@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="sq_AL" sourcelanguage="en" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="mi" sourcelanguage="en" version="2.1">
 <context>
     <name>:</name>
     <message>
@@ -13,7 +13,7 @@
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="52"/>
         <source>Analyze</source>
-        <translation>Analizo</translation>
+        <translation>Tātari</translation>
     </message>
 </context>
 <context>
@@ -21,7 +21,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="71"/>
         <source>Crates</source>
-        <translation>Arkat</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="95"/>
@@ -31,7 +31,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="108"/>
         <source>Auto DJ</source>
-        <translation>DJ Automatik</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="296"/>
@@ -45,7 +45,7 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="26"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="110"/>
         <source>Banshee</source>
-        <translation>Banshee</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
@@ -86,17 +86,17 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="42"/>
         <source>Import Playlist</source>
-        <translation>Importo Listën</translation>
+        <translation>Kawemai he tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="121"/>
         <source>Playlist Creation Failed</source>
-        <translation>Krijimi i Lisës Dështoi</translation>
+        <translation>I rahua te auaha tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="122"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>Një Gabim i Panjohur Ndodhi Ndërsa po Krijohej Lista</translation>
+        <translation>Hapa waihangatanga rārangipāho:</translation>
     </message>
 </context>
 <context>
@@ -104,7 +104,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="295"/>
         <source>New Playlist</source>
-        <translation>Listë e Re</translation>
+        <translation>Tūtira waiata hōu</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="66"/>
@@ -115,7 +115,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="39"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="292"/>
         <source>Create New Playlist</source>
-        <translation>Krijo Listë të Re</translation>
+        <translation>Auaha he tūtira waiata hōu</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="71"/>
@@ -125,60 +125,60 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="55"/>
         <source>Remove</source>
-        <translation>Hiq</translation>
+        <translation>Muku</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="45"/>
         <source>Rename</source>
-        <translation>Riemërto</translation>
+        <translation>Whakaingoa Anō</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="60"/>
         <source>Lock</source>
-        <translation>Kyç</translation>
+        <translation>Raka</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="50"/>
         <source>Duplicate</source>
-        <translation>Dyfisho</translation>
+        <translation>Tārua</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="88"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="93"/>
         <source>Import Playlist</source>
-        <translation>Importo Listën</translation>
+        <translation>Kawemai he tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="103"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>Kaweake ngā kōnae waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="82"/>
         <source>Analyze entire Playlist</source>
-        <translation>Analizo të Gjithë Listën</translation>
+        <translation>Tātari Rārangipāho katoa</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="198"/>
         <source>Enter new name for playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Tāurutia te ingoa rārangipāho hōu:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="239"/>
         <source>Duplicate Playlist</source>
-        <translation>Dyfisho Lisën</translation>
+        <translation>Tārua tēnei tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="240"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="293"/>
         <source>Enter name for new playlist:</source>
-        <translation>Zgjidh Emrin e Listës së Re</translation>
+        <translation>Tāurutia te ingoa rārangipāho hōu:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="98"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="467"/>
         <source>Export Playlist</source>
-        <translation>Eksporto Listën</translation>
+        <translation>Kaweake tēnei tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="76"/>
@@ -188,34 +188,34 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="197"/>
         <source>Rename Playlist</source>
-        <translation>Riemërto Listën</translation>
+        <translation>Whakaingoa Rārangipāho anō</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="211"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="215"/>
         <source>Renaming Playlist Failed</source>
-        <translation>Riemërtimi i Listës Dështoi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="212"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="255"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="307"/>
         <source>A playlist by that name already exists.</source>
-        <translation>Lista me atë Emër Ekziston</translation>
+        <translation>Kei te tīariari kē te ingoa rārangipāho.</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="216"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="259"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="311"/>
         <source>A playlist cannot have a blank name.</source>
-        <translation>Lista Nuk Mund të Ketë Emër Bosh</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="243"/>
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a playlist</extracomment>
-        <translation>_kopje</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="254"/>
@@ -225,18 +225,18 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="323"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="439"/>
         <source>Playlist Creation Failed</source>
-        <translation>Krijimi i Lisës Dështoi</translation>
+        <translation>I rahua te auaha tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="324"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="440"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>Një Gabim i Panjohur Ndodhi Ndërsa po Krijohej Lista</translation>
+        <translation>Hapa waihangatanga rārangipāho:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="464"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation>Listë M3U (*.m3u)</translation>
+        <translation>Tūtira waiata M3U (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="469"/>
@@ -254,7 +254,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="62"/>
         <source>Timestamp</source>
-        <translation type="unfinished"/>
+        <translation>Waitohuwā</translation>
     </message>
 </context>
 <context>
@@ -270,27 +270,27 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="129"/>
         <source>Album</source>
-        <translation>Albumi</translation>
+        <translation>Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="133"/>
         <source>Album Artist</source>
-        <translation>Artisti i Albumit</translation>
+        <translation>Mataoro Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="137"/>
         <source>Artist</source>
-        <translation>Artisti</translation>
+        <translation>Mataoro</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="141"/>
         <source>Bitrate</source>
-        <translation>Bitrate</translation>
+        <translation>Auaumoka</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="145"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>Taki i te Meneti</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="149"/>
@@ -305,67 +305,67 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="157"/>
         <source>Comment</source>
-        <translation>Shënime</translation>
+        <translation>Tākupu</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="161"/>
         <source>Composer</source>
-        <translation>Kompozitori</translation>
+        <translation>Kaitito</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="165"/>
         <source>Cover Art</source>
-        <translation>Arti i Kopertinës</translation>
+        <translation>Toi Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="169"/>
         <source>Date Added</source>
-        <translation>Data e Shtimit</translation>
+        <translation>Rā i Tāpiritia</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="173"/>
         <source>Duration</source>
-        <translation>Kohëzgjatja</translation>
+        <translation>Roanga</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="177"/>
         <source>Type</source>
-        <translation>Lloji</translation>
+        <translation>Momo</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="181"/>
         <source>Genre</source>
-        <translation>Xhanrë</translation>
+        <translation>Tūmomo</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="185"/>
         <source>Grouping</source>
-        <translation>Grupimi</translation>
+        <translation>Whakarōpū</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="189"/>
         <source>Key</source>
-        <translation>Celësi</translation>
+        <translation>Paeoro</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="193"/>
         <source>Location</source>
-        <translation>Vendndodhja</translation>
+        <translation>Tauwāhi</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="197"/>
         <source>Preview</source>
-        <translation>Inspekto</translation>
+        <translation>Arokite</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="201"/>
         <source>Rating</source>
-        <translation>Vlerësimi</translation>
+        <translation>Whakatauranga</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="205"/>
         <source>ReplayGain</source>
-        <translation>ReplayGain</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="209"/>
@@ -375,22 +375,22 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="213"/>
         <source>Played</source>
-        <translation>E Luajtur</translation>
+        <translation>I Pāhotia</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="217"/>
         <source>Title</source>
-        <translation>Titulli</translation>
+        <translation>Taitara</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="221"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation># Riu</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="225"/>
         <source>Year</source>
-        <translation>Viti</translation>
+        <translation>Tau</translation>
     </message>
 </context>
 <context>
@@ -439,32 +439,32 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="145"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Ingoa</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="147"/>
         <source>Status</source>
-        <translation type="unfinished"/>
+        <translation>Tūnga</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="197"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>Kua Momotu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="199"/>
         <source>Connecting...</source>
-        <translation type="unfinished"/>
+        <translation>Tūhono ana...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="201"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>Tūhonoa</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="203"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>Rahua</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="206"/>
@@ -477,33 +477,33 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="45"/>
         <source>Add to Quick Links</source>
-        <translation>Shto tek Quick Links</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="51"/>
         <source>Remove from Quick Links</source>
-        <translation>Hiq nga Quick Links</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="57"/>
         <source>Add to Library</source>
-        <translation>Shto në Librari</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="74"/>
         <source>Quick Links</source>
-        <translation>Quick Links</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="78"/>
         <location filename="../../src/library/browse/browsefeature.cpp" line="104"/>
         <source>Devices</source>
-        <translation>Pajisjet</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="107"/>
         <source>Removable Devices</source>
-        <translation>Pajisjet e Ndashëme</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="141"/>
@@ -524,7 +524,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="179"/>
         <source>Scan</source>
-        <translation>Këqyr</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="436"/>
@@ -537,112 +537,112 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="35"/>
         <source>Preview</source>
-        <translation>Inspekto</translation>
+        <translation>Arokite</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="36"/>
         <source>Filename</source>
-        <translation>Emri i Dosjes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="37"/>
         <source>Artist</source>
-        <translation>Artisti</translation>
+        <translation>Mataoro</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="38"/>
         <source>Title</source>
-        <translation>Titulli</translation>
+        <translation>Taitara</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="39"/>
         <source>Album</source>
-        <translation>Albumi</translation>
+        <translation>Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="40"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation># Riu</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="41"/>
         <source>Year</source>
-        <translation>Viti</translation>
+        <translation>Tau</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
         <source>Genre</source>
-        <translation>Xhanrë</translation>
+        <translation>Tūmomo</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="43"/>
         <source>Composer</source>
-        <translation>Kompozitori</translation>
+        <translation>Kaitito</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="44"/>
         <source>Comment</source>
-        <translation>Shënime</translation>
+        <translation>Tākupu</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
         <source>Duration</source>
-        <translation>Kohëzgjatja</translation>
+        <translation>Roanga</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="46"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>Taki i te Meneti</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="47"/>
         <source>Key</source>
-        <translation>Celësi</translation>
+        <translation>Paeoro</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="48"/>
         <source>Type</source>
-        <translation>Lloji</translation>
+        <translation>Momo</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="49"/>
         <source>Bitrate</source>
-        <translation>Bitrate</translation>
+        <translation>Auaumoka</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="55"/>
         <source>ReplayGain</source>
-        <translation>ReplayGain</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="50"/>
         <source>Location</source>
-        <translation>Vendndodhja</translation>
+        <translation>Tauwāhi</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="51"/>
         <source>Album Artist</source>
-        <translation>Artisti i Albumit</translation>
+        <translation>Mataoro Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="52"/>
         <source>Grouping</source>
-        <translation>Grupimi</translation>
+        <translation>Whakarōpū</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="53"/>
         <source>File Modified</source>
-        <translation>Skeda u Modifikua</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="54"/>
         <source>File Created</source>
-        <translation>Skeda u Krijua</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="199"/>
         <source>Mixxx Library</source>
-        <translation>Libraria e Mixxx</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="199"/>
@@ -655,7 +655,7 @@
     <message>
         <location filename="../../src/controllers/bulk/bulkcontroller.cpp" line="83"/>
         <source>USB Controller</source>
-        <translation>Kontrolluesi i USB</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -691,7 +691,7 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="61"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Ingoa</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="67"/>
@@ -738,32 +738,32 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="8"/>
         <source>Group</source>
-        <translation>Grupimi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="9"/>
         <source>Item</source>
-        <translation>Sendi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="10"/>
         <source>Value</source>
-        <translation>Vlera</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="11"/>
         <source>Parameter</source>
-        <translation>Parametri</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="12"/>
         <source>Title</source>
-        <translation>Titulli</translation>
+        <translation>Taitara</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="13"/>
         <source>Description</source>
-        <translation>Përshkrimi</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -776,14 +776,14 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="17"/>
         <source>Headphone Output</source>
-        <translation>Nxjerrja e Kufjeve</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="18"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="128"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="137"/>
         <source>Deck %1</source>
-        <translation>Kuverta %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="19"/>
@@ -793,22 +793,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="20"/>
         <source>Preview Deck %1</source>
-        <translation>Inspekto Kuvertën %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="21"/>
         <source>Microphone %1</source>
-        <translation>Mikrofoni %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="22"/>
         <source>Auxiliary %1</source>
-        <translation>Ndihmësi %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="23"/>
         <source>Reset to default</source>
-        <translation>Rivë në Parazgjedhje</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="24"/>
@@ -818,17 +818,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="27"/>
         <source>Parameter %1</source>
-        <translation>Parametri %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="31"/>
         <source>Mixer</source>
-        <translation>Mikser</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="36"/>
         <source>Crossfader</source>
-        <translation>Kryqzbehësi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
@@ -843,12 +843,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="98"/>
         <source>Headphone delay</source>
-        <translation>Vonesa e Kufjeve</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="167"/>
         <source>Transport</source>
-        <translation>Transporto</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="172"/>
@@ -858,24 +858,24 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="168"/>
         <source>Play button</source>
-        <translation>Butoni i Luajtjes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="146"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1015"/>
         <source>Set to full volume</source>
-        <translation>Ngrije Volumin të Plotë</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="150"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1019"/>
         <source>Set to zero volume</source>
-        <translation>Ule Volumin në Zero</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="179"/>
         <source>Stop button</source>
-        <translation>Butoni i Ndaljes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="178"/>
@@ -895,13 +895,13 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1027"/>
         <source>Headphone listen button</source>
-        <translation>Butoni të Dëgjosh me Kufje</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="157"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1023"/>
         <source>Mute button</source>
-        <translation>Butoni i Heshtjes</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="185"/>
@@ -945,27 +945,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="190"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>Taki i te Meneti</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="191"/>
         <source>Increase BPM by 1</source>
-        <translation> Ngrije BPM nga 1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="192"/>
         <source>Decrease BPM by 1</source>
-        <translation>Zbrit BPM nga 1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="193"/>
         <source>Increase BPM by 0.1</source>
-        <translation>Rrit BPM nga 0.1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="194"/>
         <source>Decrease BPM by 0.1</source>
-        <translation>Zbrit BPM nga 0.1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="195"/>
@@ -1025,7 +1025,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="103"/>
         <source>Equalizers</source>
-        <translation>Barazuesit</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="303"/>
@@ -1050,52 +1050,52 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="316"/>
         <source>Cues</source>
-        <translation>Shenjat</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="317"/>
         <source>Cue button</source>
-        <translation>Butoni i Shenjës</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="318"/>
         <source>Set cue point</source>
-        <translation>Vë Pikën e Shenjës</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="319"/>
         <source>Go to cue point</source>
-        <translation>Shko tek Pika e Shenjës</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="321"/>
         <source>Go to cue point and play</source>
-        <translation>Shko tek Pika e Shenjës edhe Luaje</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="323"/>
         <source>Go to cue point and stop</source>
-        <translation>Shko tek Pika e Shenjës edhe Ndalo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="325"/>
         <source>Preview from cue point</source>
-        <translation>Inspekto nga Pika e Shenjës</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="327"/>
         <source>Cue button (CDJ mode)</source>
-        <translation>Butoni i Shenjës (Moda CDJ)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="329"/>
         <source>Stutter cue</source>
-        <translation>Belbëzo Shenjën</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="334"/>
         <source>Hotcues</source>
-        <translation>Shenjat e Shpejta</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="342"/>
@@ -1105,27 +1105,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="343"/>
         <source>Clear hotcue %1</source>
-        <translation>Zbraz Shenjën e Shpejte %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="344"/>
         <source>Set hotcue %1</source>
-        <translation>Vë Shenjën e Shpejte %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="345"/>
         <source>Jump to hotcue %1</source>
-        <translation>Kërce tek Shenja e Shpejtë %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="346"/>
         <source>Jump to hotcue %1 and stop</source>
-        <translation>Kërce tek Shenja e Shpejte %1 edhe Ndalo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="347"/>
         <source>Jump to hotcue %1 and play</source>
-        <translation>Kërce tek Shenja e Shpejtë %1 edhe Luaje</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="348"/>
@@ -2863,7 +2863,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1051"/>
         <source>Auto DJ</source>
-        <translation>DJ Automatik</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1053"/>
@@ -3121,7 +3121,7 @@
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="43"/>
         <source>Comment</source>
-        <translation>Shënime</translation>
+        <translation>Tākupu</translation>
     </message>
 </context>
 <context>
@@ -3169,7 +3169,7 @@
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="45"/>
         <source>Comment</source>
-        <translation>Shënime</translation>
+        <translation>Tākupu</translation>
     </message>
 </context>
 <context>
@@ -3177,7 +3177,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="76"/>
         <source>Remove</source>
-        <translation>Hiq</translation>
+        <translation>Muku</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="60"/>
@@ -3188,23 +3188,23 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="66"/>
         <source>Rename</source>
-        <translation>Riemërto</translation>
+        <translation>Whakaingoa Anō</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="81"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="350"/>
         <source>Lock</source>
-        <translation>Kyç</translation>
+        <translation>Raka</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="115"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>Kaweake ngā kōnae waiatak</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="71"/>
         <source>Duplicate</source>
-        <translation>Dyfisho</translation>
+        <translation>Tārua</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="94"/>
@@ -3225,7 +3225,7 @@
         <location filename="../../src/library/crate/cratefeature.cpp" line="157"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="165"/>
         <source>Crates</source>
-        <translation>Arkat</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="100"/>
@@ -3443,7 +3443,7 @@
         <location filename="../../src/library/dlganalysis.ui" line="98"/>
         <location filename="../../src/library/dlganalysis.cpp" line="183"/>
         <source>Analyze</source>
-        <translation>Analizo</translation>
+        <translation>Tātari</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="56"/>
@@ -3649,7 +3649,7 @@ last sound.</source>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="277"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="285"/>
         <source>Auto DJ</source>
-        <translation>DJ Automatik</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="94"/>
@@ -4329,7 +4329,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="613"/>
         <source>Genre</source>
-        <translation>Xhanrë</translation>
+        <translation>Tūmomo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="447"/>
@@ -4339,7 +4339,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="564"/>
         <source>Description</source>
-        <translation>Përshkrimi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="255"/>
@@ -4349,7 +4349,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="279"/>
         <source>Bitrate</source>
-        <translation>Bitrate</translation>
+        <translation>Auaumoka</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="263"/>
@@ -4370,7 +4370,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="679"/>
         <source>Type</source>
-        <translation>Lloji</translation>
+        <translation>Momo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="720"/>
@@ -4707,7 +4707,7 @@ Apply settings and continue?</source>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="414"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="483"/>
         <source>Remove</source>
-        <translation>Hiq</translation>
+        <translation>Muku</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="88"/>
@@ -5788,7 +5788,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="136"/>
         <source>Scan</source>
-        <translation>Këqyr</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="250"/>
@@ -5856,7 +5856,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="58"/>
         <source>Remove</source>
-        <translation>Hiq</translation>
+        <translation>Muku</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="84"/>
@@ -6283,7 +6283,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="291"/>
         <source>Title</source>
-        <translation>Titulli</translation>
+        <translation>Taitara</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="314"/>
@@ -6293,7 +6293,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="337"/>
         <source>Album</source>
-        <translation>Albumi</translation>
+        <translation>Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="129"/>
@@ -7086,12 +7086,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="194"/>
         <source>Auto DJ</source>
-        <translation>DJ Automatik</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="164"/>
         <source>Equalizers</source>
-        <translation>Barazuesit</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="150"/>
@@ -7106,7 +7106,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="171"/>
         <source>Crossfader</source>
-        <translation>Kryqzbehësi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="178"/>
@@ -7293,29 +7293,29 @@ Select from different types of displays for the waveform, which differ primarily
         <location filename="../../src/library/dlgtagfetcher.ui" line="50"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="501"/>
         <source>Year</source>
-        <translation>Viti</translation>
+        <translation>Tau</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="70"/>
         <source>Title</source>
-        <translation>Titulli</translation>
+        <translation>Taitara</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="75"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="511"/>
         <source>Artist</source>
-        <translation>Artisti</translation>
+        <translation>Mataoro</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="55"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="516"/>
         <source>Album</source>
-        <translation>Albumi</translation>
+        <translation>Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="60"/>
         <source>Album Artist</source>
-        <translation>Artisti i Albumit</translation>
+        <translation>Mataoro Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="115"/>
@@ -7468,7 +7468,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="662"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>Taki i te Meneti</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="764"/>
@@ -7493,52 +7493,52 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="368"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation># Riu</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="193"/>
         <source>Album Artist</source>
-        <translation>Artisti i Albumit</translation>
+        <translation>Mataoro Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="240"/>
         <source>Composer</source>
-        <translation>Kompozitori</translation>
+        <translation>Kaitito</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="72"/>
         <source>Title</source>
-        <translation>Titulli</translation>
+        <translation>Taitara</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="340"/>
         <source>Grouping</source>
-        <translation>Grupimi</translation>
+        <translation>Whakarōpū</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="315"/>
         <source>Key</source>
-        <translation>Celësi</translation>
+        <translation>Paeoro</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="268"/>
         <source>Year</source>
-        <translation>Viti</translation>
+        <translation>Tau</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="125"/>
         <source>Artist</source>
-        <translation>Artisti</translation>
+        <translation>Mataoro</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="159"/>
         <source>Album</source>
-        <translation>Albumi</translation>
+        <translation>Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="287"/>
         <source>Genre</source>
-        <translation>Xhanrë</translation>
+        <translation>Tūmomo</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="506"/>
@@ -7735,12 +7735,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/effectsettingsmodel.cpp" line="107"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Ingoa</translation>
     </message>
     <message>
         <location filename="../../src/preferences/effectsettingsmodel.cpp" line="109"/>
         <source>Type</source>
-        <translation>Lloji</translation>
+        <translation>Momo</translation>
     </message>
 </context>
 <context>
@@ -8074,7 +8074,7 @@ support.</source>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="35"/>
         <source>Import Playlist</source>
-        <translation>Importo Listën</translation>
+        <translation>Kawemai he tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="37"/>
@@ -8426,12 +8426,12 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="45"/>
         <source>Location</source>
-        <translation>Vendndodhja</translation>
+        <translation>Tauwāhi</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="133"/>
         <source>Playlist Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>I rahua te kaweake tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="134"/>
@@ -8442,7 +8442,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="219"/>
         <source>Readable text Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>I rahua te kaweake tuhinga</translation>
     </message>
 </context>
 <context>
@@ -8451,7 +8451,7 @@ Do you want to select an input device?</source>
         <location filename="../../src/library/parserm3u.cpp" line="137"/>
         <location filename="../../src/library/parserm3u.cpp" line="150"/>
         <source>Playlist Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>I rahua te kaweake tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/parserm3u.cpp" line="138"/>
@@ -8476,7 +8476,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/parserpls.cpp" line="135"/>
         <source>Playlist Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>I rahua te kaweake tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/parserpls.cpp" line="136"/>
@@ -8489,13 +8489,13 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="87"/>
         <source>Lock</source>
-        <translation>Kyç</translation>
+        <translation>Raka</translation>
     </message>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="57"/>
         <location filename="../../src/library/playlistfeature.cpp" line="274"/>
         <source>Playlists</source>
-        <translation type="unfinished"/>
+        <translation>Ngā tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="87"/>
@@ -8525,7 +8525,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="279"/>
         <source>Create New Playlist</source>
-        <translation>Krijo Listë të Re</translation>
+        <translation>Auaha he tūtira waiata</translation>
     </message>
 </context>
 <context>
@@ -8544,7 +8544,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="458"/>
         <source>Scan</source>
-        <translation>Këqyr</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="459"/>
@@ -9094,7 +9094,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="30"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>Taki i te Meneti</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="31"/>
@@ -9909,7 +9909,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="103"/>
         <source>Deck %1</source>
-        <translation>Kuverta %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="297"/>
@@ -10027,7 +10027,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1371"/>
         <source>Playlists</source>
-        <translation type="unfinished"/>
+        <translation>Ngā tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1370"/>
@@ -10144,7 +10144,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="981"/>
         <source>Crates</source>
-        <translation>Arkat</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="984"/>
@@ -10183,7 +10183,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="114"/>
         <source>Lock</source>
-        <translation>Kyç</translation>
+        <translation>Raka</translation>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="391"/>
@@ -10437,7 +10437,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="11"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Ingoa</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="12"/>
@@ -10447,7 +10447,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="13"/>
         <source>Type</source>
-        <translation>Lloji</translation>
+        <translation>Momo</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="14"/>
@@ -10744,7 +10744,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="197"/>
         <source>Crossfader</source>
-        <translation>Kryqzbehësi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="198"/>
@@ -10846,7 +10846,7 @@ Fully right: end of the effect period</source>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="256"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="828"/>
         <source>Cover Art</source>
-        <translation>Arti i Kopertinës</translation>
+        <translation>Toi Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="253"/>
@@ -11132,7 +11132,7 @@ Fully right: end of the effect period</source>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="387"/>
         <source>Key</source>
         <extracomment>The musical key of a track</extracomment>
-        <translation>Celësi</translation>
+        <translation>Paeoro</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="391"/>
@@ -13192,7 +13192,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="148"/>
         <source>Create a new playlist</source>
-        <translation type="unfinished"/>
+        <translation>Waihangaia he rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="153"/>
@@ -13675,12 +13675,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="104"/>
         <source>Add to Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Tāpiri ki te Rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="110"/>
         <source>Crates</source>
-        <translation>Arkat</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="117"/>
@@ -13695,7 +13695,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="123"/>
         <source>Cover Art</source>
-        <translation>Arti i Kopertinës</translation>
+        <translation>Toi Pukaemi</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="130"/>
@@ -13736,12 +13736,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="165"/>
         <source>Remove</source>
-        <translation>Hiq</translation>
+        <translation>Muku</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="168"/>
         <source>Remove from Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Mukua mai i Rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="171"/>
@@ -13801,7 +13801,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="239"/>
         <source>Rating</source>
-        <translation>Vlerësimi</translation>
+        <translation>Whakatauranga</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="242"/>
@@ -13811,7 +13811,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="245"/>
         <source>Hotcues</source>
-        <translation>Shenjat e Shpejta</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="248"/>
@@ -13831,12 +13831,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="257"/>
         <source>Key</source>
-        <translation>Celësi</translation>
+        <translation>Paeoro</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="260"/>
         <source>ReplayGain</source>
-        <translation>ReplayGain</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="263"/>
@@ -13851,12 +13851,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="271"/>
         <source>Lock BPM</source>
-        <translation>Mbyllni BPM</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="272"/>
         <source>Unlock BPM</source>
-        <translation>Rihape BPM</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="277"/>
@@ -13896,7 +13896,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="572"/>
         <source>Deck %1</source>
-        <translation>Kuverta %1</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="588"/>
@@ -13917,39 +13917,39 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/widget/wtrackmenu.cpp" line="942"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="964"/>
         <source>Create New Playlist</source>
-        <translation>Krijo Listë të Re</translation>
+        <translation>Auaha he tūtira waiata hōu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="965"/>
         <source>Enter name for new playlist:</source>
-        <translation>Zgjidh Emrin e Listës së Re</translation>
+        <translation>Tāurutia te ingoa rārangipāho hōu:</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="967"/>
         <source>New Playlist</source>
-        <translation>Listë e Re</translation>
+        <translation>Tūtira waiata hōu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="975"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="979"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="988"/>
         <source>Playlist Creation Failed</source>
-        <translation>Krijimi i Lisës Dështoi</translation>
+        <translation>I rahua te auaha tūtira waiata</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="976"/>
         <source>A playlist by that name already exists.</source>
-        <translation>Lista me atë Emër Ekziston</translation>
+        <translation>Kei te tīariari kē te ingoa rārangipāho.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="980"/>
         <source>A playlist cannot have a blank name.</source>
-        <translation>Lista Nuk Mund të Ketë Emër Bosh</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="989"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>Një Gabim i Panjohur Ndodhi Ndërsa po Krijohej Lista</translation>
+        <translation>Hapa waihangatanga rārangipāho:</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1051"/>
