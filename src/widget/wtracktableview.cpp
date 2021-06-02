@@ -258,28 +258,31 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
                 &WTrackTableView::slotSortingChanged,
                 Qt::AutoConnection);
 
-        int sortColumn;
         Qt::SortOrder sortOrder;
-
-        // Stupid hack that assumes column 0 is never visible, but this is a weak
-        // proxy for "there was a saved column sort order"
-        if (horizontalHeader()->sortIndicatorSection() > 0) {
+        TrackModel::SortColumnId sortColumn =
+                trackModel->sortColumnIdFromColumnIndex(
+                        horizontalHeader()->sortIndicatorSection());
+        if (sortColumn != TrackModel::SortColumnId::Invalid) {
             // Sort by the saved sort section and order.
-            sortColumn = horizontalHeader()->sortIndicatorSection();
             sortOrder = horizontalHeader()->sortIndicatorOrder();
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
-            sortColumn = trackModel->defaultSortColumn();
+            sortColumn = trackModel->sortColumnIdFromColumnIndex(trackModel->defaultSortColumn());
             sortOrder = trackModel->defaultSortOrder();
 
             // If the TrackModel has an invalid or internal column as its default
-            // sort, find the first non-internal column and sort by that.
-            while (sortColumn < 0 || trackModel->isColumnInternal(sortColumn)) {
-                sortColumn++;
+            // sort, find the first valid sort column and sort by that.
+            int sortColumnIndex = -1;
+            constexpr int kMaxPobeIndex = 10; // just to avoid an endless while loop
+            while (sortColumn == TrackModel::SortColumnId::Invalid &&
+                    sortColumnIndex < kMaxPobeIndex) {
+                sortColumnIndex++;
+                sortColumn = trackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
             }
+            DEBUG_ASSERT(sortColumn != TrackModel::SortColumnId::Invalid);
         }
 
-        m_pSortColumn->set(static_cast<int>(trackModel->sortColumnIdFromColumnIndex(sortColumn)));
+        m_pSortColumn->set(static_cast<double>(sortColumn));
         m_pSortOrder->set(sortOrder);
         applySorting();
     }
