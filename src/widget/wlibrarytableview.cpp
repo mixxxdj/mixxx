@@ -3,6 +3,7 @@
 #include <QFocusEvent>
 #include <QFontMetrics>
 #include <QHeaderView>
+#include <QMultiMap>
 #include <QPalette>
 #include <QScrollBar>
 
@@ -10,16 +11,19 @@
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
 #include "widget/wskincolor.h"
+#include "widget/wtracktableviewheader.h"
 #include "widget/wwidget.h"
 
+namespace {
+// number of entries in the model cache
+constexpr int kModelCacheSize = 1000;
+} // namespace
+
 WLibraryTableView::WLibraryTableView(QWidget* parent,
-        UserSettingsPointer pConfig,
-        const ConfigKey& vScrollBarPosKey)
+        UserSettingsPointer pConfig)
         : QTableView(parent),
           m_pConfig(pConfig),
-          m_vScrollBarPosKey(vScrollBarPosKey) {
-    loadVScrollBarPosState();
-
+          m_modelStateCache(kModelCacheSize) {
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
@@ -53,37 +57,9 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 }
 
 WLibraryTableView::~WLibraryTableView() {
+    m_modelStateCache.clear();
 }
 
-void WLibraryTableView::loadVScrollBarPosState() {
-    // TODO(rryan) I'm not sure I understand the value in saving the v-scrollbar
-    // position across restarts of Mixxx. Now that we have different views for
-    // each mode, the views should just maintain their scrollbar position when
-    // you switch views. We should discuss this.
-    m_noSearchVScrollBarPos = m_pConfig->getValueString(m_vScrollBarPosKey).toInt();
-}
-
-void WLibraryTableView::restoreNoSearchVScrollBarPos() {
-    // Restore the scrollbar's position (scroll to that spot)
-    // when the search has been cleared
-    //qDebug() << "restoreNoSearchVScrollBarPos()" << m_noSearchVScrollBarPos;
-    updateGeometries();
-    verticalScrollBar()->setValue(m_noSearchVScrollBarPos);
-}
-
-void WLibraryTableView::saveNoSearchVScrollBarPos() {
-    // Save the scrollbar's position so we can return here after
-    // a search is cleared.
-    //qDebug() << "saveNoSearchVScrollBarPos()" << m_noSearchVScrollBarPos;
-    m_noSearchVScrollBarPos = verticalScrollBar()->value();
-}
-
-
-void WLibraryTableView::saveVScrollBarPosState() {
-    //Save the vertical scrollbar position.
-    int scrollbarPosition = verticalScrollBar()->value();
-    m_pConfig->set(m_vScrollBarPosKey, ConfigValue(scrollbarPosition));
-}
 
 void WLibraryTableView::moveSelection(int delta) {
     QAbstractItemModel* pModel = model();
@@ -91,43 +67,131 @@ void WLibraryTableView::moveSelection(int delta) {
     if (pModel == nullptr) {
         return;
     }
-
-    while(delta != 0) {
-        // TODO(rryan) what happens if there is nothing selected?
-        QModelIndex current = currentIndex();
-        if(delta > 0) {
-            // i is positive, so we want to move the highlight down
-            int row = current.row();
-            if (row + 1 < pModel->rowCount()) {
-                selectRow(row + 1);
+    QItemSelectionModel* currentSelection = selectionModel();
+    clearSelection();
+    currentSelection->clearSelection();
+    QModelIndex newIndex;
+    while (delta != 0) {
+        QModelIndex currentIndex = currentSelection->currentIndex();
+        if (currentIndex.isValid()) {
+            int row = currentIndex.row();
+            if (delta > 0) {
+                // i is positive, so we want to move the highlight down
+                if (row + 1 < pModel->rowCount()) {
+                    newIndex = currentIndex.sibling(row + 1, 0);
+                } else {
+                    // we wrap around at the end of the list so it is faster to get
+                    // to the top of the list again
+                    newIndex = currentIndex.sibling(0, 0);
+                }
+                delta--;
+            } else {
+                if (row - 1 >= 0) {
+                    newIndex = currentIndex.sibling(row - 1, 0);
+                } else {
+                    newIndex = pModel->index(pModel->rowCount() - 1, 0);
+                }
+                delta++;
             }
-
-            delta--;
         } else {
-            // i is negative, so we want to move the highlight up
-            int row = current.row();
-            if (row - 1 >= 0) {
-                selectRow(row - 1);
+            // no selection, so select the first or last element depending on delta
+            if (delta > 0) {
+                newIndex = pModel->index(0, 0);
+                delta--;
+            } else {
+                newIndex = pModel->index(pModel->rowCount() - 1, 0);
+                delta++;
             }
+        }
+        // this weired combination works when switching between models
+        setCurrentIndex(newIndex);
+        currentSelection->select(newIndex, QItemSelectionModel::ClearAndSelect);
+        // why does scrollTo not work ?
+        // scrollTo(newIndex);
+        selectRow(newIndex.row());
+    }
+}
 
-            delta++;
+void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, const QString& key) {
+    VERIFY_OR_DEBUG_ASSERT(model) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!key.isEmpty()) {
+        return;
+    }
+    ModelState* state = m_modelStateCache.take(key);
+    if (!state) {
+        state = new ModelState();
+    }
+    // qDebug() << "save: saveTrackModelState:" << key << model << verticalScrollBar()->value() << " | ";
+    state->verticalScrollPosition = verticalScrollBar()->value();
+    state->horizontalScrollPosition = horizontalScrollBar()->value();
+    fillModelState(*state);
+    m_modelStateCache.insert(key, state, 1);
+
+    WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
+    if (pHeader) {
+        pHeader->saveHeaderState();
+    }
+}
+
+bool WLibraryTableView::restoreTrackModelState(
+        const QAbstractItemModel* model, const QString& key, bool fromSearch) {
+    updateGeometries();
+    //qDebug() << "restoreTrackModelState:" << key << model << m_vModelState.keys();
+    if (model == nullptr) {
+        return false;
+    }
+
+    if (!fromSearch) {
+        WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
+        if (pHeader) {
+            pHeader->restoreHeaderState();
         }
     }
-}
 
-void WLibraryTableView::saveVScrollBarPos(TrackModel* key){
-    m_vScrollBarPosValues[key] = verticalScrollBar()->value();
-}
-
-void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
-    updateGeometries();
-
-    if (m_vScrollBarPosValues.contains(key)){
-        verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
-    }else{
-        m_vScrollBarPosValues[key] = 0;
-        verticalScrollBar()->setValue(0);
+    ModelState* state = m_modelStateCache.take(key);
+    if (!state) {
+        return false;
     }
+
+    verticalScrollBar()->setValue(state->verticalScrollPosition);
+    horizontalScrollBar()->setValue(state->horizontalScrollPosition);
+
+    applyModelState(*state);
+    // reinsert the state into the cache
+    m_modelStateCache.insert(key, state, 1);
+    return true;
+}
+
+void WLibraryTableView::fillModelState(ModelState& state) {
+    if (!selectionModel()->selectedIndexes().isEmpty()) {
+        state.selectionIndex = selectionModel()->selectedIndexes();
+    } else {
+        state.selectionIndex = QModelIndexList();
+    }
+    if (selectionModel()->currentIndex().isValid()) {
+        state.currentIndex = selectionModel()->currentIndex();
+    } else {
+        state.currentIndex = QModelIndex();
+    }
+}
+
+bool WLibraryTableView::applyModelState(ModelState& state) {
+    auto selection = selectionModel();
+    selection->clearSelection();
+    if (!state.selectionIndex.isEmpty()) {
+        for (auto index : qAsConst(state.selectionIndex)) {
+            selection->select(index, QItemSelectionModel::Select);
+        }
+    }
+    if (state.currentIndex.isValid()) {
+        selection->setCurrentIndex(state.currentIndex,
+                QItemSelectionModel::Select |
+                        QItemSelectionModel::SelectCurrent);
+        return true;
+    }
+    return false;
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
@@ -147,6 +211,24 @@ void WLibraryTableView::setSelectedClick(bool enable) {
     } else {
         setEditTriggers(QAbstractItemView::EditKeyPressed);
     }
+}
+
+void WLibraryTableView::saveCurrentViewState() {
+    const QAbstractItemModel* currentModel = model();
+    QString key = getStateKey();
+    if (!currentModel || key.isEmpty()) {
+        return;
+    }
+    saveTrackModelState(currentModel, key);
+}
+
+bool WLibraryTableView::restoreCurrentViewState(bool fromSearch) {
+    const QAbstractItemModel* currentModel = model();
+    QString key = getStateKey();
+    if (!currentModel || key.isEmpty()) {
+        return false;
+    }
+    return restoreTrackModelState(currentModel, key, fromSearch);
 }
 
 void WLibraryTableView::focusInEvent(QFocusEvent* event) {

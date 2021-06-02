@@ -162,7 +162,7 @@ void TraktorFeature::activate() {
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit featureIsLoading(this, true);
     }
-
+    emit saveModelState();
     emit showTrackModel(m_pTraktorTableModel);
     emit enableCoverArtDisplay(false);
 }
@@ -177,6 +177,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
 
     if (!item->hasChildren()) {
         qDebug() << "Activate Traktor Playlist: " << item->getData().toString();
+        emit saveModelState();
         m_pTraktorPlaylistModel->setPlaylist(item->getData().toString());
         emit showTrackModel(m_pTraktorPlaylistModel);
         emit enableCoverArtDisplay(false);
@@ -613,6 +614,7 @@ void TraktorFeature::onTrackCollectionLoaded() {
         m_trackSource->buildIndex();
 
         //m_pTraktorTableModel->select();
+        emit saveModelState();
         emit showTrackModel(m_pTraktorTableModel);
         qDebug() << "Traktor library loaded successfully";
     } else {

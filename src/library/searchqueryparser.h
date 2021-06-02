@@ -19,6 +19,10 @@ class SearchQueryParser {
             const QStringList& searchColumns,
             const QString& extraFilter) const;
 
+    static QStringList splitQuery(const QString& query);
+    /// splits the query into a list of terms
+    static bool isReducedTerm(const QString& original, const QString& changed);
+    /// checks if the changed search query is less specific then the original term
 
   private:
     void parseTokens(QStringList tokens,

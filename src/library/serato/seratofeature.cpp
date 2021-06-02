@@ -435,6 +435,10 @@ QString parseCrate(
 
 QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* databaseItem) {
     QString databaseName = databaseItem->getLabel();
+    VERIFY_OR_DEBUG_ASSERT(databaseItem->getData().toList().length() == 2) {
+        qWarning() << "Malformed data in TreeItem" << databaseItem->getData();
+        return QString();
+    }
     QString databaseFilePath = databaseItem->getData().toList()[0].toString();
     QDir databaseDir = QFileInfo(databaseFilePath).dir();
 
@@ -1053,6 +1057,7 @@ void SeratoFeature::activateChild(const QModelIndex& index) {
         item->setData(QVariant(data));
     } else {
         qDebug() << "Activate Serato Playlist: " << playlist;
+        emit saveModelState();
         m_pSeratoPlaylistModel->setPlaylist(playlist);
         emit showTrackModel(m_pSeratoPlaylistModel);
     }
@@ -1129,7 +1134,7 @@ void SeratoFeature::onTracksFound() {
     QString databasePlaylist = m_tracksFuture.result();
 
     qDebug() << "Show Serato Database Playlist: " << databasePlaylist;
-
+    emit saveModelState();
     m_pSeratoPlaylistModel->setPlaylist(databasePlaylist);
     emit showTrackModel(m_pSeratoPlaylistModel);
 }

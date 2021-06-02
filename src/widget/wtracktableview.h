@@ -18,7 +18,6 @@ class TrackCollectionManager;
 class ExternalTrackCollection;
 class WTrackMenu;
 
-const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
 
 class WTrackTableView : public WLibraryTableView {
@@ -43,8 +42,8 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
-    void saveCurrentVScrollBarPos();
-    void restoreCurrentVScrollBarPos();
+    TrackId getCurrentTrackId() const;
+    bool setCurrentTrackId(const TrackId& trackId);
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
@@ -56,7 +55,7 @@ class WTrackTableView : public WLibraryTableView {
     }
 
   public slots:
-    void loadTrackModel(QAbstractItemModel* model);
+    void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
@@ -64,6 +63,12 @@ class WTrackTableView : public WLibraryTableView {
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;
+    void slotSaveCurrentViewState() {
+        saveCurrentViewState();
+    };
+    void slotRestoreCurrentViewState() {
+        restoreCurrentViewState();
+    };
 
   private slots:
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
@@ -76,6 +81,15 @@ class WTrackTableView : public WLibraryTableView {
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
     void keyNotationChanged();
+    void slotScrollToCurrent();
+
+  signals:
+    void scrollToCurrent();
+
+  protected:
+    QString getStateKey() const override;
+    void fillModelState(ModelState& state) override;
+    bool applyModelState(ModelState& state) override;
 
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);

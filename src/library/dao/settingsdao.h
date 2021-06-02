@@ -17,6 +17,8 @@ class SettingsDAO final {
     bool setValue(
             const QString& name,
             const QVariant& value) const;
+    bool deleteValue(
+            const QString& name) const;
 
     const QSqlDatabase& database() const {
         return m_database;

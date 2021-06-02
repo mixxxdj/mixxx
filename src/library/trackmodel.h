@@ -2,6 +2,7 @@
 
 #include <QItemDelegate>
 #include <QList>
+#include <QStringBuilder>
 #include <QVector>
 #include <QtSql>
 
@@ -9,6 +10,7 @@
 #include "library/dao/settingsdao.h"
 #include "track/track_decl.h"
 #include "track/trackref.h"
+#include "util/string.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
@@ -173,6 +175,12 @@ class TrackModel {
         return settings.setValue(key, value);
     }
 
+    virtual bool deleteModelSetting(const QString& name) {
+        SettingsDAO settings(m_db);
+        QString key = m_settingsNamespace + "." + name;
+        return settings.deleteValue(key);
+    }
+
     virtual int defaultSortColumn() const {
         return m_iDefaultSortColumn;
     }
@@ -202,6 +210,10 @@ class TrackModel {
 
     virtual void select() {
     }
+    /// @brief modelKey returns a unique identifier for the model
+    /// @param noSearch don't include the current search in the key
+    /// @param baseOnly return only a identifier for the whole subsystem
+    virtual QString modelKey(bool noSearch = false) const = 0;
 
   private:
     QSqlDatabase m_db;

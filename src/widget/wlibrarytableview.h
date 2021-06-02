@@ -1,6 +1,10 @@
 #pragma once
 
+#include <QCache>
+#include <QDateTime>
 #include <QFont>
+#include <QItemSelectionModel>
+#include <QList>
 #include <QString>
 #include <QTableView>
 
@@ -12,26 +16,39 @@ class TrackModel;
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
+  protected:
+    struct ModelState {
+        int horizontalScrollPosition;
+        int verticalScrollPosition;
+        QModelIndexList selectionIndex;
+        QList<TrackId> selectionTracks;
+        TrackId currentTrack;
+        QModelIndex currentIndex;
+    };
 
   public:
     WLibraryTableView(QWidget* parent,
-            UserSettingsPointer pConfig,
-            const ConfigKey& vScrollBarPosKey);
+            UserSettingsPointer pConfig);
     ~WLibraryTableView() override;
 
     void moveSelection(int delta) override;
 
-    /**
-     * Saves current position of scrollbar using string key
-     * can be any value but should invariant for model
-     * @param key unique for trackmodel
-     */
-    void saveVScrollBarPos(TrackModel* key);
-    /**
-     * Finds scrollbar value associated with model by given key and restores it
-     * @param key unique for trackmodel
-     */
-    void restoreVScrollBarPos(TrackModel* key);
+    /// @brief saveTrackModelState function saves current position of scrollbar
+    /// using string key - can be any value but should invariant for model
+    /// @param key unique for trackmodel
+    void saveTrackModelState(const QAbstractItemModel* model, const QString& key);
+
+    /// @brief restoreTrackModelState function finds scrollbar value associated with model
+    /// by given key and restores it
+    /// @param key unique for trackmodel
+    bool restoreTrackModelState(const QAbstractItemModel* model,
+            const QString& key,
+            bool fromSearch);
+    /// @brief clears the state cache until it's size is = kClearModelStatesLowWatermark
+    void saveCurrentViewState() override;
+    /// @brief restores current view state.
+    /// @return true if restore succeeded
+    bool restoreCurrentViewState(bool fromSearch = false) override;
 
   signals:
     void loadTrack(TrackPointer pTrack);
@@ -47,20 +64,13 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   protected:
     void focusInEvent(QFocusEvent* event) override;
-
-    void saveNoSearchVScrollBarPos();
-    void restoreNoSearchVScrollBarPos();
+    virtual QString getStateKey() const = 0;
+    virtual void fillModelState(ModelState& state);
+    virtual bool applyModelState(ModelState& state);
 
   private:
-    void loadVScrollBarPosState();
-    void saveVScrollBarPosState();
-
     const UserSettingsPointer m_pConfig;
-    const ConfigKey m_vScrollBarPosKey;
 
-    QMap<TrackModel*, int> m_vScrollBarPosValues;
-
-    // The position of the vertical scrollbar slider, eg. before a search is
-    // executed
-    int m_noSearchVScrollBarPos;
+    // saves scrollposition/selection/etc
+    QCache<QString, ModelState> m_modelStateCache;
 };

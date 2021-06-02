@@ -2,11 +2,16 @@
 
 #include <QtDebug>
 
+#include "library/basesqltablemodel.h"
 #include "library/trackmodel.h"
 #include "moc_wtracktableviewheader.cpp"
 #include "util/math.h"
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
+
+namespace {
+const auto kHeaderStateKey = QStringLiteral("header_state_pb");
+}
 
 HeaderViewState::HeaderViewState(const QHeaderView& headers)
 {
@@ -97,9 +102,33 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
 }
 
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
-                                             QWidget* parent)
+        QWidget* parent)
         : QHeaderView(orientation, parent),
-          m_menu(tr("Show or hide columns."), this) {
+          m_menu(tr("Show or hide columns."), this),
+          m_actionUseSharedConfiguration(tr("Use shared configuration"), this),
+          m_actionRestoreDefault(tr("Restore default"), this),
+          m_headerChanged(false) {
+    m_actionUseSharedConfiguration.setCheckable(true);
+    connect(this,
+            &WTrackTableViewHeader::sortIndicatorChanged,
+            [this](int logicalIndex, Qt::SortOrder order) {
+                Q_UNUSED(logicalIndex);
+                Q_UNUSED(order);
+                m_headerChanged = true;
+            });
+    connect(this,
+            &WTrackTableViewHeader::geometriesChanged,
+            [this]() {
+                m_headerChanged = true;
+            });
+    connect(&m_actionUseSharedConfiguration,
+            &QAction::toggled,
+            this,
+            &WTrackTableViewHeader::slotSharedConfigurationStateChanged);
+    connect(&m_actionRestoreDefault,
+            &QAction::triggered,
+            this,
+            &WTrackTableViewHeader::slotLoadDefaultHeaderState);
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
@@ -127,13 +156,6 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     // Now set the header view to show the new model
     QHeaderView::setModel(model);
 
-    // Now build actions for the new TrackModel
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-
-    if (!trackModel) {
-        return;
-    }
-
     // Restore saved header state to get sizes, column positioning, etc. back.
     restoreHeaderState();
 
@@ -144,6 +166,36 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     setCascadingSectionResizes(false);
 
     setMinimumSectionSize(WTTVH_MINIMUM_SECTION_SIZE);
+
+    ensureColumnsAreVisible();
+}
+
+void WTrackTableViewHeader::ensureColumnsAreVisible() {
+    // Safety check against someone getting stuck with all columns hidden
+    // (produces an empty library table). Just re-show them all.
+    int columns = model()->columnCount();
+    if (hiddenCount() == columns) {
+        for (int i = 0; i < columns; ++i) {
+            showSection(i);
+        }
+    }
+}
+
+void WTrackTableViewHeader::buildMenu() {
+    // Now build actions for the new TrackModel
+    clearActions();
+
+    QAbstractItemModel* model = QHeaderView::model();
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
+
+    if (!trackModel) {
+        return;
+    }
+
+    m_menu.addAction(&m_actionUseSharedConfiguration);
+    m_menu.addAction(&m_actionRestoreDefault);
+    m_menu.addSeparator();
+    // Map this action's signals
 
     int columns = model->columnCount();
     for (int i = 0; i < columns; ++i) {
@@ -181,14 +233,6 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
             resizeSection(i,WTTVH_MINIMUM_SECTION_SIZE);
         }
     }
-
-    // Safety check against someone getting stuck with all columns hidden
-    // (produces an empty library table). Just re-show them all.
-    if (hiddenCount() == columns) {
-        for (int i = 0; i < columns; ++i) {
-            showSection(i);
-        }
-    }
 }
 
 void WTrackTableViewHeader::saveHeaderState() {
@@ -196,36 +240,102 @@ void WTrackTableViewHeader::saveHeaderState() {
     if (!track_model) {
         return;
     }
+    if (!m_headerChanged) {
+        return;
+    }
+
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
-    track_model->setModelSetting("header_state_pb", view_state.saveState());
+    if (m_actionUseSharedConfiguration.isChecked()) {
+        track_model->setModelSetting(
+                kHeaderStateKey,
+                view_state.saveState());
+    } else {
+        track_model->setModelSetting(
+                getHeaderKey(*track_model),
+                view_state.saveState());
+    }
     //qDebug() << "Saving old header state:" << result << headerState;
 }
 
 void WTrackTableViewHeader::restoreHeaderState() {
     TrackModel* track_model = getTrackModel();
+    BaseSqlTableModel* sql_model = dynamic_cast<BaseSqlTableModel*>(track_model);
 
     if (!track_model) {
         return;
     }
 
-    QString headerStateString = track_model->getModelSetting("header_state_pb");
-    if (headerStateString.isNull()) {
-        loadDefaultHeaderState();
+    QString headerStateString = track_model->getModelSetting(getHeaderKey(*track_model));
+
+    // if there is no indepentent state, try the common one
+    m_actionUseSharedConfiguration.blockSignals(true);
+    if (headerStateString.isNull() || headerStateString.isEmpty()) {
+        headerStateString = track_model->getModelSetting(kHeaderStateKey);
+        m_actionUseSharedConfiguration.setChecked(true);
+    } else {
+        m_actionUseSharedConfiguration.setChecked(false);
+    }
+    m_actionUseSharedConfiguration.blockSignals(false);
+
+    if (headerStateString.isNull() || headerStateString.isEmpty()) {
+        slotLoadDefaultHeaderState();
+        if (sql_model) {
+            sql_model->setSort(sql_model->defaultSortColumn(), sql_model->defaultSortOrder());
+        }
     } else {
         // Load the previous header state (stored as serialized protobuf).
         // Decode it and restore it.
-        //qDebug() << "Restoring header state from proto" << headerStateString;
         HeaderViewState view_state(headerStateString);
         if (!view_state.healthy()) {
-            loadDefaultHeaderState();
+            slotLoadDefaultHeaderState();
+            if (sql_model) {
+                sql_model->setSort(sql_model->defaultSortColumn(), sql_model->defaultSortOrder());
+            }
         } else {
             view_state.restoreState(this);
         }
     }
+    ensureColumnsAreVisible();
+    buildMenu();
+    emit sortIndicatorChanged(sortIndicatorSection(), sortIndicatorOrder());
 }
 
-void WTrackTableViewHeader::loadDefaultHeaderState() {
+void WTrackTableViewHeader::slotSharedConfigurationStateChanged(bool checked) {
+    if (!checked) {
+        saveIndependentState();
+    } else {
+        deleteIndependentState();
+    }
+}
+
+QString WTrackTableViewHeader::getHeaderKey(TrackModel& track_model) {
+    return kHeaderStateKey + QStringLiteral(".") + track_model.modelKey(true);
+}
+
+void WTrackTableViewHeader::deleteIndependentState() {
+    TrackModel* track_model = getTrackModel();
+    if (!track_model) {
+        return;
+    }
+    track_model->deleteModelSetting(getHeaderKey(*track_model));
+    m_headerChanged = false;
+    restoreHeaderState();
+}
+
+void WTrackTableViewHeader::saveIndependentState() {
+    TrackModel* track_model = getTrackModel();
+    if (!track_model) {
+        return;
+    }
+    HeaderViewState view_state(*this);
+    track_model->setModelSetting(
+            getHeaderKey(*track_model),
+            view_state.saveState());
+    m_headerChanged = false;
+}
+
+void WTrackTableViewHeader::slotLoadDefaultHeaderState() {
     // TODO: isColumnHiddenByDefault logic probably belongs here now.
     QAbstractItemModel* m = model();
     for (int i = 0; i < count(); ++i) {
@@ -242,7 +352,7 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     if (!track_model) {
         return false;
     }
-    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    QString headerStateString = track_model->getModelSetting(getHeaderKey(*track_model));
     return !headerStateString.isNull();
 }
 

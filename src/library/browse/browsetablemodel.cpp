@@ -326,6 +326,7 @@ void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows,
             appendRow(rows.at(i));
         }
     }
+    emit restoreModelState();
 }
 
 TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const {

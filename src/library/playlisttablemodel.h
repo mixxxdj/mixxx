@@ -1,7 +1,10 @@
 #ifndef PLAYLISTTABLEMODEL_H
 #define PLAYLISTTABLEMODEL_H
 
+#include <QStringBuilder>
+
 #include "library/basesqltablemodel.h"
+#include "util/string.h"
 
 class PlaylistTableModel final : public BaseSqlTableModel {
     Q_OBJECT
@@ -30,6 +33,16 @@ class PlaylistTableModel final : public BaseSqlTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     bool isLocked() final;
     CapabilitiesFlags getCapabilities() const final;
+    virtual QString modelKey(bool noSearch = false) const override {
+        if (noSearch) {
+            return QStringLiteral("playlist/") +
+                    QString::number(m_iPlaylistId);
+        }
+        return QStringLiteral("playlist/") +
+                QString::number(m_iPlaylistId) +
+                QStringLiteral("#") +
+                currentSearch();
+    }
 
   private slots:
     void playlistsChanged(const QSet<int>& playlistIds);

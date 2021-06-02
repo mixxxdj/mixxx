@@ -1,16 +1,18 @@
 #pragma once
 
-#include <QtSql>
 #include <QItemDelegate>
-#include <QString>
-#include <QObject>
 #include <QModelIndex>
+#include <QObject>
+#include <QString>
+#include <QStringBuilder>
+#include <QtSql>
 
-#include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
-#include "library/librarytablemodel.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "library/librarytablemodel.h"
+#include "library/trackmodel.h"
+#include "util/string.h"
 
 class BaseExternalPlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
@@ -28,6 +30,16 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     bool isColumnInternal(int column) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     CapabilitiesFlags getCapabilities() const override;
+    QString modelKey(bool noSearch = false) const override {
+        if (noSearch) {
+            return QStringLiteral("external/") +
+                    QString::number(m_currentPlaylistId);
+        }
+        return QStringLiteral("external/") +
+                QString::number(m_currentPlaylistId) +
+                QStringLiteral("#") +
+                currentSearch();
+    }
 
   private:
     TrackId doGetTrackId(const TrackPointer& pTrack) const override;
@@ -35,4 +47,5 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     QString m_playlistsTable;
     QString m_playlistTracksTable;
     QSharedPointer<BaseTrackCache> m_trackSource;
+    int m_currentPlaylistId;
 };
