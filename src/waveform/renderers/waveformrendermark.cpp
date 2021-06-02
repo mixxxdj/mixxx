@@ -146,6 +146,7 @@ void WaveformRenderMark::slotCuesUpdated() {
 
 void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     // Load the pixmap from file -- takes precedence over text.
+    float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     if (!pMark->m_pixmapPath.isEmpty()) {
         QString path = pMark->m_pixmapPath;
         QImage image = *WImageStore::getImage(path, scaleFactor());
@@ -174,10 +175,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         }
     }
 
-    //QFont font("Bitstream Vera Sans");
-    //QFont font("Helvetica");
-    QFont font; // Uses the application default
-    font.setPointSizeF(10 * scaleFactor());
+    QFont font; // Uses the application default, if not set per skin
+    font.setPointSizeF(10 * devicePixelRatio);
     font.setStretch(100);
     font.setWeight(75);
 
@@ -210,11 +209,10 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     }
 
     pMark->m_image = QImage(
-            width * static_cast<int>(m_waveformRenderer->getDevicePixelRatio()),
-            height * static_cast<int>(m_waveformRenderer->getDevicePixelRatio()),
+            static_cast<int>(width * devicePixelRatio),
+            static_cast<int>(height * devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied);
-    pMark->m_image.setDevicePixelRatio(
-            m_waveformRenderer->getDevicePixelRatio());
+    pMark->m_image.setDevicePixelRatio(devicePixelRatio);
 
     Qt::Alignment markAlignH = pMark->m_align & Qt::AlignHorizontal_Mask;
     Qt::Alignment markAlignV = pMark->m_align & Qt::AlignVertical_Mask;
