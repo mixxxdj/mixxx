@@ -161,8 +161,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
         return;
     }
 
-    //saving current vertical bar position
-    //using address of track model as key
+    // saving current vertical bar position
+    // using address of track model as key
     saveVScrollBarPos(getTrackModel());
 
     setVisible(false);
@@ -273,9 +273,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
             // If the TrackModel has an invalid or internal column as its default
             // sort, find the first valid sort column and sort by that.
             int sortColumnIndex = -1;
-            constexpr int kMaxPobeIndex = 10; // just to avoid an endless while loop
+            constexpr int kMaxProbeIndex = 10; // just to avoid an endless while loop
             while (sortColumn == TrackModel::SortColumnId::Invalid &&
-                    sortColumnIndex < kMaxPobeIndex) {
+                    sortColumnIndex < kMaxProbeIndex) {
                 sortColumnIndex++;
                 sortColumn = trackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
             }
