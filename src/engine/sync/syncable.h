@@ -76,7 +76,7 @@ class Syncable {
     virtual void setSyncMode(SyncMode mode) = 0;
 
     // Notify a Syncable that it is now the only currently-playing syncable.
-    virtual void notifyOnlyPlayingSyncable() = 0;
+    virtual void notifyUniquePlaying() = 0;
 
     // Notify a Syncable that they should sync phase.
     virtual void requestSync() = 0;

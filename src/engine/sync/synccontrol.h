@@ -30,7 +30,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     SyncMode getSyncMode() const override;
     void setSyncMode(SyncMode mode) override;
-    void notifyOnlyPlayingSyncable() override;
+    void notifyUniquePlaying() override;
     void requestSync() override;
     bool isPlaying() const override;
     bool isAudible() const override;
