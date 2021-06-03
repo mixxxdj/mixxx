@@ -32,7 +32,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
     }
 
     void setSyncMode(SyncMode mode) override;
-    void notifyOnlyPlayingSyncable() override;
+    void notifyUniquePlaying() override;
     void requestSync() override;
     SyncMode getSyncMode() const override {
         return m_mode;
