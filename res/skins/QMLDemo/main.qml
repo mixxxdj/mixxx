@@ -8,6 +8,7 @@ Rectangle {
     id: root
 
     property alias show4decks: show4DecksButton.checked
+    property alias maximizeLibrary: maximizeLibraryButton.checked
 
     width: 1920
     height: 1080
@@ -38,6 +39,52 @@ Rectangle {
                     checkable: true
                 }
 
+                Skin.Button {
+                    id: maximizeLibraryButton
+
+                    text: "Library"
+                    activeColor: Theme.white
+                    checkable: true
+                }
+
+            }
+
+        }
+
+        Skin.MiniDeckRow {
+            id: decks12mini
+
+            leftDeckGroup: "[Channel1]"
+            rightDeckGroup: "[Channel2]"
+            width: parent.width - 10
+            x: 5
+
+            states: Skin.HiddenState {
+                when: !root.maximizeLibrary
+                target: decks12mini
+            }
+
+            transitions: Skin.HiddenTransition {
+                target: decks12mini
+            }
+
+        }
+
+        Skin.MiniDeckRow {
+            id: decks34mini
+
+            leftDeckGroup: "[Channel3]"
+            rightDeckGroup: "[Channel4]"
+            width: parent.width - 10
+            x: 5
+
+            states: Skin.HiddenState {
+                when: !root.show4decks || !root.maximizeLibrary
+                target: decks34mini
+            }
+
+            transitions: Skin.HiddenTransition {
+                target: decks34mini
             }
 
         }
@@ -49,6 +96,16 @@ Rectangle {
             rightDeckGroup: "[Channel2]"
             width: parent.width - 10
             x: 5
+
+            states: Skin.HiddenState {
+                when: root.maximizeLibrary
+                target: decks12
+            }
+
+            transitions: Skin.HiddenTransition {
+                target: decks12
+            }
+
         }
 
         Skin.CrossfaderRow {
@@ -57,6 +114,16 @@ Rectangle {
             crossfaderWidth: decks12.mixer.width
             width: parent.width - 10
             x: 5
+
+            states: Skin.HiddenState {
+                when: root.maximizeLibrary
+                target: crossfader
+            }
+
+            transitions: Skin.HiddenTransition {
+                target: crossfader
+            }
+
         }
 
         Skin.DeckRow {
@@ -68,7 +135,7 @@ Rectangle {
             x: 5
 
             states: Skin.HiddenState {
-                when: !root.show4decks
+                when: !root.show4decks || root.maximizeLibrary
                 target: decks34
             }
 
