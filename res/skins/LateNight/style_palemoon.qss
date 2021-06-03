@@ -1522,7 +1522,9 @@ WPushButton#CueDeck,
 #PlayCueMini WPushButton,
 WPushButton#LoopActivate,
 WPushButton#RateControls WPushButton,
-WPushButton#SyncDeck, WPushButton#SyncSampler,
+WPushButton#SyncDeck,
+WPushButton#SyncLeader,
+WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
 #Sampler WPushButton,
@@ -2103,6 +2105,10 @@ WPushButton#PlayDeck[value="0"] {
   }
   #SyncDeck[displayValue="1"] {
     image: url(skin:/palemoon/buttons/btn__sync_deck_active.svg) no-repeat center center;
+  }
+
+#SyncLeader {
+  image: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
   }
 
   #SyncSampler {
