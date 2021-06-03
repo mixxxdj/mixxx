@@ -1662,7 +1662,7 @@ WPushButton#SamplerExpand[displayValue="0"],
   }
 
 #SyncLeader {
-  background: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
+  image: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
   }
 
   #SyncSampler {
