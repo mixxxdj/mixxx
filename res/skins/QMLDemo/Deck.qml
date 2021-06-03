@@ -87,7 +87,6 @@ Item {
                 width: rateSlider.width
                 group: "[EffectRack1_EffectUnit1]"
                 key: "group_" + root.group + "_enable"
-                checkable: true
                 activeColor: Theme.deckActiveColor
 
                 foreground: Text {
@@ -121,7 +120,6 @@ Item {
                 width: rateSlider.width
                 group: "[EffectRack1_EffectUnit2]"
                 key: "group_" + root.group + "_enable"
-                checkable: true
                 activeColor: Theme.deckActiveColor
 
                 foreground: Text {
@@ -231,7 +229,6 @@ Item {
                 anchors.right: waveformBarRightSpace.right
                 group: root.group
                 key: "quantize"
-                checkable: true
                 activeColor: Theme.deckActiveColor
 
                 foreground: Image {
@@ -268,7 +265,6 @@ Item {
                 anchors.right: waveformBarLeftSpace.right
                 group: root.group
                 key: "passthrough"
-                checkable: true
                 activeColor: Theme.deckActiveColor
 
                 foreground: Image {
@@ -311,7 +307,7 @@ Item {
             group: root.group
             key: "play"
             text: "Play"
-            checkable: true
+            toggle: true
             activeColor: Theme.deckActiveColor
         }
 
@@ -350,7 +346,7 @@ Item {
             text: "Sync"
             group: root.group
             key: "sync_enabled"
-            checkable: true
+            toggle: true
             activeColor: Theme.deckActiveColor
         }
 

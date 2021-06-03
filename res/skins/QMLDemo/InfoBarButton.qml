@@ -14,7 +14,9 @@ AbstractButton {
     property color normalColor: Theme.buttonNormalColor
     property color activeColor // required
     property color pressedColor: activeColor
+    property alias highlight: control.value
 
+    onPressed: control.value = !control.value
     states: [
         State {
             name: "pressed"
@@ -28,7 +30,7 @@ AbstractButton {
         },
         State {
             name: "active"
-            when: root.checked && !root.pressed
+            when: root.highlight && !root.pressed
 
             PropertyChanges {
                 target: colorOverlay
@@ -38,7 +40,7 @@ AbstractButton {
         },
         State {
             name: "inactive"
-            when: !root.checked && !root.pressed
+            when: !root.highlight && !root.pressed
 
             PropertyChanges {
                 target: colorOverlay
@@ -49,9 +51,10 @@ AbstractButton {
     ]
 
     Mixxx.ControlProxy {
+        id: control
+
         group: root.group
         key: root.key
-        value: root.checked || root.down
     }
 
     Item {

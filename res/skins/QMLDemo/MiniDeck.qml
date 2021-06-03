@@ -32,7 +32,7 @@ Item {
             group: root.group
             key: "play"
             text: "Play"
-            checkable: true
+            toggle: true
             activeColor: Theme.deckActiveColor
         }
 
