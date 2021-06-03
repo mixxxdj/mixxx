@@ -1,72 +1,44 @@
-import Mixxx 0.1 as Mixxx
-import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.11
 
 Item {
     id: root
 
-    required property string leftDeck
-    required property string rightDeck
+    property string leftDeckGroup // required
+    property string rightDeckGroup // required
+    property alias mixer: mixer
 
-    RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: 10
-        anchors.rightMargin: 10
-        Layout.margins: 10
+    implicitHeight: mixer.height
 
-        Deck {
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            group: root.leftDeck
-        }
+    Deck {
+        id: leftDeck
 
-        Rectangle {
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-            implicitWidth: 200
-            Layout.fillHeight: true
-            color: "#1e1e20"
-            border.color: "#121213"
-            border.width: 2
-            radius: 1
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: mixer.left
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 5
+        group: root.leftDeckGroup
+    }
 
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 10
+    Mixer {
+        id: mixer
 
-                EqColumn {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    group: root.leftDeck
-                }
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        leftDeckGroup: root.leftDeckGroup
+        rightDeckGroup: root.rightDeckGroup
+    }
 
-                MixerColumn {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    group: root.leftDeck
-                }
+    Deck {
+        id: rightDeck
 
-                MixerColumn {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    group: root.rightDeck
-                }
-
-                EqColumn {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    group: root.rightDeck
-                }
-
-            }
-
-        }
-
-        Deck {
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            group: root.rightDeck
-        }
-
+        anchors.top: parent.top
+        anchors.left: mixer.right
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 5
+        group: root.rightDeckGroup
     }
 
 }

@@ -32,22 +32,16 @@ Item {
         key: root.key + "_set_default"
     }
 
-    Rectangle {
+    Item {
         id: background
 
-        width: root.width
-        height: root.height
-        anchors.centerIn: root
-        color: "transparent"
+        anchors.fill: parent
     }
 
-    Rectangle {
+    Item {
         id: foreground
 
-        width: root.width
-        height: root.height
-        anchors.centerIn: root
-        color: "transparent"
+        anchors.fill: parent
         rotation: (control.parameter - (root.max - root.min) / 2) * 2 * root.angle
     }
 
@@ -84,9 +78,9 @@ Item {
         anchors.fill: root
         onWheel: {
             if (wheel.angleDelta.y < 0)
-                control.parameter = control.parameter + 0.1;
+                control.parameter = Math.min(root.max, control.parameter + 0.1);
             else
-                control.parameter = control.parameter - 0.1;
+                control.parameter = Math.max(root.min, control.parameter - 0.1);
         }
         onDoubleClicked: resetcontrol.value = 1
         onPressed: {
@@ -94,8 +88,9 @@ Item {
         }
         onPositionChanged: {
             if (mousearea.pressed) {
-                var dy = mousearea.posy - mouse.y;
-                control.parameter += Math.max(Math.min(dy, 100), -100) / 100;
+                const dy = mousearea.posy - mouse.y;
+                let parameter = control.parameter + Math.max(Math.min(dy, 100), -100) / 100;
+                control.parameter = Math.max(root.min, Math.min(root.max, parameter));
                 mousearea.posy = mouse.y;
             }
         }

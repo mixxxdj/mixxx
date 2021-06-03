@@ -1,400 +1,357 @@
+import "." as Skin
 import Mixxx 0.1 as Mixxx
 import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.11
+import "Theme"
 
 Item {
     id: root
 
-    required property string group
+    property string group // required
 
-    ColumnLayout {
-        anchors.fill: parent
+    Skin.DeckInfoBar {
+        id: infoBar
 
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        color: Theme.deckBackgroundColor
+        group: root.group
+    }
 
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+    Skin.Slider {
+        id: rateSlider
 
-                Rectangle {
-                    id: trackInfo
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+        anchors.top: infoBar.bottom
+        anchors.right: parent.right
+        anchors.bottom: buttonBar.top
+        width: syncButton.width
+        group: root.group
+        key: "rate"
+        barStart: 0.5
+        barColor: Theme.bpmSliderBarColor
+        bg: "images/slider_bpm.svg"
+    }
 
-                    Layout.fillWidth: true
-                    height: 60
-                    color: "#121213"
+    Rectangle {
+        id: overview
 
-                    Rectangle {
-                        id: coverArt
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+        anchors.rightMargin: 5
+        anchors.top: infoBar.bottom
+        anchors.bottom: buttonBar.top
+        anchors.left: parent.left
+        anchors.right: rateSlider.left
+        radius: 5
+        color: Theme.deckBackgroundColor
+        height: 56
 
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.bottom: parent.bottom
-                        width: height
-                        color: "black"
-                    }
+        Skin.WaveformOverview {
+            group: root.group
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: parent.height - 26
+        }
 
-                    Item {
-                        id: spinny
+        Item {
+            id: waveformBar
 
-                        anchors.fill: coverArt
+            height: 26
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
 
-                        // The Spinnies are automatically hidden if the track
-                        // is stopped. This is not really useful, but is nice for
-                        // demo'ing transitions.
-                        Mixxx.ControlProxy {
-                            group: root.group
-                            key: "play"
-                            onValueChanged: spinnyIndicator.indicatorVisible = (value > 0)
-                        }
+            Rectangle {
+                id: waveformBarVSeparator
 
-                        MixxxControls.Spinny {
-                            id: spinnyIndicator
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.rightMargin: 5
+                anchors.leftMargin: 5
+                height: 2
+                color: infoBar.lineColor
+            }
 
-                            anchors.fill: parent
-                            group: root.group
-                            indicatorVisible: false
+            InfoBarButton {
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.leftMargin: 5
+                width: rateSlider.width
+                group: "[EffectRack1_EffectUnit1]"
+                key: "group_" + root.group + "_enable"
+                checkable: true
+                activeColor: Theme.deckActiveColor
 
-                            indicatorDelegate: Image {
-                                mipmap: true
-                                width: spinnyIndicator.width
-                                height: spinnyIndicator.height
-                                source: "../LateNight/palemoon/style/spinny_indicator.svg"
-                            }
-
-                        }
-
-                    }
-
-                    Item {
-                        id: trackText
-
-                        anchors.top: parent.top
-                        anchors.left: coverArt.right
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-
-                        ColumnLayout {
-                            anchors.fill: parent
-                            anchors.margins: 5
-
-                            Text {
-                                id: trackTitle
-
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                text: "Title Placeholder"
-                                elide: Text.ElideRight
-                                color: "#c2b3a5"
-                            }
-
-                            Rectangle {
-                                id: trackColor
-
-                                Layout.fillWidth: true
-                                implicitHeight: 3
-                                color: "black"
-                            }
-
-                            Text {
-                                id: trackArtist
-
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                text: "Artist Placeholder"
-                                elide: Text.ElideRight
-                                color: "#c2b3a5"
-                            }
-
-                        }
-
-                    }
-
+                foreground: Text {
+                    anchors.centerIn: parent
+                    text: "FX 1"
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    font.family: Theme.fontFamily
+                    font.bold: true
+                    font.pixelSize: Theme.textFontPixelSize
+                    color: infoBar.textColor
                 }
 
-                WaveformOverview {
-                    Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+            }
+
+            Rectangle {
+                id: waveformBarHSeparator1
+
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: waveformBarVSeparator.left
+                anchors.leftMargin: rateSlider.width
+                width: 2
+                color: infoBar.lineColor
+            }
+
+            InfoBarButton {
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: waveformBarHSeparator1.left
+                width: rateSlider.width
+                group: "[EffectRack1_EffectUnit2]"
+                key: "group_" + root.group + "_enable"
+                checkable: true
+                activeColor: Theme.deckActiveColor
+
+                foreground: Text {
+                    anchors.centerIn: parent
+                    text: "FX 2"
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    font.family: Theme.fontFamily
+                    font.bold: true
+                    font.pixelSize: Theme.textFontPixelSize
+                    color: infoBar.textColor
+                }
+
+            }
+
+            Rectangle {
+                id: waveformBarHSeparator2
+
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: waveformBarHSeparator1.right
+                anchors.leftMargin: rateSlider.width
+                width: 2
+                color: infoBar.lineColor
+            }
+
+            Text {
+                id: waveformBarPosition
+
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: waveformBarHSeparator2.right
+                anchors.leftMargin: 5
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignLeft
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.textFontPixelSize
+                color: infoBar.textColor
+                text: {
+                    const positionSeconds = samplesControl.value / 2 / sampleRateControl.value * playPositionControl.value;
+                    if (isNaN(positionSeconds))
+                        return "";
+
+                    let minutes = Math.floor(positionSeconds / 60);
+                    let seconds = positionSeconds - (minutes * 60);
+                    let centiseconds = Math.trunc((seconds - Math.trunc(seconds)) * 100);
+                    seconds = Math.trunc(seconds);
+                    if (minutes < 10)
+                        minutes = "0" + minutes;
+
+                    if (seconds < 10)
+                        seconds = "0" + seconds;
+
+                    if (centiseconds < 10)
+                        centiseconds = "0" + centiseconds;
+
+                    return minutes + ':' + seconds + "." + centiseconds;
+                }
+
+                Mixxx.ControlProxy {
+                    id: playPositionControl
+
                     group: root.group
+                    key: "playposition"
+                }
+
+                Mixxx.ControlProxy {
+                    id: sampleRateControl
+
+                    group: root.group
+                    key: "track_samplerate"
+                }
+
+                Mixxx.ControlProxy {
+                    id: samplesControl
+
+                    group: root.group
+                    key: "track_samples"
                 }
 
             }
 
             Item {
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                Layout.fillHeight: true
-                implicitWidth: 50
+                id: waveformBarRightSpace
 
-                MixxxControls.ToggleButton {
-                    id: syncButton
+                anchors.top: waveformBar.top
+                anchors.bottom: waveformBar.bottom
+                anchors.right: waveformBar.right
+                width: rateSlider.width
+            }
 
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: 24
-                    group: root.group
-                    key: "sync_enabled"
-                    icon.width: 50
-                    icon.height: 24
+            Rectangle {
+                id: waveformBarHSeparator
 
-                    State {
-                        name: "0"
+                anchors.top: waveformBar.top
+                anchors.bottom: waveformBar.bottom
+                anchors.right: waveformBarRightSpace.left
+                anchors.bottomMargin: 5
+                width: 2
+                color: infoBar.lineColor
+            }
 
-                        PropertyChanges {
-                            target: syncButton
-                            icon.source: "../LateNight/palemoon/buttons/btn__sync_deck.svg"
-                            icon.color: "#777777"
-                            background.color: "transparent"
-                            background.border.width: 2
-                        }
+            InfoBarButton {
+                anchors.top: waveformBarVSeparator.bottom
+                anchors.bottom: waveformBar.bottom
+                anchors.left: waveformBarRightSpace.left
+                anchors.right: waveformBarRightSpace.right
+                group: root.group
+                key: "quantize"
+                checkable: true
+                activeColor: Theme.deckActiveColor
 
-                        PropertyChanges {
-                            target: syncButtonBgImage
-                            source: "../LateNight/palemoon/buttons/btn_embedded_sync.svg"
-                        }
-
-                    }
-
-                    State {
-                        name: "1"
-
-                        PropertyChanges {
-                            target: syncButton
-                            icon.source: "../LateNight/palemoon/buttons/btn__sync_deck_active.svg"
-                            icon.color: "transparent"
-                            background.color: "#b24c12"
-                            background.border.width: 2
-                        }
-
-                        PropertyChanges {
-                            target: syncButtonBgImage
-                            source: "../LateNight/palemoon/buttons/btn_embedded_sync_active.svg"
-                        }
-
-                    }
-
-                    background: Rectangle {
-                        anchors.fill: parent
-
-                        data: Image {
-                            id: syncButtonBgImage
-
-                            anchors.fill: parent
-                        }
-
-                    }
-
+                foreground: Image {
+                    anchors.centerIn: parent
+                    source: "images/icon_quantize.svg"
                 }
 
-                Mixxx.ControlProxy {
-                    id: bpmControl
+            }
 
-                    group: root.group
-                    key: "bpm"
-                }
+            Item {
+                id: waveformBarLeftSpace
 
-                Text {
-                    id: bpmText
+                anchors.top: waveformBar.top
+                anchors.bottom: waveformBar.bottom
+                anchors.right: waveformBarHSeparator.left
+                width: rateSlider.width
+            }
 
-                    anchors.top: syncButton.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: contentHeight
-                    text: bpmControl.value.toFixed(2)
-                    horizontalAlignment: Text.AlignHCenter
-                    font.family: "Open Sans"
-                    font.bold: true
-                    font.pixelSize: 11
-                    color: "#777"
-                }
+            Rectangle {
+                id: waveformBarHSeparator3
 
-                Mixxx.ControlProxy {
-                    id: rateRatioControl
+                anchors.top: waveformBar.top
+                anchors.bottom: waveformBar.bottom
+                anchors.right: waveformBarLeftSpace.left
+                anchors.bottomMargin: 5
+                width: 2
+                color: infoBar.lineColor
+            }
 
-                    group: root.group
-                    key: "rate_ratio"
-                }
+            InfoBarButton {
+                anchors.top: waveformBarVSeparator.bottom
+                anchors.bottom: waveformBar.bottom
+                anchors.left: waveformBarLeftSpace.left
+                anchors.right: waveformBarLeftSpace.right
+                group: root.group
+                key: "passthrough"
+                checkable: true
+                activeColor: Theme.deckActiveColor
 
-                Text {
-                    id: bpmRatioText
-
-                    property real ratio: ((rateRatioControl.value - 1) * 100).toPrecision(2)
-
-                    anchors.top: bpmText.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: contentHeight
-                    text: (ratio > 0) ? "+" + ratio.toFixed(2) : ratio.toFixed(2)
-                    horizontalAlignment: Text.AlignHCenter
-                    font.family: "Open Sans"
-                    font.bold: true
-                    font.pixelSize: 10
-                    color: "#404040"
-                }
-
-                MixxxControls.Slider {
-                    id: rateSlider
-
-                    anchors.top: bpmRatioText.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    group: root.group
-                    key: "rate"
-                    bar: true
-                    barColor: "#257b82"
-                    barMargin: 10
-                    barStart: 0.5
-
-                    handle: Image {
-                        source: "../LateNight/palemoon/sliders/knob_volume_deck.svg"
-                        width: 42
-                        height: 19
-                    }
-
-                    background: Image {
-                        anchors.fill: parent
-                        source: "../LateNight/palemoon/sliders/slider_volume_deck.svg"
-                    }
-
+                foreground: Image {
+                    anchors.centerIn: parent
+                    source: "images/icon_passthrough.svg"
                 }
 
             }
 
         }
 
-        Rectangle {
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-            Layout.fillWidth: true
-            height: 26
-            color: "transparent"
+    }
 
-            RowLayout {
-                anchors.fill: parent
+    Item {
+        id: buttonBar
 
-                Rectangle {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                    implicitWidth: 68
-                    implicitHeight: 26
-                    color: "#121213"
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 56
 
-                    MixxxControls.ToggleButton {
-                        id: playButton
+        Skin.ControlButton {
+            id: cueButton
 
-                        anchors.fill: parent
-                        group: root.group
-                        key: "play"
-                        icon.width: 50
-                        icon.height: 24
+            anchors.left: parent.left
+            anchors.top: parent.top
+            group: root.group
+            key: "cue_default"
+            text: "Cue"
+            activeColor: Theme.deckActiveColor
+        }
 
-                        State {
-                            name: "0"
+        Skin.ControlButton {
+            id: playButton
 
-                            PropertyChanges {
-                                target: playButton
-                                icon.source: "../LateNight/palemoon/buttons/btn__play_deck.svg"
-                                icon.color: "#777777"
-                                background.color: "transparent"
-                                background.border.width: 2
-                            }
+            anchors.top: cueButton.bottom
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.topMargin: 5
+            group: root.group
+            key: "play"
+            text: "Play"
+            checkable: true
+            activeColor: Theme.deckActiveColor
+        }
 
-                            PropertyChanges {
-                                target: playButtonBgImage
-                                source: "../LateNight/palemoon/buttons/btn_embedded_play.svg"
-                            }
+        Row {
+            anchors.left: cueButton.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 10
+            spacing: -1
 
-                        }
+            Repeater {
+                model: 8
 
-                        State {
-                            name: "1"
+                Skin.HotcueButton {
+                    // TODO: Once we require Qt >= 5.14, we're going to re-add
+                    // the `required` keyword. If the component has any
+                    // required properties, we'll stumble over a Qt bug and
+                    // need the following workaround:
+                    //     required property int index
+                    // See this for details:
+                    // https://bugreports.qt.io/browse/QTBUG-86009, and need
 
-                            PropertyChanges {
-                                target: playButton
-                                icon.source: "../LateNight/palemoon/buttons/btn__play_deck_active.svg"
-                                icon.color: "transparent"
-                                background.color: "#b24c12"
-                                background.border.width: 2
-                            }
-
-                            PropertyChanges {
-                                target: playButtonBgImage
-                                source: "../LateNight/palemoon/buttons/btn_embedded_play_active.svg"
-                            }
-
-                        }
-
-                        background: Rectangle {
-                            anchors.fill: parent
-
-                            data: Image {
-                                id: playButtonBgImage
-
-                                anchors.fill: parent
-                            }
-
-                        }
-
-                    }
-
-                }
-
-                Item {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                }
-
-                Item {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                    implicitWidth: 50
-                    implicitHeight: 20
-
-                    Mixxx.ControlProxy {
-                        id: passthroughControl
-
-                        group: root.group
-                        key: "passthrough"
-                    }
-
-                    Switch {
-                        id: passthroughSwitch
-
-                        width: parent.implicitWidth
-                        height: 18
-                        anchors.margins: 5
-                        text: "Passthrough"
-                        checked: passthroughControl.value
-                        onCheckedChanged: passthroughControl.value = checked
-
-                        indicator: Rectangle {
-                            anchors.fill: parent
-                            x: passthroughSwitch.leftPadding
-                            y: parent.height / 2 - height / 2
-                            radius: height / 2
-                            color: passthroughSwitch.checked ? "#202020" : "#121213"
-                            border.color: "#404040"
-
-                            Rectangle {
-                                x: passthroughSwitch.checked ? parent.width - width : 0
-                                height: passthroughSwitch.height
-                                width: height
-                                radius: height / 2
-                                color: passthroughSwitch.checked ? "#777" : "#404040"
-                                border.color: "#404040"
-                            }
-
-                        }
-
-                    }
-
+                    hotcueNumber: index + 1
+                    group: root.group
                 }
 
             }
 
+        }
+
+        Skin.ControlButton {
+            id: syncButton
+
+            anchors.right: parent.right
+            anchors.top: parent.top
+            text: "Sync"
+            group: root.group
+            key: "sync_enabled"
+            checkable: true
+            activeColor: Theme.deckActiveColor
         }
 
     }
