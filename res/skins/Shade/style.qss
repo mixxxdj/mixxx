@@ -16,7 +16,7 @@
 #Mixxx, WWidget,
 WEffect,
 WKey,
-WLabel, WLibrary QLabel,
+WLabel, QLabel,
 WNumber, WNumberPos,
 WPushButton, WLibrary QPushButton, WLibrary QRadioButton,
 WRecordingDuration,
@@ -30,13 +30,15 @@ WOverview #PassthroughLabel,
 WLibrary QHeaderView,
 WLibrary QHeaderView QMenu,
 WLibrarySidebar QMenu,
-QTextBrowser QMenu,
+#LibraryContainer QTextBrowser,
+#LibraryContainer QTextBrowser QMenu,
 QLineEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
 WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
+WTrackMenu QMenu QCheckBox,
 WOverview /* Hotcue labels in the overview */,
 QComboBox,
 WEffectSelector,
@@ -44,6 +46,8 @@ WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea {
   font-family: "Open Sans";
+  font-weight: normal;
+  font-style: normal;
 }
 
 /* Passthrough label on overview waveform */
@@ -108,8 +112,7 @@ WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WLibrary QHeaderView QMenu,
 WLibrary QHeaderView QMenu::item,
-QTextBrowser QMenu,
-QTextBrowser QMenu::item,
+#LibraryContainer QTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu::item,
 WTrackMenu QMenu,
@@ -159,7 +162,7 @@ WLibrarySidebar QMenu::item:selected,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
 WLibrary QHeaderView QMenu::item:selected,
 WLibrary QHeaderView QMenu::indicator:unchecked:selected,
-QTextBrowser QMenu::item:selected,
+WLibraryTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
@@ -412,13 +415,13 @@ WTrackMenu QMenu::item,
 QLineEdit QMenu::item,
 WCoverArtMenu::item,
 /* for the sake of completeness: html root view of Crates, Rec etc. */
-QTextBrowser QMenu::item {
+WLibraryTextBrowser QMenu::item {
   padding: 5px 12px 5px 12px;
 }
 
 /* Icons in those menus (copy, paste, cut, delete) */
 QLineEdit QMenu::icon,
-QTextBrowser QMenu::icon,
+WLibraryTextBrowser QMenu::icon,
 /* - checkbox in Crate name context menu
     "[ ] Auto DJ Track Source" */
 WLibrarySidebar QMenu::indicator,
@@ -542,7 +545,7 @@ WLibrary WColorPicker QPushButton {
   selection-background-color: #656d75;
 }
 
-QTextBrowser {
+#LibraryContainer QTextBrowser {
   padding-left: 10px;
 }
 
@@ -702,7 +705,7 @@ WSearchLineEdit {
   }
   #LibraryContainer QTableView:focus,
   #LibraryContainer QTreeView:focus,
-  #LibraryContainer QTextBrowser:focus {
+  #LibraryContainer WLibraryTextBrowser:focus {
     border-color: #ff6600;
   }
 

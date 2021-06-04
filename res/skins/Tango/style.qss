@@ -31,12 +31,14 @@ WEffect,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea
+#fadeModeCombobox QAbstractScrollArea,
+#LibraryContainer QTextBrowser,
 #LibraryContainer QPushButton,
 #LibraryContainer QLabel,
 #LibraryContainer QRadioButton {
   font-family: Ubuntu;
   font-weight: normal;
+  font-style: normal;
 }
 /* Unfortunately, the proportional line height of the Ubuntu font
   is not as tall as Open Sans. For single-line buttons this doesn't
@@ -48,10 +50,11 @@ QToolTip,
 WCueMenuPopup QLabel,
 WTrackMenu,
 WTrackMenu QMenu,
+WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
 WCoverArtMenu,
 WLibrarySidebar QMenu,
-QTextBrowser QMenu,
+#LibraryContainer QTextBrowser QMenu,
 WOverview, /* Hotcue labels in the overview */
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
@@ -60,6 +63,8 @@ WEffectSelector QAbstractScrollArea,
 /* With 'Ubuntu' font the header section titles would always be top-aligned... */
 WLibrary QHeaderView::section {
   font-family: "Open Sans";
+  font-weight: normal;
+  font-style: normal;
 }
 
 WPushButton {
@@ -2200,13 +2205,13 @@ WTrackMenu QMenu::item,
 QLineEdit QMenu::item,
 WCoverArtMenu::item,
 /* for the sake of completeness: html root view of Crates, Rec etc. */
-QTextBrowser QMenu::item {
+WLibraryTextBrowser QMenu::item {
   padding: 5px 12px 5px 12px;
 }
 
 /* Icons in those menus (copy, paste, cut, delete) */
 QLineEdit QMenu::icon,
-QTextBrowser QMenu::icon,
+WLibraryTextBrowser QMenu::icon,
 /* - checkbox in Crate name context menu
     "[ ] Auto DJ Track Source" */
 WLibrarySidebar QMenu::indicator,
@@ -2241,8 +2246,8 @@ WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WLibrary QHeaderView QMenu,
 WLibrary QHeaderView QMenu::item,
-QTextBrowser QMenu,
-QTextBrowser QMenu::item,
+WLibraryTextBrowser QMenu,
+WLibraryTextBrowser QMenu::item,
 WTrackMenu,
 WTrackMenu::item,
 WTrackMenu QMenu,
@@ -2664,7 +2669,7 @@ WTrackTableView {
         image: url(skin:/../Tango/graphics/library_sort_up.svg);
       }
 
-QTextBrowser {
+#LibraryContainer QTextBrowser {
   padding-left: 5px;
 }
 

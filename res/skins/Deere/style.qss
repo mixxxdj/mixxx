@@ -248,7 +248,7 @@ WTrackTableView {
   border: 1px solid #FF6600;
 }
 
-QTextBrowser {
+#LibraryContainer QTextBrowser {
   padding-left: 5px;
 }
 
@@ -807,26 +807,32 @@ WOverview #PassthroughLabel,
 /* all context menus */
 #MainMenu, #MainMenu QMenu,
 WLibrarySidebar QMenu,
+WLibrary QHeaderView,
 WLibrary QHeaderView QMenu,
-QTextBrowser QMenu,
+WLibrary QHeaderView::section,
+#LibraryContainer QTextBrowser,
+#LibraryContainer QTextBrowser QMenu,
 QLineEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
+WCueMenuPopup QLineEdit,
 WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
+WTrackMenu QMenu QCheckBox,
 WOverview /* Hotcue labels in the overview */,
 WEffect,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea
+#fadeModeCombobox QAbstractScrollArea,
 #LibraryContainer QPushButton,
 #LibraryContainer QLabel,
 #LibraryContainer QRadioButton,
 #LibraryContainer QHeaderView,
 #LibraryContainer QHeaderView::item {
   font-family: "Open Sans";
+  font-style: normal;
 }
 
 WWidget,
@@ -1900,7 +1906,7 @@ QToolTip,
 #MainMenu QMenu,
 WLibrarySidebar QMenu,
 WLibrary QHeaderView QMenu,
-QTextBrowser QMenu,
+#LibraryContainer QTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
@@ -1926,8 +1932,8 @@ WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WLibrary QHeaderView QMenu,
 WLibrary QHeaderView QMenu::item,
-QTextBrowser QMenu,
-QTextBrowser QMenu::item,
+#LibraryContainer QTextBrowser QMenu,
+#LibraryContainer QTextBrowser QMenu::item,
 WTrackMenu,
 WTrackMenu::item,
 WTrackMenu QMenu,
@@ -1949,7 +1955,7 @@ WEffectSelector QAbstractScrollArea,
 QToolTip,
 WLibrarySidebar QMenu,
 WLibrary QHeaderView QMenu,
-QTextBrowser QMenu,
+#LibraryContainer QTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
@@ -1973,7 +1979,7 @@ WEffectSelector QAbstractScrollArea,
   WLibrarySidebar QMenu::indicator:unchecked:selected,
   WLibrary QHeaderView QMenu::item:selected,
   WLibrary QHeaderView QMenu::indicator:unchecked:selected,
-  QTextBrowser QMenu::item:selected,
+  #LibraryContainer QTextBrowser QMenu::item:selected,
   WTrackMenu::item:selected,
   WTrackMenu QMenu::item:selected,
   WTrackMenu QMenu QCheckBox:selected,
@@ -2157,13 +2163,13 @@ WTrackMenu QMenu::item,
 QLineEdit QMenu::item,
 WCoverArtMenu::item,
 /* for the sake of completeness: html root view of Crates, Rec etc. */
-QTextBrowser QMenu::item {
+#LibraryContainer QTextBrowser QMenu::item {
   padding: 5px 12px 5px 12px;
 }
 
 /* Icons in those menus (copy, paste, cut, delete) */
 QLineEdit QMenu::icon,
-QTextBrowser QMenu::icon,
+#LibraryContainer QTextBrowser QMenu::icon,
 /* - checkbox in Crate name context menu
     "[ ] Auto DJ Track Source" */
 WLibrarySidebar QMenu::indicator,
