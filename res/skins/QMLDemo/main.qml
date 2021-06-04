@@ -8,6 +8,7 @@ Rectangle {
     id: root
 
     property alias show4decks: show4DecksButton.checked
+    property alias maximizeLibrary: maximizeLibraryButton.checked
 
     width: 1920
     height: 1080
@@ -38,6 +39,14 @@ Rectangle {
                     checkable: true
                 }
 
+                Skin.Button {
+                    id: maximizeLibraryButton
+
+                    text: "Library"
+                    activeColor: Theme.white
+                    checkable: true
+                }
+
             }
 
         }
@@ -49,6 +58,7 @@ Rectangle {
             rightDeckGroup: "[Channel2]"
             width: parent.width - 10
             x: 5
+            minimized: root.maximizeLibrary
         }
 
         Skin.CrossfaderRow {
@@ -57,6 +67,12 @@ Rectangle {
             crossfaderWidth: decks12.mixer.width
             width: parent.width - 10
             x: 5
+            visible: !root.maximizeLibrary
+
+            FadeBehavior on visible {
+                fadeTarget: crossfader
+            }
+
         }
 
         Skin.DeckRow {
@@ -66,14 +82,11 @@ Rectangle {
             rightDeckGroup: "[Channel4]"
             width: parent.width - 10
             x: 5
+            minimized: root.maximizeLibrary
+            visible: root.show4decks
 
-            states: Skin.HiddenState {
-                when: !root.show4decks
-                target: decks34
-            }
-
-            transitions: Skin.HiddenTransition {
-                target: decks34
+            FadeBehavior on visible {
+                fadeTarget: decks34
             }
 
         }

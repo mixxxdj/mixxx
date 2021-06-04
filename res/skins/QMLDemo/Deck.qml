@@ -10,10 +10,12 @@ Item {
     id: root
 
     property string group // required
+    property bool minimized: false
 
     Skin.DeckInfoBar {
         id: infoBar
 
+        anchors.leftMargin: 5
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -23,6 +25,7 @@ Item {
     Skin.Slider {
         id: rateSlider
 
+        visible: !root.minimized
         anchors.topMargin: 5
         anchors.bottomMargin: 5
         anchors.top: infoBar.bottom
@@ -34,15 +37,21 @@ Item {
         barStart: 0.5
         barColor: Theme.bpmSliderBarColor
         bg: "images/slider_bpm.svg"
+
+        FadeBehavior on visible {
+            fadeTarget: rateSlider
+        }
+
     }
 
     Rectangle {
         id: overview
 
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
+        visible: !root.minimized
+        anchors.leftMargin: 5
         anchors.rightMargin: 5
-        anchors.top: infoBar.bottom
+        anchors.bottomMargin: 5
+        anchors.top: rateSlider.top
         anchors.bottom: buttonBar.top
         anchors.left: parent.left
         anchors.right: rateSlider.left
@@ -86,7 +95,6 @@ Item {
                 width: rateSlider.width
                 group: "[EffectRack1_EffectUnit1]"
                 key: "group_" + root.group + "_enable"
-                checkable: true
                 activeColor: Theme.deckActiveColor
 
                 foreground: Text {
@@ -120,7 +128,6 @@ Item {
                 width: rateSlider.width
                 group: "[EffectRack1_EffectUnit2]"
                 key: "group_" + root.group + "_enable"
-                checkable: true
                 activeColor: Theme.deckActiveColor
 
                 foreground: Text {
@@ -230,7 +237,6 @@ Item {
                 anchors.right: waveformBarRightSpace.right
                 group: root.group
                 key: "quantize"
-                checkable: true
                 activeColor: Theme.deckActiveColor
 
                 foreground: Image {
@@ -267,7 +273,6 @@ Item {
                 anchors.right: waveformBarLeftSpace.right
                 group: root.group
                 key: "passthrough"
-                checkable: true
                 activeColor: Theme.deckActiveColor
 
                 foreground: Image {
@@ -279,6 +284,10 @@ Item {
 
         }
 
+        FadeBehavior on visible {
+            fadeTarget: overview
+        }
+
     }
 
     Item {
@@ -287,13 +296,16 @@ Item {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.leftMargin: 5
         height: 56
+        visible: !root.minimized
 
         Skin.ControlButton {
             id: cueButton
 
             anchors.left: parent.left
-            anchors.top: parent.top
+            anchors.bottom: playButton.top
+            anchors.bottomMargin: 5
             group: root.group
             key: "cue_default"
             text: "Cue"
@@ -303,21 +315,19 @@ Item {
         Skin.ControlButton {
             id: playButton
 
-            anchors.top: cueButton.bottom
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             anchors.topMargin: 5
             group: root.group
             key: "play"
             text: "Play"
-            checkable: true
+            toggleable: true
             activeColor: Theme.deckActiveColor
         }
 
         Row {
             anchors.left: cueButton.right
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
             anchors.leftMargin: 10
             spacing: -1
 
@@ -349,8 +359,12 @@ Item {
             text: "Sync"
             group: root.group
             key: "sync_enabled"
-            checkable: true
+            toggleable: true
             activeColor: Theme.deckActiveColor
+        }
+
+        FadeBehavior on visible {
+            fadeTarget: buttonBar
         }
 
     }
