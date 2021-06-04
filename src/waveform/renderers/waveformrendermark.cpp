@@ -184,15 +184,22 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         }
     }
 
-    QFont font; // Uses the application default, if not set per skin
+    // This alone would pick the OS default font, or that set by Qt5 Settings (qt5ct)
+    // respectively. This would mostly not be notable since contemporary OS and distros
+    // use a proven sans-serif anyway. Though, some user fonts may be lacking glyphs
+    // we use for the intro/outro markers for example.
+    QFont font;
+    // So, let's just use Open Sans which is used by all official skins to achieve
+    // a consistent skin design.
+    font.setFamily("Open Sans");
     // Use a pixel size like everywhere else in Mixxx, which can be scaled well
     // in general.
     // Point sizes would work if only explicit Qt scaling QT_SCALE_FACTORS is used,
     // though as soon as other OS-based font and app scaling mechanics join the
     // party the resulting font size is hard to predict (affects all supported OS).
     font.setPixelSize(13);
-    font.setStretch(100);
-    font.setWeight(75);
+    font.setWeight(75); // bold
+    font.setItalic(false);
 
     QFontMetrics metrics(font);
 
