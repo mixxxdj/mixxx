@@ -36,7 +36,7 @@ BrowseFeature::BrowseFeature(
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_pLastRightClickedItem(nullptr),
-          m_icon(":/images/library/ic_library_computer.svg") {
+          m_iconUrl("qrc:///images/library/ic_library_computer.svg") {
     connect(this,
             &BrowseFeature::requestAddDir,
             pLibrary,
@@ -213,8 +213,8 @@ void BrowseFeature::slotRemoveQuickLink() {
     saveQuickLinks();
 }
 
-QIcon BrowseFeature::getIcon() {
-    return m_icon;
+QUrl BrowseFeature::iconUrl() {
+    return m_iconUrl;
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {

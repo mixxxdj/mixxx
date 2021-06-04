@@ -42,7 +42,7 @@ QString formatLabel(
 CrateFeature::CrateFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseTrackSetFeature(pLibrary, pConfig, "CRATEHOME"),
-          m_cratesIcon(":/images/library/ic_library_crates.svg"),
+          m_cratesIconUrl("qrc:///images/library/ic_library_crates.svg"),
           m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_crateTableModel(this, pLibrary->trackCollectionManager()) {
@@ -174,8 +174,8 @@ QVariant CrateFeature::title() {
     return tr("Crates");
 }
 
-QIcon CrateFeature::getIcon() {
-    return m_cratesIcon;
+QUrl CrateFeature::iconUrl() {
+    return m_cratesIconUrl;
 }
 
 QString CrateFeature::formatRootViewHtml() const {

@@ -34,7 +34,7 @@ class AutoDJFeature : public LibraryFeature {
     virtual ~AutoDJFeature();
 
     QVariant title() override;
-    QIcon getIcon() override;
+    QUrl iconUrl() override;
 
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
@@ -83,7 +83,7 @@ class AutoDJFeature : public LibraryFeature {
     // auto-DJ list.
     QAction *m_pRemoveCrateFromAutoDj;
 
-    QIcon m_icon;
+    QUrl m_iconUrl;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
   private slots:

@@ -55,7 +55,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pAutoDJProcessor(nullptr),
           m_pAutoDJView(nullptr),
           m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig),
-          m_icon(":/images/library/ic_library_autodj.svg") {
+          m_iconUrl("qrc:///images/library/ic_library_autodj.svg") {
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(this,
             m_pConfig,
@@ -110,8 +110,8 @@ QVariant AutoDJFeature::title() {
     return tr("Auto DJ");
 }
 
-QIcon AutoDJFeature::getIcon() {
-    return m_icon;
+QUrl AutoDJFeature::iconUrl() {
+    return m_iconUrl;
 }
 
 void AutoDJFeature::bindLibraryWidget(

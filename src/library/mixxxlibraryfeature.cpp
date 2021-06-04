@@ -72,7 +72,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         : LibraryFeature(pLibrary, pConfig),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
-          m_icon(":/images/library/ic_library_tracks.svg"),
+          m_iconUrl("qrc:///images/library/ic_library_tracks.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_pLibraryTableModel(nullptr),
           m_pMissingView(nullptr),
@@ -144,8 +144,8 @@ QVariant MixxxLibraryFeature::title() {
     return tr("Tracks");
 }
 
-QIcon MixxxLibraryFeature::getIcon() {
-    return m_icon;
+QUrl MixxxLibraryFeature::iconUrl() {
+    return m_iconUrl;
 }
 
 TreeItemModel* MixxxLibraryFeature::getChildModel() {

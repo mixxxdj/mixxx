@@ -33,7 +33,7 @@ class LibraryFeature : public QObject {
     ~LibraryFeature() override = default;
 
     virtual QVariant title() = 0;
-    virtual QIcon getIcon() = 0;
+    virtual QUrl iconUrl() = 0;
 
     virtual bool dropAccept(const QList<QUrl>& urls, QObject* pSource) {
         Q_UNUSED(urls);

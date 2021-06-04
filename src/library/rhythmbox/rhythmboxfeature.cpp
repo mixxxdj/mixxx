@@ -17,7 +17,7 @@
 RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
-          m_icon(":/images/library/ic_library_rhythmbox.svg") {
+          m_iconUrl("qrc:///images/library/ic_library_rhythmbox.svg") {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
     QStringList columns;
@@ -108,8 +108,8 @@ QVariant RhythmboxFeature::title() {
     return m_title;
 }
 
-QIcon RhythmboxFeature::getIcon() {
-    return m_icon;
+QUrl RhythmboxFeature::iconUrl() {
+    return m_iconUrl;
 }
 
 TreeItemModel* RhythmboxFeature::getChildModel() {

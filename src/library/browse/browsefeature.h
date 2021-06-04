@@ -31,7 +31,7 @@ class BrowseFeature : public LibraryFeature {
     virtual ~BrowseFeature();
 
     QVariant title();
-    QIcon getIcon();
+    QUrl iconUrl();
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
@@ -73,6 +73,6 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
-    QIcon m_icon;
+    QUrl m_iconUrl;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };

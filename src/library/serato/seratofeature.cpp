@@ -847,7 +847,7 @@ SeratoFeature::SeratoFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_icon(":/images/library/ic_library_serato.svg") {
+          m_iconUrl("qrc:///images/library/ic_library_serato.svg") {
     QStringList columns;
     columns << LIBRARYTABLE_ID
             << LIBRARYTABLE_TITLE
@@ -959,8 +959,8 @@ QVariant SeratoFeature::title() {
     return m_title;
 }
 
-QIcon SeratoFeature::getIcon() {
-    return m_icon;
+QUrl SeratoFeature::iconUrl() {
+    return m_iconUrl;
 }
 
 bool SeratoFeature::isSupported() {

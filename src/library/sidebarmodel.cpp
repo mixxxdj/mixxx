@@ -18,6 +18,16 @@ namespace {
 // been chosen as a compromise between usability and responsiveness.
 const int kPressedUntilClickedTimeoutMillis = 300;
 
+const QHash<int, QByteArray> kCustomRoleNames = {
+        {SidebarModel::SidebarModelRole::IconUrlRole, "iconUrl"},
+};
+
+QIcon iconUrlToIcon(const QUrl& url) {
+    // Unforutnately, Qt is inconsistent here and cannot construct and a QIcon
+    // from an URL (unlike QML).
+    return QIcon(url.toString(QUrl::None).replace("qrc://", ":"));
+}
+
 } // anonymous namespace
 
 SidebarModel::SidebarModel(
@@ -30,6 +40,12 @@ SidebarModel::SidebarModel(
             &QTimer::timeout,
             this,
             &SidebarModel::slotPressedUntilClickedTimeout);
+}
+
+QHash<int, QByteArray> SidebarModel::roleNames() const {
+    QHash<int, QByteArray> customRoleNames = QAbstractItemModel::roleNames();
+    customRoleNames.insert(kCustomRoleNames);
+    return customRoleNames;
 }
 
 void SidebarModel::addLibraryFeature(LibraryFeature* pFeature) {
@@ -239,11 +255,11 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
         if (role == Qt::DisplayRole) {
             return m_sFeatures[index.row()]->title();
         } else if (role == Qt::DecorationRole) {
-            return m_sFeatures[index.row()]->getIcon();
+            return iconUrlToIcon(m_sFeatures[index.row()]->iconUrl());
+        } else if (role == SidebarModelRole::IconUrlRole) {
+            return m_sFeatures[index.row()]->iconUrl();
         }
-    }
-
-    if (index.internalPointer() != this) {
+    } else if (index.internalPointer() != this) {
         // If it points to a TreeItem
         TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
         if (pTreeItem) {

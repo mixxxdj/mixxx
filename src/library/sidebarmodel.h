@@ -11,6 +11,10 @@ class LibraryFeature;
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
   public:
+    enum SidebarModelRole {
+        IconUrlRole = Qt::UserRole + 1,
+    };
+
     // Keep object tree functions from QObject accessible
     // for parented_ptr
     using QObject::parent;
@@ -18,6 +22,8 @@ class SidebarModel : public QAbstractItemModel {
     explicit SidebarModel(
             QObject* parent = nullptr);
     ~SidebarModel() override = default;
+
+    QHash<int, QByteArray> roleNames() const override;
 
     void addLibraryFeature(LibraryFeature* feature);
     LibraryFeature* getLibraryFeatureByName(const QString& featureName);

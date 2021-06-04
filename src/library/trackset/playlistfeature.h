@@ -25,7 +25,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     ~PlaylistFeature() override = default;
 
     QVariant title() override;
-    QIcon getIcon() override;
+    QUrl iconUrl() override;
 
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
@@ -49,5 +49,5 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private:
     QString getRootViewHtml() const override;
-    const QIcon m_icon;
+    const QUrl m_iconUrl;
 };

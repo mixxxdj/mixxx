@@ -37,7 +37,7 @@ SetlogFeature::SetlogFeature(
                           /*keep deleted tracks*/ true),
                   QStringLiteral("SETLOGHOME")),
           m_playlistId(kInvalidPlaylistId),
-          m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
+          m_iconUrl(QStringLiteral("qrc:///images/library/ic_library_history.svg")) {
     // clear old empty entries
     ScopedTransaction transaction(pLibrary->trackCollectionManager()
                                           ->internalCollection()
@@ -79,8 +79,8 @@ QVariant SetlogFeature::title() {
     return tr("History");
 }
 
-QIcon SetlogFeature::getIcon() {
-    return m_icon;
+QUrl SetlogFeature::iconUrl() {
+    return m_iconUrl;
 }
 
 void SetlogFeature::bindLibraryWidget(

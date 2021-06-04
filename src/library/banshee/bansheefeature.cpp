@@ -19,7 +19,7 @@ QString BansheeFeature::m_databaseFile;
 BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
-          m_icon(":/images/library/ic_library_banshee.svg") {
+          m_iconUrl("qrc:///images/library/ic_library_banshee.svg") {
     Q_UNUSED(pConfig);
     m_pBansheePlaylistModel = new BansheePlaylistModel(
             this, m_pLibrary->trackCollectionManager(), &m_connection);
@@ -58,8 +58,8 @@ QVariant BansheeFeature::title() {
     return m_title;
 }
 
-QIcon BansheeFeature::getIcon() {
-    return m_icon;
+QUrl BansheeFeature::iconUrl() {
+    return m_iconUrl;
 }
 
 void BansheeFeature::activate() {

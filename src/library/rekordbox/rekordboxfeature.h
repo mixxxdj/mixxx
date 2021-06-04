@@ -59,7 +59,7 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     ~RekordboxFeature() override;
 
     QVariant title() override;
-    QIcon getIcon() override;
+    QUrl iconUrl() override;
     static bool isSupported();
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
@@ -90,5 +90,5 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     QString m_title;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
-    QIcon m_icon;
+    QUrl m_iconUrl;
 };

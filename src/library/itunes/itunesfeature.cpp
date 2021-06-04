@@ -65,7 +65,7 @@ QString localhost_token() {
 ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
-          m_icon(":/images/library/ic_library_itunes.svg") {
+          m_iconUrl("qrc:///images/library/ic_library_itunes.svg") {
     QString tableName = "itunes_library";
     QString idColumn = "id";
     QStringList columns;
@@ -152,8 +152,8 @@ QVariant ITunesFeature::title() {
     return m_title;
 }
 
-QIcon ITunesFeature::getIcon() {
-    return m_icon;
+QUrl ITunesFeature::iconUrl() {
+    return m_iconUrl;
 }
 
 void ITunesFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

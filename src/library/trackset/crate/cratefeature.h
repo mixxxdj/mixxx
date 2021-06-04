@@ -30,7 +30,7 @@ class CrateFeature : public BaseTrackSetFeature {
     ~CrateFeature() override = default;
 
     QVariant title() override;
-    QIcon getIcon() override;
+    QUrl iconUrl() override;
 
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
@@ -98,7 +98,7 @@ class CrateFeature : public BaseTrackSetFeature {
 
     QString formatRootViewHtml() const;
 
-    const QIcon m_cratesIcon;
+    const QUrl m_cratesIconUrl;
     const QIcon m_lockedCrateIcon;
 
     TrackCollection* const m_pTrackCollection;

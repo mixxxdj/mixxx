@@ -1326,7 +1326,7 @@ RekordboxFeature::RekordboxFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_icon(":/images/library/ic_library_rekordbox.svg") {
+          m_iconUrl("qrc:///images/library/ic_library_rekordbox.svg") {
     QString tableName = kRekordboxLibraryTable;
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns;
@@ -1438,8 +1438,8 @@ QVariant RekordboxFeature::title() {
     return m_title;
 }
 
-QIcon RekordboxFeature::getIcon() {
-    return m_icon;
+QUrl RekordboxFeature::iconUrl() {
+    return m_iconUrl;
 }
 
 bool RekordboxFeature::isSupported() {
