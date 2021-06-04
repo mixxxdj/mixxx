@@ -6,17 +6,17 @@ Skin.Button {
 
     property string group // required
     property string key // required
-    property bool toggle: false
+    property bool toggleable: false
 
     highlight: control.value
     onPressed: {
-        if (!toggle)
-            control.value = 1;
-        else
+        if (toggleable)
             control.value = !control.value;
+        else
+            control.value = 1;
     }
     onReleased: {
-        if (!toggle)
+        if (!toggleable)
             control.value = 0;
 
     }

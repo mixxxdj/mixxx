@@ -322,7 +322,7 @@ Item {
             group: root.group
             key: "play"
             text: "Play"
-            toggle: true
+            toggleable: true
             activeColor: Theme.deckActiveColor
         }
 
@@ -360,7 +360,7 @@ Item {
             text: "Sync"
             group: root.group
             key: "sync_enabled"
-            toggle: true
+            toggleable: true
             activeColor: Theme.deckActiveColor
         }
 
