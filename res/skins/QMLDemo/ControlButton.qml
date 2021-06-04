@@ -8,10 +8,14 @@ Skin.Button {
     property string key // required
     property bool toggleable: false
 
+    function toggle() {
+        control.value = !control.value;
+    }
+
     highlight: control.value
     onPressed: {
         if (toggleable)
-            control.value = !control.value;
+            toggle();
         else
             control.value = 1;
     }

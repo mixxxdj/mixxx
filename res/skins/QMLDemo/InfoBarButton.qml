@@ -16,7 +16,11 @@ AbstractButton {
     property color pressedColor: activeColor
     property alias highlight: control.value
 
-    onPressed: control.value = !control.value
+    function toggle() {
+        control.value = !control.value;
+    }
+
+    onPressed: toggle()
     states: [
         State {
             name: "pressed"
