@@ -20,18 +20,41 @@ Item {
         color: Theme.gainKnobColor
     }
 
-    Slider {
-        id: volumeSlider
-
+    Item {
         anchors.top: gainKnob.bottom
         anchors.topMargin: 5
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: pflButton.top
-        group: root.group
-        key: "volume"
-        barColor: Theme.volumeSliderBarColor
-        bg: "images/slider_volume.svg"
+
+        VuMeter {
+            x: 15
+            y: (parent.height - height) / 2
+            width: 4
+            height: parent.height - 40
+            group: root.group
+            key: "VuMeterL"
+        }
+
+        VuMeter {
+            x: parent.width - width - 15
+            y: (parent.height - height) / 2
+            width: 4
+            height: parent.height - 40
+            group: root.group
+            key: "VuMeterR"
+        }
+
+        Slider {
+            id: volumeSlider
+
+            anchors.fill: parent
+            group: root.group
+            key: "volume"
+            barColor: Theme.volumeSliderBarColor
+            bg: "images/slider_volume.svg"
+        }
+
     }
 
     Skin.ControlButton {

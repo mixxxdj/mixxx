@@ -213,26 +213,7 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
     m_pLoadedTrack = pTrack;
     if (m_pLoadedTrack) {
         // Listen for updates to the file's BPM
-        connect(m_pLoadedTrack.get(),
-                &Track::bpmUpdated,
-                m_pFileBPM.get(),
-                QOverload<double>::of(&ControlObject::set));
-
-        connect(m_pLoadedTrack.get(),
-                &Track::keyUpdated,
-                m_pKey.get(),
-                &ControlProxy::set);
-
-        // Listen for updates to the file's Replay Gain
-        connect(m_pLoadedTrack.get(),
-                &Track::replayGainUpdated,
-                this,
-                &BaseTrackPlayerImpl::slotSetReplayGain);
-
-        connect(m_pLoadedTrack.get(),
-                &Track::colorUpdated,
-                this,
-                &BaseTrackPlayerImpl::slotSetTrackColor);
+        connectLoadedTrack();
     }
 
     // Request a new track from EngineBuffer
@@ -349,17 +330,32 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
 
 void BaseTrackPlayerImpl::connectLoadedTrack() {
     connect(m_pLoadedTrack.get(),
-            &Track::bpmUpdated,
-            m_pFileBPM.get(),
-            QOverload<double>::of(&ControlObject::set));
+            &Track::bpmChanged,
+            this,
+            [this] {
+                TrackPointer pTrack = m_pLoadedTrack;
+                if (pTrack) {
+                    m_pFileBPM->set(pTrack->getBpm());
+                }
+            });
+
     connect(m_pLoadedTrack.get(),
-            &Track::keyUpdated,
-            m_pKey.get(),
-            &ControlProxy::set);
+            &Track::keyChanged,
+            this,
+            [this] {
+                TrackPointer pTrack = m_pLoadedTrack;
+                if (pTrack) {
+                    const auto key = pTrack->getKeys().getGlobalKey();
+                    m_pKey->set(static_cast<double>(key));
+                }
+            });
+
+    // Listen for updates to the file's Replay Gain
     connect(m_pLoadedTrack.get(),
             &Track::replayGainUpdated,
             this,
             &BaseTrackPlayerImpl::slotSetReplayGain);
+
     connect(m_pLoadedTrack.get(),
             &Track::colorUpdated,
             this,

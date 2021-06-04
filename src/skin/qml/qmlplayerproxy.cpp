@@ -54,7 +54,7 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
                 this,
                 &QmlPlayerProxy::trackChanged);
         connect(pTrack.get(),
-                &Track::keyUpdated,
+                &Track::keyChanged,
                 this,
                 &QmlPlayerProxy::keyTextChanged);
         connect(pTrack.get(),

@@ -179,7 +179,6 @@ void Track::replaceMetadataFromSource(
             beatsAndBpmModified = trySetBpmWhileLocked(importedBpm.getValue());
         }
         modified |= beatsAndBpmModified;
-        const auto newBpm = getBpmWhileLocked();
 
         auto keysModified = false;
         if (importedKey != mixxx::track::io::key::INVALID) {
@@ -190,7 +189,6 @@ void Track::replaceMetadataFromSource(
                     mixxx::track::io::key::FILE_METADATA);
         }
         modified |= keysModified;
-        const auto newKey = m_record.getGlobalKey();
 
         // Import track color from Serato tags if available
         const auto newColor = m_record.getMetadata().getTrackInfo().getSeratoTags().getTrackColor();
@@ -206,10 +204,10 @@ void Track::replaceMetadataFromSource(
         markDirtyAndUnlock(&lock);
 
         if (beatsAndBpmModified) {
-            emitBeatsAndBpmUpdated(newBpm);
+            emitBeatsAndBpmUpdated();
         }
         if (keysModified) {
-            emitKeysUpdated(newKey);
+            emit keyChanged();
         }
         if (oldReplayGain != newReplayGain) {
             emit replayGainUpdated(newReplayGain);
@@ -217,6 +215,8 @@ void Track::replaceMetadataFromSource(
         if (colorModified) {
             emit colorUpdated(newColor);
         }
+
+        emitChangedSignalsForAllMetadata();
     }
 
     // TODO: Import Serato metadata within the locking scope and not
@@ -240,6 +240,7 @@ bool Track::mergeExtraMetadataFromSource(
     }
     markDirtyAndUnlock(&lock);
     // Modified
+    emitChangedSignalsForAllMetadata();
     return true;
 }
 
@@ -301,11 +302,10 @@ bool Track::replaceRecord(
     markDirtyAndUnlock(&locked);
 
     if (bpmUpdatedFlag) {
-        emit bpmUpdated(newBpm.getValue());
-        emit beatsUpdated();
+        emitBeatsAndBpmUpdated();
     }
     if (oldKey != newKey) {
-        emitKeysUpdated(newKey);
+        emit keyChanged();
     }
     if (oldReplayGain != newReplayGain) {
         emit replayGainUpdated(newReplayGain);
@@ -313,6 +313,8 @@ bool Track::replaceRecord(
     if (oldColor != newColor) {
         emit colorUpdated(newColor);
     }
+
+    emitChangedSignalsForAllMetadata();
     return true;
 }
 
@@ -431,15 +433,32 @@ void Track::afterBeatsAndBpmUpdated(
         QMutexLocker* pLock) {
     DEBUG_ASSERT(pLock);
 
-    const auto bpm = getBpmWhileLocked();
     markDirtyAndUnlock(pLock);
-    emitBeatsAndBpmUpdated(bpm);
+    emitBeatsAndBpmUpdated();
 }
 
-void Track::emitBeatsAndBpmUpdated(
-        mixxx::Bpm newBpm) {
-    emit bpmUpdated(newBpm.getValue());
+void Track::emitBeatsAndBpmUpdated() {
+    emit bpmChanged();
     emit beatsUpdated();
+}
+
+void Track::emitChangedSignalsForAllMetadata() {
+    emit artistChanged(getArtist());
+    emit titleChanged(getTitle());
+    emit albumChanged(getAlbum());
+    emit albumArtistChanged(getAlbumArtist());
+    emit genreChanged(getGenre());
+    emit composerChanged(getComposer());
+    emit groupingChanged(getGrouping());
+    emit yearChanged(getYear());
+    emit trackNumberChanged(getTrackNumber());
+    emit trackTotalChanged(getTrackTotal());
+    emit commentChanged(getComment());
+    emit bpmChanged();
+    emit timesPlayedChanged();
+    emit durationChanged();
+    emit infoChanged();
+    emit keyChanged();
 }
 
 void Track::setMetadataSynchronized(bool metadataSynchronized) {
@@ -506,6 +525,7 @@ void Track::setDuration(mixxx::Duration duration) {
                 m_record.refMetadata().refStreamInfo().ptrDuration(),
                 duration)) {
         markDirtyAndUnlock(&lock);
+        emit durationChanged();
     }
 }
 
@@ -536,8 +556,11 @@ QString Track::getTitle() const {
 
 void Track::setTitle(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTitle(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTitle(), value)) {
         markDirtyAndUnlock(&lock);
+        emit titleChanged(value);
+        emit infoChanged();
     }
 }
 
@@ -548,8 +571,11 @@ QString Track::getArtist() const {
 
 void Track::setArtist(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrArtist(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrArtist(), value)) {
         markDirtyAndUnlock(&lock);
+        emit artistChanged(value);
+        emit infoChanged();
     }
 }
 
@@ -560,8 +586,10 @@ QString Track::getAlbum() const {
 
 void Track::setAlbum(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refAlbumInfo().ptrTitle(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refAlbumInfo().ptrTitle(), value)) {
         markDirtyAndUnlock(&lock);
+        emit albumChanged(value);
     }
 }
 
@@ -572,8 +600,10 @@ QString Track::getAlbumArtist()  const {
 
 void Track::setAlbumArtist(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refAlbumInfo().ptrArtist(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refAlbumInfo().ptrArtist(), value)) {
         markDirtyAndUnlock(&lock);
+        emit albumArtistChanged(value);
     }
 }
 
@@ -584,8 +614,10 @@ QString Track::getYear()  const {
 
 void Track::setYear(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrYear(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrYear(), value)) {
         markDirtyAndUnlock(&lock);
+        emit yearChanged(value);
     }
 }
 
@@ -596,8 +628,10 @@ QString Track::getGenre() const {
 
 void Track::setGenre(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGenre(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGenre(), value)) {
         markDirtyAndUnlock(&lock);
+        emit genreChanged(value);
     }
 }
 
@@ -608,8 +642,10 @@ QString Track::getComposer() const {
 
 void Track::setComposer(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrComposer(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrComposer(), value)) {
         markDirtyAndUnlock(&lock);
+        emit composerChanged(value);
     }
 }
 
@@ -620,8 +656,10 @@ QString Track::getGrouping()  const {
 
 void Track::setGrouping(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGrouping(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGrouping(), value)) {
         markDirtyAndUnlock(&lock);
+        emit groupingChanged(value);
     }
 }
 
@@ -637,15 +675,19 @@ QString Track::getTrackTotal()  const {
 
 void Track::setTrackNumber(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTrackNumber(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTrackNumber(), value)) {
         markDirtyAndUnlock(&lock);
+        emit trackNumberChanged(value);
     }
 }
 
 void Track::setTrackTotal(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTrackTotal(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTrackTotal(), value)) {
         markDirtyAndUnlock(&lock);
+        emit trackTotalChanged(value);
     }
 }
 
@@ -658,6 +700,7 @@ void Track::setPlayCounter(const PlayCounter& playCounter) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(m_record.ptrPlayCounter(), playCounter)) {
         markDirtyAndUnlock(&lock);
+        emit timesPlayedChanged();
     }
 }
 
@@ -667,6 +710,7 @@ void Track::updatePlayCounter(bool bPlayed) {
     playCounter.updateLastPlayedNowAndTimesPlayed(bPlayed);
     if (compareAndSet(m_record.ptrPlayCounter(), playCounter)) {
         markDirtyAndUnlock(&lock);
+        emit timesPlayedChanged();
     }
 }
 
@@ -692,6 +736,7 @@ void Track::setComment(const QString& s) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrComment(), s)) {
         markDirtyAndUnlock(&lock);
+        emit commentChanged(s);
     }
 }
 
@@ -1275,15 +1320,8 @@ void Track::setRating (int rating) {
 }
 
 void Track::afterKeysUpdated(QMutexLocker* pLock) {
-    const auto newKey = m_record.getGlobalKey();
     markDirtyAndUnlock(pLock);
-    emitKeysUpdated(newKey);
-}
-
-void Track::emitKeysUpdated(mixxx::track::io::key::ChromaticKey newKey) {
-    // New key might be INVALID. We don't care.
-    emit keyUpdated(KeyUtils::keyToNumericValue(newKey));
-    emit keysUpdated();
+    emit keyChanged();
 }
 
 void Track::setKeys(const Keys& keys) {
@@ -1588,6 +1626,7 @@ void Track::setAudioProperties(
                 m_record.refMetadata().ptrStreamInfo(),
                 streamInfo)) {
         markDirtyAndUnlock(&lock);
+        emit durationChanged();
     }
 }
 
@@ -1603,6 +1642,7 @@ void Track::updateStreamInfoFromSource(
         // Nothing more to do
         if (updated) {
             markDirtyAndUnlock(&lock);
+            emit durationChanged();
         }
         return;
     }
@@ -1632,6 +1672,7 @@ void Track::updateStreamInfoFromSource(
         afterBeatsAndBpmUpdated(&lock);
     } else {
         markDirtyAndUnlock(&lock);
+        emit durationChanged();
     }
     if (cuesImported) {
         emit cuesUpdated();
