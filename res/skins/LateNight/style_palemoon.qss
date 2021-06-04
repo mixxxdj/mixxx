@@ -1635,6 +1635,8 @@ WPushButton#Reverse[pressed="true"],
 #LoopActivate[value="1"],
 #Reloop[value="1"],
 #SyncSampler[displayValue="1"],
+#SyncDeck[value="1"],
+#SyncLeader[value="2"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"],
 #MicDucking[value="2"],
@@ -1653,7 +1655,7 @@ QPushButton#pushButtonAnalyze:checked {
   }
 /* dim orange for momentary controls */
 #KeyControls WPushButton[pressed="true"],
-#SyncDeck[value="1"],
+#SyncLeader[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
 #BeatjumpControls WPushButton[value="1"],
@@ -2108,7 +2110,7 @@ WPushButton#PlayDeck[value="0"] {
   }
 
 #SyncLeader {
-  image: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
+  image: url(skin:/palemoon/buttons/btn__leader_deck.svg) no-repeat center center;
   }
 
   #SyncSampler {
