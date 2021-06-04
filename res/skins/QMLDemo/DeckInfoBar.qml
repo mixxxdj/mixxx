@@ -130,7 +130,7 @@ Rectangle {
         anchors.right: infoBarHSeparator2.left
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
-        text: root.deckPlayer.key
+        text: root.deckPlayer.keyText
         font.family: Theme.fontFamily
         font.pixelSize: Theme.textFontPixelSize
         color: infoBar.textColor
