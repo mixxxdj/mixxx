@@ -270,14 +270,16 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
             sortColumn = trackModel->sortColumnIdFromColumnIndex(trackModel->defaultSortColumn());
             sortOrder = trackModel->defaultSortOrder();
 
-            // If the TrackModel has an invalid or internal column as its default
-            // sort, find the first valid sort column and sort by that.
-            int sortColumnIndex = -1;
-            const int columnCount = model->columnCount(); // just to avoid an endless while loop
-            while (sortColumn == TrackModel::SortColumnId::Invalid &&
-                    sortColumnIndex < columnCount) {
-                sortColumnIndex++;
-                sortColumn = trackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
+            if (sortColumn == TrackModel::SortColumnId::Invalid) {
+                // If the TrackModel has an invalid or internal column as its default
+                // sort, find the first valid sort column and sort by that.
+                const int columnCount = model->columnCount(); // just to avoid an endless while loop
+                for (int sortColumnIndex = 0; sortColumnIndex < columnCount; sortColumnIndex++) {
+                    sortColumn = trackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
+                    if (sortColumn != TrackModel::SortColumnId::Invalid) {
+                        break;
+                    }
+                }
             }
         }
 
