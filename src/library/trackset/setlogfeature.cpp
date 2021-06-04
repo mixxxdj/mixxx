@@ -252,11 +252,11 @@ QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
     if (playlistId == m_playlistId) {
-        item->setIcon(QIcon(":/images/library/ic_library_history_current.svg"));
+        item->setIconUrl(QUrl("qrc:///images/library/ic_library_history_current.svg"));
     } else if (m_playlistDao.isPlaylistLocked(playlistId)) {
-        item->setIcon(QIcon(":/images/library/ic_library_locked.svg"));
+        item->setIconUrl(QUrl("qrc:///images/library/ic_library_locked.svg"));
     } else {
-        item->setIcon(QIcon());
+        item->setIconUrl(QUrl());
     }
 }
 

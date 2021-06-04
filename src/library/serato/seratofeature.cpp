@@ -93,6 +93,8 @@ const QString kSeratoLibraryTable = QStringLiteral("serato_library");
 const QString kSeratoPlaylistsTable = QStringLiteral("serato_playlists");
 const QString kSeratoPlaylistTracksTable = QStringLiteral("serato_playlist_tracks");
 
+const QUrl kCratesIconUrl = QUrl("qrc:///images/library/ic_library_crates.svg");
+
 constexpr int kHeaderSize = 2 * sizeof(quint32);
 
 int createPlaylist(const QSqlDatabase& database, const QString& name, const QString& databasePath) {
@@ -650,7 +652,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                 data << QVariant(crateFilePath)
                      << QVariant(true);
                 TreeItem* crateItem = databaseItem->appendChild(crateName, data);
-                crateItem->setIcon(QIcon(":/images/library/ic_library_crates.svg"));
+                crateItem->setIconUrl(kCratesIconUrl);
             }
         }
     } else {

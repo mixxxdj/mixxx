@@ -25,6 +25,7 @@
 namespace {
 
 const QString kViewName = QStringLiteral("Auto DJ");
+const QUrl kCratesIconUrl = QUrl("qrc:///images/library/ic_library_crates.svg");
 
 } // namespace
 
@@ -71,7 +72,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     // Create the "Crates" tree-item under the root item.
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
-    m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.svg"));
+    m_pCratesTreeItem->setIconUrl(kCratesIconUrl);
 
     // Create tree-items under "Crates".
     constructCrateChildModel();

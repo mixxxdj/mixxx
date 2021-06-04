@@ -115,11 +115,11 @@ class TreeItem final {
         return m_data;
     }
 
-    void setIcon(const QIcon& icon) {
-        m_icon = icon;
+    void setIconUrl(const QUrl& iconUrl) {
+        m_iconUrl = iconUrl;
     }
-    const QIcon& getIcon() {
-        return m_icon;
+    const QUrl& iconUrl() {
+        return m_iconUrl;
     }
 
     void setBold(bool bold) {
@@ -148,6 +148,6 @@ class TreeItem final {
 
     QString m_label;
     QVariant m_data;
-    QIcon m_icon;
+    QUrl m_iconUrl;
     bool m_bold;
 };

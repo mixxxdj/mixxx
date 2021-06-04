@@ -270,10 +270,9 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
     if (m_playlistDao.isPlaylistLocked(playlistId)) {
-        item->setIcon(
-                QIcon(":/images/library/ic_library_locked_tracklist.svg"));
+        item->setIconUrl(QUrl("qrc:///images/library/ic_library_locked_tracklist.svg"));
     } else {
-        item->setIcon(QIcon());
+        item->setIconUrl(QUrl());
     }
 }
 

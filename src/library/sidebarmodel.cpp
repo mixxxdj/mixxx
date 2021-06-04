@@ -280,7 +280,9 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
                 font.setBold(pTreeItem->isBold());
                 return font;
             } else if (role == Qt::DecorationRole) {
-                return pTreeItem->getIcon();
+                return iconUrlToIcon(pTreeItem->iconUrl());
+            } else if (role == SidebarModelRole::IconUrlRole) {
+                return pTreeItem->iconUrl();
             }
         }
     }

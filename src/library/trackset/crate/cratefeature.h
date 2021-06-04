@@ -99,7 +99,7 @@ class CrateFeature : public BaseTrackSetFeature {
     QString formatRootViewHtml() const;
 
     const QUrl m_cratesIconUrl;
-    const QIcon m_lockedCrateIcon;
+    const QUrl m_lockedCrateIconUrl;
 
     TrackCollection* const m_pTrackCollection;
 

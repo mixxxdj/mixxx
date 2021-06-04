@@ -43,7 +43,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseTrackSetFeature(pLibrary, pConfig, "CRATEHOME"),
           m_cratesIconUrl("qrc:///images/library/ic_library_crates.svg"),
-          m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
+          m_lockedCrateIconUrl("qrc:///images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_crateTableModel(this, pLibrary->trackCollectionManager()) {
     initActions();
@@ -223,7 +223,7 @@ void CrateFeature::updateTreeItemForCrateSummary(
     }
     // Update mutable properties
     pTreeItem->setLabel(formatLabel(crateSummary));
-    pTreeItem->setIcon(crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
+    pTreeItem->setIconUrl(crateSummary.isLocked() ? m_lockedCrateIconUrl : QUrl());
 }
 
 bool CrateFeature::dropAcceptChild(
