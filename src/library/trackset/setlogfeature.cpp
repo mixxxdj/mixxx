@@ -91,10 +91,7 @@ void SetlogFeature::bindLibraryWidget(
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &SetlogFeature::slotPlayingTrackChanged);
-    m_libraryWidget = libraryWidget;
-    connect(m_libraryWidget, &WLibrary::destroyed, [this] {
-        m_libraryWidget = nullptr;
-    });
+    m_libraryWidget = QPointer(libraryWidget);
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
