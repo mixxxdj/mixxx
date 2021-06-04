@@ -37,7 +37,6 @@ SetlogFeature::SetlogFeature(
                           /*keep deleted tracks*/ true),
                   QStringLiteral("SETLOGHOME")),
           m_playlistId(kInvalidPlaylistId),
-          m_libraryWidget(nullptr),
           m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
     // clear old empty entries
     ScopedTransaction transaction(pLibrary->trackCollectionManager()
