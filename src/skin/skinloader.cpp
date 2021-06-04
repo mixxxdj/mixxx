@@ -101,15 +101,29 @@ SkinPointer SkinLoader::getConfiguredSkin() const {
         }
     }
 
-    SkinPointer pSkin = getSkin(configSkin);
-
-    if (pSkin == nullptr || !pSkin->isValid()) {
-        const QString defaultSkinName = getDefaultSkinName();
-        pSkin = getSkin(defaultSkinName);
-        qWarning() << "Configured skin" << configSkin
-                   << "not found, falling back to default skin"
-                   << defaultSkinName;
+    // Pick default skin otherwise
+    if (configSkin.isEmpty()) {
+        configSkin = getDefaultSkinName();
     }
+
+    // Try to load the desired skin
+    DEBUG_ASSERT(!configSkin.isEmpty());
+    SkinPointer pSkin = getSkin(configSkin);
+    if (pSkin && pSkin->isValid()) {
+        qInfo() << "Loaded skin" << configSkin;
+        return pSkin;
+    }
+    qWarning() << "Failed to load skin" << configSkin;
+
+    // Fallback to default skin as last resort
+    const QString defaultSkinName = getDefaultSkinName();
+    DEBUG_ASSERT(!defaultSkinName.isEmpty());
+    pSkin = getSkin(defaultSkinName);
+    VERIFY_OR_DEBUG_ASSERT(pSkin && pSkin->isValid()) {
+        qWarning() << "Failed to load default skin" << defaultSkinName;
+        return nullptr;
+    }
+    qInfo() << "Loaded default skin" << defaultSkinName;
     return pSkin;
 }
 
