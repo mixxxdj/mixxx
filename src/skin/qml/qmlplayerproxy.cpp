@@ -1,6 +1,7 @@
 #include "skin/qml/qmlplayerproxy.h"
 
 #include "mixer/basetrackplayer.h"
+#include "skin/qml/asyncimageprovider.h"
 
 #define PROPERTY_IMPL(TYPE, NAME, GETTER, SETTER)    \
     TYPE QmlPlayerProxy::GETTER() const {            \
@@ -164,10 +165,7 @@ QUrl QmlPlayerProxy::getCoverArtUrl() const {
     }
 
     const CoverInfo coverInfo = pTrack->getCoverInfoWithLocation();
-    QUrl url("image://mixxx/coverart/");
-    return url.resolved(
-            QString::fromLatin1(coverInfo.trackLocation.toUtf8().toBase64(
-                    QByteArray::Base64UrlEncoding)));
+    return AsyncImageProvider::trackLocationToCoverArtUrl(coverInfo.trackLocation);
 }
 
 } // namespace qml

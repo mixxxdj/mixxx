@@ -27,6 +27,10 @@ class AsyncImageProvider : public QQuickAsyncImageProvider {
     QQuickImageResponse* requestImageResponse(
             const QString& id, const QSize& requestedSize) override;
 
+    static const QString kProviderName;
+    static QUrl trackLocationToCoverArtUrl(const QString& trackLocation);
+    static QString coverArtUrlIdToTrackLocation(const QString& coverArtUrlId);
+
   private:
     QThreadPool pool;
 };

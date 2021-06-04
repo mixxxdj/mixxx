@@ -159,7 +159,7 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
 
     // No memory leak here, the QQmlENgine takes ownership of the provider
     QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider();
-    pWidget->engine()->addImageProvider(QStringLiteral("mixxx"), pImageProvider);
+    pWidget->engine()->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
 
     pWidget->setSource(QUrl::fromLocalFile(dir().absoluteFilePath(kMainQmlFileName)));
     pWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);

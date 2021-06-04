@@ -2,6 +2,10 @@
 
 #include "library/coverartcache.h"
 
+namespace {
+const QString kCoverArtPrefix = QStringLiteral("coverart/");
+}
+
 namespace mixxx {
 namespace skin {
 namespace qml {
@@ -16,9 +20,8 @@ QQuickTextureFactory* AsyncImageResponse::textureFactory() const {
 }
 
 void AsyncImageResponse::run() {
-    if (m_id.startsWith(QStringLiteral("coverart/"))) {
-        QString trackLocation = QString::fromUtf8(QByteArray::fromBase64(
-                m_id.mid(9).toLatin1(), QByteArray::Base64UrlEncoding));
+    if (m_id.startsWith(kCoverArtPrefix)) {
+        QString trackLocation = AsyncImageProvider::coverArtUrlIdToTrackLocation(m_id);
 
         // TODO: This code does not allow to override embedded cover art with
         // a custom image, which is possible in Mixxx. We need to access the
@@ -48,6 +51,23 @@ QQuickImageResponse* AsyncImageProvider::requestImageResponse(
     AsyncImageResponse* response = new AsyncImageResponse(id, requestedSize);
     pool.start(response);
     return response;
+}
+
+// static
+const QString AsyncImageProvider::kProviderName = QStringLiteral("mixxx");
+
+// static
+QUrl AsyncImageProvider::trackLocationToCoverArtUrl(const QString& trackLocation) {
+    QUrl url("image://" + kProviderName + "/" + kCoverArtPrefix);
+    return url.resolved(
+            QString::fromLatin1(trackLocation.toUtf8().toBase64(
+                    QByteArray::Base64UrlEncoding)));
+}
+
+//static
+QString AsyncImageProvider::coverArtUrlIdToTrackLocation(const QString& coverArtUrlId) {
+    return QString::fromUtf8(QByteArray::fromBase64(
+            coverArtUrlId.mid(kCoverArtPrefix.size()).toLatin1(), QByteArray::Base64UrlEncoding));
 }
 
 } // namespace qml
