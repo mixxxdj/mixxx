@@ -625,6 +625,9 @@ QVariant BaseTrackTableModel::roleValue(
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
                 return QVariant();
             }
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return mixxx::localDateTimeFromUtc(rawValue.toDateTime());
+            }
             return mixxx::localDateTimeFromUtc(rawValue.toDateTime()).date();
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
@@ -639,6 +642,9 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             DEBUG_ASSERT(lastPlayedAt.timeSpec() == Qt::UTC);
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return mixxx::localDateTimeFromUtc(lastPlayedAt);
+            }
             return mixxx::localDateTimeFromUtc(lastPlayedAt).date();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
