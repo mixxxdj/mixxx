@@ -15,9 +15,9 @@ const Logger kLogger("TrackRecord");
 
 TrackRecord::TrackRecord(TrackId id)
         : m_id(std::move(id)),
-          m_metadataSynchronized(false),
           m_rating(0),
-          m_bpmLocked(false) {
+          m_bpmLocked(false),
+          m_headerParsed(false) {
 }
 
 void TrackRecord::setKeys(const Keys& keys) {
@@ -107,24 +107,53 @@ bool copyIfNotEmpty(
 
 } // anonymous namespace
 
+bool TrackRecord::updateSourceSynchronizedAt(
+        const QDateTime& sourceSynchronizedAt) {
+    VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt.isValid()) {
+        // Cannot be reset after it has been set at least once.
+        // This is required to prevent unintended and repeated
+        // reimporting of metadata from file tags.
+        return false;
+    }
+    if (getSourceSynchronizedAt() == sourceSynchronizedAt) {
+        return false; // unchanged
+    }
+    setSourceSynchronizedAt(sourceSynchronizedAt);
+    m_headerParsed = sourceSynchronizedAt.isValid();
+    DEBUG_ASSERT(isSourceSynchronized());
+    return true;
+}
+
+bool TrackRecord::isSourceSynchronized() const {
+    // This method cannot be used to update m_headerParsed
+    // after modifying m_sourceSynchronizedAt during a short
+    // moment of inconsistency. Otherwise the debug assertion
+    // triggers!
+    DEBUG_ASSERT(m_headerParsed ||
+            !getSourceSynchronizedAt().isValid());
+    if (getSourceSynchronizedAt().isValid()) {
+        return true;
+    }
+    // Legacy fallback: The property sourceSynchronizedAt has been
+    // added later. Files that have been added before that time
+    // and that have never been re-imported will only have that
+    // legacy flag set while sourceSynchronizedAt is still invalid.
+    return m_headerParsed;
+}
+
 bool TrackRecord::replaceMetadataFromSource(
         TrackMetadata&& importedMetadata,
-        const QDateTime& metadataSynchronized) {
+        const QDateTime& sourceSynchronizedAt) {
+    VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt.isValid()) {
+        return false;
+    }
+    DEBUG_ASSERT(sourceSynchronizedAt.timeSpec() == Qt::UTC);
     bool modified = false;
     if (getMetadata() != importedMetadata) {
         setMetadata(std::move(importedMetadata));
         modified = true;
     }
-    // Only set the metadata synchronized flag (column `header_parsed`
-    // in the database) from false to true, but never reset it back to
-    // false. Otherwise file tags would be re-imported and overwrite
-    // the metadata stored in the database, e.g. after retrieving metadata
-    // from MusicBrainz!
-    // TODO: In the future this flag should become a time stamp
-    // to detect updates of files and then decide based on time
-    // stamps if file tags need to be re-imported.
-    if (!getMetadataSynchronized() && !metadataSynchronized.isNull()) {
-        setMetadataSynchronized(true);
+    if (updateSourceSynchronizedAt(sourceSynchronizedAt)) {
         modified = true;
     }
     return modified;
@@ -273,7 +302,7 @@ bool operator==(const TrackRecord& lhs, const TrackRecord& rhs) {
     return lhs.getMetadata() == rhs.getMetadata() &&
             lhs.getCoverInfo() == rhs.getCoverInfo() &&
             lhs.getId() == rhs.getId() &&
-            lhs.getMetadataSynchronized() == rhs.getMetadataSynchronized() &&
+            lhs.getSourceSynchronizedAt() == rhs.getSourceSynchronizedAt() &&
             lhs.getDateAdded() == rhs.getDateAdded() &&
             lhs.getFileType() == rhs.getFileType() &&
             lhs.getUrl() == rhs.getUrl() &&
@@ -282,7 +311,8 @@ bool operator==(const TrackRecord& lhs, const TrackRecord& rhs) {
             lhs.getCuePoint() == rhs.getCuePoint() &&
             lhs.getBpmLocked() == rhs.getBpmLocked() &&
             lhs.getKeys() == rhs.getKeys() &&
-            lhs.getRating() == rhs.getRating();
+            lhs.getRating() == rhs.getRating() &&
+            lhs.m_headerParsed == rhs.m_headerParsed;
 }
 
 } // namespace mixxx

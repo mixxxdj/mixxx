@@ -135,7 +135,7 @@ void Track::relocate(
 
 void Track::replaceMetadataFromSource(
         mixxx::TrackMetadata importedMetadata,
-        const QDateTime& metadataSynchronized) {
+        const QDateTime& sourceSynchronizedAt) {
     // Information stored in Serato tags is imported separately after
     // importing the metadata (see below). The Serato tags BLOB itself
     // is updated together with the metadata.
@@ -164,7 +164,7 @@ void Track::replaceMetadataFromSource(
                 m_record.getMetadata().getTrackInfo().getReplayGain();
         bool modified = m_record.replaceMetadataFromSource(
                 std::move(importedMetadata),
-                metadataSynchronized);
+                sourceSynchronizedAt);
         const auto newReplayGain =
                 m_record.getMetadata().getTrackInfo().getReplayGain();
 
@@ -245,10 +245,10 @@ bool Track::mergeExtraMetadataFromSource(
 }
 
 mixxx::TrackMetadata Track::getMetadata(
-        bool* pMetadataSynchronized) const {
+        bool* pSourceSynchronized) const {
     const QMutexLocker locked(&m_qMutex);
-    if (pMetadataSynchronized) {
-        *pMetadataSynchronized = m_record.getMetadataSynchronized();
+    if (pSourceSynchronized) {
+        *pSourceSynchronized = m_record.isSourceSynchronized();
     }
     return m_record.getMetadata();
 }
@@ -461,16 +461,23 @@ void Track::emitChangedSignalsForAllMetadata() {
     emit keyChanged();
 }
 
-void Track::setMetadataSynchronized(bool metadataSynchronized) {
+bool Track::isSourceSynchronized() const {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.ptrMetadataSynchronized(), metadataSynchronized)) {
+    return m_record.isSourceSynchronized();
+}
+
+void Track::setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt) {
+    DEBUG_ASSERT(!sourceSynchronizedAt.isValid() ||
+            sourceSynchronizedAt.timeSpec() == Qt::UTC);
+    QMutexLocker lock(&m_qMutex);
+    if (compareAndSet(m_record.ptrSourceSynchronizedAt(), sourceSynchronizedAt)) {
         markDirtyAndUnlock(&lock);
     }
 }
 
-bool Track::isMetadataSynchronized() const {
+QDateTime Track::getSourceSynchronizedAt() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadataSynchronized();
+    return m_record.getSourceSynchronizedAt();
 }
 
 QString Track::getInfo() const {
@@ -1430,12 +1437,11 @@ ExportTrackMetadataResult Track::exportMetadata(
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
     QMutexLocker lock(&m_qMutex);
-    // TODO(XXX): m_record.getMetadataSynchronized() currently is a
-    // boolean flag, but it should become a time stamp in the future.
-    // We could take this time stamp and the file's last modification
-    // time stamp into account and might decide to skip importing
-    // the metadata again.
-    if (!m_bMarkedForMetadataExport && !m_record.getMetadataSynchronized()) {
+    // TODO(XXX): Use sourceSynchronizedAt to decide if metadata
+    // should be (re-)imported before exporting it. The file might
+    // have been updated by external applications. Overwriting
+    // this modified metadata might not be intended.
+    if (!m_bMarkedForMetadataExport && !m_record.isSourceSynchronized()) {
         // If the metadata has never been imported from file tags it
         // must be exported explicitly once. This ensures that we don't
         // overwrite existing file tags with completely different
@@ -1577,10 +1583,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         // This information (flag or time stamp) is stored in the database.
         // The database update will follow immediately after returning from
         // this operation!
-        // TODO(XXX): Replace bool with QDateTime
-        DEBUG_ASSERT(!trackMetadataExported.second.isNull());
-        //pTrack->setMetadataSynchronized(trackMetadataExported.second);
-        m_record.setMetadataSynchronized(!trackMetadataExported.second.isNull());
+        m_record.updateSourceSynchronizedAt(trackMetadataExported.second);
         if (kLogger.debugEnabled()) {
             kLogger.debug()
                     << "Exported track metadata:"

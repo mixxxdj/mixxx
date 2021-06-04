@@ -75,20 +75,20 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
     }
 };
 
-inline QDateTime getMetadataSynchronized(const QFileInfo& fileInfo) {
-    return fileInfo.lastModified();
+inline QDateTime getSourceSynchronizedAt(const QFileInfo& fileInfo) {
+    return fileInfo.lastModified().toUTC();
 }
 
 } // anonymous namespace
 
 std::pair<MetadataSourceTagLib::ImportResult, QDateTime>
 MetadataSourceTagLib::afterImport(ImportResult importResult) const {
-    return std::make_pair(importResult, getMetadataSynchronized(QFileInfo(m_fileName)));
+    return std::make_pair(importResult, getSourceSynchronizedAt(QFileInfo(m_fileName)));
 }
 
 std::pair<MetadataSourceTagLib::ExportResult, QDateTime>
 MetadataSourceTagLib::afterExport(ExportResult exportResult) const {
-    return std::make_pair(exportResult, getMetadataSynchronized(QFileInfo(m_fileName)));
+    return std::make_pair(exportResult, getSourceSynchronizedAt(QFileInfo(m_fileName)));
 }
 
 std::pair<MetadataSource::ImportResult, QDateTime>
