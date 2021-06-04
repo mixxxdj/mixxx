@@ -53,8 +53,8 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             continue;
         }
 
-        // Generate image on first paint can't be done in setup since we need
-        // render widget to be resized yet ...
+        // Generate image on first paint can't be done in setup since we need to
+        // wait for the render widget to be resized yet.
         if (pMark->m_image.isNull()) {
             generateMarkImage(pMark);
         }
@@ -64,8 +64,9 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             double currentMarkPoint =
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-                // NOTE: vRince I guess image width is odd to display the center on the exact line !
-                // external image should respect that ...
+                // Pixmaps are expected to have the mark stroke at the center,
+                // and preferrably have an odd width in order to have the stroke
+                // exactly at the sample position.
                 const int markHalfWidth =
                         static_cast<int>(pMark->m_image.width() / 2.0 /
                                 m_waveformRenderer->getDevicePixelRatio());
@@ -145,11 +146,13 @@ void WaveformRenderMark::slotCuesUpdated() {
 }
 
 void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
-    // Load the pixmap from file -- takes precedence over text.
+    // Load the pixmap from file.
+    // If that succeeds loading the text and stroke is skipped.
     float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     if (!pMark->m_pixmapPath.isEmpty()) {
         QString path = pMark->m_pixmapPath;
-        QImage image = *WImageStore::getImage(path, scaleFactor());
+        // Use devicePixelRatio to properly scale the image
+        QImage image = *WImageStore::getImage(path, devicePixelRatio);
         //QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
@@ -157,6 +160,12 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
             pMark->m_image =
                     image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
             //WImageStore::correctImageColors(&pMark->m_image);
+            // Set the pixel/device ratio AFTER loading the image in order to get
+            // a truely scaled source image.
+            // See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
+            // Also, without this some Qt-internal issue results in an offset
+            // image when calculating the center line of pixmaps in draw().
+            pMark->m_image.setDevicePixelRatio(devicePixelRatio);
             return;
         }
     }
