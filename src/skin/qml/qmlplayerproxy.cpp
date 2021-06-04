@@ -50,9 +50,49 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
     m_pCurrentTrack = pTrack;
     if (pTrack != nullptr) {
         connect(pTrack.get(),
-                &Track::changed,
+                &Track::artistChanged,
                 this,
-                &QmlPlayerProxy::trackChanged);
+                &QmlPlayerProxy::artistChanged);
+        connect(pTrack.get(),
+                &Track::titleChanged,
+                this,
+                &QmlPlayerProxy::titleChanged);
+        connect(pTrack.get(),
+                &Track::albumChanged,
+                this,
+                &QmlPlayerProxy::albumChanged);
+        connect(pTrack.get(),
+                &Track::albumArtistChanged,
+                this,
+                &QmlPlayerProxy::albumArtistChanged);
+        connect(pTrack.get(),
+                &Track::genreChanged,
+                this,
+                &QmlPlayerProxy::genreChanged);
+        connect(pTrack.get(),
+                &Track::composerChanged,
+                this,
+                &QmlPlayerProxy::composerChanged);
+        connect(pTrack.get(),
+                &Track::groupingChanged,
+                this,
+                &QmlPlayerProxy::groupingChanged);
+        connect(pTrack.get(),
+                &Track::yearChanged,
+                this,
+                &QmlPlayerProxy::yearChanged);
+        connect(pTrack.get(),
+                &Track::trackNumberChanged,
+                this,
+                &QmlPlayerProxy::trackNumberChanged);
+        connect(pTrack.get(),
+                &Track::trackTotalChanged,
+                this,
+                &QmlPlayerProxy::trackTotalChanged);
+        connect(pTrack.get(),
+                &Track::commentChanged,
+                this,
+                &QmlPlayerProxy::commentChanged);
         connect(pTrack.get(),
                 &Track::keyChanged,
                 this,
