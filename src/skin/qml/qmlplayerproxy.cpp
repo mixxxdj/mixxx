@@ -2,12 +2,6 @@
 
 #include "mixer/basetrackplayer.h"
 
-// FIXME: Unfornately, clazy can stumble over these preprocessor macros and
-// show false-positive warnings. Therefore, the clazy-incorrect-emit warnings
-// are disabled in this source file.
-//
-// clazy:excludeall=incorrect-emit
-
 #define PROPERTY_IMPL(TYPE, NAME, GETTER, SETTER)    \
     TYPE QmlPlayerProxy::GETTER() const {            \
         const TrackPointer pTrack = m_pCurrentTrack; \
@@ -21,7 +15,6 @@
         const TrackPointer pTrack = m_pCurrentTrack; \
         if (pTrack != nullptr) {                     \
             pTrack->SETTER(value);                   \
-            emit NAME##Changed();                    \
         }                                            \
     }
 
@@ -160,7 +153,6 @@ void QmlPlayerProxy::setColor(const QColor& value) {
     if (pTrack != nullptr) {
         std::optional<RgbColor> color = RgbColor::fromQColor(value);
         pTrack->setColor(color);
-        emit colorChanged();
     }
 }
 
