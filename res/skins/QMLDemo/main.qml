@@ -51,44 +51,6 @@ Rectangle {
 
         }
 
-        Skin.MiniDeckRow {
-            id: decks12mini
-
-            leftDeckGroup: "[Channel1]"
-            rightDeckGroup: "[Channel2]"
-            width: parent.width - 10
-            x: 5
-
-            states: Skin.HiddenState {
-                when: !root.maximizeLibrary
-                target: decks12mini
-            }
-
-            transitions: Skin.HiddenTransition {
-                target: decks12mini
-            }
-
-        }
-
-        Skin.MiniDeckRow {
-            id: decks34mini
-
-            leftDeckGroup: "[Channel3]"
-            rightDeckGroup: "[Channel4]"
-            width: parent.width - 10
-            x: 5
-
-            states: Skin.HiddenState {
-                when: !root.show4decks || !root.maximizeLibrary
-                target: decks34mini
-            }
-
-            transitions: Skin.HiddenTransition {
-                target: decks34mini
-            }
-
-        }
-
         Skin.DeckRow {
             id: decks12
 
@@ -96,16 +58,7 @@ Rectangle {
             rightDeckGroup: "[Channel2]"
             width: parent.width - 10
             x: 5
-
-            states: Skin.HiddenState {
-                when: root.maximizeLibrary
-                target: decks12
-            }
-
-            transitions: Skin.HiddenTransition {
-                target: decks12
-            }
-
+            minimized: root.maximizeLibrary
         }
 
         Skin.CrossfaderRow {
@@ -114,14 +67,10 @@ Rectangle {
             crossfaderWidth: decks12.mixer.width
             width: parent.width - 10
             x: 5
+            visible: !root.maximizeLibrary
 
-            states: Skin.HiddenState {
-                when: root.maximizeLibrary
-                target: crossfader
-            }
-
-            transitions: Skin.HiddenTransition {
-                target: crossfader
+            FadeBehavior on visible {
+                fadeTarget: crossfader
             }
 
         }
@@ -133,14 +82,11 @@ Rectangle {
             rightDeckGroup: "[Channel4]"
             width: parent.width - 10
             x: 5
+            minimized: root.maximizeLibrary
+            visible: root.show4decks
 
-            states: Skin.HiddenState {
-                when: !root.show4decks || root.maximizeLibrary
-                target: decks34
-            }
-
-            transitions: Skin.HiddenTransition {
-                target: decks34
+            FadeBehavior on visible {
+                fadeTarget: decks34
             }
 
         }
