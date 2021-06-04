@@ -60,7 +60,9 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
     return QString();
 }
 
-QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schemeName) const {
+QPixmap SkinLoader::getSkinPreview(const QString& skinName,
+        const QString& schemeName,
+        const double devicePixelRatio) const {
     QPixmap preview;
     if (!schemeName.isEmpty()) {
         QString schemeNameUnformatted = schemeName;
@@ -72,7 +74,10 @@ QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schem
     if (preview.isNull()) {
         preview.load(":/images/skin_preview_placeholder.png");
     }
-    preview = preview.scaled(QSize(640, 360), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    preview = preview.scaled(QSize(640, 360) * devicePixelRatio,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    preview.setDevicePixelRatio(devicePixelRatio);
     return preview;
 }
 

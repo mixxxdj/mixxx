@@ -59,18 +59,20 @@ bool skinFitsScreenSize(
 
 } // namespace
 
-DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
-                                 SkinLoader* pSkinLoader,
-                                 UserSettingsPointer pConfig)
-        :  DlgPreferencePage(parent),
-           m_pConfig(pConfig),
-           m_mixxx(mixxx),
-           m_pSkinLoader(pSkinLoader),
-           m_dScaleFactorAuto(1.0),
-           m_bUseAutoScaleFactor(false),
-           m_dScaleFactor(1.0),
-           m_bStartWithFullScreen(false),
-           m_bRebootMixxxView(false) {
+DlgPrefInterface::DlgPrefInterface(QWidget* parent,
+        MixxxMainWindow* mixxx,
+        SkinLoader* pSkinLoader,
+        UserSettingsPointer pConfig)
+        : DlgPreferencePage(parent),
+          m_pConfig(pConfig),
+          m_mixxx(mixxx),
+          m_pSkinLoader(pSkinLoader),
+          m_dScaleFactorAuto(1.0),
+          m_bUseAutoScaleFactor(false),
+          m_dScaleFactor(1.0),
+          m_dDevicePixelRatio(1.0),
+          m_bStartWithFullScreen(false),
+          m_bRebootMixxxView(false) {
     setupUi(this);
 
     // Locale setting
@@ -150,6 +152,8 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         skins.append(dir.entryInfoList());
     }
 
+    m_dDevicePixelRatio = getDevicePixelRatioF(this);
+
     QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
     int index = 0;
     const auto* const pScreen = getScreen();
@@ -161,7 +165,9 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
             ComboBoxSkinconf->setCurrentIndex(index);
             // schemes must be updated here to populate the drop-down box and set m_colorScheme
             slotUpdateSchemes();
-            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
+            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin,
+                    m_colorScheme,
+                    m_dDevicePixelRatio));
             if (skinFitsScreenSize(*pScreen, configuredSkinPath)) {
                 warningLabel->hide();
             } else {
@@ -373,7 +379,9 @@ void DlgPrefInterface::slotSetScheme(int) {
         m_colorScheme = newScheme;
         m_bRebootMixxxView = true;
     }
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin,
+            m_colorScheme,
+            m_dDevicePixelRatio));
 }
 
 void DlgPrefInterface::slotSetSkinDescription(const QString& skin) {
@@ -404,7 +412,9 @@ void DlgPrefInterface::slotSetSkin(int) {
         slotSetSkinDescription(m_skin);
     }
 
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin, m_colorScheme));
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin,
+            m_colorScheme,
+            m_dDevicePixelRatio));
 }
 
 void DlgPrefInterface::slotApply() {
