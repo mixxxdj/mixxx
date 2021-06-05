@@ -8,7 +8,7 @@ Item {
 
     property string group // required
 
-    Knob {
+    Skin.Knob {
         id: gainKnob
 
         anchors.top: parent.top
@@ -27,7 +27,7 @@ Item {
         anchors.right: parent.right
         anchors.bottom: pflButton.top
 
-        VuMeter {
+        Skin.VuMeter {
             x: 15
             y: (parent.height - height) / 2
             width: 4
@@ -36,7 +36,7 @@ Item {
             key: "VuMeterL"
         }
 
-        VuMeter {
+        Skin.VuMeter {
             x: parent.width - width - 15
             y: (parent.height - height) / 2
             width: 4
@@ -45,7 +45,7 @@ Item {
             key: "VuMeterR"
         }
 
-        Slider {
+        Skin.Slider {
             id: volumeSlider
 
             anchors.fill: parent
