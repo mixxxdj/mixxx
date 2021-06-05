@@ -40,6 +40,10 @@ QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
     connect(this, &QmlPlayerProxy::trackChanged, this, &QmlPlayerProxy::slotTrackChanged);
 }
 
+void QmlPlayerProxy::loadTrackFromLocation(const QString& trackLocation) {
+    emit loadTrackFromLocationRequested(trackLocation);
+}
+
 void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
     m_pCurrentTrack = pTrack;
     if (pTrack != nullptr) {
