@@ -7,7 +7,8 @@ namespace mixxx {
 namespace skin {
 namespace qml {
 
-QmlPlayerManagerProxy::QmlPlayerManagerProxy(PlayerManager* pPlayerManager, QObject* parent)
+QmlPlayerManagerProxy::QmlPlayerManagerProxy(
+        std::shared_ptr<PlayerManager> pPlayerManager, QObject* parent)
         : QObject(parent), m_pPlayerManager(pPlayerManager) {
 }
 

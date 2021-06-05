@@ -135,7 +135,7 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
 
                         QmlPlayerManagerProxy* pPlayerManagerProxy =
                                 new QmlPlayerManagerProxy(
-                                        pCoreServices->getPlayerManager().get(),
+                                        pCoreServices->getPlayerManager(),
                                         pEngine);
                         return pPlayerManagerProxy;
                     }));
