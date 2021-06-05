@@ -45,7 +45,7 @@ Item {
             key: "VuMeterR"
         }
 
-        Skin.Slider {
+        Skin.ResettableControlSlider {
             id: volumeSlider
 
             anchors.fill: parent

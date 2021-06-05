@@ -18,7 +18,7 @@ Item {
         anchors.bottom: parent.bottom
     }
 
-    Skin.Slider {
+    Skin.ResettableControlSlider {
         id: crossfaderSlider
 
         anchors.centerIn: parent

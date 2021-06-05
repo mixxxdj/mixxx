@@ -18,8 +18,9 @@ MixxxControls.Slider {
     handle: Image {
         id: handleImage
 
-        anchors.top: parent.top
         source: "images/slider_handle.svg"
+        x: root.leftPadding + root.availableWidth / 2 - width / 2
+        y: root.visualPosition * (root.height - height)
     }
 
     background: Image {
