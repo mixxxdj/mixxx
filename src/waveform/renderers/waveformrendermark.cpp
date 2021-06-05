@@ -185,7 +185,12 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     }
 
     QFont font; // Uses the application default, if not set per skin
-    font.setPointSizeF(10 * devicePixelRatio);
+    // Use a pixel size like everywhere else in Mixxx, which can be scaled well
+    // in general.
+    // Point sizes would work if only explicit Qt scaling QT_SCALE_FACTORS is used,
+    // though as soon as other OS-based font and app scaling mechanics join the
+    // party the resulting font size is hard to predict (affects all supported OS).
+    font.setPixelSize(13);
     font.setStretch(100);
     font.setWeight(75);
 
