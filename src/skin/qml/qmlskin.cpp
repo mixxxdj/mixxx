@@ -5,6 +5,7 @@
 #include <functional>
 
 #include "coreservices.h"
+#include "skin/qml/asyncimageprovider.h"
 #include "skin/qml/qmlcontrolproxy.h"
 #include "skin/qml/qmlplayermanagerproxy.h"
 #include "skin/qml/qmlplayerproxy.h"
@@ -155,6 +156,11 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
 
     pWidget->engine()->setBaseUrl(QUrl::fromLocalFile(m_path.absoluteFilePath()));
     pWidget->engine()->addImportPath(m_path.absoluteFilePath());
+
+    // No memory leak here, the QQmlENgine takes ownership of the provider
+    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider();
+    pWidget->engine()->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
+
     pWidget->setSource(QUrl::fromLocalFile(dir().absoluteFilePath(kMainQmlFileName)));
     pWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
     if (pWidget->status() != QQuickWidget::Ready) {

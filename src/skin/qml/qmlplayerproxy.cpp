@@ -1,6 +1,7 @@
 #include "skin/qml/qmlplayerproxy.h"
 
 #include "mixer/basetrackplayer.h"
+#include "skin/qml/asyncimageprovider.h"
 
 #define PROPERTY_IMPL(TYPE, NAME, GETTER, SETTER)    \
     TYPE QmlPlayerProxy::GETTER() const {            \
@@ -125,6 +126,7 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit commentChanged();
     emit keyTextChanged();
     emit colorChanged();
+    emit coverArtUrlChanged();
 }
 
 PROPERTY_IMPL(QString, artist, getArtist, setArtist)
@@ -154,6 +156,16 @@ void QmlPlayerProxy::setColor(const QColor& value) {
         std::optional<RgbColor> color = RgbColor::fromQColor(value);
         pTrack->setColor(color);
     }
+}
+
+QUrl QmlPlayerProxy::getCoverArtUrl() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack == nullptr) {
+        return QUrl();
+    }
+
+    const CoverInfo coverInfo = pTrack->getCoverInfoWithLocation();
+    return AsyncImageProvider::trackLocationToCoverArtUrl(coverInfo.trackLocation);
 }
 
 } // namespace qml
