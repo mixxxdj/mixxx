@@ -63,7 +63,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     void hideTracks(const QModelIndexList& indices) override;
 
-    void select() override;
+    Q_INVOKABLE void select() override;
 
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from BaseTrackTableModel

@@ -391,6 +391,13 @@ bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
     return false;
 }
 
+QAbstractItemModel* SidebarModel::getModel(const QModelIndex& index) const {
+    if (index.internalPointer() == this) {
+        return m_sFeatures[index.row()]->getModel(index);
+    }
+    return nullptr;
+}
+
 bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) {
     //qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
     bool result = false;

@@ -1,13 +1,13 @@
 import "." as Skin
 import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
-import QtQuick.Controls 1.4
+import QtQuick.Controls 1.4 as QtQuickControls
 import "Theme"
 
 Item {
     id: root
 
-    TreeView {
+    QtQuickControls.TreeView {
         id: sidebar
 
         anchors.top: parent.top
@@ -16,8 +16,14 @@ Item {
         anchors.margins: 5
         width: 250
         model: Mixxx.Library.getSidebarModel()
+        onClicked: {
+            let featureModel = model.getModel(index);
+            featureModel.select();
+            console.warn(featureModel, featureModel.columnCount(), featureModel.rowCount());
+            trackTable.model = featureModel;
+        }
 
-        TableViewColumn {
+        QtQuickControls.TableViewColumn {
             title: "Icon"
             role: "iconUrl"
             width: 50
@@ -29,7 +35,7 @@ Item {
 
         }
 
-        TableViewColumn {
+        QtQuickControls.TableViewColumn {
             title: "Title"
             role: "display"
         }
@@ -44,37 +50,28 @@ Item {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.margins: 5
-        model: Mixxx.Library.getLibraryModel()
 
-        TableViewColumn {
-            title: "Icon"
-            role: "display"
-            width: 50
-        }
+        delegate: Item {
+            implicitWidth: 100
+            implicitHeight: 50
+            Drag.active: dragArea.drag.active
+            Drag.dragType: Drag.Automatic
+            Drag.supportedActions: Qt.CopyAction
+            Drag.mimeData: {
+                "text/plain": trackTable.model.data(trackTable.model.index(row, 25))
+            }
 
-        TableViewColumn {
-            title: "Title"
-            role: "display"
-        }
+            Text {
+                text: display
+            }
 
-        TableViewColumn {
-            title: "Title"
-            role: "display"
-        }
+            MouseArea {
+                id: dragArea
 
-        TableViewColumn {
-            title: "Title"
-            role: "display"
-        }
+                anchors.fill: parent
+                drag.target: parent
+            }
 
-        TableViewColumn {
-            title: "Title"
-            role: "display"
-        }
-
-        TableViewColumn {
-            title: "Title"
-            role: "display"
         }
 
     }

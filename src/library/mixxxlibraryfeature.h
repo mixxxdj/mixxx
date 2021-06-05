@@ -40,6 +40,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
     TreeItemModel* getChildModel() override;
     void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard) override;
+    QAbstractItemModel* getModel(const QModelIndex& index) const;
 #ifdef __ENGINEPRIME__
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 #endif

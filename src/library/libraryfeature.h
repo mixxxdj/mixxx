@@ -64,6 +64,11 @@ class LibraryFeature : public QObject {
     virtual void bindSidebarWidget(WLibrarySidebar* /* sidebar widget */) {}
     virtual TreeItemModel* getChildModel() = 0;
 
+    virtual QAbstractItemModel* getModel(const QModelIndex& index) const {
+        Q_UNUSED(index);
+        return nullptr;
+    }
+
     virtual bool hasTrackTable() {
         return false;
     }

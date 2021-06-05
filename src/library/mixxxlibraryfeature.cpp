@@ -152,6 +152,11 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
     return &m_childModel;
 }
 
+QAbstractItemModel* MixxxLibraryFeature::getModel(const QModelIndex& index) const {
+    Q_UNUSED(index);
+    return m_pLibraryTableModel;
+}
+
 void MixxxLibraryFeature::refreshLibraryModels() {
     if (m_pLibraryTableModel) {
         m_pLibraryTableModel->select();
