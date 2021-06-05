@@ -27,6 +27,10 @@ void AsyncImageResponse::run() {
         // a custom image, which is possible in Mixxx. We need to access the
         // actual CoverInfo of the track instead of constructing a default
         // instance on the fly.
+        //
+        // Unfortunately, TrackCollectionManager::getTrackByRef will not work
+        // when called from another thread (like this one). We need a solution
+        // for that.
         CoverInfo coverInfo(CoverInfoRelative(), trackLocation);
         coverInfo.type = CoverInfoRelative::METADATA;
         CoverInfo::LoadedImage loadedImage = coverInfo.loadImage();
