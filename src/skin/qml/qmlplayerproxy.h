@@ -1,10 +1,10 @@
 #include <QColor>
 #include <QObject>
+#include <QPointer>
 #include <QString>
 
+#include "mixer/basetrackplayer.h"
 #include "track/track.h"
-
-class BaseTrackPlayer;
 
 namespace mixxx {
 namespace skin {
@@ -86,7 +86,7 @@ class QmlPlayerProxy : public QObject {
     void colorChanged();
 
   private:
-    BaseTrackPlayer* m_pTrackPlayer;
+    QPointer<BaseTrackPlayer> m_pTrackPlayer;
     TrackPointer m_pCurrentTrack;
 };
 
