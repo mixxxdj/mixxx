@@ -29,7 +29,7 @@ class QmlPlayerProxy : public QObject {
     Q_PROPERTY(QColor color READ getColor WRITE setColor NOTIFY colorChanged)
 
   public:
-    explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent);
+    explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
 
     QString getTrack() const;
     QString getTitle() const;

@@ -1,5 +1,7 @@
 #include "skin/qml/qmlplayermanagerproxy.h"
 
+#include <QQmlEngine>
+
 #include "mixer/playermanager.h"
 #include "skin/qml/qmlplayerproxy.h"
 
@@ -18,7 +20,12 @@ QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
         qWarning() << "PlayerManagerProxy failed to find player for group" << group;
         return nullptr;
     }
-    return new QmlPlayerProxy(pPlayer, this);
+
+    // Don't set a parent here, so that the QML engine deletes the object when
+    // the corresponding JS object is garbage collected.
+    QmlPlayerProxy* pPlayerProxy = new QmlPlayerProxy(pPlayer);
+    QQmlEngine::setObjectOwnership(pPlayerProxy, QQmlEngine::JavaScriptOwnership);
+    return pPlayerProxy;
 }
 
 } // namespace qml
