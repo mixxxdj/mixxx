@@ -236,10 +236,7 @@ void BaseTrackTableModel::setHeaderProperties(
         int defaultWidth) {
     int section = fieldIndex(column);
     if (section < 0) {
-        kLogger.debug()
-                << "Skipping header properties for unsupported column"
-                << column
-                << title;
+        // Skipping header properties for unsupported column
         return;
     }
     if (section >= m_columnHeaders.size()) {

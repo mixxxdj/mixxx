@@ -15,6 +15,9 @@
 
 /**********************************************************************
 ************** container background colors & borders *****************/
+#SkinContainer {
+  background-color: #080808;
+}
 
 #Deck1, #DeckCompact1, #DeckMini1,
 #Deck2, #DeckCompact2, #DeckMini2,
@@ -201,11 +204,10 @@ WSearchLineEdit {
     border-width: 1px 0px 1px 0px;
   }
 
-  #KeyText,
   #DeckSettingsContainer,
   #DeckSettingsContainerCompact,
   #SamplerSettingsContainer,
-  /* Prevent cut-off or shifted stars on macOS */
+  /* Prevents cut-off or shifted stars on macOS */
   WStarRating {
     background-color: #19191a;
     }
@@ -569,10 +571,6 @@ WSearchLineEdit {
 #DeckRow_1_KeyVinylFx {
   padding-right: 2px;
   padding-left: 1px;
-  }
-  #KeyText {
-    border-left: 0px;
-    border-right: : 0px;
   }
 
 #DeckRow_2_3_ArtistTitleTime {
@@ -1172,14 +1170,30 @@ WEffectSelector,
 }
 
 /* Ivory */
-#Deck1 #TitleText, #Deck1 #ArtistText,
-#DeckCompact1 #TitleText, #DeckCompact1 #ArtistText,
-#DeckMini1 #TitleTextSmall, #DeckMini1 #ArtistTextSmall,
-#Deck1 #BpmText, #DeckCompact1 #BpmText, #DeckMini1 #BpmTextSmall,
-#Deck2 #TitleText, #Deck2 #ArtistText,
-#DeckCompact2 #TitleText, #DeckCompact2 #ArtistText,
-#DeckMini2 #TitleTextSmall, #DeckMini2 #ArtistTextSmall,
-#Deck2 #BpmText, #DeckCompact2 #BpmText, #DeckMini2 #BpmTextSmall,
+#Deck1 #TitleText,
+  #Deck1 #ArtistText,
+  #Deck1 #BpmText,
+  #Deck1 #KeyText,
+  #DeckCompact1 #TitleText,
+  #DeckCompact1 #ArtistText,
+  #DeckCompact1 #BpmText,
+  #DeckCompact1 #KeyText,
+  #DeckMini1 #TitleTextSmall,
+  #DeckMini1 #ArtistTextSmall,
+  #DeckMini1 #BpmTextSmall,
+  #DeckMini1 #KeyTextSmall,
+#Deck2 #TitleText,
+  #Deck2 #ArtistText,
+  #Deck2 #BpmText,
+  #Deck2 #KeyText,
+  #DeckCompact2 #TitleText,
+  #DeckCompact2 #ArtistText,
+  #DeckCompact2 #BpmText,
+  #DeckCompact2 #KeyText,
+  #DeckMini2 #TitleTextSmall,
+  #DeckMini2 #ArtistTextSmall,
+  #DeckMini2 #BpmTextSmall,
+  #DeckMini2 #KeyTextSmall,
 #MicAuxLabel,
 #SamplerTitle, #SamplerTitleMini,
 #MainMenu QMenu,
@@ -1234,18 +1248,6 @@ WEffectSelector:!editable:on,
   font-size: 14px;
 }
   /* dim² ivory */
-  #Deck1 #PlayPositionText,
-  #DeckCompact1 #PlayPositionTextSmall,
-  #DeckMini1 #PlayPositionTextSmall,
-  #Deck1 #KeyText,
-  #DeckCompact1 #KeyText,
-  #DeckMini1 #KeyTextSmall,
-  #Deck2 #PlayPositionText,
-  #DeckCompact2 #PlayPositionTextSmall,
-  #DeckMini2 #PlayPositionTextSmall,
-  #Deck2 #KeyText,
-  #DeckCompact2 #KeyText,
-  #DeckMini2 #KeyTextSmall,
   #SamplerBpm, #SamplerBpmMini,
   #LibraryContainer QHeaderView {
     color: #766b65;
@@ -1259,27 +1261,27 @@ WEffectSelector:!editable:on,
 /* pale blue */
 #Deck3 #TitleText,
   #Deck3 #ArtistText,
+  #Deck3 #BpmText,
+  #Deck3 #KeyText,
   #DeckCompact3 #TitleText,
   #DeckCompact3 #ArtistText,
+  #DeckCompact3 #BpmText,
+  #DeckCompact3 #KeyText,
   #DeckMini3 #TitleTextSmall,
   #DeckMini3 #ArtistTextSmall,
-  #Deck3 #BpmText,
-  #DeckCompact3 #BpmText,
   #DeckMini3 #BpmTextSmall,
-  #Deck3 #KeyText,
-  #DeckCompact3 #KeyText,
   #DeckMini3 #KeyTextSmall,
 #Deck4 #TitleText,
   #Deck4 #ArtistText,
+  #Deck4 #BpmText,
+  #Deck4 #KeyText,
   #DeckCompact4 #TitleText,
   #DeckCompact4 #ArtistText,
+  #DeckCompact4 #BpmText,
+  #DeckCompact4 #KeyText,
   #DeckMini4 #TitleTextSmall,
   #DeckMini4 #ArtistTextSmall,
-  #Deck4 #BpmText,
-  #DeckCompact4 #BpmText,
   #DeckMini4 #BpmTextSmall,
-  #Deck4 #KeyText,
-  #DeckCompact4 #KeyText,
   #DeckMini4 #KeyTextSmall {
   color: #85bdbb;
   }
@@ -1293,24 +1295,20 @@ WEffectSelector:!editable:on,
 #MicAuxLabelUnconfigured {
   color: #686666;
   }
-  /* Colorize active Fx unit label, add underline.
-     (Use color as base color of FxUnitControllerInputIndicator) */
-  WLabel#FxUnitLabel[highlight="1"],
-  #FxUnitControllerInputIndicator {
-    /*text-decoration: underline;*/
-    /*font-weight: bold;*/
-  }
-  #FxUnit1 #FxUnitLabel[highlight="1"],
-  #FxUnit2 #FxUnitLabel[highlight="1"] {
-    color: #518f00;
-  }
-  #FxUnit3 #FxUnitLabel[highlight="1"],
-  #FxUnit4 #FxUnitLabel[highlight="1"] {
-    color: #028392;
+
+/* When the Fx unit is currently focused = accessible from the controller
+  indicate that with a bright colored bar and colorize the unit label */
+#FxUnit1 #FxUnitLabel[highlight="1"],
+#FxUnit2 #FxUnitLabel[highlight="1"] {
+  color: #518f00;
   }
   #FxUnit1 #FxUnitControllerInputIndicator[highlight="1"],
   #FxUnit2 #FxUnitControllerInputIndicator[highlight="1"] {
     background-color: #518f00;
+  }
+#FxUnit3 #FxUnitLabel[highlight="1"],
+#FxUnit4 #FxUnitLabel[highlight="1"] {
+  color: #028392;
   }
   #FxUnit3 #FxUnitControllerInputIndicator[highlight="1"],
   #FxUnit4 #FxUnitControllerInputIndicator[highlight="1"] {
@@ -2512,17 +2510,7 @@ WColorPicker QPushButton[checked="true"] {
 
 
 /************** Library *********************************************/
-#LibrarySingleton {
-  /* This doesn't work as expected:
-  it appears LibrarySingleton is displayed twice (nested in itself),
-  so padding/margin would double.
-  Placed a plain spacer in library.xml which works reliably
-  padding-top: 5px;*/
-}
 
-#SkinContainer {
-  background-color: #080808;
-}
 #LibraryContainer QTableView,
 #LibraryContainer QTextBrowser,
 #LibraryContainer QTreeView,

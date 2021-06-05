@@ -89,7 +89,7 @@ var BCR2000 = new behringer.extension.GenericMidiController({
                     },
                     {
                         type: c.EffectAssignmentButton, options: {
-                            midi: [cc, p.buttonBox[1]],
+                            midi: [cc, p.buttonBox[2]],
                             effectUnit: 2,
                             type: c.Button.prototype.types.push
                         }
@@ -177,7 +177,7 @@ var BCR2000 = new behringer.extension.GenericMidiController({
                     },
                     {
                         type: c.EffectAssignmentButton, options: {
-                            midi: [cc, p.buttonBox[2]],
+                            midi: [cc, p.buttonBox[1]],
                             effectUnit: 1,
                             type: c.Button.prototype.types.push
                         }

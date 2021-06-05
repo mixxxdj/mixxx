@@ -37,7 +37,6 @@ SetlogFeature::SetlogFeature(
                           /*keep deleted tracks*/ true),
                   QStringLiteral("SETLOGHOME")),
           m_playlistId(kInvalidPlaylistId),
-          m_libraryWidget(nullptr),
           m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
     // clear old empty entries
     ScopedTransaction transaction(pLibrary->trackCollectionManager()
@@ -91,7 +90,7 @@ void SetlogFeature::bindLibraryWidget(
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &SetlogFeature::slotPlayingTrackChanged);
-    m_libraryWidget = libraryWidget;
+    m_libraryWidget = QPointer(libraryWidget);
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -397,17 +396,23 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
         // View needs a refresh
 
-        WTrackTableView* view = dynamic_cast<WTrackTableView*>(
-                m_libraryWidget->getActiveView());
-        if (view != nullptr) {
-            // We have a active view on the history. The user may have some
-            // important active selection. For example putting track into crates
-            // while the song changes trough autodj. The selection is then lost
-            // and dataloss occurs
-            const QList<TrackId> trackIds = view->getSelectedTrackIds();
-            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
-            view->setSelectedTracks(trackIds);
-        } else {
+        bool hasActiveView = false;
+        if (m_libraryWidget) {
+            WTrackTableView* view = dynamic_cast<WTrackTableView*>(
+                    m_libraryWidget->getActiveView());
+            if (view != nullptr) {
+                // We have a active view on the history. The user may have some
+                // important active selection. For example putting track into crates
+                // while the song changes trough autodj. The selection is then lost
+                // and dataloss occurs
+                hasActiveView = true;
+                const QList<TrackId> trackIds = view->getSelectedTrackIds();
+                m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+                view->setSelectedTracks(trackIds);
+            }
+        }
+
+        if (!hasActiveView) {
             m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
         }
     } else {

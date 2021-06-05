@@ -833,7 +833,6 @@ WEffectSelector {
   /* This doesn't work as expected:
   it appears LibrarySingleton is displayed twice (nested in itself),
   so padding/margin would double.
-  Placed a plain spacer in library.xml which works reliably
   padding-top: 5px;*/
 }
 

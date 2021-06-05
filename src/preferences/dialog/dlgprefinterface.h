@@ -72,6 +72,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     double m_dScaleFactorAuto;
     bool m_bUseAutoScaleFactor;
     double m_dScaleFactor;
+    double m_dDevicePixelRatio;
     bool m_bStartWithFullScreen;
     mixxx::ScreenSaverPreference m_screensaverMode;
 
