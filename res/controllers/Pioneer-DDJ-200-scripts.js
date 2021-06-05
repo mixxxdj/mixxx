@@ -59,7 +59,7 @@ DDJ200.init = function() {
     engine.beginTimer(500, function() {
         engine.setValue("[Library]", "MoveFocus", 1);
     }, true);
-    
+
     // query the controller for current control positions on startup
     midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x0a, 0x00, 0x03, 0x01, 0xf7], 12);
 };
