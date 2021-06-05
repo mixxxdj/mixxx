@@ -36,9 +36,13 @@ DlgPrefInterface::DlgPrefInterface(
           m_dScaleFactorAuto(1.0),
           m_bUseAutoScaleFactor(false),
           m_dScaleFactor(1.0),
+          m_dDevicePixelRatio(1.0),
           m_bStartWithFullScreen(false),
           m_bRebootMixxxView(false) {
     setupUi(this);
+
+    // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
+    m_dDevicePixelRatio = getDevicePixelRatioF(this);
 
     VERIFY_OR_DEBUG_ASSERT(m_pSkin != nullptr) {
         qWarning() << "Skipping creation of DlgPrefInterface because there is no skin available.";
@@ -126,7 +130,12 @@ DlgPrefInterface::DlgPrefInterface(
     ComboBoxSkinconf->setCurrentIndex(index);
     // schemes must be updated here to populate the drop-down box and set m_colorScheme
     slotUpdateSchemes();
-    skinPreviewLabel->setPixmap(m_pSkin->preview(m_colorScheme));
+    QPixmap preview = m_pSkin->preview(m_colorScheme);
+    preview.setDevicePixelRatio(m_dDevicePixelRatio);
+    skinPreviewLabel->setPixmap(preview.scaled(
+            QSize(640, 360) * m_dDevicePixelRatio,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation));
     const auto* const pScreen = getScreen();
     if (m_pSkin->fitsScreenSize(*pScreen)) {
         warningLabel->hide();
@@ -340,8 +349,11 @@ void DlgPrefInterface::slotSetScheme(int) {
         m_bRebootMixxxView = true;
     }
     QPixmap preview = m_pSkin->preview(m_colorScheme);
+    preview.setDevicePixelRatio(m_dDevicePixelRatio);
     skinPreviewLabel->setPixmap(preview.scaled(
-            QSize(640, 360), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            QSize(640, 360) * m_dDevicePixelRatio,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation));
 }
 
 void DlgPrefInterface::slotSetSkinDescription() {
@@ -375,8 +387,11 @@ void DlgPrefInterface::slotSetSkin(int) {
     slotUpdateSchemes();
     slotSetSkinDescription();
     QPixmap preview = m_pSkin->preview(m_colorScheme);
+    preview.setDevicePixelRatio(m_dDevicePixelRatio);
     skinPreviewLabel->setPixmap(preview.scaled(
-            QSize(640, 360), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            QSize(640, 360) * m_dDevicePixelRatio,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation));
 }
 
 void DlgPrefInterface::slotApply() {

@@ -9,9 +9,9 @@ import pathlib
 import sys
 
 QMLFORMAT_MISSING_MESSAGE = """
-qmlformat is not installed. It is included in Qt 5.15 and later. If that Qt
-version is not available on your system, please use the SKIP environment
-variable when committing:
+qmlformat is not installed or not in your $PATH. It is included in Qt 5.15
+and later. If that Qt version is not available on your system, please
+use the SKIP environment variable when committing:
 
     $ SKIP=qmlformat git commit
 """

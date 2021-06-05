@@ -1,6 +1,7 @@
 import "." as Skin
 import Mixxx 0.1 as Mixxx
 import Mixxx.Controls 0.1 as MixxxControls
+import QtGraphicalEffects 1.12
 import QtQuick 2.12
 import "Theme"
 
@@ -8,13 +9,14 @@ Rectangle {
     id: root
 
     property string group // required
+    property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
     property color textColor: Theme.deckTextColor
     property color lineColor: Theme.deckLineColor
 
     radius: 5
     height: 56
 
-    Rectangle {
+    Image {
         id: coverArt
 
         anchors.top: parent.top
@@ -22,6 +24,28 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 5
         width: height
+        source: root.deckPlayer.coverArtUrl
+        visible: false
+    }
+
+    Rectangle {
+        id: coverArtCircle
+
+        anchors.fill: coverArt
+        radius: height / 2
+        visible: false
+    }
+
+    OpacityMask {
+        anchors.fill: coverArt
+        source: coverArt
+        maskSource: coverArtCircle
+    }
+
+    Rectangle {
+        id: spinnyCircle
+
+        anchors.fill: coverArt
         radius: height / 2
         border.width: 2
         border.color: Theme.deckLineColor
@@ -69,7 +93,7 @@ Rectangle {
     Text {
         id: infoBarTitle
 
-        text: "Title Placeholder"
+        text: root.deckPlayer.title
         anchors.top: infoBarHSeparator1.top
         anchors.left: infoBarVSeparator.left
         anchors.right: infoBarHSeparator1.left
@@ -95,7 +119,7 @@ Rectangle {
     Text {
         id: infoBarArtist
 
-        text: "Artist Placeholder"
+        text: root.deckPlayer.artist
         anchors.top: infoBarVSeparator.bottom
         anchors.left: infoBarVSeparator.left
         anchors.right: infoBarHSeparator1.left
@@ -129,7 +153,7 @@ Rectangle {
         anchors.right: infoBarHSeparator2.left
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
-        text: "KEY"
+        text: root.deckPlayer.keyText
         font.family: Theme.fontFamily
         font.pixelSize: Theme.textFontPixelSize
         color: infoBar.textColor
@@ -193,6 +217,24 @@ Rectangle {
 
             group: root.group
             key: "rate_ratio"
+        }
+
+    }
+
+    gradient: Gradient {
+        orientation: Gradient.Horizontal
+
+        GradientStop {
+            position: -0.75
+            color: {
+                let trackColor = root.deckPlayer.color;
+                return trackColor ? trackColor : Theme.deckBackgroundColor;
+            }
+        }
+
+        GradientStop {
+            position: 0.5
+            color: Theme.deckBackgroundColor
         }
 
     }

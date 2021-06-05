@@ -67,7 +67,7 @@ Item {
         anchors.bottom: parent.bottom
         text: "PFL"
         activeColor: Theme.pflActiveButtonColor
-        checkable: true
+        toggleable: true
     }
 
 }
