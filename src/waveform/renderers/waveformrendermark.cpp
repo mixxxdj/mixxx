@@ -185,7 +185,15 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     }
 
     QFont font; // Uses the application default, if not set per skin
+#ifdef __APPLE__
+    // Appearantly the marker font is also scaled according to macOS display
+    // settings, thus the scale factor is applied twice.
+    // So we use the regular font size here.
+    // https://bugs.launchpad.net/mixxx/+bug/1930968
+    font.setPointSizeF(10);
+#else
     font.setPointSizeF(10 * devicePixelRatio);
+#endif
     font.setStretch(100);
     font.setWeight(75);
 
