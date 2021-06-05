@@ -55,6 +55,7 @@ class QmlPlayerProxy : public QObject {
     }
 
     Q_INVOKABLE void loadTrackFromLocation(const QString& trackLocation);
+    Q_INVOKABLE void loadTrackFromLocationUrl(const QUrl& trackLocationUrl);
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);
