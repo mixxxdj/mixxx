@@ -5,8 +5,7 @@ import QtQuick.Shapes 1.12
 Item {
     id: root
 
-    property alias group: control.group
-    property alias key: control.key
+    property real value: min
     property alias background: background.data
     property alias foreground: foreground.data
     property real min: 0
@@ -21,16 +20,7 @@ Item {
     property alias arcStyle: arcPath.strokeStyle
     property alias arcStylePattern: arcPath.dashPattern
 
-    Mixxx.ControlProxy {
-        id: control
-    }
-
-    Mixxx.ControlProxy {
-        id: resetcontrol
-
-        group: root.group
-        key: root.key + "_set_default"
-    }
+    signal turned(real value)
 
     Item {
         id: background
@@ -42,7 +32,7 @@ Item {
         id: foreground
 
         anchors.fill: parent
-        rotation: (control.parameter - (root.max - root.min) / 2) * 2 * root.angle
+        rotation: (root.value - (root.max - root.min) / 2) * 2 * root.angle
     }
 
     Shape {
@@ -59,7 +49,7 @@ Item {
 
             PathAngleArc {
                 startAngle: -90
-                sweepAngle: (control.parameter - (root.max - root.min) / 2) * 2 * root.angle
+                sweepAngle: (root.value - (root.max - root.min) / 2) * 2 * root.angle
                 radiusX: root.arcRadius
                 radiusY: root.arcRadius
                 centerX: root.width / 2 + root.arcOffsetX
@@ -70,29 +60,32 @@ Item {
 
     }
 
+    DragHandler {
+        id: dragHandler
+
+        property real valueRange: root.max - root.min
+        property vector2d lastTranslation: Qt.vector2d(0, 0)
+
+        target: null
+        grabPermissions: PointerHandler.CanTakeOverFromAnything | PointerHandler.ApprovesTakeOverByAnything
+        onActiveChanged: lastTranslation = Qt.vector2d(0, 0)
+        onTranslationChanged: {
+            const delta = lastTranslation.y - translation.y;
+            const change = valueRange * Math.max(Math.min(delta, 100), -100) / 100;
+            const value = Math.max(root.min, Math.min(root.max, root.value + change));
+            lastTranslation = translation;
+            root.turned(value);
+            root.value = value;
+        }
+    }
+
     MouseArea {
-        id: mousearea
-
-        property real posy: root.height / 2
-
-        anchors.fill: root
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
         onWheel: {
-            if (wheel.angleDelta.y < 0)
-                control.parameter = Math.min(root.max, control.parameter + 0.1);
-            else
-                control.parameter = Math.max(root.min, control.parameter - 0.1);
-        }
-        onDoubleClicked: resetcontrol.value = 1
-        onPressed: {
-            mousearea.posy = mouse.y;
-        }
-        onPositionChanged: {
-            if (mousearea.pressed) {
-                const dy = mousearea.posy - mouse.y;
-                let parameter = control.parameter + Math.max(Math.min(dy, 100), -100) / 100;
-                control.parameter = Math.max(root.min, Math.min(root.max, parameter));
-                mousearea.posy = mouse.y;
-            }
+            const value = (wheel.angleDelta.y < 0) ? Math.min(root.max, root.value + 0.1) : Math.max(root.min, root.value - 0.1);
+            root.turned(value);
+            root.value = value;
         }
     }
 

@@ -8,7 +8,7 @@ Item {
 
     property string group // required
 
-    Skin.Knob {
+    Skin.ResettableControlKnob {
         id: gainKnob
 
         anchors.top: parent.top

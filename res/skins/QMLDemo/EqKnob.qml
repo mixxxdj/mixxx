@@ -4,7 +4,7 @@ import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
 import "Theme"
 
-Skin.Knob {
+Skin.ResettableControlKnob {
     id: root
 
     property string statusGroup: root.group // required
