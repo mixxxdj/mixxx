@@ -41,6 +41,13 @@ class CmdlineArgs final {
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
 
+    void storeScaleFactor(double scaleFactor) {
+        m_scaleFactor = scaleFactor;
+    }
+    double getScaleFactor() const {
+        return m_scaleFactor;
+    }
+
   private:
     QList<QString> m_musicFiles;    // List of files to load into players at startup
     bool m_startInFullscreen;       // Start in fullscreen mode
@@ -49,6 +56,7 @@ class CmdlineArgs final {
     bool m_safeMode;
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
+    double m_scaleFactor;
     mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing
     QString m_locale;

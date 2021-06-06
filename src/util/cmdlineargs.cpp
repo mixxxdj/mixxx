@@ -16,6 +16,7 @@ CmdlineArgs::CmdlineArgs()
           m_safeMode(false),
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
+          m_scaleFactor(1.0),
           m_logLevel(mixxx::kLogLevelDefault),
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273

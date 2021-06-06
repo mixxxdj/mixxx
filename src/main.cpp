@@ -28,7 +28,7 @@ constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
-const QString kstrScaleFactor = QStringLiteral("ScaleFactor");
+const QString kStrScaleFactor = QStringLiteral("ScaleFactor");
 
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
     MixxxMainWindow mainWindow(app, args);
@@ -46,34 +46,37 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
     }
 }
 
-void adjustScaleFactor(const CmdlineArgs& args) {
+void adjustScaleFactor(CmdlineArgs* pArgs) {
     if (qEnvironmentVariableIsSet(kScaleFactorEnvVar)) {
         bool ok;
         const double f = qgetenv(kScaleFactorEnvVar).toDouble(&ok);
         if (ok && f > 0) {
             // The environment variable overrides the preferences option
             qDebug() << "Using" << kScaleFactorEnvVar << f;
+            pArgs->storeScaleFactor(f);
             return;
         }
     }
     // We cannot use ConfigObject, because it depends on MixxxApplication
     // but the scale factor is read during it's constructor.
     // QHighDpiScaling can not be used afterwards because it is private.
-    auto cfgFile = QFile(QDir(args.getSettingsPath()).filePath(MIXXX_SETTINGS_FILE));
+    auto cfgFile = QFile(QDir(pArgs->getSettingsPath()).filePath(MIXXX_SETTINGS_FILE));
     if (cfgFile.open(QFile::ReadOnly | QFile::Text)) {
         QTextStream in(&cfgFile);
-        QString scaleFactor;
+        QString strScaleFactor;
         QString line = in.readLine();
         while (!line.isNull()) {
-            if (line.startsWith(kstrScaleFactor)) {
-                scaleFactor = line.mid(kstrScaleFactor.size() + 1);
+            if (line.startsWith(kStrScaleFactor)) {
+                strScaleFactor = line.mid(kStrScaleFactor.size() + 1);
                 break;
             }
             line = in.readLine();
         }
-        if (!scaleFactor.isEmpty()) {
+        double scaleFactor = strScaleFactor.toDouble();
+        if (scaleFactor > 0) {
             qDebug() << "Using preferences ScaleFactor" << scaleFactor;
-            qputenv(kScaleFactorEnvVar, scaleFactor.toLocal8Bit());
+            qputenv(kScaleFactorEnvVar, strScaleFactor.toLocal8Bit());
+            pArgs->storeScaleFactor(scaleFactor);
         }
     }
 }
@@ -128,7 +131,7 @@ int main(int argc, char * argv[]) {
     }
 #endif
 
-    adjustScaleFactor(args);
+    adjustScaleFactor(&args);
 
     MixxxApplication app(argc, argv);
 

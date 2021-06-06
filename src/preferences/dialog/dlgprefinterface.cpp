@@ -68,6 +68,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget* parent,
           m_mixxx(mixxx),
           m_pSkinLoader(pSkinLoader),
           m_dScaleFactor(1.0),
+          m_minScaleFactor(1.0),
           m_dDevicePixelRatio(1.0),
           m_bStartWithFullScreen(false),
           m_bRebootMixxxView(false) {
@@ -151,6 +152,16 @@ DlgPrefInterface::DlgPrefInterface(QWidget* parent,
     }
 
     m_dDevicePixelRatio = getDevicePixelRatioF(this);
+
+    // Calculate the minimum scale factor that leads to a device picel ratio of 1.0
+    // m_dDevicePixelRatio must not drop below 1.0 because this creats an
+    // unusable GUI with visual artefacts
+    double initialScalefactor = CmdlineArgs::Instance().getScaleFactor();
+    if (initialScalefactor <= 0) {
+        initialScalefactor = 1.0;
+    }
+    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScalefactor;
+    m_minScaleFactor = 1 / unscaledDevicePixelRatio;
 
     QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
     int index = 0;
@@ -282,6 +293,7 @@ void DlgPrefInterface::slotUpdate() {
     // with 1.00 as no scaling, so multiply the stored value by 100.
     spinBoxScaleFactor->setValue(m_pConfig->getValue(
                     ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactor) * 100);
+    spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
             ConfigKey("[Config]", "StartInFullscreen"), m_bStartWithFullScreen));

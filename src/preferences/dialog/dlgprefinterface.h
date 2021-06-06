@@ -55,6 +55,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     QString m_localeOnUpdate;
     mixxx::TooltipsPreference m_tooltipMode;
     double m_dScaleFactor;
+    double m_minScaleFactor;
     double m_dDevicePixelRatio;
     bool m_bStartWithFullScreen;
     mixxx::ScreenSaverPreference m_screensaverMode;
