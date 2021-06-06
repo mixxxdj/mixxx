@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QPainter>
+#include <QPointer>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QtQml>
@@ -72,7 +73,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
             int completion) const;
     QColor getRgbPenColor(ConstWaveformPointer pWaveform, int completion) const;
 
-    QmlPlayerProxy* m_pPlayer;
+    QPointer<QmlPlayerProxy> m_pPlayer;
     TrackPointer m_pCurrentTrack;
     Channels m_channels;
     Renderer m_renderer;
