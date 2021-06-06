@@ -40,9 +40,10 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
   private slots:
     void slotSetTooltips();
-    void slotSetSkinDescription();
     void slotSetSkin(int);
     void slotSetScheme(int);
+    void slotSetSkinDescription();
+    void slotSetSkinPreview();
     void slotUpdateSchemes();
     void slotSetScaleFactor(double newValue);
     void slotSetScaleFactorAuto(bool checked);

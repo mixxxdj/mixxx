@@ -618,11 +618,16 @@ QVariant BaseTrackTableModel::roleValue(
             return QString("(%1)").arg(timesPlayed);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
-        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED: {
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
                 return QVariant();
             }
-            return mixxx::localDateTimeFromUtc(rawValue.toDateTime());
+            QDateTime dt = mixxx::localDateTimeFromUtc(rawValue.toDateTime());
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return dt;
+            }
+            return dt.date();
+        }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
             if (rawValue.type() == QVariant::String) {
@@ -636,7 +641,11 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             DEBUG_ASSERT(lastPlayedAt.timeSpec() == Qt::UTC);
-            return mixxx::localDateTimeFromUtc(lastPlayedAt);
+            QDateTime dt = mixxx::localDateTimeFromUtc(lastPlayedAt);
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return dt;
+            }
+            return dt.date();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             mixxx::Bpm bpm;
