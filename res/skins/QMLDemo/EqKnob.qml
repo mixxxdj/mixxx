@@ -36,18 +36,17 @@ Rectangle {
 
         anchors.left: root.left
         anchors.bottom: root.bottom
-        anchors.leftMargin: 6
-        anchors.bottomMargin: 2
+        anchors.leftMargin: 4
+        anchors.bottomMargin: 4
         width: 8
         height: width
         radius: width / 2
         border.width: 1
         border.color: Theme.buttonNormalColor
-        color: statusControl.value ? root.color : "transparent"
+        color: statusControl.value ? knob.color : "transparent"
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: statusControl.value = !statusControl.value
+        TapHandler {
+            onTapped: statusControl.value = !statusControl.value
         }
 
     }
