@@ -829,11 +829,11 @@ WLibrary QLabel,
 WLibrary QRadioButton {
   font-family: "Open Sans";
   font-style: normal;
+  font-weight: normal;
 }
 
-WWidget,
-WLibrary QLabel,
-WLibrary QPushButton {
+WLabel, WLibrary QLabel,
+WPushButton, WLibrary QPushButton {
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
@@ -1570,8 +1570,6 @@ WPushButton {
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
-    font-size: 12px;
-    font-weight: bold;
 }
 
 WPushButton:hover,
@@ -1643,10 +1641,6 @@ WPushButton#PreviewIndicator[value="0"] {
     background-color: #5F5F5F;
     border: 3px solid #0080BE;
     border-radius: 3px;
-}
-
-WRecordingDuration {
-  font-weight: bold;
 }
 
 /* The effect unit mix mode button toggles between
