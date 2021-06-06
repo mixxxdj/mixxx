@@ -6,6 +6,7 @@
 
 #include "coreservices.h"
 #include "skin/qml/asyncimageprovider.h"
+#include "skin/qml/qmlconfigproxy.h"
 #include "skin/qml/qmlcontrolproxy.h"
 #include "skin/qml/qmlplayermanagerproxy.h"
 #include "skin/qml/qmlplayerproxy.h"
@@ -148,6 +149,22 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
             "Player",
             "Player objects can't be created directly, please use "
             "Mixxx.PlayerManager.getPlayer(group)");
+
+    qmlRegisterSingletonType<QmlPlayerManagerProxy>("Mixxx",
+            0,
+            1,
+            "Config",
+            lambda_to_singleton_type_factory_ptr(
+                    [pConfig](QQmlEngine* pEngine,
+                            QJSEngine* pScriptEngine) -> QObject* {
+                        Q_UNUSED(pScriptEngine);
+
+                        QmlConfigProxy* pConfigProxy =
+                                new QmlConfigProxy(
+                                        pConfig,
+                                        pEngine);
+                        return pConfigProxy;
+                    }));
 
     QQuickWidget* pWidget = new QQuickWidget(pParent);
 
