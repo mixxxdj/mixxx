@@ -8,6 +8,8 @@ Row {
     property string rightDeckGroup // required
     property bool show4decks: false
 
+    spacing: 5
+
     EqColumn {
         group: root.leftDeckGroup
     }
