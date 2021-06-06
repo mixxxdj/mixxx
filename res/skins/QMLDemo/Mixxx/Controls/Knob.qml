@@ -37,7 +37,7 @@ Item {
     }
 
     Shape {
-        anchors.fill: root
+        anchors.fill: parent
         antialiasing: true
         visible: root.arc
 
