@@ -11,6 +11,7 @@ Slider {
     property alias barWidth: barPath.strokeWidth
     property real barStart: 0
 
+    // TODO: Implement support for horizontal sliders
     orientation: Qt.Vertical
     wheelEnabled: true
 
