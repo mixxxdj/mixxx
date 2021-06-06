@@ -11,7 +11,7 @@ Rectangle {
     property string statusGroup: root.knob.group // required
     property string statusKey // required
 
-    color: "#282828"
+    color: Theme.knobBackgroundColor
     width: 56
     height: 56
     radius: 5

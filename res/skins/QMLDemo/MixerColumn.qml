@@ -15,7 +15,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         height: width
-        color: "#282828"
+        color: Theme.knobBackgroundColor
         radius: 5
 
         Skin.ResettableControlKnob {
