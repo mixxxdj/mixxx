@@ -56,6 +56,9 @@ void adjustScaleFactor(const CmdlineArgs& args) {
             return;
         }
     }
+    // We cannot use ConfigObject, because it depends on MixxxApplication
+    // but the scale factor is read during it's constructor.
+    // QHighDpiScaling can not be used afterwards because it is private.
     auto cfgFile = QFile(QDir(args.getSettingsPath()).filePath(MIXXX_SETTINGS_FILE));
     if (cfgFile.open(QFile::ReadOnly | QFile::Text)) {
         QTextStream in(&cfgFile);
