@@ -366,6 +366,7 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
     return SecurityTokenPointer();
 }
 
+#ifdef __APPLE__
 QString Sandbox::migrateOldSettings() {
     // QStandardPaths::DataLocation returns a different location depending on whether the build
     // is signed (and therefore sandboxed with the hardened runtime), so use the absolute path
@@ -438,7 +439,6 @@ QString Sandbox::migrateOldSettings() {
         return sandboxedPath;
     }
 
-#ifdef __APPLE__
     CFURLRef url = CFURLCreateWithFileSystemPath(
             kCFAllocatorDefault, QStringToCFString(legacySettingsPath), kCFURLPOSIXPathStyle, true);
     if (url) {
@@ -498,9 +498,9 @@ QString Sandbox::migrateOldSettings() {
             }
         }
     }
-#endif
     return sandboxedPath;
 }
+#endif
 
 #ifdef __APPLE__
 SandboxSecurityToken::SandboxSecurityToken(const QString& path, CFURLRef url)
