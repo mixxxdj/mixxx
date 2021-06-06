@@ -6,16 +6,17 @@ Slider {
     id: root
 
     property bool bar: false
-    property real barMargin: 0
+    property alias barMargin: barShape.anchors.margins
     property alias barColor: barPath.strokeColor
     property alias barWidth: barPath.strokeWidth
     property real barStart: 0
 
-    // TODO: Implement support for horizontal sliders
     orientation: Qt.Vertical
     wheelEnabled: true
 
     Shape {
+        id: barShape
+
         anchors.fill: parent
         antialiasing: true
         visible: root.bar
@@ -26,12 +27,12 @@ Slider {
             strokeColor: "transparent"
             strokeWidth: 2
             fillColor: "transparent"
-            startX: root.width / 2
-            startY: root.height - root.barMargin - (root.height - 2 * root.barMargin) * barStart
+            startX: barShape.width * (root.horizontal ? (1 - barStart) : 0.5)
+            startY: barShape.height * (root.vertical ? (1 - barStart) : 0.5)
 
             PathLine {
-                x: root.width / 2
-                y: root.height - root.barMargin - (root.height - 2 * root.barMargin) * root.value
+                x: root.horizontal ? (barShape.width * root.value) : barPath.startX
+                y: root.vertical ? (barShape.height * (1 - root.value)) : barPath.startY
             }
 
         }

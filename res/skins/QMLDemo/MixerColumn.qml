@@ -34,6 +34,7 @@ Item {
     Item {
         anchors.top: gainKnobFrame.bottom
         anchors.topMargin: 5
+        anchors.bottomMargin: 5
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: pflButton.top

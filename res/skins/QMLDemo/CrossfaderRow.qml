@@ -8,7 +8,7 @@ Item {
 
     property real crossfaderWidth // required
 
-    implicitHeight: crossfaderSlider.width
+    implicitHeight: crossfaderSlider.height + 5
 
     Item {
         id: effectUnitLeftPlaceholder
@@ -21,21 +21,15 @@ Item {
     Skin.ResettableControlSlider {
         id: crossfaderSlider
 
+        orientation: Qt.Horizontal
         anchors.centerIn: parent
-        height: root.crossfaderWidth
+        width: root.crossfaderWidth
         group: "[Master]"
         key: "crossfader"
         barColor: Theme.crossfaderBarColor
         barStart: 0.5
         fg: "images/slider_handle_crossfader.svg"
         bg: "images/slider_crossfader.svg"
-
-        transform: Rotation {
-            origin.x: crossfaderSlider.width / 2
-            origin.y: crossfaderSlider.height / 2
-            angle: 90
-        }
-
     }
 
     Item {
