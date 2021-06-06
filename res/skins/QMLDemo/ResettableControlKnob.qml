@@ -16,7 +16,6 @@ Skin.ControlKnob {
     }
 
     TapHandler {
-        grabPermissions: PointerHandler.CanTakeOverFromAnything | PointerHandler.ApprovesTakeOverByAnything
         onDoubleTapped: {
             resetControl.value = 1;
             resetControl.value = 0;

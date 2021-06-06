@@ -69,7 +69,6 @@ Item {
         property vector2d lastTranslation: Qt.vector2d(0, 0)
 
         target: null
-        grabPermissions: PointerHandler.CanTakeOverFromAnything | PointerHandler.ApprovesTakeOverByAnything
         onActiveChanged: {
             dragHandler.value = root.value;
             lastTranslation = Qt.vector2d(0, 0);
