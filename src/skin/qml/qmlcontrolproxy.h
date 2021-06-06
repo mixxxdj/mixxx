@@ -55,6 +55,9 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     bool isKeyValid() const;
     bool isInitialized() const;
 
+    /// Reset the control to the default value.
+    Q_INVOKABLE void reset();
+
   signals:
     void groupChanged(const QString& group);
     void keyChanged(const QString& key);
