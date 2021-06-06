@@ -78,12 +78,12 @@ Skin.Button {
             spacing: 2
 
             Repeater {
-                model: 16
+                model: Mixxx.Config.getHotcueColorPalette()
 
                 Rectangle {
                     height: 24
                     width: 24
-                    color: Qt.hsva(index / 16, 1, 1, 1)
+                    color: modelData
 
                     MouseArea {
                         anchors.fill: parent
