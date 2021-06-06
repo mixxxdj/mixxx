@@ -22,7 +22,7 @@ Item {
         group: root.group
     }
 
-    Skin.ResettableControlSlider {
+    Skin.ControlSlider {
         id: rateSlider
 
         visible: !root.minimized

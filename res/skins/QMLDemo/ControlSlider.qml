@@ -1,5 +1,6 @@
 import "." as Skin
 import Mixxx 0.1 as Mixxx
+import QtQuick 2.12
 
 Skin.Slider {
     property alias group: control.group
@@ -10,6 +11,10 @@ Skin.Slider {
 
     Mixxx.ControlProxy {
         id: control
+    }
+
+    TapHandler {
+        onDoubleTapped: control.reset()
     }
 
 }
