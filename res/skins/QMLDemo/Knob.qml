@@ -21,7 +21,6 @@ MixxxControls.Knob {
         anchors.left: parent.left
         anchors.right: parent.right
         fillMode: Image.PreserveAspectFit
-        mipmap: true
         source: "images/knob.svg"
     }
 
