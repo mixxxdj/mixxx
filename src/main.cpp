@@ -1,11 +1,13 @@
 #include <QApplication>
 #include <QDir>
+#include <QSettings>
 #include <QString>
 #include <QStringList>
 #include <QTextCodec>
 #include <QThread>
 #include <QtDebug>
 
+#include "config.h"
 #include "errordialoghandler.h"
 #include "mixxx.h"
 #include "mixxxapplication.h"
@@ -25,6 +27,9 @@ namespace {
 constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
+constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
+const QString kstrScaleFactor = QStringLiteral("ScaleFactor");
+
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
     MixxxMainWindow mainWindow(app, args);
     // If startup produced a fatal error, then don't even start the
@@ -38,6 +43,35 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
 
         qDebug() << "Running Mixxx";
         return app->exec();
+    }
+}
+
+void adjustScaleFactor(const CmdlineArgs& args) {
+    if (qEnvironmentVariableIsSet(kScaleFactorEnvVar)) {
+        bool ok;
+        const double f = qgetenv(kScaleFactorEnvVar).toDouble(&ok);
+        if (ok && f > 0) {
+            // The environment variable overrides the preferences option
+            qDebug() << "Using" << kScaleFactorEnvVar << f;
+            return;
+        }
+    }
+    auto cfgFile = QFile(QDir(args.getSettingsPath()).filePath(MIXXX_SETTINGS_FILE));
+    if (cfgFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&cfgFile);
+        QString scaleFactor;
+        QString line = in.readLine();
+        while (!line.isNull()) {
+            if (line.startsWith(kstrScaleFactor)) {
+                scaleFactor = line.mid(kstrScaleFactor.size() + 1);
+                break;
+            }
+            line = in.readLine();
+        }
+        if (!scaleFactor.isEmpty()) {
+            qDebug() << "Using preferences ScaleFactor" << scaleFactor;
+            qputenv(kScaleFactorEnvVar, scaleFactor.toLocal8Bit());
+        }
     }
 }
 
@@ -90,6 +124,8 @@ int main(int argc, char * argv[]) {
         args.setSettingsPath(Sandbox::migrateOldSettings());
     }
 #endif
+
+    adjustScaleFactor(args);
 
     MixxxApplication app(argc, argv);
 
