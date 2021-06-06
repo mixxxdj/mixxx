@@ -24,12 +24,12 @@ WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-#LibraryContainer QTextBrowser,
-#LibraryContainer QPushButton,
-#LibraryContainer QLabel,
-#LibraryContainer QRadioButton,
-#LibraryContainer QHeaderView,
-#LibraryContainer QHeaderView::section {
+WLibraryTextBrowser,
+WLibrary QPushButton,
+WLibrary QLabel,
+WLibrary QRadioButton,
+WTrackTableViewHeader,
+WTrackTableViewHeader::section {
   /* On Linux all weight variants of Open Sans are identified
   as "Open Sans".
   On Windows however, the semi-bold variant is identified as
@@ -86,7 +86,7 @@ WOverview #PassthroughLabel {
 QToolTip,
 WLibrarySidebar QMenu,
 WLibrary QHeaderView QMenu,
-#LibraryContainer QTextBrowser QMenu,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
@@ -181,7 +181,7 @@ WEffectSelector::item:selected,
 }
 
 WLibrarySidebar QMenu::separator,
-#LibraryContainer QTextBrowser QMenu::separator,
+WLibraryTextBrowser QMenu::separator,
 WTrackMenu::separator,
 WTrackMenu QMenu::separator,
 QLineEdit QMenu::separator {
@@ -209,13 +209,13 @@ WTrackMenu QMenu::item,
 QLineEdit QMenu::item,
 WCoverArtMenu::item,
 /* for the sake of completeness: html root view of Crates, Rec etc. */
-#LibraryContainer QTextBrowser QMenu::item {
+WLibraryTextBrowser QMenu::item {
   padding: 5px 12px 5px 12px;
 }
 
 /* Icons in those menus (copy, paste, cut, delete) */
 QLineEdit QMenu::icon,
-#LibraryContainer QTextBrowser QMenu::icon,
+WLibraryTextBrowser QMenu::icon,
 /* - checkbox in Crate name context menu
     "[ ] Auto DJ Track Source" */
 WLibrarySidebar QMenu::indicator,
@@ -236,7 +236,7 @@ WTrackMenu QMenu QCheckBox {
 
   WTrackMenu::right-arrow,
   WTrackMenu QMenu::right-arrow,
-  #LibraryContainer QTableView::indicator {
+  WTrackTableView::indicator {
     width: 10px;
     height: 10px;
   }
@@ -360,17 +360,17 @@ WRecordingDuration {
 }
 
 
-#LibraryContainer QHeaderView::item {
+WTrackTableViewHeader::item {
   /* Don't set a font size to pick up the system font size. */
   border-bottom: 1px solid #000;
   }
-  #LibraryContainer QHeaderView::section {
+  WTrackTableViewHeader::section {
     height: 1.1em;
     border: 0px;
     padding: 2px;
   }
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
+  WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
     width: 0.8em;
     padding: 0px 3px;
     }
@@ -909,7 +909,7 @@ QLabel#labelRecStatistics {
   margin: 3px 0px 3px 0px;
 }
 
-#LibraryContainer QTreeView {
+WLibrarySidebar {
   show-decoration-selected: 0;
 }
 /************** Library *******************************************************/
