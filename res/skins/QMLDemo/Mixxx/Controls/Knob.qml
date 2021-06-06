@@ -71,8 +71,8 @@ Item {
         onActiveChanged: lastTranslation = Qt.vector2d(0, 0)
         onTranslationChanged: {
             const delta = lastTranslation.y - translation.y;
-            const change = valueRange * Math.max(Math.min(delta, 100), -100) / 100;
-            const value = Math.max(root.min, Math.min(root.max, root.value + change));
+            const change = valueRange * Mixxx.MathUtils.clamp(delta, -100, 100) / 100;
+            const value = Mixxx.MathUtils.clamp(root.value + change, root.min, root.max);
             lastTranslation = translation;
             root.turned(value);
             root.value = value;
