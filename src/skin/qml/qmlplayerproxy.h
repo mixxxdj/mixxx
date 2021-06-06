@@ -1,11 +1,11 @@
 #include <QColor>
 #include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QUrl>
 
+#include "mixer/basetrackplayer.h"
 #include "track/track.h"
-
-class BaseTrackPlayer;
 
 namespace mixxx {
 namespace skin {
@@ -31,7 +31,7 @@ class QmlPlayerProxy : public QObject {
     Q_PROPERTY(QUrl coverArtUrl READ getCoverArtUrl NOTIFY coverArtUrlChanged)
 
   public:
-    explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent);
+    explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
 
     QString getTrack() const;
     QString getTitle() const;
@@ -90,7 +90,7 @@ class QmlPlayerProxy : public QObject {
     void coverArtUrlChanged();
 
   private:
-    BaseTrackPlayer* m_pTrackPlayer;
+    QPointer<BaseTrackPlayer> m_pTrackPlayer;
     TrackPointer m_pCurrentTrack;
 };
 

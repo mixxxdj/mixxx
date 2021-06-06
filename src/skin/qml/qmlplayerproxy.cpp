@@ -23,7 +23,7 @@ namespace mixxx {
 namespace skin {
 namespace qml {
 
-QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr)
+QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
         : QObject(parent), m_pTrackPlayer(pTrackPlayer) {
     connect(m_pTrackPlayer,
             &BaseTrackPlayer::loadingTrack,

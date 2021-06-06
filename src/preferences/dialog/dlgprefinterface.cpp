@@ -130,12 +130,7 @@ DlgPrefInterface::DlgPrefInterface(
     ComboBoxSkinconf->setCurrentIndex(index);
     // schemes must be updated here to populate the drop-down box and set m_colorScheme
     slotUpdateSchemes();
-    QPixmap preview = m_pSkin->preview(m_colorScheme);
-    preview.setDevicePixelRatio(m_dDevicePixelRatio);
-    skinPreviewLabel->setPixmap(preview.scaled(
-            QSize(640, 360) * m_dDevicePixelRatio,
-            Qt::KeepAspectRatio,
-            Qt::SmoothTransformation));
+    slotSetSkinPreview();
     const auto* const pScreen = getScreen();
     if (m_pSkin->fitsScreenSize(*pScreen)) {
         warningLabel->hide();
@@ -348,12 +343,7 @@ void DlgPrefInterface::slotSetScheme(int) {
         m_colorScheme = newScheme;
         m_bRebootMixxxView = true;
     }
-    QPixmap preview = m_pSkin->preview(m_colorScheme);
-    preview.setDevicePixelRatio(m_dDevicePixelRatio);
-    skinPreviewLabel->setPixmap(preview.scaled(
-            QSize(640, 360) * m_dDevicePixelRatio,
-            Qt::KeepAspectRatio,
-            Qt::SmoothTransformation));
+    slotSetSkinPreview();
 }
 
 void DlgPrefInterface::slotSetSkinDescription() {
@@ -364,6 +354,15 @@ void DlgPrefInterface::slotSetSkinDescription() {
     } else {
         skinDescriptionText->hide();
     }
+}
+
+void DlgPrefInterface::slotSetSkinPreview() {
+    QPixmap preview = m_pSkin->preview(m_colorScheme);
+    preview.setDevicePixelRatio(m_dDevicePixelRatio);
+    skinPreviewLabel->setPixmap(preview.scaled(
+            QSize(640, 360) * m_dDevicePixelRatio,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation));
 }
 
 void DlgPrefInterface::slotSetSkin(int) {
@@ -386,12 +385,7 @@ void DlgPrefInterface::slotSetSkin(int) {
     }
     slotUpdateSchemes();
     slotSetSkinDescription();
-    QPixmap preview = m_pSkin->preview(m_colorScheme);
-    preview.setDevicePixelRatio(m_dDevicePixelRatio);
-    skinPreviewLabel->setPixmap(preview.scaled(
-            QSize(640, 360) * m_dDevicePixelRatio,
-            Qt::KeepAspectRatio,
-            Qt::SmoothTransformation));
+    slotSetSkinPreview();
 }
 
 void DlgPrefInterface::slotApply() {
