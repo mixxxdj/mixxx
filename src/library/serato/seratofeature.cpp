@@ -71,7 +71,7 @@ struct serato_track_t {
     QString grouping;
     QString label;
     int year = -1;
-    int duration = -1;
+    int duration = 0;
     QString bitrate;
     QString samplerate;
     double bpm = -1.0;
