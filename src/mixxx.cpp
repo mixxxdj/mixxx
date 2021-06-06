@@ -172,12 +172,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     mixxx::Time::start();
 
     QString settingsPath = args.getSettingsPath();
-#ifdef __APPLE__
-    Sandbox::checkSandboxed();
-    if (!args.getSettingsPathSet()) {
-        settingsPath = Sandbox::migrateOldSettings();
-    }
-#endif
 
     mixxx::LogFlags logFlags = mixxx::LogFlag::LogToFile;
     if (args.getDebugAssertBreak()) {
