@@ -11,6 +11,7 @@ Item {
     property alias foreground: foreground.data
     property real min: 0
     property real max: 1
+    property real wheelStepSize: (root.max - root.min) / 10
     property real angle: 130
     property bool arc: false
     property real arcRadius: width / 2
@@ -99,7 +100,7 @@ Item {
         anchors.fill: parent
         acceptedButtons: Qt.NoButton
         onWheel: {
-            const value = (wheel.angleDelta.y < 0) ? Math.min(root.max, root.value + 0.1) : Math.max(root.min, root.value - 0.1);
+            const value = (wheel.angleDelta.y < 0) ? Math.min(root.max, root.value + root.wheelStepSize) : Math.max(root.min, root.value - root.wheelStepSize);
             root.turned(value);
             dragHandler.value = value;
         }
