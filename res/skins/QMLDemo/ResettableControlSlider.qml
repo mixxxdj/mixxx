@@ -15,7 +15,10 @@ Skin.ControlSlider {
     }
 
     TapHandler {
-        onDoubleTapped: resetControl.value = 1
+        onDoubleTapped: {
+            resetControl.value = 1;
+            resetControl.value = 0;
+        }
     }
 
 }

@@ -7,12 +7,11 @@ Skin.Knob {
     property alias group: control.group
     property alias key: control.key
 
+    value: control.parameter
     onTurned: control.parameter = value
 
     Mixxx.ControlProxy {
         id: control
-
-        onValueChanged: root.value = control.parameter
     }
 
 }

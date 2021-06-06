@@ -75,7 +75,6 @@ Item {
             const value = Mixxx.MathUtils.clamp(root.value + change, root.min, root.max);
             lastTranslation = translation;
             root.turned(value);
-            root.value = value;
         }
     }
 
@@ -85,7 +84,6 @@ Item {
         onWheel: {
             const value = (wheel.angleDelta.y < 0) ? Math.min(root.max, root.value + 0.1) : Math.max(root.min, root.value - 0.1);
             root.turned(value);
-            root.value = value;
         }
     }
 
