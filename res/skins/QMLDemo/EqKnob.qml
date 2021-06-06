@@ -4,11 +4,25 @@ import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
 import "Theme"
 
-Skin.ResettableControlKnob {
+Rectangle {
     id: root
 
-    property string statusGroup: root.group // required
+    property alias knob: knob
+    property string statusGroup: root.knob.group // required
     property string statusKey // required
+
+    color: "#282828"
+    width: 56
+    height: 56
+    radius: 5
+
+    Skin.ResettableControlKnob {
+        id: knob
+
+        anchors.centerIn: root
+        width: 48
+        height: 48
+    }
 
     Mixxx.ControlProxy {
         id: statusControl

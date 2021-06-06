@@ -8,20 +8,31 @@ Item {
 
     property string group // required
 
-    Skin.ResettableControlKnob {
-        id: gainKnob
+    Rectangle {
+        id: gainKnobFrame
 
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         height: width
-        group: root.group
-        key: "pregain"
-        color: Theme.gainKnobColor
+        color: "#282828"
+        radius: 5
+
+        Skin.ResettableControlKnob {
+            id: gainKnob
+
+            anchors.centerIn: parent
+            width: 48
+            height: 48
+            group: root.group
+            key: "pregain"
+            color: Theme.gainKnobColor
+        }
+
     }
 
     Item {
-        anchors.top: gainKnob.bottom
+        anchors.top: gainKnobFrame.bottom
         anchors.topMargin: 5
         anchors.left: parent.left
         anchors.right: parent.right
