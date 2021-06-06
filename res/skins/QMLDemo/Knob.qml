@@ -7,18 +7,21 @@ MixxxControls.Knob {
 
     property color color // required
 
-    implicitWidth: 56
-    implicitHeight: implicitWidth
+    width: 56
+    height: width
     arc: true
-    arcRadius: 20
+    arcRadius: width * 0.35
+    arcOffsetY: -width * 0.035
     arcColor: root.color
     arcWidth: 2
     angle: 117
 
     background: Image {
-        anchors.left: parent.left
         anchors.top: parent.top
+        anchors.left: parent.left
         anchors.right: parent.right
+        fillMode: Image.PreserveAspectFit
+        mipmap: true
         source: "images/knob.svg"
     }
 
