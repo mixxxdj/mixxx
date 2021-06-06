@@ -31,8 +31,6 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();
-    void slotSetScaleFactor(double newValue);
-    void slotSetScaleFactorAuto(bool checked);
 
   private:
     void notifyRebootNecessary();
@@ -56,8 +54,6 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     QString m_colorScheme;
     QString m_localeOnUpdate;
     mixxx::TooltipsPreference m_tooltipMode;
-    double m_dScaleFactorAuto;
-    bool m_bUseAutoScaleFactor;
     double m_dScaleFactor;
     double m_dDevicePixelRatio;
     bool m_bStartWithFullScreen;
