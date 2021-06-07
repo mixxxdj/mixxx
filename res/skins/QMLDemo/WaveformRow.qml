@@ -5,7 +5,7 @@ import QtQuick.Shapes 1.12
 Item {
     id: root
 
-    required property string group
+    property string group // required
 
     Item {
         id: waveformContainer
@@ -50,13 +50,13 @@ Item {
             key: "waveform_zoom"
         }
 
-        Mixxx.WaveformOverview {
+        WaveformShader {
             id: waveform
 
-            width: waveformContainer.duration * 10 * rateRatioControl.value * zoomControl.value
+            group: root.group
+            width: waveformContainer.duration * rateRatioControl.value * zoomControl.value * 100
             height: parent.height
-            x: 0.5 * waveformContainer.width - playPositionControl.value * waveform.width
-            player: Mixxx.PlayerManager.getPlayer(root.group)
+            x: 0.5 * waveformContainer.width - playPositionControl.value * width
         }
 
     }
