@@ -23,9 +23,8 @@ QString makeTestConfigFile(const QString& path) {
 QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
 
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
-    // Construct a list of strings based on the command line arguments
     CmdlineArgs args;
-    const bool argsParsed = args.Parse(argc, argv);
+    const bool argsParsed = args.parse(argc, argv);
     Q_UNUSED(argsParsed);
     DEBUG_ASSERT(argsParsed);
 

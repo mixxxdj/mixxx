@@ -45,9 +45,9 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
         // drag so for now we accept all drags. Since almost every
         // LibraryFeature accepts all files in the drop and accepts playlist
         // drops we default to those flags to DragAndDropHelper.
-        QList<TrackFile> files = DragAndDropHelper::supportedTracksFromUrls(
+        QList<mixxx::FileInfo> fileInfos = DragAndDropHelper::supportedTracksFromUrls(
                 event->mimeData()->urls(), false, true);
-        if (!files.isEmpty()) {
+        if (!fileInfos.isEmpty()) {
             event->acceptProposedAction();
             return;
         }
@@ -214,12 +214,40 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
     auto* pModel = new QItemSelectionModel(model());
     pModel->select(index, QItemSelectionModel::Select);
+    if (selectionModel()) {
+        selectionModel()->deleteLater();
+    }
     setSelectionModel(pModel);
-
     if (index.parent().isValid()) {
         expand(index.parent());
     }
     scrollTo(index);
+}
+
+/// Selects a child index from a feature and ensures visibility
+void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem) {
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
+        qDebug() << "model() is not SidebarModel";
+        return;
+    }
+    QModelIndex translated = sidebarModel->translateChildIndex(index);
+
+    if (selectItem) {
+        auto* pModel = new QItemSelectionModel(sidebarModel);
+        pModel->select(translated, QItemSelectionModel::Select);
+        if (selectionModel()) {
+            selectionModel()->deleteLater();
+        }
+        setSelectionModel(pModel);
+    }
+
+    QModelIndex parentIndex = translated.parent();
+    while (parentIndex.isValid()) {
+        expand(parentIndex);
+        parentIndex = parentIndex.parent();
+    }
+    scrollTo(translated, EnsureVisible);
 }
 
 bool WLibrarySidebar::event(QEvent* pEvent) {

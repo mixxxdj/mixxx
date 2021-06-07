@@ -9,8 +9,7 @@ class PreviewDeck : public BaseTrackPlayerImpl {
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
-            VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            const QString& group);
+            const ChannelHandleAndGroup& handleGroup);
     ~PreviewDeck() override = default;
 };

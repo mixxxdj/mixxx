@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QTreeWidgetItem>
+#include <memory>
 
 #include "controllers/ui_dlgprefcontrollersdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
@@ -19,7 +20,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
   public:
     DlgPrefControllers(DlgPreferences* pDlgPreferences,
             UserSettingsPointer pConfig,
-            ControllerManager* pControllerManager,
+            std::shared_ptr<ControllerManager> pControllerManager,
             QTreeWidgetItem* pControllersRootItem);
     virtual ~DlgPrefControllers();
 
@@ -39,15 +40,15 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
   private slots:
     void rescanControllers();
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
-    void slotOpenLocalFile(const QString& file);
 
   private:
     void destroyControllerWidgets();
     void setupControllerWidgets();
+    void openLocalFile(const QString& file);
 
     DlgPreferences* m_pDlgPreferences;
     UserSettingsPointer m_pConfig;
-    ControllerManager* m_pControllerManager;
+    std::shared_ptr<ControllerManager> m_pControllerManager;
     QTreeWidgetItem* m_pControllersRootItem;
     QList<DlgPrefController*> m_controllerPages;
     QList<QTreeWidgetItem*> m_controllerTreeItems;

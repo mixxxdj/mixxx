@@ -45,19 +45,8 @@ void CuePointer::deleteLater(Cue* pCue) {
     }
 }
 
-Cue::Cue()
-        : m_bDirty(false),
-          m_type(mixxx::CueType::Invalid),
-          m_sampleStartPosition(Cue::kNoPosition),
-          m_sampleEndPosition(Cue::kNoPosition),
-          m_iHotCue(Cue::kNoHotCue),
-          m_color(mixxx::PredefinedColorPalettes::kDefaultCueColor) {
-    DEBUG_ASSERT(!m_dbId.isValid());
-}
-
 Cue::Cue(
         DbId id,
-        TrackId trackId,
         mixxx::CueType type,
         double position,
         double length,
@@ -66,7 +55,6 @@ Cue::Cue(
         mixxx::RgbColor color)
         : m_bDirty(false), // clear flag after loading from database
           m_dbId(id),
-          m_trackId(trackId),
           m_type(type),
           m_sampleStartPosition(position),
           m_iHotCue(hotCue),
@@ -104,6 +92,21 @@ Cue::Cue(
     DEBUG_ASSERT(!m_dbId.isValid());
 }
 
+/// Initialize new cue points
+Cue::Cue(
+        mixxx::CueType type,
+        int hotCueIndex,
+        double sampleStartPosition,
+        double sampleEndPosition)
+        : m_bDirty(true), // not yet in database, needs to be saved
+          m_type(type),
+          m_sampleStartPosition(sampleStartPosition),
+          m_sampleEndPosition(sampleEndPosition),
+          m_iHotCue(hotCueIndex),
+          m_color(mixxx::PredefinedColorPalettes::kDefaultCueColor) {
+    DEBUG_ASSERT(!m_dbId.isValid());
+}
+
 mixxx::CueInfo Cue::getCueInfo(
         mixxx::audio::SampleRate sampleRate) const {
     QMutexLocker lock(&m_mutex);
@@ -130,26 +133,6 @@ void Cue::setId(DbId cueId) {
     // Unintended side effects with the LibraryScanner occur
     // when adding new tracks that have their cue points stored
     // in Serato marker tags!!
-}
-
-TrackId Cue::getTrackId() const {
-    QMutexLocker lock(&m_mutex);
-    return m_trackId;
-}
-
-void Cue::setTrackId(TrackId trackId) {
-    QMutexLocker lock(&m_mutex);
-    if (m_trackId == trackId) {
-        return;
-    }
-    m_trackId = trackId;
-    // Mark as dirty, but DO NOT emit the updated() signal.
-    // The receiver is the corresponding Track object that
-    // would in turn be marked as dirty. This could cause
-    // unintended side effects with the LibraryScanner when
-    // adding new tracks that have their cue points stored
-    // in Serato marker tags!!
-    m_bDirty = true;
 }
 
 mixxx::CueType Cue::getType() const {
@@ -195,6 +178,26 @@ void Cue::setEndPosition(double samplePosition) {
     emit updated();
 }
 
+void Cue::setStartAndEndPosition(
+        double sampleStartPosition,
+        double sampleEndPosition) {
+    QMutexLocker lock(&m_mutex);
+    if (m_sampleStartPosition == sampleStartPosition &&
+            m_sampleEndPosition == sampleEndPosition) {
+        return;
+    }
+    m_sampleStartPosition = sampleStartPosition;
+    m_sampleEndPosition = sampleEndPosition;
+    m_bDirty = true;
+    lock.unlock();
+    emit updated();
+}
+
+Cue::StartAndEndPositions Cue::getStartAndEndPosition() const {
+    QMutexLocker lock(&m_mutex);
+    return {m_sampleStartPosition, m_sampleEndPosition};
+}
+
 void Cue::shiftPositionFrames(double frameOffset) {
     QMutexLocker lock(&m_mutex);
     if (m_sampleStartPosition != kNoPosition) {
@@ -222,18 +225,6 @@ double Cue::getLength() const {
 int Cue::getHotCue() const {
     QMutexLocker lock(&m_mutex);
     return m_iHotCue;
-}
-
-void Cue::setHotCue(int hotCue) {
-    QMutexLocker lock(&m_mutex);
-    // TODO(XXX) enforce uniqueness?
-    if (m_iHotCue == hotCue) {
-        return;
-    }
-    m_iHotCue = hotCue;
-    m_bDirty = true;
-    lock.unlock();
-    emit updated();
 }
 
 QString Cue::getLabel() const {

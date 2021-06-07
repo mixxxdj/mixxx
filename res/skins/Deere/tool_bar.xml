@@ -56,7 +56,7 @@
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">gain</SetVariable>
                 <SetVariable name="color">green</SetVariable>
-                <SetVariable name="label">Master</SetVariable>
+                <SetVariable name="label">Main</SetVariable>
               </Template>
 
               <Template src="skin:left_2state_button.xml">

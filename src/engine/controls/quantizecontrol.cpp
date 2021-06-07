@@ -80,7 +80,7 @@ void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         double prevBeat, nextBeat;
-        pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);
+        pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat, true);
         m_pCOPrevBeat->set(prevBeat);
         m_pCONextBeat->set(nextBeat);
     }

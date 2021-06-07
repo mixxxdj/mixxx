@@ -5,6 +5,7 @@
 #include <QEvent>
 #include <QRect>
 #include <QStringList>
+#include <memory>
 
 #include "control/controlpushbutton.h"
 #include "preferences/dialog/dlgpreferencepage.h"
@@ -42,7 +43,6 @@ class DlgPrefLV2;
 class LV2Backend;
 class ControllerManager;
 class EffectsManager;
-class SkinLoader;
 class PlayerManager;
 class Library;
 class VinylControlManager;
@@ -50,28 +50,44 @@ class VinylControlManager;
 class DlgPrefModplug;
 #endif // __MODPLUG__
 
+namespace mixxx {
+namespace skin {
+class SkinLoader;
+}
+} // namespace mixxx
+
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
-    DlgPreferences(MixxxMainWindow* pMixxx,
-            SkinLoader* pSkinLoader,
-            SoundManager* pSoundManager,
-            PlayerManager* pPlayerManager,
-            ControllerManager* pControllerManager,
-            VinylControlManager* pVCManager,
+    struct PreferencesPage {
+        PreferencesPage() {
+        }
+        PreferencesPage(DlgPreferencePage* pDlg, QTreeWidgetItem* pTreeItem)
+                : pDlg(pDlg), pTreeItem(pTreeItem) {
+        }
+
+        DlgPreferencePage* pDlg;
+        QTreeWidgetItem* pTreeItem;
+    };
+
+    DlgPreferences(MixxxMainWindow* mixxx,
+            std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
+            std::shared_ptr<SoundManager> pSoundManager,
+            std::shared_ptr<PlayerManager> pPlayerManager,
+            std::shared_ptr<ControllerManager> pControllerManager,
+            std::shared_ptr<VinylControlManager> pVCManager,
             LV2Backend* pLV2Backend,
-            EffectsManager* pEffectsManager,
-            SettingsManager* pSettingsManager,
-            Library* pLibrary);
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            std::shared_ptr<SettingsManager> pSettingsManager,
+            std::shared_ptr<Library> pLibrary);
     virtual ~DlgPreferences();
 
-    void addPageWidget(DlgPreferencePage* pWidget,
-            QTreeWidgetItem* pTreeItem,
+    void addPageWidget(PreferencesPage page,
             const QString& pageTitle,
             const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
-    void switchToPage(DlgPreferencePage* pWidget);
+    void switchToPage(DlgPreferencePage* pPage);
 
   public slots:
     void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
@@ -95,67 +111,18 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
   private:
     DlgPreferencePage* currentPage();
+    QList<PreferencesPage> m_allPages;
     void onShow();
     void onHide();
     QRect getDefaultGeometry();
 
+    QAbstractButton* m_pApplyButton;
+    QAbstractButton* m_pAcceptButton;
+
     QStringList m_geometry;
     UserSettingsPointer m_pConfig;
-    DlgPrefSound* m_soundPage;
-    DlgPrefLibrary* m_libraryPage;
-    DlgPrefControllers *m_controllersPage;
-#ifdef __VINYLCONTROL__
-    DlgPrefVinyl* m_vinylControlPage;
-#endif // __VINYLCONTROL__
-    DlgPrefInterface* m_interfacePage;
-    DlgPrefWaveform* m_waveformPage;
-    DlgPrefDeck* m_deckPage;
-    DlgPrefColors* m_colorsPage;
-    DlgPrefEQ* m_equalizerPage;
-    DlgPrefCrossfader* m_crossfaderPage;
-    DlgPrefEffects* m_effectsPage;
-    DlgPrefAutoDJ* m_autoDjPage;
-#ifdef __BROADCAST__
-    DlgPrefBroadcast* m_broadcastingPage;
-#endif // __BROADCAST__
-    DlgPrefRecord* m_recordingPage;
-    DlgPrefBeats* m_beatgridPage;
-    DlgPrefKey* m_musicalKeyPage;
-    DlgPrefReplayGain* m_replayGainPage;
-#ifdef __LILV__
-    DlgPrefLV2* m_lv2Page;
-#endif // __LILV__
-#ifdef __MODPLUG__
-    DlgPrefModplug* m_modplugPage;
-#endif // __MODPLUG__
-
-    QTreeWidgetItem* m_pSoundButton;
-    QTreeWidgetItem* m_pLibraryButton;
-    QTreeWidgetItem* m_pControllersRootButton;
-#ifdef __VINYLCONTROL__
-    QTreeWidgetItem* m_pVinylControlButton;
-#endif // __VINYLCONTROL__
-    QTreeWidgetItem* m_pInterfaceButton;
-    QTreeWidgetItem* m_pWaveformButton;
-    QTreeWidgetItem* m_pDecksButton;
-    QTreeWidgetItem* m_pColorsButton;
-    QTreeWidgetItem* m_pEqButton;
-#ifdef __LILV__
-    QTreeWidgetItem* m_pLV2Button;
-#endif // __LILV__
-    QTreeWidgetItem* m_pEffectsButton;
-    QTreeWidgetItem* m_pCrossfaderButton;
-    QTreeWidgetItem* m_pAutoDJButton;
-#ifdef __BROADCAST__
-    QTreeWidgetItem* m_pBroadcastButton;
-#endif // __BROADCAST__
-    QTreeWidgetItem* m_pRecordingButton;
-    QTreeWidgetItem* m_pBeatDetectionButton;
-    QTreeWidgetItem* m_pKeyDetectionButton;
-    QTreeWidgetItem* m_pReplayGainButton;
-#ifdef __MODPLUG__
-    QTreeWidgetItem* m_pModplugButton;
-#endif // __MODPLUG__
+    PreferencesPage m_soundPage;
+    DlgPrefControllers* m_pControllersDlg;
 
     QSize m_pageSizeHint;
 

@@ -276,9 +276,9 @@ void EffectChainSlot::updateRoutingSwitches() {
     }
     for (const ChannelInfo* pChannelInfo : qAsConst(m_channelInfoByName)) {
         if (pChannelInfo->pEnabled->toBool()) {
-            m_pEffectChain->enableForInputChannel(pChannelInfo->handle_group);
+            m_pEffectChain->enableForInputChannel(pChannelInfo->handleGroup);
         } else {
-            m_pEffectChain->disableForInputChannel(pChannelInfo->handle_group);
+            m_pEffectChain->disableForInputChannel(pChannelInfo->handleGroup);
         }
     }
 }
@@ -344,27 +344,26 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     return pSlot;
 }
 
-void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
-    VERIFY_OR_DEBUG_ASSERT(!m_channelInfoByName.contains(handle_group.name())) {
+void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handleGroup) {
+    VERIFY_OR_DEBUG_ASSERT(!m_channelInfoByName.contains(handleGroup.name())) {
         return;
     }
 
     double initialValue = 0.0;
     int deckNumber;
-    if (PlayerManager::isDeckGroup(handle_group.name(), &deckNumber) &&
-        (m_iChainSlotNumber + 1) == (unsigned) deckNumber) {
+    if (PlayerManager::isDeckGroup(handleGroup.name(), &deckNumber) &&
+            (m_iChainSlotNumber + 1) == (unsigned)deckNumber) {
         initialValue = 1.0;
     }
     ControlPushButton* pEnableControl = new ControlPushButton(
-            ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())),
-            true, initialValue);
+            ConfigKey(m_group, QString("group_%1_enable").arg(handleGroup.name())),
+            true,
+            initialValue);
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
-    m_channelInfoByName[handle_group.name()] = pInfo;
-    connect(pEnableControl, &ControlPushButton::valueChanged,
-            this, [this, handle_group] { slotChannelStatusChanged(handle_group.name()); });
-
+    ChannelInfo* pInfo = new ChannelInfo(handleGroup, pEnableControl);
+    m_channelInfoByName[handleGroup.name()] = pInfo;
+    connect(pEnableControl, &ControlPushButton::valueChanged, this, [this, handleGroup] { slotChannelStatusChanged(handleGroup.name()); });
 }
 
 void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {
@@ -466,9 +465,9 @@ void EffectChainSlot::slotChannelStatusChanged(const QString& group) {
         if (pChannelInfo != nullptr && pChannelInfo->pEnabled != nullptr) {
             bool bEnable = pChannelInfo->pEnabled->toBool();
             if (bEnable) {
-                m_pEffectChain->enableForInputChannel(pChannelInfo->handle_group);
+                m_pEffectChain->enableForInputChannel(pChannelInfo->handleGroup);
             } else {
-                m_pEffectChain->disableForInputChannel(pChannelInfo->handle_group);
+                m_pEffectChain->disableForInputChannel(pChannelInfo->handleGroup);
             }
         }
     }

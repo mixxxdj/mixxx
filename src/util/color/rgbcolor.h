@@ -232,7 +232,7 @@ inline QDebug operator<<(QDebug dbg, RgbColor color) {
     return dbg << RgbColor::toQString(color).toLatin1().constData();
 }
 
-inline QDebug operator<<(QDebug dbg, RgbColor::optional_t optionalColor) {
+inline QDebug operator<<(QDebug dbg, const RgbColor::optional_t& optionalColor) {
     return dbg << RgbColor::toQString(optionalColor).toLatin1().constData();
 }
 

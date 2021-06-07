@@ -12,7 +12,7 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
-class TrackCollectionManager;
+class Library;
 class WTrackMenu;
 
 class WTrackProperty : public WLabel, public TrackDropTarget {
@@ -21,7 +21,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     WTrackProperty(
             QWidget* pParent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             const QString& group);
     ~WTrackProperty() override;
 

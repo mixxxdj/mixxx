@@ -1,39 +1,39 @@
 #pragma once
 
-#include "controllers/controllerengine.h"
-#include "controllers/controllervisitor.h"
-#include "controllers/controllerpreset.h"
-#include "controllers/controllerpresetinfo.h"
-#include "controllers/controllerpresetvisitor.h"
-#include "controllers/controllerpresetfilehandler.h"
+#include <QElapsedTimer>
+#include <QTimerEvent>
+
+#include "controllers/controllermappinginfo.h"
+#include "controllers/legacycontrollermapping.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/duration.h"
 
-/// Base class representing a physical (or software) controller.
-///
+class ControllerJSProxy;
+
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the
 /// subclass' destructor should call close() at a minimum.
-class Controller : public QObject, ConstControllerPresetVisitor {
+class Controller : public QObject {
     Q_OBJECT
   public:
-    explicit Controller(UserSettingsPointer pConfig);
-    ~Controller() override; // Subclass should call close() at minimum.
+    explicit Controller();
+    ~Controller() override;  // Subclass should call close() at minimum.
 
-    /// Returns the extension for the controller (type) preset files.  This is
-    /// used by the ControllerManager to display only relevant preset files for
+    /// The object that is exposed to the JS scripts as the "controller" object.
+    /// Subclasses of Controller can return a subclass of ControllerJSProxy to further
+    /// customize their JS api.
+    virtual ControllerJSProxy* jsProxy();
+
+    /// Returns the extension for the controller (type) mapping files.  This is
+    /// used by the ControllerManager to display only relevant mapping files for
     /// the controller (type.)
-    virtual QString presetExtension() = 0;
+    virtual QString mappingExtension() = 0;
 
-    void setPreset(const ControllerPreset& preset) {
-        // We don't know the specific type of the preset so we need to ask
-        // the preset to call our visitor methods with its type.
-        preset.accept(this);
-    }
-
-    virtual void accept(ControllerVisitor* visitor) = 0;
-
-    // Returns a clone of the Controller's loaded preset.
-    virtual ControllerPresetPointer getPreset() const = 0;
+    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() = 0;
+    /// WARNING: LegacyControllerMapping is not thread safe!
+    /// Clone the mapping before passing to setMapping for use in the controller polling thread.
+    virtual void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) = 0;
 
     inline bool isOpen() const {
         return m_bIsOpen;
@@ -55,13 +55,9 @@ class Controller : public QObject, ConstControllerPresetVisitor {
         return m_bLearning;
     }
 
-    virtual bool matchPreset(const PresetInfo& preset) = 0;
+    virtual bool matchMapping(const MappingInfo& mapping) = 0;
 
   signals:
-    // Emitted when a new preset is loaded. pPreset is a /clone/ of the loaded
-    // preset, not a pointer to the preset itself.
-    void presetLoaded(ControllerPresetPointer pPreset);
-
     /// Emitted when the controller is opened or closed.
     void openChanged(bool bOpen);
 
@@ -76,36 +72,51 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // this if they have an alternate way of handling such data.)
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
-    /// Apply the preset to the controller.
-    /// Initializes both controller engine and static output mappings.
-    ///
-    /// @param initializeScripts Can be set to false to skip script
-    /// initialization for unit tests.
-    /// @return Returns whether it was successful.
-    virtual bool applyPreset(bool initializeScripts = true);
+    virtual bool applyMapping();
 
     // Puts the controller in and out of learning mode.
     void startLearning();
     void stopLearning();
 
   protected:
+    template<typename SpecificMappingType>
+    std::shared_ptr<SpecificMappingType> downcastAndTakeOwnership(
+            std::shared_ptr<LegacyControllerMapping>&& pMapping) {
+        // Controller cannot take ownership if pMapping is referenced elsewhere because
+        // the controller polling thread needs exclusive accesses to the non-thread safe
+        // LegacyControllerMapping.
+        // Trying to cast a std::shared_ptr to a std::unique_ptr is not worth the trouble.
+        VERIFY_OR_DEBUG_ASSERT(pMapping.use_count() == 1) {
+            return nullptr;
+        }
+        auto pDowncastedMapping = std::dynamic_pointer_cast<SpecificMappingType>(pMapping);
+        VERIFY_OR_DEBUG_ASSERT(pDowncastedMapping) {
+            return nullptr;
+        }
+        return pDowncastedMapping;
+    }
+
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
-    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0);
+    virtual void send(const QList<int>& data, unsigned int length = 0);
+
+    // This must be reimplemented by sub-classes desiring to send raw bytes to a
+    // controller.
+    virtual void sendBytes(const QByteArray& data) = 0;
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
-    void startEngine();
+    virtual void startEngine();
 
     // To be called in sub-class' close() functions after stopping any input
     // polling/processing but before closing the device.
-    void stopEngine();
+    virtual void stopEngine();
 
     // To be called when receiving events
     void triggerActivity();
 
-    inline ControllerEngine* getEngine() const {
-        return m_pEngine;
+    inline ControllerScriptEngineLegacy* getScriptEngine() const {
+        return m_pScriptEngineLegacy;
     }
     inline void setDeviceName(const QString& deviceName) {
         m_sDeviceName = deviceName;
@@ -139,14 +150,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     }
 
   private:
-    // This must be reimplemented by sub-classes desiring to send raw bytes to a
-    // controller.
-    virtual void send(const QByteArray& data) = 0;
-
-    // Returns a pointer to the currently loaded controller preset. For internal
-    // use only.
-    virtual ControllerPreset* preset() = 0;
-    ControllerEngine* m_pEngine;
+    ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
 
     // Verbose and unique device name suitable for display.
     QString m_sDeviceName;
@@ -162,10 +166,30 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     bool m_bLearning;
     QElapsedTimer m_userActivityInhibitTimer;
 
-    UserSettingsPointer m_pConfig;
-
+    friend class ControllerJSProxy;
     // accesses lots of our stuff, but in the same thread
     friend class ControllerManager;
     // For testing
-    friend class ControllerPresetValidationTest;
+    friend class LegacyControllerMappingValidationTest;
+};
+
+// An object of this class gets exposed to the JS engine, so the methods of this class
+// constitute the api that is provided to scripts under "controller" object.
+// See comments on ControllerEngineJSProxy.
+class ControllerJSProxy : public QObject {
+    Q_OBJECT
+  public:
+    explicit ControllerJSProxy(Controller* m_pController)
+            : m_pController(m_pController) {
+    }
+
+    // The length parameter is here for backwards compatibility for when scripts
+    // were required to specify it.
+    Q_INVOKABLE virtual void send(const QList<int>& data, unsigned int length = 0) {
+        Q_UNUSED(length);
+        m_pController->send(data, data.length());
+    }
+
+  private:
+    Controller* const m_pController;
 };

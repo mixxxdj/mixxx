@@ -22,8 +22,10 @@ enum class SignalProcessingStage {
     Postfader
 };
 
-inline uint qHash(SignalProcessingStage stage) {
-    return static_cast<uint>(stage);
+inline uint qHash(
+        SignalProcessingStage stage,
+        uint seed = 0) {
+    return qHash(static_cast<uint>(stage), seed);
 };
 
 enum class EffectChainMixMode {

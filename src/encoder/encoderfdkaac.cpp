@@ -57,14 +57,14 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     // implementation of fdk-aac, we believe that the FDK AAC license is
     // GPL compatible.
     QStringList libnames;
-#if __WINDOWS__
+#if defined(__WINDOWS__)
     // Search for library from B.U.T.T.
     QString buttFdkAacPath = buttWindowsFdkAac();
     if (!buttFdkAacPath.isEmpty()) {
         kLogger.debug() << "Found libfdk-aac at" << buttFdkAacPath;
         libnames << buttFdkAacPath;
     }
-#elif __APPLE__
+#elif defined(__APPLE__)
     // Homebrew
     libnames << QStringLiteral("/usr/local/lib/libfdk-aac");
     // MacPorts

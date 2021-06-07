@@ -52,8 +52,7 @@ class PortMidiController : public MidiController {
     PortMidiController(const PmDeviceInfo* inputDeviceInfo,
             const PmDeviceInfo* outputDeviceInfo,
             int inputDeviceIndex,
-            int outputDeviceIndex,
-            UserSettingsPointer pConfig);
+            int outputDeviceIndex);
     ~PortMidiController() override;
 
   private slots:
@@ -69,7 +68,7 @@ class PortMidiController : public MidiController {
   private:
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
-    void send(const QByteArray& data) override;
+    void sendBytes(const QByteArray& data) override;
 
     bool isPolling() const override {
         return true;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "defs_urls.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
@@ -27,8 +29,9 @@ class ControlProxy;
 class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
   public:
-    DlgPrefSound(QWidget *parent, SoundManager *soundManager,
-                 UserSettingsPointer pSettings);
+    DlgPrefSound(QWidget* parent,
+            std::shared_ptr<SoundManager> soundManager,
+            UserSettingsPointer pSettings);
     virtual ~DlgPrefSound();
 
     QUrl helpUrl() const override;
@@ -81,7 +84,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void checkLatencyCompensation();
     bool eventFilter(QObject* object, QEvent* event) override;
 
-    SoundManager *m_pSoundManager;
+    std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
     ControlProxy* m_pMasterAudioLatencyOverloadCount;

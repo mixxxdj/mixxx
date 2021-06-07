@@ -162,10 +162,10 @@ class SeratoMarkers final {
         m_entries = entries;
     }
 
-    RgbColor::optional_t getTrackColor() const {
+    const RgbColor::optional_t& getTrackColor() const {
         return m_trackColor;
     }
-    void setTrackColor(RgbColor::optional_t color) {
+    void setTrackColor(const RgbColor::optional_t& color) {
         m_trackColor = color;
     }
 

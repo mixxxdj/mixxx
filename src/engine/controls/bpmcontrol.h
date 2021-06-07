@@ -42,6 +42,9 @@ class BpmControl : public EngineControl {
     /// getBeatDistance is adjusted to include the user offset so it's
     /// transparent to other decks.
     double getBeatDistance(double dThisPosition) const;
+    double getUserOffset() const {
+        return m_dUserOffset.getValue();
+    }
 
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
@@ -153,6 +156,9 @@ class BpmControl : public EngineControl {
 
     ControlProxy* m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;
+    // The user offset is a beat distance percentage value that the user has tweaked a deck
+    // to bring it in sync with the other decks. This value is added to the reported beat
+    // distance to get the virtual beat distance used for sync.
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
     ControlProxy* m_pSyncMode;
@@ -166,6 +172,6 @@ class BpmControl : public EngineControl {
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
 
-    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
+    FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInMasterChange);
 };

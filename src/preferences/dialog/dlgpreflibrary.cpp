@@ -12,18 +12,21 @@
 #include <QUrl>
 
 #include "library/dlgtrackmetadataexport.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_dlgpreflibrary.cpp"
 #include "sources/soundsourceproxy.h"
 #include "widget/wsearchlineedit.h"
 
 namespace {
-    const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");
-    } // namespace
+const ConfigKey kSearchDebouncingTimeoutMillisKey =
+        ConfigKey("[Library]", "SearchDebouncingTimeoutMillis");
+} // namespace
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
         UserSettingsPointer pConfig,
-        Library* pLibrary)
+        std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_dirListModel(),
           m_pConfig(pConfig),
@@ -34,15 +37,15 @@ DlgPrefLibrary::DlgPrefLibrary(
 
     connect(this,
             &DlgPrefLibrary::requestAddDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestAddDir);
     connect(this,
             &DlgPrefLibrary::requestRemoveDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestRemoveDir);
     connect(this,
             &DlgPrefLibrary::requestRelocateDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestRelocateDir);
     connect(PushButtonAddDir,
             &QPushButton::clicked,
@@ -153,9 +156,11 @@ void DlgPrefLibrary::initializeDirList() {
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
     m_dirListModel.clear();
-    QStringList dirs = m_pLibrary->getDirs();
-    foreach (QString dir, dirs) {
-        m_dirListModel.appendRow(new QStandardItem(dir));
+    const auto rootDirs = m_pLibrary->trackCollectionManager()
+                                  ->internalCollection()
+                                  ->loadRootDirs();
+    for (const mixxx::FileInfo& rootDir : rootDirs) {
+        m_dirListModel.appendRow(new QStandardItem(rootDir.location()));
     }
     dirList->setModel(&m_dirListModel);
     dirList->setCurrentIndex(m_dirListModel.index(0, 0));
@@ -302,6 +307,8 @@ void DlgPrefLibrary::slotRemoveDir() {
     } else if (removeMsgBox.clickedButton() == deleteAllButton) {
         removalType = Library::RemovalType::PurgeTracks;
     } else {
+        // Only used in DEBUG_ASSERT
+        Q_UNUSED(leaveUnchangedButton);
         DEBUG_ASSERT(removeMsgBox.clickedButton() == leaveUnchangedButton);
         removalType = Library::RemovalType::KeepTracks;
     }

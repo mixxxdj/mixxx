@@ -8,17 +8,14 @@ jobs:
   pre-commit:
     name: Detecting code style issues
     runs-on: ubuntu-latest
+    # The Dockerfile for this container can be found at:
+    # https://github.com/Holzhaus/mixxx-ci-docker
+    container: holzhaus/mixxx-ci:20210526
     steps:
     - name: "Check out repository"
       uses: actions/checkout@v2
       with:
         fetch-depth: 2
-
-    - name: "Set up Python"
-      uses: actions/setup-python@v2
-
-    - name: Install clang-format
-      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-format-10
 
     - name: "Detect code style issues (push)"
       uses: pre-commit/action@v2.0.0

@@ -36,6 +36,9 @@ class SidebarModel : public QAbstractItemModel {
     bool dragMoveAccept(const QModelIndex& index, const QUrl& url);
     bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
     bool hasTrackTable(const QModelIndex& index) const;
+    QModelIndex translateChildIndex(const QModelIndex& index) {
+        return translateIndex(index, index.model());
+    }
 
   public slots:
     void pressed(const QModelIndex& index);
@@ -72,6 +75,7 @@ class SidebarModel : public QAbstractItemModel {
 
   private:
     QModelIndex translateSourceIndex(const QModelIndex& parent);
+    QModelIndex translateIndex(const QModelIndex& index, const QAbstractItemModel* model);
     void featureRenamed(LibraryFeature*);
     QList<LibraryFeature*> m_sFeatures;
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */

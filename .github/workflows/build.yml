@@ -10,29 +10,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 18.04 (gcc)
-            os: ubuntu-18.04
-            cmake_args: >-
-              -DWARNINGS_FATAL=ON
-              -DBULK=ON
-              -DFAAD=ON
-              -DFFMPEG=OFF
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
-              -DINSTALL_USER_UDEV_RULES=OFF
-            cmake_generator: Unix Makefiles
-            ctest_args:
-            compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
-            cpack_generator: DEB
-            buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 18.04 DEB
-            artifacts_path: build/*.deb
-            artifacts_slug: ubuntu-bionic
-            qt_qpa_platform: offscreen
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
             cmake_args: >-
@@ -268,7 +245,7 @@ jobs:
         -G "${{ matrix.cmake_generator }}"
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
         -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
-        -DDEBUG_ASSERTIONS_FATAL=OFF
+        -DDEBUG_ASSERTIONS_FATAL=ON
         -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DBATTERY=ON
         -DBROADCAST=ON
@@ -341,8 +318,8 @@ jobs:
       # No need to do the PPA build for both Ubuntu versions
       if: matrix.os == 'ubuntu-20.04'
       run: |
-        if [[ "${{ github.ref }}" == "refs/heads/2.3" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-          CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
         elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
         else

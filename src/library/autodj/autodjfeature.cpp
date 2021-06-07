@@ -7,11 +7,11 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
-#include "library/crate/cratestorage.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/cratestorage.h"
 #include "library/treeitem.h"
 #include "mixer/playermanager.h"
 #include "moc_autodjfeature.cpp"
@@ -46,20 +46,22 @@ namespace {
 } // anonymous namespace
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
-                             UserSettingsPointer pConfig,
-                             PlayerManagerInterface* pPlayerManager)
+        UserSettingsPointer pConfig,
+        PlayerManagerInterface* pPlayerManager)
         : LibraryFeature(pLibrary, pConfig),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
           m_pAutoDJProcessor(nullptr),
           m_pAutoDJView(nullptr),
-          m_autoDjCratesDao(m_iAutoDJPlaylistId, m_pTrackCollection, m_pConfig),
+          m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig),
           m_icon(":/images/library/ic_library_autodj.svg") {
-
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
-    m_pAutoDJProcessor = new AutoDJProcessor(
-            this, m_pConfig, pPlayerManager, pLibrary->trackCollections(), m_iAutoDJPlaylistId);
+    m_pAutoDJProcessor = new AutoDJProcessor(this,
+            m_pConfig,
+            pPlayerManager,
+            pLibrary->trackCollectionManager(),
+            m_iAutoDJPlaylistId);
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::loadTrackToPlayer,
             this,
@@ -142,7 +144,7 @@ void AutoDJFeature::bindLibraryWidget(
             this,
             &AutoDJFeature::slotRandomQueue);
     connect(m_pAutoDJView,
-            &DlgAutoDJ::addRandomButton,
+            &DlgAutoDJ::addRandomTrackButton,
             this,
             &AutoDJFeature::slotAddRandomTrack);
 }
@@ -169,7 +171,7 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     // Auto DJ playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
+    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(urls,
             !pSource);
     if (trackIds.isEmpty()) {
         return false;
@@ -250,13 +252,13 @@ void AutoDJFeature::slotAddRandomTrack() {
             }
 
             if (randomTrackId.isValid()) {
-                pRandomTrack = m_pTrackCollection->getTrackById(randomTrackId);
+                pRandomTrack = m_pLibrary->trackCollectionManager()->getTrackById(randomTrackId);
                 VERIFY_OR_DEBUG_ASSERT(pRandomTrack) {
                     qWarning() << "Track does not exist:"
                             << randomTrackId;
                     continue;
                 }
-                if (!pRandomTrack->checkFileExists()) {
+                if (!pRandomTrack->getFileInfo().checkFileExists()) {
                     qWarning() << "Track does not exist:"
                                << pRandomTrack->getInfo()
                                << pRandomTrack->getFileInfo();

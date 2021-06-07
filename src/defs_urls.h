@@ -24,7 +24,7 @@
     MIXXX_WIKI_URL "/Hardware-Compatibility"
 #define MIXXX_WIKI_AUDIO_LATENCY_URL \
     MIXXX_WIKI_URL "/Adjusting-Audio-Latency"
-#define MIXXX_WIKI_CONTROLLER_PRESET_FORMAT_URL \
+#define MIXXX_WIKI_CONTROLLER_MAPPING_FORMAT_URL \
     MIXXX_WIKI_URL "/Midi-Controller-Mapping-File-Format"
 #define MIXXX_WIKI_MIDI_SCRIPTING_URL \
     MIXXX_WIKI_URL "/Midi-Scripting"

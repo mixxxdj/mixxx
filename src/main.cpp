@@ -8,6 +8,7 @@
 #include <QtDebug>
 
 #include "config.h"
+#include "coreservices.h"
 #include "errordialoghandler.h"
 #include "mixxx.h"
 #include "mixxxapplication.h"
@@ -31,11 +32,11 @@ constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
 const QString kStrScaleFactor = QStringLiteral("ScaleFactor");
 
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
-    MixxxMainWindow mainWindow(app, args);
+    auto coreServices = std::make_shared<mixxx::CoreServices>(args);
+    MixxxMainWindow mainWindow(app, coreServices);
     // If startup produced a fatal error, then don't even start the
     // Qt event loop.
     if (ErrorDialogHandler::instance()->checkError()) {
-        mainWindow.finalize();
         return kFatalErrorOnStartupExitCode;
     } else {
         qDebug() << "Displaying main window";
@@ -95,9 +96,12 @@ int main(int argc, char * argv[]) {
     QCoreApplication::setOrganizationDomain("mixxx.org");
 
     // This needs to be set before initializing the QApplication.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
+    // workaround for https://bugreports.qt.io/browse/QTBUG-84363
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && QT_VERSION < QT_VERSION_CHECK(5, 15, 1)
+    qputenv("QV4_FORCE_INTERPRETER", QByteArrayLiteral("1"));
 #endif
 
     // Setting the organization name results in a QDesktopStorage::DataLocation
@@ -110,8 +114,7 @@ int main(int argc, char * argv[]) {
 
     // Construct a list of strings based on the command line arguments
     CmdlineArgs& args = CmdlineArgs::Instance();
-    if (!args.Parse(argc, argv)) {
-        args.printUsage();
+    if (!args.parse(argc, argv)) {
         return kParseCmdlineArgsErrorExitCode;
     }
 

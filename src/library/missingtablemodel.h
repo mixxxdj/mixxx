@@ -19,5 +19,5 @@ class MissingTableModel final : public BaseSqlTableModel {
     bool isColumnInternal(int column) final;
     void purgeTracks(const QModelIndexList& indices) final;
     Qt::ItemFlags flags(const QModelIndex &index) const final;
-    CapabilitiesFlags getCapabilities() const final;
+    Capabilities getCapabilities() const final;
 };

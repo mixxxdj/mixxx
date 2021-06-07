@@ -200,7 +200,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
-#elif __WINDOWS__
+#elif defined(__WINDOWS__)
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
         // Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/Local Settings/Application Data/Mixxx/mixxx.cfg")));
@@ -227,7 +227,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             return config;
 #ifdef __APPLE__
         }
-#elif __WINDOWS__
+#elif defined(__WINDOWS__)
         }
 #endif
     }
@@ -333,8 +333,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         bool successful = true;
 
         qDebug() << "Copying midi/ to controllers/";
-        QString midiPath = legacyUserPresetsPath(config);
-        QString controllerPath = userPresetsPath(config);
+        QString midiPath = legacyUserMappingsPath(config);
+        QString controllerPath = userMappingsPath(config);
         QDir oldDir(midiPath);
         QDir newDir(controllerPath);
         newDir.mkpath(controllerPath);  // create the new directory
@@ -397,7 +397,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                     // Sandbox isn't setup yet at this point in startup because it relies on
                     // the config settings path and this function is what loads the config
                     // so it's not ready yet.
-                    successful = tc.addDirectory(currentFolder);
+                    successful = tc.addDirectory(mixxx::FileInfo(currentFolder));
 
                     tc.disconnectDatabase();
                 }

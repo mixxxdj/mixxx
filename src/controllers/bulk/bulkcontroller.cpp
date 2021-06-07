@@ -47,8 +47,8 @@ void BulkReader::run() {
         if (result >= 0) {
             Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
-            QByteArray outData((char*)data, transferred);
-            emit incomingData(outData, mixxx::Time::elapsed());
+            QByteArray byteArray(reinterpret_cast<char*>(data), transferred);
+            emit incomingData(byteArray, mixxx::Time::elapsed());
         }
     }
     qDebug() << "Stopped Reader";
@@ -64,12 +64,11 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
     return QString::fromLatin1((char*)buf);
 }
 
-BulkController::BulkController(UserSettingsPointer pConfig,
+BulkController::BulkController(
         libusb_context* context,
         libusb_device_handle* handle,
         struct libusb_device_descriptor* desc)
-        : Controller(pConfig),
-          m_context(context),
+        : m_context(context),
           m_phandle(handle),
           in_epaddr(0),
           out_epaddr(0) {
@@ -95,24 +94,23 @@ BulkController::~BulkController() {
     }
 }
 
-QString BulkController::presetExtension() {
-    return BULK_PRESET_EXTENSION;
+QString BulkController::mappingExtension() {
+    return BULK_MAPPING_EXTENSION;
 }
 
-void BulkController::visit(const MidiControllerPreset* preset) {
-    Q_UNUSED(preset);
-    // TODO(XXX): throw a hissy fit.
-    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
 }
 
-void BulkController::visit(const HidControllerPreset* preset) {
-    m_preset = *preset;
-    // Emit presetLoaded with a clone of the preset.
-    emit presetLoaded(getPreset());
+std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
+    if (!m_pMapping) {
+        return nullptr;
+    }
+    return m_pMapping->clone();
 }
 
-bool BulkController::matchPreset(const PresetInfo& preset) {
-    const QList<ProductInfo>& products = preset.getProducts();
+bool BulkController::matchMapping(const MappingInfo& mapping) {
+    const QList<ProductInfo>& products = mapping.getProducts();
     for (const auto& product : products) {
         if (matchProductInfo(product)) {
             return true;
@@ -223,17 +221,17 @@ int BulkController::close() {
     return 0;
 }
 
-void BulkController::send(QList<int> data, unsigned int length) {
+void BulkController::send(const QList<int>& data, unsigned int length) {
     Q_UNUSED(length);
     QByteArray temp;
 
     foreach (int datum, data) {
         temp.append(datum);
     }
-    send(temp);
+    sendBytes(temp);
 }
 
-void BulkController::send(const QByteArray& data) {
+void BulkController::sendBytes(const QByteArray& data) {
     int ret;
     int transferred;
 

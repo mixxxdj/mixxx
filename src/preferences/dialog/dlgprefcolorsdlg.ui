@@ -26,6 +26,20 @@
       <string>Colors</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelHotcueDefaultColor">
+        <property name="text">
+         <string>Hotcue default color</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QPushButton" name="pushButtonReplaceCueColor">
+        <property name="text">
+         <string>Replace…</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="2">
        <widget class="QPushButton" name="pushButtonEditHotcuePalette">
         <property name="text">
@@ -40,13 +54,6 @@
        <widget class="QPushButton" name="pushButtonEditTrackPalette">
         <property name="text">
          <string>Edit…</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelTrackColors">
-        <property name="text">
-         <string>Track palette</string>
         </property>
        </widget>
       </item>
@@ -67,10 +74,10 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="labelHotcueDefaultColor">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelTrackColors">
         <property name="text">
-         <string>Hotcue default color</string>
+         <string>Track palette</string>
         </property>
        </widget>
       </item>
@@ -84,12 +91,15 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2">
-       <widget class="QPushButton" name="pushButtonReplaceCueColor">
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelLoopDefaultColor">
         <property name="text">
-         <string>Replace…</string>
+         <string>Loop default color</string>
         </property>
        </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="comboBoxLoopDefaultColor"/>
       </item>
      </layout>
     </widget>

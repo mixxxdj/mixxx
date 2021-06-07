@@ -19,7 +19,7 @@
  * inside variable bit-rate audio streams, and lists of memory cues
  * and loop points. They are used by Pioneer professional DJ
  * equipment.
- * 
+ *
  * The format has been reverse-engineered to facilitate sophisticated
  * integrations with light and laser shows, videos, and other musical
  * instruments, by supporting deep knowledge of what is playing and

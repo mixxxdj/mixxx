@@ -49,6 +49,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     m_fieldToSqlColumns["key"] << "key";
     m_fieldToSqlColumns["key_id"] << "key_id";
     m_fieldToSqlColumns["played"] << "timesplayed";
+    m_fieldToSqlColumns["lastplayed"] << "last_played_at";
     m_fieldToSqlColumns["rating"] << "rating";
     m_fieldToSqlColumns["location"] << "location";
     m_fieldToSqlColumns["datetime_added"] << "datetime_added";

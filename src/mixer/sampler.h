@@ -1,5 +1,4 @@
-#ifndef MIXER_SAMPLER_H
-#define MIXER_SAMPLER_H
+#pragma once
 
 #include "mixer/basetrackplayer.h"
 
@@ -10,10 +9,7 @@ class Sampler : public BaseTrackPlayerImpl {
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
-            VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            const QString& group);
+            const ChannelHandleAndGroup& handleGroup);
     ~Sampler() override = default;
 };
-
-#endif /* MIXER_SAMPLER_H */

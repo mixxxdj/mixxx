@@ -21,14 +21,14 @@ bool dumpToFile(const QString& filename, const QByteArray& data) {
 
 class SeratoTagsTest : public testing::Test {
   protected:
-    void trackColorRoundtrip(mixxx::RgbColor::optional_t displayedColor) {
+    void trackColorRoundtrip(const mixxx::RgbColor::optional_t& displayedColor) {
         mixxx::RgbColor storedColor =
                 mixxx::SeratoTags::displayedToStoredTrackColor(displayedColor);
         mixxx::RgbColor::optional_t actualDisplayedColor = mixxx::SeratoTags::storedToDisplayedTrackColor(storedColor);
         EXPECT_EQ(displayedColor, actualDisplayedColor);
     }
     void trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional_t displayedColor,
+            const mixxx::RgbColor::optional_t& displayedColor,
             mixxx::RgbColor storedColor) {
         mixxx::RgbColor actualStoredColor =
                 mixxx::SeratoTags::displayedToStoredTrackColor(displayedColor);

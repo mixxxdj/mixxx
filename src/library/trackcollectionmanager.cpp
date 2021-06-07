@@ -173,16 +173,13 @@ void TrackCollectionManager::stopLibraryScan() {
     m_pScanner->slotCancel();
 }
 
-bool TrackCollectionManager::saveTrack(const TrackPointer& pTrack) {
+TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
+        const TrackPointer& pTrack) const {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return false;
+        return SaveTrackResult::Skipped;
     }
-    if (!pTrack->isDirty()) {
-        return false;
-    }
-    saveTrack(pTrack.get(), TrackMetadataExportMode::Deferred);
-    DEBUG_ASSERT(!pTrack->isDirty());
-    return true;
+    const auto res = saveTrack(pTrack.get(), TrackMetadataExportMode::Deferred);
+    return res;
 }
 
 // Export metadata and save the track in both the internal database
@@ -191,22 +188,39 @@ void TrackCollectionManager::saveEvictedTrack(Track* pTrack) noexcept {
     saveTrack(pTrack, TrackMetadataExportMode::Immediate);
 }
 
-void TrackCollectionManager::saveTrack(
+TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
         Track* pTrack,
-        TrackMetadataExportMode mode) {
+        TrackMetadataExportMode mode) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    DEBUG_ASSERT(pTrack);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return SaveTrackResult::Skipped;
+    }
     DEBUG_ASSERT(pTrack->getDateAdded().isValid());
 
-    // The metadata must be exported while the cache is locked to
-    // ensure that we have exclusive (write) access on the file
-    // and not reader or writer is accessing the same file
-    // concurrently.
-    exportTrackMetadata(pTrack, mode);
+    // The track might have been marked for metadata export even
+    // if it is not dirty, e.g. when it has already been saved
+    // in the database before to avoid stale data after editing.
+    const auto fileInfo = pTrack->getFileInfo();
+    if (fileInfo.checkFileExists()) {
+        // The metadata must be exported while the cache is locked to
+        // ensure that we have exclusive (write) access on the file
+        // and not reader or writer is accessing the same file
+        // concurrently.
+        exportTrackMetadata(pTrack, mode);
+    } else {
+        // Missing tracks should not be modified until they either
+        // reappear or are purged.
+        kLogger.debug()
+                << "Skip saving of missing track"
+                << fileInfo.location();
+        return SaveTrackResult::Skipped;
+    }
 
     // The dirty flag is reset while saving the track in the internal
     // collection!
-    const bool trackDirty = pTrack->isDirty();
+    if (!pTrack->isDirty()) {
+        return SaveTrackResult::Skipped;
+    }
 
     // This operation must be executed synchronously while the cache is
     // locked to prevent that a new track is created from outdated
@@ -216,24 +230,23 @@ void TrackCollectionManager::saveTrack(
             << pTrack->getLocation()
             << "in internal collection";
     m_pInternalCollection->saveTrack(pTrack);
+    const auto res = pTrack->isDirty() ? SaveTrackResult::Failed : SaveTrackResult::Saved;
 
     if (m_externalCollections.isEmpty()) {
-        return;
+        return res;
     }
     if (pTrack->getId().isValid()) {
         // Track still exists in the internal collection/database
-        if (trackDirty) {
-            kLogger.debug()
-                    << "Saving modified track"
-                    << pTrack->getLocation()
-                    << "in"
-                    << m_externalCollections.size()
-                    << "external collection(s)";
-            for (const auto& externalTrackCollection : qAsConst(m_externalCollections)) {
-                externalTrackCollection->saveTrack(
-                        *pTrack,
-                        ExternalTrackCollection::ChangeHint::Modified);
-            }
+        kLogger.debug()
+                << "Saving modified track"
+                << pTrack->getLocation()
+                << "in"
+                << m_externalCollections.size()
+                << "external collection(s)";
+        for (const auto& externalTrackCollection : qAsConst(m_externalCollections)) {
+            externalTrackCollection->saveTrack(
+                    *pTrack,
+                    ExternalTrackCollection::ChangeHint::Modified);
         }
     } else {
         // Track has been deleted from the internal collection/database
@@ -249,6 +262,9 @@ void TrackCollectionManager::saveTrack(
                     QStringList{pTrack->getLocation()});
         }
     }
+    // After saving a track successfully the dirty flag must have been reset
+    DEBUG_ASSERT(!(res == SaveTrackResult::Saved && pTrack->isDirty()));
+    return res;
 }
 
 void TrackCollectionManager::exportTrackMetadata(
@@ -285,16 +301,16 @@ void TrackCollectionManager::exportTrackMetadata(
     }
 }
 
-bool TrackCollectionManager::addDirectory(const QString& dir) const {
+bool TrackCollectionManager::addDirectory(const mixxx::FileInfo& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_pInternalCollection->addDirectory(dir);
+    return m_pInternalCollection->addDirectory(newDir);
 }
 
-bool TrackCollectionManager::removeDirectory(const QString& dir) const {
+bool TrackCollectionManager::removeDirectory(const mixxx::FileInfo& oldDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_pInternalCollection->removeDirectory(dir);
+    return m_pInternalCollection->removeDirectory(oldDir);
 }
 
 void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QString& newDir) const {
@@ -464,7 +480,7 @@ void TrackCollectionManager::afterTracksUpdated(const QSet<TrackId>& updatedTrac
     for (const auto& trackId : updatedTrackIds) {
         auto trackLocation = m_pInternalCollection->getTrackDAO().getTrackLocation(trackId);
         if (!trackLocation.isEmpty()) {
-            trackRefs.append(TrackRef::fromFileInfo(trackLocation, trackId));
+            trackRefs.append(TrackRef::fromFilePath(trackLocation, trackId));
         }
     }
     DEBUG_ASSERT(trackRefs.size() <= updatedTrackIds.size());
@@ -507,4 +523,30 @@ void TrackCollectionManager::afterTracksRelocated(
     for (const auto& externalTrackCollection : m_externalCollections) {
         externalTrackCollection->relocateTracks(relocatedTracks);
     }
+}
+
+TrackPointer TrackCollectionManager::getTrackById(
+        TrackId trackId) const {
+    return internalCollection()->getTrackById(
+            trackId);
+}
+
+TrackPointer TrackCollectionManager::getTrackByRef(
+        const TrackRef& trackRef) const {
+    return internalCollection()->getTrackByRef(
+            trackRef);
+}
+
+QList<TrackId> TrackCollectionManager::resolveTrackIdsFromUrls(
+        const QList<QUrl>& urls,
+        bool addMissing) const {
+    return internalCollection()->resolveTrackIdsFromUrls(
+            urls,
+            addMissing);
+}
+
+QList<TrackId> TrackCollectionManager::resolveTrackIdsFromLocations(
+        const QList<QString>& locations) const {
+    return internalCollection()->resolveTrackIdsFromLocations(
+            locations);
 }

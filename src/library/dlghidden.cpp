@@ -18,7 +18,7 @@ DlgHidden::DlgHidden(
                   new WTrackTableView(
                           this,
                           pConfig,
-                          pLibrary->trackCollections(),
+                          pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           true)) {
     setupUi(this);
@@ -33,7 +33,7 @@ DlgHidden::DlgHidden(
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pHiddenTableModel = new HiddenTableModel(this, pLibrary->trackCollections());
+    m_pHiddenTableModel = new HiddenTableModel(this, pLibrary->trackCollectionManager());
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
     connect(btnUnhide,

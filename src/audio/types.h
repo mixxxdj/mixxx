@@ -194,8 +194,11 @@ class Bitrate {
         return m_value > kValueDefault;
     }
 
-    /*implicit*/ operator value_t() const {
+    value_t value() const {
         return m_value;
+    }
+    /*implicit*/ operator value_t() const {
+        return value();
     }
 
   private:

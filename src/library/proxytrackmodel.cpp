@@ -5,7 +5,7 @@
 #include "util/assert.h"
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
-                                 bool bHandleSearches)
+        bool bHandleSearches)
         // ProxyTrackModel proxies settings requests to the composed TrackModel,
         // don't initialize its TrackModel with valid parameters.
         : TrackModel(QSqlDatabase(), ""),
@@ -22,13 +22,13 @@ ProxyTrackModel::~ProxyTrackModel() {
 }
 
 TrackModel::SortColumnId ProxyTrackModel::sortColumnIdFromColumnIndex(int index) const {
-    return (m_pTrackModel ? m_pTrackModel->sortColumnIdFromColumnIndex(index)
-                          : TrackModel::SortColumnId::Invalid);
+    return m_pTrackModel ? m_pTrackModel->sortColumnIdFromColumnIndex(index)
+                         : TrackModel::SortColumnId::Invalid;
 }
 
 int ProxyTrackModel::columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const {
-    return (m_pTrackModel ? m_pTrackModel->columnIndexFromSortColumnId(sortColumn)
-                          : -1);
+    return m_pTrackModel ? m_pTrackModel->columnIndexFromSortColumnId(sortColumn)
+                         : -1;
 }
 
 TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
@@ -96,7 +96,7 @@ void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
 }
 
 void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
-                                const QModelIndex& destIndex) {
+        const QModelIndex& destIndex) {
     QModelIndex sourceIndexSource = mapToSource(sourceIndex);
     QModelIndex destIndexSource = mapToSource(destIndex);
     if (m_pTrackModel) {
@@ -108,16 +108,12 @@ QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* 
     return m_pTrackModel ? m_pTrackModel->delegateForColumn(i, pParent) : nullptr;
 }
 
-TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
-    if (m_pTrackModel) {
-        return m_pTrackModel->getCapabilities();
-    } else {
-        return static_cast<CapabilitiesFlags>(TRACKMODELCAPS_NONE);
-    }
+TrackModel::Capabilities ProxyTrackModel::getCapabilities() const {
+    return m_pTrackModel ? m_pTrackModel->getCapabilities() : Capability::None;
 }
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
-                                       const QModelIndex& sourceParent) const {
+        const QModelIndex& sourceParent) const {
     if (!m_bHandleSearches) {
         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
     }

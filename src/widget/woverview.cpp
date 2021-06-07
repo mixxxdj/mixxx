@@ -166,6 +166,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         if (pMark->isValid()) {
             pMark->connectSamplePositionChanged(this,
                     &WOverview::onMarkChanged);
+            pMark->connectSampleEndPositionChanged(this,
+                    &WOverview::onMarkChanged);
         }
         if (pMark->hasVisible()) {
             pMark->connectVisibleChanged(this,
@@ -396,7 +398,9 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
             }
 
             int hotcueNumber = currentCue->getHotCue();
-            if (currentCue->getType() == mixxx::CueType::HotCue && hotcueNumber != Cue::kNoHotCue) {
+            if ((currentCue->getType() == mixxx::CueType::HotCue ||
+                        currentCue->getType() == mixxx::CueType::Loop) &&
+                    hotcueNumber != Cue::kNoHotCue) {
                 // Prepend the hotcue number to hotcues' labels
                 QString newLabel = currentCue->getLabel();
                 if (newLabel.isEmpty()) {
@@ -811,8 +815,9 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         WaveformMarkPointer pMark = m_marksToRender.at(i);
         PainterScope painterScope(pPainter);
 
+        double samplePosition = m_marksToRender.at(i)->getSamplePosition();
         const float markPosition = math_clamp(
-                offset + static_cast<float>(m_marksToRender.at(i)->getSamplePosition()) * gain,
+                offset + static_cast<float>(samplePosition) * gain,
                 0.0f,
                 static_cast<float>(width()));
         pMark->m_linePosition = markPosition;
@@ -827,11 +832,32 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             bgLine.setLine(0.0, markPosition - 1.0, width(), markPosition - 1.0);
         }
 
+        QRectF rect;
+        double sampleEndPosition = m_marksToRender.at(i)->getSampleEndPosition();
+        if (sampleEndPosition > 0) {
+            const float markEndPosition = math_clamp(
+                    offset + static_cast<float>(sampleEndPosition) * gain,
+                    0.0f,
+                    static_cast<float>(width()));
+
+            if (m_orientation == Qt::Horizontal) {
+                rect.setCoords(markPosition, 0, markEndPosition, height());
+            } else {
+                rect.setCoords(0, markPosition, width(), markEndPosition);
+            }
+        }
+
         pPainter->setPen(pMark->borderColor());
         pPainter->drawLine(bgLine);
 
         pPainter->setPen(pMark->fillColor());
         pPainter->drawLine(line);
+
+        if (rect.isValid()) {
+            QColor loopColor = pMark->fillColor();
+            loopColor.setAlphaF(0.5);
+            pPainter->fillRect(rect, loopColor);
+        }
 
         if (!pMark->m_text.isEmpty()) {
             Qt::Alignment halign = pMark->m_align & Qt::AlignHorizontal_Mask;
@@ -1180,17 +1206,7 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
     QFont font = pPainter->font();
     QFontMetrics fm(font);
 
-    // TODO: The following use of QFontMetrics::width(const QString&, int) const
-    // is deprecated and should be replaced with
-    // QFontMetrics::horizontalAdvance(const QString&, int) const. However, the
-    // proposed alternative has just been introduced in Qt 5.11.
-    // Until the minimum required Qt version of Mixxx is increased, we need a
-    // version check here.
-    #if (QT_VERSION < QT_VERSION_CHECK(5, 11, 0))
-    int textWidth = fm.width(text);
-    #else
     int textWidth = fm.horizontalAdvance(text);
-    #endif
 
     if (textWidth > length()) {
         qreal pointSize = font.pointSizeF();

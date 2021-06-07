@@ -20,10 +20,10 @@ bool isSupportedFileExtension(const QString& fileExtension) {
 
 void extractEmbeddedCover(
         const QString& trackLocation,
-        const SecurityTokenPointer& pToken,
         const QImage& expectedImage) {
     const QImage actualImage(
-            CoverArtUtils::extractEmbeddedCover(trackLocation, pToken));
+            CoverArtUtils::extractEmbeddedCover(
+                    mixxx::FileAccess(mixxx::FileInfo(trackLocation))));
     ASSERT_FALSE(actualImage.isNull());
     EXPECT_EQ(expectedImage, actualImage);
 }
@@ -40,58 +40,53 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     QImage referencePNGImage = QImage(kReferencePNGLocationTest);
     QImage referenceJPGImage = QImage(kReferenceJPGLocationTest);
 
-    // We never need to acquire security tokens for tests since we don't run
-    // them in a sandboxed environment.
-
-    SecurityTokenPointer pToken;
-
     if (isSupportedFileExtension("aiff")) {
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test.aiff"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.aiff"), referencePNGImage);
     }
 
     if (isSupportedFileExtension("flac")) {
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test.flac"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.flac"), referencePNGImage);
     }
 
     if (isSupportedFileExtension("m4a")) {
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test-itunes-12.3.0-aac.m4a"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test-itunes-12.3.0-aac.m4a"), referencePNGImage);
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-aac.m4a"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-aac.m4a"), referencePNGImage);
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-alac.m4a"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-alac.m4a"), referencePNGImage);
     }
 
     if (isSupportedFileExtension("mp3")) {
         // PNG
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test-png.mp3"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test-png.mp3"), referencePNGImage);
         // JPEG
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test-jpg.mp3"), pToken, referenceJPGImage);
+                kTestDir.absoluteFilePath("cover-test-jpg.mp3"), referenceJPGImage);
     }
 
     if (isSupportedFileExtension("ogg")) {
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test.ogg"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.ogg"), referencePNGImage);
     }
 
     if (isSupportedFileExtension("opus")) {
         // opus
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test.opus"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.opus"), referencePNGImage);
     }
 
     if (isSupportedFileExtension("wav")) {
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test.wav"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.wav"), referencePNGImage);
     }
 
     if (isSupportedFileExtension("wv")) {
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test.wv"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test.wv"), referencePNGImage);
     }
 }
 
@@ -114,12 +109,12 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // Looking for a track with embedded cover.
     pTrack = Track::newTemporary(kTrackLocationTest);
-    SoundSourceProxy(pTrack).updateTrackFromSource();
+    EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource());
     CoverInfo result = pTrack->getCoverInfoWithLocation();
     EXPECT_EQ(result.type, CoverInfo::METADATA);
     EXPECT_EQ(result.source, CoverInfo::GUESSED);
     EXPECT_EQ(result.coverLocation, QString());
-    EXPECT_NE(result.hash, CoverInfoRelative().hash);
+    EXPECT_NE(result.cacheKey(), CoverInfoRelative().cacheKey());
 
     const char* format("jpg");
     const QString qFormat(format);
@@ -147,7 +142,6 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // All the following expect the same image/hash to be selected.
     CoverInfoRelative expected2;
-    expected2.hash = CoverInfoRelative().hash;
 
     // All the following expect FILE and GUESSED.
     expected2.type = CoverInfo::FILE;
@@ -159,10 +153,10 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // looking for cover in an directory with one image will select that one.
     expected2.coverLocation = "foo.jpg";
-    expected2.hash = CoverImageUtils::calculateHash(QImage(cLoc_foo));
+    expected2.setImage(QImage(cLoc_foo));
     covers << QFileInfo(cLoc_foo);
     CoverInfoRelative res2 = CoverArtUtils::selectCoverArtForTrack(
-            trackBaseName, trackAlbum, covers);
+            mixxx::FileInfo(trackBaseName), trackAlbum, covers);
     EXPECT_EQ(expected2, res2);
     QFile::remove(cLoc_foo);
 
@@ -227,16 +221,16 @@ TEST_F(CoverArtUtilTest, searchImage) {
         if (cover.baseName() == "other1") {
             expected2.type = CoverInfo::NONE;
             expected2.coverLocation = QString();
-            expected2.hash = CoverInfoRelative().hash;
+            expected2.setImage();
         } else {
             expected2.type = CoverInfo::FILE;
             expected2.coverLocation = cover.fileName();
-            expected2.hash = CoverImageUtils::calculateHash(QImage(cover.filePath()));
+            expected2.setImage(QImage(cover.filePath()));
         }
-        res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                    prefCovers);
+        res2 = CoverArtUtils::selectCoverArtForTrack(
+                mixxx::FileInfo(trackBaseName), trackAlbum, prefCovers);
         EXPECT_QSTRING_EQ(expected2.coverLocation, res2.coverLocation);
-        EXPECT_EQ(expected2.hash, res2.hash);
+        EXPECT_EQ(expected2.cacheKey(), res2.cacheKey());
         EXPECT_EQ(expected2, res2);
 
         QFile::remove(cover.filePath());
@@ -257,9 +251,9 @@ TEST_F(CoverArtUtilTest, searchImage) {
     prefCovers.append(QFileInfo(cLoc_coverjpg));
     extraCovers << cLoc_coverJPG << cLoc_coverjpg;
 
-    res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                prefCovers);
-    expected2.hash = CoverImageUtils::calculateHash(QImage(cLoc_coverJPG));
+    res2 = CoverArtUtils::selectCoverArtForTrack(
+            mixxx::FileInfo(trackBaseName), trackAlbum, prefCovers);
+    expected2.setImage(QImage(cLoc_coverJPG));
     expected2.coverLocation = "cover.JPG";
     EXPECT_EQ(expected2, res2);
 
@@ -274,9 +268,9 @@ TEST_F(CoverArtUtilTest, searchImage) {
     cLoc_albumName = QString(trackdir % "/" % trackAlbum % "." % qFormat);
     EXPECT_TRUE(img.save(cLoc_albumName, format));
     prefCovers.append(QFileInfo(cLoc_albumName));
-    res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                prefCovers);
-    expected2.hash = CoverImageUtils::calculateHash(QImage(cLoc_albumName));
+    res2 = CoverArtUtils::selectCoverArtForTrack(
+            mixxx::FileInfo(trackBaseName), trackAlbum, prefCovers);
+    expected2.setImage(QImage(cLoc_albumName));
     expected2.coverLocation = trackAlbum % ".jpg";
     EXPECT_EQ(expected2, res2);
 
@@ -284,10 +278,10 @@ TEST_F(CoverArtUtilTest, searchImage) {
     cLoc_filename = QString(trackdir % "/" % trackBaseName % "." % qFormat);
     EXPECT_TRUE(img.save(cLoc_filename, format));
     prefCovers.append(QFileInfo(cLoc_filename));
-    res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                prefCovers);
+    res2 = CoverArtUtils::selectCoverArtForTrack(
+            mixxx::FileInfo(trackBaseName), trackAlbum, prefCovers);
 
-    expected2.hash = CoverImageUtils::calculateHash(QImage(cLoc_filename));
+    expected2.setImage(QImage(cLoc_filename));
     expected2.coverLocation = trackBaseName % ".jpg";
     EXPECT_EQ(expected2, res2);
 

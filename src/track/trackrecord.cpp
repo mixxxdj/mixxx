@@ -108,11 +108,34 @@ bool copyIfNotEmpty(
 
 } // anonymous namespace
 
-bool TrackRecord::mergeImportedMetadata(
-        const TrackMetadata& importedFromFile) {
+bool TrackRecord::replaceMetadataFromSource(
+        TrackMetadata&& importedMetadata,
+        const QDateTime& metadataSynchronized) {
+    bool modified = false;
+    if (getMetadata() != importedMetadata) {
+        setMetadata(std::move(importedMetadata));
+        modified = true;
+    }
+    // Only set the metadata synchronized flag (column `header_parsed`
+    // in the database) from false to true, but never reset it back to
+    // false. Otherwise file tags would be re-imported and overwrite
+    // the metadata stored in the database, e.g. after retrieving metadata
+    // from MusicBrainz!
+    // TODO: In the future this flag should become a time stamp
+    // to detect updates of files and then decide based on time
+    // stamps if file tags need to be re-imported.
+    if (!getMetadataSynchronized() && !metadataSynchronized.isNull()) {
+        setMetadataSynchronized(true);
+        modified = true;
+    }
+    return modified;
+}
+
+bool TrackRecord::mergeExtraMetadataFromSource(
+        const TrackMetadata& importedMetadata) {
     bool modified = false;
     TrackInfo* pMergedTrackInfo = m_metadata.ptrTrackInfo();
-    const TrackInfo& importedTrackInfo = importedFromFile.getTrackInfo();
+    const TrackInfo& importedTrackInfo = importedMetadata.getTrackInfo();
     if (pMergedTrackInfo->getTrackTotal() == kTrackTotalPlaceholder) {
         pMergedTrackInfo->setTrackTotal(importedTrackInfo.getTrackTotal());
         // Also set the track number if it is still empty due
@@ -180,7 +203,7 @@ bool TrackRecord::mergeImportedMetadata(
             pMergedTrackInfo->ptrWork(),
             importedTrackInfo.getWork());
     AlbumInfo* pMergedAlbumInfo = refMetadata().ptrAlbumInfo();
-    const AlbumInfo& importedAlbumInfo = importedFromFile.getAlbumInfo();
+    const AlbumInfo& importedAlbumInfo = importedMetadata.getAlbumInfo();
     modified |= mergeReplayGainMetadataProperty(
             pMergedAlbumInfo->ptrReplayGain(),
             importedAlbumInfo.getReplayGain());

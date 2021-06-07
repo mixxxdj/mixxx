@@ -1,5 +1,7 @@
 #include "skin/legacy/launchimage.h"
 
+#include <util/assert.h>
+
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPainter>
@@ -56,8 +58,10 @@ LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
 LaunchImage::~LaunchImage() {
 }
 
-void LaunchImage::progress(int value) {
+void LaunchImage::progress(int value, const QString& serviceName) {
     m_pProgressBar->setValue(value);
+    // TODO: show serviceName
+    Q_UNUSED(serviceName);
 }
 
 void LaunchImage::paintEvent(QPaintEvent *)

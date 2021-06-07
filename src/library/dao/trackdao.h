@@ -1,24 +1,31 @@
 #pragma once
 
 #include <QFileInfo>
+#include <QList>
 #include <QObject>
 #include <QSet>
-#include <QList>
 #include <QSqlDatabase>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
+#include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"
 
+class FwdSqlQuery;
 class SqlTransaction;
 class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
+
+namespace mixxx {
+
+class FileInfo;
+
+} // namespace mixxx
 
 class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
@@ -44,7 +51,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void finish();
 
     QList<TrackId> resolveTrackIds(
-            const QList<TrackFile> &trackFiles,
+            const QList<mixxx::FileInfo>& fileInfos,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
     TrackId getTrackIdByRef(
@@ -67,6 +74,11 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     // Only used by friend class TrackCollection, but public for testing!
     void saveTrack(Track* pTrack) const;
+
+    /// Update the play counter properties according to the corresponding
+    /// aggregated properties obtained from the played history.
+    bool updatePlayCounterFromPlayedHistory(
+            const QSet<TrackId>& trackIds) const;
 
   signals:
     // Forwarded from Track object
@@ -113,8 +125,15 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const TrackPointer& pTrack,
             bool unremove);
     TrackPointer addTracksAddFile(
-            const TrackFile& trackFile,
+            const mixxx::FileAccess& fileAccess,
             bool unremove);
+    TrackPointer addTracksAddFile(
+            const QString& filePath,
+            bool unremove) {
+        return addTracksAddFile(
+                mixxx::FileAccess(mixxx::FileInfo(filePath)),
+                unremove);
+    }
     void addTracksFinish(bool rollback = false);
 
     bool updateTrack(Track* pTrack) const;
@@ -143,23 +162,23 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void markUnverifiedTracksAsDeleted();
 
     bool verifyRemainingTracks(
-            const QStringList& libraryRootDirs,
+            const QList<mixxx::FileInfo>& libraryRootDirs,
             volatile const bool* pCancel);
 
     void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                                         QSet<TrackId>* pTracksChanged);
 
     // Callback for GlobalTrackCache
-    TrackFile relocateCachedTrack(
+    mixxx::FileAccess relocateCachedTrack(
             TrackId trackId,
-            TrackFile fileInfo) override;
+            mixxx::FileAccess fileAccess) override;
 
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
 
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
 
     std::unique_ptr<QSqlQuery> m_pQueryTrackLocationInsert;
     std::unique_ptr<QSqlQuery> m_pQueryTrackLocationSelect;

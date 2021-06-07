@@ -54,10 +54,6 @@ bool recognizeDevice(const hid_device_info& device_info) {
 
 } // namespace
 
-HidEnumerator::HidEnumerator(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig) {
-}
-
 HidEnumerator::~HidEnumerator() {
     qDebug() << "Deleting HID devices...";
     while (m_devices.size() > 0) {
@@ -67,54 +63,32 @@ HidEnumerator::~HidEnumerator() {
 }
 
 QList<Controller*> HidEnumerator::queryDevices() {
-    qDebug() << "Scanning HID devices:";
+    qInfo() << "Scanning USB HID devices";
 
-    struct hid_device_info *devs, *cur_dev;
-    devs = hid_enumerate(0x0, 0x0);
+    hid_device_info* device_info_list = hid_enumerate(0x0, 0x0);
+    for (const auto* device_info = device_info_list;
+            device_info;
+            device_info = device_info->next) {
+        auto deviceInfo = mixxx::hid::DeviceInfo(*device_info);
+        if (!recognizeDevice(*device_info)) {
+            qInfo()
+                    << "Excluding USB HID device"
+                    << deviceInfo;
+            continue;
+        }
+        qInfo() << "Found USB HID device:"
+                << deviceInfo;
 
-    for (cur_dev = devs; cur_dev; cur_dev = cur_dev->next) {
-        if (!recognizeDevice(*cur_dev)) {
-            // OS/X and windows use usage_page/usage not interface_number
-            qDebug()
-                    << "Skipping"
-                    << HidController::safeDecodeWideString(
-                               cur_dev->manufacturer_string, 512)
-                    << HidController::safeDecodeWideString(
-                               cur_dev->product_string, 512)
-                    << QString("r%1").arg(cur_dev->release_number) << "S/N"
-                    << HidController::safeDecodeWideString(
-                               cur_dev->serial_number, 512)
-                    << (cur_dev->interface_number == -1
-                                       ? QString("Usage Page %1 Usage %2")
-                                                 .arg(QString::number(
-                                                              cur_dev->usage_page),
-                                                         QString::number(
-                                                                 cur_dev->usage))
-                                       : QString("Interface %1")
-                                                 .arg(cur_dev->interface_number));
+        if (!deviceInfo.isValid()) {
+            qWarning() << "USB permissions problem or device error."
+                       << "Your account needs write access to USB HID controllers.";
             continue;
         }
 
-        // OS/X and windows use usage_page/usage not interface_number
-        qDebug() << "Found"
-                 << HidController::safeDecodeWideString(cur_dev->manufacturer_string, 512)
-                 << HidController::safeDecodeWideString(cur_dev->product_string, 512)
-                 << QString("r%1").arg(cur_dev->release_number)
-                 << "S/N" << HidController::safeDecodeWideString(cur_dev->serial_number, 512)
-                 << (cur_dev->interface_number == -1 ? QString("Usage Page %1 Usage %2").arg(
-                     QString::number(cur_dev->usage_page),
-                     QString::number(cur_dev->usage)) :
-                     QString("Interface %1").arg(cur_dev->interface_number));
-
-        if (!cur_dev->serial_number && !cur_dev->product_string) {
-            qWarning() << "USB permissions problem (or device error.) Your account needs write access to USB HID controllers.";
-            continue;
-        }
-
-        HidController* currentDevice = new HidController(*cur_dev, m_pConfig);
-        m_devices.push_back(currentDevice);
+        HidController* newDevice = new HidController(std::move(deviceInfo));
+        m_devices.push_back(newDevice);
     }
-    hid_free_enumeration(devs);
+    hid_free_enumeration(device_info_list);
 
     return m_devices;
 }

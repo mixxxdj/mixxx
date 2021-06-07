@@ -10,7 +10,7 @@ class BulkEnumerator : public ControllerEnumerator {
     explicit BulkEnumerator(UserSettingsPointer pConfig);
     virtual ~BulkEnumerator();
 
-    QList<Controller*> queryDevices();
+    QList<Controller*> queryDevices() override;
 
   private:
     QList<Controller*> m_devices;
