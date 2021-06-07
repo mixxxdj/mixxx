@@ -35,6 +35,13 @@ class QmlPlayerProxy : public QObject {
     QML_NAMED_ELEMENT(Player)
     QML_UNCREATABLE("Only accessible via Mixxx.PlayerManager.getPlayer(group)")
 
+    Q_PROPERTY(int waveformLength READ getWaveformLength NOTIFY waveformLengthChanged)
+    Q_PROPERTY(QString waveformTexture READ getWaveformTexture NOTIFY waveformTextureChanged)
+    Q_PROPERTY(int waveformTextureSize READ getWaveformTextureSize NOTIFY
+                    waveformTextureSizeChanged)
+    Q_PROPERTY(int waveformTextureStride READ getWaveformTextureStride NOTIFY
+                    waveformTextureStrideChanged)
+
   public:
     explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
 
@@ -56,6 +63,11 @@ class QmlPlayerProxy : public QObject {
     QUrl getCoverArtUrl() const;
     QUrl getTrackLocationUrl() const;
 
+    int getWaveformLength() const;
+    QString getWaveformTexture() const;
+    int getWaveformTextureSize() const;
+    int getWaveformTextureStride() const;
+
     /// Needed for interacting with the raw track player object.
     BaseTrackPlayer* internalTrackPlayer() const {
         return m_pTrackPlayer;
@@ -68,6 +80,7 @@ class QmlPlayerProxy : public QObject {
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotTrackChanged();
+    void slotWaveformChanged();
 
     void setArtist(const QString& artist);
     void setTitle(const QString& title);
@@ -107,7 +120,13 @@ class QmlPlayerProxy : public QObject {
 
     void loadTrackFromLocationRequested(const QString& trackLocation, bool play);
 
+    void waveformLengthChanged();
+    void waveformTextureChanged();
+    void waveformTextureSizeChanged();
+    void waveformTextureStrideChanged();
+
   private:
+    QImage m_waveformTexture;
     QPointer<BaseTrackPlayer> m_pTrackPlayer;
     TrackPointer m_pCurrentTrack;
 };

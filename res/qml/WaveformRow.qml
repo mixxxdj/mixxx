@@ -68,8 +68,8 @@ Item {
             x: 0.5 * waveformContainer.width - playPositionControl.value * width
             visible: root.deckPlayer.isLoaded
 
-            Mixxx.WaveformOverview {
-                player: Mixxx.PlayerManager.getPlayer(root.group)
+            WaveformShader {
+                group: root.group
                 anchors.fill: parent
             }
 

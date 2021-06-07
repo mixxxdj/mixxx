@@ -1,5 +1,7 @@
 #include "qml/qmlplayerproxy.h"
 
+#include <QBuffer>
+
 #include "mixer/basetrackplayer.h"
 #include "moc_qmlplayerproxy.cpp"
 #include "qml/asyncimageprovider.h"
@@ -112,6 +114,10 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
                 &Track::colorUpdated,
                 this,
                 &QmlPlayerProxy::colorChanged);
+        connect(pTrack.get(),
+                &Track::waveformUpdated,
+                this,
+                &QmlPlayerProxy::slotWaveformChanged);
     }
     emit trackChanged();
     emit trackLoaded();
@@ -135,6 +141,7 @@ void QmlPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
     }
     m_pCurrentTrack.reset();
     m_pCurrentTrack = pNewTrack;
+    m_waveformTexture = QImage();
     emit trackChanged();
     emit trackLoading();
 }
@@ -155,6 +162,79 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit colorChanged();
     emit coverArtUrlChanged();
     emit trackLocationUrlChanged();
+
+    emit waveformLengthChanged();
+    emit waveformTextureChanged();
+    emit waveformTextureSizeChanged();
+    emit waveformTextureStrideChanged();
+}
+
+void QmlPlayerProxy::slotWaveformChanged() {
+    emit waveformLengthChanged();
+    emit waveformTextureSizeChanged();
+    emit waveformTextureStrideChanged();
+
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        const ConstWaveformPointer pWaveform = pTrack->getWaveform();
+        const int textureWidth = pWaveform->getTextureStride();
+        const int textureHeight = pWaveform->getTextureSize() / pWaveform->getTextureStride();
+        if (pWaveform) {
+            const uchar* data = reinterpret_cast<const uchar*>(pWaveform->data());
+            m_waveformTexture = QImage(data, textureWidth, textureHeight, QImage::Format_RGBA8888);
+            emit waveformTextureChanged();
+        }
+    }
+}
+
+int QmlPlayerProxy::getWaveformLength() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        const ConstWaveformPointer pWaveform = pTrack->getWaveform();
+        if (pWaveform) {
+            return pWaveform->getDataSize();
+        }
+    }
+    return 0;
+}
+
+QString QmlPlayerProxy::getWaveformTexture() const {
+    if (m_waveformTexture.isNull()) {
+        return QString();
+    }
+    QByteArray byteArray;
+    QBuffer buffer(&byteArray);
+    buffer.open(QIODevice::WriteOnly);
+    m_waveformTexture.save(&buffer, "png");
+
+    QString imageData = QString::fromLatin1(byteArray.toBase64().data());
+    if (imageData.isEmpty()) {
+        return QString();
+    }
+
+    return QStringLiteral("data:image/png;base64,") + imageData;
+}
+
+int QmlPlayerProxy::getWaveformTextureSize() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        const ConstWaveformPointer pWaveform = pTrack->getWaveform();
+        if (pWaveform) {
+            return pWaveform->getTextureSize();
+        }
+    }
+    return 0;
+}
+
+int QmlPlayerProxy::getWaveformTextureStride() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        const ConstWaveformPointer pWaveform = pTrack->getWaveform();
+        if (pWaveform) {
+            return pWaveform->getTextureStride();
+        }
+    }
+    return 0;
 }
 
 bool QmlPlayerProxy::isLoaded() const {

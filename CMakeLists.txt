@@ -2605,6 +2605,7 @@ set(
 set(QT_EXTRA_COMPONENTS "")
 if(QT6)
   find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
+  list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
   list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
   list(APPEND QT_EXTRA_COMPONENTS "Quick")
@@ -2630,6 +2631,8 @@ if(QT_EXTRA_COMPONENTS)
 endif()
 
 if(QML)
+  add_subdirectory(res/shaders)
+
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
   qt_add_library(mixxx-qml-lib STATIC)
   foreach(COMPONENT ${QT_COMPONENTS})
