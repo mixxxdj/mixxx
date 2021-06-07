@@ -23,14 +23,8 @@ QString makeTestConfigFile(const QString& path) {
 QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
 
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
-    // Construct a list of strings based on the command line arguments
     CmdlineArgs args;
-    QStringList argList;
-    for (int i = 0; i < argc; i++) {
-        argList << QString::fromLocal8Bit(argv[i]);
-    }
-
-    const bool argsParsed = args.parse(argList);
+    const bool argsParsed = args.parse(argc, argv);
     Q_UNUSED(argsParsed);
     DEBUG_ASSERT(argsParsed);
 

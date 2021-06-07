@@ -63,7 +63,13 @@ bool parseLogLevel(
 }
 } // namespace
 
-bool CmdlineArgs::parse(const QStringList& arguments) {
+bool CmdlineArgs::parse(int& argc, char** argv) {
+    QStringList arguments;
+    arguments.reserve(argc);
+    for (int a = 0; a < argc; ++a) {
+        arguments << QString::fromLocal8Bit(argv[a]);
+    }
+
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main",
             "Mixxx is an open source DJ software. For more information, "
@@ -183,8 +189,9 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
     }
 
     if (parser.isSet(helpOption) || parser.isSet(QStringLiteral("help-all"))) {
-        // we need to call process here otherwise there is no way to print the
-        // help-all information
+        // we need to call process here with an initialized QCoreApplication
+        // otherwise there is no way to print the help-all information
+        QCoreApplication coreApp(argc, argv);
         parser.process(arguments);
         return false;
     }
