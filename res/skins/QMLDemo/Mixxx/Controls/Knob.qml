@@ -1,16 +1,17 @@
 import Mixxx 0.1 as Mixxx
+import QtQml 2.12
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
 
 Item {
     id: root
 
-    property alias group: control.group
-    property alias key: control.key
+    property real value: min
     property alias background: background.data
     property alias foreground: foreground.data
     property real min: 0
     property real max: 1
+    property real wheelStepSize: (root.max - root.min) / 10
     property real angle: 130
     property bool arc: false
     property real arcRadius: width / 2
@@ -21,16 +22,7 @@ Item {
     property alias arcStyle: arcPath.strokeStyle
     property alias arcStylePattern: arcPath.dashPattern
 
-    Mixxx.ControlProxy {
-        id: control
-    }
-
-    Mixxx.ControlProxy {
-        id: resetcontrol
-
-        group: root.group
-        key: root.key + "_set_default"
-    }
+    signal turned(real value)
 
     Item {
         id: background
@@ -42,11 +34,11 @@ Item {
         id: foreground
 
         anchors.fill: parent
-        rotation: (control.parameter - (root.max - root.min) / 2) * 2 * root.angle
+        rotation: (root.value - (root.max - root.min) / 2) * 2 * root.angle
     }
 
     Shape {
-        anchors.fill: root
+        anchors.fill: parent
         antialiasing: true
         visible: root.arc
 
@@ -59,7 +51,7 @@ Item {
 
             PathAngleArc {
                 startAngle: -90
-                sweepAngle: (control.parameter - (root.max - root.min) / 2) * 2 * root.angle
+                sweepAngle: (root.value - (root.max - root.min) / 2) * 2 * root.angle
                 radiusX: root.arcRadius
                 radiusY: root.arcRadius
                 centerX: root.width / 2 + root.arcOffsetX
@@ -70,30 +62,54 @@ Item {
 
     }
 
+    DragHandler {
+        id: dragHandler
+
+        property real value
+        property vector2d lastTranslation: Qt.vector2d(0, 0)
+
+        target: null
+        onActiveChanged: {
+            dragHandler.value = root.value;
+            lastTranslation = Qt.vector2d(0, 0);
+        }
+        onTranslationChanged: {
+            const delta = lastTranslation.y - translation.y;
+            const change = (root.max - root.min) * Mixxx.MathUtils.clamp(delta, -100, 100) / 100;
+            const value = Mixxx.MathUtils.clamp(root.value + change, root.min, root.max);
+            lastTranslation = translation;
+            root.turned(value);
+            dragHandler.value = value;
+        }
+    }
+
+    Binding {
+        when: dragHandler.active
+        target: root
+        property: "value"
+        value: dragHandler.value
+    }
+
+    // TODO: Replace this with a WheelHandler once we switch to Qt >= 5.14.
     MouseArea {
-        id: mousearea
+        id: wheelHandler
 
-        property real posy: root.height / 2
+        property real value
 
-        anchors.fill: root
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
         onWheel: {
-            if (wheel.angleDelta.y < 0)
-                control.parameter = Math.min(root.max, control.parameter + 0.1);
-            else
-                control.parameter = Math.max(root.min, control.parameter - 0.1);
+            const value = (wheel.angleDelta.y < 0) ? Math.min(root.max, root.value + root.wheelStepSize) : Math.max(root.min, root.value - root.wheelStepSize);
+            root.turned(value);
+            dragHandler.value = value;
         }
-        onDoubleClicked: resetcontrol.value = 1
-        onPressed: {
-            mousearea.posy = mouse.y;
-        }
-        onPositionChanged: {
-            if (mousearea.pressed) {
-                const dy = mousearea.posy - mouse.y;
-                let parameter = control.parameter + Math.max(Math.min(dy, 100), -100) / 100;
-                control.parameter = Math.max(root.min, Math.min(root.max, parameter));
-                mousearea.posy = mouse.y;
-            }
-        }
+    }
+
+    Binding {
+        when: wheelHandler.drag.active
+        target: root
+        property: "value"
+        value: wheelHandler.value
     }
 
 }

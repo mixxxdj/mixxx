@@ -12,34 +12,34 @@ Column {
     spacing: 4
 
     EqKnob {
-        group: "[EqualizerRack1_" + root.group + "_Effect1]"
-        key: "parameter3"
         statusKey: "button_parameter3"
-        color: Theme.eqHighColor
+        knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        knob.key: "parameter3"
+        knob.color: Theme.eqHighColor
     }
 
     EqKnob {
-        group: "[EqualizerRack1_" + root.group + "_Effect1]"
-        key: "parameter2"
         statusKey: "button_parameter2"
-        color: Theme.eqMidColor
+        knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        knob.key: "parameter2"
+        knob.color: Theme.eqMidColor
     }
 
     EqKnob {
-        group: "[EqualizerRack1_" + root.group + "_Effect1]"
-        key: "parameter1"
+        knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        knob.key: "parameter1"
         statusKey: "button_parameter1"
-        color: Theme.eqLowColor
+        knob.color: Theme.eqLowColor
     }
 
     EqKnob {
-        group: "[QuickEffectRack1_" + root.group + "]"
-        key: "super1"
+        knob.group: "[QuickEffectRack1_" + root.group + "]"
+        knob.key: "super1"
         statusGroup: "[QuickEffectRack1_" + root.group + "_Effect1]"
         statusKey: "enabled"
-        arcStyle: ShapePath.DashLine
-        arcStylePattern: [2, 2]
-        color: Theme.eqFxColor
+        knob.arcStyle: ShapePath.DashLine
+        knob.arcStylePattern: [2, 2]
+        knob.color: Theme.eqFxColor
     }
 
     Skin.OrientationToggleButton {

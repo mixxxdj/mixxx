@@ -72,6 +72,12 @@ int main(int argc, char * argv[]) {
     QCoreApplication::setApplicationName(VersionStore::applicationName());
     QCoreApplication::setApplicationVersion(VersionStore::version());
 
+    // Construct a list of strings based on the command line arguments
+    CmdlineArgs& args = CmdlineArgs::Instance();
+    if (!args.parse(argc, argv)) {
+        return kParseCmdlineArgsErrorExitCode;
+    }
+
     // If you change this here, you also need to change it in
     // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
     QThread::currentThread()->setObjectName("Main");
@@ -81,13 +87,14 @@ int main(int argc, char * argv[]) {
     // the main thread. Bug #1748636.
     ErrorDialogHandler::instance();
 
-    MixxxApplication app(argc, argv);
-
-    // Construct a list of strings based on the command line arguments
-    CmdlineArgs& args = CmdlineArgs::Instance();
-    if (!args.parse(app.arguments())) {
-        return kParseCmdlineArgsErrorExitCode;
+#ifdef __APPLE__
+    Sandbox::checkSandboxed();
+    if (!args.getSettingsPathSet()) {
+        args.setSettingsPath(Sandbox::migrateOldSettings());
     }
+#endif
+
+    MixxxApplication app(argc, argv);
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

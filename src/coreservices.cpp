@@ -108,12 +108,6 @@ CoreServices::CoreServices(const CmdlineArgs& args)
 
 void CoreServices::initializeSettings() {
     QString settingsPath = m_cmdlineArgs.getSettingsPath();
-#ifdef __APPLE__
-    Sandbox::checkSandboxed();
-    if (!m_cmdlineArgs.getSettingsPathSet()) {
-        settingsPath = Sandbox::migrateOldSettings();
-    }
-#endif
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }
 

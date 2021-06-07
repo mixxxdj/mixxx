@@ -26,6 +26,7 @@ QtObject {
     property color backgroundColor: "#1e1e20"
     property color deckActiveColor: green
     property color deckBackgroundColor: darkGray
+    property color knobBackgroundColor: "#262626"
     property color deckLineColor: darkGray2
     property color deckTextColor: lightGray2
     property color buttonNormalColor: midGray

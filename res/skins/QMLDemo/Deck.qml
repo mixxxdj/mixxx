@@ -22,7 +22,7 @@ Item {
         group: root.group
     }
 
-    Skin.Slider {
+    Skin.ControlSlider {
         id: rateSlider
 
         visible: !root.minimized

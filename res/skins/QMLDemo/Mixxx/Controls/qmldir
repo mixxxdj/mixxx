@@ -1,5 +1,8 @@
-module Mixxx
-ToggleButton 0.1 ToggleButton.qml
+module Mixxx.Controls
+depends Mixxx 0.1
 Knob 0.1 Knob.qml
 Slider 0.1 Slider.qml
 Spinny 0.1 Spinny.qml
+WaveformOverview 0.1 WaveformOverview.qml
+WaveformOverviewMarker 0.1 WaveformOverviewMarker.qml
+WaveformOverviewHotcueMarker 0.1 WaveformOverviewHotcueMarker.qml
