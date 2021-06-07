@@ -16,7 +16,7 @@ Rectangle {
     height: 56
     radius: 5
 
-    Skin.ResettableControlKnob {
+    Skin.ControlKnob {
         id: knob
 
         anchors.centerIn: root

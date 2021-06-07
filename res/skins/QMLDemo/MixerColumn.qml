@@ -18,7 +18,7 @@ Item {
         color: Theme.knobBackgroundColor
         radius: 5
 
-        Skin.ResettableControlKnob {
+        Skin.ControlKnob {
             id: gainKnob
 
             anchors.centerIn: parent
@@ -57,7 +57,7 @@ Item {
             key: "VuMeterR"
         }
 
-        Skin.ResettableControlSlider {
+        Skin.ControlSlider {
             id: volumeSlider
 
             anchors.fill: parent

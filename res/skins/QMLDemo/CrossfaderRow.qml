@@ -18,7 +18,7 @@ Item {
         anchors.bottom: parent.bottom
     }
 
-    Skin.ResettableControlSlider {
+    Skin.ControlSlider {
         id: crossfaderSlider
 
         orientation: Qt.Horizontal

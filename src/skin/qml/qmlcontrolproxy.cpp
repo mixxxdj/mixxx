@@ -105,6 +105,13 @@ double QmlControlProxy::getParameter() const {
     return m_pControlProxy->getParameter();
 }
 
+void QmlControlProxy::reset() {
+    if (!isInitialized()) {
+        return;
+    }
+    m_pControlProxy->reset();
+}
+
 void QmlControlProxy::reinitializeFromKey() {
     // Just ignore this if the component is still loading, because group or key may not be set yet.
     if (!m_isComponentComplete) {
