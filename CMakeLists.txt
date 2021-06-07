@@ -1486,6 +1486,7 @@ add_executable(mixxx-test
   src/test/playlisttest.cpp
   src/test/portmidicontroller_test.cpp
   src/test/portmidienumeratortest.cpp
+  src/test/qmlskintest.cpp
   src/test/queryutiltest.cpp
   src/test/rangelist_test.cpp
   src/test/readaheadmanager_test.cpp
@@ -1554,6 +1555,9 @@ if (NOT WIN32)
   # allow to pass environment variables into the ctest macro expansion.
   set_tests_properties(${testsuite} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
+
+# Increase test timeout for QML skin test, since it might take longer
+set_tests_properties(QmlSkinTest.TestDemoSkinIsLoadable PROPERTIES TIMEOUT 120)
 
 # Benchmarking
 add_custom_target(mixxx-benchmark
