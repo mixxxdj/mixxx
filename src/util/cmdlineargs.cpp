@@ -188,7 +188,11 @@ bool CmdlineArgs::parse(int& argc, char** argv) {
         qWarning() << parser.errorText();
     }
 
-    if (parser.isSet(helpOption) || parser.isSet(QStringLiteral("help-all"))) {
+    if (parser.isSet(helpOption)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            || parser.isSet(QStringLiteral("help-all"))
+#endif
+    ) {
         // we need to call process here with an initialized QCoreApplication
         // otherwise there is no way to print the help-all information
         QCoreApplication coreApp(argc, argv);
