@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import pathlib
 import sys
+import re
 
 QMLFORMAT_MISSING_MESSAGE = """
 qmlformat is not installed or not in your $PATH. It is included in Qt 5.15
@@ -29,6 +30,21 @@ def main(argv=None):
 
     for filename in args.file:
         subprocess.call((qmlformat_executable, "-i", filename))
+
+        # Replace required properties
+        # (incompatible with Qt 5.12)
+        with open(filename, mode="r") as fp:
+            text = fp.read()
+
+        text = re.sub(
+            r"^(\s*)required property (.*)$",
+            r"\g<1>property \g<2> // required",
+            text,
+            flags=re.MULTILINE,
+        )
+
+        with open(filename, mode="w") as fp:
+            fp.write(text)
 
     return 0
 
