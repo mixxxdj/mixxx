@@ -289,9 +289,9 @@ double BeatUtils::makeConstBpm(
 
     // Create a const region region form the first beat of the first region to the last beat of the last region.
 
-    const double minRoundBpm = 60 * sampleRate / longestRegionBeatLengthMax;
-    const double maxRoundBpm = 60 * sampleRate / longestRegionBeatLengthMin;
-    const double centerBpm = 60 * sampleRate / longestRegionBeatLength;
+    const double minRoundBpm = 60.0 * sampleRate / longestRegionBeatLengthMax;
+    const double maxRoundBpm = 60.0 * sampleRate / longestRegionBeatLengthMin;
+    const double centerBpm = 60.0 * sampleRate / longestRegionBeatLength;
 
     //qDebug() << "minRoundBpm" << minRoundBpm;
     //qDebug() << "maxRoundBpm" << maxRoundBpm;
@@ -302,8 +302,9 @@ double BeatUtils::makeConstBpm(
         // a constant beatgrid so "first beat" only affects the anchor point where
         // bpm adjustments are made.
         *pFirstBeat = constantRegions[startRegionIndex].firstBeat;
-        const double beatsBeforeFirst = std::floor(*pFirstBeat / longestRegionBeatLength);
-        *pFirstBeat -= (longestRegionBeatLength * beatsBeforeFirst);
+        const double roundedBeatLength = 60.0 * sampleRate / roundBpm;
+        const double beatsBeforeFirst = std::floor(*pFirstBeat / roundedBeatLength);
+        *pFirstBeat -= (roundedBeatLength * beatsBeforeFirst);
     }
     return roundBpm;
 }
