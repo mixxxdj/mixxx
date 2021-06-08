@@ -13,16 +13,22 @@ Skin.Button {
     text: hotcueNumber
     width: playButton.height
     height: playButton.height
-    activeColor: {
-        if (hotcueColorControl.value < 0)
-            return Theme.deckActiveColor;
-
-        return "#" + hotcueColorControl.value.toString(16).padStart(6, "0");
-    }
+    activeColor: hotcueColorControl.color
     highlight: hotcueStatusControl.value
 
     Mixxx.ControlProxy {
         id: hotcueColorControl
+
+        readonly property color color: {
+            if (hotcueColorControl.value < 0)
+                return Theme.deckActiveColor;
+
+            return "#" + hotcueColorControl.value.toString(16).padStart(6, "0");
+        }
+
+        function setColor(newColor) {
+            value = (parseInt(newColor.r * 255) << 16) | (parseInt(newColor.g * 255) << 8) | parseInt(newColor.b * 255);
+        }
 
         group: root.group
         key: "hotcue_" + hotcueNumber + "_color"
@@ -88,7 +94,7 @@ Skin.Button {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            hotcueColorControl.value = (parseInt(parent.color.r * 255) << 16) | (parseInt(parent.color.g * 255) << 8) | parseInt(parent.color.b * 255);
+                            hotcueColorControl.setColor(parent.color);
                             popup.close();
                         }
                     }
