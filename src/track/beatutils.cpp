@@ -298,7 +298,12 @@ double BeatUtils::makeConstBpm(
     const double roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
 
     if (pFirstBeat) {
+        // Move the first beat as close to the start of the track as we can. This is
+        // a constant beatgrid so "first beat" only affects the anchor point where
+        // bpm adjustments are made.
         *pFirstBeat = constantRegions[startRegionIndex].firstBeat;
+        const double beatsBeforeFirst = std::floor(*pFirstBeat / longestRegionBeatLength);
+        *pFirstBeat -= (longestRegionBeatLength * beatsBeforeFirst);
     }
     return roundBpm;
 }
