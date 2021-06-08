@@ -12,7 +12,7 @@ Popup {
     dim: false
     modal: true
     focus: true
-    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     contentWidth: colorGrid.implicitWidth
     contentHeight: colorGrid.implicitHeight + clearButton.implicitHeight
 
