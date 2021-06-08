@@ -3,12 +3,14 @@
 # shellcheck disable=SC1091
 set -o pipefail
 
+CALL=$0
 COMMAND=$1
 shift
 
 case "$COMMAND" in
     name)
-        echo "No build environment needed for Ubuntu, please install dependencies using apt." >&2
+        echo "No build environment name required for Debian based distros." >&2
+        echo "This script installs the build dependencies via apt using the \"setup\" option." >&2
         ;;
 
     setup)
@@ -85,4 +87,13 @@ case "$COMMAND" in
             qt5keychain-dev \
             qtscript5-dev \
             "${PACKAGES_EXTRA[@]}"
+        ;;
+    *)
+        echo "Usage: $CALL [options]"
+        echo ""
+        echo "options:"
+        echo "   help       Displays this help."
+        echo "   name       Displays the name of the required build envirnment."
+        echo "   setup      Installes the build environment."
+        ;;
 esac

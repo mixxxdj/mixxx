@@ -123,4 +123,12 @@ case "$COMMAND" in
             echo_exported_variables
         fi
         ;;
+    *)
+        echo "Usage: source macos_buildenv.sh [options]"
+        echo ""
+        echo "options:"
+        echo "   help       Displays this help."
+        echo "   name       Displays the name of the required build envirnment."
+        echo "   setup      Installes the build environment."
+        ;;
 esac
