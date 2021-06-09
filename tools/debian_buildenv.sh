@@ -3,11 +3,7 @@
 # shellcheck disable=SC1091
 set -o pipefail
 
-CALL=$0
-COMMAND=$1
-shift
-
-case "$COMMAND" in
+case "$1" in
     name)
         echo "No build environment name required for Debian based distros." >&2
         echo "This script installs the build dependencies via apt using the \"setup\" option." >&2
@@ -89,7 +85,7 @@ case "$COMMAND" in
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)
-        echo "Usage: $CALL [options]"
+        echo "Usage: $0 [options]"
         echo ""
         echo "options:"
         echo "   help       Displays this help."

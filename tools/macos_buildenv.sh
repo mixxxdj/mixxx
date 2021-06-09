@@ -8,9 +8,6 @@ if [ -z "${GITHUB_ENV}" ] && ! $(return 0 2>/dev/null); then
   exit 1
 fi
 
-COMMAND=$1
-shift 1
-
 realpath() {
     OLDPWD="${PWD}"
     cd "$1" || exit 1
@@ -28,7 +25,7 @@ read -r -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/packaging/macos/bu
 
 [ -z "$BUILDENV_BASEPATH" ] && BUILDENV_BASEPATH="${MIXXX_ROOT}/buildenv"
 
-case "$COMMAND" in
+case "$1" in
     name)
         if [ -n "${GITHUB_ENV}" ]; then
             echo "BUILDENV_NAME=$BUILDENV_NAME" >> "${GITHUB_ENV}"
