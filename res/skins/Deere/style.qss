@@ -423,12 +423,12 @@ WLibrarySidebar::item:focus {
 /* triangle for closed/opened branches in treeview */
 WLibrarySidebar::branch:has-children:!has-siblings:closed,
 WLibrarySidebar::branch:closed:has-children:has-siblings {
-  border-image: none; image: url(skin:/../Deere/image/style_branch_closed.png);
+  border-image: none; image: url(skin:/../Deere/image/style_branch_closed.svg);
 }
 
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
-  border-image: none; image: url(skin:/../Deere/image/style_branch_open.png);
+  border-image: none; image: url(skin:/../Deere/image/style_branch_open.svg);
 }
 
 /* space left of selected child item */

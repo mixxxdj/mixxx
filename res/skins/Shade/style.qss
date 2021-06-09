@@ -612,22 +612,22 @@ WLibrarySidebar {
 /*  Closed branch of tree 	*/
 WLibrarySidebar::branch:has-children:!has-siblings:closed,
 WLibrarySidebar::branch:closed:has-children:has-siblings {
-  image: url(skin:/style/style_branch_closed.png);
+  image: url(skin:/style/style_branch_closed.svg);
   }
   WLibrarySidebar::branch:has-children:!has-siblings:closed:selected,
   WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
-    image: url(skin:/style/style_branch_closed_selected.png);
+    image: url(skin:/style/style_branch_closed_selected.svg);
   }
 
 /*  Open branch of tree 	*/
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
-  image: url(skin:/style/style_branch_open.png);
+  image: url(skin:/style/style_branch_open.svg);
   }
   WLibrarySidebar::branch:open:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:open:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/style/style_branch_open_selected.png);
+    image: url(skin:/style/style_branch_open_selected.svg);
   }
   /* space left of selected child item */
   WLibrarySidebar::branch:!has-children:!has-siblings:closed:selected,

@@ -2290,27 +2290,26 @@ WLibrarySidebar::branch:closed:has-children:!has-siblings:!selected,
 WLibrarySidebar::branch:closed:has-children:has-siblings:!selected {
 /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
   border-image: none;
-  /* TODO try if oversized icon would be upscaled */
-  image: url(skin:/classic/style/library_branch_closed_grey.png);
+  image: url(skin:/classic/style/library_branch_closed.svg);
   }
   /* closed, selected */
   WLibrarySidebar::branch:closed:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/classic/style/library_branch_closed_selected_white.png);
+    image: url(skin:/classic/style/library_branch_closed_selected.svg);
     background-color: #5e4507;
   }
 /* open */
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
   border-image: none;
-  image: url(skin:/classic/style/library_branch_open_grey.png);
+  image: url(skin:/classic/style/library_branch_open.svg);
   }
   /* open, selected */
   WLibrarySidebar::branch:open:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:open:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/classic/style/library_branch_open_selected_white.png);
+    image: url(skin:/classic/style/library_branch_open_selected.svg);
     background-color: #5e4507;
     }
   /* space left of selected child item */
