@@ -57,7 +57,7 @@ def get_changed_lines(
         if not include_files_filtered:
             # No files to check
             return
-        cmd.extend(["--", *include_files])
+        cmd.extend(["--", *include_files_filtered])
     logger.debug("Executing: %r", cmd)
     proc = subprocess.run(cmd, capture_output=True)
     proc.check_returncode()
