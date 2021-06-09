@@ -85,7 +85,7 @@ WOverview #PassthroughLabel {
 #SkinSettingsText,
 QToolTip,
 WLibrarySidebar QMenu,
-WLibrary QHeaderView QMenu,
+WTrackTableViewHeader QMenu,
 WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
@@ -191,7 +191,7 @@ QLineEdit QMenu::separator {
 
 /* All menus that have at least one item with a checkbox*/
 WLibrarySidebar QMenu::item,
-WLibrary QHeaderView QMenu::item,
+WTrackTableViewHeader QMenu::item,
 #CratesMenu::item {
 /* padding-right reserves space for the submenu expand arrow
   padding-left should be bigger than the menu icon width +
@@ -220,7 +220,7 @@ WLibraryTextBrowser QMenu::icon,
     "[ ] Auto DJ Track Source" */
 WLibrarySidebar QMenu::indicator,
 /* Column checkboxes in the table header menu */
-WLibrary QHeaderView QMenu::indicator {
+WTrackTableViewHeader QMenu::indicator {
   /* Qt 5.12.8: negative margin-right increases the overall item width but has no effect
                 on the indicator itself.
                 positive margin-right pushes icon to the right...
@@ -241,7 +241,7 @@ WTrackMenu QMenu QCheckBox {
     height: 10px;
   }
   WLibrarySidebar QMenu::indicator,
-  WLibrary QHeaderView QMenu::indicator,
+  WTrackTableViewHeader QMenu::indicator,
   WTrackMenu QMenu QCheckBox::indicator {
     width: 13px;
     height: 13px;
