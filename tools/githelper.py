@@ -27,7 +27,7 @@ def get_toplevel_path() -> str:
 def get_changed_lines(
     from_ref=None, to_ref=None, filter_lines=None, include_files=None
 ) -> typing.Iterable[Line]:
-    """Inspect `git diff-index` output, yields changed lines."""
+    """Inspect `git diff` output, yields changed lines."""
 
     logger = logging.getLogger(__name__)
 
