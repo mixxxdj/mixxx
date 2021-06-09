@@ -26,6 +26,7 @@ Rectangle {
         width: height
         source: root.deckPlayer.coverArtUrl
         visible: false
+        asynchronous: true
     }
 
     Rectangle {
