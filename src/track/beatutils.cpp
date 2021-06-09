@@ -301,6 +301,8 @@ double BeatUtils::makeConstBpm(
         // Move the first beat as close to the start of the track as we can. This is
         // a constant beatgrid so "first beat" only affects the anchor point where
         // bpm adjustments are made.
+        // This is a temporary fix, ideally the anchor point for the BPM grid should
+        // be the first proper downbeat, or perhaps the CUE point.
         *pFirstBeat = constantRegions[startRegionIndex].firstBeat;
         const double roundedBeatLength = 60.0 * sampleRate / roundBpm;
         const double beatsBeforeFirst = std::floor(*pFirstBeat / roundedBeatLength);
