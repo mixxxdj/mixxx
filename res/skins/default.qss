@@ -73,3 +73,27 @@ WOverview #PassthroughLabel {
 #SearchClearButton:focus {
   image: url(:/images/library/ic_library_cross_orange.svg);
 }
+
+/* checkbox in library "Played" column */
+WTrackTableView::indicator,
+/* BPM lock icon */
+#LibraryBPMButton::indicator {
+  width: 0.5em;
+  height: 0.5em;
+}
+
+
+#MainMenu QMenu::indicator {
+  width: 1em;
+  height: 1em;
+}
+
+#MainMenu QMenu::separator,
+WLibrarySidebar QMenu::separator,
+WTrackMenu::separator,
+WTrackMenu QMenu::separator,
+QLineEdit QMenu::separator,
+WLibraryTextBrowser QMenu::separator {
+  height: 0px;
+  margin: 0.25em;
+}

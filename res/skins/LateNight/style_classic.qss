@@ -2495,6 +2495,7 @@ WTrackTableView::indicator {
   WTrackTableViewHeader QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;

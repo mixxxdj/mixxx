@@ -2144,22 +2144,6 @@ WEffectSelector::indicator:unchecked,
 #MainMenu {
   margin-bottom: 0px;
   padding-bottom: 0px;
-}
-/* Checkbox preceeding menu items (Options, ) */
-#MainMenu QMenu::indicator {
-/* Make it big: the highlighted background of the hovered box
-  should be as tall as the text highlight */
-  width: 1em;
-  height: 1em;
-/* In all other menus the checkboxes are compiled from a css
-  border and a SVG checkmark icon  individually per state
-  (i.e. indeterminate, checked:selected, checked:disabled)
-
-  In the menu bar we only need to display two states
-  * checked / checked:selected
-  * unchecked / unchecked:selected
-  and we want identical appearance on both Wind'ohs and Linux
-  (avoid rendering issues) thus we use complete SVG checkboxes. */
   }
   #MainMenu QMenu::indicator:checked,
   #MainMenu QMenu::indicator:checked:selected {
@@ -2175,14 +2159,18 @@ WEffectSelector::indicator:unchecked,
   border: 1px solid #888;
   border-radius: 2px;
   }
-  #MainMenu QMenu::separator {
-    height: 0px;
-    margin: 0.25em 0.06em;
-  }
-  #MainMenu QMenu::right-arrow {
+  #MainMenu QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
     width: 0.35em;
     height: 0.7em;
     margin-right: 0.2em;
+    image: url(skin:/../Tango/buttons/btn_arrow_right.svg);
+  }
+  #MainMenu QMenu::right-arrow:selected,
+  WTrackMenu::right-arrow:selected,
+  WTrackMenu QMenu::right-arrow:selected {
+    image: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg);
   }
 
 /* All menus that have at least one item with a checkbox*/
@@ -2327,38 +2315,14 @@ QLineEdit QMenu::item:disabled {
   color: #555;
 }
 
-WLibrarySidebar QMenu::separator,
-WTrackTableViewHeader QMenu::separator,
-WTrackMenu::separator,
-WTrackMenu QMenu::separator,
-QLineEdit QMenu::separator {
-  height: 0px;
-  margin: 4px;
-  }
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
   WTrackTableViewHeader QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator {
     border-top: 1px solid #0a0a0a;
-  }
-
-WTrackMenu::right-arrow,
-WTrackMenu QMenu::right-arrow {
-  width: 8px;
-  height: 16px;
-  margin-right: 4px;
-  }
-  #MainMenu QMenu::right-arrow,
-  WTrackMenu::right-arrow,
-  WTrackMenu QMenu::right-arrow {
-    image: url(skin:/../Tango/buttons/btn_arrow_right.svg);
-  }
-  #MainMenu QMenu::right-arrow:selected,
-  WTrackMenu::right-arrow:selected,
-  WTrackMenu QMenu::right-arrow:selected {
-    image: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg);
   }
 
   WTrackTableViewHeader QMenu::indicator {
@@ -2994,8 +2958,6 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 
   /* checkbox in library "Played" column */
   WTrackTableView::indicator {
-    width: 10px;
-    height: 10px;
     margin: 0px;
     padding: 0px;
     color: #cfcfcf;

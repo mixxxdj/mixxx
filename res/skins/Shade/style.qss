@@ -201,22 +201,6 @@ WEffectSelector::indicator:unchecked:selected,
 #MainMenu {
   margin-bottom: 0px;
   padding-bottom: 0px;
-}
-/* Checkbox preceeding menu items (Options, ) */
-#MainMenu QMenu::indicator {
-/* Make it big: the highlighted background of the hovered box
-  should be as tall as the text highlight */
-  width: 1em;
-  height: 1em;
-/* In all other menus the checkboxes are compiled from a css
-  border and a SVG checkmark icon  individually per state
-  (i.e. indeterminate, checked:selected, checked:disabled)
-
-  In the menu bar we only need to display two states
-  * checked / checked:selected
-  * unchecked / unchecked:selected
-  and we want identical appearance on both Wind'ohs and Linux
-  (avoid rendering issues) thus we use complete SVG checkboxes. */
   }
   #MainMenu QMenu::indicator:checked,
   #MainMenu QMenu::indicator:checked:selected {
@@ -232,19 +216,13 @@ WEffectSelector::indicator:unchecked:selected,
   border: 1px solid #060613;
   border-radius: 2px;
   }
-  #MainMenu QMenu::separator {
-    height: 0px;
-    margin: 0.25em;
-  }
-  #MainMenu QMenu::right-arrow {
+  #MainMenu QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
     width: 0.5em;
     height: 0.5em;
     margin-right: 0.2em;
-  }
-
-  #MainMenu QMenu::indicator {
-    width: 1em;
-    height: 1em;
+    image: url(skin:/style/menu_arrow.svg);
   }
 
 WEffectSelector,
@@ -440,19 +418,12 @@ WTrackMenu QMenu QCheckBox {
   padding: 3px 10px 3px 5px;
 }
 
-WLibrarySidebar QMenu::separator,
-WTrackTableViewHeader QMenu::separator,
-WTrackMenu::separator,
-WTrackMenu QMenu::separator,
-QLineEdit QMenu::separator {
-  height: 0px;
-  margin: 4px;
-  }
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
   WTrackTableViewHeader QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator {
     border-top: 1px solid #71777a;
   }
@@ -464,17 +435,6 @@ QLineEdit QMenu::separator {
     height: 13px;
     border-width: 1px;
     border-style: solid;
-  }
-  WTrackMenu::right-arrow,
-  WTrackMenu QMenu::right-arrow {
-    width: 10px;
-    height: 10px;
-    margin-right: 4px;
-  }
-  #MainMenu QMenu::right-arrow,
-  WTrackMenu::right-arrow,
-  WTrackMenu QMenu::right-arrow {
-    image: url(skin:/style/menu_arrow.svg);
   }
 
 #EffectSelectorGroup[highlight="1"] {
@@ -643,8 +603,6 @@ WTrackTableView {
 
   /* checkbox in library "Played" column */
   WTrackTableView::indicator {
-    width: 10px;
-    height: 10px;
     margin: 0px;
     padding: 0px;
     color: #cfcfcf;

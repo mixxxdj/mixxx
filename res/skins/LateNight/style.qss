@@ -112,30 +112,10 @@ QLabel#labelRecStatistics {
   margin-bottom: 0px;
   padding-bottom: 0px;
 }
-/* Checkbox preceeding menu items (Options, ) */
-#MainMenu QMenu::indicator {
-/* Make it big: the highlighted background of the hovered box
-  should be as tall as the text highlight */
-  width: 1em;
-  height: 1em;
-}
-/* In all other menus the checkboxes are compiled from a css border
-  and a SVG checkmark icon  individually per state
-  (i.e. indeterminate, checked:selected, checked:disabled)
 
-  In the menu bar we only need to display two states
-  * checked / checked:selected
-  * unchecked / unchecked:selected
-  and we want identical appearance on both Wind'ohs and Linux
-  (avoid rendering issues) thus we use complete SVG checkboxes.
-
-  Checkbox icons are set per theme. */
-
-#MainMenu QMenu::separator {
-  height: 0px;
-  margin: 0.25em;
-}
-#MainMenu QMenu::right-arrow {
+#MainMenu QMenu::right-arrow,
+WTrackMenu::right-arrow,
+WTrackMenu QMenu::right-arrow {
   width: 0.7em;
   height: 0.7em;
 }
@@ -234,12 +214,6 @@ WTrackMenu QMenu QCheckBox {
   padding: 3px 10px 3px 5px;
 }
 
-  WTrackMenu::right-arrow,
-  WTrackMenu QMenu::right-arrow,
-  WTrackTableView::indicator {
-    width: 10px;
-    height: 10px;
-  }
   WLibrarySidebar QMenu::indicator,
   WTrackTableViewHeader QMenu::indicator,
   WTrackMenu QMenu QCheckBox::indicator {
