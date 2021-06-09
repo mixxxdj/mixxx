@@ -6,7 +6,7 @@ Slider {
     id: root
 
     property bool bar: false
-    property alias barMargin: barShape.anchors.margins
+    property real barMargin: 0
     property alias barColor: barPath.strokeColor
     property alias barWidth: barPath.strokeWidth
     property real barStart: 0
@@ -18,6 +18,7 @@ Slider {
         id: barShape
 
         anchors.fill: parent
+        anchors.margins: root.barMargin
         antialiasing: true
         visible: root.bar
 

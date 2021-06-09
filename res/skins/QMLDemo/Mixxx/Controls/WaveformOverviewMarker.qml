@@ -5,8 +5,8 @@ import QtQuick.Shapes 1.12
 Item {
     id: root
 
-    required property string group
-    required property string key
+    property string group // required
+    property string key // required
     property string color: "white"
 
     Shape {
