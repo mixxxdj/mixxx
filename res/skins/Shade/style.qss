@@ -237,30 +237,15 @@ WBeatSpinBox,
   }
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
-  padding: 2px;
   min-width: 160px;
   }
 WEffectSelector:!editable,
 WEffectSelector:!editable:on,
-WEffectSelector QAbstractScrollArea,
-WEffectSelector::down-arrow,
-#fadeModeCombobox QAbstractScrollArea,
-#fadeModeCombobox,
-#fadeModeCombobox::down-arrow,
-#spinBoxTransition,
 QToolTip,
+#MainMenu QMenu,
 WLibrarySidebar QMenu,
-WTrackMenu,
-WTrackMenu QMenu,
-QLineEdit QMenu,
-WCueMenuPopup,
-WCoverArtMenu {
-  border-width: 1px;
-  border-style: solid;
-  border-color: #060613;
-  }
-QToolTip,
-WLibrarySidebar QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
@@ -268,8 +253,11 @@ WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
-  padding: 3px;
-}
+  border-width: 1px;
+  border-style: solid;
+  border-color: #060613;
+  }
+
   WEffectSelector:!editable,
   WEffectSelector:!editable:on,
   #fadeModeCombobox {
@@ -374,51 +362,6 @@ WEffectSelector QAbstractScrollArea,
     border-color: #666;
   }
 
-/* All menus that have at least one item with a checkbox*/
-WLibrarySidebar QMenu::item,
-WTrackTableViewHeader QMenu::item,
-#CratesMenu::item {
-/* padding-right reserves space for the submenu expand arrow
-  padding-left should be bigger than the menu icon width +
-  icon margin-left/-right */
-  padding: 5px 12px 5px 26px;
-}
-
-WTrackMenu::item,
-WTrackMenu QMenu::item,
-/* This catches context menus of
-  - property cells in the tracks table
-  - WCueMenuPopup cue label editor
-  - WBeatSpinBox
-  - AutoDJ transition QSpinBox*/
-QLineEdit QMenu::item,
-WCoverArtMenu::item,
-/* for the sake of completeness: html root view of Crates, Rec etc. */
-WLibraryTextBrowser QMenu::item {
-  padding: 5px 12px 5px 12px;
-}
-
-/* Icons in those menus (copy, paste, cut, delete) */
-QLineEdit QMenu::icon,
-WLibraryTextBrowser QMenu::icon,
-/* - checkbox in Crate name context menu
-    "[ ] Auto DJ Track Source" */
-WLibrarySidebar QMenu::indicator,
-/* Column checkboxes in the table header menu */
-WTrackTableViewHeader QMenu::indicator {
-  /* Qt 5.12.8: negative margin-right increases the overall item width but has no effect
-                on the indicator itself.
-                positive margin-right pushes icon to the right...
-     Qt 5.15.2: needs negative margin-right in order to eliminate the item's
-                padding-left (necessary to avoid text/icon overlap); */
-  margin: 0px -20px 0px 5px;
-}
-
-/* items in Crate sub menu */
-WTrackMenu QMenu QCheckBox {
-  padding: 3px 10px 3px 5px;
-}
-
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
   WTrackTableViewHeader QMenu::separator,
@@ -432,8 +375,6 @@ WTrackMenu QMenu QCheckBox {
   WLibrarySidebar QMenu::indicator,
   WTrackTableViewHeader QMenu::indicator,
   WTrackMenu QMenu QCheckBox::indicator {
-    width: 0.7em;
-    height: 0.7em;
     border-width: 1px;
     border-style: solid;
   }

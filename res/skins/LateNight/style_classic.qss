@@ -2328,22 +2328,17 @@ WLibrarySidebar::branch:open:has-children:has-siblings {
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
 QToolTip,
+#MainMenu QMenu,
 WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
 WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea,
 QLineEdit QMenu,
 WCueMenuPopup,
-WCoverArtMenu {
-  padding: 3px;
-  border: 1px solid #888;
-  border-radius: 2px;
-}
-#MainMenu QMenu {
-  padding: 0.08em;
+WCoverArtMenu,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox QAbstractScrollArea {
   border: 1px solid #888;
   border-radius: 2px;
 }
