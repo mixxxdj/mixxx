@@ -217,8 +217,8 @@ WTrackMenu QMenu QCheckBox {
   WLibrarySidebar QMenu::indicator,
   WTrackTableViewHeader QMenu::indicator,
   WTrackMenu QMenu QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
+    width: 0.7em;
+    height: 0.7em;
     border: 1px solid #333;
     border-radius: 1px;
     background-color: #000;

@@ -2325,19 +2325,11 @@ QLineEdit QMenu::item:disabled {
     border-top: 1px solid #0a0a0a;
   }
 
-  WTrackTableViewHeader QMenu::indicator {
-    width: 10px;
-    height: 10px;
-    }
-    WTrackTableViewHeader QMenu::indicator:checked {
-      image: url(skin:/../Tango/buttons/btn_lib_checkmark_white.svg);
-    }
-
 WLibrarySidebar QMenu::indicator,
 WTrackTableViewHeader QMenu::indicator,
 WTrackMenu QMenu QCheckBox::indicator {
-  width: 13px;
-  height: 13px;
+  width: 0.7em;
+  height: 0.7em;
   background-color: #0f0f0f;
   border: 1px solid #333;
   border-radius: 1px;
@@ -2611,7 +2603,7 @@ WTrackTableViewHeader {
 
   WTrackTableViewHeader::up-arrow,
   WTrackTableViewHeader::down-arrow {
-    width: 12px;
+    width: 0.6em;
     padding-right: 2px;
     border-right: 1px solid #585858;
     background-color: rgba(51,51,51,200);
