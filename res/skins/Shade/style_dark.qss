@@ -100,7 +100,9 @@ WEffectSelector::indicator:unchecked:selected,
     border-color: #111;
     background-color: #897300;
   }
-  /* disabled menu item & checkbox */
+  /* disabled menu items and checkboxes */
+  #MainMenu::item:disabled,
+  #MainMenu QMenu::item:disabled,
   WLibrarySidebar QMenu::item:disabled,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,

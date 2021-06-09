@@ -350,7 +350,9 @@ WEffectSelector QAbstractScrollArea,
     /* remove OS focus indicator */
     outline: none;
   }
-  /* disabled menu item & checkbox */
+  /* disabled menu items and checkboxes */
+  #MainMenu::item:disabled,
+  #MainMenu QMenu::item:disabled,
   WLibrarySidebar QMenu::item:disabled,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,

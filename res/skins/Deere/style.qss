@@ -2107,15 +2107,14 @@ WTrackTableViewHeader QMenu::indicator:selected,
 WTrackMenu QMenu QCheckBox::indicator:selected {
   border: 1px solid #999;
 }
-/* disabled menu item and checkbox */
+/* disabled menu items and checkboxes */
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
-QLineEdit QMenu::item:disabled,
-WCoverArtMenu::item:disabled {
+QLineEdit QMenu::item:disabled {
   color: #555;
 }
 WTrackMenu QMenu QCheckBox::indicator:disabled {

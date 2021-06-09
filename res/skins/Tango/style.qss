@@ -2259,7 +2259,7 @@ WEffectSelector::item:selected {
   outline: none;
 }
 
-/* disabled menu items */
+/* disabled menu items and checkboxes */
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,

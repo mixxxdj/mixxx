@@ -2411,10 +2411,10 @@ WEffectSelector::item:selected,
     background-color: #2a1e03;
     color: #fff;
     }
-
-/* disabled menu item and checkbox */
+/* disabled menu items and checkboxes */
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
+WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,

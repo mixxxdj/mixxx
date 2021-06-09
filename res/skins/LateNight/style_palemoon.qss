@@ -2881,9 +2881,10 @@ WEffectSelector::item:selected,
   WCueMenuPopup QPushButton:focus {
     outline: none;
   }
-/* disabled items */
+/* disabled menu items and checkboxes */
+#MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
-#MainMenu QMenu QCheckBox:disabled,
+WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
