@@ -303,10 +303,9 @@ double BeatUtils::makeConstBpm(
         // bpm adjustments are made.
         // This is a temporary fix, ideally the anchor point for the BPM grid should
         // be the first proper downbeat, or perhaps the CUE point.
-        *pFirstBeat = constantRegions[startRegionIndex].firstBeat;
         const double roundedBeatLength = 60.0 * sampleRate / roundBpm;
-        const double beatsBeforeFirst = std::floor(*pFirstBeat / roundedBeatLength);
-        *pFirstBeat -= (roundedBeatLength * beatsBeforeFirst);
+        *pFirstBeat = fmod(constantRegions[startRegionIndex].firstBeat,
+                roundedBeatLength);
     }
     return roundBpm;
 }
