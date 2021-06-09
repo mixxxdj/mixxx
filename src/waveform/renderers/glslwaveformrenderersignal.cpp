@@ -297,6 +297,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
             m_waveformRenderer->getFirstDisplayedPosition() * dataSize / 2.0);
     const auto lastVisualIndex = static_cast<GLfloat>(
             m_waveformRenderer->getLastDisplayedPosition() * dataSize / 2.0);
+    qWarning() << firstVisualIndex << lastVisualIndex;
 
     // const int firstIndex = int(firstVisualIndex+0.5);
     // firstVisualIndex = firstIndex - firstIndex%2;
