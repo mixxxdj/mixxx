@@ -20,6 +20,7 @@ Skin.Button {
 
         group: root.group
         hotcueNumber: root.hotcueNumber
+        activate: root.down
         onIsSetChanged: {
             if (!isSet)
                 popup.close();
