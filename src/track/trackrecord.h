@@ -15,6 +15,20 @@
 
 namespace mixxx {
 
+/// Effect of updating a property with a new value.
+enum class [[nodiscard]] UpdateResult{
+        /// The value has been updated and changed.
+        Updated,
+
+        /// The value didn't change and has not been updated.
+        Unchanged,
+
+        /// The provided value is invalid or insonsistent with
+        /// any existing value(s) and has been rejected, i.e.
+        /// the current value didn't change either.
+        Rejected,
+};
+
 // Properties of tracks that are stored in the database.
 class TrackRecord final {
     // Properties that parsed from and (optionally) written back to their
@@ -99,7 +113,7 @@ class TrackRecord final {
     QString getGlobalKeyText() const {
         return KeyUtils::getGlobalKeyText(getKeys());
     }
-    bool updateGlobalKeyText(
+    UpdateResult updateGlobalKeyText(
             const QString& keyText,
             track::io::key::Source keySource);
 

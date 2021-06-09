@@ -184,9 +184,9 @@ void Track::replaceMetadataFromSource(
         if (importedKey != mixxx::track::io::key::INVALID) {
             // Only update the current key with a valid value. Otherwise preserve
             // the existing value.
-            keysModified = m_record.updateGlobalKeyText(
-                    importedKeyText,
-                    mixxx::track::io::key::FILE_METADATA);
+            keysModified = m_record.updateGlobalKeyText(importedKeyText,
+                                   mixxx::track::io::key::FILE_METADATA) ==
+                    mixxx::UpdateResult::Updated;
         }
         modified |= keysModified;
 
@@ -1362,7 +1362,7 @@ QString Track::getKeyText() const {
 void Track::setKeyText(const QString& keyText,
                        mixxx::track::io::key::Source keySource) {
     QMutexLocker lock(&m_qMutex);
-    if (m_record.updateGlobalKeyText(keyText, keySource)) {
+    if (m_record.updateGlobalKeyText(keyText, keySource) == mixxx::UpdateResult::Updated) {
         afterKeysUpdated(&lock);
     }
 }

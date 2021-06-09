@@ -355,8 +355,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getTrackInfo().getComment());
     txtBpm->setText(
             m_trackRecord.getMetadata().getTrackInfo().getBpmText());
-    txtKey->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getKey());
+    displayKeyText();
 
     // Non-editable fields
     txtDuration->setText(
@@ -491,7 +490,7 @@ void DlgTrackInfo::saveTrack() {
     // handlers manually to capture any changes. If the bpm or key was unchanged
     // or invalid then the change will be ignored/rejected.
     slotSpinBpmValueChanged(spinBpm->value());
-    slotKeyTextChanged();
+    static_cast<void>(updateKeyText()); // discard result
 
     // Update the cached track
     m_pLoadedTrack->replaceRecord(std::move(m_trackRecord), std::move(m_pBeatsClone));
@@ -636,20 +635,29 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     spinBpm->setValue(newValue);
 }
 
-void DlgTrackInfo::slotKeyTextChanged() {
-    // Try to parse the user's input as a key.
-    const QString newKeyText = txtKey->text();
-    Keys newKeys = KeyFactory::makeBasicKeysFromText(newKeyText,
-            mixxx::track::io::key::USER);
-    const mixxx::track::io::key::ChromaticKey newKey(newKeys.getGlobalKey());
-
-    // If the new key string is invalid and not empty them reject the new key.
-    if (newKey == mixxx::track::io::key::INVALID && !newKeyText.isEmpty()) {
-        txtKey->setText(m_trackRecord.getMetadata().getTrackInfo().getKey());
-        return;
+mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
+    const auto keyText = txtKey->text().trimmed();
+    const auto updateResult =
+            m_trackRecord.updateGlobalKeyText(
+                    keyText,
+                    mixxx::track::io::key::USER);
+    if (updateResult == mixxx::UpdateResult::Rejected) {
+        // Restore the current key text
+        displayKeyText();
     }
+    return updateResult;
+}
 
-    m_trackRecord.refMetadata().refTrackInfo().setKey(newKey);
+void DlgTrackInfo::displayKeyText() {
+    const auto keyText = m_trackRecord.getMetadata().getTrackInfo().getKey();
+    txtKey->setText(keyText);
+}
+
+void DlgTrackInfo::slotKeyTextChanged() {
+    if (updateKeyText() != mixxx::UpdateResult::Unchanged) {
+        // Ensure that the text field always reflects the actual value
+        displayKeyText();
+    }
 }
 
 void DlgTrackInfo::slotImportMetadataFromFile() {
