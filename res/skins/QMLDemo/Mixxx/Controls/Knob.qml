@@ -74,10 +74,21 @@ Item {
             lastTranslation = Qt.vector2d(0, 0);
         }
         onTranslationChanged: {
-            const delta = lastTranslation.y - translation.y;
-            const change = (root.max - root.min) * Mixxx.MathUtils.clamp(delta, -100, 100) / 100;
-            const value = Mixxx.MathUtils.clamp(root.value + change, root.min, root.max);
-            lastTranslation = translation;
+            const diff_x = (translation.x - lastTranslation.x);
+            const diff_y = (translation.y - lastTranslation.y);
+            this.lastTranslation = translation;
+            const y_dominant = Math.abs(diff_y) > Math.abs(diff_x);
+            let dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y);
+            // If y is dominant, then treat an increase in dy as negative (y is
+            // pointed downward). Otherwise, if y is not dominant and x has
+            // decreased, then treat it as negative.
+            if ((y_dominant && diff_y > 0) || (!y_dominant && diff_x < 0))
+                dist = -dist;
+
+            // For legacy (MIDI) reasons this is tuned to 127.
+            let value = root.value + dist / 127;
+            // Clamp to [0.0, 1.0].
+            value = Mixxx.MathUtils.clamp(value, 0, 1);
             root.turned(value);
             dragHandler.value = value;
         }
