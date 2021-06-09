@@ -440,7 +440,7 @@ WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
   background-color: #1F1F1F;
 }
 
-/* QSplitter between LibrarySidebar and Library */
+/* QSplitter between WLibrarySidebar and WTrackTableView */
 #LibrarySplitter::handle {
   image: url(skin:/../Deere/image/style_handle_horizontal_unchecked.svg);
   background: none;
@@ -2192,7 +2192,7 @@ WTrackMenu QMenu QCheckBox::indicator {
 
 WTrackMenu::right-arrow,
 WTrackMenu QMenu::right-arrow,
-WLibrary QTableView::indicator {
+WTrackTableView::indicator {
   width: 10px;
   height: 10px;
 }
@@ -2219,7 +2219,7 @@ WTrackMenu QMenu QCheckBox::indicator:disabled {
   background-color: #333;
 }
 WLibrarySidebar QMenu::indicator:checked,
-WLibrary QTableView::indicator:checked,
+WTrackTableView::indicator:checked,
 WTrackMenu QMenu QCheckBox::indicator:checked {
   image: url(skin:/../Deere/icon/ic_library_checkmark_orange.svg);
 }
@@ -2261,8 +2261,8 @@ WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
 WTrackTableViewHeader QMenu::indicator:unchecked,
 WTrackTableViewHeader QMenu::indicator:unchecked:selected,
-WLibrary QTableView::indicator:unchecked,
-WLibrary QTableView::indicator:unchecked:selected,
+WTrackTableView::indicator:unchecked,
+WTrackTableView::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,
