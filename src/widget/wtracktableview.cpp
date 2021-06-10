@@ -151,24 +151,20 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
         return;
     }
 
-    TrackModel* newModel = nullptr;
-
-    /* If the model has not changed
-     * there's no need to exchange the headers
-     * this will cause a small GUI freeze
-     */
+    // If the model has not changed
+    // there's no need to exchange the headers
+    // this will cause a small GUI freeze
     if (getTrackModel() == trackModel) {
         // Re-sort the table even if the track model is the same. This triggers
         // a select() if the table is dirty.
         doSortByColumn(horizontalHeader()->sortIndicatorSection(),
                 horizontalHeader()->sortIndicatorOrder());
         return;
-    } else {
-        newModel = trackModel;
-        saveVScrollBarPos(getTrackModel());
-        //saving current vertical bar position
-        //using address of track model as key
     }
+
+    // saving current vertical bar position
+    // using address of track model as key
+    saveVScrollBarPos(getTrackModel());
 
     setVisible(false);
 
@@ -263,28 +259,32 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
                 &WTrackTableView::slotSortingChanged,
                 Qt::AutoConnection);
 
-        int sortColumn;
         Qt::SortOrder sortOrder;
-
-        // Stupid hack that assumes column 0 is never visible, but this is a weak
-        // proxy for "there was a saved column sort order"
-        if (horizontalHeader()->sortIndicatorSection() > 0) {
+        TrackModel::SortColumnId sortColumn =
+                trackModel->sortColumnIdFromColumnIndex(
+                        horizontalHeader()->sortIndicatorSection());
+        if (sortColumn != TrackModel::SortColumnId::Invalid) {
             // Sort by the saved sort section and order.
-            sortColumn = horizontalHeader()->sortIndicatorSection();
             sortOrder = horizontalHeader()->sortIndicatorOrder();
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
-            sortColumn = trackModel->defaultSortColumn();
+            sortColumn = trackModel->sortColumnIdFromColumnIndex(trackModel->defaultSortColumn());
             sortOrder = trackModel->defaultSortOrder();
 
-            // If the TrackModel has an invalid or internal column as its default
-            // sort, find the first non-internal column and sort by that.
-            while (sortColumn < 0 || trackModel->isColumnInternal(sortColumn)) {
-                sortColumn++;
+            if (sortColumn == TrackModel::SortColumnId::Invalid) {
+                // If the TrackModel has an invalid or internal column as its default
+                // sort, find the first valid sort column and sort by that.
+                const int columnCount = model->columnCount(); // just to avoid an endless while loop
+                for (int sortColumnIndex = 0; sortColumnIndex < columnCount; sortColumnIndex++) {
+                    sortColumn = trackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
+                    if (sortColumn != TrackModel::SortColumnId::Invalid) {
+                        break;
+                    }
+                }
             }
         }
 
-        m_pSortColumn->set(static_cast<int>(trackModel->sortColumnIdFromColumnIndex(sortColumn)));
+        m_pSortColumn->set(static_cast<double>(sortColumn));
         m_pSortOrder->set(sortOrder);
         applySorting();
     }
@@ -314,7 +314,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
 
     setVisible(true);
 
-    restoreVScrollBarPos(newModel);
+    restoreVScrollBarPos(trackModel);
     // restoring scrollBar position using model pointer as key
     // scrollbar positions with respect to different models are backed by map
     initTrackMenu();

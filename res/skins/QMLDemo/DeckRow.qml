@@ -1,70 +1,125 @@
-import Mixxx 0.1 as Mixxx
-import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.11
 
 Item {
     id: root
 
-    required property string leftDeck
-    required property string rightDeck
+    property string leftDeckGroup // required
+    property string rightDeckGroup // required
+    property alias mixer: mixer
+    property bool minimized: false
 
-    RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: 10
-        anchors.rightMargin: 10
-        Layout.margins: 10
+    implicitHeight: mixer.height
+    states: [
+        State {
+            when: root.minimized
+            name: "minimized"
 
-        Deck {
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            group: root.leftDeck
-        }
+            PropertyChanges {
+                target: mixer
+                visible: false
+            }
 
-        Rectangle {
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-            implicitWidth: 200
-            Layout.fillHeight: true
-            color: "#1e1e20"
-            border.color: "#121213"
-            border.width: 2
-            radius: 1
+            PropertyChanges {
+                target: root
+                implicitHeight: 56
+            }
 
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 10
+            AnchorChanges {
+                target: leftDeck
+                anchors.right: mixer.horizontalCenter
+            }
 
-                EqColumn {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    group: root.leftDeck
-                }
+            AnchorChanges {
+                target: rightDeck
+                anchors.left: mixer.horizontalCenter
+            }
 
-                MixerColumn {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    group: root.leftDeck
-                }
+        },
+        State {
+            // This State can't be deduplicated by making the first one
+            // reversible, because for decks 3/4 the mixer may already be
+            // hidden (since the whole deck row is already hidden). In that
+            // case, disabling the minimized state would not show the mixer
+            // again.
+            when: !root.minimized
+            name: "maximized"
 
-                MixerColumn {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    group: root.rightDeck
-                }
+            PropertyChanges {
+                target: mixer
+                visible: true
+            }
 
-                EqColumn {
-                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    group: root.rightDeck
-                }
+            PropertyChanges {
+                target: root
+                implicitHeight: mixer.height
+            }
 
+            AnchorChanges {
+                target: leftDeck
+                anchors.right: mixer.left
+            }
+
+            AnchorChanges {
+                target: rightDeck
+                anchors.left: mixer.right
             }
 
         }
+    ]
 
-        Deck {
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            group: root.rightDeck
+    Deck {
+        id: leftDeck
+
+        minimized: root.minimized
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 5
+        group: root.leftDeckGroup
+    }
+
+    Mixer {
+        id: mixer
+
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        leftDeckGroup: root.leftDeckGroup
+        rightDeckGroup: root.rightDeckGroup
+
+        FadeBehavior on visible {
+            fadeTarget: mixer
+        }
+
+    }
+
+    Deck {
+        id: rightDeck
+
+        minimized: root.minimized
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 5
+        group: root.rightDeckGroup
+    }
+
+    transitions: Transition {
+        to: "minimized"
+        reversible: true
+
+        SequentialAnimation {
+            AnchorAnimation {
+                targets: [leftDeck, rightDeck]
+                duration: 150
+            }
+
+            PropertyAnimation {
+                target: root
+                property: "implicitHeight"
+                duration: 150
+            }
+
         }
 
     }

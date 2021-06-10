@@ -1,11 +1,13 @@
 import Mixxx 0.1 as Mixxx
+import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
+import "Theme"
 
 Item {
     id: root
 
-    required property string group
+    property string group // required
 
     states: [
         State {
@@ -119,15 +121,16 @@ Item {
         id: waveformContainer
 
         anchors.fill: parent
-        color: "#121213"
+        color: Theme.deckBackgroundColor
 
-        Text {
-            anchors.centerIn: parent
-            font.family: "Open Sans"
-            font.bold: true
-            font.pixelSize: 11
-            color: "#777777"
-            text: "Waveform Placeholder"
+        MixxxControls.WaveformOverview {
+            anchors.fill: parent
+            channels: Mixxx.WaveformOverview.Channels.LeftChannel
+            renderer: Mixxx.WaveformOverview.Renderer.Filtered
+            colorHigh: Theme.white
+            colorMid: Theme.blue
+            colorLow: Theme.green
+            group: root.group
         }
 
     }
@@ -140,10 +143,9 @@ Item {
 
         Text {
             anchors.centerIn: parent
-            font.family: "Open Sans"
-            font.bold: true
-            font.pixelSize: 11
-            color: "#777777"
+            font.family: Theme.fontFamily
+            font.pixelSize: Theme.textFontPixelSize
+            color: Theme.deckTextColor
             text: "Passthrough Enabled"
         }
 

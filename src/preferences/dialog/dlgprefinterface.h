@@ -40,9 +40,10 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
   private slots:
     void slotSetTooltips();
-    void slotSetSkinDescription();
     void slotSetSkin(int);
     void slotSetScheme(int);
+    void slotSetSkinDescription();
+    void slotSetSkinPreview();
     void slotUpdateSchemes();
     void slotSetScaleFactor(double newValue);
     void slotSetScaleFactorAuto(bool checked);
@@ -72,6 +73,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     double m_dScaleFactorAuto;
     bool m_bUseAutoScaleFactor;
     double m_dScaleFactor;
+    double m_dDevicePixelRatio;
     bool m_bStartWithFullScreen;
     mixxx::ScreenSaverPreference m_screensaverMode;
 

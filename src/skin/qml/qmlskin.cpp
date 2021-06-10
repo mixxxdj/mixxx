@@ -2,8 +2,14 @@
 
 #include <QQmlEngine>
 #include <QQuickWidget>
+#include <functional>
 
+#include "coreservices.h"
+#include "skin/qml/asyncimageprovider.h"
 #include "skin/qml/qmlcontrolproxy.h"
+#include "skin/qml/qmlplayermanagerproxy.h"
+#include "skin/qml/qmlplayerproxy.h"
+#include "skin/qml/qmlwaveformoverview.h"
 #include "util/assert.h"
 
 namespace {
@@ -12,6 +18,16 @@ const QString kMainQmlFileName = QStringLiteral("main.qml");
 
 // TODO: Figure out a sensible default value or expose this as a config option
 constexpr int kMultisamplingSampleCount = 2;
+
+// Converts a (capturing) lambda into a function pointer that can be passed to
+// qmlRegisterSingletonType.
+template<class F>
+auto lambda_to_singleton_type_factory_ptr(F&& f) {
+    static F fn = std::forward<F>(f);
+    return [](QQmlEngine* pEngine, QJSEngine* pScriptEngine) -> QObject* {
+        return fn(pEngine, pScriptEngine);
+    };
+}
 } // namespace
 
 namespace mixxx {
@@ -104,12 +120,34 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
         mixxx::CoreServices* pCoreServices) const {
     Q_UNUSED(pConfig);
     Q_UNUSED(pSkinCreatedControls);
-    Q_UNUSED(pCoreServices);
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return nullptr;
     }
 
     qmlRegisterType<QmlControlProxy>("Mixxx", 0, 1, "ControlProxy");
+    qmlRegisterType<QmlWaveformOverview>("Mixxx", 0, 1, "WaveformOverview");
+
+    qmlRegisterSingletonType<QmlPlayerManagerProxy>("Mixxx",
+            0,
+            1,
+            "PlayerManager",
+            lambda_to_singleton_type_factory_ptr(
+                    [pCoreServices](QQmlEngine* pEngine,
+                            QJSEngine* pScriptEngine) -> QObject* {
+                        Q_UNUSED(pScriptEngine);
+
+                        QmlPlayerManagerProxy* pPlayerManagerProxy =
+                                new QmlPlayerManagerProxy(
+                                        pCoreServices->getPlayerManager(),
+                                        pEngine);
+                        return pPlayerManagerProxy;
+                    }));
+    qmlRegisterUncreatableType<QmlPlayerProxy>("Mixxx",
+            0,
+            1,
+            "Player",
+            "Player objects can't be created directly, please use "
+            "Mixxx.PlayerManager.getPlayer(group)");
 
     QQuickWidget* pWidget = new QQuickWidget(pParent);
 
@@ -120,6 +158,11 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
 
     pWidget->engine()->setBaseUrl(QUrl::fromLocalFile(m_path.absoluteFilePath()));
     pWidget->engine()->addImportPath(m_path.absoluteFilePath());
+
+    // No memory leak here, the QQmlENgine takes ownership of the provider
+    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider();
+    pWidget->engine()->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
+
     pWidget->setSource(QUrl::fromLocalFile(dir().absoluteFilePath(kMainQmlFileName)));
     pWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
     if (pWidget->status() != QQuickWidget::Ready) {

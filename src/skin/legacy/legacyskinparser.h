@@ -103,6 +103,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseWidgetStack(const QDomElement& node);
     QWidget* parseSizeAwareStack(const QDomElement& node);
     QWidget* parseSplitter(const QDomElement& node);
+    QWidget* parseScrollable(const QDomElement& node);
     void parseSingletonDefinition(const QDomElement& node);
 
     // Visual widgets.

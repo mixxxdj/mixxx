@@ -1,35 +1,52 @@
+import "." as Skin
+import Mixxx 0.1 as Mixxx
 import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
+import "Theme"
 
-Item {
+Rectangle {
     id: root
 
-    required property string channelGroup
-    property alias key: knob.key
+    property alias knob: knob
+    property string statusGroup: root.knob.group // required
+    property string statusKey // required
 
-    width: 35
-    height: 35
+    color: Theme.knobBackgroundColor
+    width: 56
+    height: 56
+    radius: 5
 
-    MixxxControls.Knob {
+    Skin.ControlKnob {
         id: knob
 
-        anchors.fill: parent
-        group: "[EqualizerRack1_" + channelGroup + "_Effect1]"
-        arc: true
-        arcRadius: 15
-        arcColor: "#858585"
-        arcWidth: 2
+        anchors.centerIn: root
+        width: 48
+        height: 48
+    }
 
-        background: Image {
-            source: "../LateNight/palemoon/knobs/knob_bg_master.svg"
-            width: 35
-            height: 30
-        }
+    Mixxx.ControlProxy {
+        id: statusControl
 
-        foreground: Image {
-            source: "../LateNight/palemoon/knobs/knob_indicator_regular_red.svg"
-            width: 35
-            height: 30
+        group: root.statusGroup
+        key: root.statusKey
+    }
+
+    Rectangle {
+        id: statusButton
+
+        anchors.left: root.left
+        anchors.bottom: root.bottom
+        anchors.leftMargin: 4
+        anchors.bottomMargin: 4
+        width: 8
+        height: width
+        radius: width / 2
+        border.width: 1
+        border.color: Theme.buttonNormalColor
+        color: statusControl.value ? knob.color : "transparent"
+
+        TapHandler {
+            onTapped: statusControl.value = !statusControl.value
         }
 
     }

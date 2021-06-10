@@ -33,7 +33,9 @@ class Sandbox {
     static void setPermissionsFilePath(const QString& permissionsFile);
     static void shutdown();
 
+#ifdef __APPLE__
     static QString migrateOldSettings();
+#endif
 
     // Returns true if we are in a sandbox.
     static bool enabled() {

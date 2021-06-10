@@ -1,69 +1,85 @@
-import Mixxx.Controls 0.1 as MixxxControls
+import "." as Skin
 import QtQuick 2.12
 import QtQuick.Layouts 1.11
+import "Theme"
 
 Item {
     id: root
 
-    required property string group
+    property string group // required
 
-    implicitWidth: 47
-    implicitHeight: 150
+    Rectangle {
+        id: gainKnobFrame
 
-    ColumnLayout {
-        MixxxControls.Knob {
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: width
+        color: Theme.knobBackgroundColor
+        radius: 5
+
+        Skin.ControlKnob {
             id: gainKnob
 
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-            width: 35
-            height: width
+            anchors.centerIn: parent
+            width: 48
+            height: 48
             group: root.group
             key: "pregain"
-            arc: true
-            arcRadius: 15
-            arcColor: "#b96300"
-            arcWidth: 2
-
-            background: Image {
-                source: "../LateNight/palemoon/knobs/knob_bg_master.svg"
-                width: gainKnob.width
-                height: gainKnob.width / 7 * 6
-            }
-
-            foreground: Image {
-                source: "../LateNight/palemoon/knobs/knob_indicator_regular_orange.svg"
-                width: gainKnob.width
-                height: gainKnob.width / 7 * 6
-            }
-
+            color: Theme.gainKnobColor
         }
 
-        MixxxControls.Slider {
+    }
+
+    Item {
+        anchors.top: gainKnobFrame.bottom
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: pflButton.top
+
+        Skin.VuMeter {
+            x: 15
+            y: (parent.height - height) / 2
+            width: 4
+            height: parent.height - 40
+            group: root.group
+            key: "VuMeterL"
+        }
+
+        Skin.VuMeter {
+            x: parent.width - width - 15
+            y: (parent.height - height) / 2
+            width: 4
+            height: parent.height - 40
+            group: root.group
+            key: "VuMeterR"
+        }
+
+        Skin.ControlSlider {
             id: volumeSlider
 
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-            width: root.width
-            height: 107
+            anchors.fill: parent
             group: root.group
             key: "volume"
-            bar: true
-            barColor: "#257b82"
-            barMargin: 10
-
-            handle: Image {
-                source: "../LateNight/palemoon/sliders/knob_volume_deck.svg"
-                width: 42
-                height: 19
-            }
-
-            background: Image {
-                width: volumeSlider.width
-                height: volumeSlider.height
-                source: "../LateNight/palemoon/sliders/slider_volume_deck.svg"
-            }
-
+            barColor: Theme.volumeSliderBarColor
+            bg: "images/slider_volume.svg"
         }
 
+    }
+
+    Skin.ControlButton {
+        id: pflButton
+
+        group: root.group
+        key: "pfl"
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        text: "PFL"
+        activeColor: Theme.pflActiveButtonColor
+        toggleable: true
     }
 
 }

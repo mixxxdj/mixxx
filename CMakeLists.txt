@@ -733,8 +733,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/legacy/legacyskinparser.cpp
   src/skin/legacy/pixmapsource.cpp
   src/skin/legacy/legacyskin.cpp
+  src/skin/qml/asyncimageprovider.cpp
   src/skin/qml/qmlcontrolproxy.cpp
+  src/skin/qml/qmlplayermanagerproxy.cpp
+  src/skin/qml/qmlplayerproxy.cpp
   src/skin/qml/qmlskin.cpp
+  src/skin/qml/qmlwaveformoverview.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
   src/skin/skinloader.cpp
@@ -942,6 +946,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wpixmapstore.cpp
   src/widget/wpushbutton.cpp
   src/widget/wrecordingduration.cpp
+  src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
   src/widget/wsearchrelatedtracksmenu.cpp
   src/widget/wsingletoncontainer.cpp
@@ -2769,7 +2774,8 @@ set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu,\
+ qml-module-qtquick-controls, qml-module-qtquick-controls2, qml-module-qt-labs-qmlmodels, qml-module-qtquick-shapes")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
