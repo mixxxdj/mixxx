@@ -40,19 +40,18 @@ bool TrackRecord::updateGlobalKey(
     return false;
 }
 
-bool TrackRecord::updateGlobalKeyText(
+UpdateResult TrackRecord::updateGlobalKeyText(
         const QString& keyText,
         track::io::key::Source keySource) {
     Keys keys = KeyFactory::makeBasicKeysFromText(keyText, keySource);
     if (keys.getGlobalKey() == track::io::key::INVALID) {
-        return false;
-    } else {
-        if (m_keys.getGlobalKey() != keys.getGlobalKey()) {
-            setKeys(keys);
-            return true;
-        }
+        return UpdateResult::Rejected;
     }
-    return false;
+    if (m_keys.getGlobalKey() == keys.getGlobalKey()) {
+        return UpdateResult::Unchanged;
+    }
+    setKeys(keys);
+    return UpdateResult::Updated;
 }
 
 namespace {
