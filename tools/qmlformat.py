@@ -27,6 +27,7 @@ def main(argv=None):
             if v:
                 version = (int(v.group(1)), int(v.group(2)))
                 if version < (5, 15):
+                    # Succeed if a Qt Version < 5.15 is used without qmlformat
                     return 0
         print(QMLFORMAT_MISSING_MESSAGE.strip(), file=sys.stderr)
         return 1
