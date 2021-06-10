@@ -65,7 +65,20 @@ EXIT /B 0
             REM TODO: verify download using sha256sum?
         )
         ECHO ### Unpacking !BUILDENV_PATH!.zip ###
-        CALL :UNZIP "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
+
+        CALL :DETECT_SEVENZIP
+        IF !RETVAL!=="" (
+            ECHO Using powershell for unpacking...
+            CALL :UNZIP_POWERSHELL "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
+        ) ELSE (
+            ECHO Using 7z for unpacking...
+            CALL :UNZIP_SEVENZIP "!RETVAL!" "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
+        )
+        IF NOT EXIST %BUILDENV_PATH% (
+            ECHO ### Unpacking failed. ###
+            EXIT /B 1
+        )
+
         ECHO ### Unpacking complete. ###
         DEL /f /q %BUILDENV_PATH%.zip
     )
@@ -99,21 +112,33 @@ EXIT /B 0
     GOTO :EOF
 
 
-:UNZIP <newzipfile> <ExtractTo>
-  SET vbs="%temp%\_.vbs"
-  IF EXIST %vbs% del /f /q %vbs%
-  >%vbs%  echo Set fso = CreateObject("Scripting.FileSystemObject")
-  >>%vbs% echo If NOT fso.FolderExists(%2) Then
-  >>%vbs% echo fso.CreateFolder(%2)
-  >>%vbs% echo End If
-  >>%vbs% echo Set objShell = CreateObject("Shell.Application")
-  >>%vbs% echo Set FilesInZip=objShell.NameSpace(%1).items
-  >>%vbs% echo objShell.NameSpace(%2).CopyHere(FilesInZip)
-  >>%vbs% echo Set fso = Nothing
-  >>%vbs% echo Set objShell = Nothing
-  cscript //nologo %vbs%
-  IF EXIST %vbs% DEL /f /q %vbs%
-  GOTO :EOF
+:DETECT_SEVENZIP
+    SET SEVENZIP_PATH=7z.exe
+    !SEVENZIP_PATH! --help >NUL 2>NUL
+    IF errorlevel 1 (
+        SET SEVENZIP_PATH="c:\Program Files\7-Zip\7z.exe"
+        !SEVENZIP_PATH! --help >NUL 2>NUL
+        IF errorlevel 1 (
+            SET SEVENZIP_PATH="c:\Program Files (x86)\7-Zip\7z.exe"
+            !SEVENZIP_PATH! --help >NUL 2>NUL
+            if errorlevel 1 (
+                SET SEVENZIP_PATH=
+            )
+        )
+    )
+    SET RETVAL="!SEVENZIP_PATH!"
+    GOTO :EOF
+
+
+:UNZIP_SEVENZIP <7zippath> <newzipfile> <ExtractTo>
+    %1 x -o"%3" "%2"
+    GOTO :EOF
+
+
+:UNZIP_POWERSHELL <newzipfile> <ExtractTo>
+    SET SCRIPTDIR=%~dp0
+    powershell -executionpolicy bypass -File "%SCRIPTDIR%\unzip.ps1" %1 %2
+    GOTO :EOF
 
 
 :REALPATH
