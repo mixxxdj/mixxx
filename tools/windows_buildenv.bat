@@ -33,6 +33,9 @@ IF "%~1"=="" (
     CALL :COMMAND_%1
 )
 
+REM Make These permanent, not local to the batch script.
+ENDLOCAL & SET PATH=%PATH% & SET CMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH%
+
 EXIT /B 0
 
 :COMMAND_name
@@ -68,7 +71,6 @@ EXIT /B 0
     )
 
     ECHO ### Build environment path: !BUILDENV_PATH! ###
-    ENDLOCAL
 
     SET PATH=!BUILDENV_PATH!\bin;!PATH!
     SET CMAKE_PREFIX_PATH=!BUILDENV_PATH!
