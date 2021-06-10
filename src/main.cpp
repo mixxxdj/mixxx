@@ -16,10 +16,6 @@
 #include "util/logging.h"
 #include "util/versionstore.h"
 
-#ifdef Q_OS_LINUX
-#include <X11/Xlib.h>
-#endif
-
 namespace {
 
 // Exit codes
@@ -46,10 +42,6 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
 
 int main(int argc, char * argv[]) {
     Console console;
-
-#ifdef Q_OS_LINUX
-    XInitThreads();
-#endif
 
     // These need to be set early on (not sure how early) in order to trigger
     // logic in the OS X appstore support patch from QTBUG-16549.
