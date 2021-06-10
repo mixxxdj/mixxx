@@ -3,6 +3,7 @@
 #include "library/coverart.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
+#include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 
 namespace {
@@ -12,7 +13,7 @@ const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 } // anonymous namespace
 
 // Test for updating track metadata and cover art from files.
-class TrackUpdateTest: public MixxxTest {
+class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     static bool hasTrackMetadata(const TrackPointer& pTrack) {
         return !pTrack->getArtist().isEmpty();

@@ -4,6 +4,7 @@
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
+#include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
@@ -35,7 +36,7 @@ const CSAMPLE kMaxDecodingError = 0.01f;
 
 } // anonymous namespace
 
-class SoundSourceProxyTest : public MixxxTest {
+class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     static QStringList getFileNameSuffixes() {
         QStringList availableFileNameSuffixes;

@@ -4,7 +4,6 @@
 
 #include "control/control.h"
 #include "library/coverartutils.h"
-#include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/logging.h"
 
@@ -45,11 +44,6 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
 
     DEBUG_ASSERT(s_pApplication.isNull());
     s_pApplication.reset(new MixxxApplication(argc, argv));
-
-    const bool providersRegistered =
-            SoundSourceProxy::registerProviders();
-    Q_UNUSED(providersRegistered);
-    DEBUG_ASSERT(providersRegistered);
 }
 
 MixxxTest::ApplicationScope::~ApplicationScope() {
