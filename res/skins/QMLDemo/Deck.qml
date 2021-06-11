@@ -11,6 +11,7 @@ Item {
 
     property string group // required
     property bool minimized: false
+    property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
 
     Skin.DeckInfoBar {
         id: infoBar
@@ -22,7 +23,7 @@ Item {
         group: root.group
     }
 
-    Skin.Slider {
+    Skin.ControlSlider {
         id: rateSlider
 
         visible: !root.minimized
@@ -367,6 +368,17 @@ Item {
             fadeTarget: buttonBar
         }
 
+    }
+
+    DropArea {
+        anchors.fill: parent
+        onDropped: {
+            if (drop.hasUrls) {
+                let url = drop.urls[0];
+                console.log("Dropped URL '" + url + "' on deck " + root.group);
+                root.deckPlayer.loadTrackFromLocationUrl(url);
+            }
+        }
     }
 
 }

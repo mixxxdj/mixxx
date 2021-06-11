@@ -1,4 +1,5 @@
 import Mixxx 0.1 as Mixxx
+import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
 import "Theme"
@@ -122,12 +123,14 @@ Item {
         anchors.fill: parent
         color: Theme.deckBackgroundColor
 
-        Text {
-            anchors.centerIn: parent
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.textFontPixelSize
-            color: Theme.deckTextColor
-            text: "Waveform Placeholder"
+        MixxxControls.WaveformOverview {
+            anchors.fill: parent
+            channels: Mixxx.WaveformOverview.Channels.LeftChannel
+            renderer: Mixxx.WaveformOverview.Renderer.Filtered
+            colorHigh: Theme.white
+            colorMid: Theme.blue
+            colorLow: Theme.green
+            group: root.group
         }
 
     }

@@ -1077,16 +1077,16 @@ WEffectSelector QAbstractScrollArea,
 WSearchLineEdit,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
-#LibraryContainer QTableView,
-#LibraryContainer QTableView::indicator,
-#LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView,
+WTrackTableView,
+WTrackTableView::indicator,
+WLibraryTextBrowser,
+WLibrarySidebar,
 #LibraryFeatureControls QLabel,
 #LibraryFeatureControls QRadioButton,
 QToolTip,
 WLibrarySidebar QMenu,
-WLibrary QHeaderView QMenu,
-QTextBrowser QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
@@ -1997,9 +1997,9 @@ WLibrary,
   border-top-left-radius: 0px;
 }
 
-#LibraryContainer QTableView,
-#LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView {
+WTrackTableView,
+WLibraryTextBrowser,
+WLibrarySidebar {
   border-top: 1px solid #0a0a0a;
   border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #333,
@@ -2016,28 +2016,25 @@ WLibrary,
   /* background of Color delegate in selected row */
   selection-background-color: #5e4507;
 }
-#LibraryContainer QTableView:focus,
-#LibraryContainer QTreeView:focus,
-#LibraryContainer QTextBrowser:focus {
+WTrackTableView:focus,
+WLibrarySidebar:focus,
+WLibraryTextBrowser:focus {
   border: 1px solid #d09300;
 }
 
 /* Selected rows in Tree and Tracks table */
-#LibraryContainer QTreeView::item:selected,
-#LibraryContainer QTableView::item:selected,
+WLibrarySidebar::item:selected,
+WTrackTableView::item:selected,
 #LibraryBPMButton::item:selected {
   color: #fff;
   background-color: #5e4507;
 }
-#LibraryContainer QTreeView::item:focus {
-  outline: none;
-}
 
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
-#LibraryContainer QTableView,
+WTrackTableView,
 /* This is for the BPM cell */
-#LibraryContainer QTableView QCheckBox:focus {
+WTrackTableView QCheckBox:focus {
   outline: 1px solid #fff;
 }
 /* This uses a custom qproperty to set the focus border
@@ -2047,11 +2044,11 @@ WTrackTableView {
   qproperty-focusBorderColor: #fff;
 }
 
-#LibraryContainer QTreeView {
+WLibrarySidebar {
   show-decoration-selected: 0;
 }
-#LibraryContainer QTreeView,
-#LibraryContainer QTreeView::item:focus {
+WLibrarySidebar,
+WLibrarySidebar::item:focus {
   outline: none;
 }
 
@@ -2115,24 +2112,24 @@ WCueMenuPopup QPushButton:focus {
 
 /*********** table header styles *********************************/
 
-#LibraryContainer QHeaderView {
+WTrackTableViewHeader {
   color: #bbb;
   border-bottom: 1px solid #000;
   }
-  #LibraryContainer QHeaderView,
-  #LibraryContainer QHeaderView::section,
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
+  WTrackTableViewHeader,
+  WTrackTableViewHeader::section,
+  WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #222,
       stop:1 #111);
   }
-  #LibraryContainer QHeaderView::section {
+  WTrackTableViewHeader::section {
     border-right: 1px solid #000;
     border-bottom: 1px solid #000;
   }
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
+  WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
     border-right: 1px solid #000;
     /* gradient colors should match those of QHeaderView gradient,
       with a little transparency added to not cut off the header label */
@@ -2140,10 +2137,10 @@ WCueMenuPopup QPushButton:focus {
       stop:0 rgba(34,34,34,190),
       stop:1 rgba(17,17,17,190));
     }
-    #LibraryContainer QHeaderView::up-arrow {
+    WTrackTableViewHeader::up-arrow {
       image: url(skin:/classic/buttons/btn__lib_sort_up.svg);
       }
-    #LibraryContainer QHeaderView::down-arrow {
+    WTrackTableViewHeader::down-arrow {
       image: url(skin:/classic/buttons/btn__lib_sort_down.svg);
     }
 
@@ -2176,7 +2173,7 @@ WEffectSelector QAbstractScrollArea QScrollBar {
     background-color: #000;
   }
   /* catch scroll bar of focused treeview like this:
-  #LibraryContainer QTreeView:focus QScrollBar:vertical {
+  WLibrarySidebar:focus QScrollBar:vertical {
   }*/
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal {
@@ -2301,37 +2298,38 @@ WLibrary QRadioButton::indicator:unchecked {
 
 /* triangle for closed/opened branches in treeview */
 /* closed */
-#LibraryContainer QTreeView::branch:closed:has-children:!has-siblings:!selected,
-#LibraryContainer QTreeView::branch:closed:has-children:has-siblings:!selected {
+WLibrarySidebar::branch:closed:has-children:!has-siblings:!selected,
+WLibrarySidebar::branch:closed:has-children:has-siblings:!selected {
 /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
   border-image: none;
+  /* TODO try if oversized icon would be upscaled */
   image: url(skin:/classic/style/library_branch_closed_grey.png);
   }
   /* closed, selected */
-  #LibraryContainer QTreeView::branch:closed:has-children:!has-siblings:selected,
-  #LibraryContainer QTreeView::branch:closed:has-children:has-siblings:selected {
+  WLibrarySidebar::branch:closed:has-children:!has-siblings:selected,
+  WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
     border-image: none;
     image: url(skin:/classic/style/library_branch_closed_selected_white.png);
     background-color: #5e4507;
   }
 /* open */
-#LibraryContainer QTreeView::branch:open:has-children:!has-siblings,
-#LibraryContainer QTreeView::branch:open:has-children:has-siblings {
+WLibrarySidebar::branch:open:has-children:!has-siblings,
+WLibrarySidebar::branch:open:has-children:has-siblings {
   border-image: none;
   image: url(skin:/classic/style/library_branch_open_grey.png);
   }
   /* open, selected */
-  #LibraryContainer QTreeView::branch:open:has-children:!has-siblings:selected,
-  #LibraryContainer QTreeView::branch:open:has-children:has-siblings:selected {
+  WLibrarySidebar::branch:open:has-children:!has-siblings:selected,
+  WLibrarySidebar::branch:open:has-children:has-siblings:selected {
     border-image: none;
     image: url(skin:/classic/style/library_branch_open_selected_white.png);
     background-color: #5e4507;
     }
   /* space left of selected child item */
-  #LibraryContainer QTreeView::branch:closed:!has-children:!has-siblings:selected,
-  #LibraryContainer QTreeView::branch:closed:!has-children:has-siblings:selected,
-  #LibraryContainer QTreeView::branch:open:!has-children:!has-siblings:selected,
-  #LibraryContainer QTreeView::branch:open:!has-children:has-siblings:selected {
+  WLibrarySidebar::branch:closed:!has-children:!has-siblings:selected,
+  WLibrarySidebar::branch:closed:!has-children:has-siblings:selected,
+  WLibrarySidebar::branch:open:!has-children:!has-siblings:selected,
+  WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
     border-image: none;
     background-color: #0f0f0f;
   }
@@ -2343,8 +2341,8 @@ WLibrary QRadioButton::indicator:unchecked {
 *************** QSpinBox, QMenu, QToolTip *************************************/
 QToolTip,
 WLibrarySidebar QMenu,
-WLibrary QHeaderView QMenu,
-QTextBrowser QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WEffectSelector QAbstractScrollArea,
@@ -2372,10 +2370,10 @@ QToolTip,
 #MainMenu QMenu QCheckBox,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
-WLibrary QHeaderView QMenu,
-WLibrary QHeaderView QMenu::item,
-QTextBrowser QMenu,
-QTextBrowser QMenu::item,
+WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
+WLibraryTextBrowser QMenu,
+WLibraryTextBrowser QMenu::item,
 WTrackMenu,
 WTrackMenu::item,
 WTrackMenu QMenu,
@@ -2405,7 +2403,7 @@ WEffectSelector, #fadeModeCombobox {
 /* ::indicator:!checked won't work. use 'unchecked' */
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
-WLibrary QHeaderView QMenu::item:selected,
+WTrackTableViewHeader QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
@@ -2452,8 +2450,8 @@ QLineEdit QMenu::item:disabled {
   }
 
   WLibrarySidebar QMenu::indicator:checked,
-  WLibrary QHeaderView QMenu::indicator:checked,
-  WLibrary QTableView::indicator:checked,
+  WTrackTableViewHeader QMenu::indicator:checked,
+  WTrackTableView::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
@@ -2492,21 +2490,21 @@ QLineEdit QMenu::item:disabled {
 
 /* This is the only way to select the 'Played' checkbox.
   Note that this also selects the BPM lock. */
-#LibraryContainer QTableView::indicator {
+WTrackTableView::indicator {
   /* border is added to size defined in style.qss */
   border: 1px solid transparent;
   margin: 0px;
   padding: 0px;
   }
-  #LibraryContainer QTableView::indicator:checked {
+  WTrackTableView::indicator:checked {
     border: 1px solid #ff6600;
     }
-  #LibraryContainer QTableView::indicator:unchecked {
+  WTrackTableView::indicator:unchecked {
     border: 1px solid rgba(151,151,151,128);
     }
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
-  WLibrary QHeaderView QMenu::separator,
+  WTrackTableViewHeader QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
   QLineEdit QMenu::separator,
@@ -2519,10 +2517,10 @@ QLineEdit QMenu::item:disabled {
   selected, unchecked items would have a checkmark */
 WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
-WLibrary QHeaderView QMenu::indicator:unchecked,
-WLibrary QHeaderView QMenu::indicator:unchecked:selected,
-WLibrary QTableView::indicator:unchecked,
-WLibrary QTableView::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu::indicator:unchecked,
+WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+WTrackTableView::indicator:unchecked,
+WTrackTableView::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,

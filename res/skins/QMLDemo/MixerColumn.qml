@@ -8,26 +8,38 @@ Item {
 
     property string group // required
 
-    Knob {
-        id: gainKnob
+    Rectangle {
+        id: gainKnobFrame
 
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         height: width
-        group: root.group
-        key: "pregain"
-        color: Theme.gainKnobColor
+        color: Theme.knobBackgroundColor
+        radius: 5
+
+        Skin.ControlKnob {
+            id: gainKnob
+
+            anchors.centerIn: parent
+            width: 48
+            height: 48
+            group: root.group
+            key: "pregain"
+            color: Theme.gainKnobColor
+        }
+
     }
 
     Item {
-        anchors.top: gainKnob.bottom
+        anchors.top: gainKnobFrame.bottom
         anchors.topMargin: 5
+        anchors.bottomMargin: 5
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: pflButton.top
 
-        VuMeter {
+        Skin.VuMeter {
             x: 15
             y: (parent.height - height) / 2
             width: 4
@@ -36,7 +48,7 @@ Item {
             key: "VuMeterL"
         }
 
-        VuMeter {
+        Skin.VuMeter {
             x: parent.width - width - 15
             y: (parent.height - height) / 2
             width: 4
@@ -45,7 +57,7 @@ Item {
             key: "VuMeterR"
         }
 
-        Slider {
+        Skin.ControlSlider {
             id: volumeSlider
 
             anchors.fill: parent

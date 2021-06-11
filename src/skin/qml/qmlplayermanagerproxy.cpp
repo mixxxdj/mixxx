@@ -12,6 +12,10 @@ namespace qml {
 QmlPlayerManagerProxy::QmlPlayerManagerProxy(
         std::shared_ptr<PlayerManager> pPlayerManager, QObject* parent)
         : QObject(parent), m_pPlayerManager(pPlayerManager) {
+    connect(this,
+            &QmlPlayerManagerProxy::loadLocationToPlayer,
+            m_pPlayerManager.get(),
+            &PlayerManager::loadLocationToPlayer);
 }
 
 QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
@@ -25,6 +29,12 @@ QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
     // the corresponding JS object is garbage collected.
     QmlPlayerProxy* pPlayerProxy = new QmlPlayerProxy(pPlayer);
     QQmlEngine::setObjectOwnership(pPlayerProxy, QQmlEngine::JavaScriptOwnership);
+    connect(pPlayerProxy,
+            &QmlPlayerProxy::loadTrackFromLocationRequested,
+            this,
+            [this, group](const QString& trackLocation) {
+                emit loadLocationToPlayer(trackLocation, group);
+            });
     return pPlayerProxy;
 }
 

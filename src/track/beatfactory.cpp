@@ -8,7 +8,7 @@
 
 namespace {
 
-const QString kRoundingVersion = QStringLiteral("V3");
+const QString kRoundingVersion = QStringLiteral("V4");
 
 } // namespace
 

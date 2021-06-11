@@ -289,16 +289,23 @@ double BeatUtils::makeConstBpm(
 
     // Create a const region region form the first beat of the first region to the last beat of the last region.
 
-    const double minRoundBpm = 60 * sampleRate / longestRegionBeatLengthMax;
-    const double maxRoundBpm = 60 * sampleRate / longestRegionBeatLengthMin;
-    const double centerBpm = 60 * sampleRate / longestRegionBeatLength;
+    const double minRoundBpm = 60.0 * sampleRate / longestRegionBeatLengthMax;
+    const double maxRoundBpm = 60.0 * sampleRate / longestRegionBeatLengthMin;
+    const double centerBpm = 60.0 * sampleRate / longestRegionBeatLength;
 
     //qDebug() << "minRoundBpm" << minRoundBpm;
     //qDebug() << "maxRoundBpm" << maxRoundBpm;
     const double roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
 
     if (pFirstBeat) {
-        *pFirstBeat = constantRegions[startRegionIndex].firstBeat;
+        // Move the first beat as close to the start of the track as we can. This is
+        // a constant beatgrid so "first beat" only affects the anchor point where
+        // bpm adjustments are made.
+        // This is a temporary fix, ideally the anchor point for the BPM grid should
+        // be the first proper downbeat, or perhaps the CUE point.
+        const double roundedBeatLength = 60.0 * sampleRate / roundBpm;
+        *pFirstBeat = fmod(constantRegions[startRegionIndex].firstBeat,
+                roundedBeatLength);
     }
     return roundBpm;
 }
