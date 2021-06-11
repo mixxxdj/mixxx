@@ -87,7 +87,7 @@ EXIT /B 0
     ECHO ^Build environment path: !BUILDENV_PATH!
 
     SET PATH=!BUILDENV_PATH!\bin;!PATH!
-    SET CMAKE_PREFIX_PATH=!BUILDENV_PATH!
+    SET CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\x64-windows
 
     ECHO ^Environent Variables:
     ECHO ^- PATH=!PATH!
