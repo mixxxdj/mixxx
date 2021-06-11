@@ -260,11 +260,10 @@ jobs:
 
     - name: "Configure"
       run: >-
-        cmake
+        cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
         -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=OFF
-        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DBATTERY=ON
         -DBROADCAST=ON
         -DDOWNLOAD_MANUAL=ON
