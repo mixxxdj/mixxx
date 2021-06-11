@@ -39,7 +39,7 @@ respectively), then run:
 
     $ mkdir build
     $ cd build
-    $ cmake ..   # Use `cmake -G Ninja ..` on Windows
+    $ cmake ..
     $ cmake --build .
 
 There should now be a `mixxx` executable in the current directory that you can
