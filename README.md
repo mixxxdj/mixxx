@@ -26,8 +26,8 @@ bug list][easybugs] and get started!
 
 ## Building Mixxx
 
-First, open a terminal (on Windows, use "x64 Native Tools command prompt for
-VS2019"), download the mixxx source code and navigate to it:
+First, open a terminal (on Windows, use "x64 Native Tools Command Prompt for
+VS 2019"), download the mixxx source code and navigate to it:
 
     $ git clone https://github.com/mixxxdj/mixxx.git
     $ cd mixxx
