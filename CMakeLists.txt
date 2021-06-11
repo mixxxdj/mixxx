@@ -2540,12 +2540,9 @@ if(MODPLUG)
 endif()
 
 # QtKeychain
-find_package(Qt5Keychain QUIET)
 option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" ON)
 if(QTKEYCHAIN)
-  if(NOT Qt5Keychain_FOUND)
-    message(FATAL_ERROR "Secure credential storage support requires the Qt5::Keychain component.")
-  endif()
+  find_package(Qt5Keychain REQUIRED)
   target_compile_definitions(mixxx-lib PUBLIC __QTKEYCHAIN__)
   target_link_libraries(mixxx-lib PRIVATE ${QTKEYCHAIN_LIBRARIES})
   target_include_directories(mixxx-lib SYSTEM PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
