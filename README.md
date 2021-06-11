@@ -32,10 +32,10 @@ VS 2019"), download the mixxx source code and navigate to it:
     $ git clone https://github.com/mixxxdj/mixxx.git
     $ cd mixxx
 
-Fetch the required dependencies (on Windows, macOS and Debian/Ubuntu, you can
-do that by running `tools\windows_buildenv.bat`, `source
-tools/macos_buildenv.sh setup` or `source tools/debian_buildenv.sh setup`
-respectively), then run:
+Fetch the required dependencies and set up the build environment (on Windows,
+macOS and Debian/Ubuntu, you can do that by running
+`tools\windows_buildenv.bat`, `source tools/macos_buildenv.sh setup` or `source
+tools/debian_buildenv.sh setup` respectively), then run:
 
     $ mkdir build
     $ cd build
