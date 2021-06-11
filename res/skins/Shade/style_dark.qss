@@ -83,6 +83,7 @@ WEffectSelector::indicator:unchecked:selected,
   WTrackTableViewHeader QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator {
     border-top: 1px solid #3F3041;
   }
