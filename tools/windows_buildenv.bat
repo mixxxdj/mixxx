@@ -52,38 +52,39 @@ EXIT /B 0
     SET CMAKE_TOOLCHAIN_FILE=%BUILDENV_PATH%\scripts\buildsystems\vcpkg.cmake
 
     IF NOT EXIST %BUILDENV_BASEPATH% (
-        ECHO ### Create subdirectory buildenv ###
+        ECHO ^Creating "buildenv" directory...
         MD %BUILDENV_BASEPATH%
     )
 
     IF NOT EXIST %BUILDENV_PATH% (
-        ECHO ### Download prebuild build environment ###
         SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/2.3/Windows/!BUILDENV_NAME!.zip
         IF NOT EXIST !BUILDENV_PATH!.zip (
-            ECHO ### Download prebuild build environment from !BUILDENV_URL! to !BUILDENV_PATH!.zip ###
+            ECHO ^Download prebuilt build environment from "!BUILDENV_URL!" to "!BUILDENV_PATH!.zip"...
             BITSADMIN /transfer buildenvjob /download /priority normal !BUILDENV_URL! !BUILDENV_PATH!.zip
             REM TODO: verify download using sha256sum?
+            ECHO ^Download complete.
+        ) else (
+            ECHO ^Using cached archive at "!BUILDENV_PATH!.zip".
         )
-        ECHO ### Unpacking !BUILDENV_PATH!.zip ###
 
         CALL :DETECT_SEVENZIP
         IF !RETVAL!=="" (
-            ECHO Using powershell for unpacking...
+            ECHO ^Unpacking "!BUILDENV_PATH!.zip" using powershell...
             CALL :UNZIP_POWERSHELL "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
         ) ELSE (
-            ECHO Using 7z for unpacking...
+            ECHO ^Unpacking "!BUILDENV_PATH!.zip" using 7z...
             CALL :UNZIP_SEVENZIP "!RETVAL!" "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
         )
         IF NOT EXIST %BUILDENV_PATH% (
-            ECHO ### Unpacking failed. ###
+            ECHO ^Error: Unpacking failed. The downloaded archive might be broken, consider removing "!BUILDENV_PATH!.zip" to force redownload.
             EXIT /B 1
         )
 
-        ECHO ### Unpacking complete. ###
+        ECHO ^Unpacking complete.
         DEL /f /q %BUILDENV_PATH%.zip
     )
 
-    ECHO ### Build environment path: !BUILDENV_PATH! ###
+    ECHO ^Build environment path: !BUILDENV_PATH!
 
     SET PATH=!BUILDENV_PATH!\bin;!PATH!
     SET CMAKE_PREFIX_PATH=!BUILDENV_PATH!
@@ -97,15 +98,16 @@ EXIT /B 0
         ECHO CMAKE_ARGS_EXTRA=-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON -DCMAKE_TOOLCHAIN_FILE=!CMAKE_TOOLCHAIN_FILE! -DVCPKG_TARGET_TRIPLET=x64-windows>>!GITHUB_ENV!
         ECHO PATH=!PATH!>>!GITHUB_ENV!
     ) else (
+        ECHO ^Generating "CMakeSettings.json"...
         CALL :GENERATE_CMakeSettings_JSON
 
         IF NOT EXIST %BUILD_ROOT% (
-            ECHO ### Create subdirectory build ###
+            ECHO ^Creating subdirectory "build"...
             MD %BUILD_ROOT%
         )
 
         IF NOT EXIST %INSTALL_ROOT% (
-            ECHO ### Create subdirectory install ###
+            ECHO ^Creating subdirectory "install"...
             MD %INSTALL_ROOT%
         )
     )
@@ -147,23 +149,23 @@ EXIT /B 0
 
 
 :READ_ENVNAME
-    ECHO ### Read name of prebuild environment from: %MIXXX_ROOT%\packaging\windows\build_environment ###
+    ECHO Reading name of prebuild environment from "%MIXXX_ROOT%\packaging\windows\build_environment"
     SET /P BUILDENV_NAME=<%MIXXX_ROOT%\packaging\windows\build_environment
     SET BUILDENV_NAME=!BUILDENV_NAME:PLATFORM=%PLATFORM%!
     SET BUILDENV_NAME=!BUILDENV_NAME:CONFIGURATION=%CONFIGURATION%!
     SET RETVAL=%BUILDENV_NAME%
-    ECHO "%RETVAL%"
+    ECHO Environment name: %RETVAL%
     GOTO :EOF
 
 :GENERATE_CMakeSettings_JSON
 REM Generate CMakeSettings.json which is read by MS Visual Studio to determine the supported CMake build environments
     SET CMakeSettings=%MIXXX_ROOT%\CMakeSettings.json
     IF EXIST %CMakeSettings% (
-        ECHO ### CMakeSettings.json exist: Rename old file to CMakeSettings__YYYY-MM-DD_HH-MM-SS.json ###
         FOR /f "delims=" %%a in ('wmic OS Get localdatetime ^| find "."') do set DateTime=%%a
-        REN %CMakeSettings% CMakeSettings__!DateTime:~0,4!-!DateTime:~4,2!-!DateTime:~6,2!_!DateTime:~8,2!-!DateTime:~10,2!-!DateTime:~12,2!.json
+        SET CMakeSettingsBackup=CMakeSettings_!DateTime:~0,4!-!DateTime:~4,2!-!DateTime:~6,2!_!DateTime:~8,2!-!DateTime:~10,2!-!DateTime:~12,2!.json
+        ECHO CMakeSettings.json already exists, creating backup at "!CMakeSettingsBackup!"...
+        REN %CMakeSettings% !CMakeSettingsBackup!
     )
-    ECHO ### Create new CMakeSettings.json ###
 
     CALL :SETANSICONSOLE
     SET OLDCODEPAGE=%RETVAL%
