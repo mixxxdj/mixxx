@@ -125,7 +125,7 @@ WTrackTableViewHeader QMenu::item,
 /* padding-right reserves space for the submenu expand arrow
   padding-left should be bigger than the menu icon width +
   icon margin-left/-right */
-  padding: 0.25em 0.6em 0.24em 1.3em;
+  padding: 0.17em 0.6em 0.17em 1.3em;
 }
 
 WTrackMenu::item,
@@ -139,7 +139,7 @@ QLineEdit QMenu::item,
 WCoverArtMenu::item,
 /* for the sake of completeness: html root view of Crates, Rec etc. */
 WLibraryTextBrowser QMenu::item {
-  padding: 0.25em 0.6em 0.25em 0.6em;
+  padding: 0.17em 0.6em 0.17em 0.6em;
 }
 
 /* Icons in those menus (copy, paste, cut, delete) */
@@ -160,7 +160,7 @@ WTrackTableViewHeader QMenu::indicator {
 
 /* items in Crate sub menu */
 WTrackMenu QMenu QCheckBox {
-  padding: 0.15em 0.5em 0.15em 0.25em;
+  padding: 0.17em 0.6em 0.17em 0.25em;
 }
 
 WLibrarySidebar QMenu::indicator,
