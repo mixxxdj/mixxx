@@ -2542,7 +2542,7 @@ WTrackTableViewHeader {
   /*  Library header 'buttons'  */
   WTrackTableViewHeader::section {
     height: 1.1em;
-    padding: 0px 2px;
+    padding: 0 0.1em;
     /*  use 'border-right' so that for the header of the leftmost column
     the border doesn't add to the border of the surrounding qtableview */
     border-right: 1px solid #585858;
@@ -2557,7 +2557,7 @@ WTrackTableViewHeader {
   WTrackTableViewHeader::up-arrow,
   WTrackTableViewHeader::down-arrow {
     width: 0.6em;
-    padding-right: 2px;
+    padding-right: 0.1em;
     border-right: 1px solid #585858;
     background-color: rgba(51,51,51,200);
     }

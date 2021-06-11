@@ -341,7 +341,7 @@ WTrackTableViewHeader {
 WTrackTableViewHeader::section {
   height: 1.1em;
   font-weight: bold;
-  padding: 2px;
+  padding: 0.1em;
   background-color: #1A1A1A;
   border-top: none;
   border-left: none;

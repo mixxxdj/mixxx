@@ -160,15 +160,6 @@ WEffectSelector::item:selected,
   border: 0px;
 }
 
-WLibrarySidebar QMenu::separator,
-WLibraryTextBrowser QMenu::separator,
-WTrackMenu::separator,
-WTrackMenu QMenu::separator,
-QLineEdit QMenu::separator {
-  height: 0px;
-  margin: 4px;
-}
-
   WLibrarySidebar QMenu::indicator,
   WTrackTableViewHeader QMenu::indicator,
   WTrackMenu QMenu QCheckBox::indicator {
@@ -293,13 +284,13 @@ WTrackTableViewHeader::item {
   }
   WTrackTableViewHeader::section {
     height: 1.1em;
-    border: 0px;
-    padding: 2px;
+    border: 0;
+    padding: 0.1em;
   }
   WTrackTableViewHeader::up-arrow,
   WTrackTableViewHeader::down-arrow {
     width: 0.8em;
-    padding: 0px 3px;
+    padding: 0 0.15em;
     }
 
 
