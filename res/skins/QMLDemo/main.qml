@@ -68,39 +68,55 @@ Rectangle {
 
         }
 
-        Skin.DeckRow {
-            id: decks12
+        SwipeView {
+            width: root.width
+            currentIndex: 0
 
-            leftDeckGroup: "[Channel1]"
-            rightDeckGroup: "[Channel2]"
-            width: parent.width
-            minimized: root.maximizeLibrary
-        }
+            Column {
+                Skin.DeckRow {
+                    id: decks12
 
-        Skin.CrossfaderRow {
-            id: crossfader
+                    leftDeckGroup: "[Channel1]"
+                    rightDeckGroup: "[Channel2]"
+                    width: parent.width
+                    minimized: root.maximizeLibrary
+                }
 
-            crossfaderWidth: decks12.mixer.width
-            width: parent.width
-            visible: !root.maximizeLibrary
+                Skin.CrossfaderRow {
+                    id: crossfader
 
-            FadeBehavior on visible {
-                fadeTarget: crossfader
+                    crossfaderWidth: decks12.mixer.width
+                    width: parent.width
+                    visible: !root.maximizeLibrary
+
+                    FadeBehavior on visible {
+                        fadeTarget: crossfader
+                    }
+
+                }
+
+                Skin.DeckRow {
+                    id: decks34
+
+                    leftDeckGroup: "[Channel3]"
+                    rightDeckGroup: "[Channel4]"
+                    width: parent.width
+                    minimized: root.maximizeLibrary
+                    visible: root.show4decks
+
+                    FadeBehavior on visible {
+                        fadeTarget: decks34
+                    }
+
+                }
+
             }
 
-        }
+            Skin.BroadcasterView {
+                id: broadcasterView
 
-        Skin.DeckRow {
-            id: decks34
-
-            leftDeckGroup: "[Channel3]"
-            rightDeckGroup: "[Channel4]"
-            width: parent.width
-            minimized: root.maximizeLibrary
-            visible: root.show4decks
-
-            FadeBehavior on visible {
-                fadeTarget: decks34
+                implicitWidth: root.width - 10
+                implicitHeight: 240
             }
 
         }
