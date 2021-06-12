@@ -2757,26 +2757,26 @@ WLibrarySidebar::branch:closed:has-children:has-siblings:!selected {
 /* Suppresses that selected sidebar items branch indicator shows wrong color when
     out of focus ; lp:880588 */
   border-image: none;
-  image: url(skin:/palemoon/style/library_branch_closed_grey.png);
+  image: url(skin:/palemoon/style/library_branch_closed.svg);
   }
   /* closed, selected */
   WLibrarySidebar::branch:closed:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/palemoon/style/library_branch_closed_selected_white.png);
+    image: url(skin:/palemoon/style/library_branch_closed_selected.svg);
     background-color: #2c454f;
   }
 /* open */
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
   border-image: none;
-  image: url(skin:/palemoon/style/library_branch_open_grey.png);
+  image: url(skin:/palemoon/style/library_branch_open.svg);
   }
   /* open, selected */
   WLibrarySidebar::branch:open:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:open:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/palemoon/style/library_branch_open_selected_white.png);
+    image: url(skin:/palemoon/style/library_branch_open_selected.svg);
     background-color: #2c454f;
     }
   /* space left of selected child item */
@@ -2794,6 +2794,7 @@ WLibrarySidebar::branch:open:has-children:has-siblings {
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
 QToolTip,
+#MainMenu QMenu,
 WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
 WLibraryTextBrowser QMenu,
@@ -2804,12 +2805,6 @@ WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
-  padding: 3px;
-  border: 1px solid #333;
-  border-radius: 1px;
-}
-#MainMenu QMenu {
-  padding: 0.08em;
   border: 1px solid #333;
   border-radius: 1px;
 }
@@ -2886,9 +2881,10 @@ WEffectSelector::item:selected,
   WCueMenuPopup QPushButton:focus {
     outline: none;
   }
-/* disabled items */
+/* disabled menu items and checkboxes */
+#MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
-#MainMenu QMenu QCheckBox:disabled,
+WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
@@ -2898,8 +2894,10 @@ QLineEdit QMenu::item:disabled {
 
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
+  WTrackTableViewHeader QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;

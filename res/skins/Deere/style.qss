@@ -263,7 +263,6 @@ WLibrary QLineEdit,
   border: 1px solid #006596;
 }
 
-
 /* checkbox in library "Played" column */
 WTrackTableView::indicator:checked {
   image: url(skin:/../Deere/icon/ic_library_checkmark.svg);
@@ -274,7 +273,8 @@ WTrackTableView::indicator:unchecked {
 }
 
 /* focused BPM cell in the library "BPM" column */
-#LibraryBPMButton:focus {
+#LibraryBPMButton:focus
+#LibraryBPMButton::indicator:focus {
   outline: none;
 }
 /* BPM lock icon */
@@ -341,7 +341,7 @@ WTrackTableViewHeader {
 WTrackTableViewHeader::section {
   height: 1.1em;
   font-weight: bold;
-  padding: 2px;
+  padding: 0.1em;
   background-color: #1A1A1A;
   border-top: none;
   border-left: none;
@@ -423,12 +423,12 @@ WLibrarySidebar::item:focus {
 /* triangle for closed/opened branches in treeview */
 WLibrarySidebar::branch:has-children:!has-siblings:closed,
 WLibrarySidebar::branch:closed:has-children:has-siblings {
-  border-image: none; image: url(skin:/../Deere/image/style_branch_closed.png);
+  border-image: none; image: url(skin:/../Deere/image/style_branch_closed.svg);
 }
 
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
-  border-image: none; image: url(skin:/../Deere/image/style_branch_open.png);
+  border-image: none; image: url(skin:/../Deere/image/style_branch_open.svg);
 }
 
 /* space left of selected child item */
@@ -1892,20 +1892,6 @@ do not highlight either state. */
 
 
 /* common styles for WEffectSelector, QMenu, QToolTip */
-QToolTip,
-#MainMenu QMenu,
-WLibrarySidebar QMenu,
-WTrackTableViewHeader QMenu,
-WLibraryTextBrowser QMenu,
-WTrackMenu,
-WTrackMenu QMenu,
-QLineEdit QMenu,
-WCueMenuPopup,
-WCoverArtMenu,
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea {
-  padding: 2px;
-}
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   font: 13px;
@@ -2005,22 +1991,6 @@ WEffectSelector QAbstractScrollArea,
   margin-bottom: 0px;
   padding-bottom: 0px;
 }
-/* Checkbox preceeding menu items (Options, ) */
-#MainMenu QMenu::indicator {
-/* Make it big: the highlighted background of the hovered box
-  should be as tall as the text highlight */
-  width: 1em;
-  height: 1em;
-/* In all other menus the checkboxes are compiled from a css
-  border and a SVG checkmark icon  individually per state
-  (i.e. indeterminate, checked:selected, checked:disabled)
-
-  In the menu bar we only need to display two states
-  * checked / checked:selected
-  * unchecked / unchecked:selected
-  and we want identical appearance on both Wind'ohs and Linux
-  (avoid rendering issues) thus we use complete SVG checkboxes. */
-  }
   #MainMenu QMenu::indicator:checked,
   #MainMenu QMenu::indicator:checked:selected {
     image: url(skin:/../Deere/icon/ic_mainmenu_checkbox_checked.svg);
@@ -2035,18 +2005,12 @@ WEffectSelector QAbstractScrollArea,
   border: 1px solid #888;
   border-radius: 2px;
   }
-  #MainMenu QMenu::separator {
-    height: 0px;
-    margin: 0.25em;
-  }
-  #MainMenu QMenu::right-arrow {
+  #MainMenu QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
     width: 0.7em;
     height: 0.7em;
-  }
-
-  #MainMenu QMenu::indicator {
-    width: 1em;
-    height: 1em;
+    image: url(skin:/../Deere/icon/ic_chevron_right_48px.svg);
   }
 
 
@@ -2117,84 +2081,24 @@ WEffectSelector::indicator:unchecked,
   border: 0px solid transparent;
 }
 
-WLibrarySidebar QMenu::separator,
-WTrackMenu::separator,
-WTrackMenu QMenu::separator,
-QLineEdit QMenu::separator {
-  height: 0px;
-  margin: 4px;
-}
 #MainMenu QMenu::separator,
 WLibrarySidebar QMenu::separator,
 WTrackTableViewHeader QMenu::separator,
 WTrackMenu::separator,
 WTrackMenu QMenu::separator,
+WLibraryTextBrowser QMenu::separator,
 QLineEdit QMenu::separator {
-  border-top: 1px solid #0a0a0a;
-}
-
-/* All menus that have at least one item with a checkbox*/
-WLibrarySidebar QMenu::item,
-WTrackTableViewHeader QMenu::item,
-#CratesMenu::item {
-/* padding-right reserves space for the submenu expand arrow
-  padding-left should be bigger than the menu icon width +
-  icon margin-left/-right */
-  padding: 5px 12px 5px 26px;
-}
-
-WTrackMenu::item,
-WTrackMenu QMenu::item,
-/* This catches context menus of
-  - property cells in the tracks table
-  - WCueMenuPopup cue label editor
-  - WBeatSpinBox
-  - AutoDJ transition QSpinBox*/
-QLineEdit QMenu::item,
-WCoverArtMenu::item,
-/* for the sake of completeness: html root view of Crates, Rec etc. */
-WLibraryTextBrowser QMenu::item {
-  padding: 5px 12px 5px 12px;
-}
-
-/* Icons in those menus (copy, paste, cut, delete) */
-QLineEdit QMenu::icon,
-WLibraryTextBrowser QMenu::icon,
-/* - checkbox in Crate name context menu
-    "[ ] Auto DJ Track Source" */
-WLibrarySidebar QMenu::indicator,
-/* Column checkboxes in the table header menu */
-WTrackTableViewHeader QMenu::indicator {
-  /* Qt 5.12.8: negative margin-right increases the overall item width but has no effect
-                on the indicator itself.
-                positive margin-right pushes icon to the right...
-     Qt 5.15.2: needs negative margin-right in order to eliminate the item's
-                padding-left (necessary to avoid text/icon overlap); */
-  margin: 0px -20px 0px 5px;
-}
-
-/* items in Crate sub menu */
-WTrackMenu QMenu QCheckBox {
-  padding: 3px 10px 3px 5px;
+  border-top: 1px solid #999;
 }
 
 WLibrarySidebar QMenu::indicator,
 WTrackTableViewHeader QMenu::indicator,
 WTrackMenu QMenu QCheckBox::indicator {
-  width: 13px;
-  height: 13px;
   border: 1px solid #555;
   border-radius: 1px;
   background-color: #0f0f0f;
   /* remove OS focus indicator */
   outline: none;
-}
-
-WTrackMenu::right-arrow,
-WTrackMenu QMenu::right-arrow,
-WTrackTableView::indicator {
-  width: 10px;
-  height: 10px;
 }
 
 QLineEdit QMenu::icon:selected,
@@ -2203,15 +2107,14 @@ WTrackTableViewHeader QMenu::indicator:selected,
 WTrackMenu QMenu QCheckBox::indicator:selected {
   border: 1px solid #999;
 }
-/* disabled menu item and checkbox */
+/* disabled menu items and checkboxes */
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
-QLineEdit QMenu::item:disabled,
-WCoverArtMenu::item:disabled {
+QLineEdit QMenu::item:disabled {
   color: #555;
 }
 WTrackMenu QMenu QCheckBox::indicator:disabled {
@@ -2247,12 +2150,6 @@ WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
 WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
 WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked {
   border: 1px solid #222;
-}
-
-#MainMenu QMenu::right-arrow,
-WTrackMenu::right-arrow,
-WTrackMenu QMenu::right-arrow {
-  image: url(skin:/../Deere/icon/ic_chevron_right_48px.svg);
 }
 
 /* explicitly remove icons from unchecked items otherwise

@@ -2144,22 +2144,6 @@ WEffectSelector::indicator:unchecked,
 #MainMenu {
   margin-bottom: 0px;
   padding-bottom: 0px;
-}
-/* Checkbox preceeding menu items (Options, ) */
-#MainMenu QMenu::indicator {
-/* Make it big: the highlighted background of the hovered box
-  should be as tall as the text highlight */
-  width: 1em;
-  height: 1em;
-/* In all other menus the checkboxes are compiled from a css
-  border and a SVG checkmark icon  individually per state
-  (i.e. indeterminate, checked:selected, checked:disabled)
-
-  In the menu bar we only need to display two states
-  * checked / checked:selected
-  * unchecked / unchecked:selected
-  and we want identical appearance on both Wind'ohs and Linux
-  (avoid rendering issues) thus we use complete SVG checkboxes. */
   }
   #MainMenu QMenu::indicator:checked,
   #MainMenu QMenu::indicator:checked:selected {
@@ -2175,60 +2159,19 @@ WEffectSelector::indicator:unchecked,
   border: 1px solid #888;
   border-radius: 2px;
   }
-  #MainMenu QMenu::separator {
-    height: 0px;
-    margin: 0.25em 0.06em;
-  }
-  #MainMenu QMenu::right-arrow {
+  #MainMenu QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
     width: 0.35em;
     height: 0.7em;
     margin-right: 0.2em;
+    image: url(skin:/../Tango/buttons/btn_arrow_right.svg);
   }
-
-/* All menus that have at least one item with a checkbox*/
-WLibrarySidebar QMenu::item,
-WTrackTableViewHeader QMenu::item,
-#CratesMenu::item {
-/* padding-right reserves space for the submenu expand arrow
-  padding-left should be bigger than the menu icon width +
-  icon margin-left/-right */
-  padding: 5px 12px 5px 26px;
-}
-
-WTrackMenu::item,
-WTrackMenu QMenu::item,
-/* This catches context menus of
-  - property cells in the tracks table
-  - WCueMenuPopup cue label editor
-  - WBeatSpinBox
-  - AutoDJ transition QSpinBox*/
-QLineEdit QMenu::item,
-WCoverArtMenu::item,
-/* for the sake of completeness: html root view of Crates, Rec etc. */
-WLibraryTextBrowser QMenu::item {
-  padding: 5px 12px 5px 12px;
-}
-
-/* Icons in those menus (copy, paste, cut, delete) */
-QLineEdit QMenu::icon,
-WLibraryTextBrowser QMenu::icon,
-/* - checkbox in Crate name context menu
-    "[ ] Auto DJ Track Source" */
-WLibrarySidebar QMenu::indicator,
-/* Column checkboxes in the table header menu */
-WTrackTableViewHeader QMenu::indicator {
-  /* Qt 5.12.8: negative margin-right increases the overall item width but has no effect
-                on the indicator itself.
-                positive margin-right pushes icon to the right...
-     Qt 5.15.2: needs negative margin-right in order to eliminate the item's
-                padding-left (necessary to avoid text/icon overlap); */
-  margin: 0px -20px 0px 5px;
-}
-
-/* items in Crate sub menu */
-WTrackMenu QMenu QCheckBox {
-  padding: 3px 10px 3px 5px;
-}
+  #MainMenu QMenu::right-arrow:selected,
+  WTrackMenu::right-arrow:selected,
+  WTrackMenu QMenu::right-arrow:selected {
+    image: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg);
+  }
 
 /* Passthrough label on overview waveform */
 WOverview #PassthroughLabel {
@@ -2270,17 +2213,17 @@ WEffectSelector, WEffectSelector QAbstractScrollArea,
   color: #ccc;
   }
 QToolTip,
-WCueMenuPopup,
+#MainMenu QMenu,
 WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
-QLineEdit QMenu,
-WCoverArtMenu,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
-#SkinSettings,
+QLineEdit QMenu,
+WCueMenuPopup,
+WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
-  padding: 2px;
   border: 1px solid #888;
   border-radius: 2px;
   }
@@ -2316,7 +2259,7 @@ WEffectSelector::item:selected {
   outline: none;
 }
 
-/* disabled menu items */
+/* disabled menu items and checkboxes */
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,
@@ -2327,53 +2270,19 @@ QLineEdit QMenu::item:disabled {
   color: #555;
 }
 
-WLibrarySidebar QMenu::separator,
-WTrackTableViewHeader QMenu::separator,
-WTrackMenu::separator,
-WTrackMenu QMenu::separator,
-QLineEdit QMenu::separator {
-  height: 0px;
-  margin: 4px;
-  }
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
   WTrackTableViewHeader QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator {
     border-top: 1px solid #0a0a0a;
   }
 
-WTrackMenu::right-arrow,
-WTrackMenu QMenu::right-arrow {
-  width: 8px;
-  height: 16px;
-  margin-right: 4px;
-  }
-  #MainMenu QMenu::right-arrow,
-  WTrackMenu::right-arrow,
-  WTrackMenu QMenu::right-arrow {
-    image: url(skin:/../Tango/buttons/btn_arrow_right.svg);
-  }
-  #MainMenu QMenu::right-arrow:selected,
-  WTrackMenu::right-arrow:selected,
-  WTrackMenu QMenu::right-arrow:selected {
-    image: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg);
-  }
-
-  WTrackTableViewHeader QMenu::indicator {
-    width: 10px;
-    height: 10px;
-    }
-    WTrackTableViewHeader QMenu::indicator:checked {
-      image: url(skin:/../Tango/buttons/btn_lib_checkmark_white.svg);
-    }
-
 WLibrarySidebar QMenu::indicator,
 WTrackTableViewHeader QMenu::indicator,
 WTrackMenu QMenu QCheckBox::indicator {
-  width: 13px;
-  height: 13px;
   background-color: #0f0f0f;
   border: 1px solid #333;
   border-radius: 1px;
@@ -2584,7 +2493,7 @@ WLibrarySidebar {
 /*  Closed branch icon in tree */
 WLibrarySidebar::branch:has-children:!has-siblings:closed,
 WLibrarySidebar::branch:closed:has-children:has-siblings {
-  image: url(skin:/../Tango/graphics/branch_closed.png);
+  image: url(skin:/../Tango/graphics/branch_closed.svg);
   }
   WLibrarySidebar::branch:has-children:!has-siblings:closed:selected,
   WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
@@ -2594,7 +2503,7 @@ WLibrarySidebar::branch:closed:has-children:has-siblings {
 /*  Open branch icon in tree */
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
-  image: url(skin:/../Tango/graphics/branch_open.png);
+  image: url(skin:/../Tango/graphics/branch_open.svg);
   }
   WLibrarySidebar::branch:open:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:open:has-children:has-siblings:selected {
@@ -2633,7 +2542,7 @@ WTrackTableViewHeader {
   /*  Library header 'buttons'  */
   WTrackTableViewHeader::section {
     height: 1.1em;
-    padding: 0px 2px;
+    padding: 0 0.1em;
     /*  use 'border-right' so that for the header of the leftmost column
     the border doesn't add to the border of the surrounding qtableview */
     border-right: 1px solid #585858;
@@ -2647,8 +2556,8 @@ WTrackTableViewHeader {
 
   WTrackTableViewHeader::up-arrow,
   WTrackTableViewHeader::down-arrow {
-    width: 12px;
-    padding-right: 2px;
+    width: 0.6em;
+    padding-right: 0.1em;
     border-right: 1px solid #585858;
     background-color: rgba(51,51,51,200);
     }
@@ -2994,8 +2903,6 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 
   /* checkbox in library "Played" column */
   WTrackTableView::indicator {
-    width: 10px;
-    height: 10px;
     margin: 0px;
     padding: 0px;
     color: #cfcfcf;
