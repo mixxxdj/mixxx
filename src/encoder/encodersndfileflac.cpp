@@ -85,7 +85,7 @@ void EncoderSndfileFlac::initStream() {
 #endif //SFC_SUPPORTS_SET_COMPRESSION_LEVEL
 
     // Version 1.0.28 suffers broken clamping https://bugs.launchpad.net/mixxx/+bug/1915298
-    // We receive "libsndfile-1.0.28" on Ubuntu Bionic 18.04 LTS/Focal 20.04 LTS/Grovy 20.10
+    // We receive "libsndfile-1.0.28" on Ubuntu Focal 20.04 LTS/Grovy 20.10
     // Older versions are not expected. All newer version have a working internal clamping
     const char* sf_version = sf_version_string();
     if (strstr(sf_version, "-1.0.28") != nullptr) {
