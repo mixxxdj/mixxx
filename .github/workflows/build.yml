@@ -180,8 +180,11 @@ jobs:
       # Possibly related: actions/checkout#290
       run: git fetch origin --force --tags
 
-    - name: "Set up cmake"
+    - name: "[macOS/Ubuntu 18.04] Set up cmake"
       uses: jwlawson/actions-setup-cmake@v1.4
+      # Ubuntu 20.04 should use the CMake version from the repos, and Visual
+      # Studio on Windows comes with its own CMake version anyway.
+      if: runner.os == 'macOS' || matrix.os == 'ubuntu-18.04'
       with:
         # This should always match the mininum required version in
         # our CMakeLists.txt
