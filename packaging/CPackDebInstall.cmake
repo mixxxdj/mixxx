@@ -27,7 +27,7 @@ endif()
 message( NOTICE "Creating temporary debian folder for debhelper" )
 file(COPY ${CPACK_DEBIAN_SOURCE_DIR}/packaging/debian
     DESTINATION ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME})
-set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libavcodec-dev, libavutil-dev,")
+set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libavformat-dev, ")
 configure_file(${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control.in
                ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control
                @ONLY)
