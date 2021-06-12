@@ -153,7 +153,8 @@ PioneerDDJSB3.flasher.removeFunction = function(fn) {
     });
 };
 
-PioneerDDJSB3.midiOutputBeatLeds = [0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67];
+PioneerDDJSB3.midiOutputBeatLedsStart = 0x60;
+PioneerDDJSB3.midiOutputBeatLedsCount = 8;
 
 PioneerDDJSB3.scratchSettings = {
     "alpha": 1.0 / 8,
@@ -429,7 +430,7 @@ PioneerDDJSB3.Pad = function(padNumber) {
 
     this.slicerButtons = [];
 
-    for (var i = 1; i <= PioneerDDJSB3.midiOutputBeatLeds.length; i++) {
+    for (var i = 1; i <= PioneerDDJSB3.midiOutputBeatLedsCount; i++) {
         (function(beat) {
             _this.slicerButtons[beat] = function(channel, control, value, status) {
                 if (_this.slicer) {
@@ -525,7 +526,7 @@ PioneerDDJSB3.Pad.prototype.slicerMode = function(channel, control, value) {
             var group = "[Channel" + this.padNumber + "]";
             var midiOutputOp = 0x97 + this.padNumber - 1;
 
-            this.slicer = new PioneerDDJSB3.Slicer(group, midiOutputOp, PioneerDDJSB3.midiOutputBeatLeds);
+            this.slicer = new PioneerDDJSB3.Slicer(group, midiOutputOp);
         }
     }
 };
@@ -936,7 +937,7 @@ PioneerDDJSB3.headphoneMasterUpdate = function() {
     }
 };
 
-PioneerDDJSB3.inValueScale= function(input) {
+PioneerDDJSB3.inValueScale = function(input) {
     // Scale so that:
     // from 0/4 to 3/4 - 500 of input represents 0.0 to 1.0
     // from 3/4 - 500 to 3/4 + 500 represents 1.0
@@ -1542,13 +1543,12 @@ PioneerDDJSB3.EffectUnit.prototype.setShift = function(value) {
 //                             SLICER                        //
 ///////////////////////////////////////////////////////////////
 
-PioneerDDJSB3.Slicer = function(group, midiOutputOp, midiOutputBeatLeds) {
+PioneerDDJSB3.Slicer = function(group, midiOutputOp) {
     var _this = this;
 
     this.group = group;
 
     this.midiOutputOp = midiOutputOp;
-    this.midiOutputBeatLeds = midiOutputBeatLeds;
 
     this.beatPositions = [];
 
@@ -1560,7 +1560,7 @@ PioneerDDJSB3.Slicer = function(group, midiOutputOp, midiOutputBeatLeds) {
 
     this.buttons = [];
 
-    for (var i = 1; i <= midiOutputBeatLeds.length; i++) {
+    for (var i = 1; i <= PioneerDDJSB3.midiOutputBeatLedsCount; i++) {
         (function(beat) {
             _this.buttons[beat] = function(channel, control, value) {
                 if (value) {
@@ -1603,8 +1603,8 @@ PioneerDDJSB3.Slicer.prototype.PLAY_POSITION_RANGE = 1 - PioneerDDJSB3.Slicer.pr
 PioneerDDJSB3.Slicer.prototype.shutdown = function() {
     var i;
 
-    for (i = 0; i < this.midiOutputBeatLeds.length; i++) {
-        var ledMidi = this.midiOutputBeatLeds[i];
+    for (i = 0; i < PioneerDDJSB3.midiOutputBeatLedsCount.length; i++) {
+        var ledMidi = PioneerDDJSB3.midiOutputBeatLedsStart + i;
 
         if (ledMidi) {
             midi.sendShortMsg(this.midiOutputOp, ledMidi, 0x0);
@@ -1631,7 +1631,7 @@ PioneerDDJSB3.Slicer.prototype.calculateBeats = function() {
 PioneerDDJSB3.Slicer.prototype.generateBeatPositions = function() {
     this.beatPositions = [];
 
-    for (var i = 0; i < this.midiOutputBeatLeds.length; i++) {
+    for (var i = 0; i < PioneerDDJSB3.midiOutputBeatLedsCount; i++) {
         var sample = this.firstBeatSample + (i * this.samplesPerBeat);
         var nextSample = this.firstBeatSample + ((i + 1) * this.samplesPerBeat);
 
@@ -1713,10 +1713,10 @@ PioneerDDJSB3.Slicer.prototype.playPositionChange = function(value) {
 };
 
 PioneerDDJSB3.Slicer.prototype.midiOuputUpdate = function() {
-    var onLedMidi = this.midiOutputBeatLeds[this.currentBeat];
+    var onLedMidi = PioneerDDJSB3.midiOutputBeatLedsStart + this.currentBeat;
 
-    for (var i = 0; i < this.midiOutputBeatLeds.length; i++) {
-        var ledMidi = this.midiOutputBeatLeds[i];
+    for (var i = 0; i < PioneerDDJSB3.midiOutputBeatLedsCount; i++) {
+        var ledMidi = PioneerDDJSB3.midiOutputBeatLedsStart + i;
 
         if (ledMidi !== onLedMidi) {
             midi.sendShortMsg(this.midiOutputOp, ledMidi, 0x0);
