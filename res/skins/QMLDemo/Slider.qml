@@ -20,7 +20,7 @@ MixxxControls.Slider {
         id: handleImage
 
         visible: false
-        source: "images/slider_handle.svg"
+        source: Theme.imgSliderHandle
         fillMode: Image.PreserveAspectFit
     }
 

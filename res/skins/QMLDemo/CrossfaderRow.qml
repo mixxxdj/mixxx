@@ -28,8 +28,8 @@ Item {
         key: "crossfader"
         barColor: Theme.crossfaderBarColor
         barStart: 0.5
-        fg: "images/slider_handle_crossfader.svg"
-        bg: "images/slider_crossfader.svg"
+        fg: Theme.imgCrossfaderHandle
+        bg: Theme.imgCrossfaderBackground
     }
 
     Item {

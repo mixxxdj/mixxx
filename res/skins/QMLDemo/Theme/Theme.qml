@@ -35,4 +35,14 @@ QtObject {
     property string fontFamily: "Open Sans"
     property int textFontPixelSize: 14
     property int buttonFontPixelSize: 10
+    property string imgButton: "images/button.svg"
+    property string imgButtonPressed: "images/button_pressed.svg"
+    property string imgSliderHandle: "images/slider_handle.svg"
+    property string imgBpmSliderBackground: "images/slider_bpm.svg"
+    property string imgVolumeSliderBackground: "images/slider_volume.svg"
+    property string imgCrossfaderHandle: "images/slider_handle_crossfader.svg"
+    property string imgCrossfaderBackground: "images/slider_crossfader.svg"
+    property string imgPopupBackground: imgButton
+    property string imgKnob: "images/knob.svg"
+    property string imgKnobShadow: "images/knob_shadow.svg"
 }

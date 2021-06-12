@@ -22,7 +22,7 @@ AbstractButton {
 
             PropertyChanges {
                 target: backgroundImage
-                source: "images/button_pressed.svg"
+                source: Theme.imgButtonPressed
             }
 
             PropertyChanges {
@@ -42,7 +42,7 @@ AbstractButton {
 
             PropertyChanges {
                 target: backgroundImage
-                source: "images/button.svg"
+                source: Theme.imgButton
             }
 
             PropertyChanges {
@@ -62,7 +62,7 @@ AbstractButton {
 
             PropertyChanges {
                 target: backgroundImage
-                source: "images/button.svg"
+                source: Theme.imgButton
             }
 
             PropertyChanges {
@@ -84,7 +84,7 @@ AbstractButton {
         anchors.fill: parent
         horizontalTileMode: BorderImage.Stretch
         verticalTileMode: BorderImage.Stretch
-        source: "images/button.svg"
+        source: Theme.imgButton
 
         border {
             top: 10

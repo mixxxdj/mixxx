@@ -64,7 +64,7 @@ Item {
             group: root.group
             key: "volume"
             barColor: Theme.volumeSliderBarColor
-            bg: "images/slider_volume.svg"
+            bg: Theme.imgVolumeSliderBackground
         }
 
     }

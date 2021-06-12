@@ -37,7 +37,7 @@ Item {
         key: "rate"
         barStart: 0.5
         barColor: Theme.bpmSliderBarColor
-        bg: "images/slider_bpm.svg"
+        bg: Theme.imgBpmSliderBackground
 
         FadeBehavior on visible {
             fadeTarget: rateSlider
