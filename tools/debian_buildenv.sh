@@ -21,8 +21,7 @@ case "$COMMAND" in
                 ;;
             *) # libmp4v2 was removed from Debian 10 & Ubuntu 20.04 due to lack of maintenance, so use FFMPEG instead
                 PACKAGES_EXTRA=(
-                    libavcodec-dev
-                    libavutil-dev
+                    libavformat-dev
                 )
         esac
 
@@ -48,7 +47,6 @@ case "$COMMAND" in
             fonts-open-sans \
             fonts-ubuntu \
             g++ \
-            libavformat-dev \
             libchromaprint-dev \
             libdistro-info-perl \
             libebur128-dev \
