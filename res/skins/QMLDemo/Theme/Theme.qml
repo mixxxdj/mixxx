@@ -19,8 +19,7 @@ QtObject {
     property color effectColor: yellow
     property color effectUnitColor: red
     property color bpmSliderBarColor: green
-    property color volumeSliderBarColor: blue
-    property color gainKnobColor: blue
+    property color mixerColor: blue
     property color samplerColor: blue
     property color crossfaderOrientationColor: lightGray
     property color crossfaderBarColor: red
@@ -33,12 +32,14 @@ QtObject {
     property color deckLineColor: darkGray2
     property color deckTextColor: lightGray2
     property color embeddedBackgroundColor: "#a0000000"
+    property color knobLabelColor: lightGray2
     property color buttonNormalColor: midGray
     property color textColor: lightGray2
     property color toolbarActiveColor: white
     property string fontFamily: "Open Sans"
     property int textFontPixelSize: 14
     property int buttonFontPixelSize: 10
+    property int knobFontPixelSize: 8
     property string imgButton: "images/button.svg"
     property string imgButtonPressed: "images/button_pressed.svg"
     property string imgSliderHandle: "images/slider_handle.svg"

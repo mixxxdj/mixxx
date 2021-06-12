@@ -115,8 +115,8 @@ Rectangle {
             Skin.BroadcasterView {
                 id: broadcasterView
 
-                implicitWidth: root.width - 10
-                implicitHeight: 240
+                implicitWidth: root.width
+                implicitHeight: 450
             }
 
         }
