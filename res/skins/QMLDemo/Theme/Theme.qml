@@ -46,5 +46,7 @@ QtObject {
     property string imgPopupBackground: imgButton
     property string imgKnob: "images/knob.svg"
     property string imgKnobShadow: "images/knob_shadow.svg"
+    property string imgKnobMini: "images/miniknob.svg"
+    property string imgKnobMiniShadow: "images/miniknob_shadow.svg"
     property string imgSectionBackground: "images/section.svg"
 }
