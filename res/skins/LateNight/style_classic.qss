@@ -245,7 +245,7 @@ WSearchLineEdit,
     min-width: 1px;
     max-width: 1px;
     margin: 2px 1px;
-    background: url(skin:/classic/style/fx_separator.svg) no-repeat center center;
+    image: url(skin:/classic/style/fx_separator.svg) no-repeat center center;
   }
   #FxSlotSeparatorH {
     min-height: 2px;

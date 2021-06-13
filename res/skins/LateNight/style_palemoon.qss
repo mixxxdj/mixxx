@@ -324,7 +324,7 @@ WSearchLineEdit {
 
   #FxFlowIndicatorCollapsed {
     margin: 0px 0px 0px 0px;
-    background-image: url(skin:/palemoon/style/fx_flow_horizontal.svg) no-repeat center center;
+    image: url(skin:/palemoon/style/fx_flow_horizontal.svg) no-repeat center center;
   }
   #ToolbarSeparator {
     margin: 0px 5px;
@@ -2195,21 +2195,15 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skin:/palemoon/buttons/btn__split_active.svg) no-repeat center center;
   }
 
-#FxExpand,
-#SamplerExpand,
-#LibExpand {
-  background-repeat: no-repeat;
-  background-position: center center;
-}
 #FxExpand[value="0"],
 #SamplerExpand[value="0"],
 #LibExpand[value="0"] {
-  background: url(skin:/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
+  image: url(skin:/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
   }
   #FxExpand[value="1"],
   #SamplerExpand[value="1"],
   #LibExpand[value="1"] {
-    background: url(skin:/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
+    image: url(skin:/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
   }
 
 #MixModeButton[value="0"] {
@@ -2782,11 +2776,11 @@ WLibrary QLabel, WLibrary QRadioButton {
 }
 
 WLibrary QRadioButton::indicator:checked {
-  background: url(skin:/palemoon/buttons/btn__lib_radio_button_on_blue.svg) center center;
+  image: url(skin:/palemoon/buttons/btn__lib_radio_button_on_blue.svg) center center;
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:/palemoon/buttons/btn__lib_radio_button_off.svg) center center;
+  image: url(skin:/palemoon/buttons/btn__lib_radio_button_off.svg) center center;
 }
 
 /* Library feature pushbuttons
