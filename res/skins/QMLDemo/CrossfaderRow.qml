@@ -8,36 +8,58 @@ Item {
 
     property real crossfaderWidth // required
 
-    implicitHeight: crossfaderSlider.height + 5
+    implicitHeight: crossfader.height
 
     Item {
         id: effectUnitLeftPlaceholder
 
         anchors.top: parent.top
         anchors.left: parent.left
+        anchors.right: crossfader.left
         anchors.bottom: parent.bottom
+
+        Skin.SectionBackground {
+            anchors.fill: parent
+        }
+
     }
 
-    Skin.ControlSlider {
-        id: crossfaderSlider
+    Skin.SectionBackground {
+        id: crossfader
 
-        orientation: Qt.Horizontal
         anchors.centerIn: parent
         width: root.crossfaderWidth
-        group: "[Master]"
-        key: "crossfader"
-        barColor: Theme.crossfaderBarColor
-        barStart: 0.5
-        fg: Theme.imgCrossfaderHandle
-        bg: Theme.imgCrossfaderBackground
+        height: crossfaderSlider.height + 20
+
+        Skin.ControlSlider {
+            id: crossfaderSlider
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            orientation: Qt.Horizontal
+            group: "[Master]"
+            key: "crossfader"
+            barColor: Theme.crossfaderBarColor
+            barStart: 0.5
+            fg: Theme.imgCrossfaderHandle
+            bg: Theme.imgCrossfaderBackground
+        }
+
     }
 
     Item {
         id: effectUnitRightPlaceholder
 
         anchors.top: parent.top
+        anchors.left: crossfader.right
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+
+        Skin.SectionBackground {
+            anchors.fill: parent
+        }
+
     }
 
 }

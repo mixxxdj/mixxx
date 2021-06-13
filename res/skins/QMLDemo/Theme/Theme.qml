@@ -29,6 +29,7 @@ QtObject {
     property color knobBackgroundColor: "#262626"
     property color deckLineColor: darkGray2
     property color deckTextColor: lightGray2
+    property color embeddedBackgroundColor: "#a0000000"
     property color buttonNormalColor: midGray
     property color textColor: lightGray2
     property color toolbarActiveColor: white
@@ -45,4 +46,5 @@ QtObject {
     property string imgPopupBackground: imgButton
     property string imgKnob: "images/knob.svg"
     property string imgKnobShadow: "images/knob_shadow.svg"
+    property string imgSectionBackground: "images/section.svg"
 }

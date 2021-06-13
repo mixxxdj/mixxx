@@ -13,6 +13,8 @@ Rectangle {
     property color textColor: Theme.deckTextColor
     property color lineColor: Theme.deckLineColor
 
+    border.width: 2
+    border.color: Theme.deckBackgroundColor
     radius: 5
     height: 56
 
@@ -226,15 +228,18 @@ Rectangle {
         orientation: Gradient.Horizontal
 
         GradientStop {
-            position: -0.75
+            position: 0
             color: {
-                let trackColor = root.deckPlayer.color;
-                return trackColor ? trackColor : Theme.deckBackgroundColor;
+                const trackColor = root.deckPlayer.color;
+                if (!trackColor.valid)
+                    return Theme.deckBackgroundColor;
+
+                return Qt.darker(root.deckPlayer.color, 2);
             }
         }
 
         GradientStop {
-            position: 0.5
+            position: 1
             color: Theme.deckBackgroundColor
         }
 

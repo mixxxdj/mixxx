@@ -13,10 +13,16 @@ Item {
     property bool minimized: false
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
 
+    Skin.SectionBackground {
+        anchors.fill: parent
+    }
+
     Skin.DeckInfoBar {
         id: infoBar
 
         anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.rightMargin: 5
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -28,6 +34,7 @@ Item {
 
         visible: !root.minimized
         anchors.topMargin: 5
+        anchors.rightMargin: 5
         anchors.bottomMargin: 5
         anchors.top: infoBar.bottom
         anchors.right: parent.right
@@ -298,6 +305,8 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.leftMargin: 5
+        anchors.rightMargin: 5
+        anchors.bottomMargin: 5
         height: 56
         visible: !root.minimized
 

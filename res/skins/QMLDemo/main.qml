@@ -17,7 +17,6 @@ Rectangle {
 
     Column {
         anchors.fill: parent
-        spacing: 10
 
         Rectangle {
             id: toolbar
@@ -56,8 +55,7 @@ Rectangle {
 
             leftDeckGroup: "[Channel1]"
             rightDeckGroup: "[Channel2]"
-            width: parent.width - 10
-            x: 5
+            width: parent.width
             minimized: root.maximizeLibrary
         }
 
@@ -65,8 +63,7 @@ Rectangle {
             id: crossfader
 
             crossfaderWidth: decks12.mixer.width
-            width: parent.width - 10
-            x: 5
+            width: parent.width
             visible: !root.maximizeLibrary
 
             FadeBehavior on visible {
@@ -80,8 +77,7 @@ Rectangle {
 
             leftDeckGroup: "[Channel3]"
             rightDeckGroup: "[Channel4]"
-            width: parent.width - 10
-            x: 5
+            width: parent.width
             minimized: root.maximizeLibrary
             visible: root.show4decks
 
