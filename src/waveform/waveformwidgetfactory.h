@@ -95,6 +95,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int getHandleIndex() {
         return findHandleIndexFromType(m_type);
     }
+    int findHandleIndexFromType(WaveformWidgetType::Type type);
 
   protected:
     bool setWidgetType(
@@ -159,7 +160,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int findIndexOf(WWaveformViewer* viewer) const;
 
     WaveformWidgetType::Type findTypeFromHandleIndex(int index);
-    int findHandleIndexFromType(WaveformWidgetType::Type type);
 
     //All type of available widgets
 

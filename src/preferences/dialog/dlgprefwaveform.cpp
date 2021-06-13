@@ -195,10 +195,10 @@ void DlgPrefWaveform::slotApply() {
 void DlgPrefWaveform::slotResetToDefaults() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
-    // Get the default we ought to use based on whether the user has OpenGL or
-    // not.
-    WaveformWidgetType::Type defaultType = factory->autoChooseWidgetType();
-    int defaultIndex = waveformTypeComboBox->findData(defaultType);
+    // Get the default we ought to use based on whether the user has OpenGL or not.
+    // Select the combobox index that holds the default handle's index in data column.
+    int defaultIndex = waveformTypeComboBox->findData(
+            factory->findHandleIndexFromType(factory->autoChooseWidgetType()));
     if (defaultIndex != -1 && waveformTypeComboBox->currentIndex() != defaultIndex) {
         waveformTypeComboBox->setCurrentIndex(defaultIndex);
     }
