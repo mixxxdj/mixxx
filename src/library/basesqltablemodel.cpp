@@ -707,8 +707,11 @@ bool BaseSqlTableModel::setTrackValueForColumn(
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
         pTrack->trySetBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) == column) {
-        // pTrack->trySet(static_cast<double>(value.toDouble()));
-        pTrack->trySetReplayGainFromString(value.toString());
+        bool valid = false;
+        double ratio = mixxx::ReplayGain::ratioFromString(value.toString(), &valid);
+        if (valid) {
+            pTrack->setReplayGainDb(ratio);
+        }
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
         // Update both the played flag and the number of times played
         pTrack->updatePlayCounter(value.toBool());
