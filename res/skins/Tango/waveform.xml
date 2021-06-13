@@ -77,7 +77,7 @@ Variables:
           <Control>intro_start_position</Control>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
           <Text>&#9698;</Text>
-          <Align>bottom</Align>
+          <Align>bottom|right</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
@@ -85,7 +85,7 @@ Variables:
           <Control>intro_end_position</Control>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
           <Text>&#9698;</Text>
-          <Align>bottom</Align>
+          <Align>bottom|left</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
@@ -100,7 +100,7 @@ Variables:
           <Control>outro_start_position</Control>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
           <Text>&#9699;</Text>
-          <Align>bottom</Align>
+          <Align>bottom|right</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
@@ -108,7 +108,7 @@ Variables:
           <Control>outro_end_position</Control>
           <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
           <Text>&#9699;</Text>
-          <Align>bottom</Align>
+          <Align>bottom|left</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
