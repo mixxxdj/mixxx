@@ -8,6 +8,7 @@ Rectangle {
     id: root
 
     property alias show4decks: show4DecksButton.checked
+    property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
     property alias maximizeLibrary: maximizeLibraryButton.checked
 
@@ -43,6 +44,14 @@ Rectangle {
                     id: maximizeLibraryButton
 
                     text: "Library"
+                    activeColor: Theme.white
+                    checkable: true
+                }
+
+                Skin.Button {
+                    id: showEffectsButton
+
+                    text: "Effects"
                     activeColor: Theme.white
                     checkable: true
                 }
@@ -104,6 +113,18 @@ Rectangle {
 
             FadeBehavior on visible {
                 fadeTarget: samplers
+            }
+
+        }
+
+        EffectRow {
+            id: effects
+
+            width: parent.width
+            visible: root.showEffects
+
+            FadeBehavior on visible {
+                fadeTarget: effects
             }
 
         }

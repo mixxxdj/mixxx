@@ -10,16 +10,6 @@ Item {
 
     implicitHeight: crossfader.height
 
-    Skin.EffectUnit {
-        id: effectUnit1
-
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: crossfader.left
-        anchors.bottom: parent.bottom
-        unitNumber: 1
-    }
-
     Skin.SectionBackground {
         id: crossfader
 
@@ -42,16 +32,6 @@ Item {
             bg: Theme.imgCrossfaderBackground
         }
 
-    }
-
-    Skin.EffectUnit {
-        id: effectUnit2
-
-        anchors.top: parent.top
-        anchors.left: crossfader.right
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        unitNumber: 2
     }
 
 }
