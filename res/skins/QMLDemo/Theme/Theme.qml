@@ -16,6 +16,8 @@ QtObject {
     property color eqMidColor: white
     property color eqLowColor: white
     property color eqFxColor: red
+    property color effectColor: yellow
+    property color effectUnitColor: red
     property color bpmSliderBarColor: green
     property color volumeSliderBarColor: blue
     property color gainKnobColor: blue

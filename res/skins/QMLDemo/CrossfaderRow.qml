@@ -10,18 +10,14 @@ Item {
 
     implicitHeight: crossfader.height
 
-    Item {
-        id: effectUnitLeftPlaceholder
+    Skin.EffectUnit {
+        id: effectUnit1
 
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: crossfader.left
         anchors.bottom: parent.bottom
-
-        Skin.SectionBackground {
-            anchors.fill: parent
-        }
-
+        unitNumber: 1
     }
 
     Skin.SectionBackground {
@@ -48,18 +44,14 @@ Item {
 
     }
 
-    Item {
-        id: effectUnitRightPlaceholder
+    Skin.EffectUnit {
+        id: effectUnit2
 
         anchors.top: parent.top
         anchors.left: crossfader.right
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-
-        Skin.SectionBackground {
-            anchors.fill: parent
-        }
-
+        unitNumber: 2
     }
 
 }
