@@ -68,7 +68,7 @@
     <Mark>
       <Control>intro_start_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text>|&#9698;</Text>
+      <Text>&#9698;</Text>
       <Align>bottom</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
@@ -77,7 +77,7 @@
     <Mark>
       <Control>intro_end_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text>&#9698;|</Text>
+      <Text>&#9698;</Text>
       <Align>bottom</Align>
       <Color>#0000FF</Color>
       <Opacity>0.1</Opacity>
@@ -86,7 +86,7 @@
     <Mark>
       <Control>outro_start_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text>|&#9699;</Text>
+      <Text>&#9699;</Text>
       <Align>bottom</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
@@ -94,7 +94,7 @@
     <Mark>
       <Control>outro_end_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text>&#9699;|</Text>
+      <Text>&#9699;</Text>
       <Align>bottom</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
