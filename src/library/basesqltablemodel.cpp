@@ -706,6 +706,9 @@ bool BaseSqlTableModel::setTrackValueForColumn(
         pTrack->setComment(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
         pTrack->trySetBpm(static_cast<double>(value.toDouble()));
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) == column) {
+        // pTrack->trySet(static_cast<double>(value.toDouble()));
+        pTrack->trySetReplayGainFromString(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
         // Update both the played flag and the number of times played
         pTrack->updatePlayCounter(value.toBool());

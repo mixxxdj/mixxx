@@ -142,6 +142,9 @@ class Track : public QObject {
     void setBpmLocked(bool bpmLocked);
     bool isBpmLocked() const;
 
+    // Try to set the ReplayGain from a db string, as done by the EditRole
+    // in the track table.
+    bool trySetReplayGainFromString(const QString& gainStr);
     // Set ReplayGain
     void setReplayGain(const mixxx::ReplayGain&);
     // Returns ReplayGain

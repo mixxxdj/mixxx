@@ -8,6 +8,7 @@
 #include "sources/metadatasource.h"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
+#include "track/replaygain.h"
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
@@ -321,6 +322,23 @@ bool Track::replaceRecord(
 mixxx::ReplayGain Track::getReplayGain() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getTrackInfo().getReplayGain();
+}
+
+bool Track::trySetReplayGainFromString(const QString& gainStr) {
+    QMutexLocker lock(&m_qMutex);
+    bool valid = false;
+    double ratio = mixxx::ReplayGain::ratioFromString(gainStr, &valid);
+    if (!valid) {
+        return false;
+    }
+    mixxx::ReplayGain replayGain = *m_record.refMetadata().refTrackInfo().ptrReplayGain();
+    replayGain.setRatio(ratio);
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
+        markDirtyAndUnlock(&lock);
+        emit replayGainUpdated(replayGain);
+        return true;
+    }
+    return false;
 }
 
 void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {

@@ -795,6 +795,21 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             return QVariant::fromValue(StarRating(rawValue.toInt()));
+        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN:
+            double rgRatio;
+            if (rawValue.canConvert<mixxx::ReplayGain>()) {
+                rgRatio = rawValue.value<mixxx::ReplayGain>().getRatio();
+            } else {
+                VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
+                    return QVariant();
+                }
+                bool ok;
+                rgRatio = rawValue.toDouble(&ok);
+                VERIFY_OR_DEBUG_ASSERT(ok) {
+                    return QVariant();
+                }
+            }
+            return mixxx::ReplayGain::ratioToString(rgRatio);
         default:
             // Otherwise, just use the column value
             break;
@@ -878,7 +893,6 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE)) {
         return readOnlyFlags(index);
     }
