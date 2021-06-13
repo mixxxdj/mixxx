@@ -15,6 +15,7 @@ Item {
     property real angle: 130
     property bool arc: false
     property real arcRadius: width / 2
+    property real arcStart: (max - min) / 2
     property real arcOffsetX: 0
     property real arcOffsetY: 0
     property alias arcColor: arcPath.strokeColor
@@ -50,8 +51,8 @@ Item {
             fillColor: "transparent"
 
             PathAngleArc {
-                startAngle: -90
-                sweepAngle: (root.value - (root.max - root.min) / 2) * 2 * root.angle
+                startAngle: -90 + root.angle * 2 * (root.arcStart - (root.max - root.min) / 2)
+                sweepAngle: (root.value - root.arcStart) * 2 * root.angle
                 radiusX: root.arcRadius
                 radiusY: root.arcRadius
                 centerX: root.width / 2 + root.arcOffsetX
