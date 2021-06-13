@@ -92,6 +92,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     /// dialog.
     bool setWidgetTypeFromHandle(int handleIndex, bool force = false);
     WaveformWidgetType::Type getType() const { return m_type;}
+    int getHandleIndex() {
+        return findHandleIndexFromType(m_type);
+    }
 
   protected:
     bool setWidgetType(
