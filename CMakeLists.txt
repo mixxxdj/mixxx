@@ -84,6 +84,17 @@ endif()
 
 #######################################################################
 
+if(MSVC)
+  # Microsoft Visual Studio Compiler
+  if(NOT DEFINED ENV{CMAKE_BUILD_TYPE})
+    # Possible values are: Debug, Release, RelWithDebInfo or MinSizeRel
+    set(CMAKE_BUILD_TYPE RelWithDebInfo)
+    message(STATUS "No Configuration Type specified, use default: ${CMAKE_BUILD_TYPE}")
+  else()
+    message(STATUS "Configuration Type was specified: ${CMAKE_BUILD_TYPE}")
+  endif()
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs and prevent wearing of SDDs
