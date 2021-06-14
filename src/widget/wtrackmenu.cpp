@@ -1649,11 +1649,11 @@ void WTrackMenu::slotRemoveFromDisk() {
     // TODO Should each item may have a checkbox to allow removing it from the delete list
     // or is it okay for the user to Cancel and adjust the selection in the tracks table?
     {
-        QDialog* delConfirmDlg = new QDialog(nullptr);
-        delConfirmDlg->setModal(true); // just to be sure
-        delConfirmDlg->setWindowTitle(tr("Delete Track Files"));
+        QDialog* dlgDelConfirm = new QDialog(nullptr);
+        dlgDelConfirm->setModal(true); // just to be sure
+        dlgDelConfirm->setWindowTitle(tr("Delete Track Files"));
 
-        QVBoxLayout* delConfirmDlgLayout = new QVBoxLayout;
+        QVBoxLayout* delLayout = new QVBoxLayout;
         QLabel* delWarning = new QLabel;
         delWarning->setText(tr("Permanently delete these files from disk?") +
                 QString("<br><br><b>") +
@@ -1662,28 +1662,28 @@ void WTrackMenu::slotRemoveFromDisk() {
         delWarning->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::Minimum));
 
-        QListWidget* fileListWidget = new QListWidget;
-        fileListWidget->addItems(locations);
+        QListWidget* delListWidget = new QListWidget;
+        delListWidget->addItems(locations);
 
-        QDialogButtonBox* delConfirmDlgButtons = new QDialogButtonBox();
-        QPushButton* cancelBtn = delConfirmDlgButtons->addButton(
+        QDialogButtonBox* delButtons = new QDialogButtonBox();
+        QPushButton* cancelBtn = delButtons->addButton(
                 tr("Cancel"),
                 QDialogButtonBox::RejectRole);
-        QPushButton* deleteBtn = delConfirmDlgButtons->addButton(
+        QPushButton* deleteBtn = delButtons->addButton(
                 tr("Delete Files"),
                 QDialogButtonBox::AcceptRole);
         cancelBtn->setDefault(true);
         // This is required after customizing the buttons, otherwise neither button
         // would close the dialog.
-        connect(cancelBtn, &QPushButton::clicked, delConfirmDlg, &QDialog::reject);
-        connect(deleteBtn, &QPushButton::clicked, delConfirmDlg, &QDialog::accept);
+        connect(cancelBtn, &QPushButton::clicked, dlgDelConfirm, &QDialog::reject);
+        connect(deleteBtn, &QPushButton::clicked, dlgDelConfirm, &QDialog::accept);
 
-        delConfirmDlgLayout->addWidget(fileListWidget);
-        delConfirmDlgLayout->addWidget(delWarning);
-        delConfirmDlgLayout->addWidget(delConfirmDlgButtons);
-        delConfirmDlg->setLayout(delConfirmDlgLayout);
+        delLayout->addWidget(delListWidget);
+        delLayout->addWidget(delWarning);
+        delLayout->addWidget(delButtons);
+        dlgDelConfirm->setLayout(delLayout);
 
-        if (delConfirmDlg->exec() == QDialog::Rejected) {
+        if (dlgDelConfirm->exec() == QDialog::Rejected) {
             return;
         }
     }
@@ -1725,8 +1725,8 @@ void WTrackMenu::slotRemoveFromDisk() {
 
     {
         // If there are tracks that could not be deleted show a message with those listed.
-        QDialog* notDeletedDlg = new QDialog(nullptr);
-        notDeletedDlg->setWindowTitle(tr("Delete Track Files"));
+        QDialog* dlgNotDeleted = new QDialog(nullptr);
+        dlgNotDeleted->setWindowTitle(tr("Delete Track Files"));
         QVBoxLayout* notDeletedLayout = new QVBoxLayout;
         QLabel* notDeletedLabel = new QLabel;
         notDeletedLabel->setText(
@@ -1735,16 +1735,16 @@ void WTrackMenu::slotRemoveFromDisk() {
                                 trackOperator.tr_tracksToKeep.length())));
         notDeletedLabel->setTextFormat(Qt::RichText);
 
-        QListWidget* notDeletedList = new QListWidget;
-        notDeletedList->addItems(trackOperator.tr_tracksToKeep);
+        QListWidget* notDeletedListWidget = new QListWidget;
+        notDeletedListWidget->addItems(trackOperator.tr_tracksToKeep);
 
-        QDialogButtonBox* deletedDlgButtons = new QDialogButtonBox(QDialogButtonBox::Ok);
+        QDialogButtonBox* notDeletedButtons = new QDialogButtonBox(QDialogButtonBox::Ok);
 
         notDeletedLayout->addWidget(notDeletedLabel);
-        notDeletedLayout->addWidget(notDeletedList);
-        notDeletedLayout->addWidget(deletedDlgButtons);
-        notDeletedDlg->setLayout(notDeletedLayout);
-        notDeletedDlg->exec();
+        notDeletedLayout->addWidget(notDeletedListWidget);
+        notDeletedLayout->addWidget(notDeletedButtons);
+        dlgNotDeleted->setLayout(notDeletedLayout);
+        dlgNotDeleted->exec();
     }
 }
 
