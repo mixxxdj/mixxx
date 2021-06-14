@@ -415,19 +415,26 @@ inline CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample
 
 FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
-    const SINT numChannels = frame->header.channels;
-    if (getSignalInfo().getChannelCount() > numChannels) {
+    VERIFY_OR_DEBUG_ASSERT(frame->header.channels > 0) {
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
+    const auto channelCount = mixxx::audio::ChannelCount::fromInt(frame->header.channels);
+    if (getSignalInfo().getChannelCount() > channelCount) {
         kLogger.warning()
                 << "Corrupt or unsupported FLAC file:"
                 << "Invalid number of channels in FLAC frame header"
-                << frame->header.channels << "<>" << getSignalInfo().getChannelCount();
+                << channelCount << "<>" << getSignalInfo().getChannelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    if (getSignalInfo().getSampleRate() != SINT(frame->header.sample_rate)) {
+    VERIFY_OR_DEBUG_ASSERT(frame->header.sample_rate > 0) {
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
+    const auto sampleRate = mixxx::audio::SampleRate(frame->header.sample_rate);
+    if (getSignalInfo().getSampleRate() != sampleRate) {
         kLogger.warning()
                 << "Corrupt or unsupported FLAC file:"
                 << "Invalid sample rate in FLAC frame header"
-                << frame->header.sample_rate << "<>" << getSignalInfo().getSampleRate();
+                << sampleRate << "<>" << getSignalInfo().getSampleRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     const SINT numReadableFrames = frame->header.blocksize;
@@ -460,7 +467,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     }
 
     CSAMPLE* pSampleBuffer = writableSlice.data();
-    DEBUG_ASSERT(getSignalInfo().getChannelCount() <= numChannels);
+    DEBUG_ASSERT(getSignalInfo().getChannelCount() <= channelCount);
     switch (getSignalInfo().getChannelCount()) {
     case 1: {
         // optimized code for 1 channel (mono)
