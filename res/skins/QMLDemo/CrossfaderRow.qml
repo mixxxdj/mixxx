@@ -1,4 +1,5 @@
 import "." as Skin
+import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import "Theme"
@@ -17,27 +18,72 @@ Item {
     Row {
         id: microphoneRow
 
-        anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
+        anchors.left: parent.left
         anchors.right: crossfader.left
+        layoutDirection: Qt.RightToLeft
         padding: 5
-        spacing: 20
+        spacing: 10
 
         Skin.MicrophoneUnit {
-            group: "[Microphone]"
+            unitNumber: 1
         }
 
         Skin.MicrophoneUnit {
-            group: "[Microphone2]"
+            unitNumber: 2
         }
 
         Skin.MicrophoneUnit {
-            group: "[Microphone3]"
+            unitNumber: 3
         }
 
         Skin.MicrophoneUnit {
-            group: "[Microphone4]"
+            unitNumber: 4
+        }
+
+        Column {
+            Skin.ControlSlider {
+                width: 50
+                height: 26
+                orientation: Qt.Horizontal
+                group: "[Master]"
+                key: "duckStrength"
+                barColor: Theme.crossfaderBarColor
+                barStart: 1
+                fg: Theme.imgMicDuckingSliderHandle
+                bg: Theme.imgMicDuckingSlider
+            }
+
+            Skin.Button {
+                id: pflButton
+
+                text: {
+                    switch (duckingControl.value) {
+                    case 1:
+                        return "Auto";
+                    case 2:
+                        return "Manual";
+                    default:
+                        return "Off";
+                    }
+                }
+                activeColor: Theme.pflActiveButtonColor
+                highlight: {
+                    let value = duckingControl.value;
+                    return (value == 1 || value == 2);
+                }
+                onClicked: duckingControl.value = (duckingControl.value + 1) % 3
+
+                Mixxx.ControlProxy {
+                    id: duckingControl
+
+                    group: "[Master]"
+                    key: "talkoverDucking"
+                }
+
+            }
+
         }
 
     }
@@ -73,24 +119,27 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        layoutDirection: Qt.RightToLeft
         padding: 5
-        spacing: 20
+        spacing: 10
 
         Skin.AuxiliaryUnit {
-            group: "[Auxiliary4]"
+            layoutDirection: Qt.RightToLeft
+            unitNumber: 1
         }
 
         Skin.AuxiliaryUnit {
-            group: "[Auxiliary3]"
+            layoutDirection: Qt.RightToLeft
+            unitNumber: 2
         }
 
         Skin.AuxiliaryUnit {
-            group: "[Auxiliary2]"
+            layoutDirection: Qt.RightToLeft
+            unitNumber: 3
         }
 
         Skin.AuxiliaryUnit {
-            group: "[Auxiliary1]"
+            layoutDirection: Qt.RightToLeft
+            unitNumber: 4
         }
 
     }

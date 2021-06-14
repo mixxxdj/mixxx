@@ -7,7 +7,8 @@ import "Theme"
 Row {
     id: root
 
-    property string group // required
+    property int unitNumber // required
+    property string group: unitNumber === 1 ? "[Microphone]" : "[Microphone" + unitNumber + "]"
 
     spacing: 5
 
@@ -43,6 +44,19 @@ Row {
     }
 
     Column {
+        Text {
+            width: parent.width
+            height: root.height / 2
+            text: "MIC " + root.unitNumber
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            font.family: Theme.fontFamily
+            font.pixelSize: Theme.textFontPixelSize
+            font.bold: true
+            color: Theme.buttonNormalColor
+        }
+
         Skin.ControlButton {
             id: pflButton
 
@@ -53,14 +67,83 @@ Row {
             toggleable: true
         }
 
-        Skin.ControlButton {
+    }
+
+    Skin.EmbeddedBackground {
+        id: embedded
+
+        color: Theme.embeddedBackgroundColor
+        height: parent.height
+        width: 56
+
+        Skin.InfoBarButton {
             id: talkButton
 
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.verticalCenter
             group: root.group
             key: "talkover"
-            text: "Talk"
-            activeColor: Theme.pflActiveButtonColor
-            toggleable: true
+            activeColor: Theme.deckActiveColor
+
+            foreground: Text {
+                anchors.centerIn: parent
+                text: "TALK"
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.buttonFontPixelSize
+                font.bold: true
+                color: Theme.deckTextColor
+            }
+
+        }
+
+        Skin.InfoBarButton {
+            id: fx1Button
+
+            anchors.left: parent.left
+            anchors.right: parent.horizontalCenter
+            anchors.top: parent.verticalCenter
+            anchors.bottom: parent.bottom
+            group: "[EffectRack1_EffectUnit1]"
+            key: "group_" + root.group + "_enable"
+            activeColor: Theme.deckActiveColor
+
+            foreground: Text {
+                anchors.centerIn: parent
+                text: "FX1"
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.buttonFontPixelSize
+                font.bold: true
+                color: Theme.deckTextColor
+            }
+
+        }
+
+        Skin.InfoBarButton {
+            group: "[EffectRack1_EffectUnit2]"
+            anchors.left: parent.horizontalCenter
+            anchors.right: parent.right
+            anchors.top: parent.verticalCenter
+            anchors.bottom: parent.bottom
+            key: "group_" + root.group + "_enable"
+            activeColor: Theme.deckActiveColor
+
+            foreground: Text {
+                anchors.centerIn: parent
+                text: "FX2"
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.buttonFontPixelSize
+                font.bold: true
+                color: Theme.deckTextColor
+            }
+
         }
 
     }

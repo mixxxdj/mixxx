@@ -49,7 +49,7 @@ MixxxControls.Slider {
         id: backgroundImage
 
         anchors.fill: parent
-        anchors.margins: 10
+        anchors.margins: root.barMargin
     }
 
 }
