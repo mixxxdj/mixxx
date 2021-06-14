@@ -3,7 +3,6 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QInputDialog>
-#include <QListView>
 #include <QListWidget>
 #include <QModelIndex>
 #include <QVBoxLayout>
@@ -33,6 +32,7 @@
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "util/qt.h"
+#include "util/widgethelper.h"
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
@@ -1645,7 +1645,6 @@ void WTrackMenu::slotRemoveFromDisk() {
         locations.append(location);
     }
 
-    // TODO Resize the dialog appropriately.
     // TODO Should each item may have a checkbox to allow removing it from the delete list
     // or is it okay for the user to Cancel and adjust the selection in the tracks table?
     {
@@ -1662,8 +1661,14 @@ void WTrackMenu::slotRemoveFromDisk() {
         delWarning->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::Minimum));
 
+        // TODO (ronso0) We could also make this a table to allow showing
+        // artist and title if file names don't suffice to identify tracks.
         QListWidget* delListWidget = new QListWidget;
+        delListWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
+                QSizePolicy::MinimumExpanding));
         delListWidget->addItems(locations);
+        delListWidget->setMinimumSize(
+                mixxx::widgethelper::adjustedListWidgetSize(*delListWidget, *this));
 
         QDialogButtonBox* delButtons = new QDialogButtonBox();
         QPushButton* cancelBtn = delButtons->addButton(
@@ -1737,6 +1742,8 @@ void WTrackMenu::slotRemoveFromDisk() {
 
         QListWidget* notDeletedListWidget = new QListWidget;
         notDeletedListWidget->addItems(trackOperator.tr_tracksToKeep);
+        notDeletedListWidget->setMinimumSize(
+                mixxx::widgethelper::adjustedListWidgetSize(*notDeletedListWidget, *this));
 
         QDialogButtonBox* notDeletedButtons = new QDialogButtonBox(QDialogButtonBox::Ok);
 
