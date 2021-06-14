@@ -539,6 +539,28 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
     return html;
 }
 
+namespace {
+QVariant rawValueToReplayGainString(QVariant&& rawValue) {
+    if (rawValue.isNull()) {
+        return QVariant();
+    }
+    double rgRatio;
+    if (rawValue.canConvert<mixxx::ReplayGain>()) {
+        rgRatio = rawValue.value<mixxx::ReplayGain>().getRatio();
+    } else {
+        VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
+            return QVariant();
+        }
+        bool ok;
+        rgRatio = rawValue.toDouble(&ok);
+        VERIFY_OR_DEBUG_ASSERT(ok) {
+            return QVariant();
+        }
+    }
+    return mixxx::ReplayGain::ratioToString(rgRatio);
+}
+} // namespace
+
 QVariant BaseTrackTableModel::roleValue(
         const QModelIndex& index,
         QVariant&& rawValue,
@@ -741,25 +763,8 @@ QVariant BaseTrackTableModel::roleValue(
             // Render the key with the user-provided notation
             return KeyUtils::keyToString(key);
         }
-        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
-            if (rawValue.isNull()) {
-                return QVariant();
-            }
-            double rgRatio;
-            if (rawValue.canConvert<mixxx::ReplayGain>()) {
-                rgRatio = rawValue.value<mixxx::ReplayGain>().getRatio();
-            } else {
-                VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
-                    return QVariant();
-                }
-                bool ok;
-                rgRatio = rawValue.toDouble(&ok);
-                VERIFY_OR_DEBUG_ASSERT(ok) {
-                    return QVariant();
-                }
-            }
-            return mixxx::ReplayGain::ratioToString(rgRatio);
-        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN:
+            return rawValueToReplayGainString(std::move(rawValue));
         case ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS:
             // Not yet supported
             DEBUG_ASSERT(rawValue.isNull());
@@ -796,20 +801,7 @@ QVariant BaseTrackTableModel::roleValue(
             }
             return QVariant::fromValue(StarRating(rawValue.toInt()));
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN:
-            double rgRatio;
-            if (rawValue.canConvert<mixxx::ReplayGain>()) {
-                rgRatio = rawValue.value<mixxx::ReplayGain>().getRatio();
-            } else {
-                VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
-                    return QVariant();
-                }
-                bool ok;
-                rgRatio = rawValue.toDouble(&ok);
-                VERIFY_OR_DEBUG_ASSERT(ok) {
-                    return QVariant();
-                }
-            }
-            return mixxx::ReplayGain::ratioToString(rgRatio);
+            return rawValueToReplayGainString(std::move(rawValue));
         default:
             // Otherwise, just use the column value
             break;
