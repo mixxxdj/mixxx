@@ -100,6 +100,8 @@ Item {
 
             anchors.left: parent.left
             anchors.right: parent.right
+            anchors.leftMargin: 5
+            anchors.rightMargin: 5
             anchors.verticalCenter: parent.verticalCenter
             orientation: Qt.Horizontal
             group: "[Master]"
