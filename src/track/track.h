@@ -144,7 +144,7 @@ class Track : public QObject {
 
     // Updates the ReplayGain ratio value, preserving the other properties of the
     // existing ReplayGain.
-    bool setReplayGainDb(double ratio);
+    bool setReplayGainRatio(double ratio);
     // Set ReplayGain
     void setReplayGain(const mixxx::ReplayGain&);
     // Returns ReplayGain

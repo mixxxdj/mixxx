@@ -710,7 +710,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
         bool valid = false;
         double ratio = mixxx::ReplayGain::ratioFromString(value.toString(), &valid);
         if (valid) {
-            pTrack->setReplayGainDb(ratio);
+            pTrack->setReplayGainRatio(ratio);
         }
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
         // Update both the played flag and the number of times played
