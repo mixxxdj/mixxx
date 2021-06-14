@@ -10,7 +10,7 @@
 #ifdef WIN64
 #define WIN32
 #endif
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 #ifdef WIN64
 #undef WIN32
 #endif
@@ -61,6 +61,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_format_is_mp3(false),
           m_format_is_ov(false),
           m_format_is_opus(false),
+          m_format_is_aac(false),
           m_protocol_is_icecast1(false),
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
@@ -191,6 +192,7 @@ void ShoutConnection::updateFromPreferences() {
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
+    m_format_is_aac = false;
     m_protocol_is_icecast1 = false;
     m_protocol_is_icecast2 = false;
     m_protocol_is_shoutcast = false;
@@ -364,17 +366,27 @@ void ShoutConnection::updateFromPreferences() {
     m_format_is_mp3 = !qstrcmp(baFormat.constData(), ENCODING_MP3);
     m_format_is_ov = !qstrcmp(baFormat.constData(), ENCODING_OGG);
     m_format_is_opus = !qstrcmp(baFormat.constData(), ENCODING_OPUS);
+    m_format_is_aac =
+            (!qstrcmp(baFormat.constData(), ENCODING_AAC) ||
+                    !qstrcmp(baFormat.constData(), ENCODING_HEAAC) ||
+                    !qstrcmp(baFormat.constData(), ENCODING_HEAACV2));
     if (m_format_is_mp3) {
         format = SHOUT_FORMAT_MP3;
     } else if (m_format_is_ov || m_format_is_opus) {
         format = SHOUT_FORMAT_OGG;
+#ifdef SHOUT_FORMAT_AAC
+    } else if (m_format_is_aac) {
+        format = SHOUT_FORMAT_AAC;
+#endif
     } else {
-        qWarning() << "Error: unknown format:" << baFormat.constData();
+        errorDialog(tr("Unknown stream encoding format!"),
+                tr("Use a libshout version with %1 enabled")
+                        .arg(baFormat.constData()));
         return;
     }
 
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting streaming format!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting stream encoding format!"), shout_get_error(m_pShout));
         return;
     }
 
@@ -429,9 +441,9 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    if (m_protocol_is_shoutcast && !m_format_is_mp3) {
-        errorDialog(tr("Error: libshout only supports Shoutcast with MP3 format!"),
-                    shout_get_error(m_pShout));
+    if (m_protocol_is_shoutcast && !(m_format_is_mp3 || m_format_is_aac)) {
+        errorDialog(tr("Error: Shoutcast only supports MP3 and AAC encoders"),
+                shout_get_error(m_pShout));
         return;
     }
 
@@ -446,21 +458,28 @@ void ShoutConnection::updateFromPreferences() {
     m_encoder = EncoderFactory::getFactory().createEncoder(
                     pBroadcastSettings, this);
 
-    QString errorMsg;
-    // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
-    if (m_encoder->initEncoder(static_cast<int>(masterSamplerate), errorMsg) < 0) {
-        // e.g., if lame is not found
-        // init m_encoder itself will display a message box
-        kLogger.warning() << "**** Encoder init failed";
-        kLogger.warning() << errorMsg;
+    QString userErrorMsg;
+    int ret = -1;
+    if (m_encoder) {
+        ret = m_encoder->initEncoder(static_cast<int>(masterSamplerate), &userErrorMsg);
+    }
 
+    // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
+    if (ret < 0) {
         // delete m_encoder calls write() make sure it will be exit early
         DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
         m_encoder.reset();
 
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
-        m_lastErrorStr = "Encoder error";
 
+        m_lastErrorStr = pBroadcastSettings->getFormat() + QChar(' ') +
+                QObject::tr(" encoder failure") + QChar('\n');
+        if (userErrorMsg.isEmpty()) {
+            m_lastErrorStr.append(QObject::tr(
+                    "Failed to apply the selected settings."));
+        } else {
+            m_lastErrorStr.append(userErrorMsg);
+        }
         return;
     }
     setState(NETWORKSTREAMWORKER_STATE_READY);
@@ -987,8 +1006,10 @@ void ShoutConnection::run() {
 
     if (!processConnect()) {
         errorDialog(tr("Can't connect to streaming server"),
-                m_lastErrorStr + "\n" +
-                tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                m_lastErrorStr + "\n\n" +
+                        tr("Please check your connection to the Internet and "
+                           "verify that your username and password are "
+                           "correct."));
         return;
     }
 

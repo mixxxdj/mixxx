@@ -8,7 +8,6 @@
 #include <QStandardPaths>
 #include <QXmlStreamReader>
 #include <QtDebug>
-#include <tuple>
 
 #include "library/library.h"
 #include "library/librarytablemodel.h"
@@ -19,22 +18,13 @@
 #include "library/treeitem.h"
 #include "moc_traktorfeature.cpp"
 #include "util/sandbox.h"
+#include "util/semanticversion.h"
 
 namespace {
 
 QString fromTraktorSeparators(QString path) {
     // Traktor uses /: instead of just / as delimiting character for some reasons
     return path.replace("/:", "/");
-}
-
-struct SemanticVersion {
-    uint major{0},
-            minor{0},
-            patch{0};
-};
-
-bool operator<(const SemanticVersion& a, const SemanticVersion& b) {
-    return std::tie(a.major, a.minor, a.patch) < std::tie(b.major, b.minor, b.patch);
 }
 
 } // anonymous namespace
@@ -94,9 +84,12 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
             << "bitrate"
             << "bpm"
             << "key";
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(pLibrary->trackCollections()->internalCollection(), tableName, idColumn,
-                           columns, false));
+    m_trackSource = QSharedPointer<BaseTrackCache>(new BaseTrackCache(
+            pLibrary->trackCollectionManager()->internalCollection(),
+            tableName,
+            idColumn,
+            columns,
+            false));
     QStringList searchColumns;
     searchColumns << "artist"
                   << "album"
@@ -107,13 +100,18 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
     m_trackSource->setSearchColumns(searchColumns);
 
     m_isActivated = false;
-    m_pTraktorTableModel = new TraktorTrackModel(this, pLibrary->trackCollections(), m_trackSource);
-    m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
+    m_pTraktorTableModel = new TraktorTrackModel(
+            this, pLibrary->trackCollectionManager(), m_trackSource);
+    m_pTraktorPlaylistModel = new TraktorPlaylistModel(
+            this, pLibrary->trackCollectionManager(), m_trackSource);
 
     m_title = tr("Traktor");
 
-    m_database = QSqlDatabase::cloneDatabase(pLibrary->trackCollections()->internalCollection()->database(),
-                                             "TRAKTOR_SCANNER");
+    m_database =
+            QSqlDatabase::cloneDatabase(pLibrary->trackCollectionManager()
+                                                ->internalCollection()
+                                                ->database(),
+                    "TRAKTOR_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -135,7 +133,8 @@ TraktorFeature::~TraktorFeature() {
 }
 
 BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
+    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(
+            this, m_pLibrary->trackCollectionManager(), m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }
@@ -215,8 +214,9 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
                   ":rating,:key)");
 
     //Parse Trakor XML file using SAX (for performance)
+    mixxx::FileInfo fileInfo(file);
     QFile traktor_file(file);
-    if (!Sandbox::askForAccess(file) || !traktor_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (!Sandbox::askForAccess(&fileInfo) || !traktor_file.open(QIODevice::ReadOnly)) {
         qDebug() << "Cannot open Traktor music collection";
         return nullptr;
     }
@@ -579,12 +579,13 @@ QString TraktorFeature::getTraktorMusicDatabase() {
     // We may not have access to this directory since it is in the user's
     // Documents folder. Ask for access if we don't have it.
     if (ni_directory.exists()) {
-        Sandbox::askForAccess(ni_directory.canonicalPath());
+        auto fileInfo = mixxx::FileInfo(ni_directory);
+        Sandbox::askForAccess(&fileInfo);
     }
 
     //Iterate over the subfolders
     QFileInfoList list = ni_directory.entryInfoList();
-    QMap<SemanticVersion, QString> installed_ts_map;
+    QMap<mixxx::SemanticVersion, QString> installed_ts_map;
 
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
@@ -592,19 +593,14 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
         if (folder_name == "Traktor") {
             //We found a Traktor 1 installation
-            installed_ts_map.insert({1, 0, 0}, fileInfo.absoluteFilePath());
+            installed_ts_map.insert(mixxx::SemanticVersion(1, 0, 0), fileInfo.absoluteFilePath());
             continue;
         }
         if (folder_name.contains("Traktor")) {
             qDebug() << "Found " << folder_name;
-            QRegularExpression re("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)");
-            QRegularExpressionMatch match = re.match(folder_name);
-            if (match.hasMatch()) {
-                const auto version = SemanticVersion{
-                        match.captured("major").toUInt(),
-                        match.captured("minor").toUInt(),
-                        match.captured("patch").toUInt()};
-                installed_ts_map.insert(version, fileInfo.absoluteFilePath());
+            auto semver = mixxx::SemanticVersion(folder_name);
+            if (semver.isValid()) {
+                installed_ts_map.insert(semver, fileInfo.absoluteFilePath());
             }
         }
     }
@@ -612,7 +608,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
     if (installed_ts_map.isEmpty()) {
         musicFolder = QDir::homePath() + "/collection.nml";
     } else { //Select the folder with the highest version as default Traktor folder
-        QList<SemanticVersion> versions = installed_ts_map.keys();
+        QList<mixxx::SemanticVersion> versions = installed_ts_map.keys();
         std::sort(versions.begin(), versions.end());
         musicFolder = installed_ts_map.value(versions.last()) + "/collection.nml";
     }

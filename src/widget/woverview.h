@@ -18,7 +18,7 @@
 #include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/color/color.h"

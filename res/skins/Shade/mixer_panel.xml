@@ -23,7 +23,7 @@
                 <TooltipId>channel_volume</TooltipId>
                 <Handle>knob_volume.png</Handle>
                 <Slider>slider_volume.png</Slider>
-                <Pos>72,55</Pos>
+                <Pos>73,55</Pos>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey>[Channel1],volume</ConfigKey>
@@ -293,7 +293,7 @@
                   <Pressed>skin:/btn/btn_pfl_overdown.png</Pressed>
                   <Unpressed>skin:/btn/btn_pfl_over.png</Unpressed>
                 </State>
-                <Pos>64,161</Pos>
+                <Pos>65,161</Pos>
                 <Connection>
                   <ConfigKey>[Channel1],pfl</ConfigKey>
                 </Connection>
@@ -560,6 +560,64 @@
 
               <!--
               **********************************************
+              Button- Toggle Recording / Visual- Recording State
+              **********************************************
+              -->
+              <!--Button as visual indicator for Recording State-->
+              <PushButton>
+              <TooltipId>toggle_recording</TooltipId>
+                <NumberStates>3</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>skin:/btn/btn_record_off.png</Pressed>
+                  <Unpressed>skin:/btn/btn_record_off.png</Unpressed>
+                </State>
+                  <State>
+                  <Number>1</Number>
+                  <Pressed>skin:/btn/btn_record_ready.png</Pressed>
+                  <Unpressed>skin:/btn/btn_record_ready.png</Unpressed>
+                </State>
+                <State>
+                  <Number>2</Number>
+                  <Pressed>skin:/btn/btn_record_on.png</Pressed>
+                  <Unpressed>skin:/btn/btn_record_on.png</Unpressed>
+                </State>
+                <Pos>214,18</Pos>
+                <Connection>
+                  <ConfigKey>[Recording],toggle_recording</ConfigKey>
+                  <EmitOnDownPress>true</EmitOnDownPress>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Recording],status</ConfigKey>
+                </Connection>
+              </PushButton>
+
+               <!--
+              **********************************************
+              Text- Recording Duration
+              **********************************************
+              -->
+              <RecordingDuration>
+                <Style>
+                  QLabel {
+                    font-size: 9px;
+                    font-weight: bold;
+                    background-color: transparent;
+                    color: #191F24;
+                    text-align:center;
+                  }
+                </Style>
+                <ObjectName>RecDuration</ObjectName>
+                <TooltipId>recording_duration</TooltipId>
+                <Pos>212,8</Pos>
+                <Size>34f,9f</Size>
+                <InactiveText>--:--</InactiveText>
+                <Alignment>center</Alignment>
+              </RecordingDuration>
+
+              <!--
+              **********************************************
               RotaryFader- Master gain & balance
               **********************************************
               -->
@@ -567,7 +625,7 @@
                 <TooltipId>master_gain</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
-                <Pos>164,15</Pos>
+                <Pos>151,15</Pos>
                 <Connection>
                   <ConfigKey>[Master],gain</ConfigKey>
                 </Connection>
@@ -576,7 +634,7 @@
                 <TooltipId>balance</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
-                <Pos>197,15</Pos>
+                <Pos>184,15</Pos>
                 <Connection>
                   <ConfigKey>[Master],balance</ConfigKey>
                 </Connection>
@@ -685,7 +743,7 @@
                 <TooltipId>pregain</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
-                <Pos>196,47</Pos>
+                <Pos>197,47</Pos>
                 <Connection>
                   <ConfigKey>[Channel2],pregain</ConfigKey>
                 </Connection>
@@ -693,7 +751,7 @@
               <EffectParameterKnob>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
-                <Pos>196,76</Pos>
+                <Pos>197,76</Pos>
                 <Connection>
                   <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3</ConfigKey>
                 </Connection>
@@ -706,7 +764,7 @@
                 <TooltipId>filterMid</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
-                <Pos>196,105</Pos>
+                <Pos>197,105</Pos>
                 <Connection>
                   <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2</ConfigKey>
                 </Connection>
@@ -719,7 +777,7 @@
                 <TooltipId>filterLow</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
-                <Pos>196,134</Pos>
+                <Pos>197,134</Pos>
                 <Connection>
                   <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1</ConfigKey>
                 </Connection>

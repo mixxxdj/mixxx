@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QObject>
-#include <QString>
-#include <QList>
 #include <QByteArray>
+#include <QList>
 #include <QSharedPointer>
+#include <QString>
 
+#include "audio/types.h"
 #include "util/memory.h"
 #include "util/types.h"
 
@@ -25,14 +25,12 @@ class BeatIterator {
     virtual double next() = 0;
 };
 
-// Beats is a pure abstract base class for BPM and beat management classes. It
+// Beats is the base class for BPM and beat management classes. It
 // provides a specification of all methods a beat-manager class must provide, as
 // well as a capability model for representing optional features.
-class Beats : public QObject {
-    Q_OBJECT
+class Beats {
   public:
-    Beats() { }
-    ~Beats() override = default;
+    virtual ~Beats() = default;
 
     enum Capabilities {
         BEATSCAP_NONE          = 0x0000,
@@ -57,7 +55,6 @@ class Beats : public QObject {
 
     // Serialization
     virtual QByteArray toByteArray() const = 0;
-    virtual BeatsPointer clone() const = 0;
 
     // A string representing the version of the beat-processing code that
     // produced this Beats instance. Used by BeatsFactory for associating a
@@ -93,8 +90,9 @@ class Beats : public QObject {
     // even.  Returns false if *at least one* sample is -1.  (Can return false
     // with one beat successfully filled)
     virtual bool findPrevNextBeats(double dSamples,
-                                   double* dpPrevBeatSamples,
-                                   double* dpNextBeatSamples) const = 0;
+            double* dpPrevBeatSamples,
+            double* dpNextBeatSamples,
+            bool snapToNearBeats) const = 0;
 
     // Starting from sample dSamples, return the sample of the closest beat in
     // the track, or -1 if none exists.  Non- -1 values are guaranteed to be
@@ -108,7 +106,7 @@ class Beats : public QObject {
     // then dSamples is returned. If no beat can be found, returns -1.
     virtual double findNthBeat(double dSamples, int n) const = 0;
 
-    int numBeatsInRange(double dStartSample, double dEndSample);
+    int numBeatsInRange(double dStartSample, double dEndSample) const;
 
     // Find the sample N beats away from dSample. The number of beats may be
     // negative and does not need to be an integer.
@@ -128,10 +126,6 @@ class Beats : public QObject {
     // valid, otherwise returns -1
     virtual double getBpm() const = 0;
 
-    // Return the average BPM over the range from startSample to endSample,
-    // specified in samples if the BPM is valid, otherwise returns -1
-    virtual double getBpmRange(double startSample, double stopSample) const = 0;
-
     // Return the average BPM over the range of n*2 beats centered around
     // curSample.  (An n of 4 results in an averaging of 8 beats).  Invalid
     // BPM returns -1.
@@ -141,35 +135,24 @@ class Beats : public QObject {
         return kMaxBpm;
     }
 
+    virtual audio::SampleRate getSampleRate() const = 0;
+
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    // Add a beat at location dBeatSample. Beats instance must have the
-    // capability BEATSCAP_ADDREMOVE.
-    virtual void addBeat(double dBeatSample) = 0;
-
-    // Remove a beat at location dBeatSample. Beats instance must have the
-    // capability BEATSCAP_ADDREMOVE.
-    virtual void removeBeat(double dBeatSample) = 0;
-
     // Translate all beats in the song by dNumSamples samples. Beats that lie
     // before the start of the track or after the end of the track are not
     // removed. Beats instance must have the capability BEATSCAP_TRANSLATE.
-    virtual void translate(double dNumSamples) = 0;
+    virtual BeatsPointer translate(double dNumSamples) const = 0;
 
     // Scale the position of every beat in the song by dScalePercentage. Beats
     // class must have the capability BEATSCAP_SCALE.
-    virtual void scale(enum BPMScale scale) = 0;
+    virtual BeatsPointer scale(enum BPMScale scale) const = 0;
 
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.
-    virtual void setBpm(double dBpm) = 0;
-
-    virtual SINT getSampleRate() const = 0;
-
-  signals:
-    void updated();
+    virtual BeatsPointer setBpm(double dBpm) = 0;
 };
 
 } // namespace mixxx

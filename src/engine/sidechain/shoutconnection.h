@@ -140,6 +140,7 @@ class ShoutConnection
     bool m_format_is_mp3;
     bool m_format_is_ov;
     bool m_format_is_opus;
+    bool m_format_is_aac;
     bool m_protocol_is_icecast1;
     bool m_protocol_is_icecast2;
     bool m_protocol_is_shoutcast;

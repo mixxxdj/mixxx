@@ -197,8 +197,7 @@ void EncoderFfmpegCore::updateMetaData(const QString& artist, const QString& tit
     m_strMetaDataAlbum = album;
 }
 
-int EncoderFfmpegCore::initEncoder(int samplerate, QString errorMessage) {
-
+int EncoderFfmpegCore::initEncoder(int samplerate, QString* pUserErrorMessage) {
 #ifndef avformat_alloc_output_context2
     qDebug() << "EncoderFfmpegCore::initEncoder: Old Style initialization";
     m_pEncodeFormatCtx = avformat_alloc_context();

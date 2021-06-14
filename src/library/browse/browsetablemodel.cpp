@@ -185,13 +185,12 @@ void BrowseTableModel::addSearchColumn(int index) {
     m_searchColumns.push_back(index);
 }
 
-void BrowseTableModel::setPath(const MDir& path) {
-    m_current_directory = path;
-    m_pBrowseThread->executePopulation(m_current_directory, this);
+void BrowseTableModel::setPath(mixxx::FileAccess path) {
+    m_pBrowseThread->executePopulation(std::move(path), this);
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
-    return getTrackByRef(TrackRef::fromFileInfo(getTrackLocation(index)));
+    return getTrackByRef(TrackRef::fromFilePath(getTrackLocation(index)));
 }
 
 TrackPointer BrowseTableModel::getTrackByRef(const TrackRef& trackRef) const {
@@ -298,7 +297,7 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList& indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url = TrackFile(getTrackLocation(index)).toUrl();
+                QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
                 if (!url.isValid()) {
                     qDebug() << "ERROR invalid url" << url;
                     continue;
@@ -397,7 +396,7 @@ bool BrowseTableModel::setData(
         pTrack->setAlbum(value.toString());
         break;
     case COLUMN_BPM:
-        pTrack->setBpm(value.toDouble());
+        pTrack->trySetBpm(value.toDouble());
         break;
     case COLUMN_KEY:
         pTrack->setKeyText(value.toString());

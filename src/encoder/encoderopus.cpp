@@ -5,9 +5,7 @@
 #include <QByteArray>
 #include <QMapIterator>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
-#endif
 #include <QtGlobal>
 
 #include "encoder/encoderopussettings.h"
@@ -23,7 +21,7 @@ constexpr int kMaxOpusBufferSize = 1+1275;
 constexpr int kOpusFrameMs = 60;
 constexpr int kOpusChannelCount = 2;
 // Opus only supports 48 and 96 kHz samplerates
-constexpr int kMasterSamplerate = 48000;
+constexpr mixxx::audio::SampleRate kMasterSamplerate = mixxx::audio::SampleRate(48000);
 
 const mixxx::Logger kLogger("EncoderOpus");
 
@@ -65,11 +63,7 @@ int getSerial() {
 
     int serial;
     do {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
         serial = static_cast<int>(QRandomGenerator::global()->generate());
-#else
-        serial = qrand();
-#endif
     } while (prevSerial == serial);
 
     prevSerial = serial;
@@ -79,7 +73,7 @@ int getSerial() {
 } // namespace
 
 //static
-int EncoderOpus::getMasterSamplerate() {
+mixxx::audio::SampleRate EncoderOpus::getMasterSamplerate() {
     return kMasterSamplerate;
 }
 
@@ -116,11 +110,7 @@ EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
     // the Live Broadcasting implementation
 
     m_opusComments.insert("ENCODER", "mixxx/libopus");
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
     int serial = static_cast<int>(QRandomGenerator::global()->generate());
-#else
-    int serial = qrand();
-#endif
     ogg_stream_init(&m_oggStream, serial);
 }
 
@@ -148,8 +138,8 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderOpus::initEncoder(int samplerate, QString& errorMessage) {
-    Q_UNUSED(errorMessage);
+int EncoderOpus::initEncoder(int samplerate, QString* pUserErrorMessage) {
+    Q_UNUSED(pUserErrorMessage);
 
     if (samplerate != kMasterSamplerate) {
         kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";

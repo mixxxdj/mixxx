@@ -61,18 +61,19 @@ const QStringList DEFAULT_COLUMNS = {
         LIBRARYTABLE_COVERART_SOURCE,
         LIBRARYTABLE_COVERART_TYPE,
         LIBRARYTABLE_COVERART_LOCATION,
+        LIBRARYTABLE_COVERART_COLOR,
         LIBRARYTABLE_COVERART_DIGEST,
         LIBRARYTABLE_COVERART_HASH};
 
 } // namespace
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-                                         UserSettingsPointer pConfig)
+        UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary, pConfig),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
           m_icon(":/images/library/ic_library_tracks.svg"),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_pLibraryTableModel(nullptr),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
@@ -101,7 +102,9 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     m_pTrackCollection->connectTrackSource(m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, pLibrary->trackCollections(), "mixxx.db.model.library");
+    m_pLibraryTableModel = new LibraryTableModel(this,
+            pLibrary->trackCollectionManager(),
+            "mixxx.db.model.library");
 
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     pRootItem->appendChild(kMissingTitle);
@@ -196,7 +199,7 @@ bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) 
     if (pSource) {
         return false;
     } else {
-        QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(
+        QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
                 urls, true);
         return trackIds.size() > 0;
     }

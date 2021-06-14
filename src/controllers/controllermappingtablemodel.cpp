@@ -11,8 +11,8 @@ ControllerMappingTableModel::~ControllerMappingTableModel() {
 
 }
 
-void ControllerMappingTableModel::setMapping(LegacyControllerMappingPointer pMapping) {
-    m_pMidiMapping = dynamic_cast<LegacyMidiControllerMapping*>(pMapping.data());
+void ControllerMappingTableModel::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMidiMapping = std::dynamic_pointer_cast<LegacyMidiControllerMapping>(pMapping);
     // Only legacy MIDI mappings are supported
     // TODO: prevent calling this code for unsupported mapping types?
     if (!m_pMidiMapping) {

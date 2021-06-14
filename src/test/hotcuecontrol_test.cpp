@@ -41,7 +41,8 @@ class HotcueControlTest : public BaseSignalPathTest {
 
     TrackPointer createTestTrack() const {
         const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
-        const auto pTrack = Track::newTemporary(kTrackLocationTest, SecurityTokenPointer());
+        const auto pTrack = Track::newTemporary(
+                mixxx::FileAccess(mixxx::FileInfo(kTrackLocationTest)));
         pTrack->setAudioProperties(
                 mixxx::audio::ChannelCount(2),
                 mixxx::audio::SampleRate(44100),
@@ -59,7 +60,7 @@ class HotcueControlTest : public BaseSignalPathTest {
         DEBUG_ASSERT(!m_pPlay->toBool());
         // Setup fake track with 120 bpm can calculate loop size
         TrackPointer pTrack = createTestTrack();
-        pTrack->setBpm(bpm);
+        pTrack->trySetBpm(bpm);
 
         loadTrack(pTrack);
         ProcessBuffer();
@@ -68,7 +69,9 @@ class HotcueControlTest : public BaseSignalPathTest {
     }
 
     TrackPointer createAndLoadFakeTrack() {
-        return m_pMixerDeck1->loadFakeTrack(false, 0.0);
+        TrackPointer pTrack = m_pMixerDeck1->loadFakeTrack(false, 0.0);
+        ProcessBuffer();
+        return pTrack;
     }
 
     void unloadTrack() {

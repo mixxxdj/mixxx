@@ -6,12 +6,12 @@
 
 #include "engine/sync/clock.h"
 #include "engine/sync/syncable.h"
-#include "engine/channels/enginechannel.h"
 
 class ControlObject;
 class ControlLinPotmeter;
 class ControlPushButton;
 class EngineSync;
+class EngineChannel;
 
 /// Internal Clock is a Master Sync object that provides a source of constant
 /// tempo when needed.  The EngineSync will decide when to make the Internal
@@ -43,6 +43,9 @@ class InternalClock : public QObject, public Clock, public Syncable {
     bool isPlaying() const override {
         return false;
     }
+    bool isAudible() const override {
+        return false;
+    }
 
     double getBeatDistance() const override;
     void setMasterBeatDistance(double beatDistance) override;
@@ -57,8 +60,8 @@ class InternalClock : public QObject, public Clock, public Syncable {
     void onCallbackEnd(int sampleRate, int bufferSize);
 
   private slots:
-    void slotBpmChanged(double bpm);
-    void slotBeatDistanceChanged(double beat_distance);
+    void slotBaseBpmChanged(double baseBpm);
+    void slotBeatDistanceChanged(double beatDistance);
     void slotSyncMasterEnabledChangeRequest(double state);
 
   private:
@@ -73,6 +76,10 @@ class InternalClock : public QObject, public Clock, public Syncable {
 
     int m_iOldSampleRate;
     double m_dOldBpm;
+
+    // This is the BPM value at unity adopted when sync is enabled.
+    // It is used to relate the followers and must not change when
+    // the bpm is adjusted to avoid sudden double/half rate changes.
     double m_dBaseBpm;
 
     // The internal clock rate is stored in terms of samples per beat.

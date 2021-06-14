@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QtDebug>
+#include <cstdint>
+#include <limits>
 
 #include "util/assert.h"
 #include "util/optional.h"
@@ -34,47 +36,75 @@ QDebug operator<<(QDebug dbg, ChannelLayout arg);
 
 class ChannelCount {
   public:
-    typedef SINT value_t;
+    typedef uint8_t value_t;
 
   private:
     // The default value is invalid and indicates a missing or unknown value.
     static constexpr value_t kValueDefault = 0;
+    static constexpr value_t kValueMin = 1;   // lower bound (inclusive)
+
+    static value_t valueFromInt(int value) {
+        VERIFY_OR_DEBUG_ASSERT(value >= std::numeric_limits<value_t>::min() &&
+                value <= std::numeric_limits<value_t>::max()) {
+            return kValueDefault;
+        }
+        return static_cast<value_t>(value);
+    }
+
+    static value_t valueFromLayout(ChannelLayout layout) {
+        switch (layout) {
+        case ChannelLayout::Mono:
+            return 1;
+        case ChannelLayout::DualMono:
+            return 2;
+        case ChannelLayout::Stereo:
+            return 2;
+        }
+        DEBUG_ASSERT(!"unreachable code");
+    }
 
   public:
-    static constexpr value_t kValueMin = 1;   // lower bound (inclusive)
-    static constexpr value_t kValueMax = 255; // upper bound (inclusive, 8-bit unsigned integer)
-
     static constexpr ChannelCount min() {
         return ChannelCount(kValueMin);
     }
     static constexpr ChannelCount max() {
-        return ChannelCount(kValueMax);
+        return ChannelCount(std::numeric_limits<value_t>::max());
     }
 
     static ChannelCount fromLayout(ChannelLayout layout) {
-        switch (layout) {
-        case ChannelLayout::Mono:
-            return ChannelCount(1);
-        case ChannelLayout::DualMono:
-            return ChannelCount(2);
-        case ChannelLayout::Stereo:
-            return ChannelCount(2);
-        }
-        DEBUG_ASSERT(!"unreachable code");
+        return ChannelCount(valueFromLayout(layout));
+    }
+
+    static ChannelCount fromInt(int value) {
+        return ChannelCount(valueFromInt(value));
+    }
+
+    static constexpr ChannelCount mono() {
+        return ChannelCount(static_cast<value_t>(1));
+    }
+
+    static constexpr ChannelCount stereo() {
+        return ChannelCount(static_cast<value_t>(2));
     }
 
     explicit constexpr ChannelCount(
             value_t value = kValueDefault)
             : m_value(value) {
     }
+
+    // A limits checking c-tor fom int channel used in many
+    // external libraries
+    explicit ChannelCount(int value)
+            : m_value(valueFromInt(value)) {
+    }
+
     explicit ChannelCount(
             ChannelLayout layout)
-            : m_value(fromLayout(layout).m_value) {
+            : m_value(valueFromLayout(layout)) {
     }
 
     constexpr bool isValid() const {
-        return (kValueMin <= m_value) &&
-                (m_value <= kValueMax);
+        return kValueMin <= m_value;
     }
 
     /*implicit*/ constexpr operator value_t() const {
@@ -87,7 +117,7 @@ class ChannelCount {
 
 class SampleRate {
   public:
-    typedef SINT value_t;
+    typedef uint32_t value_t;
 
   private:
     // The default value is invalid and indicates a missing or unknown value.
@@ -114,8 +144,7 @@ class SampleRate {
     }
 
     constexpr bool isValid() const {
-        return (kValueMin <= m_value) &&
-                (m_value <= kValueMax);
+        return kValueMin <= m_value && m_value <= kValueMax;
     }
 
     void operator=(const value_t& value) {
@@ -145,7 +174,7 @@ QDebug operator<<(QDebug dbg, SampleRate arg);
 // expected quality.
 class Bitrate {
   public:
-    typedef SINT value_t;
+    typedef uint32_t value_t;
 
   private:
     // The default value is invalid and indicates a missing or unknown value.
@@ -165,9 +194,11 @@ class Bitrate {
         return m_value > kValueDefault;
     }
 
-    /*implicit*/ operator value_t() const {
-        DEBUG_ASSERT(m_value >= kValueDefault); // unsigned value
+    value_t value() const {
         return m_value;
+    }
+    /*implicit*/ operator value_t() const {
+        return value();
     }
 
   private:

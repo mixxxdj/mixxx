@@ -4,7 +4,7 @@
   <SetVariable name="VuColor">light</SetVariable>
 
   <WidgetGroup>
-    <SizePolicy>min,me</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
 

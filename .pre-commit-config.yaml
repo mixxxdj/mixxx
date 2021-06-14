@@ -54,6 +54,7 @@ repos:
   - id: check-merge-conflict
   - id: check-xml
   - id: check-yaml
+    exclude: ^\.clang-format$
   - id: end-of-file-fixer
     stages:
     - commit
@@ -123,3 +124,18 @@ repos:
     stages:
     - commit
     - manual
+  - id: qmlformat
+    name: qmlformat
+    entry: tools/qmlformat.py
+    pass_filenames: true
+    language: system
+    types: [text]
+    files: ^.*\.qml$
+  - id: qmllint
+    name: qmllint
+    entry: qmllint
+    pass_filenames: true
+    require_serial: true
+    language: system
+    types: [text]
+    files: ^.*\.qml$

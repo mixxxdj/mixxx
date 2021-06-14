@@ -19,8 +19,9 @@ class DlgPrefSound;
 class DlgPrefLibrary;
 class DlgPrefController;
 class DlgPrefControllers;
+#ifdef __VINYLCONTROL__
 class DlgPrefVinyl;
-class DlgPrefNoVinyl;
+#endif // __VINYLCONTROL__
 class DlgPrefInterface;
 class DlgPrefWaveform;
 class DlgPrefDeck;
@@ -29,24 +30,31 @@ class DlgPrefEQ;
 class DlgPrefEffects;
 class DlgPrefCrossfader;
 class DlgPrefAutoDJ;
+#ifdef __BROADCAST__
 class DlgPrefBroadcast;
+#endif // __BROADCAST__
 class DlgPrefRecord;
 class DlgPrefBeats;
 class DlgPrefKey;
 class DlgPrefReplayGain;
 #ifdef __LILV__
 class DlgPrefLV2;
-#endif /* __LILV__ */
+#endif // __LILV__
 class LV2Backend;
 class ControllerManager;
 class EffectsManager;
-class SkinLoader;
 class PlayerManager;
 class Library;
 class VinylControlManager;
 #ifdef __MODPLUG__
 class DlgPrefModplug;
-#endif
+#endif // __MODPLUG__
+
+namespace mixxx {
+namespace skin {
+class SkinLoader;
+}
+} // namespace mixxx
 
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
@@ -63,7 +71,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     };
 
     DlgPreferences(MixxxMainWindow* mixxx,
-            std::shared_ptr<SkinLoader> pSkinLoader,
+            std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
             std::shared_ptr<SoundManager> pSoundManager,
             std::shared_ptr<PlayerManager> pPlayerManager,
             std::shared_ptr<ControllerManager> pControllerManager,

@@ -16,6 +16,8 @@ class TrackModel {
   public:
     static const int kHeaderWidthRole = Qt::UserRole + 0;
     static const int kHeaderNameRole = Qt::UserRole + 1;
+    // This role is used for data export like in CSV files
+    static constexpr int kDataExportRole = Qt::UserRole + 2;
 
     TrackModel(const QSqlDatabase& db,
             const char* settingsNamespace)

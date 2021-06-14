@@ -236,10 +236,7 @@ void BaseTrackTableModel::setHeaderProperties(
         int defaultWidth) {
     int section = fieldIndex(column);
     if (section < 0) {
-        kLogger.debug()
-                << "Skipping header properties for unsupported column"
-                << column
-                << title;
+        // Skipping header properties for unsupported column
         return;
     }
     if (section >= m_columnHeaders.size()) {
@@ -426,7 +423,8 @@ QVariant BaseTrackTableModel::data(
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&
             role != Qt::CheckStateRole &&
-            role != Qt::ToolTipRole) {
+            role != Qt::ToolTipRole &&
+            role != kDataExportRole) {
         return QVariant();
     }
 
@@ -551,6 +549,7 @@ QVariant BaseTrackTableModel::roleValue(
     }
     switch (role) {
     case Qt::ToolTipRole:
+    case kDataExportRole:
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_COLOR:
             return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
@@ -619,11 +618,16 @@ QVariant BaseTrackTableModel::roleValue(
             return QString("(%1)").arg(timesPlayed);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
-        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED: {
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
                 return QVariant();
             }
-            return mixxx::localDateTimeFromUtc(rawValue.toDateTime());
+            QDateTime dt = mixxx::localDateTimeFromUtc(rawValue.toDateTime());
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return dt;
+            }
+            return dt.date();
+        }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
             if (rawValue.type() == QVariant::String) {
@@ -637,7 +641,11 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             DEBUG_ASSERT(lastPlayedAt.timeSpec() == Qt::UTC);
-            return mixxx::localDateTimeFromUtc(lastPlayedAt);
+            QDateTime dt = mixxx::localDateTimeFromUtc(lastPlayedAt);
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return dt;
+            }
+            return dt.date();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             mixxx::Bpm bpm;
@@ -657,7 +665,11 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
             if (bpm.hasValue()) {
-                return QString("%1").arg(bpm.getValue(), 0, 'f', 1);
+                if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                    return QString::number(bpm.getValue(), 'f', 4);
+                } else {
+                    return QString::number(bpm.getValue(), 'f', 1);
+                }
             } else {
                 return QChar('-');
             }
@@ -909,7 +921,7 @@ QList<QUrl> BaseTrackTableModel::collectUrls(
             continue;
         }
         visitedRows.insert(index.row());
-        QUrl url = TrackFile(getTrackLocation(index)).toUrl();
+        QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
         if (url.isValid()) {
             urls.append(url);
         }
@@ -1020,7 +1032,7 @@ void BaseTrackTableModel::emitDataChangedForMultipleRowsInColumn(
 
 TrackPointer BaseTrackTableModel::getTrackByRef(
         const TrackRef& trackRef) const {
-    return m_pTrackCollectionManager->internalCollection()->getTrackByRef(trackRef);
+    return m_pTrackCollectionManager->getTrackByRef(trackRef);
 }
 
 TrackId BaseTrackTableModel::doGetTrackId(

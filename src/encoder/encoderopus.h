@@ -1,12 +1,13 @@
 #pragma once
 
+#include <ogg/ogg.h>
+#include <opus/opus.h>
+
 #include <QMap>
 #include <QString>
 #include <QVector>
 
-#include <ogg/ogg.h>
-#include <opus/opus.h>
-
+#include "audio/types.h"
 #include "encoder/encoder.h"
 #include "encoder/encodercallback.h"
 #include "util/fifo.h"
@@ -16,13 +17,13 @@
 
 class EncoderOpus: public Encoder {
   public:
-    static int getMasterSamplerate();
+    static mixxx::audio::SampleRate getMasterSamplerate();
     static QString getInvalidSamplerateMessage();
 
     explicit EncoderOpus(EncoderCallback* pCallback = nullptr);
     ~EncoderOpus() override;
 
-    int initEncoder(int samplerate, QString& errorMessage) override;
+    int initEncoder(int samplerate, QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;

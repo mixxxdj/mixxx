@@ -64,10 +64,7 @@ class Library: public QObject {
         return m_pDbConnectionPool;
     }
 
-    TrackCollectionManager* trackCollections() const;
-
-    // Deprecated: Obtain directly from TrackCollectionManager
-    TrackCollection& trackCollection();
+    TrackCollectionManager* trackCollectionManager() const;
 
     void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
@@ -75,7 +72,6 @@ class Library: public QObject {
                     KeyboardEventFilter* pKeyboard);
 
     void addFeature(LibraryFeature* feature);
-    QStringList getDirs();
 
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;

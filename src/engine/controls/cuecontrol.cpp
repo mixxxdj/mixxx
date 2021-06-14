@@ -85,8 +85,12 @@ CueControl::CueControl(const QString& group,
           m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
           m_bypassCueSetByPlay(false),
           m_iNumHotCues(NUM_HOT_CUES),
-          m_pCurrentSavedLoopControl(nullptr),
-          m_trackMutex(QMutex::Recursive) {
+          m_pCurrentSavedLoopControl(nullptr)
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+          ,
+          m_trackMutex(QMutex::Recursive)
+#endif
+{
     // To silence a compiler warning about CUE_MODE_PIONEER.
     Q_UNUSED(CUE_MODE_PIONEER);
     createControls();
@@ -1970,7 +1974,7 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+    const mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
     if (!pBeats) {
         return cuePos;
     }

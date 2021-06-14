@@ -102,9 +102,10 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         bool bTrack,
         bool bPersist,
         double defaultValue) {
-    VERIFY_OR_DEBUG_ASSERT(key.isValid()) {
+    if (!key.isValid()) {
         qWarning() << "ControlDoublePrivate::getControl returning nullptr"
                    << "for invalid ConfigKey" << key;
+        DEBUG_ASSERT(flags.testFlag(ControlFlag::AllowInvalidKey));
         return nullptr;
     }
 

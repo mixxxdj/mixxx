@@ -15,6 +15,20 @@
 
 namespace mixxx {
 
+/// Effect of updating a property with a new value.
+enum class [[nodiscard]] UpdateResult{
+        /// The value has been updated and changed.
+        Updated,
+
+        /// The value didn't change and has not been updated.
+        Unchanged,
+
+        /// The provided value is invalid or insonsistent with
+        /// any existing value(s) and has been rejected, i.e.
+        /// the current value didn't change either.
+        Rejected,
+};
+
 // Properties of tracks that are stored in the database.
 class TrackRecord final {
     // Properties that parsed from and (optionally) written back to their
@@ -99,10 +113,13 @@ class TrackRecord final {
     QString getGlobalKeyText() const {
         return KeyUtils::getGlobalKeyText(getKeys());
     }
-    bool updateGlobalKeyText(
+    UpdateResult updateGlobalKeyText(
             const QString& keyText,
             track::io::key::Source keySource);
 
+    bool replaceMetadataFromSource(
+            TrackMetadata&& importedMetadata,
+            const QDateTime& metadataSynchronized);
     // Merge the current metadata with new and additional properties
     // imported from the file. Since these properties are not (yet)
     // stored in the library or have been added later all existing
@@ -111,7 +128,7 @@ class TrackRecord final {
     // data when needed.
     //
     // Returns true if any property has been modified or false otherwise.
-    bool mergeImportedMetadata(
+    bool mergeExtraMetadataFromSource(
             const TrackMetadata& importedMetadata);
 
     /// Update the stream info after opening the audio stream during
@@ -119,7 +136,7 @@ class TrackRecord final {
     /// Returns true if the corresponding metadata properties have been
     /// updated and false otherwise.
     bool updateStreamInfoFromSource(
-            const mixxx::audio::StreamInfo& streamInfoFromSource);
+            mixxx::audio::StreamInfo streamInfoFromSource);
     /// Check if the stream info is supposed to be reliable and accurate.
     /// TODO: Also flag the stream info as "accurate" in the database and
     /// invoke updateStreamInfoFromSource() accordingly when loading tracks

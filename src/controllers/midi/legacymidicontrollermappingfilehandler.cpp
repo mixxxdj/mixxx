@@ -7,24 +7,25 @@
 #define DEFAULT_OUTPUT_ON 0x7F
 #define DEFAULT_OUTPUT_OFF 0x00
 
-LegacyControllerMappingPointer LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
+std::shared_ptr<LegacyControllerMapping>
+LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
         const QString& filePath,
         const QDir& systemMappingsPath) {
     if (root.isNull()) {
-        return LegacyControllerMappingPointer();
+        return nullptr;
     }
 
     QDomElement controller = getControllerNode(root);
     if (controller.isNull()) {
-        return LegacyControllerMappingPointer();
+        return nullptr;
     }
 
-    LegacyMidiControllerMapping* mapping = new LegacyMidiControllerMapping();
-    mapping->setFilePath(filePath);
+    auto pMapping = std::make_shared<LegacyMidiControllerMapping>();
+    pMapping->setFilePath(filePath);
 
     // Superclass handles parsing <info> tag and script files
-    parseMappingInfo(root, mapping);
-    addScriptFilesToMapping(controller, mapping, systemMappingsPath);
+    parseMappingInfo(root, pMapping);
+    addScriptFilesToMapping(controller, pMapping, systemMappingsPath);
 
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
@@ -67,35 +68,35 @@ LegacyControllerMappingPointer LegacyMidiControllerMappingFileHandler::load(cons
 
             // "normal" is no options
             if (strMidiOption == QLatin1String("invert")) {
-                options.invert = true;
+                options.setFlag(MidiOption::Invert);
             } else if (strMidiOption == QLatin1String("rot64")) {
-                options.rot64 = true;
+                options.setFlag(MidiOption::Rot64);
             } else if (strMidiOption == QLatin1String("rot64inv")) {
-                options.rot64_inv = true;
+                options.setFlag(MidiOption::Rot64Invert);
             } else if (strMidiOption == QLatin1String("rot64fast")) {
-                options.rot64_fast = true;
+                options.setFlag(MidiOption::Rot64Fast);
             } else if (strMidiOption == QLatin1String("diff")) {
-                options.diff = true;
+                options.setFlag(MidiOption::Diff);
             } else if (strMidiOption == QLatin1String("button")) {
-                options.button = true;
+                options.setFlag(MidiOption::Button);
             } else if (strMidiOption == QLatin1String("switch")) {
-                options.sw = true;
+                options.setFlag(MidiOption::Switch);
             } else if (strMidiOption == QLatin1String("hercjog")) {
-                options.herc_jog = true;
+                options.setFlag(MidiOption::HercJog);
             } else if (strMidiOption == QLatin1String("hercjogfast")) {
-                options.herc_jog_fast = true;
+                options.setFlag(MidiOption::HercJogFast);
             } else if (strMidiOption == QLatin1String("spread64")) {
-                options.spread64 = true;
+                options.setFlag(MidiOption::Spread64);
             } else if (strMidiOption == QLatin1String("selectknob")) {
-                options.selectknob = true;
+                options.setFlag(MidiOption::SelectKnob);
             } else if (strMidiOption == QLatin1String("soft-takeover")) {
-                options.soft_takeover = true;
+                options.setFlag(MidiOption::SoftTakeover);
             } else if (strMidiOption == QLatin1String("script-binding")) {
-                options.script = true;
+                options.setFlag(MidiOption::Script);
             } else if (strMidiOption == QLatin1String("fourteen-bit-msb")) {
-                options.fourteen_bit_msb = true;
+                options.setFlag(MidiOption::FourteenBitMSB);
             } else if (strMidiOption == QLatin1String("fourteen-bit-lsb")) {
-                options.fourteen_bit_lsb = true;
+                options.setFlag(MidiOption::FourteenBitLSB);
             }
 
             optionsNode = optionsNode.nextSiblingElement();
@@ -114,7 +115,7 @@ LegacyControllerMappingPointer LegacyMidiControllerMappingFileHandler::load(cons
 
         // Use insertMulti because we support multiple inputs mappings for the
         // same input MidiKey.
-        mapping->addInputMapping(inputMapping.key.key, inputMapping);
+        pMapping->addInputMapping(inputMapping.key.key, inputMapping);
         control = control.nextSiblingElement("control");
     }
 
@@ -205,14 +206,14 @@ LegacyControllerMappingPointer LegacyMidiControllerMappingFileHandler::load(cons
 
         // Use insertMulti because we support multiple outputs from the same
         // control.
-        mapping->addOutputMapping(outputMapping.controlKey, outputMapping);
+        pMapping->addOutputMapping(outputMapping.controlKey, outputMapping);
 
         output = output.nextSiblingElement("output");
     }
 
     qDebug() << "MidiMappingFileHandler: Output mapping parsing complete.";
 
-    return LegacyControllerMappingPointer(mapping);
+    return pMapping;
 }
 
 bool LegacyMidiControllerMappingFileHandler::save(const LegacyMidiControllerMapping& mapping,
@@ -293,67 +294,67 @@ QDomElement LegacyMidiControllerMappingFileHandler::inputMappingToXML(
     QDomElement optionsNode = doc->createElement("options");
 
     // "normal" is no options
-    if (mapping.options.all == 0) {
+    if (!mapping.options) {
         QDomElement singleOption = doc->createElement("normal");
         optionsNode.appendChild(singleOption);
     } else {
-        if (mapping.options.invert) {
+        if (mapping.options.testFlag(MidiOption::Invert)) {
             QDomElement singleOption = doc->createElement("invert");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.rot64) {
+        if (mapping.options.testFlag(MidiOption::Rot64)) {
             QDomElement singleOption = doc->createElement("rot64");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.rot64_inv) {
+        if (mapping.options.testFlag(MidiOption::Rot64Invert)) {
             QDomElement singleOption = doc->createElement("rot64inv");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.rot64_fast) {
+        if (mapping.options.testFlag(MidiOption::Rot64Fast)) {
             QDomElement singleOption = doc->createElement("rot64fast");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.diff) {
+        if (mapping.options.testFlag(MidiOption::Diff)) {
             QDomElement singleOption = doc->createElement("diff");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.button) {
+        if (mapping.options.testFlag(MidiOption::Button)) {
             QDomElement singleOption = doc->createElement("button");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.sw) {
+        if (mapping.options.testFlag(MidiOption::Switch)) {
             QDomElement singleOption = doc->createElement("switch");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.herc_jog) {
+        if (mapping.options.testFlag(MidiOption::HercJog)) {
             QDomElement singleOption = doc->createElement("hercjog");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.herc_jog_fast) {
+        if (mapping.options.testFlag(MidiOption::HercJogFast)) {
             QDomElement singleOption = doc->createElement("hercjogfast");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.spread64) {
+        if (mapping.options.testFlag(MidiOption::Spread64)) {
             QDomElement singleOption = doc->createElement("spread64");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.selectknob) {
+        if (mapping.options.testFlag(MidiOption::SelectKnob)) {
             QDomElement singleOption = doc->createElement("selectknob");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.soft_takeover) {
+        if (mapping.options.testFlag(MidiOption::SoftTakeover)) {
             QDomElement singleOption = doc->createElement("soft-takeover");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.script) {
+        if (mapping.options.testFlag(MidiOption::Script)) {
             QDomElement singleOption = doc->createElement("script-binding");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.fourteen_bit_msb) {
+        if (mapping.options.testFlag(MidiOption::FourteenBitMSB)) {
             QDomElement singleOption = doc->createElement("fourteen-bit-msb");
             optionsNode.appendChild(singleOption);
         }
-        if (mapping.options.fourteen_bit_lsb) {
+        if (mapping.options.testFlag(MidiOption::FourteenBitLSB)) {
             QDomElement singleOption = doc->createElement("fourteen-bit-lsb");
             optionsNode.appendChild(singleOption);
         }

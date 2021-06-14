@@ -1,6 +1,6 @@
 #include "wskincolor.h"
 
-#include "skin/imgloader.h"
+#include "skin/legacy/imgloader.h"
 
 QSharedPointer<ImgSource> WSkinColor::loader
     = QSharedPointer<ImgSource>(new ImgLoader());

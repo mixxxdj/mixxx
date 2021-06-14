@@ -5,7 +5,7 @@
 
 #include "library/coverartutils.h"
 #include "moc_wcoverartmenu.cpp"
-#include "util/sandbox.h"
+#include "util/fileaccess.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent) {
@@ -72,9 +72,7 @@ void WCoverArtMenu::slotChange() {
 
     CoverInfoRelative coverInfo;
     // Create a security token for the file.
-    QFileInfo selectedCover(selectedCoverPath);
-    SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-        selectedCover, true);
+    auto selectedCover = mixxx::FileAccess(mixxx::FileInfo(selectedCoverPath));
     QImage image(selectedCoverPath);
     if (image.isNull()) {
         // TODO(rryan): feedback

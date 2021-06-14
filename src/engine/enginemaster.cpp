@@ -731,7 +731,7 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     if (m_pMasterMonoMixdown->toBool()) {
-        SampleUtil::mixStereoToMono(m_pMaster, m_pMaster, m_iBufferSize);
+        SampleUtil::mixStereoToMono(m_pMaster, m_iBufferSize);
     }
 
     if (masterEnabled) {
@@ -792,6 +792,7 @@ void EngineMaster::processHeadphones(const CSAMPLE_GAIN masterMixGainInHeadphone
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
+    pChannel->setChannelIndex(pChannelInfo->m_index);
     pChannelInfo->m_pChannel = pChannel;
     const QString& group = pChannel->getGroup();
     pChannelInfo->m_handle = m_pChannelHandleFactory->getOrCreateHandle(group);
@@ -834,6 +835,13 @@ EngineChannel* EngineMaster::getChannel(const QString& group) {
         }
     }
     return nullptr;
+}
+
+CSAMPLE_GAIN EngineMaster::getMasterGain(int channelIndex) const {
+    if (channelIndex >= 0 && channelIndex < m_channelMasterGainCache.size()) {
+        return m_channelMasterGainCache[channelIndex].m_gain;
+    }
+    return CSAMPLE_GAIN_ZERO;
 }
 
 const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {

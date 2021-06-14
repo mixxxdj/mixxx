@@ -14,11 +14,7 @@
 #include "util/cmdlineargs.h"
 #include "util/console.h"
 #include "util/logging.h"
-#include "util/version.h"
-
-#ifdef Q_OS_LINUX
-#include <X11/Xlib.h>
-#endif
+#include "util/versionstore.h"
 
 namespace {
 
@@ -47,10 +43,6 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
 int main(int argc, char * argv[]) {
     Console console;
 
-#ifdef Q_OS_LINUX
-    XInitThreads();
-#endif
-
     // These need to be set early on (not sure how early) in order to trigger
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
@@ -69,13 +61,12 @@ int main(int argc, char * argv[]) {
     // organization name blank.
     //QCoreApplication::setOrganizationName("Mixxx");
 
-    QCoreApplication::setApplicationName(Version::applicationName());
-    QCoreApplication::setApplicationVersion(Version::version());
+    QCoreApplication::setApplicationName(VersionStore::applicationName());
+    QCoreApplication::setApplicationVersion(VersionStore::version());
 
     // Construct a list of strings based on the command line arguments
     CmdlineArgs& args = CmdlineArgs::Instance();
-    if (!args.Parse(argc, argv)) {
-        args.printUsage();
+    if (!args.parse(argc, argv)) {
         return kParseCmdlineArgsErrorExitCode;
     }
 
@@ -88,8 +79,14 @@ int main(int argc, char * argv[]) {
     // the main thread. Bug #1748636.
     ErrorDialogHandler::instance();
 
-    MixxxApplication app(argc, argv);
+#ifdef __APPLE__
+    Sandbox::checkSandboxed();
+    if (!args.getSettingsPathSet()) {
+        args.setSettingsPath(Sandbox::migrateOldSettings());
+    }
+#endif
 
+    MixxxApplication app(argc, argv);
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

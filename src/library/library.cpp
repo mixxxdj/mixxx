@@ -217,12 +217,25 @@ Library::Library(
     // On startup we need to check if all of the user's library folders are
     // accessible to us. If the user is using a database from <1.12.0 with
     // sandboxing then we will need them to give us permission.
-    qDebug() << "Checking for access to user's library directories:";
-    foreach (QString directoryPath, getDirs()) {
-        QFileInfo directory(directoryPath);
-        bool hasAccess = Sandbox::askForAccess(directory.canonicalFilePath());
-        qDebug() << "Checking for access to" << directoryPath << ":"
-                 << hasAccess;
+    const auto rootDirs = m_pTrackCollectionManager->internalCollection()->loadRootDirs();
+    for (mixxx::FileInfo dirInfo : rootDirs) {
+        if (!dirInfo.exists() || !dirInfo.isDir()) {
+            kLogger.warning()
+                    << "Skipping access check for missing or invalid directory"
+                    << dirInfo;
+            continue;
+        }
+        if (Sandbox::askForAccess(&dirInfo)) {
+            kLogger.info()
+                    << "Access to directory"
+                    << dirInfo
+                    << "from sandbox granted";
+        } else {
+            kLogger.warning()
+                    << "Access to directory"
+                    << dirInfo
+                    << "from sandbox denied";
+        }
     }
 
     m_iTrackTableRowHeight = m_pConfig->getValue(
@@ -244,7 +257,7 @@ Library::~Library() {
     // Empty but required due to forward declarations in header file!
 }
 
-TrackCollectionManager* Library::trackCollections() const {
+TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
     return m_pTrackCollectionManager;
 }
@@ -448,7 +461,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void Library::slotLoadLocationToPlayer(const QString& location, const QString& group) {
-    auto trackRef = TrackRef::fromFileInfo(location);
+    auto trackRef = TrackRef::fromFilePath(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
         emit loadTrackToPlayer(pTrack, group);
@@ -486,9 +499,9 @@ void Library::slotRequestAddDir(const QString& dir) {
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
     QDir directory(dir);
-    Sandbox::createSecurityToken(directory);
+    Sandbox::createSecurityTokenForDir(directory);
 
-    if (!m_pTrackCollectionManager->addDirectory(dir)) {
+    if (!m_pTrackCollectionManager->addDirectory(mixxx::FileInfo(dir))) {
         QMessageBox::information(nullptr,
                 tr("Add Directory to Library"),
                 tr("Could not add the directory to your library. Either this "
@@ -503,6 +516,11 @@ void Library::slotRequestAddDir(const QString& dir) {
 }
 
 void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) {
+    // Remove the directory from the directory list.
+    if (!m_pTrackCollectionManager->removeDirectory(mixxx::FileInfo(dir))) {
+        return;
+    }
+
     switch (removalType) {
     case RemovalType::KeepTracks:
         break;
@@ -519,21 +537,19 @@ void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) 
         DEBUG_ASSERT(!"unreachable");
     }
 
-    // Remove the directory from the directory list.
-    m_pTrackCollectionManager->removeDirectory(dir);
-
     // Also update the config file if necessary so that downgrading is still
     // possible.
     QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
 
     if (QDir(dir) == QDir(confDir)) {
-        QStringList dirList = getDirs();
-        if (!dirList.isEmpty()) {
-            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dirList.first());
-        } else {
+        const QList<mixxx::FileInfo> dirList =
+                m_pTrackCollectionManager->internalCollection()->loadRootDirs();
+        if (dirList.isEmpty()) {
             // Save empty string so that an old version of mixxx knows it has to
             // ask for a new directory.
             m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, QString());
+        } else {
+            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dirList.first().location());
         }
     }
 }
@@ -547,10 +563,6 @@ void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDi
     if (oldDir == conDir) {
         m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, newDir);
     }
-}
-
-QStringList Library::getDirs() {
-    return m_pTrackCollectionManager->internalCollection()->getDirectoryDAO().getDirs();
 }
 
 void Library::setFont(const QFont& font) {
@@ -576,12 +588,6 @@ void Library::setRowHeight(int rowHeight) {
 void Library::setEditMedatataSelectedClick(bool enabled) {
     m_editMetadataSelectedClick = enabled;
     emit setSelectedClick(enabled);
-}
-
-TrackCollection& Library::trackCollection() {
-    DEBUG_ASSERT(m_pTrackCollectionManager);
-    DEBUG_ASSERT(m_pTrackCollectionManager->internalCollection());
-    return *m_pTrackCollectionManager->internalCollection();
 }
 
 void Library::searchTracksInCollection(const QString& query) {
