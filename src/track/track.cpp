@@ -324,16 +324,14 @@ mixxx::ReplayGain Track::getReplayGain() const {
     return m_record.getMetadata().getTrackInfo().getReplayGain();
 }
 
-bool Track::setReplayGainRatio(double ratio) {
+void Track::setReplayGainRatio(double ratio) {
     QMutexLocker lock(&m_qMutex);
-    mixxx::ReplayGain replayGain = *m_record.refMetadata().refTrackInfo().ptrReplayGain();
-    replayGain.setRatio(ratio);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
+    mixxx::ReplayGain* replayGain = m_record.refMetadata().refTrackInfo().ptrReplayGain();
+    if (ratio != replayGain->getRatio()) {
+        replayGain->setRatio(ratio);
         markDirtyAndUnlock(&lock);
-        emit replayGainUpdated(replayGain);
-        return true;
+        emit replayGainUpdated(*replayGain);
     }
-    return false;
 }
 
 void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
