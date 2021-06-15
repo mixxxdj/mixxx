@@ -27,8 +27,9 @@ Item {
             Item {
                 id: effect
 
-                property int effectNumber: index + 1
-                property string group: "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + effectNumber + "]"
+                property var slot: Mixxx.EffectsManager.getEffectSlot(1, root.unitNumber, index + 1)
+                readonly property int effectNumber: slot.number
+                readonly property string group: slot.group
 
                 height: 50
                 Layout.fillWidth: true
@@ -60,9 +61,28 @@ Item {
                     textRole: "display"
                     model: Mixxx.EffectsManager.visibleEffectsModel
                     onActivated: {
-                        console.warn(1, root.unitNumber, effect.effectNumber, model.get(index).effectId);
-                        Mixxx.EffectsManager.loadEffect(1, root.unitNumber, effect.effectNumber, model.get(index).effectId);
+                        const effectId = model.get(index).effectId;
+                        if (effect.slot.effectId != effectId)
+                            effect.slot.effectId = effectId;
+
                     }
+
+                    Connections {
+                        function onEffectIdChanged() {
+                            const rowCount = effectSelector.model.rowCount();
+                            // TODO: Consider using an additional QHash in the
+                            // model and provide a more efficient lookup method
+                            for (let i = 0; i < rowCount; i++) {
+                                if (effectSelector.model.get(i).effectId === target.effectId) {
+                                    effectSelector.currentIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        target: effect.slot
+                    }
+
                 }
 
                 Skin.ControlMiniKnob {
