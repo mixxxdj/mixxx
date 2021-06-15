@@ -1314,7 +1314,7 @@ WPushButton#PlayIndicator,
 WPushButton#CueDeck,
 #PlayCueMini WPushButton,
 WPushButton#LoopActivate,
-#RateControls WPushButton,
+WPushButton#RateControls WPushButton,
 WPushButton#SyncDeck,
 WPushButton#SyncLeader,
 WPushButton#SyncSampler,
@@ -1378,10 +1378,17 @@ WPushButton#SkinSettingsToggle[displayValue="0"] {
   background-color: #262626;
 }
 
+/* Orange for 'partially active' status */
+#SyncLeader[value="1"] {
+background-color: #db7700;
+}
+
 /* Red for 'active' status */
 #BeatgridControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
-#SyncDeck[value="1"], #SyncSampler[displayValue="1"],
+#SyncDeck[value="1"],
+#SyncLeader[value="2"],
+#SyncSampler[displayValue="1"],
 WPushButton#PlayDeck[displayValue="1"],
 WPushButton#PlayDeckMini[displayValue="1"],
 WPushButton#PlaySampler[displayValue="1"],
@@ -1662,7 +1669,7 @@ WPushButton#SamplerExpand[displayValue="0"],
   }
 
 #SyncLeader {
-  background: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
+  image: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
   }
 
   #SyncSampler {

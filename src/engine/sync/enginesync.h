@@ -115,8 +115,9 @@ class EngineSync : public SyncableListener {
 
     void setMasterParams(Syncable* pSource);
 
-    /// Check if there are no playing followers left.
-    bool noPlayingFollowers() const;
+    /// Iff there is a single playing syncable in sync mode, return it.
+    /// This is used to initialize master params.
+    Syncable* getUniquePlayingSyncedDeck() const;
 
     /// Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);

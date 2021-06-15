@@ -369,6 +369,9 @@ void EngineMaster::processChannels(int iBufferSize) {
 
     // Do internal master sync post-processing before the other
     // channels.
+    // Note, because we call this on the internal clock first,
+    // it will have an up-to-date beatDistance, whereas the other
+    // Syncables will not.
     m_pMasterSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
 
     // After all the engines have been processed, trigger post-processing

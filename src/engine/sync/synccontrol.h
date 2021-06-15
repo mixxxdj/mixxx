@@ -30,7 +30,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     SyncMode getSyncMode() const override;
     void setSyncMode(SyncMode mode) override;
-    void notifyOnlyPlayingSyncable() override;
+    void notifyUniquePlaying() override;
     void requestSync() override;
     bool isPlaying() const override;
     bool isAudible() const override;
@@ -48,10 +48,10 @@ class SyncControl : public EngineControl, public Syncable {
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     void setMasterBeatDistance(double beatDistance) override;
-
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.
     void setMasterBpm(double bpm) override;
+    void notifyMasterParamSource() override;
     void setMasterParams(double beatDistance, double baseBpm, double bpm) override;
 
     // Must never result in a call to

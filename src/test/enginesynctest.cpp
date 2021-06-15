@@ -1445,6 +1445,24 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
 
+TEST_F(EngineSyncTest, DISABLED_BeatDistanceBeforeStart) {
+    // https://bugs.launchpad.net/mixxx/+bug/1930143
+    // If the start position is before zero, we should still initialize the beat distance
+    // correctly.  Unfortunately, this currently doesn't work.
+
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 128, 0.0);
+    m_pTrack1->trySetBeats(pBeats1);
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition"), -.05);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))
+            ->set(SYNC_MASTER_SOFT);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ProcessBuffer();
+    EXPECT_NEAR(
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
+            kMaxBeatDistanceEpsilon);
+}
+
 TEST_F(EngineSyncTest, ZeroLatencyRateChangeNoQuant) {
     // Confirm that a rate change in an explicit master is instantly communicated
     // to followers.
@@ -1664,10 +1682,10 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
 
-    EXPECT_EQ(1.0,
+    EXPECT_EQ(0.5,
             m_pChannel1->getEngineBuffer()
                     ->m_pSyncControl->m_masterBpmAdjustFactor);
-    EXPECT_EQ(2.0,
+    EXPECT_EQ(1.0,
             m_pChannel2->getEngineBuffer()
                     ->m_pSyncControl->m_masterBpmAdjustFactor);
     EXPECT_DOUBLE_EQ(
@@ -1789,7 +1807,7 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
 
     ProcessBuffer();
 
-    EXPECT_DOUBLE_EQ(87.5,
+    EXPECT_DOUBLE_EQ(175,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
 
@@ -2021,12 +2039,13 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
 
     ProcessBuffer();
 
-    // we expect that Deck 1 distance has not changed and the internal clock follows it exactly.
+    // we expect that Deck 1 distance has not changed but the internal clock keeps going, because
+    // the internal clock should continue playing even if the leader is stopped.
     EXPECT_TRUE(isSoftMaster(m_sGroup1));
     EXPECT_NEAR(0.019349962,
             ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
             kMaxFloatingPointErrorLowPrecision);
-    EXPECT_NEAR(0.019349962,
+    EXPECT_NEAR(0.038699924,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
             kMaxFloatingPointErrorLowPrecision);
 
