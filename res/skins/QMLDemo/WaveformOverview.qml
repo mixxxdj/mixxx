@@ -1,3 +1,4 @@
+import "." as Skin
 import Mixxx 0.1 as Mixxx
 import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
@@ -141,11 +142,8 @@ Item {
         anchors.fill: parent
         color: "transparent"
 
-        Text {
+        Skin.SectionText {
             anchors.centerIn: parent
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.textFontPixelSize
-            color: Theme.deckTextColor
             text: "Passthrough Enabled"
         }
 

@@ -10,7 +10,6 @@ Rectangle {
 
     property string group // required
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
-    property color textColor: Theme.deckTextColor
     property color lineColor: Theme.deckLineColor
 
     border.width: 2
@@ -93,7 +92,7 @@ Rectangle {
 
     }
 
-    Text {
+    Skin.EmbeddedText {
         id: infoBarTitle
 
         text: root.deckPlayer.title
@@ -101,11 +100,9 @@ Rectangle {
         anchors.left: infoBarVSeparator.left
         anchors.right: infoBarHSeparator1.left
         anchors.bottom: infoBarVSeparator.bottom
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
-        font.family: Theme.fontFamily
+        horizontalAlignment: Text.AlignLeft
+        font.bold: false
         font.pixelSize: Theme.textFontPixelSize
-        color: infoBar.textColor
     }
 
     Rectangle {
@@ -119,7 +116,7 @@ Rectangle {
         color: infoBar.lineColor
     }
 
-    Text {
+    Skin.EmbeddedText {
         id: infoBarArtist
 
         text: root.deckPlayer.artist
@@ -128,11 +125,8 @@ Rectangle {
         anchors.right: infoBarHSeparator1.left
         anchors.bottom: infoBarHSeparator1.bottom
         horizontalAlignment: Text.AlignLeft
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
-        font.family: Theme.fontFamily
+        font.bold: false
         font.pixelSize: Theme.textFontPixelSize
-        color: infoBar.textColor
     }
 
     Rectangle {
@@ -147,19 +141,14 @@ Rectangle {
         color: infoBar.lineColor
     }
 
-    Text {
+    Skin.EmbeddedText {
         id: infoBarKey
 
+        text: root.deckPlayer.keyText
         anchors.top: infoBarHSeparator1.top
         anchors.bottom: infoBarVSeparator.top
-        width: rateSlider.width
         anchors.right: infoBarHSeparator2.left
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
-        text: root.deckPlayer.keyText
-        font.family: Theme.fontFamily
-        font.pixelSize: Theme.textFontPixelSize
-        color: infoBar.textColor
+        width: rateSlider.width
     }
 
     Rectangle {
@@ -174,20 +163,14 @@ Rectangle {
         color: infoBar.lineColor
     }
 
-    Text {
+    Skin.EmbeddedText {
         id: infoBarRate
 
         anchors.top: infoBarHSeparator2.top
         anchors.bottom: infoBarVSeparator.top
-        width: rateSlider.width
         anchors.right: infoBar.right
         anchors.rightMargin: 5
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
-        text: bpmControl.value.toFixed(2)
-        font.family: Theme.fontFamily
-        font.pixelSize: Theme.textFontPixelSize
-        color: infoBar.textColor
+        width: rateSlider.width
 
         Mixxx.ControlProxy {
             id: bpmControl
@@ -198,7 +181,7 @@ Rectangle {
 
     }
 
-    Text {
+    Skin.EmbeddedText {
         id: infoBarRateRatio
 
         property real ratio: ((rateRatioControl.value - 1) * 100).toPrecision(2)
@@ -208,11 +191,6 @@ Rectangle {
         width: rateSlider.width
         anchors.right: infoBar.right
         anchors.rightMargin: 5
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
-        font.family: Theme.fontFamily
-        font.pixelSize: Theme.textFontPixelSize
-        color: infoBar.textColor
         text: (ratio > 0) ? "+" + ratio.toFixed(2) : ratio.toFixed(2)
 
         Mixxx.ControlProxy {

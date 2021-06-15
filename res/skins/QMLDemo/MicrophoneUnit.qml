@@ -44,17 +44,10 @@ Row {
     }
 
     Column {
-        Text {
+        SectionText {
             width: parent.width
             height: root.height / 2
             text: "MIC " + root.unitNumber
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.textFontPixelSize
-            font.bold: true
-            color: Theme.buttonNormalColor
         }
 
         Skin.ControlButton {
@@ -86,15 +79,9 @@ Row {
             key: "talkover"
             activeColor: Theme.deckActiveColor
 
-            foreground: Text {
+            foreground: Skin.EmbeddedText {
                 anchors.centerIn: parent
                 text: "TALK"
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                font.family: Theme.fontFamily
-                font.pixelSize: Theme.buttonFontPixelSize
-                font.bold: true
-                color: Theme.deckTextColor
             }
 
         }
@@ -110,15 +97,9 @@ Row {
             key: "group_" + root.group + "_enable"
             activeColor: Theme.deckActiveColor
 
-            foreground: Text {
+            foreground: Skin.EmbeddedText {
                 anchors.centerIn: parent
                 text: "FX1"
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                font.family: Theme.fontFamily
-                font.pixelSize: Theme.buttonFontPixelSize
-                font.bold: true
-                color: Theme.deckTextColor
             }
 
         }
@@ -132,15 +113,9 @@ Row {
             key: "group_" + root.group + "_enable"
             activeColor: Theme.deckActiveColor
 
-            foreground: Text {
+            foreground: Skin.EmbeddedText {
                 anchors.centerIn: parent
                 text: "FX2"
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                font.family: Theme.fontFamily
-                font.pixelSize: Theme.buttonFontPixelSize
-                font.bold: true
-                color: Theme.deckTextColor
             }
 
         }

@@ -105,15 +105,9 @@ Item {
                 key: "group_" + root.group + "_enable"
                 activeColor: Theme.deckActiveColor
 
-                foreground: Text {
+                foreground: Skin.EmbeddedText {
                     anchors.centerIn: parent
                     text: "FX 1"
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    font.family: Theme.fontFamily
-                    font.bold: true
-                    font.pixelSize: Theme.textFontPixelSize
-                    color: infoBar.textColor
                 }
 
             }
@@ -138,15 +132,9 @@ Item {
                 key: "group_" + root.group + "_enable"
                 activeColor: Theme.deckActiveColor
 
-                foreground: Text {
+                foreground: Skin.EmbeddedText {
                     anchors.centerIn: parent
                     text: "FX 2"
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    font.family: Theme.fontFamily
-                    font.bold: true
-                    font.pixelSize: Theme.textFontPixelSize
-                    color: infoBar.textColor
                 }
 
             }
@@ -162,18 +150,13 @@ Item {
                 color: infoBar.lineColor
             }
 
-            Text {
+            Skin.EmbeddedText {
                 id: waveformBarPosition
 
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 anchors.left: waveformBarHSeparator2.right
                 anchors.leftMargin: 5
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignLeft
-                font.family: Theme.fontFamily
-                font.pixelSize: Theme.textFontPixelSize
-                color: infoBar.textColor
                 text: {
                     const positionSeconds = samplesControl.value / 2 / sampleRateControl.value * playPositionControl.value;
                     if (isNaN(positionSeconds))
