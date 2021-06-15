@@ -978,6 +978,12 @@ if(UNIX AND NOT APPLE)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
 endif()
 
+# QML Debugging
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_definitions(mixxx-lib PRIVATE QT_QML_DEBUG)
+  message(STATUS "Enabling QML Debugging! This poses a security risk as Mixxx will open a TCP port for debugging")
+endif()
+
 # Disable warnings in generated source files
 set_property(
   SOURCE src/library/rekordbox/rekordbox_anlz.cpp
