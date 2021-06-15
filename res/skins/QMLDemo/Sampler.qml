@@ -34,7 +34,6 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: vuMeter.left
         anchors.bottom: parent.bottom
-        color: Theme.deckBackgroundColor
     }
 
     Skin.ControlMiniKnob {

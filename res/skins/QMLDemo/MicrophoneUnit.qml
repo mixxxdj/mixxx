@@ -72,7 +72,6 @@ Row {
     Skin.EmbeddedBackground {
         id: embedded
 
-        color: Theme.embeddedBackgroundColor
         height: parent.height
         width: 56
 

@@ -7,7 +7,6 @@ ComboBox {
     id: root
 
     background: Skin.EmbeddedBackground {
-        color: Theme.embeddedBackgroundColor
     }
 
     delegate: ItemDelegate {
@@ -57,7 +56,6 @@ ComboBox {
         }
 
         background: Skin.EmbeddedBackground {
-            color: Theme.embeddedBackgroundColor
         }
 
     }

@@ -7,4 +7,5 @@ Rectangle {
     border.width: 2
     border.color: Theme.deckBackgroundColor
     radius: 5
+    color: Theme.embeddedBackgroundColor
 }
