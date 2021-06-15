@@ -809,9 +809,9 @@ void ShoutConnection::updateMetaData() {
      */
 
 
-    // If we use either MP3 streaming or OGG streaming with dynamic update of
+    // If we use either MP3 streaming, AAC streaming or OGG streaming with dynamic update of
     // metadata being enabled, we want dynamic metadata changes
-    if (!m_custom_metadata && (m_format_is_mp3 || m_ogg_dynamic_update)) {
+    if (!m_custom_metadata && (m_format_is_mp3 || m_format_is_aac || m_ogg_dynamic_update)) {
         if (m_pMetaData != nullptr) {
 
             QString artist = m_pMetaData->getArtist();
