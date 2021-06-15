@@ -42,48 +42,7 @@ Item {
             unitNumber: 4
         }
 
-        Column {
-            Skin.ControlSlider {
-                width: 50
-                height: 26
-                orientation: Qt.Horizontal
-                group: "[Master]"
-                key: "duckStrength"
-                barColor: Theme.crossfaderBarColor
-                barStart: 1
-                fg: Theme.imgMicDuckingSliderHandle
-                bg: Theme.imgMicDuckingSlider
-            }
-
-            Skin.Button {
-                id: pflButton
-
-                text: {
-                    switch (duckingControl.value) {
-                    case 1:
-                        return "Auto";
-                    case 2:
-                        return "Manual";
-                    default:
-                        return "Off";
-                    }
-                }
-                activeColor: Theme.pflActiveButtonColor
-                highlight: {
-                    let value = duckingControl.value;
-                    return (value == 1 || value == 2);
-                }
-                onClicked: duckingControl.value = (duckingControl.value + 1) % 3
-
-                Mixxx.ControlProxy {
-                    id: duckingControl
-
-                    group: "[Master]"
-                    key: "talkoverDucking"
-                }
-
-            }
-
+        Skin.MicrophoneDuckingPanel {
         }
 
     }
