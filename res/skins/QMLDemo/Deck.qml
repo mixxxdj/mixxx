@@ -13,6 +13,20 @@ Item {
     property bool minimized: false
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
 
+    Drag.active: dragArea.drag.active
+    Drag.dragType: Drag.Automatic
+    Drag.supportedActions: Qt.CopyAction
+    Drag.mimeData: {
+        "mixxx/player": this.group
+    }
+
+    MouseArea {
+        id: dragArea
+
+        anchors.fill: root
+        drag.target: root
+    }
+
     Skin.SectionBackground {
         anchors.fill: parent
     }

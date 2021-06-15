@@ -21,6 +21,19 @@ Rectangle {
         return Qt.darker(root.deckPlayer.color, 2);
     }
     implicitHeight: gainKnob.height + 10
+    Drag.active: dragArea.drag.active
+    Drag.dragType: Drag.Automatic
+    Drag.supportedActions: Qt.CopyAction
+    Drag.mimeData: {
+        "mixxx/player": this.group
+    }
+
+    MouseArea {
+        id: dragArea
+
+        anchors.fill: root
+        drag.target: root
+    }
 
     Skin.SectionBackground {
         anchors.fill: parent
