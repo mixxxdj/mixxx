@@ -759,19 +759,19 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                     pDecodeBuffer); // verify the in/out parameter
 
             // Verify the decoded sample data for consistency
-            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getChannelCount() ==
-                    decFrameInfo.channels) {
+            const auto channelCount = mixxx::audio::ChannelCount(decFrameInfo.channels);
+            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getChannelCount() == channelCount) {
                 kLogger.critical() << "Corrupt or unsupported AAC file:"
                                    << "Unexpected number of channels"
-                                   << decFrameInfo.channels << "<>"
+                                   << channelCount << "<>"
                                    << getSignalInfo().getChannelCount();
                 break; // abort
             }
-            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getSampleRate() ==
-                    SINT(decFrameInfo.samplerate)) {
+            const auto sampleRate = mixxx::audio::SampleRate(decFrameInfo.samplerate);
+            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getSampleRate() == sampleRate) {
                 kLogger.critical()
                         << "Corrupt or unsupported AAC file:"
-                        << "Unexpected sample rate" << decFrameInfo.samplerate
+                        << "Unexpected sample rate" << sampleRate
                         << "<>" << getSignalInfo().getSampleRate();
                 break; // abort
             }
