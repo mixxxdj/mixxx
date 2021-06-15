@@ -6,6 +6,8 @@ import QtQuick.Layouts 1.12
 import "Theme"
 
 Item {
+    id: root
+
     property int unitNumber // required
 
     Skin.SectionBackground {
@@ -25,7 +27,8 @@ Item {
             Item {
                 id: effect
 
-                property string group: "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + (index + 1) + "]"
+                property int effectNumber: index + 1
+                property string group: "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + effectNumber + "]"
 
                 height: 50
                 Layout.fillWidth: true
@@ -56,6 +59,10 @@ Item {
                     // TODO: Add a way to retrieve effect names here
                     textRole: "display"
                     model: Mixxx.EffectsManager.visibleEffectsModel
+                    onActivated: {
+                        console.warn(1, root.unitNumber, effect.effectNumber, model.get(index).effectId);
+                        Mixxx.EffectsManager.loadEffect(1, root.unitNumber, effect.effectNumber, model.get(index).effectId);
+                    }
                 }
 
                 Skin.ControlMiniKnob {
