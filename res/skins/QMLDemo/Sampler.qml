@@ -46,7 +46,7 @@ Rectangle {
         width: 40
         group: root.group
         key: "pregain"
-        color: Theme.gainKnobColor
+        color: Theme.samplerColor
     }
 
     Skin.ControlButton {
@@ -54,7 +54,7 @@ Rectangle {
 
         anchors.top: embedded.top
         anchors.left: embedded.left
-        activeColor: Theme.gainKnobColor
+        activeColor: Theme.samplerColor
         width: 40
         height: 40
         text: "Play"
@@ -103,7 +103,7 @@ Rectangle {
             width: playPositionControl.value * parent.width
             height: parent.height
             radius: height / 2
-            color: Theme.gainKnobColor
+            color: Theme.samplerColor
 
             Mixxx.ControlProxy {
                 id: playPositionControl

@@ -21,6 +21,7 @@ QtObject {
     property color bpmSliderBarColor: green
     property color volumeSliderBarColor: blue
     property color gainKnobColor: blue
+    property color samplerColor: blue
     property color crossfaderOrientationColor: lightGray
     property color crossfaderBarColor: red
     property color toolbarBackgroundColor: darkGray2
