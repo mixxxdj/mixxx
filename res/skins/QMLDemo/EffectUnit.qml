@@ -37,7 +37,7 @@ Item {
                     anchors.bottom: parent.bottom
                     anchors.margins: 5
                     width: 40
-                    group: parent.group
+                    group: effect.group
                     key: "enabled"
                     toggleable: true
                     text: "ON"
@@ -65,7 +65,7 @@ Item {
                     anchors.margins: 5
                     arcStart: 0
                     width: 40
-                    group: parent.group
+                    group: effect.group
                     key: "meta"
                     color: Theme.effectColor
                 }
