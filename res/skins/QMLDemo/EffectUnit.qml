@@ -1,4 +1,5 @@
 import "." as Skin
+import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -53,7 +54,8 @@ Item {
                     anchors.right: effectMetaKnob.left
                     anchors.margins: 5
                     // TODO: Add a way to retrieve effect names here
-                    model: ["---", "Effect 1", "Effect 2", "Effect 3", "Effect 4"]
+                    textRole: "display"
+                    model: Mixxx.EffectsManager.visibleEffectsModel
                 }
 
                 Skin.ControlMiniKnob {

@@ -20,7 +20,7 @@ QmlVisibleEffectsModel::QmlVisibleEffectsModel(
         std::shared_ptr<EffectsManager> pEffectsManager,
         QObject* parent)
         : QAbstractListModel(parent), m_pEffectsManager(pEffectsManager) {
-    m_visibleEffectManifests = m_pEffectsManager->getVisibleEffectManifests();
+    slotVisibleEffectsUpdated();
     connect(m_pEffectsManager.get(),
             &EffectsManager::visibleEffectsUpdated,
             this,
@@ -28,14 +28,9 @@ QmlVisibleEffectsModel::QmlVisibleEffectsModel(
 }
 
 void QmlVisibleEffectsModel::slotVisibleEffectsUpdated() {
-    const QList<EffectManifestPointer> visibleEffectManifests =
-            m_pEffectsManager->getVisibleEffectManifests();
-    const auto firstMismatch = std::mismatch(visibleEffectManifests.begin(),
-            visibleEffectManifests.end(),
-            m_visibleEffectManifests.begin(),
-            [](const auto a, const auto b) { return a->id() == b->id(); });
-    Q_UNUSED(firstMismatch);
-    qWarning() << "first mismatched elements";
+    beginResetModel();
+    m_visibleEffectManifests = m_pEffectsManager->getVisibleEffectManifests();
+    endResetModel();
 }
 
 QVariant QmlVisibleEffectsModel::data(const QModelIndex& index, int role) const {

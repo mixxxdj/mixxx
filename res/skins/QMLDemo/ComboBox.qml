@@ -12,9 +12,10 @@ ComboBox {
     delegate: ItemDelegate {
         width: parent.width
         highlighted: root.highlightedIndex === index
+        text: root.textAt(index)
 
         contentItem: Text {
-            text: modelData
+            text: parent.text
             color: Theme.deckTextColor
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
