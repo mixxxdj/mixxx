@@ -24,7 +24,7 @@ MixxxControls.Knob {
         anchors.right: parent.right
         height: width * 7 / 6
         fillMode: Image.PreserveAspectFit
-        source: Theme.imgKnobShadow
+        source: Theme.imgKnobMiniShadow
     }
 
     background: Image {
@@ -34,12 +34,10 @@ MixxxControls.Knob {
         anchors.left: parent.left
         anchors.right: parent.right
         height: width
-        source: Theme.imgKnob
+        source: Theme.imgKnobMini
     }
 
     foreground: Item {
-        id: inidicator
-
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
