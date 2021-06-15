@@ -21,6 +21,8 @@ class QmlEffectsManagerProxy : public QObject {
             std::shared_ptr<EffectsManager> pEffectsManager,
             QObject* parent = nullptr);
 
+    Q_INVOKABLE void loadEffect(int rack, int unit, int effect, const QString& effectId);
+
   private:
     const std::shared_ptr<EffectsManager> m_pEffectsManager;
     QmlVisibleEffectsModel* m_pVisibleEffectsModel;
