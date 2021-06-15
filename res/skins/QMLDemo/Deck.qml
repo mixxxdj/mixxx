@@ -379,15 +379,9 @@ Item {
 
     }
 
-    DropArea {
+    Mixxx.PlayerDropArea {
         anchors.fill: parent
-        onDropped: {
-            if (drop.hasUrls) {
-                let url = drop.urls[0];
-                console.log("Dropped URL '" + url + "' on deck " + root.group);
-                root.deckPlayer.loadTrackFromLocationUrl(url);
-            }
-        }
+        group: root.group
     }
 
 }
