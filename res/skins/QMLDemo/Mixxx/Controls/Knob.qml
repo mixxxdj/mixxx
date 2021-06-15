@@ -22,8 +22,13 @@ Item {
     property alias arcWidth: arcPath.strokeWidth
     property alias arcStyle: arcPath.strokeStyle
     property alias arcStylePattern: arcPath.dashPattern
+    readonly property real valueCenter: (max - min) / 2
 
     signal turned(real value)
+
+    function angleFrom(targetValue) {
+        return targetValue * 2 * root.angle;
+    }
 
     Item {
         id: background
@@ -35,7 +40,7 @@ Item {
         id: foreground
 
         anchors.fill: parent
-        rotation: (root.value - (root.max - root.min) / 2) * 2 * root.angle
+        rotation: root.angleFrom(root.value - root.valueCenter)
     }
 
     Shape {
@@ -51,8 +56,8 @@ Item {
             fillColor: "transparent"
 
             PathAngleArc {
-                startAngle: -90 + root.angle * 2 * (root.arcStart - (root.max - root.min) / 2)
-                sweepAngle: (root.value - root.arcStart) * 2 * root.angle
+                startAngle: root.angleFrom(root.arcStart - root.valueCenter) - 90
+                sweepAngle: root.angleFrom(root.value - root.arcStart)
                 radiusX: root.arcRadius
                 radiusY: root.arcRadius
                 centerX: root.width / 2 + root.arcOffsetX
