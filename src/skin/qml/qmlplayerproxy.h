@@ -81,6 +81,7 @@ class QmlPlayerProxy : public QObject {
     void trackLoaded();
     void trackUnloaded();
     void trackChanged();
+    void cloneFromGroup(const QString& group);
 
     void albumChanged();
     void titleChanged();
