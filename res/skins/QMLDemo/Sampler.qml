@@ -59,16 +59,8 @@ Rectangle {
         height: 40
         text: "Play"
         group: root.group
-        key: "play"
-        highlight: playControl.value
-
-        Mixxx.ControlProxy {
-            id: playControl
-
-            group: root.group
-            key: "play_indicator"
-        }
-
+        key: "cue_gotoandplay"
+        highlight: playControl.playing
     }
 
     Text {
@@ -140,6 +132,40 @@ Rectangle {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: gainKnob.left
+    }
+
+    Mixxx.ControlProxy {
+        id: playControl
+
+        readonly property bool playing: value != 0
+
+        function stop() {
+            value = 0;
+        }
+
+        group: root.group
+        key: "play"
+    }
+
+    Mixxx.ControlProxy {
+        id: ejectControl
+
+        function trigger() {
+            value = 1;
+            value = 0;
+        }
+
+        group: root.group
+        key: "eject"
+    }
+
+    TapHandler {
+        onDoubleTapped: {
+            if (playControl.playing)
+                playControl.stop();
+            else
+                ejectControl.trigger();
+        }
     }
 
     Mixxx.PlayerDropArea {
