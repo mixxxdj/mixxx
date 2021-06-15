@@ -3,13 +3,12 @@
 
 #include "effects/effectsmanager.h"
 
-QT_FORWARD_DECLARE_CLASS(QAbstractListModel);
-
 namespace mixxx {
 namespace skin {
 namespace qml {
 
 class QmlVisibleEffectsModel;
+class QmlEffectSlotProxy;
 
 class QmlEffectsManagerProxy : public QObject {
     Q_OBJECT
@@ -21,7 +20,8 @@ class QmlEffectsManagerProxy : public QObject {
             std::shared_ptr<EffectsManager> pEffectsManager,
             QObject* parent = nullptr);
 
-    Q_INVOKABLE void loadEffect(int rack, int unit, int effect, const QString& effectId);
+    Q_INVOKABLE mixxx::skin::qml::QmlEffectSlotProxy* getEffectSlot(
+            int rackNumber, int unitNumber, int effectNumber) const;
 
   private:
     const std::shared_ptr<EffectsManager> m_pEffectsManager;

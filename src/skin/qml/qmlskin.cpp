@@ -8,6 +8,7 @@
 #include "skin/qml/asyncimageprovider.h"
 #include "skin/qml/qmlconfigproxy.h"
 #include "skin/qml/qmlcontrolproxy.h"
+#include "skin/qml/qmleffectslotproxy.h"
 #include "skin/qml/qmleffectsmanagerproxy.h"
 #include "skin/qml/qmlplayermanagerproxy.h"
 #include "skin/qml/qmlplayerproxy.h"
@@ -151,6 +152,12 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
             "VisibleEffectsModel",
             "VisibleEffectsModel objects can't be created directly, please use "
             "Mixxx.EffectsManager.visibleEffectsModel");
+    qmlRegisterUncreatableType<QmlEffectSlotProxy>("Mixxx",
+            0,
+            1,
+            "EffectSlotProxy",
+            "EffectSlotProxy objects can't be created directly, please use "
+            "Mixxx.EffectsManager.getEffectSlot(rackNumber, unitNumber, effectNumber)");
 
     qmlRegisterSingletonType<QmlPlayerManagerProxy>("Mixxx",
             0,
