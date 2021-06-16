@@ -2271,13 +2271,7 @@ find_package(MP4)
 find_package(MP4v2)
 # It is enabled by default on Linux only, because other targets have other
 # solutions. It requires MP4 or MP4v2.
-# Note, we use if() here, because the following line does not work with cmake 3.16.3
-# default_option(FAAD "FAAD AAC audio file decoder support" "UNIX;NOT APPLE;(MP4_FOUND OR MP4v2_FOUND)")
-if (UNIX AND NOT APPLE AND (MP4_FOUND OR MP4v2_FOUND))
-  option(FAAD "FAAD AAC audio file decoder support" ON)
-else()
-  option(FAAD "FAAD AAC audio file decoder support" OFF)
-endif()
+default_option(FAAD "FAAD AAC audio file decoder support" "UNIX;NOT APPLE;MP4_FOUND OR MP4v2_FOUND")
 if(FAAD)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
     message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2 with development headers.")
