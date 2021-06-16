@@ -684,7 +684,8 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             DEBUG_ASSERT(isStreamValid(m_madStream));
 
 #ifndef QT_NO_DEBUG_OUTPUT
-            const SINT madFrameChannelCount = MAD_NCHANNELS(&m_madFrame.header);
+            const auto madFrameChannelCount =
+                    mixxx::audio::ChannelCount{MAD_NCHANNELS(&m_madFrame.header)};
             if (madFrameChannelCount != getSignalInfo().getChannelCount()) {
                 kLogger.warning() << "MP3 frame header with mismatching number of channels"
                                   << madFrameChannelCount << "<>" << getSignalInfo().getChannelCount()
@@ -696,7 +697,8 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             // Once decoded the frame is synthesized to PCM samples
             mad_synth_frame(&m_madSynth, &m_madFrame);
 #ifndef QT_NO_DEBUG_OUTPUT
-            const SINT madSynthSampleRate = m_madSynth.pcm.samplerate;
+            const auto madSynthSampleRate =
+                    mixxx::audio::SampleRate{m_madSynth.pcm.samplerate};
             if (madSynthSampleRate != getSignalInfo().getSampleRate()) {
                 kLogger.warning() << "Reading MP3 data with different sample rate"
                                   << madSynthSampleRate << "<>" << getSignalInfo().getSampleRate()
