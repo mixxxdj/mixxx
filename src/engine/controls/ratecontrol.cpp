@@ -537,8 +537,8 @@ void RateControl::processTempRate(const int bufferSamples) {
         } else if (m_eRateRampMode == RampMode::Linear) {
             if (!m_bTempStarted) {
                 m_bTempStarted = true;
-                double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
-                m_dRateTempRampChange = (latrate / ((double)m_iRateRampSensitivity / 100.));
+                double latrate = bufferSamples / m_pSampleRate->get();
+                m_dRateTempRampChange = latrate / (m_iRateRampSensitivity / 100.0);
             }
 
             switch (rampDirection) {
