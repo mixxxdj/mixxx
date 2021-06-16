@@ -439,32 +439,32 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
 
-    double deck1RateRange = m_rateRangeControls[0]->get();
-    int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100.0));
+    double rateRange = m_rateRangeControls[0]->get();
+    int index = ComboBoxRateRange->findData(static_cast<int>(rateRange * 100.0));
     if (index == -1) {
-        ComboBoxRateRange->addItem(QString::number(deck1RateRange * 100.).append("%"),
-                                   deck1RateRange * 100.);
+        ComboBoxRateRange->addItem(QString::number(rateRange * 100.).append("%"),
+                rateRange * 100.);
     }
     ComboBoxRateRange->setCurrentIndex(index);
 
-    double deck1RateDirection = m_rateDirectionControls[0]->get();
-    checkBoxInvertSpeedSlider->setChecked(deck1RateDirection == kRateDirectionInverted);
+    double rateDirection = m_rateDirectionControls[0]->get();
+    checkBoxInvertSpeedSlider->setChecked(rateDirection == kRateDirectionInverted);
 
-    double deck1CueMode = m_cueControls[0]->get();
-    index = ComboBoxCueMode->findData(static_cast<int>(deck1CueMode));
+    double cueMode = m_cueControls[0]->get();
+    index = ComboBoxCueMode->findData(static_cast<int>(cueMode));
     ComboBoxCueMode->setCurrentIndex(index);
 
-    KeylockMode deck1KeylockMode =
-        static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0]->get()));
-    if (deck1KeylockMode == KeylockMode::LockCurrentKey) {
+    KeylockMode keylockMode =
+            static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0]->get()));
+    if (keylockMode == KeylockMode::LockCurrentKey) {
         radioButtonCurrentKey->setChecked(true);
     } else {
         radioButtonOriginalKey->setChecked(true);
     }
 
-    KeyunlockMode deck1KeyunlockMode =
-        static_cast<KeyunlockMode>(static_cast<int>(m_keyunlockModeControls[0]->get()));
-    if (deck1KeyunlockMode == KeyunlockMode::KeepLockedKey) {
+    KeyunlockMode keyunlockMode =
+            static_cast<KeyunlockMode>(static_cast<int>(m_keyunlockModeControls[0]->get()));
+    if (keyunlockMode == KeyunlockMode::KeepLockedKey) {
         radioButtonKeepUnlockedKey->setChecked(true);
     } else {
         radioButtonResetUnlockedKey->setChecked(true);
