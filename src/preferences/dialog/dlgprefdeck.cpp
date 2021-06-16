@@ -342,22 +342,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
                     MIXXX_MANUAL_CUE_MODES_URL));
 
     //
-    // Ramping Temporary Rate Change configuration
+    // Speed / Pitch reset configuration
     //
-
-    // Set Ramp Rate On or Off
-    connect(radioButtonRateRampModeLinear,
-            &QRadioButton::toggled,
-            this,
-            &DlgPrefDeck::slotRateRampingModeLinearButton);
-    m_bRateRamping = static_cast<RateControl::RampMode>(
-        m_pConfig->getValue(ConfigKey("[Controls]", "RateRamp"),
-                            static_cast<int>(kDefaultRampingMode)));
-    if (m_bRateRamping == RateControl::RampMode::Linear) {
-        radioButtonRateRampModeLinear->setChecked(true);
-    } else {
-        radioButtonRateRampModeStepping->setChecked(true);
-    }
 
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
@@ -376,6 +362,10 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
     connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
 
+    //
+    // Ramping Temporary Rate Change configuration
+    //
+
     connect(SliderRateRampSensitivity,
             QOverload<int>::of(&QAbstractSlider::valueChanged),
             SpinBoxRateRampSensitivity,
@@ -384,6 +374,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
             QOverload<int>::of(&QSpinBox::valueChanged),
             SliderRateRampSensitivity,
             QOverload<int>::of(&QAbstractSlider::setValue));
+    // Enable/disable permanent rate spinboxes when smooth ramping is selected
     connect(radioButtonRateRampModeLinear,
             &QRadioButton::toggled,
             labelSpeedRampSensitivity,
@@ -396,6 +387,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
             &QRadioButton::toggled,
             SpinBoxRateRampSensitivity,
             &QWidget::setEnabled);
+    // Enable/disable temporary rate spinboxes when abrupt ramping is selected
     connect(radioButtonRateRampModeStepping,
             &QRadioButton::toggled,
             labelSpeedTemporary,
@@ -408,6 +400,19 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
             &QRadioButton::toggled,
             spinBoxTemporaryRateFine,
             &QWidget::setEnabled);
+    // Set Ramp Rate On or Off
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            this,
+            &DlgPrefDeck::slotRateRampingModeLinearButton);
+    m_bRateRamping = static_cast<RateControl::RampMode>(
+            m_pConfig->getValue(ConfigKey("[Controls]", "RateRamp"),
+                    static_cast<int>(kDefaultRampingMode)));
+    if (m_bRateRamping == RateControl::RampMode::Linear) {
+        radioButtonRateRampModeLinear->setChecked(true);
+    } else {
+        radioButtonRateRampModeStepping->setChecked(true);
+    }
 
     slotUpdate();
 }
@@ -478,6 +483,12 @@ void DlgPrefDeck::slotUpdate() {
     } else if (reset == BaseTrackPlayer::RESET_NONE) {
         checkBoxResetPitch->setChecked(false);
         checkBoxResetSpeed->setChecked(false);
+    }
+
+    if (m_bRateRamping == RateControl::RampMode::Linear) {
+        radioButtonRateRampModeLinear->setChecked(true);
+    } else {
+        radioButtonRateRampModeStepping->setChecked(true);
     }
 
     SliderRateRampSensitivity->setValue(
