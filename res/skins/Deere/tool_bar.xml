@@ -342,6 +342,7 @@
             <SetVariable name="state_1">icon/ic_broadcast_1_32px.svg</SetVariable>
             <SetVariable name="state_2">icon/ic_broadcast_2_32px.svg</SetVariable>
             <SetVariable name="state_3">icon/ic_broadcast_3_32px.svg</SetVariable>
+            <SetVariable name="state_3">icon/ic_broadcast_4_32px.svg</SetVariable>
             <SetVariable name="left_connection_control">[Shoutcast],enabled</SetVariable>
             <SetVariable name="display_connection_control">[Shoutcast],status</SetVariable>
           </Template>
