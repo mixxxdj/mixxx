@@ -19,12 +19,12 @@ QStringList trackColumnValues(
     QStringList columnValues;
     columnValues.reserve(6);
     columnValues
-            << trackMetadata.getTrackInfo().getYear()
-            << trackMetadata.getAlbumInfo().getTitle()
-            << trackMetadata.getAlbumInfo().getArtist()
-            << trackNumberAndTotal
             << trackMetadata.getTrackInfo().getTitle()
-            << trackMetadata.getTrackInfo().getArtist();
+            << trackMetadata.getTrackInfo().getArtist()
+            << trackMetadata.getAlbumInfo().getTitle()
+            << trackMetadata.getTrackInfo().getYear()
+            << trackNumberAndTotal
+            << trackMetadata.getAlbumInfo().getArtist();
     return columnValues;
 }
 
@@ -36,12 +36,14 @@ QStringList trackReleaseColumnValues(
     QStringList columnValues;
     columnValues.reserve(6);
     columnValues
-            << trackRelease.date
-            << trackRelease.albumTitle
-            << trackRelease.albumArtist
-            << trackNumberAndTotal
             << trackRelease.title
-            << trackRelease.artist;
+            << trackRelease.artist
+            << trackRelease.albumTitle
+            << trackRelease.date
+            << trackNumberAndTotal
+            << trackRelease.albumArtist
+
+            ;
     return columnValues;
 }
 
@@ -86,12 +88,12 @@ void DlgTagFetcher::init() {
     connect(&m_tagFetcher, &TagFetcher::networkError, this, &DlgTagFetcher::slotNetworkResult);
 
     // Resize columns, this can't be set in the ui file
-    results->setColumnWidth(0, 50);  // Year column
-    results->setColumnWidth(1, 160); // Album column
-    results->setColumnWidth(2, 160); // Album artist column
-    results->setColumnWidth(3, 50);  // Track (numbers) column
-    results->setColumnWidth(4, 160); // Title column
-    results->setColumnWidth(5, 160); // Artist column
+    results->setColumnWidth(0, 160); // Title column
+    results->setColumnWidth(1, 160); // Artist column
+    results->setColumnWidth(2, 160); // Album column
+    results->setColumnWidth(3, 50);  // Year column
+    results->setColumnWidth(4, 50);  // Track (numbers) column
+    results->setColumnWidth(5, 160); // Album artist column
 }
 
 void DlgTagFetcher::slotNext() {
