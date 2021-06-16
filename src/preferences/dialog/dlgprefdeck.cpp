@@ -284,53 +284,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     }
 
     //
-    // Rate buttons configuration
-    //
-    connect(spinBoxTemporaryRateCoarse,
-            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            this,
-            &DlgPrefDeck::slotRateTempCoarseSpinbox);
-    connect(spinBoxTemporaryRateFine,
-            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            this,
-            &DlgPrefDeck::slotRateTempFineSpinbox);
-    connect(spinBoxPermanentRateCoarse,
-            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            this,
-            &DlgPrefDeck::slotRatePermCoarseSpinbox);
-    connect(spinBoxPermanentRateFine,
-            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            this,
-            &DlgPrefDeck::slotRatePermFineSpinbox);
-
-    m_dRateTempCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempLeft"),
-            kDefaultTemporaryRateChangeCoarse);
-    m_dRateTempFine = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempRight"),
-            kDefaultTemporaryRateChangeFine);
-    m_dRatePermCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermLeft"),
-            kDefaultPermanentRateChangeCoarse);
-    m_dRatePermFine = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermRight"),
-            kDefaultPermanentRateChangeFine);
-
-    spinBoxTemporaryRateCoarse->setValue(m_dRateTempCoarse);
-    spinBoxTemporaryRateFine->setValue(m_dRateTempFine);
-    spinBoxPermanentRateCoarse->setValue(m_dRatePermCoarse);
-    spinBoxPermanentRateFine->setValue(m_dRatePermFine);
-
-    RateControl::setTemporaryRateChangeCoarseAmount(m_dRateTempCoarse);
-    RateControl::setTemporaryRateChangeFineAmount(m_dRateTempFine);
-    RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
-    RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
-
-    // Rate Ramp Sensitivity
-    m_iRateRampSensitivity = m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"), kDefaultRateRampSensitivity);
-    SliderRateRampSensitivity->setValue(m_iRateRampSensitivity);
-    connect(SliderRateRampSensitivity,
-            &QSlider::valueChanged,
-            this,
-            &DlgPrefDeck::slotRateRampSensitivitySlider);
-
-    //
     // Cue Mode
     //
 
@@ -366,6 +319,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     // Ramping Temporary Rate Change configuration
     //
 
+    // Rate Ramp Sensitivity slider & spinbox
     connect(SliderRateRampSensitivity,
             QOverload<int>::of(&QAbstractSlider::valueChanged),
             SpinBoxRateRampSensitivity,
@@ -374,6 +328,16 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
             QOverload<int>::of(&QSpinBox::valueChanged),
             SliderRateRampSensitivity,
             QOverload<int>::of(&QAbstractSlider::setValue));
+
+    m_iRateRampSensitivity =
+            m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"),
+                    kDefaultRateRampSensitivity);
+    SliderRateRampSensitivity->setValue(m_iRateRampSensitivity);
+    connect(SliderRateRampSensitivity,
+            &QSlider::valueChanged,
+            this,
+            &DlgPrefDeck::slotRateRampSensitivitySlider);
+
     // Enable/disable permanent rate spinboxes when smooth ramping is selected
     connect(radioButtonRateRampModeLinear,
             &QRadioButton::toggled,
@@ -413,6 +377,43 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     } else {
         radioButtonRateRampModeStepping->setChecked(true);
     }
+
+    // Rate buttons configuration
+    connect(spinBoxTemporaryRateCoarse,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefDeck::slotRateTempCoarseSpinbox);
+    connect(spinBoxTemporaryRateFine,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefDeck::slotRateTempFineSpinbox);
+    connect(spinBoxPermanentRateCoarse,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefDeck::slotRatePermCoarseSpinbox);
+    connect(spinBoxPermanentRateFine,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefDeck::slotRatePermFineSpinbox);
+
+    m_dRateTempCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempLeft"),
+            kDefaultTemporaryRateChangeCoarse);
+    m_dRateTempFine = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempRight"),
+            kDefaultTemporaryRateChangeFine);
+    m_dRatePermCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermLeft"),
+            kDefaultPermanentRateChangeCoarse);
+    m_dRatePermFine = m_pConfig->getValue(ConfigKey("[Controls]", "RatePermRight"),
+            kDefaultPermanentRateChangeFine);
+
+    spinBoxTemporaryRateCoarse->setValue(m_dRateTempCoarse);
+    spinBoxTemporaryRateFine->setValue(m_dRateTempFine);
+    spinBoxPermanentRateCoarse->setValue(m_dRatePermCoarse);
+    spinBoxPermanentRateFine->setValue(m_dRatePermFine);
+
+    RateControl::setTemporaryRateChangeCoarseAmount(m_dRateTempCoarse);
+    RateControl::setTemporaryRateChangeFineAmount(m_dRateTempFine);
+    RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
+    RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
     slotUpdate();
 }
