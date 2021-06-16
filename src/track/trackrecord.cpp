@@ -148,6 +148,11 @@ bool TrackRecord::replaceMetadataFromSource(
         return false;
     }
     DEBUG_ASSERT(sourceSynchronizedAt.timeSpec() == Qt::UTC);
+    if (m_streamInfoFromSource) {
+        // Preserve precise stream info if available, i.e. discard the
+        // audio properties that are also stored as track metadata.
+        importedMetadata.updateStreamInfoFromSource(*m_streamInfoFromSource);
+    }
     bool modified = false;
     if (getMetadata() != importedMetadata) {
         setMetadata(std::move(importedMetadata));

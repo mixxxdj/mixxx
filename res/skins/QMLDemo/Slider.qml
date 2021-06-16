@@ -20,7 +20,7 @@ MixxxControls.Slider {
         id: handleImage
 
         visible: false
-        source: "images/slider_handle.svg"
+        source: Theme.imgSliderHandle
         fillMode: Image.PreserveAspectFit
     }
 
@@ -49,7 +49,7 @@ MixxxControls.Slider {
         id: backgroundImage
 
         anchors.fill: parent
-        anchors.margins: 10
+        anchors.margins: root.barMargin
     }
 
 }

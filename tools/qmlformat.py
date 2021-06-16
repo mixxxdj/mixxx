@@ -10,17 +10,25 @@ import sys
 import re
 
 QMLFORMAT_MISSING_MESSAGE = """
-qmlformat is not installed or not in your $PATH. It is included in Qt 5.15
-and later. If that Qt version is not available on your system, please
-use the SKIP environment variable when committing:
-
-    $ SKIP=qmlformat git commit
+qmlformat is not installed or not in your $PATH, please install.
 """
 
 
 def main(argv=None):
     qmlformat_executable = shutil.which("qmlformat")
     if not qmlformat_executable:
+        # verify if qmlformat is available on this machine
+        moc_executable = shutil.which("moc")
+        if moc_executable:
+            moc_version = subprocess.check_output(
+                (moc_executable, "-v")
+            ).strip()
+            v = re.search("moc ([0-9]*)\\.([0-9]*)\\.[0-9]*", str(moc_version))
+            if v:
+                version = (int(v.group(1)), int(v.group(2)))
+                if version < (5, 15):
+                    # Succeed if a Qt Version < 5.15 is used without qmlformat
+                    return 0
         print(QMLFORMAT_MISSING_MESSAGE.strip(), file=sys.stderr)
         return 1
 

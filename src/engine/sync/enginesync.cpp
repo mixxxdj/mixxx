@@ -75,6 +75,13 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     default:;
     }
 
+    Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
+    if (pOnlyPlayer) {
+        // This resets the user offset, so that if this deck gets used as the params syncable
+        // it will have that offset removed.
+        pOnlyPlayer->notifyUniquePlaying();
+    }
+
     // Second, figure out what Syncable should be used to initialize the master
     // parameters, if any. Usually this is the new master. (Note, that pointer might be null!)
     Syncable* pParamsSyncable = m_pMasterSyncable;
@@ -96,9 +103,6 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         }
     }
 
-    if (noPlayingFollowers() && m_pMasterSyncable) {
-        m_pMasterSyncable->notifyOnlyPlayingSyncable();
-    }
 }
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
@@ -350,11 +354,15 @@ void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) 
 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
         activateMaster(newMaster, SYNC_MASTER_SOFT);
-    }
-
-    if (noPlayingFollowers() && m_pMasterSyncable) {
-        m_pMasterSyncable->notifyOnlyPlayingSyncable();
-        setMasterParams(m_pMasterSyncable);
+        setMasterParams(newMaster);
+    } else {
+        Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
+        if (pOnlyPlayer) {
+            // Even if we didn't change master, if there is only one player (us), then we should
+            // reinit the beat distance.
+            pOnlyPlayer->notifyUniquePlaying();
+            setMasterBeatDistance(pOnlyPlayer, pOnlyPlayer->getBeatDistance());
+        }
     }
 
     pSyncable->requestSync();
@@ -584,6 +592,11 @@ void EngineSync::setMasterInstantaneousBpm(Syncable* pSource, double bpm) {
 }
 
 void EngineSync::setMasterBeatDistance(Syncable* pSource, double beatDistance) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::setMasterBeatDistance"
+                        << (pSource ? pSource->getGroup() : "null")
+                        << beatDistance;
+    }
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterBeatDistance(beatDistance);
     }
@@ -597,35 +610,68 @@ void EngineSync::setMasterBeatDistance(Syncable* pSource, double beatDistance) {
 }
 
 void EngineSync::setMasterParams(Syncable* pSource) {
-    const double beatDistance = pSource->getBeatDistance();
+    // Important note! Because of the way sync works, the new master is usually not the same
+    // as the Syncable setting the master parameters (here, pSource). Notify the proper Syncable
+    // so it can prepare itself.  (This is a hack to undo half/double math so that we initialize
+    // based on un-multiplied bpm values).
+    pSource->notifyMasterParamSource();
+
+    double beatDistance = pSource->getBeatDistance();
+    if (!pSource->isPlaying()) {
+        // If the params source is not playing, but other syncables are, then we are a stopped
+        // explicit Master and we should not initialize the beat distance.  Take it from the
+        // internal clock instead, because that will be up to date with the playing deck(s).
+        bool playingSyncables = false;
+        for (Syncable* pSyncable : qAsConst(m_syncables)) {
+            if (pSyncable == pSource) {
+                continue;
+            }
+            if (!pSyncable->isSynchronized()) {
+                continue;
+            }
+            if (pSyncable->isPlaying()) {
+                playingSyncables = true;
+                break;
+            }
+        }
+        if (playingSyncables) {
+            beatDistance = m_pInternalClock->getBeatDistance();
+        }
+    }
     const double baseBpm = pSource->getBaseBpm();
     double bpm = pSource->getBpm();
     if (bpm <= 0) {
         bpm = baseBpm;
     }
-    // qDebug() << "BaseSyncableListener::setMasterParams, source is"
-    //          << pSource->getGroup() << beatDistance << baseBpm << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "BaseSyncableListener::setMasterParams, source is"
+                        << pSource->getGroup() << beatDistance << baseBpm << bpm;
+    }
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterParams(beatDistance, baseBpm, bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
-        if (pSyncable == pSource || !pSyncable->isSynchronized()) {
+        if (!pSyncable->isSynchronized()) {
             continue;
         }
         pSyncable->setMasterParams(beatDistance, baseBpm, bpm);
     }
 }
 
-bool EngineSync::noPlayingFollowers() const {
+Syncable* EngineSync::getUniquePlayingSyncedDeck() const {
+    Syncable* onlyPlaying = nullptr;
     for (Syncable* pSyncable : m_syncables) {
         if (!pSyncable->isSynchronized()) {
             continue;
         }
 
-        if (pSyncable->isPlaying() && pSyncable->isAudible() &&
-                isFollower(pSyncable->getSyncMode())) {
-            return false;
+        if (pSyncable->isPlaying()) {
+            if (!onlyPlaying) {
+                onlyPlaying = pSyncable;
+            } else {
+                return nullptr;
+            }
         }
     }
-    return true;
+    return onlyPlaying;
 }

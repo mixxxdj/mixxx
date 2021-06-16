@@ -81,7 +81,7 @@ Popup {
         anchors.fill: parent
         horizontalTileMode: BorderImage.Stretch
         verticalTileMode: BorderImage.Stretch
-        source: "images/button.svg"
+        source: Theme.imgPopupBackground
 
         border {
             top: 10

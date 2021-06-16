@@ -1,35 +1,50 @@
+import "." as Skin
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
-Row {
+Item {
     id: mixer
 
     property string leftDeckGroup // required
     property string rightDeckGroup // required
     property bool show4decks: false
 
-    spacing: 5
+    implicitWidth: content.width + 10
+    implicitHeight: content.height + 10
 
-    EqColumn {
-        group: root.leftDeckGroup
+    Skin.SectionBackground {
+        anchors.fill: parent
     }
 
-    MixerColumn {
-        width: 56
-        height: parent.height
-        group: root.leftDeckGroup
-    }
+    Row {
+        id: content
 
-    MixerColumn {
-        width: 56
-        height: parent.height
-        group: root.rightDeckGroup
-    }
+        spacing: 5
+        anchors.centerIn: parent
+        anchors.margins: 5
 
-    EqColumn {
-        width: 56
-        height: parent.height
-        group: root.rightDeckGroup
+        EqColumn {
+            group: root.leftDeckGroup
+        }
+
+        MixerColumn {
+            width: 56
+            height: parent.height
+            group: root.leftDeckGroup
+        }
+
+        MixerColumn {
+            width: 56
+            height: parent.height
+            group: root.rightDeckGroup
+        }
+
+        EqColumn {
+            width: 56
+            height: parent.height
+            group: root.rightDeckGroup
+        }
+
     }
 
 }

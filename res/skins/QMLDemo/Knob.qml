@@ -24,7 +24,7 @@ MixxxControls.Knob {
         anchors.right: parent.right
         height: width * 7 / 6
         fillMode: Image.PreserveAspectFit
-        source: "images/knob_shadow.svg"
+        source: Theme.imgKnobShadow
     }
 
     background: Image {
@@ -34,7 +34,7 @@ MixxxControls.Knob {
         anchors.left: parent.left
         anchors.right: parent.right
         height: width
-        source: "images/knob.svg"
+        source: Theme.imgKnob
     }
 
     foreground: Item {

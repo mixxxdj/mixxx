@@ -245,7 +245,7 @@ WSearchLineEdit,
     min-width: 1px;
     max-width: 1px;
     margin: 2px 1px;
-    background: url(skin:/classic/style/fx_separator.svg) no-repeat center center;
+    image: url(skin:/classic/style/fx_separator.svg) no-repeat center center;
   }
   #FxSlotSeparatorH {
     min-height: 2px;
@@ -1314,7 +1314,7 @@ WPushButton#PlayIndicator,
 WPushButton#CueDeck,
 #PlayCueMini WPushButton,
 WPushButton#LoopActivate,
-#RateControls WPushButton,
+WPushButton#RateControls WPushButton,
 WPushButton#SyncDeck,
 WPushButton#SyncLeader,
 WPushButton#SyncSampler,
@@ -1378,10 +1378,17 @@ WPushButton#SkinSettingsToggle[displayValue="0"] {
   background-color: #262626;
 }
 
+/* Orange for 'partially active' status */
+#SyncLeader[value="1"] {
+background-color: #db7700;
+}
+
 /* Red for 'active' status */
 #BeatgridControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
-#SyncDeck[value="1"], #SyncSampler[displayValue="1"],
+#SyncDeck[value="1"],
+#SyncLeader[value="2"],
+#SyncSampler[displayValue="1"],
 WPushButton#PlayDeck[displayValue="1"],
 WPushButton#PlayDeckMini[displayValue="1"],
 WPushButton#PlaySampler[displayValue="1"],
@@ -1662,7 +1669,7 @@ WPushButton#SamplerExpand[displayValue="0"],
   }
 
 #SyncLeader {
-  background: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
+  image: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
   }
 
   #SyncSampler {
@@ -2295,27 +2302,26 @@ WLibrarySidebar::branch:closed:has-children:!has-siblings:!selected,
 WLibrarySidebar::branch:closed:has-children:has-siblings:!selected {
 /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
   border-image: none;
-  /* TODO try if oversized icon would be upscaled */
-  image: url(skin:/classic/style/library_branch_closed_grey.png);
+  image: url(skin:/classic/style/library_branch_closed.svg);
   }
   /* closed, selected */
   WLibrarySidebar::branch:closed:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/classic/style/library_branch_closed_selected_white.png);
+    image: url(skin:/classic/style/library_branch_closed_selected.svg);
     background-color: #5e4507;
   }
 /* open */
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
   border-image: none;
-  image: url(skin:/classic/style/library_branch_open_grey.png);
+  image: url(skin:/classic/style/library_branch_open.svg);
   }
   /* open, selected */
   WLibrarySidebar::branch:open:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:open:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/classic/style/library_branch_open_selected_white.png);
+    image: url(skin:/classic/style/library_branch_open_selected.svg);
     background-color: #5e4507;
     }
   /* space left of selected child item */
@@ -2333,22 +2339,17 @@ WLibrarySidebar::branch:open:has-children:has-siblings {
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
 QToolTip,
+#MainMenu QMenu,
 WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
 WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea,
 QLineEdit QMenu,
 WCueMenuPopup,
-WCoverArtMenu {
-  padding: 3px;
-  border: 1px solid #888;
-  border-radius: 2px;
-}
-#MainMenu QMenu {
-  padding: 0.08em;
+WCoverArtMenu,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox QAbstractScrollArea {
   border: 1px solid #888;
   border-radius: 2px;
 }
@@ -2422,10 +2423,10 @@ WEffectSelector::item:selected,
     background-color: #2a1e03;
     color: #fff;
     }
-
-/* disabled menu item and checkbox */
+/* disabled menu items and checkboxes */
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
+WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
@@ -2500,6 +2501,7 @@ WTrackTableView::indicator {
   WTrackTableViewHeader QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
