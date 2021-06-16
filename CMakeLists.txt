@@ -210,10 +210,11 @@ if(MSVC)
         string(REPLACE "/INCREMENTAL" "/INCREMENTAL:NO" CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
       endif()
       # Note: CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
-    elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-      # Settings for MinSizeRel builds
     elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-      # Settings for Release builds
+      # Reduce the size of the binary in Release builds
+      # Do not use /OPT:ICF because it has no effect.
+      # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
+      add_link_options(/OPT:REF)
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
