@@ -130,6 +130,7 @@ endif()
 #
 
 set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy)")
+set_property(CACHE OPTIMIZE PROPERTY STRINGS "off" "portable" "native" "legacy")
 string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
 
