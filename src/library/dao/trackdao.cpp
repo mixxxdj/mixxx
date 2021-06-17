@@ -1213,6 +1213,7 @@ bool setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, Tr
     // if the column value is NULL and then converts to 0 (zero). This
     // is NOT desired and therefore we MUST USE QVariant::isNull() instead!
     if (!value.isNull() && value.canConvert<quint64>()) {
+        DEBUG_ASSERT(value.isValid());
         const quint64 msecsSinceEpoch = qvariant_cast<quint64>(value);
         sourceSynchronizedAt.setTimeSpec(Qt::UTC);
         sourceSynchronizedAt.setMSecsSinceEpoch(msecsSinceEpoch);
