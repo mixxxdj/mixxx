@@ -76,7 +76,16 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
 };
 
 inline QDateTime getSourceSynchronizedAt(const QFileInfo& fileInfo) {
-    return fileInfo.lastModified().toUTC();
+    const QDateTime lastModifiedUtc = fileInfo.lastModified().toUTC();
+    // Ignore bogus values like 1970-01-01T00:00:00.000 UTC
+    // that are obviously incorrect and don't provide any
+    // information.
+    if (lastModifiedUtc.isValid() &&
+            // Only defined if valid
+            lastModifiedUtc.toMSecsSinceEpoch() == 0) {
+        return QDateTime{};
+    }
+    return lastModifiedUtc;
 }
 
 } // anonymous namespace
