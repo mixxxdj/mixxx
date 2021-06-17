@@ -29,7 +29,7 @@ constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
-const QString kStrScaleFactor = QStringLiteral("ScaleFactor");
+const QString kScaleFactorConfigKey = QStringLiteral("ScaleFactor");
 
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
     auto coreServices = std::make_shared<mixxx::CoreServices>(args);
@@ -67,8 +67,8 @@ void adjustScaleFactor(CmdlineArgs* pArgs) {
         QString strScaleFactor;
         QString line = in.readLine();
         while (!line.isNull()) {
-            if (line.startsWith(kStrScaleFactor)) {
-                strScaleFactor = line.mid(kStrScaleFactor.size() + 1);
+            if (line.startsWith(kScaleFactorConfigKey)) {
+                strScaleFactor = line.mid(kScaleFactorConfigKey.size() + 1);
                 break;
             }
             line = in.readLine();
