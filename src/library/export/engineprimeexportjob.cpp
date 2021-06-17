@@ -151,8 +151,12 @@ void exportMetadata(djinterop::database* pDatabase,
     snapshot.comment = pTrack->getComment().toStdString();
     snapshot.composer = pTrack->getComposer().toStdString();
     snapshot.key = toDjinteropKey(pTrack->getKey());
-    int64_t lastModifiedMillisSinceEpoch =
-            pTrack->getFileInfo().lastModified().toMSecsSinceEpoch();
+    int64_t lastModifiedMillisSinceEpoch = 0;
+    const QDateTime fileLastModified = pTrack->getFileInfo().lastModified();
+    if (fileLastModified.isValid()) {
+        // Only defined if valid
+        lastModifiedMillisSinceEpoch = fileLastModified.toMSecsSinceEpoch();
+    }
     std::chrono::system_clock::time_point lastModifiedAt{
             std::chrono::milliseconds{lastModifiedMillisSinceEpoch}};
     snapshot.last_modified_at = lastModifiedAt;

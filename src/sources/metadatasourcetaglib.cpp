@@ -80,7 +80,9 @@ inline QDateTime getSourceSynchronizedAt(const QFileInfo& fileInfo) {
     // Ignore bogus values like 1970-01-01T00:00:00.000 UTC
     // that are obviously incorrect and don't provide any
     // information.
-    if (lastModifiedUtc.toMSecsSinceEpoch() == 0) {
+    if (lastModifiedUtc.isValid() &&
+            // Only defined if valid
+            lastModifiedUtc.toMSecsSinceEpoch() == 0) {
         return QDateTime{};
     }
     return lastModifiedUtc;
