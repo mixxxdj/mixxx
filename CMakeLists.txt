@@ -47,11 +47,15 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND NOT WIN32)
   set(default_build_type "Debug")
 endif()
 
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(STATUS "Setting CMAKE_BUILD_TYPE to '${default_build_type}' as none was specified.")
-  set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
-  # Set the possible values of build type for cmake-gui
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+if(NOT CMAKE_CONFIGURATION_TYPES)
+  if(NOT CMAKE_BUILD_TYPE)
+    message(STATUS "Setting CMAKE_BUILD_TYPE to '${default_build_type}' as none was specified.")
+    set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
+  elseif(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo)$")
+    message(FATAL_ERROR "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} is not supported, use one of Debug, Release or RelWithDebInfo.")
+  endif()
 endif()
 
 project(mixxx VERSION 2.3.0)
@@ -126,6 +130,7 @@ endif()
 #
 
 set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy)")
+set_property(CACHE OPTIMIZE PROPERTY STRINGS "off" "portable" "native" "legacy")
 string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
 
@@ -206,10 +211,11 @@ if(MSVC)
         string(REPLACE "/INCREMENTAL" "/INCREMENTAL:NO" CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
       endif()
       # Note: CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
-    elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-      # Settings for MinSizeRel builds
     elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-      # Settings for Release builds
+      # Reduce the size of the binary in Release builds
+      # Do not use /OPT:ICF because it has no effect.
+      # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
+      add_link_options(/OPT:REF)
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
