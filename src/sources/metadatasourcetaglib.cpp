@@ -639,6 +639,14 @@ class SafelyWritableFile final {
         // See also: https://bugs.launchpad.net/mixxx/+bug/1815305
         DEBUG_ASSERT(m_origFileName.isNull());
         DEBUG_ASSERT(m_tempFileName.isNull());
+        if (!QFileInfo(origFileName).isWritable()) {
+            kLogger.warning()
+                    << "Failed to prepare file for writing:"
+                    << origFileName
+                    << "is not writable.";
+            // Abort constructor
+            return;
+        }
         if (useTemporaryFile) {
             QString tempFileName = origFileName + kSafelyWritableTempFileSuffix;
             QFile origFile(origFileName);
