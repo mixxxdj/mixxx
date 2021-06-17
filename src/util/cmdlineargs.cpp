@@ -63,13 +63,7 @@ bool parseLogLevel(
 }
 } // namespace
 
-bool CmdlineArgs::parse(int& argc, char** argv) {
-    QStringList arguments;
-    arguments.reserve(argc);
-    for (int a = 0; a < argc; ++a) {
-        arguments << QString::fromLocal8Bit(argv[a]);
-    }
-
+bool CmdlineArgs::process(const QCoreApplication& app) {
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main",
             "Mixxx is an open source DJ software. For more information, "
@@ -184,19 +178,13 @@ bool CmdlineArgs::parse(int& argc, char** argv) {
                     "you specify will be loaded into the next virtual deck."));
 
     // process all arguments
-    if (!parser.parse(arguments)) {
-        qWarning() << parser.errorText();
-    }
+    parser.process(app);
 
     if (parser.isSet(helpOption)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
             || parser.isSet(QStringLiteral("help-all"))
 #endif
     ) {
-        // we need to call process here with an initialized QCoreApplication
-        // otherwise there is no way to print the help-all information
-        QCoreApplication coreApp(argc, argv);
-        parser.process(arguments);
         return false;
     }
     if (parser.isSet(versionOption)) {

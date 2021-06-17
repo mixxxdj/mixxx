@@ -22,8 +22,11 @@ QString makeTestConfigFile(const QString& path) {
 QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
 
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
+    DEBUG_ASSERT(s_pApplication.isNull());
+    MixxxApplication* app = new MixxxApplication(argc, argv);
+
     CmdlineArgs args;
-    const bool argsParsed = args.parse(argc, argv);
+    const bool argsParsed = args.process(*app);
     Q_UNUSED(argsParsed);
     DEBUG_ASSERT(argsParsed);
 
@@ -42,8 +45,7 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     // due to timing issues.
     disableConcurrentGuessingOfTrackCoverInfoDuringTests();
 
-    DEBUG_ASSERT(s_pApplication.isNull());
-    s_pApplication.reset(new MixxxApplication(argc, argv));
+    s_pApplication.reset(app);
 }
 
 MixxxTest::ApplicationScope::~ApplicationScope() {
