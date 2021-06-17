@@ -118,6 +118,14 @@ bool TrackRecord::updateSourceSynchronizedAt(
     if (getSourceSynchronizedAt() == sourceSynchronizedAt) {
         return false; // unchanged
     }
+    if (getSourceSynchronizedAt().isValid() &&
+            getSourceSynchronizedAt() >= sourceSynchronizedAt) {
+        kLogger.warning()
+                << "Backdating source synchronization time from"
+                << getSourceSynchronizedAt()
+                << "to"
+                << sourceSynchronizedAt;
+    }
     setSourceSynchronizedAt(sourceSynchronizedAt);
     m_headerParsed = sourceSynchronizedAt.isValid();
     DEBUG_ASSERT(isSourceSynchronized());
