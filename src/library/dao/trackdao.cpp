@@ -1209,7 +1209,10 @@ bool setTrackHeaderParsed(const QSqlRecord& record, const int column, TrackPoint
 bool setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
     QDateTime sourceSynchronizedAt;
     const QVariant value = record.value(column);
-    if (value.isValid() && value.canConvert<quint64>()) {
+    // Observation (Qt 5.15): QVariant::isValid() may return true even
+    // if the column value is NULL and then converts to 0 (zero). This
+    // is NOT desired and therefore we MUST USE QVariant::isNull() instead!
+    if (!value.isNull() && value.canConvert<quint64>()) {
         const quint64 msecsSinceEpoch = qvariant_cast<quint64>(value);
         sourceSynchronizedAt.setTimeSpec(Qt::UTC);
         sourceSynchronizedAt.setMSecsSinceEpoch(msecsSinceEpoch);
