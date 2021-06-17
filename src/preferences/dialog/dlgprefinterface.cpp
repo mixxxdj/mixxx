@@ -43,8 +43,8 @@ DlgPrefInterface::DlgPrefInterface(
     // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
     m_dDevicePixelRatio = getDevicePixelRatioF(this);
 
-    // Calculate the minimum scale factor that leads to a device picel ratio of 1.0
-    // m_dDevicePixelRatio must not drop below 1.0 because this creats an
+    // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
+    // m_dDevicePixelRatio must not drop below 1.0 because this creates an
     // unusable GUI with visual artefacts
     double initialScalefactor = CmdlineArgs::Instance().getScaleFactor();
     if (initialScalefactor <= 0) {
