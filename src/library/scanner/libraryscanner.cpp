@@ -155,9 +155,11 @@ void LibraryScanner::run() {
     kLogger.debug() << "Exiting thread";
 }
 
-void LibraryScanner::slotStartScan() {
+void LibraryScanner::slotStartScan(const mixxx::TaggingConfig& taggingConfig) {
     kLogger.debug() << "slotStartScan()";
     DEBUG_ASSERT(m_state == STARTING);
+
+    m_taggingConfig = taggingConfig;
 
     cleanUpDatabase(m_libraryHashDao.database());
 
@@ -409,9 +411,9 @@ void LibraryScanner::slotFinishUnhashedScan() {
     emit scanFinished();
 }
 
-void LibraryScanner::scan() {
+void LibraryScanner::scan(const mixxx::TaggingConfig& taggingConfig) {
     if (changeScannerState(STARTING)) {
-        emit startScan();
+        emit startScan(taggingConfig);
     }
 }
 
@@ -539,6 +541,7 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     ScopedTimer timer("LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack = m_trackDao.addTracksAddFile(
+            m_taggingConfig,
             trackPath,
             false);
     if (pTrack) {

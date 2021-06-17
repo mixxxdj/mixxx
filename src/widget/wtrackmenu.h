@@ -23,6 +23,12 @@ class WColorPickerAction;
 class WCoverArtMenu;
 class WSearchRelatedTracksMenu;
 
+namespace mixxx {
+
+class TrackCustomTagsMenu;
+
+} // namespace mixxx
+
 /// A context menu for track(s).
 /// Can be used with individual track type widgets based on TrackPointer
 /// or list/table type track widgets based on QModelIndexList and TrackModel.
@@ -46,10 +52,11 @@ class WTrackMenu : public QMenu {
         FileBrowser = 1 << 10,
         Properties = 1 << 11,
         SearchRelated = 1 << 12,
+        CustomTags = 1 << 13,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
                 BPM | Color | HideUnhidePurge | FileBrowser | Properties |
-                SearchRelated
+                SearchRelated | CustomTags
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -205,6 +212,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
+    parented_ptr<mixxx::TrackCustomTagsMenu> m_pCustomTagsMenu;
 
     // Reload Track Metadata Action:
     QAction* m_pImportMetadataFromFileAct{};

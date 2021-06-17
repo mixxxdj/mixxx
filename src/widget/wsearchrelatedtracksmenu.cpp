@@ -302,7 +302,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         }
     }
     {
-        const auto genre = track.getGenre();
+        const auto genre = track.getGenreText();
         if (!genre.isEmpty()) {
             const QString searchQuery =
                     QStringLiteral("genre:") +

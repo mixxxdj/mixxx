@@ -9,6 +9,8 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 #include "moc_dlgtrackinfo.cpp"
 #include "preferences/colorpalettesettings.h"
@@ -38,11 +40,14 @@ const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
 } // namespace
 
 DlgTrackInfo::DlgTrackInfo(
+        const TrackCollectionManager* pTrackCollectionManager,
         const TrackModel* trackModel)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
+          m_pTrackCollectionManager(pTrackCollectionManager),
           m_pTrackModel(trackModel),
+          m_customTagsStorage(m_pTrackCollectionManager->internalCollection()->database(), this),
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_dLastTapedBpm(-1.),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this)),
@@ -173,13 +178,6 @@ void DlgTrackInfo::init() {
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
                         txtAlbumArtist->text().trimmed());
             });
-    connect(txtGenre,
-            &QLineEdit::editingFinished,
-            this,
-            [this]() {
-                m_trackRecord.refMetadata().refTrackInfo().setGenre(
-                        txtGenre->text().trimmed());
-            });
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
@@ -204,6 +202,99 @@ void DlgTrackInfo::init() {
         m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
                 txtTrackNumber->text().trimmed());
     });
+
+    // Genre text and custom tags must be synchronized
+    txtGenreCombo->setEditable(true);
+    txtGenreCombo->setInsertPolicy(QComboBox::NoInsert);
+    const auto mostFrequentGenres =
+            m_customTagsStorage.findMostFrequentLabelsOfFacet(
+                    mixxx::CustomTags::kFacetGenre);
+    for (const auto& labelAndCount : mostFrequentGenres) {
+        txtGenreCombo->addItem(labelAndCount.first);
+    }
+    connect(txtGenreCombo->lineEdit(),
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                if (m_trackRecord.refMetadata().updateGenreText(
+                            m_pTrackCollectionManager->taggingConfig(),
+                            txtGenreCombo->currentText())) {
+                    QSignalBlocker signalBlocker(this);
+                    updateTrackMetadataFields();
+                }
+            });
+    connect(txtGenreCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            [this](int itemIndex) {
+                auto currentText = m_trackRecord.getMetadata().getTrackInfo().getGenre();
+                const auto* pTagMappingConfig =
+                        m_pTrackCollectionManager->taggingConfig()
+                                .findFacetTagMapping(mixxx::CustomTags::kFacetGenre);
+                if (pTagMappingConfig &&
+                        pTagMappingConfig->labelInputEndsWithSeparator(currentText)) {
+                    // append selected text to current text
+                    currentText += txtGenreCombo->itemText(itemIndex);
+                } else {
+                    // replace current text with selected text
+                    currentText = txtGenreCombo->itemText(itemIndex);
+                }
+                if (m_trackRecord.refMetadata().updateGenreText(
+                            m_pTrackCollectionManager->taggingConfig(),
+                            currentText)) {
+                    QSignalBlocker signalBlocker(this);
+                    updateTrackMetadataFields();
+                }
+            });
+    // TODO: Add mood text
+
+    // Custom tags
+    m_pCustomTagsTreeWidgetHelper =
+            make_parented<mixxx::CustomTagsTreeWidgetHelper>(uiCustomTagsTree);
+    connect(m_pCustomTagsTreeWidgetHelper,
+            &mixxx::CustomTagsTreeWidgetHelper::pasteAndMergeFromClipboard,
+            this,
+            [this] {
+                const auto pastedFromClipboard = mixxx::pasteCustomTagsFromClipboard();
+                if (pastedFromClipboard &&
+                        m_trackRecord.refMetadata().mergeReplaceCustomTags(
+                                m_pTrackCollectionManager->taggingConfig(),
+                                *pastedFromClipboard)) {
+                    // Update view
+                    QSignalBlocker signalBlocker(this);
+                    updateTrackMetadataFields();
+                }
+            });
+    connect(m_pCustomTagsTreeWidgetHelper,
+            &mixxx::CustomTagsTreeWidgetHelper::itemsRemoved,
+            this,
+            [this] {
+                if (m_pCustomTagsTreeWidgetHelper->onItemsRemoved(
+                            m_trackRecord.refMetadata().ptrCustomTags())) {
+                    // Synchronize dependent text fields
+                    m_trackRecord.refMetadata().updateTextFieldsFromCustomTags(
+                            m_pTrackCollectionManager->taggingConfig());
+                    // Update view
+                    QSignalBlocker signalBlocker(this);
+                    updateTrackMetadataFields();
+                }
+            });
+    connect(uiCustomTagsTree,
+            &QTreeWidget::itemChanged,
+            this,
+            [this](QTreeWidgetItem* item, int column) {
+                if (m_pCustomTagsTreeWidgetHelper->onItemChanged(
+                            m_trackRecord.refMetadata().ptrCustomTags(),
+                            *item,
+                            column)) {
+                    // Synchronize dependent text fields
+                    m_trackRecord.refMetadata().updateTextFieldsFromCustomTags(
+                            m_pTrackCollectionManager->taggingConfig());
+                    // Update view
+                    QSignalBlocker signalBlocker(this);
+                    updateTrackMetadataFields();
+                }
+            });
 
     connect(btnImportMetadataFromFile,
             &QPushButton::clicked,
@@ -341,7 +432,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getAlbumInfo().getTitle());
     txtAlbumArtist->setText(
             m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    txtGenre->setText(
+    txtGenreCombo->setEditText(
             m_trackRecord.getMetadata().getTrackInfo().getGenre());
     txtComposer->setText(
             m_trackRecord.getMetadata().getTrackInfo().getComposer());
@@ -356,6 +447,10 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     txtBpm->setText(
             m_trackRecord.getMetadata().getTrackInfo().getBpmText());
     displayKeyText();
+
+    m_pCustomTagsTreeWidgetHelper->importData(
+            m_pTrackCollectionManager->taggingContext(),
+            m_trackRecord.getMetadata().getCustomTags());
 
     // Non-editable fields
     txtDuration->setText(
@@ -492,8 +587,18 @@ void DlgTrackInfo::saveTrack() {
     slotSpinBpmValueChanged(spinBpm->value());
     static_cast<void>(updateKeyText()); // discard result
 
+    DEBUG_ASSERT(m_trackRecord.getMetadata().allTextFieldsSynchronizedWithCustomTags(
+            m_pTrackCollectionManager->taggingConfig()));
+
     // Update the cached track
     m_pLoadedTrack->replaceRecord(std::move(m_trackRecord), std::move(m_pBeatsClone));
+
+    // Push pending changes into the database to make them
+    // visible for subsequent queries. Otherwise filtering
+    // by custom tags that always involves the database would
+    // not take the updated tags into account and return stale
+    // results.
+    m_pTrackCollectionManager->saveTrack(m_pLoadedTrack);
 
     // Repopulate the dialog and update the UI
     updateFromTrack(*m_pLoadedTrack);
@@ -687,6 +792,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             trackMetadata.getAlbumInfo().getTitle(),
             coverImage);
     trackRecord.replaceMetadataFromSource(
+            m_pTrackCollectionManager->taggingConfig(),
             std::move(trackMetadata),
             sourceSynchronizedAt);
     trackRecord.setCoverInfo(
@@ -705,6 +811,7 @@ void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     if (!m_pDlgTagFetcher) {
         m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
+                m_pTrackCollectionManager,
                 m_pTrackModel);
         connect(m_pDlgTagFetcher.get(),
                 &QDialog::finished,

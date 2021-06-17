@@ -18,7 +18,7 @@ class QmlPlayerProxy : public QObject {
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
     Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist
                     NOTIFY albumArtistChanged)
-    Q_PROPERTY(QString genre READ getGenre WRITE setGenre NOTIFY genreChanged)
+    Q_PROPERTY(QString genreText READ getGenreText STORED false NOTIFY genreTextChanged)
     Q_PROPERTY(QString composer READ getComposer WRITE setComposer NOTIFY composerChanged)
     Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping NOTIFY groupingChanged)
     Q_PROPERTY(QString year READ getYear WRITE setYear NOTIFY yearChanged)
@@ -39,7 +39,7 @@ class QmlPlayerProxy : public QObject {
     QString getArtist() const;
     QString getAlbum() const;
     QString getAlbumArtist() const;
-    QString getGenre() const;
+    QString getGenreText() const;
     QString getComposer() const;
     QString getGrouping() const;
     QString getYear() const;
@@ -68,7 +68,6 @@ class QmlPlayerProxy : public QObject {
     void setTitle(const QString& title);
     void setAlbum(const QString& album);
     void setAlbumArtist(const QString& albumArtist);
-    void setGenre(const QString& genre);
     void setComposer(const QString& composer);
     void setGrouping(const QString& grouping);
     void setYear(const QString& year);
@@ -89,7 +88,7 @@ class QmlPlayerProxy : public QObject {
     void titleChanged();
     void artistChanged();
     void albumArtistChanged();
-    void genreChanged();
+    void genreTextChanged();
     void composerChanged();
     void groupingChanged();
     void yearChanged();

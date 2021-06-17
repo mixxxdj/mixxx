@@ -7,6 +7,7 @@
 
 #include "library/coverart.h"
 #include "library/dao/settingsdao.h"
+#include "tagging/tags.h"
 #include "track/track_decl.h"
 #include "track/trackref.h"
 
@@ -202,6 +203,15 @@ class TrackModel {
 
     virtual void select() {
     }
+
+    virtual bool updateTrackGenreText(
+            Track* pTrack,
+            const mixxx::TagLabel::value_t& genreText) const = 0;
+#if defined(__EXTRA_METADATA__)
+    virtual bool updateTrackMoodText(
+            Track* pTrack,
+            const mixxx::TagLabel::value_t& moodText) const = 0;
+#endif // __EXTRA_METADATA__
 
   private:
     QSqlDatabase m_db;

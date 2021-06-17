@@ -112,6 +112,20 @@ TrackModel::Capabilities ProxyTrackModel::getCapabilities() const {
     return m_pTrackModel ? m_pTrackModel->getCapabilities() : Capability::None;
 }
 
+bool ProxyTrackModel::updateTrackGenreText(
+        Track* pTrack,
+        const mixxx::TagLabel::value_t& genreText) const {
+    return m_pTrackModel ? m_pTrackModel->updateTrackGenreText(pTrack, genreText) : false;
+}
+
+#if defined(__EXTRA_METADATA__)
+bool ProxyTrackModel::updateTrackMoodText(
+        Track* pTrack,
+        const mixxx::TagLabel::value_t& moodText) const {
+    return m_pTrackModel ? m_pTrackModel->updateTrackMoodText(pTrack, moodText) : false;
+}
+#endif // __EXTRA_METADATA__
+
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         const QModelIndex& sourceParent) const {
     if (!m_bHandleSearches) {

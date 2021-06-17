@@ -134,6 +134,7 @@ void Track::relocate(
 }
 
 void Track::replaceMetadataFromSource(
+        const mixxx::TaggingConfig& taggingConfig,
         mixxx::TrackMetadata importedMetadata,
         const QDateTime& sourceSynchronizedAt) {
     // Information stored in Serato tags is imported separately after
@@ -163,6 +164,7 @@ void Track::replaceMetadataFromSource(
         const auto oldReplayGain =
                 m_record.getMetadata().getTrackInfo().getReplayGain();
         bool modified = m_record.replaceMetadataFromSource(
+                taggingConfig,
                 std::move(importedMetadata),
                 sourceSynchronizedAt);
         const auto newReplayGain =
@@ -232,10 +234,12 @@ void Track::replaceMetadataFromSource(
 }
 
 bool Track::mergeExtraMetadataFromSource(
+        const mixxx::TaggingConfig& taggingConfig,
         const mixxx::TrackMetadata& importedMetadata) {
     QMutexLocker lock(&m_qMutex);
-    if (!m_record.mergeExtraMetadataFromSource(importedMetadata)) {
-        // Not modified
+    if (!m_record.mergeExtraMetadataFromSource(
+                taggingConfig,
+                importedMetadata)) {
         return false;
     }
     markDirtyAndUnlock(&lock);
@@ -447,7 +451,7 @@ void Track::emitChangedSignalsForAllMetadata() {
     emit titleChanged(getTitle());
     emit albumChanged(getAlbum());
     emit albumArtistChanged(getAlbumArtist());
-    emit genreChanged(getGenre());
+    emit genreTextChanged(getGenreText());
     emit composerChanged(getComposer());
     emit groupingChanged(getGrouping());
     emit yearChanged(getYear());
@@ -625,20 +629,6 @@ void Track::setYear(const QString& s) {
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrYear(), value)) {
         markDirtyAndUnlock(&lock);
         emit yearChanged(value);
-    }
-}
-
-QString Track::getGenre() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getGenre();
-}
-
-void Track::setGenre(const QString& s) {
-    QMutexLocker lock(&m_qMutex);
-    const QString value = s.trimmed();
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGenre(), value)) {
-        markDirtyAndUnlock(&lock);
-        emit genreChanged(value);
     }
 }
 
@@ -1321,7 +1311,7 @@ int Track::getRating() const {
 
 void Track::setRating (int rating) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.ptrRating(), rating)) {
+    if (m_record.updateRating(rating)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -1432,7 +1422,8 @@ CoverInfo Track::getCoverInfoWithLocation() const {
 
 ExportTrackMetadataResult Track::exportMetadata(
         const mixxx::MetadataSource& metadataSource,
-        const UserSettingsPointer& pConfig) {
+        const UserSettingsPointer& pConfig,
+        const mixxx::TaggingConfig& taggingConfig) {
     // Locking shouldn't be necessary here, because this function will
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
@@ -1514,7 +1505,9 @@ ExportTrackMetadataResult Track::exportMetadata(
         // library database! This will in turn update the current metadata
         // that is stored in the database. New columns that need to be populated
         // from file tags cannot be filled during a database migration.
-        m_record.mergeExtraMetadataFromSource(importedFromFile);
+        m_record.mergeExtraMetadataFromSource(
+                taggingConfig,
+                importedFromFile);
 
         // Prepare export by cloning and normalizing the metadata
         normalizedFromRecord = m_record.getMetadata();
@@ -1680,4 +1673,170 @@ void Track::updateStreamInfoFromSource(
     if (cuesImported) {
         emit cuesUpdated();
     }
+}
+
+mixxx::CustomTags Track::getCustomTags() const {
+    QMutexLocker locked(&m_qMutex);
+    return m_record.getMetadata().getCustomTags();
+}
+
+void Track::setCustomTagsInternal(
+        mixxx::CustomTags&& customTags) {
+    QMutexLocker locked(&m_qMutex);
+    if (m_record.getMetadata().getCustomTags() == customTags) {
+        return;
+    }
+    m_record.refMetadata().refCustomTags() = std::move(customTags);
+    markDirtyAndUnlock(&locked);
+}
+
+bool Track::updateCustomTags(
+        const mixxx::TaggingConfig& config,
+        const mixxx::CustomTags& customTags) {
+    QMutexLocker locked(&m_qMutex);
+    if (!m_record.refMetadata().updateCustomTags(
+                config,
+                customTags)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}
+
+bool Track::mergeReplaceCustomTags(
+        const mixxx::TaggingConfig& config,
+        const mixxx::CustomTags& customTags) {
+    QMutexLocker locked(&m_qMutex);
+    if (!m_record.refMetadata().mergeReplaceCustomTags(
+                config,
+                customTags)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}
+
+bool Track::replaceCustomTag(
+        const mixxx::TaggingConfig& config,
+        const mixxx::Tag& tag,
+        const mixxx::TagFacet& facet) {
+    QMutexLocker locked(&m_qMutex);
+    if (!m_record.refMetadata().replaceCustomTag(
+                config,
+                tag,
+                facet)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}
+
+bool Track::appendCustomTag(
+        const mixxx::TaggingConfig& config,
+        const mixxx::TagLabel& newLabel,
+        const mixxx::TagFacet& facet) {
+    QMutexLocker locked(&m_qMutex);
+    if (!m_record.refMetadata().appendCustomTag(
+                config,
+                newLabel,
+                facet)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}
+
+bool Track::removeCustomTag(
+        const mixxx::TaggingConfig& config,
+        const mixxx::TagLabel& oldLabel,
+        const mixxx::TagFacet& facet) {
+    QMutexLocker locked(&m_qMutex);
+    if (!m_record.refMetadata().removeCustomTag(
+                config,
+                oldLabel,
+                facet)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}
+
+QString Track::getGenreText() const {
+    QMutexLocker locked(&m_qMutex);
+    return m_record.getMetadata().getTrackInfo().getGenre();
+}
+
+void Track::setGenreTextInternal(
+        const mixxx::TagLabel::value_t& genreText) {
+    QMutexLocker locked(&m_qMutex);
+    if (compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrGenre(),
+                std::move(genreText))) {
+        const auto newGenreText =
+                m_record.getMetadata().getTrackInfo().getGenre();
+        markDirtyAndUnlock(&locked);
+        emit genreTextChanged(newGenreText);
+    }
+}
+
+bool Track::updateGenreText(
+        const mixxx::TaggingConfig& config,
+        const mixxx::TagLabel::value_t& genreText) {
+    QMutexLocker locked(&m_qMutex);
+    if (!m_record.refMetadata().updateGenreText(
+                config,
+                genreText)) {
+        return false;
+    }
+    const auto newGenreText =
+            m_record.getMetadata().getTrackInfo().getGenre();
+    markDirtyAndUnlock(&locked);
+    emit genreTextChanged(newGenreText);
+    return true;
+}
+
+#if defined(__EXTRA_METADATA__)
+QString Track::getMoodText() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_record.getMetadata().getTrackInfo().getMood();
+}
+
+void Track::setMoodTextInternal(
+        const mixxx::TagLabel::value_t& moodText) {
+    QMutexLocker locked(&m_qMutex);
+    if (compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrMood(),
+                std::move(moodText))) {
+        const auto newMoodText =
+                m_record.getMetadata().getTrackInfo().getMood();
+        markDirtyAndUnlock(&locked);
+        emit moodTextChanged(newMoodText);
+    }
+}
+
+bool Track::updateMoodText(
+        const mixxx::TaggingConfig& config,
+        const mixxx::TagLabel::value_t& moodText) {
+    QMutexLocker locked(&m_qMutex);
+    if (!m_record.refMetadata().updateMoodText(
+                config,
+                moodText)) {
+        return false;
+    }
+    const auto newMoodText =
+            m_record.getMetadata().getTrackInfo().getMood();
+    markDirtyAndUnlock(&locked);
+    emit moodTextChanged(newMoodText);
+    return true;
+}
+#endif // __EXTRA_METADATA__
+
+bool Track::synchronizeTextFieldsWithCustomTags(
+        const mixxx::TaggingConfig& taggingConfig) {
+    QMutexLocker locked(&m_qMutex);
+    if (!m_record.synchronizeTextFieldsWithCustomTags(taggingConfig)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
 }

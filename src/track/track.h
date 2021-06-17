@@ -52,7 +52,10 @@ class Track : public QObject {
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
     Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist
                     NOTIFY albumArtistChanged)
-    Q_PROPERTY(QString genre READ getGenre WRITE setGenre NOTIFY genreChanged)
+    Q_PROPERTY(QString genreText READ getGenreText STORED false NOTIFY genreTextChanged)
+#if defined(__EXTRA_METADATA__)
+    Q_PROPERTY(QString moodText READ getMoodText STORED false NOTIFY moodTextChanged)
+#endif // __EXTRA_METADATA__
     Q_PROPERTY(QString composer READ getComposer WRITE setComposer NOTIFY composerChanged)
     Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping NOTIFY groupingChanged)
     Q_PROPERTY(QString year READ getYear WRITE setYear NOTIFY yearChanged)
@@ -186,10 +189,6 @@ class Track : public QObject {
     QString getYear() const;
     // Set year
     void setYear(const QString&);
-    // Return genre
-    QString getGenre() const;
-    // Set genre
-    void setGenre(const QString&);
     // Returns the track color
     mixxx::RgbColor::optional_t getColor() const;
     // Sets the track color
@@ -212,6 +211,81 @@ class Track : public QObject {
     // Set track number/total
     void setTrackNumber(const QString&);
     void setTrackTotal(const QString&);
+
+    /// Return the genre as text
+    mixxx::TagLabel::value_t getGenreText() const;
+    /// !!!DO NOT USE!!!
+    /// Set the genre text WITHOUT updating the corresponding custom tags.
+    ///
+    /// Only allowed to be used by TrackDAO!!! Unfortunately, the
+    /// design of TrackDAO does not allow to hide this method by
+    /// making it private.
+    void setGenreTextInternal(
+            const mixxx::TagLabel::value_t& genreText);
+    /// Set the genre text and update the corresponding custom tags
+    /// by splitting the text according to the given tag mapping
+    /// configuration.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    bool updateGenreText(
+            const mixxx::TaggingConfig& config,
+            const mixxx::TagLabel::value_t& genreText);
+
+#if defined(__EXTRA_METADATA__)
+    /// Return the mood as text
+    mixxx::TagLabel::value_t getMoodText() const;
+    /// !!!DO NOT USE!!!
+    /// Set the mood text WITHOUT updating the corresponding custom tags.
+    ///
+    /// Only allowed to be used by TrackDAO!!! Unfortunately, the
+    /// design of TrackDAO does not allow to hide this method by
+    /// making it private.
+    void setMoodTextInternal(
+            const mixxx::TagLabel::value_t& moodText);
+    /// Set the mood text and update the corresponding custom tags
+    /// by splitting the text according to the given tag mapping
+    /// configuration.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    bool updateMoodText(
+            const mixxx::TaggingConfig& config,
+            const mixxx::TagLabel::value_t& moodText);
+#endif // __EXTRA_METADATA__
+
+    mixxx::CustomTags getCustomTags() const;
+
+    /// Set the custom tags and update all dependent text fields
+    /// accordingly.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    bool updateCustomTags(
+            const mixxx::TaggingConfig& config,
+            const mixxx::CustomTags& customTags);
+
+    /// Merge and replace incoming over existing custom tags and
+    /// update all dependent text fields accordingly.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    bool mergeReplaceCustomTags(
+            const mixxx::TaggingConfig& config,
+            const mixxx::CustomTags& customTags);
+
+    bool replaceCustomTag(
+            const mixxx::TaggingConfig& config,
+            const mixxx::Tag& tag,
+            const mixxx::TagFacet& facet = mixxx::TagFacet());
+    bool appendCustomTag(
+            const mixxx::TaggingConfig& config,
+            const mixxx::TagLabel& newLabel,
+            const mixxx::TagFacet& facet);
+    bool removeCustomTag(
+            const mixxx::TaggingConfig& config,
+            const mixxx::TagLabel& label,
+            const mixxx::TagFacet& facet = mixxx::TagFacet());
 
     PlayCounter getPlayCounter() const;
     void setPlayCounter(const PlayCounter& playCounter);
@@ -345,6 +419,7 @@ class Track : public QObject {
     /// The timestamp tracks when metadata has last been synchronized
     /// with file tags, either by importing or exporting the metadata.
     void replaceMetadataFromSource(
+            const mixxx::TaggingConfig& taggingConfig,
             mixxx::TrackMetadata importedMetadata,
             const QDateTime& sourceSynchronizedAt);
 
@@ -381,7 +456,10 @@ class Track : public QObject {
     void titleChanged(const QString&);
     void albumChanged(const QString&);
     void albumArtistChanged(const QString&);
-    void genreChanged(const QString&);
+    void genreTextChanged(const QString&);
+#if defined(__EXTRA_METADATA__)
+    void moodTextChanged(const QString&);
+#endif // __EXTRA_METADATA__
     void composerChanged(const QString&);
     void groupingChanged(const QString&);
     void yearChanged(const QString&);
@@ -479,11 +557,18 @@ class Track : public QObject {
     ///
     /// Returns true if the track has been modified and false otherwise.
     bool mergeExtraMetadataFromSource(
+            const mixxx::TaggingConfig& taggingConfig,
             const mixxx::TrackMetadata& importedMetadata);
+
+    // TODO: Remove this dependency after populating TrackRecord
+    // instead of the Track object from the database
+    bool synchronizeTextFieldsWithCustomTags(
+            const mixxx::TaggingConfig& config);
 
     ExportTrackMetadataResult exportMetadata(
             const mixxx::MetadataSource& metadataSource,
-            const UserSettingsPointer& pConfig);
+            const UserSettingsPointer& pConfig,
+            const mixxx::TaggingConfig& taggingConfig);
 
     // Information about the actual properties of the
     // audio stream is only available after opening the
@@ -496,6 +581,9 @@ class Track : public QObject {
     }
     void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
+
+    void setCustomTagsInternal(
+            mixxx::CustomTags&& customTags);
 
     // Mutex protecting access to object
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)

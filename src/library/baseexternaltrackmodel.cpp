@@ -72,7 +72,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
             pTrack->setTitle(title);
             pTrack->setAlbum(album);
             pTrack->setYear(year);
-            pTrack->setGenre(genre);
+            updateTrackGenreText(pTrack.get(), genre);
             pTrack->trySetBpm(bpm);
         }
     } else {

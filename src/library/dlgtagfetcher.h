@@ -9,6 +9,8 @@
 #include "musicbrainz/tagfetcher.h"
 #include "track/track_decl.h"
 
+class TrackCollectionManager;
+
 /// A dialog box to fetch track metadata from MusicBrainz.
 /// Use TrackPointer to load a track into the dialog or
 /// QModelIndex along with TrackModel to enable previous and next buttons
@@ -19,6 +21,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   public:
     // TODO: Remove dependency on TrackModel
     explicit DlgTagFetcher(
+            const TrackCollectionManager* pTrackCollectionManager,
             const TrackModel* pTrackModel = nullptr);
     ~DlgTagFetcher() override = default;
 
@@ -50,6 +53,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void updateStack();
     void addDivider(const QString& text, QTreeWidget* parent) const;
 
+    const TrackCollectionManager* const m_pTrackCollectionManager;
     const TrackModel* const m_pTrackModel;
 
     TagFetcher m_tagFetcher;
