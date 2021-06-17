@@ -674,7 +674,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
     mixxx::TrackMetadata trackMetadata = trackRecord.getMetadata();
     QImage coverImage;
-    const auto [importResult, metadataSynchronized] =
+    const auto [importResult, sourceSynchronizedAt] =
             SoundSourceProxy(m_pLoadedTrack)
                     .importTrackMetadataAndCoverImage(
                             &trackMetadata, &coverImage);
@@ -688,7 +688,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             coverImage);
     trackRecord.replaceMetadataFromSource(
             std::move(trackMetadata),
-            metadataSynchronized);
+            sourceSynchronizedAt);
     trackRecord.setCoverInfo(
             std::move(guessedCoverInfo));
     replaceTrackRecord(
