@@ -119,7 +119,7 @@ bool TrackRecord::updateSourceSynchronizedAt(
         return false; // unchanged
     }
     if (getSourceSynchronizedAt().isValid() &&
-            getSourceSynchronizedAt() >= sourceSynchronizedAt) {
+            getSourceSynchronizedAt() > sourceSynchronizedAt) {
         kLogger.warning()
                 << "Backdating source synchronization time from"
                 << getSourceSynchronizedAt()
