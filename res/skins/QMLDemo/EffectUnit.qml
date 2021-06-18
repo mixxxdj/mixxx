@@ -63,7 +63,7 @@ Item {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.margins: 5
-                    arcStart: 0
+                    arcStart: Knob.ArcStart.Minimum
                     width: 40
                     group: effect.group
                     key: "meta"
@@ -93,7 +93,7 @@ Item {
             anchors.centerIn: parent
             width: 48
             height: 48
-            arcStart: 0
+            arcStart: Knob.ArcStart.Minimum
             group: "[EffectRack1_EffectUnit" + unitNumber + "]"
             key: "super1"
             color: Theme.effectUnitColor
