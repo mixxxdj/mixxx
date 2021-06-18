@@ -33,9 +33,8 @@ DlgPrefInterface::DlgPrefInterface(
           m_mixxx(mixxx),
           m_pSkinLoader(pSkinLoader),
           m_pSkin(pSkinLoader->getConfiguredSkin()),
-          m_dScaleFactorAuto(1.0),
-          m_bUseAutoScaleFactor(false),
           m_dScaleFactor(1.0),
+          m_minScaleFactor(1.0),
           m_dDevicePixelRatio(1.0),
           m_bStartWithFullScreen(false),
           m_bRebootMixxxView(false) {
@@ -43,6 +42,16 @@ DlgPrefInterface::DlgPrefInterface(
 
     // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
     m_dDevicePixelRatio = getDevicePixelRatioF(this);
+
+    // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
+    // m_dDevicePixelRatio must not drop below 1.0 because this creates an
+    // unusable GUI with visual artefacts
+    double initialScalefactor = CmdlineArgs::Instance().getScaleFactor();
+    if (initialScalefactor <= 0) {
+        initialScalefactor = 1.0;
+    }
+    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScalefactor;
+    m_minScaleFactor = 1 / unscaledDevicePixelRatio;
 
     VERIFY_OR_DEBUG_ASSERT(m_pSkin != nullptr) {
         qWarning() << "Skipping creation of DlgPrefInterface because there is no skin available.";
@@ -148,10 +157,6 @@ DlgPrefInterface::DlgPrefInterface(
             this,
             &DlgPrefInterface::slotSetScheme);
 
-    checkBoxScaleFactorAuto->hide();
-    spinBoxScaleFactor->hide();
-    labelScaleFactor->hide();
-
     // Start in fullscreen mode
     checkBoxStartFullScreen->setChecked(m_pConfig->getValueString(
                     ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
@@ -248,13 +253,11 @@ void DlgPrefInterface::slotUpdate() {
     m_localeOnUpdate = m_pConfig->getValueString(ConfigKey("[Config]", "Locale"));
     ComboBoxLocale->setCurrentIndex(ComboBoxLocale->findData(m_localeOnUpdate));
 
-    checkBoxScaleFactorAuto->setChecked(m_pConfig->getValue(
-            ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor));
-
     // The spinbox shows a percentage but Mixxx stores a multiplication factor
     // with 1.00 as no scaling, so multiply the stored value by 100.
     spinBoxScaleFactor->setValue(m_pConfig->getValue(
                     ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactor) * 100);
+    spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
             ConfigKey("[Config]", "StartInFullscreen"), m_bStartWithFullScreen));
@@ -276,9 +279,6 @@ void DlgPrefInterface::slotResetToDefaults() {
     // Default to normal size widgets
     // The spinbox shows a percentage with 100% as no scaling.
     spinBoxScaleFactor->setValue(100);
-    if (m_dScaleFactorAuto > 0) {
-        checkBoxScaleFactorAuto->setChecked(true);
-    }
 
     // Don't start in full screen.
     checkBoxStartFullScreen->setChecked(false);
@@ -289,29 +289,6 @@ void DlgPrefInterface::slotResetToDefaults() {
 
     // Tooltips on everywhere.
     radioButtonTooltipsLibraryAndSkin->setChecked(true);
-}
-
-void DlgPrefInterface::slotSetScaleFactor(double newValue) {
-    // The spinbox shows a percentage, but Mixxx stores a multiplication factor
-    // with 1.00 as no change.
-    newValue /= 100.0;
-    if (m_dScaleFactor != newValue) {
-        m_dScaleFactor = newValue;
-        m_bRebootMixxxView = true;
-    }
-}
-
-void DlgPrefInterface::slotSetScaleFactorAuto(bool newValue) {
-    if (newValue) {
-        if (!m_bUseAutoScaleFactor) {
-            m_bRebootMixxxView = true;
-        }
-    } else {
-        slotSetScaleFactor(newValue);
-    }
-
-    m_bUseAutoScaleFactor = newValue;
-    spinBoxScaleFactor->setEnabled(!newValue);
 }
 
 void DlgPrefInterface::slotSetTooltips() {
@@ -325,9 +302,10 @@ void DlgPrefInterface::slotSetTooltips() {
 
 void DlgPrefInterface::notifyRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
-    QMessageBox::information(
-        this, tr("Information"),
-        tr("Mixxx must be restarted before the new locale setting will take effect."));
+    QMessageBox::information(this,
+            tr("Information"),
+            tr("Mixxx must be restarted before the new locale or scaling "
+               "settings will take effect."));
 }
 
 void DlgPrefInterface::slotSetScheme(int) {
@@ -396,14 +374,8 @@ void DlgPrefInterface::slotApply() {
             ComboBoxLocale->currentIndex()).toString();
     m_pConfig->set(ConfigKey("[Config]", "Locale"), locale);
 
-    m_pConfig->setValue(
-            ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor);
-    if (m_bUseAutoScaleFactor) {
-        m_pConfig->setValue(
-                ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactorAuto);
-    } else {
-        m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactor);
-    }
+    double scaleFactor = spinBoxScaleFactor->value() / 100;
+    m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), scaleFactor);
 
     m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
@@ -419,10 +391,11 @@ void DlgPrefInterface::slotApply() {
                 static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
-    if (locale != m_localeOnUpdate) {
+    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor) {
         notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
+        m_dScaleFactor = scaleFactor;
     }
 
     if (m_bRebootMixxxView) {
