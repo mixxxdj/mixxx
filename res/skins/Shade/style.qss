@@ -886,7 +886,7 @@ QPushButton#pushButtonSkipNext:!enabled {
 QPushButton#pushButtonShuffle {
   image: url(skin:/btn/btn_autodj_shuffle.svg) no-repeat center center;
 }
-QPushButton#pushButtonAddRandom {
+QPushButton#pushButtonAddRandomTrack {
   image: url(skin:/btn/btn_autodj_addrandom.svg) no-repeat center center;
 }
 QPushButton#pushButtonRepeatPlaylist {

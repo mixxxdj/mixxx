@@ -19,13 +19,11 @@ class MockPortMidiController : public PortMidiController {
     MockPortMidiController(const PmDeviceInfo* inputDeviceInfo,
             const PmDeviceInfo* outputDeviceInfo,
             int inputDeviceIndex,
-            int outputDeviceIndex,
-            UserSettingsPointer pConfig)
+            int outputDeviceIndex)
             : PortMidiController(inputDeviceInfo,
                       outputDeviceInfo,
                       inputDeviceIndex,
-                      outputDeviceIndex,
-                      pConfig) {
+                      outputDeviceIndex) {
     }
     ~MockPortMidiController() override {
     }
@@ -38,9 +36,13 @@ class MockPortMidiController : public PortMidiController {
         PortMidiController::sendSysexMsg(data, length);
     }
 
-    MOCK_METHOD4(receive, void(unsigned char, unsigned char, unsigned char,
-                               mixxx::Duration));
+    MOCK_METHOD4(receivedShortMessage,
+            void(unsigned char, unsigned char, unsigned char, mixxx::Duration));
     MOCK_METHOD2(receive, void(const QByteArray&, mixxx::Duration));
+
+    // These tests are unrelated to scripting.
+    MOCK_METHOD0(startEngine, void());
+    MOCK_METHOD0(stopEngine, void());
 };
 
 class MockPortMidiDevice : public PortMidiDevice {
@@ -77,7 +79,7 @@ class PortMidiControllerTest : public MixxxTest {
         m_outputDeviceInfo.opened = 0;
 
         m_pController.reset(new MockPortMidiController(
-                &m_inputDeviceInfo, &m_outputDeviceInfo, 0, 0, config()));
+                &m_inputDeviceInfo, &m_outputDeviceInfo, 0, 0));
         m_pController->setPortMidiInputDevice(m_mockInput);
         m_pController->setPortMidiOutputDevice(m_mockOutput);
     }
@@ -211,9 +213,9 @@ TEST_F(PortMidiControllerTest, Poll_Read_Basic) {
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
 
-    EXPECT_CALL(*m_pController, receive(0x90, 0x3C, 0x40, _))
+    EXPECT_CALL(*m_pController, receivedShortMessage(0x90, 0x3C, 0x40, _))
             .InSequence(read);
-    EXPECT_CALL(*m_pController, receive(0x80, 0x3C, 0x40, _))
+    EXPECT_CALL(*m_pController, receivedShortMessage(0x80, 0x3C, 0x40, _))
             .InSequence(read);
 
     pollDevice();
@@ -245,9 +247,9 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExWithRealtime) {
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
-    EXPECT_CALL(*m_pController, receive(0xF8, 0x00, 0x00, _))
+    EXPECT_CALL(*m_pController, receivedShortMessage(0xF8, 0x00, 0x00, _))
             .InSequence(read);
-    EXPECT_CALL(*m_pController, receive(0xFA, 0x00, 0x00, _))
+    EXPECT_CALL(*m_pController, receivedShortMessage(0xFA, 0x00, 0x00, _))
             .InSequence(read);
     EXPECT_CALL(*m_pController, receive(sysex, _))
             .InSequence(read);
@@ -334,7 +336,7 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExInterrupted_FollowedByNormalMessag
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
-    EXPECT_CALL(*m_pController, receive(0x90, 0x3C, 0x40, _))
+    EXPECT_CALL(*m_pController, receivedShortMessage(0x90, 0x3C, 0x40, _))
             .InSequence(read);
 
     pollDevice();

@@ -13,8 +13,10 @@
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
-    DlgPrefEQ(QWidget *parent, EffectsManager* pEffectsManager,
-              UserSettingsPointer _config);
+    DlgPrefEQ(
+            QWidget* parent,
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            UserSettingsPointer _config);
     virtual ~DlgPrefEQ();
 
     QUrl helpUrl() const override;
@@ -40,11 +42,11 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotUpdateEqAutoReset(int);
     void slotUpdateGainAutoReset(int);
     void slotBypass(int state);
-    // Update the Master EQ
-    void slotUpdateMasterEQParameter(int value);
-    void slotMasterEQToDefault();
-    void setMasterEQParameter(int i, double value);
-    void slotMasterEqEffectChanged(int effectIndex);
+    // Update the Main EQ
+    void slotUpdateMainEQParameter(int value);
+    void slotMainEQToDefault();
+    void setMainEQParameter(int i, double value);
+    void slotMainEqEffectChanged(int effectIndex);
 
   signals:
     void apply(const QString &);
@@ -57,7 +59,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
     void updateBandFilter(int index, double value);
-    void setUpMasterEQ();
+    void setUpMainEQ();
     void applySelections();
 
     ControlProxy m_COLoFreq;
@@ -66,7 +68,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     double m_lowEqFreq, m_highEqFreq;
 
     // Members needed for changing the effects loaded on the EQ Effect Rack
-    EffectsManager* m_pEffectsManager;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
     EqualizerRackPointer m_pEQEffectRack;
     QuickEffectRackPointer m_pQuickEffectRack;
     OutputEffectRackPointer m_pOutputEffectRack;
@@ -79,11 +81,11 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     bool m_inSlotPopulateDeckEffectSelectors;
 
-    // Members needed for the Master EQ
+    // Members needed for the Main EQ
     QList<QSlider*> m_masterEQSliders;
     QList<QLabel*> m_masterEQValues;
     QList<QLabel*> m_masterEQLabels;
-    QWeakPointer<Effect> m_pEffectMasterEQ;
+    QWeakPointer<Effect> m_pEffectMainEQ;
 
     bool m_bEqAutoReset;
     bool m_bGainAutoReset;

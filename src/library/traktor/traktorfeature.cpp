@@ -84,9 +84,12 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
             << "bitrate"
             << "bpm"
             << "key";
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(pLibrary->trackCollections()->internalCollection(), tableName, idColumn,
-                           columns, false));
+    m_trackSource = QSharedPointer<BaseTrackCache>(new BaseTrackCache(
+            pLibrary->trackCollectionManager()->internalCollection(),
+            tableName,
+            idColumn,
+            columns,
+            false));
     QStringList searchColumns;
     searchColumns << "artist"
                   << "album"
@@ -97,13 +100,18 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
     m_trackSource->setSearchColumns(searchColumns);
 
     m_isActivated = false;
-    m_pTraktorTableModel = new TraktorTrackModel(this, pLibrary->trackCollections(), m_trackSource);
-    m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
+    m_pTraktorTableModel = new TraktorTrackModel(
+            this, pLibrary->trackCollectionManager(), m_trackSource);
+    m_pTraktorPlaylistModel = new TraktorPlaylistModel(
+            this, pLibrary->trackCollectionManager(), m_trackSource);
 
     m_title = tr("Traktor");
 
-    m_database = QSqlDatabase::cloneDatabase(pLibrary->trackCollections()->internalCollection()->database(),
-                                             "TRAKTOR_SCANNER");
+    m_database =
+            QSqlDatabase::cloneDatabase(pLibrary->trackCollectionManager()
+                                                ->internalCollection()
+                                                ->database(),
+                    "TRAKTOR_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -125,7 +133,8 @@ TraktorFeature::~TraktorFeature() {
 }
 
 BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
+    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(
+            this, m_pLibrary->trackCollectionManager(), m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }
@@ -205,8 +214,9 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
                   ":rating,:key)");
 
     //Parse Trakor XML file using SAX (for performance)
+    mixxx::FileInfo fileInfo(file);
     QFile traktor_file(file);
-    if (!Sandbox::askForAccess(file) || !traktor_file.open(QIODevice::ReadOnly)) {
+    if (!Sandbox::askForAccess(&fileInfo) || !traktor_file.open(QIODevice::ReadOnly)) {
         qDebug() << "Cannot open Traktor music collection";
         return nullptr;
     }
@@ -569,7 +579,8 @@ QString TraktorFeature::getTraktorMusicDatabase() {
     // We may not have access to this directory since it is in the user's
     // Documents folder. Ask for access if we don't have it.
     if (ni_directory.exists()) {
-        Sandbox::askForAccess(ni_directory.canonicalPath());
+        auto fileInfo = mixxx::FileInfo(ni_directory);
+        Sandbox::askForAccess(&fileInfo);
     }
 
     //Iterate over the subfolders

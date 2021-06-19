@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
+<<<<<<< HEAD
 <MixxxControllerPreset mixxxVersion="2.3.0+" schemaVersion="1">
+=======
+<MixxxControllerPreset mixxxVersion="2.4.0+" schemaVersion="1">
+>>>>>>> 2beb2dab889545e6c43003dd9e0bc8ff61ba6da0
     <info>
         <name>Behringer CMD PL-1</name>
         <author>Yann Le Doaré</author>

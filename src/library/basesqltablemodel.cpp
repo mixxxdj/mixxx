@@ -40,10 +40,7 @@ BaseSqlTableModel::BaseSqlTableModel(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace)
-        : BaseTrackTableModel(
-                  settingsNamespace,
-                  pTrackCollectionManager,
-                  parent),
+        : BaseTrackTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_database(pTrackCollectionManager->internalCollection()->database()),
           m_bInitialized(false) {
@@ -123,6 +120,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
             TrackModel::SortColumnId::TimesPlayed)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
     m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::LastPlayedAt)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
+    m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Rating)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
     m_columnIndexBySortColumnId[static_cast<int>(
@@ -140,6 +140,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::SampleRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::LastPlayedAt)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
@@ -738,7 +741,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
+    return m_pTrackCollectionManager->getTrackById(getTrackId(index));
 }
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
@@ -763,31 +766,43 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
 
 CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
     CoverInfo coverInfo;
-    coverInfo.hash =
+    coverInfo.setImageDigest(
+            index.sibling(index.row(),
+                         fieldIndex(ColumnCache::
+                                         COLUMN_LIBRARYTABLE_COVERART_DIGEST))
+                    .data()
+                    .toByteArray(),
             index.sibling(index.row(),
                          fieldIndex(ColumnCache::
                                          COLUMN_LIBRARYTABLE_COVERART_HASH))
                     .data()
-                    .toUInt();
-    coverInfo.type = static_cast<CoverInfo::Type>(
+                    .toUInt());
+    coverInfo.color = mixxx::RgbColor::fromQVariant(
             index.sibling(index.row(),
                          fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_TYPE))
-                    .data()
-                    .toInt());
-    coverInfo.source = static_cast<CoverInfo::Source>(
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_SOURCE))
-                    .data()
-                    .toInt());
-    coverInfo.coverLocation =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_LOCATION))
-                    .data()
-                    .toString();
-    coverInfo.trackLocation = getTrackLocation(index);
+                                         COLUMN_LIBRARYTABLE_COVERART_COLOR))
+                    .data());
+    if (coverInfo.hasImage()) {
+        coverInfo.type = static_cast<CoverInfo::Type>(
+                index.sibling(index.row(),
+                             fieldIndex(ColumnCache::
+                                             COLUMN_LIBRARYTABLE_COVERART_TYPE))
+                        .data()
+                        .toInt());
+        coverInfo.source = static_cast<CoverInfo::Source>(
+                index.sibling(index.row(),
+                             fieldIndex(ColumnCache::
+                                             COLUMN_LIBRARYTABLE_COVERART_SOURCE))
+                        .data()
+                        .toInt());
+        coverInfo.coverLocation =
+                index.sibling(index.row(),
+                             fieldIndex(ColumnCache::
+                                             COLUMN_LIBRARYTABLE_COVERART_LOCATION))
+                        .data()
+                        .toString();
+        coverInfo.trackLocation = getTrackLocation(index);
+    }
     return coverInfo;
 }
 
@@ -827,8 +842,8 @@ QList<TrackRef> BaseSqlTableModel::getTrackRefs(
     QList<TrackRef> trackRefs;
     trackRefs.reserve(indices.size());
     foreach (QModelIndex index, indices) {
-        trackRefs.append(TrackRef::fromFileInfo(
-                TrackFile(getTrackLocation(index)),
+        trackRefs.append(TrackRef::fromFilePath(
+                getTrackLocation(index),
                 getTrackId(index)));
     }
     return trackRefs;

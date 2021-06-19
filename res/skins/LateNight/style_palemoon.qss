@@ -1522,7 +1522,9 @@ WPushButton#CueDeck,
 #PlayCueMini WPushButton,
 WPushButton#LoopActivate,
 WPushButton#RateControls WPushButton,
-WPushButton#SyncDeck, WPushButton#SyncSampler,
+WPushButton#SyncDeck,
+WPushButton#SyncLeader,
+WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
 #Sampler WPushButton,
@@ -1633,6 +1635,8 @@ WPushButton#Reverse[pressed="true"],
 #LoopActivate[value="1"],
 #Reloop[value="1"],
 #SyncSampler[displayValue="1"],
+#SyncDeck[value="1"],
+#SyncLeader[value="2"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"],
 #MicDucking[value="2"],
@@ -1652,7 +1656,7 @@ QPushButton#pushButtonAnalyze:checked {
   }
 /* dim orange for momentary controls */
 #KeyControls WPushButton[pressed="true"],
-#SyncDeck[value="1"],
+#SyncLeader[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
 #BeatjumpControls WPushButton[value="1"],
@@ -1871,81 +1875,145 @@ WPushButton#PlayDeck[value="0"] {
 #Hotcue1 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__1.svg) no-repeat center center;
   }
-  #Hotcue1 WPushButton[displayValue="1"][dark="false"] {
+  #Hotcue1 WPushButton[displayValue="1"],
+  #Hotcue1 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__1_active.svg) no-repeat center center;
   }
-  #Hotcue1 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue1 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue1 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__1_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
   }
 
 #Hotcue2 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__2.svg) no-repeat center center;
   }
-  #Hotcue2 WPushButton[displayValue="1"] {
+  #Hotcue2 WPushButton[displayValue="1"],
+  #Hotcue2 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__2_active.svg) no-repeat center center;
   }
-  #Hotcue2 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue2 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue2 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__2_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
   }
 
 #Hotcue3 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__3.svg) no-repeat center center;
   }
-  #Hotcue3 WPushButton[displayValue="1"] {
+  #Hotcue3 WPushButton[displayValue="1"],
+  #Hotcue3 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__3_active.svg) no-repeat center center;
   }
-  #Hotcue3 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue3 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue3 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__3_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
   }
 
 #Hotcue4 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__4.svg) no-repeat center center;
   }
-  #Hotcue4 WPushButton[displayValue="1"] {
+  #Hotcue4 WPushButton[displayValue="1"],
+  #Hotcue4 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__4_active.svg) no-repeat center center;
   }
-  #Hotcue4 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue4 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue4 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__4_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
   }
 
 #Hotcue5 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__5.svg) no-repeat center center;
   }
-  #Hotcue5 WPushButton[displayValue="1"] {
+  #Hotcue5 WPushButton[displayValue="1"],
+  #Hotcue5 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__5_active.svg) no-repeat center center;
   }
-  #Hotcue5 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue5 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue5 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__5_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
   }
 
 #Hotcue6 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__6.svg) no-repeat center center;
   }
-  #Hotcue6 WPushButton[displayValue="1"] {
+  #Hotcue6 WPushButton[displayValue="1"],
+  #Hotcue6 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__6_active.svg) no-repeat center center;
   }
-  #Hotcue6 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue6 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue6 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__6_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
   }
 
 #Hotcue7 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__7.svg) no-repeat center center;
   }
-  #Hotcue7 WPushButton[displayValue="1"] {
+  #Hotcue7 WPushButton[displayValue="1"],
+  #Hotcue7 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__7_active.svg) no-repeat center center;
   }
-  #Hotcue7 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue7 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue7 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__7_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
   }
 
 #Hotcue8 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__8.svg) no-repeat center center;
   }
-  #Hotcue8 WPushButton[displayValue="1"] {
+  #Hotcue8 WPushButton[displayValue="1"],
+  #Hotcue8 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__8_active.svg) no-repeat center center;
   }
-  #Hotcue8 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue8 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue8 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__8_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
   }
 
 #SpecialCueButton_intro_start WPushButton[displayValue="0"] {
@@ -2040,6 +2108,10 @@ WPushButton#PlayDeck[value="0"] {
   }
   #SyncDeck[displayValue="1"] {
     image: url(skin:/palemoon/buttons/btn__sync_deck_active.svg) no-repeat center center;
+  }
+
+#SyncLeader {
+  image: url(skin:/palemoon/buttons/btn__leader_deck.svg) no-repeat center center;
   }
 
   #SyncSampler {

@@ -10,39 +10,17 @@
 #include <QStringList>
 
 #include "util/cache.h"
+#include "util/fileaccess.h"
 #include "util/performancetimer.h"
-#include "util/sandbox.h"
 #include "util/task.h"
-
-class DirInfo {
-  public:
-    DirInfo(const QDir& dir,
-            const SecurityTokenPointer& token)
-          : m_dir(dir),
-            m_token(token) {
-    }
-
-    const QDir& dir() const {
-        return m_dir;
-    }
-
-    const SecurityTokenPointer& token() const {
-        return m_token;
-    }
-
-  private:
-    QDir m_dir;
-    SecurityTokenPointer m_token;
-};
-
 
 class ScannerGlobal {
   public:
     ScannerGlobal(const QSet<QString>& trackLocations,
-                  const QHash<QString, mixxx::cache_key_t>& directoryHashes,
-                  const QRegExp& supportedExtensionsMatcher,
-                  const QRegExp& supportedCoverExtensionsMatcher,
-                  const QStringList& directoriesBlacklist)
+            const QHash<QString, mixxx::cache_key_t>& directoryHashes,
+            const QRegExp& supportedExtensionsMatcher,
+            const QRegExp& supportedCoverExtensionsMatcher,
+            const QStringList& directoriesBlacklist)
             : m_trackLocations(trackLocations),
               m_directoryHashes(directoryHashes),
               m_supportedExtensionsMatcher(supportedExtensionsMatcher),
@@ -59,7 +37,7 @@ class ScannerGlobal {
     }
 
     // Returns whether the track already exists in the database.
-    inline bool trackExistsInDatabase(const QString& trackLocation) const {
+    bool trackExistsInDatabase(const QString& trackLocation) const {
         return m_trackLocations.contains(trackLocation);
     }
 
@@ -68,7 +46,7 @@ class ScannerGlobal {
         return m_directoryHashes.value(directoryPath, mixxx::invalidCacheKey());
     }
 
-    inline bool directoryBlacklisted(const QString& directoryPath) const {
+    bool directoryBlacklisted(const QString& directoryPath) const {
         return m_directoriesBlacklist.contains(directoryPath);
     }
 
@@ -76,7 +54,7 @@ class ScannerGlobal {
         return m_supportedExtensionsMatcher;
     }
 
-    inline bool testAndMarkDirectoryScanned(const QDir& dir) {
+    bool testAndMarkDirectoryScanned(const QDir& dir) {
         const QString canonicalPath(dir.canonicalPath());
         QMutexLocker locker(&m_directoriesScannedMutex);
         if (m_directoriesScanned.contains(canonicalPath)) {
@@ -87,20 +65,19 @@ class ScannerGlobal {
         }
     }
 
-    inline void addUnhashedDir(const QDir& dir,
-                               const SecurityTokenPointer& token) {
+    void addUnhashedDir(const mixxx::FileAccess& dirAccess) {
         QMutexLocker locker(&m_directoriesUnhashedMutex);
-        m_directoriesUnhashed.append(DirInfo(dir, token));
+        m_directoriesUnhashed.append(dirAccess);
     }
 
-    inline QList<DirInfo>& unhashedDirs() {
+    const QList<mixxx::FileAccess>& unhashedDirs() const {
         // no need for locking here, because it is only used
         // when only one using thread is around.
         return m_directoriesUnhashed;
     }
 
     // TODO(rryan) test whether tasks should create their own QRegExp.
-    inline bool isAudioFileSupported(const QString& fileName) const {
+    bool isAudioFileSupported(const QString& fileName) const {
         QMutexLocker locker(&m_supportedExtensionsMatcherMutex);
         return m_supportedExtensionsMatcher.indexIn(fileName) != -1;
     }
@@ -110,16 +87,16 @@ class ScannerGlobal {
     }
 
     // TODO(rryan) test whether tasks should create their own QRegExp.
-    inline bool isCoverFileSupported(const QString& fileName) const {
+    bool isCoverFileSupported(const QString& fileName) const {
         QMutexLocker locker(&m_supportedCoverExtensionsMatcherMutex);
         return m_supportedCoverExtensionsMatcher.indexIn(fileName) != -1;
     }
 
-    inline bool shouldCancel() const {
+    bool shouldCancel() const {
         return m_shouldCancel;
     }
 
-    inline volatile const bool* shouldCancelPointer() const {
+    volatile const bool* shouldCancelPointer() const {
         return &m_shouldCancel;
     }
 
@@ -127,7 +104,7 @@ class ScannerGlobal {
         m_shouldCancel = true;
     }
 
-    inline bool scanFinishedCleanly() const {
+    bool scanFinishedCleanly() const {
         return m_scanFinishedCleanly;
     }
 
@@ -174,7 +151,6 @@ class ScannerGlobal {
         m_numScannedDirectories++;
     }
 
-
   private:
     TaskWatcher m_watcher;
 
@@ -197,7 +173,7 @@ class ScannerGlobal {
     // discovered directories, they are scanned in a
     // second run to avoid swapping between duplicated tracks
     mutable QMutex m_directoriesUnhashedMutex;
-    QList<DirInfo> m_directoriesUnhashed;
+    QList<mixxx::FileAccess> m_directoriesUnhashed;
 
     // Typically there are 1 to 2 entries in the blacklist so a O(n) search in a
     // QList may have better constant factors than a O(1) QSet check. However,

@@ -12,9 +12,10 @@
 #include "moc_dlgpreflv2.cpp"
 #include "util/math.h"
 
-DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
-                       UserSettingsPointer pConfig,
-                       EffectsManager* pEffectsManager)
+DlgPrefLV2::DlgPrefLV2(QWidget* pParent,
+        LV2Backend* lv2Backend,
+        UserSettingsPointer pConfig,
+        std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pLV2Backend(lv2Backend),
           m_iCheckedParameters(0),

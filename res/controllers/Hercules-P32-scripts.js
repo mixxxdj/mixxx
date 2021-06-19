@@ -141,7 +141,7 @@ P32.slipButton = new components.Button({
     connect: function() {
         for (var d = 1; d <= 4; d++) {
             this.connections.push(
-                engine.connectControl("[Channel" + d + "]", "slip_enabled", this.output)
+                engine.connectControl("[Channel" + d + "]", "slip_enabled", this.output.bind(this))
             );
         }
     },
@@ -222,9 +222,9 @@ P32.Deck = function(deckNumbers, channel) {
             };
         },
         connect: function() {
-            this.connections[0] = engine.connectControl(this.group, "beatloop_size", this.output);
+            this.connections[0] = engine.connectControl(this.group, "beatloop_size", this.output.bind(this));
             if (loopEnabledDot) {
-                this.connections[1] = engine.connectControl(this.group, "loop_enabled", this.output);
+                this.connections[1] = engine.connectControl(this.group, "loop_enabled", this.output.bind(this));
             }
         },
         output: function(_value, _group, _control) {

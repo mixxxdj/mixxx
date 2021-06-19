@@ -15,58 +15,24 @@
 #include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
 #include "skin/legacy/legacyskinparser.h"
+#include "skin/skin.h"
 #include "skin/skinloader.h"
 #include "util/screensaver.h"
 #include "util/widgethelper.h"
 
 using mixxx::skin::SkinManifest;
+using mixxx::skin::SkinPointer;
 
-namespace {
-
-const QRegExp kMinSizeRegExp("<MinimumSize>(\\d+), *(\\d+)<");
-
-bool skinFitsScreenSize(
-        const QScreen& screen,
-        const QString& skin) {
-    // Use the full resolution of the entire screen that is
-    // available in full-screen mode.
-    const auto screenSize = screen.size();
-    QFile skinfile(skin + QStringLiteral("/skin.xml"));
-    if (skinfile.open(QFile::ReadOnly | QFile::Text)) {
-        QTextStream in(&skinfile);
-        bool found_size = false;
-        while (!in.atEnd()) {
-            if (kMinSizeRegExp.indexIn(in.readLine()) != -1) {
-                found_size = true;
-                break;
-            }
-        }
-        if (found_size) {
-            return !(kMinSizeRegExp.cap(1).toInt() > screenSize.width() ||
-                    kMinSizeRegExp.cap(2).toInt() > screenSize.height());
-        }
-    }
-
-    // If regex failed, fall back to skin name parsing.
-    QString skinName = skin.left(skin.indexOf(QRegExp("\\d")));
-    QString resName = skin.right(skin.count() - skinName.count());
-    QString res = resName.left(resName.lastIndexOf(QRegExp("\\d")) + 1);
-    QString skinWidth = res.left(res.indexOf("x"));
-    QString skinHeight = res.right(res.count() - skinWidth.count() - 1);
-    return skinWidth.toInt() <= screenSize.width() &&
-            skinHeight.toInt() <= screenSize.height();
-}
-
-} // namespace
-
-DlgPrefInterface::DlgPrefInterface(QWidget* parent,
+DlgPrefInterface::DlgPrefInterface(
+        QWidget* parent,
         MixxxMainWindow* mixxx,
-        SkinLoader* pSkinLoader,
+        std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_mixxx(mixxx),
           m_pSkinLoader(pSkinLoader),
+          m_pSkin(pSkinLoader->getConfiguredSkin()),
           m_dScaleFactorAuto(1.0),
           m_bUseAutoScaleFactor(false),
           m_dScaleFactor(1.0),
@@ -74,6 +40,14 @@ DlgPrefInterface::DlgPrefInterface(QWidget* parent,
           m_bStartWithFullScreen(false),
           m_bRebootMixxxView(false) {
     setupUi(this);
+
+    // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
+    m_dDevicePixelRatio = getDevicePixelRatioF(this);
+
+    VERIFY_OR_DEBUG_ASSERT(m_pSkin != nullptr) {
+        qWarning() << "Skipping creation of DlgPrefInterface because there is no skin available.";
+        return;
+    }
 
     // Locale setting
     // Iterate through the available locales and add them to the combobox
@@ -145,38 +119,25 @@ DlgPrefInterface::DlgPrefInterface(QWidget* parent,
     skinDescriptionText->setText("");
     skinDescriptionText->hide();
 
-    QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
-    QList<QFileInfo> skins;
-    for (QDir& dir : skinSearchPaths) {
-        dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-        skins.append(dir.entryInfoList());
-    }
-
-    m_dDevicePixelRatio = getDevicePixelRatioF(this);
-
-    QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
+    const QList<SkinPointer> skins = m_pSkinLoader->getSkins();
     int index = 0;
-    const auto* const pScreen = getScreen();
-    for (const QFileInfo& skinInfo : skins) {
-        ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
-
-        if (skinInfo.absoluteFilePath() == configuredSkinPath) {
-            m_skin = skinInfo.fileName();
-            ComboBoxSkinconf->setCurrentIndex(index);
-            // schemes must be updated here to populate the drop-down box and set m_colorScheme
-            slotUpdateSchemes();
-            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin,
-                    m_colorScheme,
-                    m_dDevicePixelRatio));
-            if (skinFitsScreenSize(*pScreen, configuredSkinPath)) {
-                warningLabel->hide();
-            } else {
-                warningLabel->show();
-            }
-            slotSetSkinDescription(m_skin);
-        }
+    for (const SkinPointer& pSkin : skins) {
+        ComboBoxSkinconf->insertItem(index, pSkin->name());
+        m_skins.insert(pSkin->name(), pSkin);
         index++;
     }
+
+    ComboBoxSkinconf->setCurrentIndex(index);
+    // schemes must be updated here to populate the drop-down box and set m_colorScheme
+    slotUpdateSchemes();
+    slotSetSkinPreview();
+    const auto* const pScreen = getScreen();
+    if (m_pSkin->fitsScreenSize(*pScreen)) {
+        warningLabel->hide();
+    } else {
+        warningLabel->show();
+    }
+    slotSetSkinDescription();
 
     connect(ComboBoxSkinconf,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -238,8 +199,7 @@ QScreen* DlgPrefInterface::getScreen() const {
 void DlgPrefInterface::slotUpdateSchemes() {
     // Re-populates the scheme combobox and attempts to pick the color scheme from config file.
     // Since this involves opening a file we won't do this as part of regular slotUpdate
-    QList<QString> schlist = LegacySkinParser::getSchemeList(
-                m_pSkinLoader->getSkinPath(m_skin));
+    const QList<QString> schlist = m_pSkin->colorschemes();
 
     ComboBoxSchemeconf->clear();
 
@@ -247,7 +207,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
         ComboBoxSchemeconf->setEnabled(false);
         ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", nullptr));
         ComboBoxSchemeconf->setCurrentIndex(0);
-        // clear m_colorScheme so that SkinLoader::getSkinPreview returns the correct preview
+        // clear m_colorScheme so that the correct skin preview is loaded
         m_colorScheme = QString();
     } else {
         ComboBoxSchemeconf->setEnabled(true);
@@ -273,11 +233,15 @@ void DlgPrefInterface::slotUpdateSchemes() {
 }
 
 void DlgPrefInterface::slotUpdate() {
-    m_skinOnUpdate = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
-    if (m_skinOnUpdate.isEmpty()) {
-        m_skinOnUpdate = m_pSkinLoader->getDefaultSkinName();
+    const QString skinNameOnUpdate =
+            m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
+    const SkinPointer pSkinOnUpdate = m_skins[skinNameOnUpdate];
+    if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
+        m_skinNameOnUpdate = pSkinOnUpdate->name();
+    } else {
+        m_skinNameOnUpdate = m_pSkinLoader->getDefaultSkinName();
     }
-    ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinOnUpdate));
+    ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinNameOnUpdate));
     slotUpdateSchemes();
     m_bRebootMixxxView = false;
 
@@ -379,16 +343,12 @@ void DlgPrefInterface::slotSetScheme(int) {
         m_colorScheme = newScheme;
         m_bRebootMixxxView = true;
     }
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin,
-            m_colorScheme,
-            m_dDevicePixelRatio));
+    slotSetSkinPreview();
 }
 
-void DlgPrefInterface::slotSetSkinDescription(const QString& skin) {
-    SkinManifest manifest = LegacySkinParser::getSkinManifest(
-            LegacySkinParser::openSkin(m_pSkinLoader->getSkinPath(skin)));
-    QString description = QString::fromStdString(manifest.description());
-    if (manifest.has_description() && !description.isEmpty()) {
+void DlgPrefInterface::slotSetSkinDescription() {
+    const QString description = m_pSkin->description();
+    if (!description.isEmpty()) {
         skinDescriptionText->show();
         skinDescriptionText->setText(description);
     } else {
@@ -396,29 +356,40 @@ void DlgPrefInterface::slotSetSkinDescription(const QString& skin) {
     }
 }
 
+void DlgPrefInterface::slotSetSkinPreview() {
+    QPixmap preview = m_pSkin->preview(m_colorScheme);
+    preview.setDevicePixelRatio(m_dDevicePixelRatio);
+    skinPreviewLabel->setPixmap(preview.scaled(
+            QSize(640, 360) * m_dDevicePixelRatio,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation));
+}
+
 void DlgPrefInterface::slotSetSkin(int) {
-    QString newSkin = ComboBoxSkinconf->currentText();
-    if (newSkin != m_skin) {
-        m_skin = newSkin;
-        m_bRebootMixxxView = newSkin != m_skinOnUpdate;
-        const auto* const pScreen = getScreen();
-        if (pScreen &&
-                skinFitsScreenSize(*pScreen, m_pSkinLoader->getSkinPath(m_skin))) {
-            warningLabel->hide();
-        } else {
-            warningLabel->show();
-        }
-        slotUpdateSchemes();
-        slotSetSkinDescription(m_skin);
+    QString newSkinName = ComboBoxSkinconf->currentText();
+    if (newSkinName == m_pSkin->name()) {
+        return;
     }
 
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin,
-            m_colorScheme,
-            m_dDevicePixelRatio));
+    const SkinPointer pNewSkin = m_skins[newSkinName];
+    VERIFY_OR_DEBUG_ASSERT(pNewSkin != nullptr && pNewSkin->isValid()) {
+        return;
+    }
+    m_pSkin = pNewSkin;
+    m_bRebootMixxxView = newSkinName != m_skinNameOnUpdate;
+    const auto* const pScreen = getScreen();
+    if (pScreen && m_pSkin->fitsScreenSize(*pScreen)) {
+        warningLabel->hide();
+    } else {
+        warningLabel->show();
+    }
+    slotUpdateSchemes();
+    slotSetSkinDescription();
+    slotSetSkinPreview();
 }
 
 void DlgPrefInterface::slotApply() {
-    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_skin);
+    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_pSkin->name());
     m_pConfig->set(ConfigKey("[Config]", "Scheme"), m_colorScheme);
 
     QString locale = ComboBoxLocale->itemData(
@@ -457,7 +428,7 @@ void DlgPrefInterface::slotApply() {
     if (m_bRebootMixxxView) {
         m_mixxx->rebootMixxxView();
         // Allow switching skins multiple times without closing the dialog
-        m_skinOnUpdate = m_skin;
+        m_skinNameOnUpdate = m_pSkin->name();
     }
     m_bRebootMixxxView = false;
 }

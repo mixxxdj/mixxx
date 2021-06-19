@@ -18,12 +18,13 @@
 #ifndef __MACAPPSTORE__
 #include "effects/builtin/reverbeffect.h"
 #endif
-#include "effects/builtin/echoeffect.h"
 #include "effects/builtin/autopaneffect.h"
-#include "effects/builtin/phasereffect.h"
+#include "effects/builtin/echoeffect.h"
 #include "effects/builtin/loudnesscontoureffect.h"
 #include "effects/builtin/metronomeeffect.h"
+#include "effects/builtin/phasereffect.h"
 #include "effects/builtin/tremoloeffect.h"
+#include "effects/builtin/whitenoiseeffect.h"
 
 BuiltInBackend::BuiltInBackend(QObject* pParent)
         : EffectsBackend(pParent, EffectBackendType::BuiltIn) {
@@ -52,6 +53,7 @@ BuiltInBackend::BuiltInBackend(QObject* pParent)
 #endif
     registerEffect<PhaserEffect>();
     registerEffect<MetronomeEffect>();
+    registerEffect<WhiteNoiseEffect>();
     registerEffect<TremoloEffect>();
 }
 

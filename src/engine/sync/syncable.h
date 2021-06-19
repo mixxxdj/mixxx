@@ -31,8 +31,36 @@ inline bool toSynchronized(SyncMode mode) {
     return mode > SYNC_NONE;
 }
 
+inline bool isFollower(SyncMode mode) {
+    return (mode == SYNC_FOLLOWER);
+}
+
 inline bool isMaster(SyncMode mode) {
     return (mode == SYNC_MASTER_SOFT || mode == SYNC_MASTER_EXPLICIT);
+}
+
+enum SyncMasterLight {
+    MASTER_INVALID = -1,
+    MASTER_OFF = 0,
+    MASTER_SOFT = 1,
+    MASTER_EXPLICIT = 2,
+};
+
+inline SyncMasterLight SyncModeToMasterLight(SyncMode mode) {
+    switch (mode) {
+    case SYNC_INVALID:
+    case SYNC_NONE:
+    case SYNC_FOLLOWER:
+        return MASTER_OFF;
+    case SYNC_MASTER_SOFT:
+        return MASTER_SOFT;
+    case SYNC_MASTER_EXPLICIT:
+        return MASTER_EXPLICIT;
+        break;
+    case SYNC_NUM_MODES:
+        break;
+    }
+    return MASTER_INVALID;
 }
 
 /// Syncable is an abstract base class for any object that wants to participate
@@ -48,7 +76,7 @@ class Syncable {
     virtual void setSyncMode(SyncMode mode) = 0;
 
     // Notify a Syncable that it is now the only currently-playing syncable.
-    virtual void notifyOnlyPlayingSyncable() = 0;
+    virtual void notifyUniquePlaying() = 0;
 
     // Notify a Syncable that they should sync phase.
     virtual void requestSync() = 0;
@@ -84,6 +112,11 @@ class Syncable {
     // signal loops could occur.
     virtual void setMasterBpm(double bpm) = 0;
 
+    // Tells a Syncable that it's going to be used as a source for master
+    // params. This is a gross hack so that the SyncControl can undo its
+    // half/double adjustment so bpms are initialized correctly.
+    virtual void notifyMasterParamSource() = 0;
+
     // Combines the above three calls into one, since they are often set
     // simultaneously.  Avoids redundant recalculation that would occur by
     // using the three calls separately.
@@ -106,13 +139,10 @@ class SyncableListener {
     // Syncable::notifySyncModeChanged.
     virtual void requestSyncMode(Syncable* pSyncable, SyncMode mode) = 0;
 
-    // Used by Syncables to tell EngineSync it wants to be enabled in any mode
-    // (master/follower).
-    virtual void requestEnableSync(Syncable* pSyncable, bool enabled) = 0;
-
     // A Syncable must never call notifyBpmChanged in response to a setMasterBpm()
     // call.
-    virtual void notifyBpmChanged(Syncable* pSyncable, double bpm) = 0;
+    virtual void notifyBaseBpmChanged(Syncable* pSyncable, double bpm) = 0;
+    virtual void notifyRateChanged(Syncable* pSyncable, double bpm) = 0;
     virtual void requestBpmUpdate(Syncable* pSyncable, double bpm) = 0;
 
     // Syncables notify EngineSync directly about various events. EngineSync

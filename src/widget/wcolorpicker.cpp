@@ -210,7 +210,7 @@ void WColorPicker::addCustomColorButton(QGridLayout* pLayout, int row, int colum
     pLayout->addWidget(pButton, row, column);
 }
 
-void WColorPicker::setColorButtonChecked(mixxx::RgbColor::optional_t color, bool checked) {
+void WColorPicker::setColorButtonChecked(const mixxx::RgbColor::optional_t& color, bool checked) {
     // Unset currently selected color
     QPushButton* pButton = nullptr;
     if (color) {
@@ -236,7 +236,7 @@ void WColorPicker::resetSelectedColor() {
     setColorButtonChecked(m_selectedColor, false);
 }
 
-void WColorPicker::setSelectedColor(mixxx::RgbColor::optional_t color) {
+void WColorPicker::setSelectedColor(const mixxx::RgbColor::optional_t& color) {
     resetSelectedColor();
 
     m_selectedColor = color;
@@ -254,6 +254,6 @@ void WColorPicker::setColorPalette(const ColorPalette& palette) {
     addColorButtons();
 }
 
-void WColorPicker::slotColorPicked(mixxx::RgbColor::optional_t color) {
+void WColorPicker::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     setSelectedColor(color);
 }

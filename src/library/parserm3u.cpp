@@ -97,7 +97,7 @@ QString ParserM3u::getFilePath(QTextStream* stream, const QString& basePath) {
             // Skip comments
             continue;
         }
-        auto trackFile = playlistEntryToTrackFile(textline, basePath);
+        auto trackFile = playlistEntryToFileInfo(textline, basePath);
         if (trackFile.checkFileExists()) {
             return trackFile.location();
         }

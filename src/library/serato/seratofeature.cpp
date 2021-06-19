@@ -143,12 +143,7 @@ inline quint32 bytesToUInt32(const QByteArray& data) {
     VERIFY_OR_DEBUG_ASSERT(data.size() >= static_cast<int>(sizeof(quint32))) {
         return 0;
     }
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     return qFromBigEndian<quint32>(data.constData());
-#else
-    return qFromBigEndian<quint32>(
-            reinterpret_cast<const uchar*>(data.constData()));
-#endif
 }
 
 inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
@@ -352,8 +347,9 @@ QString parseCrate(
         return QString();
     }
 
+    mixxx::FileInfo fileInfo(crateFilePath);
     QFile crateFile(crateFilePath);
-    if (!Sandbox::askForAccess(crateFilePath) || !crateFile.open(QIODevice::ReadOnly)) {
+    if (!Sandbox::askForAccess(&fileInfo) || !crateFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << crateFilePath
                    << " for reading.";
@@ -533,8 +529,9 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             ":serato_db"
             ")");
 
+    mixxx::FileInfo fileInfo(databaseFilePath);
     QFile databaseFile(databaseFilePath);
-    if (!Sandbox::askForAccess(databaseFilePath) || !databaseFile.open(QIODevice::ReadOnly)) {
+    if (!Sandbox::askForAccess(&fileInfo) || !databaseFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << databaseFilePath
                    << " for reading.";
@@ -887,7 +884,8 @@ SeratoFeature::SeratoFeature(
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection, kSeratoLibraryTable, LIBRARYTABLE_ID, columns, false));
     m_trackSource->setSearchColumns(searchColumns);
-    m_pSeratoPlaylistModel = new SeratoPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
+    m_pSeratoPlaylistModel = new SeratoPlaylistModel(
+            this, pLibrary->trackCollectionManager(), m_trackSource);
 
     m_title = tr("Serato");
 
@@ -951,7 +949,8 @@ void SeratoFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    SeratoPlaylistModel* model = new SeratoPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
+    SeratoPlaylistModel* model = new SeratoPlaylistModel(
+            this, m_pLibrary->trackCollectionManager(), m_trackSource);
     model->setPlaylist(playlist);
     return model;
 }

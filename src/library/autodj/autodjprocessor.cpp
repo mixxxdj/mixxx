@@ -136,6 +136,13 @@ AutoDJProcessor::AutoDJProcessor(
     connect(m_pSkipNext, &ControlObject::valueChanged,
             this, &AutoDJProcessor::controlSkipNext);
 
+    m_pAddRandomTrack = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "add_random_track"));
+    connect(m_pAddRandomTrack,
+            &ControlObject::valueChanged,
+            this,
+            &AutoDJProcessor::controlAddRandomTrack);
+
     m_pFadeNow = new ControlPushButton(
             ConfigKey("[AutoDJ]", "fade_now"));
     connect(m_pFadeNow, &ControlObject::valueChanged,
@@ -186,6 +193,7 @@ AutoDJProcessor::~AutoDJProcessor() {
     delete m_pCOCrossfaderReverse;
 
     delete m_pSkipNext;
+    delete m_pAddRandomTrack;
     delete m_pShufflePlaylist;
     delete m_pEnabledAutoDJ;
     delete m_pFadeNow;
@@ -581,6 +589,12 @@ void AutoDJProcessor::controlSkipNext(double value) {
     }
 }
 
+void AutoDJProcessor::controlAddRandomTrack(double value) {
+    if (value > 0.0) {
+        emit randomTrackRequested(1);
+    }
+}
+
 void AutoDJProcessor::crossfaderChanged(double value) {
     if (m_eState == ADJ_IDLE) {
         // The user is changing the crossfader manually. If the user has
@@ -846,7 +860,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
             m_pAutoDJTableModel->index(0, 0));
 
         if (nextTrack) {
-            if (nextTrack->checkFileExists()) {
+            if (nextTrack->getFileInfo().checkFileExists()) {
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist.
@@ -1105,10 +1119,10 @@ double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
     }
 
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pFromTrackAudibleSound && pFromTrackAudibleSound->getLength() > 0) {
-        double lastSound = pFromTrackAudibleSound->getEndPosition();
-        if (lastSound > 0) {
-            return samplePositionToSeconds(lastSound, pDeck);
+    if (pFromTrackAudibleSound) {
+        Cue::StartAndEndPositions pos = pFromTrackAudibleSound->getStartAndEndPosition();
+        if (pos.endPosition > 0 && (pos.endPosition - pos.startPosition) > 0) {
+            return samplePositionToSeconds(pos.endPosition, pDeck);
         }
     }
     return getEndSecond(pDeck);

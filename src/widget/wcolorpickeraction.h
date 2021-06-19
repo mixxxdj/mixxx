@@ -16,7 +16,7 @@ class WColorPickerAction : public QWidgetAction {
             QWidget* parent = nullptr);
 
     void resetSelectedColor();
-    void setSelectedColor(mixxx::RgbColor::optional_t color);
+    void setSelectedColor(const mixxx::RgbColor::optional_t& color);
 
     /// Set a new color palette for the underlying color picker.
     ///
@@ -29,7 +29,7 @@ class WColorPickerAction : public QWidgetAction {
     void setColorPalette(const ColorPalette& palette);
 
   signals:
-    void colorPicked(mixxx::RgbColor::optional_t color);
+    void colorPicked(const mixxx::RgbColor::optional_t& color);
 
   private:
     parented_ptr<WColorPicker> m_pColorPicker;

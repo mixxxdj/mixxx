@@ -43,10 +43,10 @@ if(NOT CPACK_DEBIAN_GPG_RET EQUAL "0")
 endif()
 
 # hack to advance the version from the legacy version like this:
-# dpkg --compare-versions 2.3.0~beta~git8163 lt 2.3.0~beta1~2345~gffffff && echo true
-# dpkg --compare-versions 2.3.0~beta1~2345~gffffff lt 2.3.0 && echo true
-if(DEB_UPLOAD_PPA MATCHES "mixxxbetas")
-  string(REPLACE "2.3~beta~" "2.3.0~beta1~" CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_DEBIAN_PACKAGE_VERSION}")
+# dpkg --compare-versions 2.4.0~alpha~pre1~git7859  lt 2.4.0~alpha1~5463~gf2da9e619d && echo true
+# dpkg --compare-versions 2.4.0~alpha1~5463~gf2da9e619d lt 2.4.0 && echo true
+if(DEB_UPLOAD_PPA MATCHES "nightlies")
+  string(REPLACE "2.4~alpha~" "2.4.0~alpha1~" CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_DEBIAN_PACKAGE_VERSION}")
 endif()
 
 message(NOTICE "Creating mixxx_${CPACK_DEBIAN_PACKAGE_VERSION}.orig.tar.gz")
