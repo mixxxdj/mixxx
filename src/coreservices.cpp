@@ -114,7 +114,7 @@ void CoreServices::initializeSettings() {
     // due to potential QMessageBox invocations within migrateOldSettings().
     // Solution: Start Mixxx with default settings, migrate the preferences, and then restart
     // immediately.
-    if (!args.getSettingsPathSet()) {
+    if (!m_cmdlineArgs.getSettingsPathSet()) {
         CmdlineArgs::Instance().setSettingsPath(Sandbox::migrateOldSettings());
     }
 #endif
