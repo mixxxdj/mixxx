@@ -41,9 +41,7 @@ endif()
 # Set a default build type if none was specified
 # See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
 set(default_build_type "RelWithDebInfo")
-if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND NOT WIN32)
-  # Debug builds are broken on Windows due to CMake/vcpkg linking issues.
-  # As a workaround, we just default to RelWithDebInfo on Windows.
+if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
   set(default_build_type "Debug")
 endif()
 
