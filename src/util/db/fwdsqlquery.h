@@ -1,20 +1,16 @@
-#ifndef MIXXX_FWDSQLQUERY_H
-#define MIXXX_FWDSQLQUERY_H
+#pragma once
 
-
+#include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
-#include <QSqlError>
-
-#include "util/db/dbid.h"
-#include "util/db/dbfieldindex.h"
 
 #include "util/assert.h"
+#include "util/db/dbfieldindex.h"
+#include "util/db/dbid.h"
 
 // forward declarations
 class SqlQueryFinisher;
 class FwdSqlQuerySelectResult;
-
 
 // A forward-only QSqlQuery that is prepared immediately
 // during initialization. It offers a limited set of functions
@@ -31,13 +27,16 @@ class FwdSqlQuerySelectResult;
 //
 // Please note that forward-only queries don't provide information
 // about the size of the result set!
-class FwdSqlQuery: protected QSqlQuery {
+class FwdSqlQuery : protected QSqlQuery {
     friend class SqlQueryFinisher;
     friend class FwdSqlQuerySelectResult;
 
   public:
+    FwdSqlQuery()
+            : m_prepared(false) {
+    }
     FwdSqlQuery(
-            QSqlDatabase database,
+            const QSqlDatabase& database,
             const QString& statement);
 
     bool isPrepared() const {
@@ -45,25 +44,24 @@ class FwdSqlQuery: protected QSqlQuery {
     }
 
     bool hasError() const {
-        return lastError().isValid() && (lastError().type() != QSqlError::NoError);
+        return lastError().isValid() &&
+                (lastError().type() != QSqlError::NoError);
+    }
+    QSqlError lastError() const {
+        return QSqlQuery::lastError();
     }
 
-    static const int BOOLEAN_FALSE = 0;
-    static const int BOOLEAN_TRUE = 1;
-
-    // Generic function for type QVariant
     void bindValue(const QString& placeholder, const QVariant& value) {
         QSqlQuery::bindValue(placeholder, value);
-    }
-
-    // Overloaded function for type bool
-    void bindValue(const QString& placeholder, bool value) {
-        bindValue(placeholder, value ? QVariant(BOOLEAN_TRUE) : QVariant(BOOLEAN_FALSE));
     }
 
     // Overloaded function for type DbId
     void bindValue(const QString& placeholder, const DbId& value) {
         bindValue(placeholder, value.toVariant());
+    }
+
+    QString executedQuery() const {
+        return QSqlQuery::executedQuery();
     }
 
     // Execute the prepared query and log errors on failure.
@@ -108,10 +106,5 @@ class FwdSqlQuery: protected QSqlQuery {
     bool fieldValueBoolean(DbFieldIndex fieldIndex) const;
 
   private:
-    FwdSqlQuery() = default; // hidden
-
     bool m_prepared;
 };
-
-
-#endif // MIXXX_FWDSQLQUERY_H

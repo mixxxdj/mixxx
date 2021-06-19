@@ -4,6 +4,7 @@
       <author>ePoxi</author>
       <description>You must load the scene file first. Download it from the forums.</description>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=1999</forums>
+      <manual>korg_nanokontrol</manual>
     </info>
     <controller id="nanoKONTROL MIDI 1">
         <scriptfiles/>

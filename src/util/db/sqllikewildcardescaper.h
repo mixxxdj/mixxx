@@ -1,6 +1,4 @@
-#ifndef MIXXX_SQLLIKEWILDCARDESCAPER_H
-#define MIXXX_SQLLIKEWILDCARDESCAPER_H
-
+#pragma once
 
 #include <QString>
 
@@ -17,6 +15,3 @@ class SqlLikeWildcardEscaper final {
   private:
     SqlLikeWildcardEscaper() = delete; // utility class
 };
-
-
-#endif // MIXXX_SQLLIKEWILDCARDESCAPER_H

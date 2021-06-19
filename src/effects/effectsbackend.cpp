@@ -1,7 +1,9 @@
+#include "effects/effectsbackend.h"
+
 #include <QtDebug>
 
-#include "effects/effectsbackend.h"
 #include "effects/effectsmanager.h"
+#include "moc_effectsbackend.cpp"
 
 EffectsBackend::EffectsBackend(QObject* pParent,
                                EffectBackendType type)
@@ -26,7 +28,7 @@ void EffectsBackend::registerEffect(const QString& id,
 
     m_registeredEffects[id] = RegisteredEffect(pManifest, pInstantiator);
     m_effectIds.append(id);
-    emit(effectRegistered(pManifest));
+    emit effectRegistered(pManifest);
 }
 
 const QList<QString> EffectsBackend::getEffectIds() const {

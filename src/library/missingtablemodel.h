@@ -1,20 +1,17 @@
-#ifndef MISSINGTABLEMODEL_H
-#define MISSINGTABLEMODEL_H
+#pragma once
 
-#include <QtSql>
 #include <QItemDelegate>
 #include <QModelIndex>
 #include <QObject>
+#include <QtSql>
 
-#include "trackmodel.h"
 #include "library/basesqltablemodel.h"
+#include "library/trackmodel.h"
 
-class TrackCollection;
-
-class MissingTableModel : public BaseSqlTableModel {
+class MissingTableModel final : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    MissingTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    MissingTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
     ~MissingTableModel() final;
 
     void setTableModel(int id = -1);
@@ -22,7 +19,5 @@ class MissingTableModel : public BaseSqlTableModel {
     bool isColumnInternal(int column) final;
     void purgeTracks(const QModelIndexList& indices) final;
     Qt::ItemFlags flags(const QModelIndex &index) const final;
-    CapabilitiesFlags getCapabilities() const final;
+    Capabilities getCapabilities() const final;
 };
-
-#endif

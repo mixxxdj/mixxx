@@ -1,7 +1,9 @@
+#include "widget/weffectparameter.h"
+
 #include <QtDebug>
 
-#include "widget/weffectparameter.h"
 #include "effects/effectsmanager.h"
+#include "moc_weffectparameter.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectParameter::WEffectParameter(QWidget* pParent, EffectsManager* pEffectsManager)

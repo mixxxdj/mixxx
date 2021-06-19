@@ -1,11 +1,10 @@
-#ifndef ENGINECOMPRESSOR_H
-#define ENGINECOMPRESSOR_H
+#pragma once
 
 #include "util/types.h"
 
 class EngineSideChainCompressor {
   public:
-    EngineSideChainCompressor(const char* group);
+    EngineSideChainCompressor(const QString& group);
     virtual ~EngineSideChainCompressor() { };
 
     void setParameters(CSAMPLE threshold, CSAMPLE strength,
@@ -81,5 +80,3 @@ class EngineSideChainCompressor {
     CSAMPLE m_attackPerFrame;
     CSAMPLE m_decayPerFrame;
 };
-
-#endif

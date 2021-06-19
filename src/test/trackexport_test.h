@@ -1,3 +1,5 @@
+#pragma once
+
 #include "library/export/trackexportworker.h"
 
 #include <future>
@@ -7,29 +9,26 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QPair>
-
-#include "track/track.h"
-
+#include <QTemporaryDir>
 
 class FakeOverwriteAnswerer : public QObject {
     Q_OBJECT
   public:
     FakeOverwriteAnswerer(TrackExportWorker* worker) : m_worker(worker) {
-        connect(m_worker, SIGNAL(progress(QString, int, int)), this,
-            SLOT(slotProgress(QString, int, int)));
+        connect(m_worker, &TrackExportWorker::progress, this, &FakeOverwriteAnswerer::slotProgress);
         connect(m_worker,
-            SIGNAL(askOverwriteMode(
-                    QString, std::promise<TrackExportWorker::OverwriteAnswer>*)),
-            this,
-            SLOT(slotAskOverwriteMode(
-                    QString,
-                    std::promise<TrackExportWorker::OverwriteAnswer>*)));
-        connect(m_worker, SIGNAL(canceled()), this, SLOT(cancelButtonClicked()));
+                &TrackExportWorker::askOverwriteMode,
+                this,
+                &FakeOverwriteAnswerer::slotAskOverwriteMode);
+        connect(m_worker,
+                &TrackExportWorker::canceled,
+                this,
+                &FakeOverwriteAnswerer::cancelButtonClicked);
     }
     virtual ~FakeOverwriteAnswerer();
 
-    void setAnswer(QString expected_filename,
-                   TrackExportWorker::OverwriteAnswer answer) {
+    void setAnswer(const QString& expected_filename,
+            TrackExportWorker::OverwriteAnswer answer) {
         // We should never copy a duplicate filename, so if a name already
         // exists that's a bug in the test.
         Q_ASSERT(m_answers.find(expected_filename) == m_answers.end());
@@ -49,9 +48,9 @@ class FakeOverwriteAnswerer : public QObject {
     }
 
   public slots:
-    void slotProgress(QString filename, int progress, int count);
+    void slotProgress(const QString& filename, int progress, int count);
     void slotAskOverwriteMode(
-            QString filename,
+            const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
     void cancelButtonClicked();
 
@@ -70,26 +69,13 @@ class TrackExporterTest : public testing::Test {
                 "src/test/id3-test-data")) { }
 
     void SetUp() override {
-        // QTemporaryDir only in QT5, that would be more convenient.
-        QDir tempPath(QDir::tempPath());
-        qsrand(QDateTime::currentDateTime().toTime_t());
-        const int randnum = qrand() % 100000;
-        QString export_subdir = QString("ExportTest-%2/").arg(randnum);
-        m_exportDir = QDir(tempPath.filePath(export_subdir));
-        tempPath.mkpath(export_subdir);
-    }
-
-    void TearDown() override {
-        QFileInfoList files =
-                m_exportDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
-        for (const auto& file : files) {
-            ASSERT_TRUE(m_exportDir.remove(file.absoluteFilePath()));
-        }
-        ASSERT_TRUE(m_exportDir.rmdir(m_exportDir.absolutePath()));
+        ASSERT_TRUE(m_exportTempDir.isValid());
+        m_exportDir = QDir(m_exportTempDir.path());
     }
 
   protected:
     const QDir m_testDataDir;
+    QTemporaryDir m_exportTempDir;
     QDir m_exportDir;
     QScopedPointer<FakeOverwriteAnswerer> m_answerer;
 };

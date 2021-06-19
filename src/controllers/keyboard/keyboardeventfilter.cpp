@@ -1,16 +1,19 @@
+#include "controllers/keyboard/keyboardeventfilter.h"
+
+#include <QEvent>
+#include <QKeyEvent>
 #include <QList>
 #include <QtDebug>
-#include <QKeyEvent>
-#include <QEvent>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "control/controlobject.h"
+#include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
 
 KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
-                                         QObject* parent, const char* name)
+        QObject* parent,
+        const char* name)
         : QObject(parent),
-          m_pKbdConfigObject(NULL) {
+          m_pKbdConfigObject(nullptr) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
 }
@@ -51,21 +54,20 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             // Check if a shortcut is defined
             bool result = false;
             // using const_iterator here is faster than QMultiHash::values()
-            for (QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator it =
-                         m_keySequenceToControlHash.find(ksv);
-                 it != m_keySequenceToControlHash.end() && it.key() == ksv; ++it) {
+            for (auto it = m_keySequenceToControlHash.constFind(ksv);
+                 it != m_keySequenceToControlHash.constEnd() && it.key() == ksv; ++it) {
                 const ConfigKey& configKey = it.value();
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
                     if (control) {
-                        //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
+                        //qDebug() << configKey << "MidiOpCode::NoteOn" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
                             keyId, ke->modifiers(), control));
                         // Since setting the value might cause us to go down
                         // a route that would eventually clear the active
                         // key list, do that last.
-                        control->setValueFromMidi(MIDI_NOTE_ON, 1);
+                        control->setValueFromMidi(MidiOpCode::NoteOn, 1);
                         result = true;
                     } else {
                         qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
@@ -106,8 +108,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             if (keyDownInfo.keyId == keyId ||
                     (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
-                    //qDebug() << pControl->getKey() << "MIDI_NOTE_OFF" << 0;
-                    pControl->setValueFromMidi(MIDI_NOTE_OFF, 0);
+                    //qDebug() << pControl->getKey() << "MidiOpCode::NoteOff" << 0;
+                    pControl->setValueFromMidi(MidiOpCode::NoteOff, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
                 // Due to the modifier clearing workaround we might match multiple keys for
@@ -130,17 +132,21 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
 
     // TODO(XXX) check if we may simply return QKeySequence(e->modifiers()+e->key())
 
-    if (e->modifiers() & Qt::ShiftModifier)
+    if (e->modifiers() & Qt::ShiftModifier) {
         modseq += "Shift+";
+    }
 
-    if (e->modifiers() & Qt::ControlModifier)
+    if (e->modifiers() & Qt::ControlModifier) {
         modseq += "Ctrl+";
+    }
 
-    if (e->modifiers() & Qt::AltModifier)
+    if (e->modifiers() & Qt::AltModifier) {
         modseq += "Alt+";
+    }
 
-    if (e->modifiers() & Qt::MetaModifier)
+    if (e->modifiers() & Qt::MetaModifier) {
         modseq += "Meta+";
+    }
 
     if (e->key() >= 0x01000020 && e->key() <= 0x01000023) {
         // Do not act on Modifier only

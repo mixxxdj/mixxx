@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_SAMPLE_H
-#define MIXXX_UTIL_SAMPLE_H
+#pragma once
 
 #include <algorithm>
 #include <cstring> // memset
@@ -203,9 +202,7 @@ class SampleUtil {
             const CSAMPLE* pBuffer, SINT numSamples);
 
     // Copies every sample in pSrc to pDest, limiting the values in pDest
-    // to the valid range of CSAMPLE. If pDest and pSrc are aliases, will
-    // not copy will only clamp. Returns true if any samples in pSrc were
-    // outside the valid range of CSAMPLE.
+    // to the valid range of CSAMPLE. pDest and pSrc must not overlap.
     static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numSamples);
 
@@ -223,19 +220,20 @@ class SampleUtil {
     static void deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
             const CSAMPLE* pSrc, SINT numSamples);
 
-    // Crossfade two buffers together and put the result in pDest.  All the
-    // buffers must be the same length.  pDest may be an alias of the source
-    // buffers.  It is preferable to use the copyWithRamping functions, but
-    // sometimes this function is necessary.
-    static void linearCrossfadeBuffers(CSAMPLE* pDest,
-            const CSAMPLE* pSrcFadeOut, const CSAMPLE* pSrcFadeIn,
-            SINT numSamples);
+    /// Crossfade two buffers together. All the buffers must be the same length.
+    /// pDest is in one version the Out and in the other version the In buffer.
+    static void linearCrossfadeBuffersOut(
+            CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples);
+    static void linearCrossfadeBuffersIn(
+            CSAMPLE* pDestSrcFadeIn, const CSAMPLE* pSrcFadeOut, SINT numSamples);
 
     // Mix a buffer down to mono, putting the result in both of the channels.
     // This uses a simple (L+R)/2 method, which assumes that the audio is
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
     static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numSamples);
+    // In place version of the above.
+    static void mixStereoToMono(CSAMPLE* pBuffer, SINT numSamples);
 
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer
@@ -288,5 +286,3 @@ class SampleUtil {
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(SampleUtil::CLIP_STATUS);
-
-#endif /* MIXXX_UTIL_SAMPLE_H */

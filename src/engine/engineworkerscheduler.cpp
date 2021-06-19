@@ -1,10 +1,9 @@
-// engineworkerscheduler.cpp
-// Created 6/2/2010 by RJ Ryan (rryan@mit.edu)
+#include "engine/engineworkerscheduler.h"
 
 #include <QtDebug>
 
 #include "engine/engineworker.h"
-#include "engine/engineworkerscheduler.h"
+#include "moc_engineworkerscheduler.cpp"
 #include "util/event.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
@@ -40,15 +39,16 @@ void EngineWorkerScheduler::runWorkers() {
 }
 
 void EngineWorkerScheduler::run() {
+    static const QString tag("EngineWorkerScheduler");
     while (!m_bQuit) {
-        Event::start("EngineWorkerScheduler");
+        Event::start(tag);
         {
             QMutexLocker lock(&m_mutex);
             for(const auto& pWorker: m_workers) {
                 pWorker->wakeIfReady();
             }
         }
-        Event::end("EngineWorkerScheduler");
+        Event::end(tag);
         {
             QMutexLocker lock(&m_mutex);
             if (!m_bQuit) {

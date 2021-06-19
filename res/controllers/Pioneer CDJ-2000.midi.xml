@@ -4,6 +4,7 @@
     <name>Pioneer CDJ-2000</name>
     <author>Ilkka Tuohela &lt;hile@iki.fi&gt;</author>
     <description>Pioneer CDJ-2000 configuration for 2 decks on midi channels 1 and 2</description>
+    <manual>pioneer_cdj_2000</manual>
   </info>
   <controller id="PIONEER CDJ-2000" port="">
     <scriptfiles>

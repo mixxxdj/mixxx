@@ -3,6 +3,7 @@
         <name>Numark Omni Control</name>
         <author>Baxter</author>
         <description>Adaptation from the work of Smashuu and David Gnedt</description>
+        <manual>numark_omni_control</manual>
     </info>
     <controller id="Numark OMNI CONTROL MIDI">
         <scriptfiles>

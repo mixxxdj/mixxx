@@ -1,314 +1,276 @@
 <Template>
-	<WidgetGroup>
-		<Size>i,72f</Size>
-		<Layout>vertical</Layout>
-		<Children>
-			<WidgetGroup>
-				<ObjectName>SamplerTopBorder</ObjectName>
-				<Size>0e,5f</Size>
-				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>
-					QGroupBox { border: 0px solid red; } 
-					QWidget { margin: 0px; padding: 0; }
-				</Style>
-			</WidgetGroup>
+  <WidgetGroup>
+    <Size>e,</Size>
+    <Layout>vertical</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>PreviewDeckContainer</ObjectName>
+        <Size>e,</Size>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>SamplerTopBorder</ObjectName>
+            <Size>0e,5f</Size>
+            <BackPath>style/style_bg_deck_border.png</BackPath>
+          </WidgetGroup>
 
-			<!-- Middle part: left border, text/overview, VU, volume, right border -->
-			<WidgetGroup>
-				<Size>0e,54f</Size>
-				<Layout>horizontal</Layout>
-				<Style>
-					QGroupBox { border: 0px solid red;} 
-					QWidget { margin: 0; padding: 0; }
-				</Style>
-				<Children>
-					<WidgetGroup>
-						<ObjectName>SamplerLeftBorder</ObjectName>
-						<Size>5f,0e</Size>
-						<BackPath>style/style_bg_deck_border.png</BackPath>
-					</WidgetGroup>
+          <!-- Middle part: left border, text/overview, VU, volume, right border -->
+          <WidgetGroup>
+            <Size>0e,54f</Size>
+            <Layout>horizontal</Layout>
+            <Style>
+              QWidget { margin: 0; padding: 0; }
+            </Style>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>SamplerLeftBorder</ObjectName>
+                <Size>5f,0e</Size>
+                <BackPath>style/style_bg_deck_border.png</BackPath>
+              </WidgetGroup>
 
-					<WidgetGroup>
-						<Style>
-							QGroupBox { border: 0px solid red; } 
-							QWidget { margin: 0; padding: 0; }
-						</Style>
-						<BackPath>style/style_bg_sampler_mid.png</BackPath>
-						<Layout>vertical</Layout>
-						<Children>
+              <WidgetGroup>
+                <BackPath>style/style_bg_sampler_mid.png</BackPath>
+                <Layout>vertical</Layout>
+                <Children>
 
-							<WidgetGroup>
-								<Style>
-									QGroupBox { border: 0px solid red; } 
-									QWidget { margin: 0; padding: 0; }
-								</Style>
-								<Layout>horizontal</Layout>
-								<Children>
-									<WidgetGroup>
-										<Size>0e,18f</Size>
-										<Style>
-											QGroupBox {border: 0px solid red; } 
-											QWidget { margin: 0; padding: 0; }
-										</Style>
-										<Layout>horizontal</Layout>
-										<Children>
-											<Text>
-												<TooltipId>text</TooltipId>
-												<Style>QLabel { font: bold 12px/14px sans-serif;
-													font-family: "Open Sans";
-													background-color: transparent;
-													color: #191F24;
-													text-align: left;
-													padding-left: 1px;
-													padding-top: 2px;}
-												</Style>
-												<Group>[PreviewDeck1]</Group>
-												<SizePolicy>me,min</SizePolicy>
-												<Elide>right</Elide>
-											</Text>
-										</Children>
-									</WidgetGroup>
-									<WidgetGroup>
-										<Size>35f,18f</Size>
-										<Style>
-											QGroupBox {border: 0px solid red; } 
-											QWidget { margin: 0; padding: 0; }
-										</Style>
-										<Children>
-											<Number>
-												<TooltipId>visual_bpm</TooltipId>
-												<Style>QLabel { font: bold 9px sans-serif;
-													font-family: "Open Sans";
-													background-color: transparent;
-													color: #191F24;
-													padding-right: 0;
-													padding-top: 2px;}
-												</Style>
-												<Size>35f,18f</Size>
-												<Group>[PreviewDeck1]</Group>
-												<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
-												<Alignment>right</Alignment>
-												<Connection>
-													<ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
-												</Connection>
-											</Number>
-										</Children>
-									</WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>0e,18f</Size>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Text>
+                            <TooltipId>text</TooltipId>
+                            <Style> QLabel {
+                              font-size: 12px;
+                              line-height: 14px;
+                              font-weight: bold;
+                              background-color: transparent;
+                              color: #191F24;
+                              text-align: left;
+                              padding-left: 1px;
+                              padding-top: 2px;}
+                            </Style>
+                            <Group>[PreviewDeck1]</Group>
+                            <SizePolicy>me,min</SizePolicy>
+                            <Elide>right</Elide>
+                          </Text>
+                        </Children>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                        <Size>35f,18f</Size>
+                        <Children>
+                          <Number>
+                            <TooltipId>visual_bpm</TooltipId>
+                            <Style>QLabel {
+                              font-size: 9px;
+                              font-weight: bold;
+                              background-color: transparent;
+                              color: #191F24;
+                              padding-right: 0;
+                              padding-top: 2px;}
+                            </Style>
+                            <Size>35f,18f</Size>
+                            <Group>[PreviewDeck1]</Group>
+                            <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                            <Alignment>right</Alignment>
+                            <Connection>
+                              <ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
+                            </Connection>
+                          </Number>
+                        </Children>
+                      </WidgetGroup>
 
-									<WidgetGroup>
-										<ObjectName>SamplerRightBorder</ObjectName>
-										<Size>1f,0e</Size>
-										<BackPath>style/style_bg_deck_border.png</BackPath>
-									</WidgetGroup>
+                      <WidgetGroup>
+                        <ObjectName>SamplerRightBorder</ObjectName>
+                        <Size>1f,0e</Size>
+                        <BackPath>style/style_bg_deck_border.png</BackPath>
+                      </WidgetGroup>
 
-									<WidgetGroup>
-										<Size>20f,18f</Size>
-										<Style>
-											QGroupBox {border: 0px solid red; } 
-											QWidget { margin: 0; padding: 0; }
-										</Style>
-										<Children>
-											<PushButton>
-												<TooltipId>eject</TooltipId>
-												<Style></Style>
-												<NumberStates>1</NumberStates>
-												<State>
-													<Number>0</Number>
-													<Pressed>skin:/btn/btn_eject_over.png</Pressed>
-													<Unpressed>skin:/btn/btn_eject.png</Unpressed>
-												</State>
-												<Connection>
-													<ConfigKey>[PreviewDeck1],eject</ConfigKey>
-													<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-													<ButtonState>LeftButton</ButtonState>
-													<ConnectValueToWidget>false</ConnectValueToWidget>
-												</Connection>
-											</PushButton>
-										</Children>
-									</WidgetGroup>
-								</Children>
-							</WidgetGroup>
+                      <WidgetGroup>
+                        <Size>20f,18f</Size>
+                        <Children>
+                          <PushButton>
+                            <TooltipId>eject</TooltipId>
+                            <NumberStates>1</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>skin:/btn/btn_eject_over.png</Pressed>
+                              <Unpressed>skin:/btn/btn_eject.png</Unpressed>
+                            </State>
+                            <Connection>
+                              <ConfigKey>[PreviewDeck1],eject</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                              <ConnectValueToWidget>false</ConnectValueToWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
 
-							<WidgetGroup>
-								<Size>0e,1f</Size>
-								<BackPath>style/style_bg_deck_border.png</BackPath>
-							</WidgetGroup>
+                  <WidgetGroup>
+                    <Size>0e,1f</Size>
+                    <BackPath>style/style_bg_deck_border.png</BackPath>
+                  </WidgetGroup>
 
-							<WidgetGroup>
-								<ObjectName>SamplerMid</ObjectName>
-								<Size>0e,35f</Size>
-								<Style>
-									QGroupBox { border: 0px solid red; } 
-									QWidget { margin: 0px; padding: 0; }
-								</Style>
-								<Layout>horizontal</Layout>
-								<Children>
-									<WidgetGroup>
-										<ObjectName>SamplerMid</ObjectName>
-										<Size>27f,35f</Size>
-										<BackPath>style/style_bg_sampler_mid.png</BackPath>
-										<Style>
-											QGroupBox { border: 0px solid red; } 
-											QWidget { margin: 0px; padding: 0; }
-										</Style>
-										<Children>
-											<PushButton>
-												<TooltipId>play_start</TooltipId>
-												<Style></Style>
-												<NumberStates>2</NumberStates>
-												<State>
-													<Number>0</Number>
-													<Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
-													<Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
-												</State>
-												<State>
-													<Number>1</Number>
-													<Pressed>skin:/btn/btn_play_previewdeck_overdown.png</Pressed>
-													<Unpressed>skin:/btn/btn_play_previewdeck_over.png</Unpressed>
-												</State>
-												<Pos>3,7</Pos>
-												<Connection>
-													<ConfigKey>[PreviewDeck1],play</ConfigKey>
-													<EmitOnDownPress>true</EmitOnDownPress>
-													<ButtonState>LeftButton</ButtonState>
-												</Connection>
-												<Connection>
-													<ConfigKey>[PreviewDeck1],start</ConfigKey>
-													<EmitOnDownPress>true</EmitOnDownPress>
-													<ButtonState>RightButton</ButtonState>
-													<ConnectValueToWidget>false</ConnectValueToWidget>
-												</Connection>
-											</PushButton>
-										</Children>
-									</WidgetGroup>
-									<WidgetGroup>
-										<ObjectName>SamplerMid</ObjectName>
-										<Size>0e,35f</Size>
-										<BackPath>style/style_bg_sampler_mid.png</BackPath>
-										<Style>
-											QGroupBox { border: 0px solid red; } 
-											QWidget { margin: 0px; padding: 0; }
-										</Style>
-										<Layout>horizontal</Layout>
-										<Children>
-											<Overview>
-												<TooltipId>waveform_overview</TooltipId>
-												<Style></Style>
-												<Group>[PreviewDeck1]</Group>
-												<Pos>0,0</Pos>
-												<Size>0e,35f</Size>
-												<BgColor>#8D98A3</BgColor>
-												<PlayedOverlayColor>#60000000</PlayedOverlayColor>
-												<SignalHighColor></SignalHighColor>
-												<SignalMidColor></SignalMidColor>
-												<SignalLowColor></SignalLowColor>
-												<SignalColor>#191F24</SignalColor>
-												<PlayPosColor>#00FF00</PlayPosColor>
-												<DefaultMark>
-													<Align>top</Align>
-													<Color>#FD0564</Color>
-													<TextColor>#FFFFFF</TextColor>
-													<Text> %1 </Text>
-												</DefaultMark>
-												<Connection>
-													<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
-													<EmitOnDownPress>false</EmitOnDownPress>
-												</Connection>
-											</Overview>
-										</Children>
-									</WidgetGroup>
-								</Children>
-							</WidgetGroup>
-						</Children>
-					</WidgetGroup>
+                  <WidgetGroup>
+                    <ObjectName>SamplerMid</ObjectName>
+                    <Size>0e,35f</Size>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>SamplerMid</ObjectName>
+                        <Size>27f,35f</Size>
+                        <BackPath>style/style_bg_sampler_mid.png</BackPath>
+                        <Children>
+                          <PushButton>
+                            <TooltipId>play_start</TooltipId>
+                            <NumberStates>2</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
+                              <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>skin:/btn/btn_play_previewdeck_overdown.png</Pressed>
+                              <Unpressed>skin:/btn/btn_play_previewdeck_over.png</Unpressed>
+                            </State>
+                            <Pos>3,7</Pos>
+                            <Connection>
+                              <ConfigKey>[PreviewDeck1],play</ConfigKey>
+                              <EmitOnDownPress>true</EmitOnDownPress>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey>[PreviewDeck1],start</ConfigKey>
+                              <EmitOnDownPress>true</EmitOnDownPress>
+                              <ButtonState>RightButton</ButtonState>
+                              <ConnectValueToWidget>false</ConnectValueToWidget>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                        <ObjectName>SamplerMid</ObjectName>
+                        <Size>0e,35f</Size>
+                        <BackPath>style/style_bg_sampler_mid.png</BackPath>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Overview>
+                            <TooltipId>waveform_overview</TooltipId>
+                            <Group>[PreviewDeck1]</Group>
+                            <Pos>0,0</Pos>
+                            <Size>0e,35f</Size>
+                            <BgColor>#8D98A3</BgColor>
+                            <PlayedOverlayColor>#60000000</PlayedOverlayColor>
+                            <SignalHighColor></SignalHighColor>
+                            <SignalMidColor></SignalMidColor>
+                            <SignalLowColor></SignalLowColor>
+                            <SignalColor>#191F24</SignalColor>
+                            <PlayPosColor>#00FF00</PlayPosColor>
+                            <ShowCueTimes>false</ShowCueTimes>
+                            <DefaultMark>
+                              <Align>top</Align>
+                              <Color>#FD0564</Color>
+                              <TextColor>#FFFFFF</TextColor>
+                              <Text> %1 </Text>
+                            </DefaultMark>
+                            <Connection>
+                              <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+                              <EmitOnDownPress>false</EmitOnDownPress>
+                            </Connection>
+                          </Overview>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
 
-					<WidgetGroup>
-						<ObjectName>SamplerRightBorder</ObjectName>
-						<Size>1f,0e</Size>
-						<BackPath>style/style_bg_deck_border.png</BackPath>
-					</WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>SamplerRightBorder</ObjectName>
+                <Size>1f,0e</Size>
+                <BackPath>style/style_bg_deck_border.png</BackPath>
+              </WidgetGroup>
 
-					<WidgetGroup>
-						<ObjectName>SamplerVUMeter</ObjectName>
-						<BackPath>style/style_bg_deck_pane.png</BackPath>
-						<Size>9f,54f</Size>
-						<Style>
-							QGroupBox { border: 0px solid red; } 
-							QWidget { margin: 0px; padding: 2px; }
-						</Style>
-						<Children>
-							<StatusLight>
-								<TooltipId>sampler_PeakIndicator</TooltipId>
-								<Style></Style>
-								<PathStatusLight>skin:/style/volume_clipping_previewdeck_over.png</PathStatusLight>
-								<PathBack>skin:/style/volume_clipping_previewdeck.png</PathBack>
-								<Pos>2,2</Pos>
-								<Size>5f,8f</Size>
-								<Connection>
-									<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
-								</Connection>
-							</StatusLight>
-							<VuMeter>
-								<TooltipId>sampler_VuMeter</TooltipId>
-								<Style></Style>
-								<PathVu>skin:/style/volume_display_previewdeck_over.png</PathVu>
-								<PathBack>skin:/style/volume_display_previewdeck.png</PathBack>
-								<Pos>2,11</Pos>
-								<Size>5f,41f</Size>
-								<Horizontal>false</Horizontal>
-								<PeakHoldSize>5</PeakHoldSize>
-								<PeakHoldTime>500</PeakHoldTime>
-								<PeakFallTime>50</PeakFallTime>
-								<PeakFallStep>2</PeakFallStep>
-								<Connection>
-									<ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
-								</Connection>
-							</VuMeter>
-						</Children>
-					</WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>SamplerVUMeter</ObjectName>
+                <BackPath>style/style_bg_deck_pane.png</BackPath>
+                <Size>9f,54f</Size>
+                <Style>
+                  QWidget { margin: 0px; padding: 2px; }
+                </Style>
+                <Children>
+                  <StatusLight>
+                    <TooltipId>sampler_PeakIndicator</TooltipId>
+                    <PathStatusLight>skin:/style/volume_clipping_previewdeck_over.png</PathStatusLight>
+                    <PathBack>skin:/style/volume_clipping_previewdeck.png</PathBack>
+                    <Pos>2,2</Pos>
+                    <Size>5f,8f</Size>
+                    <Connection>
+                      <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
+                    </Connection>
+                  </StatusLight>
+                  <VuMeter>
+                    <TooltipId>sampler_VuMeter</TooltipId>
+                    <PathVu>skin:/style/volume_display_previewdeck_over.png</PathVu>
+                    <PathBack>skin:/style/volume_display_previewdeck.png</PathBack>
+                    <Pos>2,11</Pos>
+                    <Size>5f,41f</Size>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>500</PeakHoldTime>
+                    <PeakFallTime>50</PeakFallTime>
+                    <PeakFallStep>2</PeakFallStep>
+                    <Connection>
+                      <ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup>
 
-					<WidgetGroup>
-						<BackPath>style/style_bg_deck_pane.png</BackPath>
-						<Size>10f,54f</Size>
-						<Style>
-							QGroupBox { border: 0px solid red; } 
-							QWidget { margin: 0px; }
-						</Style>
-						<Children>
-							<SliderComposed>
-								<TooltipId>pregain</TooltipId>
-								<Style></Style>
-								<Pos>0,1</Pos>
-								<Size>8f,52f</Size>
-								<Handle>knob_volume_previewdeck.png</Handle>
-								<Horizontal>false</Horizontal>
-								<Connection>
-									<ConfigKey>[PreviewDeck1],pregain</ConfigKey>
-									<EmitOnDownPress>false</EmitOnDownPress>
-								</Connection>
-							</SliderComposed>
-						</Children>
-					</WidgetGroup>
+              <WidgetGroup>
+                <BackPath>style/style_bg_deck_pane.png</BackPath>
+                <Size>10f,54f</Size>
+                <Children>
+                  <SliderComposed>
+                    <TooltipId>pregain</TooltipId>
+                    <Pos>0,1</Pos>
+                    <Size>8f,52f</Size>
+                    <Handle>knob_volume_previewdeck.png</Handle>
+                    <Horizontal>false</Horizontal>
+                    <Connection>
+                      <ConfigKey>[PreviewDeck1],pregain</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </SliderComposed>
+                </Children>
+              </WidgetGroup>
 
-					<WidgetGroup>
-						<ObjectName>SamplerRightBorder</ObjectName>
-						<Size>5f,0e</Size>
-						<BackPath>style/style_bg_deck_border.png</BackPath>
-					</WidgetGroup>
-				</Children>
-			</WidgetGroup>
-			<!-- /Middle part: left border, text/overview, VU, volume, right border -->
+              <WidgetGroup>
+                <ObjectName>SamplerRightBorder</ObjectName>
+                <Size>5f,0e</Size>
+                <BackPath>style/style_bg_deck_border.png</BackPath>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <!-- /Middle part: left border, text/overview, VU, volume, right border -->
 
-			<WidgetGroup>
-				<ObjectName>SamplerBottomBorder</ObjectName>
-				<Size>0e,5f</Size>
-				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>
-					QGroupBox { border: 0px solid red; } 
-					QWidget { margin: 0px; padding: 0; }
-				</Style>
-			</WidgetGroup>
-		</Children>
-	</WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>SamplerBottomBorder</ObjectName>
+            <Size>0e,5f</Size>
+            <BackPath>style/style_bg_deck_border.png</BackPath>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
 </Template>
-

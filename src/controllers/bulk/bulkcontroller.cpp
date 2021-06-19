@@ -1,19 +1,14 @@
-/**
-  * @file bulkcontroller.cpp
-  * @author Neale Pickett  neale@woozle.org
-  * @date Thu Jun 28 2012
-  * @brief USB Bulk controller backend
-  *
-  */
+#include "controllers/bulk/bulkcontroller.h"
+
 #include <libusb.h>
 
-#include "controllers/bulk/bulkcontroller.h"
 #include "controllers/bulk/bulksupported.h"
-#include "controllers/defs_controllers.h"
 #include "controllers/controllerdebug.h"
+#include "controllers/defs_controllers.h"
+#include "moc_bulkcontroller.cpp"
 #include "util/compatibility.h"
-#include "util/trace.h"
 #include "util/time.h"
+#include "util/trace.h"
 
 BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
         : QThread(),
@@ -33,7 +28,7 @@ void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    while (load_atomic(m_stop) == 0) {
+    while (atomicLoadAcquire(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data
@@ -52,8 +47,8 @@ void BulkReader::run() {
         if (result >= 0) {
             Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
-            QByteArray outData((char*)data, transferred);
-            emit(incomingData(outData, mixxx::Time::elapsed()));
+            QByteArray byteArray(reinterpret_cast<char*>(data), transferred);
+            emit incomingData(byteArray, mixxx::Time::elapsed());
         }
     }
     qDebug() << "Stopped Reader";
@@ -66,18 +61,17 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
         libusb_get_string_descriptor_ascii(handle, id, buf, sizeof(buf));
     }
 
-    return QString::fromAscii((char*)buf);
+    return QString::fromLatin1((char*)buf);
 }
 
-
-BulkController::BulkController(libusb_context* context,
-                               libusb_device_handle *handle,
-                               struct libusb_device_descriptor *desc)
+BulkController::BulkController(
+        libusb_context* context,
+        libusb_device_handle* handle,
+        struct libusb_device_descriptor* desc)
         : m_context(context),
           m_phandle(handle),
           in_epaddr(0),
-          out_epaddr(0)
-{
+          out_epaddr(0) {
     vendor_id = desc->idVendor;
     product_id = desc->idProduct;
 
@@ -87,11 +81,11 @@ BulkController::BulkController(libusb_context* context,
 
     setDeviceCategory(tr("USB Controller"));
 
-    setDeviceName(QString("%1 %2").arg(product).arg(m_sUID));
+    setDeviceName(QString("%1 %2").arg(product, m_sUID));
 
     setInputDevice(true);
     setOutputDevice(true);
-    m_pReader = NULL;
+    m_pReader = nullptr;
 }
 
 BulkController::~BulkController() {
@@ -100,29 +94,23 @@ BulkController::~BulkController() {
     }
 }
 
-QString BulkController::presetExtension() {
-    return BULK_PRESET_EXTENSION;
+QString BulkController::mappingExtension() {
+    return BULK_MAPPING_EXTENSION;
 }
 
-void BulkController::visit(const MidiControllerPreset* preset) {
-    Q_UNUSED(preset);
-    // TODO(XXX): throw a hissy fit.
-    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
 }
 
-void BulkController::visit(const HidControllerPreset* preset) {
-    m_preset = *preset;
-    // Emit presetLoaded with a clone of the preset.
-    emit(presetLoaded(getPreset()));
+std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
+    if (!m_pMapping) {
+        return nullptr;
+    }
+    return m_pMapping->clone();
 }
 
-bool BulkController::savePreset(const QString fileName) const {
-    HidControllerPresetFileHandler handler;
-    return handler.save(m_preset, getName(), fileName);
-}
-
-bool BulkController::matchPreset(const PresetInfo& preset) {
-    const QList<ProductInfo>& products = preset.getProducts();
+bool BulkController::matchMapping(const MappingInfo& mapping) {
+    const QList<ProductInfo>& products = mapping.getProducts();
     for (const auto& product : products) {
         if (matchProductInfo(product)) {
             return true;
@@ -136,9 +124,13 @@ bool BulkController::matchProductInfo(const ProductInfo& product) {
     bool ok;
     // Product and vendor match is always required
     value = product.vendor_id.toInt(&ok, 16);
-    if (!ok || vendor_id!=value) return false;
+    if (!ok || vendor_id != value) {
+        return false;
+    }
     value = product.product_id.toInt(&ok, 16);
-    if (!ok || product_id!=value) return false;
+    if (!ok || product_id != value) {
+        return false;
+    }
 
     // Match found
     return true;
@@ -167,12 +159,12 @@ int BulkController::open() {
     }
 
     // XXX: we should enumerate devices and match vendor, product, and serial
-    if (m_phandle == NULL) {
+    if (m_phandle == nullptr) {
         m_phandle = libusb_open_device_with_vid_pid(
             m_context, vendor_id, product_id);
     }
 
-    if (m_phandle == NULL) {
+    if (m_phandle == nullptr) {
         qWarning()  << "Unable to open USB Bulk device" << getName();
         return -1;
     }
@@ -180,14 +172,13 @@ int BulkController::open() {
     setOpen(true);
     startEngine();
 
-    if (m_pReader != NULL) {
+    if (m_pReader != nullptr) {
         qWarning() << "BulkReader already present for" << getName();
     } else {
         m_pReader = new BulkReader(m_phandle, in_epaddr);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
-        connect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-                this, SLOT(receive(QByteArray, mixxx::Duration)));
+        connect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
 
         // Controller input needs to be prioritized since it can affect the
         // audio directly, like when scratching
@@ -206,17 +197,16 @@ int BulkController::close() {
     qDebug() << "Shutting down USB Bulk device" << getName();
 
     // Stop the reading thread
-    if (m_pReader == NULL) {
+    if (m_pReader == nullptr) {
         qWarning() << "BulkReader not present for" << getName()
                    << "yet the device is open!";
     } else {
-        disconnect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-                   this, SLOT(receive(QByteArray, mixxx::Duration)));
+        disconnect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
         m_pReader->stop();
         controllerDebug("  Waiting on reader to finish");
         m_pReader->wait();
         delete m_pReader;
-        m_pReader = NULL;
+        m_pReader = nullptr;
     }
 
     // Stop controller engine here to ensure it's done before the device is
@@ -226,22 +216,22 @@ int BulkController::close() {
     // Close device
     controllerDebug("  Closing device");
     libusb_close(m_phandle);
-    m_phandle = NULL;
+    m_phandle = nullptr;
     setOpen(false);
     return 0;
 }
 
-void BulkController::send(QList<int> data, unsigned int length) {
+void BulkController::send(const QList<int>& data, unsigned int length) {
     Q_UNUSED(length);
     QByteArray temp;
 
     foreach (int datum, data) {
         temp.append(datum);
     }
-    send(temp);
+    sendBytes(temp);
 }
 
-void BulkController::send(QByteArray data) {
+void BulkController::sendBytes(const QByteArray& data) {
     int ret;
     int transferred;
 

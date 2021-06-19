@@ -1,8 +1,6 @@
 <Template>
   <WidgetGroup>
-    <Size>105f,64f</Size>
-    <BackPath>style/style_bg_deck_botom_mid.png</BackPath>
-    <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+    <Size>105f,59f</Size>
     <Children>
         <!--
       **********************************************
@@ -11,7 +9,6 @@
       -->
       <PushButton>
         <TooltipId>show_effects</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -31,17 +28,16 @@
 
       <PushButton>
         <TooltipId>EffectUnit_deck_enabled</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_hotcue_<Variable name="effectunitnum"/>_down.png</Pressed>
-          <Unpressed>skin:/btn/btn_hotcue_<Variable name="effectunitnum"/>.png</Unpressed>
+          <Pressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_hotcue_<Variable name="effectunitnum"/>_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_hotcue_<Variable name="effectunitnum"/>_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>_over.png</Unpressed>
         </State>
         <Pos>4,14</Pos>
         <Connection>
@@ -52,7 +48,6 @@
 
       <PushButton>
         <TooltipId>EffectUnit_headphones_enabled</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -72,8 +67,7 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId>EffectUnit_<Variable name="group"/>_enabled</TooltipId>
-        <Style></Style>
+        <TooltipId>EffectUnit_<Variable name="effectgroup"/>_enabled</TooltipId>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -87,24 +81,22 @@
         </State>
           <Pos>4,35</Pos>
         <Connection>
-          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[<Variable name="group"/>]_enable</ConfigKey>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[<Variable name="effectgroup"/>]_enable</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
 
       <WidgetGroup>
         <Size>17f,5f</Size>
-        <Pos>53,16</Pos>
+        <Pos>53,14</Pos>
         <BackPath>skin:/btn/btn_mix.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
       </WidgetGroup>
 
       <Knob>
         <TooltipId>EffectUnit_mix</TooltipId>
-        <Style></Style>
-        <NumberStates>63</NumberStates>
-        <Path>knobs/knob_rotary_s%1.png</Path>
-        <Pos>49,24</Pos>
+        <NumberStates>64</NumberStates>
+        <Path>knobs_no_center/knob_rotary_s%1.png</Path>
+        <Pos>49,21</Pos>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],mix</ConfigKey>
         </Connection>
@@ -112,7 +104,6 @@
 
       <PushButton>
         <TooltipId>EffectUnit_mix_mode</TooltipId>
-        <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -124,7 +115,8 @@
           <Pressed>skin:/btn/btn_fxmix_d+w.svg</Pressed>
           <Unpressed>skin:/btn/btn_fxmix_d+w.svg</Unpressed>
         </State>
-        <Pos>54,49</Pos>
+        <Size>20f,9f</Size>
+        <Pos>52,46</Pos>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],mix_mode</ConfigKey>
         </Connection>
@@ -132,17 +124,15 @@
 
       <WidgetGroup>
         <Size>29f,5f</Size>
-        <Pos>76,16</Pos>
+        <Pos>76,14</Pos>
         <BackPath>skin:/btn/btn_super.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
       </WidgetGroup>
 
       <Knob>
         <TooltipId>EffectUnit_super1</TooltipId>
-        <Style></Style>
-        <NumberStates>63</NumberStates>
-        <Path>knobs/knob_rotary_s%1.png</Path>
-        <Pos>77,24</Pos>
+        <NumberStates>64</NumberStates>
+        <Path>knobs_no_center/knob_rotary_s%1.png</Path>
+        <Pos>77,21</Pos>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],super1</ConfigKey>
         </Connection>

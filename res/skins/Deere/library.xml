@@ -4,84 +4,96 @@
     Library widget.
 -->
 <Template>
+<!-- This additional wrapper is necessary for being able to address
+    QMenus in QTableView, QTreeView etc. at once with #LibraryContainer QMenu
+    like in LateNight. Go figure... -->
   <WidgetGroup>
-    <ObjectName>LibraryContainer</ObjectName>
-    <Layout>vertical</Layout>
     <!-- 'Ignore' is the only thing that lets it
           shrink to nothing. -->
     <SizePolicy>me,i</SizePolicy>
+    <Layout>vertical</Layout>
     <Children>
-      <!-- QSplitter between LibrarySidebar and Library -->
-      <Splitter>
-        <ObjectName>LibrarySplitter</ObjectName>
-        <Orientation>horizontal</Orientation>
+      <WidgetGroup>
+        <ObjectName>LibraryContainer</ObjectName>
+        <Layout>vertical</Layout>
         <SizePolicy>me,me</SizePolicy>
-        <SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>
-        <SplitSizes>2,8</SplitSizes>
         <Children>
-          <WidgetGroup>
-            <Layout>vertical</Layout>
+          <!-- QSplitter between LibrarySidebar and Library -->
+          <Splitter>
+            <ObjectName>LibrarySplitter</ObjectName>
+            <Orientation>horizontal</Orientation>
+            <SizePolicy>me,me</SizePolicy>
+            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+            <SplitSizes>2,8</SplitSizes>
             <Children>
-              <Template src="skin:preview_deck.xml"/>
               <WidgetGroup>
-                <Layout>horizontal</Layout>
+                <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:hide_show_button.xml">
-                    <SetVariable name="TooltipId">maximize_library</SetVariable>
-                    <SetVariable name="object_name">LibraryToggle</SetVariable>
-                    <SetVariable name="control">[Master],maximize_library</SetVariable>
-                  </Template>
-                  <SearchBox>
-                  </SearchBox>
-                </Children>
-              </WidgetGroup>
-              <!-- QSplitter between LibrarySidebar and CoverArt -->
-              <Splitter>
-                <ObjectName>LibraryCoverArtSplitter</ObjectName>
-                <Orientation>vertical</Orientation>
-                <SizePolicy>me,me</SizePolicy>
-                <MinimumSize>30,30</MinimumSize>
-                <SplitSizesConfigKey>[Deere],LibraryCoverartSplitSize</SplitSizesConfigKey>
-                <SplitSizes>2,8</SplitSizes>
-                <Collapsible>0,0</Collapsible>
-                <Children>
-                  <LibrarySidebar>
-                  </LibrarySidebar>
-
-                  <CoverArt>
-                    <ObjectName>LibraryCoverArt</ObjectName>
-                    <TooltipId>coverart</TooltipId>
+                  <Template src="skin:preview_deck.xml"/>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <SearchBox></SearchBox>
+                      <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="TooltipId">maximize_library</SetVariable>
+                        <SetVariable name="object_name">LibraryToggle</SetVariable>
+                        <SetVariable name="control">[Master],maximize_library</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <!-- QSplitter between LibrarySidebar and CoverArt -->
+                  <Splitter>
+                    <ObjectName>LibraryCoverArtSplitter</ObjectName>
+                    <Orientation>vertical</Orientation>
                     <SizePolicy>me,me</SizePolicy>
                     <MinimumSize>30,30</MinimumSize>
-                    <Connection>
-                      <ConfigKey>[Library],show_coverart</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </CoverArt>
+                    <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
+                    <SplitSizes>2,8</SplitSizes>
+                    <Collapsible>0,0</Collapsible>
+                    <Children>
+                      <LibrarySidebar>
+                      </LibrarySidebar>
+
+                      <CoverArt>
+                        <ObjectName>LibraryCoverArt</ObjectName>
+                        <TooltipId>coverart</TooltipId>
+                        <SizePolicy>me,me</SizePolicy>
+                        <MinimumSize>30,30</MinimumSize>
+                        <Connection>
+                          <ConfigKey>[Library],show_coverart</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </CoverArt>
+                    </Children>
+                  </Splitter>
                 </Children>
-              </Splitter>
+              </WidgetGroup>
+
+              <Library>
+                <ShowButtonText>false</ShowButtonText>
+                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+              </Library>
+
             </Children>
-          </WidgetGroup>
-          <Library>
-          </Library>
+            <!--Connection>
+              <ConfigKey>[Skin],show_library</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection-->
+          </Splitter>
+
+          <!--WidgetGroup>
+            <ObjectName>Spacer22</ObjectName>
+            <SizePolicy>me,me</SizePolicy>
+            <Children/>
+            <Connection>
+              <ConfigKey>[Skin],show_library</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup-->
+
         </Children>
-        <Connection>
-          <ConfigKey>[Library],show_library</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </Splitter>
-
-      <WidgetGroup>
-        <ObjectName>Spacer22</ObjectName>
-        <SizePolicy>me,me</SizePolicy>
-        <Children/>
-        <Connection>
-          <ConfigKey>[Library],show_library</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
       </WidgetGroup>
-
-    </Children>
-  </WidgetGroup>
+        </Children>
+      </WidgetGroup>
 </Template>

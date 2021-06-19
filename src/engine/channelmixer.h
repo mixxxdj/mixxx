@@ -1,5 +1,4 @@
-#ifndef CHANNELMIXER_H
-#define CHANNELMIXER_H
+#pragma once
 
 #include <QVarLengthArray>
 
@@ -30,5 +29,3 @@ class ChannelMixer {
         unsigned int iSampleRate,
         EngineEffectsManager* pEngineEffectsManager);
 };
-
-#endif /* CHANNELMIXER_H */

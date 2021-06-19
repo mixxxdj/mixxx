@@ -3,6 +3,7 @@
     <name>Vestax VCI-100 Hile Mod</name>
     <author>Ilkka Tuohela</author>
     <description>Modified Mapping for Vestax VCI-100</description>
+    <manual>vestax_vci_100mki</manual>
   </info>
   <controller id="Vestax VCI-100 Hile Variant" port="">
     <scriptfiles>

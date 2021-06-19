@@ -1,8 +1,9 @@
 <MixxxMIDIPreset mixxxVersion="1.10.0+" schemaVersion="1">
     <info>
-      <name>Kontrol Dj KDJ500</name>
+      <name>Kontrol DJ KDJ500</name>
       <author>bonkhead and dnine</author>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=1609</forums>
+      <manual>kontrol_dj_kdj500</manual>
     </info>
     <controller id="KDJ500">
         <scriptfiles>

@@ -1,5 +1,4 @@
-#ifndef WEFFECTPUSHBUTTON_H
-#define WEFFECTPUSHBUTTON_H
+#pragma once
 
 #include <QMenu>
 #include <QAction>
@@ -10,7 +9,7 @@
 #include "widget/wpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "effects/defs.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class WEffectPushButton : public WPushButton {
     Q_OBJECT
@@ -41,5 +40,3 @@ class WEffectPushButton : public WPushButton {
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
     QMenu* m_pButtonMenu;
 };
-
-#endif // WEFFECTPUSHBUTTON_H

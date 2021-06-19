@@ -1,5 +1,4 @@
-#ifndef CONTROLLERS_MIDI_PORTMIDIDEVICE
-#define CONTROLLERS_MIDI_PORTMIDIDEVICE
+#pragma once
 
 #include <portmidi.h>
 
@@ -72,5 +71,3 @@ class PortMidiDevice {
     int m_deviceIndex;
     PortMidiStream* m_pStream;
 };
-
-#endif /* CONTROLLERS_MIDI_PORTMIDIDEVICE */

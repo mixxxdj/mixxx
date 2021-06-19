@@ -1,8 +1,7 @@
-#ifndef MIXXX_UTIL_SAMPLEAUTOGEN_H
-#define MIXXX_UTIL_SAMPLEAUTOGEN_H
+#pragma once
 ////////////////////////////////////////////////////////
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //
-// SEE scripts/generate_sample_functions.py           //
+// SEE tools/generate_sample_functions.py             //
 ////////////////////////////////////////////////////////
 static inline void copy1WithGain(CSAMPLE* M_RESTRICT pDest,
                                  const CSAMPLE* M_RESTRICT pSrc0, CSAMPLE_GAIN gain0,
@@ -8836,4 +8835,3 @@ static inline void copy32WithRampingGain(CSAMPLE* M_RESTRICT pDest,
                            pSrc31[i * 2 + 1] * gain31;
     }
 }
-#endif /* MIXXX_UTIL_SAMPLEAUTOGEN_H */

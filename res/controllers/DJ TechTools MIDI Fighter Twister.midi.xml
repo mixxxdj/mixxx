@@ -4,7 +4,7 @@
     <name>DJ TechTools MIDI Fighter Twister</name>
     <author>tock203</author>
     <description>for 2 deck use</description>
-    <wiki>https://www.mixxx.org/wiki/doku.php/dj_tech_tools_midi_fighter_twister</wiki>
+    <manual>dj_techtools_midi_figher_twister</manual>
   </info>
   <controller id="DJ TechTools MIDI Fighter Twister">
     <scriptfiles>

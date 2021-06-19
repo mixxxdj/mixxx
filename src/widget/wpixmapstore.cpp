@@ -5,7 +5,7 @@
 #include <QtDebug>
 
 #include "util/math.h"
-#include "skin/imgloader.h"
+#include "skin/legacy/imgloader.h"
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
@@ -13,9 +13,9 @@ QSharedPointer<ImgSource> WPixmapStore::m_loader
         = QSharedPointer<ImgSource>(new ImgLoader());
 
 // static
-PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
-                                            Paintable::DrawMode mode,
-                                            double scaleFactor) {
+PaintablePointer WPixmapStore::getPaintable(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     if (source.isEmpty()) {
         return PaintablePointer();
     }
@@ -41,12 +41,8 @@ QPixmap* WPixmapStore::getPixmapNoCache(
         double scaleFactor) {
     QPixmap* pPixmap = nullptr;
     QImage* img = m_loader->getImage(fileName, scaleFactor);
-#if QT_VERSION >= 0x040700
     pPixmap = new QPixmap();
     pPixmap->convertFromImage(*img);
-#else
-    pPixmap = new QPixmap(QPixmap::fromImage(*img));
-#endif
     delete img;
     return pPixmap;
 }

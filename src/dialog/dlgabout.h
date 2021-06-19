@@ -1,5 +1,4 @@
-#ifndef DIALOG_DLGABOUT_H
-#define DIALOG_DLGABOUT_H
+#pragma once
 
 #include <QWidget>
 
@@ -11,5 +10,3 @@ class DlgAbout : public QDialog, public Ui::DlgAboutDlg {
   public:
     DlgAbout(QWidget* parent);
 };
-
-#endif  // DIALOG_DLGABOUT_H

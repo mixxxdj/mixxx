@@ -1,25 +1,19 @@
-/**
- * @file midioutputhandler.cpp
- * @author Sean Pappalardo spappalardo@mixxx.org
- * @date Tue 11 Feb 2012
- * @brief MIDI output mapping handler
- *
- */
+#include "controllers/midi/midioutputhandler.h"
 
 #include <QtDebug>
 
-#include "controllers/midi/midioutputhandler.h"
-#include "controllers/midi/midicontroller.h"
-#include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
+#include "controllers/controllerdebug.h"
+#include "controllers/midi/midicontroller.h"
+#include "moc_midioutputhandler.cpp"
 
 MidiOutputHandler::MidiOutputHandler(MidiController* controller,
-                                     const MidiOutputMapping& mapping)
+        const MidiOutputMapping& mapping)
         : m_pController(controller),
           m_mapping(mapping),
-          m_cos(mapping.controlKey, this),
+          m_cos(mapping.controlKey, this, ControlFlag::NoAssertIfMissing),
           m_lastVal(-1) { // -1 = virgin
-    m_cos.connectValueChanged(SLOT(controlChanged(double)));
+    m_cos.connectValueChanged(this, &MidiOutputHandler::controlChanged);
 }
 
 MidiOutputHandler::~MidiOutputHandler() {

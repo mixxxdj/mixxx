@@ -3,6 +3,7 @@
       <name>Gemini FirstMix</name>
       <author>mcsquared88</author>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3884</forums>
+      <manual>gemini_firstmix</manual>
     </info>
     <controller id=" firstmix  ">
         <scriptfiles>

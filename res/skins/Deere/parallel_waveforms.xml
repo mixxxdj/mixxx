@@ -1,0 +1,131 @@
+<!DOCTYPE template>
+<!--
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+
+
+  <WidgetGroup><!-- Parallel Waveforms -->
+    <ObjectName>Waveforms</ObjectName>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:../Deere/deck_spinny.xml">
+            <SetVariable name="cover">true</SetVariable>
+            <SetVariable name="Size">55f,55f</SetVariable>
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+          <SingletonContainer>
+            <ObjectName>DeckWaveform3</ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:../Deere/deck_spinny.xml">
+                <SetVariable name="cover">true</SetVariable>
+                <SetVariable name="Size">55f,55f</SetVariable>
+                <SetVariable name="i">1</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:../Deere/deck_spinny.xml">
+                <SetVariable name="cover">true</SetVariable>
+                <SetVariable name="Size">75f,75f</SetVariable>
+                <SetVariable name="i">1</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_4decks</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <SingletonContainer>
+            <ObjectName>DeckWaveform1</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:../Deere/deck_spinny.xml">
+                <SetVariable name="cover">true</SetVariable>
+                <SetVariable name="Size">55f,55f</SetVariable>
+                <SetVariable name="i">2</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:../Deere/deck_spinny.xml">
+                <SetVariable name="cover">true</SetVariable>
+                <SetVariable name="Size">75f,75f</SetVariable>
+                <SetVariable name="i">2</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_4decks</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <SingletonContainer>
+            <ObjectName>DeckWaveform2</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:../Deere/deck_spinny.xml">
+            <SetVariable name="cover">true</SetVariable>
+            <SetVariable name="Size">55f,55f</SetVariable>
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+          <SingletonContainer>
+            <ObjectName>DeckWaveform4</ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>y
+  </WidgetGroup><!-- /Parallel Waveforms -->
+</Template>

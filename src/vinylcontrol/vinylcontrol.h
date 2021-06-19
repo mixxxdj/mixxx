@@ -1,5 +1,4 @@
-#ifndef VINYLCONTROL_H
-#define VINYLCONTROL_H
+#pragma once
 
 #include <QString>
 
@@ -11,7 +10,7 @@ class ControlProxy;
 
 class VinylControl : public QObject {
   public:
-    VinylControl(UserSettingsPointer pConfig, QString group);
+    VinylControl(UserSettingsPointer pConfig, const QString& group);
     virtual ~VinylControl();
 
     virtual void toggleVinylControl(bool enable);
@@ -23,7 +22,7 @@ class VinylControl : public QObject {
     virtual float getAngle() = 0;
 
     UserSettingsPointer m_pConfig;
-    QString m_group;
+    const QString m_group;
 
     // The VC input gain preference.
     ControlProxy* m_pVinylControlInputGain;
@@ -41,8 +40,8 @@ class VinylControl : public QObject {
     ControlProxy* m_pVCRate;
     // Reflects the mean value (filtered for display) used of m_pVCRate during
     // VC and and is used to change the speed/pitch of the song without VC
-    // 0.0 = original rate
-    ControlProxy* m_pRateSlider;
+    // 1.0 = original rate
+    ControlProxy* m_pRateRatio;
     // The ControlObject used to get the duration of the current song.
     ControlProxy* duration;
     // The ControlObject used to get the vinyl control mode
@@ -58,11 +57,7 @@ class VinylControl : public QObject {
     ControlProxy* cueing;
     // Is pitch changing very quickly?
     ControlProxy* scratching;
-    // The ControlObject used to the get the pitch range from the prefs.
-    ControlProxy* m_pRateRange;
     ControlProxy* vinylStatus;
-    // direction of rate
-    ControlProxy* m_pRateDir;
     // looping enabled?
     ControlProxy* loopEnabled;
     // show the signal in the skin?
@@ -83,5 +78,3 @@ class VinylControl : public QObject {
     // Whether this VinylControl instance is enabled.
     bool m_bIsEnabled;
 };
-
-#endif

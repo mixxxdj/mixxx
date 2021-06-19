@@ -13,15 +13,13 @@
 
 #include "library/parserm3u.h"
 
-#include <QtDebug>
 #include <QDir>
 #include <QMessageBox>
-#include <QUrl>
 #include <QTextCodec>
+#include <QUrl>
+#include <QtDebug>
 
-/**
-   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
- **/
+#include "moc_parserm3u.cpp"
 
 /**
    ToDo:
@@ -47,12 +45,11 @@ ParserM3u::~ParserM3u()
 
 }
 
-QList<QString> ParserM3u::parse(QString sFilename)
-{
+QList<QString> ParserM3u::parse(const QString& sFilename) {
     clearLocations();
 
     QFile file(sFilename);
-    if (isBinary(sFilename) || !file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly)) {
         qWarning()
                 << "Failed to open playlist file"
                 << sFilename;
@@ -81,9 +78,9 @@ QList<QString> ParserM3u::parse(QString sFilename)
         textstream.setCodec("windows-1252");
     }
 
-    const QString basepath = sFilename.section('/', 0, -2);
+    const auto basePath = sFilename.section('/', 0, -2);
     while (!textstream.atEnd()) {
-        QString sLine = getFilepath(&textstream, basepath);
+        QString sLine = getFilePath(&textstream, basePath);
         if (sLine.isEmpty()) {
             continue;
         }
@@ -93,26 +90,19 @@ QList<QString> ParserM3u::parse(QString sFilename)
     return m_sLocations;
 }
 
-
-QString ParserM3u::getFilepath(QTextStream* stream, QString basepath) {
+QString ParserM3u::getFilePath(QTextStream* stream, const QString& basePath) {
     QString textline;
     while (!(textline = stream->readLine().trimmed()).isEmpty()) {
         if (textline.startsWith("#")) {
             // Skip comments
             continue;
         }
-        QString trackLocation = playlistEntrytoLocalFile(textline);
-        if (QFileInfo::exists(trackLocation)) {
-            return trackLocation;
-        } else {
-            // Try relative to m3u dir
-            QString rel = QDir(basepath).filePath(trackLocation);
-            if (QFile::exists(rel)) {
-                return rel;
-            }
-            // We couldn't match this to a real file so ignore it
-            qWarning() << trackLocation << "not found";
+        auto trackFile = playlistEntryToFileInfo(textline, basePath);
+        if (trackFile.checkFileExists()) {
+            return trackFile.location();
         }
+        // We couldn't match this to a real file so ignore it
+        qWarning() << trackFile << "not found";
     }
     // Signal we reached the end
     return QString();
@@ -143,10 +133,12 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
         for (int i = 0; i < items.size(); ++i) {
             if (!codec->canEncode(items.at(i))) {
                 // filepath contains incompatible character
-                QMessageBox::warning(NULL,tr("Playlist Export Failed"),
-                                     tr("File path contains characters, not allowed in m3u playlists.\n") +
-                                     tr("Export a m3u8 playlist instead!\n") +
-                                     items.at(i));
+                QMessageBox::warning(nullptr,
+                        tr("Playlist Export Failed"),
+                        tr("File path contains characters, not allowed in m3u "
+                           "playlists.\n") +
+                                tr("Export a m3u8 playlist instead!\n") +
+                                items.at(i));
                 return false;
             }
         }
@@ -154,8 +146,9 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
 
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
-                             tr("Could not create file") + " " + file_str);
+        QMessageBox::warning(nullptr,
+                tr("Playlist Export Failed"),
+                tr("Could not create file") + " " + file_str);
         return false;
     }
 

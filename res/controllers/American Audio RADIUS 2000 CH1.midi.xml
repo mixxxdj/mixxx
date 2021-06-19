@@ -3,6 +3,7 @@
         <name>American Audio Radius 2000 CH1</name>
         <author>Markus Steinbauer</author>
         <description>American Audio Radius 2000 mapping for Deck 1</description>
+        <manual>american_audio_radius_2000</manual>
     </info>
     <controller id="Radius 2000 MIDI 1">
         <scriptfiles>

@@ -13,134 +13,260 @@
   <property name="windowTitle">
    <string>Auto DJ Preferences</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="textAutoDjRequeue">
-       <property name="text">
-        <string>Re-queue tracks after playback</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxAutoDjRequeue</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="ComboBoxAutoDjRequeue">
-       <property name="toolTip">
-        <string>Add a track to the end of the Auto DJ queue once it is played, instead of removing it.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="autoDjMinimumAvailableLabel">
-       <property name="text">
-        <string>Minimum available tracks in Track Source</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QSpinBox" name="autoDjMinimumAvailableSpinBox">
-       <property name="toolTip">
-        <string>This percentage of tracks are always available for selecting, regardless of when they were last played.</string>
-       </property>
-       <property name="suffix">
-        <string>%</string>
-       </property>
-       <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="value">
-        <number>20</number>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="autoDjIgnoreTimeCheckBox">
-       <property name="toolTip">
-        <string>Uncheck, to ignore all played tracks.</string>
-       </property>
-       <property name="text">
-        <string>Suspend track in Track Source from re-queue</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="autoDjMinimumAvailableLabel_2">
-       <property name="text">
-        <string>Suspension period for track selection</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QTimeEdit" name="autoDjIgnoreTimeEdit">
-       <property name="toolTip">
-        <string>Duration after which a track is eligible for selection by Auto DJ again</string>
-       </property>
-       <property name="displayFormat">
-        <string>hh:mm</string>
-       </property>
-       <property name="timeSpec">
-        <enum>Qt::LocalTime</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="textAutoDJRandomQueue">
-       <property name="text">
-        <string>Enable random track addition to queue</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxAutoDjRequeue</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QComboBox" name="ComboBoxAutoDjRandomQueue">
-       <property name="toolTip">
-        <string>Add random tracks from Track Source if the specified minimum tracks remain</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="autoDJRandomQueueMinimumLabel">
-       <property name="text">
-        <string>Minimum allowed tracks before addition</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QSpinBox" name="autoDJRandomQueueMinimumSpinBox">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="toolTip">
-        <string>Minimum number of tracks after which random tracks may be added</string>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>20</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
+  <layout class="QVBoxLayout" name="AutoDJGridLayout">
+
+   <item>
+    <widget class="QGroupBox" name="RequeueOptions">
+      <property name="title">
+       <string>Re-queue Tracks</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <layout class="QGridLayout" name="RequeGridLayout">
+
+       <item row="0" column="0">
+        <widget class="QLabel" name="MinimumAvailableLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Minimum available tracks in Track Source</string>
+         </property>
+        </widget>
+       </item>
+
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="MinimumAvailableSpinBox">
+         <property name="toolTip">
+          <string>This percentage of tracks are always available for selecting, regardless of when they were last played.</string>
+         </property>
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>20</number>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+
+       <item row="1" column="0">
+        <widget class="QLabel" name="RequeueIgnoreLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Uncheck, to ignore all played tracks.</string>
+         </property>
+         <property name="text">
+          <string>Suspend track in Track Source from re-queue</string>
+         </property>
+          <property name="buddy">
+           <cstring>RequeueIgnoreCheckBox</cstring>
+          </property>
+        </widget>
+       </item>
+
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="RequeueIgnoreCheckBox">
+         <property name="toolTip">
+          <string>Uncheck, to ignore all played tracks.</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+
+       <item row="2" column="0">
+        <widget class="QLabel" name="RequeueIgnoreTimeLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Suspension period for track selection</string>
+         </property>
+        </widget>
+       </item>
+
+       <item row="2" column="1">
+        <widget class="QTimeEdit" name="RequeueIgnoreTimeEdit">
+         <property name="toolTip">
+          <string>Duration after which a track is eligible for selection by Auto DJ again</string>
+         </property>
+         <property name="displayFormat">
+          <string>hh:mm</string>
+         </property>
+         <property name="timeSpec">
+          <enum>Qt::LocalTime</enum>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+
+       <item row="2" column="2">
+        <spacer name="horizontalSpacerRequeue">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+        </spacer>
+       </item>
+
+      </layout>
+    </widget>
    </item>
-   <item row="1" column="0">
+
+   <item>
+    <widget class="QGroupBox" name="AddRandomOptions">
+      <property name="title">
+       <string>Add Random Tracks</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <layout class="QGridLayout" name="AddRandomGridLayout">
+
+       <item row="0" column="0">
+        <widget class="QLabel" name="RandomQueueLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Enable random track addition to queue</string>
+         </property>
+         <property name="buddy">
+          <cstring>RandomQueueCheckBox</cstring>
+         </property>
+        </widget>
+       </item>
+
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="RandomQueueCheckBox">
+         <property name="toolTip">
+          <string>Add random tracks from Track Source if the specified minimum tracks remain</string>
+         </property>
+        </widget>
+       </item>
+
+       <item row="1" column="0">
+        <widget class="QLabel" name="RandomQueueMinimumLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Minimum allowed tracks before addition</string>
+         </property>
+        </widget>
+       </item>
+
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="RandomQueueMinimumSpinBox">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string>Minimum number of tracks after which random tracks may be added</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>20</number>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+
+       <item row="1" column="2">
+        <spacer name="horizontalSpacerRandom">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+        </spacer>
+       </item>
+
+      </layout>
+    </widget>
+   </item>
+
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>30</height>
-      </size>
-     </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
     </spacer>
    </item>
+
   </layout>
  </widget>
  <resources/>

@@ -1,145 +1,155 @@
 <Template>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+  <SetVariable name="KnobBg">small</SetVariable>
+  <SetVariable name="KnobIndicator">small</SetVariable>
+  <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
+  <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
+  <SetVariable name="ArcUnipolar">true</SetVariable>
+
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
 
-      <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-
       <WidgetGroup>
-        <ObjectName>MicContainer</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>max,min</SizePolicy>
+        <ObjectName>MicAuxRack</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
+
           <WidgetGroup>
+            <ObjectName>MicAuxRackFiller</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>MicRack</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Label>
-                <ObjectName>MicTitle</ObjectName>
-                <Text>Microphones</Text>
-              </Label>
+
+              <Template src="skin:/mic_aux/ducking_controls.xml">
+                <SetVariable name="KnobColor">red</SetVariable>
+              </Template>
 
               <WidgetGroup>
-                <SizePolicy>me,min</SizePolicy>
-              </WidgetGroup>
-
-              <Label>
-                <ObjectName>DuckingTitle</ObjectName>
-                <Size>60f,17f</Size>
-                <Text>Ducking</Text>
-                <Alignment>center</Alignment>
-              </Label>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup><!-- Mic units -->
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,min</SizePolicy>
-            <Children>
-              <Template src="skin:mic_unit.xml">
-                <SetVariable name="mic1hack">1</SetVariable>
-              </Template>
-              <Template src="skin:mic_unit.xml">
-                <SetVariable name="micnum">2</SetVariable>
-              </Template>
-              <Template src="skin:mic_unit.xml">
-                <SetVariable name="micnum">3</SetVariable>
-              </Template>
-              <Template src="skin:mic_unit.xml">
-                <SetVariable name="micnum">4</SetVariable>
-              </Template>
-
-              <WidgetGroup><!-- Ducking controls -->
-                <ObjectName>MicDuckingContainer</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:button_3state.xml">
-                    <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
-                    <SetVariable name="ObjectName">MicDuckingButton</SetVariable>
-                    <SetVariable name="Size">62f,28f</SetVariable>
-                    <SetVariable name="state_0">micDuck</SetVariable>
-                    <SetVariable name="state_0_text">OFF</SetVariable>
-                    <SetVariable name="state_1">micDuck_over</SetVariable>
-                    <SetVariable name="state_1_text">AUTO</SetVariable>
-                    <SetVariable name="state_2">micDuck_over</SetVariable>
-                    <SetVariable name="state_2_text">MANUAL</SetVariable>
-                    <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
+                  <Template src="skin:/mic_aux/mic_unit.xml">
+                    <SetVariable name="Mic1Hack">1</SetVariable>
                   </Template>
-
-                  <WidgetGroup>
-                    <ObjectName>MicDuckingStrengthKnob</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:knob_textless.xml">
-                        <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
-                        <SetVariable name="Size">40f,34f</SetVariable>
-                        <SetVariable name="group">[Master]</SetVariable>
-                        <SetVariable name="control">duckStrength</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
+                  <Template src="skin:/mic_aux/mic_unit_unconfigured.xml">
+                    <SetVariable name="Mic1Hack">1</SetVariable>
+                  </Template>
                 </Children>
-              </WidgetGroup><!-- /Ducking controls -->
-            </Children>
-          </WidgetGroup><!-- /Mic units -->
+              </WidgetGroup>
 
-        </Children>
-      </WidgetGroup><!-- /Mic -->
-      
-      <WidgetGroup><!-- Aux -->
-        <ObjectName>AuxContainer</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>max,min</SizePolicy>
-        <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:/mic_aux/mic_unit.xml">
+                    <SetVariable name="MicNum">2</SetVariable>
+                  </Template>
+                  <Template src="skin:/mic_aux/mic_unit_unconfigured.xml">
+                    <SetVariable name="MicNum">2</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:/mic_aux/mic_unit.xml">
+                    <SetVariable name="MicNum">3</SetVariable>
+                  </Template>
+                  <Template src="skin:/mic_aux/mic_unit_unconfigured.xml">
+                    <SetVariable name="MicNum">3</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:/mic_aux/mic_unit.xml">
+                    <SetVariable name="MicNum">4</SetVariable>
+                  </Template>
+                  <Template src="skin:/mic_aux/mic_unit_unconfigured.xml">
+                    <SetVariable name="MicNum">4</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- MicRack -->
+
           <WidgetGroup>
+            <ObjectName>MicAuxRackFiller</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>AuxRack</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Label>
-                <ObjectName>MicTitle</ObjectName>
-                <Text>Aux Inputs</Text>
-              </Label>
+
               <WidgetGroup>
-                <Layout>vertical</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <Children/>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:/mic_aux/aux_unit.xml">
+                    <SetVariable name="AuxNum">1</SetVariable>
+                  </Template>
+                  <Template src="skin:/mic_aux/aux_unit_unconfigured.xml">
+                    <SetVariable name="AuxNum">1</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:/mic_aux/aux_unit.xml">
+                    <SetVariable name="AuxNum">2</SetVariable>
+                  </Template>
+                  <Template src="skin:/mic_aux/aux_unit_unconfigured.xml">
+                    <SetVariable name="AuxNum">2</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:/mic_aux/aux_unit.xml">
+                    <SetVariable name="AuxNum">3</SetVariable>
+                  </Template>
+                  <Template src="skin:/mic_aux/aux_unit_unconfigured.xml">
+                    <SetVariable name="AuxNum">3</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:/mic_aux/aux_unit.xml">
+                    <SetVariable name="AuxNum">4</SetVariable>
+                  </Template>
+                  <Template src="skin:/mic_aux/aux_unit_unconfigured.xml">
+                    <SetVariable name="AuxNum">4</SetVariable>
+                  </Template>
+                </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- AuxRack -->
 
           <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,min</SizePolicy>
-            <Children>
-              <Template src="skin:aux_unit.xml">
-                <SetVariable name="auxnum">1</SetVariable>
-              </Template>
-              <Template src="skin:aux_unit.xml">
-                <SetVariable name="auxnum">2</SetVariable>
-              </Template>
-              <Template src="skin:aux_unit.xml">
-                <SetVariable name="auxnum">3</SetVariable>
-              </Template>
-              <Template src="skin:aux_unit.xml">
-                <SetVariable name="auxnum">4</SetVariable>
-              </Template>
-            </Children>
+            <ObjectName>MicAuxRackFiller</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
           </WidgetGroup>
+
         </Children>
-      </WidgetGroup><!-- Aux -->
-
-      <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-
-      <WidgetGroup>
-        <Size>5f,1min</Size>
-        <Connection>
-          <ConfigKey>[Master],skin_settings</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- MicAuxRack -->
 
     </Children>
     <Connection>

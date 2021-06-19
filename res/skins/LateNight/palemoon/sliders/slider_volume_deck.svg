@@ -1,0 +1,43 @@
+<svg width="42" height="107" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="m9 57.5008h8v0.999596h-8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m9 67.501h8v0.999596h-8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m9 77.5007h8v0.999596h-8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m9 87.5005h8v0.999596h-8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m9 17.5h8v0.999596h-8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m9 27.5016h8v0.999596h-8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m9 37.5013h8v0.999596h-8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m9 47.5011h8v0.999596h-8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m8 7.5004 9-2.025e-4v0.999596l-9 2.025e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m8 97.5004 9-2.03e-4v0.999595l-9 2.03e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m25 57.5008 8 2.53e-4v0.999596l-8-2.53e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m25 67.501 8 2.53e-4v0.999596l-8-2.53e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m25 77.5007 8 2.53e-4v0.999596l-8-2.53e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m25 87.5005 8 2.52e-4v0.999596l-8-2.52e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m25 17.5 8 2.52e-4v0.999596l-8-2.52e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m25 27.5016 8 2.53e-4v0.999596l-8-2.53e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m25 37.5013 8 2.53e-4v0.999596l-8-2.53e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m25 47.5011 8 2.53e-4v0.999596l-8-2.53e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m9 58.0006h8v0.999596h-8z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m9 68.0007h8v0.999596h-8z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m9 78.0005h8v0.999596h-8z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m9 88.0002h8v0.999596h-8z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m9 17.9997h8v0.999596h-8z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m9 28.0013h8v0.999596h-8z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m9 38.0011h8v0.999596h-8z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m9 48.0008h8v0.999596h-8z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m25 58.0006 8 2.53e-4v0.999596l-8-2.53e-4z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m25 68.0007 8 2.03e-4v0.999596l-8-2.03e-4z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m25 78.0005 8 2.03e-4v0.999596l-8-2.03e-4z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m25 88.0002 8 2.02e-4v0.999596l-8-2.02e-4z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m25 17.9997 8 2.02e-4v0.999596l-8-2.02e-4z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m25 28.0013 8 2.03e-4v0.999596l-8-2.03e-4z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m25 38.0011 8 2.03e-4v0.999596l-8-2.03e-4z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m25 48.0008 8 2.03e-4v0.999596l-8-2.03e-4z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <path d="m25 7.49995 9 2.525e-4v0.999596l-9-2.525e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m25 97.5 9 2.52e-4v0.999596l-9-2.53e-4z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m8 8.0004 9-2.025e-4v0.999596l-9 2.025e-4z" color="#000000" fill="#505050" stroke-width=".999798"/>
+  <path d="m8 98.0004 9-2.03e-4v0.999595l-9 2.03e-4z" color="#000000" fill="#505050" stroke-width=".999798"/>
+  <path d="m25 8.0002 9 2.025e-4v0.999596l-9-2.025e-4z" color="#000000" fill="#505050" stroke-width=".999798"/>
+  <path d="m25 98.0002 9 2.02e-4v0.999596l-9-2.03e-4z" color="#000000" fill="#505050" stroke-width=".999798"/>
+  <path d="m20.3052 7.30523h1.38955v92.3896h-1.38955z" color="#000000" stroke="#000" stroke-linejoin="round" stroke-width="1.61045"/>
+</svg>

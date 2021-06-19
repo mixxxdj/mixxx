@@ -1,0 +1,44 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>MicDuckingContainer</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>f,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MicDuckingModeBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:/controls/button_3state.xml">
+            <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
+            <SetVariable name="ObjectName">MicDucking</SetVariable>
+            <SetVariable name="Size">42f,24f</SetVariable>
+            <SetVariable name="BtnType">embedded</SetVariable>
+            <SetVariable name="BtnSize">medium</SetVariable>
+            <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>MicDuckingStrengthBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:/controls/knob.xml">
+            <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
+            <SetVariable name="KnobColor">red</SetVariable>
+            <SetVariable name="ArcColor"><Variable name="ArcColorFxMix"/></SetVariable>
+            <SetVariable name="ArcReversed">true</SetVariable>
+            <SetVariable name="Group">[Master]</SetVariable>
+            <SetVariable name="Control">duckStrength</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- MicDuckingStrengthKnob -->
+    </Children>
+    <Connection>
+      <ConfigKey>[LateNight],show_ducking_controls</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- MicDuckingContainer -->
+</Template>

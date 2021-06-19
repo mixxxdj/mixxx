@@ -1,19 +1,21 @@
-#include <QWidget>
-#include <QString>
-#include <QPair>
-#include <QLabel>
-#include <QCheckBox>
-#include <QPushButton>
-
 #include "dlgpreflv2.h"
-#include "engine/enginefilterbessel4.h"
-#include "control/controlobject.h"
-#include "util/math.h"
-#include "effects/effectsmanager.h"
 
-DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
-                       UserSettingsPointer pConfig,
-                       EffectsManager* pEffectsManager)
+#include <QCheckBox>
+#include <QLabel>
+#include <QPair>
+#include <QPushButton>
+#include <QString>
+#include <QWidget>
+
+#include "control/controlobject.h"
+#include "effects/effectsmanager.h"
+#include "moc_dlgpreflv2.cpp"
+#include "util/math.h"
+
+DlgPrefLV2::DlgPrefLV2(QWidget* pParent,
+        LV2Backend* lv2Backend,
+        UserSettingsPointer pConfig,
+        std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pLV2Backend(lv2Backend),
           m_iCheckedParameters(0),
@@ -26,9 +28,9 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
         return;
     }
 
-    QList<QString> allPlugins = m_pLV2Backend->getDiscoveredPluginIds().toList();
+    QList<QString> allPlugins = m_pLV2Backend->getDiscoveredPluginIds().values();
     // Display them alphabetically
-    qSort(allPlugins.begin(), allPlugins.end());
+    std::sort(allPlugins.begin(), allPlugins.end());
 
     for (const auto& effectId: allPlugins) {
         LV2Manifest* lv2Manifest = m_pLV2Backend->getLV2Manifest(effectId);
@@ -36,6 +38,7 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
 
         QPushButton* button = new QPushButton(this);
         button->setText(pEffectManifest->name());
+        button->setStyleSheet("text-align:left; padding: 5px;");
 
         if (!m_pLV2Backend->canInstantiateEffect(effectId)) {
             // Tooltip displaying why this effect is disabled
@@ -57,29 +60,31 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
             button->setDisabled(false);
         }
 
-        lv2_vertical_layout_left->addWidget(button);
+        lv2EffectsList->addWidget(button);
         button->setProperty("id", QVariant(pEffectManifest->id()));
-        connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayParameters()));
+        connect(button, &QAbstractButton::clicked, this, &DlgPrefLV2::slotDisplayParameters);
     }
+    effectNameLabel->clear();
 }
 
 DlgPrefLV2::~DlgPrefLV2() {
 }
 
 void DlgPrefLV2::slotDisplayParameters() {
-    // Set the number of checked parameters to 0 because new parameters are
-    // displayed
-
-    // Clear the right vertical layout
+    // New parameters will be displayed.
+    // Reset the number of checked parameters to 0 and clear the layout.
     foreach (QCheckBox* box, m_pluginParameters) {
         delete box;
     }
     m_pluginParameters.clear();
 
-    QLayoutItem* item;
-    while ((item = lv2_vertical_layout_params->takeAt(1)) != 0) {
-        lv2_vertical_layout_params->removeWidget(item->widget());
-        delete item->widget();
+    // isEmpty() doesn't consider spacers but count() does.
+    while (lv2EffectParametersList->count() > 0) {
+        QLayoutItem* item = lv2EffectParametersList->takeAt(0);
+        VERIFY_OR_DEBUG_ASSERT(item) {
+            continue;
+        }
+        delete item;
     }
 
     QPushButton* button = qobject_cast<QPushButton*>(sender());
@@ -87,35 +92,53 @@ void DlgPrefLV2::slotDisplayParameters() {
     m_currentEffectId = pluginId;
 
     EffectManifestPointer pCurrentEffectManifest = m_pLV2Backend->getManifest(pluginId);
-    const QList<EffectManifestParameterPointer>& parameterList =
-            pCurrentEffectManifest->parameters();
-    for (const auto& pPrameter: parameterList) {
-        QCheckBox* entry = new QCheckBox(this);
-        entry->setText(pPrameter->name());
-        if (pPrameter->showInParameterSlot()) {
-            entry->setChecked(true);
-        } else {
-            entry->setChecked(false);
-            entry->setEnabled(false);
+    if (pCurrentEffectManifest) {
+        // Show the effect name above the parameter list
+        effectNameLabel->setText(QObject::tr("Parameters of %1")
+                                         .arg(pCurrentEffectManifest->name()));
+        // Populate the parameters list
+        const QList<EffectManifestParameterPointer>& parameterList =
+                pCurrentEffectManifest->parameters();
+        for (const auto& pParameter : parameterList) {
+            QCheckBox* entry = new QCheckBox(this);
+            entry->setText(pParameter->name());
+            if (pParameter->showInParameterSlot()) {
+                entry->setChecked(true);
+            } else {
+                entry->setChecked(false);
+                entry->setEnabled(false);
+            }
+            lv2EffectParametersList->addWidget(entry);
+            m_pluginParameters.append(entry);
+            connect(entry, &QCheckBox::stateChanged, this, &DlgPrefLV2::slotUpdateOnParameterCheck);
         }
-        lv2_vertical_layout_params->addWidget(entry);
-        m_pluginParameters.append(entry);
-        connect(entry, SIGNAL(stateChanged(int)),
-                this, SLOT(slotUpdateOnParameterCheck(int)));
+        int parameterListSize = parameterList.size();
+        m_iCheckedParameters = parameterListSize < 8 ? parameterListSize : 8;
+    } else {
+        m_iCheckedParameters = 0;
     }
-    lv2_vertical_layout_params->addStretch();
+    lv2EffectParametersList->addStretch();
+}
 
-    int parameterListSize = parameterList.size();
-    m_iCheckedParameters = parameterListSize < 8 ? parameterListSize : 8;
+void DlgPrefLV2::slotUpdate() {
+    // This preferences page will be removed in PR #2618 anyway, so we'll just
+    // leave this empty for now.
+}
+
+void DlgPrefLV2::slotResetToDefaults() {
+    // This preferences page will be removed in PR #2618 anyway, so we'll just
+    // leave this empty for now.
 }
 
 void DlgPrefLV2::slotApply() {
     EffectManifestPointer pCurrentEffectManifest =
             m_pLV2Backend->getManifest(m_currentEffectId);
     qDebug() << "DlgPrefLV2::slotApply" << pCurrentEffectManifest.data();
-    for (int i = 0; i < m_pluginParameters.size(); i++) {
-        EffectManifestParameterPointer pParameter = pCurrentEffectManifest->parameter(i);
-        pParameter->setShowInParameterSlot(m_pluginParameters[i]->isChecked());
+    if (pCurrentEffectManifest) {
+        for (int i = 0; i < m_pluginParameters.size(); i++) {
+            EffectManifestParameterPointer pParameter = pCurrentEffectManifest->parameter(i);
+            pParameter->setShowInParameterSlot(m_pluginParameters[i]->isChecked());
+        }
     }
     m_pEffectsManager->refeshAllRacks();
 }

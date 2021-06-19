@@ -1,5 +1,7 @@
 #include "test/librarytest.h"
 
+#include "track/track.h"
+
 namespace {
 
 const bool kInMemoryDbConnection = true;
@@ -10,27 +12,30 @@ void deleteTrack(Track* pTrack) {
     delete pTrack;
 };
 
+std::unique_ptr<TrackCollectionManager> newTrackCollectionManager(
+        UserSettingsPointer userSettings,
+        mixxx::DbConnectionPoolPtr dbConnectionPool) {
+    const auto dbConnection = mixxx::DbConnectionPooled(dbConnectionPool);
+    if (!MixxxDb::initDatabaseSchema(dbConnection)) {
+        return nullptr;
+    }
+    return std::make_unique<TrackCollectionManager>(
+            nullptr,
+            std::move(userSettings),
+            std::move(dbConnectionPool),
+            deleteTrack);
 }
+
+} // namespace
 
 LibraryTest::LibraryTest()
-    : m_mixxxDb(config(), kInMemoryDbConnection),
-      m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-      m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())),
-      m_pTrackCollection(std::make_unique<TrackCollection>(config())) {
-    MixxxDb::initDatabaseSchema(m_dbConnection);
-    m_pTrackCollection->connectDatabase(m_dbConnection);
-    GlobalTrackCache::createInstance(this, deleteTrack);
+        : MixxxDbTest(kInMemoryDbConnection),
+          m_pTrackCollectionManager(newTrackCollectionManager(config(), dbConnectionPooler())),
+          m_keyNotationCO(ConfigKey("[Library]", "key_notation")) {
 }
 
-LibraryTest::~LibraryTest() {
-    m_pTrackCollection->disconnectDatabase();
-    m_pTrackCollection.reset();
-    // With the track collection all remaining track references
-    // should have been dropped before destroying the cache.
-    GlobalTrackCache::destroyInstance();
-}
-
-void LibraryTest::saveEvictedTrack(Track* pTrack) noexcept {
-    m_pTrackCollection->exportTrackMetadata(pTrack);
-    m_pTrackCollection->saveTrack(pTrack);
+TrackPointer LibraryTest::getOrAddTrackByLocation(
+        const QString& trackLocation) const {
+    return m_pTrackCollectionManager->getOrAddTrack(
+            TrackRef::fromFilePath(trackLocation));
 }

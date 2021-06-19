@@ -1,12 +1,11 @@
-#ifndef WAVEFORMRENDERBACKGROUND_H
-#define WAVEFORMRENDERBACKGROUND_H
+#pragma once
 
 #include <QColor>
 #include <QDomNode>
 #include <QPaintEvent>
 #include <QPainter>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/class.h"
 #include "waveformrendererabstract.h"
 
@@ -29,5 +28,3 @@ class WaveformRenderBackground : public WaveformRendererAbstract {
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBackground);
 };
-
-#endif /* WAVEFORMRENDERBACKGROUND_H */

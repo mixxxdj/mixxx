@@ -1,1 +1,5 @@
-<svg id="svg2" width="180" height="40" version="1.1" xmlns="http://www.w3.org/2000/svg"><rect id="rect2984" x="3.9767" y="12.759" width="172.05" height="14.483" color="#000000" fill="#f60"/><!-- marker lines every 5px --><!-- end marker --><!-- quarter marker --><!-- middle marker --><!-- quarter marker --><!-- end marker --></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="180" height="40" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <style/>
+ <rect x="1" y="12" width="178" height="16" color="#000000" fill="#f60"/>
+</svg>

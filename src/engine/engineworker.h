@@ -1,8 +1,4 @@
-// engineworker.h
-// Created 6/2/2010 by RJ Ryan (rryan@mit.edu)
-
-#ifndef ENGINEWORKER_H
-#define ENGINEWORKER_H
+#pragma once
 
 #include <atomic>
 #include <QObject>
@@ -35,5 +31,3 @@ class EngineWorker : public QThread {
     EngineWorkerScheduler* m_pScheduler;
     std::atomic_flag m_notReady;
 };
-
-#endif /* ENGINEWORKER_H */

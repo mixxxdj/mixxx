@@ -19,13 +19,14 @@ QWidget* MidiOpCodeDelegate::createEditor(QWidget* parent,
     QComboBox* pComboBox = new QComboBox(parent);
 
     QList<MidiOpCode> choices;
-    choices.append(MIDI_NOTE_ON);
-    choices.append(MIDI_NOTE_OFF);
-    choices.append(MIDI_CC);
-    choices.append(MIDI_PITCH_BEND);
+    choices.append(MidiOpCode::NoteOn);
+    choices.append(MidiOpCode::NoteOff);
+    choices.append(MidiOpCode::ControlChange);
+    choices.append(MidiOpCode::PitchBendChange);
 
-    foreach (MidiOpCode choice, choices) {
-        pComboBox->addItem(MidiUtils::opCodeToTranslatedString(choice), choice);
+    for (const MidiOpCode choice : qAsConst(choices)) {
+        pComboBox->addItem(MidiUtils::opCodeToTranslatedString(choice),
+                static_cast<uint8_t>(choice));
     }
     return pComboBox;
 }
@@ -40,8 +41,8 @@ QString MidiOpCodeDelegate::displayText(const QVariant& value,
 void MidiOpCodeDelegate::setEditorData(QWidget* editor,
                                        const QModelIndex& index) const {
     int opCode = index.data(Qt::EditRole).toInt();
-    QComboBox* pComboBox = dynamic_cast<QComboBox*>(editor);
-    if (pComboBox == NULL) {
+    QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
+    if (pComboBox == nullptr) {
         return;
     }
     for (int i = 0; i < pComboBox->count(); ++i) {
@@ -55,8 +56,8 @@ void MidiOpCodeDelegate::setEditorData(QWidget* editor,
 void MidiOpCodeDelegate::setModelData(QWidget* editor,
                                       QAbstractItemModel* model,
                                       const QModelIndex& index) const {
-    QComboBox* pComboBox = dynamic_cast<QComboBox*>(editor);
-    if (pComboBox == NULL) {
+    QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
+    if (pComboBox == nullptr) {
         return;
     }
     model->setData(index, pComboBox->itemData(pComboBox->currentIndex()),

@@ -1,5 +1,4 @@
-#ifndef VINYLCONTROLPROCESSOR_H
-#define VINYLCONTROLPROCESSOR_H
+#pragma once
 
 #include <QObject>
 #include <QThread>
@@ -41,8 +40,8 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     }
 
   public slots:
-    virtual void onInputConfigured(AudioInput input);
-    virtual void onInputUnconfigured(AudioInput input);
+    virtual void onInputConfigured(const AudioInput& input);
+    virtual void onInputUnconfigured(const AudioInput& input);
 
     // Called by the engine callback. Must not touch any state in
     // VinylControlProcessor except for m_samplePipes. NOTE:
@@ -53,8 +52,7 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     // method is re-entrant since the VinylControlProcessor is registered for
     // multiple AudioDestinations, however it is not re-entrant for a given
     // AudioInput index.
-    void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                       unsigned int iNumFrames);
+    void receiveBuffer(const AudioInput& input, const CSAMPLE* pBuffer, unsigned int iNumFrames);
 
   protected:
     void run();
@@ -74,13 +72,14 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     CSAMPLE* m_pWorkBuffer;
     QWaitCondition m_samplesAvailableSignal;
     QMutex m_waitForSampleMutex;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QRecursiveMutex m_processorsLock;
+#else
     QMutex m_processorsLock;
+#endif
     QVector<VinylControl*> m_processors;
     FIFO<VinylSignalQualityReport> m_signalQualityFifo;
     volatile bool m_bReportSignalQuality;
     volatile bool m_bQuit;
     volatile bool m_bReloadConfig;
 };
-
-
-#endif /* VINYLCONTROLPROCESSOR_H */

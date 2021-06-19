@@ -1,49 +1,47 @@
 #include "preferences/dialog/dlgprefeffects.h"
 
-#include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectsbackend.h"
+#include "effects/effectsmanager.h"
+#include "moc_dlgprefeffects.cpp"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
-                               UserSettingsPointer pConfig,
-                               EffectsManager* pEffectsManager)
+        UserSettingsPointer pConfig,
+        std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_pEffectsManager(pEffectsManager) {
     setupUi(this);
 
-    m_availableEffectsModel.resetFromEffectManager(pEffectsManager);
-    for (auto& profile : m_availableEffectsModel.profiles()) {
+    m_availableEffectsModel.resetFromEffectManager(pEffectsManager.get());
+    const QList<EffectProfilePtr> effectProfiles = m_availableEffectsModel.profiles();
+    for (const auto& profile : effectProfiles) {
         EffectManifestPointer pManifest = profile->pManifest;
 
-        // Users are likely to have lots of external plugins installed and 
-        // many of them are useless for DJing. To avoid cluttering the list 
+        // Users are likely to have lots of external plugins installed and
+        // many of them are useless for DJing. To avoid cluttering the list
         // shown in WEffectSelector, blacklist external plugins by default.
         bool defaultValue = (pManifest->backendType() == EffectBackendType::BuiltIn);
-        bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible " + pManifest->backendName() + " Effects]", 
-                                                 pManifest->id()), defaultValue);
+        bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible " + pManifest->backendName() + " Effects]",
+                                                         pManifest->id()),
+                defaultValue);
         profile->bIsVisible = visible;
         m_pEffectsManager->setEffectVisibility(pManifest, visible);
     }
     availableEffectsList->setModel(&m_availableEffectsModel);
+    availableEffectsList->setTabKeyNavigation(false);
 
     connect(availableEffectsList->selectionModel(),
-            SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
+            &QItemSelectionModel::currentRowChanged,
             this,
-            SLOT(availableEffectsListItemSelected(const QModelIndex&)));
+            &DlgPrefEffects::availableEffectsListItemSelected);
 
     // Highlight first row
     availableEffectsList->selectRow(0);
 
-  #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    availableEffectsList->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
-    availableEffectsList->setColumnWidth(1, 200);
-    availableEffectsList->horizontalHeader()->setResizeMode(2, QHeaderView::ResizeToContents);
-  #else
     availableEffectsList->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     availableEffectsList->setColumnWidth(1, 200);
     availableEffectsList->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-  #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 }
 
 DlgPrefEffects::~DlgPrefEffects() {
@@ -51,27 +49,38 @@ DlgPrefEffects::~DlgPrefEffects() {
 
 void DlgPrefEffects::slotUpdate() {
     clear();
-    m_availableEffectsModel.resetFromEffectManager(m_pEffectsManager);
+    m_availableEffectsModel.resetFromEffectManager(m_pEffectsManager.get());
 
     if (!m_availableEffectsModel.isEmpty()) {
         availableEffectsList->selectRow(0);
     }
+
+    bool effectAdoptMetaknobValue = m_pConfig->getValue(
+            ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
+    radioButtonKeepMetaknobPosition->setChecked(effectAdoptMetaknobValue);
+    radioButtonMetaknobLoadDefault->setChecked(!effectAdoptMetaknobValue);
 }
 
 void DlgPrefEffects::slotApply() {
-    for (EffectProfilePtr profile : m_availableEffectsModel.profiles()) {
+    const QList<EffectProfilePtr> effectProfiles = m_availableEffectsModel.profiles();
+    for (const EffectProfilePtr& profile : effectProfiles) {
         EffectManifestPointer pManifest = profile->pManifest;
         m_pEffectsManager->setEffectVisibility(pManifest, profile->bIsVisible);
-        
+
         // Effects from different backends can have same Effect IDs.
         // Add backend name to group to uniquely identify those effects.
         // Use untranslated value to keep the group language independent.
-        m_pConfig->set(ConfigKey("[Visible " + pManifest->backendName() + " Effects]", pManifest->id()), 
-                       ConfigValue(profile->bIsVisible));
+        m_pConfig->set(ConfigKey("[Visible " + pManifest->backendName() + " Effects]", pManifest->id()),
+                ConfigValue(profile->bIsVisible));
     }
+
+    m_pConfig->set(ConfigKey("[Effects]", "AdoptMetaknobValue"),
+            ConfigValue(radioButtonKeepMetaknobPosition->isChecked()));
 }
 
 void DlgPrefEffects::slotResetToDefaults() {
+    radioButtonKeepMetaknobPosition->setChecked(true);
+
     slotUpdate();
 }
 

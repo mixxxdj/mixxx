@@ -4,8 +4,8 @@
         <name>Reloop Beatmix 2/4</name>
         <author>Sébastien Blaisot &lt;sebastien@blaisot.org&gt;</author>
         <description>Controller mapping for the Reloop Beatmix 2/4.</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=8428</forums>
-        <wiki>http://www.mixxx.org/wiki/doku.php/reloop_beatmix_4</wiki>
+        <forums>https://mixxx.discourse.group/t/reloop-beatmix-2-4-mapping/16049</forums>
+        <manual>reloop_beatmix_2</manual>
     </info>
     <controller id="Reloop Beatmix 2/4">
         <scriptfiles>

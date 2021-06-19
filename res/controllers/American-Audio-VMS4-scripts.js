@@ -7,12 +7,12 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -92,7 +92,7 @@ VMS4.init = function (id) {    // called when the MIDI device is opened & set up
     engine.softTakeover("[EffectRack1_EffectUnit4]","super1",true);
     engine.softTakeover("[EffectRack1_EffectUnit4]","mix",true);
     engine.softTakeover("[EffectRack1_EffectUnit4]","super1",true);
-    
+
 
     print("American Audio "+VMS4.id+" initialized.");
 }
@@ -229,7 +229,7 @@ VMS4.Deck.prototype.keyLockButtonHandler = function(value) {
 
 VMS4.Deck.prototype.effectParamButtonHandler = function(value) {
     // Couldn't get this to work. The buttons are mapped instead to VMS4.effectParameterButton
-    
+
 //     if(value == ButtonState.pressed) {
 //         this.controlEffectParameter=!this.controlEffectParameter;
 //         if (this.controlEffectParameter) {
@@ -306,19 +306,19 @@ VMS4.pitchCenter = function(channel, control, value, status, group) {
 
 VMS4.effectSelect = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
-    
+
     if (deck.effectSelect == -1 || isNaN(deck.effectSelect)) deck.effectSelect = value;
-    
+
     // Take wrap around into account
     var wrapCount = 0;
     if (value>=0 && value<10 && deck.effectSelect>117 && deck.effectSelect<=127) wrapCount+=1;
     if (value>117 && value<=127 && deck.effectSelect>=0 && deck.effectSelect<10) wrapCount-=1;
-    
+
     var diff = value - deck.effectSelect;
     deck.effectSelect=value;
-    
+
     diff += wrapCount*128;
-    
+
     engine.setValue("[EffectRack1_EffectUnit"+VMS4.GetDeckNum(group)+"_Effect1]",
                     "effect_selector",diff);
 }
@@ -366,17 +366,17 @@ VMS4.effectParameterButton = function(channel, control, value, status, group) {
 VMS4.sampleSelect = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
     if (deck.sampleSelect == -1) deck.sampleSelect = value;
-    
+
     // Take wrap around into account
     var wrapCount = 0;
     if (value>=0 && value<10 && deck.sampleSelect>117 && deck.sampleSelect<=127) wrapCount+=1;
     if (value>117 && value<=127 && deck.sampleSelect>=0 && deck.sampleSelect<10) wrapCount-=1;
-    
+
     var diff = value - deck.sampleSelect;
     deck.sampleSelect=value;
-    
+
     diff += wrapCount*128;
-    
+
     engine.setValue("[Playlist]","SelectTrackKnob",diff);
 }
 
@@ -424,10 +424,10 @@ VMS4.strip_scroll = function(channel, control, value, status, group) {
         // Higher on the strip gives a higher value, and up is negative on Library
         //  scroll controls
         if (side === "Left") {
-            engine.setValue("[Playlist]", "SelectPlaylist", 
+            engine.setValue("[Playlist]", "SelectPlaylist",
                             VMS4.touchStripPos[side] - value);
         } else {
-            engine.setValue("[Playlist]", "SelectTrackKnob", 
+            engine.setValue("[Playlist]", "SelectTrackKnob",
                             VMS4.touchStripPos[side] - value);
         }
     }

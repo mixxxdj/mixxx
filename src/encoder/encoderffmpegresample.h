@@ -1,5 +1,4 @@
-#ifndef ENCODERFFMPEGRESAMPLE_H
-#define ENCODERFFMPEGRESAMPLE_H
+#pragma once
 
 #include <QtDebug>
 
@@ -28,5 +27,3 @@ class EncoderFfmpegResample {
     enum AVSampleFormat m_pInSampleFmt;
 
 };
-
-#endif

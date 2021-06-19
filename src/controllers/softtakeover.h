@@ -1,13 +1,4 @@
-/***************************************************************************
-                           softtakeover.h  -  description
-                           --------------
-    begin                : Thu Mar 17 2011
-    copyright            : (C) 2011 by Sean M. Pappalardo
-    email                : spappalardo@mixxx.org
- ***************************************************************************/
-
-#ifndef SOFTTAKEOVER_H
-#define SOFTTAKEOVER_H
+#pragma once
 
 #include <QHash>
 
@@ -63,5 +54,3 @@ class SoftTakeoverCtrl {
   private:
     QHash<ControlObject*, SoftTakeover*> m_softTakeoverHash;
 };
-
-#endif

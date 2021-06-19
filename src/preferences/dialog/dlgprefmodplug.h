@@ -1,12 +1,11 @@
-// dlgprefmodplug.h  -  modplug settings dialog
-// created 2013 by Stefan Nuernberger <kabelfrickler@gmail.com>
+// modplug settings dialog
 
-#ifndef DLGPREFMODPLUG_H
-#define DLGPREFMODPLUG_H
+#pragma once
 
 #include <QDialog>
+
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 namespace Ui {
 class DlgPrefModplug;
@@ -20,10 +19,9 @@ class DlgPrefModplug : public DlgPreferencePage {
     virtual ~DlgPrefModplug();
 
   public slots:
-    /** Apply changes to widget */
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
 
     void loadSettings();
     void saveSettings();
@@ -33,5 +31,3 @@ class DlgPrefModplug : public DlgPreferencePage {
     Ui::DlgPrefModplug* m_pUi;
     UserSettingsPointer m_pConfig;
 };
-
-#endif // DLGPREFMODPLUG_H

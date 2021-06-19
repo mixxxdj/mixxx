@@ -1,5 +1,4 @@
-#ifndef ENGINEEFFECTPARAMETER_H
-#define ENGINEEFFECTPARAMETER_H
+#pragma once
 
 #include <QString>
 #include <QVariant>
@@ -85,5 +84,3 @@ class EngineEffectParameter {
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectParameter);
 };
-
-#endif /* ENGINEEFFECTPARAMETER_H */

@@ -1,5 +1,4 @@
-#ifndef PHASEREFFECT_H
-#define PHASEREFFECT_H
+#pragma once
 
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -81,5 +80,3 @@ class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(PhaserEffect);
 };
-
-#endif

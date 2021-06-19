@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "moc_weffectpushbutton.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectPushButton::WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager)
@@ -15,8 +16,8 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
     WPushButton::setup(node, context);
 
     m_pButtonMenu = new QMenu(this);
-    connect(m_pButtonMenu, SIGNAL(triggered(QAction*)),
-            this, SLOT(slotActionChosen(QAction*)));
+    connect(m_pButtonMenu, &QMenu::triggered, this, &WEffectPushButton::slotActionChosen);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WEffectPushButton::setupEffectParameterSlot(const ConfigKey& configKey) {
@@ -34,15 +35,18 @@ void WEffectPushButton::setEffectParameterSlot(
         EffectButtonParameterSlotPointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {
-        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
+        connect(m_pEffectParameterSlot.data(),
+                &EffectParameterSlot::updated,
+                this,
+                &WEffectPushButton::parameterUpdated);
     }
     parameterUpdated();
 }
 
 
 void WEffectPushButton::onConnectedControlChanged(double dParameter, double dValue) {
-    for (const auto& action : m_pButtonMenu->actions()) {
+    const QList<QAction*> actions = m_pButtonMenu->actions();
+    for (const auto& action : actions) {
         if (action->data().toDouble() == dValue) {
             action->setChecked(true);
             break;
@@ -63,8 +67,9 @@ void WEffectPushButton::mousePressEvent(QMouseEvent* e) {
 
     // The push handler may have set the left value. Check the corresponding
     // QAction.
-    double leftValue = getControlParameterLeft();
-    for (const auto& action : m_pButtonMenu->actions()) {
+    const double leftValue = getControlParameterLeft();
+    const QList<QAction*> actions = m_pButtonMenu->actions();
+    for (const auto& action : actions) {
         if (action->data().toDouble() == leftValue) {
             action->setChecked(true);
             break;
@@ -78,8 +83,9 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent* e) {
 
     // The release handler may have set the left value. Check the corresponding
     // QAction.
-    double leftValue = getControlParameterLeft();
-    for (QAction* action : m_pButtonMenu->actions()) {
+    const double leftValue = getControlParameterLeft();
+    const QList<QAction*> actions = m_pButtonMenu->actions();
+    for (QAction* action : actions) {
         if (action->data().toDouble() == leftValue) {
             action->setChecked(true);
             break;
@@ -116,11 +122,11 @@ void WEffectPushButton::parameterUpdated() {
     }
     double value = getControlParameterLeft();
 
-    auto actionGroup = new QActionGroup(m_pButtonMenu);
+    auto* actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);
-    for (const auto& option : options) {
+    for (const auto& option : qAsConst(options)) {
         // action is added automatically to actionGroup
-        auto action = new QAction(actionGroup);
+        auto* action = new QAction(actionGroup);
         // qDebug() << options[i].first;
         action->setText(option.first);
         action->setData(option.second);

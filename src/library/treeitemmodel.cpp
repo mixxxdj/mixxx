@@ -1,6 +1,7 @@
 #include "library/treeitemmodel.h"
 
 #include "library/treeitem.h"
+#include "moc_treeitemmodel.cpp"
 
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:
@@ -11,7 +12,7 @@
  * 1. argument represents a name shown in the sidebar view later on
  * 2. argument represents the absolute path of this tree item
  * 3. argument is a library feature object.
- *    This is necessary because in sidebar.cpp we hanlde 'activateChid' events
+ *    This is necessary because in sidebar.cpp we handle 'activateChid' events
  * 4. the parent TreeItem object
  *    The constructor does not add this TreeItem object to the parent's child list
  *
@@ -83,7 +84,7 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
         return false;
     }
 
-    emit(dataChanged(a_rIndex, a_rIndex));
+    emit dataChanged(a_rIndex, a_rIndex);
     return true;
 }
 
@@ -91,7 +92,7 @@ Qt::ItemFlags TreeItemModel::flags(const QModelIndex &index) const {
     if (index.isValid()) {
         return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     } else {
-        return 0;
+        return Qt::NoItemFlags;
     }
 }
 
@@ -129,8 +130,10 @@ QModelIndex TreeItemModel::parent(const QModelIndex& index) const {
 
     TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
     TreeItem *parentItem = childItem->parent();
-    if (parentItem == getRootItem()) {
+    if (!parentItem) {
         return QModelIndex();
+    } else if (parentItem == getRootItem()) {
+        return createIndex(0, 0, getRootItem());
     } else {
         return createIndex(parentItem->parentRow(), 0, parentItem);
     }
@@ -155,9 +158,14 @@ int TreeItemModel::rowCount(const QModelIndex& parent) const {
  * Call this method first, before you do call any other methods.
  */
 TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
+    beginResetModel();
     m_pRootItem = std::move(pRootItem);
-    reset();
+    endResetModel();
     return getRootItem();
+}
+
+const QModelIndex TreeItemModel::getRootIndex() {
+    return createIndex(0, 0, getRootItem());
 }
 
 /**
@@ -176,7 +184,8 @@ void TreeItemModel::insertTreeItemRows(
     DEBUG_ASSERT(pParentItem != nullptr);
 
     beginInsertRows(parent, position, position + rows.size() - 1);
-    pParentItem->insertChildren(rows, position, rows.size());
+    pParentItem->insertChildren(position, rows);
+    DEBUG_ASSERT(rows.isEmpty());
     endInsertRows();
 }
 
@@ -204,11 +213,11 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
 }
 
 void TreeItemModel::triggerRepaint(const QModelIndex& index) {
-    emit(dataChanged(index, index));
+    emit dataChanged(index, index);
 }
 
 void TreeItemModel::triggerRepaint() {
     QModelIndex left = index(0, 0);
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
-    emit(dataChanged(left, right));
+    emit dataChanged(left, right);
 }

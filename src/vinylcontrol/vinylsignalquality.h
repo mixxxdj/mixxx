@@ -1,5 +1,4 @@
-#ifndef VINYLSIGNALQUALITY_H
-#define VINYLSIGNALQUALITY_H
+#pragma once
 
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -14,5 +13,3 @@ class VinylSignalQualityListener {
   public:
     virtual void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) = 0;
 };
-
-#endif /* VINYLSIGNALQUALITY_H */

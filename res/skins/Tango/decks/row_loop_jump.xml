@@ -1,0 +1,82 @@
+<!--
+Description:
+    Loop and beatjump controls used for left & right decks (see variables below)
+    Top row: Loop, loop size spinbox, reloop, loop in/out
+    Bottom row (optional): fixed-size loop buttons
+Variables:
+    group     : The group for the controls
+    SpaceLeft : width of spacer at the far left
+    SpaceRight : width of spacer at the far right
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize><Variable name="SpaceLeft"/>,-1</MaximumSize>
+              </WidgetGroup>
+
+              <Template src="skin:../Tango/decks/loop_controls.xml"/>
+
+              <WidgetGroup>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>70,-1</MaximumSize>
+              </WidgetGroup>
+
+              <Template src="skin:../Tango/decks/jump_controls.xml"/>
+
+              <WidgetGroup>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize><Variable name="SpaceRight"/>,-1</MaximumSize>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- This stack switches the background color depending on the overall width
+              of the decks' loop/jump row.
+              As soon as each virtual filler gets wider than ~20px the bg is painted #252525 -->
+          <SizeAwareStack>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>Spacer1e</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>380,-1</MaximumSize>
+              </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>Spacer25</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>381,-1</MinimumSize>
+                <MaximumSize>-1,-1</MaximumSize>
+              </WidgetGroup>
+            </Children>
+          </SizeAwareStack>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_loop_beatjump_controls</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

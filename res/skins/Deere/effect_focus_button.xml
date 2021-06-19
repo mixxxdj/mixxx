@@ -10,6 +10,8 @@ Variables:
   <SetVariable name="EffectGroup">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>EffectFocusButtonContainer</ObjectName>
+    <MaximumSize>15,15</MaximumSize>
+    <SizePolicy>min,min</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
       <PushButton>

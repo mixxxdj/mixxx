@@ -1,5 +1,4 @@
-#ifndef ENGINEWORKERSCHEDULER_H
-#define ENGINEWORKERSCHEDULER_H
+#pragma once
 
 #include <QMutex>
 #include <QThreadPool>
@@ -37,5 +36,3 @@ class EngineWorkerScheduler : public QThread {
     QMutex m_mutex;
     volatile bool m_bQuit;
 };
-
-#endif /* ENGINEWORKERSCHEDULER_H */

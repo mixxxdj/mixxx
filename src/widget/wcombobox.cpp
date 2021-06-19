@@ -1,13 +1,17 @@
-#include <QtDebug>
-#include <QIcon>
-
 #include "widget/wcombobox.h"
+
+#include <QIcon>
+#include <QtDebug>
+
+#include "moc_wcombobox.cpp"
 
 WComboBox::WComboBox(QWidget* pParent)
         : QComboBox(pParent),
           WBaseWidget(this) {
-    connect(this, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotCurrentIndexChanged(int)));
+    connect(this,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &WComboBox::slotCurrentIndexChanged);
 }
 
 void WComboBox::setup(const QDomNode& node, const SkinContext& context) {

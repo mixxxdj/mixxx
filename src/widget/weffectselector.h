@@ -1,11 +1,10 @@
-#ifndef WEFFECTSELECTOR_H
-#define WEFFECTSELECTOR_H
+#pragma once
 
 #include <QDomNode>
 #include <QComboBox>
 #include "effects/effectrack.h"
 #include "effects/effectslot.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class EffectsManager;
 
@@ -31,6 +30,3 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
     EffectRackPointer m_pRack;
     double m_scaleFactor;
 };
-
-
-#endif /* WEFFECTSELECTOR_H */

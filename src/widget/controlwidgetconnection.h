@@ -1,10 +1,10 @@
-#ifndef CONTROLWIDGETCONNECTION_H
-#define CONTROLWIDGETCONNECTION_H
+#pragma once
 
-#include <QObject>
-#include <QString>
-#include <QScopedPointer>
 #include <QByteArray>
+#include <QMetaProperty>
+#include <QObject>
+#include <QScopedPointer>
+#include <QString>
 
 #include "control/controlproxy.h"
 #include "util/valuetransformer.h"
@@ -46,7 +46,7 @@ class ControlWidgetConnection : public QObject {
     QScopedPointer<ValueTransformer> m_pValueTransformer;
 };
 
-class ControlParameterWidgetConnection : public ControlWidgetConnection {
+class ControlParameterWidgetConnection final : public ControlWidgetConnection {
     Q_OBJECT
   public:
     enum EmitOption {
@@ -124,7 +124,7 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     EmitOption m_emitOption;
 };
 
-class ControlWidgetPropertyConnection : public ControlWidgetConnection {
+class ControlWidgetPropertyConnection final : public ControlWidgetConnection {
     Q_OBJECT
   public:
     ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
@@ -138,7 +138,7 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
     void slotControlValueChanged(double v) override;
 
   private:
-    QByteArray m_propertyName;
+    const QString m_propertyName;
+    const QMetaProperty m_property;
+    QVariant m_propertyValue;
 };
-
-#endif /* CONTROLWIDGETCONNECTION_H */

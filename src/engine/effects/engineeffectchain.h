@@ -1,9 +1,7 @@
-#ifndef ENGINEEFFECTCHAIN_H
-#define ENGINEEFFECTCHAIN_H
+#pragma once
 
 #include <QString>
 #include <QList>
-#include <QLinkedList>
 
 #include "util/class.h"
 #include "util/types.h"
@@ -79,5 +77,3 @@ class EngineEffectChain : public EffectsRequestHandler {
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
 };
-
-#endif /* ENGINEEFFECTCHAIN_H */

@@ -1,5 +1,4 @@
-#ifndef QUERYUTIL_H
-#define QUERYUTIL_H
+#pragma once
 
 #include <QtDebug>
 #include <QtSql>
@@ -42,9 +41,14 @@ class ScopedTransaction {
             return false;
         }
         bool result = m_database.commit();
-        qDebug() << "Committing transaction on"
-                 << m_database.connectionName()
-                 << "result:" << result;
+        if (result) {
+            qDebug() << "Committing transaction successfully on"
+                     << m_database.connectionName();
+        } else {
+            qInfo() << "Committing transaction failed on"
+                    << m_database.connectionName()
+                    << ":" << m_database.lastError();
+        }
         m_active = false;
         return result;
     }
@@ -97,5 +101,3 @@ class FieldEscaper final {
     QSqlDatabase m_database;
     mutable QSqlField m_stringField;
 };
-
-#endif /* QUERYUTIL_H */

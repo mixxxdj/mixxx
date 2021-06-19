@@ -9,26 +9,22 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef WNUMBERRATE_H
-#define WNUMBERRATE_H
+#pragma once
 
 #include "widget/wnumber.h"
 
 class ControlProxy;
 
-class WNumberRate : public WNumber {
+class WNumberRate final : public WNumber {
     Q_OBJECT
   public:
-    explicit WNumberRate(const char *group, QWidget *parent=nullptr);
+    explicit WNumberRate(const QString& group, QWidget* parent = nullptr);
+
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
     void setValue(double dValue) override;
 
   private:
-    // Pointer to control objects for rate.
-    ControlProxy* m_pRateControl;
-    ControlProxy* m_pRateRangeControl;
-    ControlProxy* m_pRateDirControl;
+    ControlProxy* m_pRateRatio;
 };
-
-#endif

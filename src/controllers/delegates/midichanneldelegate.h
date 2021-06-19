@@ -1,5 +1,4 @@
-#ifndef MIDICHANNELDELEGATE_H
-#define MIDICHANNELDELEGATE_H
+#pragma once
 
 #include <QStyledItemDelegate>
 
@@ -18,5 +17,3 @@ class MidiChannelDelegate : public QStyledItemDelegate {
     void setModelData(QWidget* editor, QAbstractItemModel* model,
                       const QModelIndex& index) const;
 };
-
-#endif /* MIDICHANNELDELEGATE_H */

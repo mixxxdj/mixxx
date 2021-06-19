@@ -1,26 +1,25 @@
-#ifndef DLGRECORDING_H
-#define DLGRECORDING_H
+#pragma once
 
-#include "preferences/usersettings.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/browse/browsetablemodel.h"
+#include "library/library.h"
 #include "library/libraryview.h"
 #include "library/proxytrackmodel.h"
-#include "library/library.h"
-#include "library/trackcollection.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "recording/recordingmanager.h"
-#include "track/track.h"
 #include "library/recording/ui_dlgrecording.h"
+#include "library/trackcollection.h"
+#include "preferences/usersettings.h"
+#include "recording/recordingmanager.h"
+#include "track/track_decl.h"
 
 class PlaylistTableModel;
-class QSqlTableModel;
+class WLibrary;
 class WTrackTableView;
 
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgRecording(QWidget *parent, UserSettingsPointer pConfig,
-                 Library* pLibrary, TrackCollection* pTrackCollection,
+    DlgRecording(WLibrary *parent, UserSettingsPointer pConfig,
+                 Library* pLibrary,
                  RecordingManager* pRecManager, KeyboardEventFilter* pKeyboard);
     ~DlgRecording() override;
 
@@ -28,39 +27,36 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void onShow() override;
     bool hasFocus() const override;
     void loadSelectedTrack() override;
-    void slotSendToAutoDJBottom() override;
-    void slotSendToAutoDJTop() override;
-    void slotSendToAutoDJReplace() override;
-    void loadSelectedTrackToGroup(QString group, bool play) override;
+    void slotAddToAutoDJBottom() override;
+    void slotAddToAutoDJTop() override;
+    void slotAddToAutoDJReplace() override;
+    void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
 
   public slots:
-    void toggleRecording(bool toggle);
-    void slotRecordingEnabled(bool);
+    void slotRecordingStateChanged(bool);
     void slotBytesRecorded(int);
     void refreshBrowseModel();
     void slotRestoreSearch();
-    void slotDurationRecorded(QString durationRecorded);
+    void slotDurationRecorded(const QString& durationRecorded);
 
   signals:
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group, bool play);
-    void restoreSearch(QString search);
+    void loadTrackToPlayer(TrackPointer tio, const QString& group, bool play);
+    void restoreSearch(const QString& search);
 
   private:
     UserSettingsPointer m_pConfig;
-    TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
     QString m_recordingDir;
 
-    void refreshLabel();
+    void refreshLabels();
+    void slotRecButtonClicked(bool checked);
     QString m_bytesRecordedStr;
     QString m_durationRecordedStr;
 
     RecordingManager* m_pRecordingManager;
 };
-
-#endif //DLGRECORDING_H

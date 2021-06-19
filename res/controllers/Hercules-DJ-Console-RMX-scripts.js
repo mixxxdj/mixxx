@@ -821,7 +821,7 @@ HerculesRMX.init = function (id) {    // called when the MIDI device is opened &
 
    engine.connectControl("[Channel1]","rate","HerculesRMX.rateChange");
    engine.connectControl("[Channel2]","rate","HerculesRMX.rateChange");
-   
+
    // Enable soft-takeover for all direct hardware controls
    engine.softTakeover("[Channel1]","rate",true);
    engine.softTakeover("[Channel1]","volume",true);
@@ -909,7 +909,7 @@ HerculesRMX.rateChange = function (value, group) {
 //   HerculesRMX.stopJog[group] = 1.0;
 //   HerculesRMX.decayLast = new Date().getTime();
 //   engine.setValue(group,"scratch",HerculesRMX.stopJog[group]);
-//   HerculesRMX.stoping = true;
+//   HerculesRMX.stopping = true;
 //   return;
 //      } else {
 //        engine.setValue(group,"playposition",0);

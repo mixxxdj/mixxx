@@ -1,5 +1,4 @@
-#ifndef ANALYSISDAO_H
-#define ANALYSISDAO_H
+#pragma once
 
 #include <QObject>
 #include <QDir>
@@ -34,7 +33,7 @@ class AnalysisDao : public DAO {
     };
 
     explicit AnalysisDao(UserSettingsPointer pConfig);
-    ~AnalysisDao() override {}
+    ~AnalysisDao() override = default;
 
     // The following functions can be used with a custom database
     // connection and independent of whether the DAO has been
@@ -45,10 +44,6 @@ class AnalysisDao : public DAO {
     size_t getDiskUsageInBytes(
             const QSqlDatabase& database,
             AnalysisType type) const;
-
-    void initialize(const QSqlDatabase& database) override {
-        m_db = database;
-    }
 
     QList<AnalysisInfo> getAnalysesForTrackByType(TrackId trackId, AnalysisType type);
     QList<AnalysisInfo> getAnalysesForTrack(TrackId trackId);
@@ -69,8 +64,5 @@ class AnalysisDao : public DAO {
     bool deleteFile(const QString& filename) const;
     QList<AnalysisInfo> loadAnalysesFromQuery(TrackId trackId, QSqlQuery* query);
 
-    UserSettingsPointer m_pConfig;
-    QSqlDatabase m_db;
+    const UserSettingsPointer m_pConfig;
 };
-
-#endif // ANALYSISDAO_H

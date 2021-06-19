@@ -1,13 +1,14 @@
-
 #include "widget/wpixmapstore.h"
 
 #include <QDir>
 #include <QString>
 #include <QtDebug>
 
+#include "skin/legacy/imgloader.h"
+
 #include "util/math.h"
 #include "util/memory.h"
-#include "skin/imgloader.h"
+#include "util/painterscope.h"
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
@@ -68,7 +69,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
         }
         m_pSvg.reset(pSvg.release());
 #ifdef __APPLE__
-        // Apple does Retina scaling behind the sceens, so we also pass a
+        // Apple does Retina scaling behind the scenes, so we also pass a
         // Paintable::FIXED image. On the other targets, it is better to
         // cache the pixmap. We do not do this for TILE and color schemas.
         // which can result in a correct but possibly blurry picture at a
@@ -150,15 +151,18 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         return;
     }
 
-    if (m_drawMode == FIXED) {
+    switch (m_drawMode) {
+    case FIXED: {
         // Only render the minimum overlapping rectangle between the source
         // and target.
         QSizeF fixedSize(math_min(sourceRect.width(), targetRect.width()),
                          math_min(sourceRect.height(), targetRect.height()));
         QRectF adjustedTarget(targetRect.topLeft(), fixedSize);
         QRectF adjustedSource(sourceRect.topLeft(), fixedSize);
-        return drawInternal(adjustedTarget, pPainter, adjustedSource);
-    } else if (m_drawMode == STRETCH_ASPECT) {
+        drawInternal(adjustedTarget, pPainter, adjustedSource);
+        break;
+    }
+    case STRETCH_ASPECT: {
         qreal sx = targetRect.width() / sourceRect.width();
         qreal sy = targetRect.height() / sourceRect.height();
 
@@ -169,20 +173,25 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
                                   targetRect.y(),
                                   scale * sourceRect.width(),
                                   scale * sourceRect.height());
-            return drawInternal(adjustedTarget, pPainter, sourceRect);
+            drawInternal(adjustedTarget, pPainter, sourceRect);
         } else {
-            return drawInternal(targetRect, pPainter, sourceRect);
+            drawInternal(targetRect, pPainter, sourceRect);
         }
-    } else if (m_drawMode == STRETCH) {
-        return drawInternal(targetRect, pPainter, sourceRect);
-    } else if (m_drawMode == TILE) {
-        return drawInternal(targetRect, pPainter, sourceRect);
+        break;
+    }
+    case STRETCH:
+        drawInternal(targetRect, pPainter, sourceRect);
+        break;
+    case TILE:
+        drawInternal(targetRect, pPainter, sourceRect);
+        break;
     }
 }
 
 void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
                              const QRectF& sourceRect) {
-    if (m_drawMode == FIXED) {
+    switch (m_drawMode) {
+    case FIXED: {
         // Only render the minimum overlapping rectangle between the source
         // and target.
         QSizeF fixedSize(math_min(sourceRect.width(), targetRect.width()),
@@ -192,8 +201,10 @@ void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
         QRectF adjustedTarget(QPointF(-adjustedSource.width() / 2.0,
                                       -adjustedSource.height() / 2.0),
                               fixedSize);
-        return drawInternal(adjustedTarget, pPainter, adjustedSource);
-    } else if (m_drawMode == STRETCH_ASPECT) {
+        drawInternal(adjustedTarget, pPainter, adjustedSource);
+        break;
+    }
+    case STRETCH_ASPECT: {
         qreal sx = targetRect.width() / sourceRect.width();
         qreal sy = targetRect.height() / sourceRect.height();
 
@@ -204,16 +215,20 @@ void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
             qreal scaledHeight = scale * sourceRect.height();
             QRectF adjustedTarget(-scaledWidth / 2.0, -scaledHeight / 2.0,
                                   scaledWidth, scaledHeight);
-            return drawInternal(adjustedTarget, pPainter, sourceRect);
+            drawInternal(adjustedTarget, pPainter, sourceRect);
         } else {
-            return drawInternal(targetRect, pPainter, sourceRect);
+            drawInternal(targetRect, pPainter, sourceRect);
         }
-    } else if (m_drawMode == STRETCH) {
-        return drawInternal(targetRect, pPainter, sourceRect);
-    } else if (m_drawMode == TILE) {
+        break;
+    }
+    case STRETCH:
+        drawInternal(targetRect, pPainter, sourceRect);
+        break;
+    case TILE:
         // TODO(XXX): What's the right behavior here? Draw the first tile at the
         // center point and then tile all around it based on that?
-        return drawInternal(targetRect, pPainter, sourceRect);
+        drawInternal(targetRect, pPainter, sourceRect);
+        break;
     }
 }
 
@@ -244,12 +259,11 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
             // entire SVG to the painter. We save/restore the QPainter in case
             // there is an existing clip region (I don't know of any Mixxx code
             // that uses one but we may in the future).
-            pPainter->save();
+            PainterScope PainterScope(pPainter);
             pPainter->setClipping(true);
             pPainter->setClipRect(targetRect);
             m_pSvg->setViewBox(sourceRect);
             m_pSvg->render(pPainter, targetRect);
-            pPainter->restore();
         }
     }
 }
@@ -263,7 +277,7 @@ QString Paintable::getAltFileName(const QString& fileName) {
         return fileName;
     }
 
-    QString newFileName = temp[0] + QString::fromAscii("@2x.") + temp[1];
+    QString newFileName = temp[0] + QLatin1String("@2x.") + temp[1];
     QFile file(newFileName);
     if (QFileInfo(file).exists()) {
         return newFileName;

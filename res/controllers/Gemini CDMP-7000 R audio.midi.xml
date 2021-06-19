@@ -4,7 +4,8 @@
       <name>Gemini CDMP-7000 R</name>
       <author>djtrinidad</author>
       <description>Gemini CDMP-7000 mapping for Deck 2</description>
-      <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=6535</forums>
+      <forums>https://mixxx.discourse.group/t/gemini-cdmp-7000-mapping/14482</forums>
+      <manual>gemini_cdmp_7000</manual>
     </info>
     <controller id="gemini">
         <scriptfiles>

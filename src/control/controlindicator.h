@@ -1,5 +1,4 @@
-#ifndef CONTROLINDICATOR_H
-#define CONTROLINDICATOR_H
+#pragma once
 
 #include "control/controlobject.h"
 
@@ -15,7 +14,7 @@ class ControlIndicator : public ControlObject {
         RATIO1TO1_250MS = 3, // used for Pioneer cue
     };
 
-    ControlIndicator(ConfigKey key);
+    ControlIndicator(const ConfigKey& key);
     virtual ~ControlIndicator();
 
     void setBlinkValue(enum BlinkValue bv);
@@ -39,5 +38,3 @@ class ControlIndicator : public ControlObject {
     ControlProxy* m_pCOTGuiTickTime;
     ControlProxy* m_pCOTGuiTick50ms;
 };
-
-#endif // CONTROLINDICATOR_H

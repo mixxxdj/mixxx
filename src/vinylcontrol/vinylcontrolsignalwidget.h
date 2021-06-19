@@ -5,8 +5,7 @@
  *      Author: asantoni
  */
 
-#ifndef VINYLCONTROLSIGNALWIDGET_H
-#define VINYLCONTROLSIGNALWIDGET_H
+#pragma once
 
 #include <QImage>
 #include <QPaintEvent>
@@ -42,5 +41,3 @@ class VinylControlSignalWidget : public QWidget, public VinylSignalQualityListen
     float m_fSignalQuality;
     bool m_bVinylActive;
 };
-
-#endif /* VINYLCONTROLSIGNALWIDGET_H */

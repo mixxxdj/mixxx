@@ -1,11 +1,13 @@
+#include "preferences/broadcastsettings.h"
+
 #include <QDir>
-#include <QStringList>
-#include <QFileInfoList>
 #include <QFileInfo>
+#include <QFileInfoList>
+#include <QStringList>
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
-#include "preferences/broadcastsettings.h"
+#include "moc_broadcastsettings.cpp"
 #include "util/logger.h"
 #include "util/memory.h"
 
@@ -49,12 +51,13 @@ void BroadcastSettings::loadProfiles() {
         kLogger.info() << "Found" << files.size() << "profile(s)";
 
         // Load profiles from filesystem
-        for(QFileInfo fileInfo : files) {
+        for (const QFileInfo& fileInfo : files) {
             BroadcastProfilePtr profile =
                     BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
 
-            if (profile)
+            if (profile) {
                 addProfile(profile);
+            }
         }
     } else {
         kLogger.info() << "No profiles found. Creating default profile.";
@@ -70,8 +73,9 @@ void BroadcastSettings::loadProfiles() {
 }
 
 bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return false;
+    }
 
     if (m_profiles.size() >= BROADCAST_MAX_CONNECTIONS) {
         kLogger.warning() << "addProfile: connection limit reached."
@@ -85,34 +89,44 @@ bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
     // at risk of being manually deleted.
     // However it's fine with Qt's connect because it can be trusted that
     // it won't delete the pointer.
-    connect(profile.data(), SIGNAL(profileNameChanged(QString, QString)),
-            this, SLOT(onProfileNameChanged(QString,QString)));
-    connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-            this, SLOT(onConnectionStatusChanged(int)));
+    connect(profile.data(),
+            &BroadcastProfile::profileNameChanged,
+            this,
+            &BroadcastSettings::onProfileNameChanged);
+    connect(profile.data(),
+            &BroadcastProfile::connectionStatusChanged,
+            this,
+            &BroadcastSettings::onConnectionStatusChanged);
     m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
 
-    emit(profileAdded(profile));
+    emit profileAdded(profile);
     return true;
 }
 
-BroadcastProfilePtr BroadcastSettings::createProfile(const QString& profileName) {
-    QFileInfo xmlFile(filePathForProfile(profileName));
+bool BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
+    if (!profile) {
+        return false;
+    }
 
-    if (!xmlFile.exists()) {
-        BroadcastProfilePtr profile(new BroadcastProfile(profileName));
-        if (addProfile(profile)) {
-            saveProfile(profile);
-            return profile;
+    QString filename = profile->getLastFilename();
+    if (filename.isEmpty()) {
+        // there was no previous filename, find an unused filename
+        for (int index = 0;; ++index) {
+            if (index > 0) {
+                // add an index to the file name to make it unique
+                filename = filePathForProfile(profile->getProfileName() + QString::number(index));
+            } else {
+                filename = filePathForProfile(profile->getProfileName());
+            }
+
+            QFileInfo fileInfo(filename);
+            if (!fileInfo.exists()) {
+                break;
+            }
         }
     }
-    return BroadcastProfilePtr(nullptr);
-}
 
-bool BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
-    if (!profile)
-        return false;
-
-    return profile->save(filePathForProfile(profile));
+    return profile->save(filename);
 }
 
 QString BroadcastSettings::filePathForProfile(const QString& profileName) {
@@ -122,21 +136,25 @@ QString BroadcastSettings::filePathForProfile(const QString& profileName) {
 }
 
 QString BroadcastSettings::filePathForProfile(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return QString();
+    }
 
     return filePathForProfile(profile->getProfileName());
 }
 
 bool BroadcastSettings::deleteFileForProfile(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return false;
+    }
 
-    return deleteFileForProfile(profile->getProfileName());
-}
+    QString filename = profile->getLastFilename();
+    if (filename.isEmpty()) {
+        // no file was saved, there is no file to delete
+        return false;
+    }
 
-bool BroadcastSettings::deleteFileForProfile(const QString& profileName) {
-    QFileInfo xmlFile(filePathForProfile(profileName));
+    QFileInfo xmlFile(filename);
     if (xmlFile.exists()) {
         return QFile::remove(xmlFile.absoluteFilePath());
     }
@@ -150,31 +168,23 @@ QString BroadcastSettings::getProfilesFolder() {
 }
 
 void BroadcastSettings::saveAll() {
-    for(auto kv : m_profiles.values()) {
+    for (const auto& kv : qAsConst(m_profiles)) {
         saveProfile(kv);
     }
-    emit(profilesChanged());
+    emit profilesChanged();
 }
 
-void BroadcastSettings::deleteProfile(BroadcastProfilePtr profile) {
-    if (!profile)
+void BroadcastSettings::onProfileNameChanged(const QString& oldName, const QString& newName) {
+    if (!m_profiles.contains(oldName)) {
         return;
-
-    deleteFileForProfile(profile);
-    m_profiles.remove(profile->getProfileName());
-    emit(profileRemoved(profile));
-}
-
-void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
-    if (!m_profiles.contains(oldName))
-        return;
+    }
 
     BroadcastProfilePtr profile = m_profiles.take(oldName);
     if (profile) {
         m_profiles.insert(newName, profile);
-        emit(profileRenamed(oldName, profile));
+        emit profileRenamed(oldName, profile);
 
-        deleteFileForProfile(oldName);
+        deleteFileForProfile(profile);
         saveProfile(profile);
     }
 }
@@ -184,7 +194,8 @@ void BroadcastSettings::onConnectionStatusChanged(int newStatus) {
 }
 
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
-    return m_profiles.values().value(index, BroadcastProfilePtr(nullptr));
+    auto it = m_profiles.begin() + index;
+    return it != m_profiles.end() ? it.value() : BroadcastProfilePtr(nullptr);
 }
 
 QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
@@ -198,17 +209,23 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     // TODO(Palakis): lock both lists against modifications while syncing
 
     // Step 1: find profiles to delete from the settings
-    for(BroadcastProfilePtr actualProfile : m_profiles.values()) {
-        QString profileName = actualProfile->getProfileName();
+    for (auto profileIter = m_profiles.begin(); profileIter != m_profiles.end();) {
+        QString profileName = (*profileIter)->getProfileName();
         if (!pModel->getProfileByName(profileName)) {
             // If profile exists in settings but not in the model,
             // remove the profile from the settings
-            deleteProfile(actualProfile);
+            const auto removedProfile = *profileIter;
+            deleteFileForProfile(removedProfile);
+            profileIter = m_profiles.erase(profileIter);
+            emit profileRemoved(removedProfile);
+        } else {
+            ++profileIter;
         }
     }
 
     // Step 2: add new profiles
-    for(BroadcastProfilePtr profileCopy : pModel->profiles()) {
+    const QList<BroadcastProfilePtr> existingProfiles = pModel->profiles();
+    for (auto profileCopy : existingProfiles) {
         // Check if profile already exists in settings
         BroadcastProfilePtr existingProfile =
                 m_profiles.value(profileCopy->getProfileName());
@@ -222,7 +239,8 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     }
 
     // Step 3: update existing profiles
-    for(BroadcastProfilePtr profileCopy : pModel->profiles()) {
+    const QList<BroadcastProfilePtr> allProfiles = pModel->profiles();
+    for (BroadcastProfilePtr profileCopy : allProfiles) {
         BroadcastProfilePtr actualProfile =
                 m_profiles.value(profileCopy->getProfileName());
         if (actualProfile) {
@@ -232,4 +250,3 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
 
     saveAll();
 }
-

@@ -10,11 +10,10 @@ Variables:
   <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
-    <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.-->
-    <MinimumSize>-1,65</MinimumSize>
-    <MaximumSize>-1,75</MaximumSize>
+    <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.
+    <MinimumSize>-1,65</MinimumSize>-->
     <Children>
 
       <WidgetGroup>
@@ -42,60 +41,7 @@ Variables:
             </Children>
           </WidgetGroup>
 
-          <Template src="skin:spacer_h.xml" />
-
-          <WidgetGroup>
-            <ObjectName>EffectUnitControls</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Connection>
-                  <ConfigKey>[Master],show_superknobs</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-                <Children>
-                  <Template src="skin:knob.xml">
-                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-                    <SetVariable name="control">super1</SetVariable>
-                    <SetVariable name="color">blue_gapless</SetVariable>
-                  </Template>
-
-                  <!-- Spacer to vertically align with mix knob because of the mix mode button.-->
-                  <WidgetGroup>
-                      <Layout>vertical</Layout>
-                      <Size>-1,20f</Size>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <Children>
-                  <Template src="skin:knob.xml">
-                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-                    <SetVariable name="control">mix</SetVariable>
-                    <SetVariable name="color">purple_gapless</SetVariable>
-                  </Template>
-
-                  <Template src="skin:left_2state_button.xml">
-                    <SetVariable name="ObjectName">EffectUnitMixModeButton</SetVariable>
-                    <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
-                    <SetVariable name="MinimumSize">40,20</SetVariable>
-                    <SetVariable name="MaximumSize">40,20</SetVariable>
-                    <SetVariable name="state_0_unpressed">icon/ic_fx_mixmode_d-w.svg</SetVariable>
-                    <SetVariable name="state_0_pressed">icon/ic_fx_mixmode_d-w.svg</SetVariable>
-                    <SetVariable name="state_1_unpressed">icon/ic_fx_mixmode_d+w.svg</SetVariable>
-                    <SetVariable name="state_1_pressed">icon/ic_fx_mixmode_d+w.svg</SetVariable>
-                    <SetVariable name="left_connection_control"><Variable name="group"/>,mix_mode</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
-
-            </Children>
-          </WidgetGroup>
+          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
 
         </Children>
       </WidgetGroup>

@@ -1,5 +1,4 @@
-#ifndef COLUMNCACHE_H
-#define COLUMNCACHE_H
+#pragma once
 
 #include <QObject>
 #include <QMap>
@@ -14,7 +13,6 @@
 class ColumnCache : public QObject {
   Q_OBJECT
   public:
-
     enum Column {
         COLUMN_LIBRARYTABLE_INVALID = -1,
         COLUMN_LIBRARYTABLE_ID = 0,
@@ -28,7 +26,6 @@ class ColumnCache : public QObject {
         COLUMN_LIBRARYTABLE_GROUPING,
         COLUMN_LIBRARYTABLE_TRACKNUMBER,
         COLUMN_LIBRARYTABLE_FILETYPE,
-        COLUMN_LIBRARYTABLE_NATIVELOCATION,
         COLUMN_LIBRARYTABLE_COMMENT,
         COLUMN_LIBRARYTABLE_DURATION,
         COLUMN_LIBRARYTABLE_BITRATE,
@@ -49,21 +46,25 @@ class ColumnCache : public QObject {
         COLUMN_LIBRARYTABLE_KEY_ID,
         COLUMN_LIBRARYTABLE_BPM_LOCK,
         COLUMN_LIBRARYTABLE_PREVIEW,
+        COLUMN_LIBRARYTABLE_COLOR,
         COLUMN_LIBRARYTABLE_COVERART,
         COLUMN_LIBRARYTABLE_COVERART_SOURCE,
         COLUMN_LIBRARYTABLE_COVERART_TYPE,
         COLUMN_LIBRARYTABLE_COVERART_LOCATION,
+        COLUMN_LIBRARYTABLE_COVERART_COLOR,
+        COLUMN_LIBRARYTABLE_COVERART_DIGEST,
         COLUMN_LIBRARYTABLE_COVERART_HASH,
+        COLUMN_LIBRARYTABLE_LAST_PLAYED_AT,
 
+        COLUMN_TRACKLOCATIONSTABLE_LOCATION,
         COLUMN_TRACKLOCATIONSTABLE_FSDELETED,
 
         COLUMN_PLAYLISTTRACKSTABLE_TRACKID,
         COLUMN_PLAYLISTTRACKSTABLE_POSITION,
         COLUMN_PLAYLISTTRACKSTABLE_PLAYLISTID,
-        COLUMN_PLAYLISTTRACKSTABLE_LOCATION,
-        COLUMN_PLAYLISTTRACKSTABLE_ARTIST,
-        COLUMN_PLAYLISTTRACKSTABLE_TITLE,
         COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED,
+
+        COLUMN_REKORDBOX_ANALYZE_PATH,
 
         // NUM_COLUMNS should always be the last item.
         NUM_COLUMNS
@@ -85,7 +86,7 @@ class ColumnCache : public QObject {
     }
 
     inline QString columnName(Column column) const {
-        return columnNameForFieldIndex(fieldIndex(column));
+        return m_columnNameByEnum[column];
     }
 
     inline QString columnNameForFieldIndex(int index) const {
@@ -101,22 +102,40 @@ class ColumnCache : public QObject {
         return format.arg(columnNameForFieldIndex(index));
     }
 
-    QStringList m_columnsByIndex;
-    QMap<int, QString> m_columnSortByIndex;
-    QMap<QString, int> m_columnIndexByName;
-    // A mapping from column enum to logical index.
-    int m_columnIndexByEnum[NUM_COLUMNS];
+    void insertColumnSortByEnum(
+            Column column,
+            const QString& sortFormat) {
+        int index = fieldIndex(column);
+        if (index < 0) {
+            return;
+        }
+        DEBUG_ASSERT(!m_columnSortByIndex.contains(index));
+        m_columnSortByIndex.insert(index, sortFormat);
+    }
+
+    void insertColumnNameByEnum(
+            Column column,
+            const QString& name) {
+        DEBUG_ASSERT(!m_columnNameByEnum.contains(column) ||
+                m_columnNameByEnum[column] == name);
+        m_columnNameByEnum.insert(column, name);
+    }
 
     KeyUtils::KeyNotation keyNotation() const {
         return KeyUtils::keyNotationFromNumericValue(
                 m_pKeyNotationCP->get());
     }
 
-  private:
-    ControlProxy* m_pKeyNotationCP;
-
   private slots:
     void slotSetKeySortOrder(double);
-};
 
-#endif /* COLUMNCACHE_H */
+  private:
+    QStringList m_columnsByIndex;
+    QMap<int, QString> m_columnSortByIndex;
+    QMap<QString, int> m_columnIndexByName;
+    QMap<Column, QString> m_columnNameByEnum;
+    // A mapping from column enum to logical index.
+    int m_columnIndexByEnum[NUM_COLUMNS];
+
+    ControlProxy* m_pKeyNotationCP;
+};

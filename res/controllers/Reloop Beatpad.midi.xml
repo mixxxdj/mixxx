@@ -5,7 +5,7 @@
         <author>Chloé Avrillon (DJ Chloé)</author>
         <description>Controller mapping for the Reloop Beatpad. Have fun !!!</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=7581</forums>
-        <wiki>http://www.mixxx.org/wiki/doku.php/reloop_beatpad</wiki>
+        <manual>reloop_beatpad</manual>
     </info>
     <controller id="Reloop">
         <scriptfiles>

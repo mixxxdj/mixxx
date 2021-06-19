@@ -4,7 +4,7 @@
         <name>Vestax VCI-400</name>
         <author>Owen Williams, Tobias Rafreider</author>
         <description>Controller mapping for Vestax VCI-400</description>
-        <wiki>http://mixxx.org/wiki/doku.php/vestax_vci-400</wiki>
+        <manual>vestax_vci_400</manual>
     </info>
     <controller id="Vestax">
         <scriptfiles>

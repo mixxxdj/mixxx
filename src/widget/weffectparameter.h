@@ -1,11 +1,10 @@
-#ifndef WEFFECTPARAMETER_H
-#define WEFFECTPARAMETER_H
+#pragma once
 
 #include <QDomNode>
 
 #include "widget/wlabel.h"
 #include "widget/weffectparameterbase.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class EffectsManager;
 
@@ -16,6 +15,3 @@ class WEffectParameter : public WEffectParameterBase {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 };
-
-
-#endif /* WEFFECTPARAMETER_H */

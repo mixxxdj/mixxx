@@ -1,11 +1,9 @@
-
-#ifndef WNUMBERDB_H
-#define WNUMBERDB_H
+#pragma once
 
 #include <QLabel>
 
 #include "widget/wnumber.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class WNumberDb : public WNumber {
     Q_OBJECT
@@ -15,5 +13,3 @@ class WNumberDb : public WNumber {
   public slots:
     void setValue(double dValue) override;
 };
-
-#endif // WNUMBERDB_H

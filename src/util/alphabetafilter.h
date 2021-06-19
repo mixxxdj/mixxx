@@ -1,16 +1,4 @@
-/***************************************************************************
-                        alphabetafilter.h  -  description
-                        -------------------
-begin                : Wed May 12 2010
-copyright            : (C) 2010 by Sean M. Pappalardo
-email                : spappalardo@mixxx.org
-
-This is essentially just a C++ version of xwax's pitch.h,
-    which is Copyright (C) 2010 Mark Hills <mark@pogo.org.uk>
-***************************************************************************/
-
-#ifndef ALPHABETAFILTER_H
-#define ALPHABETAFILTER_H
+#pragma once
 
 // This is a simple alpha-beta filter. It follows the example from Wikipedia
 // closely: http://en.wikipedia.org/wiki/Alpha_beta_filter
@@ -18,6 +6,9 @@ This is essentially just a C++ version of xwax's pitch.h,
 // Given an initial position and velocity, learning parameters alpha and beta,
 // and a series of input observations of the distance travelled, the filter
 // predicts the real position and velocity.
+//
+// This is essentially just a C++ version of xwax's pitch.h,
+// which is Copyright (C) 2010 Mark Hills <mark@pogo.org.uk>
 class AlphaBetaFilter {
   public:
     AlphaBetaFilter()
@@ -77,5 +68,3 @@ class AlphaBetaFilter {
     // State of the rate calculation filter
     double m_dt, m_x, m_v, m_alpha, m_beta;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef TASK_H
-#define TASK_H
+#pragma once
 
 #include <QAtomicInt>
 #include <QObject>
@@ -29,5 +28,3 @@ class TaskWatcher : public QObject {
   private:
     QAtomicInt m_activeTasks;
 };
-
-#endif /* TASK_H */

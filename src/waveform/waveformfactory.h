@@ -1,5 +1,4 @@
-#ifndef WAVEFORMFACTORY_H
-#define WAVEFORMFACTORY_H
+#pragma once
 
 #include "library/dao/analysisdao.h"
 
@@ -51,5 +50,3 @@ class WaveformFactory {
     static QString currentWaveformSummaryVersion();
     static QString currentWaveformSummaryDescription();
 };
-
-#endif /* WAVEFORMFACTORY_H */

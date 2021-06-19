@@ -265,7 +265,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
             components.Pot.prototype.input.call(this, channel, control, value, status, group);
         },
         connect: function() {
-            this.focus_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+            this.focus_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange.bind(this));
             this.focus_connection.trigger();
         },
         disconnect: function() {
@@ -367,7 +367,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
         },
         connect: function() {
             components.Button.prototype.connect.call(this);
-            this.fx_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+            this.fx_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange.bind(this));
         },
         disconnect: function() {
             components.Button.prototype.disconnect.call(this);
@@ -405,7 +405,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
                     button.send(button.off);
                     button.flash_state = true;
                 }
-            });
+            }.bind(this));
         },
         stopFlash: function() {
             engine.stopTimer(this.flash_timer);
@@ -426,7 +426,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
                 engine.setValue(eu.group, "show_parameters", 1);
             }
         }
-    });
+    }.bind(this));
     this.show_focus_connection.trigger();
 
     this.touch_strip = new this.EffectUnitTouchStrip();
@@ -563,7 +563,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         type: components.Button.prototype.types.toggle,
         connect: function() {
             components.Button.prototype.connect.call(this);
-            this.connections[1] = engine.makeConnection(this.group, this.outKey, MixtrackPlatinum.pflToggle);
+            this.connections[1] = engine.makeConnection(this.group, this.outKey, MixtrackPlatinum.pflToggle.bind(this));
         },
     });
 
@@ -772,7 +772,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
             inKey: 'beatloop_8_toggle',
             outKey: 'beatloop_8_enabled',
         })),
-        
+
         roll1: new components.Button(auto_loop_base(0x1C, {
             inKey: 'beatlooproll_0.0625_activate',
             outKey: 'beatloop_0.0625_enabled',
@@ -1350,7 +1350,7 @@ MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
     }
 };
 
-MixtrackPlatinum.wheel = []; // initialzed in the MixtrackPlatinum.init() function
+MixtrackPlatinum.wheel = []; // initialized in the MixtrackPlatinum.init() function
 MixtrackPlatinum.wheelToggle = function (channel, control, value, status, group) {
     if (value != 0x7F) return;
     MixtrackPlatinum.wheel[channel] = !MixtrackPlatinum.wheel[channel];

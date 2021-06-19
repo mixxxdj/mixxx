@@ -4,8 +4,8 @@
         <name>MixVibes U-Mix Control Pro 2</name>
         <author>tomtom (thomas-8)</author>
 	<description>V1.0.0 -> Please visit Forum and Wiki for more details.</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=4892</forums>
-        <wiki>http://www.mixxx.org/wiki/doku.php/umix_control_pro_2</wiki>
+        <forums>https://mixxx.discourse.group/t/v1-0-mixvibes-u-mix-control-pro-2-mapping/13322</forums>
+        <manual>mixvibes_u_mix_control_2</manual>
     </info>
     <controller id="MixVibes">
     <scriptfiles>

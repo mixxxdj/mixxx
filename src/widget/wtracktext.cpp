@@ -1,25 +1,53 @@
+#include "widget/wtracktext.h"
 
 #include <QDebug>
 #include <QUrl>
 
 #include "control/controlobject.h"
-#include "widget/wtracktext.h"
+#include "moc_wtracktext.cpp"
+#include "track/track.h"
 #include "util/dnd.h"
+#include "widget/wtrackmenu.h"
 
-WTrackText::WTrackText(const char *group, UserSettingsPointer pConfig, QWidget* pParent)
+namespace {
+constexpr WTrackMenu::Features kTrackMenuFeatures =
+        WTrackMenu::Feature::SearchRelated |
+        WTrackMenu::Feature::Playlist |
+        WTrackMenu::Feature::Crate |
+        WTrackMenu::Feature::Metadata |
+        WTrackMenu::Feature::Reset |
+        WTrackMenu::Feature::BPM |
+        WTrackMenu::Feature::Color |
+        WTrackMenu::Feature::FileBrowser |
+        WTrackMenu::Feature::Properties;
+} // namespace
+
+WTrackText::WTrackText(QWidget* pParent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary,
+        const QString& group)
         : WLabel(pParent),
-          m_pGroup(group),
-          m_pConfig(pConfig) {
+          m_group(group),
+          m_pConfig(pConfig),
+          m_pTrackMenu(make_parented<WTrackMenu>(
+                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 
-void WTrackText::slotTrackLoaded(TrackPointer track) {
-    if (track) {
-        m_pCurrentTrack = track;
-        connect(track.get(), SIGNAL(changed(Track*)),
-                this, SLOT(updateLabel(Track*)));
-        updateLabel(track.get());
+WTrackText::~WTrackText() {
+    // Required to allow forward declaration of WTrackMenu in header
+}
+
+void WTrackText::slotTrackLoaded(TrackPointer pTrack) {
+    if (!pTrack) {
+        return;
     }
+    m_pCurrentTrack = pTrack;
+    connect(pTrack.get(),
+            &Track::changed,
+            this,
+            &WTrackText::slotTrackChanged);
+    updateLabel();
 }
 
 void WTrackText::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -29,25 +57,49 @@ void WTrackText::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack
         disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
     m_pCurrentTrack.reset();
-    setText("");
+    updateLabel();
 }
 
-void WTrackText::updateLabel(Track* /*unused*/) {
+void WTrackText::slotTrackChanged(TrackId trackId) {
+    Q_UNUSED(trackId);
+    updateLabel();
+}
+
+void WTrackText::updateLabel() {
     if (m_pCurrentTrack) {
         setText(m_pCurrentTrack->getInfo());
+    } else {
+        setText("");
     }
 }
 
 void WTrackText::mouseMoveEvent(QMouseEvent *event) {
-    if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
-        DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_pGroup);
+    if (event->buttons().testFlag(Qt::LeftButton) && m_pCurrentTrack) {
+        DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
+    }
+}
+
+void WTrackText::mouseDoubleClickEvent(QMouseEvent* event) {
+    Q_UNUSED(event);
+    if (m_pCurrentTrack) {
+        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        m_pTrackMenu->slotShowDlgTrackInfo();
     }
 }
 
 void WTrackText::dragEnterEvent(QDragEnterEvent *event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_pGroup, m_pConfig);
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
 void WTrackText::dropEvent(QDropEvent *event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+}
+
+void WTrackText::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
+    if (m_pCurrentTrack) {
+        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        // Create the right-click menu
+        m_pTrackMenu->popup(event->globalPos());
+    }
 }

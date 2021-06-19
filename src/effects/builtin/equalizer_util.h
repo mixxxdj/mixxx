@@ -1,5 +1,4 @@
-#ifndef EFFECTS_BUILTIN_EQUALIZER_UTIL_H
-#define EFFECTS_BUILTIN_EQUALIZER_UTIL_H
+#pragma once
 
 #include <QObject>
 
@@ -92,6 +91,3 @@ class EqualizerUtil {
             "To adjust frequency shelves, go to Preferences -> Equalizers.");
     }
 };
-
-
-#endif /* EFFECTS_BUILTIN_EQUALIZER_UTIL_H */

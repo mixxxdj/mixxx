@@ -1,46 +1,55 @@
-#ifndef DLGTRACKINFO_H
-#define DLGTRACKINFO_H
+#pragma once
 
 #include <QDialog>
-#include <QMutex>
-#include <QHash>
-#include <QList>
-#include <QScopedPointer>
+#include <QModelIndex>
+#include <memory>
 
-#include "library/ui_dlgtrackinfo.h"
-#include "track/track.h"
 #include "library/coverart.h"
+#include "library/ui_dlgtrackinfo.h"
+#include "track/beats.h"
+#include "track/keys.h"
+#include "track/track_decl.h"
+#include "track/trackrecord.h"
+#include "util/parented_ptr.h"
 #include "util/tapfilter.h"
-#include "util/types.h"
-#include "widget/wcoverartlabel.h"
-#include "widget/wcoverartmenu.h"
 
+class TrackModel;
+class DlgTagFetcher;
+class WCoverArtLabel;
+class WStarRating;
+
+/// A dialog box to display and edit track properties.
+/// Use TrackPointer to load a track into the dialog or
+/// QModelIndex along with TrackModel to enable previous and next buttons
+/// to switch tracks within the context of the TrackModel.
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
-    DlgTrackInfo(QWidget* parent);
-    virtual ~DlgTrackInfo();
+    // TODO: Remove dependency on TrackModel
+    explicit DlgTrackInfo(
+            const TrackModel* trackModel = nullptr);
+    ~DlgTrackInfo() override = default;
 
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
     void loadTrack(TrackPointer pTrack);
+    void loadTrack(const QModelIndex& index);
 
   signals:
     void next();
     void previous();
-    void showTagFetcher(TrackPointer pTrack);
 
   private slots:
-    void slotNext();
-    void slotPrev();
-    void OK();
-    void apply();
-    void cancel();
-    void trackUpdated();
+    void slotNextButton();
+    void slotPrevButton();
+    void slotNextDlgTagFetcher();
+    void slotPrevDlgTagFetcher();
+    void slotOk();
+    void slotApply();
+    void slotCancel();
 
-    void cueActivate();
-    void cueDelete();
+    void trackUpdated();
 
     void slotBpmDouble();
     void slotBpmHalve();
@@ -58,33 +67,58 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotImportMetadataFromFile();
     void slotImportMetadataFromMusicBrainz();
 
-    void updateTrackMetadata();
+    void slotTrackChanged(TrackId trackId);
     void slotOpenInFileBrowser();
 
-    void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& info,
+            const QPixmap& pixmap,
+            mixxx::cache_key_t requestedCacheKey,
+            bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
   private:
-    void populateFields(const Track& track);
+    void loadNextTrack();
+    void loadPrevTrack();
+    void loadTrackInternal(const TrackPointer& pTrack);
     void reloadTrackBeats(const Track& track);
-    void populateCues(TrackPointer pTrack);
     void saveTrack();
-    void unloadTrack(bool save);
     void clear();
     void init();
-    QHash<int, CuePointer> m_cueMap;
+
+    mixxx::UpdateResult updateKeyText();
+    void displayKeyText();
+
+    void updateFromTrack(const Track& track);
+
+    void replaceTrackRecord(
+            mixxx::TrackRecord trackRecord,
+            const QString& trackLocation);
+    void resetTrackRecord() {
+        replaceTrackRecord(
+                mixxx::TrackRecord(),
+                QString());
+    }
+
+    void updateTrackMetadataFields();
+    const TrackModel* const m_pTrackModel;
+
     TrackPointer m_pLoadedTrack;
-    BeatsPointer m_pBeatsClone;
-    Keys m_keysClone;
+
+    QModelIndex m_currentTrackIndex;
+
+    mixxx::TrackRecord m_trackRecord;
+
+    mixxx::BeatsPointer m_pBeatsClone;
     bool m_trackHasBeatMap;
 
-    QScopedPointer<TapFilter> m_pTapFilter;
+    TapFilter m_tapFilter;
     double m_dLastTapedBpm;
 
-    CoverInfo m_loadedCoverInfo;
-    WCoverArtLabel* m_pWCoverArtLabel;
-};
+    parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
+    parented_ptr<WStarRating> m_pWStarRating;
 
-#endif /* DLGTRACKINFO_H */
+    std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
+};

@@ -1,14 +1,20 @@
 #include "mixer/previewdeck.h"
 
-PreviewDeck::PreviewDeck(QObject* pParent,
-                         UserSettingsPointer pConfig,
-                         EngineMaster* pMixingEngine,
-                         EffectsManager* pEffectsManager,
-                         EngineChannel::ChannelOrientation defaultOrientation,
-                         QString group) :
-        BaseTrackPlayerImpl(pParent, pConfig, pMixingEngine, pEffectsManager,
-                            defaultOrientation, group, false, true) {
-}
+#include "moc_previewdeck.cpp"
 
-PreviewDeck::~PreviewDeck() {
+PreviewDeck::PreviewDeck(QObject* pParent,
+        UserSettingsPointer pConfig,
+        EngineMaster* pMixingEngine,
+        EffectsManager* pEffectsManager,
+        EngineChannel::ChannelOrientation defaultOrientation,
+        const ChannelHandleAndGroup& handleGroup)
+        : BaseTrackPlayerImpl(pParent,
+                  pConfig,
+                  pMixingEngine,
+                  pEffectsManager,
+                  defaultOrientation,
+                  handleGroup,
+                  /*defaultMaster*/ false,
+                  /*defaultHeadphones*/ true,
+                  /*primaryDeck*/ false) {
 }

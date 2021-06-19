@@ -1,9 +1,8 @@
-
 #include "track/beats.h"
 
+namespace mixxx {
 
-
-int Beats::numBeatsInRange(double dStartSample, double dEndSample) {
+int Beats::numBeatsInRange(double dStartSample, double dEndSample) const {
     double dLastCountedBeat = 0.0;
     int iBeatsCounter;
     for (iBeatsCounter = 1; dLastCountedBeat < dEndSample; iBeatsCounter++) {
@@ -20,7 +19,7 @@ double Beats::findNBeatsFromSample(double fromSample, double beats) const {
     double prevBeat;
     double nextBeat;
 
-    if (!findPrevNextBeats(fromSample, &prevBeat, &nextBeat)) {
+    if (!findPrevNextBeats(fromSample, &prevBeat, &nextBeat, true)) {
         return fromSample;
     }
     double fromFractionBeats = (fromSample - prevBeat) / (nextBeat - prevBeat);
@@ -53,3 +52,4 @@ double Beats::findNBeatsFromSample(double fromSample, double beats) const {
     return nthBeat;
 };
 
+} // namespace mixxx

@@ -1,6 +1,4 @@
-#ifndef MIXXX_FWDSQLQUERYSELECTRESULT_H
-#define MIXXX_FWDSQLQUERYSELECTRESULT_H
-
+#pragma once
 
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqlqueryfinisher.h"
@@ -49,6 +47,3 @@ private:
     FwdSqlQuery m_query;
     SqlQueryFinisher m_queryFinisher;
 };
-
-
-#endif // MIXXX_FWDSQLQUERYSELECTRESULT_H

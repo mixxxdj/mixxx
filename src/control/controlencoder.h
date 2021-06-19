@@ -1,5 +1,4 @@
-#ifndef CONTROLENCODER_H
-#define CONTROLENCODER_H
+#pragma once
 
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
@@ -7,7 +6,5 @@
 class ControlEncoder : public ControlObject {
     Q_OBJECT
   public:
-    ControlEncoder(ConfigKey key, bool bIgnoreNops=true);
+    ControlEncoder(const ConfigKey& key, bool bIgnoreNops = true);
 };
-
-#endif

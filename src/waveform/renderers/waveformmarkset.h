@@ -1,14 +1,15 @@
-#ifndef WAVEFORMMARKSET_H
-#define WAVEFORMMARKSET_H
+#pragma once
 
 #include <QList>
 
 #include "waveformmark.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/memory.h"
 
 class WaveformWidgetRenderer;
 
+// This class helps share code between the WaveformRenderMark and WOverview
+// constructors.
 class WaveformMarkSet {
   public:
     WaveformMarkSet();
@@ -23,14 +24,13 @@ class WaveformMarkSet {
 
     // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
     WaveformMarkPointer getHotCueMark(int hotCue) const;
+    WaveformMarkPointer getDefaultMark() const;
 
   private:
-    void clear(){ m_marks.clear(); }
-    std::unique_ptr<WaveformMark> m_pDefaultMark;
+    void clear() { m_marks.clear(); }
+    WaveformMarkPointer m_pDefaultMark;
     QList<WaveformMarkPointer> m_marks;
     QMap<int, WaveformMarkPointer> m_hotCueMarks;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
 };
-
-#endif // WAVEFORMMARKSET_H

@@ -1,13 +1,15 @@
-#include <QtDebug>
+#include "controllers/delegates/controldelegate.h"
+
 #include <QLineEdit>
 #include <QStringList>
+#include <QtDebug>
 
-#include "controllers/delegates/controldelegate.h"
 #include "controllers/midi/midimessage.h"
+#include "moc_controldelegate.cpp"
 
 ControlDelegate::ControlDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent),
-          m_pPicker(new ControlPickerMenu(NULL)),
+          m_pPicker(new ControlPickerMenu(nullptr)),
           m_iMidiOptionsColumn(-1),
           m_bIsIndexScript(false) {
 }
@@ -31,8 +33,8 @@ void ControlDelegate::paint(QPainter* painter,
     if (m_iMidiOptionsColumn != -1) {
         QModelIndex optionsColumn = index.sibling(index.row(),
                                                   m_iMidiOptionsColumn);
-        MidiOptions options = qVariantValue<MidiOptions>(optionsColumn.data());
-        m_bIsIndexScript = options.script;
+        MidiOptions options = optionsColumn.data().value<MidiOptions>();
+        m_bIsIndexScript = options.testFlag(MidiOption::Script);
     }
 
     QStyledItemDelegate::paint(painter, option, index);
@@ -41,14 +43,14 @@ void ControlDelegate::paint(QPainter* painter,
 QString ControlDelegate::displayText(const QVariant& value,
                                      const QLocale& locale) const {
     Q_UNUSED(locale);
-    ConfigKey key = qVariantValue<ConfigKey>(value);
+    ConfigKey key = value.value<ConfigKey>();
 
     if (key.group.isEmpty() && key.item.isEmpty()) {
         return tr("No control chosen.");
     }
 
     if (m_bIsIndexScript) {
-        return tr("Script: %1(%2)").arg(key.item, key.group);
+        return tr("%1 %2").arg(key.group, key.item);
     }
 
     QString description = m_pPicker->descriptionForConfigKey(key);
@@ -61,10 +63,10 @@ QString ControlDelegate::displayText(const QVariant& value,
 
 void ControlDelegate::setEditorData(QWidget* editor,
                                     const QModelIndex& index) const {
-    ConfigKey key = qVariantValue<ConfigKey>(index.data(Qt::EditRole));
+    ConfigKey key = index.data(Qt::EditRole).value<ConfigKey>();
 
-    QLineEdit* pLineEdit = dynamic_cast<QLineEdit*>(editor);
-    if (pLineEdit == NULL) {
+    QLineEdit* pLineEdit = qobject_cast<QLineEdit*>(editor);
+    if (pLineEdit == nullptr) {
         return;
     }
 
@@ -79,13 +81,13 @@ void ControlDelegate::setModelData(QWidget* editor,
                                    QAbstractItemModel* model,
                                    const QModelIndex& index) const {
     QLineEdit* pLineEdit = qobject_cast<QLineEdit*>(editor);
-    if (pLineEdit == NULL) {
+    if (pLineEdit == nullptr) {
         return;
     }
 
     QStringList keyStrs = pLineEdit->text().split(",");
     if (keyStrs.size() == 2) {
-        model->setData(index, qVariantFromValue(
+        model->setData(index, QVariant::fromValue(
             ConfigKey(keyStrs.at(0), keyStrs.at(1))), Qt::EditRole);
     }
 }

@@ -1,38 +1,19 @@
-/***************************************************************************
-                          wpushbutton.h  -  description
-                             -------------------
-    begin                : Fri Jun 21 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef WPUSHBUTTON_H
-#define WPUSHBUTTON_H
-
+#include <QFocusEvent>
+#include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPixmap>
 #include <QString>
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QFocusEvent>
 #include <QTimer>
 #include <QVector>
 
-#include "widget/wwidget.h"
-#include "widget/wpixmapstore.h"
 #include "control/controlpushbutton.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
+#include "util/fpclassify.h"
 #include "widget/controlwidgetconnection.h"
-#include "util/math.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
 
 class WPushButton : public WWidget {
     Q_OBJECT
@@ -48,6 +29,15 @@ class WPushButton : public WWidget {
         return m_bPressed;
     }
 
+    // #MyPushButton:hover would affect most object styles except font color
+    // so we use a custom property that allows to also change the font color
+    // with #MyPushButton[hover="true"] {}
+    Q_PROPERTY(bool hover READ isHovered);
+
+    bool isHovered() const {
+        return m_bHovered;
+    }
+
     // The displayValue property is used to restyle the pushbutton with CSS.
     // The declaration #MyButton[displayValue="0"] { } will define the style
     // when the widget is in state 0.  This allows for effects like reversing
@@ -56,7 +46,7 @@ class WPushButton : public WWidget {
 
     int readDisplayValue() const {
         double value = getControlParameterDisplay();
-        if (!isnan(value) && m_iNoStates > 0) {
+        if (!util_isnan(value) && m_iNoStates > 0) {
             return static_cast<int>(value) % m_iNoStates;
         }
         return 0;
@@ -75,31 +65,38 @@ class WPushButton : public WWidget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected:
-    void paintEvent(QPaintEvent* /*unused*/) override;
+    bool event(QEvent* e) override;
+    void paintEvent(QPaintEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
     void focusOutEvent(QFocusEvent* e) override;
     void fillDebugTooltip(QStringList* debug) override;
 
   protected:
-    void restyleAndRepaint();
+    virtual void restyleAndRepaint();
 
     // Associates a pixmap of a given state of the button with the widget
-    void setPixmap(int iState, bool bPressed, PixmapSource source,
-                   Paintable::DrawMode mode, double scaleFactor);
+    void setPixmap(int iState,
+            bool bPressed,
+            const PixmapSource& source,
+            Paintable::DrawMode mode,
+            double scaleFactor);
 
     // Associates a background pixmap with the widget. This is only needed if
     // the button pixmaps contains alpha channel values.
     void setPixmapBackground(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
 
     // True, if the button is currently pressed
     bool m_bPressed;
+    // True, if the button is pointer is above button
+    bool m_bHovered;
 
     // Array of associated pixmaps
     int m_iNoStates;
+    Qt::TextElideMode m_elideMode;
     QVector<QString> m_text;
     QVector<PaintablePointer> m_pressedPixmaps;
     QVector<PaintablePointer> m_unpressedPixmaps;
@@ -113,5 +110,3 @@ class WPushButton : public WWidget {
     QTimer m_clickTimer;
     QVector<int> m_align;
 };
-
-#endif

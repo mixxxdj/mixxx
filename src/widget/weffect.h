@@ -1,11 +1,10 @@
-#ifndef WEFFECT_H
-#define WEFFECT_H
+#pragma once
 
 #include <QDomNode>
 
 #include "widget/wlabel.h"
 #include "effects/effectslot.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class EffectsManager;
 
@@ -26,6 +25,3 @@ class WEffect : public WLabel {
     EffectsManager* m_pEffectsManager;
     EffectSlotPointer m_pEffectSlot;
 };
-
-
-#endif /* WEFFECT_H */

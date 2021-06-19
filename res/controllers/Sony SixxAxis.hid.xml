@@ -5,6 +5,7 @@
         <author>Ilkka Tuohela</author>
         <description>HID mapping for Sony SixxAxis Game Controller</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3940</forums>
+        <manual>sony_sixxaxis</manual>
         <devices>
             <product protocol="hid" vendor_id="0x54c" product_id="0x268" usage_page="0x1" usage="0x4" interface_number="0x1" />
         </devices>

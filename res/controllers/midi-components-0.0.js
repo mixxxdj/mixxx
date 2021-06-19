@@ -26,22 +26,22 @@
  * the lodash.mixxx.js file in this directory for details.
 **/
 
-;(function (global) {
-    var Component = function (options) {
-        if (Array.isArray(options) && typeof options[0] === 'number') {
+(function(global) {
+    var Component = function(options) {
+        if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
         } else {
             _.assign(this, options);
         }
 
-        if (typeof this.unshift === 'function') {
+        if (typeof this.unshift === "function") {
             this.unshift();
         }
         // These cannot be in the prototype; they must be unique to each instance.
         this.isShifted = false;
         this.connections = [];
 
-        if (options !== undefined && typeof options.key === 'string') {
+        if (options !== undefined && typeof options.key === "string") {
             this.inKey = options.key;
             this.outKey = options.key;
         }
@@ -56,7 +56,7 @@
     Component.prototype = {
         // default attributes
         // You should probably overwrite at least some of these.
-        inValueScale: function (value) {
+        inValueScale: function(value) {
             // Hack to get exact center of pots to return 0.5
             if (value > (this.max / 2)) {
                 return (value - 1) / (this.max - 1);
@@ -65,11 +65,11 @@
             }
         },
         // map input in the XML file, not inValueScale
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             this.inSetParameter(this.inValueScale(value));
         },
-        outValueScale: function (value) {return value * this.max;},
-        output: function (value, group, control) {
+        outValueScale: function(value) { return value * this.max; },
+        output: function(value, _group, _control) {
             this.send(this.outValueScale(value));
         },
         outConnect: true,
@@ -79,39 +79,39 @@
 
         // common functions
         // In most cases, you should not overwrite these.
-        inGetParameter: function () {
+        inGetParameter: function() {
             return engine.getParameter(this.group, this.inKey);
         },
-        inSetParameter: function (value) {
+        inSetParameter: function(value) {
             engine.setParameter(this.group, this.inKey, value);
         },
-        inGetValue: function () {
+        inGetValue: function() {
             return engine.getValue(this.group, this.inKey);
         },
-        inSetValue: function (value) {
+        inSetValue: function(value) {
             engine.setValue(this.group, this.inKey, value);
         },
-        inToggle: function () {
-            this.inSetValue( ! this.inGetValue());
+        inToggle: function() {
+            this.inSetValue(!this.inGetValue());
         },
 
-        outGetParameter: function () {
+        outGetParameter: function() {
             return engine.getParameter(this.group, this.outKey);
         },
-        outSetParameter: function (value) {
+        outSetParameter: function(value) {
             engine.setParameter(this.group, this.outKey, value);
         },
-        outGetValue: function () {
+        outGetValue: function() {
             return engine.getValue(this.group, this.outKey);
         },
-        outSetValue: function (value) {
+        outSetValue: function(value) {
             engine.setValue(this.group, this.outKey, value);
         },
-        outToggle: function () {
-            this.outSetValue( ! this.outGetValue());
+        outToggle: function() {
+            this.outSetValue(!this.outGetValue());
         },
 
-        connect: function () {
+        connect: function() {
             /**
             Override this method with a custom one to connect multiple Mixxx COs for a single Component.
             Add the connection objects to the this.connections array so they all get disconnected just
@@ -122,20 +122,20 @@
             if (undefined !== this.group &&
                 undefined !== this.outKey &&
                 undefined !== this.output &&
-                typeof this.output === 'function') {
-                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
+                typeof this.output === "function") {
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
         },
-        disconnect: function () {
+        disconnect: function() {
             if (this.connections[0] !== undefined) {
-                this.connections.forEach(function (conn) {
+                this.connections.forEach(function(conn) {
                     conn.disconnect();
                 });
             }
         },
         trigger: function() {
             if (this.connections[0] !== undefined) {
-                this.connections.forEach(function (conn) {
+                this.connections.forEach(function(conn) {
                     conn.trigger();
                 });
             }
@@ -144,7 +144,7 @@
         sendShifted: false,
         shiftChannel: false,
         shiftControl: false,
-        send: function (value) {
+        send: function(value) {
             if (this.midi === undefined || this.midi[0] === undefined || this.midi[1] === undefined) {
                 return;
             }
@@ -159,7 +159,7 @@
         },
     };
 
-    var Button = function (options) {
+    var Button = function(options) {
         Component.call(this, options);
     };
     Button.prototype = new Component({
@@ -176,10 +176,10 @@
         // in any Buttons that act differently with short and long presses
         // to keep the timeouts uniform.
         longPressTimeout: 275,
-        isPress: function (channel, control, value, status) {
+        isPress: function(channel, control, value, _status) {
             return value > 0;
         },
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, _group) {
             if (this.type === undefined || this.type === this.types.push) {
                 this.inSetValue(this.isPress(channel, control, value, status));
             } else if (this.type === this.types.toggle) {
@@ -190,10 +190,10 @@
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                     this.isLongPressed = false;
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
                         this.isLongPressed = true;
                         this.longPressTimer = 0;
-                    }, true);
+                    }.bind(this), true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
@@ -206,57 +206,61 @@
                 }
             }
         },
-        outValueScale: function (value) {
+        outValueScale: function(value) {
             return (value > 0) ? this.on : this.off;
+        },
+
+        shutdown: function() {
+            this.send(this.off);
         },
     });
 
-    var PlayButton = function (options) {
+    var PlayButton = function(options) {
         Button.call(this, options);
     };
     PlayButton.prototype = new Button({
-        unshift: function () {
-            this.inKey = 'play';
+        unshift: function() {
+            this.inKey = "play";
         },
-        shift: function () {
-            this.inKey = 'reverse';
+        shift: function() {
+            this.inKey = "reverse";
         },
         type: Button.prototype.types.toggle,
-        outKey: 'play_indicator',
+        outKey: "play_indicator",
     });
 
-    var CueButton = function (options) {
+    var CueButton = function(options) {
         Button.call(this, options);
     };
     CueButton.prototype = new Button({
-        unshift: function () {
-            this.inKey = 'cue_default';
+        unshift: function() {
+            this.inKey = "cue_default";
         },
-        shift: function () {
+        shift: function() {
             if (this.reverseRollOnShift) {
-                this.inKey = 'reverseroll';
+                this.inKey = "reverseroll";
             } else {
-                this.inKey = 'start_stop';
+                this.inKey = "start_stop";
             }
         },
-        outKey: 'cue_indicator',
+        outKey: "cue_indicator",
     });
 
-    var SyncButton = function (options) {
+    var SyncButton = function(options) {
         Button.call(this, options);
     };
     SyncButton.prototype = new Button({
-        unshift: function () {
-            this.input = function (channel, control, value, status, group) {
+        unshift: function() {
+            this.input = function(channel, control, value, status, _group) {
                 if (this.isPress(channel, control, value, status)) {
-                    if (engine.getValue(this.group, 'sync_enabled') === 0) {
-                        engine.setValue(this.group, 'beatsync', 1);
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
-                            engine.setValue(this.group, 'sync_enabled', 1);
+                    if (engine.getValue(this.group, "sync_enabled") === 0) {
+                        engine.setValue(this.group, "beatsync", 1);
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                            engine.setValue(this.group, "sync_enabled", 1);
                             this.longPressTimer = 0;
                         }, true);
                     } else {
-                        engine.setValue(this.group, 'sync_enabled', 0);
+                        engine.setValue(this.group, "sync_enabled", 0);
                     }
                 } else {
                     if (this.longPressTimer !== 0) {
@@ -266,87 +270,141 @@
                 }
             };
         },
-        shift: function () {
-            this.inKey = 'quantize';
+        shift: function() {
+            this.inKey = "quantize";
             this.type = Button.prototype.types.toggle;
             this.input = Button.prototype.input;
         },
-        outKey: 'sync_enabled',
+        outKey: "sync_enabled",
     });
 
-    var LoopToggleButton = function (options) {
+    var LoopToggleButton = function(options) {
         Button.call(this, options);
     };
     LoopToggleButton.prototype = new Button({
-        inKey: 'reloop_exit',
-        inValueScale: function () {
+        inKey: "reloop_exit",
+        inValueScale: function() {
             return 1;
         },
-        outKey: 'loop_enabled',
+        outKey: "loop_enabled",
     });
 
-    var HotcueButton = function (options) {
+    var HotcueButton = function(options) {
         if (options.number === undefined) {
-            print('ERROR: No hotcue number specified for new HotcueButton.');
+            print("ERROR: No hotcue number specified for new HotcueButton.");
             return;
         }
+        if (options.colorMapper !== undefined || options.sendRGB !== undefined) {
+            this.colorKey = "hotcue_" + options.number + "_color";
+        }
         this.number = options.number;
-        this.outKey = 'hotcue_' + this.number + '_enabled';
+        this.outKey = "hotcue_" + this.number + "_enabled";
         Button.call(this, options);
     };
     HotcueButton.prototype = new Button({
-        unshift: function () {
-            this.inKey = 'hotcue_' + this.number + '_activate';
+        unshift: function() {
+            this.inKey = "hotcue_" + this.number + "_activate";
         },
-        shift: function () {
-            this.inKey = 'hotcue_' + this.number + '_clear';
+        shift: function() {
+            this.inKey = "hotcue_" + this.number + "_clear";
+        },
+        output: function(value) {
+            var outval = this.outValueScale(value);
+            // NOTE: outputColor only handles hotcueColors
+            // and there is no hotcueColor for turning the LED
+            // off. So the `send()` function is responsible for turning the
+            // actual LED off.
+            if (this.colorKey !== undefined && outval !== this.off) {
+                this.outputColor(engine.getValue(this.group, this.colorKey));
+            } else {
+                this.send(outval);
+            }
+        },
+        outputColor: function(colorCode) {
+            // Sends the color from the colorCode to the controller. This
+            // method will not be called if no colorKey has been specified.
+            if (colorCode === undefined || colorCode < 0 || colorCode > 0xFFFFFF) {
+                print("Ignoring invalid color code '" + colorCode + "' in outputColor()");
+                return;
+            }
+
+            if (this.colorMapper !== undefined) {
+                // This HotcueButton holds a reference to a ColorMapper. This means
+                // that the controller only supports a fixed set of colors, so we
+                // get the MIDI value for the nearest supported color and send it.
+                var nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
+                this.send(nearestColorValue);
+            } else {
+                // Since outputColor has been called but no ColorMapper is
+                // available, we can assume that controller supports arbitrary
+                // RGB color output.
+                this.sendRGB(colorCodeToObject(colorCode));
+            }
+        },
+        sendRGB: function(_colorObject) {
+            // This method needs to be overridden in controller mappings,
+            // because the procedure is controller-dependent.
+            throw Error("sendRGB(colorObject) not implemented - unable to send RGB colors!");
+        },
+        connect: function() {
+            Button.prototype.connect.call(this); // call parent connect
+            if (undefined !== this.group && this.colorKey !== undefined) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
+                    if (engine.getValue(this.group, this.outKey)) {
+                        this.outputColor(color);
+                    }
+                }.bind(this));
+            }
         },
     });
-
-    var SamplerButton = function (options) {
+    var SamplerButton = function(options) {
         if (options.number === undefined) {
-            print('ERROR: No sampler number specified for new SamplerButton.');
+            print("ERROR: No sampler number specified for new SamplerButton.");
             return;
         }
+        this.volumeByVelocity = options.volumeByVelocity;
         this.number = options.number;
-        this.group = '[Sampler' + this.number + ']';
+        this.group = "[Sampler" + this.number + "]";
         Button.call(this, options);
     };
     SamplerButton.prototype = new Button({
-        unshift: function () {
-            this.input = function (channel, control, value, status, group) {
+        unshift: function() {
+            this.input = function(channel, control, value, status, _group) {
                 if (this.isPress(channel, control, value, status)) {
-                    if (engine.getValue(this.group, 'track_loaded') === 0) {
-                        engine.setValue(this.group, 'LoadSelectedTrack', 1);
+                    if (engine.getValue(this.group, "track_loaded") === 0) {
+                        engine.setValue(this.group, "LoadSelectedTrack", 1);
                     } else {
-                        engine.setValue(this.group, 'cue_gotoandplay', 1);
+                        if (this.volumeByVelocity) {
+                            engine.setValue(this.group, "volume", this.inValueScale(value));
+                        }
+                        engine.setValue(this.group, "cue_gotoandplay", 1);
                     }
                 }
             };
         },
         shift: function() {
-            this.input = function (channel, control, value, status, group) {
+            this.input = function(channel, control, value, status, _group) {
                 if (this.isPress(channel, control, value, status)) {
-                    if (engine.getValue(this.group, 'play') === 1) {
-                        engine.setValue(this.group, 'play', 0);
+                    if (engine.getValue(this.group, "play") === 1) {
+                        engine.setValue(this.group, "play", 0);
                     } else {
-                        engine.setValue(this.group, 'eject', 1);
+                        engine.setValue(this.group, "eject", 1);
                     }
                 } else {
-                    if (engine.getValue(this.group, 'play') === 0) {
-                        engine.setValue(this.group, 'eject', 0);
+                    if (engine.getValue(this.group, "play") === 0) {
+                        engine.setValue(this.group, "eject", 0);
                     }
                 }
             };
         },
-        output: function (value, group, control) {
-            if (engine.getValue(this.group, 'track_loaded') === 1) {
+        output: function(_value, _group, _control) {
+            if (engine.getValue(this.group, "track_loaded") === 1) {
                 if (this.loaded === undefined) {
                     this.send(this.on);
                 } else {
-                    if (engine.getValue(this.group, 'play') === 1) {
+                    if (engine.getValue(this.group, "play") === 1) {
                         if (this.looping !== undefined &&
-                            engine.getValue(this.group, 'repeat') === 1) {
+                            engine.getValue(this.group, "repeat") === 1) {
                             this.send(this.looping);
                         } else {
                             this.send(this.playing);
@@ -364,33 +422,33 @@
             }
         },
         connect: function() {
-            this.connections[0] = engine.makeConnection(this.group, 'track_loaded', this.output);
+            this.connections[0] = engine.makeConnection(this.group, "track_loaded", this.output.bind(this));
             if (this.playing !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, 'play', this.output);
+                this.connections[1] = engine.makeConnection(this.group, "play", this.output.bind(this));
             }
             if (this.looping !== undefined) {
-                this.connections[2] = engine.connectControl(this.group, 'repeat', this.output);
+                this.connections[2] = engine.makeConnection(this.group, "repeat", this.output.bind(this));
             }
         },
         outKey: null, // hack to get Component constructor to call connect()
     });
 
-    var EffectAssignmentButton = function (options) {
-        options.key = 'group_' + options.group + '_enable';
-        options.group = '[EffectRack1_EffectUnit' + options.effectUnit + ']';
+    var EffectAssignmentButton = function(options) {
+        options.key = "group_" + options.group + "_enable";
+        options.group = "[EffectRack1_EffectUnit" + options.effectUnit + "]";
         Button.call(this, options);
     };
     EffectAssignmentButton.prototype = new Button({
         type: Button.prototype.types.toggle,
     });
 
-    var Pot = function (options) {
+    var Pot = function(options) {
         Component.call(this, options);
 
         this.firstValueReceived = false;
     };
     Pot.prototype = new Component({
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (this.MSB !== undefined) {
                 value = (this.MSB << 7) + value;
             }
@@ -405,7 +463,7 @@
             }
         },
         // Input handlers for 14 bit MIDI
-        inputMSB: function (channel, control, value, status, group) {
+        inputMSB: function(channel, control, value, status, group) {
             // For the first messages, disregard the LSB in case
             // the first LSB is received after the first MSB.
             if (this.MSB === undefined) {
@@ -415,70 +473,98 @@
             }
             this.MSB = value;
         },
-        inputLSB: function (channel, control, value, status, group) {
+        inputLSB: function(channel, control, value, status, group) {
             // Make sure the first MSB has been received
             if (this.MSB !== undefined) {
                 this.input(channel, control, value, status, group);
             }
         },
-        connect: function () {
+        connect: function() {
             if (this.firstValueReceived && !this.relative) {
                 engine.softTakeover(this.group, this.inKey, true);
             }
         },
-        disconnect: function () {
+        disconnect: function() {
             if (!this.relative) {
                 engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
             }
         },
-        trigger: function () {},
+        trigger: function() {},
     });
 
     /**
     The generic Component code provides everything to implement an Encoder. This Encoder Component
     exists so instanceof can be used to separate Encoders from other Components.
     **/
-    var Encoder = function (options) {
+    var Encoder = function(options) {
         Component.call(this, options);
     };
     Encoder.prototype = new Component();
 
-    var ComponentContainer = function (initialLayer) {
-        if (typeof initialLayer === 'object') {
+    var ComponentContainer = function(initialLayer) {
+        if (typeof initialLayer === "object") {
             this.applyLayer(initialLayer);
         }
     };
     ComponentContainer.prototype = {
-        forEachComponent: function (operation, recursive) {
-            if (typeof operation !== 'function') {
-                print('ERROR: ComponentContainer.forEachComponent requires a function argument');
+        forEachComponent: function(operation, recursive) {
+            if (typeof operation !== "function") {
+                print("ERROR: ComponentContainer.forEachComponent requires a function argument");
                 return;
             }
             if (recursive === undefined) { recursive = true; }
 
             var that = this;
-            var applyOperationTo = function (obj) {
+            var applyOperationTo = function(obj) {
                 if (obj instanceof Component) {
                     operation.call(that, obj);
                 } else if (recursive && obj instanceof ComponentContainer) {
                     obj.forEachComponent(operation);
                 } else if (Array.isArray(obj)) {
-                    obj.forEach(function (element) {
+                    obj.forEach(function(element) {
                         applyOperationTo(element);
                     });
                 }
             };
 
             for (var memberName in this) {
-                if (this.hasOwnProperty(memberName)) {
+                if (ComponentContainer.prototype.hasOwnProperty.call(this, memberName)) {
                     applyOperationTo(this[memberName]);
                 }
             }
         },
-        reconnectComponents: function (operation, recursive) {
-            this.forEachComponent(function (component) {
+        forEachComponentContainer: function(operation, recursive) {
+            if (typeof operation !== "function") {
+                print("ERROR: ComponentContainer.forEachComponentContainer requires a function argument");
+                return;
+            }
+            if (recursive === undefined) { recursive = true; }
+
+            var that = this;
+            var applyOperationTo = function(obj) {
+                if (obj instanceof ComponentContainer) {
+                    operation.call(that, obj);
+
+                    if (recursive) {
+                        obj.forEachComponentContainer(operation);
+                    }
+                } else if (Array.isArray(obj)) {
+                    obj.forEach(function(element) {
+                        applyOperationTo(element);
+                    });
+                }
+            };
+
+            for (var memberName in this) {
+                if (ComponentContainer.prototype.hasOwnProperty.call(this, memberName)) {
+                    applyOperationTo(this[memberName]);
+                }
+            }
+        },
+        reconnectComponents: function(operation, recursive) {
+            this.forEachComponent(function(component) {
                 component.disconnect();
-                if (typeof operation === 'function') {
+                if (typeof operation === "function") {
                     operation.call(this, component);
                 }
                 component.connect();
@@ -486,8 +572,9 @@
             }, recursive);
         },
         isShifted: false,
-        shift: function () {
-            this.forEachComponent(function (component) {
+        shift: function() {
+            // Shift direct child Components
+            this.forEachComponent(function(component) {
                 // Controls for push type Buttons depend on getting reset to 0 when the
                 // Button is released for correct behavior. If there is a skin button
                 // that lights up with the inKey, the skin button would stay lit if the
@@ -497,49 +584,62 @@
                 // shifted state, and the unshifted inKey would not get reset to 0.
                 // To work around this, reset push Buttons' inKey to 0 when the shift
                 // button is pressed.
-                if (typeof component.shift === 'function') {
+                if (typeof component.shift === "function") {
                     if (component instanceof Button
                         && (component.type === Button.prototype.types.push
                             || component.type === undefined)
                         && component.input === Button.prototype.input
-                        && typeof component.inKey === 'string'
-                        && typeof component.group === 'string') {
+                        && typeof component.inKey === "string"
+                        && typeof component.group === "string") {
                         if (engine.getValue(component.group, component.inKey) !== 0) {
                             engine.setValue(component.group, component.inKey, 0);
                         }
                     }
                     component.shift();
                 }
-                // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
-                this.isShifted = true;
-            });
+            }, false);
+
+            // Shift child ComponentContainers
+            this.forEachComponentContainer(function(container) {
+                container.shift();
+            }, false);
+
+            // Set isShifted for each ComponentContainer recursively
+            this.isShifted = true;
         },
-        unshift: function () {
-            this.forEachComponent(function (component) {
+        unshift: function() {
+            // Unshift direct child Components
+            this.forEachComponent(function(component) {
                 // Refer to comment in ComponentContainer.shift() above for explanation
-                if (typeof component.unshift === 'function') {
+                if (typeof component.unshift === "function") {
                     if (component instanceof Button
                         && (component.type === Button.prototype.types.push
                             || component.type === undefined)
                         && component.input === Button.prototype.input
-                        && typeof component.inKey === 'string'
-                        && typeof component.group === 'string') {
+                        && typeof component.inKey === "string"
+                        && typeof component.group === "string") {
                         if (engine.getValue(component.group, component.inKey) !== 0) {
                             engine.setValue(component.group, component.inKey, 0);
                         }
                     }
                     component.unshift();
                 }
-                // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
-                this.isShifted = false;
-            });
+            }, false);
+
+            // Unshift child ComponentContainers
+            this.forEachComponentContainer(function(container) {
+                container.unshift();
+            }, false);
+
+            // Unset isShifted for each ComponentContainer recursively
+            this.isShifted = false;
         },
-        applyLayer: function (newLayer, reconnectComponents) {
+        applyLayer: function(newLayer, reconnectComponents) {
             if (reconnectComponents !== false) {
                 reconnectComponents = true;
             }
             if (reconnectComponents === true) {
-                this.forEachComponent(function (component) {
+                this.forEachComponent(function(component) {
                     component.disconnect();
                 });
             }
@@ -547,56 +647,61 @@
             _.merge(this, newLayer);
 
             if (reconnectComponents === true) {
-                this.forEachComponent(function (component) {
+                this.forEachComponent(function(component) {
                     component.connect();
                     component.trigger();
                 });
             }
         },
+        shutdown: function() {
+            this.forEachComponent(function(component) {
+                if (component.shutdown !== undefined
+                    && typeof component.shutdown === "function") {
+                    component.shutdown();
+                }
+            });
+        },
     };
 
-    var Deck = function (deckNumbers) {
-        if (deckNumbers !== undefined) {
-            if (Array.isArray(deckNumbers)) {
-                // These must be unique to each instance,
-                // so they cannot be in the prototype.
-                this.currentDeck = '[Channel' + deckNumbers[0] + ']';
-                this.deckNumbers = deckNumbers;
-            } else if (typeof deckNumbers === 'number' &&
-                      Math.floor(deckNumbers) === deckNumbers &&
-                      isFinite(deckNumbers)) {
-                this.currentDeck = '[Channel' + deckNumbers + ']';
-                this.deckNumbers = [deckNumbers];
-            }
+    var Deck = function(deckNumbers) {
+        if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
+            // These must be unique to each instance,
+            // so they cannot be in the prototype.
+            this.deckNumbers = deckNumbers;
+        } else if (deckNumbers !== undefined && typeof deckNumbers === "number" &&
+                Math.floor(deckNumbers) === deckNumbers &&
+                isFinite(deckNumbers)) {
+            this.deckNumbers = [deckNumbers];
         } else {
-            print('ERROR! new Deck() called without specifying any deck numbers');
+            print("ERROR! new Deck() called without specifying any deck numbers");
             return;
         }
+        this.currentDeck = "[Channel" + this.deckNumbers[0] + "]";
     };
     Deck.prototype = new ComponentContainer({
-        setCurrentDeck: function (newGroup) {
+        setCurrentDeck: function(newGroup) {
             this.currentDeck = newGroup;
-            this.reconnectComponents(function (component) {
+            this.reconnectComponents(function(component) {
                 if (component.group === undefined
                       || component.group.search(script.channelRegEx) !== -1) {
                     component.group = newGroup;
                 } else if (component.group.search(script.eqRegEx) !== -1) {
-                    component.group = '[EqualizerRack1_' + newGroup + '_Effect1]';
+                    component.group = "[EqualizerRack1_" + newGroup + "_Effect1]";
                 } else if (component.group.search(script.quickEffectRegEx) !== -1) {
-                    component.group = '[QuickEffectRack1_' + newGroup + ']';
+                    component.group = "[QuickEffectRack1_" + newGroup + "]";
                 }
                 // Do not alter the Component's group if it does not match any of those RegExs.
 
                 if (component instanceof EffectAssignmentButton) {
-                    // The ControlObjects for assinging decks to effect units
+                    // The ControlObjects for assigning decks to effect units
                     // indicate the effect unit with the group and the deck with the key,
                     // so change the key here instead of the group.
-                    component.inKey = 'group_' + newGroup + '_enable';
-                    component.outKey = 'group_' + newGroup + '_enable';
+                    component.inKey = "group_" + newGroup + "_enable";
+                    component.outKey = "group_" + newGroup + "_enable";
                 }
             });
         },
-        toggle: function () {
+        toggle: function() {
             // cycle through deckNumbers array
             var index = this.deckNumbers.indexOf(parseInt(
                 script.channelRegEx.exec(this.currentDeck)[1]
@@ -610,77 +715,79 @@
         }
     });
 
-    EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden, colors) {
+    var EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
         var eu = this;
         this.focusChooseModeActive = false;
 
         // This is only connected if allowFocusWhenParametersHidden is false.
-        this.onShowParametersChange = function (value) {
+        this.onShowParametersChange = function(value) {
             if (value === 0) {
                 // Prevent this from getting called twice (on button down and button up)
                 // when show_parameters button is clicked in skin.
                 // Otherwise this.previouslyFocusedEffect would always be set to 0
                 // on the second call.
-                if (engine.getValue(eu.group, 'show_focus') > 0) {
-                    engine.setValue(eu.group, 'show_focus', 0);
+                if (engine.getValue(eu.group, "show_focus") > 0) {
+                    engine.setValue(eu.group, "show_focus", 0);
                     eu.previouslyFocusedEffect = engine.getValue(eu.group,
-                                                                  "focused_effect");
+                        "focused_effect");
                     engine.setValue(eu.group, "focused_effect", 0);
                 }
             } else {
-                engine.setValue(eu.group, 'show_focus', 1);
+                engine.setValue(eu.group, "show_focus", 1);
                 if (eu.previouslyFocusedEffect !== undefined) {
-                    engine.setValue(eu.group, 'focused_effect',
-                                    eu.previouslyFocusedEffect);
+                    engine.setValue(eu.group, "focused_effect",
+                        eu.previouslyFocusedEffect);
                 }
             }
             if (eu.enableButtons !== undefined) {
-                eu.enableButtons.reconnectComponents(function (button) {
+                eu.enableButtons.reconnectComponents(function(button) {
                     button.stopEffectFocusChooseMode();
                 });
             }
         };
 
-        this.setCurrentUnit = function (newNumber) {
+        this.setCurrentUnit = function(newNumber) {
             this.currentUnitNumber = newNumber;
+            this.group = "[EffectRack1_EffectUnit" + newNumber + "]";
+
             if (allowFocusWhenParametersHidden) {
-                engine.setValue(this.group, 'show_focus', 0);
+                engine.setValue(this.group, "show_focus", 0);
             } else {
                 if (this.showParametersConnection !== undefined) {
                     this.showParametersConnection.disconnect();
                 }
                 delete this.previouslyFocusedEffect;
             }
-
-            this.group = '[EffectRack1_EffectUnit' + newNumber + ']';
+            engine.setValue(this.group, "controller_input_active", 0);
 
             if (allowFocusWhenParametersHidden) {
-                engine.setValue(this.group, 'show_focus', 1);
+                engine.setValue(this.group, "show_focus", 1);
             } else {
                 // Connect a callback to show_parameters changing instead of
                 // setting show_focus when effectFocusButton is pressed so
                 // show_focus is always in the correct state, even if the user
                 // presses the skin button for show_parameters.
                 this.showParametersConnection = engine.makeConnection(this.group,
-                                                    'show_parameters',
-                                                    this.onShowParametersChange);
+                    "show_parameters",
+                    this.onShowParametersChange.bind(this));
                 this.showParametersConnection.trigger();
             }
+            engine.setValue(this.group, "controller_input_active", 1);
 
             // Do not enable soft takeover upon EffectUnit construction
             // so initial values can be loaded from knobs.
             if (this.hasInitialized === true) {
                 for (var n = 1; n <= 3; n++) {
-                    var effect = '[EffectRack1_EffectUnit' + this.currentUnitNumber +
-                                '_Effect' + n + ']';
-                    engine.softTakeover(effect, 'meta', true);
-                    engine.softTakeover(effect, 'parameter1', true);
-                    engine.softTakeover(effect, 'parameter2', true);
-                    engine.softTakeover(effect, 'parameter3', true);
+                    var effect = "[EffectRack1_EffectUnit" + this.currentUnitNumber +
+                                "_Effect" + n + "]";
+                    engine.softTakeover(effect, "meta", true);
+                    engine.softTakeover(effect, "parameter1", true);
+                    engine.softTakeover(effect, "parameter2", true);
+                    engine.softTakeover(effect, "parameter3", true);
                 }
             }
 
-            this.reconnectComponents(function (component) {
+            this.reconnectComponents(function(component) {
                 // update [EffectRack1_EffectUnitX] groups
                 var unitMatch = component.group.match(script.effectUnitRegEx);
                 if (unitMatch !== null) {
@@ -689,15 +796,15 @@
                     // update [EffectRack1_EffectUnitX_EffectY] groups
                     var effectMatch = component.group.match(script.individualEffectRegEx);
                     if (effectMatch !== null) {
-                        component.group = '[EffectRack1_EffectUnit' +
+                        component.group = "[EffectRack1_EffectUnit" +
                                           eu.currentUnitNumber +
-                                          '_Effect' + effectMatch[2] + ']';
+                                          "_Effect" + effectMatch[2] + "]";
                     }
                 }
             });
         };
 
-        this.toggle = function () {
+        this.toggle = function() {
             // cycle through unitNumbers array
             var index = this.unitNumbers.indexOf(this.currentUnitNumber);
             if (index === (this.unitNumbers.length - 1)) {
@@ -706,39 +813,38 @@
                 index += 1;
             }
             this.setCurrentUnit(this.unitNumbers[index]);
-        }
+        };
 
-        if (unitNumbers !== undefined) {
-            if (Array.isArray(unitNumbers)) {
-                this.unitNumbers = unitNumbers;
-                this.setCurrentUnit(unitNumbers[0]);
-            } else if (typeof unitNumbers === 'number' &&
-                      Math.floor(unitNumbers) === unitNumbers &&
-                      isFinite(unitNumbers)) {
-                this.unitNumbers = [unitNumbers];
-                this.setCurrentUnit(unitNumbers);
-            }
+        if (unitNumbers !== undefined && Array.isArray(unitNumbers)) {
+            this.unitNumbers = unitNumbers;
+        } else if (unitNumbers !== undefined && typeof unitNumbers === "number" &&
+                  Math.floor(unitNumbers) === unitNumbers &&
+                  isFinite(unitNumbers)) {
+            this.unitNumbers = [unitNumbers];
         } else {
-            print('ERROR! new EffectUnit() called without specifying any unit numbers!');
+            print("ERROR! new EffectUnit() called without specifying any unit numbers!");
             return;
         }
 
+        this.group = "[EffectRack1_EffectUnit" + this.unitNumbers[0] + "]";
+        this.setCurrentUnit(this.unitNumbers[0]);
+
         this.dryWetKnob = new Pot({
             group: this.group,
-            unshift: function () {
-                this.inKey = 'mix';
+            unshift: function() {
+                this.inKey = "mix";
                 // for soft takeover
                 this.disconnect();
                 this.connect();
             },
-            shift: function () {
-                this.inKey = 'super1';
+            shift: function() {
+                this.inKey = "super1";
                 // for soft takeover
                 this.disconnect();
                 this.connect();
                 // engine.softTakeoverIgnoreNextValue is called
                 // in the knobs' onFocusChange function
-                eu.knobs.forEachComponent(function (knob) {
+                eu.knobs.forEachComponent(function(knob) {
                     knob.trigger();
                 });
             },
@@ -746,59 +852,68 @@
         });
 
         this.enableOnChannelButtons = new ComponentContainer();
-        this.enableOnChannelButtons.addButton = function (channel) {
+        this.enableOnChannelButtons.addButton = function(channel) {
             this[channel] = new Button({
                 group: eu.group,
-                key: 'group_[' + channel + ']_enable',
+                key: "group_[" + channel + "]_enable",
                 type: Button.prototype.types.toggle,
                 outConnect: false,
             });
         };
 
-        this.EffectUnitKnob = function (number) {
+        this.EffectUnitKnob = function(number) {
             this.number = number;
             Pot.call(this);
         };
         this.EffectUnitKnob.prototype = new Pot({
             group: this.group,
-            unshift: function () {
-                this.input = function (channel, control, value, status, group) {
+            number: this.currentUnitNumber,
+            unshift: function() {
+                this.input = function(channel, control, value, _status, _group) {
                     if (this.MSB !== undefined) {
                         value = (this.MSB << 7) + value;
                     }
                     this.inSetParameter(this.inValueScale(value));
 
                     if (this.previousValueReceived === undefined) {
-                        var effect = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
-                                    '_Effect' + this.number + ']';
-                        engine.softTakeover(effect, 'meta', true);
-                        engine.softTakeover(effect, 'parameter1', true);
-                        engine.softTakeover(effect, 'parameter2', true);
-                        engine.softTakeover(effect, 'parameter3', true);
+                        var effect = "[EffectRack1_EffectUnit" + eu.currentUnitNumber +
+                                    "_Effect" + this.number + "]";
+                        engine.softTakeover(effect, "meta", true);
+                        engine.softTakeover(effect, "parameter1", true);
+                        engine.softTakeover(effect, "parameter2", true);
+                        engine.softTakeover(effect, "parameter3", true);
                     }
                     this.previousValueReceived = value;
                 };
             },
-            shift: function () {
+            shift: function() {
                 engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
                 this.valueAtLastEffectSwitch = this.previousValueReceived;
                 // Floor the threshold to ensure that every effect can be selected
                 this.changeThreshold = Math.floor(this.max /
-                    engine.getValue('[Master]', 'num_effectsavailable'));
+                    engine.getValue("[Master]", "num_effectsavailable"));
 
-                this.input = function (channel, control, value, status, group) {
+                this.input = function(channel, control, value, _status, _group) {
                     if (this.MSB !== undefined) {
                         value = (this.MSB << 7) + value;
                     }
+
+                    // Prevent attempt to set the effect_selector CO to NaN
+                    if (this.valueAtLastEffectSwitch === undefined) {
+                        this.valueAtLastEffectSwitch = value;
+                        this.previousValueReceived = value;
+                        return;
+                    }
+
                     var change = value - this.valueAtLastEffectSwitch;
                     if (Math.abs(change) >= this.changeThreshold
                         // this.valueAtLastEffectSwitch can be undefined if
                         // shift was pressed before the first MIDI value was received.
                         || this.valueAtLastEffectSwitch === undefined) {
-                        var effectGroup = '[EffectRack1_EffectUnit' +
-                                           eu.currentUnitNumber + '_Effect' +
-                                           this.number + ']';
-                        engine.setValue(effectGroup, 'effect_selector', change);
+                        var effectGroup = "[EffectRack1_EffectUnit" +
+                                           eu.currentUnitNumber + "_Effect" +
+                                           this.number + "]";
+                        engine.setValue(effectGroup, "effect_selector", change);
                         this.valueAtLastEffectSwitch = value;
                     }
 
@@ -806,62 +921,62 @@
                 };
             },
             outKey: "focused_effect",
-            connect: function () {
+            connect: function() {
                 this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                                                            this.onFocusChange);
+                    this.onFocusChange.bind(this));
             },
-            disconnect: function () {
+            disconnect: function() {
                 engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
                 this.connections[0].disconnect();
             },
-            trigger: function () {
+            trigger: function() {
                 this.connections[0].trigger();
             },
-            onFocusChange: function (value, group, control) {
+            onFocusChange: function(value, _group, _control) {
                 if (value === 0) {
-                    this.group = '[EffectRack1_EffectUnit' +
-                                  eu.currentUnitNumber + '_Effect' +
-                                  this.number + ']';
-                    this.inKey = 'meta';
+                    this.group = "[EffectRack1_EffectUnit" +
+                                  eu.currentUnitNumber + "_Effect" +
+                                  this.number + "]";
+                    this.inKey = "meta";
                 } else {
-                    this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
-                                  '_Effect' + value + ']';
-                    this.inKey = 'parameter' + this.number;
+                    this.group = "[EffectRack1_EffectUnit" + eu.currentUnitNumber +
+                                  "_Effect" + value + "]";
+                    this.inKey = "parameter" + this.number;
                 }
                 engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
             },
         });
 
-        this.EffectEnableButton = function (number) {
+        this.EffectEnableButton = function(number) {
             this.number = number;
-            this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
-                          '_Effect' + this.number + ']';
+            this.group = "[EffectRack1_EffectUnit" + eu.currentUnitNumber +
+                          "_Effect" + this.number + "]";
             Button.call(this);
         };
         this.EffectEnableButton.prototype = new Button({
             type: Button.prototype.types.powerWindow,
             // NOTE: This function is only connected when not in focus choosing mode.
-            onFocusChange: function (value, group, control) {
+            onFocusChange: function(value, _group, _control) {
                 if (value === 0) {
                     if (colors !== undefined) {
                         this.color = colors.unfocused;
                     }
-                    this.group = '[EffectRack1_EffectUnit' +
-                                  eu.currentUnitNumber + '_Effect' +
-                                  this.number + ']';
-                    this.inKey = 'enabled';
-                    this.outKey = 'enabled';
+                    this.group = "[EffectRack1_EffectUnit" +
+                                  eu.currentUnitNumber + "_Effect" +
+                                  this.number + "]";
+                    this.inKey = "enabled";
+                    this.outKey = "enabled";
                 } else {
                     if (colors !== undefined) {
                         this.color = colors.focused;
                     }
-                    this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
-                                 '_Effect' + value + ']';
-                    this.inKey = 'button_parameter' + this.number;
-                    this.outKey = 'button_parameter' + this.number;
+                    this.group = "[EffectRack1_EffectUnit" + eu.currentUnitNumber +
+                                 "_Effect" + value + "]";
+                    this.inKey = "button_parameter" + this.number;
+                    this.outKey = "button_parameter" + this.number;
                 }
             },
-            stopEffectFocusChooseMode: function () {
+            stopEffectFocusChooseMode: function() {
                 this.type = Button.prototype.types.powerWindow;
                 this.input = Button.prototype.input;
                 this.output = Button.prototype.output;
@@ -869,35 +984,35 @@
                     this.color = colors.unfocused;
                 }
 
-                this.connect = function () {
+                this.connect = function() {
                     this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                                                                this.onFocusChange);
+                        this.onFocusChange.bind(this));
                     // this.onFocusChange sets this.group and this.outKey, so trigger it
                     // before making the connection for LED output
                     this.connections[0].trigger();
-                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output);
+                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
                 };
 
-                this.unshift = function () {
+                this.unshift = function() {
                     this.disconnect();
                     this.connect();
                     this.trigger();
                 };
-                this.shift = function () {
-                    this.group = '[EffectRack1_EffectUnit' +
-                                  eu.currentUnitNumber + '_Effect' +
-                                  this.number + ']';
-                    this.inKey = 'enabled';
+                this.shift = function() {
+                    this.group = "[EffectRack1_EffectUnit" +
+                                  eu.currentUnitNumber + "_Effect" +
+                                  this.number + "]";
+                    this.inKey = "enabled";
                 };
                 if (this.isShifted) {
                     this.shift();
                 }
             },
-            startEffectFocusChooseMode: function () {
+            startEffectFocusChooseMode: function() {
                 if (colors !== undefined) {
                     this.color = colors.focusChooseMode;
                 }
-                this.input = function (channel, control, value, status, group) {
+                this.input = function(channel, control, value, status, _group) {
                     if (this.isPress(channel, control, value, status)) {
                         if (engine.getValue(eu.group, "focused_effect") === this.number) {
                             // unfocus and make knobs control metaknobs
@@ -908,18 +1023,18 @@
                         }
                     }
                 };
-                this.output = function (value, group, control) {
+                this.output = function(value, _group, _control) {
                     this.send((value === this.number) ? this.on : this.off);
                 };
-                this.connect = function () {
+                this.connect = function() {
                     // Outside of focus choose mode, the this.connections array
                     // has two members. Connections can be triggered when they
                     // are disconnected, so overwrite the whole array here instead
                     // of assigning to this.connections[0] to avoid
                     // Component.prototype.trigger() triggering the disconnected connection.
                     this.connections = [engine.makeConnection(eu.group,
-                                                              "focused_effect",
-                                                              this.output)];
+                        "focused_effect",
+                        this.output.bind(this))];
                 };
             },
         });
@@ -937,32 +1052,32 @@
             longPressTimer: 0,
             pressedWhenParametersHidden: false,
             previouslyFocusedEffect: 0,
-            startEffectFocusChooseMode: function () {
+            startEffectFocusChooseMode: function() {
                 if (colors !== undefined) {
                     this.color = colors.focusChooseMode;
                 }
                 this.send(this.on);
                 eu.focusChooseModeActive = true;
-                eu.enableButtons.reconnectComponents(function (button) {
+                eu.enableButtons.reconnectComponents(function(button) {
                     button.startEffectFocusChooseMode();
                 });
             },
-            setColor: function () {
+            setColor: function() {
                 if (colors !== undefined) {
-                    if (engine.getValue(this.group, 'focused_effect') === 0) {
+                    if (engine.getValue(this.group, "focused_effect") === 0) {
                         this.color = colors.unfocused;
                     } else {
                         this.color = colors.focused;
                     }
                 }
             },
-            unshift: function () {
-                this.input = function (channel, control, value, status, group) {
+            unshift: function() {
+                this.input = function(channel, control, value, status, _group) {
                     var showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout,
-                                                      this.startEffectFocusChooseMode,
-                                                      true);
+                            this.startEffectFocusChooseMode.bind(this),
+                            true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {
                                 engine.setValue(this.group, "show_parameters", 1);
@@ -979,47 +1094,47 @@
                         if (eu.focusChooseModeActive) {
                             this.setColor();
                             this.trigger();
-                            eu.enableButtons.reconnectComponents(function (button) {
+                            eu.enableButtons.reconnectComponents(function(button) {
                                 button.stopEffectFocusChooseMode();
                             });
                             eu.focusChooseModeActive = false;
                         } else {
                             if (!showParameters && allowFocusWhenParametersHidden) {
-                                  engine.setValue(this.group, "show_parameters", 1);
+                                engine.setValue(this.group, "show_parameters", 1);
                             } else if (showParameters && !this.pressedWhenParametersHidden) {
-                                  engine.setValue(this.group, "show_parameters", 0);
-                                  // eu.onShowParametersChange will save the focused effect,
-                                  // unfocus, and hide focus buttons in skin
+                                engine.setValue(this.group, "show_parameters", 0);
+                                // eu.onShowParametersChange will save the focused effect,
+                                // unfocus, and hide focus buttons in skin
                             }
                         }
                         this.pressedWhenParametersHidden = false;
                     }
                 };
             },
-            shift: function () {
-                this.input = function (channel, control, value, status, group) {
+            shift: function() {
+                this.input = function(channel, control, value, status, _group) {
                     if (this.isPress(channel, control, value, status)) {
                         eu.toggle();
                     }
                 };
             },
-            outKey: 'focused_effect',
-            output: function (value, group, control) {
+            outKey: "focused_effect",
+            output: function(value, _group, _control) {
                 this.send((value > 0) ? this.on : this.off);
             },
             outConnect: false,
         });
         this.effectFocusButton.setColor();
 
-        this.init = function () {
+        this.init = function() {
             this.knobs.reconnectComponents();
-            this.enableButtons.reconnectComponents(function (button) {
+            this.enableButtons.reconnectComponents(function(button) {
                 button.stopEffectFocusChooseMode();
             });
             this.effectFocusButton.connect();
             this.effectFocusButton.trigger();
 
-            this.enableOnChannelButtons.forEachComponent(function (button) {
+            this.enableOnChannelButtons.forEachComponent(function(button) {
                 if (button.midi !== undefined) {
                     button.disconnect();
                     button.connect();
@@ -1027,7 +1142,7 @@
                 }
             });
 
-            this.forEachComponent(function (component) {
+            this.forEachComponent(function(component) {
                 if (component.group === undefined) {
                     component.group = eu.group;
                 }

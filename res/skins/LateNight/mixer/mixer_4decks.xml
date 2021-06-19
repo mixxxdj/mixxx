@@ -1,0 +1,81 @@
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Channel controls -->
+        <ObjectName>AlignHCenter</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <Template src="skin:/mixer/channel_4decks.xml">
+            <SetVariable name="ChanNum">3</SetVariable>
+            <SetVariable name="xfaderLeft">default</SetVariable>
+            <SetVariable name="xfaderRight">warning</SetVariable>
+          </Template>
+
+          <Template src="skin:/mixer/channel_4decks.xml">
+            <SetVariable name="ChanNum">1</SetVariable>
+            <SetVariable name="xfaderLeft">default</SetVariable>
+            <SetVariable name="xfaderRight">warning</SetVariable>
+          </Template>
+
+          <Template src="skin:/mixer/channel_4decks.xml">
+            <SetVariable name="ChanNum">2</SetVariable>
+            <SetVariable name="xfaderLeft">warning</SetVariable>
+            <SetVariable name="xfaderRight">default</SetVariable>
+          </Template>
+
+          <Template src="skin:/mixer/channel_4decks.xml">
+            <SetVariable name="ChanNum">4</SetVariable>
+            <SetVariable name="xfaderLeft">warning</SetVariable>
+            <SetVariable name="xfaderRight">default</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- /Channel controls -->
+
+      <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>CrossfaderAndSwitches2Decks</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>CrossfaderContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>CrossfaderSingleton</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup><!-- CrossfaderContainer -->
+
+          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- CrossfaderAndSwitches2Decks -->
+
+      <!-- spacer to center channel controls without crossfader
+          without stretching the mixer -->
+      <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

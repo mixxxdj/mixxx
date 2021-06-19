@@ -4,7 +4,8 @@
     <name>Vestax Typhoon Enhanced</name>
     <author>bestdani</author>
     <description>bestdani's customized controller mapping for Vestax Typhoon in Mixxx 2.0+ and script. The controller actions differ from the description on the console. Therefore it enables more controls such as hotcues, relative pitch movements, slip mode and much more. Some elements are taken from Bill Good's original mapping.</description>
-    <forums>http://mixxx.org/forums/viewtopic.php?p=14494#p14494</forums>
+    <forums>https://mixxx.discourse.group/t/vestax-typhoon-mapping-for-mixxx-2-0/12551/1#p14494</forums>
+    <manual>vestax_typhoon</manual>
   </info>
   <controller id="Vestax Typhoon">
     <scriptfiles>

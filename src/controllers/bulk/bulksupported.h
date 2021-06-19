@@ -1,12 +1,6 @@
-/**
-* @file bulksupported.h
-* @author Neale Picket  neale@woozle.org
-* @date Thu Jun 28 2012
-* @brief A list of supported USB bulk devices
-*/
+// A list of supported USB bulk devices
 
-#ifndef BULKSUPPORTED_H
-#define BULKSUPPORTED_H
+#pragma once
 
 typedef struct bulk_supported {
     unsigned short vendor_id;
@@ -22,5 +16,3 @@ static bulk_supported_t bulk_supported[] = {
     {0x06f8, 0xb120, 0x82, 0x03}, // Hercules MP3 LE / Glow
     {0, 0, 0, 0}
 };
-
-#endif

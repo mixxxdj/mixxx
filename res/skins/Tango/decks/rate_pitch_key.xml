@@ -1,0 +1,250 @@
+<!--
+Description:
+  The pitch container with
+  * BPM display with Sync/Reset button overlay (Master sync on long-press)
+  * Key display with Match/Reset and up/down button overlays
+  * Pitch slider
+  (* key offset indicator, not working reliably)
+Variables:
+  chanNum : channel number
+  group   : [ChannelXY]
+-->
+<Template>
+  <WidgetGroup><!-- RateContainer -->
+    <ObjectName>RateContainer<Variable name="chanNum" /></ObjectName>
+    <Layout>vertical</Layout>
+    <Size>min,me</Size>
+    <Children>
+      <WidgetGroup><!-- BPM, Key & Pitch fader -->
+        <ObjectName>RateControls</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>50f,136f</Size>
+        <Children>
+
+          <WidgetGroup><!-- Key Display/Match + Key adjust buttons -->
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup><!-- Key adjust buttons -->
+                <ObjectName>KeyControls</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>1me,13f</Size>
+                <Children>
+                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                    <SetVariable name="TooltipId">pitch_down</SetVariable>
+                    <SetVariable name="ObjectName">KeyDown</SetVariable>
+                    <SetVariable name="Size">12me,13f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_down</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
+                  </Template>
+
+                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                    <SetVariable name="TooltipId">pitch_up</SetVariable>
+                    <SetVariable name="ObjectName">KeyUp</SetVariable>
+                    <SetVariable name="Size">12me,13f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_up</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],rate_key_controls</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /Key adjust buttons -->
+
+              <WidgetGroup><!-- Key Display/Match -->
+                <ObjectName>KeyDisplayMatch</ObjectName>
+                <Layout>stacked</Layout>
+                <Size>1me,13f</Size>
+                <Children>
+                  <!-- KeyMatch, transparent -->
+                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                    <SetVariable name="TooltipId">sync_reset_key</SetVariable>
+                    <SetVariable name="ObjectName">KeyMatch</SetVariable>
+                    <SetVariable name="Size">26me,13f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
+                  </Template>
+
+                  <!-- Show/light up if key is not original, like with script.
+                        Not working, only once per skin load.
+                      Tried different controls: pitch (from script), pitch_adjust, ...
+                  <WidgetGroup>
+                    <ObjectName>KeyOffsetWarning</ObjectName>
+                    <Size>50f,13f</Size>
+                    <Layout>horizontal</Layout>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                      <Transform><Not/><IsEqual>1</IsEqual></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup> -->
+
+                  <Key><!-- Actual Key display -->
+                    <TooltipId>visual_key</TooltipId>
+                    <ObjectName>KeyDisplay</ObjectName>
+                    <Channel><Variable name="chanNum"/></Channel>
+                    <Size>50f,13f</Size>
+                    <Alignment>center</Alignment>
+                    <Elide>right</Elide>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                    </Connection>
+                  </Key>
+                </Children>
+              </WidgetGroup><!-- /Key Display/Match -->
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],key_display_match</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Key Display/Match + Key adjust buttons -->
+
+          <WidgetGroup><!-- BPM display & invisible sync button -->
+            <ObjectName>BPM</ObjectName>
+            <Layout>stacked</Layout>
+            <MinimumSize>50,18</MinimumSize>
+            <MaximumSize>50,18</MaximumSize>
+            <SizePolicy>f,min</SizePolicy>
+            <Children>
+              <Template src="skin:../Tango/controls/button_2state_right.xml">
+                <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                <SetVariable name="ObjectName">SyncButtonOverlay</SetVariable>
+                <SetVariable name="Size">50f,18min</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
+              </Template>
+              <Number>
+                <ObjectName>BpmLabel</ObjectName>
+                <Size>50f,18min</Size>
+                <TooltipId>visual_bpm</TooltipId>
+                <Channel><Variable name="chanNum" /></Channel>
+                <NumberOfDigits>1</NumberOfDigits>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                </Connection>
+              </Number>
+            </Children>
+          </WidgetGroup><!-- /BPM display & invisible sync button -->
+
+          <WidgetGroup><!-- Rate adjust buttons -->
+            <Layout>horizontal</Layout>
+            <Size>50f,14f</Size>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>RateButtons</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>50f,14f</Size>
+                <Children>
+                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
+                    <SetVariable name="ObjectName">RateDown</SetVariable>
+                    <SetVariable name="Size">13me,13f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_temp_down</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_down_small</SetVariable>
+                  </Template>
+
+                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                    <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
+                    <SetVariable name="ObjectName">RateUp</SetVariable>
+                    <SetVariable name="Size">13me,13f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,rate_temp_up</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_up_small</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],rate_key_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Rate adjust buttons -->
+
+          <WidgetGroup><!-- Rate slider + range displays -->
+            <Layout>stacked</Layout>
+            <SizePolicy>max,me</SizePolicy>
+            <ObjectName>PitchSliderGroup</ObjectName>
+            <Children>
+              <SliderComposed>
+                <ObjectName>PitchSlider</ObjectName>
+                <MinimumSize>50,75</MinimumSize>
+                <MaximumSize>50,136</MaximumSize>
+                <SizePolicy>f,me</SizePolicy>
+                <TooltipId>rate</TooltipId>
+                <Handle scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/pitch_handle.svg</Handle>
+                <Slider scalemode="STRETCH">skin:../Tango/knobs_sliders/pitch_scale.svg</Slider>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+                </Connection>
+              </SliderComposed><!-- /PitchSlider -->
+
+              <!-- Pitch range indicators: prefix / spacer / range number -->
+              <WidgetGroup>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Size>50f,-1me</Size>
+                <Children>
+                  <WidgetGroup>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <!-- Top range limit + prefix -->
+                      <RateRange>
+                        <TooltipId>rate_range_display</TooltipId>
+                        <ObjectName>RateDisplayTopPrefix</ObjectName>
+                        <Channel><Variable name="chanNum" /></Channel>
+                        <Position>Top</Position>
+                        <Display>prefix</Display>
+                        <SizePolicy>me,me</SizePolicy>
+                      </RateRange>
+                      <RateRange>
+                        <TooltipId>rate_range_display</TooltipId>
+                        <ObjectName>RateDisplayTopRate</ObjectName>
+                        <Channel><Variable name="chanNum" /></Channel>
+                        <Position>Top</Position>
+                        <Display>range</Display>
+                        <SizePolicy>me,me</SizePolicy>
+                      </RateRange>
+                    </Children>
+                  </WidgetGroup><!-- Pitch range indicators -->
+
+                  <WidgetGroup>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <!-- Bottom range limit + prefix -->
+                      <RateRange>
+                        <TooltipId>rate_range_display</TooltipId>
+                        <ObjectName>RateDisplayBottomPrefix</ObjectName>
+                        <Channel><Variable name="chanNum" /></Channel>
+                        <Position>Bottom</Position>
+                        <Align>Bottom</Align>
+                        <Display>prefix</Display>
+                        <SizePolicy>me,me</SizePolicy>
+                      </RateRange>
+                      <RateRange>
+                        <TooltipId>rate_range_display</TooltipId>
+                        <ObjectName>RateDisplayBottomRate</ObjectName>
+                        <Channel><Variable name="chanNum" /></Channel>
+                        <Align>Bottom</Align>
+                        <Display>range</Display>
+                        <SizePolicy>me,me</SizePolicy>
+                      </RateRange>
+                    </Children>
+                  </WidgetGroup><!-- Pitch range indicators -->
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /BPM, Key & Pitch fader -->
+
+      <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- /RateContainer -->
+</Template>

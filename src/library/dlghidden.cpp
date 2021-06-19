@@ -1,22 +1,31 @@
-#include "QItemSelection"
-
 #include "library/dlghidden.h"
-#include "library/hiddentablemodel.h"
-#include "widget/wtracktableview.h"
-#include "util/assert.h"
 
-DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
-                     Library* pLibrary, TrackCollection* pTrackCollection,
-                     KeyboardEventFilter* pKeyboard)
-         : QWidget(parent),
-           Ui::DlgHidden(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+#include "library/hiddentablemodel.h"
+#include "library/trackcollectionmanager.h"
+#include "moc_dlghidden.cpp"
+#include "util/assert.h"
+#include "widget/wlibrary.h"
+#include "widget/wtracktableview.h"
+
+DlgHidden::DlgHidden(
+        WLibrary* parent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary,
+        KeyboardEventFilter* pKeyboard)
+        : QWidget(parent),
+          Ui::DlgHidden(),
+          m_pTrackTableView(
+                  new WTrackTableView(
+                          this,
+                          pConfig,
+                          pLibrary,
+                          parent->getTrackTableBackgroundColorOpacity(),
+                          true)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     // Install our own trackTable
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
@@ -24,32 +33,50 @@ DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
+    m_pHiddenTableModel = new HiddenTableModel(this, pLibrary->trackCollectionManager());
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
-    connect(btnUnhide, SIGNAL(clicked()),
-            m_pTrackTableView, SLOT(slotUnhide()));
-    connect(btnUnhide, SIGNAL(clicked()),
-            this, SLOT(clicked()));
-    connect(btnPurge, SIGNAL(clicked()),
-            m_pTrackTableView, SLOT(slotPurge()));
-    connect(btnPurge, SIGNAL(clicked()),
-            this, SLOT(clicked()));
-    connect(btnSelect, SIGNAL(clicked()),
-            this, SLOT(selectAll()));
-    connect(m_pTrackTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+    connect(btnUnhide,
+            &QPushButton::clicked,
+            m_pTrackTableView,
+            &WTrackTableView::slotUnhide);
+    connect(btnUnhide,
+            &QPushButton::clicked,
             this,
-            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+            &DlgHidden::clicked);
+    connect(btnPurge,
+            &QPushButton::clicked,
+            m_pTrackTableView,
+            &WTrackTableView::slotPurge);
+    connect(btnPurge,
+            &QPushButton::clicked,
+            this,
+            &DlgHidden::clicked);
+    connect(btnSelect,
+            &QPushButton::clicked,
+            this,
+            &DlgHidden::selectAll);
+    connect(m_pTrackTableView->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            this,
+            &DlgHidden::selectionChanged);
+    connect(m_pTrackTableView,
+            &WTrackTableView::trackSelected,
+            this,
+            &DlgHidden::trackSelected);
 
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
-            m_pTrackTableView, SLOT(setSelectedClick(bool)));
+    connect(pLibrary,
+            &Library::setTrackTableFont,
+            m_pTrackTableView,
+            &WTrackTableView::setTrackTableFont);
+    connect(pLibrary,
+            &Library::setTrackTableRowHeight,
+            m_pTrackTableView,
+            &WTrackTableView::setTrackTableRowHeight);
+    connect(pLibrary,
+            &Library::setSelectedClick,
+            m_pTrackTableView,
+            &WTrackTableView::setSelectedClick);
 }
 
 DlgHidden::~DlgHidden() {
@@ -94,5 +121,5 @@ void DlgHidden::selectionChanged(const QItemSelection &selected,
 }
 
 bool DlgHidden::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pTrackTableView->hasFocus();
 }

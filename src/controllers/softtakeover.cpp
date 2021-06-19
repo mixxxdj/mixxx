@@ -1,11 +1,3 @@
-/***************************************************************************
-                          softtakeover.cpp  -  description
-                          ----------------
-    begin                : Sat Mar 26 2011
-    copyright            : (C) 2011 by Sean M. Pappalardo
-    email                : spappalardo@mixxx.org
- ***************************************************************************/
-
 #include "controllers/softtakeover.h"
 #include "control/controlpotmeter.h"
 #include "util/math.h"
@@ -32,8 +24,8 @@ SoftTakeoverCtrl::~SoftTakeoverCtrl() {
 }
 
 void SoftTakeoverCtrl::enable(ControlObject* control) {
-    ControlPotmeter* cpo = dynamic_cast<ControlPotmeter*>(control);
-    if (cpo == NULL) {
+    ControlPotmeter* cpo = qobject_cast<ControlPotmeter*>(control);
+    if (cpo == nullptr) {
         // softtakecover works only for continuous ControlPotmeter based COs
         return;
     }
@@ -45,7 +37,7 @@ void SoftTakeoverCtrl::enable(ControlObject* control) {
 }
 
 void SoftTakeoverCtrl::disable(ControlObject* control) {
-    if (control == NULL) {
+    if (control == nullptr) {
         return;
     }
     SoftTakeover* pSt = m_softTakeoverHash.take(control);
@@ -55,7 +47,7 @@ void SoftTakeoverCtrl::disable(ControlObject* control) {
 }
 
 bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
-    if (control == NULL) {
+    if (control == nullptr) {
         return false;
     }
     bool ignore = false;
@@ -67,12 +59,12 @@ bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
 }
 
 void SoftTakeoverCtrl::ignoreNext(ControlObject* control) {
-    if (control == NULL) {
+    if (control == nullptr) {
         return;
     }
 
     SoftTakeover* pSt = m_softTakeoverHash.value(control);
-    if (pSt == NULL) {
+    if (pSt == nullptr) {
         return;
     }
 

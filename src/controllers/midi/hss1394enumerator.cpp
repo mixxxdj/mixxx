@@ -1,15 +1,13 @@
-/**
-* @file hss1394enumerator.cpp
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Thu 15 Mar 2012
-*/
+#include "controllers/midi/hss1394enumerator.h"
 
 #include <hss1394/HSS1394.h>
 
 #include "controllers/midi/hss1394controller.h"
-#include "controllers/midi/hss1394enumerator.h"
+#include "moc_hss1394enumerator.cpp"
 
-Hss1394Enumerator::Hss1394Enumerator() : MidiEnumerator() {
+Hss1394Enumerator::Hss1394Enumerator(UserSettingsPointer pConfig)
+        : MidiEnumerator(),
+          m_pConfig(pConfig) {
 }
 
 Hss1394Enumerator::~Hss1394Enumerator() {
@@ -42,8 +40,8 @@ QList<Controller*> Hss1394Enumerator::queryDevices() {
                          QString("%1").arg(tNodeInfo.uGUID.mu32Low, 0, 16),
                          QString("%1").arg(tNodeInfo.uProtocolVersion, 0, 16));
             qDebug() << " " << message;
-            Hss1394Controller *currentDevice = new Hss1394Controller(
-                tNodeInfo, i);
+            Hss1394Controller* currentDevice = new Hss1394Controller(
+                    tNodeInfo, i, m_pConfig);
             m_devices.push_back(currentDevice);
         }
     }

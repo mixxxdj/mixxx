@@ -1,15 +1,12 @@
-#ifndef UTIL_BATTERY_BATTERYWINDOWS_H
-#define UTIL_BATTERY_BATTERYWINDOWS_H
+#pragma once
 
 #include "util/battery/battery.h"
 
 class BatteryWindows : public Battery {
   public:
     BatteryWindows(QObject* pParent=nullptr);
-    virtual ~BatteryWindows();
+    ~BatteryWindows() override = default;
 
   protected:
     void read() override;
 };
-
-#endif /* UTIL_BATTERY_BATTERYWINDOWS_H */

@@ -4,6 +4,7 @@
     <name>Pioneer CDJ-850</name>
     <author>Ilkka Tuohela &lt;hile@iki.fi&gt;</author>
     <description>Pioneer CDJ-850 configuration for 2 decks on midi channels 1 and 2</description>
+    <manual>pioneer_cdj_850</manual>
   </info>
   <controller id="PIONEER CDJ-850" port="">
     <scriptfiles>

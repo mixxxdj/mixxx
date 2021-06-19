@@ -4,7 +4,7 @@
     <name>Stanton DJC.4</name>
     <author>Martin Bruset Solberg, Christoph Zimmermann</author>
     <description>The Stanton DJC.4 is a 4 deck controller with large, touch-sensitive jog wheels and a built-in audio interface (2 inputs, 2 outputs). It features 4 FX units and a master VU meter.</description>
-    <wiki>https://mixxx.org/wiki/doku.php/stanton_djc.4</wiki>
+    <manual>stanton_djc_4</manual>
   </info>
   <controller id="DJC-4">
     <scriptfiles>

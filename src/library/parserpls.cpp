@@ -12,15 +12,13 @@
 //
 #include "library/parserpls.h"
 
-#include <QtDebug>
-#include <QMessageBox>
 #include <QDir>
 #include <QFile>
+#include <QMessageBox>
 #include <QUrl>
+#include <QtDebug>
 
-/**
-   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
- **/
+#include "moc_parserpls.cpp"
 
 /**
    ToDo:
@@ -34,15 +32,14 @@ ParserPls::ParserPls() : Parser() {
 ParserPls::~ParserPls() {
 }
 
-QList<QString> ParserPls::parse(QString sFilename) {
+QList<QString> ParserPls::parse(const QString& sFilename) {
     //long numEntries =0;
     QFile file(sFilename);
-    QString basepath = sFilename.section('/', 0, -2);
+    const auto basePath = sFilename.section('/', 0, -2);
 
     clearLocations();
 
-    if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
-
+    if (file.open(QIODevice::ReadOnly)) {
         /* Unfortunately, QT 4.7 does not handle <CR> (=\r or asci value 13) line breaks.
          * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
          * rather that <LF>
@@ -55,12 +52,13 @@ QList<QString> ParserPls::parse(QString sFilename) {
         //detect encoding
         bool isCRLF_encoded = ba.contains("\r\n");
         bool isCR_encoded = ba.contains("\r");
-        if(isCR_encoded && !isCRLF_encoded)
+        if (isCR_encoded && !isCRLF_encoded) {
             ba.replace('\r','\n');
+        }
         QTextStream textstream(ba.constData());
 
         while(!textstream.atEnd()) {
-            QString psLine = getFilepath(&textstream, basepath);
+            QString psLine = getFilePath(&textstream, basePath);
             if(psLine.isNull()) {
                 break;
             } else {
@@ -71,10 +69,11 @@ QList<QString> ParserPls::parse(QString sFilename) {
 
         file.close();
 
-        if(m_sLocations.count() != 0)
+        if (m_sLocations.count() != 0) {
             return m_sLocations;
-        else
+        } else {
             return QList<QString>(); // NULL pointer returned when no locations were found
+        }
     }
 
     file.close();
@@ -102,7 +101,7 @@ long ParserPls::getNumEntries(QTextStream *stream) {
 }
 
 
-QString ParserPls::getFilepath(QTextStream *stream, QString basepath) {
+QString ParserPls::getFilePath(QTextStream *stream, const QString& basePath) {
     QString textline = stream->readLine();
     while (!textline.isEmpty()) {
         if (textline.isNull()) {
@@ -114,33 +113,27 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath) {
             ++iPos;
 
             QString filename = textline.right(textline.length() - iPos);
-            QString trackLocation = playlistEntrytoLocalFile(filename);
-
-            if(QFile::exists(trackLocation)) {
-                return trackLocation;
-            } else {
-                // Try relative to pls dir
-                QString rel = QDir(basepath).filePath(trackLocation);
-                if (QFile::exists(rel)) {
-                    return rel;
-                }
-                // We couldn't match this to a real file so ignore it
-                qWarning() << trackLocation << "not found";
+            auto trackFile = playlistEntryToFileInfo(filename, basePath);
+            if (trackFile.checkFileExists()) {
+                return trackFile.location();
             }
+            // We couldn't match this to a real file so ignore it
+            qWarning() << trackFile << "not found";
         }
         textline = stream->readLine();
     }
 
     // Signal we reached the end
-    return 0;
+    return QString();
 }
 
 bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &items, bool useRelativePath)
 {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
-                             tr("Could not create file")+" "+file_str);
+        QMessageBox::warning(nullptr,
+                tr("Playlist Export Failed"),
+                tr("Could not create file") + " " + file_str);
         return false;
     }
     //Base folder of file

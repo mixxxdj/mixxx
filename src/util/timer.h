@@ -1,5 +1,4 @@
-#ifndef UTIL_TIMER_H
-#define UTIL_TIMER_H
+#pragma once
 
 #include <QObject>
 
@@ -134,5 +133,3 @@ class GuiTickTimer : public QObject {
     mixxx::Duration m_lastUpdate;
     bool m_bActive;
 };
-
-#endif /* UTIL_TIMER_H */

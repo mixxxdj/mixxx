@@ -34,7 +34,7 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
     m_pProcessor = pInstantiator->instantiate(this, pManifest);
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
-          mixxx::AudioSignal::SampleRate(96000),
+          mixxx::audio::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
     m_pProcessor->initialize(activeInputChannels, pEffectsManager, bufferParameters);
     m_effectRampsFromDry = pManifest->effectRampsFromDry();
@@ -76,7 +76,7 @@ void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* inputChannel
 
 bool EngineEffect::processEffectsRequest(EffectsRequest& message,
                                          EffectsResponsePipe* pResponsePipe) {
-    EngineEffectParameter* pParameter = NULL;
+    EngineEffectParameter* pParameter = nullptr;
     EffectsResponse response(message);
 
     switch (message.type) {
@@ -104,7 +104,7 @@ bool EngineEffect::processEffectsRequest(EffectsRequest& message,
             }
 
             response.success = true;
-            pResponsePipe->writeMessages(&response, 1);
+            pResponsePipe->writeMessage(response);
             return true;
             break;
         case EffectsRequest::SET_PARAMETER_PARAMETERS:
@@ -128,7 +128,7 @@ bool EngineEffect::processEffectsRequest(EffectsRequest& message,
                 response.success = false;
                 response.status = EffectsResponse::NO_SUCH_PARAMETER;
             }
-            pResponsePipe->writeMessages(&response, 1);
+            pResponsePipe->writeMessage(response);
             return true;
         default:
             break;
@@ -191,7 +191,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     if (effectiveEffectEnableState != EffectEnableState::Disabled) {
         //TODO: refactor rest of audio engine to use mixxx::AudioParameters
         const mixxx::EngineParameters bufferParameters(
-              mixxx::AudioSignal::SampleRate(sampleRate),
+              mixxx::audio::SampleRate(sampleRate),
               numSamples / mixxx::kEngineChannelCount);
 
         m_pProcessor->process(inputHandle, outputHandle, pInput, pOutput,
@@ -205,16 +205,16 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
             if (effectiveEffectEnableState == EffectEnableState::Disabling) {
                 DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
                 // Fade out (fade to dry signal)
-                SampleUtil::copy2WithRampingGain(pOutput,
-                        pInput, 0.0, 1.0,
-                        pOutput, 1.0, 0.0,
+                SampleUtil::linearCrossfadeBuffersOut(
+                        pOutput,
+                        pInput,
                         numSamples);
             } else if (effectiveEffectEnableState == EffectEnableState::Enabling) {
                 DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
                 // Fade in (fade to wet signal)
-                SampleUtil::copy2WithRampingGain(pOutput,
-                        pInput, 1.0, 0.0,
-                        pOutput, 0.0, 1.0,
+                SampleUtil::linearCrossfadeBuffersIn(
+                        pOutput,
+                        pInput,
                         numSamples);
             }
         }

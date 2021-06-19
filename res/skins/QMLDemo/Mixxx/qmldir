@@ -1,0 +1,3 @@
+module Mixxx
+MathUtils 0.1 MathUtils.mjs
+PlayerDropArea 0.1 PlayerDropArea.qml

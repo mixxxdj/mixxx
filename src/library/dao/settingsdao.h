@@ -1,27 +1,27 @@
-#ifndef SETTINGSDAO_H
-#define SETTINGSDAO_H
+#pragma once
 
-#include <QtSql>
-
-#define SETTINGS_TABLE "settings"
-
-#define SETTINGSTABLE_NAME "name"
-#define SETTINGSTABLE_VALUE "value"
-#define SETTINGSTABLE_LOCKED "locked"
-#define SETTINGSTABLE_HIDDEN "hidden"
-
+#include <QSqlDatabase>
+#include <QString>
+#include <QVariant>
 
 // All library-specific preferences go in the library settings table
-class SettingsDAO final : public QObject {
+class SettingsDAO final {
   public:
-    explicit SettingsDAO(const QSqlDatabase& db);
-    ~SettingsDAO() override = default;
+    explicit SettingsDAO(QSqlDatabase database)
+            : m_database(std::move(database)) {
+    }
 
-    QString getValue(const QString& name, QString defaultValue = QString()) const;
-    bool setValue(const QString& name, const QVariant& value);
+    QString getValue(
+            const QString& name,
+            QString defaultValue = QString()) const;
+    bool setValue(
+            const QString& name,
+            const QVariant& value) const;
+
+    const QSqlDatabase& database() const {
+        return m_database;
+    }
 
   private:
-    QSqlDatabase m_db;
+    const QSqlDatabase m_database;
 };
-
-#endif /* SETTINGSDAO_H */

@@ -1,5 +1,4 @@
-#ifndef WAVEFORM_H
-#define WAVEFORM_H
+#pragma once
 
 #include <vector>
 
@@ -37,7 +36,7 @@ class Waveform {
         Saved
     };
 
-    explicit Waveform(const QByteArray pData = QByteArray());
+    explicit Waveform(const QByteArray& pData = QByteArray());
     Waveform(int audioSampleRate, int audioSamples,
              int desiredVisualSampleRate, int maxVisualSamples);
 
@@ -58,7 +57,7 @@ class Waveform {
         return m_version;
     }
 
-    void setVersion(QString version) {
+    void setVersion(const QString& version) {
         QMutexLocker locker(&m_mutex);
         m_version = version;
     }
@@ -68,7 +67,7 @@ class Waveform {
         return m_description;
     }
 
-    void setDescription(QString description) {
+    void setDescription(const QString& description) {
         QMutexLocker locker(&m_mutex);
         m_description = description;
     }
@@ -100,7 +99,7 @@ class Waveform {
     // Atomically lookup the completion of the waveform. Represents the number
     // of data elements that have been processed out of dataSize.
     int getCompletion() const {
-        return load_atomic(m_completion);
+        return atomicLoadAcquire(m_completion);
     }
     void setCompletion(int completion) {
         m_completion = completion;
@@ -112,7 +111,7 @@ class Waveform {
 
     // We do not lock the mutex since m_data is not resized after the
     // constructor runs.
-    inline int getTextureSize() const { return m_data.size(); }
+    inline int getTextureSize() const { return static_cast<int>(m_data.size()); }
 
     // Atomically get the number of data elements in this Waveform. We do not
     // lock the mutex since m_dataSize is not changed after the constructor
@@ -185,5 +184,3 @@ class Waveform {
 
 typedef QSharedPointer<Waveform> WaveformPointer;
 typedef QSharedPointer<const Waveform> ConstWaveformPointer;
-
-#endif // WAVEFORM_H

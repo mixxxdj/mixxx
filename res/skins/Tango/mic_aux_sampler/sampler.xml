@@ -1,0 +1,361 @@
+<!--
+Description:
+  Container for both minimal and full Sampler.
+  Play button and Cover Art are loaded as Singleton, they appear
+  in both minimal and full version.
+Variables:
+  samNum          : sampler deck number
+  row             : number of the parent sampler row, use for expand/collapse
+  PlayedOverlayColor  : defined in skin.xml
+-->
+<Template>
+  <SetVariable name="sourceType">sampler</SetVariable>
+  <SetVariable name="group">[Sampler<Variable name="samNum"/>]</SetVariable>
+  <SingletonDefinition>
+    <ObjectName>Sampler<Variable name="samNum"/>_Play_Cover</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>stacked</Layout>
+        <Children>
+          <Template src="skin:../Tango/controls/button_2state_right_display.xml">
+            <SetVariable name="ObjectName">PlayCue</SetVariable>
+            <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="state_0_icon">play_sampler.svg</SetVariable>
+            <SetVariable name="state_1_icon">pause_sampler.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_latched</SetVariable>
+          </Template>
+          <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
+          <Template src="skin:../Tango/controls/button_2state.xml">
+            <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+          </Template>
+          <!-- DefaultCover is transparent, bg-color #333 -->
+          <CoverArt>
+            <ObjectName>SamplerCover</ObjectName>
+            <Size>34f,34f</Size>
+            <Group><Variable name="group"/></Group>
+            <DefaultCover>skin:../Tango/graphics/blank_1x1.svg</DefaultCover>
+          </CoverArt>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <WidgetGroup><!-- mini Sampler -->
+    <Layout>horizontal</Layout>
+    <ObjectName>SamplerDeck</ObjectName>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Play/Cue + Cover-->
+        <ObjectName>SamplerPlayBox_mini</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>35f,34f</Size>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Sampler<Variable name="samNum"/>_Play_Cover</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Title + [Sync, CF assign, Volume] -->
+        <ObjectName>Spacer33</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>84me,34f</Size>
+        <Children>
+
+          <TrackProperty>
+            <ObjectName>SamplerTitle_mini</ObjectName>
+            <TooltipId>text</TooltipId>
+            <Size>i,14f</Size>
+            <Group><Variable name="group"/></Group>
+            <Property>titleInfo</Property>
+          </TrackProperty>
+
+          <WidgetGroup><!-- Sync, CF assign, Volume -->
+            <Layout>horizontal</Layout>
+            <Size>82me,20f</Size>
+            <Children>
+
+              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>SamplerGainKnob</ObjectName>
+                <Layout>vertical</Layout>
+                <Children>
+                  <KnobComposed>
+                    <TooltipId>pregain</TooltipId>
+                    <Size>24f,20f</Size>
+                    <Knob>skin:../Tango/knobs_sliders/knob_tiny_red.svg</Knob>
+                    <BackPath>skin:../Tango/knobs_sliders/knob_bg.svg</BackPath>
+                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                    <KnobCenterYOffset>1.364</KnobCenterYOffset>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+                </Children>
+              </WidgetGroup>
+
+              <!-- Instead of a plain spacer I chose <TrackProperty> here,
+                  so that tracks from library can be dropped on 'empty space' -->
+              <TrackProperty>
+                <ObjectName>Text33</ObjectName>
+                <TooltipId>text</TooltipId>
+                <Size>1me,1min</Size>
+                <Group><Variable name="group"/></Group>
+                <Property>durationFormatted</Property>
+              </TrackProperty>
+
+              <Template src="skin:../Tango/controls/button_3state.xml">
+                <SetVariable name="TooltipId">orientation</SetVariable>
+                <SetVariable name="ObjectName">SamplerButton</SetVariable>
+                <SetVariable name="Size">16f,16f</SetVariable>
+                <SetVariable name="state_0_icon">sampler_xfader_left_white.svg</SetVariable>
+                <SetVariable name="state_1_icon">sampler_xfader_center.svg</SetVariable>
+                <SetVariable name="state_2_icon">sampler_xfader_right_white.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <Template src="skin:../Tango/controls/button_1state_right.xml">
+                <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
+                <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
+                <SetVariable name="Size">18f,18f</SetVariable>
+                <SetVariable name="state_0_unpressed">sampler_sync_off.svg</SetVariable>
+                <SetVariable name="state_0_pressed">sampler_sync_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beatsync</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- Sync, CF assign, Volume -->
+
+        </Children>
+      </WidgetGroup><!-- /Title + [Sync, CF assign, Volume] -->
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- /mini Sampler -->
+
+  <WidgetGroup><!-- Maxi Sampler -->
+    <ObjectName>SamplerDeck</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- [ Title + [Play / Overview] ] + VU / Tempo -->
+        <ObjectName></ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>119me,54f</Size>
+        <Children>
+          <WidgetGroup><!-- Title + [Play / Overview] -->
+            <ObjectName></ObjectName>
+            <Layout>vertical</Layout>
+            <Size>89me,54f</Size>
+            <Children>
+
+              <TrackProperty>
+                <ObjectName>SamplerTitle</ObjectName>
+                <TooltipId>text</TooltipId>
+                <Size>i,18f</Size>
+                <Group><Variable name="group"/></Group>
+                <Property>titleInfo</Property>
+                <Elide>right</Elide>
+              </TrackProperty>
+
+              <WidgetGroup><!-- Play / Overview -->
+                <Layout>horizontal</Layout>
+                <Size>1me,36f</Size>
+                <ObjectName></ObjectName>
+                <Children>
+
+                  <WidgetGroup><!-- Play/Cue + Cover-->
+                    <ObjectName>SamplerPlayBox</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>35f,36f</Size>
+                    <Children>
+                      <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
+                      <SingletonContainer>
+                        <ObjectName>Sampler<Variable name="samNum"/>_Play_Cover</ObjectName>
+                      </SingletonContainer>
+                      <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
+                  <Overview>
+                    <ObjectName>SamplerOverview</ObjectName>
+                    <TooltipId>waveform_overview</TooltipId>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Group><Variable name="group"/></Group>
+                    <BgColor>#151515</BgColor>
+                    <SignalColor>#bababa</SignalColor>
+                    <PlayPosColor>#FF4300</PlayPosColor>
+                    <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+                    <ShowCueTimes>false</ShowCueTimes>
+                    <MarkerColor>#00FF00</MarkerColor>
+                    <DefaultMark>
+                      <Align>bottom|right</Align>
+                      <Color>#666666</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                      <Text> %1 </Text>
+                    </DefaultMark>
+                    <Mark>
+                      <Control>cue_point</Control>
+                      <Text>Q</Text>
+                      <Align>top|right</Align>
+                      <Color>#FF0080</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                    </Mark>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                    </Connection>
+                  </Overview>
+
+                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+
+                  <Template src="skin:../Tango/mixer/vumeter_mini.xml">
+                    <SetVariable name="Size">6f,1me</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /Play / Overview -->
+
+            </Children>
+          </WidgetGroup><!-- /Title + [Play / Overview] -->
+
+          <SliderComposed>
+            <ObjectName>SamplerPitchSlider</ObjectName>
+            <TooltipId>rate</TooltipId>
+            <Size>20f,54f</Size>
+            <Handle scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/pitch_sampler_handle.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/pitch_sampler_scale.svg</Slider>
+            <Horizontal>false</Horizontal>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+            </Connection>
+          </SliderComposed>
+
+        </Children>
+      </WidgetGroup><!-- /[ Title + [Play / Overview] ] + VU / Tempo -->
+
+      <WidgetGroup><!-- Sampler Buttons -->
+        <ObjectName>Spacer33</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>1me,20f</Size>
+        <Children>
+
+          <WidgetGroup><!-- Gain knob, expanding to be centered below Play/Cover -->
+            <ObjectName>SamplerGainKnob</ObjectName>
+            <Layout>horizontal</Layout>
+            <MinimumSize>20,20</MinimumSize>
+            <MaximumSize>34,20</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Children>
+              <KnobComposed>
+                <TooltipId>pregain</TooltipId>
+                <Size>24f,20f</Size>
+                <Knob>skin:../Tango/knobs_sliders/knob_tiny_red.svg</Knob>
+                <BackPath>skin:../Tango/knobs_sliders/knob_bg.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <KnobCenterYOffset>1.364</KnobCenterYOffset>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                </Connection>
+              </KnobComposed>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Pfl button -->
+            <Size>20f,20f</Size>
+            <Layout>stacked</Layout>
+            <Children>
+              <!-- Greyed out if no headphone device is configured -->
+              <Template src="skin:../Tango/helpers/pfl_cover.xml"/>
+              <Template src="skin:../Tango/controls/button_2state.xml">
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="ObjectName">PflButton</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
+                <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Pfl button -->
+
+          <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+
+          <Template src="skin:../Tango/controls/button_2state.xml">
+            <SetVariable name="TooltipId">repeat</SetVariable>
+            <SetVariable name="ObjectName">SamplerButton</SetVariable>
+            <SetVariable name="Size">16f,16f</SetVariable>
+            <SetVariable name="state_0_icon">sampler_repeat_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">sampler_repeat_on.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
+          </Template>
+
+          <Template src="skin:../Tango/controls/button_1state.xml">
+            <SetVariable name="TooltipId">eject</SetVariable>
+            <SetVariable name="ObjectName">SamplerButton</SetVariable>
+            <SetVariable name="Size">14f,16f</SetVariable>
+            <SetVariable name="state_0_pressed">sampler_eject_pressed.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">sampler_eject.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
+          </Template>
+
+          <Template src="skin:../Tango/controls/button_2state.xml">
+            <SetVariable name="TooltipId">keylock</SetVariable>
+            <SetVariable name="ObjectName">SamplerButton</SetVariable>
+            <SetVariable name="Size">14f,16f</SetVariable>
+            <SetVariable name="state_0_icon">sampler_keylock_off.svg</SetVariable>
+            <SetVariable name="state_1_icon">sampler_keylock_on.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
+          </Template>
+
+          <Template src="skin:../Tango/controls/button_3state.xml">
+            <SetVariable name="TooltipId">orientation</SetVariable>
+            <SetVariable name="ObjectName">SamplerButton</SetVariable>
+            <SetVariable name="Size">16f,16f</SetVariable>
+            <SetVariable name="state_0_icon">sampler_xfader_left_white.svg</SetVariable>
+            <SetVariable name="state_1_icon">sampler_xfader_center.svg</SetVariable>
+            <SetVariable name="state_2_icon">sampler_xfader_right_white.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1min,1min</Size></WidgetGroup>
+
+          <Template src="skin:../Tango/controls/button_1state_right.xml">
+            <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
+            <SetVariable name="ObjectName">SamplerSyncButton</SetVariable>
+            <SetVariable name="Size">18f,18f</SetVariable>
+            <SetVariable name="state_0_unpressed">sampler_sync_off.svg</SetVariable>
+            <SetVariable name="state_0_pressed">sampler_sync_on.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,beatsync</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /Sampler Buttons -->
+
+      <Template src="skin:../Tango/decks/hotcues_sampler_preview.xml"/>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- /Maxi Sampler -->
+</Template>

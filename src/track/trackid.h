@@ -1,9 +1,6 @@
-#ifndef TRACKID_H
-#define TRACKID_H
-
+#pragma once
 
 #include "util/db/dbid.h"
-
 
 class TrackId: public DbId {
 public:
@@ -14,5 +11,4 @@ public:
 Q_DECLARE_TYPEINFO(TrackId, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(TrackId)
 
-
-#endif // TRACKID_H
+typedef QList<TrackId> TrackIdList;

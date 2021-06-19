@@ -3,6 +3,7 @@
     <name>Mixman DM2 (OS X)</name>
     <author>Joe M.</author>
     <description>MIDI Mapping for Mixman DM2 (OS/X Version)</description>
+    <manual>mixman_dm2</manual>
   </info>
 	<controller id="Mixman DM2" >
 		<scriptfiles>

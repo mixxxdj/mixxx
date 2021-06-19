@@ -4,6 +4,7 @@
     <name>Mixman DM2 (Windows)</name>
     <author>Joe M.</author>
     <description>MIDI Mapping for Mixman DM2 (Windows)</description>
+    <manual>mixman_dm2</manual>
   </info>
   <controller id="Mixman DM2 (Windows)" port="Port">
     <controls>

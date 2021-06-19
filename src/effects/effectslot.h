@@ -1,5 +1,4 @@
-#ifndef EFFECTSLOT_H
-#define EFFECTSLOT_H
+#pragma once
 
 #include <QObject>
 #include <QSharedPointer>
@@ -81,7 +80,7 @@ class EffectSlot : public QObject {
     void slotClear(double v);
     void slotEffectSelector(double v);
     void slotEffectEnabledChanged(bool enabled);
-    void slotEffectMetaParameter(double v, bool force = false);
+    void slotEffectMetaParameter(double v, bool force);
 
   signals:
     // Indicates that the effect pEffect has been loaded into this
@@ -135,5 +134,3 @@ class EffectSlot : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };
-
-#endif /* EFFECTSLOT_H */

@@ -4,6 +4,7 @@
         <name>Hercules DJ Console RMX Advanced</name>
         <author>Anders Gunnarsson</author>
         <description>Hercules DJ Console RMX controller mapping with hotcues and loops, v1.9.0. Requires script v1.9.0</description>
+        <manual>hercules_dj_console_rmx</manual>
     </info>
     <controller id="Hercules DJ Console RMX MIDI">
         <scriptfiles>

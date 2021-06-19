@@ -19,7 +19,7 @@ Keys::Keys(const KeyMap& keyMap)
 QByteArray Keys::toByteArray() const {
     std::string output;
     m_keyMap.SerializeToString(&output);
-    return QByteArray(output.data(), output.length());
+    return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
 const QString& Keys::getSubVersion() const {
@@ -50,4 +50,10 @@ bool Keys::readByteArray(const QByteArray& byteArray) {
         return false;
     }
     return true;
+}
+
+bool operator==(const Keys& lhs, const Keys& rhs) {
+    return lhs.getSubVersion() == rhs.getSubVersion() &&
+            // TODO: Is there a more efficient way to compare protobuf types?
+            lhs.toByteArray() == rhs.toByteArray();
 }

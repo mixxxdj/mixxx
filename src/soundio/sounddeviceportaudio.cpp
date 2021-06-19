@@ -6,8 +6,6 @@
 #include <QThread>
 #include <QtDebug>
 
-
-
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "soundio/sounddevice.h"
@@ -81,11 +79,11 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         PaHostApiTypeId deviceTypeId,
         unsigned int devIndex)
         : SoundDevice(config, sm),
-          m_pStream(NULL),
+          m_pStream(nullptr),
           m_deviceInfo(deviceInfo),
           m_deviceTypeId(deviceTypeId),
-          m_outputFifo(NULL),
-          m_inputFifo(NULL),
+          m_outputFifo(nullptr),
+          m_inputFifo(nullptr),
           m_outputDrift(false),
           m_inputDrift(false),
           m_bSetThreadPriority(false),
@@ -115,7 +113,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         m_deviceId.name = deviceInfo->name;
     }
     m_deviceId.portAudioIndex = devIndex;
-    m_strDisplayName = QString::fromLocal8Bit(deviceInfo->name);
+    m_strDisplayName = QString::fromUtf8(deviceInfo->name);
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 
@@ -126,13 +124,13 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     m_inputParams.channelCount = 0;
     m_inputParams.sampleFormat = 0;
     m_inputParams.suggestedLatency = 0.0;
-    m_inputParams.hostApiSpecificStreamInfo = NULL;
+    m_inputParams.hostApiSpecificStreamInfo = nullptr;
 
     m_outputParams.device = 0;
     m_outputParams.channelCount = 0;
     m_outputParams.sampleFormat = 0;
     m_outputParams.suggestedLatency = 0.0;
-    m_outputParams.hostApiSpecificStreamInfo = NULL;
+    m_outputParams.hostApiSpecificStreamInfo = nullptr;
 }
 
 SoundDevicePortAudio::~SoundDevicePortAudio() {
@@ -159,7 +157,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // so we can figure out how many output channels we need to open.
     if (m_audioOutputs.empty()) {
         m_outputParams.channelCount = 0;
-        pOutputParams = NULL;
+        pOutputParams = nullptr;
     } else {
         foreach (AudioOutput out, m_audioOutputs) {
             ChannelGroup channelGroup = out.getChannelGroup();
@@ -175,7 +173,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // so we can figure out how many input channels we need to open.
     if (m_audioInputs.empty()) {
         m_inputParams.channelCount = 0;
-        pInputParams = NULL;
+        pInputParams = nullptr;
     } else {
         foreach (AudioInput in, m_audioInputs) {
             ChannelGroup channelGroup = in.getChannelGroup();
@@ -235,12 +233,12 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     m_outputParams.device = m_deviceId.portAudioIndex;
     m_outputParams.sampleFormat = paFloat32;
     m_outputParams.suggestedLatency = bufferMSec / 1000.0;
-    m_outputParams.hostApiSpecificStreamInfo = NULL;
+    m_outputParams.hostApiSpecificStreamInfo = nullptr;
 
     m_inputParams.device  = m_deviceId.portAudioIndex;
     m_inputParams.sampleFormat  = paFloat32;
     m_inputParams.suggestedLatency = bufferMSec / 1000.0;
-    m_inputParams.hostApiSpecificStreamInfo = NULL;
+    m_inputParams.hostApiSpecificStreamInfo = nullptr;
 
     qDebug() << "Opening stream with id" << m_deviceId.portAudioIndex;
 
@@ -249,7 +247,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     m_syncBuffers = syncBuffers;
 
     // Create the callback function pointer.
-    PaStreamCallback* callback = NULL;
+    PaStreamCallback* callback = nullptr;
     if (isClkRefDevice) {
         callback = paV19CallbackClkRef;
     } else if (m_syncBuffers == 2) { // "Default (long delay)"
@@ -265,17 +263,33 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             // Clear first 1.5 chunks on for the required artificial delaly to
             // a allow jitter and a half, because we can't predict which
             // callback fires first.
-            m_outputFifo->releaseWriteRegions(
-                    m_outputParams.channelCount * m_framesPerBuffer * kFifoSize
-                            / 2);
+            int writeCount = m_outputParams.channelCount * m_framesPerBuffer *
+                    kFifoSize / 2;
+            CSAMPLE* dataPtr1;
+            ring_buffer_size_t size1;
+            CSAMPLE* dataPtr2;
+            ring_buffer_size_t size2;
+            (void)m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1,
+                    &size1, &dataPtr2, &size2);
+            SampleUtil::clear(dataPtr1, size1);
+            SampleUtil::clear(dataPtr2, size2);
+            m_outputFifo->releaseWriteRegions(writeCount);
         }
         if (m_inputParams.channelCount) {
             m_inputFifo = new FIFO<CSAMPLE>(
                     m_inputParams.channelCount * m_framesPerBuffer * kFifoSize);
-            // Clear first two 1.5 chunks (see above)
-            m_inputFifo->releaseWriteRegions(
-                    m_inputParams.channelCount * m_framesPerBuffer * kFifoSize
-                            / 2);
+            // Clear first 1.5 chunks (see above)
+            int writeCount = m_inputParams.channelCount * m_framesPerBuffer *
+                    kFifoSize / 2;
+            CSAMPLE* dataPtr1;
+            ring_buffer_size_t size1;
+            CSAMPLE* dataPtr2;
+            ring_buffer_size_t size2;
+            (void)m_inputFifo->aquireWriteRegions(writeCount, &dataPtr1,
+                    &size1, &dataPtr2, &size2);
+            SampleUtil::clear(dataPtr1, size1);
+            SampleUtil::clear(dataPtr2, size2);
+            m_inputFifo->releaseWriteRegions(writeCount);
         }
     } else if (m_syncBuffers == 1) { // "Disabled (short delay)"
         // this can be used on a second device when it is driven by the Clock
@@ -363,13 +377,13 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
 }
 
 bool SoundDevicePortAudio::isOpen() const {
-    return m_pStream != NULL;
+    return m_pStream != nullptr;
 }
 
 SoundDeviceError SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << m_deviceId;
     PaStream* pStream = m_pStream;
-    m_pStream = NULL;
+    m_pStream = nullptr;
     if (pStream) {
         // Make sure the stream is not stopped before we try stopping it.
         PaError err = Pa_IsStreamStopped(pStream);
@@ -417,8 +431,8 @@ SoundDeviceError SoundDevicePortAudio::close() {
         }
     }
 
-    m_outputFifo = NULL;
-    m_inputFifo = NULL;
+    m_outputFifo = nullptr;
+    m_inputFifo = nullptr;
     m_bSetThreadPriority = false;
 
     return SOUNDDEVICE_ERROR_OK;
@@ -890,6 +904,21 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         qWarning() << "No SSE: No denormals to zero mode available. EQs and effects may suffer high CPU load";
 #endif
 #endif
+
+#ifdef aarch64
+        // Flush-to-zero on aarch64 is controlled by the Floating-point Control Register
+        // Load the register into our variable.
+        int savedFPCR;
+        asm volatile("mrs %[savedFPCR], FPCR"
+                     : [ savedFPCR ] "=r"(savedFPCR));
+
+        qDebug() << "aarch64 FPCR: setting bit 24 to 1 to enable Flush-to-zero";
+        // Bit 24 is the flush-to-zero mode control bit. Setting it to 1 flushes denormals to 0.
+        asm volatile("msr FPCR, %[src]"
+                     :
+                     : [ src ] "r"(savedFPCR | (1 << 24)));
+#endif
+
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
@@ -1033,8 +1062,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 void SoundDevicePortAudio::updateAudioLatencyUsage(
         const SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate
-            > (m_dSampleRate / kCpuUsageUpdateRate)) {
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_dSampleRate / kCpuUsageUpdateRate)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_pMasterAudioLatencyUsage->set(
                 secInAudioCb

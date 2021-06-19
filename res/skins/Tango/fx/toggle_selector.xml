@@ -1,0 +1,63 @@
+<!--
+Description:
+  A button stack:
+  * effect enable button
+  * effect name
+  * enable feedback
+  * effect selector drop-down list
+Variables:
+  FxRack        : effect rack number
+  FxUnitNum     : effect unit number
+  FxRack_FxUnit : EffectRack1_EffectUnitX
+  FxNum         : effect number
+-->
+<Template>
+  <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>FxToggleSelector</ObjectName>
+    <Layout>stacked</Layout>
+    <Size>82f,20f</Size>
+    <Children>
+      <!-- invisible, clickable Overlay to toggle Effect -->
+      <Template src="skin:../Tango/controls/button_2state.xml">
+        <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
+        <SetVariable name="ObjectName">FxToggleButton</SetVariable>
+        <SetVariable name="Size">69f,20f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
+      </Template>
+
+      <WidgetGroup>
+        <ObjectName>FxNameContainer</ObjectName>
+        <Size>69f,20f</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+          <EffectName>
+            <ObjectName>FxName</ObjectName>
+            <EffectRack><Variable name="FxRack"/></EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+          </EffectName>
+          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+       <!-- Colored background to communicate the Effect's ON/OFF status -->
+      <Template src="skin:../Tango/controls/button_2state.xml">
+        <SetVariable name="ObjectName">FxToggleButtonUnderlay</SetVariable>
+        <SetVariable name="Size">69f,20f</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
+      </Template>
+
+      <EffectSelector>
+        <EffectRack><Variable name="FxRack"/></EffectRack>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
+        <Elide>right</Elide>
+        <Size>82f,20f</Size>
+      </EffectSelector>
+
+    </Children>
+  </WidgetGroup><!-- /Effect toggler + Effect selector -->
+</Template>

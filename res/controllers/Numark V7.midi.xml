@@ -3,7 +3,8 @@
 	<info>
 		<name>Numark V7</name>
 		<author>Mike Bucceroni</author>
-                <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3974</forums>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3974</forums>
+        <manual>numark_v7</manual>
 	</info>
 
     <controller id="Numark V7" port="">

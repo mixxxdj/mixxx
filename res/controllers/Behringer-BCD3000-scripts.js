@@ -4,10 +4,10 @@ BehringerBCD3000.escratch = [false, false];
 
 //sensitivity setting
 BehringerBCD3000.UseAcceleration = true;
-BehringerBCD3000.JogSensivity = 0.5;
+BehringerBCD3000.JogSensitivity = 0.5;
 
 BehringerBCD3000.init = function (id) { // called when the device is opened & set up
-    
+
     BehringerBCD3000.reset();
 
     // Ask BCD to send the current values of all rotary knobs and sliders
@@ -24,7 +24,7 @@ BehringerBCD3000.shutdown = function () {
 
     BehringerBCD3000.reset();
 
-    // Reenable jog acceleration 
+    // Reenable jog acceleration
     if (!BehringerBCD3000.UseAcceleration)
         midi.sendShortMsg(0xB0, 0x63, 0x7F);
 };
@@ -43,7 +43,7 @@ BehringerBCD3000.getDeck = function (group) {
         return 0;
     else if (group == "[Channel2]")
         return 1;
-    
+
     print("Invalid group : " + group);
     return -1; // error
 }
@@ -65,7 +65,7 @@ BehringerBCD3000.jogWheel = function (channel, control, value, status, group) {
 
     } else {
 
-        jogValue = (value - 0x40) * BehringerBCD3000.JogSensivity;
+        jogValue = (value - 0x40) * BehringerBCD3000.JogSensitivity;
         engine.setValue(group, "jog", jogValue);
 
         if (BehringerBCD3000.debug)
@@ -74,7 +74,7 @@ BehringerBCD3000.jogWheel = function (channel, control, value, status, group) {
     }
 };
 
-//Scratch button function 
+//Scratch button function
 BehringerBCD3000.scratchButton = function (channel, control, value, status, group) {
 
     if (value != 0x7F)
@@ -99,7 +99,7 @@ BehringerBCD3000.scratchButton = function (channel, control, value, status, grou
 
     } else {
         // Turn off the scratch light
-        if (!deck)    
+        if (!deck)
             midi.sendShortMsg(0xB0, 0x13, 0x00);
         else
             midi.sendShortMsg(0xB0, 0x0B, 0x00);
@@ -109,7 +109,7 @@ BehringerBCD3000.scratchButton = function (channel, control, value, status, grou
     }
 };
 
-//Set loop function 
+//Set loop function
 BehringerBCD3000.loop = function (channel, control, value, status, group) {
     if (value)
         action = "loop_in";

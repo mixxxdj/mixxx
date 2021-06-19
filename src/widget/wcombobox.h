@@ -1,12 +1,11 @@
-#ifndef WCOMBOBOX_H
-#define WCOMBOBOX_H
+#pragma once
 
 #include <QComboBox>
 #include <QDomNode>
 #include <QEvent>
 
 #include "widget/wbasewidget.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class WComboBox : public QComboBox, public WBaseWidget {
     Q_OBJECT
@@ -23,5 +22,3 @@ class WComboBox : public QComboBox, public WBaseWidget {
   private slots:
     void slotCurrentIndexChanged(int index);
 };
-
-#endif /* WCOMBOBOX_H */

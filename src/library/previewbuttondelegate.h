@@ -1,21 +1,22 @@
-#ifndef PREVIEWBUTTONDELEGATE_H
-#define PREVIEWBUTTONDELEGATE_H
+#pragma once
 
 #include <QPushButton>
 #include <QStyleOptionButton>
 
 #include "library/tableitemdelegate.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
 class ControlProxy;
+class WLibraryTableView;
 
 // A QPushButton for rendering the library preview button within the
 // PreviewButtonDelegate.
 class LibraryPreviewButton : public QPushButton {
     Q_OBJECT
   public:
-    LibraryPreviewButton(QWidget* parent=nullptr) : QPushButton(parent) {
+    explicit LibraryPreviewButton(QWidget* parent)
+            : QPushButton(parent) {
         setObjectName("LibraryPreviewButton");
     }
 
@@ -33,28 +34,37 @@ class LibraryPreviewButton : public QPushButton {
 };
 
 class PreviewButtonDelegate : public TableItemDelegate {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
-    explicit PreviewButtonDelegate(QTableView* parent, int column);
-    virtual ~PreviewButtonDelegate();
+    PreviewButtonDelegate(WLibraryTableView* parent, int column);
+    ~PreviewButtonDelegate() override;
 
-    QWidget* createEditor(QWidget* parent,
-                          const QStyleOptionViewItem& option,
-                          const QModelIndex& index) const;
+    QWidget* createEditor(
+            QWidget* parent,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
 
-    void setEditorData(QWidget* editor, const QModelIndex& index) const;
-    void setModelData(QWidget* editor, QAbstractItemModel* model,
-                      const QModelIndex &index) const;
-    void paintItem(QPainter* painter, const QStyleOptionViewItem& option,
-               const QModelIndex& index) const;
-    QSize sizeHint(const QStyleOptionViewItem &option,
-                   const QModelIndex& index) const;
-    void updateEditorGeometry(QWidget* editor,const QStyleOptionViewItem& option,
-                              const QModelIndex& index) const;
+    void setEditorData(
+            QWidget* editor,
+            const QModelIndex& index) const override;
+    void setModelData(
+            QWidget* editor,
+            QAbstractItemModel* model,
+            const QModelIndex& index) const override;
+    void paintItem(
+            QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
+    QSize sizeHint(
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
+    void updateEditorGeometry(QWidget* editor,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
 
   signals:
-    void loadTrackToPlayer(TrackPointer Track, QString group, bool play);
+    void loadTrackToPlayer(const TrackPointer& pTrack, const QString& group, bool play);
     void buttonSetChecked(bool);
 
   public slots:
@@ -63,13 +73,27 @@ class PreviewButtonDelegate : public TableItemDelegate {
     void previewDeckPlayChanged(double v);
 
   private:
-    QTableView* m_pTableView;
-    ControlProxy* m_pPreviewDeckPlay;
-    ControlProxy* m_pCueGotoAndPlay;
-    parented_ptr<LibraryPreviewButton> m_pButton;
-    bool m_isOneCellInEditMode;
-    QPersistentModelIndex m_currentEditedCellIndex;
-    int m_column;
-};
+    QTableView* parentTableView() const {
+        return qobject_cast<QTableView*>(parent());
+    }
+    bool isPreviewDeckPlaying() const;
+    bool isTrackLoadedInPreviewDeck(
+            const QModelIndex& index) const;
+    bool isTrackLoadedInPreviewDeckAndPlaying(
+            const QModelIndex& index) const {
+        if (!isPreviewDeckPlaying()) {
+            // No need to query additional data from the table
+            return false;
+        }
+        return isTrackLoadedInPreviewDeck(index);
+    }
 
-#endif // PREVIEWBUTTONDELEGATE_H
+    const int m_column;
+
+    const parented_ptr<ControlProxy> m_pPreviewDeckPlay;
+    const parented_ptr<ControlProxy> m_pCueGotoAndPlay;
+
+    const parented_ptr<LibraryPreviewButton> m_pButton;
+
+    QPersistentModelIndex m_currentEditedCellIndex;
+};

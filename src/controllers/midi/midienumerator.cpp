@@ -8,6 +8,8 @@
 
 #include "controllers/midi/midienumerator.h"
 
+#include "moc_midienumerator.cpp"
+
 MidiEnumerator::MidiEnumerator() : ControllerEnumerator() {
 }
 

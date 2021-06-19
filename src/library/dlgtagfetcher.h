@@ -1,62 +1,79 @@
-#ifndef DLGTAGFETCHER_H
-#define DLGTAGFETCHER_H
+#pragma once
 
 #include <QDialog>
+#include <QList>
 #include <QTreeWidget>
 
+#include "library/trackmodel.h"
 #include "library/ui_dlgtagfetcher.h"
-#include "track/track.h"
 #include "musicbrainz/tagfetcher.h"
+#include "track/track_decl.h"
 
-class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
-  Q_OBJECT
+/// A dialog box to fetch track metadata from MusicBrainz.
+/// Use TrackPointer to load a track into the dialog or
+/// QModelIndex along with TrackModel to enable previous and next buttons
+/// to switch tracks within the context of the TrackModel.
+class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
+    Q_OBJECT
 
   public:
-    DlgTagFetcher(QWidget *parent);
-    virtual ~DlgTagFetcher();
+    // TODO: Remove dependency on TrackModel
+    explicit DlgTagFetcher(
+            const TrackModel* pTrackModel = nullptr);
+    ~DlgTagFetcher() override = default;
 
     void init();
 
-    enum networkError {
-        NOERROR,
-        HTTPERROR,
-        FTWERROR
-    };
-
   public slots:
-    void loadTrack(const TrackPointer track);
-    void updateTrackMetadata(Track* pTIO);
+    void loadTrack(const TrackPointer& track);
+    void loadTrack(const QModelIndex& index);
 
   signals:
     void next();
     void previous();
 
   private slots:
-    void fetchTagFinished(const TrackPointer,const QList<TrackPointer>& tracks);
+    void fetchTagFinished(
+            TrackPointer pTrack,
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
     void resultSelected();
-    void fetchTagProgress(QString);
-    void slotNetworkError(int, QString);
+    void fetchTagProgress(const QString&);
+    void slotNetworkResult(int httpStatus, const QString& app, const QString& message, int code);
+    void slotTrackChanged(TrackId trackId);
     void apply();
     void quit();
+    void slotNext();
+    void slotPrev();
 
   private:
+    void loadTrackInternal(const TrackPointer& track);
     void updateStack();
     void addDivider(const QString& text, QTreeWidget* parent) const;
-    void addTrack(const TrackPointer track, int resultIndex,
-                  QTreeWidget* parent) const;
+
+    const TrackModel* const m_pTrackModel;
+
+    TagFetcher m_tagFetcher;
+
+    TrackPointer m_track;
+
+    QModelIndex m_currentTrackIndex;
+
     struct Data {
-        Data() : m_pending(true), m_selectedResult(-1) {}
+        Data()
+                : m_pending(true),
+                  m_selectedResult(-1) {
+        }
 
         bool m_pending;
         int m_selectedResult;
-        QList<TrackPointer> m_results;
+        QList<mixxx::musicbrainz::TrackRelease> m_results;
     };
-
-    TrackPointer m_track;
     Data m_data;
-    QString m_progress;
-    TagFetcher m_TagFetcher;
-    networkError m_networkError;
-};
 
-#endif // DLGTAGFETCHER_H
+    enum class NetworkResult {
+        Ok,
+        HttpError,
+        UnknownError,
+    };
+    NetworkResult m_networkResult;
+};

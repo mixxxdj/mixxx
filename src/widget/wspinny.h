@@ -1,17 +1,15 @@
+#pragma once
 
-#ifndef _WSPINNY_H
-#define _WSPINNY_H
-
-#include <QGLWidget>
-#include <QShowEvent>
-#include <QHideEvent>
 #include <QEvent>
+#include <QGLWidget>
+#include <QHideEvent>
+#include <QShowEvent>
 
 #include "library/dlgcoverartfullsize.h"
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
-#include "skin/skincontext.h"
-#include "track/track.h"
+#include "skin/legacy/skincontext.h"
+#include "track/track_decl.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
@@ -21,6 +19,7 @@
 class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
+class VSyncThread;
 
 class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener,
                 public TrackDropTarget {
@@ -45,19 +44,24 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
     void updateSlipEnabled(double enabled);
-    void render();
+    void render(VSyncThread* vSyncThread);
     void swap();
 
   protected slots:
-    void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            mixxx::cache_key_t requestedCacheKey,
+            bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
 
 
   signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   protected:
     //QWidget:
@@ -76,7 +80,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
     std::shared_ptr<QImage> m_pBgImage;
     std::shared_ptr<QImage> m_pMaskImage;
@@ -84,7 +88,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QImage m_fgImageScaled;
     std::shared_ptr<QImage> m_pGhostImage;
     QImage m_ghostImageScaled;
-    ControlProxy* m_pPlay;
     ControlProxy* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
     ControlProxy* m_pTrackSamples;
@@ -122,7 +125,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     int m_iStartMouseY;
     int m_iFullRotations;
     double m_dPrevTheta;
-    double m_dTheta;
     // Speed of the vinyl rotation.
     double m_dRotationsPerSecond;
     bool m_bClampFailedWarning;
@@ -132,5 +134,3 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     DlgCoverArtFullSize* m_pDlgCoverArt;
     WCoverArtMenu* m_pCoverMenu;
 };
-
-#endif //_WSPINNY_H

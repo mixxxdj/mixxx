@@ -5,45 +5,48 @@
  *      Author: Vittorio Colao
  */
 
-#ifndef ANALYZER_ANALYZERBEATS_H
-#define ANALYZER_ANALYZERBEATS_H
+#pragma once
 
 #include <QHash>
+#include <QList>
 
 #include "analyzer/analyzer.h"
-#include "analyzer/vamp/vampanalyzer.h"
+#include "analyzer/plugins/analyzerplugin.h"
+#include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
+#include "util/memory.h"
 
-class AnalyzerBeats: public Analyzer {
+class AnalyzerBeats : public Analyzer {
   public:
     explicit AnalyzerBeats(
             UserSettingsPointer pConfig,
             bool enforceBpmDetection = false);
     ~AnalyzerBeats() override = default;
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
-    void process(const CSAMPLE *pIn, const int iLen) override;
-    void cleanup(TrackPointer tio) override;
-    void finalize(TrackPointer tio) override;
+    static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
+    static mixxx::AnalyzerPluginInfo defaultPlugin();
+
+    bool initialize(TrackPointer pTrack, int sampleRate, int totalSamples) override;
+    bool processSamples(const CSAMPLE *pIn, const int iLen) override;
+    void storeResults(TrackPointer tio) override;
+    void cleanup() override;
 
   private:
+    bool shouldAnalyze(TrackPointer pTrack) const;
     static QHash<QString, QString> getExtraVersionInfo(
-        QString pluginId, bool bPreferencesFastAnalysis);
-    QVector<double> correctedBeats(QVector<double> rawbeats);
+            const QString& pluginId, bool bPreferencesFastAnalysis);
 
-    const UserSettingsPointer m_pConfig;
+    BeatDetectionSettings m_bpmSettings;
+    std::unique_ptr<mixxx::AnalyzerBeatsPlugin> m_pPlugin;
     const bool m_enforceBpmDetection;
-
-    VampAnalyzer* m_pVamp;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;
+    bool m_bPreferencesReanalyzeImported;
     bool m_bPreferencesFixedTempo;
-    bool m_bPreferencesOffsetCorrection;
     bool m_bPreferencesFastAnalysis;
 
-    int m_iSampleRate, m_iTotalSamples;
-    int m_iMinBpm, m_iMaxBpm;
+    mixxx::audio::SampleRate m_sampleRate;
+    SINT m_totalSamples;
+    int m_iMaxSamplesToProcess;
+    int m_iCurrentSample;
 };
-
-#endif /* ANALYZER_ANALYZERBEATS_H */

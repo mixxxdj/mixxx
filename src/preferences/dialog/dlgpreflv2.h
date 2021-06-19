@@ -1,25 +1,31 @@
-#ifndef DLGPREFLV2_H
-#define DLGPREFLV2_H
+#pragma once
 
-#include <QWidget>
 #include <QCheckBox>
+#include <QWidget>
 
+#include "effects/lv2/lv2backend.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflv2dlg.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
-#include "effects/lv2/lv2backend.h"
 
 class EffectsManager;
 
 class DlgPrefLV2 : public DlgPreferencePage, public Ui::DlgPrefLV2Dlg  {
     Q_OBJECT
   public:
-    DlgPrefLV2(QWidget *parent, LV2Backend* lv2Backend,
-               UserSettingsPointer pConfig, EffectsManager* pEffectsManager);
+    DlgPrefLV2(QWidget* parent,
+            LV2Backend* lv2Backend,
+            UserSettingsPointer pConfig,
+            std::shared_ptr<EffectsManager> pEffectsManager);
     virtual ~DlgPrefLV2();
 
   public slots:
-    void slotApply();
+    /// Called when the preference dialog (not this page) is shown to the user.
+    void slotUpdate() override;
+    /// Called when the user clicks the global "Apply" button.
+    void slotApply() override;
+    /// Called when the user clicks the global "Reset to Defaults" button.
+    void slotResetToDefaults() override;
 
   private slots:
     void slotDisplayParameters();
@@ -30,7 +36,5 @@ class DlgPrefLV2 : public DlgPreferencePage, public Ui::DlgPrefLV2Dlg  {
     QString m_currentEffectId;
     QList<QCheckBox*> m_pluginParameters;
     int m_iCheckedParameters;
-    EffectsManager* m_pEffectsManager;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
 };
-
-#endif

@@ -1,176 +1,139 @@
 #include "preferences/dialog/dlgprefbeats.h"
 
-#include "analyzer/vamp/vamppluginadapter.h"
+#include "analyzer/analyzerbeats.h"
 #include "control/controlobject.h"
-#include "track/beat_preferences.h"
+#include "defs_urls.h"
+#include "moc_dlgprefbeats.cpp"
 
-using Vamp::Plugin;
-using Vamp::HostExt::PluginLoader;
-
-DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer _config)
+DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_pconfig(_config),
-          m_minBpm(0),
-          m_maxBpm(0),
-          m_banalyzerEnabled(false),
-          m_bfixedtempoEnabled(false),
-          m_boffsetEnabled(false),
-          m_FastAnalysisEnabled(false),
-          m_bReanalyze(false) {
+          m_bpmSettings(pConfig),
+          m_bAnalyzerEnabled(m_bpmSettings.getBpmDetectionEnabledDefault()),
+          m_bFixedTempoEnabled(m_bpmSettings.getFixedTempoAssumptionDefault()),
+          m_bFastAnalysisEnabled(m_bpmSettings.getFastAnalysisDefault()),
+          m_bReanalyze(m_bpmSettings.getReanalyzeWhenSettingsChangeDefault()),
+          m_bReanalyzeImported(m_bpmSettings.getReanalyzeImportedDefault()) {
     setupUi(this);
 
-    populate();
+    m_availablePlugins = AnalyzerBeats::availablePlugins();
+    for (const auto& info : qAsConst(m_availablePlugins)) {
+        comboBoxBeatPlugin->addItem(info.name(), info.id());
+    }
+
     loadSettings();
 
     // Connections
-    connect(plugincombo, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(pluginSelected(int)));
-    connect(banalyzerenabled, SIGNAL(stateChanged(int)),
-            this, SLOT(analyzerEnabled(int)));
-    connect(bfixedtempo, SIGNAL(stateChanged(int)),
-            this, SLOT(fixedtempoEnabled(int)));
-    connect(boffset, SIGNAL(stateChanged(int)),
-            this, SLOT(offsetEnabled(int)));
-
-    connect(bFastAnalysis, SIGNAL(stateChanged(int)),
-            this, SLOT(fastAnalysisEnabled(int)));
-
-    connect(txtMinBpm, SIGNAL(valueChanged(int)),
-            this, SLOT(minBpmRangeChanged(int)));
-    connect(txtMaxBpm, SIGNAL(valueChanged(int)),
-            this, SLOT(maxBpmRangeChanged(int)));
-
-    connect(bReanalyse,SIGNAL(stateChanged(int)),
-            this, SLOT(slotReanalyzeChanged(int)));
+    connect(comboBoxBeatPlugin,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefBeats::pluginSelected);
+    connect(checkBoxAnalyzerEnabled,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::analyzerEnabled);
+    connect(checkBoxFixedTempo,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::fixedtempoEnabled);
+    connect(checkBoxFastAnalysis,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::fastAnalysisEnabled);
+    connect(checkBoxReanalyze,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::slotReanalyzeChanged);
+    connect(checkBoxReanalyzeImported,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefBeats::slotReanalyzeImportedChanged);
 }
 
 DlgPrefBeats::~DlgPrefBeats() {
 }
 
+QUrl DlgPrefBeats::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_BEATS_URL);
+}
+
 void DlgPrefBeats::loadSettings() {
-    if (m_pconfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID)).isEmpty()) {
-        slotResetToDefaults();
-        slotApply();    // Write to config file so AnalyzerBeats can get the data
-        return;
-    }
-
-    QString pluginid = m_pconfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
-    m_selectedAnalyzer = pluginid;
-
-    m_banalyzerEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED)).toInt());
-
-    m_bfixedtempoEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION)).toInt());
-
-    m_boffsetEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION)).toInt());
-
-    m_bReanalyze =  static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
-
-    m_FastAnalysisEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
-
-    if (!m_listIdentifier.contains(pluginid)) {
-        slotResetToDefaults();
-    }
-    m_minBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
-    m_maxBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
+    m_selectedAnalyzerId = m_bpmSettings.getBeatPluginId();
+    m_bAnalyzerEnabled = m_bpmSettings.getBpmDetectionEnabled();
+    m_bFixedTempoEnabled = m_bpmSettings.getFixedTempoAssumption();
+    m_bReanalyze =  m_bpmSettings.getReanalyzeWhenSettingsChange();
+    m_bFastAnalysisEnabled = m_bpmSettings.getFastAnalysis();
 
     slotUpdate();
 }
 
 void DlgPrefBeats::slotResetToDefaults() {
-    if (!m_listIdentifier.isEmpty()) {
-        if (m_listIdentifier.contains("qm-tempotracker:0")) {
-            m_selectedAnalyzer = "qm-tempotracker:0";
-        } else {
-            // the first one will always be the soundtouch one. defined in
-            // vamp-plugins/libmain.cpp
-            m_selectedAnalyzer = m_listIdentifier.at(0);
-        }
-    } else {
-        qDebug() << "DlgPrefBeats:No Vamp plugin not found";
+    if (m_availablePlugins.size() > 0) {
+        m_selectedAnalyzerId = m_availablePlugins[0].id();
     }
+    m_bAnalyzerEnabled = m_bpmSettings.getBpmDetectionEnabledDefault();
+    m_bFixedTempoEnabled = m_bpmSettings.getFixedTempoAssumptionDefault();
+    m_bFastAnalysisEnabled = m_bpmSettings.getFastAnalysisDefault();
+    m_bReanalyze = m_bpmSettings.getReanalyzeWhenSettingsChangeDefault();
 
-    m_banalyzerEnabled = true;
-    m_bfixedtempoEnabled = true;
-    m_boffsetEnabled = true;
-    m_FastAnalysisEnabled = false;
-    m_bReanalyze = false;
-    m_minBpm = 70;
-    m_maxBpm = 140;
     slotUpdate();
 }
 
 void DlgPrefBeats::pluginSelected(int i) {
-    if (i==-1)
+    if (i == -1) {
         return;
-    m_selectedAnalyzer = m_listIdentifier[i];
+    }
+    m_selectedAnalyzerId = m_availablePlugins[i].id();
     slotUpdate();
 }
 
 void DlgPrefBeats::analyzerEnabled(int i) {
-    m_banalyzerEnabled = static_cast<bool>(i);
+    m_bAnalyzerEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
 void DlgPrefBeats::fixedtempoEnabled(int i) {
-    m_bfixedtempoEnabled = static_cast<bool>(i);
-    slotUpdate();
-}
-
-void DlgPrefBeats::offsetEnabled(int i) {
-    m_boffsetEnabled = static_cast<bool>(i);
-    slotUpdate();
-}
-
-void DlgPrefBeats::minBpmRangeChanged(int value) {
-    m_minBpm = value;
-    slotUpdate();
-}
-
-void DlgPrefBeats::maxBpmRangeChanged(int value) {
-    m_maxBpm = value;
+    m_bFixedTempoEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
 void DlgPrefBeats::slotUpdate() {
-    bfixedtempo->setEnabled(m_banalyzerEnabled);
-    boffset->setEnabled((m_banalyzerEnabled && m_bfixedtempoEnabled));
-    plugincombo->setEnabled(m_banalyzerEnabled);
-    banalyzerenabled->setChecked(m_banalyzerEnabled);
-    bFastAnalysis->setEnabled(m_banalyzerEnabled);
-    txtMaxBpm->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
-    txtMinBpm->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
-    bReanalyse->setEnabled(m_banalyzerEnabled);
+    checkBoxFixedTempo->setEnabled(m_bAnalyzerEnabled);
+    comboBoxBeatPlugin->setEnabled(m_bAnalyzerEnabled);
+    checkBoxAnalyzerEnabled->setChecked(m_bAnalyzerEnabled);
+    // Fast analysis cannot be combined with non-constant tempo beatgrids.
+    checkBoxFastAnalysis->setEnabled(m_bAnalyzerEnabled && m_bFixedTempoEnabled);
+    checkBoxReanalyze->setEnabled(m_bAnalyzerEnabled);
+    checkBoxReanalyzeImported->setEnabled(m_bAnalyzerEnabled);
 
-    if (!m_banalyzerEnabled) {
+    if (!m_bAnalyzerEnabled) {
         return;
     }
 
-    if (m_selectedAnalyzer != "qm-tempotracker:0") {
-        bfixedtempo->setEnabled(false);
-        boffset->setEnabled(false);
+    if (m_availablePlugins.size() > 0) {
+        bool found = false;
+        for (int i = 0; i < m_availablePlugins.size(); ++i) {
+            const auto& info = m_availablePlugins.at(i);
+            if (info.id() == m_selectedAnalyzerId) {
+                found = true;
+                comboBoxBeatPlugin->setCurrentIndex(i);
+                if (!m_availablePlugins[i].isConstantTempoSupported()) {
+                    checkBoxFixedTempo->setEnabled(false);
+                }
+                break;
+            }
+        }
+        if (!found) {
+            comboBoxBeatPlugin->setCurrentIndex(0);
+            m_selectedAnalyzerId = m_availablePlugins[0].id();
+        }
     }
 
-    bfixedtempo->setChecked(m_bfixedtempoEnabled);
-    boffset->setChecked(m_boffsetEnabled);
-    bFastAnalysis->setChecked(m_FastAnalysisEnabled);
+    checkBoxFixedTempo->setChecked(m_bFixedTempoEnabled);
+    // Fast analysis cannot be combined with non-constant tempo beatgrids.
+    checkBoxFastAnalysis->setChecked(m_bFastAnalysisEnabled && m_bFixedTempoEnabled);
 
-    int comboselected = m_listIdentifier.indexOf(m_selectedAnalyzer);
-    if (comboselected == -1) {
-        qDebug()<<"DlgPrefBeats: Plugin("<<m_selectedAnalyzer<<") not found in slotUpdate()";
-        return;
-    }
-
-    plugincombo->setCurrentIndex(comboselected);
-    txtMaxBpm->setValue(m_maxBpm);
-    txtMinBpm->setValue(m_minBpm);
-    bReanalyse->setChecked(m_bReanalyze);
+    checkBoxReanalyze->setChecked(m_bReanalyze);
+    checkBoxReanalyzeImported->setChecked(m_bReanalyzeImported);
 }
 
 void DlgPrefBeats::slotReanalyzeChanged(int value) {
@@ -178,74 +141,21 @@ void DlgPrefBeats::slotReanalyzeChanged(int value) {
     slotUpdate();
 }
 
+void DlgPrefBeats::slotReanalyzeImportedChanged(int value) {
+    m_bReanalyzeImported = static_cast<bool>(value);
+    slotUpdate();
+}
+
 void DlgPrefBeats::fastAnalysisEnabled(int i) {
-    m_FastAnalysisEnabled = static_cast<bool>(i);
+    m_bFastAnalysisEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
 void DlgPrefBeats::slotApply() {
-    int selected = m_listIdentifier.indexOf(m_selectedAnalyzer);
-    if (selected == -1)
-        return;
-
-    m_pconfig->set(ConfigKey(
-        VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_LIBRARY), ConfigValue(m_listLibrary[selected]));
-    m_pconfig->set(ConfigKey(
-        VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID), ConfigValue(m_selectedAnalyzer));
-    m_pconfig->set(ConfigKey(
-        BPM_CONFIG_KEY, BPM_DETECTION_ENABLED), ConfigValue(m_banalyzerEnabled ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION), ConfigValue(m_bfixedtempoEnabled ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION), ConfigValue(m_boffsetEnabled ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE), ConfigValue(m_bReanalyze ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED), ConfigValue(m_FastAnalysisEnabled ? 1 : 0));
-
-    m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START), ConfigValue(m_minBpm));
-    m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END), ConfigValue(m_maxBpm));
-    m_pconfig->save();
-}
-
-void DlgPrefBeats::populate() {
-    m_listIdentifier.clear();
-    m_listName.clear();
-    m_listLibrary.clear();
-    disconnect(plugincombo, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(pluginSelected(int)));
-    plugincombo->clear();
-    plugincombo->setDuplicatesEnabled(false);
-    connect(plugincombo, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(pluginSelected(int)));
-    const PluginLoader::PluginKeyList plugins = mixxx::VampPluginAdapter::listPlugins();
-    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
-    for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
-        // TODO(XXX): WTF, 48000
-        mixxx::VampPluginAdapter pluginAdapter(plugins[iplugin], 48000);
-        //TODO: find a way to add beat trackers only
-        if (pluginAdapter) {
-            const Plugin::OutputList& outputs = pluginAdapter.getOutputDescriptors();
-            for (unsigned int ioutput=0; ioutput < outputs.size(); ioutput++) {
-                QString displayname = QString::fromStdString(pluginAdapter.getIdentifier()) + ":"
-                                            + QString::number(ioutput);
-                QString displaynametext = QString::fromStdString(pluginAdapter.getName());
-                qDebug() << "Plugin output displayname:" << displayname << displaynametext;
-                bool goodones = ((displayname.contains("mixxxbpmdetection")||
-                                  displayname.contains("qm-tempotracker:0"))||
-                                 displayname.contains("beatroot:0")||
-                                 displayname.contains("marsyas_ibt:0")||
-                                 displayname.contains("aubiotempo:0"));
-                if (goodones) {
-                    m_listName << displaynametext;
-                    QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
-                    m_listLibrary << pluginlibrary;
-                    QString displayname = QString::fromStdString(pluginAdapter.getIdentifier()) + ":"
-                            + QString::number(ioutput);
-                    m_listIdentifier << displayname;
-                    plugincombo->addItem(displaynametext, displayname);
-                }
-            }
-        }
-    }
+    m_bpmSettings.setBeatPluginId(m_selectedAnalyzerId);
+    m_bpmSettings.setBpmDetectionEnabled(m_bAnalyzerEnabled);
+    m_bpmSettings.setFixedTempoAssumption(m_bFixedTempoEnabled);
+    m_bpmSettings.setReanalyzeWhenSettingsChange(m_bReanalyze);
+    m_bpmSettings.setReanalyzeImported(m_bReanalyzeImported);
+    m_bpmSettings.setFastAnalysis(m_bFastAnalysisEnabled);
 }

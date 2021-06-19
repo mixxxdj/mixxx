@@ -1,5 +1,4 @@
-#ifndef ENCODERCALLBACK_H
-#define ENCODERCALLBACK_H
+#pragma once
 
 class EncoderCallback {
   public:
@@ -13,5 +12,3 @@ class EncoderCallback {
     // gets stream length
     virtual int filelen() = 0;
 };
-
-#endif /* ENCODERCALLBACK_H */

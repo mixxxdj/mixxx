@@ -4,7 +4,7 @@
         <name>MIDI for light</name>
         <author>Michael Stahl / DG3NEC</author>
         <description>MIDI-output for light control</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=7746</forums>
+        <forums>https://mixxx.discourse.group/t/midi-for-light/15513</forums>
         <wiki>http://mixxx.org/wiki/doku.php/midi_for_light</wiki>
     </info>
     <controller id="midi_for_light Control">

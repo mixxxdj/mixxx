@@ -1,5 +1,4 @@
-#ifndef PARAMERICEQEFFECT_H
-#define PARAMERICEQEFFECT_H
+#pragma once
 
 #include <vector>
 #include <QMap>
@@ -9,7 +8,7 @@
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterbiquad1.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -61,10 +60,7 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
     QList<EngineEffectParameter*> m_pPotQ;
     QList<EngineEffectParameter*> m_pPotCenter;
 
-
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 
     DISALLOW_COPY_AND_ASSIGN(ParametricEQEffect);
 };
-
-#endif // PARAMERICEQEFFECT_H

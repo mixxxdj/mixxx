@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_BROADCASTSETTINGS_H
-#define PREFERENCES_BROADCASTSETTINGS_H
+#pragma once
 
 #include <QMap>
 #include <QSharedPointer>
@@ -8,7 +7,6 @@
 #include "preferences/usersettings.h"
 #include "preferences/broadcastsettingsmodel.h"
 #include "preferences/broadcastprofile.h"
-#include "track/track.h"
 
 class BroadcastSettings : public QObject {
   Q_OBJECT
@@ -18,7 +16,6 @@ class BroadcastSettings : public QObject {
 
     bool saveProfile(BroadcastProfilePtr profile);
     void saveAll();
-    BroadcastProfilePtr createProfile(const QString& profileName);
     QList<BroadcastProfilePtr> profiles();
     BroadcastProfilePtr profileAt(int index);
 
@@ -27,22 +24,20 @@ class BroadcastSettings : public QObject {
   signals:
     void profileAdded(BroadcastProfilePtr profile);
     void profileRemoved(BroadcastProfilePtr profile);
-    void profileRenamed(QString oldName, BroadcastProfilePtr profile);
+    void profileRenamed(const QString& oldName, BroadcastProfilePtr profile);
     void profilesChanged();
 
   private slots:
-    void onProfileNameChanged(QString oldName, QString newName);
+    void onProfileNameChanged(const QString& oldName, const QString& newName);
     void onConnectionStatusChanged(int newStatus);
 
   private:
     void loadProfiles();
     bool addProfile(BroadcastProfilePtr profile);
-    void deleteProfile(BroadcastProfilePtr profile);
 
     QString filePathForProfile(BroadcastProfilePtr profile);
     QString filePathForProfile(const QString& profileName);
     bool deleteFileForProfile(BroadcastProfilePtr profile);
-    bool deleteFileForProfile(const QString& profileName);
     QString getProfilesFolder();
 
     void loadLegacySettings(BroadcastProfilePtr profile);
@@ -53,5 +48,3 @@ class BroadcastSettings : public QObject {
 };
 
 typedef QSharedPointer<BroadcastSettings> BroadcastSettingsPointer;
-
-#endif /* PREFERENCES_BROADCASTSETTINGS_H */

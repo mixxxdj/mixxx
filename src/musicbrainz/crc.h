@@ -13,8 +13,7 @@
  *    ReflectOut   = True
  *    Algorithm    = table-driven
  *****************************************************************************/
-#ifndef __CRC_H__
-#define __CRC_H__
+#pragma once
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -79,5 +78,3 @@ crc_t crc_update(crc_t crc, const unsigned char *data, size_t data_len);
 #ifdef __cplusplus
 }           /* closing brace for extern "C" */
 #endif
-
-#endif      /* __CRC_H__ */

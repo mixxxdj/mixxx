@@ -1,5 +1,4 @@
-#ifndef BANSHEEDBCONNECTION_H
-#define BANSHEEDBCONNECTION_H
+#pragma once
 
 #include <QSqlDatabase>
 #include <QUrl>
@@ -64,5 +63,3 @@ private:
     QMap<int, Album> m_albumMap;
 
 };
-
-#endif // BANSHEEDBCONNECTION_H

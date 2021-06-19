@@ -1,15 +1,17 @@
-#ifndef DLGPREFKEY_H
-#define DLGPREFKEY_H
+#pragma once
 
 #include <QList>
-#include <QWidget>
 #include <QMap>
+#include <QWidget>
 
+#include "analyzer/plugins/analyzerplugin.h"
 #include "control/controlproxy.h"
+#include "defs_urls.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefkeydlg.h"
+#include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
 #include "track/keyutils.h"
-#include "preferences/dlgpreferencepage.h"
 
 class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     Q_OBJECT
@@ -17,11 +19,13 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     DlgPrefKey(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefKey();
 
+    QUrl helpUrl() const override;
+
   public slots:
     // Apply changes to widget
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
 
   private slots:
     void pluginSelected(int i);
@@ -31,23 +35,21 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
 
     void setNotation(KeyUtils::KeyNotation notation);
     void setNotationOpenKey(bool);
+    void setNotationOpenKeyAndTraditional(bool);
     void setNotationLancelot(bool);
+    void setNotationLancelotAndTraditional(bool);
     void setNotationTraditional(bool);
     void setNotationCustom(bool);
 
   private:
-    void populate();
     void loadSettings();
 
-    UserSettingsPointer m_pConfig;
+    KeyDetectionSettings m_keySettings;
     QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
-    QList<QString> m_listName;
-    QList<QString> m_listLibrary, m_listIdentifier;
-    QString m_selectedAnalyzer;
+    QList<mixxx::AnalyzerPluginInfo> m_availablePlugins;
+    QString m_selectedAnalyzerId;
     ControlProxy* m_pKeyNotation;
     bool m_bAnalyzerEnabled;
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyzeEnabled;
 };
-
-#endif

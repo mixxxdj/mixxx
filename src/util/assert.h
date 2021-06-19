@@ -12,7 +12,7 @@ inline void mixxx_debug_assert(const char* assertion, const char* file, int line
 }
 
 inline bool mixxx_maybe_debug_assert_return_true(const char* assertion, const char* file, int line, const char* function) {
-#ifdef MIXXX_BUILD_DEBUG
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     mixxx_debug_assert(assertion, file, line, function);
 #else
     Q_UNUSED(assertion);
@@ -36,10 +36,10 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 #define ASSERT_FUNCTION __PRETTY_FUNCTION__
 #endif
 
-// If cond is false, produces a fatal assertion and quits ungracefully. Think
-// very hard before using this -- this should only be for the most dire of
-// situations where we know Mixxx cannot take any action without potentially
-// corrupting user data. Handle errors gracefully whenever possible.
+/// If cond is false, produces a fatal assertion and quits ungracefully. Think
+/// very hard before using this -- this should only be for the most dire of
+/// situations where we know Mixxx cannot take any action without potentially
+/// corrupting user data. Handle errors gracefully whenever possible.
 #define RELEASE_ASSERT(cond) ((!(cond)) ? mixxx_release_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION) : mixxx_noop())
 
 // Checks that cond is true in debug builds. If cond is false then prints a
@@ -51,10 +51,12 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 //   DEBUG_ASSERT(doSomething());
 //
 // In release builds, doSomething() is never called!
-#ifdef MIXXX_BUILD_DEBUG
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #define DEBUG_ASSERT(cond) ((!(cond)) ? mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION) : mixxx_noop())
 #else
 #define DEBUG_ASSERT(cond)
 #endif
 
+/// Same as DEBUG_ASSERT, but if MIXXX_DEBUG_ASSERTIONS_FATAL is disabled run the specified fallback function.
+/// In most cases you should probably use this rather than DEBUG_ASSERT. Only use DEBUG_ASSERT if there is no appropriate fallback.
 #define VERIFY_OR_DEBUG_ASSERT(cond) if ((!(cond)) && mixxx_maybe_debug_assert_return_true(#cond, __FILE__, __LINE__, ASSERT_FUNCTION))

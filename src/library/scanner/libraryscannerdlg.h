@@ -1,23 +1,4 @@
-/***************************************************************************
-                          LibraryScannerDlg.cpp  -  shows library scanning
-                                                       progress
-                             -------------------
-    begin                : 11/27/2007
-    copyright            : (C) 2007 Albert Santoni and Adam Davison
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#ifndef LIBRARYSCANNERDLG_H
-#define LIBRARYSCANNERDLG_H
+#pragma once
 
 #include <QThread>
 #include <QWidget>
@@ -32,19 +13,17 @@ class LibraryScannerDlg : public QWidget {
     virtual ~LibraryScannerDlg();
 
   public slots:
-    void slotUpdate(QString path);
-    void slotUpdateCover(QString path);
+    void slotUpdate(const QString& path);
+    void slotUpdateCover(const QString& path);
     void slotCancel();
     void slotScanFinished();
     void slotScanStarted();
 
   signals:
     void scanCancelled();
-    void progress(QString);
+    void progress(const QString&);
 
   private:
     PerformanceTimer m_timer;
     bool m_bCancelled;
 };
-
-#endif

@@ -1,7 +1,0 @@
-?package(mixxx): \
-  needs="X11" \
-  section="Apps/Sound" \
-  title="Mixxx" \
-  command="/usr/bin/pasuspender -- /usr/bin/mixxx -platform xcb" \
-  icon="/usr/share/pixmaps/mixxx.xpm" \
-  icon16x16="/usr/share/pixmaps/mixxx-16.xpm"

@@ -398,10 +398,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label_12">
-        <property name="text">
-         <string>All settings take effect on next track load. Currently loaded tracks are not affected. For an explanation of these settings, see the &lt;a href=&quot;http://wiki.openmpt.org/Manual:_Setup/Player&quot;&gt;OpenMPT manual&lt;/a&gt;.</string>
-        </property>
+       <widget class="QLabel" name="modplugSettingsHint">
         <property name="wordWrap">
          <bool>true</bool>
         </property>
@@ -543,54 +540,4 @@
   <tabstop>surroundDelay</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>memoryLimit</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>memoryLimitSpin</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>405</x>
-     <y>58</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>556</x>
-     <y>58</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>memoryLimitSpin</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>memoryLimit</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>556</x>
-     <y>58</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>405</x>
-     <y>58</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>showAdvanced</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>advancedSettings</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>97</x>
-     <y>154</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>395</x>
-     <y>323</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
 </ui>

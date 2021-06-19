@@ -1,13 +1,14 @@
 #include "effects/effectchain.h"
 
-#include "engine/engine.h"
 #include "effects/effectchainmanager.h"
-#include "effects/effectsmanager.h"
 #include "effects/effectprocessor.h"
+#include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffectrack.h"
 #include "engine/effects/message.h"
+#include "engine/engine.h"
+#include "moc_effectchain.cpp"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/xml.h"
@@ -133,7 +134,7 @@ const QString& EffectChain::name() const {
 
 void EffectChain::setName(const QString& name) {
     m_name = name;
-    emit(nameChanged(name));
+    emit nameChanged(name);
 }
 
 QString EffectChain::description() const {
@@ -142,7 +143,7 @@ QString EffectChain::description() const {
 
 void EffectChain::setDescription(const QString& description) {
     m_description = description;
-    emit(descriptionChanged(description));
+    emit descriptionChanged(description);
 }
 
 bool EffectChain::enabled() const {
@@ -152,15 +153,15 @@ bool EffectChain::enabled() const {
 void EffectChain::setEnabled(bool enabled) {
     m_bEnabled = enabled;
     sendParameterUpdate();
-    emit(enabledChanged(enabled));
+    emit enabledChanged(enabled);
 }
 
-void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
     // TODO(Be): remove m_enabledChannels from this class and move this logic
     // to EffectChainSlot
-    bool bWasAlreadyEnabled = m_enabledInputChannels.contains(handle_group);
+    bool bWasAlreadyEnabled = m_enabledInputChannels.contains(handleGroup);
     if (!bWasAlreadyEnabled) {
-        m_enabledInputChannels.insert(handle_group);
+        m_enabledInputChannels.insert(handleGroup);
     }
 
     // The allocation of EffectStates below may be expensive, so avoid it if
@@ -172,18 +173,18 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
     request->pTargetChain = m_pEngineEffectChain;
-    request->EnableInputChannelForChain.pChannelHandle = &handle_group.handle();
+    request->EnableInputChannelForChain.pChannelHandle = &handleGroup.handle();
 
     // Allocate EffectStates here in the main thread to avoid allocating
     // memory in the realtime audio callback thread. Pointers to the
     // EffectStates are passed to the EffectRequest and the EffectProcessorImpls
     // store the pointers. The containers of EffectState* pointers get deleted
     // by ~EffectsRequest, but the EffectStates are managed by EffectProcessorImpl.
-    auto pEffectStatesMapArray = new EffectStatesMapArray;
+    auto* pEffectStatesMapArray = new EffectStatesMapArray;
 
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
-          mixxx::AudioSignal::SampleRate(96000),
+          mixxx::audio::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
     for (int i = 0; i < m_effects.size(); ++i) {
@@ -191,7 +192,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
         if (m_effects[i] != nullptr) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
                 if (kEffectDebugOutput) {
-                    qDebug() << debugString() << "EffectChain::enableForInputChannel creating EffectState for input" << handle_group << "output" << outputChannel;
+                    qDebug() << debugString() << "EffectChain::enableForInputChannel creating EffectState for input" << handleGroup << "output" << outputChannel;
                 }
                 statesMap.insert(outputChannel.handle(),
                         m_effects[i]->createState(bufferParameters));
@@ -208,25 +209,25 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
     request->EnableInputChannelForChain.pEffectStatesMapArray = pEffectStatesMapArray;
 
     m_pEffectsManager->writeRequest(request);
-    emit(channelStatusChanged(handle_group.name(), true));
+    emit channelStatusChanged(handleGroup.name(), true);
 }
 
-bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
-    return m_enabledInputChannels.contains(handle_group);
+bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handleGroup) const {
+    return m_enabledInputChannels.contains(handleGroup);
 }
 
-void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_enabledInputChannels.remove(handle_group)) {
+void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
+    if (m_enabledInputChannels.remove(handleGroup)) {
         if (!m_bAddedToEngine) {
             return;
         }
         EffectsRequest* request = new EffectsRequest();
         request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
-        request->DisableInputChannelForChain.pChannelHandle = &handle_group.handle();
+        request->DisableInputChannelForChain.pChannelHandle = &handleGroup.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit(channelStatusChanged(handle_group.name(), false));
+        emit channelStatusChanged(handleGroup.name(), false);
     }
 }
 
@@ -237,7 +238,7 @@ double EffectChain::mix() const {
 void EffectChain::setMix(const double& dMix) {
     m_dMix = dMix;
     sendParameterUpdate();
-    emit(mixChanged(dMix));
+    emit mixChanged(dMix);
 }
 
 EffectChainMixMode EffectChain::mixMode() const {
@@ -247,7 +248,7 @@ EffectChainMixMode EffectChain::mixMode() const {
 void EffectChain::setMixMode(EffectChainMixMode mixMode) {
     m_mixMode = mixMode;
     sendParameterUpdate();
-    emit(mixModeChanged(mixMode));
+    emit mixModeChanged(mixMode);
 }
 
 void EffectChain::addEffect(EffectPointer pEffect) {
@@ -267,7 +268,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
     if (m_bAddedToEngine) {
         pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1, m_enabledInputChannels);
     }
-    emit(effectChanged(m_effects.size() - 1));
+    emit effectChanged(m_effects.size() - 1);
 }
 
 void EffectChain::replaceEffect(unsigned int effectSlotNumber,
@@ -294,7 +295,7 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
         }
     }
 
-    emit(effectChanged(effectSlotNumber));
+    emit effectChanged(effectSlotNumber);
 }
 
 void EffectChain::removeEffect(unsigned int effectSlotNumber) {
@@ -303,7 +304,7 @@ void EffectChain::removeEffect(unsigned int effectSlotNumber) {
 
 void EffectChain::refreshAllEffects() {
     for (int i = 0; i < m_effects.size(); ++i) {
-        emit(effectChanged(i));
+        emit effectChanged(i);
     }
 }
 

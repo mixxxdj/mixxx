@@ -4,7 +4,7 @@
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
     <description>2018-4-15</description>
-    <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
+    <manual>vestax_vci_100mkii</manual>
   </info>
   <controller id="VCI-100MKII">
     <scriptfiles>

@@ -1,8 +1,7 @@
 // Ported from CAPS Reverb.
 // This effect is GPL code.
 
-#ifndef REVERBEFFECT_H
-#define REVERBEFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -61,5 +60,3 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(ReverbEffect);
 };
-
-#endif /* REVERBEFFECT_H */

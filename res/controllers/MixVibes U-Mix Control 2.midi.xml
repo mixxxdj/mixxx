@@ -4,6 +4,7 @@
       <author>peper</author>
       <description>A beta v0.2 preset for the MixVibes U-Mix Control 2.</description>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4469</forums>
+      <manual>mixvibes_u_mix_control_2</manual>
     </info>
     <controller id="MixVibes U-MIX CONTROL 2 MIDI 1">
         <scriptfiles/>

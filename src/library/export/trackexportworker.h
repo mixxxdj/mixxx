@@ -1,5 +1,4 @@
-#ifndef TRACKEXPORTWORKER_H
-#define TRACKEXPORTWORKER_H
+#pragma once
 
 #include <QObject>
 #include <QScopedPointer>
@@ -7,7 +6,8 @@
 #include <QThread>
 #include <future>
 
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "util/fileinfo.h"
 
 // A QThread class for copying a list of files to a single destination directory.
 // Currently does not preserve subdirectory relationships.  This class performs
@@ -34,8 +34,9 @@ class TrackExportWorker : public QThread {
 
     // Constructor does not validate the destination directory.  Calling classes
     // should do that.
-    TrackExportWorker(QString destDir, QList<TrackPointer> tracks)
-            : m_destDir(destDir), m_tracks(tracks) { }
+    TrackExportWorker(const QString& destDir, const TrackPointerList& tracks)
+            : m_destDir(destDir), m_tracks(tracks) {
+    }
     virtual ~TrackExportWorker() { };
 
     // exports ALL the tracks.  Thread joins on success or failure.
@@ -58,9 +59,9 @@ class TrackExportWorker : public QThread {
     // Note that fully qualifying the Answer class name is required for the
     // signal to connect.
     void askOverwriteMode(
-            QString filename,
+            const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
-    void progress(QString filename, int progress, int count);
+    void progress(const QString& filename, int progress, int count);
     void canceled();
 
   private:
@@ -69,19 +70,17 @@ class TrackExportWorker : public QThread {
     // exists, will emit an overwrite request signal to ask how to proceed.
     // On unrecoverable error, sets the error message and stops the export
     // process entirely.
-    void copyFile(const QFileInfo& source_fileinfo,
-                  const QString& dest_filename);
+    void copyFile(const mixxx::FileInfo& source_fileinfo,
+            const QString& dest_filename);
 
     // Emit a signal requesting overwrite mode, and block until we get an
     // answer.  Updates m_overwriteMode appropriately.
-    OverwriteAnswer makeOverwriteRequest(QString filename);
+    OverwriteAnswer makeOverwriteRequest(const QString& filename);
 
     QAtomicInt m_bStop = false;
     QString m_errorMessage;
 
     OverwriteMode m_overwriteMode = OverwriteMode::ASK;
     const QString m_destDir;
-    const QList<TrackPointer> m_tracks;
+    const TrackPointerList m_tracks;
 };
-
-#endif  // TRACKEXPORTWORKER_H

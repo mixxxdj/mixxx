@@ -1,5 +1,4 @@
-#ifndef EFFECTSBACKEND_H
-#define EFFECTSBACKEND_H
+#pragma once
 
 #include <QObject>
 #include <QList>
@@ -72,5 +71,3 @@ class EffectsBackend : public QObject {
     QMap<QString, RegisteredEffect> m_registeredEffects;
     QList<QString> m_effectIds;
 };
-
-#endif /* EFFECTSBACKEND_H */

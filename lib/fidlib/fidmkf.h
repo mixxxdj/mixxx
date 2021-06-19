@@ -139,10 +139,7 @@
  #endif
 #endif
 
-//Hacks for crappy linker error in MSVC... - Albert
 #ifdef T_MSVC
- #undef HUGE_VAL
- #define HUGE_VAL 1.797693134862315E+308
  #define INF HUGE_VAL
 #endif
 

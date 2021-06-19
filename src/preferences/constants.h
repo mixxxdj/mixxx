@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_CONSTANTS_H
-#define PREFERENCES_CONSTANTS_H
+#pragma once
 
 namespace mixxx {
 
@@ -19,5 +18,3 @@ enum class ScreenSaverPreference {
 };
 
 }  // namespace mixxx
-
-#endif /* PREFERENCES_CONSTANTS_H */

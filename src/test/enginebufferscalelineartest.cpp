@@ -4,7 +4,7 @@
 #include <QtDebug>
 #include <QVector>
 
-#include "engine/enginebufferscalelinear.h"
+#include "engine/bufferscalers/enginebufferscalelinear.h"
 #include "engine/readaheadmanager.h"
 #include "test/mixxxtest.h"
 #include "util/math.h"
@@ -74,7 +74,7 @@ class EngineBufferScaleLinearTest : public MixxxTest {
     void SetRate(double rate) {
         double tempoRatio = rate;
         double pitchRatio = rate;
-        m_pScaler->setSampleRate(44100);
+        m_pScaler->setSampleRate(mixxx::audio::SampleRate(44100));
         m_pScaler->setScaleParameters(
                 1.0, &tempoRatio, &pitchRatio);
     }

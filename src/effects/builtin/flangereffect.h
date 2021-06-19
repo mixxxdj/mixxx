@@ -1,5 +1,4 @@
-#ifndef FLANGEREFFECT_H
-#define FLANGEREFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -32,7 +31,7 @@ struct FlangerGroupState : public EffectState {
               prev_regen(0),
               prev_mix(0),
               prev_width(0),
-              prev_manual(kCenterDelayMs) {
+              prev_manual(static_cast<CSAMPLE_GAIN>(kCenterDelayMs)) {
         SampleUtil::clear(delayLeft, kBufferLenth);
         SampleUtil::clear(delayRight, kBufferLenth);
     }
@@ -77,5 +76,3 @@ class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(FlangerEffect);
 };
-
-#endif /* FLANGEREFFECT_H */

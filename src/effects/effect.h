@@ -1,5 +1,4 @@
-#ifndef EFFECT_H
-#define EFFECT_H
+#pragma once
 
 #include <QSharedPointer>
 #include <QDomDocument>
@@ -85,5 +84,3 @@ class Effect : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(Effect);
 };
-
-#endif /* EFFECT_H */

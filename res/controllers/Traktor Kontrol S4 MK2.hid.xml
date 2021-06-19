@@ -4,7 +4,7 @@
         <name>Traktor Kontrol S4 MK2</name>
         <author>Owen Williams, Fayaaz Ahmed</author>
         <description>HID Mapping for Traktor Kontrol S4 MK2</description>
-        <wiki>http://mixxx.org/wiki/doku.php/traktor_s4_mk2</wiki>
+        <manual>native_instruments_traktor_kontrol_s4_mk2</manual>
         <devices>
             <product protocol="hid" vendor_id="0x17cc" product_id="0x1310" usage_page="0xff01" usage="0x1" interface_number="0x4" />
         </devices>

@@ -1,5 +1,4 @@
-#ifndef KEYS_H
-#define KEYS_H
+#pragma once
 
 #include <QByteArray>
 #include <QPair>
@@ -54,4 +53,8 @@ class Keys final {
     friend class KeyFactory;
 };
 
-#endif /* KEYS_H */
+bool operator==(const Keys& lhs, const Keys& rhs);
+
+inline bool operator!=(const Keys& lhs, const Keys& rhs) {
+    return !(lhs == rhs);
+}

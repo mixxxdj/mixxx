@@ -10,11 +10,11 @@
       <Alignment>left</Alignment>
     </State>
     <Connection>
-      <ConfigKey>[Deere],sampler_row_<Variable name="next"/></ConfigKey>
+      <ConfigKey>[Skin],sampler_row_<Variable name="next"/></ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
     <Connection>
-      <ConfigKey>[Deere],sampler_row_<Variable name="prev"/></ConfigKey>
+      <ConfigKey>[Skin],sampler_row_<Variable name="prev"/></ConfigKey>
       <ButtonState>RightButton</ButtonState>
     </Connection>
   </PushButton>

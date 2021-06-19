@@ -21,37 +21,35 @@ then
     do
         for rate in ${samplerates[*]}
         do
-            friendlyrate=`expr $rate / 1000`
+            friendlyrate=$(( "$rate" / 1000 ))
             for channel in ${channels[*]}
             do
-                if [ $channel -eq 1 ]
+                if [ "$channel" -eq 1 ]
                 then
                     friendlychannel="Mono"
                 fi
-                if [ $channel -eq 2 ]
+                if [ "$channel" -eq 2 ]
                 then
                     friendlychannel="Stereo"
                 fi
-                
+
                 # Remove files from formats for which sample size is irrelevant
-                if  ( [ $format == "ogg" ] || [ $format == "mp3" ] ) && [ -e test${friendlyrate}k${friendlychannel}.${format} ]
-                then 
+                if  { [ "$format" == "ogg" ] || [ "$format" == "mp3" ] ; } && [ -e "test${friendlyrate}k${friendlychannel}.${format}" ]
+                then
                     echo "Removing test${friendlyrate}k${friendlychannel}.${format}"
-                    rm test${friendlyrate}k${friendlychannel}.${format}
-                    if [ $? -gt 0 ]
+                    if rm "test${friendlyrate}k${friendlychannel}.${format}"
                     then
                         echo "Error #$?"
                         exit 1
                     fi
                 fi
-                
+
                 for ssize in ${samplesizes[*]}
                 do
-                    if [ -e test${ssize}bit${friendlyrate}k${friendlychannel}.${format} ]
-                    then 
+                    if [ -e "test${ssize}bit${friendlyrate}k${friendlychannel}.${format}" ]
+                    then
                         echo "Removing test${ssize}bit${friendlyrate}k${friendlychannel}.${format}"
-                        rm test${ssize}bit${friendlyrate}k${friendlychannel}.${format}
-                        if [ $? -gt 0 ]
+                        if rm "test${ssize}bit${friendlyrate}k${friendlychannel}.${format}"
                         then
                             echo "Error #$?"
                             exit 1
@@ -86,19 +84,19 @@ for format in ${formats[*]}
 do
     if [ "$1" == "table" ]
     then
-        if [ $format == "ogg" ] || [ $format == "mp3" ]
+        if [ "$format" == "ogg" ] || [ "$format" == "mp3" ]
         then
             friendlyformat="OGG Vorbis"
         fi
-        if [ $format == "wav" ]
+        if [ "$format" == "wav" ]
         then
             friendlyformat="WAVE/AIFF"
         fi
-        if [ $format == "mp3" ]
+        if [ "$format" == "mp3" ]
         then
             friendlyformat="MP3"
         fi
-        if [ $format == "flac" ]
+        if [ "$format" == "flac" ]
         then
             friendlyformat="FLAC"
         fi
@@ -108,20 +106,20 @@ do
     fi
     for channel in ${channels[*]}
     do
-        if [ $channel -eq 1 ]
+        if [ "$channel" -eq 1 ]
         then
             friendlychannel="Mono"
-            lameopt="-m m"
+            lameopt=(-m m)
         fi
-        if [ $channel -eq 2 ]
+        if [ "$channel" -eq 2 ]
         then
             friendlychannel="Stereo"
-            lameopt=""
+            lameopt=()
         fi
         for ssize in ${samplesizes[*]}
         do
             # Hack because sox doesn't abort if the parameters are out of spec
-            if [ $ssize -gt 24 ] && [ $format == "flac" ]
+            if [ "$ssize" -gt 24 ] && [ "$format" == "flac" ]
             then
                 if [ "$1" != "table" ]
                 then
@@ -129,19 +127,19 @@ do
                 fi
                     break
             fi
-            
+
             # vorbis and MP3 don't use bit depth, so only run sox once per sample rate
-            if [ $ssize != ${samplesizes[0]} ] && ( [ $format == "ogg" ] || [ $format == "mp3" ] )
+            if [ "$ssize" != "${samplesizes[0]}" ] && { [ "$format" == "ogg" ] || [ "$format" == "mp3" ] ; }
             then
                 break
             fi
             for rate in ${samplerates[*]}
-            do 
-                friendlyrate=`expr $rate / 1000`
+            do
+                friendlyrate=$(( "$rate" / 1000 ))
                 problem="false"
-                
+
                 # Hack because lame doesn't abort if the parameters are out of spec
-                if [ $rate -gt 48000 ] && [ $format == "mp3" ]
+                if [ "$rate" -gt 48000 ] && [ "$format" == "mp3" ]
                 then
                     if [ "$1" != "table" ]
                     then
@@ -149,19 +147,19 @@ do
                     fi
                     problem="true"
                 fi
-                
+
                 if [ "$1" == "table" ] && [ "$problem" != "true" ]
                 then
-                    if [ $format == "ogg" ] || [ $format == "mp3" ]
+                    if [ "$format" == "ogg" ] || [ "$format" == "mp3" ]
                     then    # sample size is irrelevant for MP3 and Vorbis
-                        if [ $channel -eq 1 ]
+                        if [ "$channel" -eq 1 ]
                         then
                             echo "^ Mono   ^        ^ $rate Hz |    |"
                         else
                             echo "^ $friendlychannel ^        ^ $rate Hz |    |"
                         fi
                     else
-                        if [ $channel -eq 1 ]
+                        if [ "$channel" -eq 1 ]
                         then
                             echo "^ Mono   ^ $ssize-bit ^ $rate Hz |    |"
                         else
@@ -169,27 +167,27 @@ do
                         fi
                     fi
                 fi
-                
-                if [ "$problem" != "true" ] && ( [ $format == "ogg" ] || [ $format == "mp3" ] )
+
+                if [ "$problem" != "true" ] && { [ "$format" == "ogg" ] || [ "$format" == "mp3" ] ; }
                 then
                     if [ "$1" != "table" ]
                     then
                         echo "Generating ${rate}Hz ${channel}-channel ${format} file"
-                        if [ $format == "mp3" ]
+                        if [ "$format" == "mp3" ]
                         then    # sox can't make MP3s by default, so we use LAME
-                            lame -S $lameopt --tt test${friendlyrate}k${friendlychannel} test32bit${friendlyrate}k${friendlychannel}.wav test${friendlyrate}k${friendlychannel}.mp3
+                            lame -S "${lameopt[@]}" --tt "test${friendlyrate}k${friendlychannel}" "test32bit${friendlyrate}k${friendlychannel}.wav" "test${friendlyrate}k${friendlychannel}.mp3"
                         else    # For formats where sample size is irrelevant
-                            sox -V0 1kHzR440HzLReference_32i96kStereo.wav -c ${channel} -r ${rate} test${friendlyrate}k${friendlychannel}.${format}
+                            sox -V0 1kHzR440HzLReference_32i96kStereo.wav -c "${channel}" -r "${rate}" "test${friendlyrate}k${friendlychannel}.${format}"
                         fi
                         problem="true"
                     fi
                 fi
-                
+
                 # Use sox by default
-                if [ "$1" != "table" ] && [ $problem != "true" ]
+                if [ "$1" != "table" ] && [ "$problem" != "true" ]
                 then
                     echo "Generating ${ssize}-bit ${rate}Hz ${channel}-channel ${format} file"
-                    sox -V0 1kHzR440HzLReference_32i96kStereo.wav -b ${ssize} -c ${channel} -r ${rate} test${ssize}bit${friendlyrate}k${friendlychannel}.${format}
+                    sox -V0 1kHzR440HzLReference_32i96kStereo.wav -b "${ssize}" -c "${channel}" -r "${rate}" "test${ssize}bit${friendlyrate}k${friendlychannel}.${format}"
                 fi
                 if [ $? -gt 1 ]
                 then

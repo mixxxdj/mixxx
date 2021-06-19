@@ -1,19 +1,13 @@
-/**
- * @file bulkenumerator.cpp
- * @author Neale Picket  neale@woozle.org
- * @date Thu Jun 28 2012
- * @brief USB Bulk controller backend
- */
-
 #include <libusb.h>
 
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/bulk/bulkenumerator.h"
 #include "controllers/bulk/bulksupported.h"
 
-BulkEnumerator::BulkEnumerator()
+BulkEnumerator::BulkEnumerator(UserSettingsPointer pConfig)
         : ControllerEnumerator(),
-          m_context(NULL) {
+          m_context(nullptr),
+          m_pConfig(pConfig) {
     libusb_init(&m_context);
 }
 
@@ -48,14 +42,15 @@ QList<Controller*> BulkEnumerator::queryDevices() {
 
         libusb_get_device_descriptor(device, &desc);
         if (is_interesting(&desc)) {
-            struct libusb_device_handle *handle = NULL;
+            struct libusb_device_handle* handle = nullptr;
             err = libusb_open(device, &handle);
             if (err) {
                 qWarning() << "Error opening a device";
                 continue;
             }
 
-            BulkController* currentDevice = new BulkController(m_context, handle, &desc);
+            BulkController* currentDevice =
+                    new BulkController(m_context, handle, &desc);
             m_devices.push_back(currentDevice);
         }
     }

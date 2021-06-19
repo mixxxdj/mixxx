@@ -1,5 +1,4 @@
-#ifndef PATH_H
-#define PATH_H
+#pragma once
 
 #ifndef PATH_MAX
 #ifndef MAX_PATH
@@ -11,5 +10,3 @@ enum {
     PATH_MAX = MAX_PATH
 };
 #endif
-
-#endif /* PATH_H */

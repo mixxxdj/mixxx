@@ -202,7 +202,7 @@ HerculesMP3e2.shutdown = function() {
 };
 
 HerculesMP3e2.automix = function(midino, control, value, status, group) {
-    // SHIFT BUTTON    
+    // SHIFT BUTTON
     // The "Automix" button is used like a shift button. When this is hold
     //    down, many commands of the console has another functions
 
@@ -215,7 +215,7 @@ HerculesMP3e2.automix = function(midino, control, value, status, group) {
         midi.sendShortMsg(0x90, 31, 0x7F); // Pitchbend + DB
         midi.sendShortMsg(0x90, 10, 0x7F); // Pitchbend - DA
         midi.sendShortMsg(0x90, 11, 0x7F); // Pitchbend + DA
-        midi.sendShortMsg(0x90, 18, 0x7F); // Sync DA 
+        midi.sendShortMsg(0x90, 18, 0x7F); // Sync DA
         midi.sendShortMsg(0x90, 38, 0x7F); // Sync DB
     }
     // Button released
@@ -224,12 +224,12 @@ HerculesMP3e2.automix = function(midino, control, value, status, group) {
             superButtonHold = 0;
         }
         automixPressed = false;
-        // Switch-off some LEDs    
+        // Switch-off some LEDs
         midi.sendShortMsg(0x90, 30, 0x00); // Pitchbend - DB
         midi.sendShortMsg(0x90, 31, 0x00); // Pitchbend + DB
         midi.sendShortMsg(0x90, 10, 0x00); // Pitchbend - DA
         midi.sendShortMsg(0x90, 11, 0x00); // Pitchbend + DA
-        midi.sendShortMsg(0x90, 18, 0x00); // Sync DA 
+        midi.sendShortMsg(0x90, 18, 0x00); // Sync DA
         midi.sendShortMsg(0x90, 38, 0x00); // Sync DB
     }
 };
@@ -345,11 +345,11 @@ HerculesMP3e2.holdTimer = function (group, first, second) {
 
 
 HerculesMP3e2.holdButton = function (group, value, first, second) {
-    // This feature allows you to perform a different function if a button is 
+    // This feature allows you to perform a different function if a button is
     // pressed for 2 seconds. When the button is pressed, the first function is
     // performed. If the button is hold down for 2 seconds, the second function
     // is performed and the first function is disables.
-    
+
     if (value) {
         engine.setValue(group, first, 1);    // Set "On" the first function
         holdTimerID = engine.beginTimer(2000, "HerculesMP3e2.holdTimer(\""+group+"\", \""+first+"\", \""+second+"\")", true);
@@ -364,7 +364,7 @@ HerculesMP3e2.holdButton = function (group, value, first, second) {
             engine.setValue(group, first, 0);    // Set "Off" the first function
         }
     }
-}; 
+};
 
 */
 
@@ -409,7 +409,7 @@ HerculesMP3e2.keyButton = function(midino, control, value, status, group) {
                 engine.setValue(deck, "beatloop_16_toggle", 1);
             } else if (superButtonHold == 1 && value) {
                 engine.setValue(deck, "beatloop_2_toggle", 1);
-            } else if (value) { 
+            } else if (value) {
                 engine.setValue(deck, "beatloop_4_toggle", 1);
             }
             break;
@@ -585,14 +585,14 @@ HerculesMP3e2.scratch = function(midino, control, value, status, group) {
             midi.sendShortMsg(0x90, 79, 0x7F); // Blink Pitchbend + DB
             midi.sendShortMsg(0x90, 58, 0x7F); // Blink Pitchbend - DA
             midi.sendShortMsg(0x90, 59, 0x7F); // Blink Pitchbend + DA
-            midi.sendShortMsg(0x90, 66, 0x7F); // Blink Sync DA 
+            midi.sendShortMsg(0x90, 66, 0x7F); // Blink Sync DA
             midi.sendShortMsg(0x90, 86, 0x7F); // Blink Sync DB
         } else {
             midi.sendShortMsg(0x90, 78, 0x00); // Blink Pitchbend - DB
             midi.sendShortMsg(0x90, 79, 0x00); // Blink Pitchbend + DB
             midi.sendShortMsg(0x90, 58, 0x00); // Blink Pitchbend - DA
             midi.sendShortMsg(0x90, 59, 0x00); // Blink Pitchbend + DA
-            midi.sendShortMsg(0x90, 66, 0x00); // Blink Sync DA 
+            midi.sendShortMsg(0x90, 66, 0x00); // Blink Sync DA
             midi.sendShortMsg(0x90, 86, 0x00); // Blink Sync DB
             if (automixPressed) {
                 superButtonHold = 1;
@@ -641,7 +641,7 @@ HerculesMP3e2.sync = function(midino, control, value, status, group) {
 };
 
 
-// This function is called every "scratchResetTime" seconds and checks if the wheel was moved in the previous interval 
+// This function is called every "scratchResetTime" seconds and checks if the wheel was moved in the previous interval
 // (every interval last "scratchResetTime" seconds). If the wheel was moved enables the scratch mode, else disables it.
 // In this way I have made a simple workaround to simulate the touch-sensitivity of the other controllers.
 
@@ -968,7 +968,7 @@ HerculesMP3e2.loopEnabledLeds = function(value, group, control) {
 
 HerculesMP3e2.selectTrack = function(midino, control, value, status, group) {
     //normal: goes 1 track down
-    //shift: goes 1 track up 
+    //shift: goes 1 track up
     if (superButtonHold >= 1 && value) {
         engine.setValue("[Playlist]", "SelectPrevTrack", 1);
     } else if (value) {

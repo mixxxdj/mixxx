@@ -11,15 +11,20 @@
 namespace mixxx {
 
 class AlbumInfo final {
-    // Album properties (in alphabetical order)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    artist,                    Artist)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzArtistId,       MusicBrainzArtistId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId,      MusicBrainzReleaseId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseGroupId, MusicBrainzReleaseGroupId)
-    PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,                ReplayGain)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                     Title)
+    // Properties in alphabetical order
+    MIXXX_DECL_PROPERTY(QString, artist, Artist)
+#if defined(__EXTRA_METADATA__)
+    MIXXX_DECL_PROPERTY(QString, copyright, Copyright)
+    MIXXX_DECL_PROPERTY(QString, license, License)
+    MIXXX_DECL_PROPERTY(QUuid, musicBrainzArtistId, MusicBrainzArtistId)
+    MIXXX_DECL_PROPERTY(QUuid, musicBrainzReleaseGroupId, MusicBrainzReleaseGroupId)
+    MIXXX_DECL_PROPERTY(QUuid, musicBrainzReleaseId, MusicBrainzReleaseId)
+    MIXXX_DECL_PROPERTY(QString, recordLabel, RecordLabel)
+    MIXXX_DECL_PROPERTY(ReplayGain, replayGain, ReplayGain)
+#endif // __EXTRA_METADATA__
+    MIXXX_DECL_PROPERTY(QString, title, Title)
 
-public:
+  public:
     AlbumInfo() = default;
     AlbumInfo(AlbumInfo&&) = default;
     AlbumInfo(const AlbumInfo&) = default;
@@ -28,13 +33,12 @@ public:
     AlbumInfo& operator=(AlbumInfo&&) = default;
     AlbumInfo& operator=(const AlbumInfo&) = default;
 
-    // TODO(XXX): Remove after all new fields have been added to the library
-    void resetUnsupportedValues();
-
-    // Adjusts floating-point values to match their string representation
+    // Adjusts floating-point properties to match their string representation
     // in file tags to account for rounding errors.
     void normalizeBeforeExport() {
+#if defined(__EXTRA_METADATA__)
         refReplayGain().normalizeBeforeExport();
+#endif // __EXTRA_METADATA__
     }
 };
 

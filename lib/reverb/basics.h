@@ -32,8 +32,6 @@
 #ifndef BASICS_H
 #define BASICS_H
 
-// NOTE(rryan): 3/2014 Added for MSVC support. (missing M_PI)
-#define _USE_MATH_DEFINES
 #include <cmath>
 
 #include <stdlib.h>

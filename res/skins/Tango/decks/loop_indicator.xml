@@ -1,0 +1,37 @@
+<!--
+Description:
+  A loop indicator in decks' artist/title container, visible when loop is enabled
+  but loop controls are hidden.
+Variables:
+  group   : [ChannelN]
+-->
+<Template>
+  <WidgetGroup>
+    <SizePolicy>max,min</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>max,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:../Tango/controls/button_2state_display.xml">
+            <SetVariable name="TooltipId">reloop_toggle</SetVariable>
+            <SetVariable name="ObjectName">LoopIndicator</SetVariable>
+            <SetVariable name="Size">30f,40me</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,loop_enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_loop_beatjump_controls</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

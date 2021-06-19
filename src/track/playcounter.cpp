@@ -1,28 +1,29 @@
 #include "track/playcounter.h"
 
-
-void PlayCounter::setPlayedAndUpdateTimesPlayed(bool bPlayed) {
-    // This should never happen if the play counter is used
-    // as intended! But since this class provides independent
-    // setters for both members we need to check and re-establish
-    // the class invariant just in case.
-    VERIFY_OR_DEBUG_ASSERT(!m_bPlayed || (0 < m_iTimesPlayed)) {
-        // Make sure that the number of times played does
-        // not become negative!
-        m_iTimesPlayed = 1;
+void PlayCounter::updateLastPlayedNowAndTimesPlayed(bool setPlayed) {
+    if (setPlayed) {
+        // Increment unconditionally
+        incTimesPlayed();
+        setLastPlayedNow();
+    } else if (isPlayed()) {
+        // Decrement only if already marked as played during
+        // the current session. Keep the last played at time
+        // stamp!
+        decTimesPlayed();
     }
-    if (bPlayed) {
-        // Increment always
-        ++m_iTimesPlayed;
-    } else if (m_bPlayed) {
-        // Decrement only if already marked as played
-        DEBUG_ASSERT(0 < m_iTimesPlayed);
-        --m_iTimesPlayed;
-    }
-    m_bPlayed = bPlayed;
+    setPlayedFlag(setPlayed);
 }
 
 bool operator==(const PlayCounter& lhs, const PlayCounter& rhs) {
-    return (lhs.getTimesPlayed() == rhs.getTimesPlayed())
-            && (lhs.isPlayed() == rhs.isPlayed());
+    return lhs.getTimesPlayed() == rhs.getTimesPlayed() &&
+            lhs.getLastPlayedAt() == rhs.getLastPlayedAt() &&
+            lhs.isPlayed() == rhs.isPlayed();
+}
+
+QDebug operator<<(QDebug dbg, const PlayCounter& arg) {
+    return dbg << "timesPlayed =" << arg.getTimesPlayed()
+               << '/'
+               << "lastPlayedAt =" << arg.getLastPlayedAt()
+               << '/'
+               << "isPlayed =" << arg.isPlayed();
 }

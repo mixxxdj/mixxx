@@ -1,5 +1,4 @@
-#ifndef CONTROLLERLEARNINGEVENTFILTER_H
-#define CONTROLLERLEARNINGEVENTFILTER_H
+#pragma once
 
 #include <QObject>
 #include <QEvent>
@@ -48,6 +47,3 @@ class ControllerLearningEventFilter : public QObject {
     QHash<QWidget*, ControlInfo> m_widgetControlInfo;
     bool m_bListening;
 };
-
-
-#endif /* CONTROLLERLEARNINGEVENTFILTER_H */

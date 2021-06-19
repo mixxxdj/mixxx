@@ -4,6 +4,7 @@
         <name>Denon MC3000 v0.995</name>
         <author>BeMixxx</author>
         <description>Optimized for Denon MC3000 - Default Midi Channel</description>
+        <manual>denon_mc3000</manual>
     </info>
     <controller id="MC3000 MIDI 1">    
     <scriptfiles>

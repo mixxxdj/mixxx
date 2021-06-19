@@ -1,114 +1,116 @@
-/**
-  * @file hidcontroller.h
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Sun May 1 2011
-  * @brief HID controller backend
-  */
-
-#ifndef HIDCONTROLLER_H
-#define HIDCONTROLLER_H
-
-#include <hidapi.h>
-
-#include <QAtomicInt>
+#pragma once
 
 #include "controllers/controller.h"
-#include "controllers/hid/hidcontrollerpreset.h"
-#include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "controllers/hid/hiddevice.h"
+#include "controllers/hid/legacyhidcontrollermapping.h"
 #include "util/duration.h"
 
-class HidReader : public QThread {
+/// HID controller backend
+class HidController final : public Controller {
     Q_OBJECT
   public:
-    HidReader(hid_device* device);
-    virtual ~HidReader();
-
-    void stop() {
-        m_stop = 1;
-    }
-
-  signals:
-    void incomingData(QByteArray data, mixxx::Duration timestamp);
-
-  protected:
-    void run();
-
-  private:
-    hid_device* m_pHidDevice;
-    QAtomicInt m_stop;
-};
-
-class HidController : public Controller {
-    Q_OBJECT
-  public:
-    HidController(const hid_device_info deviceInfo);
+    explicit HidController(
+            mixxx::hid::DeviceInfo&& deviceInfo);
     ~HidController() override;
 
-    QString presetExtension() override;
+    ControllerJSProxy* jsProxy() override;
 
-    ControllerPresetPointer getPreset() const override {
-        HidControllerPreset* pClone = new HidControllerPreset();
-        *pClone = m_preset;
-        return ControllerPresetPointer(pClone);
-    }
+    QString mappingExtension() override;
 
-    bool savePreset(const QString fileName) const override;
-
-    void visit(const MidiControllerPreset* preset) override;
-    void visit(const HidControllerPreset* preset) override;
-
-    void accept(ControllerVisitor* visitor) override {
-        if (visitor) {
-            visitor->visit(this);
-        }
-    }
+    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
+    void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
     bool isMappable() const override {
-        return m_preset.isMappable();
+        if (!m_pMapping) {
+            return false;
+        }
+        return m_pMapping->isMappable();
     }
 
-    bool matchPreset(const PresetInfo& preset) override;
-
-    static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);
+    bool matchMapping(const MappingInfo& mapping) override;
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
+    void sendReport(QList<int> data, unsigned int length, unsigned int reportID);
 
   private slots:
     int open() override;
     int close() override;
 
+    bool poll() override;
+
   private:
+    bool isPolling() const override;
+    void processInputReport(int bytesRead);
+
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void send(QByteArray data) override;
-    void virtual send(QByteArray data, unsigned int reportID);
+    void sendBytes(const QByteArray& data) override;
+    void sendBytesReport(QByteArray data, unsigned int reportID);
+    void sendFeatureReport(const QList<int>& dataList, unsigned int reportID);
 
-    // Returns a pointer to the currently loaded controller preset. For internal
-    // use only.
-    ControllerPreset* preset() override {
-        return &m_preset;
-    }
+    // getInputReport receives an input report on request.
+    // This can be used on startup to initialize the knob positions in Mixxx
+    // to the physical position of the hardware knobs on the controller.
+    // The returned data structure for the input reports is the same
+    // as in the polling functionality (including ReportID in first byte).
+    // The returned list can be used to call the incomingData
+    // function of the common-hid-packet-parser.
+    QList<int> getInputReport(unsigned int reportID);
 
-    bool matchProductInfo(const ProductInfo& product);
-    void guessDeviceCategory();
+    // getFeatureReport receives a feature reports on request.
+    // HID doesn't support polling feature reports, therefore this is the
+    // only method to get this information.
+    // Usually, single bits in a feature report need to be set without
+    // changing the other bits. The returned list matches the input
+    // format of sendFeatureReport, allowing it to be read, modified
+    // and sent it back to the controller.
+    QList<int> getFeatureReport(unsigned int reportID);
 
-    // Local copies of things we need from hid_device_info
-    int hid_interface_number;
-    unsigned short hid_vendor_id;
-    unsigned short hid_product_id;
-    unsigned short hid_usage_page;
-    unsigned short hid_usage;
-    char* hid_path;
-    wchar_t* hid_serial_raw;
-    QString hid_serial;
-    QString hid_manufacturer;
-    QString hid_product;
+    const mixxx::hid::DeviceInfo m_deviceInfo;
 
-    QString m_sUID;
     hid_device* m_pHidDevice;
-    HidReader* m_pReader;
-    HidControllerPreset m_preset;
+    std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
+
+    static constexpr int kNumBuffers = 2;
+    static constexpr int kBufferSize = 255;
+    unsigned char m_pPollData[kNumBuffers][kBufferSize];
+    int m_lastPollSize;
+    int m_pollingBufferIndex;
+
+    friend class HidControllerJSProxy;
 };
 
-#endif
+class HidControllerJSProxy : public ControllerJSProxy {
+    Q_OBJECT
+  public:
+    HidControllerJSProxy(HidController* m_pController)
+            : ControllerJSProxy(m_pController),
+              m_pHidController(m_pController) {
+    }
+
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0) override {
+        m_pHidController->send(data, length);
+    }
+
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length, unsigned int reportID) {
+        m_pHidController->sendReport(data, length, reportID);
+    }
+
+    Q_INVOKABLE QList<int> getInputReport(
+            unsigned int reportID) {
+        return m_pHidController->getInputReport(reportID);
+    }
+
+    Q_INVOKABLE void sendFeatureReport(
+            const QList<int>& dataList, unsigned int reportID) {
+        m_pHidController->sendFeatureReport(dataList, reportID);
+    }
+
+    Q_INVOKABLE QList<int> getFeatureReport(
+            unsigned int reportID) {
+        return m_pHidController->getFeatureReport(reportID);
+    }
+
+  private:
+    HidController* m_pHidController;
+};

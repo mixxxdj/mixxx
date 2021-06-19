@@ -18,6 +18,7 @@
             <TooltipId><Variable name="tooltip_meter"/></TooltipId>
             <Size>9me,3me</Size>
             <MaximumSize>80,8</MaximumSize>
+            <PathBack scalemode="STRETCH">vumeter_bg.png</PathBack>
             <PathVu scalemode="STRETCH">vumeter.png</PathVu>
             <Horizontal>true</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>

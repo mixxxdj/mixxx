@@ -1,18 +1,3 @@
-/**
- * @file soundmanagerconfig.cpp
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100709
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #include <QRegularExpression>
 
 #include "soundio/soundmanagerconfig.h"
@@ -26,7 +11,8 @@
 // this (7) represents latency values from 1 ms to about 80 ms -- bkgood
 const unsigned int SoundManagerConfig::kMaxAudioBufferSizeIndex = 7;
 
-const QString SoundManagerConfig::kDefaultAPI = QString("None");
+const QString SoundManagerConfig::kDefaultAPI = QStringLiteral("None");
+const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
 // Sample Rate even the cheap sound Devices will support most likely
 const unsigned int SoundManagerConfig::kFallbackSampleRate = 48000;
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
@@ -53,7 +39,7 @@ const QString xmlElementOutput = "output";
 const QString xmlElementInput = "input";
 
 const QRegularExpression kLegacyFormatRegex("((\\d*), )(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))?\\)");
-}
+} // namespace
 
 SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
     : m_api(kDefaultAPI),
@@ -111,7 +97,9 @@ bool SoundManagerConfig::readFromDisk() {
 
     for (int i = 0; i < devElements.count(); ++i) {
         QDomElement devElement(devElements.at(i).toElement());
-        if (devElement.isNull()) continue;
+        if (devElement.isNull()) {
+            continue;
+        }
         SoundDeviceId deviceIdFromFile;
         deviceIdFromFile.name = devElement.attribute(xmlAttributeDeviceName);
         if (deviceIdFromFile.name.isEmpty()) {
@@ -136,6 +124,9 @@ bool SoundManagerConfig::readFromDisk() {
                 devicesMatchingByName++;
             }
         }
+
+        QDomNodeList outElements(devElement.elementsByTagName(xmlElementOutput));
+        QDomNodeList inElements(devElement.elementsByTagName(xmlElementInput));
 
         if (devicesMatchingByName == 0) {
             continue;
@@ -169,44 +160,68 @@ bool SoundManagerConfig::readFromDisk() {
                     if (hardwareDeviceId.name == deviceIdFromFile.name
                             && hardwareDeviceId.alsaHwDevice == deviceIdFromFile.alsaHwDevice) {
                         deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
+                        break;
+                    }
+                }
+            } else {
+                // Check if the one of the matching devices has the configured in and output channels
+                for (const auto& soundDevice : soundDevices) {
+                    SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
+                    if (hardwareDeviceId.name == deviceIdFromFile.name &&
+                            soundDevice->getNumOutputChannels() >=
+                                    outElements.count() &&
+                            soundDevice->getNumInputChannels() >=
+                                    inElements.count()) {
+                        deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
+                        break;
                     }
                 }
             }
         }
 
-        QDomNodeList outElements(devElement.elementsByTagName(xmlElementOutput));
-        QDomNodeList inElements(devElement.elementsByTagName(xmlElementInput));
         for (int j = 0; j < outElements.count(); ++j) {
             QDomElement outElement(outElements.at(j).toElement());
-            if (outElement.isNull()) continue;
+            if (outElement.isNull()) {
+                continue;
+            }
             AudioOutput out(AudioOutput::fromXML(outElement));
-            if (out.getType() == AudioPath::INVALID) continue;
+            if (out.getType() == AudioPath::INVALID) {
+                continue;
+            }
             bool dupe(false);
-            for (const AudioOutput& otherOut : m_outputs) {
+            for (const AudioOutput& otherOut : qAsConst(m_outputs)) {
                 if (out == otherOut
                         && out.getChannelGroup() == otherOut.getChannelGroup()) {
                     dupe = true;
                     break;
                 }
             }
-            if (dupe) continue;
+            if (dupe) {
+                continue;
+            }
 
             addOutput(deviceIdFromFile, out);
         }
         for (int j = 0; j < inElements.count(); ++j) {
             QDomElement inElement(inElements.at(j).toElement());
-            if (inElement.isNull()) continue;
+            if (inElement.isNull()) {
+                continue;
+            }
             AudioInput in(AudioInput::fromXML(inElement));
-            if (in.getType() == AudioPath::INVALID) continue;
+            if (in.getType() == AudioPath::INVALID) {
+                continue;
+            }
             bool dupe(false);
-            for (const AudioInput& otherIn : m_inputs) {
+            for (const AudioInput& otherIn : qAsConst(m_inputs)) {
                 if (in == otherIn
                         && in.getChannelGroup() == otherIn.getChannelGroup()) {
                     dupe = true;
                     break;
                 }
             }
-            if (dupe) continue;
+            if (dupe) {
+                continue;
+            }
             addInput(deviceIdFromFile, in);
         }
     }
@@ -224,21 +239,28 @@ bool SoundManagerConfig::writeToDisk() const {
     docElement.setAttribute(xmlAttributeDeckCount, m_deckCount);
     doc.appendChild(docElement);
 
-    for (const auto& deviceId: getDevices()) {
+    const QSet<SoundDeviceId> deviceIds = getDevices();
+    for (const auto& deviceId : deviceIds) {
         QDomElement devElement(doc.createElement(xmlElementSoundDevice));
         devElement.setAttribute(xmlAttributeDeviceName, deviceId.name);
         devElement.setAttribute(xmlAttributePortAudioIndex, deviceId.portAudioIndex);
         if (m_api == MIXXX_PORTAUDIO_ALSA_STRING) {
             devElement.setAttribute(xmlAttributeAlsaHwDevice, deviceId.alsaHwDevice);
         }
-        for (const AudioInput& in : m_inputs.values(deviceId)) {
+
+        for (auto it = m_inputs.constFind(deviceId);
+                it != m_inputs.constEnd() && it.key() == deviceId;
+                ++it) {
             QDomElement inElement(doc.createElement(xmlElementInput));
-            in.toXML(&inElement);
+            it.value().toXML(&inElement);
             devElement.appendChild(inElement);
         }
-        for (const AudioOutput& out : m_outputs.values(deviceId)) {
+
+        for (auto it = m_outputs.constFind(deviceId);
+                it != m_outputs.constEnd() && it.key() == deviceId;
+                ++it) {
             QDomElement outElement(doc.createElement(xmlElementOutput));
-            out.toXML(&outElement);
+            it.value().toXML(&outElement);
             devElement.appendChild(outElement);
         }
         docElement.appendChild(devElement);
@@ -330,21 +352,29 @@ void SoundManagerConfig::setDeckCount(unsigned int deckCount) {
 void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
     int minimum_deck_count = 0;
 
-    for (const auto& device: getDevices()) {
-        foreach (AudioInput in, m_inputs.values(device)) {
-            if ((in.getType() == AudioInput::DECK ||
-                 in.getType() == AudioInput::VINYLCONTROL ||
-                 in.getType() == AudioInput::AUXILIARY) &&
-                in.getIndex() + 1 > minimum_deck_count) {
+    const QSet<SoundDeviceId> deviceIds = getDevices();
+    for (const auto& deviceId : deviceIds) {
+        for (auto it = m_inputs.constFind(deviceId);
+                it != m_inputs.constEnd() && it.key() == deviceId;
+                ++it) {
+            const int index = it.value().getIndex();
+            const AudioPathType type = it.value().getType();
+            if ((type == AudioInput::DECK ||
+                        type == AudioInput::VINYLCONTROL ||
+                        type == AudioInput::AUXILIARY) &&
+                    index + 1 > minimum_deck_count) {
                 qDebug() << "Found an input connection above current deck count";
-                minimum_deck_count = in.getIndex() + 1;
+                minimum_deck_count = index + 1;
             }
         }
-        foreach (AudioOutput out, m_outputs.values(device)) {
-            if (out.getType() == AudioOutput::DECK &&
-                    out.getIndex() + 1 > minimum_deck_count) {
+        for (auto it = m_outputs.constFind(deviceId);
+                it != m_outputs.constEnd() && it.key() == deviceId;
+                ++it) {
+            const int index = it.value().getIndex();
+            const AudioPathType type = it.value().getType();
+            if (type == AudioOutput::DECK && index + 1 > minimum_deck_count) {
                 qDebug() << "Found an output connection above current deck count";
-                minimum_deck_count = out.getIndex() + 1;
+                minimum_deck_count = index + 1;
             }
         }
     }
@@ -445,7 +475,7 @@ bool SoundManagerConfig::hasExternalRecordBroadcast() {
  *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
  *              load default API and master device.
  */
-void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int flags) {
+void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
         QList<QString> apiList = soundManager->getHostAPIList();
         if (!apiList.isEmpty()) {
@@ -523,4 +553,3 @@ QSet<SoundDeviceId> SoundManagerConfig::getDevices() const {
     }
     return devices;
 }
-

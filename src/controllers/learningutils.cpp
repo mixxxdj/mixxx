@@ -73,19 +73,17 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         qDebug() << "Control:" << control;
     }
 
-    for (QMap<unsigned char, int>::const_iterator it = stats.value_histogram.begin();
-         it != stats.value_histogram.end(); ++it) {
+    for (auto it = stats.value_histogram.constBegin();
+         it != stats.value_histogram.constEnd(); ++it) {
         qDebug() << "Overall Value:" << it.key()
                  << "count" << it.value();
     }
 
-    for (QMap<unsigned char, MessageStats>::const_iterator control_it =
-                 stats_by_control.begin();
-         control_it != stats_by_control.end(); ++control_it) {
+    for (auto control_it = stats_by_control.constBegin();
+         control_it != stats_by_control.constEnd(); ++control_it) {
         QString controlName = QString("Control %1").arg(control_it.key());
-        for (QMap<unsigned char, int>::const_iterator it =
-                     control_it->value_histogram.begin();
-             it != control_it->value_histogram.end(); ++it) {
+        for (auto it = control_it->value_histogram.constBegin();
+             it != control_it->value_histogram.constEnd(); ++it) {
             qDebug() << controlName << "Value:" << it.key()
                      << "count" << it.value();
         }
@@ -95,17 +93,17 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
     bool one_control = stats.controls.size() == 1;
     bool one_channel = stats.channels.size() == 1;
-    bool only_note_on = stats.opcodes.size() == 1 && stats.opcodes.contains(MIDI_NOTE_ON);
+    bool only_note_on = stats.opcodes.size() == 1 && stats.opcodes.contains(MidiOpCode::NoteOn);
     bool only_note_on_and_note_off = stats.opcodes.size() == 2 &&
-            stats.opcodes.contains(MIDI_NOTE_ON) &&
-            stats.opcodes.contains(MIDI_NOTE_OFF);
+            stats.opcodes.contains(MidiOpCode::NoteOn) &&
+            stats.opcodes.contains(MidiOpCode::NoteOff);
 
-    bool has_cc = stats.opcodes.contains(MIDI_CC);
+    bool has_cc = stats.opcodes.contains(MidiOpCode::ControlChange);
     bool only_cc = stats.opcodes.size() == 1 && has_cc;
     int num_cc_controls = 0;
-    for (QMap<unsigned char, MessageStats>::const_iterator it = stats_by_control.begin();
-         it != stats_by_control.end(); ++it) {
-        if (it->opcodes.contains(MIDI_CC)) {
+    for (auto it = stats_by_control.constBegin();
+         it != stats_by_control.constEnd(); ++it) {
+        if (it->opcodes.contains(MidiOpCode::ControlChange)) {
             num_cc_controls++;
         }
     }
@@ -143,12 +141,14 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiOptions options;
 
         MidiKey note_on;
-        note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
+        note_on.status = MidiUtils::statusFromOpCodeAndChannel(
+                MidiOpCode::NoteOn, *stats.channels.begin());
         note_on.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(note_on, options, control));
 
         MidiKey note_off;
-        note_off.status = MIDI_NOTE_OFF | *stats.channels.begin();
+        note_off.status = MidiUtils::statusFromOpCodeAndChannel(
+                MidiOpCode::NoteOff, *stats.channels.begin());
         note_off.control = note_on.control;
         mappings.append(MidiInputMapping(note_off, options, control));
     } else if (one_control && one_channel &&
@@ -159,7 +159,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         MidiOptions options;
 
         MidiKey note_on;
-        note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
+        note_on.status = MidiUtils::statusFromOpCodeAndChannel(
+                MidiOpCode::NoteOn, *stats.channels.begin());
         note_on.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(note_on, options, control));
     } else if (one_control && one_channel &&
@@ -167,18 +168,18 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
                (only_note_on || only_cc)) {
         // This looks like a toggle switch. If we only got one value and it's
         // either min or max then this behaves like hard-coded toggle buttons on
-        // the VCI-400. The opcode can be MIDI_NOTE_ON or MIDI_CC.
+        // the VCI-400. The opcode can be MidiOpCode::NoteOn or MidiOpCode::ControlChange.
         // Examples:
         // - VCI-400 vinyl toggle button (NOTE_ON)
         // - Korg nanoKontrol switches (CC)
         MidiOptions options;
-        options.sw = true;
+        options.setFlag(MidiOption::Switch);
 
         MidiKey note_on;
         // The predicate ensures only NOTE_ON or CC messages can trigger this
         // logic.
-        MidiOpCode code = only_note_on ? MIDI_NOTE_ON : MIDI_CC;
-        note_on.status = code | *stats.channels.begin();
+        MidiOpCode code = only_note_on ? MidiOpCode::NoteOn : MidiOpCode::ControlChange;
+        note_on.status = MidiUtils::statusFromOpCodeAndChannel(code, *stats.channels.begin());
         note_on.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(note_on, options, control));
     } else if (one_control && one_channel &&
@@ -197,19 +198,21 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // though it is called 'selectknob' it is actually only two's complement
         // processing).
         MidiOptions options;
-        options.selectknob = true;
+        options.setFlag(MidiOption::SelectKnob);
         MidiKey knob;
-        knob.status = MIDI_CC | *stats.channels.begin();
+        knob.status = MidiUtils::statusFromOpCodeAndChannel(
+                MidiOpCode::ControlChange, *stats.channels.begin());
         knob.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(knob, options, control));
     } else if (one_control && one_channel && multiple_values_around_0x40) {
         // A "spread 64" ticker, where 0x40 is zero, positive jog values are
         // 0x41 and above, and negative jog values are 0x3F and below.
         MidiOptions options;
-        options.spread64 = true;
+        options.setFlag(MidiOption::Spread64);
 
         MidiKey knob;
-        knob.status = MIDI_CC | *stats.channels.begin();
+        knob.status = MidiUtils::statusFromOpCodeAndChannel(
+                MidiOpCode::ControlChange, *stats.channels.begin());
         knob.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(knob, options, control));
     } else if (one_channel && has_cc && num_cc_controls == 1 && only_7bit_values) {
@@ -221,15 +224,17 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // reset control.
         ConfigKey resetControl = control;
         resetControl.item.append("_set_default");
-        bool hasResetControl = ControlObject::getControl(resetControl) != NULL;
+        bool hasResetControl = ControlObject::getControl(resetControl,
+                                       ControlFlag::NoWarnIfMissing) != nullptr;
 
         // Find the CC control (based on the predicate one must exist) and add a
         // binding for it.
-        for (QMap<unsigned char, MessageStats>::const_iterator it = stats_by_control.begin();
-             it != stats_by_control.end(); ++it) {
-            if (it->opcodes.contains(MIDI_CC)) {
+        for (auto it = stats_by_control.constBegin();
+             it != stats_by_control.constEnd(); ++it) {
+            if (it->opcodes.contains(MidiOpCode::ControlChange)) {
                 MidiKey knob;
-                knob.status = MIDI_CC | *stats.channels.begin();
+                knob.status = MidiUtils::statusFromOpCodeAndChannel(
+                        MidiOpCode::ControlChange, *stats.channels.begin());
                 knob.control = it.key();
                 mappings.append(MidiInputMapping(knob, MidiOptions(), control));
             }
@@ -238,17 +243,18 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
             // TODO(rryan): We need to modularize each recognizer here so we can
             // run the button recognizer on these messages minus the CC
             // messages.
-            if (hasResetControl && it->opcodes.contains(MIDI_NOTE_ON)) {
+            if (hasResetControl && it->opcodes.contains(MidiOpCode::NoteOn)) {
                 MidiKey note_on;
-                note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
+                note_on.status = MidiUtils::statusFromOpCodeAndChannel(
+                        MidiOpCode::NoteOn, *stats.channels.begin());
                 note_on.control = it.key();
                 mappings.append(MidiInputMapping(note_on, MidiOptions(), resetControl));
             }
         }
     } else if (one_channel && only_cc && stats.controls.size() == 2 &&
-               stats_by_control.begin()->message_count > 10 &&
-               stats_by_control.begin()->message_count ==
-               (stats_by_control.begin() + 1)->message_count) {
+            stats_by_control.begin()->message_count > 10 &&
+            stats_by_control.begin()->message_count ==
+                    (++stats_by_control.begin())->message_count) {
         // If there are two CC controls with the same number of messages then we
         // assume this is a 14-bit CC knob. Now we need to determine which
         // control is the LSB and which is the MSB.
@@ -259,7 +265,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // between messages. We expect to see many high/low wrap-arounds for the
         // LSB.
         int control1 = *stats.controls.begin();
-        int control2 = *(stats.controls.begin() + 1);
+        int control2 = *(++stats.controls.begin());
 
         int control1_max_abs_diff =
                 (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
@@ -280,17 +286,19 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // MSB.
 
         MidiKey msb;
-        msb.status = MIDI_CC | *stats.channels.begin();
+        msb.status = MidiUtils::statusFromOpCodeAndChannel(
+                MidiOpCode::ControlChange, *stats.channels.begin());
         msb.control = msb_control;
         MidiOptions msb_option;
-        msb_option.fourteen_bit_msb = true;
+        msb_option.setFlag(MidiOption::FourteenBitMSB);
         mappings.append(MidiInputMapping(msb, msb_option, control));
 
         MidiKey lsb;
-        lsb.status = MIDI_CC | *stats.channels.begin();
+        lsb.status = MidiUtils::statusFromOpCodeAndChannel(
+                MidiOpCode::ControlChange, *stats.channels.begin());
         lsb.control = lsb_control;
         MidiOptions lsb_option;
-        lsb_option.fourteen_bit_lsb = true;
+        lsb_option.setFlag(MidiOption::FourteenBitLSB);
         mappings.append(MidiInputMapping(lsb, lsb_option, control));
     }
 

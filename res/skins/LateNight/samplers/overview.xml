@@ -1,0 +1,76 @@
+<Template>
+  <Overview>
+    <TooltipId>waveform_overview</TooltipId>
+    <Size>145me,20me</Size>
+    <Group><Variable name="Group"/></Group>
+    <Connection>
+      <ConfigKey><Variable name="Group"/>,playposition</ConfigKey>
+    </Connection>
+    <BgColor><Variable name="BgColorOverview_12"/></BgColor>
+    <SignalColor><Variable name="SignalColor_12"/></SignalColor>
+    <SignalHighColor><Variable name="SignalHighColor"/></SignalHighColor>
+    <SignalMidColor><Variable name="SignalMidColor"/></SignalMidColor>
+    <SignalLowColor><Variable name="SignalLowColor"/></SignalLowColor>
+    <SignalRGBHighColor><Variable name="SignalHighColor"/></SignalRGBHighColor>
+    <SignalRGBMidColor><Variable name="SignalMidColor"/></SignalRGBMidColor>
+    <SignalRGBLowColor><Variable name="SignalLowColor"/></SignalRGBLowColor>
+    <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+    <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
+    <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+    <LabelFontSize><Variable name="OverviewFontSizeSampler"/></LabelFontSize>
+    <DefaultMark>
+      <Align>bottom|right</Align>
+      <Color>#FF0000</Color>
+      <TextColor>#FFFFFF</TextColor>
+      <Text> %1 </Text>
+    </DefaultMark>
+    <!-- Cue -->
+    <Mark>
+      <Control>cue_point</Control>
+      <Text>C</Text>
+      <Align>top|right</Align>
+      <Color><Variable name="CueColor"/></Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <!-- Loop
+    <MarkRange>
+      <StartControl>loop_start_position</StartControl>
+      <EndControl>loop_end_position</EndControl>
+      <EnabledControl>loop_enabled</EnabledControl>
+      <Color><Variable name="LoopColor"/></Color>
+      <DisabledColor>#FFFFFF</DisabledColor>
+    </MarkRange>
+    <Mark>
+      <Control>loop_start_position</Control>
+      <Align>bottom|right</Align>
+      <Color><Variable name="LoopColor"/></Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>loop_end_position</Control>
+      <Align>bottom|right</Align>
+      <Color><Variable name="LoopColor"/></Color>
+      <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl><Variable name="Group"/>,loop_enabled</VisibilityControl>
+    </Mark> -->
+    <!-- Intro -->
+    <MarkRange>
+      <StartControl>intro_start_position</StartControl>
+      <EndControl>intro_end_position</EndControl>
+      <Color><Variable name="IntroOutroColor"/></Color>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <DurationTextColor>#ffffff</DurationTextColor>
+      <DurationTextLocation>after</DurationTextLocation>
+    </MarkRange>
+    <!-- Outro -->
+    <MarkRange>
+      <StartControl>outro_start_position</StartControl>
+      <EndControl>outro_end_position</EndControl>
+      <Color><Variable name="IntroOutroColor"/></Color>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <DurationTextColor>#ffffff</DurationTextColor>
+      <DurationTextLocation>before</DurationTextLocation>
+    </MarkRange>
+    <!-- Don't show intro/outro markers in samplers -->
+  </Overview>
+</Template>
