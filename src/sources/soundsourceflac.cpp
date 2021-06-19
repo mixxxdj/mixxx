@@ -399,10 +399,11 @@ namespace {
 // https://bugs.launchpad.net/mixxx/+bug/1769717
 // https://hydrogenaud.io/index.php/topic,61792.msg559045.html#msg559045
 
-// We will shift decoded samples left by (32 - m_bitsPerSample) to
-// get rid of the garbage in the most significant bits before scaling
-// to the range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon] with
-// epsilon = 1 / 2 ^ bitsPerSample.
+// We multiply the decoded samples by 2 ^ (32 - m_bitsPerSample) to
+// get rid of the garbage in the most significant bits which get shifted
+// out to the left. The resulting, upscaled integer value is then scaled
+// down to the floating point range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon]
+// with epsilon = 1 / 2 ^ bitsPerSample.
 //
 // We have to negate the nominator to compensate for the negative denominator!
 // Otherwise the phase would be inverted: https://bugs.launchpad.net/mixxx/+bug/1933001
