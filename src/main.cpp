@@ -78,9 +78,6 @@ int main(int argc, char * argv[]) {
 
 #ifdef __APPLE__
     Sandbox::checkSandboxed();
-    if (!args.getSettingsPathSet()) {
-        args.setSettingsPath(Sandbox::migrateOldSettings());
-    }
 #endif
 
     MixxxApplication app(argc, argv);
