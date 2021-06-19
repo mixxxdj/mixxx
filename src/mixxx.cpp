@@ -172,7 +172,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     mixxx::Time::start();
 
 #ifdef __APPLE__
-    Sandbox::checkSandboxed();
     // TODO: This place it is to late to provide the same settings path to all components
     // and to early to log errors and give user advises in their system language
     // Solution: Init Mixxx with default, copy preferences and restart.

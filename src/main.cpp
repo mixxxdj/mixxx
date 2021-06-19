@@ -76,6 +76,10 @@ int main(int argc, char * argv[]) {
     // the main thread. Bug #1748636.
     ErrorDialogHandler::instance();
 
+#ifdef __APPLE__
+    Sandbox::checkSandboxed();
+#endif
+
     MixxxApplication app(argc, argv);
 
 #ifdef __APPLE__
