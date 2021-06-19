@@ -87,7 +87,7 @@ bool Sandbox::askForAccess(const QString& path) {
     QString title = QObject::tr("Mixxx Needs Access to: %1")
             .arg(info.fileName());
 
-    QMessageBox::question(nullptr,
+    QMessageBox::information(nullptr,
             title,
             QObject::tr(
                     "Due to Mac Sandboxing, we need your permission to access "
@@ -129,7 +129,7 @@ bool Sandbox::askForAccess(const QString& path) {
         if (sDebug) {
             qDebug() << "User selected the wrong file.";
         }
-        QMessageBox::question(
+        QMessageBox::information(
                 nullptr, title, QObject::tr("You selected the wrong file. To grant Mixxx access, "
                                             "please select the file '%1'. If you do not want to "
                                             "continue, press Cancel.")
