@@ -412,8 +412,8 @@ constexpr CSAMPLE kSampleUnshiftFactor = -CSAMPLE_PEAK /
 inline CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample) {
     static_assert(std::numeric_limits<FLAC__int32>::is_signed);
     static_assert(kSampleUnshiftFactor > CSAMPLE_ZERO, "preserve phase of decoded signal");
-    const auto leftShift = (std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample;
-    const auto shiftedSample = decodedSample << leftShift;
+    const auto shiftLeft = (std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample;
+    const auto shiftedSample = decodedSample << shiftLeft;
     return shiftedSample * kSampleUnshiftFactor;
 }
 
