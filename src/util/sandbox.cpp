@@ -76,14 +76,14 @@ bool Sandbox::canAccess(mixxx::FileInfo* pFileInfo) {
     VERIFY_OR_DEBUG_ASSERT(pFileInfo) {
         return false;
     }
-    openSecurityToken(pFileInfo, true);
-    return pFileInfo->isReadable();
+    return openSecurityToken(pFileInfo, true) &&
+            pFileInfo->isReadable();
 }
 
 //static
 bool Sandbox::canAccessDir(const QDir& dir) {
-    openSecurityTokenForDir(dir, true);
-    return QFileInfo(dir.canonicalPath()).isReadable();
+    return openSecurityTokenForDir(dir, true) &&
+            QFileInfo(dir.canonicalPath()).isReadable();
 }
 
 // static
@@ -105,7 +105,7 @@ bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
     }
     const QString fileName = pFileInfo->fileName();
     const QString title = QObject::tr("Mixxx Needs Access to: %1").arg(fileName);
-    QMessageBox::question(nullptr,
+    QMessageBox::information(nullptr,
             title,
             QObject::tr(
                     "Due to Mac Sandboxing, we need your permission to access "
@@ -147,7 +147,7 @@ bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
         if (sDebug) {
             qDebug() << "User selected the wrong file.";
         }
-        QMessageBox::question(
+        QMessageBox::information(
                 nullptr, title, QObject::tr("You selected the wrong file. To grant Mixxx access, "
                                             "please select the file '%1'. If you do not want to "
                                             "continue, press Cancel.")
