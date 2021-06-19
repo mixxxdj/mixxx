@@ -172,11 +172,12 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     mixxx::Time::start();
 
 #ifdef __APPLE__
-    // TODO: This place it is to late to provide the same settings path to all components
-    // and to early to log errors and give user advises in their system language
-    // Solution: Init Mixxx with default, copy preferences and restart.
-    // Calling this from main.cpp before QApplication is initialized will crash mixxx
-    // due to possible QMesssagebox calls inside migrateOldSettings()
+    // TODO: At this point it is too late to provide the same settings path to all components
+    // and too early to log errors and give users advises in their system language.
+    // Calling this from main.cpp before the QApplication is initialized may cause a crash
+    // due to potential QMessageBox invocations within migrateOldSettings().
+    // Solution: Start Mixxx with default settings, migrate the preferences, and then restart
+    // immediately.
     if (!args.getSettingsPathSet()) {
         CmdlineArgs::Instance().setSettingsPath(Sandbox::migrateOldSettings());
     }
