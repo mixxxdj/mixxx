@@ -73,6 +73,11 @@ bool Sandbox::askForAccess(const QString& path) {
     }
 
     QFileInfo info(path);
+    if (info.exists()) {
+        // we cannot grand access to a not existing file
+        return false;
+    }
+
     // We always want read/write access because we wouldn't want to have to
     // re-ask for access in the future if we need to write.
     if (canAccessFile(info)) {
