@@ -76,14 +76,14 @@ bool Sandbox::canAccess(mixxx::FileInfo* pFileInfo) {
     VERIFY_OR_DEBUG_ASSERT(pFileInfo) {
         return false;
     }
-    return openSecurityToken(pFileInfo, true) &&
-            pFileInfo->isReadable();
+    openSecurityToken(pFileInfo, true);
+    return pFileInfo->isReadable();
 }
 
 //static
 bool Sandbox::canAccessDir(const QDir& dir) {
-    return openSecurityTokenForDir(dir, true) &&
-            QFileInfo(dir.canonicalPath()).isReadable();
+    openSecurityTokenForDir(dir, true);
+    return QFileInfo(dir.canonicalPath()).isReadable();
 }
 
 // static
