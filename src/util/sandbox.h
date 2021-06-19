@@ -42,7 +42,7 @@ class Sandbox {
     }
 
     // Prompt the user to give us access to the path with an open-file dialog.
-    static bool askForAccess(const QString& canonicalPath);
+    static bool askForAccess(const QString& path);
 
     static bool canAccessFile(const QFileInfo& file) {
         SecurityTokenPointer pToken = openSecurityToken(file, true);
