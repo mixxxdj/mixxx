@@ -175,6 +175,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // TODO: This place it is to late to provide the same settings path to all components
     // and to early to log errors and give user advises in their system language
     // Solution: Init Mixxx with default, copy preferences and restart.
+    // Calling this from main.cpp before QApplication is initialized will crash mixxx
+    // due to possible QMesssagebox calls inside migrateOldSettings()
     if (!args.getSettingsPathSet()) {
         CmdlineArgs::Instance().setSettingsPath(Sandbox::migrateOldSettings());
     }
