@@ -74,7 +74,7 @@ bool Sandbox::askForAccess(const QString& path) {
 
     QFileInfo info(path);
     if (info.exists()) {
-        // we cannot grand access to a not existing file
+        // We cannot grant access to a not existing file
         return false;
     }
 
