@@ -406,15 +406,18 @@ namespace {
 //
 // We have to negate the nominator to compensate for the negative denominator!
 // Otherwise the phase would be inverted: https://bugs.launchpad.net/mixxx/+bug/1933001
-constexpr CSAMPLE kSampleUnshiftFactor = -CSAMPLE_PEAK /
+constexpr CSAMPLE kSampleScaleFactor = -CSAMPLE_PEAK /
         (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
 
 inline CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample) {
     static_assert(std::numeric_limits<FLAC__int32>::is_signed);
-    static_assert(kSampleUnshiftFactor > CSAMPLE_ZERO, "preserve phase of decoded signal");
-    const auto shiftLeft = (std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample;
-    const auto shiftedSample = decodedSample << shiftLeft;
-    return shiftedSample * kSampleUnshiftFactor;
+    static_assert(kSampleScaleFactor > CSAMPLE_ZERO, "preserve phase of decoded signal");
+    // Multiples by 2 ^ (32 - bitsPerSample)
+    const auto upscaleShift = (std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample;
+    const auto upscaledSample = decodedSample << upscaleShift;
+    // shiftedSample is now a 32-bit signed integer that needs to scaled
+    // to the range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon]
+    return upscaledSample * kSampleScaleFactor;
 }
 
 } // anonymous namespace
