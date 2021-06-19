@@ -63,25 +63,22 @@ void Sandbox::shutdown() {
 }
 
 // static
-bool Sandbox::askForAccess(const QString& canonicalPath) {
+bool Sandbox::askForAccess(const QString& path) {
     if (sDebug) {
-        qDebug() << "Sandbox::askForAccess" << canonicalPath;
+        qDebug() << "Sandbox::askForAccess" << path;
     }
     if (!enabled()) {
         // Pretend we have access.
         return true;
     }
 
-    QFileInfo info(canonicalPath);
+    QFileInfo info(path);
     // We always want read/write access because we wouldn't want to have to
     // re-ask for access in the future if we need to write.
     if (canAccessFile(info)) {
         return true;
     }
 
-    if (sDebug) {
-        qDebug() << "Sandbox: Requesting user access to" << canonicalPath;
-    }
     QString title = QObject::tr("Mixxx Needs Access to: %1")
             .arg(info.fileName());
 
@@ -98,20 +95,20 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
                     "the file picker. "
                     "We're sorry for this inconvenience.\n\n"
                     "To abort this action, press Cancel on the file dialog.")
-                    .arg(canonicalPath, info.fileName()));
+                    .arg(path, info.fileName()));
 
     QString result;
     QFileInfo resultInfo;
     while (true) {
         if (info.isFile()) {
-            result = QFileDialog::getOpenFileName(nullptr, title, canonicalPath);
+            result = QFileDialog::getOpenFileName(nullptr, title, path);
         } else if (info.isDir()) {
-            result = QFileDialog::getExistingDirectory(nullptr, title, canonicalPath);
+            result = QFileDialog::getExistingDirectory(nullptr, title, path);
         }
 
         if (result.isNull()) {
             if (sDebug) {
-                qDebug() << "Sandbox: User rejected access to" << canonicalPath;
+                qDebug() << "Sandbox: User rejected access to" << path;
             }
             return false;
         }

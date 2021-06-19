@@ -188,8 +188,7 @@ Library::Library(
     // sandboxing then we will need them to give us permission.
     qDebug() << "Checking for access to user's library directories:";
     foreach (QString directoryPath, getDirs()) {
-        QFileInfo directory(directoryPath);
-        bool hasAccess = Sandbox::askForAccess(directory.canonicalFilePath());
+        bool hasAccess = Sandbox::askForAccess(directoryPath);
         qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
     }
 
