@@ -73,7 +73,7 @@ bool Sandbox::askForAccess(const QString& path) {
     }
 
     QFileInfo info(path);
-    if (info.exists()) {
+    if (!info.exists()) {
         // We cannot grant access to a not existing file
         return false;
     }
