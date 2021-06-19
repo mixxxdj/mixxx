@@ -171,6 +171,13 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_runtime_timer.start();
     mixxx::Time::start();
 
+#ifdef __APPLE__
+    Sandbox::checkSandboxed();
+    if (!args.getSettingsPathSet()) {
+        CmdlineArgs::Instance().setSettingsPath(Sandbox::migrateOldSettings());
+    }
+#endif
+
     QString settingsPath = args.getSettingsPath();
 
     mixxx::LogFlags logFlags = mixxx::LogFlag::LogToFile;
