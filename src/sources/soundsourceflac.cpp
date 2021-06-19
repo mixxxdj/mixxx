@@ -416,7 +416,7 @@ inline CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample
     // Multiples by 2 ^ (32 - bitsPerSample)
     const auto upscaleShift = (std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample;
     const auto upscaledSample = decodedSample << upscaleShift;
-    // shiftedSample is now a 32-bit signed integer that needs to scaled
+    // upscaledSample is now a 32-bit signed integer that needs to scaled
     // to the range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon]
     return upscaledSample * kSampleScaleFactor;
 }
