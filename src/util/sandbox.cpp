@@ -90,19 +90,24 @@ bool Sandbox::canAccessDir(const QDir& dir) {
 bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
     // We always want read/write access because we wouldn't want to have to
     // re-ask for access in the future if we need to write.
+    if (sDebug) {
+        qDebug() << "Sandbox: Requesting user access to" << pFileInfo;
+    }
+    if (!enabled()) {
+        // Pretend we have access.
+        return true;
+    }
+
+    if (!pFileInfo->exists()) {
+        // We cannot grant access to a not existing file
+        return false;
+    }
+
     if (canAccess(pFileInfo)) {
         return true;
     }
 
-    const QString canonicalLocation = pFileInfo->canonicalLocation();
-    if (canonicalLocation.isEmpty()) {
-        // File does not exist
-        return false;
-    }
-
-    if (sDebug) {
-        qDebug() << "Sandbox: Requesting user access to" << canonicalLocation;
-    }
+    const QString location = pFileInfo->location();
     const QString fileName = pFileInfo->fileName();
     const QString title = QObject::tr("Mixxx Needs Access to: %1").arg(fileName);
     QMessageBox::information(nullptr,
@@ -118,20 +123,20 @@ bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
                     "the file picker. "
                     "We're sorry for this inconvenience.\n\n"
                     "To abort this action, press Cancel on the file dialog.")
-                    .arg(canonicalLocation, fileName));
+                    .arg(location, fileName));
 
     mixxx::FileInfo resultInfo;
     while (true) {
         QString result;
         if (pFileInfo->isFile()) {
-            result = QFileDialog::getOpenFileName(nullptr, title, canonicalLocation);
+            result = QFileDialog::getOpenFileName(nullptr, title, location);
         } else if (pFileInfo->isDir()) {
-            result = QFileDialog::getExistingDirectory(nullptr, title, canonicalLocation);
+            result = QFileDialog::getExistingDirectory(nullptr, title, location);
         }
 
         if (result.isNull()) {
             if (sDebug) {
-                qDebug() << "Sandbox: User rejected access to" << canonicalLocation;
+                qDebug() << "Sandbox: User rejected access to" << location;
             }
             return false;
         }
