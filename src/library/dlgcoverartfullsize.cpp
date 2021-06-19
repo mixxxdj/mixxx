@@ -1,48 +1,73 @@
-#include <QDesktopWidget>
+#include "library/dlgcoverartfullsize.h"
+
+#include <QRect>
+#include <QScreen>
 #include <QStyle>
 #include <QWheelEvent>
 
-#include "library/dlgcoverartfullsize.h"
-#include "library/coverartutils.h"
 #include "library/coverartcache.h"
-#include "util/compatibility.h"
+#include "library/coverartutils.h"
+#include "moc_dlgcoverartfullsize.cpp"
+#include "track/track.h"
+#include "util/widgethelper.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
         : QDialog(parent),
           m_pPlayer(pPlayer),
-          m_pCoverMenu(new WCoverArtMenu(this)) {
+          m_pCoverMenu(make_parented<WCoverArtMenu>(this)) {
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &DlgCoverArtFullSize::slotCoverFound);
     }
 
     setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
-            this, SLOT(slotReloadCoverArt()));
+    connect(this,
+            &DlgCoverArtFullSize::customContextMenuRequested,
+            this,
+            &DlgCoverArtFullSize::slotCoverMenu);
+    connect(m_pCoverMenu,
+            &WCoverArtMenu::coverInfoSelected,
+            this,
+            &DlgCoverArtFullSize::slotCoverInfoSelected);
+    connect(m_pCoverMenu,
+            &WCoverArtMenu::reloadCoverArt,
+            this,
+            &DlgCoverArtFullSize::slotReloadCoverArt);
 
     if (m_pPlayer != nullptr) {
-        connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                this, SLOT(slotLoadTrack(TrackPointer)));
+        connect(pPlayer,
+                &BaseTrackPlayer::newTrackLoaded,
+                this,
+                &DlgCoverArtFullSize::slotLoadTrack);
     }
 
     setupUi(this);
 }
 
-DlgCoverArtFullSize::~DlgCoverArtFullSize() {
-    delete m_pCoverMenu;
+void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
+    if (parentWidget()) {
+        // Since the widget has a parent, this instance will be reused again.
+        // We need to prevent qt from destroying it's children
+        hide();
+        slotLoadTrack(nullptr);
+        event->ignore();
+    } else {
+        QDialog::closeEvent(event);
+    }
 }
 
 void DlgCoverArtFullSize::init(TrackPointer pTrack) {
-    if (pTrack == nullptr) {
+    if (!pTrack) {
         return;
     }
+    // The real size will be calculated later.
+    // If you zoom in so the window is larger then the desktop, close the
+    // window and reopen, the window will not be resized correctly
+    // by slotCoverFound. Setting a small fixed size before show fixes this
+    resize(100, 100);
     show();
     raise();
     activateWindow();
@@ -54,13 +79,17 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
 
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
     if (m_pLoadedTrack != nullptr) {
-        disconnect(m_pLoadedTrack.get(), SIGNAL(coverArtUpdated()),
-                   this, SLOT(slotTrackCoverArtUpdated()));
+        disconnect(m_pLoadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
     }
     m_pLoadedTrack = pTrack;
     if (m_pLoadedTrack != nullptr) {
-        connect(m_pLoadedTrack.get(), SIGNAL(coverArtUpdated()),
-                this, SLOT(slotTrackCoverArtUpdated()));
+        connect(m_pLoadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
 
         // Somehow setting the widow title triggered a bug in Xlib that resulted
         // in a deadlock before the check for isVisible() was added.
@@ -102,74 +131,126 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
-    if (m_pLoadedTrack != nullptr) {
-        CoverArtCache::requestCover(*m_pLoadedTrack, this);
+    if (m_pLoadedTrack) {
+        CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
+    } else {
+        coverArt->setPixmap(QPixmap());
     }
 }
 
-void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
-                                         const CoverInfoRelative& info, QPixmap pixmap,
-                                         bool fromCache) {
-    Q_UNUSED(info);
-    Q_UNUSED(fromCache);
-
-    if (pRequestor == this && m_pLoadedTrack != nullptr &&
-            m_pLoadedTrack->getCoverHash() == info.hash) {
-        // qDebug() << "DlgCoverArtFullSize::slotCoverFound" << pRequestor << info
-        //          << pixmap.size();
-        m_pixmap = pixmap;
-        // Scale down dialog if the pixmap is larger than the screen.
-        // Use 90% of screen size instead of 100% to prevent an issue with
-        // whitespace appearing on the side when resizing a window whose
-        // borders touch the edges of the screen.
-        QSize dialogSize = m_pixmap.size();
-        const QSize availableScreenSpace =
-            QApplication::desktop()->availableGeometry().size() * 0.9;
-        if (dialogSize.height() > availableScreenSpace.height()) {
-            dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
-                             Qt::KeepAspectRatio);
-        } else if (dialogSize.width() > availableScreenSpace.width()) {
-            dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
-                             Qt::KeepAspectRatio);
-        }
-        QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
-        coverArt->setPixmap(resizedPixmap);
-        // center the window
-        setGeometry(QStyle::alignedRect(
-                Qt::LeftToRight,
-                Qt::AlignCenter,
-                dialogSize,
-                QApplication::desktop()->availableGeometry()));
+void DlgCoverArtFullSize::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        mixxx::cache_key_t requestedCacheKey,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedCacheKey);
+    Q_UNUSED(coverInfoUpdated);
+    if (pRequestor != this || !m_pLoadedTrack ||
+            m_pLoadedTrack->getLocation() != coverInfo.trackLocation) {
+        return;
     }
+
+    m_pixmap = pixmap;
+
+    if (m_pixmap.isNull()) {
+        coverArt->setPixmap(QPixmap());
+        hide();
+        return;
+    }
+
+    // Scale down dialog if the pixmap is larger than the screen.
+    // Use 90% of screen size instead of 100% to prevent an issue with
+    // whitespace appearing on the side when resizing a window whose
+    // borders touch the edges of the screen.
+    QSize dialogSize = m_pixmap.size();
+    QWidget* centerOverWidget = parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(centerOverWidget) {
+        qWarning() << "DlgCoverArtFullSize does not have a parent.";
+        centerOverWidget = this;
+    }
+
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
+    QRect screenGeometry;
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        qWarning() << "Assuming screen size of 800x600px.";
+        screenGeometry = QRect(0, 0, 800, 600);
+    }
+    else {
+        screenGeometry = pScreen->geometry();
+    }
+
+    const QSize availableScreenSpace = screenGeometry.size() * 0.9;
+    if (dialogSize.height() > availableScreenSpace.height()) {
+        dialogSize.scale(dialogSize.width(), screenGeometry.height(), Qt::KeepAspectRatio);
+    } else if (dialogSize.width() > screenGeometry.width()) {
+        dialogSize.scale(screenGeometry.width(), dialogSize.height(), Qt::KeepAspectRatio);
+    }
+    QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
+    coverArt->setPixmap(resizedPixmap);
+
+    // center the window
+    setGeometry(QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            dialogSize,
+            screenGeometry));
 }
 
 // slots to handle signals from the context menu
 void DlgCoverArtFullSize::slotReloadCoverArt() {
-    if (m_pLoadedTrack != nullptr) {
-        auto coverInfo =
-                CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
-        slotCoverInfoSelected(coverInfo);
+    if (!m_pLoadedTrack) {
+        return;
     }
+    slotCoverInfoSelected(
+            CoverInfoGuesser().guessCoverInfoForTrack(
+                    *m_pLoadedTrack));
 }
 
-void DlgCoverArtFullSize::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    // qDebug() << "DlgCoverArtFullSize::slotCoverInfoSelected" << coverInfo;
-    if (m_pLoadedTrack != nullptr) {
-        m_pLoadedTrack->setCoverInfo(coverInfo);
+void DlgCoverArtFullSize::slotCoverInfoSelected(
+        const CoverInfoRelative& coverInfo) {
+    if (!m_pLoadedTrack) {
+        return;
     }
+    m_pLoadedTrack->setCoverInfo(coverInfo);
 }
 
 void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
-    Q_UNUSED(event);
+    if (!m_pCoverMenu->isVisible() && event->button() == Qt::LeftButton) {
+        m_clickTimer.setSingleShot(true);
+        m_clickTimer.start(500);
+        m_coverPressed = true;
+        m_dragStartPosition = event->globalPos() - frameGeometry().topLeft();
+    }
+}
 
+void DlgCoverArtFullSize::mouseReleaseEvent(QMouseEvent* event) {
+    m_coverPressed = false;
     if (m_pCoverMenu->isVisible()) {
         return;
     }
 
     if (event->button() == Qt::LeftButton && isVisible()) {
-        close();
+        if (m_clickTimer.isActive()) {
+        // short press
+            close();
+        } else {
+        // long press
+            return;
+        }
+        event->accept();
+    }
+}
+
+void DlgCoverArtFullSize::mouseMoveEvent(QMouseEvent* event) {
+    if (m_coverPressed) {
+        move(event->globalPos() - m_dragStartPosition);
+        event->accept();
+    } else {
+        return;
     }
 }
 
@@ -193,17 +274,24 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     // Scale the image size
     int oldWidth = width();
     int oldHeight = height();
-    int newWidth = oldWidth + (0.2 * event->delta());
-    int newHeight = oldHeight + (0.2 * event->delta());
+    auto newWidth = static_cast<int>(oldWidth + (0.2 * event->angleDelta().y()));
+    auto newHeight = static_cast<int>(oldHeight + (0.2 * event->angleDelta().y()));
     QSize newSize = size();
     newSize.scale(newWidth, newHeight, Qt::KeepAspectRatio);
 
     // To keep the same part of the image under the cursor, shift the
     // origin (top left point) by the distance the point moves under the cursor.
     QPoint oldOrigin = geometry().topLeft();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QPoint oldPointUnderCursor = event->position().toPoint();
+#else
     QPoint oldPointUnderCursor = event->pos();
-    int newPointX = (double) oldPointUnderCursor.x() / oldWidth * newSize.width();
-    int newPointY = (double) oldPointUnderCursor.y() / oldHeight * newSize.height();
+#endif
+
+    const auto newPointX = static_cast<int>(
+            static_cast<double>(oldPointUnderCursor.x()) / oldWidth * newSize.width());
+    const auto newPointY = static_cast<int>(
+            static_cast<double>(oldPointUnderCursor.y()) / oldHeight * newSize.height());
     QPoint newOrigin = QPoint(
         oldOrigin.x() + (oldPointUnderCursor.x() - newPointX),
         oldOrigin.y() + (oldPointUnderCursor.y() - newPointY));

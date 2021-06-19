@@ -4,6 +4,7 @@
     <name>Vestax Spin</name>
     <author>Bill Good, based on the work of Anders Gunnarsson</author>
     <description>Bill's controller mapping for Vestax Spin + script</description>
+    <manual>vestax_spin</manual>
   </info>
   <controller id="Vestax Spin">
     <scriptfiles>

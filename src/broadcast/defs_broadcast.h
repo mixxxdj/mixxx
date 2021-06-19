@@ -1,5 +1,4 @@
-#ifndef DEFS_BROADCAST_H
-#define DEFS_BROADCAST_H
+#pragma once
 
 // NOTE(rryan): Do not change this from [Shoutcast] unless you also put upgrade
 // logic in src/preferences/upgrade.h.
@@ -23,8 +22,8 @@
 #define BROADCAST_BITRATE_48KBPS 48
 #define BROADCAST_BITRATE_32KBPS 32
 
-#define BROADCAST_FORMAT_MP3 "MP3"
-#define BROADCAST_FORMAT_OV "OggVorbis"
+// This code is intended just for fixing old settings. Use formats from defs_recording.h instead.
+#define BROADCAST_FORMAT_OV_LEGACY "OggVorbis"
 
 // EngineNetworkStream can't use locking mechanisms to protect its
 // internal worker list against concurrency issues, as it is used by
@@ -34,5 +33,3 @@
 // the workers are then performed on thread-safe QSharedPointers and not
 // onto the thread-unsafe QVector
 #define BROADCAST_MAX_CONNECTIONS 16
-
-#endif /* DEFS_BROADCAST_H */

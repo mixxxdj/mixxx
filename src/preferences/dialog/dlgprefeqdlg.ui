@@ -76,6 +76,9 @@
             <property name="text">
              <string>Equalizer Plugin</string>
             </property>
+            <property name="leftMargin">
+             <number>3</number>
+            </property>
            </widget>
           </item>
           <item row="0" column="2">
@@ -85,6 +88,9 @@
               <weight>75</weight>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="leftMargin">
+             <number>3</number>
             </property>
             <property name="text">
              <string>Quick Effect</string>
@@ -300,18 +306,18 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="MasterMasterEQ">
+    <widget class="QGroupBox" name="MainMainEQ">
      <property name="title">
-      <string>Master EQ</string>
+      <string>Main EQ</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QComboBox" name="comboBoxMasterEq"/>
+         <widget class="QComboBox" name="comboBoxMainEq"/>
         </item>
         <item>
-         <widget class="QPushButton" name="pbResetMasterEq">
+         <widget class="QPushButton" name="pbResetMainEq">
           <property name="text">
            <string>Reset Parameter</string>
           </property>
@@ -410,6 +416,21 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>CheckBoxEqOnly</tabstop>
+  <tabstop>CheckBoxSingleEqEffect</tabstop>
+  <!-- TODO(ronso0)
+      Dynamically add Eq / Quick Effect comboboxes -->
+  <tabstop>SliderHiEQ</tabstop>
+  <tabstop>SliderLoEQ</tabstop>
+  <tabstop>comboBoxMainEq</tabstop>
+  <tabstop>pbResetMainEq</tabstop>
+  <!-- TODO(ronso0)
+      Dynamically add Main EQ sliders -->
+  <tabstop>CheckBoxEqAutoReset</tabstop>
+  <tabstop>CheckBoxGainAutoReset</tabstop>
+  <tabstop>CheckBoxBypass</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -2,10 +2,10 @@ function BehringerBCD3000 () {}
 
 //sensitivity setting
 BehringerBCD3000.UseAcceleration = true;
-BehringerBCD3000.JogSensivity = 0.5;
+BehringerBCD3000.JogSensitivity = 0.5;
 
 BehringerBCD3000.init = function (id) { // called when the device is opened & set up
-    
+
     BehringerBCD3000.reset();
 
     // Ask BCD to send the current values of all rotary knobs and sliders
@@ -22,7 +22,7 @@ BehringerBCD3000.shutdown = function () {
 
     BehringerBCD3000.reset();
 
-    // Reenable jog acceleration 
+    // Reenable jog acceleration
     if (!BehringerBCD3000.UseAcceleration)
         midi.sendShortMsg(0xB0, 0x63, 0x7F);
 };
@@ -51,7 +51,7 @@ BehringerBCD3000.getDeck = function (group) {
         return 0;
     else if (group == "[Channel2]")
         return 1;
-    
+
     print("Invalid group : " + group);
     return -1; // error
 }
@@ -93,7 +93,7 @@ BehringerBCD3000.jogWheel = function (channel, control, value, status, group) {
 
     } else {
 
-        jogValue = (value - 0x40) * BehringerBCD3000.JogSensivity;
+        jogValue = (value - 0x40) * BehringerBCD3000.JogSensitivity;
         engine.setValue(group, "jog", jogValue);
 
     }
@@ -114,7 +114,7 @@ BehringerBCD3000.scratchButton = function (channel, control, value, status, grou
             midi.sendShortMsg(0xB0, 0x0B, 0x7F);
     } else {
         // Turn off the scratch light
-        if (!deck)    
+        if (!deck)
             midi.sendShortMsg(0xB0, 0x13, 0x00);
         else
             midi.sendShortMsg(0xB0, 0x0B, 0x00);
@@ -129,7 +129,7 @@ BehringerBCD3000.stopScratch = function(deck) {
 }
 
 
-//Set loop function 
+//Set loop function
 BehringerBCD3000.loop = function (channel, control, value, status, group) {
     if (value)
         action = "loop_in";
@@ -138,7 +138,7 @@ BehringerBCD3000.loop = function (channel, control, value, status, group) {
         engine.setValue(group, action, 1);
 };
 
-//On button function 
+//On button function
 BehringerBCD3000.On = function (channel, control, value, status, group) {
 
     if (BehringerBCD3000.actionKey){
@@ -158,7 +158,7 @@ BehringerBCD3000.On = function (channel, control, value, status, group) {
     };
 };
 
-//Action button function 
+//Action button function
 BehringerBCD3000.Action = function (channel, control, value, status, group) {
     if (BehringerBCD3000.onKey){
         BehringerBCD3000.onKey = false;
@@ -179,7 +179,7 @@ BehringerBCD3000.Action = function (channel, control, value, status, group) {
     }
 };
 
-//Key button function 
+//Key button function
 BehringerBCD3000.keykey = function (channel, control, value, status, group) {
     // toggle "alt" flag
     if (value) BehringerBCD3000.alt = !BehringerBCD3000.alt;
@@ -198,7 +198,7 @@ BehringerBCD3000.keykey = function (channel, control, value, status, group) {
 };
 
 
-//Ext-A button function 
+//Ext-A button function
 //BehringerBCD3000.extakey = function (channel, control, value, status, group) {
 //    // toggle inputA flag
 //    if (value) BehringerBCD3000.inputA = !BehringerBCD3000.inputA;
@@ -211,7 +211,7 @@ BehringerBCD3000.keykey = function (channel, control, value, status, group) {
 //    }
 //};
 
-//Ext-B button function 
+//Ext-B button function
 //BehringerBCD3000.extbkey = function (channel, control, value, status, group) {
 //    // toggle inputB flag
 //    if (value) BehringerBCD3000.inputB = !BehringerBCD3000.inputB;

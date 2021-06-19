@@ -1,20 +1,15 @@
-#ifndef SKINLOADER_H
-#define SKINLOADER_H
+#pragma once
 
-#include <QWidget>
-#include <QList>
 #include <QDir>
+#include <QList>
+#include <QSet>
+#include <QWidget>
 
 #include "preferences/usersettings.h"
+#include "skin/skin.h"
 
-class KeyboardEventFilter;
-class PlayerManager;
-class ControllerManager;
-class Library;
-class VinylControlManager;
-class EffectsManager;
-class RecordingManager;
-class LaunchImage;
+namespace mixxx {
+namespace skin {
 
 class SkinLoader {
   public:
@@ -22,27 +17,23 @@ class SkinLoader {
     virtual ~SkinLoader();
 
     QWidget* loadConfiguredSkin(QWidget* pParent,
-                                KeyboardEventFilter* pKeyboard,
-                                PlayerManager* pPlayerManager,
-                                ControllerManager* pControllerManager,
-                                Library* pLibrary,
-                                VinylControlManager* pVCMan,
-                                EffectsManager* pEffectsManager,
-                                RecordingManager* pRecordingManager);
+            QSet<ControlObject*>* skinCreatedControls,
+            mixxx::CoreServices* pCoreServices);
 
-    LaunchImage* loadLaunchImage(QWidget* pParent);
+    LaunchImage* loadLaunchImage(QWidget* pParent) const;
 
-    QString getSkinPath(const QString& skinName) const;
-    QPixmap getSkinPreview(const QString& skinName) const;
-    QString getConfiguredSkinPath() const;
+    SkinPointer getSkin(const QString& skinName) const;
+    SkinPointer getConfiguredSkin() const;
     QString getDefaultSkinName() const;
     QList<QDir> getSkinSearchPaths() const;
+    QList<SkinPointer> getSkins() const;
 
   private:
-    QString pickResizableSkin(QString oldSkin) const;
+    QString pickResizableSkin(const QString& oldSkin) const;
+    SkinPointer skinFromDirectory(const QDir& dir) const;
 
     UserSettingsPointer m_pConfig;
 };
 
-
-#endif /* SKINLOADER_H */
+} // namespace skin
+} // namespace mixxx

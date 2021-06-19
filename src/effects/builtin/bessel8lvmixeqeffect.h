@@ -1,5 +1,4 @@
-#ifndef BESSEL8LVMIXEQEFFECT_H
-#define BESSEL8LVMIXEQEFFECT_H
+#pragma once
 
 #include "effects/builtin/lvmixeqbase.h"
 
@@ -10,8 +9,8 @@
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterbessel8.h"
-#include "engine/enginefilterdelay.h"
+#include "engine/filters/enginefilterbessel8.h"
+#include "engine/filters/enginefilterdelay.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -60,5 +59,3 @@ class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGrou
 
     DISALLOW_COPY_AND_ASSIGN(Bessel8LVMixEQEffect);
 };
-
-#endif /* BESSEL8LVMIXEQEFFECT_H */

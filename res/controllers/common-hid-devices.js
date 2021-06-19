@@ -35,7 +35,7 @@ HIDTrackpadDevice = function() {
     }
 }
 
-// Generic HID keyboard implementation 
+// Generic HID keyboard implementation
 HIDKeyboardDevice = function() {
     this.controller = new HIDController()
 

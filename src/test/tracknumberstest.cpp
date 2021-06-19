@@ -69,7 +69,7 @@ class TrackNumbersTest : public testing::Test {
 
         EXPECT_EQ(expectedTrackNumber, actualTrackNumber);
         EXPECT_EQ(expectedTrackTotal, actualTrackTotal);
-        EXPECT_EQ(inputValue, TrackNumbers::joinStrings(actualTrackNumber, actualTrackTotal));
+        EXPECT_EQ(inputValue, TrackNumbers::joinAsString(actualTrackNumber, actualTrackTotal));
     }
 };
 

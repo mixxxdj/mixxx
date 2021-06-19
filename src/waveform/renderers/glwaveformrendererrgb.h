@@ -1,13 +1,17 @@
-#ifndef GLWAVEFORMRENDERERRGB_H
-#define GLWAVEFORMRENDERERRGB_H
+#pragma once
 
-#include "waveformrenderersignalbase.h"
+#include "waveform/renderers/glwaveformrenderer.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
+#include "waveform/renderers/waveformrenderersignalbase.h"
 
 class ControlObject;
 
-class GLWaveformRendererRGB : public WaveformRendererSignalBase {
+class GLWaveformRendererRGB : public WaveformRendererSignalBase,
+                              public GLWaveformRenderer {
   public:
-    explicit GLWaveformRendererRGB(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit GLWaveformRendererRGB(
+            WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererRGB();
 
     virtual void onSetup(const QDomNode& node);
@@ -17,4 +21,4 @@ class GLWaveformRendererRGB : public WaveformRendererSignalBase {
     DISALLOW_COPY_AND_ASSIGN(GLWaveformRendererRGB);
 };
 
-#endif // GLWAVEFORMRENDERERRGB_H
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2

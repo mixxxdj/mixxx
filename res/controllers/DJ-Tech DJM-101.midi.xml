@@ -5,6 +5,7 @@
         <author>zestoi</author>
         <description>Mapping with full led feedback for the DJ-Tech DJM-101</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3693</forums>
+        <manual>dj_tech_djm_101</manual>
     </info>
     <controller id="DJM-101">
         <scriptfiles>

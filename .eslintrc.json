@@ -1,8 +1,11 @@
 {
   "extends": "eslint:recommended",
   "parserOptions": {
-    "ecmaVersion": 5,
+    "ecmaVersion": 7,
     "sourceType": "script"
+  },
+  "env": {
+    "es6": true
   },
   "rules": {
     "array-bracket-spacing" : "warn",
@@ -47,6 +50,10 @@
   "globals": {
     "console": "writable",
     "svg": "writable",
-    "print": "readonly"
+    "print": "readonly",
+    "HIDController": "writable",
+    "HIDDebug": "writable",
+    "HIDPacket": "writable",
+    "controller": "writable"
   }
 }

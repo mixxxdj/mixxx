@@ -1,12 +1,11 @@
-#ifndef METRONOMEEFFECT_H
-#define METRONOMEEFFECT_H
+#pragma once
 
 #include <QMap>
 
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterpansingle.h"
+#include "engine/filters/enginefilterpansingle.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -22,7 +21,7 @@ class MetronomeGroupState final : public EffectState {
     ~MetronomeGroupState() {
     }
 
-    unsigned int m_framesSinceClickStart;
+    SINT m_framesSinceClickStart;
 };
 
 class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
@@ -46,5 +45,3 @@ class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(MetronomeEffect);
 };
-
-#endif /* METRONOMEEFFECT_H */

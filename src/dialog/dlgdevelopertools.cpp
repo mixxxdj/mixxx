@@ -3,9 +3,10 @@
 #include <QDateTime>
 
 #include "control/control.h"
+#include "moc_dlgdevelopertools.cpp"
 #include "util/cmdlineargs.h"
-#include "util/statsmanager.h"
 #include "util/logging.h"
+#include "util/statsmanager.h"
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      UserSettingsPointer pConfig)
@@ -13,20 +14,20 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
           m_pConfig(pConfig) {
     setupUi(this);
 
-    QList<QSharedPointer<ControlDoublePrivate> > controlsList;
-    ControlDoublePrivate::getControls(&controlsList);
-    QHash<ConfigKey, ConfigKey> controlAliases =
+    const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
+            ControlDoublePrivate::getAllInstances();
+    const QHash<ConfigKey, ConfigKey> controlAliases =
             ControlDoublePrivate::getControlAliases();
 
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
-            it != controlsList.end(); ++it) {
+    for (auto it = controlsList.constBegin();
+            it != controlsList.constEnd(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             m_controlModel.addControl(pControl->getKey(), pControl->name(),
                                       pControl->description());
 
             ConfigKey aliasKey = controlAliases[pControl->getKey()];
-            if (!aliasKey.isNull()) {
+            if (aliasKey.isValid()) {
                 m_controlModel.addControl(aliasKey, pControl->name(),
                                           "Alias for " + pControl->getKey().group + pControl->getKey().item);
             }
@@ -43,8 +44,10 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
 
     StatsManager* pManager = StatsManager::instance();
     if (pManager) {
-        connect(pManager, SIGNAL(statUpdated(const Stat&)),
-                &m_statModel, SLOT(statUpdated(const Stat&)));
+        connect(pManager,
+                &StatsManager::statUpdated,
+                &m_statModel,
+                &StatModel::statUpdated);
         pManager->emitAllStats();
     }
 
@@ -58,16 +61,24 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     }
 
     // Connect search box signals to the library
-    connect(controlSearch, SIGNAL(search(const QString&)),
-            this, SLOT(slotControlSearch(const QString&)));
-    connect(controlDump, SIGNAL(clicked()),
-            this, SLOT(slotControlDump()));
+    connect(controlSearch,
+            &WSearchLineEdit::search,
+            this,
+            &DlgDeveloperTools::slotControlSearch);
+    connect(controlDump,
+            &QPushButton::clicked,
+            this,
+            &DlgDeveloperTools::slotControlDump);
 
     // Set up the log search box
-    connect(logSearch, SIGNAL(returnPressed()),
-            this, SLOT(slotLogSearch()));
-    connect(logSearchButton, SIGNAL(clicked()),
-            this, SLOT(slotLogSearch()));
+    connect(logSearch,
+            &QLineEdit::returnPressed,
+            this,
+            &DlgDeveloperTools::slotLogSearch);
+    connect(logSearchButton,
+            &QPushButton::clicked,
+            this,
+            &DlgDeveloperTools::slotLogSearch);
 
     m_logCursor = logTextView->textCursor();
 
@@ -134,10 +145,9 @@ void DlgDeveloperTools::slotControlDump() {
         return;
     }
 
-    QList<QSharedPointer<ControlDoublePrivate> > controlsList;
-    ControlDoublePrivate::getControls(&controlsList);
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it =
-            controlsList.begin(); it != controlsList.end(); ++it) {
+    const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
+            ControlDoublePrivate::getAllInstances();
+    for (auto it = controlsList.constBegin(); it != controlsList.constEnd(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             QString line = pControl->getKey().group + "," +

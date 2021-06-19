@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset mixxxVersion="1.10.1+" schemaVersion="1">
     <info>
-        <name>Akai LPD8 - RK</name>
+        <name>Akai LPD8</name>
         <author>Rob K</author>
         <description>This is a mapping for an Akai LPD8.  Provides access to transport controls, 30 hotcues, loop controls, basic beat jumping, for two decks and two samplers.  Prog 1 = Deck 1; Prog 2 = Deck 2; Prog 3 = Sampler 1; Prog 4 = Sampler 4.  PAD controls hotcues, CC controls Loops, PROG CHNG provides transport controls.  Intended for use as a supplementary controller on top of a standard DJ controller to give access to more hotcues, etc. but could be used as a standalone controller in a pinch.  Created Jan 1, 2013</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=4477</forums>
+        <forums>https://mixxx.discourse.group/t/akai-lpd8-mapping-4-decks-30-hotcues-loops-etc-v2/13064</forums>
+        <manual>akai_lpd8</manual>
     </info>
     <controller id="LPD8">
         <scriptfiles>

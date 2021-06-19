@@ -1,5 +1,4 @@
-#ifndef TAPFILTER_H
-#define TAPFILTER_H
+#pragma once
 
 #include <QObject>
 #include <QMutex>
@@ -27,5 +26,3 @@ class TapFilter : public QObject {
     mixxx::Duration m_maxInterval;
     QMutex m_mutex;
 };
-
-#endif /* TAPFILTER_H */

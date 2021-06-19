@@ -1,42 +1,40 @@
 #include "library/export/trackexportworker.h"
-#include "util/compatibility.h"
 
+#include <QDebug>
 #include <QFileInfo>
 #include <QMessageBox>
-#include <QDebug>
+
+#include "moc_trackexportworker.cpp"
+#include "track/track.h"
 
 namespace {
 
-QString rewriteFilename(const QFileInfo& fileinfo, int index) {
+QString rewriteFilename(const mixxx::FileInfo& fileinfo, int index) {
     // We don't have total control over the inputs, so definitely
     // don't use .arg().arg().arg().
     const QString index_str = QString("%1").arg(index, 4, 10, QChar('0'));
-    return QString("%1-%2.%3").arg(fileinfo.baseName(), index_str,
-                                   fileinfo.completeSuffix());
+    return QString("%1-%2.%3").arg(fileinfo.baseName(), index_str, fileinfo.completeSuffix());
 }
 
 // Iterate over a list of tracks and generate a minimal set of files to copy.
 // Finds duplicate filenames.  Munges filenames if they refer to different files,
 // and skips if they refer to the same disk location.  Returns a map from
-// QString (the destination possibly-munged filenames) to QFileinfo (the source
+// QString (the destination possibly-munged filenames) to QFileInfo (the source
 // file information).
-QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
+QMap<QString, mixxx::FileInfo> createCopylist(const TrackPointerList& tracks) {
     // QMap is a non-obvious return value, but it's easy for callers to use
     // in practice and is the best object for producing the final list
     // efficiently.
-    QMap<QString, QFileInfo> copylist;
-    for (const auto& it : tracks) {
-        if (it->getCanonicalLocation().isEmpty()) {
+    QMap<QString, mixxx::FileInfo> copylist;
+    for (const auto& pTrack : tracks) {
+        auto fileInfo = pTrack->getFileInfo();
+        if (fileInfo.resolveCanonicalLocation().isEmpty()) {
             qWarning()
                     << "File not found or inaccessible while exporting"
-                    << it->getLocation();
+                    << fileInfo;
             // Skip file
             continue;
         }
-
-        // When obtaining the canonical location the file info of the
-        // track might have been refreshed. Get it now.
-        const auto fileInfo = it->getFileInfo();
 
         const auto fileName = fileInfo.fileName();
         auto destFileName = fileName;
@@ -48,7 +46,7 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
                 copylist[destFileName] = fileInfo;
                 break;
             }
-            if (fileInfo.canonicalFilePath() == duplicateIter->canonicalFilePath()) {
+            if (fileInfo.canonicalLocation() == duplicateIter->canonicalLocation()) {
                 // Silently ignore and skip duplicate files that point
                 // to the same location on disk
                 break;
@@ -58,7 +56,7 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
                         << "Failed to generate a unique file name from"
                         << fileName
                         << "while exporting"
-                        << it->getLocation();
+                        << fileInfo.location();
                 break;
             }
             // Next round
@@ -72,26 +70,27 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
 
 void TrackExportWorker::run() {
     int i = 0;
-    QMap<QString, QFileInfo> copy_list = createCopylist(m_tracks);
+    QMap<QString, mixxx::FileInfo> copy_list = createCopylist(m_tracks);
     for (auto it = copy_list.constBegin(); it != copy_list.constEnd(); ++it) {
         // We emit progress twice per loop, which may seem excessive, but it
         // guarantees that we emit a sane progress before we start and after
         // we end.  In between, each filename will get its own visible tick
         // on the bar, which looks really nice.
-        emit(progress(it->fileName(), i, copy_list.size()));
+        emit progress(it->fileName(), i, copy_list.size());
         copyFile(*it, it.key());
-        if (load_atomic(m_bStop)) {
-            emit(canceled());
+        if (atomicLoadAcquire(m_bStop)) {
+            emit canceled();
             return;
         }
         ++i;
-        emit(progress(it->fileName(), i, copy_list.size()));
+        emit progress(it->fileName(), i, copy_list.size());
     }
 }
 
-void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,
-                                 const QString& dest_filename) {
-    QString sourceFilename = source_fileinfo.canonicalFilePath();
+void TrackExportWorker::copyFile(
+        const mixxx::FileInfo& source_fileinfo,
+        const QString& dest_filename) {
+    QString sourceFilename = source_fileinfo.canonicalLocation();
     const QString dest_path = QDir(m_destDir).filePath(dest_filename);
     QFileInfo dest_fileinfo(dest_path);
 
@@ -147,21 +146,21 @@ void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,
 }
 
 TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
-        QString filename) {
+        const QString& filename) {
     // QT's QFuture is not quite right for this type of threaded question-and-answer.
     // std::future works fine, even with signals and slots.
     QScopedPointer<std::promise<OverwriteAnswer>> mode_promise(
             new std::promise<OverwriteAnswer>());
     std::future<OverwriteAnswer> mode_future = mode_promise->get_future();
 
-    emit(askOverwriteMode(filename, mode_promise.data()));
+    emit askOverwriteMode(filename, mode_promise.data());
 
     // Block until the user tells us the answer.
     mode_future.wait();
 
     // We can be either canceled from the other thread, or as a return value
     // from this call.  First check for a call from the other thread.
-    if (load_atomic(m_bStop)) {
+    if (atomicLoadAcquire(m_bStop)) {
         return OverwriteAnswer::CANCEL;
     }
 

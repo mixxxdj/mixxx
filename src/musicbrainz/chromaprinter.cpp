@@ -1,14 +1,16 @@
 #include "musicbrainz/chromaprinter.h"
 
 #include <chromaprint.h>
-#include <vector>
 
 #include <QtDebug>
+#include <vector>
 
-#include "sources/soundsourceproxy.h"
+#include "moc_chromaprinter.cpp"
 #include "sources/audiosourcestereoproxy.h"
-#include "util/sample.h"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/performancetimer.h"
+#include "util/sample.h"
 
 namespace
 {
@@ -37,7 +39,7 @@ QString calcFingerprint(
 
     mixxx::SampleBuffer sampleBuffer(math_max(
             fingerprintRange.length(),
-            audioSourceProxy.frames2samples(fingerprintRange.length())));
+            audioSourceProxy.getSignalInfo().frames2samples(fingerprintRange.length())));
     const auto readableSampleFrames =
             audioSourceProxy.readSampleFrames(
                     mixxx::WritableSampleFrames(
@@ -49,7 +51,7 @@ QString calcFingerprint(
     }
 
     std::vector<SAMPLE> fingerprintSamples(
-            audioSourceProxy.frames2samples(
+            audioSourceProxy.getSignalInfo().frames2samples(
                     readableSampleFrames.frameLength()));
     // Convert floating-point to integer
     SampleUtil::convertFloat32ToS16(
@@ -60,11 +62,17 @@ QString calcFingerprint(
     qDebug() << "reading file took" << timerReadingFile.elapsed().debugMillisWithUnit();
 
     ChromaprintContext* ctx = chromaprint_new(CHROMAPRINT_ALGORITHM_DEFAULT);
-    chromaprint_start(ctx, audioSourceProxy.sampleRate(), audioSourceProxy.channelCount());
+    chromaprint_start(
+            ctx,
+            audioSourceProxy.getSignalInfo().getSampleRate(),
+            audioSourceProxy.getSignalInfo().getChannelCount());
 
     PerformanceTimer timerGeneratingFingerprint;
     timerGeneratingFingerprint.start();
-    int success = chromaprint_feed(ctx, &fingerprintSamples[0], fingerprintSamples.size());
+    const int success = chromaprint_feed(
+            ctx,
+            &fingerprintSamples[0],
+            static_cast<int>(fingerprintSamples.size()));
     chromaprint_finish(ctx);
     if (!success) {
         qWarning() << "Failed to generate fingerprint from sample data";
@@ -72,12 +80,12 @@ QString calcFingerprint(
         return QString();
     }
 
-    uint32_p fprint = NULL;
+    uint32_p fprint = nullptr;
     int size = 0;
     int ret = chromaprint_get_raw_fingerprint(ctx, &fprint, &size);
     QByteArray fingerprint;
     if (ret == 1) {
-        char_p encoded = NULL;
+        char_p encoded = nullptr;
         int encoded_size = 0;
         chromaprint_encode_fingerprint(fprint, size,
                                        CHROMAPRINT_ALGORITHM_DEFAULT,
@@ -105,12 +113,13 @@ ChromaPrinter::ChromaPrinter(QObject* parent)
 
 QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
     mixxx::AudioSource::OpenParams config;
-    config.setChannelCount(2); // always stereo / 2 channels (see below)
+    // always stereo / 2 channels (see below)
+    config.setChannelCount(mixxx::audio::ChannelCount(2));
     auto pAudioSource = SoundSourceProxy(pTrack).openAudioSource(config);
     if (!pAudioSource) {
         qDebug()
                 << "Failed to open file for fingerprinting"
-                << pTrack->getLocation();
+                << pTrack->getFileInfo();
         return QString();
     }
 
@@ -118,7 +127,7 @@ QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
             pAudioSource->frameIndexRange(),
             mixxx::IndexRange::forward(
                     pAudioSource->frameIndexMin(),
-                    kFingerprintDuration * pAudioSource->sampleRate()));
+                    kFingerprintDuration * pAudioSource->getSignalInfo().getSampleRate()));
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
             fingerprintRange.length());

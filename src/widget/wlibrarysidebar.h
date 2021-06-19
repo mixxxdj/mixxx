@@ -1,5 +1,4 @@
-#ifndef WLIBRARYSIDEBAR_H
-#define WLIBRARYSIDEBAR_H
+#pragma once
 
 #include <QBasicTimer>
 #include <QContextMenuEvent>
@@ -30,6 +29,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
 
   public slots:
     void selectIndex(const QModelIndex&);
+    void selectChildIndex(const QModelIndex&, bool selectItem = true);
     void slotSetFont(const QFont& font);
 
   signals:
@@ -42,5 +42,3 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
 };
-
-#endif /* WLIBRARYSIDEBAR_H */

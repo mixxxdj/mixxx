@@ -1,9 +1,11 @@
+#include "widget/wcoverartmenu.h"
+
 #include <QFileDialog>
 #include <QFileInfo>
 
-#include "widget/wcoverartmenu.h"
 #include "library/coverartutils.h"
-#include "util/sandbox.h"
+#include "moc_wcoverartmenu.cpp"
+#include "util/fileaccess.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent) {
@@ -19,17 +21,17 @@ WCoverArtMenu::~WCoverArtMenu() {
 void WCoverArtMenu::createActions() {
     m_pChange = new QAction(tr("Choose new cover",
             "change cover art location"), this);
-    connect(m_pChange, SIGNAL(triggered()), this, SLOT(slotChange()));
+    connect(m_pChange, &QAction::triggered, this, &WCoverArtMenu::slotChange);
     addAction(m_pChange);
 
     m_pUnset = new QAction(tr("Clear cover",
             "clears the set cover art -- does not touch files on disk"), this);
-    connect(m_pUnset, SIGNAL(triggered()), this, SLOT(slotUnset()));
+    connect(m_pUnset, &QAction::triggered, this, &WCoverArtMenu::slotUnset);
     addAction(m_pUnset);
 
     m_pReload = new QAction(tr("Reload from file/folder",
             "reload cover art from file metadata or folder"), this);
-    connect(m_pReload, SIGNAL(triggered()), this, SIGNAL(reloadCoverArt()));
+    connect(m_pReload, &QAction::triggered, this, &WCoverArtMenu::reloadCoverArt);
     addAction(m_pReload);
 }
 
@@ -57,8 +59,7 @@ void WCoverArtMenu::slotChange() {
     for (auto&& extension : extensions) {
         extension.prepend("*.");
     }
-    QString supportedText = QString("%1 (%2)").arg(tr("Image Files"))
-            .arg(extensions.join(" "));
+    QString supportedText = QString("%1 (%2)").arg(tr("Image Files"), extensions.join(" "));
 
     // open file dialog
     QString selectedCoverPath = QFileDialog::getOpenFileName(
@@ -71,9 +72,7 @@ void WCoverArtMenu::slotChange() {
 
     CoverInfoRelative coverInfo;
     // Create a security token for the file.
-    QFileInfo selectedCover(selectedCoverPath);
-    SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-        selectedCover, true);
+    auto selectedCover = mixxx::FileAccess(mixxx::FileInfo(selectedCoverPath));
     QImage image(selectedCoverPath);
     if (image.isNull()) {
         // TODO(rryan): feedback
@@ -82,16 +81,16 @@ void WCoverArtMenu::slotChange() {
     coverInfo.type = CoverInfo::FILE;
     coverInfo.source = CoverInfo::USER_SELECTED;
     coverInfo.coverLocation = selectedCoverPath;
-    // TODO() here we may introduce a duplicate hash code
-    coverInfo.hash = CoverArtUtils::calculateHash(image);
+    coverInfo.setImage(image);
     qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
-    emit(coverInfoSelected(coverInfo));
+    emit coverInfoSelected(coverInfo);
 }
 
 void WCoverArtMenu::slotUnset() {
     CoverInfo coverInfo;
     coverInfo.type = CoverInfo::NONE;
     coverInfo.source = CoverInfo::USER_SELECTED;
+    coverInfo.setImage();
     qDebug() << "WCoverArtMenu::slotUnset emit" << coverInfo;
-    emit(coverInfoSelected(coverInfo));
+    emit coverInfoSelected(coverInfo);
 }

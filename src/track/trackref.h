@@ -1,11 +1,7 @@
-#ifndef TRACKREF_H
-#define TRACKREF_H
-
-
-#include <QFileInfo>
+#pragma once
 
 #include "track/trackid.h"
-
+#include "util/fileinfo.h"
 
 // A track in the library is identified by a location and an id.
 // The location is mandatory to identify the file, whereas the id
@@ -13,32 +9,34 @@
 //
 // This class is intended to be used as a simple, almost immutable
 // value object. Only the id can be set once.
-class TrackRef {
-public:
-    // All file-related track properties are snapshots from the provided
-    // QFileInfo. Obtaining them might involve accessing the file system
-    // and should be used consciously! The QFileInfo class does some
-    // caching behind the scenes.
-    // Please note that the canonical location of QFileInfo may change at
-    // any time, when the underlying file system structure is modified.
-    // It becomes empty if the file is deleted.
-    static QString location(const QFileInfo& fileInfo) {
-        return fileInfo.absoluteFilePath();
-    }
-    static QString canonicalLocation(const QFileInfo& fileInfo) {
-        return fileInfo.canonicalFilePath();
+class TrackRef final {
+  public:
+    /// Converts a file path and an optional TrackId into a TrackRef.
+    ///
+    /// This involves and intermediate creation of mixxx::FileInfo
+    /// and accessing the file system!
+    static TrackRef fromFilePath(
+            const QString& filePath,
+            TrackId id = TrackId()) {
+        return fromFileInfo(mixxx::FileInfo(filePath), id);
     }
 
-    // Converts a QFileInfo and an optional TrackId into a TrackRef. This
-    // involves obtaining the file-related track properties from QFileInfo
-    // (see above) and should used consciously!
+    /// Converts a mixxx::FileInfo and an optional TrackId into a TrackRef.
+    ///
+    /// This involves obtaining the file-related track properties from
+    /// the file info and might involve accessing the file system!
     static TrackRef fromFileInfo(
-            const QFileInfo& fileInfo,
+            mixxx::FileInfo fileInfo,
             TrackId id = TrackId()) {
+        // The conditional refresh ensures that files that were previously
+        // unavailable (e.g. file system volume not mounted before) are
+        // resolved successfully.
+        auto canonicalLocation = fileInfo.resolveCanonicalLocation();
+        // All properties of the file info are now considered fresh
         return TrackRef(
-                location(fileInfo),
-                canonicalLocation(fileInfo),
-                id);
+                fileInfo.location(),
+                std::move(canonicalLocation),
+                std::move(id));
     }
 
     // Default constructor
@@ -90,6 +88,7 @@ public:
     bool isValid() const {
         return hasId() || hasCanonicalLocation();
     }
+
 protected:
     // Initializing constructor
     TrackRef(
@@ -129,5 +128,10 @@ std::ostream& operator<<(std::ostream& os, const TrackRef& trackRef);
 
 QDebug operator<<(QDebug debug, const TrackRef& trackRef);
 
-
-#endif // TRACKREF_H
+inline uint qHash(
+        const TrackRef& key,
+        uint seed = 0) {
+    return qHash(
+            key.getLocation(), seed) ^
+            qHash(key.getId(), seed);
+}

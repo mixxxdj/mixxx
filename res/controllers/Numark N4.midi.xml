@@ -4,6 +4,7 @@
       <name>Numark N4</name>
       <author>Swiftb0y</author>
       <description>4 channel MIDI Mapping for Numark N4</description>
+      <manual>numark_n4</manual>
   </info>
   <controller id="N4 MIDI 1">
     <scriptfiles>

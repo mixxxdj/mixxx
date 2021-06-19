@@ -1,3 +1,5 @@
+#ifdef __BROADCAST__
+
 #include <QFile>
 #include <QString>
 
@@ -42,21 +44,39 @@ TEST(BroadcastProfileTest, SaveAndLoadXML) {
     // Preliminary: set a discriminating value in one of the profile fields
     QString streamName("unit testing in progress");
 
-    BroadcastProfile profile("Unit Testing Profile");
+    BroadcastProfile profile("Broadcast Profile test");
     profile.setStreamName(streamName);
 
-    QString filename = profile.getProfileName() + QString(".bcp.xml");
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    QString filename = tempDir.filePath(profile.getProfileName() + QString(".bcp.xml"));
 
-    // Call save() on a profile and assert it actually exists
-    QFile::remove(filename); // First, make sure it doesn't exists
     profile.save(filename);
     ASSERT_TRUE(QFile::exists(filename));
 
     // Load XML file using static loadFromFile and assert
     // the discriminating value is present
     BroadcastProfilePtr savedProfile = BroadcastProfile::loadFromFile(filename);
-    ASSERT_NE(savedProfile, nullptr);
-    ASSERT_TRUE(savedProfile->getStreamName() == streamName);
+    EXPECT_NE(savedProfile, nullptr);
+    EXPECT_TRUE(savedProfile->getStreamName() == streamName);
+}
+
+TEST(BroadcastProfileTest, SaveAndLoadXMLDotName) {
+    QString profileName("broadcast profile has a dot. (in the name) test");
+    BroadcastProfile profile(profileName);
+
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    QString filename = tempDir.filePath(profile.getProfileName() + QString(".bcp.xml"));
+
+    profile.save(filename);
+    ASSERT_TRUE(QFile::exists(filename));
+
+    // Load XML file using static loadFromFile and assert
+    // the discriminating value is present
+    BroadcastProfilePtr savedProfile = BroadcastProfile::loadFromFile(filename);
+    EXPECT_NE(savedProfile, nullptr);
+    EXPECT_TRUE(savedProfile->getProfileName() == profileName);
 }
 
 TEST(BroadcastProfileTest, SetGetValues) {
@@ -197,3 +217,5 @@ TEST(BroadcastProfileTest, DefaultValues) {
 }
 
 } // namespace
+
+#endif // __BROADCAST__

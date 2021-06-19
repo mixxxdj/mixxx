@@ -5,7 +5,7 @@
 #include "test/signalpathtest.h"
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
-#include "engine/enginemicrophone.h"
+#include "engine/channels/enginemicrophone.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/defs.h"
 #include "util/sample.h"

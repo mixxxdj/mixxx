@@ -1,8 +1,4 @@
-// sidebarmodel.h
-// Created 8/21/09 by RJ Ryan (rryan@mit.edu)
-
-#ifndef SIDEBARMODEL_H
-#define SIDEBARMODEL_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include <QList>
@@ -15,6 +11,10 @@ class LibraryFeature;
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
   public:
+    // Keep object tree functions from QObject accessible
+    // for parented_ptr
+    using QObject::parent;
+
     explicit SidebarModel(
             QObject* parent = nullptr);
     ~SidebarModel() override = default;
@@ -26,16 +26,19 @@ class SidebarModel : public QAbstractItemModel {
 
     // Required for QAbstractItemModel
     QModelIndex index(int row, int column,
-                      const QModelIndex& parent = QModelIndex()) const;
-    QModelIndex parent(const QModelIndex& index) const;
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
-    int columnCount(const QModelIndex& parent = QModelIndex()) const;
+                      const QModelIndex& parent = QModelIndex()) const override;
+    QModelIndex parent(const QModelIndex& index) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index,
-                  int role = Qt::DisplayRole) const;
-    bool dropAccept(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
-    bool dragMoveAccept(const QModelIndex& index, QUrl url);
-    virtual bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
+                  int role = Qt::DisplayRole) const override;
+    bool dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource);
+    bool dragMoveAccept(const QModelIndex& index, const QUrl& url);
+    bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
     bool hasTrackTable(const QModelIndex& index) const;
+    QModelIndex translateChildIndex(const QModelIndex& index) {
+        return translateIndex(index, index.model());
+    }
 
   public slots:
     void pressed(const QModelIndex& index);
@@ -72,6 +75,7 @@ class SidebarModel : public QAbstractItemModel {
 
   private:
     QModelIndex translateSourceIndex(const QModelIndex& parent);
+    QModelIndex translateIndex(const QModelIndex& index, const QAbstractItemModel* model);
     void featureRenamed(LibraryFeature*);
     QList<LibraryFeature*> m_sFeatures;
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
@@ -79,8 +83,6 @@ class SidebarModel : public QAbstractItemModel {
     QTimer* const m_pressedUntilClickedTimer;
     QModelIndex m_pressedIndex;
 
-    void startPressedUntilClickedTimer(QModelIndex pressedIndex);
+    void startPressedUntilClickedTimer(const QModelIndex& pressedIndex);
     void stopPressedUntilClickedTimer();
 };
-
-#endif /* SIDEBARMODEL_H */

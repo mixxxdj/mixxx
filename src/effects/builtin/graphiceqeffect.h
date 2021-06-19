@@ -1,5 +1,4 @@
-#ifndef GRAPHICEQEFFECT_H
-#define GRAPHICEQEFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -8,7 +7,7 @@
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterbiquad1.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -54,9 +53,7 @@ class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
     EngineEffectParameter* m_pPotLow;
     QList<EngineEffectParameter*> m_pPotMid;
     EngineEffectParameter* m_pPotHigh;
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 
     DISALLOW_COPY_AND_ASSIGN(GraphicEQEffect);
 };
-
-#endif // GRAPHICEQEFFECT_H

@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_CONFIGOBJECT_H
-#define PREFERENCES_CONFIGOBJECT_H
+#pragma once
 
 #include <QString>
 #include <QKeySequence>
@@ -9,96 +8,123 @@
 #include <QMetaType>
 #include <QReadWriteLock>
 
+#include "util/assert.h"
 #include "util/debug.h"
 
 // Class for the key for a specific configuration element. A key consists of a
 // group and an item.
-class ConfigKey {
+class ConfigKey final {
   public:
-    ConfigKey(); // is required for qMetaTypeConstructHelper()
-    ConfigKey(const ConfigKey& key);
-    ConfigKey(const QString& g, const QString& i);
+    ConfigKey() = default; // is required for qMetaTypeConstructHelper()
+    ConfigKey(QString group, QString item)
+            : group(std::move(group)),
+              item(std::move(item)) {
+    }
+
     static ConfigKey parseCommaSeparated(const QString& key);
 
-    inline bool isEmpty() const {
-        return group.isEmpty() && item.isEmpty();
+    bool isValid() const {
+        return !group.isEmpty() && !item.isEmpty();
     }
 
-    inline bool isNull() const {
-        return group.isNull() && item.isNull();
-    }
-
-    // comparison function for ConfigKeys. Used by a QHash in ControlObject
-    friend inline bool operator==(const ConfigKey& lhs, const ConfigKey& rhs) {
-        return lhs.group == rhs.group && lhs.item == rhs.item;
-    }
-
-    // comparison function for ConfigKeys. Used by a QMap in ControlObject
-    friend inline bool operator<(const ConfigKey& lhs, const ConfigKey& rhs) {
-        int groupResult = lhs.group.compare(rhs.group);
-        if (groupResult == 0) {
-            return lhs.item < rhs.item;
-        }
-        return (groupResult < 0);
-    }
-    QString group, item;
+    QString group;
+    QString item;
 };
 Q_DECLARE_METATYPE(ConfigKey);
 
+// comparison function for ConfigKeys. Used by a QHash in ControlObject
+inline bool operator==(const ConfigKey& lhs, const ConfigKey& rhs) {
+    return lhs.group == rhs.group &&
+            lhs.item == rhs.item;
+}
+
+// comparison function for ConfigKeys. Used by a QHash in ControlObject
+inline bool operator!=(const ConfigKey& lhs, const ConfigKey& rhs) {
+    return !(lhs == rhs);
+}
+
+// comparison function for ConfigKeys. Used by a QMap in ControlObject
+inline bool operator<(const ConfigKey& lhs, const ConfigKey& rhs) {
+    int groupResult = lhs.group.compare(rhs.group);
+    if (groupResult == 0) {
+        return lhs.item < rhs.item;
+    }
+    return (groupResult < 0);
+}
 
 // stream operator function for trivial qDebug()ing of ConfigKeys
-inline QDebug operator<<(QDebug stream, const ConfigKey& c1) {
-    stream << c1.group << "," << c1.item;
+inline QDebug operator<<(QDebug stream, const ConfigKey& configKey) {
+    stream << configKey.group << "," << configKey.item;
     return stream;
 }
 
 // QHash hash function for ConfigKey objects.
-inline uint qHash(const ConfigKey& key) {
-    return qHash(key.group) ^ qHash(key.item);
+inline uint qHash(
+        const ConfigKey& key,
+        uint seed = 0) {
+    return qHash(key.group, seed) ^
+            qHash(key.item, seed);
 }
-
-inline uint qHash(const QKeySequence& key) {
-    return qHash(key.toString());
-}
-
 
 // The value corresponding to a key. The basic value is a string, but can be
 // subclassed to more specific needs.
 class ConfigValue {
   public:
-    ConfigValue();
+    ConfigValue() = default;
+    virtual ~ConfigValue() = default;
     // Only allow non-explicit QString -> ConfigValue conversion for
     // convenience. All other types must be explicit.
-    ConfigValue(const QString& value);
+    ConfigValue(QString value)
+            : value(std::move(value)) {
+    }
     explicit ConfigValue(int value);
     explicit ConfigValue(double value);
-    explicit ConfigValue(const QDomNode& /* node */) {
+    explicit ConfigValue(const QDomNode&) {
         reportFatalErrorAndQuit("ConfigValue from QDomNode not implemented here");
     }
-    void valCopy(const ConfigValue& value);
     bool isNull() const { return value.isNull(); }
 
     QString value;
-    friend bool operator==(const ConfigValue& s1, const ConfigValue& s2);
 };
 
-inline uint qHash(const ConfigValue& key) {
-    return qHash(key.value.toUpper());
+inline bool operator==(const ConfigValue& lhs, const ConfigValue& rhs) {
+    return lhs.value.toUpper() == rhs.value.toUpper();
+}
+
+inline bool operator!=(const ConfigValue& lhs, const ConfigValue& rhs) {
+    return !(lhs == rhs);
+}
+
+inline uint qHash(
+        const ConfigValue& key,
+        uint seed = 0) {
+    return qHash(key.value.toUpper(), seed);
 }
 
 class ConfigValueKbd : public ConfigValue {
   public:
-    ConfigValueKbd();
-    explicit ConfigValueKbd(const QString& _value);
-    explicit ConfigValueKbd(const QKeySequence& key);
-    explicit ConfigValueKbd(const QDomNode& /* node */) {
+    ConfigValueKbd() = default;
+    ~ConfigValueKbd() override = default;
+    explicit ConfigValueKbd(const QKeySequence& keys);
+    explicit ConfigValueKbd(const QDomNode&) {
         reportFatalErrorAndQuit("ConfigValueKbd from QDomNode not implemented here");
     }
-    void valCopy(const ConfigValueKbd& v);
-    friend bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2);
 
-    QKeySequence m_qKey;
+    friend bool operator==(const ConfigValueKbd& lhs, const ConfigValueKbd& rhs) {
+        // Both the key sequence and the value of the base class must be consistent!
+        // TODO(XXX): Fix this error prone design!!
+        DEBUG_ASSERT((lhs.m_keys == rhs.m_keys) ==
+                (static_cast<const ConfigValue&>(lhs) == static_cast<const ConfigValue&>(rhs)));
+        return lhs.m_keys == rhs.m_keys;
+    }
+
+   private:
+    QKeySequence m_keys;
 };
+
+inline bool operator!=(const ConfigValueKbd& lhs, const ConfigValueKbd& rhs) {
+    return !(lhs == rhs);
+}
 
 template <class ValueType> class ConfigObject {
   public:
@@ -147,7 +173,7 @@ template <class ValueType> class ConfigObject {
     QMultiHash<ValueType, ConfigKey> transpose() const;
 
     void reopen(const QString& file);
-    void save();
+    bool save();
 
     // Returns the resource path -- the path where controller presets, skins,
     // library schema, keyboard mappings, and more are stored.
@@ -161,6 +187,9 @@ template <class ValueType> class ConfigObject {
         return m_settingsPath;
     }
 
+    QSet<QString> getGroups();
+    QList<ConfigKey> getKeysWithGroup(const QString& group) const;
+
   protected:
     // We use QMap because we want a sorted list in mixxx.cfg
     QMap<ConfigKey, ValueType> m_values;
@@ -173,5 +202,3 @@ template <class ValueType> class ConfigObject {
     // not be opened; otherwise true.
     bool parse();
 };
-
-#endif // PREFERENCES_CONFIGOBJECT_H

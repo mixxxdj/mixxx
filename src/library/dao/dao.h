@@ -1,13 +1,22 @@
-#ifndef DAO_H
-#define DAO_H
+#pragma once
 
 #include <QSqlDatabase>
 
+#include "util/assert.h"
+
 class DAO {
   public:
-    virtual ~DAO() {}
+    virtual ~DAO() = default;
 
-    virtual void initialize(const QSqlDatabase& database) = 0;
+    virtual void initialize(const QSqlDatabase& database) {
+        DEBUG_ASSERT(!m_database.isOpen());
+        m_database = database;
+    }
+
+    const QSqlDatabase& database() const {
+        return m_database;
+    }
+
+  protected:
+    QSqlDatabase m_database;
 };
-
-#endif /* DAO_H */

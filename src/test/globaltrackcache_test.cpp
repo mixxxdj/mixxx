@@ -1,19 +1,18 @@
+#include "track/globaltrackcache.h"
+
 #include <QThread>
 #include <QtDebug>
-
 #include <atomic>
 
 #include "test/mixxxtest.h"
-
-#include "track/globaltrackcache.h"
-
+#include "track/track.h"
 
 namespace {
 
 const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
-const QFileInfo kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
-const QFileInfo kTestFile2(kTestDir.absoluteFilePath("cover-test.ogg"));
+const mixxx::FileInfo kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
+const mixxx::FileInfo kTestFile2(kTestDir.absoluteFilePath("cover-test.ogg"));
 
 class TrackTitleThread: public QThread {
   public:
@@ -98,7 +97,8 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
 
     TrackPointer track;
     {
-        GlobalTrackCacheResolver resolver(kTestFile);
+        auto testFileAccess = mixxx::FileAccess(mixxx::FileInfo(kTestFile));
+        GlobalTrackCacheResolver resolver(testFileAccess);
         track = resolver.getTrack();
         EXPECT_TRUE(static_cast<bool>(track));
         EXPECT_EQ(2, track.use_count());
@@ -150,14 +150,18 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     // lp1744550: A decent number of iterations is needed to reliably
     // reveal potential race conditions while evicting tracks from
     // the cache!
-    for (int i = 0; i < 250000; ++i) {
+    // NOTE(2019-12-14, uklotzde): On Travis and macOS executing 10_000
+    // iterations takes ~1 sec. In order to safely finish this test within
+    // the timeout limit of 30 sec. we use 20 * 10_000 = 200_000 iterations.
+    for (int i = 0; i < 200000; ++i) {
         m_recentTrackPtr.reset();
 
         TrackId trackId;
 
         TrackPointer track;
         {
-            GlobalTrackCacheResolver resolver(kTestFile);
+            auto testFileAccess = mixxx::FileAccess(mixxx::FileInfo(kTestFile));
+            GlobalTrackCacheResolver resolver(testFileAccess);
             track = resolver.getTrack();
             EXPECT_TRUE(static_cast<bool>(track));
             trackId = track->getId();
@@ -198,10 +202,14 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
     ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
 
-    TrackPointer track1 = GlobalTrackCacheResolver(kTestFile).getTrack();
+    TrackPointer track1 = GlobalTrackCacheResolver(
+            mixxx::FileAccess(mixxx::FileInfo(kTestFile)))
+                                  .getTrack();
     EXPECT_TRUE(static_cast<bool>(track1));
 
-    TrackPointer track2 = GlobalTrackCacheResolver(kTestFile2).getTrack();
+    TrackPointer track2 = GlobalTrackCacheResolver(
+            mixxx::FileAccess(mixxx::FileInfo(kTestFile2)))
+                                  .getTrack();
     EXPECT_TRUE(static_cast<bool>(track2));
 
     track1 = std::move(track2);

@@ -1,5 +1,4 @@
-#ifndef LIBRARYMIDICONTROL_H
-#define LIBRARYMIDICONTROL_H
+#pragma once
 
 #include <QObject>
 
@@ -10,25 +9,27 @@
 class ControlObject;
 class ControlPushButton;
 class Library;
+class LibraryControl;
 class WLibrary;
 class WLibrarySidebar;
+class WSearchLineEdit;
 class KeyboardEventFilter;
 
 class LoadToGroupController : public QObject {
     Q_OBJECT
   public:
-    LoadToGroupController(QObject* pParent, const QString& group);
+    LoadToGroupController(LibraryControl* pParent, const QString& group);
     virtual ~LoadToGroupController();
 
   signals:
-    void loadToGroup(QString group, bool);
+    void loadToGroup(const QString& group, bool);
 
   public slots:
     void slotLoadToGroup(double v);
     void slotLoadToGroupAndPlay(double v);
 
   private:
-    QString m_group;
+    const QString m_group;
     std::unique_ptr<ControlObject> m_pLoadControl;
     std::unique_ptr<ControlObject> m_pLoadAndPlayControl;
 };
@@ -39,12 +40,21 @@ class LibraryControl : public QObject {
     LibraryControl(Library* pLibrary);
     virtual ~LibraryControl();
 
-    void bindWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
+    void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
+    void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
+
+  signals:
+    void clearSearchIfClearButtonHasFocus();
+
+  public slots:
+    // Deprecated navigation slots
+    void slotLoadSelectedTrackToGroup(const QString& group, bool play);
 
   private slots:
     void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
+    void searchboxWidgetDeleted();
 
     void slotMoveUp(double);
     void slotMoveDown(double);
@@ -60,8 +70,10 @@ class LibraryControl : public QObject {
     void slotMoveFocus(double);
     void slotGoToItem(double v);
 
+    void slotTrackColorPrev(double v);
+    void slotTrackColorNext(double v);
+
     // Deprecated navigation slots
-    void slotLoadSelectedTrackToGroup(QString group, bool play);
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
     void slotSelectTrack(double v);
@@ -72,11 +84,15 @@ class LibraryControl : public QObject {
     void slotLoadSelectedIntoFirstStopped(double v);
     void slotAutoDjAddTop(double v);
     void slotAutoDjAddBottom(double v);
+    void slotAutoDjAddReplace(double v);
 
     void maybeCreateGroupController(const QString& group);
     void slotNumDecksChanged(double v);
     void slotNumSamplersChanged(double v);
     void slotNumPreviewDecksChanged(double v);
+
+    void slotSortColumn(double v);
+    void slotSortColumnToggle(double v);
 
     void slotFontSize(double v);
     void slotIncrementFontSize(double v);
@@ -113,9 +129,24 @@ class LibraryControl : public QObject {
     // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pGoToItem;
 
-    // Add to Auto-Dj Cueue
+    // Add to Auto-Dj Queue
     std::unique_ptr<ControlObject> m_pAutoDjAddTop;
     std::unique_ptr<ControlObject> m_pAutoDjAddBottom;
+    std::unique_ptr<ControlObject> m_pAutoDjAddReplace;
+
+    // Controls to sort the track view
+    std::unique_ptr<ControlEncoder> m_pSortColumn;
+    std::unique_ptr<ControlEncoder> m_pSortColumnToggle;
+    std::unique_ptr<ControlPushButton> m_pSortOrder;
+
+    // Controls to change track color
+    std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
+    std::unique_ptr<ControlPushButton> m_pTrackColorNext;
+
+    // Controls to navigate search history
+    std::unique_ptr<ControlPushButton> m_pSelectHistoryNext;
+    std::unique_ptr<ControlPushButton> m_pSelectHistoryPrev;
+    std::unique_ptr<ControlEncoder> m_pSelectHistorySelect;
 
     // Font sizes
     std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;
@@ -135,6 +166,7 @@ class LibraryControl : public QObject {
     // Library widgets
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
+    WSearchLineEdit* m_pSearchbox;
 
     // Other variables
     ControlProxy m_numDecks;
@@ -142,5 +174,3 @@ class LibraryControl : public QObject {
     ControlProxy m_numPreviewDecks;
     std::map<QString, std::unique_ptr<LoadToGroupController>> m_loadToGroupControllers;
 };
-
-#endif //LIBRARYMIDICONTROL_H

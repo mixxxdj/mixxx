@@ -1,5 +1,4 @@
-#ifndef DIALOG_DLGDEVELOPERTOOLS_H
-#define DIALOG_DLGDEVELOPERTOOLS_H
+#pragma once
 
 #include <QDialog>
 #include <QFile>
@@ -36,5 +35,3 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
     QFile m_logFile;
     QTextCursor m_logCursor;
 };
-
-#endif // DIALOG_DLGDEVELOPERTOOLS_H

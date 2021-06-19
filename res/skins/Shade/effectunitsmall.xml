@@ -8,7 +8,6 @@
         <ObjectName>EffectLeftBorder</ObjectName>
         <Size>5f,36f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
       </WidgetGroup>
 
       <WidgetGroup>
@@ -31,20 +30,18 @@
           <WidgetGroup>
             <Size>0e,28f</Size>
           </WidgetGroup>
-          </Children>
+        </Children>
       </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>EffectRightBorder</ObjectName>
         <Size>5f,36f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
       </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>EffectRightBorder</ObjectName>
         <Size>3f,36f</Size>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
       </WidgetGroup>
 
     </Children>

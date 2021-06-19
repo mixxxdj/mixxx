@@ -1,20 +1,24 @@
-#ifndef GLWAVEFORMWIDGETSHADER_H
-#define GLWAVEFORMWIDGETSHADER_H
+#pragma once
 
-#include <QGLWidget>
-
-#include "waveformwidgetabstract.h"
+#include "waveform/widgets/glwaveformwidgetabstract.h"
 
 class GLSLWaveformRendererSignal;
 
-class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class GLSLWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLSLWaveformWidget(const char* group, QWidget* parent,
-                       bool rgbRenderer);
-    ~GLSLWaveformWidget() override;
+    enum class GlslType {
+        Filtered,
+        RGB,
+        RGBStacked,
+    };
+    GLSLWaveformWidget(
+            const QString& group,
+            QWidget* parent,
+            GlslType type);
+    ~GLSLWaveformWidget() override = default;
 
-    void resize(int width, int height);
+    void resize(int width, int height) override;
 
   protected:
     void castToQWidget() override;
@@ -23,7 +27,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     mixxx::Duration render() override;
 
   private:
-    GLSLWaveformRendererSignal* signalRenderer_;
+    GLSLWaveformRendererSignal* m_signalRenderer;
 
     friend class WaveformWidgetFactory;
 };
@@ -31,7 +35,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
     Q_OBJECT
   public:
-    GLSLFilteredWaveformWidget(const char* group, QWidget* parent);
+    GLSLFilteredWaveformWidget(const QString& group, QWidget* parent);
     ~GLSLFilteredWaveformWidget() override = default;
 
     WaveformWidgetType::Type getType() const override { return WaveformWidgetType::GLSLFilteredWaveform; }
@@ -46,7 +50,7 @@ class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
 class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     Q_OBJECT
   public:
-    GLSLRGBWaveformWidget(const char* group, QWidget* parent);
+    GLSLRGBWaveformWidget(const QString& group, QWidget* parent);
     ~GLSLRGBWaveformWidget() override = default;
 
     WaveformWidgetType::Type getType() const override { return WaveformWidgetType::GLSLRGBWaveform; }
@@ -58,5 +62,29 @@ class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     static inline bool developerOnly() { return false; }
 };
 
+class GLSLRGBStackedWaveformWidget : public GLSLWaveformWidget {
+    Q_OBJECT
+  public:
+    GLSLRGBStackedWaveformWidget(const QString& group, QWidget* parent);
+    ~GLSLRGBStackedWaveformWidget() override = default;
 
-#endif // GLWAVEFORMWIDGETSHADER_H
+    WaveformWidgetType::Type getType() const override {
+        return WaveformWidgetType::GLSLRGBStackedWaveform;
+    }
+
+    static inline QString getWaveformWidgetName() {
+        return tr("RGB Stacked");
+    }
+    static inline bool useOpenGl() {
+        return true;
+    }
+    static inline bool useOpenGles() {
+        return false;
+    }
+    static inline bool useOpenGLShaders() {
+        return true;
+    }
+    static inline bool developerOnly() {
+        return false;
+    }
+};

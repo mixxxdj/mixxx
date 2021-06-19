@@ -1,37 +1,32 @@
-#ifndef RECORDINGMANAGER_H
-#define RECORDINGMANAGER_H
+#pragma once
 
 #include <QDateTime>
+#include <QList>
 #include <QObject>
 #include <QString>
-#include <QList>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
-#include "recording/defs_recording.h"
 #include "encoder/encoder.h"
-//
-// The RecordingManager is a central class and manages
-// the recording feature of Mixxx.
-//
-// There is exactly one instance of this class
-//
-// All methods in this class are thread-safe
-//
-// Note: The RecordingManager lives in the GUI thread
-//
+#include "preferences/usersettings.h"
+#include "recording/defs_recording.h"
 
 class EngineMaster;
 class ControlPushButton;
 class ControlProxy;
 
-class RecordingManager : public QObject
-{
+/// The RecordingManager is a central class and manages
+/// the recording feature of Mixxx.
+///
+/// There is exactly one instance of this class
+///
+/// All methods in this class are thread-safe
+///
+/// Note: The RecordingManager lives in the GUI thread
+class RecordingManager : public QObject {
     Q_OBJECT
   public:
     RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine);
-    virtual ~RecordingManager();
-
+    ~RecordingManager() override;
 
     // This will try to start recording. If successful, slotIsRecording will be
     // called and a signal isRecording will be emitted.
@@ -49,19 +44,17 @@ class RecordingManager : public QObject
     // Emits the cumulative number of bytes currently recorded.
     void bytesRecorded(int);
     void isRecording(bool);
-    void durationRecorded(QString);
+    void durationRecorded(const QString&);
 
   public slots:
     void slotIsRecording(bool recording, bool error);
     void slotBytesRecorded(int);
     void slotDurationRecorded(quint64);
-
-  private slots:
     void slotSetRecording(bool recording);
-    void slotToggleRecording(double v);
+    void slotToggleRecording(double value);
 
   private:
-    QString formatDateTimeForFilename(QDateTime dateTime) const;
+    QString formatDateTimeForFilename(const QDateTime& dateTime) const;
     // slotBytesRecorded just noticed that recording must be interrupted
     // to split the file. The nth filename will follow the date/time
     // name of the first split but with a suffix.
@@ -98,5 +91,3 @@ class RecordingManager : public QObject
     unsigned int m_secondsRecordedSplit;
     QString getRecordedDurationStr(unsigned int duration);
 };
-
-#endif // RECORDINGMANAGER_H

@@ -1,5 +1,4 @@
-#ifndef EFFECTPARAMETERSLOTBASE_H
-#define EFFECTPARAMETERSLOTBASE_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -32,7 +31,7 @@ class EffectParameterSlotBase : public QObject {
 
   protected:
     const unsigned int m_iParameterSlotNumber;
-    QString m_group;
+    const QString m_group;
     EffectPointer m_pEffect;
     EffectParameter* m_pEffectParameter;
 
@@ -43,5 +42,3 @@ class EffectParameterSlotBase : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlotBase);
 };
-
-#endif /* EFFECTPARAMETERSLOTBASE_H */

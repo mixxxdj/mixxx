@@ -3,8 +3,8 @@
       <name>Hercules DJ Control Instinct</name>
       <author>Mich Wyser</author>
       <description></description>
-      <wiki>http://mixxx.org/wiki/doku.php/hercules_dj_control_instinct</wiki>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3907</forums>
+      <manual>hercules_djcontrol_instinct</manual>
     </info>
     <controller id="Hercules DJControl Instinct MID" port="">
     <scriptfiles>

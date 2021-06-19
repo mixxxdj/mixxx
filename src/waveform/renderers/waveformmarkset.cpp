@@ -2,7 +2,7 @@
 #include <QtDebug>
 
 #include "waveformmarkset.h"
-#include "engine/cuecontrol.h"
+#include "engine/controls/cuecontrol.h"
 #include "control/controlobject.h"
 #include "util/memory.h"
 
@@ -27,7 +27,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     QDomNode defaultChild;
     while (!child.isNull()) {
         if (child.nodeName() == "DefaultMark") {
-            m_pDefaultMark = std::make_unique<WaveformMark>(group, child, context, signalColors);
+            m_pDefaultMark = WaveformMarkPointer(new WaveformMark(group, child, context, signalColors));
             hasDefaultMark = true;
             defaultChild = child;
         } else if (child.nodeName() == "Mark") {
@@ -55,7 +55,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             if (m_hotCueMarks.value(i).isNull()) {
                 //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
                 WaveformMarkPointer pMark(new WaveformMark(group, defaultChild, context, signalColors, i));
-                m_marks.push_back(pMark);
+                m_marks.push_front(pMark);
                 m_hotCueMarks.insert(pMark->getHotCue(), pMark);
             }
         }
@@ -64,4 +64,8 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 
 WaveformMarkPointer WaveformMarkSet::getHotCueMark(int hotCue) const {
     return m_hotCueMarks.value(hotCue);
+}
+
+WaveformMarkPointer WaveformMarkSet::getDefaultMark() const {
+    return m_pDefaultMark;
 }

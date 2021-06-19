@@ -1,5 +1,4 @@
-#ifndef WWIDGETGROUP_H
-#define WWIDGETGROUP_H
+#pragma once
 
 #include <QDomNode>
 #include <QFrame>
@@ -67,11 +66,11 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
 
     virtual void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
     void setPixmapBackgroundHighlighted(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
     void addWidget(QWidget* pChild);
@@ -91,5 +90,3 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     PaintablePointer m_pPixmapBackHighlighted;
     int m_highlight;
 };
-
-#endif // WWIDGETGROUP_H

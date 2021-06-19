@@ -1,6 +1,4 @@
-
-#ifndef PAINTABLE_H
-#define PAINTABLE_H
+#pragma once
 
 #include <QPixmap>
 #include <QHash>
@@ -12,8 +10,8 @@
 #include <QRectF>
 #include <QString>
 
-#include "skin/imgsource.h"
-#include "skin/pixmapsource.h"
+#include "skin/legacy/imgsource.h"
+#include "skin/legacy/pixmapsource.h"
 
 // Wrapper around QImage and QSvgRenderer to support rendering SVG images in
 // high fidelity.
@@ -61,5 +59,3 @@ class Paintable {
     DrawMode m_drawMode;
     PixmapSource m_source;
 };
-
-#endif // PAINTABLE

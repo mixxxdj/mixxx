@@ -1,32 +1,38 @@
-#include "control/controlproxy.h"
 #include "engine/enginetalkoverducking.h"
 
-#define DUCK_THRESHOLD 0.1
+#include "control/controlproxy.h"
+#include "moc_enginetalkoverducking.cpp"
+
+namespace {
+
+constexpr CSAMPLE kDuckThreshold = 0.1f;
+
+} // namespace
 
 EngineTalkoverDucking::EngineTalkoverDucking(
-        UserSettingsPointer pConfig, const char* group)
-    : EngineSideChainCompressor(group),
-      m_pConfig(pConfig),
-      m_group(group) {
+        UserSettingsPointer pConfig, const QString& group)
+        : EngineSideChainCompressor(group),
+          m_pConfig(pConfig),
+          m_group(group) {
     m_pMasterSampleRate = new ControlProxy(m_group, "samplerate", this);
-    m_pMasterSampleRate->connectValueChanged(SLOT(slotSampleRateChanged(double)),
+    m_pMasterSampleRate->connectValueChanged(this, &EngineTalkoverDucking::slotSampleRateChanged,
                                              Qt::DirectConnection);
 
     m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
     m_pDuckStrength->set(
             m_pConfig->getValue<double>(ConfigKey(m_group, "duckStrength"), 90) / 100);
-    connect(m_pDuckStrength, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDuckStrengthChanged(double)),
+    connect(m_pDuckStrength, &ControlObject::valueChanged,
+            this, &EngineTalkoverDucking::slotDuckStrengthChanged,
             Qt::DirectConnection);
 
     // We only allow the strength to be configurable for now.  The next most likely
     // candidate for customization is the threshold, which may be too low for
     // noisy club situations.
     setParameters(
-            DUCK_THRESHOLD,
-            m_pDuckStrength->get(),
-            m_pMasterSampleRate->get() / 2 * .1,
-            m_pMasterSampleRate->get() / 2);
+            kDuckThreshold,
+            static_cast<CSAMPLE>(m_pDuckStrength->get()),
+            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2 * .1),
+            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2));
 
     m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "talkoverDucking"));
     m_pTalkoverDucking->setButtonMode(ControlPushButton::TOGGLE);
@@ -34,8 +40,8 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     m_pTalkoverDucking->set(
             m_pConfig->getValue<double>(
                 ConfigKey(m_group, "duckMode"), AUTO));
-    connect(m_pTalkoverDucking, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDuckModeChanged(double)),
+    connect(m_pTalkoverDucking, &ControlObject::valueChanged,
+            this, &EngineTalkoverDucking::slotDuckModeChanged,
             Qt::DirectConnection);
 }
 
@@ -49,14 +55,17 @@ EngineTalkoverDucking::~EngineTalkoverDucking() {
 
 void EngineTalkoverDucking::slotSampleRateChanged(double samplerate) {
     setParameters(
-            DUCK_THRESHOLD, m_pDuckStrength->get(),
-            samplerate / 2 * .1, samplerate / 2);
+            kDuckThreshold,
+            static_cast<CSAMPLE>(m_pDuckStrength->get()),
+            static_cast<unsigned int>(samplerate / 2 * .1),
+            static_cast<unsigned int>(samplerate / 2));
 }
 
 void EngineTalkoverDucking::slotDuckStrengthChanged(double strength) {
-    setParameters(
-            DUCK_THRESHOLD, strength,
-            m_pMasterSampleRate->get() / 2 * .1, m_pMasterSampleRate->get() / 2);
+    setParameters(kDuckThreshold,
+            static_cast<CSAMPLE>(strength),
+            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2 * .1),
+            static_cast<unsigned int>(m_pMasterSampleRate->get() / 2));
     m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(strength * 100));
 }
 
@@ -68,12 +77,12 @@ CSAMPLE EngineTalkoverDucking::getGain(int numFrames) {
     // Apply microphone ducking.
     switch (getMode()) {
     case EngineTalkoverDucking::OFF:
-        return 1.0;
+        return 1.0f;
     case EngineTalkoverDucking::AUTO:
     case EngineTalkoverDucking::MANUAL:
-        return calculateCompressedGain(numFrames);
+        return static_cast<CSAMPLE>(calculateCompressedGain(numFrames));
     default:
         DEBUG_ASSERT("!Unknown Ducking mode");
-        return 1.0;
+        return 1.0f;
     }
 }

@@ -9,14 +9,14 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Set up BeatGrids for decks 1 and 2.
     const double bpm = 60.0;
     const double firstBeat = 0.0;
-    auto grid1 = new BeatGrid(*m_pTrack1, m_pTrack1->getSampleRate());
-    grid1->setGrid(bpm, firstBeat);
-    m_pTrack1->setBeats(BeatsPointer(grid1));
+    auto grid1 = mixxx::BeatGrid::makeBeatGrid(
+            m_pTrack1->getSampleRate(), QString(), bpm, firstBeat);
+    m_pTrack1->trySetBeats(grid1);
     ASSERT_DOUBLE_EQ(firstBeat, grid1->findClosestBeat(0));
 
-    auto grid2 = new BeatGrid(*m_pTrack2, m_pTrack2->getSampleRate());
-    grid2->setGrid(bpm, firstBeat);
-    m_pTrack2->setBeats(BeatsPointer(grid2));
+    auto grid2 = mixxx::BeatGrid::makeBeatGrid(
+            m_pTrack2->getSampleRate(), QString(), bpm, firstBeat);
+    m_pTrack2->trySetBeats(grid2);
     ASSERT_DOUBLE_EQ(firstBeat, grid2->findClosestBeat(0));
 
     // Seek deck 1 forward a bit.
@@ -26,8 +26,8 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     EXPECT_TRUE(m_pChannel1->getEngineBuffer()->getVisualPlayPos() > 0);
 
     // Make both decks playing.
-    ControlObject::getControl(m_sGroup1, "play", true)->set(1.0);
-    ControlObject::getControl(m_sGroup2, "play", true)->set(1.0);
+    ControlObject::getControl(m_sGroup1, "play")->set(1.0);
+    ControlObject::getControl(m_sGroup2, "play")->set(1.0);
     ProcessBuffer();
     // Manually set the "bpm" control... I would like to figure out why this
     // doesn't get set naturally, but this will do for now.
@@ -46,5 +46,6 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Deck 1 is +delta away from its closest beat (which is at 0).
     // Deck 2 was left at 0. We translated grid 2 so that it is also +delta
     // away from its closest beat, so that beat should be at -delta.
-    ASSERT_DOUBLE_EQ(-delta, grid2->findClosestBeat(0));
+    mixxx::BeatsPointer beats = m_pTrack2->getBeats();
+    ASSERT_DOUBLE_EQ(-delta, beats->findClosestBeat(0));
 }

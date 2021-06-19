@@ -1,6 +1,4 @@
-#ifndef MIXXX_SQLSTRINGFORMATTER_H
-#define MIXXX_SQLSTRINGFORMATTER_H
-
+#pragma once
 
 #include <QSet>
 #include <QStringList>
@@ -28,6 +26,3 @@ class SqlStringFormatter final {
   private:
     SqlStringFormatter() = delete; // utility class
 };
-
-
-#endif // MIXXX_SQLSTRINGFORMATTER_H

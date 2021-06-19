@@ -1,5 +1,4 @@
-#ifndef QTWAVEFORMWIDGET_H
-#define QTWAVEFORMWIDGET_H
+#pragma once
 
 #include <QGLWidget>
 
@@ -8,7 +7,7 @@
 class QtWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
-    QtWaveformWidget(const char* group, QWidget* parent);
+    QtWaveformWidget(const QString& group, QWidget* parent);
     virtual ~QtWaveformWidget();
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::QtWaveform; }
@@ -27,5 +26,3 @@ class QtWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-
-#endif // QTWAVEFORMWIDGET_H

@@ -1,5 +1,4 @@
-#ifndef COUNTER_H
-#define COUNTER_H
+#pragma once
 
 #include "util/stat.h"
 
@@ -26,5 +25,3 @@ class Counter {
   private:
     QString m_tag;
 };
-
-#endif /* COUNTER_H */

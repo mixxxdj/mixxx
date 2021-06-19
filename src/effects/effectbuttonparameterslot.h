@@ -1,5 +1,4 @@
-#ifndef EFFECTBUTTONPARAMETERSLOT_H
-#define EFFECTBUTTONPARAMETERSLOT_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -47,5 +46,3 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
 
     DISALLOW_COPY_AND_ASSIGN(EffectButtonParameterSlot);
 };
-
-#endif // EFFECTBUTTONPARAMETERSLOT_H

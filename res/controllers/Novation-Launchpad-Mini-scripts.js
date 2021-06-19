@@ -405,7 +405,7 @@ NLM.init = function()
 
         //Init hw
         midi.sendShortMsg(0xb0, 0x0, 0x0);
-        //midi.sendShortMsg(0xb0, 0x0, 0x28); //Enable buffer cycling <-- Figure out whats wrong with this
+        //midi.sendShortMsg(0xb0, 0x0, 0x28); //Enable buffer cycling <-- Figure out what's wrong with this
 
         // select buffer 0
         midi.sendShortMsg(0xb0, 0x68, 3);
@@ -488,12 +488,12 @@ NLM.init = function()
         NLM.setupBtn(7,7,2, LoadKey("Channel",2));
         NLM.setupBtn(7,5,4, LoadKey("Channel",3));
         NLM.setupBtn(7,7,4, LoadKey("Channel",4));
-        
+
         NLM.setupBtn(7,0,6, LoadKey("Sampler",1));
         NLM.setupBtn(7,1,6, LoadKey("Sampler",2));
         NLM.setupBtn(7,2,6, LoadKey("Sampler",3));
         NLM.setupBtn(7,3,6, LoadKey("Sampler",4));
-        
+
         NLM.setupBtn(7,0,7, LoadKey("Sampler",5));
         NLM.setupBtn(7,1,7, LoadKey("Sampler",6));
         NLM.setupBtn(7,2,7, LoadKey("Sampler",7));
@@ -513,9 +513,9 @@ NLM.init = function()
                 NLM.setupBtn(1,i,ch*2-1, SeekKey(ch, i));
             }
         }
-        
+
         // ============== PAGE C ===============
-        
+
         // Add Sampler playbuttons
         for(var channel = 1 ; channel < 9 ; channel++) {
             NLM.setupBtn(2, 0, channel-1, PlayKey("Sampler", channel));
@@ -524,7 +524,7 @@ NLM.init = function()
                 NLM.setupBtn(2, 3+i, channel-1, HotCueKey("Sampler", channel, i));
             }
         }
-        
+
 
 
 

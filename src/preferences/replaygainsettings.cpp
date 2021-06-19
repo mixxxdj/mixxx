@@ -1,5 +1,7 @@
 #include "preferences/replaygainsettings.h"
 
+#include "track/track.h"
+
 namespace {
 const char* kConfigKey = "[ReplayGain]";
 
@@ -83,13 +85,14 @@ void ReplayGainSettings::setReplayGainReanalyze(bool value) {
                 ConfigValue(value));
 }
 
-bool ReplayGainSettings::isAnalyzerDisabled(int version, TrackPointer tio) const {
-    int prefversion = getReplayGainAnalyzerVersion();
-    bool analyzerEnabled = getReplayGainAnalyzerEnabled() && (version == prefversion);
-    bool reanalyze = getReplayGainReanalyze();
+bool ReplayGainSettings::isAnalyzerEnabled(int version) const {
+    return getReplayGainAnalyzerEnabled()
+            && (version == getReplayGainAnalyzerVersion());
+}
 
-    if (analyzerEnabled) {
-        if (reanalyze) {
+bool ReplayGainSettings::isAnalyzerDisabled(int version, TrackPointer tio) const {
+    if (isAnalyzerEnabled(version)) {
+        if (getReplayGainReanalyze()) {
             // ignore stored replay gain
             return false;
         }

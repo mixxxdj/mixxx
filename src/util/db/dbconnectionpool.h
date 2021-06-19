@@ -1,6 +1,4 @@
-#ifndef MIXXX_DBCONNECTIONPOOL_H
-#define MIXXX_DBCONNECTIONPOOL_H
-
+#pragma once
 
 #include <QAtomicInt>
 #include <QThreadStorage>
@@ -65,6 +63,3 @@ class DbConnectionPool final {
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_DBCONNECTIONPOOL_H

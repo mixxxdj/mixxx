@@ -1,11 +1,8 @@
-// readaheadmanager.cpp
-// Created 8/2/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/readaheadmanager.h"
 
-#include "engine/cachingreader.h"
-#include "engine/loopingcontrol.h"
-#include "engine/ratecontrol.h"
+#include "engine/cachingreader/cachingreader.h"
+#include "engine/controls/loopingcontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "util/defs.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -13,25 +10,25 @@
 static const int kNumChannels = 2;
 
 ReadAheadManager::ReadAheadManager()
-        : m_pLoopingControl(NULL),
-          m_pRateControl(NULL),
+        : m_pLoopingControl(nullptr),
+          m_pRateControl(nullptr),
           m_currentPosition(0),
-          m_pReader(NULL),
+          m_pReader(nullptr),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_cacheMissHappened(false) {
     // For testing only: ReadAheadManagerMock
 }
 
 ReadAheadManager::ReadAheadManager(CachingReader* pReader,
-                                   LoopingControl* pLoopingControl)
+        LoopingControl* pLoopingControl)
         : m_pLoopingControl(pLoopingControl),
-          m_pRateControl(NULL),
+          m_pRateControl(nullptr),
           m_currentPosition(0),
           m_pReader(pReader),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_cacheMissHappened(false) {
-    DEBUG_ASSERT(m_pLoopingControl != NULL);
-    DEBUG_ASSERT(m_pReader != NULL);
+    DEBUG_ASSERT(m_pLoopingControl != nullptr);
+    DEBUG_ASSERT(m_pReader != nullptr);
 }
 
 ReadAheadManager::~ReadAheadManager() {
@@ -156,7 +153,10 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
 
         // do crossfade from the current buffer into the new loop beginning
         if (samples_from_reader != 0) { // avoid division by zero
-            SampleUtil::linearCrossfadeBuffers(pOutput, pOutput, m_pCrossFadeBuffer, samples_from_reader);
+            SampleUtil::linearCrossfadeBuffersOut(
+                    pOutput,
+                    m_pCrossFadeBuffer,
+                    samples_from_reader);
         }
     }
 
@@ -221,12 +221,12 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
     ReadLogEntry newEntry(virtualPlaypositionStart,
                           virtualPlaypositionEndNonInclusive);
     if (m_readAheadLog.size() > 0) {
-        ReadLogEntry& last = m_readAheadLog.last();
+        ReadLogEntry& last = m_readAheadLog.back();
         if (last.merge(newEntry)) {
             return;
         }
     }
-    m_readAheadLog.append(newEntry);
+    m_readAheadLog.push_back(newEntry);
 }
 
 // Not thread-save, call from engine thread only
@@ -247,7 +247,7 @@ double ReadAheadManager::getFilePlaypositionFromLog(
     double filePlayposition = 0;
     bool shouldNotifySeek = false;
     while (m_readAheadLog.size() > 0 && numConsumedSamples > 0) {
-        ReadLogEntry& entry = m_readAheadLog.first();
+        ReadLogEntry& entry = m_readAheadLog.front();
 
         // Notify EngineControls that we have taken a seek.
         // Every new entry start with a seek
@@ -264,7 +264,7 @@ double ReadAheadManager::getFilePlaypositionFromLog(
 
         if (entry.length() == 0) {
             // This entry is empty now.
-            m_readAheadLog.removeFirst();
+            m_readAheadLog.pop_front();
         }
         shouldNotifySeek = true;
     }

@@ -2,39 +2,32 @@
 
 #include <memory>
 
-#include "test/mixxxtest.h"
-
+#include "control/controlobject.h"
 #include "database/mixxxdb.h"
 #include "library/trackcollection.h"
-#include "util/db/dbconnectionpooler.h"
+#include "library/trackcollectionmanager.h"
+#include "test/mixxxdbtest.h"
+#include "test/soundsourceproviderregistration.h"
 #include "util/db/dbconnectionpooled.h"
-#include "track/globaltrackcache.h"
+#include "util/db/dbconnectionpooler.h"
 
-class LibraryTest : public MixxxTest,
-    public virtual /*implements*/ GlobalTrackCacheSaver {
-
-  public:
-    void saveEvictedTrack(Track* pTrack) noexcept override;
-
+class LibraryTest : public MixxxDbTest, SoundSourceProviderRegistration {
   protected:
     LibraryTest();
-    ~LibraryTest() override;
+    ~LibraryTest() override = default;
 
-    mixxx::DbConnectionPoolPtr dbConnectionPool() const {
-        return m_mixxxDb.connectionPool();
+    TrackCollectionManager* trackCollectionManager() const {
+        return m_pTrackCollectionManager.get();
     }
 
-    QSqlDatabase dbConnection() const {
-        return m_dbConnection;
+    TrackCollection* internalCollection() const {
+        return trackCollectionManager()->internalCollection();
     }
 
-    TrackCollection* collection() {
-        return m_pTrackCollection.get();
-    }
+    TrackPointer getOrAddTrackByLocation(
+            const QString& trackLocation) const;
 
   private:
-    const MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPooler m_dbConnectionPooler;
-    QSqlDatabase m_dbConnection;
-    std::unique_ptr<TrackCollection> m_pTrackCollection;
+    const std::unique_ptr<TrackCollectionManager> m_pTrackCollectionManager;
+    ControlObject m_keyNotationCO;
 };

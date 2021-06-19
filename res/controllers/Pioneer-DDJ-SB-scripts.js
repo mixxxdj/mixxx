@@ -21,8 +21,8 @@ PioneerDDJSB.blinkingSync = false;
 // Allows toggling slip faster, but is counterintuitive.
 PioneerDDJSB.invertVinylSlipButton = false;
 
-// Sets the jogwheels sensivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
-PioneerDDJSB.jogwheelSensivity = 1.0;
+// Sets the jogwheels sensitivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
+PioneerDDJSB.jogwheelSensitivity = 1.0;
 
 // Sets how much more sensitive the jogwheels get when holding shift.
 // Set to 1 to disable jogwheel sensitivity increase when holding shift.
@@ -828,7 +828,7 @@ PioneerDDJSB.triggerVinylLed = function (deck) {
 
 PioneerDDJSB.pitchBendFromJog = function (channel, movement) {
     var group = (typeof channel === "string" ? channel : '[Channel' + channel + 1 + ']');
-    engine.setValue(group, 'jog', movement / 5 * PioneerDDJSB.jogwheelSensivity);
+    engine.setValue(group, 'jog', movement / 5 * PioneerDDJSB.jogwheelSensitivity);
 };
 
 

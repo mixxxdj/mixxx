@@ -1,6 +1,4 @@
-#ifndef MIXXX_DBENTITY_H
-#define MIXXX_DBENTITY_H
-
+#pragma once
 
 #include "util/db/dbid.h"
 
@@ -31,6 +29,3 @@ class DbEntity {
   private:
     T m_id;
 };
-
-
-#endif // MIXXX_DBENTITY_H

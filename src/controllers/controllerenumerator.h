@@ -1,18 +1,11 @@
-/**
-* @file controllerenumerator.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Sat Apr 30 2011
-* @brief Base class handling discovery and enumeration of DJ controllers.
-*
-* This class handles discovery and enumeration of DJ controllers and
-*   must be inherited by a class that implements it on some API.
-*/
-
-#ifndef CONTROLLERENUMERATOR_H
-#define CONTROLLERENUMERATOR_H
+#pragma once
 
 #include "controllers/controller.h"
 
+/// Base class handling discovery and enumeration of DJ controllers.
+///
+/// This class handles discovery and enumeration of DJ controllers and
+/// must be inherited by a class that implements it on some API.
 class ControllerEnumerator : public QObject {
     Q_OBJECT
   public:
@@ -29,5 +22,3 @@ class ControllerEnumerator : public QObject {
         return false;
     }
 };
-
-#endif

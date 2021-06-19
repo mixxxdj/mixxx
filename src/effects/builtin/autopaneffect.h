@@ -1,12 +1,11 @@
-#ifndef AUTOPANEFFECT_H
-#define AUTOPANEFFECT_H
+#pragma once
 
 #include <QMap>
 
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterpansingle.h"
+#include "engine/filters/enginefilterpansingle.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -106,5 +105,3 @@ class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(AutoPanEffect);
 };
-
-#endif /* AUTOPANEFFECT_H */

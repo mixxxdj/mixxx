@@ -5,14 +5,14 @@
 #include "util/defs.h"
 
 LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
-                                       EffectManifestPointer pManifest,
-                                       const LilvPlugin* plugin,
-                                       QList<int> audioPortIndices,
-                                       QList<int> controlPortIndices)
-            : m_pPlugin(plugin),
-              m_audioPortIndices(audioPortIndices),
-              m_controlPortIndices(controlPortIndices),
-              m_pEffectsManager(nullptr) {
+        EffectManifestPointer pManifest,
+        const LilvPlugin* plugin,
+        const QList<int>& audioPortIndices,
+        const QList<int>& controlPortIndices)
+        : m_pPlugin(plugin),
+          m_audioPortIndices(audioPortIndices),
+          m_controlPortIndices(controlPortIndices),
+          m_pEffectsManager(nullptr) {
     m_inputL = new float[MAX_BUFFER_LEN];
     m_inputR = new float[MAX_BUFFER_LEN];
     m_outputL = new float[MAX_BUFFER_LEN];
@@ -114,14 +114,14 @@ void LV2EffectProcessor::process(const ChannelHandle& inputHandle,
     if (!pState) {
         SampleUtil::copyWithGain(pOutput, pInput, 1.0, bufferParameters.samplesPerBuffer());
         return;
-    } 
+    }
 
     for (int i = 0; i < m_parameters.size(); i++) {
-        m_params[i] = m_parameters[i]->value();
+        m_params[i] = static_cast<float>(m_parameters[i]->value());
     }
 
     int j = 0;
-    for (unsigned int i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
+    for (SINT i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
         m_inputL[j] = pInput[i];
         m_inputR[j] = pInput[i + 1];
         j++;
@@ -130,7 +130,7 @@ void LV2EffectProcessor::process(const ChannelHandle& inputHandle,
     lilv_instance_run(pState->lilvIinstance(), bufferParameters.framesPerBuffer());
 
     j = 0;
-    for (unsigned int i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
+    for (SINT i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
         pOutput[i] = m_outputL[j];
         pOutput[i + 1] = m_outputR[j];
         j++;
@@ -142,7 +142,7 @@ LV2EffectGroupState* LV2EffectProcessor::createGroupState(const mixxx::EnginePar
     LilvInstance* handle = pState->lilvIinstance();
     if (handle) {
         for (int i = 0; i < m_parameters.size(); i++) {
-            m_params[i] = m_parameters[i]->value();
+            m_params[i] = static_cast<float>(m_parameters[i]->value());
             lilv_instance_connect_port(handle, m_controlPortIndices[i], &m_params[i]);
         }
 
@@ -204,8 +204,8 @@ bool LV2EffectProcessor::loadStatesForInputChannel(const ChannelHandle* inputCha
                      << this << "output" << outputChannel;
         }
 
-        auto pState = dynamic_cast<LV2EffectGroupState*>(
-                  pStatesMap->at(outputChannel.handle()));
+        auto* pState = dynamic_cast<LV2EffectGroupState*>(
+                pStatesMap->at(outputChannel.handle()));
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
               return false;
         }

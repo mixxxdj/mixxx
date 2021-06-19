@@ -4,6 +4,7 @@
       <author>rojaro</author>
       <description>Mapping for Hercules DJ Control AIR</description>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3263</forums>
+        <manual>hercules_djcontrol_air</manual>
     </info>
     <controller id="DJ Control Air">
         <scriptfiles>

@@ -1,0 +1,5 @@
+<svg width="21" height="18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <rect x=".5" y="6" width="20" height="8" rx="4" ry="4" fill="#0f0f0f"/>
+  <circle transform="scale(-1,1)" cx="-10.5" cy="10" r="4" fill="#3d3d3c"/>
+  <ellipse transform="matrix(-.500007 -.866021 -.86603 .499993 0 0)" cx="-13.9102" cy="-4.0932" rx="3.50174" ry="3.50178" fill="none"/>
+</svg>

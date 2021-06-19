@@ -76,10 +76,10 @@ NANOPAD2RK.init = function (id, debug) { // called when the device is opened & s
 };
 
 NANOPAD2RK.shutdown = function () {
-    
+
 };
-    
-    
+
+
 NANOPAD2RK.clear = function (){//enables hotcue clearing
     if (NANOPAD2RK.debug){print("###hotcueclear##############")};
     NANOPAD2RK.hotcueClear=true;
@@ -97,7 +97,7 @@ NANOPAD2RK.hotcueButton = function (channel, control, value, status, group) {
     if (NANOPAD2RK.debug){print("control:"+control)};
     if (NANOPAD2RK.debug){print("hotcuebank:"+NANOPAD2RK.hotcueBank)};
     if (NANOPAD2RK.debug){print("phrase:#"+status.toString(16).toLowerCase()+control.toString(16).toLowerCase()+"#")};
-    
+
     //activate or clear depending on whether clear button is pressed
     var thecue = NANOPAD2RK.hotcues[control];
     if (NANOPAD2RK.hotcueClear){
@@ -127,7 +127,7 @@ NANOPAD2RK.loopButtonRelease = function (channel, control, value, status, group)
 NANOPAD2RK.reloopButton = function (channel, control, value, status, group) {
     if (NANOPAD2RK.debug){print(NANOPAD2RK.looplen+"len");}
     if (NANOPAD2RK.debug){print(NANOPAD2RK.looptype+"type");}
-    
+
     NANOPAD2RK.loopbuttonDown=true;
     NANOPAD2RK.doreloop=true;
     NANOPAD2RK.reloopTimer = engine.beginTimer(500, "NANOPAD2RK.disablereloop()", true);
@@ -148,7 +148,7 @@ NANOPAD2RK.disablereloop = function () {
 
 NANOPAD2RK.loopplus = function (channel, control, value, status, group) {
     //grows loop or moves loop forward
-    if (NANOPAD2RK.loopbuttonDown !== true){engine.setValue(group, "loop_double", 1); return false;}//shrink loop if no loop button down 
+    if (NANOPAD2RK.loopbuttonDown !== true){engine.setValue(group, "loop_double", 1); return false;}//shrink loop if no loop button down
     else if (engine.getValue(group, "loop_start_position")>=0 && engine.getValue(group, "loop_end_position")>=0 ){
         //move loop
         var interval =    NANOPAD2RK.loopmove*engine.getValue(group, "track_samples")/engine.getValue(group, "duration");
@@ -161,7 +161,7 @@ NANOPAD2RK.loopplus = function (channel, control, value, status, group) {
     };
 NANOPAD2RK.loopminus = function (channel, control, value, status, group) {
     //shrinks loop or moves loop back
-    if (NANOPAD2RK.loopbuttonDown !== true){engine.setValue(group, "loop_halve", 1); return false;}//shrink loop if no loop button down 
+    if (NANOPAD2RK.loopbuttonDown !== true){engine.setValue(group, "loop_halve", 1); return false;}//shrink loop if no loop button down
     else if (engine.getValue(group, "loop_start_position")>=0 && engine.getValue(group, "loop_end_position")>=0 ){
         //move loop
         var interval =    NANOPAD2RK.loopmove*engine.getValue(group, "track_samples")/engine.getValue(group, "duration");
@@ -182,7 +182,7 @@ NANOPAD2RK.muteOn = function (channel, control, value, status, group) {
     engine.setValue(group, "volume", 0);
     NANOPAD2RK.vol[group]=curvol;
     engine.softTakeover(group,"volume",true);
-    
+
     if (NANOPAD2RK.debug){print("MUTE");}
     };
 
@@ -193,7 +193,7 @@ NANOPAD2RK.muteOff = function (channel, control, value, status, group) {
     engine.softTakeover(group,"volume",false);
     engine.setValue(group, "volume", storedvol);
     engine.softTakeover(group,"volume",true);
-    
+
     if (NANOPAD2RK.debug){print("MUTE");}
     };
 

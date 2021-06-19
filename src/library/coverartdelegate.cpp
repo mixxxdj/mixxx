@@ -1,128 +1,184 @@
-#include <QTableView>
-#include <QPainter>
-
 #include "library/coverartdelegate.h"
+
+#include <QPainter>
+#include <algorithm>
+
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
-#include "util/compatibility.h"
-#include "util/math.h"
+#include "library/trackmodel.h"
+#include "moc_coverartdelegate.cpp"
+#include "track/track.h"
+#include "util/logger.h"
+
+namespace {
+
+const mixxx::Logger kLogger("CoverArtDelegate");
+
+inline TrackModel* asTrackModel(
+        QTableView* pTableView) {
+    auto* pTrackModel =
+            dynamic_cast<TrackModel*>(pTableView->model());
+    DEBUG_ASSERT(pTrackModel);
+    return pTrackModel;
+}
+
+} // anonymous namespace
 
 CoverArtDelegate::CoverArtDelegate(QTableView* parent)
         : TableItemDelegate(parent),
-          m_pTableView(parent),
-          m_bOnlyCachedCover(false),
-          m_iCoverColumn(-1),
-          m_iCoverSourceColumn(-1),
-          m_iCoverTypeColumn(-1),
-          m_iCoverLocationColumn(-1),
-          m_iCoverHashColumn(-1),
-          m_iTrackLocationColumn(-1),
-          m_iIdColumn(-1) {
-    // This assumes that the parent is wtracktableview
-    connect(parent, SIGNAL(onlyCachedCoverArt(bool)),
-            this, SLOT(slotOnlyCachedCoverArt(bool)));
-
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache) {
-        connect(pCache, &CoverArtCache::coverFound,
-                this, &CoverArtDelegate::slotCoverFound);
-    }
-
-    TrackModel* pTrackModel = NULL;
-    QTableView* pTableView = NULL;
-    if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
-        pTableView = tableView;
-        pTrackModel = dynamic_cast<TrackModel*>(pTableView->model());
-    }
-
-    if (pTrackModel) {
-        m_iCoverColumn = pTrackModel->fieldIndex(
-            LIBRARYTABLE_COVERART);
-        m_iCoverSourceColumn = pTrackModel->fieldIndex(
-            LIBRARYTABLE_COVERART_SOURCE);
-        m_iCoverTypeColumn = pTrackModel->fieldIndex(
-            LIBRARYTABLE_COVERART_TYPE);
-        m_iCoverHashColumn = pTrackModel->fieldIndex(
-            LIBRARYTABLE_COVERART_HASH);
-        m_iCoverLocationColumn = pTrackModel->fieldIndex(
-            LIBRARYTABLE_COVERART_LOCATION);
-        m_iTrackLocationColumn = pTrackModel->fieldIndex(
-            TRACKLOCATIONSTABLE_LOCATION);
-        m_iIdColumn = pTrackModel->fieldIndex(
-            LIBRARYTABLE_ID);
-    }
-}
-
-CoverArtDelegate::~CoverArtDelegate() {
-}
-
-void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
-    m_bOnlyCachedCover = b;
-
-    // If we can request non-cache covers now, request updates for all rows that
-    // were cache misses since the last time.
-    if (!m_bOnlyCachedCover) {
-        foreach (int row, m_cacheMissRows) {
-            emit(coverReadyForCell(row, m_iCoverColumn));
-        }
-        m_cacheMissRows.clear();
-    }
-}
-
-void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
-                                      const CoverInfoRelative& info,
-                                      QPixmap pixmap, bool fromCache) {
-    if (pRequestor == this && !pixmap.isNull() && !fromCache) {
-        // qDebug() << "CoverArtDelegate::slotCoverFound" << pRequestor << info
-        //          << pixmap.size();
-        QLinkedList<int> rows = m_hashToRow.take(info.hash);
-        foreach(int row, rows) {
-            emit(coverReadyForCell(row, m_iCoverColumn));
-        }
-    }
-}
-
-void CoverArtDelegate::paintItem(QPainter *painter,
-                             const QStyleOptionViewItem &option,
-                             const QModelIndex &index) const {
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache == NULL || m_iIdColumn == -1 || m_iCoverSourceColumn == -1 ||
-            m_iCoverTypeColumn == -1 || m_iCoverLocationColumn == -1 ||
-            m_iCoverHashColumn == -1) {
-        return;
-    }
-
-    CoverInfo info;
-    info.type = static_cast<CoverInfo::Type>(
-        index.sibling(index.row(), m_iCoverTypeColumn).data().toInt());
-
-    // We don't support types other than METADATA or FILE currently.
-    if (info.type != CoverInfo::METADATA && info.type != CoverInfo::FILE) {
-        return;
-    }
-
-    info.source = static_cast<CoverInfo::Source>(
-        index.sibling(index.row(), m_iCoverSourceColumn).data().toInt());
-    info.coverLocation = index.sibling(index.row(), m_iCoverLocationColumn).data().toString();
-    info.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toUInt();
-    info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
-
-    double scaleFactor = getDevicePixelRatioF(static_cast<QWidget*>(parent()));
-    // We listen for updates via slotCoverFound above and signal to
-    // BaseSqlTableModel when a row's cover is ready.
-    QPixmap pixmap = pCache->requestCover(info, this, option.rect.width() * scaleFactor,
-                                          m_bOnlyCachedCover, true);
-    if (!pixmap.isNull()) {
-        pixmap.setDevicePixelRatio(scaleFactor);
-        painter->drawPixmap(option.rect.topLeft(), pixmap);
-    } else if (!m_bOnlyCachedCover) {
-        // If we asked for a non-cache image and got a null pixmap, then our
-        // request was queued.
-        m_hashToRow[info.hash].append(index.row());
+          m_pTrackModel(asTrackModel(parent)),
+          m_pCache(CoverArtCache::instance()),
+          m_inhibitLazyLoading(false) {
+    if (m_pCache) {
+        connect(m_pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &CoverArtDelegate::slotCoverFound);
     } else {
-        // Otherwise, we are requesting cache-only covers and got a cache
-        // miss. Record this row so that when we switch to requesting non-cache
-        // we can request an update.
-        m_cacheMissRows.append(index.row());
+        kLogger.warning()
+                << "Caching of cover art is not available";
+    }
+}
+
+void CoverArtDelegate::emitRowsChanged(
+        QList<int>&& rows) {
+    if (rows.isEmpty()) {
+        return;
+    }
+    // Sort in ascending order...
+    std::sort(rows.begin(), rows.end());
+    // ...and then deduplicate...
+    rows.erase(std::unique(rows.begin(), rows.end()), rows.end());
+    // ...before emitting the signal.
+    DEBUG_ASSERT(!rows.isEmpty());
+    emit rowsChanged(std::move(rows));
+}
+
+void CoverArtDelegate::slotInhibitLazyLoading(
+        bool inhibitLazyLoading) {
+    m_inhibitLazyLoading = inhibitLazyLoading;
+    if (m_inhibitLazyLoading || m_cacheMissRows.isEmpty()) {
+        return;
+    }
+    // If we can request non-cache covers now, request updates
+    // for all rows that were cache misses since the last time.
+    // Reset the member variable before mutating the aggregated
+    // rows list (-> implicit sharing) and emitting a signal that
+    // in turn may trigger new signals for CoverArtDelegate!
+    QList<int> staleRows = std::move(m_cacheMissRows);
+    DEBUG_ASSERT(m_cacheMissRows.isEmpty());
+    emitRowsChanged(std::move(staleRows));
+}
+
+void CoverArtDelegate::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        mixxx::cache_key_t requestedImageHash,
+        bool coverInfoUpdated) {
+    Q_UNUSED(pixmap);
+    if (pRequestor != this) {
+        return;
+    }
+    if (coverInfoUpdated) {
+        const auto pTrack =
+                loadTrackByLocation(coverInfo.trackLocation);
+        if (pTrack) {
+            kLogger.info()
+                    << "Updating cover info of track"
+                    << coverInfo.trackLocation;
+            pTrack->setCoverInfo(coverInfo);
+        }
+    }
+    QList<int> refreshRows = m_pendingCacheRows.values(requestedImageHash);
+    m_pendingCacheRows.remove(requestedImageHash);
+    if (pixmap.isNull()) {
+        kLogger.warning() << "Failed to load cover" << coverInfo;
+    } else {
+        // Only refresh the rows if loading succeeded, otherwise
+        // we would enter an infinite repaint loop and churn CPU.
+        emitRowsChanged(std::move(refreshRows));
+    }
+}
+
+TrackPointer CoverArtDelegate::loadTrackByLocation(
+        const QString& trackLocation) const {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
+        return TrackPointer();
+    }
+    return m_pTrackModel->getTrackByRef(
+            TrackRef::fromFilePath(trackLocation));
+}
+
+void CoverArtDelegate::paintItem(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
+    paintItemBackground(painter, option, index);
+
+    CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
+        return;
+    }
+    bool drewPixmap = false;
+    if (coverInfo.hasImage()) {
+        VERIFY_OR_DEBUG_ASSERT(m_pCache) {
+            return;
+        }
+        const double scaleFactor =
+                getDevicePixelRatioF(qobject_cast<QWidget*>(parent()));
+        QPixmap pixmap = m_pCache->tryLoadCover(this,
+                coverInfo,
+                static_cast<int>(option.rect.width() * scaleFactor),
+                m_inhibitLazyLoading ? CoverArtCache::Loading::CachedOnly
+                                     : CoverArtCache::Loading::Default);
+        if (pixmap.isNull()) {
+            // Cache miss
+            if (m_inhibitLazyLoading) {
+                // We are requesting cache-only covers and got a cache
+                // miss. Record this row so that when we switch to requesting
+                // non-cache we can request an update.
+                m_cacheMissRows.append(index.row());
+            } else {
+                // If we asked for a non-cache image and got a null pixmap,
+                // then our request was queued.
+                m_pendingCacheRows.insert(coverInfo.cacheKey(), index.row());
+            }
+        } else {
+            // Cache hit
+            pixmap.setDevicePixelRatio(scaleFactor);
+            painter->drawPixmap(option.rect.topLeft(), pixmap);
+            drewPixmap = true;
+        }
+    }
+    // Fallback: Use the (background) color as a placeholder:
+    //  - while the cover art is loaded asynchronously in the background
+    //  - if the audio file with embedded cover art is missing
+    //  - if the external image file with custom cover art is missing
+    // Since the background color is calculated from the cover art image
+    // it is optional and may not always be available. The background
+    // color may even be set manually without having a cover image.
+    if (!drewPixmap && coverInfo.color) {
+        painter->fillRect(option.rect, mixxx::RgbColor::toQColor(coverInfo.color));
+    }
+
+    // Draw a border if the cover art cell has focus
+    if (option.state & QStyle::State_HasFocus) {
+        // This uses a color from the stylesheet:
+        // WTrackTableView {
+        //   qproperty-focusBorderColor: red;
+        // }
+        QPen borderPen(
+                m_pFocusBorderColor,
+                1,
+                Qt::SolidLine,
+                Qt::SquareCap);
+        painter->setPen(borderPen);
+        painter->setBrush(QBrush(Qt::transparent));
+        painter->drawRect(
+                option.rect.left(),
+                option.rect.top(),
+                option.rect.width() - 1,
+                option.rect.height() - 1);
     }
 }

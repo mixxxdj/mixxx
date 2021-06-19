@@ -1,8 +1,4 @@
-// rhythmboxfeature.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef RHYTHMBOXFEATURE_H
-#define RHYTHMBOXFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QtSql>
@@ -21,7 +17,7 @@ class BaseExternalPlaylistModel;
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
-    RhythmboxFeature(QObject* parent, TrackCollection*);
+    RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig);
     virtual ~RhythmboxFeature();
     static bool isSupported();
 
@@ -40,9 +36,9 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     void onTrackCollectionLoaded();
 
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
+    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist);
     // Removes all rows from a given table
-    void clearTable(QString table_name);
+    void clearTable(const QString& table_name);
     // reads the properties of a track and executes a SQL statement
     void importTrack(QXmlStreamReader &xml, QSqlQuery &query);
     // reads all playlist entries and executes a SQL statement
@@ -51,7 +47,6 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     BaseExternalTrackModel* m_pRhythmboxTrackModel;
     BaseExternalPlaylistModel* m_pRhythmboxPlaylistModel;
 
-    TrackCollection* m_pTrackCollection;
     // new DB object because of threads
     QSqlDatabase m_database;
     bool m_isActivated;
@@ -65,5 +60,3 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     QSharedPointer<BaseTrackCache>  m_trackSource;
     QIcon m_icon;
 };
-
-#endif // RHYTHMBOXFEATURE_H

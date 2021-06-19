@@ -1,6 +1,4 @@
-#ifndef MIXXX_DBCONNECTION_H
-#define MIXXX_DBCONNECTION_H
-
+#pragma once
 
 #include <QSqlDatabase>
 #include <QtDebug>
@@ -26,6 +24,7 @@ class DbConnection final {
 
     struct Params {
         QString type;
+        QString connectOptions;
         QString hostName;
         QString filePath;
         QString userName;
@@ -63,10 +62,7 @@ class DbConnection final {
     DbConnection(const DbConnection&&) = delete;
 
     QSqlDatabase m_sqlDatabase;
-    StringCollator m_collator;
+    mixxx::StringCollator m_collator;
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_DBCONNECTION_H

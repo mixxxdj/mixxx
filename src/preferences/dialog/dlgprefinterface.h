@@ -1,56 +1,49 @@
-/***************************************************************************
-                          dlgprefcontrols.h  -  description
-                             -------------------
-    begin                : Sat Jul 5 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFCONTROLS_H
-#define DLGPREFCONTROLS_H
-
+#include <QMap>
 #include <QWidget>
+#include <memory>
+#include <optional>
 
 #include "preferences/constants.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefinterfacedlg.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
+#include "skin/skin.h"
 
 class ControlProxy;
 class ControlPotmeter;
-class SkinLoader;
 class PlayerManager;
 class MixxxMainWindow;
 class ControlObject;
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
+namespace mixxx {
+namespace skin {
+class SkinLoader;
+}
+} // namespace mixxx
 
 class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
   public:
-    DlgPrefInterface(QWidget *parent, MixxxMainWindow *mixxx,
-                    SkinLoader* pSkinLoader, UserSettingsPointer pConfig);
-    virtual ~DlgPrefInterface();
+    DlgPrefInterface(
+            QWidget* parent,
+            MixxxMainWindow* mixxx,
+            std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
+            UserSettingsPointer pConfig);
+    ~DlgPrefInterface() override = default;
 
   public slots:
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
 
+  private slots:
     void slotSetTooltips();
     void slotSetSkin(int);
     void slotSetScheme(int);
+    void slotSetSkinDescription();
+    void slotSetSkinPreview();
     void slotUpdateSchemes();
     void slotSetScaleFactor(double newValue);
     void slotSetScaleFactorAuto(bool checked);
@@ -58,32 +51,31 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
   private:
     void notifyRebootNecessary();
     void loadTooltipPreferenceFromConfig();
-    bool checkSkinResolution(QString skin);
 
     // Because the CueDefault list is out of order, we have to set the combo
     // box using the user data, not the index.  Returns the index of the item
     // that has the corresponding userData. If the userdata is not in the list,
     // returns zero.
     int cueDefaultIndexByData(int userData) const;
+    QScreen* getScreen() const;
 
     UserSettingsPointer m_pConfig;
     ControlObject* m_pControlTrackTimeDisplay;
     MixxxMainWindow *m_mixxx;
-    SkinLoader* m_pSkinLoader;
-    PlayerManager* m_pPlayerManager;
+    std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
 
-    QString m_skin;
-    QString m_skinOnUpdate;
+    QMap<QString, mixxx::skin::SkinPointer> m_skins;
+    mixxx::skin::SkinPointer m_pSkin;
+    QString m_skinNameOnUpdate;
     QString m_colorScheme;
     QString m_localeOnUpdate;
     mixxx::TooltipsPreference m_tooltipMode;
     double m_dScaleFactorAuto;
     bool m_bUseAutoScaleFactor;
     double m_dScaleFactor;
+    double m_dDevicePixelRatio;
     bool m_bStartWithFullScreen;
     mixxx::ScreenSaverPreference m_screensaverMode;
 
     bool m_bRebootMixxxView;
 };
-
-#endif

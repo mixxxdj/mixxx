@@ -4,44 +4,52 @@
 #include <QItemSelectionModel>
 #include <QModelIndex>
 #include <QModelIndexList>
+#include <QWindow>
 #include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "mixer/playermanager.h"
-#include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
-#include "widget/wtracktableview.h"
 #include "library/library.h"
 #include "library/libraryview.h"
+#include "mixer/playermanager.h"
+#include "moc_librarycontrol.cpp"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
+#include "widget/wsearchlineedit.h"
+#include "widget/wtracktableview.h"
 
-
-LoadToGroupController::LoadToGroupController(QObject* pParent, const QString& group)
+LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QString& group)
         : QObject(pParent),
           m_group(group) {
     m_pLoadControl = std::make_unique<ControlPushButton>(ConfigKey(group, "LoadSelectedTrack"));
-    connect(m_pLoadControl.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadToGroup(double)));
+    connect(m_pLoadControl.get(),
+            &ControlObject::valueChanged,
+            this,
+            &LoadToGroupController::slotLoadToGroup);
 
     m_pLoadAndPlayControl = std::make_unique<ControlPushButton>(ConfigKey(group, "LoadSelectedTrackAndPlay"));
-    connect(m_pLoadAndPlayControl.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadToGroupAndPlay(double)));
+    connect(m_pLoadAndPlayControl.get(),
+            &ControlObject::valueChanged,
+            this,
+            &LoadToGroupController::slotLoadToGroupAndPlay);
 
-    connect(this, SIGNAL(loadToGroup(QString, bool)),
-            pParent, SLOT(slotLoadSelectedTrackToGroup(QString, bool)));
+    connect(this,
+            &LoadToGroupController::loadToGroup,
+            pParent,
+            &LibraryControl::slotLoadSelectedTrackToGroup);
 }
 
 LoadToGroupController::~LoadToGroupController() = default;
 
 void LoadToGroupController::slotLoadToGroup(double v) {
     if (v > 0) {
-        emit(loadToGroup(m_group, false));
+        emit loadToGroup(m_group, false);
     }
 }
 
 void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
     if (v > 0) {
-        emit(loadToGroup(m_group, true));
+        emit loadToGroup(m_group, true);
     }
 }
 
@@ -50,6 +58,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_pLibrary(pLibrary),
           m_pLibraryWidget(nullptr),
           m_pSidebarWidget(nullptr),
+          m_pSearchbox(nullptr),
           m_numDecks("[Master]", "num_decks", this),
           m_numSamplers("[Master]", "num_samplers", this),
           m_numPreviewDecks("[Master]", "num_preview_decks", this) {
@@ -57,108 +66,244 @@ LibraryControl::LibraryControl(Library* pLibrary)
     slotNumDecksChanged(m_numDecks.get());
     slotNumSamplersChanged(m_numSamplers.get());
     slotNumPreviewDecksChanged(m_numPreviewDecks.get());
-    m_numDecks.connectValueChanged(SLOT(slotNumDecksChanged(double)));
-    m_numSamplers.connectValueChanged(SLOT(slotNumSamplersChanged(double)));
-    m_numPreviewDecks.connectValueChanged(SLOT(slotNumPreviewDecksChanged(double)));
+    m_numDecks.connectValueChanged(this, &LibraryControl::slotNumDecksChanged);
+    m_numSamplers.connectValueChanged(this, &LibraryControl::slotNumSamplersChanged);
+    m_numPreviewDecks.connectValueChanged(this, &LibraryControl::slotNumPreviewDecksChanged);
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveUp"));
     m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveDown"));
     m_pMoveVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveVertical"), false);
-    connect(m_pMoveUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveUp(double)));
-    connect(m_pMoveDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveDown(double)));
-    connect(m_pMoveVertical.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveVertical(double)));
+    connect(m_pMoveUp.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveUp);
+    connect(m_pMoveDown.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveDown);
+    connect(m_pMoveVertical.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotMoveVertical);
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     m_pScrollUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollUp"));
     m_pScrollDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollDown"));
     m_pScrollVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "ScrollVertical"), false);
-    connect(m_pScrollUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollUp(double)));
-    connect(m_pScrollDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollDown(double)));
-    connect(m_pScrollVertical.get(), SIGNAL(valueChanged(double)),this, SLOT(slotScrollVertical(double)));
+    connect(m_pScrollUp.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotScrollUp);
+    connect(m_pScrollDown.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotScrollDown);
+    connect(m_pScrollVertical.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotScrollVertical);
 
     // Controls to navigate horizontally within currently selected item (left/right buttons)
     m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveLeft"));
     m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveRight"));
     m_pMoveHorizontal = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveHorizontal"), false);
-    connect(m_pMoveLeft.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveLeft(double)));
-    connect(m_pMoveRight.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveRight(double)));
-    connect(m_pMoveHorizontal.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveHorizontal(double)));
+    connect(m_pMoveLeft.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveLeft);
+    connect(m_pMoveRight.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveRight);
+    connect(m_pMoveHorizontal.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotMoveHorizontal);
 
     // Control to navigate between widgets (tab/shit+tab button)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
     m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
     m_pMoveFocus = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveFocus"), false);
-    connect(m_pMoveFocusForward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusForward(double)));
-    connect(m_pMoveFocusBackward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusBackward(double)));
-    connect(m_pMoveFocus.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocus(double)));
+    connect(m_pMoveFocusForward.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveFocusForward);
+    connect(m_pMoveFocusBackward.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveFocusBackward);
+    connect(m_pMoveFocus.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotMoveFocus);
 
     // Control to "goto" the currently selected item in focused widget (context dependent)
     m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
-    connect(m_pGoToItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotGoToItem(double)));
+    connect(m_pGoToItem.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotGoToItem);
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
-    connect(m_pAutoDjAddTop.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotAutoDjAddTop(double)));
+    connect(m_pAutoDjAddTop.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotAutoDjAddTop);
 
     m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddBottom"));
-    connect(m_pAutoDjAddBottom.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotAutoDjAddBottom(double)));
+    connect(m_pAutoDjAddBottom.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotAutoDjAddBottom);
+
+    m_pAutoDjAddReplace = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "AutoDjAddReplace"));
+    connect(m_pAutoDjAddReplace.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotAutoDjAddReplace);
+
+    // Sort controls
+    m_pSortColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column"));
+    m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
+    m_pSortOrder->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSortColumnToggle = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column_toggle"), false);
+    connect(m_pSortColumn.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotSortColumn);
+    connect(m_pSortColumnToggle.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotSortColumnToggle);
 
     // Font sizes
     m_pFontSizeKnob = std::make_unique<ControlObject>(
             ConfigKey("[Library]", "font_size_knob"), false);
-    connect(m_pFontSizeKnob.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotFontSize(double)));
+    connect(m_pFontSizeKnob.get(),
+            &ControlObject::valueChanged,
+            this,
+            &LibraryControl::slotFontSize);
 
     m_pFontSizeDecrement = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "font_size_decrement"));
-    connect(m_pFontSizeDecrement.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotDecrementFontSize(double)));
+    connect(m_pFontSizeDecrement.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotDecrementFontSize);
 
     m_pFontSizeIncrement = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "font_size_increment"));
-    connect(m_pFontSizeIncrement.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotIncrementFontSize(double)));
+    connect(m_pFontSizeIncrement.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotIncrementFontSize);
 
+    // Track Color controls
+    m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));
+    m_pTrackColorNext = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_next"));
+    connect(m_pTrackColorPrev.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotTrackColorPrev);
+    connect(m_pTrackColorNext.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotTrackColorNext);
+
+    // Control to navigate between widgets (tab/shit+tab button)
+    m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "search_history_next"));
+    m_pSelectHistoryPrev = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "search_history_prev"));
+    m_pSelectHistorySelect = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "search_history_selector"), false);
+    connect(m_pSelectHistoryNext.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value >= 1.0) {
+                    m_pSearchbox->slotMoveSelectedHistory(1);
+                }
+            });
+    connect(m_pSelectHistoryPrev.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value >= 1.0) {
+                    m_pSearchbox->slotMoveSelectedHistory(-1);
+                }
+            });
+    connect(m_pSelectHistorySelect.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            [this](double steps) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (steps >= 1.0 || steps <= -1.0) {
+                    m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(steps));
+                }
+            });
 
     /// Deprecated controls
     m_pSelectNextTrack = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectNextTrack"));
-    connect(m_pSelectNextTrack.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectNextTrack(double)));
-
+    connect(m_pSelectNextTrack.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotSelectNextTrack);
 
     m_pSelectPrevTrack = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectPrevTrack"));
-    connect(m_pSelectPrevTrack.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectPrevTrack(double)));
+    connect(m_pSelectPrevTrack.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotSelectPrevTrack);
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pSelectTrack = std::make_unique<ControlObject>(ConfigKey("[Playlist]","SelectTrackKnob"), false);
-    connect(m_pSelectTrack.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectTrack(double)));
-
+    connect(m_pSelectTrack.get(),
+            &ControlObject::valueChanged,
+            this,
+            &LibraryControl::slotSelectTrack);
 
     m_pSelectNextSidebarItem = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectNextPlaylist"));
-    connect(m_pSelectNextSidebarItem.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectNextSidebarItem(double)));
+    connect(m_pSelectNextSidebarItem.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotSelectNextSidebarItem);
 
     m_pSelectPrevSidebarItem = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectPrevPlaylist"));
-    connect(m_pSelectPrevSidebarItem.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectPrevSidebarItem(double)));
+    connect(m_pSelectPrevSidebarItem.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotSelectPrevSidebarItem);
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pSelectSidebarItem = std::make_unique<ControlObject>(ConfigKey("[Playlist]", "SelectPlaylist"), false);
-    connect(m_pSelectSidebarItem.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectSidebarItem(double)));
+    connect(m_pSelectSidebarItem.get(),
+            &ControlObject::valueChanged,
+            this,
+            &LibraryControl::slotSelectSidebarItem);
 
     m_pToggleSidebarItem = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
-    connect(m_pToggleSidebarItem.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotToggleSelectedSidebarItem(double)));
+    connect(m_pToggleSidebarItem.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotToggleSelectedSidebarItem);
 
     m_pLoadSelectedIntoFirstStopped = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
-    connect(m_pLoadSelectedIntoFirstStopped.get(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
+    connect(m_pLoadSelectedIntoFirstStopped.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotLoadSelectedIntoFirstStopped);
 
     ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddTop"), ConfigKey("[Library]", "AutoDjAddTop"));
     ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddBottom"), ConfigKey("[Library]", "AutoDjAddBottom"));
@@ -173,7 +318,7 @@ void LibraryControl::maybeCreateGroupController(const QString& group) {
 }
 
 void LibraryControl::slotNumDecksChanged(double v) {
-    int iNumDecks = v;
+    int iNumDecks = static_cast<int>(v);
 
     if (iNumDecks < 0) {
         return;
@@ -185,7 +330,7 @@ void LibraryControl::slotNumDecksChanged(double v) {
 }
 
 void LibraryControl::slotNumSamplersChanged(double v) {
-    int iNumSamplers = v;
+    int iNumSamplers = static_cast<int>(v);
 
     if (iNumSamplers < 0) {
         return;
@@ -198,7 +343,7 @@ void LibraryControl::slotNumSamplersChanged(double v) {
 
 
 void LibraryControl::slotNumPreviewDecksChanged(double v) {
-    int iNumPreviewDecks = v;
+    int iNumPreviewDecks = static_cast<int>(v);
 
     if (iNumPreviewDecks < 0) {
         return;
@@ -211,22 +356,43 @@ void LibraryControl::slotNumPreviewDecksChanged(double v) {
 
 void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     if (m_pSidebarWidget) {
-        disconnect(m_pSidebarWidget, 0, this, 0);
+        disconnect(m_pSidebarWidget, nullptr, this, nullptr);
     }
     m_pSidebarWidget = pSidebarWidget;
-    connect(m_pSidebarWidget, SIGNAL(destroyed()),
-            this, SLOT(sidebarWidgetDeleted()));
+    connect(m_pSidebarWidget,
+            &WLibrarySidebar::destroyed,
+            this,
+            &LibraryControl::sidebarWidgetDeleted);
 }
 
-void LibraryControl::bindWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
+void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
     Q_UNUSED(pKeyboard);
     if (m_pLibraryWidget) {
-        disconnect(m_pLibraryWidget, 0, this, 0);
+        disconnect(m_pLibraryWidget, nullptr, this, nullptr);
     }
     m_pLibraryWidget = pLibraryWidget;
-    connect(m_pLibraryWidget, SIGNAL(destroyed()),
-            this, SLOT(libraryWidgetDeleted()));
+    connect(m_pLibraryWidget,
+            &WLibrary::destroyed,
+            this,
+            &LibraryControl::libraryWidgetDeleted);
 }
+
+void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
+    if (m_pSearchbox) {
+        disconnect(m_pSearchbox, nullptr, this, nullptr);
+    }
+    m_pSearchbox = pSearchbox;
+    connect(this,
+            &LibraryControl::clearSearchIfClearButtonHasFocus,
+            m_pSearchbox,
+            &WSearchLineEdit::slotClearSearchIfClearButtonHasFocus);
+    connect(m_pSearchbox,
+            &WSearchLineEdit::destroyed,
+            this,
+            &LibraryControl::searchboxWidgetDeleted);
+}
+
+
 
 void LibraryControl::libraryWidgetDeleted() {
     m_pLibraryWidget = nullptr;
@@ -236,16 +402,20 @@ void LibraryControl::sidebarWidgetDeleted() {
     m_pSidebarWidget = nullptr;
 }
 
-void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
+void LibraryControl::searchboxWidgetDeleted() {
+    m_pSearchbox = nullptr;
+}
+
+void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
     if (!m_pLibraryWidget) {
         return;
     }
 
-    LibraryView* activeView = m_pLibraryWidget->getActiveView();
-    if (!activeView) {
+    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+    if (!pActiveView) {
         return;
     }
-    activeView->loadSelectedTrackToGroup(group, play);
+    pActiveView->loadSelectedTrackToGroup(group, play);
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
@@ -254,11 +424,11 @@ void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
     }
 
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->loadSelectedTrack();
+        pActiveView->loadSelectedTrack();
     }
 }
 
@@ -268,11 +438,11 @@ void LibraryControl::slotAutoDjAddTop(double v) {
     }
 
     if (v > 0) {
-        auto activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->slotSendToAutoDJTop();
+        pActiveView->slotAddToAutoDJTop();
     }
 }
 
@@ -280,13 +450,25 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
     if (!m_pLibraryWidget) {
         return;
     }
-
     if (v > 0) {
-        auto activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->slotSendToAutoDJBottom();
+        pActiveView->slotAddToAutoDJBottom();
+    }
+}
+
+void LibraryControl::slotAutoDjAddReplace(double v) {
+    if (!m_pLibraryWidget) {
+        return;
+    }
+    if (v > 0) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
+            return;
+        }
+        pActiveView->slotAddToAutoDJReplace();
     }
 }
 
@@ -309,11 +491,11 @@ void LibraryControl::slotSelectTrack(double v) {
 
     int i = (int)v;
 
-    auto activeView = m_pLibraryWidget->getActiveView();
-    if (!activeView) {
+    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+    if (!pActiveView) {
         return;
     }
-    activeView->moveSelection(i);
+    pActiveView->moveSelection(i);
 }
 
 void LibraryControl::slotMoveUp(double v) {
@@ -389,18 +571,46 @@ void LibraryControl::slotMoveFocus(double v) {
 }
 
 void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
-    // Ensure a valid widget has the keyboard focus
-    auto focusWidget = QApplication::focusWidget();
-    if (!focusWidget) {
-        setLibraryFocus();
-        focusWidget = QApplication::focusWidget();
-        if (!focusWidget) {
-            return;
+    // Ensure there's a valid library widget that can receive keyboard focus.
+    // QApplication::focusWidget() is not sufficient here because it
+    // would return any focused widget like WOverview, WWaveform, QSpinBox
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+        return;
+    }
+    if (!QApplication::focusWindow()) {
+        qDebug() << "Mixxx window is not focused, don't send key events";
+        return;
+    }
+
+    bool keyIsTab = event.key() == Qt::Key_Tab;
+    bool keyIsUpDown = event.key() == Qt::Key_Up || event.key() == Qt::Key_Down;
+
+    // If the main window has focus, any widget can receive Tab.
+    // Other keys should be sent to library widgets only to not
+    // accidentally alter spinboxes etc.
+    // If the searchbox has focus allow only Up/Down to select previous queries.
+    if (!keyIsTab && !m_pSidebarWidget->hasFocus()
+            && !m_pLibraryWidget->getActiveView()->hasFocus()) {
+        if (keyIsUpDown && !m_pSearchbox->hasFocus()) {
+            setLibraryFocus();
         }
     }
+    if (keyIsTab && !QApplication::focusWidget()){
+        setLibraryFocus();
+    }
+
     // Send the event pointer to the currently focused widget
-    for (auto i = 0; i < event.count(); ++i) {
-        QApplication::sendEvent(focusWidget, &event);
+    auto* focusWidget = QApplication::focusWidget();
+    if (focusWidget) {
+        for (auto i = 0; i < event.count(); ++i) {
+            QApplication::sendEvent(focusWidget, &event);
+        }
     }
 }
 
@@ -411,6 +621,7 @@ void LibraryControl::setLibraryFocus() {
     }
     // Try to focus the sidebar.
     m_pSidebarWidget->setFocus();
+
     // This may have failed, for example when a Cover window still has focus,
     // so make sure the sidebar is focused or we'll crash.
     if (!m_pSidebarWidget->hasFocus()) {
@@ -463,29 +674,83 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
 }
 
 void LibraryControl::slotGoToItem(double v) {
-    if (!m_pLibraryWidget) {
+    if (v <= 0) {
         return;
     }
-    // Load current track if a LibraryView object has focus
-    const auto activeView = m_pLibraryWidget->getActiveView();
-    if (activeView && activeView->hasFocus()) {
-        return slotLoadSelectedIntoFirstStopped(v);
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+        return;
     }
 
     // Focus the library if this is a leaf node in the tree
     if (m_pSidebarWidget->hasFocus()) {
-        if (m_pSidebarWidget && v > 0
-                && m_pSidebarWidget->isLeafNodeSelected()) {
+        // Note that Tracks and AutoDJ always return 'false':
+        // expanding those root items via controllers is considered dispensable
+        // because the subfeatures' actions can't be accessed by controllers anyway.
+        if (m_pSidebarWidget->isLeafNodeSelected()) {
             setLibraryFocus();
+            return;
         } else {
             // Otherwise toggle the sidebar item expanded state
             slotToggleSelectedSidebarItem(v);
         }
     }
+
+    // Load current track if a LibraryView object has focus
+    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+    if (pActiveView && pActiveView->hasFocus()) {
+        pActiveView->loadSelectedTrack();
+        return;
+    }
+
+    // If searchbox has focus jump to the tracks table
+    if (m_pSearchbox->hasFocus()) {
+        return setLibraryFocus();
+    }
+
+    // Clear the search if the searchbox has focus
+    emit clearSearchIfClearButtonHasFocus();
+
+    // If the focused window is a dialog, press Enter
+    auto* focusWindow = QApplication::focusWindow();
+    if (focusWindow && (focusWindow->type() & (Qt::Dialog | Qt::Popup))) {
+        QKeyEvent event(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
+        QApplication::sendEvent(focusWindow, &event);
+    }
+
     // TODO(xxx) instead of remote control the widgets individual, we should
     // translate this into Alt+Return and handle it at each library widget
     // individual https://bugs.launchpad.net/mixxx/+bug/1758618
     //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
+}
+
+void LibraryControl::slotSortColumn(double v) {
+    m_pSortColumnToggle->set(v);
+}
+
+void LibraryControl::slotSortColumnToggle(double v) {
+    int sortColumnId = static_cast<int>(v);
+    if (sortColumnId == static_cast<int>(TrackModel::SortColumnId::CurrentIndex)) {
+        if (!m_pLibraryWidget) {
+            return;
+        }
+        // Get the ID of the column with the cursor
+        sortColumnId =
+                static_cast<int>(m_pLibraryWidget->getActiveView()
+                                         ->getColumnIdFromCurrentIndex());
+    }
+
+    if (static_cast<int>(m_pSortColumn->get()) == sortColumnId) {
+        m_pSortOrder->set((m_pSortOrder->get() == 0) ? 1.0 : 0.0);
+    } else {
+        m_pSortColumn->set(sortColumnId);
+        m_pSortOrder->set(0.0);
+    }
 }
 
 void LibraryControl::slotFontSize(double v) {
@@ -506,5 +771,33 @@ void LibraryControl::slotIncrementFontSize(double v) {
 void LibraryControl::slotDecrementFontSize(double v) {
     if (v > 0.0) {
         slotFontSize(-1);
+    }
+}
+
+void LibraryControl::slotTrackColorPrev(double v) {
+    if (!m_pLibraryWidget) {
+        return;
+    }
+
+    if (v > 0) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
+            return;
+        }
+        pActiveView->assignPreviousTrackColor();
+    }
+}
+
+void LibraryControl::slotTrackColorNext(double v) {
+    if (!m_pLibraryWidget) {
+        return;
+    }
+
+    if (v > 0) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
+            return;
+        }
+        pActiveView->assignNextTrackColor();
     }
 }

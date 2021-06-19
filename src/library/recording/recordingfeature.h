@@ -1,8 +1,4 @@
-// recordingfeature.h
-// Created 03/26/2010 by Tobias Rafreider
-
-#ifndef RECORDING_FEATURE_H
-#define RECORDING_FEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
@@ -12,30 +8,27 @@
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
-#include "recording/recordingmanager.h"
 
-class Library;
-class TrackCollection;
+class RecordingManager;
 
-class RecordingFeature : public LibraryFeature {
+class RecordingFeature final : public LibraryFeature {
     Q_OBJECT
   public:
     RecordingFeature(Library* parent,
                      UserSettingsPointer pConfig,
-                     TrackCollection* pTrackCollection,
                      RecordingManager* pRecordingManager);
-    virtual ~RecordingFeature();
+    ~RecordingFeature() override = default;
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
 
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
+    void bindLibraryWidget(WLibrary* libraryWidget,
+                    KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
   public slots:
-    void activate();
+    void activate() override;
 
   signals:
     void setRootIndex(const QModelIndex&);
@@ -43,13 +36,8 @@ class RecordingFeature : public LibraryFeature {
     void refreshBrowseModel();
 
   private:
-    UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
-    TrackCollection* m_pTrackCollection;
-    FolderTreeModel m_childModel;
-    const static QString m_sRecordingViewName;
-    RecordingManager* m_pRecordingManager;
-    QIcon m_icon;
-};
+    RecordingManager* const m_pRecordingManager;
+    const QIcon m_icon;
 
-#endif
+    FolderTreeModel m_childModel;
+};

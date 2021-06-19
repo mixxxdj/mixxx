@@ -4,6 +4,7 @@
         <author>Tobias Rafreider and Sandor Ivicsics</author>
         <description>This is a complete mapping for a Reloop Digital Jockey 2 Controller Edition or Reloop Digital Jockey 2 Interface Editiion </description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=1226</forums>
+        <manual>reloop_digital_jockey_2_controller_edition</manual>
     </info>
    <controller id="DIGITAL JOCKEY">
         <scriptfiles>

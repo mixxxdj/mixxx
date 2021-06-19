@@ -1,5 +1,4 @@
-#ifndef LINKWITZRILEYEQEFFECT_H
-#define LINKWITZRILEYEQEFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -8,7 +7,7 @@
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/enginefilterlinkwitzriley8.h"
+#include "engine/filters/enginefilterlinkwitzriley8.h"
 #include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -34,7 +33,7 @@ class LinkwitzRiley8EQEffectGroupState : public EffectState {
     CSAMPLE* m_pMidBuf;
     CSAMPLE* m_pHighBuf;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
     int m_loFreq;
     int m_hiFreq;
 };
@@ -73,5 +72,3 @@ class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffect
 
     DISALLOW_COPY_AND_ASSIGN(LinkwitzRiley8EQEffect);
 };
-
-#endif /* LINKWITZRILEYEQEFFECT_H */

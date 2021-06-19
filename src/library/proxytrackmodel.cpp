@@ -1,13 +1,11 @@
-// proxytrackmodel.cpp
-// Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
+#include "library/proxytrackmodel.h"
 
 #include <QVariant>
 
-#include "library/proxytrackmodel.h"
 #include "util/assert.h"
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
-                                 bool bHandleSearches)
+        bool bHandleSearches)
         // ProxyTrackModel proxies settings requests to the composed TrackModel,
         // don't initialize its TrackModel with valid parameters.
         : TrackModel(QSqlDatabase(), ""),
@@ -23,18 +21,37 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 ProxyTrackModel::~ProxyTrackModel() {
 }
 
+TrackModel::SortColumnId ProxyTrackModel::sortColumnIdFromColumnIndex(int index) const {
+    return m_pTrackModel ? m_pTrackModel->sortColumnIdFromColumnIndex(index)
+                         : TrackModel::SortColumnId::Invalid;
+}
+
+int ProxyTrackModel::columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const {
+    return m_pTrackModel ? m_pTrackModel->columnIndexFromSortColumnId(sortColumn)
+                         : -1;
+}
+
 TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : TrackId();
 }
 
-const QLinkedList<int> ProxyTrackModel::getTrackRows(TrackId trackId) const {
-    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : QLinkedList<int>();
+CoverInfo ProxyTrackModel::getCoverInfo(const QModelIndex& index) const {
+    QModelIndex indexSource = mapToSource(index);
+    return m_pTrackModel ? m_pTrackModel->getCoverInfo(indexSource) : CoverInfo();
+}
+
+const QVector<int> ProxyTrackModel::getTrackRows(TrackId trackId) const {
+    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : QVector<int>();
 }
 
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel ? m_pTrackModel->getTrack(indexSource) : TrackPointer();
+}
+
+TrackPointer ProxyTrackModel::getTrackByRef(const TrackRef& trackRef) const {
+    return m_pTrackModel ? m_pTrackModel->getTrackByRef(trackRef) : TrackPointer();
 }
 
 QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
@@ -79,7 +96,7 @@ void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
 }
 
 void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
-                                const QModelIndex& destIndex) {
+        const QModelIndex& destIndex) {
     QModelIndex sourceIndexSource = mapToSource(sourceIndex);
     QModelIndex destIndexSource = mapToSource(destIndex);
     if (m_pTrackModel) {
@@ -88,19 +105,20 @@ void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
 }
 
 QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* pParent) {
-    return m_pTrackModel ? m_pTrackModel->delegateForColumn(i, pParent) : NULL;
+    return m_pTrackModel ? m_pTrackModel->delegateForColumn(i, pParent) : nullptr;
 }
 
-TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
-    return m_pTrackModel ? m_pTrackModel->getCapabilities() : TrackModel::TRACKMODELCAPS_NONE;
+TrackModel::Capabilities ProxyTrackModel::getCapabilities() const {
+    return m_pTrackModel ? m_pTrackModel->getCapabilities() : Capability::None;
 }
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
-                                       const QModelIndex& sourceParent) const {
-    if (!m_bHandleSearches)
+        const QModelIndex& sourceParent) const {
+    if (!m_bHandleSearches) {
         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+    }
 
-    if (m_pTrackModel == NULL) {
+    if (m_pTrackModel == nullptr) {
         return false;
     }
 
@@ -116,24 +134,25 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         int i = iter.next();
         QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
         QVariant data = itemModel->data(index);
-        if (qVariantCanConvert<QString>(data)) {
-            QString strData = qVariantValue<QString>(data);
-            if (strData.contains(filter))
+        if (data.canConvert(QMetaType::QString)) {
+            QString strData = data.toString();
+            if (strData.contains(filter)) {
                 rowMatches = true;
+            }
         }
     }
     return rowMatches;
 }
 
-QString ProxyTrackModel::getModelSetting(QString name) {
-    if (m_pTrackModel == NULL) {
+QString ProxyTrackModel::getModelSetting(const QString& name) {
+    if (m_pTrackModel == nullptr) {
         return QString();
     }
     return m_pTrackModel->getModelSetting(name);
 }
 
-bool ProxyTrackModel::setModelSetting(QString name, QVariant value) {
-    if (m_pTrackModel == NULL) {
+bool ProxyTrackModel::setModelSetting(const QString& name, const QVariant& value) {
+    if (m_pTrackModel == nullptr) {
         return false;
     }
     return m_pTrackModel->setModelSetting(name, value);
@@ -144,4 +163,3 @@ void ProxyTrackModel::sort(int column, Qt::SortOrder order) {
         QSortFilterProxyModel::sort(column, order);
     }
 }
-

@@ -5,6 +5,7 @@
         <author>Rob K</author>
         <description>DJ-Tech Mixer One preset. Pretty straightforward - all controls do what they're labelled to do on the controller, except (1) the Xfader slope knob controls master balance; and (2) the Inverse button mutes the master output momentarily.</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4693</forums>
+        <manual>dj_tech_mixer_one</manual>
     </info>
     <controller id="MIXER1">
         <scriptfiles>

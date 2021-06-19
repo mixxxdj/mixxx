@@ -1,10 +1,34 @@
-#include <QtDebug>
+#include "controllers/delegates/midioptionsdelegate.h"
+
 #include <QComboBox>
 #include <QTableView>
+#include <QtDebug>
 
-#include "controllers/delegates/midioptionsdelegate.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
+#include "moc_midioptionsdelegate.cpp"
+
+namespace {
+
+const QList<MidiOption> kMidiOptions = {
+        MidiOption::None,
+        MidiOption::Invert,
+        MidiOption::Rot64,
+        MidiOption::Rot64Invert,
+        MidiOption::Rot64Fast,
+        MidiOption::Diff,
+        MidiOption::Button,
+        MidiOption::Switch,
+        MidiOption::Spread64,
+        MidiOption::HercJog,
+        MidiOption::SelectKnob,
+        MidiOption::SoftTakeover,
+        MidiOption::Script,
+        MidiOption::FourteenBitMSB,
+        MidiOption::FourteenBitLSB,
+};
+
+}
 
 MidiOptionsDelegate::MidiOptionsDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent) {
@@ -21,27 +45,9 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
     Q_UNUSED(index);
     QComboBox* pComboBox = new QComboBox(parent);
 
-    QList<MidiOption> choices;
-    choices.append(MIDI_OPTION_NONE);
-    choices.append(MIDI_OPTION_INVERT);
-    choices.append(MIDI_OPTION_ROT64);
-    choices.append(MIDI_OPTION_ROT64_INV);
-    choices.append(MIDI_OPTION_ROT64_FAST);
-    choices.append(MIDI_OPTION_DIFF);
-    choices.append(MIDI_OPTION_BUTTON);
-    choices.append(MIDI_OPTION_SWITCH);
-    choices.append(MIDI_OPTION_SPREAD64);
-    choices.append(MIDI_OPTION_HERC_JOG);
-    choices.append(MIDI_OPTION_SELECTKNOB);
-    choices.append(MIDI_OPTION_SOFT_TAKEOVER);
-    choices.append(MIDI_OPTION_SCRIPT);
-    choices.append(MIDI_OPTION_14BIT_MSB);
-    choices.append(MIDI_OPTION_14BIT_LSB);
-
-    for (int i = 0; i < choices.size(); ++i) {
-        MidiOption choice = choices.at(i);
+    for (const MidiOption choice : kMidiOptions) {
         pComboBox->addItem(MidiUtils::midiOptionToTranslatedString(choice),
-                           choice);
+                static_cast<uint16_t>(choice));
     }
 
     return pComboBox;
@@ -50,28 +56,26 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
 QString MidiOptionsDelegate::displayText(const QVariant& value,
                                          const QLocale& locale) const {
     Q_UNUSED(locale);
-    MidiOptions options = qVariantValue<MidiOptions>(value);
+    MidiOptions options = value.value<MidiOptions>();
     QStringList optionStrs;
-    MidiOption option = static_cast<MidiOption>(1);
-    while (option < MIDI_OPTION_MASK) {
-        if (options.all & option) {
+    for (const MidiOption option : kMidiOptions) {
+        if (options.testFlag(option)) {
             optionStrs.append(MidiUtils::midiOptionToTranslatedString(option));
         }
-        option = static_cast<MidiOption>(option << 1);
     }
     return optionStrs.join(", ");
 }
 
 void MidiOptionsDelegate::setEditorData(QWidget* editor,
                                         const QModelIndex& index) const {
-    MidiOptions options = qVariantValue<MidiOptions>(index.data(Qt::EditRole));
+    MidiOptions options = index.data(Qt::EditRole).value<MidiOptions>();
 
-    QComboBox* pComboBox = dynamic_cast<QComboBox*>(editor);
-    if (pComboBox == NULL) {
+    QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
+    if (pComboBox == nullptr) {
         return;
     }
     for (int i = 0; i < pComboBox->count(); ++i) {
-        if (pComboBox->itemData(i).toInt() & options.all) {
+        if (MidiOptions(pComboBox->itemData(i).toInt()) & options) {
             pComboBox->setCurrentIndex(i);
             return;
         }
@@ -83,9 +87,9 @@ void MidiOptionsDelegate::setModelData(QWidget* editor,
                                        const QModelIndex& index) const {
     MidiOptions options;
     QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
-    if (pComboBox == NULL) {
+    if (pComboBox == nullptr) {
         return;
     }
-    options.all = pComboBox->itemData(pComboBox->currentIndex()).toInt();
-    model->setData(index, qVariantFromValue(options), Qt::EditRole);
+    options = MidiOptions(pComboBox->itemData(pComboBox->currentIndex()).toInt());
+    model->setData(index, QVariant::fromValue(options), Qt::EditRole);
 }

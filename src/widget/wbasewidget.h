@@ -1,5 +1,4 @@
-#ifndef WBASEWIDGET_H
-#define WBASEWIDGET_H
+#pragma once
 
 #include <QString>
 #include <QWidget>
@@ -100,5 +99,3 @@ class WBaseWidget {
 
     friend class ControlParameterWidgetConnection;
 };
-
-#endif /* WBASEWIDGET_H */

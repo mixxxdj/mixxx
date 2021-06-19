@@ -1,5 +1,4 @@
-#ifndef WEFFECTCHAIN_H
-#define WEFFECTCHAIN_H
+#pragma once
 
 #include <QWidget>
 #include <QLabel>
@@ -7,7 +6,7 @@
 
 #include "effects/effectchainslot.h"
 #include "widget/wlabel.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class EffectsManager;
 
@@ -28,5 +27,3 @@ class WEffectChain : public WLabel {
     EffectsManager* m_pEffectsManager;
     EffectChainSlotPointer m_pEffectChainSlot;
 };
-
-#endif /* WEFFECTCHAIN_H */
