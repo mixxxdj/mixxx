@@ -29,6 +29,7 @@ class QmlPlayerProxy : public QObject {
     Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyTextChanged)
     Q_PROPERTY(QColor color READ getColor WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(QUrl coverArtUrl READ getCoverArtUrl NOTIFY coverArtUrlChanged)
+    Q_PROPERTY(QUrl trackLocationUrl READ getTrackLocationUrl NOTIFY trackLocationUrlChanged)
 
   public:
     explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
@@ -48,6 +49,7 @@ class QmlPlayerProxy : public QObject {
     QString getKeyText() const;
     QColor getColor() const;
     QUrl getCoverArtUrl() const;
+    QUrl getTrackLocationUrl() const;
 
     /// Needed for interacting with the raw track player object.
     BaseTrackPlayer* internalTrackPlayer() const {
@@ -81,6 +83,7 @@ class QmlPlayerProxy : public QObject {
     void trackLoaded();
     void trackUnloaded();
     void trackChanged();
+    void cloneFromGroup(const QString& group);
 
     void albumChanged();
     void titleChanged();
@@ -96,6 +99,7 @@ class QmlPlayerProxy : public QObject {
     void keyTextChanged();
     void colorChanged();
     void coverArtUrlChanged();
+    void trackLocationUrlChanged();
 
     void loadTrackFromLocationRequested(const QString& trackLocation);
 

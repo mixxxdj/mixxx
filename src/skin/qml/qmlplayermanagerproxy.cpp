@@ -35,6 +35,12 @@ QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
             [this, group](const QString& trackLocation) {
                 emit loadLocationToPlayer(trackLocation, group);
             });
+    connect(pPlayerProxy,
+            &QmlPlayerProxy::cloneFromGroup,
+            this,
+            [this, group](const QString& sourceGroup) {
+                m_pPlayerManager->slotCloneDeck(sourceGroup, group);
+            });
     return pPlayerProxy;
 }
 
