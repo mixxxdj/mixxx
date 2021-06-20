@@ -45,6 +45,7 @@ Item {
                 root.slot.effectId = effectId;
 
         }
+        Component.onCompleted: root.slot.onEffectIdChanged()
 
         Connections {
             function onEffectIdChanged() {
