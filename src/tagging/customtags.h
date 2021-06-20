@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QMap>
-#include <QVector>
 
 #include "tagging/tags.h"
 
@@ -9,8 +8,6 @@ namespace mixxx {
 
 typedef QMap<TagLabel, TagScore> TagMap;
 typedef QMap<TagFacet, TagMap> FacetTagMap;
-
-typedef QVector<Tag> TagVector;
 
 class CustomTags final {
     MIXXX_DECL_PROPERTY(FacetTagMap, facetedTags, FacetedTags)

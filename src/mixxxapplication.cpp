@@ -98,6 +98,7 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::TagLabel>("mixxx::TagLabel");
     qRegisterMetaType<mixxx::TagScore>("mixxx::TagScore");
     qRegisterMetaType<mixxx::Tag>("mixxx::Tag");
+    qRegisterMetaType<mixxx::TagVector>("mixxx::TagVector");
     qRegisterMetaType<mixxx::FacetedTagConfig>("mixxx::FacetedTagConfig");
     qRegisterMetaType<mixxx::TagMappingConfig>("mixxx::TagMappingConfig");
     qRegisterMetaType<mixxx::TaggingConfig>("mixxx::TaggingConfig");

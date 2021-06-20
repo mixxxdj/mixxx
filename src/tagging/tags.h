@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QJsonValue>
+#include <QVector>
 
 #include "util/assert.h"
 #include "util/macros.h"
@@ -290,9 +291,12 @@ inline bool operator!=(
 
 QDebug operator<<(QDebug dbg, const Tag& arg);
 
+typedef QVector<Tag> TagVector;
+
 } // namespace mixxx
 
 Q_DECLARE_METATYPE(mixxx::TagFacet)
 Q_DECLARE_METATYPE(mixxx::TagLabel)
 Q_DECLARE_METATYPE(mixxx::TagScore)
 Q_DECLARE_METATYPE(mixxx::Tag)
+Q_DECLARE_METATYPE(mixxx::TagVector)
