@@ -17,7 +17,14 @@ Item {
     Drag.dragType: Drag.Automatic
     Drag.supportedActions: Qt.CopyAction
     Drag.mimeData: {
-        "mixxx/player": this.group
+        let data = {
+            "mixxx/player": group
+        };
+        const trackLocationUrl = deckPlayer.trackLocationUrl;
+        if (trackLocationUrl)
+            data["text/uri-list"] = trackLocationUrl;
+
+        return data;
     }
 
     MouseArea {
