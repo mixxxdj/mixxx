@@ -162,8 +162,10 @@ bool PortMidiController::poll() {
             }
 
             // Collect bytes from PmMessage
-            unsigned char data = 0;
-            for (int shift = 0; shift < 32 && (data != MIDI_EOX); shift += 8) {
+            uint8_t data = 0;
+            for (int shift = 0; shift < 32 &&
+                    (data != MidiUtils::opCodeValue(MidiOpCode::EndOfExclusive));
+                    shift += 8) {
                 // TODO(rryan): This prevents buffer overflow if the sysex is
                 // larger than 1024 bytes. I don't want to radically change
                 // anything before the 2.0 release so this will do for now.
@@ -174,7 +176,7 @@ bool PortMidiController::poll() {
             }
 
             // End System Exclusive message if the EOX byte was received
-            if (data == MIDI_EOX) {
+            if (data == MidiUtils::opCodeValue(MidiOpCode::EndOfExclusive)) {
                 m_bInSysex = false;
                 const char* buffer = reinterpret_cast<const char*>(m_cReceiveMsg);
                 receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index),
@@ -197,27 +199,31 @@ void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
 
     PmError err = m_pOutputDevice->writeShort(word);
     if (err == pmNoError) {
-        controllerDebug(MidiUtils::formatMidiMessage(getName(),
-                                                     status, byte1, byte2,
-                                                     MidiUtils::channelFromStatus(status),
-                                                     MidiUtils::opCodeFromStatus(status)));
+        controllerDebug(MidiUtils::formatMidiOpCode(getName(),
+                status,
+                byte1,
+                byte2,
+                MidiUtils::channelFromStatus(status),
+                MidiUtils::opCodeFromStatus(status)));
     } else {
         // Use two qWarnings() to ensure line break works on all operating systems
         qWarning() << "Error sending short message"
-                      << MidiUtils::formatMidiMessage(getName(),
-                                                      status, byte1, byte2,
-                                                      MidiUtils::channelFromStatus(status),
-                                                      MidiUtils::opCodeFromStatus(status));
+                   << MidiUtils::formatMidiOpCode(getName(),
+                              status,
+                              byte1,
+                              byte2,
+                              MidiUtils::channelFromStatus(status),
+                              MidiUtils::opCodeFromStatus(status));
         qWarning()    << "PortMidi error:" << Pm_GetErrorText(err);
     }
 }
 
 void PortMidiController::sendBytes(const QByteArray& data) {
     // PortMidi does not receive a length argument for the buffer we provide to
-    // Pm_WriteSysEx. Instead, it scans for a MIDI_EOX byte to know when the
-    // message is over. If one is not provided, it will overflow the buffer and
-    // cause a segfault.
-    if (!data.endsWith(MIDI_EOX)) {
+    // Pm_WriteSysEx. Instead, it scans for a MidiOpCode::EndOfExclusive byte
+    // to know when the message is over. If one is not provided, it will
+    // overflow the buffer and cause a segfault.
+    if (!data.endsWith(MidiUtils::opCodeValue(MidiOpCode::EndOfExclusive))) {
         controllerDebug("SysEx message does not end with 0xF7 -- ignoring.");
         return;
     }

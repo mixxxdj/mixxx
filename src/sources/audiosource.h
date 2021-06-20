@@ -305,7 +305,7 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     explicit AudioSource(const QUrl& url);
 
     bool initChannelCountOnce(audio::ChannelCount channelCount);
-    bool initChannelCountOnce(SINT channelCount) {
+    bool initChannelCountOnce(int channelCount) {
         return initChannelCountOnce(audio::ChannelCount(channelCount));
     }
 

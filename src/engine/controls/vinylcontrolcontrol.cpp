@@ -2,7 +2,6 @@
 
 #include "moc_vinylcontrolcontrol.cpp"
 #include "track/track.h"
-#include "util/math.h"
 #include "vinylcontrol/vinylcontrol.h"
 
 VinylControlControl::VinylControlControl(const QString& group, UserSettingsPointer pConfig)
@@ -80,7 +79,7 @@ void VinylControlControl::notifySeekQueued() {
 
 void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
     // Prevent NaN's from sneaking into the engine.
-    if (isnan(fractionalPos)) {
+    if (util_isnan(fractionalPos)) {
         return;
     }
 

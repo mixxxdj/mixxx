@@ -12,8 +12,9 @@
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
+#include "config.h"
+#include "defs_urls.h"
 #include "sources/soundsourceproxy.h"
-#include "util/version.h"
 
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
@@ -26,9 +27,13 @@ CmdlineArgs::CmdlineArgs()
           m_logLevel(mixxx::kLogLevelDefault),
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
-#ifdef __LINUX__
-          m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
+#ifdef MIXXX_SETTINGS_PATH
+          m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH)) {
 #else
+#ifdef __LINUX__
+#error "We are not ready to switch to XDG folders under Linux"
+#endif
+
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
           // to QDir::filePath elsewhere in the code. This is candidate for removal.
           m_settingsPath(
@@ -58,11 +63,18 @@ bool parseLogLevel(
 }
 } // namespace
 
-bool CmdlineArgs::parse(const QStringList& arguments) {
+bool CmdlineArgs::parse(int& argc, char** argv) {
+    QStringList arguments;
+    arguments.reserve(argc);
+    for (int a = 0; a < argc; ++a) {
+        arguments << QString::fromLocal8Bit(argv[a]);
+    }
+
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main",
-            "Mixxx is an open source DJ software. For more information, see "
-            "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options).\n"
+            "Mixxx is an open source DJ software. For more information, "
+            "see " MIXXX_MANUAL_COMMANDLINEOPTIONS_URL
+            "\n."
             "CamelCase arguments are deprecated and will be removed in 2.5"));
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 
@@ -138,7 +150,7 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
             QCoreApplication::translate("main",
                     "Sets the verbosity of command line logging.\n"
                     "critical - Critical/Fatal only\n"
-                    "warning  - Above + Warnings"
+                    "warning  - Above + Warnings\n"
                     "info     - Above + Informational messages\n"
                     "debug    - Above + Debug/Developer messages\n"
                     "trace    - Above + Profiling messages"),
@@ -176,9 +188,14 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
         qWarning() << parser.errorText();
     }
 
-    if (parser.isSet(helpOption) || parser.isSet(QStringLiteral("help-all"))) {
-        // we need to call process here otherwise there is no way to print the
-        // help-all information
+    if (parser.isSet(helpOption)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            || parser.isSet(QStringLiteral("help-all"))
+#endif
+    ) {
+        // we need to call process here with an initialized QCoreApplication
+        // otherwise there is no way to print the help-all information
+        QCoreApplication coreApp(argc, argv);
         parser.process(arguments);
         return false;
     }

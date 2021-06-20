@@ -8,9 +8,6 @@ if [ -z "${GITHUB_ENV}" ] && ! $(return 0 2>/dev/null); then
   exit 1
 fi
 
-COMMAND=$1
-shift 1
-
 realpath() {
     OLDPWD="${PWD}"
     cd "$1" || exit 1
@@ -28,7 +25,7 @@ read -r -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/packaging/macos/bu
 
 [ -z "$BUILDENV_BASEPATH" ] && BUILDENV_BASEPATH="${MIXXX_ROOT}/buildenv"
 
-case "$COMMAND" in
+case "$1" in
     name)
         if [ -n "${GITHUB_ENV}" ]; then
             echo "BUILDENV_NAME=$BUILDENV_NAME" >> "${GITHUB_ENV}"
@@ -46,7 +43,7 @@ case "$COMMAND" in
         if [ ! -d "${BUILDENV_PATH}" ]; then
             if [ "$1" != "--profile" ]; then
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading it..."
-                curl "https://downloads.mixxx.org/builds/buildserver/2.3.x-macosx/${BUILDENV_NAME}.tar.gz" -o "${BUILDENV_PATH}.tar.gz"
+                curl "https://downloads.mixxx.org/dependencies/buildserver/2.3.x-macosx/${BUILDENV_NAME}.tar.gz" -o "${BUILDENV_PATH}.tar.gz"
                 OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.tar.gz"|cut -f 1 -d' ')
                 if [[ "$OBSERVED_SHA256" == "$BUILDENV_SHA256" ]]; then
                     echo "Download matched expected SHA256 sum $BUILDENV_SHA256"
@@ -122,5 +119,13 @@ case "$COMMAND" in
             echo "Exported environment variables:"
             echo_exported_variables
         fi
+        ;;
+    *)
+        echo "Usage: source macos_buildenv.sh [options]"
+        echo ""
+        echo "options:"
+        echo "   help       Displays this help."
+        echo "   name       Displays the name of the required build envirnment."
+        echo "   setup      Installes the build environment."
         ;;
 esac

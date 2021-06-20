@@ -30,23 +30,28 @@ class SyncControl : public EngineControl, public Syncable {
 
     SyncMode getSyncMode() const override;
     void setSyncMode(SyncMode mode) override;
-    void notifyOnlyPlayingSyncable() override;
+    void notifyUniquePlaying() override;
     void requestSync() override;
     bool isPlaying() const override;
+    bool isAudible() const override;
 
     double adjustSyncBeatDistance(double beatDistance) const;
     double getBeatDistance() const override;
     void updateTargetBeatDistance();
     double getBaseBpm() const override;
+
+    // The local bpm is the base bpm of the track around the current position.
+    // For beatmap tracks, this can change with every beat.
     void setLocalBpm(double local_bpm);
+    void updateAudible();
 
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     void setMasterBeatDistance(double beatDistance) override;
-
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.
     void setMasterBpm(double bpm) override;
+    void notifyMasterParamSource() override;
     void setMasterParams(double beatDistance, double baseBpm, double bpm) override;
 
     // Must never result in a call to
@@ -71,9 +76,6 @@ class SyncControl : public EngineControl, public Syncable {
 
     // Fired when passthrough mode is enabled or disabled.
     void slotPassthroughChanged(double v);
-
-    // Fired when a track is ejected.
-    void slotEjectPushed(double v);
 
     // Fired by changes in rate, rate_dir, rateRange.
     void slotRateChanged();
@@ -112,6 +114,7 @@ class SyncControl : public EngineControl, public Syncable {
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
     ControlValueAtomic<double> m_prevLocalBpm;
+    QAtomicInt m_audible;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
@@ -127,7 +130,6 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pRateRatio;
     ControlProxy* m_pVCEnabled;
     ControlProxy* m_pPassthroughEnabled;
-    ControlProxy* m_pEjectButton;
     ControlProxy* m_pSyncPhaseButton;
     ControlProxy* m_pQuantize;
 

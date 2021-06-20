@@ -46,8 +46,9 @@ class BeatGrid final : public Beats {
     double findNextBeat(double dSamples) const override;
     double findPrevBeat(double dSamples) const override;
     bool findPrevNextBeats(double dSamples,
-                           double* dpPrevBeatSamples,
-                           double* dpNextBeatSamples) const override;
+            double* dpPrevBeatSamples,
+            double* dpNextBeatSamples,
+            bool snapToNearBeats) const override;
     double findClosestBeat(double dSamples) const override;
     double findNthBeat(double dSamples, int n) const override;
     std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;

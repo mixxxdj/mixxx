@@ -1,5 +1,14 @@
 #include "preferences/colorpaletteeditormodel.h"
 
+#include <util/assert.h>
+#include <util/rangelist.h>
+
+#include <QList>
+#include <QMap>
+#include <QMultiMap>
+#include <algorithm>
+
+#include "engine/controls/cuecontrol.h"
 #include "moc_colorpaletteeditormodel.cpp"
 
 namespace {
@@ -8,6 +17,13 @@ QIcon toQIcon(const QColor& color) {
     QPixmap pixmap(50, 50);
     pixmap.fill(color);
     return QIcon(pixmap);
+}
+
+HotcueIndexListItem* toHotcueIndexListItem(QStandardItem* pFrom) {
+    VERIFY_OR_DEBUG_ASSERT(pFrom->type() == QStandardItem::UserType) {
+        return nullptr;
+    }
+    return static_cast<HotcueIndexListItem*>(pFrom);
 }
 
 } // namespace
@@ -53,25 +69,39 @@ bool ColorPaletteEditorModel::dropMimeData(const QMimeData* data, Qt::DropAction
 bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVariant& value, int role) {
     setDirty(true);
     if (modelIndex.isValid() && modelIndex.column() == 1) {
-        bool ok;
-        int hotcueIndex = value.toInt(&ok);
+        const bool initialAttemptSuccessful = QStandardItemModel::setData(modelIndex, value, role);
 
-        // Make sure that the value is valid
-        if (!ok || hotcueIndex <= 0 || hotcueIndex > rowCount()) {
-            return QStandardItemModel::setData(modelIndex, QVariant(), role);
+        const auto* pHotcueIndexListItem = toHotcueIndexListItem(itemFromIndex(modelIndex));
+        VERIFY_OR_DEBUG_ASSERT(pHotcueIndexListItem) {
+            return false;
         }
 
-        // Make sure there is no other row with the same hotcue index
-        for (int i = 0; i < rowCount(); i++) {
-            QModelIndex otherModelIndex = index(i, 1);
-            QVariant otherValue = data(otherModelIndex);
-            int otherHotcueIndex = otherValue.toInt(&ok);
-            if (ok && otherHotcueIndex == hotcueIndex) {
-                QStandardItemModel::setData(otherModelIndex, QVariant(), role);
+        auto hotcueIndexList = pHotcueIndexListItem->getHotcueIndexList();
+
+        // make sure no index is outside of range
+        DEBUG_ASSERT(std::is_sorted(hotcueIndexList.cbegin(), hotcueIndexList.cend()));
+        auto endUpper = std::upper_bound(
+                hotcueIndexList.begin(), hotcueIndexList.end(), NUM_HOT_CUES);
+        hotcueIndexList.erase(endUpper, hotcueIndexList.end());
+        auto endLower = std::upper_bound(hotcueIndexList.begin(), hotcueIndexList.end(), 0);
+        hotcueIndexList.erase(hotcueIndexList.begin(), endLower);
+
+        for (int i = 0; i < rowCount(); ++i) {
+            auto* pHotcueIndexListItem = toHotcueIndexListItem(item(i, 1));
+
+            if (pHotcueIndexListItem == nullptr) {
+                continue;
+            }
+
+            if (i == modelIndex.row()) {
+                pHotcueIndexListItem->setHotcueIndexList(hotcueIndexList);
+            } else {
+                pHotcueIndexListItem->removeIndicies(hotcueIndexList);
             }
         }
-    }
 
+        return initialAttemptSuccessful;
+    }
     return QStandardItemModel::setData(modelIndex, value, role);
 }
 
@@ -84,21 +114,18 @@ void ColorPaletteEditorModel::setColor(int row, const QColor& color) {
     setDirty(true);
 }
 
-void ColorPaletteEditorModel::appendRow(const QColor& color, int hotcueIndex) {
+void ColorPaletteEditorModel::appendRow(
+        const QColor& color, const QList<int>& hotcueIndicies) {
     QStandardItem* pColorItem = new QStandardItem(toQIcon(color), color.name());
     pColorItem->setEditable(false);
     pColorItem->setDropEnabled(false);
 
-    QString hotcueIndexStr;
-    if (hotcueIndex >= 0) {
-        hotcueIndexStr = QString::number(hotcueIndex + 1);
-    }
-
-    QStandardItem* pHotcueIndexItem = new QStandardItem(hotcueIndexStr);
+    QStandardItem* pHotcueIndexItem = new HotcueIndexListItem(hotcueIndicies);
     pHotcueIndexItem->setEditable(true);
     pHotcueIndexItem->setDropEnabled(false);
 
-    QStandardItemModel::appendRow(QList<QStandardItem*>{pColorItem, pHotcueIndexItem});
+    QStandardItemModel::appendRow(
+            QList<QStandardItem*>{pColorItem, pHotcueIndexItem});
 }
 
 void ColorPaletteEditorModel::setColorPalette(const ColorPalette& palette) {
@@ -106,40 +133,100 @@ void ColorPaletteEditorModel::setColorPalette(const ColorPalette& palette) {
     removeRows(0, rowCount());
 
     // Make a map of hotcue indices
-    QMap<int, int> hotcueColorIndicesMap;
+    QMultiMap<int, int> hotcueColorIndicesMap;
     QList<int> colorIndicesByHotcue = palette.getIndicesByHotcue();
     for (int i = 0; i < colorIndicesByHotcue.size(); i++) {
         int colorIndex = colorIndicesByHotcue.at(i);
-        hotcueColorIndicesMap.insert(colorIndex, i);
+        hotcueColorIndicesMap.insert(colorIndex, i + 1);
     }
 
     for (int i = 0; i < palette.size(); i++) {
         QColor color = mixxx::RgbColor::toQColor(palette.at(i));
-        int colorIndex = hotcueColorIndicesMap.value(i, kNoHotcueIndex);
+        QList<int> colorIndex = hotcueColorIndicesMap.values(i);
         appendRow(color, colorIndex);
     }
 
     setDirty(false);
 }
 
-ColorPalette ColorPaletteEditorModel::getColorPalette(const QString& name) const {
+ColorPalette ColorPaletteEditorModel::getColorPalette(
+        const QString& name) const {
     QList<mixxx::RgbColor> colors;
     QMap<int, int> hotcueColorIndices;
     for (int i = 0; i < rowCount(); i++) {
         QStandardItem* pColorItem = item(i, 0);
-        QStandardItem* pHotcueIndexItem = item(i, 1);
-        mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQString(pColorItem->text());
+
+        const auto* pHotcueIndexItem = toHotcueIndexListItem(item(i, 1));
+        if (!pHotcueIndexItem) {
+            continue;
+        }
+
+        mixxx::RgbColor::optional_t color =
+                mixxx::RgbColor::fromQString(pColorItem->text());
+
         if (color) {
+            const QList<int> hotcueIndexes = pHotcueIndexItem->getHotcueIndexList();
             colors << *color;
 
-            bool ok;
-            int hotcueIndex = pHotcueIndexItem->text().toInt(&ok);
-            if (ok) {
-                hotcueColorIndices.insert(hotcueIndex - 1, colors.size() - 1);
+            for (int index : hotcueIndexes) {
+                hotcueColorIndices.insert(index - 1, colors.size() - 1);
             }
         }
     }
     // If we have a non consequitive list of hotcue indexes, indexes are shifted down
     // due to the sorting nature of QMap. This is intended, this way we have a color for every hotcue.
     return ColorPalette(name, colors, hotcueColorIndices.values());
+}
+
+HotcueIndexListItem::HotcueIndexListItem(const QList<int>& hotcueList)
+        : QStandardItem(), m_hotcueIndexList(hotcueList) {
+    std::sort(m_hotcueIndexList.begin(), m_hotcueIndexList.end());
+}
+QVariant HotcueIndexListItem::data(int role) const {
+    switch (role) {
+    case Qt::DisplayRole:
+    case Qt::EditRole: {
+        return QVariant(mixxx::stringifyRangeList(m_hotcueIndexList));
+        break;
+    }
+    default:
+        return QStandardItem::data(role);
+        break;
+    }
+}
+
+void HotcueIndexListItem::setData(const QVariant& value, int role) {
+    switch (role) {
+    case Qt::EditRole: {
+        const QList<int> newHotcueIndicies = mixxx::parseRangeList(value.toString());
+
+        if (m_hotcueIndexList != newHotcueIndicies) {
+            m_hotcueIndexList = newHotcueIndicies;
+            emitDataChanged();
+        }
+        break;
+    }
+    default:
+        QStandardItem::setData(value, role);
+        break;
+    }
+}
+
+void HotcueIndexListItem::removeIndicies(const QList<int>& otherIndicies) {
+    DEBUG_ASSERT(std::is_sorted(otherIndicies.cbegin(), otherIndicies.cend()));
+    DEBUG_ASSERT(std::is_sorted(m_hotcueIndexList.cbegin(), m_hotcueIndexList.cend()));
+
+    QList<int> hotcueIndiciesWithOthersRemoved;
+    hotcueIndiciesWithOthersRemoved.reserve(m_hotcueIndexList.size());
+
+    std::set_difference(m_hotcueIndexList.cbegin(),
+            m_hotcueIndexList.cend(),
+            otherIndicies.cbegin(),
+            otherIndicies.cend(),
+            std::back_inserter(hotcueIndiciesWithOthersRemoved));
+
+    if (m_hotcueIndexList != hotcueIndiciesWithOthersRemoved) {
+        m_hotcueIndexList = hotcueIndiciesWithOthersRemoved;
+        emitDataChanged();
+    }
 }

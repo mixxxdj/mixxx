@@ -140,6 +140,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::SampleRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::LastPlayedAt)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
@@ -738,7 +741,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
+    return m_pTrackCollectionManager->getTrackById(getTrackId(index));
 }
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
@@ -839,8 +842,8 @@ QList<TrackRef> BaseSqlTableModel::getTrackRefs(
     QList<TrackRef> trackRefs;
     trackRefs.reserve(indices.size());
     foreach (QModelIndex index, indices) {
-        trackRefs.append(TrackRef::fromFileInfo(
-                TrackFile(getTrackLocation(index)),
+        trackRefs.append(TrackRef::fromFilePath(
+                getTrackLocation(index),
                 getTrackId(index)));
     }
     return trackRefs;

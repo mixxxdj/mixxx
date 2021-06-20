@@ -9,7 +9,7 @@
 #include "widget/wpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "effects/defs.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class WEffectPushButton : public WPushButton {
     Q_OBJECT

@@ -17,7 +17,7 @@ ClementineFeature::ClementineFeature(
           m_connection(std::make_shared<ClementineDbConnection>()),
           m_isActivated(false),
           m_pClementinePlaylistModel(make_parented<ClementinePlaylistModel>(
-                  this, m_pLibrary->trackCollections(), m_connection)),
+                  this, m_pLibrary->trackCollectionManager(), m_connection)),
           m_childModel(),
           m_playlists(),
           m_future(),

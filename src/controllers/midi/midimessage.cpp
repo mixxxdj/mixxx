@@ -1,5 +1,14 @@
 #include "controllers/midi/midiutils.h"
 
+QDebug operator<<(QDebug debug, MidiOpCode midiOpCode) {
+    debug << static_cast<uint8_t>(midiOpCode);
+    return debug;
+}
+
+uint qHash(MidiOpCode key, uint seed) {
+    return qHash(static_cast<uint8_t>(key), seed);
+}
+
 MidiKey::MidiKey()
         : status(0),
           control(0) {

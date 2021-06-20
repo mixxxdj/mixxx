@@ -33,6 +33,7 @@
 #   libavutil
 #   libpostproc
 #   libswscale
+#   libswresample
 #
 # the following variables will be defined
 #
@@ -105,7 +106,7 @@ macro(find_component _component _pkgconfig _library _header)
   set(FFMPEG_${_component}_VERSION      ${PC_FFMPEG_${_component}_VERSION}      CACHE STRING "The ${_component} version number.")
 
   if (FFMPEG_${_component}_LIBRARIES AND FFMPEG_${_component}_INCLUDE_DIRS)
-    message(STATUS "  - ${_component} found.")
+    message(STATUS "  - ${_component} ${FFMPEG_${_component}_VERSION} found.")
     set(FFMPEG_${_component}_FOUND TRUE)
   else ()
     message(STATUS "  - ${_component} not found.")

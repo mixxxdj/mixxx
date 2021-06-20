@@ -4,10 +4,13 @@
 
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DCMAKE_BUILD_TYPE=RelWithDebInfo -DINSTALL_USER_UDEV_RULES=OFF -DKEYFINDER=OFF -DENGINEPRIME=OFF
+	dh_auto_configure -- -DCMAKE_BUILD_TYPE=RelWithDebInfo -DINSTALL_USER_UDEV_RULES=OFF -DKEYFINDER=OFF
 
 override_dh_installudev:
 	dh_installudev --name=mixxx-usb-uaccess --priority 69
+
+override_dh_compress:
+	dh_compress -X.pdf
 
 %:
 	dh $@ --buildsystem=cmake
