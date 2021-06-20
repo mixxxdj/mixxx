@@ -113,16 +113,13 @@ bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
     QMessageBox::information(nullptr,
             title,
             QObject::tr(
-                    "Due to Mac Sandboxing, we need your permission to access "
-                    "this file:"
+                    "Your permission is required to access "
+                    "the following location:"
                     "\n\n%1\n\n"
                     "After clicking OK, you will see a file picker. "
-                    "To give Mixxx permission, you must select '%2' to "
-                    "proceed. "
-                    "If you do not want to grant Mixxx access click Cancel on "
-                    "the file picker. "
-                    "We're sorry for this inconvenience.\n\n"
-                    "To abort this action, press Cancel on the file dialog.")
+                    "Please select '%2' to proceed or click Cancel if "
+                    "you don't want to grant Mixxx access and abort "
+                    "this action.")
                     .arg(location, fileName));
 
     mixxx::FileInfo resultInfo;
