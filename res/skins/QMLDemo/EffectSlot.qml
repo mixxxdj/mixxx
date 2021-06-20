@@ -9,6 +9,7 @@ Item {
     property var slot: Mixxx.EffectsManager.getEffectSlot(1, unitNumber, effectNumber)
     property int unitNumber // required
     property int effectNumber // required
+    property bool expanded: false
     readonly property string group: slot.group
 
     height: 50
@@ -77,6 +78,86 @@ Item {
         group: root.group
         key: "meta"
         color: Theme.effectColor
+    }
+
+    Row {
+        id: parameterContainer
+
+        visible: root.expanded
+        anchors.leftMargin: 10
+        anchors.left: effectMetaKnob.right
+        anchors.top: effectMetaKnob.top
+        spacing: 5
+
+        Repeater {
+            model: 16
+
+            Skin.ControlMiniKnob {
+                id: parameterKnob
+
+                property int parameterNumber: index + 1
+
+                width: 40
+                height: width
+                arcStart: 0
+                group: root.group
+                key: "parameter" + parameterNumber
+                color: Theme.effectColor
+                visible: parameterLoadedControl.loaded
+
+                Mixxx.ControlProxy {
+                    id: parameterLoadedControl
+
+                    property bool loaded: value != 0
+
+                    group: root.group
+                    key: "parameter" + parameterNumber + "_loaded"
+                }
+
+            }
+
+        }
+
+        Repeater {
+            model: 16
+
+            Item {
+                id: buttonParameter
+
+                property int parameterNumber: index + 1
+
+                width: 40
+                height: width
+                visible: buttonParameterLoadedControl.loaded
+
+                Mixxx.ControlProxy {
+                    id: buttonParameterLoadedControl
+
+                    property bool loaded: value != 0
+
+                    group: root.group
+                    key: "button_parameter" + parameterNumber + "_loaded"
+                }
+
+                Skin.ControlButton {
+                    id: buttonParameterButton
+
+                    height: 26
+                    width: parent.width
+                    anchors.centerIn: parent
+                    group: root.group
+                    key: "button_parameter" + parameterNumber
+                    activeColor: Theme.effectColor
+                }
+
+            }
+
+        }
+
+        Skin.FadeBehavior on visible {
+            fadeTarget: parameterContainer
+        }
+
     }
 
 }
