@@ -30,8 +30,6 @@ enum class ControlFlag {
 Q_DECLARE_FLAGS(ControlFlags, ControlFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(ControlFlags)
 
-class ThreadLocalQuickAction;
-
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
   public:
@@ -159,11 +157,6 @@ class ControlDoublePrivate : public QObject {
         m_bQuickActionsRecordable = bQuickActionsRecordable;
     }
 
-    // Injects a specific QuickAction. For tests only.
-    void setQuickAction(std::shared_ptr<ThreadLocalQuickAction> pQuickAction) {
-        m_pQuickAction = std::move(pQuickAction);
-    }
-
   signals:
     // Emitted when the ControlDoublePrivate value changes. pSender is a
     // pointer to the setter of the value (potentially NULL).
@@ -218,8 +211,6 @@ class ControlDoublePrivate : public QObject {
     ControlValueAtomic<double> m_defaultValue;
 
     QSharedPointer<ControlNumericBehavior> m_pBehavior;
-
-    std::shared_ptr<ThreadLocalQuickAction> m_pQuickAction;
 
     // Hack to implement persistent controls. This is a pointer to the current
     // user configuration object (if one exists). In general, we do not want the

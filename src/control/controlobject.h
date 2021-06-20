@@ -159,13 +159,6 @@ class ControlObject : public QObject {
     // Installs a value-change request handler that ignores all sets.
     void setReadOnly();
 
-    // Injects a specific QuickAction. For tests only.
-    void setQuickAction(std::shared_ptr<ThreadLocalQuickAction> pQuickAction) {
-        if (m_pControl) {
-            m_pControl->setQuickAction(std::move(pQuickAction));
-        }
-    }
-
   signals:
     void valueChanged(double);
 

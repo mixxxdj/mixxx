@@ -430,7 +430,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlpushbutton.cpp
   src/control/controlttrotary.cpp
   src/control/quickaction.cpp
-  src/control/threadlocalquickaction.cpp
+  src/control/quickactionsmanager.cpp
   src/controllers/controller.cpp
   src/controllers/controllerdebug.cpp
   src/controllers/controllerenumerator.cpp
@@ -2014,6 +2014,9 @@ target_link_libraries(mixxx-lib PRIVATE mixxx-proto)
 # Rigtorp SPSC Queue
 # https://github.com/rigtorp/SPSCQueue
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
+
+# Fork of Rigtorp's MPMC Queue
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/ferranpujolcamins/MPMCQueue/include)
 
 # Qt
 find_package(Qt5

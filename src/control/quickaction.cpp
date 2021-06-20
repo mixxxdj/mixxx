@@ -1,31 +1,51 @@
 #include "quickaction.h"
 
+#include "control/controlproxy.h"
 #include "preferences/usersettings.h"
 
-QuickAction::QuickAction(QObject* parent)
-        : QObject(parent),
-          m_recordingMacro("[QuickAction]", "recording"),
-          m_trigger("[QuickAction]", "trigger") {
-    m_trigger.connectValueChanged(this, &QuickAction::trigger);
+QuickAction::QuickAction(int iIndex)
+        : QObject(),
+          m_coRecording(ConfigKey(QString("[QuickAction%1]").arg(iIndex), "recording")),
+          m_coTrigger(ConfigKey(QString("[QuickAction%1]").arg(iIndex), "trigger")),
+          m_iIndex(iIndex),
+          m_recordedValues(100) {
+    m_coRecording.setButtonMode(ControlPushButton::TOGGLE);
+    m_coTrigger.setButtonMode(ControlPushButton::TRIGGER);
+
+    connect(&m_coTrigger,
+            &ControlObject::valueChanged,
+            this,
+            &QuickAction::slotTriggered);
 }
 
 bool QuickAction::recordCOValue(const ConfigKey& key, double value) {
-    if (m_recordingMacro.toBool()) {
-        m_recordedValues.emplace_back(key, value);
-        m_validPosition[key] = m_recordedValues.size() - 1;
-        return true;
+    if (m_coRecording.toBool()) {
+        return m_recordedValues.try_emplace(key, value);
     }
     return false;
 }
 
-void QuickAction::trigger(double) {
-    for (unsigned int i = 0; i < m_recordedValues.size(); ++i) {
-        ConfigKey key = m_recordedValues[i].first;
-        double value = m_recordedValues[i].second;
-        if (m_validPosition[key] == i) {
+void QuickAction::trigger() {
+    std::vector<std::pair<ConfigKey, double>> values;
+    QHash<ConfigKey, unsigned int> validValue;
+
+    m_recordedValues.try_consume_until_current_head(
+            [&values, &validValue](QueueElement&& recordedValue) noexcept {
+                values.emplace_back(
+                        recordedValue.m_key, recordedValue.m_dValue);
+                validValue[recordedValue.m_key] = values.size() - 1;
+            });
+
+    for (unsigned int i = 0; i < values.size(); ++i) {
+        ConfigKey key = values[i].first;
+        double value = values[i].second;
+        if (validValue[key] == i) {
             ControlProxy(key).set(value);
         }
     }
-    m_recordedValues.clear();
-    m_validPosition.clear();
+}
+
+void QuickAction::slotTriggered(double d) {
+    m_coRecording.set(0);
+    trigger();
 }

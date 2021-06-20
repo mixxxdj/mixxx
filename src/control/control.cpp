@@ -1,8 +1,7 @@
 #include "control/control.h"
 
 #include "control/controlobject.h"
-#include "control/quickaction.h"
-#include "control/threadlocalquickaction.h"
+#include "control/quickactionsmanager.h"
 #include "moc_control.cpp"
 #include "util/stat.h"
 
@@ -36,8 +35,7 @@ ControlDoublePrivate::ControlDoublePrivate(
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
           m_confirmRequired(false),
-          m_bQuickActionsRecordable(false),
-          m_pQuickAction(ThreadLocalQuickAction::globalInstance()) {
+          m_bQuickActionsRecordable(false) {
     initialize(defaultValue);
 }
 
@@ -216,13 +214,11 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
 }
 
 void ControlDoublePrivate::setAndConfirm(double value, QObject* pSender) {
-    if (m_bQuickActionsRecordable) {
-        bool wasRecorded = m_pQuickAction
-                                   ->get()
-                                   ->recordCOValue(m_key, value);
-        if (wasRecorded) {
-            return;
-        }
+    std::shared_ptr<QuickActionsManager> pQuickActionsManager =
+            QuickActionsManager::globalInstance();
+    if (m_bQuickActionsRecordable && pQuickActionsManager &&
+            pQuickActionsManager->recordCOValue(m_key, value)) {
+        return;
     }
     setInner(value, pSender);
 }

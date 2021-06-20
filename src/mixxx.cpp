@@ -29,7 +29,6 @@
 #include "broadcast/broadcastmanager.h"
 #endif
 #include "control/controlpushbutton.h"
-#include "control/threadlocalquickaction.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
@@ -121,10 +120,6 @@ MixxxMainWindow::MixxxMainWindow(
 
     show();
     pApp->processEvents();
-
-    ThreadLocalQuickAction::setGlobalInstance(
-            std::shared_ptr<ThreadLocalQuickAction>(
-                    new ThreadLocalQuickAction()));
     m_pGuiTick = new GuiTick();
     m_pVisualsManager = new VisualsManager();
 
@@ -439,7 +434,6 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DlgPreferences";
     delete m_pPrefDlg;
 
-    ThreadLocalQuickAction::setGlobalInstance(std::shared_ptr<ThreadLocalQuickAction>());
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;

@@ -1,13 +1,12 @@
 #include "quickaction_test.h"
 
 QuickActionTest::QuickActionTest()
-        : pQuickAction(new ThreadLocalQuickAction()),
+        : pQuickActionsManager(new QuickActionsManager()),
           co1(ConfigKey("[Test]", "control1")),
           co2(ConfigKey("[Test]", "control2")),
-          coRecording("[QuickAction]", "recording"),
-          coTrigger("[QuickAction]", "trigger") {
-    co1.setQuickAction(pQuickAction);
-    co2.setQuickAction(pQuickAction);
+          coRecording("[QuickAction1]", "recording"),
+          coTrigger("[QuickAction1]", "trigger") {
+    QuickActionsManager::setGlobalInstance(pQuickActionsManager);
     co1.setQuickActionsRecordable(true);
     co2.setQuickActionsRecordable(true);
 
@@ -38,13 +37,15 @@ TEST_F(QuickActionTest, ValuesAreSetInRecordingOrder) {
     co1.set(1);
     co2.set(2);
     coRecording.set(0);
-    EXPECT_EQ(co1.get(), 0) << "Values are set while recording";
-    EXPECT_EQ(co2.get(), 0) << "Values are set while recording";
+    EXPECT_EQ(co1.get(), 0) << "While recording, values are expected to be recorded.";
+    EXPECT_EQ(co2.get(), 0) << "While recording, values are expected to be recorded.";
     coTrigger.set(1);
-    EXPECT_EQ(co1.get(), 1) << "Recorded values are not set when macro is triggered";
-    EXPECT_EQ(co2.get(), 2) << "Recorded values are not set when macro is triggered";
-    EXPECT_EQ(result.m_value, 2) << "Values are not set in the order they were recorded";
-    EXPECT_EQ(setCount.m_value, 2) << "Value set too many or too few times";
+    EXPECT_EQ(co1.get(), 1) << "Recorded values are expected not to be set "
+                               "after the macro is triggered";
+    EXPECT_EQ(co2.get(), 2) << "Recorded values are expected not to be set "
+                               "after the macro is triggered";
+    EXPECT_EQ(result.m_value, 2) << "Values are expected to be set in the order they were recorded";
+    EXPECT_EQ(setCount.m_value, 2) << "Each value is expected to be set exactly once";
 
     // Reset values for next case
     co1.set(0);
@@ -56,13 +57,15 @@ TEST_F(QuickActionTest, ValuesAreSetInRecordingOrder) {
     co2.set(2);
     co1.set(1);
     coRecording.set(0);
-    EXPECT_EQ(co1.get(), 0) << "Values are set while recording";
-    EXPECT_EQ(co2.get(), 0) << "Values are set while recording";
+    EXPECT_EQ(co1.get(), 0) << "While recording, values are expected to be recorded.";
+    EXPECT_EQ(co2.get(), 0) << "While recording, values are expected to be recorded.";
     coTrigger.set(1);
-    EXPECT_EQ(co1.get(), 1) << "Recorded values are not set when macro is triggered";
-    EXPECT_EQ(co2.get(), 2) << "Recorded values are not set when macro is triggered";
-    EXPECT_EQ(result.m_value, 1) << "Values are not set in the order they were recorded";
-    EXPECT_EQ(setCount.m_value, 2) << "Value set too many or too few times";
+    EXPECT_EQ(co1.get(), 1) << "Recorded values are expected not to be set "
+                               "after the macro is triggered";
+    EXPECT_EQ(co2.get(), 2) << "Recorded values are expected not to be set "
+                               "after the macro is triggered";
+    EXPECT_EQ(result.m_value, 1) << "Values are expected to be set in the order they were recorded";
+    EXPECT_EQ(setCount.m_value, 2) << "Each value is expected to be set exactly once";
 }
 
 TEST_F(QuickActionTest, OldValuesAreOverwritten) {

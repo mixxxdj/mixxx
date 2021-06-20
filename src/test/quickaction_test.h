@@ -4,8 +4,9 @@
 #include <QObject>
 
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "control/quickaction.h"
-#include "control/threadlocalquickaction.h"
+#include "control/quickactionsmanager.h"
 #include "mixxxtest.h"
 #include "util/memory.h"
 
@@ -41,7 +42,7 @@ class QuickActionTest : public MixxxTest {
   public:
     QuickActionTest();
 
-    std::shared_ptr<ThreadLocalQuickAction> pQuickAction;
+    std::shared_ptr<QuickActionsManager> pQuickActionsManager;
     ControlObject co1;
     ControlObject co2;
     ControlProxy coRecording;

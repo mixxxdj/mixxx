@@ -1,43 +1,42 @@
 #pragma once
 
 #include <QObject>
-#include <utility>
 
-#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "rigtorp/MPMCQueue.h"
 
 class ConfigKey;
 
 class QuickAction : public QObject {
     Q_OBJECT
   public:
-    explicit QuickAction(QObject* parent = nullptr);
+    explicit QuickAction(int index);
+
     // Record a new value for a CO.
     // Returns true if the macro recorder was in recording state and the new value was recorded,
     // returns false if the new value was not recorded.
     bool recordCOValue(const ConfigKey& key, double value);
 
-    void trigger(double value);
+    void trigger();
+
+  private slots:
+    void slotTriggered(double);
 
   private:
-    ControlProxy m_recordingMacro;
-    ControlProxy m_trigger;
+    ControlPushButton m_coRecording;
+    ControlPushButton m_coTrigger;
+    int m_iIndex;
 
-    class Key {
+    class QueueElement {
       public:
-        Key(ConfigKey configKey, int ordinal)
-                : m_configKey(std::move(configKey)), m_iOrdinal(ordinal) {
+        QueueElement(ConfigKey key, double dValue) noexcept
+                : m_key(key),
+                  m_dValue(dValue) {
         }
 
-        // We use configKey to determine whether two keys are equal or not, thus only one Key with a given configKey can
-        // exist in the QMap.
-        ConfigKey m_configKey;
-
-        // We use ordinal to sort the keys, so the recorded CO are triggered in the same order they were recorded.
-        int m_iOrdinal;
-
-        bool operator<(const QuickAction::Key& other) const;
+        ConfigKey m_key;
+        double m_dValue;
     };
 
-    std::vector<std::pair<ConfigKey, double>> m_recordedValues;
-    QHash<ConfigKey, unsigned int> m_validPosition;
+    rigtorp::MPMCQueue<QueueElement> m_recordedValues;
 };

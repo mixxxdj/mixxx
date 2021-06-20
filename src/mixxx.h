@@ -25,7 +25,6 @@ class EngineMaster;
 class GuiTick;
 class LaunchImage;
 class Library;
-class ThreadLocalQuickAction;
 class VisualsManager;
 class WMainMenuBar;
 
