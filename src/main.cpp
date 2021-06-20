@@ -14,11 +14,7 @@
 #include "util/cmdlineargs.h"
 #include "util/console.h"
 #include "util/logging.h"
-#include "util/version.h"
-
-#ifdef Q_OS_LINUX
-#include <X11/Xlib.h>
-#endif
+#include "util/versionstore.h"
 
 namespace {
 
@@ -47,10 +43,6 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
 int main(int argc, char * argv[]) {
     Console console;
 
-#ifdef Q_OS_LINUX
-    XInitThreads();
-#endif
-
     // These need to be set early on (not sure how early) in order to trigger
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
@@ -69,9 +61,14 @@ int main(int argc, char * argv[]) {
     // organization name blank.
     //QCoreApplication::setOrganizationName("Mixxx");
 
-    QCoreApplication::setApplicationName(Version::applicationName());
-    QCoreApplication::setApplicationVersion(Version::version());
+    QCoreApplication::setApplicationName(VersionStore::applicationName());
+    QCoreApplication::setApplicationVersion(VersionStore::version());
 
+    // Construct a list of strings based on the command line arguments
+    CmdlineArgs& args = CmdlineArgs::Instance();
+    if (!args.parse(argc, argv)) {
+        return kParseCmdlineArgsErrorExitCode;
+    }
 
     // If you change this here, you also need to change it in
     // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
@@ -84,11 +81,17 @@ int main(int argc, char * argv[]) {
 
     MixxxApplication app(argc, argv);
 
-    // Construct a list of strings based on the command line arguments
-    CmdlineArgs& args = CmdlineArgs::Instance();
-    if (!args.parse(app.arguments())) {
-        return kParseCmdlineArgsErrorExitCode;
+#ifdef __APPLE__
+    // TODO: At this point it is too late to provide the same settings path to all components
+    // and too early to log errors and give users advises in their system language.
+    // Calling this from main.cpp before the QApplication is initialized may cause a crash
+    // due to potential QMessageBox invocations within migrateOldSettings().
+    // Solution: Start Mixxx with default settings, migrate the preferences, and then restart
+    // immediately.
+    if (!args.getSettingsPathSet()) {
+        CmdlineArgs::Instance().setSettingsPath(Sandbox::migrateOldSettings());
     }
+#endif
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

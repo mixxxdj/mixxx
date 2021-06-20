@@ -12,7 +12,7 @@
 #include "util/compatibility.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
-#include "util/version.h"
+#include "util/versionstore.h"
 
 namespace mixxx {
 
@@ -27,9 +27,9 @@ const QString kRequestPath = QStringLiteral("/ws/2/recording/");
 const QByteArray kUserAgentRawHeaderKey = "User-Agent";
 
 QString userAgentRawHeaderValue() {
-    return Version::applicationName() +
+    return VersionStore::applicationName() +
             QStringLiteral("/") +
-            Version::version() +
+            VersionStore::version() +
             QStringLiteral(" ( ") +
             QStringLiteral(MIXXX_WEBSITE_URL) +
             QStringLiteral(" )");

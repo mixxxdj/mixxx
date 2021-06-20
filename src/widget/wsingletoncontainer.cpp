@@ -3,7 +3,7 @@
 #include <QLayout>
 
 #include "moc_wsingletoncontainer.cpp"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 

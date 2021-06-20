@@ -19,7 +19,6 @@
 #include "moc_browsetablemodel.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
-#include "util/fileaccess.h"
 #include "widget/wlibrarytableview.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
@@ -191,7 +190,7 @@ void BrowseTableModel::setPath(mixxx::FileAccess path) {
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
-    return getTrackByRef(TrackRef::fromFileInfo(getTrackLocation(index)));
+    return getTrackByRef(TrackRef::fromFilePath(getTrackLocation(index)));
 }
 
 TrackPointer BrowseTableModel::getTrackByRef(const TrackRef& trackRef) const {
@@ -298,7 +297,7 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList& indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url = TrackFile(getTrackLocation(index)).toUrl();
+                QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
                 if (!url.isValid()) {
                     qDebug() << "ERROR invalid url" << url;
                     continue;

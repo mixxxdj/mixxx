@@ -110,6 +110,7 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::Crate)) {
         m_pCrateMenu = new QMenu(this);
         m_pCrateMenu->setTitle(tr("Crates"));
+        m_pCrateMenu->setObjectName("CratesMenu");
         connect(m_pCrateMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulateCrateMenu);
     }
 
@@ -241,9 +242,9 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotExportMetadataIntoFileTags);
 
         m_updateInExternalTrackCollections.reserve(
-                m_pLibrary->trackCollections()->externalCollections().size());
+                m_pLibrary->trackCollectionManager()->externalCollections().size());
         for (auto* const pExternalTrackCollection :
-                m_pLibrary->trackCollections()->externalCollections()) {
+                m_pLibrary->trackCollectionManager()->externalCollections()) {
             UpdateExternalTrackCollection updateInExternalTrackCollection;
             updateInExternalTrackCollection.externalTrackCollection = pExternalTrackCollection;
             updateInExternalTrackCollection.action = new QAction(
@@ -802,7 +803,7 @@ QList<TrackRef> WTrackMenu::getTrackRefs() const {
     if (m_pTrackModel) {
         trackRefs.reserve(m_trackIndexList.size());
         for (const auto& index : m_trackIndexList) {
-            auto trackRef = TrackRef::fromFileInfo(
+            auto trackRef = TrackRef::fromFilePath(
                     m_pTrackModel->getTrackLocation(index),
                     m_pTrackModel->getTrackId(index));
             if (!trackRef.isValid()) {
@@ -816,7 +817,7 @@ QList<TrackRef> WTrackMenu::getTrackRefs() const {
         for (const auto& pTrack : m_trackPointerList) {
             DEBUG_ASSERT(pTrack);
             auto trackRef = TrackRef::fromFileInfo(
-                    pTrack->getLocation(),
+                    pTrack->getFileInfo(),
                     pTrack->getId());
             trackRefs.push_back(std::move(trackRef));
         }
@@ -876,7 +877,7 @@ int WTrackMenu::applyTrackPointerOperation(
             operationMode);
     return modalOperation.processTracks(
             progressLabelText,
-            m_pLibrary->trackCollections(),
+            m_pLibrary->trackCollectionManager(),
             pTrackPointerIter.get());
 }
 
@@ -907,7 +908,7 @@ class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPoint
         // to override the information within Mixxx! Custom cover art must be
         // reloaded separately.
         SoundSourceProxy(pTrack).updateTrackFromSource(
-                SoundSourceProxy::ImportTrackMetadataMode::Again);
+                SoundSourceProxy::UpdateTrackFromSourceMode::Again);
     }
 };
 
@@ -974,7 +975,7 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         return;
     }
     m_pPlaylistMenu->clear();
-    const PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+    const PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                              ->internalCollection()
                                              ->getPlaylistDAO();
     QMap<QString, int> playlists;
@@ -1013,7 +1014,7 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                        ->internalCollection()
                                        ->getPlaylistDAO();
 
@@ -1055,7 +1056,7 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
     }
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pLibrary->trackCollections()->unhideTracks(trackIds);
+    m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
     playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
 }
 
@@ -1070,7 +1071,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
     const TrackIdList trackIds = getTrackIds();
 
     CrateSummarySelectResult allCrates(
-            m_pLibrary->trackCollections()
+            m_pLibrary->trackCollectionManager()
                     ->internalCollection()
                     ->crates()
                     .selectCratesWithTrackCount(trackIds));
@@ -1140,19 +1141,21 @@ void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     pCheckBox->setTristate(false);
     if (!pCheckBox->isChecked()) {
         if (crateId.isValid()) {
-            m_pLibrary->trackCollections()
+            m_pLibrary->trackCollectionManager()
                     ->internalCollection()
                     ->removeCrateTracks(crateId, trackIds);
         }
     } else {
         if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
             crateId = CrateFeatureHelper(
-                    m_pLibrary->trackCollections()->internalCollection(), m_pConfig)
+                    m_pLibrary->trackCollectionManager()->internalCollection(), m_pConfig)
                               .createEmptyCrate();
         }
         if (crateId.isValid()) {
-            m_pLibrary->trackCollections()->unhideTracks(trackIds);
-            m_pLibrary->trackCollections()->internalCollection()->addCrateTracks(crateId, trackIds);
+            m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
+            m_pLibrary->trackCollectionManager()
+                    ->internalCollection()
+                    ->addCrateTracks(crateId, trackIds);
         }
     }
 }
@@ -1166,12 +1169,14 @@ void WTrackMenu::addSelectionToNewCrate() {
     }
 
     CrateId crateId = CrateFeatureHelper(
-            m_pLibrary->trackCollections()->internalCollection(), m_pConfig)
+            m_pLibrary->trackCollectionManager()->internalCollection(), m_pConfig)
                               .createEmptyCrate();
 
     if (crateId.isValid()) {
-        m_pLibrary->trackCollections()->unhideTracks(trackIds);
-        m_pLibrary->trackCollections()->internalCollection()->addCrateTracks(crateId, trackIds);
+        m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
+        m_pLibrary->trackCollectionManager()
+                ->internalCollection()
+                ->addCrateTracks(crateId, trackIds);
     }
 }
 
@@ -1510,7 +1515,7 @@ void WTrackMenu::slotClearWaveform() {
     const auto progressLabelText =
             tr("Resetting waveform of %n track(s)", "", getTrackCount());
     AnalysisDao& analysisDao =
-            m_pLibrary->trackCollections()->internalCollection()->getAnalysisDAO();
+            m_pLibrary->trackCollectionManager()->internalCollection()->getAnalysisDAO();
     const auto trackOperator =
             ResetWaveformTrackPointerOperation(analysisDao);
     applyTrackPointerOperation(
@@ -1566,7 +1571,7 @@ void WTrackMenu::slotClearAllMetadata() {
     const auto progressLabelText =
             tr("Resetting all performance metadata of %n track(s)", "", getTrackCount());
     AnalysisDao& analysisDao =
-            m_pLibrary->trackCollections()->internalCollection()->getAnalysisDAO();
+            m_pLibrary->trackCollectionManager()->internalCollection()->getAnalysisDAO();
     const auto trackOperator =
             ClearAllPerformanceMetadataTrackPointerOperation(analysisDao);
     applyTrackPointerOperation(
@@ -1642,12 +1647,12 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                        ->internalCollection()
                                        ->getPlaylistDAO();
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pLibrary->trackCollections()->unhideTracks(trackIds);
+    m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 

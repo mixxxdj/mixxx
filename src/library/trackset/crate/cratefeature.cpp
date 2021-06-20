@@ -44,8 +44,8 @@ CrateFeature::CrateFeature(Library* pLibrary,
         : BaseTrackSetFeature(pLibrary, pConfig, "CRATEHOME"),
           m_cratesIcon(":/images/library/ic_library_crates.svg"),
           m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
-          m_crateTableModel(this, pLibrary->trackCollections()) {
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
+          m_crateTableModel(this, pLibrary->trackCollectionManager()) {
     initActions();
 
     // construct child model
@@ -238,7 +238,7 @@ bool CrateFeature::dropAcceptChild(
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
     QList<TrackId> trackIds =
-            m_pTrackCollection->resolveTrackIdsFromUrls(urls, !pSource);
+            m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(urls, !pSource);
     if (!trackIds.size()) {
         return false;
     }
@@ -729,7 +729,7 @@ void CrateFeature::slotExportPlaylist() {
     // Create list of files of the crate
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
-            new CrateTableModel(this, m_pLibrary->trackCollections()));
+            new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
     pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 
@@ -755,7 +755,7 @@ void CrateFeature::slotExportPlaylist() {
 void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
-            new CrateTableModel(this, m_pLibrary->trackCollections()));
+            new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
     pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 

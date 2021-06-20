@@ -45,6 +45,7 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
     m_pSyncMasterEnabled.reset(
             new ControlPushButton(ConfigKey(m_group, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSyncMasterEnabled->setStates(3);
     m_pSyncMasterEnabled->connectValueChangeRequest(
             this, &InternalClock::slotSyncMasterEnabledChangeRequest, Qt::DirectConnection);
 }
@@ -56,10 +57,10 @@ void InternalClock::setSyncMode(SyncMode mode) {
     // Syncable has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_mode = mode;
-    m_pSyncMasterEnabled->setAndConfirm(isMaster(mode));
+    m_pSyncMasterEnabled->setAndConfirm(SyncModeToMasterLight(mode));
 }
 
-void InternalClock::notifyOnlyPlayingSyncable() {
+void InternalClock::notifyUniquePlaying() {
     // No action necessary.
 }
 
@@ -137,6 +138,9 @@ void InternalClock::setInstantaneousBpm(double bpm) {
     }
     // Do nothing.
     Q_UNUSED(bpm);
+}
+
+void InternalClock::notifyMasterParamSource() {
 }
 
 void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {

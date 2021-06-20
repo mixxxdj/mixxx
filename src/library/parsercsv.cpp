@@ -33,7 +33,7 @@ QList<QString> ParserCsv::parse(const QString& sFilename) {
 
     clearLocations();
     //qDebug() << "ParserCsv: Starting to parse.";
-    if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
+    if (file.open(QIODevice::ReadOnly)) {
         QByteArray ba = file.readAll();
 
         QList<QList<QString> > tokens = tokenize(ba, ',');

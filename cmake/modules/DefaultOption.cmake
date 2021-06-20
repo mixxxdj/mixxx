@@ -33,7 +33,10 @@ set a default and the value may be overridden by the user.
 macro(DEFAULT_OPTION option doc depends)
   set(${option}_DEFAULT_ON 1)
   foreach(d ${depends})
-    string(REGEX REPLACE " +" ";" DEFAULT_OPTION_DEP "${d}")
+    # if() takes the condition as a list of arguments. Parentheses need to be separated as well.
+    string(REPLACE "(" " ( " DEFAULT_OPTION_DEP "${d}")
+    string(REPLACE ")" " ) " DEFAULT_OPTION_DEP "${DEFAULT_OPTION_DEP}")
+    string(REGEX REPLACE " +" ";" DEFAULT_OPTION_DEP "${DEFAULT_OPTION_DEP}")
     if(${DEFAULT_OPTION_DEP})
     else()
       set(${option}_DEFAULT_ON 0)

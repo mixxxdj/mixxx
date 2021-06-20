@@ -16,29 +16,24 @@
 #include "util/parented_ptr.h"
 #include "util/timer.h"
 
-class BroadcastManager;
 class ChannelHandleFactory;
-class ControllerManager;
 class ControlPushButton;
 class DlgDeveloperTools;
 class DlgPreferences;
 class DlgKeywheel;
-class EffectsManager;
 class EngineMaster;
 class GuiTick;
-class KeyboardEventFilter;
 class LaunchImage;
 class Library;
-class PlayerManager;
-class RecordingManager;
-class SettingsManager;
-class SkinLoader;
-class SoundManager;
 class ThreadLocalQuickAction;
-class TrackCollectionManager;
-class VinylControlManager;
 class VisualsManager;
 class WMainMenuBar;
+
+namespace mixxx {
+namespace skin {
+class SkinLoader;
+}
+} // namespace mixxx
 
 #ifdef __ENGINEPRIME__
 namespace mixxx {
@@ -127,7 +122,7 @@ class MixxxMainWindow : public QMainWindow {
     QWidget* m_pCentralWidget;
     LaunchImage* m_pLaunchImage;
 
-    std::shared_ptr<SkinLoader> m_pSkinLoader;
+    std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;
     VisualsManager* m_pVisualsManager;
 
@@ -145,7 +140,6 @@ class MixxxMainWindow : public QMainWindow {
 
     mixxx::TooltipsPreference m_toolTipsCfg;
 
-    ControlPushButton* m_pTouchShift;
     mixxx::ScreenSaverPreference m_inhibitScreensaver;
 
     QSet<ControlObject*> m_skinCreatedControls;

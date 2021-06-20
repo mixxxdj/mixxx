@@ -1,0 +1,25 @@
+
+#MainMenu::item {
+  /* Don't touch except font and bg color.
+     Should automatically look like the native menus. */
+  /*padding: 0.1em 0.3em 0.1em 0.3em;*/
+  /*margin: 0em;*/
+}
+#MainMenu QMenu::item {
+  padding: 0.1em 0.3em 0.2em 0.3em;
+  /* Text and checkbox are left-aligned with checkbox = overlap
+    margin-left: moves icon & text to the right, so they still overlap
+                 but we now have space for the checkbox */
+  margin: 0em 0em 0em 1.2em;
+  }
+  /* Checkbox preceeding menu items */
+  #MainMenu QMenu::indicator {
+    /*width: 1em;*/
+    /*height: 1em;*/
+    /* margin-left: negative to move the checkbox left into the gap
+                    we created with the item's padding-left
+
+                     */
+    margin: 0em 0em 0em -1.3em;
+    padding: 0.3em 0em 0.3em 0.3em;
+  }

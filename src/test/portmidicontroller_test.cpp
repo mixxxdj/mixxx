@@ -8,6 +8,7 @@
 #include "test/mixxxtest.h"
 
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::Sequence;

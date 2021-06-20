@@ -83,7 +83,7 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
             m_pBitDepthParameter ? m_pBitDepthParameter->value() : 16);
 
     // divided by two because we use float math which includes the sing bit anyway
-    const CSAMPLE scale = pow(2.0f, bit_depth) / 2;
+    const CSAMPLE scale = std::pow(2.0f, bit_depth) / 2;
     // Gain correction is required, because MSB (values above 0.5) is usually
     // rarely used, to achieve equal loudness and maximum dynamic
     const CSAMPLE gainCorrection = (17 - bit_depth) / 8;

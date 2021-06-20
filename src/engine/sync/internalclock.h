@@ -32,7 +32,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
     }
 
     void setSyncMode(SyncMode mode) override;
-    void notifyOnlyPlayingSyncable() override;
+    void notifyUniquePlaying() override;
     void requestSync() override;
     SyncMode getSyncMode() const override {
         return m_mode;
@@ -43,12 +43,16 @@ class InternalClock : public QObject, public Clock, public Syncable {
     bool isPlaying() const override {
         return false;
     }
+    bool isAudible() const override {
+        return false;
+    }
 
     double getBeatDistance() const override;
     void setMasterBeatDistance(double beatDistance) override;
 
     double getBaseBpm() const override;
     void setMasterBpm(double bpm) override;
+    void notifyMasterParamSource() override;
     double getBpm() const override;
     void setInstantaneousBpm(double bpm) override;
     void setMasterParams(double beatDistance, double baseBpm, double bpm) override;

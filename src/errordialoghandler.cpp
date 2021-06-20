@@ -8,10 +8,10 @@
 
 #include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
-#include "util/version.h"
+#include "util/versionstore.h"
 
 ErrorDialogProperties::ErrorDialogProperties()
-        : m_title(Version::applicationName()),
+        : m_title(VersionStore::applicationName()),
           m_detailsUseMonospaceFont(false),
           m_modal(true),
           m_shouldQuit(false),

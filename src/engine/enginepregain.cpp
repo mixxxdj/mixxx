@@ -2,11 +2,11 @@
 
 #include <QtDebug>
 
-#include "preferences/usersettings.h"
 #include "control/controlaudiotaperpot.h"
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "preferences/usersettings.h"
 #include "util/math.h"
 #include "util/sample.h"
 
@@ -17,7 +17,7 @@ constexpr float kSpeedGainMultiplier = 4.0f;
 // -1 dB to not risk any clipping even for lossy track that may have samples above 1.0
 constexpr float kMaxTotalGainBySpeed = 0.9f;
 // value to normalize gain to 1 at speed one
-const float kSpeedOneDiv = log10((1 * kSpeedGainMultiplier) + 1);
+const float kSpeedOneDiv = std::log10((1 * kSpeedGainMultiplier) + 1);
 } // anonymous namespace
 
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = nullptr;
@@ -134,8 +134,8 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // we do not add more gain then we found in the original track.
     // This compensates a negative ReplayGain or PreGain setting.
 
-    CSAMPLE_GAIN speedGain = log10((fabs(static_cast<CSAMPLE_GAIN>(m_dSpeed)) *
-                                           kSpeedGainMultiplier) +
+    CSAMPLE_GAIN speedGain = std::log10((fabs(static_cast<CSAMPLE_GAIN>(m_dSpeed)) *
+                                                kSpeedGainMultiplier) +
                                      1) /
             kSpeedOneDiv;
     // Limit speed Gain to 0 dB if totalGain is already > 0.9 or Limit the

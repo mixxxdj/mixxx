@@ -5,7 +5,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/widgetrendertimer.h"
 #include "widget/wwidget.h"
 #include "widget/knobeventhandler.h"

@@ -1,0 +1,36 @@
+<!--
+Description:
+  An EffectPushButton template used for FX parameter buttons,
+  EQ kill buttons and QuickEffect buttons.
+Variables:
+  ObjectName:
+  Size      :
+  parameter : 1, 2, 3, ...
+  labelOn   : optional button graphic for ON state
+  labelOff  : optional button graphic for OFF state
+  FxRack_FxUnit_FxNum : various, might be
+      [EffectRack1_EffectUnitX_EffectY]
+      [EqualizerRack1_[ChannelA]_EffectY]
+      [QuickEffectRack1_[ChannelA]_EffectY]
+-->
+<Template>
+  <EffectPushButton>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOff"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOff"/>.svg</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Pressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOn"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,<Variable name="FxParameter"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </EffectPushButton>
+</Template>

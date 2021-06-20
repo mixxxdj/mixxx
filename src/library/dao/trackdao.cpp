@@ -156,10 +156,10 @@ TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
 }
 
 QList<TrackId> TrackDAO::resolveTrackIds(
-        const QList<TrackFile>& trackFiles,
+        const QList<mixxx::FileInfo>& fileInfos,
         ResolveTrackIdFlags flags) {
     QList<TrackId> trackIds;
-    trackIds.reserve(trackFiles.size());
+    trackIds.reserve(fileInfos.size());
 
     // Create a temporary database of the paths of all the imported tracks.
     QSqlQuery query(m_database);
@@ -172,9 +172,9 @@ QList<TrackId> TrackDAO::resolveTrackIds(
     }
 
     QStringList pathList;
-    pathList.reserve(trackFiles.size());
-    for (const auto& trackFile: trackFiles) {
-        pathList << "(" + SqlStringFormatter::format(m_database, trackFile.location()) + ")";
+    pathList.reserve(fileInfos.size());
+    for (const auto& fileInfo : fileInfos) {
+        pathList << "(" + SqlStringFormatter::format(m_database, fileInfo.location()) + ")";
     }
 
     // Add all the track paths temporary to this database.
@@ -227,13 +227,13 @@ QList<TrackId> TrackDAO::resolveTrackIds(
         while (query.next()) {
             trackIds.append(TrackId(query.value(idColumn)));
         }
-        DEBUG_ASSERT(trackIds.size() <= trackFiles.size());
-        if (trackIds.size() < trackFiles.size()) {
+        DEBUG_ASSERT(trackIds.size() <= fileInfos.size());
+        if (trackIds.size() < fileInfos.size()) {
             qDebug() << "TrackDAO::getTrackIds(): Found only"
-                    << trackIds.size()
-                    << "of"
-                    << trackFiles.size()
-                    << "tracks in library";
+                     << trackIds.size()
+                     << "of"
+                     << fileInfos.size()
+                     << "tracks in library";
         }
     } else {
         LOG_FAILED_QUERY(query);
@@ -288,15 +288,13 @@ QString TrackDAO::getTrackLocation(TrackId trackId) const {
 }
 
 void TrackDAO::saveTrack(Track* pTrack) const {
-    DEBUG_ASSERT(pTrack);
-    if (!pTrack->isDirty()) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return;
     }
+    DEBUG_ASSERT(pTrack->isDirty());
+
     const TrackId trackId = pTrack->getId();
-    // Only update the database if the track has already been added!
-    if (!trackId.isValid()) {
-        return;
-    }
+    DEBUG_ASSERT(trackId.isValid());
     qDebug() << "TrackDAO: Saving track"
             << trackId
             << pTrack->getFileInfo();
@@ -398,6 +396,7 @@ void TrackDAO::addTracksPrepare() {
             "played,"
             "mixxx_deleted,"
             "header_parsed,"
+            "source_synchronized_ms,"
             "channels,"
             "samplerate,"
             "bitrate,"
@@ -445,6 +444,7 @@ void TrackDAO::addTracksPrepare() {
             ":played,"
             ":mixxx_deleted,"
             ":header_parsed,"
+            ":source_synchronized_ms,"
             ":channels,"
             ":samplerate,"
             ":bitrate,"
@@ -495,19 +495,19 @@ namespace {
 
 bool insertTrackLocation(
         QSqlQuery* pTrackLocationInsert,
-        const TrackFile& trackFile) {
+        const mixxx::FileInfo& fileInfo) {
     DEBUG_ASSERT(pTrackLocationInsert);
-    pTrackLocationInsert->bindValue(":location", trackFile.location());
-    pTrackLocationInsert->bindValue(":directory", trackFile.directory());
-    pTrackLocationInsert->bindValue(":filename", trackFile.fileName());
-    pTrackLocationInsert->bindValue(":filesize", trackFile.fileSize());
+    pTrackLocationInsert->bindValue(":location", fileInfo.location());
+    pTrackLocationInsert->bindValue(":directory", fileInfo.locationPath());
+    pTrackLocationInsert->bindValue(":filename", fileInfo.fileName());
+    pTrackLocationInsert->bindValue(":filesize", fileInfo.sizeInBytes());
     pTrackLocationInsert->bindValue(":fs_deleted", 0);
     pTrackLocationInsert->bindValue(":needs_verification", 0);
     if (pTrackLocationInsert->exec()) {
         return true;
     } else {
         LOG_FAILED_QUERY(*pTrackLocationInsert)
-                << "Skip inserting duplicate track location" << trackFile.location();
+                << "Skip inserting duplicate track location" << fileInfo.location();
         return false;
     }
 }
@@ -551,7 +551,17 @@ void bindTrackLibraryValues(
             trackMetadata.getStreamInfo().getDuration().toDoubleSeconds());
 
     pTrackLibraryQuery->bindValue(":header_parsed",
-            track.getMetadataSynchronized() ? 1 : 0);
+            track.isSourceSynchronized() ? 1 : 0);
+    const QDateTime sourceSynchronizedAt =
+            track.getSourceSynchronizedAt();
+    if (sourceSynchronizedAt.isValid()) {
+        DEBUG_ASSERT(sourceSynchronizedAt.timeSpec() == Qt::UTC);
+        pTrackLibraryQuery->bindValue(":source_synchronized_ms",
+                sourceSynchronizedAt.toMSecsSinceEpoch());
+    } else {
+        pTrackLibraryQuery->bindValue(":source_synchronized_ms",
+                QVariant());
+    }
 
     const PlayCounter& playCounter = track.getPlayCounter();
     pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
@@ -608,13 +618,13 @@ bool insertTrackLibrary(
         const mixxx::TrackRecord& trackRecord,
         const mixxx::BeatsPointer& pBeats,
         DbId trackLocationId,
-        const TrackFile& trackFile,
+        const mixxx::FileInfo& fileInfo,
         const QDateTime& trackDateAdded) {
     bindTrackLibraryValues(pTrackLibraryInsert, trackRecord, pBeats);
 
     if (!trackRecord.getDateAdded().isNull()) {
         qDebug() << "insertTrackLibrary: Track"
-                 << trackFile
+                 << fileInfo
                  << "was added"
                  << trackRecord.getDateAdded();
     }
@@ -636,7 +646,7 @@ bool insertTrackLibrary(
         // but marked deleted? Skip this track.
         LOG_FAILED_QUERY(*pTrackLibraryInsert)
                 << "Failed to insert new track into library:"
-                << trackFile;
+                << fileInfo;
         return false;
     }
     return true;
@@ -646,29 +656,29 @@ bool insertTrackLibrary(
 
 TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     DEBUG_ASSERT(pTrack);
-    const auto trackFile = pTrack->getFileInfo();
+    const auto fileAccess = pTrack->getFileAccess();
 
     VERIFY_OR_DEBUG_ASSERT(m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
             m_pQueryLibrarySelect || m_pQueryTrackLocationSelect) {
         qDebug() << "TrackDAO::addTracksAddTrack: needed SqlQuerys have not "
                     "been prepared. Skipping track"
-                 << trackFile;
+                 << fileAccess.info();
         return TrackId();
     }
 
     qDebug() << "TrackDAO: Adding track"
-             << trackFile;
+             << fileAccess.info();
 
     TrackId trackId;
 
     // Insert the track location into the corresponding table. This will fail
     // silently if the location is already in the table because it has a UNIQUE
     // constraint.
-    if (!insertTrackLocation(m_pQueryTrackLocationInsert.get(), trackFile)) {
+    if (!insertTrackLocation(m_pQueryTrackLocationInsert.get(), fileAccess.info())) {
         DEBUG_ASSERT(pTrack->getDateAdded().isValid());
         // Inserting into track_locations failed, so the file already
         // exists. Query for its trackLocationId.
-        m_pQueryTrackLocationSelect->bindValue(":location", trackFile.location());
+        m_pQueryTrackLocationSelect->bindValue(":location", fileAccess.info().location());
         if (!m_pQueryTrackLocationSelect->exec()) {
             // We can't even select this, something is wrong.
             LOG_FAILED_QUERY(*m_pQueryTrackLocationSelect)
@@ -691,7 +701,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         if (!m_pQueryLibrarySelect->exec()) {
             LOG_FAILED_QUERY(*m_pQueryLibrarySelect)
                     << "Failed to query existing track: "
-                    << trackFile;
+                    << fileAccess.info();
             return TrackId();
         }
         if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
@@ -718,7 +728,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             if (!m_pQueryLibraryUpdate->exec()) {
                 LOG_FAILED_QUERY(*m_pQueryLibraryUpdate)
                         << "Failed to unremove existing track: "
-                        << trackFile;
+                        << fileAccess.info();
                 return TrackId();
             }
         }
@@ -747,16 +757,13 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         }
 
         // Time stamps are stored with timezone UTC in the database
-        mixxx::TrackRecord trackRecord;
-        pTrack->readTrackRecord(&trackRecord);
-        const mixxx::BeatsPointer pBeats = pTrack->getBeats();
         const auto trackDateAdded = QDateTime::currentDateTimeUtc();
         if (!insertTrackLibrary(
                     m_pQueryLibraryInsert.get(),
-                    trackRecord,
-                    pBeats,
+                    pTrack->getRecord(),
+                    pTrack->getBeats(),
                     trackLocationId,
-                    trackFile,
+                    fileAccess.info(),
                     trackDateAdded)) {
             return TrackId();
         }
@@ -782,24 +789,26 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     return trackId;
 }
 
-TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremove) {
+TrackPointer TrackDAO::addTracksAddFile(
+        const mixxx::FileAccess& fileAccess,
+        bool unremove) {
     // Check that track is a supported extension.
     // TODO(uklotzde): The following check can be skipped if
     // the track is already in the library. A refactoring is
     // needed to detect this before calling addTracksAddTrack().
-    if (!SoundSourceProxy::isFileSupported(trackFile)) {
+    if (!SoundSourceProxy::isFileSupported(fileAccess.info())) {
         qWarning() << "TrackDAO::addTracksAddFile:"
-                << "Unsupported file type"
-                << trackFile.location();
+                   << "Unsupported file type"
+                   << fileAccess.info().location();
         return TrackPointer();
     }
 
-    GlobalTrackCacheResolver cacheResolver(trackFile);
+    GlobalTrackCacheResolver cacheResolver(fileAccess);
     TrackPointer pTrack = cacheResolver.getTrack();
     if (!pTrack) {
         qWarning() << "TrackDAO::addTracksAddFile:"
-                << "File not found"
-                << trackFile.location();
+                   << "File not found"
+                   << fileAccess.info().location();
         return TrackPointer();
     }
     const TrackId oldTrackId = pTrack->getId();
@@ -812,15 +821,15 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
         // TODO: These duplicates are only detected by chance when
         // the other track is currently cached. Instead file aliasing
         // must be detected reliably in any situation.
-        if (trackFile.location() != trackLocation) {
+        if (fileAccess.info().location() != trackLocation) {
             kLogger.warning()
                     << "Cannot add track:"
                     << "Both the new track at"
-                    << trackFile.location()
+                    << fileAccess.info().location()
                     << "and an existing track at"
                     << trackLocation
                     << "are referencing the same file"
-                    << trackFile.canonicalLocation();
+                    << fileAccess.info().canonicalLocation();
             return TrackPointer();
         }
         return pTrack;
@@ -831,7 +840,7 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
     // Initially (re-)import the metadata for the newly created track
     // from the file.
     SoundSourceProxy(pTrack).updateTrackFromSource();
-    if (!pTrack->isMetadataSynchronized()) {
+    if (!pTrack->isSourceSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
@@ -944,9 +953,9 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
     const int idColumn = query.record().indexOf("id");
     const int locationColumn = query.record().indexOf("location");
     while (query.next()) {
-        auto trackId = TrackId(query.value(idColumn));
-        auto trackFile = TrackFile(query.value(locationColumn).toString());
-        trackRefs.append(TrackRef::fromFileInfo(trackFile, trackId));
+        const auto trackId = TrackId(query.value(idColumn));
+        const auto fileLocation = query.value(locationColumn).toString();
+        trackRefs.append(TrackRef::fromFilePath(fileLocation, trackId));
     }
 
     return trackRefs;
@@ -1192,9 +1201,24 @@ bool setTrackFiletype(const QSqlRecord& record, const int column,
     return false;
 }
 
-bool setTrackMetadataSynchronized(const QSqlRecord& record, const int column,
-                          TrackPointer pTrack) {
-    pTrack->setMetadataSynchronized(record.value(column).toBool());
+bool setTrackHeaderParsed(const QSqlRecord& record, const int column, TrackPointer pTrack) {
+    pTrack->setHeaderParsedFromTrackDAO(record.value(column).toBool());
+    return false;
+}
+
+bool setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
+    QDateTime sourceSynchronizedAt;
+    const QVariant value = record.value(column);
+    // Observation (Qt 5.15): QVariant::isValid() may return true even
+    // if the column value is NULL and then converts to 0 (zero). This
+    // is NOT desired and therefore we MUST USE QVariant::isNull() instead!
+    if (!value.isNull() && value.canConvert<quint64>()) {
+        DEBUG_ASSERT(value.isValid());
+        const quint64 msecsSinceEpoch = qvariant_cast<quint64>(value);
+        sourceSynchronizedAt.setTimeSpec(Qt::UTC);
+        sourceSynchronizedAt.setMSecsSinceEpoch(msecsSinceEpoch);
+    }
+    pTrack->setSourceSynchronizedAt(sourceSynchronizedAt);
     return false;
 }
 
@@ -1335,7 +1359,8 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"last_played_at", setTrackLastPlayedAt},
             {"played", setTrackPlayed},
             {"datetime_added", setTrackDateAdded},
-            {"header_parsed", setTrackMetadataSynchronized},
+            {"header_parsed", setTrackHeaderParsed},
+            {"source_synchronized_ms", setTrackSourceSynchronizedAt},
 
             // Audio properties are set together at once. Do not change the
             // ordering of these columns or put other columns in between them!
@@ -1407,7 +1432,8 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // Location is the first column.
     const QString trackLocation(queryRecord.value(0).toString());
 
-    GlobalTrackCacheResolver cacheResolver(TrackFile(trackLocation), trackId);
+    GlobalTrackCacheResolver cacheResolver(
+            mixxx::FileAccess(mixxx::FileInfo(trackLocation)), trackId);
     pTrack = cacheResolver.getTrack();
     if (cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::Hit) {
         // Due to race conditions the track might have been reloaded
@@ -1474,6 +1500,12 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         // before, so just check and try for every track that has been
         // freshly loaded from the database.
         SoundSourceProxy(pTrack).updateTrackFromSource();
+        if (kLogger.debugEnabled() && pTrack->isDirty()) {
+            kLogger.debug()
+                    << "Updated track metadata from file tags:"
+                    << pTrack->getFileInfo().lastModified()
+                    << pTrack->getMetadata();
+        }
     }
 
     // Validate and refresh cover image hash values if needed.
@@ -1596,6 +1628,7 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
             "last_played_at=:last_played_at,"
             "played=:played,"
             "header_parsed=:header_parsed,"
+            "source_synchronized_ms=:source_synchronized_ms,"
             "channels=:channels,"
             "bitrate=:bitrate,"
             "samplerate=:samplerate,"
@@ -1618,10 +1651,10 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
 
     query.bindValue(":track_id", trackId.toVariant());
 
-    mixxx::TrackRecord trackRecord;
-    pTrack->readTrackRecord(&trackRecord);
-    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    bindTrackLibraryValues(&query, trackRecord, pBeats);
+    bindTrackLibraryValues(
+            &query,
+            pTrack->getRecord(),
+            pTrack->getBeats());
 
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -1858,11 +1891,11 @@ bool TrackDAO::detectMovedTracks(
         DEBUG_ASSERT(oldTrackId != newTrackId);
         DEBUG_ASSERT(oldTrackLocationId != newTrackLocationId);
 
-        auto missingTrackRef = TrackRef::fromFileInfo(
-                TrackFile(oldTrackLocation),
+        auto missingTrackRef = TrackRef::fromFilePath(
+                oldTrackLocation,
                 std::move(oldTrackId));
-        auto addedTrackRef = TrackRef::fromFileInfo(
-                TrackFile(newTrackLocation),
+        auto addedTrackRef = TrackRef::fromFilePath(
+                newTrackLocation,
                 std::move(newTrackId));
         auto relocatedTrack = RelocatedTrack(
             std::move(missingTrackRef),
@@ -2085,21 +2118,18 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         //qDebug() << "Searching for cover art for" << trackLocation;
         emit progressCoverArt(track.trackLocation);
 
-        TrackFile trackFile(track.trackLocation);
-        if (!trackFile.checkFileExists()) {
-            //qDebug() << trackLocation << "does not exist";
+        const auto fileInfo = mixxx::FileInfo(track.trackLocation);
+        if (!fileInfo.checkFileExists()) {
+            //qDebug() << fileInfo << "does not exist";
             continue;
         }
 
-        SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-                trackFile.asFileInfo(), true);
         const auto embeddedCover =
                 CoverArtUtils::extractEmbeddedCover(
-                        trackFile,
-                        pToken);
+                        mixxx::FileAccess(fileInfo));
         const auto coverInfo =
                 coverInfoGuesser.guessCoverInfo(
-                        trackFile,
+                        fileInfo,
                         track.trackAlbum,
                         embeddedCover);
         DEBUG_ASSERT(coverInfo.source != CoverInfo::UNKNOWN);
@@ -2169,15 +2199,15 @@ TrackPointer TrackDAO::getOrAddTrack(
     return pTrack;
 }
 
-TrackFile TrackDAO::relocateCachedTrack(
+mixxx::FileAccess TrackDAO::relocateCachedTrack(
         TrackId trackId,
-        TrackFile fileInfo) {
+        mixxx::FileAccess fileAccess) {
     QString trackLocation = getTrackLocation(trackId);
     if (trackLocation.isEmpty()) {
         // not found
-        return fileInfo;
+        return fileAccess;
     } else {
-        return TrackFile(trackLocation);
+        return mixxx::FileAccess(mixxx::FileInfo(trackLocation));
     }
 }
 

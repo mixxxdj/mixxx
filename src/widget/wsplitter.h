@@ -5,7 +5,7 @@
 #include <QSplitter>
 
 #include "preferences/usersettings.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/wbasewidget.h"
 
 class WSplitter : public QSplitter, public WBaseWidget {

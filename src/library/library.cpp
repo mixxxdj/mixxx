@@ -218,14 +218,14 @@ Library::Library(
     // accessible to us. If the user is using a database from <1.12.0 with
     // sandboxing then we will need them to give us permission.
     const auto rootDirs = m_pTrackCollectionManager->internalCollection()->loadRootDirs();
-    for (const mixxx::FileInfo& dirInfo : rootDirs) {
+    for (mixxx::FileInfo dirInfo : rootDirs) {
         if (!dirInfo.exists() || !dirInfo.isDir()) {
             kLogger.warning()
                     << "Skipping access check for missing or invalid directory"
                     << dirInfo;
             continue;
         }
-        if (Sandbox::askForAccess(dirInfo.canonicalLocation())) {
+        if (Sandbox::askForAccess(&dirInfo)) {
             kLogger.info()
                     << "Access to directory"
                     << dirInfo
@@ -257,7 +257,7 @@ Library::~Library() {
     // Empty but required due to forward declarations in header file!
 }
 
-TrackCollectionManager* Library::trackCollections() const {
+TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
     return m_pTrackCollectionManager;
 }
@@ -461,7 +461,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void Library::slotLoadLocationToPlayer(const QString& location, const QString& group) {
-    auto trackRef = TrackRef::fromFileInfo(location);
+    auto trackRef = TrackRef::fromFilePath(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
         emit loadTrackToPlayer(pTrack, group);
@@ -588,12 +588,6 @@ void Library::setRowHeight(int rowHeight) {
 void Library::setEditMedatataSelectedClick(bool enabled) {
     m_editMetadataSelectedClick = enabled;
     emit setSelectedClick(enabled);
-}
-
-TrackCollection& Library::trackCollection() {
-    DEBUG_ASSERT(m_pTrackCollectionManager);
-    DEBUG_ASSERT(m_pTrackCollectionManager->internalCollection());
-    return *m_pTrackCollectionManager->internalCollection();
 }
 
 void Library::searchTracksInCollection(const QString& query) {

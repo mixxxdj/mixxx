@@ -23,7 +23,7 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/sleep.h"
-#include "util/version.h"
+#include "util/versionstore.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 typedef PaError (*SetJackClientName)(const char *name);
@@ -659,7 +659,7 @@ void SoundManager::setJACKName() const {
             // PortAudio does not make a copy of the string we provide it so we
             // need to make sure it will last forever so we intentionally leak
             // this string.
-            char* jackNameCopy = strdup(Version::applicationName().toLocal8Bit().constData());
+            char* jackNameCopy = strdup(VersionStore::applicationName().toLocal8Bit().constData());
             if (!func(jackNameCopy)) {
                 qDebug() << "JACK client name set";
             }

@@ -37,7 +37,7 @@ DlgPrefColors::DlgPrefColors(
           m_pReplaceCueColorDlg(new DlgReplaceCueColor(
                   pConfig,
                   pLibrary->dbConnectionPool(),
-                  pLibrary->trackCollections(),
+                  pLibrary->trackCollectionManager(),
                   this)) {
     setupUi(this);
     comboBoxHotcueColors->setIconSize(kPalettePreviewSize);
@@ -46,7 +46,7 @@ DlgPrefColors::DlgPrefColors(
     m_pReplaceCueColorDlg->setHidden(true);
     connect(m_pReplaceCueColorDlg,
             &DlgReplaceCueColor::databaseTracksChanged,
-            &(pLibrary->trackCollections()->internalCollection()->getTrackDAO()),
+            &(pLibrary->trackCollectionManager()->internalCollection()->getTrackDAO()),
             &TrackDAO::slotDatabaseTracksChanged);
 
     connect(comboBoxHotcueColors,

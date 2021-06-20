@@ -4,7 +4,7 @@
 #include <QEvent>
 
 #include "widget/wbasewidget.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class WLabel : public QLabel, public WBaseWidget {
     Q_OBJECT
