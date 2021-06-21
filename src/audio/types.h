@@ -107,8 +107,11 @@ class ChannelCount {
         return kValueMin <= m_value;
     }
 
-    /*implicit*/ constexpr operator value_t() const {
+    constexpr value_t value() const {
         return m_value;
+    }
+    /*implicit*/ constexpr operator value_t() const {
+        return value();
     }
 
   private:
@@ -151,8 +154,11 @@ class SampleRate {
         m_value = value;
     }
 
-    /*implicit*/ constexpr operator value_t() const {
+    constexpr value_t value() const {
         return m_value;
+    }
+    /*implicit*/ constexpr operator value_t() const {
+        return value();
     }
 
     static constexpr SampleRate fromDouble(double value) {
@@ -194,10 +200,10 @@ class Bitrate {
         return m_value > kValueDefault;
     }
 
-    value_t value() const {
+    constexpr value_t value() const {
         return m_value;
     }
-    /*implicit*/ operator value_t() const {
+    /*implicit*/ constexpr operator value_t() const {
         return value();
     }
 
