@@ -5,7 +5,7 @@
 #include <QScopedPointer>
 #include <QVector>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/wlabel.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"

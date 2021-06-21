@@ -1,7 +1,6 @@
-IDI_ICON1               ICON    DISCARDABLE     "res/images/ic_mixxx.ico"
+IDI_ICON1               ICON    DISCARDABLE     "res/images/icons/ic_mixxx.ico"
 
 #include <windows.h>
-#include <defs_version.h>
 
 #include "mixxx.rc.include"
 
@@ -39,7 +38,7 @@ VS_VERSION_INFO VERSIONINFO
 FILEVERSION    	VER_FILEVERSION
 PRODUCTVERSION 	VER_PRODUCTVERSION
 FILEFLAGSMASK  	VS_FFI_FILEFLAGSMASK
-FILEFLAGS      	(VER_DEBUG|VER_PRERELEASE)
+FILEFLAGS      	(VER_DEBUG|VER_PRERELEASE|VER_PATCHED)
 FILEOS         	VOS__WINDOWS32
 FILETYPE       	VFT_APP
 BEGIN

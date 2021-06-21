@@ -26,7 +26,6 @@
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
-#include "util/file.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 #include "widget/wlibrary.h"
@@ -484,7 +483,8 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
 
-    if (!Sandbox::askForAccess(dbPath)) {
+    mixxx::FileInfo fileInfo(dbPath);
+    if (!Sandbox::askForAccess(&fileInfo)) {
         return QString();
     }
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);
@@ -1364,7 +1364,8 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_KEY;
     m_trackSource->setSearchColumns(searchColumns);
 
-    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
+    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(
+            this, pLibrary->trackCollectionManager(), m_trackSource);
 
     m_title = tr("Rekordbox");
 
@@ -1427,7 +1428,8 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
+    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(
+            this, m_pLibrary->trackCollectionManager(), m_trackSource);
     model->setPlaylist(playlist);
     return model;
 }

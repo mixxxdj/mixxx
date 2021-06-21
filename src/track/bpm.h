@@ -22,6 +22,8 @@ public:
 
     static double normalizeValue(double value);
 
+    static QString displayValueText(double value);
+
     // Adjusts floating-point values to match their string representation
     // in file tags to account for rounding errors and false positives
     // when checking for modifications.
@@ -75,6 +77,10 @@ public:
         default:
             return getValue() == bpm.getValue();
         }
+    }
+
+    QString displayText() const {
+        return displayValueText(m_value);
     }
 
 private:

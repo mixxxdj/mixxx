@@ -3,15 +3,21 @@
 #include <QMutexLocker>
 #include <QtDebug>
 
+#include "track/beatutils.h"
 #include "track/track.h"
 #include "util/math.h"
 
-static const int kFrameSize = 2;
+namespace {
 
 struct BeatGridData {
     double bpm;
     double firstBeat;
 };
+
+constexpr int kFrameSize = 2;
+constexpr double kBpmScaleRounding = 0.001;
+
+} // namespace
 
 namespace mixxx {
 
@@ -151,7 +157,7 @@ double BeatGrid::findClosestBeat(double dSamples) const {
     }
     double prevBeat;
     double nextBeat;
-    findPrevNextBeats(dSamples, &prevBeat, &nextBeat);
+    findPrevNextBeats(dSamples, &prevBeat, &nextBeat, true);
     if (prevBeat == -1) {
         // If both values are -1, we correctly return -1.
         return nextBeat;
@@ -206,8 +212,9 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 }
 
 bool BeatGrid::findPrevNextBeats(double dSamples,
-                                 double* dpPrevBeatSamples,
-                                 double* dpNextBeatSamples) const {
+        double* dpPrevBeatSamples,
+        double* dpNextBeatSamples,
+        bool snapToNearBeats) const {
     double dFirstBeatSample;
     double dBeatLength;
     if (!isValid()) {
@@ -222,11 +229,13 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
     double prevBeat = floor(beatFraction);
     double nextBeat = ceil(beatFraction);
 
-    // If the position is within 1/100th of the next or previous beat, treat it
-    // as if it is that beat.
     const double kEpsilon = .01;
 
-    if (fabs(nextBeat - beatFraction) < kEpsilon) {
+    if ((!snapToNearBeats && ((nextBeat - beatFraction) == 0.0)) ||
+            (snapToNearBeats && (fabs(nextBeat - beatFraction) < kEpsilon))) {
+        // In snapToNearBeats mode: If the position is within 1/100th of the next or previous beat,
+        // treat it as if it is that beat.
+
         beatFraction = nextBeat;
         // If we are going to pretend we were actually on nextBeat then prevBeatFraction
         // needs to be re-calculated. Since it is floor(beatFraction), that's
@@ -239,7 +248,6 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
     *dpNextBeatSamples = nextBeat * dBeatLength + dFirstBeatSample;
     return true;
 }
-
 
 std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double stopSample) const {
     if (!isValid() || startSample > stopSample) {
@@ -267,7 +275,7 @@ bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
 
 double BeatGrid::getBpm() const {
     if (!isValid()) {
-        return 0;
+        return mixxx::Bpm::kValueUndefined;
     }
     return bpm();
 }
@@ -326,8 +334,9 @@ BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
     if (bpm > getMaxBpm()) {
         return BeatsPointer(new BeatGrid(*this));
     }
-    grid.mutable_bpm()->set_bpm(bpm);
 
+    bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
+    grid.mutable_bpm()->set_bpm(bpm);
     double beatLength = (60.0 * m_sampleRate / bpm) * kFrameSize;
     return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }

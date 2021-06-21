@@ -172,6 +172,10 @@ class ChannelHandleMap {
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::const_iterator const_iterator;
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::iterator iterator;
 
+    ChannelHandleMap()
+            : m_dummy{} {
+    }
+
     const T& at(const ChannelHandle& handle) const {
         if (!handle.valid()) {
             return m_dummy;
@@ -220,8 +224,16 @@ class ChannelHandleMap {
 
   private:
     inline void maybeExpand(int iSize) {
-        if (m_data.size() < iSize) {
-            m_data.resize(iSize);
+        if (QTypeInfo<T>::isComplex) {
+            // The value for complex types is initialized by QVarLengthArray
+            if (m_data.size() < iSize) {
+                m_data.resize(iSize);
+            }
+        } else {
+            // We need to initialize simple types ourselves
+            while (m_data.size() < iSize) {
+                m_data.append({});
+            }
         }
     }
     container_type m_data;

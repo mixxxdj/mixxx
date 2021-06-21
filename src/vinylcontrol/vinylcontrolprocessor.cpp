@@ -20,7 +20,9 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPoint
           m_pConfig(pConfig),
           m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
           m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
           m_processorsLock(QMutex::Recursive),
+#endif
           m_processors(kMaximumVinylControlInputs, NULL),
           m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
           m_bReportSignalQuality(false),

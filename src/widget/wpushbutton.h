@@ -1,20 +1,19 @@
 #pragma once
 
+#include <QFocusEvent>
+#include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPixmap>
 #include <QString>
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QFocusEvent>
 #include <QTimer>
 #include <QVector>
 
-#include "widget/wwidget.h"
-#include "widget/wpixmapstore.h"
 #include "control/controlpushbutton.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
+#include "util/fpclassify.h"
 #include "widget/controlwidgetconnection.h"
-#include "util/math.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
 
 class WPushButton : public WWidget {
     Q_OBJECT
@@ -47,7 +46,7 @@ class WPushButton : public WWidget {
 
     int readDisplayValue() const {
         double value = getControlParameterDisplay();
-        if (!isnan(value) && m_iNoStates > 0) {
+        if (!util_isnan(value) && m_iNoStates > 0) {
             return static_cast<int>(value) % m_iNoStates;
         }
         return 0;

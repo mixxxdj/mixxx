@@ -6,6 +6,16 @@ CueInfoImporter::CueInfoImporter(const QList<CueInfo>& cueInfos)
         : m_cueInfos(cueInfos) {
 }
 
+bool CueInfoImporter::hasCueOfType(CueType cueType) const {
+    for (const CueInfo& cueInfo : qAsConst(m_cueInfos)) {
+        if (cueInfo.getType() == cueType) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 double CueInfoImporter::guessTimingOffsetMillis(
         const QString& filePath,
         const audio::SignalInfo& signalInfo) const {

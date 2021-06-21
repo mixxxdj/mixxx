@@ -7,7 +7,7 @@
 #include <QEvent>
 
 #include "library/libraryview.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/wbasewidget.h"
 
 class KeyboardEventFilter;
@@ -54,7 +54,11 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     bool event(QEvent* pEvent) override;
 
   private:
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QRecursiveMutex m_mutex;
+#else
     QMutex m_mutex;
+#endif
     QMap<QString, QWidget*> m_viewMap;
     double m_trackTableBackgroundColorOpacity;
     bool m_bShowButtonText;

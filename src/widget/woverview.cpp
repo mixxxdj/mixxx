@@ -1206,17 +1206,7 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
     QFont font = pPainter->font();
     QFontMetrics fm(font);
 
-// TODO: The following use of QFontMetrics::width(const QString&, int) const
-// is deprecated and should be replaced with
-// QFontMetrics::horizontalAdvance(const QString&, int) const. However, the
-// proposed alternative has just been introduced in Qt 5.11.
-// Until the minimum required Qt version of Mixxx is increased, we need a
-// version check here.
-#if (QT_VERSION < QT_VERSION_CHECK(5, 11, 0))
-    int textWidth = fm.width(text);
-    #else
     int textWidth = fm.horizontalAdvance(text);
-    #endif
 
     if (textWidth > length()) {
         qreal pointSize = font.pointSizeF();

@@ -276,7 +276,7 @@ void DlgPrefVinyl::slotUpdate() {
 
 void DlgPrefVinyl::verifyAndSaveLeadInTime(
         QSpinBox* widget, const QString& group, const QString& vinyl_type) {
-    QString strLeadIn = widget->text();
+    QString strLeadIn = widget->cleanText();
     bool isInteger;
     strLeadIn.toInt(&isInteger);
     if (isInteger) {

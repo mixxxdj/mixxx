@@ -5,7 +5,7 @@
 #include <QString>
 #include <QWidget>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/parented_ptr.h"
 #include "widget/wcuemenupopup.h"
 #include "widget/wpushbutton.h"

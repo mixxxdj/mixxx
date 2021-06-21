@@ -4,25 +4,31 @@
 
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
-
-const QString DIRECTORYDAO_DIR = "directory";
-const QString DIRECTORYDAO_TABLE = "directories";
-
-enum ReturnCodes {
-    SQL_ERROR,
-    ALREADY_WATCHING,
-    ALL_FINE
-};
+#include "util/fileinfo.h"
 
 class DirectoryDAO : public DAO {
   public:
     ~DirectoryDAO() override = default;
 
-    QStringList getDirs() const;
+    QList<mixxx::FileInfo> loadAllDirectories(
+            bool skipInvalidOrMissing = false) const;
 
-    int addDirectory(const QString& dir) const;
-    int removeDirectory(const QString& dir) const;
+    enum class AddResult {
+        Ok,
+        AlreadyWatching,
+        InvalidOrMissingDirectory,
+        SqlError,
+    };
+    AddResult addDirectory(const mixxx::FileInfo& newDir) const;
 
+    enum class RemoveResult {
+        Ok,
+        NotFound,
+        SqlError,
+    };
+    RemoveResult removeDirectory(const mixxx::FileInfo& oldDir) const;
+
+    // TODO: Move this function out of the DAO
     QList<RelocatedTrack> relocateDirectory(
             const QString& oldFolder,
             const QString& newFolder) const;

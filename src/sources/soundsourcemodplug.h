@@ -15,9 +15,9 @@ namespace mixxx {
 // in RAM to allow seeking and smooth operation in Mixxx.
 class SoundSourceModPlug : public SoundSource {
   public:
-    static constexpr SINT kChannelCount = 2;
-    static constexpr SINT kSampleRate = 44100;
-    static constexpr SINT kBitsPerSample = 16;
+    static constexpr int kChannelCount = 2;
+    static constexpr int kSampleRate = 44100;
+    static constexpr int kBitsPerSample = 16;
 
     // apply settings for decoding
     static void configure(unsigned int bufferSizeLimit,

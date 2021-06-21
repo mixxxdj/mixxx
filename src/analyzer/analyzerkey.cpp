@@ -57,10 +57,10 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
 
     const auto plugins = availablePlugins();
     if (!plugins.isEmpty()) {
-        m_pluginId = defaultPlugin().id;
+        m_pluginId = defaultPlugin().id();
         QString pluginId = m_keySettings.getKeyPluginId();
         for (const auto& info : plugins) {
-            if (info.id == pluginId) {
+            if (info.id() == pluginId) {
                 m_pluginId = pluginId; // configured Plug-In available
                 break;
             }
@@ -88,10 +88,10 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
-        if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id) {
+        if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id()) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
 #if defined __KEYFINDER__
-        } else if (m_pluginId == mixxx::AnalyzerKeyFinder::pluginInfo().id) {
+        } else if (m_pluginId == mixxx::AnalyzerKeyFinder::pluginInfo().id()) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerKeyFinder>();
 #endif
         } else {
@@ -119,7 +119,7 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     QString pluginID = m_keySettings.getKeyPluginId();
     if (pluginID.isEmpty()) {
-        pluginID = defaultPlugin().id;
+        pluginID = defaultPlugin().id();
     }
 
     const Keys keys(tio->getKeys());

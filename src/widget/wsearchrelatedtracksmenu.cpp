@@ -315,7 +315,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         }
     }
     {
-        const auto locationPath = track.getFileInfo().directory();
+        const auto locationPath = track.getFileInfo().locationPath();
         if (!locationPath.isEmpty()) {
             // Search folder and all subfolders, i.e. for "path/to/folder"
             // also find files in "path/to/folder/subfolder" but not in

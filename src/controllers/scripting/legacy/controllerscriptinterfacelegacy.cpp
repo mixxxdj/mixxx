@@ -7,7 +7,7 @@
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
-#include "util/math.h"
+#include "util/fpclassify.h"
 #include "util/time.h"
 
 namespace {
@@ -112,7 +112,7 @@ double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QSt
 
 void ControllerScriptInterfaceLegacy::setValue(
         const QString& group, const QString& name, double newValue) {
-    if (isnan(newValue)) {
+    if (util_isnan(newValue)) {
         qWarning() << "script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
         return;
@@ -143,7 +143,7 @@ double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const
 
 void ControllerScriptInterfaceLegacy::setParameter(
         const QString& group, const QString& name, double newParameter) {
-    if (isnan(newParameter)) {
+    if (util_isnan(newParameter)) {
         qWarning() << "script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
         return;
@@ -162,7 +162,7 @@ void ControllerScriptInterfaceLegacy::setParameter(
 
 double ControllerScriptInterfaceLegacy::getParameterForValue(
         const QString& group, const QString& name, double value) {
-    if (isnan(value)) {
+    if (util_isnan(value)) {
         qWarning() << "script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
         return 0.0;

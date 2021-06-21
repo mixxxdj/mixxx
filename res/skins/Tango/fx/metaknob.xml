@@ -1,0 +1,32 @@
+<!--
+Description:
+  An effect meta knob that controls all knobs linked to it.
+Variables:
+  PotiMinAngle:	see skin.xml
+  PotiMaxAngle: see skin.xml
+  FxGroup     : EffectRack1_EffectUnitX
+  FxNum       : EffectX
+-->
+<Template>
+  <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>FxMetaknob</ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <KnobComposed>
+        <TooltipId>EffectSlot_metaknob</TooltipId>
+        <Size>30f,26f</Size>
+        <Knob>skin:../Tango/knobs_sliders/knob_blue.svg</Knob>
+        <BackPath>skin:../Tango/knobs_sliders/knob_bg.svg</BackPath>
+        <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+        <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+        <KnobCenterYOffset>2.000</KnobCenterYOffset>
+        <Connection>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,meta</ConfigKey>
+        </Connection>
+      </KnobComposed>
+    </Children>
+  </WidgetGroup>
+</Template>

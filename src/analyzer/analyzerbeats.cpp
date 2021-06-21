@@ -36,13 +36,10 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_bPreferencesReanalyzeOldBpm(false),
           m_bPreferencesReanalyzeImported(false),
           m_bPreferencesFixedTempo(true),
-          m_bPreferencesOffsetCorrection(false),
           m_bPreferencesFastAnalysis(false),
           m_totalSamples(0),
           m_iMaxSamplesToProcess(0),
-          m_iCurrentSample(0),
-          m_iMinBpm(0),
-          m_iMaxBpm(9999) {
+          m_iCurrentSample(0) {
 }
 
 bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSamples) {
@@ -63,21 +60,17 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSam
         return false;
     }
 
-    m_iMinBpm = m_bpmSettings.getBpmRangeStart();
-    m_iMaxBpm = m_bpmSettings.getBpmRangeEnd();
-
     m_bPreferencesFixedTempo = m_bpmSettings.getFixedTempoAssumption();
-    m_bPreferencesOffsetCorrection = m_bpmSettings.getFixedTempoOffsetCorrection();
     m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
 
     const auto plugins = availablePlugins();
     if (!plugins.isEmpty()) {
-        m_pluginId = defaultPlugin().id;
+        m_pluginId = defaultPlugin().id();
         QString pluginId = m_bpmSettings.getBeatPluginId();
         for (const auto& info : plugins) {
-            if (info.id == pluginId) {
+            if (info.id() == pluginId) {
                 m_pluginId = pluginId; // configured Plug-In available
                 break;
             }
@@ -86,9 +79,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSam
 
     qDebug() << "AnalyzerBeats preference settings:"
              << "\nPlugin:" << m_pluginId
-             << "\nMin/Max BPM:" << m_iMinBpm << m_iMaxBpm
              << "\nFixed tempo assumption:" << m_bPreferencesFixedTempo
-             << "\nOffset correction:" << m_bPreferencesOffsetCorrection
              << "\nRe-analyze when settings change:" << m_bPreferencesReanalyzeOldBpm
              << "\nFast analysis:" << m_bPreferencesFastAnalysis;
 
@@ -109,9 +100,9 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSam
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
-        if (m_pluginId == mixxx::AnalyzerQueenMaryBeats::pluginInfo().id) {
+        if (m_pluginId == mixxx::AnalyzerQueenMaryBeats::pluginInfo().id()) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryBeats>();
-        } else if (m_pluginId == mixxx::AnalyzerSoundTouchBeats::pluginInfo().id) {
+        } else if (m_pluginId == mixxx::AnalyzerSoundTouchBeats::pluginInfo().id()) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerSoundTouchBeats>();
         } else {
             // This must not happen, because we have already verified above
@@ -135,9 +126,6 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSam
 }
 
 bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
-    int iMinBpm = m_bpmSettings.getBpmRangeStart();
-    int iMaxBpm = m_bpmSettings.getBpmRangeEnd();
-
     bool bpmLock = pTrack->isBpmLocked();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
@@ -146,7 +134,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
 
     QString pluginID = m_bpmSettings.getBeatPluginId();
     if (pluginID.isEmpty()) {
-        pluginID = defaultPlugin().id;
+        pluginID = defaultPlugin().id();
     }
 
     // If the track already has a Beats object then we need to decide whether to
@@ -171,7 +159,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     }
 
     if (subVersion.isEmpty() && pBeats->findNextBeat(0) <= 0.0 &&
-            m_pluginId != mixxx::AnalyzerSoundTouchBeats::pluginInfo().id) {
+            m_pluginId != mixxx::AnalyzerSoundTouchBeats::pluginInfo().id()) {
         // This happens if the beat grid was created from the metadata BPM value.
         qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
         return true;
@@ -182,12 +170,8 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
             pluginID,
             m_bPreferencesFastAnalysis);
     QString newVersion = BeatFactory::getPreferredVersion(
-            m_bPreferencesOffsetCorrection);
+            m_bPreferencesFixedTempo);
     QString newSubVersion = BeatFactory::getPreferredSubVersion(
-            m_bPreferencesFixedTempo,
-            m_bPreferencesOffsetCorrection,
-            iMinBpm,
-            iMaxBpm,
             extraVersionInfo);
 
     if (version == newVersion && subVersion == newSubVersion) {
@@ -242,11 +226,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
                 beats,
                 extraVersionInfo,
                 m_bPreferencesFixedTempo,
-                m_bPreferencesOffsetCorrection,
-                m_sampleRate,
-                m_totalSamples,
-                m_iMinBpm,
-                m_iMaxBpm);
+                m_sampleRate);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
                  << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : 0.0);
     } else {

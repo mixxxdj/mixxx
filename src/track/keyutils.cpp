@@ -249,6 +249,9 @@ QString KeyUtils::getGlobalKeyText(const Keys& keys, KeyNotation notation) {
 // static
 ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
     QString trimmed = text.trimmed();
+    if (trimmed.isEmpty()) {
+        return mixxx::track::io::key::INVALID;
+    }
 
     // Try using the user's custom notation.
     {

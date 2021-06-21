@@ -20,11 +20,11 @@ from it and overwrite the parse function and add class specific functions to
 it afterwards for proper functioning
 **/
 
+#include <QList>
 #include <QObject>
 #include <QString>
-#include <QList>
 
-#include "track/trackfile.h"
+#include "util/fileinfo.h"
 
 class Parser : public QObject {
   public:
@@ -50,12 +50,10 @@ class Parser : public QObject {
     long countParsed();
     // Clears m_psLocations
     void clearLocations();
-    // Checks if the file does contain binary content
-    bool isBinary(const QString&);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
     // Resolve an absolute or relative file path
-    TrackFile playlistEntryToTrackFile(
+    mixxx::FileInfo playlistEntryToFileInfo(
             const QString& playlistEntry,
             const QString& basePath = QString());
 };

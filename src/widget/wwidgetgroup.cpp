@@ -6,7 +6,7 @@
 #include <QStylePainter>
 
 #include "moc_wwidgetgroup.cpp"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/debug.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"

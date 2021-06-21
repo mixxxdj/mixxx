@@ -43,12 +43,10 @@ class AnalyzerBeats : public Analyzer {
     bool m_bPreferencesReanalyzeOldBpm;
     bool m_bPreferencesReanalyzeImported;
     bool m_bPreferencesFixedTempo;
-    bool m_bPreferencesOffsetCorrection;
     bool m_bPreferencesFastAnalysis;
 
     mixxx::audio::SampleRate m_sampleRate;
     SINT m_totalSamples;
     int m_iMaxSamplesToProcess;
     int m_iCurrentSample;
-    int m_iMinBpm, m_iMaxBpm;
 };

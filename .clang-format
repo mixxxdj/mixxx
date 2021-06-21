@@ -31,15 +31,14 @@ SpacesBeforeTrailingComments: 1
 # StatementMacros don't require a trailing semicolon.
 # Trailing semicolons should be omitted after these macros
 # when compiling with -Wpedantic to avoid warnings.
-# TODO: Enable if Clang 8 is available, Ubuntu 18.04 uses Clang 6
-#StatementMacros:
-#  - Q_DECLARE_FLAGS
-#  - Q_DECLARE_METATYPE
-#  - Q_DECLARE_OPERATORS_FOR_FLAGS
-#  - Q_OBJECT
-#  - Q_PROPERTY
-#  - Q_UNUSED
-#  - QT_REQUIRE_VERSION
+StatementMacros:
+  - Q_DECLARE_FLAGS
+  - Q_DECLARE_METATYPE
+  - Q_DECLARE_OPERATORS_FOR_FLAGS
+  - Q_OBJECT
+  - Q_PROPERTY
+  - Q_UNUSED
+  - QT_REQUIRE_VERSION
 ---
 Language: JavaScript
 # Don't format .js files yet
