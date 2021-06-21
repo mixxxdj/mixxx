@@ -43,7 +43,10 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
         EngineMaster* pEngine)
-        : m_mutex(QMutex::Recursive),
+        :
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+          m_mutex(QMutex::Recursive),
+#endif
           m_pConfig(pConfig),
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),

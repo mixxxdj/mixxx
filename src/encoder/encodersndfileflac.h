@@ -21,9 +21,11 @@ class EncoderSndfileFlac : public EncoderWave {
     ~EncoderSndfileFlac() override = default;
 
     void setEncoderSettings(const EncoderSettings& settings) override;
+    void encodeBuffer(const CSAMPLE* samples, const int size) override;
 
   protected:
     void initStream() override;
   private:
     double m_compression;
+    std::unique_ptr<int[]> m_pClampBuffer;
 };

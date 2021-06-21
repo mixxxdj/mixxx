@@ -1,11 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <QtGlobal>
 #include <QDebug>
 #include <QUrl>
+#include <QtGlobal>
 
 #include "library/parser.h"
-
 
 class DummyParser : public Parser {
   public:
@@ -16,7 +15,10 @@ class DummyParser : public Parser {
     QString playlistEntryToFilePath(
             const QString& playlistEntry,
             const QString& basePath = QString()) {
-        return playlistEntryToTrackFile(playlistEntry, basePath).asFileInfo().filePath();
+        const auto fileInfo = playlistEntryToFileInfo(playlistEntry, basePath);
+        // Return the plain, literal file path, because the location
+        // is undefined if relative paths.
+        return fileInfo.asQFileInfo().filePath();
     }
 };
 

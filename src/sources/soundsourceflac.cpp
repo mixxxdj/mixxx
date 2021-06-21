@@ -399,35 +399,52 @@ namespace {
 // https://bugs.launchpad.net/mixxx/+bug/1769717
 // https://hydrogenaud.io/index.php/topic,61792.msg559045.html#msg559045
 
-// We will shift decoded samples left by (32 - m_bitsPerSample) to
-// get rid of the garbage in the most significant bits before scaling
-// to the range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon] with
-// epsilon = 1 / 2 ^ bitsPerSample.
-constexpr CSAMPLE kSampleScaleFactor = CSAMPLE_PEAK /
+// We multiply the decoded samples by 2 ^ (32 - m_bitsPerSample) to
+// get rid of the garbage in the most significant bits which get shifted
+// out to the left. The resulting, upscaled integer value is then scaled
+// down to the floating point range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon]
+// with epsilon = 1 / 2 ^ bitsPerSample.
+//
+// We have to negate the nominator to compensate for the negative denominator!
+// Otherwise the phase would be inverted: https://bugs.launchpad.net/mixxx/+bug/1933001
+constexpr CSAMPLE kSampleScaleFactor = -CSAMPLE_PEAK /
         (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
 
 inline CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample) {
-    DEBUG_ASSERT(std::numeric_limits<FLAC__int32>::is_signed);
-    return (decodedSample << ((std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample)) * kSampleScaleFactor;
+    static_assert(std::numeric_limits<FLAC__int32>::is_signed);
+    static_assert(kSampleScaleFactor > CSAMPLE_ZERO, "preserve phase of decoded signal");
+    // Multiples by 2 ^ (32 - bitsPerSample)
+    const auto upscaleShift = (std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample;
+    const auto upscaledSample = decodedSample << upscaleShift;
+    // upscaledSample is now a 32-bit signed integer that needs to scaled
+    // to the range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon]
+    return upscaledSample * kSampleScaleFactor;
 }
 
 } // anonymous namespace
 
 FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
-    const SINT numChannels = frame->header.channels;
-    if (getSignalInfo().getChannelCount() > numChannels) {
+    VERIFY_OR_DEBUG_ASSERT(frame->header.channels > 0) {
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
+    const auto channelCount = mixxx::audio::ChannelCount::fromInt(frame->header.channels);
+    if (getSignalInfo().getChannelCount() > channelCount) {
         kLogger.warning()
                 << "Corrupt or unsupported FLAC file:"
                 << "Invalid number of channels in FLAC frame header"
-                << frame->header.channels << "<>" << getSignalInfo().getChannelCount();
+                << channelCount << "<>" << getSignalInfo().getChannelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    if (getSignalInfo().getSampleRate() != SINT(frame->header.sample_rate)) {
+    VERIFY_OR_DEBUG_ASSERT(frame->header.sample_rate > 0) {
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
+    const auto sampleRate = mixxx::audio::SampleRate(frame->header.sample_rate);
+    if (getSignalInfo().getSampleRate() != sampleRate) {
         kLogger.warning()
                 << "Corrupt or unsupported FLAC file:"
                 << "Invalid sample rate in FLAC frame header"
-                << frame->header.sample_rate << "<>" << getSignalInfo().getSampleRate();
+                << sampleRate << "<>" << getSignalInfo().getSampleRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     const SINT numReadableFrames = frame->header.blocksize;
@@ -460,7 +477,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     }
 
     CSAMPLE* pSampleBuffer = writableSlice.data();
-    DEBUG_ASSERT(getSignalInfo().getChannelCount() <= numChannels);
+    DEBUG_ASSERT(getSignalInfo().getChannelCount() <= channelCount);
     switch (getSignalInfo().getChannelCount()) {
     case 1: {
         // optimized code for 1 channel (mono)

@@ -12,7 +12,9 @@
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
           m_mutex(QMutex::Recursive),
+#endif
           m_trackTableBackgroundColorOpacity(kDefaultTrackTableBackgroundColorOpacity),
           m_bShowButtonText(true) {
 }

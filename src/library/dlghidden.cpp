@@ -20,7 +20,7 @@ DlgHidden::DlgHidden(
                           pConfig,
                           pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
-                          false)) {
+                          true)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -33,7 +33,7 @@ DlgHidden::DlgHidden(
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pHiddenTableModel = new HiddenTableModel(this, pLibrary->trackCollections());
+    m_pHiddenTableModel = new HiddenTableModel(this, pLibrary->trackCollectionManager());
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
     connect(btnUnhide,

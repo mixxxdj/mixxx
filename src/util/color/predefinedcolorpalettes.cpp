@@ -43,6 +43,24 @@ constexpr mixxx::RgbColor kRekordboxTrackColorAqua(0x16C0F8);
 constexpr mixxx::RgbColor kRekordboxTrackColorBlue(0x0150F8);
 constexpr mixxx::RgbColor kRekordboxTrackColorPurple(0x9808F8);
 
+// Rekordbox Hotcue Color Palette
+constexpr mixxx::RgbColor kRekordboxHotcueColor1(0xDE44CF);
+constexpr mixxx::RgbColor kRekordboxHotcueColor2(0xB432FF);
+constexpr mixxx::RgbColor kRekordboxHotcueColor3(0xAA42FF);
+constexpr mixxx::RgbColor kRekordboxHotcueColor4(0x6473FF);
+constexpr mixxx::RgbColor kRekordboxHotcueColor5(0x305AFF);
+constexpr mixxx::RgbColor kRekordboxHotcueColor6(0x50B4FF);
+constexpr mixxx::RgbColor kRekordboxHotcueColor7(0x00E0FF);
+constexpr mixxx::RgbColor kRekordboxHotcueColor8(0x1FA382);
+constexpr mixxx::RgbColor kRekordboxHotcueColor9(0x10B176);
+constexpr mixxx::RgbColor kRekordboxHotcueColor10(0x28E214);
+constexpr mixxx::RgbColor kRekordboxHotcueColor11(0xA5E116);
+constexpr mixxx::RgbColor kRekordboxHotcueColor12(0xB4BE04);
+constexpr mixxx::RgbColor kRekordboxHotcueColor13(0xC3AF04);
+constexpr mixxx::RgbColor kRekordboxHotcueColor14(0xE0641B);
+constexpr mixxx::RgbColor kRekordboxHotcueColor15(0xE62828);
+constexpr mixxx::RgbColor kRekordboxHotcueColor16(0xFF127B);
+
 // Traktor Track Color Palette
 constexpr mixxx::RgbColor kTraktorProTrackColorRed(0xFA4B35);
 constexpr mixxx::RgbColor kTraktorProTrackColorOrange(0xFF8402);
@@ -203,6 +221,51 @@ const ColorPalette PredefinedColorPalettes::kSeratoDJProHotcueColorPalette =
                 },
                 {0, 2, 12, 3, 6, 15, 9, 14});
 
+// All Rekordbox Palette types, share the same color, but their default colors
+// are not in the selection offered to the user. This usecase is not supported
+// by mixxx's ColorPalette. The compromise is slightly altering the default
+// colors used so they're part of the selection. The difference between these
+// colors should be imperceptible for the unknowing user.
+const QList<mixxx::RgbColor> kRekordboxColorsSelection = {
+        kRekordboxHotcueColor1,
+        kRekordboxHotcueColor2,
+        kRekordboxHotcueColor3,
+        kRekordboxHotcueColor4,
+        kRekordboxHotcueColor5,
+        kRekordboxHotcueColor6,
+        kRekordboxHotcueColor7,
+        kRekordboxHotcueColor8,
+        kRekordboxHotcueColor9,
+        kRekordboxHotcueColor10,
+        kRekordboxHotcueColor11,
+        kRekordboxHotcueColor12,
+        kRekordboxHotcueColor13,
+        kRekordboxHotcueColor14,
+        kRekordboxHotcueColor15,
+        kRekordboxHotcueColor16,
+};
+
+// the Rekordbox CDJ palette can be emulated by picking kRekordboxHotcueColor9
+// (0x10B176) as the default cue color.
+
+const ColorPalette PredefinedColorPalettes::kRekordboxCOLD1HotcueColorPalette =
+        ColorPalette(
+                QStringLiteral("Rekordbox COLD1 Hotcue Colors"),
+                kRekordboxColorsSelection,
+                {5, 8, 1, 6, 7, 2, 7, 5});
+
+const ColorPalette PredefinedColorPalettes::kRekordboxCOLD2HotcueColorPalette =
+        ColorPalette(
+                QStringLiteral("Rekordbox COLD2 Hotcue Colors"),
+                kRekordboxColorsSelection,
+                {7, 5, 5, 5, 3, 4, 3, 2});
+
+const ColorPalette PredefinedColorPalettes::kRekordboxCOLORFULHotcueColorPalette =
+        ColorPalette(
+                QStringLiteral("Rekordbox COLORFUL Hotcue Colors"),
+                kRekordboxColorsSelection,
+                {15, 5, 10, 2, 8, 13, 4, 12});
+
 const ColorPalette PredefinedColorPalettes::kMixxxTrackColorPalette =
         ColorPalette(
                 QStringLiteral("Mixxx Track Colors"),
@@ -304,6 +367,9 @@ const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         // Hotcue Color Palettes
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette,
         mixxx::PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
+        mixxx::PredefinedColorPalettes::kRekordboxCOLD1HotcueColorPalette,
+        mixxx::PredefinedColorPalettes::kRekordboxCOLD2HotcueColorPalette,
+        mixxx::PredefinedColorPalettes::kRekordboxCOLORFULHotcueColorPalette,
         // Track Color Palettes
         mixxx::PredefinedColorPalettes::kMixxxTrackColorPalette,
         mixxx::PredefinedColorPalettes::kRekordboxTrackColorPalette,

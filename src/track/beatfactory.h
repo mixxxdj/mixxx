@@ -2,6 +2,7 @@
 
 #include <QHash>
 
+#include "audio/types.h"
 #include "track/beats.h"
 
 class Track;
@@ -18,22 +19,14 @@ class BeatFactory {
             double dBpm,
             double dFirstBeatSample);
 
-    static QString getPreferredVersion(bool bEnableFixedTempoCorrection);
+    static QString getPreferredVersion(bool fixedTempo);
 
     static QString getPreferredSubVersion(
-            bool bEnableFixedTempoCorrection,
-            bool bEnableOffsetCorrection,
-            int iMinBpm,
-            int iMaxBpm,
             const QHash<QString, QString>& extraVersionInfo);
 
     static mixxx::BeatsPointer makePreferredBeats(
             const QVector<double>& beats,
             const QHash<QString, QString>& extraVersionInfo,
-            bool bEnableFixedTempoCorrection,
-            bool bEnableOffsetCorrection,
-            mixxx::audio::SampleRate iSampleRate,
-            SINT totalSamples,
-            int iMinBpm,
-            int iMaxBpm);
+            bool fixedTempo,
+            mixxx::audio::SampleRate sampleRate);
 };

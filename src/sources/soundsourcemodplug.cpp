@@ -55,15 +55,6 @@ QString getModPlugTypeFromUrl(const QUrl& url) {
 } // anonymous namespace
 
 //static
-constexpr SINT SoundSourceModPlug::kChannelCount;
-
-//static
-constexpr SINT SoundSourceModPlug::kBitsPerSample;
-
-//static
-constexpr SINT SoundSourceModPlug::kSampleRate;
-
-//static
 unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
 //static

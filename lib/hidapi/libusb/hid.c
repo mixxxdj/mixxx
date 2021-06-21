@@ -1098,17 +1098,20 @@ static void cleanup_mutex(void *param)
 
 int HID_API_EXPORT hid_read_timeout(hid_device *dev, unsigned char *data, size_t length, int milliseconds)
 {
-	int bytes_read = -1;
-
 #if 0
 	int transferred;
 	int res = libusb_interrupt_transfer(dev->device_handle, dev->input_endpoint, data, length, &transferred, 5000);
 	LOG("transferred: %d\n", transferred);
 	return transferred;
 #endif
+	/* by initialising this variable right here, GCC gives a compilation warning/error: */
+	/* error: variable ‘bytes_read’ might be clobbered by ‘longjmp’ or ‘vfork’ [-Werror=clobbered] */
+	int bytes_read; /* = -1; */
 
 	pthread_mutex_lock(&dev->mutex);
 	pthread_cleanup_push(&cleanup_mutex, dev);
+
+	bytes_read = -1;
 
 	/* There's an input report queued up. Return it. */
 	if (dev->input_reports) {
@@ -1359,6 +1362,7 @@ int HID_API_EXPORT_CALL hid_get_indexed_string(hid_device *dev, int string_index
 
 HID_API_EXPORT const wchar_t * HID_API_CALL  hid_error(hid_device *dev)
 {
+	(void)dev;
 	return L"hid_error is not implemented yet";
 }
 

@@ -53,7 +53,7 @@
 
 DlgPreferences::DlgPreferences(
         MixxxMainWindow* mixxx,
-        std::shared_ptr<SkinLoader> pSkinLoader,
+        std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
         std::shared_ptr<SoundManager> pSoundManager,
         std::shared_ptr<PlayerManager> pPlayerManager,
         std::shared_ptr<ControllerManager> pControllerManager,
@@ -107,7 +107,7 @@ DlgPreferences::DlgPreferences(
     DlgPrefLibrary* plibraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     connect(plibraryPage,
             &DlgPrefLibrary::scanLibrary,
-            pLibrary->trackCollections(),
+            pLibrary->trackCollectionManager(),
             &TrackCollectionManager::startLibraryScan);
     addPageWidget(PreferencesPage(plibraryPage,
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),

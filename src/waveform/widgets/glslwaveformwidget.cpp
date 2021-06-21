@@ -105,7 +105,9 @@ void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         makeCurrent();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-        m_signalRenderer->debugClick();
+        if (m_signalRenderer) {
+            m_signalRenderer->debugClick();
+        }
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     }
 }

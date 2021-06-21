@@ -11,8 +11,7 @@ namespace {
 
 QStringList trackColumnValues(
         const Track& track) {
-    mixxx::TrackMetadata trackMetadata;
-    track.readTrackMetadata(&trackMetadata);
+    const mixxx::TrackMetadata trackMetadata = track.getMetadata();
     const QString trackNumberAndTotal = TrackNumbers::joinAsString(
             trackMetadata.getTrackInfo().getTrackNumber(),
             trackMetadata.getTrackInfo().getTrackTotal());
@@ -166,8 +165,7 @@ void DlgTagFetcher::apply() {
     DEBUG_ASSERT(resultIndex < m_data.m_results.size());
     const mixxx::musicbrainz::TrackRelease& trackRelease =
             m_data.m_results[resultIndex];
-    mixxx::TrackMetadata trackMetadata;
-    m_track->readTrackMetadata(&trackMetadata);
+    mixxx::TrackMetadata trackMetadata = m_track->getMetadata();
     if (!trackRelease.artist.isEmpty()) {
         trackMetadata.refTrackInfo().setArtist(
                 trackRelease.artist);
@@ -222,7 +220,7 @@ void DlgTagFetcher::apply() {
                 trackRelease.releaseGroupId);
     }
 #endif // __EXTRA_METADATA__
-    m_track->importMetadata(
+    m_track->replaceMetadataFromSource(
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
             // by explicitly setting the synchronization time stamp

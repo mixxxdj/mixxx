@@ -66,7 +66,7 @@ class DlgControllerLearning : public QDialog,
     void showControlMenu();
 #ifdef CONTROLLERLESSTESTING
     void DEBUGFakeMidiMessage();
-    void DEBUGFakeMidiMessage2();
+    void DEBUGFakeMidiMessage();
 #endif
 
   private:

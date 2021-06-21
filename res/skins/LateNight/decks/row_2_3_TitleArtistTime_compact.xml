@@ -36,9 +36,9 @@
               </WidgetGroup>
 
               <WidgetGroup>
-                <ObjectName>PlayPositionGutter</ObjectName>
+                <ObjectName>AlignRight</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>p,mme</SizePolicy>
+                <SizePolicy>p,min</SizePolicy>
                 <MinimumSize>80,</MinimumSize>
                 <Children>
                   <NumberPos>

@@ -171,7 +171,7 @@ TrackId ClementinePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const 
     if (pTrack) {
         for (int row = 0; row < rowCount(); ++row) {
             const QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
-            if (TrackFile::fromUrl(rowUrl) == pTrack->getFileInfo()) {
+            if (mixxx::FileInfo::fromQUrl(rowUrl) == pTrack->getFileInfo()) {
                 return TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
             }
         }
@@ -199,7 +199,7 @@ TrackPointer ClementinePlaylistModel::getTrack(const QModelIndex& index) const {
 
     bool trackAlreadyInLibrary = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &trackAlreadyInLibrary);
 
     // If this track was not in the Mixxx library it is now added and will be

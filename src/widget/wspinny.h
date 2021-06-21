@@ -8,7 +8,7 @@
 #include "library/dlgcoverartfullsize.h"
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "widget/trackdroptarget.h"

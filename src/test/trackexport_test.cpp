@@ -39,12 +39,12 @@ void FakeOverwriteAnswerer::cancelButtonClicked() {
 
 TEST_F(TrackExporterTest, SimpleListExport) {
     // Create a simple list of trackpointers and export them.
-    TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackFile fileinfo2(m_testDataDir.filePath("cover-test.flac"));
-    TrackPointer track2(Track::newTemporary(fileinfo2));
-    TrackFile fileinfo3(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
-    TrackPointer track3(Track::newTemporary(fileinfo3));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("cover-test.flac"));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
+    mixxx::FileInfo fileinfo3(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    TrackPointer track3(Track::newTemporary(mixxx::FileAccess(fileinfo3)));
 
     // An initializer list would be prettier here, but it doesn't compile
     // on MSVC or OSX.
@@ -70,11 +70,11 @@ TEST_F(TrackExporterTest, SimpleListExport) {
 TEST_F(TrackExporterTest, OverwriteSkip) {
     // Export a tracklist with two existing tracks -- overwrite one and skip
     // the other.
-    TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    const qint64 fileSize1 = fileinfo1.asFileInfo().size();
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackFile fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
-    TrackPointer track2(Track::newTemporary(fileinfo2));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    const qint64 fileSize1 = fileinfo1.sizeInBytes();
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
 
     // Create empty versions at the destination so we can see if we actually
     // overwrote or skipped.
@@ -115,12 +115,12 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
 
 TEST_F(TrackExporterTest, OverwriteAll) {
     // Export a tracklist with two existing tracks -- overwrite both.
-    TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    const qint64 fileSize1 = fileinfo1.asFileInfo().size();
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackFile fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
-    const qint64 fileSize2 = fileinfo2.asFileInfo().size();
-    TrackPointer track2(Track::newTemporary(fileinfo2));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    const qint64 fileSize1 = fileinfo1.sizeInBytes();
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    const qint64 fileSize2 = fileinfo2.sizeInBytes();
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
 
     // Create empty versions at the destination so we can see if we actually
     // overwrote or skipped.
@@ -158,10 +158,10 @@ TEST_F(TrackExporterTest, OverwriteAll) {
 
 TEST_F(TrackExporterTest, SkipAll) {
     // Export a tracklist with two existing tracks -- skip both.
-    TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackFile fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
-    TrackPointer track2(Track::newTemporary(fileinfo2));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
 
     // Create empty versions at the destination so we can see if we actually
     // overwrote or skipped.
@@ -200,10 +200,10 @@ TEST_F(TrackExporterTest, SkipAll) {
 TEST_F(TrackExporterTest, Cancel) {
     // Export a tracklist with two existing tracks, but cancel before we do
     // anything.
-    TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackFile fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
-    TrackPointer track2(Track::newTemporary(fileinfo2));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
 
     // Create empty version at the destination so we can see if we actually
     // canceled.
@@ -238,9 +238,9 @@ TEST_F(TrackExporterTest, Cancel) {
 
 TEST_F(TrackExporterTest, DedupeList) {
     // Create a track list with a duplicate track, see that it gets deduped.
-    TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackPointer track2(Track::newTemporary(fileinfo1));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
 
     // Set up the worker and answerer.
     TrackPointerList tracks;
@@ -267,17 +267,17 @@ TEST_F(TrackExporterTest, DedupeList) {
 TEST_F(TrackExporterTest, MungeFilename) {
     // Create a track list with a duplicate track in a different location,
     // see that the name gets munged.
-    TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    TrackPointer track1(Track::newTemporary(fileinfo1));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
 
     // Create a file with the same name in a different place.  Its filename
     // should be munged and the file still copied.
     QDir tempPath(QDir::tempPath());
     QFile file2(tempPath.filePath("cover-test.ogg"));
-    TrackFile fileinfo2(file2);
+    mixxx::FileInfo fileinfo2(file2);
     ASSERT_TRUE(file2.open(QIODevice::WriteOnly));
     file2.close();
-    TrackPointer track2(Track::newTemporary(fileinfo2));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
 
     // Set up the worker and answerer.
     TrackPointerList tracks;

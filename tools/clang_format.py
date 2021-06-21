@@ -21,7 +21,7 @@ BREAK_BEFORE = 80
 
 def get_clang_format_config_with_columnlimit(rootdir, limit):
     """Create a temporary config with ColumnLimit set to 80."""
-    cpp_file = os.path.join(rootdir, "src/mixxx.cpp")
+    cpp_file = os.path.join(rootdir, "src/main.cpp")
     proc = subprocess.run(
         ["clang-format", "--dump-config", cpp_file],
         capture_output=True,

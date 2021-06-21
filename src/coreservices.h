@@ -134,14 +134,8 @@ class CoreServices : public QObject {
 
     std::unique_ptr<ControlPushButton> m_pTouchShift;
 
-    TooltipsPreference m_toolTipsCfg;
-
     Timer m_runtime_timer;
     const CmdlineArgs& m_cmdlineArgs;
-
-    ScreenSaverPreference m_inhibitScreensaver;
-
-    QSet<ControlObject*> m_skinCreatedControls;
 };
 
 } // namespace mixxx

@@ -32,8 +32,8 @@ BrowseFeature::BrowseFeature(
         UserSettingsPointer pConfig,
         RecordingManager* pRecordingManager)
         : LibraryFeature(pLibrary, pConfig),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
-          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
+          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_pLastRightClickedItem(nullptr),
           m_icon(":/images/library/ic_library_computer.svg") {
@@ -249,21 +249,22 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 
     QString path = item->getData().toString();
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
-        m_browseModel.setPath(MDir());
+        m_browseModel.setPath({});
     } else {
         // Open a security token for this path and if we do not have access, ask
         // for it.
-        MDir dir(path);
-        if (!dir.canAccess()) {
-            if (Sandbox::askForAccess(path)) {
+        auto dirInfo = mixxx::FileInfo(path);
+        auto dirAccess = mixxx::FileAccess(dirInfo);
+        if (!dirAccess.isReadable()) {
+            if (Sandbox::askForAccess(&dirInfo)) {
                 // Re-create to get a new token.
-                dir = MDir(path);
+                dirAccess = mixxx::FileAccess(dirInfo);
             } else {
                 // TODO(rryan): Activate an info page about sandboxing?
                 return;
             }
         }
-        m_browseModel.setPath(dir);
+        m_browseModel.setPath(std::move(dirAccess));
     }
     emit showTrackModel(&m_proxyModel);
     emit enableCoverArtDisplay(false);
@@ -402,10 +403,10 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     } else {
         // we assume that the path refers to a folder in the file system
         // populate childs
-        MDir dir(path);
+        const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
 
-        QFileInfoList all = dir.dir().entryInfoList(
-            QDir::Dirs | QDir::NoDotAndDotDot);
+        QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
+                QDir::Dirs | QDir::NoDotAndDotDot);
 
         // loop through all the item and construct the childs
         foreach (QFileInfo one, all) {
@@ -465,7 +466,6 @@ QString BrowseFeature::extractNameFromPath(const QString& spath) {
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {
     // Default configuration
-    QStringList mixxxMusicDirs = m_pTrackCollection->getDirectoryDAO().getDirs();
     QDir osMusicDir(QStandardPaths::writableLocation(
             QStandardPaths::MusicLocation));
     QDir osDocumentsDir(QStandardPaths::writableLocation(
@@ -485,12 +485,15 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     bool osDownloadsDirIncluded = false;
     bool osDesktopDirIncluded = false;
     bool osDocumentsDirIncluded = false;
-    foreach (QString dirPath, mixxxMusicDirs) {
-        QDir dir(dirPath);
+    const auto rootDirs = m_pLibrary->trackCollectionManager()
+                                  ->internalCollection()
+                                  ->loadRootDirs();
+    for (mixxx::FileInfo fileInfo : rootDirs) {
         // Skip directories we don't have permission to.
-        if (!Sandbox::canAccessFile(dir)) {
+        if (!Sandbox::canAccess(&fileInfo)) {
             continue;
         }
+        const auto dir = fileInfo.toQDir();
         if (dir == osMusicDir) {
             osMusicDirIncluded = true;
         }
@@ -506,22 +509,20 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
         result << dir.canonicalPath() + "/";
     }
 
-    if (!osMusicDirIncluded && Sandbox::canAccessFile(osMusicDir)) {
+    if (!osMusicDirIncluded && Sandbox::canAccessDir(osMusicDir)) {
         result << osMusicDir.canonicalPath() + "/";
     }
 
     if (downloadsExists && !osDownloadsDirIncluded &&
-            Sandbox::canAccessFile(osDownloadsDir)) {
+            Sandbox::canAccessDir(osDownloadsDir)) {
         result << osDownloadsDir.canonicalPath() + "/";
     }
 
-    if (!osDesktopDirIncluded &&
-            Sandbox::canAccessFile(osDesktopDir)) {
+    if (!osDesktopDirIncluded && Sandbox::canAccessDir(osDesktopDir)) {
         result << osDesktopDir.canonicalPath() + "/";
     }
 
-    if (!osDocumentsDirIncluded &&
-            Sandbox::canAccessFile(osDocumentsDir)) {
+    if (!osDocumentsDirIncluded && Sandbox::canAccessDir(osDocumentsDir)) {
         result << osDocumentsDir.canonicalPath() + "/";
     }
 

@@ -59,43 +59,43 @@
       <Color>#0000FF</Color>
       <Opacity>0.1</Opacity>
     </MarkRange>
+    <Mark>
+      <Control>intro_start_position</Control>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <Text>&#9698;</Text>
+      <Align>bottom|right</Align>
+      <Color>#0000FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>intro_end_position</Control>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <Text>&#9698;</Text>
+      <Align>bottom|left</Align>
+      <Color>#0000FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <!-- Outro -->
     <MarkRange>
       <StartControl>outro_start_position</StartControl>
       <EndControl>outro_end_position</EndControl>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
       <Color>#0000FF</Color>
-    </MarkRange>
-    <Mark>
-      <Control>intro_start_position</Control>
-      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text>|&#9698;</Text>
-      <Align>bottom</Align>
-      <Color>#0000FF</Color>
-      <TextColor>#FFFFFF</TextColor>
-    </Mark>
-    <!-- Outro -->
-    <Mark>
-      <Control>intro_end_position</Control>
-      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text>&#9698;|</Text>
-      <Align>bottom</Align>
-      <Color>#0000FF</Color>
       <Opacity>0.1</Opacity>
-      <TextColor>#FFFFFF</TextColor>
-    </Mark>
+    </MarkRange>
     <Mark>
       <Control>outro_start_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text>|&#9699;</Text>
-      <Align>bottom</Align>
+      <Text>&#9699;</Text>
+      <Align>bottom|right</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
     </Mark>
     <Mark>
       <Control>outro_end_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text>&#9699;|</Text>
-      <Align>bottom</Align>
+      <Text>&#9699;</Text>
+      <Align>bottom|left</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
     </Mark>

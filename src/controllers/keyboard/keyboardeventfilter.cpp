@@ -60,14 +60,14 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
                     if (control) {
-                        //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
+                        //qDebug() << configKey << "MidiOpCode::NoteOn" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
                             keyId, ke->modifiers(), control));
                         // Since setting the value might cause us to go down
                         // a route that would eventually clear the active
                         // key list, do that last.
-                        control->setValueFromMidi(MIDI_NOTE_ON, 1);
+                        control->setValueFromMidi(MidiOpCode::NoteOn, 1);
                         result = true;
                     } else {
                         qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
@@ -108,8 +108,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             if (keyDownInfo.keyId == keyId ||
                     (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
-                    //qDebug() << pControl->getKey() << "MIDI_NOTE_OFF" << 0;
-                    pControl->setValueFromMidi(MIDI_NOTE_OFF, 0);
+                    //qDebug() << pControl->getKey() << "MidiOpCode::NoteOff" << 0;
+                    pControl->setValueFromMidi(MidiOpCode::NoteOff, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
                 // Due to the modifier clearing workaround we might match multiple keys for

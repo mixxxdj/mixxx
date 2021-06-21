@@ -5,8 +5,8 @@
 #include <QSharedPointer>
 #include <unordered_map>
 
-#include "skin/imgsource.h"
-#include "skin/pixmapsource.h"
+#include "skin/legacy/imgsource.h"
+#include "skin/legacy/pixmapsource.h"
 #include "util/memory.h"
 
 class WImageStore {

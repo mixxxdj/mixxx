@@ -172,7 +172,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         return 0;
     }
 
-    QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()->resolveTrackIdsFromLocations(
+    QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromLocations(
             locations);
 
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);

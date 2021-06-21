@@ -7,7 +7,7 @@
   <SingletonDefinition>
     <ObjectName>SamplerRow1</ObjectName>
     <Children>
-      <Template src="skin:../Tango/sampler_row.xml">
+      <Template src="skin:../Tango/mic_aux_sampler/sampler_row.xml">
         <SetVariable name="row">1</SetVariable>
         <SetVariable name="sampler1">1</SetVariable>
         <SetVariable name="sampler2">2</SetVariable>
@@ -24,7 +24,7 @@
   <SingletonDefinition>
     <ObjectName>SamplerRow2</ObjectName>
     <Children>
-      <Template src="skin:../Tango/sampler_row.xml">
+      <Template src="skin:../Tango/mic_aux_sampler/sampler_row.xml">
         <SetVariable name="row">2</SetVariable>
         <SetVariable name="sampler1">9</SetVariable>
         <SetVariable name="sampler2">10</SetVariable>
@@ -41,7 +41,7 @@
   <SingletonDefinition>
     <ObjectName>SamplerRow3</ObjectName>
     <Children>
-      <Template src="skin:../Tango/sampler_row.xml">
+      <Template src="skin:../Tango/mic_aux_sampler/sampler_row.xml">
         <SetVariable name="row">3</SetVariable>
         <SetVariable name="sampler1">17</SetVariable>
         <SetVariable name="sampler2">18</SetVariable>
@@ -58,7 +58,7 @@
   <SingletonDefinition>
     <ObjectName>SamplerRow4</ObjectName>
     <Children>
-      <Template src="skin:../Tango/sampler_row.xml">
+      <Template src="skin:../Tango/mic_aux_sampler/sampler_row.xml">
         <SetVariable name="row">4</SetVariable>
         <SetVariable name="sampler1">25</SetVariable>
         <SetVariable name="sampler2">26</SetVariable>
@@ -75,7 +75,7 @@
   <SingletonDefinition>
     <ObjectName>SamplerRow5</ObjectName>
     <Children>
-      <Template src="skin:../Tango/sampler_row.xml">
+      <Template src="skin:../Tango/mic_aux_sampler/sampler_row.xml">
         <SetVariable name="row">5</SetVariable>
         <SetVariable name="sampler1">33</SetVariable>
         <SetVariable name="sampler2">34</SetVariable>
@@ -92,7 +92,7 @@
   <SingletonDefinition>
     <ObjectName>SamplerRow6</ObjectName>
     <Children>
-      <Template src="skin:../Tango/sampler_row.xml">
+      <Template src="skin:../Tango/mic_aux_sampler/sampler_row.xml">
         <SetVariable name="row">6</SetVariable>
         <SetVariable name="sampler1">41</SetVariable>
         <SetVariable name="sampler2">42</SetVariable>
@@ -109,7 +109,7 @@
   <SingletonDefinition>
     <ObjectName>SamplerRow7</ObjectName>
     <Children>
-      <Template src="skin:../Tango/sampler_row.xml">
+      <Template src="skin:../Tango/mic_aux_sampler/sampler_row.xml">
         <SetVariable name="row">7</SetVariable>
         <SetVariable name="sampler1">49</SetVariable>
         <SetVariable name="sampler2">50</SetVariable>
@@ -126,7 +126,7 @@
   <SingletonDefinition>
     <ObjectName>SamplerRow8</ObjectName>
     <Children>
-      <Template src="skin:../Tango/sampler_row.xml">
+      <Template src="skin:../Tango/mic_aux_sampler/sampler_row.xml">
         <SetVariable name="row">8</SetVariable>
         <SetVariable name="sampler1">57</SetVariable>
         <SetVariable name="sampler2">58</SetVariable>
@@ -336,4 +336,3 @@
     </Connection>
   </WidgetGroup>
 </Template>
-
