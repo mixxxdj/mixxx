@@ -47,7 +47,7 @@ MixxxControls.Knob {
 
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
-            width: root.width / 30
+            width: 2
             height: root.width / 5
             y: height
             color: root.color
