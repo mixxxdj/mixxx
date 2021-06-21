@@ -101,13 +101,14 @@ void ClementineFeature::activate() {
 void ClementineFeature::activateChild(const QModelIndex& index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     int playlistID = item->getData().toInt();
-    if (playlistID > 0) {
-        qDebug() << "Activating " << item->getLabel();
-        m_pClementinePlaylistModel->setTableModel(playlistID);
-        m_pClementinePlaylistModel->select();
-        emit showTrackModel(m_pClementinePlaylistModel);
-        emit enableCoverArtDisplay(false);
+    VERIFY_OR_DEBUG_ASSERT(playlistID > 0) {
+        return;
     }
+    qDebug() << "Activating " << item->getLabel();
+    m_pClementinePlaylistModel->setTableModel(playlistID);
+    m_pClementinePlaylistModel->select();
+    emit showTrackModel(m_pClementinePlaylistModel);
+    emit enableCoverArtDisplay(false);
 }
 
 TreeItemModel* ClementineFeature::getChildModel() {
@@ -116,7 +117,7 @@ TreeItemModel* ClementineFeature::getChildModel() {
 
 void ClementineFeature::appendTrackIdsFromRightClickIndex(
         QList<TrackId>* trackIds, QString* pPlaylist) {
-    if (!lastRightClickedIndex().isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(lastRightClickedIndex().isValid()) {
         return;
     }
 
@@ -124,7 +125,7 @@ void ClementineFeature::appendTrackIdsFromRightClickIndex(
     *pPlaylist = item->getLabel();
 
     int playlistID = item->getData().toInt();
-    if (playlistID <= 0) {
+    VERIFY_OR_DEBUG_ASSERT(playlistID > 0) {
         return;
     }
 

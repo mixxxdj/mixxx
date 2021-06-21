@@ -244,7 +244,6 @@ QFileInfo ClementineDbConnection::getDatabaseFile() {
 
     QSettings ini(QSettings::IniFormat, QSettings::UserScope, "Clementine", "Clementine");
     dbfile = QFileInfo(QFileInfo(ini.fileName()).absoluteDir(), "clementine.db");
-    qDebug() << "dbfile: " << dbfile;
     if (dbfile.exists()) {
         return dbfile;
     }
