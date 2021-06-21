@@ -736,6 +736,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/qml/asyncimageprovider.cpp
   src/skin/qml/qmlcontrolproxy.cpp
   src/skin/qml/qmlconfigproxy.cpp
+  src/skin/qml/qmleffectmanifestparametersmodel.cpp
   src/skin/qml/qmleffectsmanagerproxy.cpp
   src/skin/qml/qmleffectslotproxy.cpp
   src/skin/qml/qmlplayermanagerproxy.cpp

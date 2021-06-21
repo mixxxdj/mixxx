@@ -7,6 +7,8 @@ namespace mixxx {
 namespace skin {
 namespace qml {
 
+class QmlEffectManifestParametersModel;
+
 class QmlEffectSlotProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(int rackNumber READ getRackNumber CONSTANT)
@@ -16,6 +18,8 @@ class QmlEffectSlotProxy : public QObject {
     Q_PROPERTY(int number READ getNumber CONSTANT)
     Q_PROPERTY(QString group READ getGroup CONSTANT)
     Q_PROPERTY(QString effectId READ getEffectId WRITE setEffectId NOTIFY effectIdChanged)
+    Q_PROPERTY(mixxx::skin::qml::QmlEffectManifestParametersModel* parametersModel
+                    READ getParametersModel NOTIFY parametersModelChanged)
 
   public:
     explicit QmlEffectSlotProxy(EffectRackPointer pEffectRack,
@@ -30,12 +34,14 @@ class QmlEffectSlotProxy : public QObject {
     int getNumber() const;
     QString getGroup() const;
     QString getEffectId() const;
+    QmlEffectManifestParametersModel* getParametersModel() const;
 
   public slots:
     void setEffectId(const QString& effectId);
 
   signals:
     void effectIdChanged();
+    void parametersModelChanged();
 
   private:
     const EffectRackPointer m_pRack;

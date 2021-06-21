@@ -1,9 +1,11 @@
 #include "skin/qml/qmleffectslotproxy.h"
 
 #include <QObject>
+#include <QQmlEngine>
 
 #include "effects/effectrack.h"
 #include "effects/effectslot.h"
+#include "skin/qml/qmleffectmanifestparametersmodel.h"
 
 namespace mixxx {
 namespace skin {
@@ -24,6 +26,10 @@ QmlEffectSlotProxy::QmlEffectSlotProxy(EffectRackPointer pRack,
             &EffectSlot::updated,
             this,
             &QmlEffectSlotProxy::effectIdChanged);
+    connect(m_pEffectSlot.get(),
+            &EffectSlot::updated,
+            this,
+            &QmlEffectSlotProxy::parametersModelChanged);
 }
 
 int QmlEffectSlotProxy::getRackNumber() const {
@@ -65,6 +71,22 @@ void QmlEffectSlotProxy::setEffectId(const QString& effectId) {
             m_pChainSlot->getChainSlotNumber(),
             m_pEffectSlot->getEffectSlotNumber(),
             effectId);
+}
+
+QmlEffectManifestParametersModel* QmlEffectSlotProxy::getParametersModel() const {
+    const EffectPointer pEffect = m_pEffectSlot->getEffect();
+    if (!pEffect) {
+        return nullptr;
+    }
+
+    const EffectManifestPointer pManifest = pEffect->getManifest();
+    VERIFY_OR_DEBUG_ASSERT(pManifest) {
+        return nullptr;
+    }
+
+    QmlEffectManifestParametersModel* pModel = new QmlEffectManifestParametersModel(pManifest);
+    QQmlEngine::setObjectOwnership(pModel, QQmlEngine::JavaScriptOwnership);
+    return pModel;
 }
 
 } // namespace qml
