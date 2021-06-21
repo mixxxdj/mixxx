@@ -12,10 +12,6 @@ Item {
 
     implicitHeight: effectContainer.height
 
-    Skin.SectionBackground {
-        anchors.fill: parent
-    }
-
     Item {
         id: effectContainer
 
