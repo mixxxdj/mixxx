@@ -81,16 +81,19 @@ Item {
 
             PropertyChanges {
                 target: effect1
+                width: parent.width
                 expanded: true
             }
 
             PropertyChanges {
                 target: effect2
+                width: parent.width
                 expanded: true
             }
 
             PropertyChanges {
                 target: effect3
+                width: parent.width
                 expanded: true
             }
 

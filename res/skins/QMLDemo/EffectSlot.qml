@@ -11,99 +11,129 @@ Item {
     property int effectNumber // required
     property bool expanded: false
     readonly property string group: slot.group
+    property real maxSelectorWidth: 300
 
     height: 50
 
-    Skin.ControlButton {
-        id: effectEnableButton
+    Item {
+        id: selector
 
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        anchors.margins: 5
-        width: 40
-        group: root.group
-        key: "enabled"
-        toggleable: true
-        text: "ON"
-        activeColor: Theme.effectColor
-    }
+        width: Math.min(root.width, root.maxSelectorWidth)
 
-    Skin.ComboBox {
-        id: effectSelector
+        Skin.ControlButton {
+            id: effectEnableButton
 
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: effectEnableButton.right
-        anchors.right: effectMetaKnob.left
-        anchors.margins: 5
-        // TODO: Add a way to retrieve effect names here
-        textRole: "display"
-        model: Mixxx.EffectsManager.visibleEffectsModel
-        onActivated: {
-            const effectId = model.get(index).effectId;
-            if (root.slot.effectId != effectId)
-                root.slot.effectId = effectId;
-
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.margins: 5
+            width: 40
+            group: root.group
+            key: "enabled"
+            toggleable: true
+            text: "ON"
+            activeColor: Theme.effectColor
         }
-        Component.onCompleted: root.slot.onEffectIdChanged()
 
-        Connections {
-            function onEffectIdChanged() {
-                const rowCount = effectSelector.model.rowCount();
-                // TODO: Consider using an additional QHash in the
-                // model and provide a more efficient lookup method
-                for (let i = 0; i < rowCount; i++) {
-                    if (effectSelector.model.get(i).effectId === target.effectId) {
-                        effectSelector.currentIndex = i;
-                        break;
+        Skin.ComboBox {
+            id: effectSelector
+
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.left: effectEnableButton.right
+            anchors.right: effectMetaKnob.left
+            anchors.margins: 5
+            // TODO: Add a way to retrieve effect names here
+            textRole: "display"
+            model: Mixxx.EffectsManager.visibleEffectsModel
+            onActivated: {
+                const effectId = model.get(index).effectId;
+                if (root.slot.effectId != effectId)
+                    root.slot.effectId = effectId;
+
+            }
+            Component.onCompleted: root.slot.onEffectIdChanged()
+
+            Connections {
+                function onEffectIdChanged() {
+                    const rowCount = effectSelector.model.rowCount();
+                    // TODO: Consider using an additional QHash in the
+                    // model and provide a more efficient lookup method
+                    for (let i = 0; i < rowCount; i++) {
+                        if (effectSelector.model.get(i).effectId === target.effectId) {
+                            effectSelector.currentIndex = i;
+                            break;
+                        }
                     }
                 }
+
+                target: root.slot
             }
 
-            target: root.slot
+        }
+
+        Skin.ControlMiniKnob {
+            id: effectMetaKnob
+
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.margins: 5
+            arcStart: 0
+            width: 40
+            group: root.group
+            key: "meta"
+            color: Theme.effectColor
         }
 
     }
 
-    Skin.ControlMiniKnob {
-        id: effectMetaKnob
-
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.margins: 5
-        arcStart: 0
-        width: 40
-        group: root.group
-        key: "meta"
-        color: Theme.effectColor
-    }
-
-    Row {
-        id: parameterContainer
+    ListView {
+        id: parametersView
 
         visible: root.expanded
         anchors.leftMargin: 10
-        anchors.left: effectMetaKnob.right
-        anchors.top: effectMetaKnob.top
+        anchors.top: parent.top
+        anchors.left: selector.right
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        clip: false
         spacing: 5
+        model: root.slot.parametersModel
+        orientation: ListView.Horizontal
 
-        Repeater {
-            model: 16
+        delegate: Item {
+            id: parameter
+
+            property int number: index + 1
+            property string name: shortName
+            property bool isButton: controlHint > 0 && controlHint == 6
+            property bool isKnob: controlHint > 0 && controlHint < 6
+
+            width: 40
+            height: 50
+
+            EmbeddedText {
+                anchors.fill: parent
+                verticalAlignment: Text.AlignBottom
+                text: parameter.name
+                font.bold: false
+            }
 
             Skin.ControlMiniKnob {
                 id: parameterKnob
 
-                property int parameterNumber: index + 1
-
-                width: 40
-                height: width
+                width: 30
+                height: 30
+                anchors.centerIn: parent
                 arcStart: 0
                 group: root.group
-                key: "parameter" + parameterNumber
+                key: "parameter" + parameter.number
                 color: Theme.effectColor
-                visible: parameterLoadedControl.loaded
+                visible: parameter.isKnob
 
                 Mixxx.ControlProxy {
                     id: parameterLoadedControl
@@ -111,24 +141,21 @@ Item {
                     property bool loaded: value != 0
 
                     group: root.group
-                    key: "parameter" + parameterNumber + "_loaded"
+                    key: "parameter" + parameter.number + "_loaded"
                 }
 
             }
 
-        }
+            Skin.ControlButton {
+                id: buttonParameterButton
 
-        Repeater {
-            model: 16
-
-            Item {
-                id: buttonParameter
-
-                property int parameterNumber: index + 1
-
-                width: 40
-                height: width
-                visible: buttonParameterLoadedControl.loaded
+                height: 22
+                width: parent.width
+                anchors.centerIn: parent
+                group: root.group
+                key: "button_parameter" + parameter.number
+                activeColor: Theme.effectColor
+                visible: parameter.isButton
 
                 Mixxx.ControlProxy {
                     id: buttonParameterLoadedControl
@@ -136,26 +163,32 @@ Item {
                     property bool loaded: value != 0
 
                     group: root.group
-                    key: "button_parameter" + parameterNumber + "_loaded"
-                }
-
-                Skin.ControlButton {
-                    id: buttonParameterButton
-
-                    height: 26
-                    width: parent.width
-                    anchors.centerIn: parent
-                    group: root.group
-                    key: "button_parameter" + parameterNumber
-                    activeColor: Theme.effectColor
+                    key: "button_parameter" + parameter.number + "_loaded"
                 }
 
             }
 
         }
 
-        Skin.FadeBehavior on visible {
-            fadeTarget: parameterContainer
+        populate: Transition {
+            NumberAnimation {
+                property: "opacity"
+                from: 0
+                to: 1
+                duration: 200
+            }
+
+            NumberAnimation {
+                property: "scale"
+                from: 0
+                to: 1
+                duration: 200
+            }
+
+        }
+
+        Skin.FadeBehavior on opacity {
+            fadeTarget: parametersView
         }
 
     }
