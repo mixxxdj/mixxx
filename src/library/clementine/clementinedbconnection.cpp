@@ -24,10 +24,10 @@ ClementineDbConnection::~ClementineDbConnection() {
     m_database.close();
 }
 
-bool ClementineDbConnection::open(const QString& databaseFile) {
+bool ClementineDbConnection::open(const QFileInfo& databaseFile) {
     m_database = QSqlDatabase::addDatabase("QSQLITE", "CLEMENTINE_DB_CONNECTION");
     m_database.setHostName("localhost");
-    m_database.setDatabaseName(databaseFile);
+    m_database.setDatabaseName(databaseFile.filePath());
     m_database.setConnectOptions("SQLITE_OPEN_READONLY");
 
     //Open the database connection in this thread.
@@ -239,22 +239,19 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
 }
 
 // static
-QString ClementineDbConnection::getDatabaseFile() {
-    QString dbfile;
+QFileInfo ClementineDbConnection::getDatabaseFile() {
+    QFileInfo dbfile;
 
     QSettings ini(QSettings::IniFormat, QSettings::UserScope, "Clementine", "Clementine");
-    dbfile = QFileInfo(ini.fileName()).absolutePath();
-    dbfile += "/clementine.db";
-    if (QFile::exists(dbfile)) {
+    dbfile = QFileInfo(QFileInfo(ini.fileName()).absoluteDir(), "clementine.db");
+    qDebug() << "dbfile: " << dbfile;
+    if (dbfile.exists()) {
         return dbfile;
     }
 
     // Legacy clementine Application Data Path
-    dbfile = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    dbfile += "/.gnome2/Clementine/clementine.db";
-    if (QFile::exists(dbfile)) {
-        return dbfile;
-    }
-
-    return QString();
+    dbfile = QFileInfo(
+            QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
+            "/.gnome2/Clementine/clementine.db");
+    return dbfile;
 }

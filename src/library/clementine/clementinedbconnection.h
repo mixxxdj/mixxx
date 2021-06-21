@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFileInfo>
 #include <QSqlDatabase>
 #include <QUrl>
 
@@ -37,9 +38,9 @@ class ClementineDbConnection {
     ClementineDbConnection();
     ~ClementineDbConnection();
 
-    static QString getDatabaseFile();
+    static QFileInfo getDatabaseFile();
 
-    bool open(const QString& databaseFile);
+    bool open(const QFileInfo& databaseFile);
     QList<ClementinePlaylist> getPlaylists() const;
     QList<ClementinePlaylistEntry> getPlaylistEntries(int playlistId) const;
 

@@ -36,7 +36,7 @@ ClementineFeature::~ClementineFeature() {
 
 // static
 bool ClementineFeature::isSupported() {
-    return !ClementineDbConnection::getDatabaseFile().isEmpty();
+    return ClementineDbConnection::getDatabaseFile().exists();
 }
 
 QVariant ClementineFeature::title() {
@@ -53,15 +53,15 @@ void ClementineFeature::activate() {
     m_title = tr("(loading) Clementine");
     //calls a slot in the sidebar model such that 'Clementine (isLoading)' is displayed.
     emit featureIsLoading(this, true);
-    QString databaseFile = ClementineDbConnection::getDatabaseFile();
+    QFileInfo databaseFile = ClementineDbConnection::getDatabaseFile();
 
     if (!m_isActivated) {
-        if (!QFile::exists(databaseFile)) {
+        if (!databaseFile.exists()) {
             QMessageBox::warning(
                     nullptr,
                     tr("Error loading Clementine database"),
                     tr("Clementine database file not found at\n") +
-                            databaseFile);
+                            databaseFile.filePath());
             qInfo() << "Clementine database file" << databaseFile << "does not exist";
             return;
         }
@@ -71,7 +71,7 @@ void ClementineFeature::activate() {
                     nullptr,
                     tr("Error loading Clementine database"),
                     tr("There was an error loading your Clementine database at\n") +
-                            databaseFile);
+                            databaseFile.filePath());
             return;
         }
     }
