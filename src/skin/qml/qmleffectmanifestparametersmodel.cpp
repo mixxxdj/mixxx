@@ -40,6 +40,8 @@ QVariant QmlEffectManifestParametersModel::data(const QModelIndex& index, int ro
     case QmlEffectManifestParametersModel::DescriptionRole:
         return pParameter->description();
     case QmlEffectManifestParametersModel::ControlHintRole:
+        // TODO: Remove this cast, instead expose the enum directly using
+        // Q_ENUM after #2618 has been merged.
         return static_cast<int>(pParameter->controlHint());
     default:
         return QVariant();
