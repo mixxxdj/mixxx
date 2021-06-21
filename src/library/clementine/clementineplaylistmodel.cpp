@@ -45,10 +45,6 @@ ClementinePlaylistModel::ClementinePlaylistModel(QObject* pParent,
 
 void ClementinePlaylistModel::setTableModel(int playlistId) {
     qDebug() << "ClementinePlaylistModel::setTableModel" << playlistId;
-    if (m_playlistId == playlistId) {
-        qDebug() << "Already focused on playlist " << playlistId;
-        return;
-    }
 
     if (m_playlistId >= 0) {
         // Clear old playlist
@@ -247,8 +243,6 @@ QString ClementinePlaylistModel::getTrackLocation(const QModelIndex& index) cons
 
     QString location;
     location = url.toLocalFile();
-
-    qDebug() << location << " = " << url;
 
     if (!location.isEmpty()) {
         return location;

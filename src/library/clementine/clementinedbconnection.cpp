@@ -169,7 +169,6 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
         if (playlistId > 0) {
             // Determine datasource/table for a the specific playlist track
             QString type = queryPlaylist.value(17).toString();
-            qDebug() << "type " << type;
             if (type == QString("File")) {
                 trackDataSource = &queryPlaylist;
             } else if (type == QString("Library")) {
@@ -184,7 +183,6 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
         QString location = QUrl::fromEncoded(
                 trackDataSource->value(2).toByteArray(), QUrl::StrictMode)
                                    .toLocalFile();
-        qDebug() << "location " << location;
 
         entry.artist = trackDataSource->value(4).toString();
         entry.title = trackDataSource->value(1).toString();
