@@ -46,7 +46,6 @@ Item {
             anchors.left: effectEnableButton.right
             anchors.right: effectMetaKnob.left
             anchors.margins: 5
-            // TODO: Add a way to retrieve effect names here
             textRole: "display"
             model: Mixxx.EffectsManager.visibleEffectsModel
             onActivated: {
