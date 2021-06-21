@@ -53,9 +53,10 @@ void ClementineFeature::activate() {
     m_title = tr("(loading) Clementine");
     //calls a slot in the sidebar model such that 'Clementine (isLoading)' is displayed.
     emit featureIsLoading(this, true);
-    QFileInfo databaseFile = ClementineDbConnection::getDatabaseFile();
 
     if (!m_isActivated) {
+        QFileInfo databaseFile = ClementineDbConnection::getDatabaseFile();
+
         if (!databaseFile.exists()) {
             QMessageBox::warning(
                     nullptr,
