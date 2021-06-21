@@ -6,7 +6,7 @@ import "Theme"
 Item {
     id: root
 
-    property var slot: Mixxx.EffectsManager.getEffectSlot(1, unitNumber, effectNumber)
+    property Mixxx.EffectSlotProxy slot: Mixxx.EffectsManager.getEffectSlot(1, unitNumber, effectNumber)
     property int unitNumber // required
     property int effectNumber // required
     property bool expanded: false
