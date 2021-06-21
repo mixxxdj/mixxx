@@ -135,15 +135,16 @@ void ClementineFeature::appendTrackIdsFromRightClickIndex(
     int rows = m_pClementinePlaylistModel->rowCount();
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = m_pClementinePlaylistModel->index(i, 0);
-        if (index.isValid()) {
-            //Check if track file really exists, otherwise a segfault is happening
-            QString trackLocation = m_pClementinePlaylistModel->getTrackLocation(index);
-            bool fileExists = QFile::exists(trackLocation);
-            if (!fileExists) {
-                continue;
-            }
-            TrackPointer track = m_pClementinePlaylistModel->getTrack(index);
-            trackIds->append(track->getId());
+        if (!index.isValid()) {
+            continue;
         }
+        //Check if track file really exists, otherwise a segfault is happening
+        QString trackLocation = m_pClementinePlaylistModel->getTrackLocation(index);
+        bool fileExists = QFile::exists(trackLocation);
+        if (!fileExists) {
+            continue;
+        }
+        TrackPointer track = m_pClementinePlaylistModel->getTrack(index);
+        trackIds->append(track->getId());
     }
 }
