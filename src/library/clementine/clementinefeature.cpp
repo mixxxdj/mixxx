@@ -101,7 +101,7 @@ void ClementineFeature::activate() {
 void ClementineFeature::activateChild(const QModelIndex& index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     int playlistID = item->getData().toInt();
-    VERIFY_OR_DEBUG_ASSERT(playlistID > 0) {
+    VERIFY_OR_DEBUG_ASSERT(playlistID >= 0) {
         return;
     }
     qDebug() << "Activating " << item->getLabel();
@@ -125,7 +125,7 @@ void ClementineFeature::appendTrackIdsFromRightClickIndex(
     *pPlaylist = item->getLabel();
 
     int playlistID = item->getData().toInt();
-    VERIFY_OR_DEBUG_ASSERT(playlistID > 0) {
+    VERIFY_OR_DEBUG_ASSERT(playlistID >= 0) {
         return;
     }
 
