@@ -99,7 +99,7 @@ Item {
         anchors.left: selector.right
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        clip: false
+        clip: true
         spacing: 5
         model: root.slot.parametersModel
         orientation: ListView.Horizontal
@@ -112,7 +112,7 @@ Item {
             property bool isButton: controlHint > 0 && controlHint == 6
             property bool isKnob: controlHint > 0 && controlHint < 6
 
-            width: 40
+            width: 50
             height: 50
 
             EmbeddedText {
