@@ -46,7 +46,7 @@ ClementinePlaylistModel::ClementinePlaylistModel(QObject* pParent,
 void ClementinePlaylistModel::setTableModel(int playlistId) {
     qDebug() << "ClementinePlaylistModel::setTableModel" << playlistId;
 
-    VERIFY_OR_DEBUG_ASSERT(m_playlistId >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
         return;
     }
 
