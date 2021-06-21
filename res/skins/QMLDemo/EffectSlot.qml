@@ -108,7 +108,7 @@ Item {
             id: parameter
 
             property int number: index + 1
-            property string name: shortName
+            property string label: shortName ? shortName : name
             property bool isButton: controlHint > 0 && controlHint == 6
             property bool isKnob: controlHint > 0 && controlHint < 6
 
@@ -118,7 +118,7 @@ Item {
             EmbeddedText {
                 anchors.fill: parent
                 verticalAlignment: Text.AlignBottom
-                text: parameter.name
+                text: parameter.label
                 font.bold: false
             }
 
