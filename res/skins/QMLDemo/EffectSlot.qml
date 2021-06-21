@@ -82,7 +82,7 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.margins: 5
-            arcStart: 0
+            arcStart: Knob.ArcStart.Minimum
             width: 40
             group: root.group
             key: "meta"

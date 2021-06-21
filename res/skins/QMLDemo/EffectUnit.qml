@@ -133,7 +133,7 @@ Item {
             anchors.top: parent.top
             height: 48
             width: height
-            arcStart: 0
+            arcStart: Knob.ArcStart.Minimum
             group: "[EffectRack1_EffectUnit" + unitNumber + "]"
             key: "super1"
             color: Theme.effectUnitColor

@@ -668,9 +668,13 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     // losing existing metadata or to lose the beat grid by replacing
     // it with a default grid created from an imprecise BPM.
     // See also: https://bugs.launchpad.net/mixxx/+bug/1929311
-    mixxx::TrackMetadata trackMetadata = m_pLoadedTrack->getMetadata();
+    // In additiona we need to preserve all other track properties
+    // that are stored in TrackRecord, which serves as the underlying
+    // model for this dialog.
+    mixxx::TrackRecord trackRecord = m_pLoadedTrack->getRecord();
+    mixxx::TrackMetadata trackMetadata = trackRecord.getMetadata();
     QImage coverImage;
-    const auto [importResult, metadataSynchronized] =
+    const auto [importResult, sourceSynchronizedAt] =
             SoundSourceProxy(m_pLoadedTrack)
                     .importTrackMetadataAndCoverImage(
                             &trackMetadata, &coverImage);
@@ -682,10 +686,9 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             fileAccess.info(),
             trackMetadata.getAlbumInfo().getTitle(),
             coverImage);
-    mixxx::TrackRecord trackRecord;
     trackRecord.replaceMetadataFromSource(
             std::move(trackMetadata),
-            metadataSynchronized);
+            sourceSynchronizedAt);
     trackRecord.setCoverInfo(
             std::move(guessedCoverInfo));
     replaceTrackRecord(

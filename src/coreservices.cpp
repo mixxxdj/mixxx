@@ -107,6 +107,17 @@ CoreServices::CoreServices(const CmdlineArgs& args)
 }
 
 void CoreServices::initializeSettings() {
+#ifdef __APPLE__
+    // TODO: At this point it is too late to provide the same settings path to all components
+    // and too early to log errors and give users advises in their system language.
+    // Calling this from main.cpp before the QApplication is initialized may cause a crash
+    // due to potential QMessageBox invocations within migrateOldSettings().
+    // Solution: Start Mixxx with default settings, migrate the preferences, and then restart
+    // immediately.
+    if (!m_cmdlineArgs.getSettingsPathSet()) {
+        CmdlineArgs::Instance().setSettingsPath(Sandbox::migrateOldSettings());
+    }
+#endif
     QString settingsPath = m_cmdlineArgs.getSettingsPath();
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }

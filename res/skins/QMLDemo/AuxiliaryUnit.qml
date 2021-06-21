@@ -35,7 +35,7 @@ Row {
             anchors.centerIn: parent
             width: 48
             height: width
-            arcStart: 0
+            arcStart: Knob.ArcStart.Minimum
             group: root.group
             key: "pregain"
             color: Theme.gainKnobColor
