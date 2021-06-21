@@ -46,14 +46,16 @@ ClementinePlaylistModel::ClementinePlaylistModel(QObject* pParent,
 void ClementinePlaylistModel::setTableModel(int playlistId) {
     qDebug() << "ClementinePlaylistModel::setTableModel" << playlistId;
 
-    if (m_playlistId >= 0) {
-        // Clear old playlist
-        m_playlistId = -1;
-        QSqlQuery query(m_database);
-        QString strQuery("DELETE FROM " Clementine_TABLE);
-        if (!query.exec(strQuery)) {
-            LOG_FAILED_QUERY(query);
-        }
+    VERIFY_OR_DEBUG_ASSERT(m_playlistId >= 0) {
+        return;
+    }
+
+    // Clear old playlist
+    m_playlistId = -1;
+    QSqlQuery query(m_database);
+    QString strQuery("DELETE FROM " Clementine_TABLE);
+    if (!query.exec(strQuery)) {
+        LOG_FAILED_QUERY(query);
     }
 
     // setup new playlist
