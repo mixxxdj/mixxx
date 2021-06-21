@@ -45,6 +45,9 @@
          <attribute name="headerMinimumSectionSize">
           <number>50</number>
          </attribute>
+         <attribute name="headerStretchLastSection">
+          <bool>false</bool>
+         </attribute>
          <column>
           <property name="text">
            <string>Title</string>

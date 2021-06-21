@@ -53,7 +53,7 @@ void addTrack(
         QTreeWidget* parent) {
     QTreeWidgetItem* item = new QTreeWidgetItem(parent, trackRow);
     item->setData(0, Qt::UserRole, resultIndex);
-    item->setData(0, Qt::TextAlignmentRole, Qt::AlignRight);
+    item->setData(0, Qt::TextAlignmentRole, Qt::AlignLeft);
 }
 
 } // anonymous namespace
@@ -308,6 +308,8 @@ void DlgTagFetcher::updateStack() {
             ++trackIndex;
         }
     }
+
+    results->header()->resizeSections(QHeaderView::ResizeToContents);
 
     // Find the item that was selected last time
     for (int i = 0; i < results->model()->rowCount(); ++i) {
