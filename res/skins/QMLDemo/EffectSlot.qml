@@ -140,7 +140,7 @@ Item {
                     property bool loaded: value != 0
 
                     group: root.group
-                    key: "parameter" + parameter.number + "_loaded"
+                    key: `parameter${parameter.number}_loaded`
                 }
 
             }
@@ -162,7 +162,7 @@ Item {
                     property bool loaded: value != 0
 
                     group: root.group
-                    key: "button_parameter" + parameter.number + "_loaded"
+                    key: `button_parameter${parameter.number}_loaded`
                 }
 
             }
