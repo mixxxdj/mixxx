@@ -37,7 +37,7 @@ var MC7000 = {};
 // 1) Beat LED in Slicer mode (counts every 8 beats AFTER the CUE point)
 //    only works for CONSTANT TEMPO tracks
 //    needs beat grid and CUE point set
-MC7000.experimental = true;
+MC7000.experimental = false;
 
 // Wanna have Needle Search active while playing a track ?
 // In any case Needle Search is available holding "SHIFT" down.
@@ -98,10 +98,6 @@ MC7000.needleSearchTouched = [true, true, true, true];
 
 // initial value for VINYL mode per Deck (see above for user input)
 MC7000.isVinylMode = [MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn];
-
-// used to keep track of which the rateRange of each slider.
-// value used as an index to MC7000.rateRanges
-MC7000.currentRateRangeIndex = [0, 0, 0, 0];
 
 // initialize the "factor" function for Spinback
 MC7000.factor = [];
@@ -733,13 +729,17 @@ MC7000.nextRateRange = function(midichan, control, value, status, group) {
     if (value === 0) {
         return; // don't respond to note off messages
     }
-    var deckOffset = script.deckFromGroup(group) - 1;
-    // increment currentRateRangeIndex and check for overflow
-    if (++MC7000.currentRateRangeIndex[deckOffset] ===
-      MC7000.rateRanges.length) {
-        MC7000.currentRateRangeIndex[deckOffset] = 0;
+    var currRateRange = engine.getValue(group, "rateRange");
+    engine.setValue(group, "rateRange", MC7000.getNextRateRange(currRateRange));
+};
+
+MC7000.getNextRateRange = function(currRateRange) {
+    for (var i = 0; i < MC7000.rateRanges.length; i++) {
+        if (MC7000.rateRanges[i] > currRateRange) {
+            return MC7000.rateRanges[i];
+        }
     }
-    engine.setValue(group, "rateRange", MC7000.rateRanges[MC7000.currentRateRangeIndex[deckOffset]]);
+    return MC7000.rateRanges[0];
 };
 
 // Previous Rate range toggle
@@ -747,12 +747,17 @@ MC7000.prevRateRange = function(midichan, control, value, status, group) {
     if (value === 0) {
         return; // don't respond to note off messages
     }
-    var deckOffset = script.deckFromGroup(group) - 1;
-    // decrement currentRateRangeIndex and check for underflow
-    if (--MC7000.currentRateRangeIndex[deckOffset] < 0) {
-        MC7000.currentRateRangeIndex[deckOffset] = MC7000.rateRanges.length - 1;
+    var currRateRange = engine.getValue(group, "rateRange");
+    engine.setValue(group, "rateRange", MC7000.getPrevRateRange(currRateRange));
+};
+
+MC7000.getPrevRateRange = function(currRateRange) {
+    for (var i = MC7000.rateRanges.length; i >= 0; i--) {
+        if (MC7000.rateRanges[i] < currRateRange) {
+            return MC7000.rateRanges[i];
+        }
     }
-    engine.setValue(group, "rateRange", MC7000.rateRanges[MC7000.currentRateRangeIndex[deckOffset]]);
+    return MC7000.rateRanges[MC7000.rateRanges.length - 1];
 };
 
 // Key & Waveform zoom Select
