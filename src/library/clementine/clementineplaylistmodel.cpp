@@ -61,8 +61,7 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
     // setup new playlist
     m_playlistId = playlistId;
 
-    QSqlQuery query(m_database);
-    QString strQuery(
+    strQuery = QString(
             "CREATE TEMP TABLE IF NOT EXISTS " Clementine_TABLE
             " (" CLM_VIEW_ORDER " INTEGER, " CLM_ARTIST " TEXT, " CLM_TITLE
             " TEXT, " CLM_DURATION " INTEGER, " CLM_URI " TEXT, " CLM_ALBUM
