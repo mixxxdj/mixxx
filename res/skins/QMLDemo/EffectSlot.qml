@@ -110,6 +110,7 @@ Item {
             property int number: index + 1
             // TODO: Use null coalescing when we switch to Qt >= 5.15
             property string label: shortName ? shortName : name
+            property string key: controlKey
             property bool isButton: controlHint > 0 && controlHint == 6
             property bool isKnob: controlHint > 0 && controlHint < 6
 
@@ -131,7 +132,7 @@ Item {
                 anchors.centerIn: parent
                 arcStart: 0
                 group: root.group
-                key: "parameter" + parameter.number
+                key: parameter.key
                 color: Theme.effectColor
                 visible: parameter.isKnob
 
@@ -141,7 +142,7 @@ Item {
                     property bool loaded: value != 0
 
                     group: root.group
-                    key: `parameter${parameter.number}_loaded`
+                    key: parameter.key + "_loaded"
                 }
 
             }
@@ -153,7 +154,7 @@ Item {
                 width: parent.width
                 anchors.centerIn: parent
                 group: root.group
-                key: "button_parameter" + parameter.number
+                key: parameter.key
                 activeColor: Theme.effectColor
                 visible: parameter.isButton
                 toggleable: true
@@ -165,7 +166,7 @@ Item {
                     property bool loaded: value != 0
 
                     group: root.group
-                    key: `button_parameter${parameter.number}_loaded`
+                    key: parameter.key + "_loaded"
                 }
 
             }
