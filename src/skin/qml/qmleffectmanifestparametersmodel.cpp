@@ -14,6 +14,7 @@ const QHash<int, QByteArray> kRoleNames = {
         {QmlEffectManifestParametersModel::ShortNameRole, "shortName"},
         {QmlEffectManifestParametersModel::DescriptionRole, "description"},
         {QmlEffectManifestParametersModel::ControlHintRole, "controlHint"},
+        {QmlEffectManifestParametersModel::ControlKeyRole, "controlKey"},
 };
 }
 
@@ -43,6 +44,56 @@ QVariant QmlEffectManifestParametersModel::data(const QModelIndex& index, int ro
         // TODO: Remove this cast, instead expose the enum directly using
         // Q_ENUM after #2618 has been merged.
         return static_cast<int>(pParameter->controlHint());
+    case QmlEffectManifestParametersModel::ControlKeyRole: {
+        // FIXME: Unfortunately our effect parameter controls are messed up.
+        // Even though we only have a single, ordered list of parameters, our
+        // COs splits up this list into two distinct list (`parameter_N` and
+        // `button_parameter_M`), and their indices don't match up with the
+        // original list.
+        //
+        // For example, if you have 4 parameters (A: Knob, B: Button, C: Knob,
+        // D: Knob), one would expect the following control keys:
+        //    parameter1 -> A
+        //    button_parameter2 -> B
+        //    parameter3 -> C
+        //    parameter4 -> D
+        //
+        // But in reality, this will lead to the following control keys:
+        //    parameter1 -> A
+        //    button_parameter1 -> B
+        //    parameter2 -> C
+        //    parameter3 -> D
+        //
+        // This  makes it extremely hard to show the parameters in the correct
+        // order, because you also need to know how many parameters of the same
+        // type are in that list.
+        //
+        // Due to backwards compatibility, we cannot fix this. This attempts to
+        // solve this problem by letting the user fetch the appropriate key
+        // from the model.
+        if (pParameter->controlHint() == EffectManifestParameter::ControlHint::UNKNOWN) {
+            return QString();
+        }
+        const bool isButton = pParameter->controlHint() ==
+                EffectManifestParameter::ControlHint::TOGGLE_STEPPING;
+        int keyNumber = 1;
+        for (int i = 0; i < index.row(); i++) {
+            const EffectManifestParameterPointer pPrevParameter = parameters.at(i);
+            if (pPrevParameter->controlHint() == EffectManifestParameter::ControlHint::UNKNOWN) {
+                continue;
+            }
+            if (isButton ==
+                    (pPrevParameter->controlHint() ==
+                            EffectManifestParameter::ControlHint::
+                                    TOGGLE_STEPPING)) {
+                keyNumber++;
+            }
+        }
+
+        return (isButton ? QStringLiteral("button_parameter%1")
+                         : QStringLiteral("parameter%1"))
+                .arg(QString::number(keyNumber));
+    }
     default:
         return QVariant();
     }
