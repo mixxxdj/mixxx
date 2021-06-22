@@ -108,6 +108,7 @@ Item {
             id: parameter
 
             property int number: index + 1
+            // TODO: Use null coalescing when we switch to Qt >= 5.15
             property string label: shortName ? shortName : name
             property bool isButton: controlHint > 0 && controlHint == 6
             property bool isKnob: controlHint > 0 && controlHint < 6
