@@ -771,9 +771,13 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/qml/asyncimageprovider.cpp
   src/skin/qml/qmlcontrolproxy.cpp
   src/skin/qml/qmlconfigproxy.cpp
+  src/skin/qml/qmleffectmanifestparametersmodel.cpp
+  src/skin/qml/qmleffectsmanagerproxy.cpp
+  src/skin/qml/qmleffectslotproxy.cpp
   src/skin/qml/qmlplayermanagerproxy.cpp
   src/skin/qml/qmlplayerproxy.cpp
   src/skin/qml/qmlskin.cpp
+  src/skin/qml/qmlvisibleeffectsmodel.cpp
   src/skin/qml/qmlwaveformoverview.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
@@ -1018,6 +1022,12 @@ set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY 
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
+endif()
+
+# QML Debugging
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_definitions(mixxx-lib PRIVATE QT_QML_DEBUG)
+  message(STATUS "Enabling QML Debugging! This poses a security risk as Mixxx will open a TCP port for debugging")
 endif()
 
 # Disable warnings in generated source files

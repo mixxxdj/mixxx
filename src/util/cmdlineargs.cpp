@@ -222,6 +222,10 @@ bool CmdlineArgs::parse(int& argc, char** argv) {
         m_resourcePath = parser.value(resourcePath);
     }
 
+    if (parser.isSet(timelinePath)) {
+        m_timelinePath = parser.value(timelinePath);
+    }
+
     m_midiDebug = parser.isSet(controllerDebug);
     m_developer = parser.isSet(developer);
     m_safeMode = parser.isSet(safeMode);
@@ -234,13 +238,21 @@ bool CmdlineArgs::parse(int& argc, char** argv) {
 
     if (parser.isSet(logLevel)) {
         if (!parseLogLevel(parser.value(logLevel), &m_logLevel)) {
-            fputs("\nlogLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
-warnings and errors to the console unless this is set properly.\n",
+            fputs("\nlog-level wasn't 'trace', 'debug', 'info', 'warning', or 'critical'!\n"
+                  "Mixxx will only print warnings and critical messages to the console.\n",
                     stdout);
         }
     } else {
         if (m_developer) {
             m_logLevel = mixxx::LogLevel::Debug;
+        }
+    }
+
+    if (parser.isSet(logFlushLevel)) {
+        if (!parseLogLevel(parser.value(logFlushLevel), &m_logFlushLevel)) {
+            fputs("\nlog-flush-level wasn't 'trace', 'debug', 'info', 'warning', or 'critical'!\n"
+                  "Mixxx will only flush output after a critical message.\n",
+                    stdout);
         }
     }
 

@@ -6,6 +6,8 @@ MixxxControls.Knob {
     id: root
 
     property color color // required
+    property url shadowSource: Theme.imgKnobShadow
+    property url backgroundSource: Theme.imgKnob
 
     implicitWidth: background.width
     implicitHeight: implicitWidth
@@ -24,7 +26,7 @@ MixxxControls.Knob {
         anchors.right: parent.right
         height: width * 7 / 6
         fillMode: Image.PreserveAspectFit
-        source: Theme.imgKnobShadow
+        source: root.shadowSource
     }
 
     background: Image {
@@ -34,12 +36,10 @@ MixxxControls.Knob {
         anchors.left: parent.left
         anchors.right: parent.right
         height: width
-        source: Theme.imgKnob
+        source: root.backgroundSource
     }
 
     foreground: Item {
-        id: inidicator
-
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -47,8 +47,8 @@ MixxxControls.Knob {
 
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
-            width: root.width / 30
-            height: 10
+            width: 2
+            height: root.width / 5
             y: height
             color: root.color
         }
