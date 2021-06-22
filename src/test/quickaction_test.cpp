@@ -100,6 +100,6 @@ TEST_F(QuickActionTest, NonRecordableValuesAreNotPerturbed) {
     co1.set(1);
     EXPECT_EQ(co1.get(), 1) << "NonRecordable value is filtered while recording";
     coTrigger.set(1);
-    EXPECT_EQ(setCount.m_value, 1) << "NonRecordable value is set again when "
+    EXPECT_EQ(setCount.m_value, 0) << "NonRecordable value is set when "
                                       "triggering the QuickAction";
 }
