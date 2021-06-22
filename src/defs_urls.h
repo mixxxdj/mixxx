@@ -35,7 +35,7 @@
 #define MIXXX_MANUAL_SHORTCUTS_URL \
     MIXXX_MANUAL_URL "/chapters/controlling_mixxx.html#using-a-keyboard"
 #define MIXXX_MANUAL_COMMANDLINEOPTIONS_URL \
-    MIXXX_MANUAL_URL "/chapters/appendix.html#command-line-options"
+    MIXXX_MANUAL_URL "/chapters/appendix/commandline_dev_tools.html"
 #define MIXXX_MANUAL_CONTROLLERS_URL \
     MIXXX_MANUAL_URL "/chapters/controlling_mixxx.html#using-midi-hid-controllers"
 #define MIXXX_MANUAL_CONTROLLERMANUAL_PREFIX \
