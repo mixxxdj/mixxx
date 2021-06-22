@@ -8,8 +8,12 @@
 #include "skin/qml/asyncimageprovider.h"
 #include "skin/qml/qmlconfigproxy.h"
 #include "skin/qml/qmlcontrolproxy.h"
+#include "skin/qml/qmleffectmanifestparametersmodel.h"
+#include "skin/qml/qmleffectslotproxy.h"
+#include "skin/qml/qmleffectsmanagerproxy.h"
 #include "skin/qml/qmlplayermanagerproxy.h"
 #include "skin/qml/qmlplayerproxy.h"
+#include "skin/qml/qmlvisibleeffectsmodel.h"
 #include "skin/qml/qmlwaveformoverview.h"
 #include "util/assert.h"
 
@@ -128,6 +132,40 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
     qmlRegisterType<QmlControlProxy>("Mixxx", 0, 1, "ControlProxy");
     qmlRegisterType<QmlWaveformOverview>("Mixxx", 0, 1, "WaveformOverview");
 
+    qmlRegisterSingletonType<QmlEffectsManagerProxy>("Mixxx",
+            0,
+            1,
+            "EffectsManager",
+            lambda_to_singleton_type_factory_ptr(
+                    [pCoreServices](QQmlEngine* pEngine,
+                            QJSEngine* pScriptEngine) -> QObject* {
+                        Q_UNUSED(pScriptEngine);
+
+                        QmlEffectsManagerProxy* pEffectsManagerProxy =
+                                new QmlEffectsManagerProxy(
+                                        pCoreServices->getEffectsManager(),
+                                        pEngine);
+                        return pEffectsManagerProxy;
+                    }));
+    qmlRegisterUncreatableType<QmlVisibleEffectsModel>("Mixxx",
+            0,
+            1,
+            "VisibleEffectsModel",
+            "VisibleEffectsModel objects can't be created directly, please use "
+            "Mixxx.EffectsManager.visibleEffectsModel");
+    qmlRegisterUncreatableType<QmlEffectManifestParametersModel>("Mixxx",
+            0,
+            1,
+            "EffectManifestParametersModel",
+            "EffectManifestParametersModel objects can't be created directly, "
+            "please use Mixxx.EffectsSlot.parametersModel");
+    qmlRegisterUncreatableType<QmlEffectSlotProxy>("Mixxx",
+            0,
+            1,
+            "EffectSlotProxy",
+            "EffectSlotProxy objects can't be created directly, please use "
+            "Mixxx.EffectsManager.getEffectSlot(rackNumber, unitNumber, effectNumber)");
+
     qmlRegisterSingletonType<QmlPlayerManagerProxy>("Mixxx",
             0,
             1,
@@ -150,7 +188,7 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
             "Player objects can't be created directly, please use "
             "Mixxx.PlayerManager.getPlayer(group)");
 
-    qmlRegisterSingletonType<QmlPlayerManagerProxy>("Mixxx",
+    qmlRegisterSingletonType<QmlConfigProxy>("Mixxx",
             0,
             1,
             "Config",
