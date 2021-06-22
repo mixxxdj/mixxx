@@ -262,7 +262,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="418"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="414"/>
         <source>Couldn&apos;t load track.</source>
         <translation>Track konnte nicht geladen werden.</translation>
     </message>
@@ -403,12 +403,12 @@
 <context>
     <name>BroadcastManager</name>
     <message>
-        <location filename="../../src/broadcast/broadcastmanager.cpp" line="112"/>
+        <location filename="../../src/broadcast/broadcastmanager.cpp" line="111"/>
         <source>Action failed</source>
         <translation>Aktion fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../../src/broadcast/broadcastmanager.cpp" line="113"/>
+        <location filename="../../src/broadcast/broadcastmanager.cpp" line="112"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
         <translation>Bitte aktivieren Sie mindestens eine Verbindung, um Liveübertragung zu verwenden.</translation>
     </message>
@@ -3442,12 +3442,12 @@
         <translation>Frühere Mitwirkende</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="353"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="355"/>
         <source>Official Website</source>
         <translation>Offizielle Webseite</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="363"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="365"/>
         <source>Donate</source>
         <translation type="unfinished"/>
     </message>
@@ -5630,37 +5630,37 @@ Sie können jederzeit Tracks auf dem Bildschirm ziehen und ablegen, um ein Deck 
 <context>
     <name>DlgPrefInterface</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="106"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="110"/>
         <source>The minimum size of the selected skin is bigger than your screen resolution.</source>
         <translation>Die minimale Größe des ausgewählten Skins ist größer als Ihre Bildschirmauflösung.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="157"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="161"/>
         <source>Allow screensaver to run</source>
         <translation>Bildschirmschoner erlauben</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="159"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="163"/>
         <source>Prevent screensaver from running</source>
         <translation>Bildschirmschoner unterdrücken</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="161"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="165"/>
         <source>Prevent screensaver while playing</source>
         <translation>Bildschirmschoner während der Wiedergabe unterdrücken</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="204"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="208"/>
         <source>This skin does not support color schemes</source>
         <translation>Dieses Skin unterstützt keine Farbschemen</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="325"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="329"/>
         <source>Information</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="326"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="330"/>
         <source>Mixxx must be restarted before the new locale setting will take effect.</source>
         <translation>Mixxx muss neu gestartet werden, damit die neuen Spracheinstellungen wirksam werden.</translation>
     </message>
@@ -6957,17 +6957,17 @@ Die Ziel-Lautheit ist ungefähr und nimmt an das Track-Vorverstärkung und Maste
         <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="144"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="148"/>
         <source>OpenGL not available</source>
         <translation>OpenGL nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="289"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="294"/>
         <source>dropped frames</source>
         <translation>ausgelassene Einzelbilder</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="322"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="327"/>
         <source>Cached waveforms occupy %1 MiB on disk.</source>
         <translation>Zwischengespeicherte Wellenformen belegen %1 MiB auf der Festplatte.</translation>
     </message>
@@ -8852,39 +8852,31 @@ Willst du deine Bibliothek jetzt nach Cover-Dateien scannen?</translation>
         <translation>Kodierer</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="107"/>
+        <location filename="../../src/util/sandbox.cpp" line="112"/>
         <source>Mixxx Needs Access to: %1</source>
         <translation>Mixxx benötigt Zugriff auf: %1</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="110"/>
-        <source>Due to Mac Sandboxing, we need your permission to access this file:
+        <location filename="../../src/util/sandbox.cpp" line="115"/>
+        <source>Your permission is required to access the following location:
 
 %1
 
-After clicking OK, you will see a file picker. To give Mixxx permission, you must select '%2' to proceed. If you do not want to grant Mixxx access click Cancel on the file picker. We're sorry for this inconvenience.
-
-To abort this action, press Cancel on the file dialog.</source>
-        <translation>Aufgrund der macOS-Sandboxing benötigen wir Ihre Erlaubnis, um auf diese Datei zuzugreifen:
-
-%1
-
-Nach einem Klick auf OK sehen Sie eine Dateiauswahl. Um Mixxx Zugriffsberechtigung zu erteilen und fortzufahren, müssen Sie &apos;%2&apos; auswählen. Wenn Sie Mixxx keinen Zugriff gewähren wollen, klicken Sie in der Dateiauswahl auf Abbrechen. Wir entschuldigen uns für diese Unannehmlichkeit.
-
-Um diese Aktion abzubrechen, drücken Sie Abbrechen im Datei-Dialog.</translation>
+After clicking OK, you will see a file picker. Please select &apos;%2&apos; to proceed or click Cancel if you don&apos;t want to grant Mixxx access and abort this action.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="151"/>
+        <location filename="../../src/util/sandbox.cpp" line="153"/>
         <source>You selected the wrong file. To grant Mixxx access, please select the file &apos;%1&apos;. If you do not want to continue, press Cancel.</source>
         <translation>Sie haben die falsche Datei ausgewählt. Um Mixxx Zugriff zu gewähren, wählen Sie die Datei &apos;%1&apos;. Wenn Sie nicht fortfahren möchten, klicken Sie auf Abbrechen.</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="444"/>
+        <location filename="../../src/util/sandbox.cpp" line="447"/>
         <source>Upgrading old Mixxx settings</source>
         <translation>Aktualisieren alter Mixxx-Einstellungen</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="447"/>
+        <location filename="../../src/util/sandbox.cpp" line="450"/>
         <source>Due to macOS sandboxing, Mixxx needs your permission to access your music library and settings from Mixxx versions before 2.3.0. After clicking OK, you will see a file selection dialog. 
 
 To allow Mixxx to use your old library and settings, click the Open button in the file selection dialog. Mixxx will then move your old settings into the sandbox. This only needs to be done once.
@@ -10296,27 +10288,27 @@ Ganz rechts: Ende der Effektperiode</translation>
 <context>
     <name>SetlogFeature</name>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="53"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="52"/>
         <source>Join with previous (below)</source>
         <translation>Mit vorherigem verbinden (darunter)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="59"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="58"/>
         <source>Finish current and start new</source>
         <translation>Aktuelles beenden und neu beginnen</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="80"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="79"/>
         <source>History</source>
         <translation>Verlauf</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="123"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="122"/>
         <source>Unlock</source>
         <translation>Entsperren</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="123"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="122"/>
         <source>Lock</source>
         <translation>Sperren</translation>
     </message>
@@ -10470,47 +10462,47 @@ Ganz rechts: Ende der Effektperiode</translation>
         <translation>Netzwerk-Zwischenspeicher-Überlauf</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="899"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="898"/>
         <source>Connection error</source>
         <translation>Verbindungsfehler</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="900"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="899"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>Eine der Liveübertragung-Verbindungen hat diesen Fehler ausgelöst:&lt;br&gt;&lt;b&gt;Fehler bei Verbindung &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="914"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="913"/>
         <source>Connection message</source>
         <translation>Verbindungsnachricht</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="915"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="914"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;Nachricht von Liveübertragung-Verbindung &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="965"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="964"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation>Verbindung zum Streaming-Server verloren, und %1 Versuche erneut zu verbinden sind fehlgeschlagen.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="968"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="967"/>
         <source>Lost connection to streaming server.</source>
         <translation>Verbindung zum Streaming-Server verloren.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="973"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="972"/>
         <source>Please check your connection to the Internet.</source>
         <translation>Bitte überprüfen Sie die Verbindung zum Internet.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1008"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1007"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>Verbindung zum Streaming-Server kann nicht hergestellt werden</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1010"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1009"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>Bitte überprüfen Sie die Internetverbindung und vergewissern sich, dass Ihr Benutzername und Kennwort richtig sind.</translation>
     </message>
@@ -14288,22 +14280,22 @@ Verwenden Sie diese Option, um nur das verarbeitete (Wet) Signal mit EQ- und Fil
 <context>
     <name>WaveformWidgetFactory</name>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="885"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="901"/>
         <source>(GLSL)</source>
         <translation>(GLSL)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="887"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="903"/>
         <source>(GL)</source>
         <translation>(GL)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="897"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="913"/>
         <source>(GLSL ES)</source>
         <translation>(GLSL ES)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="899"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="915"/>
         <source>(GL ES)</source>
         <translation>(GL ES)</translation>
     </message>
@@ -14311,52 +14303,52 @@ Verwenden Sie diese Option, um nur das verarbeitete (Wet) Signal mit EQ- und Fil
 <context>
     <name>main</name>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="79"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="85"/>
         <source>Starts Mixxx in full-screen mode</source>
         <translation>Startet Mixxx im Vollbild-Modus</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="83"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="89"/>
         <source>Use a custom locale for loading translations. (e.g &apos;fr&apos;)</source>
         <translation>Verwenden Sie ein benutzerdefiniertes Gebietsschema für das Laden von Übersetzungen (z.B. &apos;de&apos;)</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="91"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="97"/>
         <source>Top-level directory where Mixxx should look for settings. Default is:</source>
         <translation>Übergeordnetes Verzeichnis, in dem Mixxx nach Einstellungen suchen soll. Standard ist:</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="100"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="106"/>
         <source>Top-level directory where Mixxx should look for its resource files such as MIDI mappings, overriding the default installation location.</source>
         <translation>Übergeordnetes Verzeichnis, in dem Mixxx nach seinen Ressourcendateien wie z. B. MIDI-Mappings suchen soll, wobei der Standard-Installationsort überschrieben wird.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="109"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="115"/>
         <source>Path the timeline is written to</source>
         <translation>Pfad, in den die Zeitleiste geschrieben wird</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="116"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="122"/>
         <source>Causes Mixxx to display/log all of the controller data it receives and script functions it loads</source>
         <translation>Lässt Mixxx alle Controller-Daten, die es empfängt und Skript-Funktionen die es lädt anzeigen/protokollieren</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="122"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="128"/>
         <source>Enables developer-mode. Includes extra log info, stats on performance, and a Developer tools menu.</source>
         <translation>Aktiviert den Entwicklermodus. Enthält zusätzliche Protokollinformationen, Statistiken zur Leistung und ein Menü für Entwicklerwerkzeuge.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="129"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="135"/>
         <source>Enables safe-mode. Disables OpenGL waveforms, and spinning vinyl widgets. Try this option if Mixxx is crashing on startup.</source>
         <translation>Aktiviert den Safe-Modus. Deaktiviert OpenGL-Wellenformen und rotierende Vinyl-Widgets. Versuchen Sie diese Option, wenn Mixxx beim Starten abstürzt.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="136"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="142"/>
         <source>[auto|always|never] Use colors on the console output.</source>
         <translation>[auto|always|never] Farbige Konsolenausgabe verwenden.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="144"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="150"/>
         <source>Sets the verbosity of command line logging.
 critical - Critical/Fatal only
 warning  - Above + Warnings
@@ -14371,17 +14363,17 @@ debug - Wie oben + Debug-/Entwicklermeldungen
 trace - Wie oben + Profiling-Meldungen</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="156"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="162"/>
         <source>Sets the the logging level at which the log buffer is flushed to mixxx.log. LEVEL is one of the values defined at --logLevel above.</source>
         <translation>Legt die Protokollierungsstufe fest, mit welcher der Protokollpuffer in mixxx.log geschrieben wird. LEVEL ist einer der oben unter --logLevel definierten Werte.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="166"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="172"/>
         <source>Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to false. Under a debugger you can continue afterwards.</source>
         <translation>Bricht (SIGINT) Mixxx ab, wenn ein DEBUG_ASSERT zu false ausgewertet wird. Unter einem Debugger können Sie danach fortfahren.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="176"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="182"/>
         <source>Load the specified music file(s) at start-up. Each file you specify will be loaded into the next virtual deck.</source>
         <translation>Lädt die angegebene(n) Musikdatei(en) beim Start. Jede angegebene Datei wird in das nächste virtuelle Deck geladen.</translation>
     </message>
@@ -14389,52 +14381,52 @@ trace - Wie oben + Profiling-Meldungen</translation>
 <context>
     <name>mixxx::CoreServices</name>
     <message>
-        <location filename="../../src/coreservices.cpp" line="167"/>
+        <location filename="../../src/coreservices.cpp" line="172"/>
         <source>fonts</source>
         <translation>Schriftarten</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="171"/>
+        <location filename="../../src/coreservices.cpp" line="176"/>
         <source>database</source>
         <translation>Datenbank</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="184"/>
+        <location filename="../../src/coreservices.cpp" line="189"/>
         <source>effects</source>
         <translation>Effekte</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="208"/>
+        <location filename="../../src/coreservices.cpp" line="213"/>
         <source>audio interface</source>
         <translation>Audio-Interface</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="228"/>
+        <location filename="../../src/coreservices.cpp" line="233"/>
         <source>decks</source>
         <translation>Decks</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="259"/>
+        <location filename="../../src/coreservices.cpp" line="264"/>
         <source>library</source>
         <translation>Bibliothek</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="292"/>
+        <location filename="../../src/coreservices.cpp" line="297"/>
         <source>Choose music library directory</source>
         <translation>Verzeichnis für die Musikbibliothek auswählen</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="302"/>
+        <location filename="../../src/coreservices.cpp" line="307"/>
         <source>controllers</source>
         <translation>Controller</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="439"/>
+        <location filename="../../src/coreservices.cpp" line="444"/>
         <source>Cannot open database</source>
         <translation>Kann Datenbank nicht öffnen</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="440"/>
+        <location filename="../../src/coreservices.cpp" line="445"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
@@ -14636,6 +14628,14 @@ Zum Beenden OK drücken.</translation>
         <location filename="../../src/network/webtask.cpp" line="192"/>
         <source>No network access</source>
         <translation>Kein Netzwerkzugriff</translation>
+    </message>
+</context>
+<context>
+    <name>mixxx::skin::qml::QmlVisibleEffectsModel</name>
+    <message>
+        <location filename="../../src/skin/qml/qmlvisibleeffectsmodel.cpp" line="42"/>
+        <source>No effect loaded.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 </TS>
