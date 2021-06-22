@@ -35,7 +35,7 @@ class AnalysisFeature : public LibraryFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
     void refreshLibraryModels();
 
   signals:
@@ -68,7 +68,7 @@ class AnalysisFeature : public LibraryFeature {
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
-    TreeItemModel m_childModel;
+    TreeItemModel* m_pSidebarModel;
     DlgAnalysis* m_pAnalysisView;
 
     // The title is dynamic and reflects the current progress

@@ -24,7 +24,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* sidebarModel() const;
     // processes the music collection
     TreeItem* importMusicCollection();
     // processes the playlist entries
@@ -54,7 +54,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
 
     QFutureWatcher<TreeItem*> m_track_watcher;
     QFuture<TreeItem*> m_track_future;
-    TreeItemModel m_childModel;
+    TreeItemModel* m_pSidebarModel;
     bool m_cancelImport;
 
     QSharedPointer<BaseTrackCache>  m_trackSource;

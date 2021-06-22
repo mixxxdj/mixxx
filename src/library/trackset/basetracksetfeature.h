@@ -19,5 +19,5 @@ class BaseTrackSetFeature : public LibraryFeature {
   protected:
     const QString m_rootViewName;
 
-    TreeItemModel m_childModel;
+    TreeItemModel* m_pSidebarModel;
 };

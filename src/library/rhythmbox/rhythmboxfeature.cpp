@@ -16,6 +16,7 @@
 
 RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
+          m_pSidebarModel(new TreeItemModel(this)),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_rhythmbox.svg") {
     QString tableName = "rhythmbox_library";
@@ -112,8 +113,8 @@ QIcon RhythmboxFeature::getIcon() {
     return m_icon;
 }
 
-TreeItemModel* RhythmboxFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* RhythmboxFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void RhythmboxFeature::activate() {
@@ -432,7 +433,7 @@ void RhythmboxFeature::clearTable(const QString& table_name) {
 void RhythmboxFeature::onTrackCollectionLoaded() {
     std::unique_ptr<TreeItem> root(m_track_future.result());
     if (root) {
-        m_childModel.setRootItem(std::move(root));
+        m_pSidebarModel->setRootItem(std::move(root));
 
         // Tell the rhythmbox track source that it should re-build its index.
         m_trackSource->buildIndex();

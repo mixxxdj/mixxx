@@ -27,7 +27,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QIcon getIcon() override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -52,7 +52,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     BaseExternalTrackModel* m_pITunesTrackModel;
     BaseExternalPlaylistModel* m_pITunesPlaylistModel;
-    TreeItemModel m_childModel;
+    TreeItemModel* m_pSidebarModel;
     QStringList m_playlists;
     // a new DB connection for the worker thread
     QSqlDatabase m_database;

@@ -64,7 +64,7 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -80,7 +80,7 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     QString formatRootViewHtml() const;
     BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
 
-    TreeItemModel m_childModel;
+    TreeItemModel* m_pSidebarModel;
     RekordboxPlaylistModel* m_pRekordboxPlaylistModel;
 
     QFutureWatcher<QList<TreeItem*>> m_devicesFutureWatcher;

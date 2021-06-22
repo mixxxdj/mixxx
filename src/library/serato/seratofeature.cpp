@@ -847,6 +847,7 @@ SeratoFeature::SeratoFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
+          m_pSidebarModel(new TreeItemModel(this)),
           m_icon(":/images/library/ic_library_serato.svg") {
     QStringList columns;
     columns << LIBRARYTABLE_ID
@@ -912,7 +913,7 @@ SeratoFeature::SeratoFeature(
             &SeratoFeature::onTracksFound);
 
     // initialize the model
-    m_childModel.setRootItem(TreeItem::newRoot(this));
+    m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
 }
 
 SeratoFeature::~SeratoFeature() {
@@ -967,8 +968,8 @@ bool SeratoFeature::isSupported() {
     return true;
 }
 
-TreeItemModel* SeratoFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* SeratoFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 QString SeratoFeature::formatRootViewHtml() const {
@@ -1059,7 +1060,7 @@ void SeratoFeature::activateChild(const QModelIndex& index) {
 
 void SeratoFeature::onSeratoDatabasesFound() {
     QList<TreeItem*> foundDatabases = m_databasesFuture.result();
-    TreeItem* root = m_childModel.getRootItem();
+    TreeItem* root = m_pSidebarModel->getRootItem();
 
     QSqlDatabase database = m_pTrackCollection->database();
 
@@ -1068,7 +1069,7 @@ void SeratoFeature::onSeratoDatabasesFound() {
 
         if (root->childRows() > 0) {
             // Devices have since been unmounted
-            m_childModel.removeRows(0, root->childRows());
+            m_pSidebarModel->removeRows(0, root->childRows());
         }
     } else {
         for (int databaseIndex = 0; databaseIndex < root->childRows(); databaseIndex++) {
@@ -1087,7 +1088,7 @@ void SeratoFeature::onSeratoDatabasesFound() {
             if (removeChild) {
                 // Device has since been unmounted, cleanup DB
 
-                m_childModel.removeRows(databaseIndex, 1);
+                m_pSidebarModel->removeRows(databaseIndex, 1);
             }
         }
 
@@ -1112,7 +1113,7 @@ void SeratoFeature::onSeratoDatabasesFound() {
         }
 
         if (!childrenToAdd.empty()) {
-            m_childModel.insertTreeItemRows(childrenToAdd, 0);
+            m_pSidebarModel->insertTreeItemRows(childrenToAdd, 0);
         }
     }
 
@@ -1123,7 +1124,7 @@ void SeratoFeature::onSeratoDatabasesFound() {
 
 void SeratoFeature::onTracksFound() {
     qDebug() << "onTracksFound";
-    m_childModel.triggerRepaint();
+    m_pSidebarModel->triggerRepaint();
 
     QString databasePlaylist = m_tracksFuture.result();
 

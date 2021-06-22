@@ -34,7 +34,7 @@ class SeratoFeature : public BaseExternalLibraryFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -50,7 +50,7 @@ class SeratoFeature : public BaseExternalLibraryFeature {
     QString formatRootViewHtml() const;
     BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
 
-    TreeItemModel m_childModel;
+    TreeItemModel* m_pSidebarModel;
     SeratoPlaylistModel* m_pSeratoPlaylistModel;
 
     QFutureWatcher<QList<TreeItem*>> m_databasesFutureWatcher;

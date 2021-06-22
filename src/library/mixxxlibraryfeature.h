@@ -37,7 +37,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
     QIcon getIcon() override;
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
     void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard) override;
 #ifdef __ENGINEPRIME__
@@ -73,7 +73,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
 
-    TreeItemModel m_childModel;
+    TreeItemModel* m_pSidebarModel;
 
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;

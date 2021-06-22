@@ -46,7 +46,7 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
           m_icon(QStringLiteral(":/images/library/ic_library_playlist.svg")) {
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
     constructChildModel(kInvalidPlaylistId);
 }
 
@@ -261,11 +261,11 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertTreeItemRows(data_list, 0);
+    m_pSidebarModel->insertTreeItemRows(data_list, 0);
     if (selectedRow == -1) {
         return QModelIndex();
     }
-    return m_childModel.index(selectedRow, 0);
+    return m_pSidebarModel->index(selectedRow, 0);
 }
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {

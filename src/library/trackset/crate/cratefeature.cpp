@@ -49,7 +49,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
     initActions();
 
     // construct child model
-    m_childModel.setRootItem(TreeItem::newRoot(this));
+    m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
     rebuildChildModel();
 
     connectLibrary(pLibrary);
@@ -279,8 +279,8 @@ void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pSidebarWidget = pSidebarWidget;
 }
 
-TreeItemModel* CrateFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* CrateFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
@@ -489,11 +489,11 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
 QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     qDebug() << "CrateFeature::rebuildChildModel()" << selectedCrateId;
 
-    TreeItem* pRootItem = m_childModel.getRootItem();
+    TreeItem* pRootItem = m_pSidebarModel->getRootItem();
     VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
         return QModelIndex();
     }
-    m_childModel.removeRows(0, pRootItem->childRows());
+    m_pSidebarModel->removeRows(0, pRootItem->childRows());
 
     QList<TreeItem*> modelRows;
     modelRows.reserve(m_pTrackCollection->crates().countCrates());
@@ -513,13 +513,13 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertTreeItemRows(modelRows, 0);
+    m_pSidebarModel->insertTreeItemRows(modelRows, 0);
 
     // Update rendering of crates depending on the currently selected track
     slotTrackSelected(m_pSelectedTrack);
 
     if (selectedRow >= 0) {
-        return m_childModel.index(selectedRow, 0);
+        return m_pSidebarModel->index(selectedRow, 0);
     } else {
         return QModelIndex();
     }
@@ -538,8 +538,8 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
             continue;
         }
         updateTreeItemForCrateSummary(
-                m_childModel.getItem(index), crateSummary);
-        m_childModel.triggerRepaint(index);
+                m_pSidebarModel->getItem(index), crateSummary);
+        m_pSidebarModel->triggerRepaint(index);
     }
     if (m_pSelectedTrack) {
         // Crates containing the currently selected track might
@@ -563,9 +563,9 @@ QModelIndex CrateFeature::indexFromCrateId(CrateId crateId) const {
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return QModelIndex();
     }
-    for (int row = 0; row < m_childModel.rowCount(); ++row) {
-        QModelIndex index = m_childModel.index(row, 0);
-        TreeItem* pTreeItem = m_childModel.getItem(index);
+    for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
+        QModelIndex index = m_pSidebarModel->index(row, 0);
+        TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
         DEBUG_ASSERT(pTreeItem != nullptr);
         if (!pTreeItem->hasChildren() && // leaf node
                 (CrateId(pTreeItem->getData()) == crateId)) {
@@ -805,7 +805,7 @@ void CrateFeature::htmlLinkClicked(const QUrl& link) {
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = std::move(pTrack);
 
-    TreeItem* pRootItem = m_childModel.getRootItem();
+    TreeItem* pRootItem = m_pSidebarModel->getRootItem();
     VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
         return;
     }
@@ -834,7 +834,7 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
         pTreeItem->setBold(crateContainsSelectedTrack);
     }
 
-    m_childModel.triggerRepaint();
+    m_pSidebarModel->triggerRepaint();
 }
 
 void CrateFeature::slotResetSelectedTrack() {

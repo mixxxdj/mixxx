@@ -46,7 +46,7 @@ SetlogFeature::SetlogFeature(
     transaction.commit();
 
     //construct child model
-    m_childModel.setRootItem(TreeItem::newRoot(this));
+    m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
     constructChildModel(kInvalidPlaylistId);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous (below)"), this);
@@ -220,7 +220,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertTreeItemRows(itemList, 0);
+    m_pSidebarModel->insertTreeItemRows(itemList, 0);
 
     if (selectedId) {
         return indexFromPlaylistId(selectedId);
