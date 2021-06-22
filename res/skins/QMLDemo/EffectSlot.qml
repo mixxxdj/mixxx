@@ -156,6 +156,8 @@ Item {
                 key: "button_parameter" + parameter.number
                 activeColor: Theme.effectColor
                 visible: parameter.isButton
+                toggleable: true
+                text: "ON"
 
                 Mixxx.ControlProxy {
                     id: buttonParameterLoadedControl
