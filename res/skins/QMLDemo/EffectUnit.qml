@@ -18,7 +18,7 @@ Item {
         anchors.margins: 5
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.right: effectSuperKnobFrame.left
+        anchors.right: effectUnitControlsFrame.left
         height: 60
 
         EffectSlot {
@@ -98,6 +98,16 @@ Item {
                 height: 160
             }
 
+            PropertyChanges {
+                target: superKnob
+                visible: true
+            }
+
+            PropertyChanges {
+                target: dryWetKnob
+                visible: true
+            }
+
         }
 
         transitions: Transition {
@@ -111,41 +121,90 @@ Item {
     }
 
     Rectangle {
-        id: effectSuperKnobFrame
+        id: effectUnitControlsFrame
 
         anchors.margins: 5
         anchors.right: parent.right
         anchors.top: parent.top
-        height: 50
-        width: effectSuperKnob.width + expandButton.width + 15
+        anchors.bottom: parent.bottom
+        width: effectUnitControls.width
         color: Theme.knobBackgroundColor
         radius: 5
 
-        Skin.ControlKnob {
-            id: effectSuperKnob
+        Column {
+            id: effectUnitControls
 
-            anchors.margins: 5
-            anchors.left: parent.left
             anchors.top: parent.top
-            height: 48
-            width: height
-            arcStart: Knob.ArcStart.Minimum
-            group: "[EffectRack1_EffectUnit" + unitNumber + "]"
-            key: "super1"
-            color: Theme.effectUnitColor
-        }
+            anchors.right: parent.right
+            padding: 5
+            spacing: 10
 
-        Skin.Button {
-            id: expandButton
+            Item {
+                width: 40
+                height: width
 
-            anchors.margins: 5
-            anchors.left: effectSuperKnob.right
-            anchors.top: parent.top
-            height: 40
-            width: height
-            activeColor: Theme.effectUnitColor
-            text: "▼"
-            checkable: true
+                Skin.Button {
+                    id: expandButton
+
+                    anchors.fill: parent
+                    activeColor: Theme.effectUnitColor
+                    text: "▼"
+                    checkable: true
+                }
+
+            }
+
+            Skin.ControlKnob {
+                id: superKnob
+
+                height: 40
+                width: height
+                arcStart: Knob.ArcStart.Minimum
+                group: "[EffectRack1_EffectUnit" + unitNumber + "]"
+                key: "super1"
+                color: Theme.effectUnitColor
+                visible: false
+
+                Skin.FadeBehavior on visible {
+                    fadeTarget: superKnob
+                }
+
+            }
+
+            Skin.ControlKnob {
+                id: dryWetKnob
+
+                height: 40
+                width: height
+                arcStart: Knob.ArcStart.Minimum
+                group: "[EffectRack1_EffectUnit" + unitNumber + "]"
+                key: "mix"
+                color: Theme.effectUnitColor
+                visible: false
+
+                Skin.FadeBehavior on visible {
+                    fadeTarget: dryWetKnob
+                }
+
+            }
+
+            add: Transition {
+                NumberAnimation {
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 150
+                }
+
+                NumberAnimation {
+                    property: "scale"
+                    from: 0
+                    to: 1
+                    duration: 150
+                }
+
+            }
+
         }
 
     }
