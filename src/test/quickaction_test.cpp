@@ -32,6 +32,10 @@ QuickActionTest::QuickActionTest()
             Qt::DirectConnection);
 }
 
+QuickActionTest::~QuickActionTest() {
+    QuickActionsManager::setGlobalInstance(nullptr);
+}
+
 TEST_F(QuickActionTest, ValuesAreSetInRecordingOrder) {
     coRecording.set(1);
     co1.set(1);

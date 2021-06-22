@@ -41,6 +41,7 @@ class Counter : public QObject {
 class QuickActionTest : public MixxxTest {
   public:
     QuickActionTest();
+    ~QuickActionTest();
 
     std::shared_ptr<QuickActionsManager> pQuickActionsManager;
     ControlObject co1;
