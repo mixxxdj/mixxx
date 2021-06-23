@@ -6353,7 +6353,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="337"/>
         <source>Album</source>
-        <translation>Album:</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="129"/>
@@ -7368,13 +7368,13 @@ Select from different types of displays for the waveform, which differ primarily
         <location filename="../../src/library/dlgtagfetcher.ui" line="75"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="511"/>
         <source>Artist</source>
-        <translation>Artist:</translation>
+        <translation>Artist</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="55"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="516"/>
         <source>Album</source>
-        <translation>Album:</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="60"/>
