@@ -40,7 +40,10 @@ SOFTWARE.
 
 namespace rigtorp {
 namespace mpmc {
-#ifdef __cpp_lib_hardware_interference_size
+// on macOS there is a bug in libc++ where __cpp_lib_hardware_interference_size
+// is defined but std::hardware_destructive_interference_size is not actually implemented
+// https://bugs.llvm.org/show_bug.cgi?id=41423
+#if defined(__cpp_lib_hardware_interference_size) && ! defined(__APPLE__)
 static constexpr size_t hardwareInterferenceSize =
     std::hardware_destructive_interference_size;
 #else
