@@ -63,7 +63,11 @@ bool parseLogLevel(
 }
 } // namespace
 
-bool CmdlineArgs::parse(int& argc, char** argv) {
+bool CmdlineArgs::parse(int argc, char** argv) {
+    if (argc == 1) {
+        // We have got the binary name only, noting to do
+        return true;
+    }
     QStringList arguments;
     arguments.reserve(argc);
     for (int a = 0; a < argc; ++a) {
