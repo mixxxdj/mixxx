@@ -41,9 +41,7 @@ QStringList trackReleaseColumnValues(
             << trackRelease.albumTitle
             << trackRelease.date
             << trackNumberAndTotal
-            << trackRelease.albumArtist
-
-            ;
+            << trackRelease.albumArtist;
     return columnValues;
 }
 
