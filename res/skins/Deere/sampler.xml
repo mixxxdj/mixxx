@@ -1,0 +1,29 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A simple sample deck.
+  Variables:
+    i: The Sampler number (1-indexed)
+    row: the Sampler row
+-->
+<Template>
+  <SetVariable name="group">[Sampler<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>Sampler</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+      <Template src="skin:sampler_text_row.xml"/>
+      <WidgetGroup>
+        <Connection>
+          <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:sampler_controls_row.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

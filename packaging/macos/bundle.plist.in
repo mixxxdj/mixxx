@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>CFBundleExecutable</key>
+    <string>mixxx</string>
+
+    <key>CFBundleIconFile</key>
+    <string>application.icns</string>
+
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <key>CFBundleIdentifier</key>
+    <string>org.mixxx.mixxx</string>
+
+    <key>CFBundleDisplayName</key>
+    <string>Mixxx</string>
+
+    <key>CFBundleVersion</key>
+    <string>@MACOS_BUNDLE_VERSION@</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>@MACOS_BUNDLE_SHORTVERSION@</string>
+
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2001-@MIXXX_YEAR@ Mixxx Development Team</string>
+
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+
+    <key>NSHighResolutionCapable</key>
+    <string>True</string>
+
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.music</string>
+
+    <key>LSMinimumSystemVersion</key>
+    <string>@CMAKE_OSX_DEPLOYMENT_TARGET@</string>
+  </dict>
+</plist>

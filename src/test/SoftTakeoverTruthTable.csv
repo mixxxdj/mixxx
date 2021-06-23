@@ -1,0 +1,31 @@
+"Sides","prev distance","new distance","new value arrives","Ignore"
+"opposite","close","close","soon",FALSE
+"opposite","close","close","later",FALSE
+"opposite","close","far","soon",FALSE
+"opposite","close","far","later",TRUE
+"opposite","far","close","soon",FALSE
+"opposite","far","close","later",FALSE
+"opposite","far","far","soon",FALSE
+"opposite","far","far","later",TRUE
+"same","close","close","soon",FALSE
+"same","close","close","later",FALSE
+"same","close","far","soon",FALSE
+"same","close","far","later",TRUE
+"same","far","close","soon",FALSE
+"same","far","close","later",FALSE
+"same","far","far","soon",TRUE
+"same","far","far","later",TRUE
+"(I (Sean) figured these out manually by imagining each scenario on a real controller.)",,,,
+,,,,
+,,,,
+"So:",,,,
+"opposite","close","far","later",TRUE
+"opposite","far","far","later",TRUE
+"same","close","far","later",TRUE
+"same","far","far","soon",TRUE
+"same","far","far","later",TRUE
+,,,,
+"But from 1.11's results in the test matrix, all we need is:",,,,
+"same","far","far","soon",TRUE
+"same","far","far","later",TRUE
+"Why the discrepancy? Did I just figure out more cases to ignore?",,,,

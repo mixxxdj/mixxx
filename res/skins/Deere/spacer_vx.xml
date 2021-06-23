@@ -1,0 +1,10 @@
+<!DOCTYPE template>
+<!--
+Description: Spacer.
+-->
+<Template>
+    <WidgetGroup>
+    <ObjectName>Spacer<Variable name="color"/></ObjectName>
+    <Size>0min,<Variable name="height"/>f</Size>
+  </WidgetGroup>
+</Template>

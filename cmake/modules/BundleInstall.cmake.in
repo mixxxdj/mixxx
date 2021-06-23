@@ -1,0 +1,31 @@
+set(BUNDLE_NAME @BUNDLE_NAME@)
+set(BUNDLE_PATH "${CMAKE_INSTALL_PREFIX}/${BUNDLE_NAME}")
+set(BUNDLE_LIBS @BUNDLE_LIBS@)
+set(BUNDLE_DIRS @BUNDLE_DIRS@)
+set(APPLE_CODESIGN_IDENTITY @APPLE_CODESIGN_IDENTITY@)
+set(APPLE_CODESIGN_ENTITLEMENTS @APPLE_CODESIGN_ENTITLEMENTS@)
+
+include(BundleUtilities)
+
+#fixup_bundle tries to copy system libraries without this. Wtf?
+function(gp_resolved_file_type_override file type)
+  if(file MATCHES "^(/usr/lib)")
+    set(type "system" PARENT_SCOPE)
+  endif()
+endfunction()
+
+set(BU_CHMOD_BUNDLE_ITEMS ON)
+fixup_bundle("${BUNDLE_PATH}" "${BUNDLE_LIBS}" "${BUNDLE_DIRS}")
+
+if(DEFINED APPLE_CODESIGN_IDENTITY AND DEFINED APPLE_CODESIGN_ENTITLEMENTS)
+  foreach(PATH_TO_SIGN IN LISTS BUNDLE_LIBS BUNDLE_PATH)
+    execute_process(COMMAND
+        codesign --verbose=4 --deep --force --options runtime
+        --entitlements "${APPLE_CODESIGN_ENTITLEMENTS}"
+        --sign "${APPLE_CODESIGN_IDENTITY}"
+        "${PATH_TO_SIGN}"
+    )
+  endforeach()
+else()
+  message(STATUS "Not signing bundle. Specify -DAPPLE_CODESIGN_IDENTITY and -DAPPLE_CODESIGN_ENTITLEMENTS to cmake before running cpack to sign")
+endif()

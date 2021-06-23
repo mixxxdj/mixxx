@@ -1,0 +1,58 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>SamplerRow</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <Template src="skin:sampler.xml">
+        <SetVariable name="i"><Variable name="1"/></SetVariable>
+      </Template>
+      <Template src="skin:sampler.xml">
+        <SetVariable name="i"><Variable name="2"/></SetVariable>
+      </Template>
+      <Template src="skin:sampler.xml">
+        <SetVariable name="i"><Variable name="3"/></SetVariable>
+      </Template>
+      <Template src="skin:sampler.xml">
+        <SetVariable name="i"><Variable name="4"/></SetVariable>
+      </Template>
+
+      <Template src="skin:spacer_hx.xml">
+        <SetVariable name="width">3</SetVariable>
+        <SetVariable name="color">22</SetVariable>
+      </Template>
+
+      <Template src="skin:sampler.xml">
+        <SetVariable name="i"><Variable name="5"/></SetVariable>
+      </Template>
+      <Template src="skin:sampler.xml">
+        <SetVariable name="i"><Variable name="6"/></SetVariable>
+      </Template>
+      <Template src="skin:sampler.xml">
+        <SetVariable name="i"><Variable name="7"/></SetVariable>
+      </Template>
+      <Template src="skin:sampler.xml">
+        <SetVariable name="i"><Variable name="8"/></SetVariable>
+      </Template>
+
+      <WidgetGroup>
+        <ObjectName>SamplerExpandButtonContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>20f,-1me</Size>
+        <Children>
+          <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
+
+          <Template src="skin:hide_show_button.xml">
+            <SetVariable name="object_name">SamplerRowExpandButton</SetVariable>
+            <SetVariable name="control">[Skin],sampler_row_<Variable name="row"/>_expanded</SetVariable>
+          </Template>
+
+          <!-- Push the button up to the top. -->
+          <Template src="skin:spacer_v.xml"/>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

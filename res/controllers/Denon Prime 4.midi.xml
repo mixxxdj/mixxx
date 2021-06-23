@@ -1,0 +1,1340 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3.0+">
+    <info>
+        <name>Denon Prime 4 - Mixxx Mapping</name>
+        <author>Levi "Whanake" Williams</author>
+        <description>This is a Work-In-Progress mapping to allow the Denon Prime 4 to be used with Mixxx, ideally with the same (if not more) functionality that the Prime 4 provides as a standalone device.</description>
+        <wiki>https://github.com/mixxxdj/mixxx/wiki/Denon-Prime-4</wiki>
+        <forum>https://mixxx.discourse.group/t/denon-prime-4-mapping/22404</forum>
+    </info>
+    <controller id="denonprime4">
+        <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
+            <file filename="Denon-Prime-4-scripts.js" functionprefix="Prime4"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <group>[Channel3]</group> <!-- Deck 3 Cue Button -->
+                <key>pfl</key>
+                <description>MIDI Learned from 6 messages.</description>
+                <status>0x92</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group> <!-- Deck 4 Cue Button -->
+                <key>pfl</key>
+                <description>MIDI Learned from 8 messages.</description>
+                <status>0x93</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 12 messages.</description>
+                <status>0x96</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 18 messages.</description>
+                <status>0x97</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveVertical</key>
+                <description>MIDI Learned from 210 messages.</description>
+                <status>0xBF</status>
+                <midino>0x05</midino>
+                <options>
+                    <selectknob/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 14 messages.</description>
+                <status>0x86</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 20 messages.</description>
+                <status>0x87</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <description>MIDI Learned from 540 messages.</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>MIDI Learned from 50 messages.</description>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <description>MIDI Learned from 460 messages.</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter3</key>
+                <description>MIDI Learned from 476 messages.</description>
+                <status>0xB2</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>MIDI Learned from 54 messages.</description>
+                <status>0x91</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headGain</key>
+                <description>MIDI Learned from 408 messages.</description>
+                <status>0xBF</status>
+                <midino>0x0A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter3</key>
+                <description>MIDI Learned from 504 messages.</description>
+                <status>0xB3</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel3]_enable</key>
+                <description>MIDI Learned from 58 messages.</description>
+                <status>0x92</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>MIDI Learned from 62 messages.</description>
+                <status>0x93</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>MIDI Learned from 52 messages.</description>
+                <status>0x80</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>MIDI Learned from 56 messages.</description>
+                <status>0x81</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 10 messages.</description>
+                <status>0x96</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel3]_enable</key>
+                <description>MIDI Learned from 60 messages.</description>
+                <status>0x82</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x80</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 16 messages.</description>
+                <status>0x97</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>MIDI Learned from 64 messages.</description>
+                <status>0x83</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <description>MIDI Learned from 4 messages.</description>
+                <status>0x81</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <description>MIDI Learned from 6 messages.</description>
+                <status>0x82</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>gain</key>
+                <description>MIDI Learned from 506 messages.</description>
+                <status>0xBF</status>
+                <midino>0x0F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <description>MIDI Learned from 8 messages.</description>
+                <status>0x83</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 12 messages.</description>
+                <status>0x86</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 18 messages.</description>
+                <status>0x87</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pregain</key>
+                <description>MIDI Learned from 576 messages.</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <description>MIDI Learned from 414 messages.</description>
+                <status>0xB1</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>pregain</key>
+                <description>MIDI Learned from 663 messages.</description>
+                <status>0xB2</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group> <!-- Deck 1 Volume Slider -->
+                <key>volume</key>
+                <description>Deck 1 Volume Slider</description>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <description>MIDI Learned from 390 messages.</description>
+                <status>0xBF</status>
+                <midino>0x09</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>pregain</key>
+                <description>MIDI Learned from 884 messages.</description>
+                <status>0xB3</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group> <!-- Deck 2 Volume SLider -->
+                <key>volume</key>
+                <description>Deck 2 Volume Slider</description>
+                <status>0xB1</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group> <!-- Deck 3 Volume Slider -->
+                <key>volume</key>
+                <description>Deck 3 Volume Slider</description>
+                <status>0xB2</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group> <!-- Deck 4 Volume Slider -->
+                <key>volume</key>
+                <description>Deck 4 Volume Slider</description>
+                <status>0xB3</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>MIDI Learned from 50 messages.</description>
+                <status>0x80</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>MIDI Learned from 54 messages.</description>
+                <status>0x81</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel3]_enable</key>
+                <description>MIDI Learned from 58 messages.</description>
+                <status>0x82</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <description>MIDI Learned from 518 messages.</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>MIDI Learned from 62 messages.</description>
+                <status>0x83</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <description>MIDI Learned from 480 messages.</description>
+                <status>0xB1</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>MIDI Learned from 1089 messages.</description>
+                <status>0xBF</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter1</key>
+                <description>MIDI Learned from 768 messages.</description>
+                <status>0xB2</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter1</key>
+                <description>MIDI Learned from 340 messages.</description>
+                <status>0xB3</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 10 messages.</description>
+                <status>0x86</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headSplit</key>
+                <description>MIDI Learned from 28 messages.</description>
+                <status>0x9F</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 16 messages.</description>
+                <status>0x87</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headSplit</key>
+                <description>MIDI Learned from 28 messages.</description>
+                <status>0x8F</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
+                <description>MIDI Learned from 528 messages.</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
+                <description>MIDI Learned from 374 messages.</description>
+                <status>0xB1</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter2</key>
+                <description>MIDI Learned from 510 messages.</description>
+                <status>0xB2</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter2</key>
+                <description>MIDI Learned from 760 messages.</description>
+                <status>0xB3</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 14 messages.</description>
+                <status>0x96</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <description>MIDI Learned from 987 messages.</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>enabled</key>
+                <description>MIDI Learned from 20 messages.</description>
+                <status>0x97</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <description>MIDI Learned from 396 messages.</description>
+                <status>0xB1</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel3]]</group>
+                <key>super1</key>
+                <description>MIDI Learned from 460 messages.</description>
+                <status>0xB2</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel4]]</group>
+                <key>super1</key>
+                <description>MIDI Learned from 3864 messages.</description>
+                <status>0xB3</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>MIDI Learned from 52 messages.</description>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>MIDI Learned from 56 messages.</description>
+                <status>0x91</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel3]_enable</key>
+                <description>MIDI Learned from 60 messages.</description>
+                <status>0x92</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>MIDI Learned from 64 messages.</description>
+                <status>0x93</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <description>MIDI Learned from 4 messages.</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+          <!-- LEFT DECK -->
+            <control>
+              <group></group>
+              <key></key>
+              <description>Deck 1-3 Loop In</description>
+              <status>0x94</status>
+              <midino>0x25</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Deck 1-3 Loop Out</description>
+              <status>0x94</status>
+              <midino>0x26</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Previous Track</description>
+              <status>0x94</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Next Track</description>
+              <status>0x94</status>
+              <midino>0x05</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Beat-Jump Back</description>
+              <status>0x94</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Beat-Jump Forward</description>
+              <status>0x94</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Sync</description>
+              <status>0x94</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Cue</description>
+              <status>0x94</status>
+              <midino>0x09</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Play/Stop</description>
+              <status>0x94</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Paramater Left</description>
+              <status>0x94</status>
+              <midino>0x17</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Parameter Right</description>
+              <status>0x94</status>
+              <midino>0x18</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Beatgrid Downbeat Left / Beatgrid Half</description>
+              <status>0x94</status>
+              <midino>0x19</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Beatgrid Downbeat Right / Beatgrid Double</description>
+              <status>0x94</status>
+              <midino>0x1A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Edit Beatgrid / Reset Beatgrid</description>
+              <status>0x94</status>
+              <midino>0x1B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Shift Button</description>
+              <status>0x94</status>
+              <midino>0x1C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Pitch Bend Down / Pitch Bend Range Down</description>
+              <status>0x94</status>
+              <midino>0x1D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Pitch Bend Up / Pitch Bend Range Up</description>
+              <status>0x94</status>
+              <midino>0x1E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Key Lock / Reset Keylock (Key Sync)</description>
+              <status>0x94</status>
+              <midino>0x22</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Vinyl Mode</description>
+              <status>0x94</status>
+              <midino>0x23</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Slip Mode</description>
+              <status>0x94</status>
+              <midino>0x24</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+            <!-- Left Deck Performance Pads -->
+            <control>
+              <group></group>
+              <key></key>
+              <description>HOT CUE</description>
+              <status>0x94</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>LOOP / AUTOLOOP</description>
+              <status>0x94</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>ROLL</description>
+              <status>0x94</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>SLICER / SLICER LOOP</description>
+              <status>0x94</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 1</description>
+              <status>0x94</status>
+              <midino>0x09</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 2</description>
+              <status>0x94</status>
+              <midino>0x10</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 3</description>
+              <status>0x94</status>
+              <midino>0x11</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 4</description>
+              <status>0x94</status>
+              <midino>0x12</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 5</description>
+              <status>0x94</status>
+              <midino>0x13</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 6</description>
+              <status>0x94</status>
+              <midino>0x14</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 7</description>
+              <status>0x94</status>
+              <midino>0x15</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 8</description>
+              <status>0x94</status>
+              <midino>0x16</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+          <!-- RIGHT DECK -->
+            <control>
+              <group></group>
+              <key></key>
+              <description>Deck 2-4 Loop In</description>
+              <status>0x95</status>
+              <midino>0x25</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Deck 2-4 Loop Out</description>
+              <status>0x95</status>
+              <midino>0x26</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Previous Track</description>
+              <status>0x95</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Next Track</description>
+              <status>0x95</status>
+              <midino>0x05</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Beat-Jump Back</description>
+              <status>0x95</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Beat-Jump Forward</description>
+              <status>0x95</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Sync</description>
+              <status>0x95</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Cue</description>
+              <status>0x95</status>
+              <midino>0x09</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Play/Stop</description>
+              <status>0x95</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Paramater Left</description>
+              <status>0x95</status>
+              <midino>0x17</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Parameter Right</description>
+              <status>0x95</status>
+              <midino>0x18</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Beatgrid Downbeat Left / Beatgrid Half</description>
+              <status>0x95</status>
+              <midino>0x19</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Beatgrid Downbeat Right / Beatgrid Double</description>
+              <status>0x95</status>
+              <midino>0x1A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Edit Beatgrid / Reset Beatgrid</description>
+              <status>0x95</status>
+              <midino>0x1B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Shift Button</description>
+              <status>0x95</status>
+              <midino>0x1C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Pitch Bend Down / Pitch Bend Range Down</description>
+              <status>0x95</status>
+              <midino>0x1D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Pitch Bend Up / Pitch Bend Range Up</description>
+              <status>0x95</status>
+              <midino>0x1E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Key Lock / Reset Keylock (Key Sync)</description>
+              <status>0x95</status>
+              <midino>0x22</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Vinyl Mode</description>
+              <status>0x95</status>
+              <midino>0x23</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Slip Mode</description>
+              <status>0x95</status>
+              <midino>0x24</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+            <!-- Right Deck Performance Pads -->
+            <control>
+              <group></group>
+              <key></key>
+              <description>HOT CUE</description>
+              <status>0x95</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>LOOP / AUTOLOOP</description>
+              <status>0x95</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>ROLL</description>
+              <status>0x95</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>SLICER / SLICER LOOP</description>
+              <status>0x95</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 1</description>
+              <status>0x95</status>
+              <midino>0x09</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 2</description>
+              <status>0x95</status>
+              <midino>0x10</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 3</description>
+              <status>0x95</status>
+              <midino>0x11</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 4</description>
+              <status>0x95</status>
+              <midino>0x12</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 5</description>
+              <status>0x95</status>
+              <midino>0x13</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 6</description>
+              <status>0x95</status>
+              <midino>0x14</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 7</description>
+              <status>0x95</status>
+              <midino>0x15</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key></key>
+              <description>Hotcue 8</description>
+              <status>0x95</status>
+              <midino>0x16</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+        <outputs>
+          <!-- LED feedback for non-JavaScript controls -->
+        </outputs>
+    </controller>
+</MixxxControllerPreset>
+

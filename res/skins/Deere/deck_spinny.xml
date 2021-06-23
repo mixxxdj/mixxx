@@ -1,0 +1,34 @@
+<!--
+Spinny template
+
+Stacked waveforms: always show cover art in spinny
+
+Split waveforms: show cover art in spinny when it is not showing in deck text row,
+but do not show cover art in spinny when the cover art is showing right above it
+in the deck text row.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size><Variable name="Size"/></Size>
+    <Children>
+      <Spinny>
+        <TooltipId>spinny</TooltipId>
+        <ObjectName>Spinny<Variable name="i"/></ObjectName>
+        <Size><Variable name="Size"/></Size>
+        <Group><Variable name="group"/></Group>
+        <PathBackground scalemode="STRETCH">image/vinyl_spinny_background.svg</PathBackground>
+        <PathForeground scalemode="STRETCH">image/vinyl_spinny_foreground.svg</PathForeground>
+        <PathGhost scalemode="STRETCH">image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+        <PathMask scalemode="STRETCH">image/vinyl_spinny_cover_mask.svg</PathMask>
+        <ShowCover><Variable name="cover"/></ShowCover>
+      </Spinny>
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_spinnies</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

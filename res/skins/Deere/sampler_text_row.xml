@@ -1,0 +1,96 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler text row.
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>SamplerTopRowOuter</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>SamplerTopRowInner</ObjectName>
+        <Layout>horizontal</Layout>
+        <!-- When TextRow is laid out, we need to ignore our children. Otherwise
+             decks might end up with different widths based on the size of the
+             labels in this row -->
+        <SizePolicy>i,max</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:left_right_display_2state_button.xml">
+                <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+                <SetVariable name="ObjectName">SamplerPlayButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_play_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_play_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_pause_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_pause_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,cue_gotoandplay</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,cue_default</SetVariable>
+                <SetVariable name="display_connection_control"><Variable name="group"/>,play</SetVariable>
+              </Template>
+
+            </Children>
+            <Connection>
+              <!-- This enables the style with the blue play button -->
+              <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:left_right_display_2state_button.xml">
+                <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+                <SetVariable name="ObjectName">SamplerPlayButtonRepeating</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_play_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_play_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_pause_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_pause_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,cue_gotoandplay</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,cue_default</SetVariable>
+                <SetVariable name="display_connection_control"><Variable name="group"/>,play</SetVariable>
+              </Template>
+
+            </Children>
+            <Connection>
+              <!-- This enables the style with the violet play button -->
+              <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <TrackProperty>
+            <TooltipId>track_title</TooltipId>
+            <SizePolicy>me,min</SizePolicy>
+            <Property>titleInfo</Property>
+            <Group><Variable name="group"/></Group>
+            <Elide>right</Elide>
+          </TrackProperty>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,83 @@
+<!--
+Description:
+  Size-aware container that hides the toggle for deck controls if it is not
+  necessary (when all deck controls are permanently visible).
+  Overall width of all controls is XYpx, the SizeAwareStack fills remaining space.
+  If it can grow broader than 1px the toggle should be visible.
+
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>120f,0f</Size>
+    <Children>
+      <!-- spacers for deck controls that are set to be always visible -->
+      <WidgetGroup><!-- keylock -->
+        <Size>18f,0f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- repeat -->
+        <Size>22f,0f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_repeat</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- eject -->
+        <Size>18f,0f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- slip mode -->
+        <Size>22f,0f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_slip_enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- xfader orientation -->
+        <Size>20f,0f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_orientation</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <WidgetGroup><!-- quantize -->
+        <Size>20f,0f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <SizeAwareStack><!-- Size detector -->
+        <Children>
+          <WidgetStack><!-- hide toggle if unnecessary -->
+            <SizePolicy>me,f</SizePolicy>
+            <MinimumSize>0,0</MinimumSize>
+            <MaximumSize>0,0</MaximumSize>
+            <Children>
+              <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[Tango],show_deck_controls_toggle"><Size>1f,0f</Size></WidgetGroup>
+            </Children>
+          </WidgetStack>
+
+          <WidgetStack><!-- show toggle if necessary -->
+            <SizePolicy>me,f</SizePolicy>
+            <MinimumSize>1,0</MinimumSize>
+            <MaximumSize>-1,0</MaximumSize>
+            <Children>
+              <WidgetGroup trigger="[Tango],show_deck_controls_toggle"><Size>1f,0f</Size></WidgetGroup>
+              <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
+            </Children>
+          </WidgetStack>
+        </Children>
+      </SizeAwareStack><!-- /Size detector -->
+    </Children>
+  </WidgetGroup>
+</Template>

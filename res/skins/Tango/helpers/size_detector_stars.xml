@@ -1,0 +1,300 @@
+<!--
+Description:
+  Size-aware container that decides whether Star Rating fits in between
+  HotCues and deck controls, to avoid squeezed deck controls and on the
+  other hand let HotCue buttons auto-shrink only if necessary.
+  It contains spacers for 4/8 HotCues, each deck control button i.e. separate
+  Cue, keylock, quantize etc.
+
+  Now, this detector is placed below main skin to avoid interference with
+  skin settings menu.
+
+Controls:
+  [Tango],starrating_fits   controls Star visibility in deck_buttons_left/right.xml
+
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>0me,0f</Size>
+    <Children>
+      <!-- left deck buttons -->
+      <WidgetGroup>
+        <ObjectName>SizeTest2</ObjectName>
+        <Size>0me,20f</Size>
+      </WidgetGroup>
+
+      <!-- Spacer for mixer, VU meter, pitch fader, Cover Art -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>0min,20f</Size>
+        <Children>
+
+          <WidgetGroup><!-- Spacer between decks -->
+            <ObjectName>SizeTest</ObjectName>
+            <Size>10f,20f</Size>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Pitch fader spacer -->
+            <ObjectName>SizeTest</ObjectName>
+            <Size>106f,20f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Channel Mixer, EQs and Filter knobs -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup><!-- Basic mixer incl. VU Meter master -->
+                <ObjectName>SizeTest</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>150f,20f</Size>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- EQ knobs -->
+                <ObjectName>SizeTest</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>96f,20f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- Big Cover/Spinny when Channel Mixer is hidden -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>SizeTest</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>228f,20f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>SizeTest</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>52f,20f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Big Cover/Spinny when Channel Mixer is hidden -->
+
+        </Children>
+      </WidgetGroup><!-- /Spacer for mixer, VU meter, pitch fader, Cover Art -->
+
+      <WidgetGroup><!-- right deck buttons  -->
+        <ObjectName>SizeTest2</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>0me,20f</Size>
+        <Children>
+
+          <!-- Play + Cue button -->
+          <WidgetGroup><Size>75f,20f</Size></WidgetGroup>
+
+          <!-- HotCues -->
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup><!-- HotCues 1-4 at minimum size -->
+                <Size>64f,20f</Size>
+              </WidgetGroup>
+              <WidgetGroup><!-- HotCues 5-8 at minimum size -->
+                <Size>64f,20f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- AutoDJ Cues -->
+          <WidgetGroup>
+            <Size>64f,20f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_intro_outro_cues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- deck controls toggle -->
+          <WidgetGroup>
+            <Size>15f,20f</Size>
+            <Connection>
+              <ConfigKey>[Tango],deck_controls_toggle</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /deck controls toggle -->
+
+          <!-- spacers for deck controls that are set to be always visible -->
+          <WidgetGroup><!-- keylock -->
+            <Size>18f,20f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- repeat -->
+            <Size>22f,20f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_repeat</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- eject -->
+            <Size>18f,20f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- slip mode -->
+            <Size>22f,20f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_slipMode</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- xfader orientation -->
+            <Size>20f,20f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_orientation</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup><!-- quantize -->
+            <Size>20f,20f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Spacer for expanded deck controls -->
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup><!-- keylock expanded -->
+                <Size>18f,20f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],always_visible_keylock</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <WidgetGroup><!-- repeat expanded -->
+                <Size>22f,20f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],always_visible_repeat</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <WidgetGroup><!-- eject expanded -->
+                <Size>18f,20f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],always_visible_eject</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <WidgetGroup><!-- slip mode expanded -->
+                <Size>22f,20f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],always_visible_slipMode</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <WidgetGroup><!-- xfader orientation expanded -->
+                <Size>20f,20f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],always_visible_orientation</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <WidgetGroup><!-- quantize expanded -->
+                <Size>20f,20f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],always_visible_quantize</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],deck_controls_expanded</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Spacer for expanded deck controls -->
+
+          <SizeAwareStack><!-- Size detector -->
+            <Children>
+              <WidgetStack><!-- Not enough space for stars -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>82,0</MaximumSize>
+                <Children>
+                  <WidgetGroup><Size>1f,20f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[Tango],starrating_fits"><Size>1f,20f</Size></WidgetGroup>
+                </Children>
+              </WidgetStack>
+
+              <WidgetStack><!-- when there is enough space for stars (min 83px) show them. -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>83,0</MinimumSize>
+                <MaximumSize>-1,0</MaximumSize>
+                <Children>
+                  <WidgetGroup trigger="[Tango],starrating_fits"><Size>1f,20f</Size></WidgetGroup>
+                  <WidgetGroup><Size>1f,20f</Size></WidgetGroup>
+                </Children>
+              </WidgetStack>
+
+            </Children>
+          </SizeAwareStack><!-- /Size detector -->
+
+        </Children>
+      </WidgetGroup><!-- /right deck buttons -->
+
+    </Children>
+  </WidgetGroup><!-- /divide screen width into two equal parts -->
+</Template>
