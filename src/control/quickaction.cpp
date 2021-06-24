@@ -45,7 +45,8 @@ void QuickAction::trigger() {
     }
 }
 
-void QuickAction::slotTriggered(double) {
+void QuickAction::slotTriggered(double d) {
+    Q_UNUSED(d);
     m_coRecording.set(0);
     trigger();
 }
