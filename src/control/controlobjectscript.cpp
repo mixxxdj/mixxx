@@ -7,6 +7,7 @@
 
 ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
         : ControlProxy(key, pParent, ControllerDebug::controlFlags()) {
+    setValueChangesAreQuickActionsRecordable(true);
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
