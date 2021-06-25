@@ -92,10 +92,14 @@ class ControlObject : public QObject {
         }
     }
 
-    // Sets the ControlObject value and confirms it.
-    inline void setAndConfirm(double value) {
+    /// Sets the ControlObject value and confirms it.
+    ///
+    /// \param value The new value of the control object
+    /// \param bValueChangesAreQuickActionsRecordable Specifies whether the value change can be recorded by
+    ///        QuickActions or not. See comment on ControlProxy::setValueChangesAreQuickActionsRecordable.
+    inline void setAndConfirm(double value, bool bValueChangesAreQuickActionsRecordable = false) {
         if (m_pControl) {
-            m_pControl->setAndConfirm(value, this);
+            m_pControl->setAndConfirm(value, this, bValueChangesAreQuickActionsRecordable);
         }
     }
 

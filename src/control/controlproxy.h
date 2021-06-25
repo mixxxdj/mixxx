@@ -33,6 +33,16 @@ class ControlProxy : public QObject {
 
     void initialize(ControlFlags flags = ControlFlag::None);
 
+    /// Sets whether the value changes set through this ControlProxy can be
+    /// recorded by QuickActions or not.
+    ///
+    /// Changes to a QuickActions recordable ControlObject shouldn't always be recorded.
+    /// e.g. Value changes made by the AutoDj should not be recorded, while changes made
+    /// by the user through the UI or a controller should.
+    void setValueChangesAreQuickActionsRecordable(bool bValueChangesAreQuickActionsRecordable) {
+        m_bValueChangesAreQuickActionsRecordable = bValueChangesAreQuickActionsRecordable;
+    }
+
     const ConfigKey& getKey() const {
         return m_key;
     }
@@ -150,13 +160,13 @@ class ControlProxy : public QObject {
     // Sets the control value to v. Thread safe, non-blocking.
     void set(double v) {
         if (m_pControl) {
-            m_pControl->set(v, this);
+            m_pControl->set(v, this, m_bValueChangesAreQuickActionsRecordable);
         }
     }
     // Sets the control parameterized value to v. Thread safe, non-blocking.
     void setParameter(double v) {
         if (m_pControl) {
-            m_pControl->setParameter(v, this);
+            m_pControl->setParameter(v, this, m_bValueChangesAreQuickActionsRecordable);
         }
     }
     // Resets the control to its default value. Thread safe, non-blocking.
@@ -167,7 +177,7 @@ class ControlProxy : public QObject {
             // general valueChanged() signal even though the change originated from
             // us. For this reason, we provide nullptr here so that the change is
             // not filtered in valueChanged()
-            m_pControl->reset();
+            m_pControl->reset(m_bValueChangesAreQuickActionsRecordable);
         }
     }
 
@@ -203,6 +213,7 @@ class ControlProxy : public QObject {
 
   protected:
     ConfigKey m_key;
+    bool m_bValueChangesAreQuickActionsRecordable;
     // Pointer to connected control.
     QSharedPointer<ControlDoublePrivate> m_pControl;
 };

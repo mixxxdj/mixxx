@@ -85,17 +85,33 @@ class ControlDoublePrivate : public QObject {
         m_description = description;
     }
 
-    // Sets the control value.
-    void set(double value, QObject* pSender);
-    // directly sets the control value. Must be used from and only from the
-    // ValueChangeRequest slot.
-    void setAndConfirm(double value, QObject* pSender);
+    /// Sets the control value.
+    ///
+    /// \param value The new value for the ControlObject.
+    /// \param bValueChangesAreQuickActionsRecordable Specifies whether the value change can be recorded by
+    ///        QuickActions or not. See comment on ControlProxy::setValueChangesAreQuickActionsRecordable.
+    void set(double value, QObject* pSender, bool bValueChangesAreQuickActionsRecordable = false);
+
+    /// Directly sets the control value. Must be used from and only from the
+    /// ValueChangeRequest slot.
+    ///
+    /// \param value The new value for the ControlObject.
+    /// \param bValueChangesAreQuickActionsRecordable Specifies whether the value change can be recorded by
+    ///        QuickActions or not. See comment on ControlProxy::setValueChangesAreQuickActionsRecordable.
+    void setAndConfirm(double value,
+            QObject* pSender,
+            bool bValueChangesAreQuickActionsRecordable = false);
+
     // Gets the control value.
     double get() const {
         return m_value.getValue();
     }
-    // Resets the control value to its default.
-    void reset();
+
+    /// Resets the control value to its default.
+    ///
+    /// \param bValueChangesAreQuickActionsRecordable Specifies whether the value change can be recorded by
+    ///        QuickActions or not. See comment on ControlProxy::setValueChangesAreQuickActionsRecordable.
+    void reset(bool bValueChangesAreQuickActionsRecordable = false);
 
     // Set the behavior to be used when setting values and translating between
     // parameter and value space. Returns the previously set behavior (if any).
@@ -105,7 +121,14 @@ class ControlDoublePrivate : public QObject {
     // transfer of ownership.
     void setBehavior(ControlNumericBehavior* pBehavior);
 
-    void setParameter(double dParam, QObject* pSender);
+    /// Sets the control parameter.
+    ///
+    /// \param bValueChangesAreQuickActionsRecordable Specifies whether the value change can be recorded by
+    ///        QuickActions or not. See comment on ControlProxy::setValueChangesAreQuickActionsRecordable.
+    void setParameter(double dParam,
+            QObject* pSender,
+            bool bValueChangesAreQuickActionsRecordable = false);
+
     double getParameter() const;
     double getParameterForValue(double value) const;
     double getParameterForMidi(double midiValue) const;
@@ -153,6 +176,10 @@ class ControlDoublePrivate : public QObject {
         return m_confirmRequired;
     }
 
+    /// Sets whether this ControlObject can be recorded by QuickActions.
+    ///
+    /// Not all controls should be recorded by QuickActions, e.g. "[Channel1], play"
+    /// should, while "[Master], maximize_library" should not.
     void setQuickActionsRecordable(bool bQuickActionsRecordable) {
         m_bQuickActionsRecordable = bQuickActionsRecordable;
     }
@@ -161,7 +188,13 @@ class ControlDoublePrivate : public QObject {
     // Emitted when the ControlDoublePrivate value changes. pSender is a
     // pointer to the setter of the value (potentially NULL).
     void valueChanged(double value, QObject* pSender);
-    void valueChangeRequest(double value);
+
+    /// Emitted when there's a request for a value change.
+    ///
+    /// \param value The new value for the ControlObject.
+    /// \param bValueChangesAreQuickActionsRecordable Specifies whether the value change can be recorded by
+    ///        QuickActions or not. See comment on ControlProxy::setValueChangesAreQuickActionsRecordable.
+    void valueChangeRequest(double value, bool bValueChangesAreQuickActionsRecordable);
 
   private:
     ControlDoublePrivate(

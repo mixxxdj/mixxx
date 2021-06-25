@@ -727,7 +727,7 @@ void EngineBuffer::verifyPlay() {
     }
 }
 
-void EngineBuffer::slotControlPlayRequest(double v) {
+void EngineBuffer::slotControlPlayRequest(double v, bool bValueChangesAreQuickActionsRecordable) {
     bool oldPlay = m_playButton->toBool();
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
@@ -742,7 +742,7 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     }
 
     // set and confirm must be called here in any case to update the widget toggle state
-    m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
+    m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0, bValueChangesAreQuickActionsRecordable);
 }
 
 void EngineBuffer::slotControlStart(double v)
