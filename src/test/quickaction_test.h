@@ -38,14 +38,25 @@ class Counter : public QObject {
     double m_value;
 };
 
+class QuickActionTestControlObject : public ControlObject {
+  public:
+    using ControlObject::ControlObject;
+
+    inline void set(double value) {
+        if (m_pControl) {
+            m_pControl->set(value, this, true);
+        }
+    }
+};
+
 class QuickActionTest : public MixxxTest {
   public:
     QuickActionTest();
     ~QuickActionTest();
 
     std::shared_ptr<QuickActionsManager> pQuickActionsManager;
-    ControlObject co1;
-    ControlObject co2;
+    QuickActionTestControlObject co1;
+    QuickActionTestControlObject co2;
     ControlProxy coRecording;
     ControlProxy coTrigger;
     Value result;
