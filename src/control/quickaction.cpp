@@ -7,15 +7,21 @@ QuickAction::QuickAction(int iIndex)
         : QObject(),
           m_coRecording(ConfigKey(QString("[QuickAction%1]").arg(iIndex), "recording")),
           m_coTrigger(ConfigKey(QString("[QuickAction%1]").arg(iIndex), "trigger")),
+          m_coClear(ConfigKey(QString("[QuickAction%1]").arg(iIndex), "clear")),
           m_iIndex(iIndex),
           m_recordedValues(100) {
     m_coRecording.setButtonMode(ControlPushButton::TOGGLE);
     m_coTrigger.setButtonMode(ControlPushButton::TRIGGER);
+    m_coClear.setButtonMode(ControlPushButton::TRIGGER);
 
     connect(&m_coTrigger,
             &ControlObject::valueChanged,
             this,
             &QuickAction::slotTriggered);
+    connect(&m_coClear,
+            &ControlObject::valueChanged,
+            this,
+            &QuickAction::slotCleared);
 }
 
 bool QuickAction::recordCOValue(const ConfigKey& key, double value) {
@@ -45,8 +51,20 @@ void QuickAction::trigger() {
     }
 }
 
+void QuickAction::clear() {
+    m_recordedValues.try_consume_until_current_head(
+            [](QueueElement&& recordedValue) noexcept {
+                Q_UNUSED(recordedValue);
+            });
+}
+
 void QuickAction::slotTriggered(double d) {
     Q_UNUSED(d);
     m_coRecording.set(0);
     trigger();
+}
+
+void QuickAction::slotCleared(double d) {
+    Q_UNUSED(d);
+    clear();
 }

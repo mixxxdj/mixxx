@@ -18,13 +18,16 @@ class QuickAction : public QObject {
     bool recordCOValue(const ConfigKey& key, double value);
 
     void trigger();
+    void clear();
 
   private slots:
     void slotTriggered(double);
+    void slotCleared(double);
 
   private:
     ControlPushButton m_coRecording;
     ControlPushButton m_coTrigger;
+    ControlPushButton m_coClear;
     int m_iIndex;
 
     class QueueElement {

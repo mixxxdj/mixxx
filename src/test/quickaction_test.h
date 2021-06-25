@@ -59,6 +59,7 @@ class QuickActionTest : public MixxxTest {
     QuickActionTestControlObject co2;
     ControlProxy coRecording;
     ControlProxy coTrigger;
+    ControlProxy coClear;
     Value result;
     Counter setCount;
 };

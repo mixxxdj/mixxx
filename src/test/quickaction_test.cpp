@@ -5,7 +5,8 @@ QuickActionTest::QuickActionTest()
           co1(ConfigKey("[Test]", "control1")),
           co2(ConfigKey("[Test]", "control2")),
           coRecording("[QuickAction1]", "recording"),
-          coTrigger("[QuickAction1]", "trigger") {
+          coTrigger("[QuickAction1]", "trigger"),
+          coClear("[QuickAction1]", "clear") {
     QuickActionsManager::setGlobalInstance(pQuickActionsManager);
     co1.setQuickActionsRecordable(true);
     co2.setQuickActionsRecordable(true);
@@ -102,4 +103,21 @@ TEST_F(QuickActionTest, NonRecordableValuesAreNotPerturbed) {
     coTrigger.set(1);
     EXPECT_EQ(setCount.m_value, 0) << "NonRecordable value is set when "
                                       "triggering the QuickAction";
+}
+
+TEST_F(QuickActionTest, NoValuesAreTriggeredAfterClear) {
+    coRecording.set(1);
+    co1.set(1);
+    coRecording.set(0);
+    EXPECT_EQ(co1.get(), 0) << "Values are set while recording";
+    coClear.set(1);
+    coTrigger.set(1);
+    EXPECT_EQ(co1.get(), 0) << "Recorded values are not cleared";
+
+    coRecording.set(1);
+    co1.set(1);
+    coRecording.set(0);
+    EXPECT_EQ(co1.get(), 0) << "Values are set while recording";
+    coTrigger.set(1);
+    EXPECT_EQ(co1.get(), 1) << "Recorded values are not recorded after a clear";
 }
