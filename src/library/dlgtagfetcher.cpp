@@ -84,14 +84,6 @@ void DlgTagFetcher::init() {
     connect(&m_tagFetcher, &TagFetcher::resultAvailable, this, &DlgTagFetcher::fetchTagFinished);
     connect(&m_tagFetcher, &TagFetcher::fetchProgress, this, &DlgTagFetcher::fetchTagProgress);
     connect(&m_tagFetcher, &TagFetcher::networkError, this, &DlgTagFetcher::slotNetworkResult);
-
-    // Resize columns, this can't be set in the ui file
-    results->setColumnWidth(0, 160); // Title column
-    results->setColumnWidth(1, 160); // Artist column
-    results->setColumnWidth(2, 160); // Album column
-    results->setColumnWidth(3, 50);  // Year column
-    results->setColumnWidth(4, 50);  // Track (numbers) column
-    results->setColumnWidth(5, 160); // Album artist column
 }
 
 void DlgTagFetcher::slotNext() {
