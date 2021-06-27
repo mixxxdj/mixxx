@@ -46,7 +46,7 @@
           <number>50</number>
          </attribute>
          <attribute name="headerStretchLastSection">
-          <bool>false</bool>
+          <bool>true</bool>
          </attribute>
          <column>
           <property name="text">

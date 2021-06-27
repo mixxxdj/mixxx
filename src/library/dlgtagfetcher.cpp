@@ -299,7 +299,11 @@ void DlgTagFetcher::updateStack() {
         }
     }
 
-    results->header()->resizeSections(QHeaderView::ResizeToContents);
+    for (int i = 0; i < results->model()->columnCount(); i++) {
+        results->resizeColumnToContents(i);
+        int sectionSize = (results->columnWidth(i) + 10);
+        results->header()->resizeSection(i, sectionSize);
+    }
 
     // Find the item that was selected last time
     for (int i = 0; i < results->model()->rowCount(); ++i) {
