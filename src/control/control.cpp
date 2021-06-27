@@ -1,7 +1,6 @@
 #include "control/control.h"
 
 #include "control/controlobject.h"
-#include "control/quickactionsmanager.h"
 #include "moc_control.cpp"
 #include "util/stat.h"
 
@@ -192,41 +191,28 @@ void ControlDoublePrivate::deleteCreatorCO() {
     delete m_pCreatorCO.fetchAndStoreOrdered(nullptr);
 }
 
-void ControlDoublePrivate::reset(bool bValueChangesAreQuickActionsRecordable) {
+void ControlDoublePrivate::reset() {
     double defaultValue = m_defaultValue.getValue();
     // NOTE: pSender = NULL is important. The originator of this action does
     // not know the resulting value so it makes sense that we should emit a
     // general valueChanged() signal even though we know the originator.
-    set(defaultValue, nullptr, bValueChangesAreQuickActionsRecordable);
+    set(defaultValue, nullptr);
 }
 
-void ControlDoublePrivate::set(double value,
-        QObject* pSender,
-        bool bValueChangesAreQuickActionsRecordable) {
+void ControlDoublePrivate::set(double value, QObject* pSender) {
     // If the behavior says to ignore the set, ignore it.
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior.isNull() && !pBehavior->setFilter(&value)) {
         return;
     }
     if (m_confirmRequired) {
-        emit valueChangeRequest(value, bValueChangesAreQuickActionsRecordable);
+        emit valueChangeRequest(value);
     } else {
-        setAndConfirm(value, pSender, bValueChangesAreQuickActionsRecordable);
+        setInner(value, pSender);
     }
 }
 
-void ControlDoublePrivate::setAndConfirm(double value,
-        QObject* pSender,
-        bool bValueChangesAreQuickActionsRecordable) {
-    std::shared_ptr<QuickActionsManager> pQuickActionsManager =
-            QuickActionsManager::globalInstance();
-    if (m_bQuickActionsRecordable) {
-        if (bValueChangesAreQuickActionsRecordable &&
-                m_bQuickActionsRecordable && pQuickActionsManager &&
-                pQuickActionsManager->recordCOValue(m_key, value)) {
-            return;
-        }
-    }
+void ControlDoublePrivate::setAndConfirm(double value, QObject* pSender) {
     setInner(value, pSender);
 }
 
@@ -249,14 +235,16 @@ void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
     m_pBehavior = QSharedPointer<ControlNumericBehavior>(pBehavior);
 }
 
-void ControlDoublePrivate::setParameter(double dParam,
-        QObject* pSender,
-        bool bValueChangesAreQuickActionsRecordable) {
+QSharedPointer<ControlNumericBehavior> ControlDoublePrivate::getBehavior() const {
+    return m_pBehavior;
+}
+
+void ControlDoublePrivate::setParameter(double dParam, QObject* pSender) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (pBehavior.isNull()) {
-        set(dParam, pSender, bValueChangesAreQuickActionsRecordable);
+        set(dParam, pSender);
     } else {
-        set(pBehavior->parameterToValue(dParam), pSender, bValueChangesAreQuickActionsRecordable);
+        set(pBehavior->parameterToValue(dParam), pSender);
     }
 }
 

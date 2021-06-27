@@ -4,12 +4,16 @@ QuickActionTest::QuickActionTest()
         : pQuickActionsManager(new QuickActionsManager()),
           co1(ConfigKey("[Test]", "control1")),
           co2(ConfigKey("[Test]", "control2")),
+          cp1(ConfigKey("[Test]", "control1")),
+          cp2(ConfigKey("[Test]", "control2")),
           coRecording("[QuickAction1]", "recording"),
           coTrigger("[QuickAction1]", "trigger"),
           coClear("[QuickAction1]", "clear") {
     QuickActionsManager::setGlobalInstance(pQuickActionsManager);
     co1.setQuickActionsRecordable(true);
     co2.setQuickActionsRecordable(true);
+    cp1.setValueChangesAreQuickActionsRecordable(true);
+    cp2.setValueChangesAreQuickActionsRecordable(true);
 
     QObject::connect(&co1,
             &ControlObject::valueChanged,
@@ -39,8 +43,8 @@ QuickActionTest::~QuickActionTest() {
 
 TEST_F(QuickActionTest, ValuesAreSetInRecordingOrder) {
     coRecording.set(1);
-    co1.set(1);
-    co2.set(2);
+    cp1.set(1);
+    cp2.set(2);
     coRecording.set(0);
     EXPECT_EQ(co1.get(), 0) << "While recording, values are expected to be recorded.";
     EXPECT_EQ(co2.get(), 0) << "While recording, values are expected to be recorded.";
@@ -53,14 +57,14 @@ TEST_F(QuickActionTest, ValuesAreSetInRecordingOrder) {
     EXPECT_EQ(setCount.m_value, 2) << "Each value is expected to be set exactly once";
 
     // Reset values for next case
-    co1.set(0);
-    co2.set(0);
+    cp1.set(0);
+    cp2.set(0);
     setCount.m_value = 0;
 
     // Same test setting control2 first, to make sure ConfigKey order does not interfere with the triggering order.
     coRecording.set(1);
-    co2.set(2);
-    co1.set(1);
+    cp2.set(2);
+    cp1.set(1);
     coRecording.set(0);
     EXPECT_EQ(co1.get(), 0) << "While recording, values are expected to be recorded.";
     EXPECT_EQ(co2.get(), 0) << "While recording, values are expected to be recorded.";
@@ -75,8 +79,8 @@ TEST_F(QuickActionTest, ValuesAreSetInRecordingOrder) {
 
 TEST_F(QuickActionTest, OldValuesAreOverwritten) {
     coRecording.set(1);
-    co1.set(1);
-    co1.set(2);
+    cp1.set(1);
+    cp1.set(2);
     coRecording.set(0);
     EXPECT_EQ(co1.get(), 0) << "Values are set while recording";
     coTrigger.set(1);
@@ -88,7 +92,7 @@ TEST_F(QuickActionTest, OldValuesAreOverwritten) {
 
 TEST_F(QuickActionTest, TriggerDisablesRecording) {
     coRecording.set(1);
-    co1.set(1);
+    cp1.set(1);
     EXPECT_EQ(co1.get(), 0) << "Values are set while recording";
     coTrigger.set(1);
     EXPECT_EQ(co1.get(), 1) << "Recorded values are not set when macro is triggered";
@@ -98,16 +102,17 @@ TEST_F(QuickActionTest, TriggerDisablesRecording) {
 TEST_F(QuickActionTest, NonRecordableValuesAreNotPerturbed) {
     co1.setQuickActionsRecordable(false);
     coRecording.set(1);
-    co1.set(1);
+    cp1.set(1);
     EXPECT_EQ(co1.get(), 1) << "NonRecordable value is filtered while recording";
+    EXPECT_EQ(setCount.m_value, 1) << "NonRecordable value is filtered while recording";
     coTrigger.set(1);
-    EXPECT_EQ(setCount.m_value, 0) << "NonRecordable value is set when "
+    EXPECT_EQ(setCount.m_value, 1) << "NonRecordable value is set when "
                                       "triggering the QuickAction";
 }
 
 TEST_F(QuickActionTest, NoValuesAreTriggeredAfterClear) {
     coRecording.set(1);
-    co1.set(1);
+    cp1.set(1);
     coRecording.set(0);
     EXPECT_EQ(co1.get(), 0) << "Values are set while recording";
     coClear.set(1);
@@ -115,7 +120,7 @@ TEST_F(QuickActionTest, NoValuesAreTriggeredAfterClear) {
     EXPECT_EQ(co1.get(), 0) << "Recorded values are not cleared";
 
     coRecording.set(1);
-    co1.set(1);
+    cp1.set(1);
     coRecording.set(0);
     EXPECT_EQ(co1.get(), 0) << "Values are set while recording";
     coTrigger.set(1);

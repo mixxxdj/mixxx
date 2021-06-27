@@ -120,6 +120,7 @@ MixxxMainWindow::MixxxMainWindow(
 
     show();
     pApp->processEvents();
+
     m_pGuiTick = new GuiTick();
     m_pVisualsManager = new VisualsManager();
 

@@ -115,28 +115,24 @@ EngineBuffer::EngineBuffer(const QString& group,
     // Play button
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
-    m_playButton->setQuickActionsRecordable(true);
     m_playButton->connectValueChangeRequest(
             this, &EngineBuffer::slotControlPlayRequest,
             Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
     m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
-    m_playStartButton->setQuickActionsRecordable(true);
     connect(m_playStartButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlPlayFromStart,
             Qt::DirectConnection);
 
     // Jump to start and stop button
     m_stopStartButton = new ControlPushButton(ConfigKey(m_group, "start_stop"));
-    m_stopStartButton->setQuickActionsRecordable(true);
     connect(m_stopStartButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlJumpToStartAndStop,
             Qt::DirectConnection);
 
     //Stop playback (for sampler)
     m_stopButton = new ControlPushButton(ConfigKey(m_group, "stop"));
-    m_stopButton->setQuickActionsRecordable(true);
     connect(m_stopButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlStop,
             Qt::DirectConnection);
@@ -144,14 +140,12 @@ EngineBuffer::EngineBuffer(const QString& group,
     // Start button
     m_startButton = new ControlPushButton(ConfigKey(m_group, "start"));
     m_startButton->setButtonMode(ControlPushButton::TRIGGER);
-    m_startButton->setQuickActionsRecordable(true);
     connect(m_startButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlStart,
             Qt::DirectConnection);
 
     // End button
     m_endButton = new ControlPushButton(ConfigKey(m_group, "end"));
-    m_endButton->setQuickActionsRecordable(true);
     connect(m_endButton, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlEnd,
             Qt::DirectConnection);
@@ -182,7 +176,6 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
-    m_pKeylock->setQuickActionsRecordable(true);
 
     m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
     connect(m_pEject, &ControlObject::valueChanged,
@@ -727,7 +720,7 @@ void EngineBuffer::verifyPlay() {
     }
 }
 
-void EngineBuffer::slotControlPlayRequest(double v, bool bValueChangesAreQuickActionsRecordable) {
+void EngineBuffer::slotControlPlayRequest(double v) {
     bool oldPlay = m_playButton->toBool();
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
@@ -742,7 +735,7 @@ void EngineBuffer::slotControlPlayRequest(double v, bool bValueChangesAreQuickAc
     }
 
     // set and confirm must be called here in any case to update the widget toggle state
-    m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0, bValueChangesAreQuickActionsRecordable);
+    m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
 }
 
 void EngineBuffer::slotControlStart(double v)

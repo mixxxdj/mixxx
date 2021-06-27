@@ -3,8 +3,6 @@
 #include <QEvent>
 #include <QMutex>
 #include <QObject>
-#include <memory>
-#include <utility>
 
 #include "control/control.h"
 #include "controllers/midi/midimessage.h"
@@ -56,6 +54,10 @@ class ControlObject : public QObject {
         }
     }
 
+    /// Sets whether this ControlObject can be recorded by QuickActions.
+    ///
+    /// Not all controls should be recorded by QuickActions, e.g. "[Channel1], play"
+    /// should, while "[Master], maximize_library" should not.
     void setQuickActionsRecordable(bool quickActionsRecordable) {
         if (m_pControl) {
             m_pControl->setQuickActionsRecordable(quickActionsRecordable);
@@ -92,14 +94,10 @@ class ControlObject : public QObject {
         }
     }
 
-    /// Sets the ControlObject value and confirms it.
-    ///
-    /// \param value The new value of the control object
-    /// \param bValueChangesAreQuickActionsRecordable Specifies whether the value change can be recorded by
-    ///        QuickActions or not. See comment on ControlProxy::setValueChangesAreQuickActionsRecordable.
-    inline void setAndConfirm(double value, bool bValueChangesAreQuickActionsRecordable = false) {
+    // Sets the ControlObject value and confirms it.
+    inline void setAndConfirm(double value) {
         if (m_pControl) {
-            m_pControl->setAndConfirm(value, this, bValueChangesAreQuickActionsRecordable);
+            m_pControl->setAndConfirm(value, this);
         }
     }
 

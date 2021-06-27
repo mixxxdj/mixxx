@@ -5,6 +5,7 @@
 #include <QString>
 
 #include "control/control.h"
+#include "control/quickactionsmanager.h"
 #include "preferences/usersettings.h"
 #include "util/platform.h"
 
@@ -160,24 +161,49 @@ class ControlProxy : public QObject {
     // Sets the control value to v. Thread safe, non-blocking.
     void set(double v) {
         if (m_pControl) {
-            m_pControl->set(v, this, m_bValueChangesAreQuickActionsRecordable);
+            if (m_bValueChangesAreQuickActionsRecordable &&
+                    m_pControl->quickActionsRecordable() &&
+                    QuickActionsManager::globalInstance() &&
+                    QuickActionsManager::globalInstance()->recordCOValue(
+                            m_key, v)) {
+                return;
+            }
+            m_pControl->set(v, this);
         }
     }
     // Sets the control parameterized value to v. Thread safe, non-blocking.
     void setParameter(double v) {
         if (m_pControl) {
-            m_pControl->setParameter(v, this, m_bValueChangesAreQuickActionsRecordable);
+            if (m_bValueChangesAreQuickActionsRecordable &&
+                    m_pControl->quickActionsRecordable() &&
+                    QuickActionsManager::globalInstance()) {
+                QSharedPointer<ControlNumericBehavior> pBehavior = m_pControl->getBehavior();
+                if (pBehavior) {
+                    v = pBehavior->parameterToValue(v);
+                }
+                if (QuickActionsManager::globalInstance()->recordCOValue(m_key, v)) {
+                    return;
+                }
+            }
+            m_pControl->setParameter(v, this);
         }
     }
     // Resets the control to its default value. Thread safe, non-blocking.
     void reset() {
         if (m_pControl) {
+            if (m_bValueChangesAreQuickActionsRecordable &&
+                    m_pControl->quickActionsRecordable() &&
+                    QuickActionsManager::globalInstance() &&
+                    QuickActionsManager::globalInstance()->recordCOValue(
+                            m_key, m_pControl->defaultValue())) {
+                return;
+            }
             // NOTE(rryan): This is important. The originator of this action does
             // not know the resulting value so it makes sense that we should emit a
             // general valueChanged() signal even though the change originated from
             // us. For this reason, we provide nullptr here so that the change is
             // not filtered in valueChanged()
-            m_pControl->reset(m_bValueChangesAreQuickActionsRecordable);
+            m_pControl->reset();
         }
     }
 

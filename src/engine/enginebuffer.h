@@ -165,7 +165,7 @@ class EngineBuffer : public EngineObject {
     }
 
   public slots:
-    void slotControlPlayRequest(double, bool bValueChangesAreQuickActionsRecordable);
+    void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
     void slotControlJumpToStartAndStop(double);
     void slotControlStop(double);
