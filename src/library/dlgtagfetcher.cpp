@@ -85,13 +85,6 @@ void DlgTagFetcher::init() {
     connect(&m_tagFetcher, &TagFetcher::fetchProgress, this, &DlgTagFetcher::fetchTagProgress);
     connect(&m_tagFetcher, &TagFetcher::networkError, this, &DlgTagFetcher::slotNetworkResult);
 
-    // Resize columns, this can't be set in the ui file
-    results->setColumnWidth(0, 160); // Title column
-    results->setColumnWidth(1, 160); // Artist column
-    results->setColumnWidth(2, 160); // Album column
-    results->setColumnWidth(3, 50);  // Year column
-    results->setColumnWidth(4, 50);  // Track (numbers) column
-    results->setColumnWidth(5, 160); // Album artist column
 }
 
 void DlgTagFetcher::slotNext() {
@@ -307,7 +300,11 @@ void DlgTagFetcher::updateStack() {
         }
     }
 
-    results->header()->resizeSections(QHeaderView::ResizeToContents);
+    for (int i = 0; i < results->model()->columnCount(); i++) {
+        results->resizeColumnToContents(i);
+        int sectionSize = (results->columnWidth(i) + 10);
+        results->header()->resizeSection(i, sectionSize);
+    }
 
     // Find the item that was selected last time
     for (int i = 0; i < results->model()->rowCount(); ++i) {
