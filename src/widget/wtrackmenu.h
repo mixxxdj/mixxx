@@ -47,6 +47,7 @@ class WTrackMenu : public QMenu {
         FileBrowser = 1 << 10,
         Properties = 1 << 11,
         SearchRelated = 1 << 12,
+        UpdateReplayGain = 1 << 13,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
                 BPM | Color | HideUnhidePurge | FileBrowser | Properties |
@@ -69,7 +70,7 @@ class WTrackMenu : public QMenu {
             const QModelIndexList& trackIndexList);
 
     void loadTrack(
-            const TrackPointer& pTrack);
+            const TrackPointer& pTrack, const QString& deckGroup);
 
     // WARNING: This function hides non-virtual QMenu::popup().
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
@@ -106,6 +107,7 @@ class WTrackMenu : public QMenu {
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
 
     // Info and metadata
+    void slotUpdateReplaygain();
     void slotShowDlgTagFetcher();
     void slotImportMetadataFromFileTags();
     void slotExportMetadataIntoFileTags();
@@ -188,6 +190,9 @@ class WTrackMenu : public QMenu {
 
     /// Track being referenced when TrackModel is not set.
     TrackPointer m_pTrack;
+    /// If the user right clicked on a track in a deck, this will record which
+    /// deck made the request.
+    QString m_deckGroup;
 
     const ControlProxy* m_pNumSamplers{};
     const ControlProxy* m_pNumDecks{};
@@ -206,6 +211,9 @@ class WTrackMenu : public QMenu {
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
+
+    // Update Replaygain from Track
+    QAction* m_pUpdateReplayGain{};
 
     // Reload Track Metadata Action:
     QAction* m_pImportMetadataFromFileAct{};

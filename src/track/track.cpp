@@ -207,7 +207,7 @@ void Track::replaceMetadataFromSource(
             emit keyChanged();
         }
         if (oldReplayGain != newReplayGain) {
-            emit replayGainUpdated(newReplayGain);
+            emit replayGainUpdated(newReplayGain, mixxx::ReplayGain::UpdateWhenStopped);
         }
         if (colorModified) {
             emit colorUpdated(newColor);
@@ -305,7 +305,7 @@ bool Track::replaceRecord(
         emit keyChanged();
     }
     if (oldReplayGain != newReplayGain) {
-        emit replayGainUpdated(newReplayGain);
+        emit replayGainUpdated(newReplayGain, mixxx::ReplayGain::UpdateWhenStopped);
     }
     if (oldColor != newColor) {
         emit colorUpdated(newColor);
@@ -324,7 +324,25 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     auto locked = lockMutex(&m_qMutex);
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
         markDirtyAndUnlock(&locked);
-        emit replayGainUpdated(replayGain);
+        emit replayGainUpdated(replayGain, mixxx::ReplayGain::UpdateWhenStopped);
+    }
+}
+
+void Track::adjustReplayGainFromDeckGain(const QString& deckGroup) {
+    QMutexLocker lock(&m_qMutex);
+    mixxx::ReplayGain replayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
+    auto deckPregainCO = ControlProxy(deckGroup, "pregain");
+    if (!deckPregainCO.valid()) {
+        qDebug() << "pregain CO not valid";
+        return;
+    }
+    const double gain = deckPregainCO.get();
+    qDebug() << "ADJUST REPLAYGAIN: old: " << replayGain.getRatio()
+             << " adjust " << gain << " so: " << replayGain.getRatio() * gain;
+    replayGain.setRatio(replayGain.getRatio() * gain);
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
+        markDirtyAndUnlock(&lock);
+        emit replayGainUpdated(replayGain, mixxx::ReplayGain::UpdateAndAdjustGain);
     }
 }
 

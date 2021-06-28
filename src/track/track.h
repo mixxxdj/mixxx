@@ -144,6 +144,8 @@ class Track : public QObject {
 
     // Set ReplayGain
     void setReplayGain(const mixxx::ReplayGain&);
+    // Adjust ReplayGain by the value from the given deck's pregain knob.
+    void adjustReplayGainFromDeckGain(const QString& deckGroup);
     // Returns ReplayGain
     mixxx::ReplayGain getReplayGain() const;
 
@@ -409,7 +411,8 @@ class Track : public QObject {
     void waveformSummaryUpdated();
     void coverArtUpdated();
     void beatsUpdated();
-    void replayGainUpdated(mixxx::ReplayGain replayGain);
+    void replayGainUpdated(mixxx::ReplayGain replayGain,
+            mixxx::ReplayGain::ReplayGainUpdateMode mode);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
     void analyzed();

@@ -597,11 +597,23 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     slotLoadTrack(pTrack, false);
 }
 
-void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
+void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain,
+        mixxx::ReplayGain::ReplayGainUpdateMode mode) {
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change
-    if (m_pPlay->get() == 0.0) {
-        setReplayGain(replayGain.getRatio());
+    if (m_pPlay->get() == 0.0 || mode == mixxx::ReplayGain::UpdateAndAdjustGain) {
+        const double factor = m_pReplayGain->get() / replayGain.getRatio();
+        const double newPregain = m_pPreGain->get() * factor;
+        // There is a very slight chance that there will be a buffer call in between these sets.
+        // Therefore, we first adjust the control that is being lowered before the control
+        // that is being raised.  Worst case, the volume goes down briefly before rectifying.
+        if (newPregain <= replayGain.getRatio()) {
+            m_pPreGain->set(newPregain);
+            setReplayGain(replayGain.getRatio());
+        } else {
+            setReplayGain(replayGain.getRatio());
+            m_pPreGain->set(newPregain);
+        }
     } else {
         m_replaygainPending = true;
     }

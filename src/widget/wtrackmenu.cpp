@@ -340,6 +340,15 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotClearBeats);
     }
 
+    if (featureIsEnabled(Feature::UpdateReplayGain)) {
+        m_pUpdateReplayGain =
+                new QAction(tr("Update ReplayGain from Deck Gain"), m_pClearMetadataMenu);
+        connect(m_pUpdateReplayGain,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotUpdateReplaygain);
+    }
+
     if (featureIsEnabled(Feature::Color)) {
         ColorPaletteSettings colorPaletteSettings(m_pConfig);
         m_pColorPickerAction = new WColorPickerAction(WColorPicker::Option::AllowNoColor,
@@ -471,6 +480,10 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
         addMenu(m_pClearMetadataMenu);
+    }
+
+    if (featureIsEnabled(Feature::UpdateReplayGain)) {
+        addAction(m_pUpdateReplayGain);
     }
 
     addSeparator();
@@ -701,6 +714,10 @@ void WTrackMenu::updateMenus() {
         }
     }
 
+    if (featureIsEnabled(Feature::UpdateReplayGain)) {
+        m_pUpdateReplayGain->setEnabled(!m_deckGroup.isEmpty());
+    }
+
     if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
@@ -736,7 +753,7 @@ void WTrackMenu::updateMenus() {
 }
 
 void WTrackMenu::loadTrack(
-        const TrackPointer& pTrack) {
+        const TrackPointer& pTrack, const QString& deckGroup) {
     // This asserts that this function is only accessible when a track model is not set,
     // thus maintaining only the TrackPointerList in state and avoiding storing
     // duplicate state with TrackIdList and QModelIndexList.
@@ -751,6 +768,7 @@ void WTrackMenu::loadTrack(
         return;
     }
     m_pTrack = pTrack;
+    m_deckGroup = deckGroup;
     updateMenus();
 }
 
@@ -898,6 +916,17 @@ class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPoint
 };
 
 } // anonymous namespace
+
+void WTrackMenu::slotUpdateReplaygain() {
+    if (!m_pTrack) {
+        qDebug() << "track pointer nullptr, returning";
+        return;
+    }
+    if (m_deckGroup.isEmpty()) {
+        qDebug() << "deck group not set";
+    }
+    m_pTrack->adjustReplayGainFromDeckGain(m_deckGroup);
+}
 
 void WTrackMenu::slotImportMetadataFromFileTags() {
     const auto progressLabelText =
@@ -1723,6 +1752,7 @@ void WTrackMenu::slotPurge() {
 
 void WTrackMenu::clearTrackSelection() {
     m_pTrack = nullptr;
+    m_deckGroup.clear();
     m_trackIndexList.clear();
 }
 
