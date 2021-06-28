@@ -5,8 +5,8 @@
 QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
-WLibrary QHeaderView QMenu,
-WLibrary QHeaderView QMenu::item,
+WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
 QTextBrowser QMenu,
 QTextBrowser QMenu::item,
 WTrackMenu,
@@ -44,11 +44,12 @@ WBeatSpinBox,
 #spinBoxTransition {
   background-color: #7b6f38;
 }
-  #MainMenu QMenu::separator
+  #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
-  WLibrary QHeaderView QMenu::separator,
+  WTrackTableViewHeader QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator {
     border-top: 1px solid #222;
   }
@@ -60,8 +61,8 @@ WBeatSpinBox,
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
-WLibrary QHeaderView QMenu::item:selected,
-WLibrary QHeaderView QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu::item:selected,
+WTrackTableViewHeader QMenu::indicator:unchecked:selected,
 QTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
@@ -87,7 +88,7 @@ WEffectSelector::indicator:unchecked:selected,
   }
   /* unchecked menu checkbox */
   WLibrarySidebar QMenu::indicator:unchecked,
-  WLibrary QHeaderView QMenu::indicator:unchecked,
+  WTrackTableViewHeader QMenu::indicator:unchecked,
   WTrackMenu QMenu QCheckBox::indicator:enabled:unchecked {
     border-color: #222;
   }
@@ -95,7 +96,7 @@ WEffectSelector::indicator:unchecked:selected,
   /* checked checkbox */
   /* checkbox in Crate name context menu: "[ ] Auto DJ Track Source"  */
   WLibrarySidebar QMenu::indicator:checked,
-  WLibrary QHeaderView QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
@@ -140,9 +141,9 @@ WOverview #PassthroughLabel {
   color: #FF9900;
 }
 
-#LibraryContainer QTableView:focus,
-#LibraryContainer QTreeView:focus,
-#LibraryContainer QTextBrowser:focus,
+WTrackTableView:focus,
+WLibrarySidebar:focus,
+WLibraryTextBrowser:focus,
 WSearchLineEdit:focus {
   border-color: #78C70B;
 }

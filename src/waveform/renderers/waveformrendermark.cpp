@@ -53,8 +53,8 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             continue;
         }
 
-        // Generate image on first paint can't be done in setup since we need
-        // render widget to be resized yet ...
+        // Generate image on first paint can't be done in setup since we need to
+        // wait for the render widget to be resized yet.
         if (pMark->m_image.isNull()) {
             generateMarkImage(pMark);
         }
@@ -64,8 +64,9 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             double currentMarkPoint =
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-                // NOTE: vRince I guess image width is odd to display the center on the exact line !
-                // external image should respect that ...
+                // Pixmaps are expected to have the mark stroke at the center,
+                // and preferrably have an odd width in order to have the stroke
+                // exactly at the sample position.
                 const int markHalfWidth =
                         static_cast<int>(pMark->m_image.width() / 2.0 /
                                 m_waveformRenderer->getDevicePixelRatio());
@@ -145,10 +146,13 @@ void WaveformRenderMark::slotCuesUpdated() {
 }
 
 void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
-    // Load the pixmap from file -- takes precedence over text.
+    // Load the pixmap from file.
+    // If that succeeds loading the text and stroke is skipped.
+    float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     if (!pMark->m_pixmapPath.isEmpty()) {
         QString path = pMark->m_pixmapPath;
-        QImage image = *WImageStore::getImage(path, scaleFactor());
+        // Use devicePixelRatio to properly scale the image
+        QImage image = *WImageStore::getImage(path, devicePixelRatio);
         //QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
@@ -156,6 +160,12 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
             pMark->m_image =
                     image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
             //WImageStore::correctImageColors(&pMark->m_image);
+            // Set the pixel/device ratio AFTER loading the image in order to get
+            // a truely scaled source image.
+            // See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
+            // Also, without this some Qt-internal issue results in an offset
+            // image when calculating the center line of pixmaps in draw().
+            pMark->m_image.setDevicePixelRatio(devicePixelRatio);
             return;
         }
     }
@@ -174,12 +184,22 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         }
     }
 
-    //QFont font("Bitstream Vera Sans");
-    //QFont font("Helvetica");
-    QFont font; // Uses the application default
-    font.setPointSizeF(10 * scaleFactor());
-    font.setStretch(100);
-    font.setWeight(75);
+    // This alone would pick the OS default font, or that set by Qt5 Settings (qt5ct)
+    // respectively. This would mostly not be notable since contemporary OS and distros
+    // use a proven sans-serif anyway. Though, some user fonts may be lacking glyphs
+    // we use for the intro/outro markers for example.
+    QFont font;
+    // So, let's just use Open Sans which is used by all official skins to achieve
+    // a consistent skin design.
+    font.setFamily("Open Sans");
+    // Use a pixel size like everywhere else in Mixxx, which can be scaled well
+    // in general.
+    // Point sizes would work if only explicit Qt scaling QT_SCALE_FACTORS is used,
+    // though as soon as other OS-based font and app scaling mechanics join the
+    // party the resulting font size is hard to predict (affects all supported OS).
+    font.setPixelSize(13);
+    font.setWeight(75); // bold
+    font.setItalic(false);
 
     QFontMetrics metrics(font);
 
@@ -210,11 +230,10 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     }
 
     pMark->m_image = QImage(
-            width * static_cast<int>(m_waveformRenderer->getDevicePixelRatio()),
-            height * static_cast<int>(m_waveformRenderer->getDevicePixelRatio()),
+            static_cast<int>(width * devicePixelRatio),
+            static_cast<int>(height * devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied);
-    pMark->m_image.setDevicePixelRatio(
-            m_waveformRenderer->getDevicePixelRatio());
+    pMark->m_image.setDevicePixelRatio(devicePixelRatio);
 
     Qt::Alignment markAlignH = pMark->m_align & Qt::AlignHorizontal_Mask;
     Qt::Alignment markAlignV = pMark->m_align & Qt::AlignVertical_Mask;

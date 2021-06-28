@@ -55,7 +55,7 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
             if (!m_settingsPath.endsWith("/")) {
                 m_settingsPath.append("/");
             }
-            m_settingsPathSet=true;
+            m_settingsPathSet = true;
         } else if (argv[i] == QString("--resourcePath") && i+1 < argc) {
             m_resourcePath = QString::fromLocal8Bit(argv[i+1]);
             i++;

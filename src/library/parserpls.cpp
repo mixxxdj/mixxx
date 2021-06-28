@@ -39,8 +39,7 @@ QList<QString> ParserPls::parse(const QString& sFilename) {
 
     clearLocations();
 
-    if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
-
+    if (file.open(QIODevice::ReadOnly)) {
         /* Unfortunately, QT 4.7 does not handle <CR> (=\r or asci value 13) line breaks.
          * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
          * rather that <LF>

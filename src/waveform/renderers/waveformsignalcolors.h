@@ -3,7 +3,7 @@
 #include <QColor>
 #include <QDomNode>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class WaveformSignalColors {
   public:

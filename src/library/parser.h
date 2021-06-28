@@ -50,8 +50,6 @@ class Parser : public QObject {
     long countParsed();
     // Clears m_psLocations
     void clearLocations();
-    // Checks if the file does contain binary content
-    bool isBinary(const QString&);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
     // Resolve an absolute or relative file path

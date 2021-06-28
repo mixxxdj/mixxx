@@ -7,7 +7,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class WDisplay : public WWidget {
    Q_OBJECT

@@ -10,6 +10,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "moc_bpmcontrol.cpp"
+#include "track/beatutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/duration.h"
@@ -28,12 +29,13 @@ constexpr double kBpmRangeSmallStep = 0.1;
 
 constexpr double kBpmAdjustMin = kBpmRangeMin;
 constexpr double kBpmAdjustStep = 0.01;
+constexpr double kBpmTabRounding = 1 / 12.0;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
 constexpr double kBpmTapMin = 30.0;
 const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kBpmTapMin)));
-constexpr int kBpmTapFilterLength = 5;
+constexpr int kBpmTapFilterLength = 80;
 
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.
@@ -164,10 +166,7 @@ double BpmControl::getBpm() const {
     return m_pEngineBpm->get();
 }
 
-void BpmControl::slotAdjustBeatsFaster(double v) {
-    if (v <= 0) {
-        return;
-    }
+void BpmControl::adjustBeatsBpm(double deltaBpm) {
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;
@@ -175,25 +174,25 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
-        double adjustedBpm = bpm + kBpmAdjustStep;
+        double centerBpm = math_max(kBpmAdjustMin, bpm + deltaBpm);
+        double adjustedBpm = BeatUtils::roundBpmWithinRange(
+                centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);
         pTrack->trySetBeats(pBeats->setBpm(adjustedBpm));
     }
+}
+
+void BpmControl::slotAdjustBeatsFaster(double v) {
+    if (v <= 0) {
+        return;
+    }
+    adjustBeatsBpm(kBpmAdjustStep);
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
     if (v <= 0) {
         return;
     }
-    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
-    if (!pTrack) {
-        return;
-    }
-    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
-        double bpm = pBeats->getBpm();
-        double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
-        pTrack->trySetBeats(pBeats->setBpm(adjustedBpm));
-    }
+    adjustBeatsBpm(-kBpmAdjustStep);
 }
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
@@ -259,6 +258,9 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength / rateRatio;
+    averageBpm = BeatUtils::roundBpmWithinRange(averageBpm - kBpmTabRounding,
+            averageBpm,
+            averageBpm + kBpmTabRounding);
     pTrack->trySetBeats(pBeats->setBpm(averageBpm));
 }
 
@@ -791,6 +793,13 @@ double BpmControl::getBeatMatchPosition(
     if (!m_pBeats) {
         return dThisPosition;
     }
+    const double dThisRateRatio = m_pRateRatio->get();
+    if (dThisRateRatio == 0.0) {
+        // We can't continue without a rate.
+        // This avoids also a division by zero in the following calculations
+        return dThisPosition;
+    }
+
     // Explicit master buffer is always in sync!
     if (getSyncMode() == SYNC_MASTER_EXPLICIT) {
         return dThisPosition;
@@ -864,7 +873,6 @@ double BpmControl::getBeatMatchPosition(
 
     const double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
     const double dThisSampleRate = m_pBeats->getSampleRate();
-    const double dThisRateRatio = m_pRateRatio->get();
 
     // Seek our next beat to the other next beat near our beat.
     // This is the only thing we can do if the track has different BPM,

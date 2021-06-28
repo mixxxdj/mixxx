@@ -6,7 +6,7 @@
 
 #include "control/controlpushbutton.h"
 #include "library/starrating.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "widget/wwidget.h"

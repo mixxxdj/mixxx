@@ -22,7 +22,6 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
-            cmake_generator: Unix Makefiles
             ctest_args:
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
@@ -44,7 +43,6 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
-            cmake_generator: Unix Makefiles
             ctest_args:
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
@@ -64,7 +62,6 @@ jobs:
               -DMACOS_BUNDLE=ON
               -DMODPLUG=OFF
               -DWAVPACK=OFF
-            cmake_generator: Unix Makefiles
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
@@ -93,7 +90,6 @@ jobs:
               -DWAVPACK=ON
             cc: cl
             cxx: cl
-            cmake_generator: Ninja
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
@@ -180,8 +176,11 @@ jobs:
       # Possibly related: actions/checkout#290
       run: git fetch origin --force --tags
 
-    - name: "Set up cmake"
+    - name: "[macOS/Ubuntu 18.04] Set up cmake"
       uses: jwlawson/actions-setup-cmake@v1.4
+      # Ubuntu 20.04 should use the CMake version from the repos, and Visual
+      # Studio on Windows comes with its own CMake version anyway.
+      if: runner.os == 'macOS' || matrix.os == 'ubuntu-18.04'
       with:
         # This should always match the mininum required version in
         # our CMakeLists.txt
@@ -264,12 +263,10 @@ jobs:
 
     - name: "Configure"
       run: >-
-        cmake
-        -G "${{ matrix.cmake_generator }}"
+        cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
         -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=OFF
-        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DBATTERY=ON
         -DBROADCAST=ON
         -DDOWNLOAD_MANUAL=ON

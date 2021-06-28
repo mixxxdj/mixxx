@@ -57,8 +57,8 @@
 #include "mixer/playermanager.h"
 #include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
-#include "skin/launchimage.h"
-#include "skin/legacyskinparser.h"
+#include "skin/legacy/launchimage.h"
+#include "skin/legacy/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
@@ -171,13 +171,19 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_runtime_timer.start();
     mixxx::Time::start();
 
-    QString settingsPath = args.getSettingsPath();
 #ifdef __APPLE__
-    Sandbox::checkSandboxed();
+    // TODO: At this point it is too late to provide the same settings path to all components
+    // and too early to log errors and give users advises in their system language.
+    // Calling this from main.cpp before the QApplication is initialized may cause a crash
+    // due to potential QMessageBox invocations within migrateOldSettings().
+    // Solution: Start Mixxx with default settings, migrate the preferences, and then restart
+    // immediately.
     if (!args.getSettingsPathSet()) {
-        settingsPath = Sandbox::migrateOldSettings();
+        CmdlineArgs::Instance().setSettingsPath(Sandbox::migrateOldSettings());
     }
 #endif
+
+    QString settingsPath = args.getSettingsPath();
 
     mixxx::LogFlags logFlags = mixxx::LogFlag::LogToFile;
     if (args.getDebugAssertBreak()) {
@@ -521,7 +527,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pEffectsManager,
             m_pSettingsManager.get(),
             m_pLibrary);
-    m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
+    m_pPrefDlg->setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
     m_pPrefDlg->setHidden(true);
 
     launchProgress(60);
@@ -582,8 +588,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     pApp->installEventFilter(this); // The eventfilter is located in this
                                     // Mixxx class as a callback.
     emit skinLoaded();
-
-    m_pMenuBar->show();
 
     // Wait until all other ControlObjects are set up before initializing
     // controllers
@@ -695,6 +699,11 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
     setCentralWidget(m_pWidgetParent);
+
+    // Show the menubar after the launch image is replaced by the skin widget,
+    // otherwise it would shift the launch image shortly before the skin is visible.
+    m_pMenuBar->show();
+
     // The launch image widget is automatically disposed, but we still have a
     // pointer to it.
     m_pLaunchImage = nullptr;
@@ -941,7 +950,7 @@ void MixxxMainWindow::initializeWindow() {
     restoreState(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
         ConfigKey("[MainWindow]", "state")).toUtf8()));
 
-    setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
+    setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
     slotUpdateWindowTitle(TrackPointer());
 }
 

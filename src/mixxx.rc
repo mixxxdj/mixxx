@@ -1,4 +1,4 @@
-IDI_ICON1               ICON    DISCARDABLE     "res/images/ic_mixxx.ico"
+IDI_ICON1               ICON    DISCARDABLE     "res/images/icons/ic_mixxx.ico"
 
 #include <windows.h>
 

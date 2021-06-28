@@ -32,7 +32,9 @@ class Sandbox {
     static void setPermissionsFilePath(const QString& permissionsFile);
     static void shutdown();
 
+#ifdef __APPLE__
     static QString migrateOldSettings();
+#endif
 
     // Returns true if we are in a sandbox.
     static bool enabled() {
@@ -40,7 +42,7 @@ class Sandbox {
     }
 
     // Prompt the user to give us access to the path with an open-file dialog.
-    static bool askForAccess(const QString& canonicalPath);
+    static bool askForAccess(const QString& path);
 
     static bool canAccessFile(const QFileInfo& file) {
         SecurityTokenPointer pToken = openSecurityToken(file, true);

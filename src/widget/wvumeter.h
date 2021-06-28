@@ -8,7 +8,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 
 class WVuMeter : public WWidget  {

@@ -8,7 +8,7 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/widgetrendertimer.h"
 #include "widget/slidereventhandler.h"
 #include "widget/wwidget.h"

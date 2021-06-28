@@ -5,10 +5,10 @@
 QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
-WLibrary QHeaderView QMenu,
-WLibrary QHeaderView QMenu::item,
-QTextBrowser QMenu,
-QTextBrowser QMenu::item,
+WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
+WLibraryTextBrowser QMenu,
+WLibraryTextBrowser QMenu::item,
 WTrackMenu,
 WTrackMenu::item,
 WTrackMenu QMenu,
@@ -52,9 +52,9 @@ WEffectSelector::indicator:unchecked,
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
-WLibrary QHeaderView QMenu::item:selected,
-WLibrary QHeaderView QMenu::indicator:unchecked:selected,
-QTextBrowser QMenu::item:selected,
+WTrackTableViewHeader QMenu::item:selected,
+WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+WLibraryTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
@@ -80,16 +80,17 @@ WEffectSelector::indicator:unchecked:selected,
 
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
-  WLibrary QHeaderView QMenu::separator,
+  WTrackTableViewHeader QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator {
     border-top: 1px solid #3F3041;
   }
   /* checked checkbox */
   /* checkbox in Crate name context menu: "[ ] Auto DJ Track Source"  */
   WLibrarySidebar QMenu::indicator:checked,
-  WLibrary QHeaderView QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
@@ -100,7 +101,9 @@ WEffectSelector::indicator:unchecked:selected,
     border-color: #111;
     background-color: #897300;
   }
-  /* disabled menu item & checkbox */
+  /* disabled menu items and checkboxes */
+  #MainMenu::item:disabled,
+  #MainMenu QMenu::item:disabled,
   WLibrarySidebar QMenu::item:disabled,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,
@@ -143,16 +146,16 @@ WOverview #PassthroughLabel {
 }
 
 
-#LibraryContainer QTableView,
-#LibraryContainer QTreeView {
+WTrackTableView,
+WLibrarySidebar {
   /* background of Color delegate in selected row */
   selection-background-color: #666;
   /*outline: 1px solid yellow;*/
 }
 
-#LibraryContainer QTableView:focus,
-#LibraryContainer QTreeView:focus,
-#LibraryContainer QTextBrowser:focus {
+WTrackTableView:focus,
+WLibrarySidebar:focus,
+WLibraryTextBrowser:focus {
   border-color: #78C70B;
 }
 
@@ -163,23 +166,23 @@ WSearchLineEdit QToolButton:focus {
   image: url(skin:/btn/btn_lib_clear_search_focus_green.svg);
 }
 
-#LibraryContainer QTreeView::item:selected,
-#LibraryContainer QTableView::item:selected,
-#LibraryContainer QTreeView::branch:selected,
+WLibrarySidebar::item:selected,
+WTrackTableView::item:selected,
+WLibrarySidebar::branch:selected,
 #LibraryBPMButton::item:selected {
   color: #000;
   selection-color: #000;
   background-color: #666;
 }
-#LibraryContainer QTreeView,
-#LibraryContainer QTreeView::item:focus {
+WLibrarySidebar,
+WLibrarySidebar::item:focus {
   outline: none;
 }
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
-#LibraryContainer QTableView,
+WTrackTableView,
 /* This is for the BPM cell */
-#LibraryContainer QTableView QCheckBox:focus {
+WTrackTableView QCheckBox:focus {
   outline: 1px solid #ccc;
 }
 /* This uses a custom qproperty to set the focus border
@@ -207,7 +210,7 @@ WTrackTableView {
   }
 
 /* checkbox in library "Played" column */
-#LibraryContainer QTableView::indicator:unchecked:selected {
+WTrackTableView::indicator:unchecked:selected {
   background: none;
   color: #cfcfcf;
   border: 1px solid #000;
@@ -223,8 +226,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
   background-color: #000;
 }
-#LibraryContainer QHeaderView,
-#LibraryContainer QHeaderView::section,
+WTrackTableViewHeader,
+WTrackTableViewHeader::section,
 #LibraryContainer QScrollBar::handle:vertical,
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
@@ -234,14 +237,14 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   background: #3f3041;
   color: #999;
 }
-#LibraryContainer QHeaderView::up-arrow,
-#LibraryContainer QHeaderView::down-arrow {
+WTrackTableViewHeader::up-arrow,
+WTrackTableViewHeader::down-arrow {
   background-color: rgba(63,48,65,200);
   }
-  #LibraryContainer QHeaderView::up-arrow {
+  WTrackTableViewHeader::up-arrow {
     image: url(skin:/btn/btn_lib_sort_up_green.png)
   }
-  #LibraryContainer QHeaderView::down-arrow {
+  WTrackTableViewHeader::down-arrow {
     image: url(skin:/btn/btn_lib_sort_down_green.png)
   }
 #LibraryFeatureControls QPushButton:enabled {

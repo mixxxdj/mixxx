@@ -16,8 +16,7 @@
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerengine.cpp"
-// to tell the msvs compiler about `isnan`
-#include "util/math.h"
+#include "util/fpclassify.h"
 #include "util/time.h"
 
 // Used for id's inside controlConnection objects
@@ -684,7 +683,7 @@ double ControllerEngine::getValue(const QString& group, const QString& name) {
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::setValue(const QString& group, const QString& name, double newValue) {
-    if (isnan(newValue)) {
+    if (util_isnan(newValue)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                  << "] to NotANumber, ignoring.";
         return;
@@ -722,7 +721,7 @@ double ControllerEngine::getParameter(const QString& group, const QString& name)
    -------- ------------------------------------------------------ */
 void ControllerEngine::setParameter(
         const QString& group, const QString& name, double newParameter) {
-    if (isnan(newParameter)) {
+    if (util_isnan(newParameter)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                  << "] to NotANumber, ignoring.";
         return;
@@ -746,7 +745,7 @@ void ControllerEngine::setParameter(
    -------- ------------------------------------------------------ */
 double ControllerEngine::getParameterForValue(
         const QString& group, const QString& name, double value) {
-    if (isnan(value)) {
+    if (util_isnan(value)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                  << "] to NotANumber, ignoring.";
         return 0.0;

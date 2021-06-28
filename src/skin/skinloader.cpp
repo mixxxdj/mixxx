@@ -6,13 +6,13 @@
 #include <QtDebug>
 
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "skin/legacyskinparser.h"
+#include "skin/legacy/legacyskinparser.h"
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "effects/effectsmanager.h"
 #include "mixer/playermanager.h"
 #include "util/debug.h"
-#include "skin/launchimage.h"
+#include "skin/legacy/launchimage.h"
 #include "util/timer.h"
 #include "recording/recordingmanager.h"
 
@@ -49,13 +49,20 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
     const QList<QDir> skinSearchPaths = getSkinSearchPaths();
     for (QDir dir : skinSearchPaths) {
         if (dir.cd(skinName)) {
+            if (!dir.exists("skin.xml")) {
+                qWarning() << "Skipping skin directory" << dir.absolutePath()
+                           << "because \"skin.xml\" is missing";
+                continue;
+            }
             return dir.absolutePath();
         }
     }
     return QString();
 }
 
-QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schemeName) const {
+QPixmap SkinLoader::getSkinPreview(const QString& skinName,
+        const QString& schemeName,
+        const double devicePixelRatio) const {
     QPixmap preview;
     if (!schemeName.isEmpty()) {
         QString schemeNameUnformatted = schemeName;
@@ -64,10 +71,13 @@ QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schem
     } else {
         preview.load(getSkinPath(skinName) + "/skin_preview.png");
     }
-    if (!preview.isNull()){
-        return preview;
+    if (preview.isNull()) {
+        preview.load(":/images/skin_preview_placeholder.png");
     }
-    preview.load(":/images/skin_preview_placeholder.png");
+    preview = preview.scaled(QSize(640, 360) * devicePixelRatio,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    preview.setDevicePixelRatio(devicePixelRatio);
     return preview;
 }
 

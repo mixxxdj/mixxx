@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "preferences/usersettings.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 

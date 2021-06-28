@@ -35,7 +35,9 @@ class SkinLoader {
     LaunchImage* loadLaunchImage(QWidget* pParent);
 
     QString getSkinPath(const QString& skinName) const;
-    QPixmap getSkinPreview(const QString& skinName, const QString& schemeName) const;
+    QPixmap getSkinPreview(const QString& skinName,
+            const QString& schemeName,
+            const double devicePixelRatio) const;
     QString getConfiguredSkinPath() const;
     QString getDefaultSkinName() const;
     QList<QDir> getSkinSearchPaths() const;
