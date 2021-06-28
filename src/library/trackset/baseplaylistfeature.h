@@ -33,7 +33,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
             const QString& rootViewName);
     ~BasePlaylistFeature() override = default;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;

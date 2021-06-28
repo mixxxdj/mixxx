@@ -62,7 +62,7 @@ class LibraryFeature : public QObject {
     virtual void bindLibraryWidget(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}
     virtual void bindSidebarWidget(WLibrarySidebar* /* sidebar widget */) {}
-    virtual TreeItemModel* getChildModel() = 0;
+    virtual TreeItemModel* sidebarModel() const = 0;
 
     virtual bool hasTrackTable() {
         return false;

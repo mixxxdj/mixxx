@@ -7,7 +7,8 @@ BaseTrackSetFeature::BaseTrackSetFeature(
         UserSettingsPointer pConfig,
         const QString& rootViewName)
         : LibraryFeature(pLibrary, pConfig),
-          m_rootViewName(rootViewName) {
+          m_rootViewName(rootViewName),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)) {
 }
 
 void BaseTrackSetFeature::activate() {

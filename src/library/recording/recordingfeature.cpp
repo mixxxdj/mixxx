@@ -16,11 +16,12 @@ const QString kViewName = QStringLiteral("Recording");
 } // anonymous namespace
 
 RecordingFeature::RecordingFeature(Library* pLibrary,
-                                   UserSettingsPointer pConfig,
-                                   RecordingManager* pRecordingManager)
+        UserSettingsPointer pConfig,
+        RecordingManager* pRecordingManager)
         : LibraryFeature(pLibrary, pConfig),
           m_pRecordingManager(pRecordingManager),
-          m_icon(":/images/library/ic_library_recordings.svg") {
+          m_icon(":/images/library/ic_library_recordings.svg"),
+          m_pSidebarModel(new FolderTreeModel(this)) {
 }
 
 QVariant RecordingFeature::title() {
@@ -31,8 +32,8 @@ QIcon RecordingFeature::getIcon() {
     return m_icon;
 }
 
-TreeItemModel* RecordingFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* RecordingFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
                                   KeyboardEventFilter *keyboard) {

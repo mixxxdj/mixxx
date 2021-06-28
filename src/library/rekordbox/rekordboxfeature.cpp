@@ -1326,6 +1326,7 @@ RekordboxFeature::RekordboxFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_icon(":/images/library/ic_library_rekordbox.svg") {
     QString tableName = kRekordboxLibraryTable;
     QString idColumn = LIBRARYTABLE_ID;
@@ -1391,7 +1392,7 @@ RekordboxFeature::RekordboxFeature(
             this,
             &RekordboxFeature::onTracksFound);
     // initialize the model
-    m_childModel.setRootItem(TreeItem::newRoot(this));
+    m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
 }
 
 RekordboxFeature::~RekordboxFeature() {
@@ -1446,8 +1447,8 @@ bool RekordboxFeature::isSupported() {
     return true;
 }
 
-TreeItemModel* RekordboxFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* RekordboxFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 QString RekordboxFeature::formatRootViewHtml() const {
@@ -1554,7 +1555,7 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
 
 void RekordboxFeature::onRekordboxDevicesFound() {
     QList<TreeItem*> foundDevices = m_devicesFuture.result();
-    TreeItem* root = m_childModel.getRootItem();
+    TreeItem* root = m_pSidebarModel->getRootItem();
 
     QSqlDatabase database = m_pTrackCollection->database();
 
@@ -1575,7 +1576,7 @@ void RekordboxFeature::onRekordboxDevicesFound() {
 
         if (root->childRows() > 0) {
             // Devices have since been unmounted
-            m_childModel.removeRows(0, root->childRows());
+            m_pSidebarModel->removeRows(0, root->childRows());
         }
     } else {
         for (int deviceIndex = 0; deviceIndex < root->childRows(); deviceIndex++) {
@@ -1595,7 +1596,7 @@ void RekordboxFeature::onRekordboxDevicesFound() {
                 // Device has since been unmounted, cleanup DB
                 clearDeviceTables(database, child);
 
-                m_childModel.removeRows(deviceIndex, 1);
+                m_pSidebarModel->removeRows(deviceIndex, 1);
             }
         }
 
@@ -1620,7 +1621,7 @@ void RekordboxFeature::onRekordboxDevicesFound() {
         }
 
         if (!childrenToAdd.empty()) {
-            m_childModel.insertTreeItemRows(childrenToAdd, 0);
+            m_pSidebarModel->insertTreeItemRows(childrenToAdd, 0);
         }
     }
 
@@ -1631,7 +1632,7 @@ void RekordboxFeature::onRekordboxDevicesFound() {
 
 void RekordboxFeature::onTracksFound() {
     qDebug() << "onTracksFound";
-    m_childModel.triggerRepaint();
+    m_pSidebarModel->triggerRepaint();
 
     QString devicePlaylist = m_tracksFuture.result();
 

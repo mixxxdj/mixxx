@@ -1,6 +1,7 @@
 #pragma once
 
 #include "library/libraryfeature.h"
+#include "util/parented_ptr.h"
 
 class BaseTrackSetFeature : public LibraryFeature {
     Q_OBJECT
@@ -19,5 +20,5 @@ class BaseTrackSetFeature : public LibraryFeature {
   protected:
     const QString m_rootViewName;
 
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
 };
