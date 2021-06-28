@@ -373,7 +373,7 @@ jobs:
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
-          export DEPLOY_PATH='releases/mixxx-{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
+          export DEPLOY_PATH='releases/{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
         else
           export DEPLOY_PATH='snapshots/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
         fi;
@@ -444,7 +444,7 @@ jobs:
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
-          export DEPLOY_PATH='releases/mixxx-{git_describe}/manifest.json';
+          export DEPLOY_PATH='releases/{git_describe}/manifest.json';
         else
           export DEPLOY_PATH='snapshots/{git_branch}/manifest.json';
         fi;
