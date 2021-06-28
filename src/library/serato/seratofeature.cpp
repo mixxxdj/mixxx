@@ -847,7 +847,7 @@ SeratoFeature::SeratoFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_pSidebarModel(new TreeItemModel(this)),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_icon(":/images/library/ic_library_serato.svg") {
     QStringList columns;
     columns << LIBRARYTABLE_ID

@@ -16,6 +16,7 @@
 #include "library/trackset/crate/crate.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class DlgAutoDJ;
 class Library;
@@ -62,7 +63,7 @@ class AutoDJFeature : public LibraryFeature {
     // The id of the AutoDJ playlist.
     int m_iAutoDJPlaylistId;
     AutoDJProcessor* m_pAutoDJProcessor;
-    TreeItemModel* m_pSidebarModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAutoDJ* m_pAutoDJView;
 
     // Initialize the list of crates loaded into the auto-DJ queue.

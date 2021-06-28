@@ -64,7 +64,7 @@ QString localhost_token() {
 
 ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_pSidebarModel(new TreeItemModel(this)),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_itunes.svg") {
     QString tableName = "itunes_library";

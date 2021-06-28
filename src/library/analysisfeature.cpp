@@ -52,7 +52,7 @@ AnalysisFeature::AnalysisFeature(
           m_baseTitle(tr("Analyze")),
           m_icon(":/images/library/ic_library_prepare.svg"),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
-          m_pSidebarModel(new TreeItemModel(this)),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAnalysisView(nullptr),
           m_title(m_baseTitle) {
 }

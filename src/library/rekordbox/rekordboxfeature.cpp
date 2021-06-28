@@ -1326,7 +1326,7 @@ RekordboxFeature::RekordboxFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_pSidebarModel(new TreeItemModel(this)),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_icon(":/images/library/ic_library_rekordbox.svg") {
     QString tableName = kRekordboxLibraryTable;
     QString idColumn = LIBRARYTABLE_ID;

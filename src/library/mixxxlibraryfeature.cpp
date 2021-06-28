@@ -75,7 +75,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_icon(":/images/library/ic_library_tracks.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_pLibraryTableModel(nullptr),
-          m_pSidebarModel(new TreeItemModel(this)),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
     QStringList columns = DEFAULT_COLUMNS;

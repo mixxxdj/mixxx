@@ -21,6 +21,7 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/serato/seratoplaylistmodel.h"
 #include "library/treeitemmodel.h"
+#include "util/parented_ptr.h"
 
 class SeratoFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -50,7 +51,7 @@ class SeratoFeature : public BaseExternalLibraryFeature {
     QString formatRootViewHtml() const;
     BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
 
-    TreeItemModel* m_pSidebarModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     SeratoPlaylistModel* m_pSeratoPlaylistModel;
 
     QFutureWatcher<QList<TreeItem*>> m_databasesFutureWatcher;

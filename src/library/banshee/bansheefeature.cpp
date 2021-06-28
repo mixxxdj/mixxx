@@ -18,7 +18,7 @@ QString BansheeFeature::m_databaseFile;
 
 BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_pSidebarModel(new TreeItemModel(this)),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_banshee.svg") {
     Q_UNUSED(pConfig);

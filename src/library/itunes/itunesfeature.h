@@ -1,16 +1,17 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QtSql>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
 #include <QPointer>
+#include <QStringListModel>
+#include <QtConcurrentRun>
+#include <QtSql>
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
-#include "library/treeitemmodel.h"
 #include "library/treeitem.h"
+#include "library/treeitemmodel.h"
+#include "util/parented_ptr.h"
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;
@@ -52,7 +53,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     BaseExternalTrackModel* m_pITunesTrackModel;
     BaseExternalPlaylistModel* m_pITunesPlaylistModel;
-    TreeItemModel* m_pSidebarModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     QStringList m_playlists;
     // a new DB connection for the worker thread
     QSqlDatabase m_database;

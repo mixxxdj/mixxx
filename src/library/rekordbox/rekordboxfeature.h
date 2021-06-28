@@ -28,13 +28,13 @@
 #include <QFutureWatcher>
 #include <QStringListModel>
 #include <QtConcurrentRun>
-
 #include <fstream>
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/baseexternalplaylistmodel.h"
 #include "library/baseexternaltrackmodel.h"
 #include "library/treeitemmodel.h"
+#include "util/parented_ptr.h"
 
 class TrackCollectionManager;
 class BaseExternalPlaylistModel;
@@ -80,7 +80,7 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     QString formatRootViewHtml() const;
     BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
 
-    TreeItemModel* m_pSidebarModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     RekordboxPlaylistModel* m_pRekordboxPlaylistModel;
 
     QFutureWatcher<QList<TreeItem*>> m_devicesFutureWatcher;

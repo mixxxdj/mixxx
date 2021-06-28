@@ -1,15 +1,16 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QtSql>
-#include <QXmlStreamReader>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QStringListModel>
+#include <QXmlStreamReader>
+#include <QtConcurrentRun>
+#include <QtSql>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/treeitemmodel.h"
 #include "library/trackcollection.h"
+#include "library/treeitemmodel.h"
+#include "util/parented_ptr.h"
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;
@@ -54,7 +55,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
 
     QFutureWatcher<TreeItem*> m_track_watcher;
     QFuture<TreeItem*> m_track_future;
-    TreeItemModel* m_pSidebarModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     bool m_cancelImport;
 
     QSharedPointer<BaseTrackCache>  m_trackSource;

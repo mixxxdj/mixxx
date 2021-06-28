@@ -73,7 +73,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
 
-    TreeItemModel* m_pSidebarModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
 
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;

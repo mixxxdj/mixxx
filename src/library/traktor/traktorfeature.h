@@ -61,7 +61,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     void clearTable(const QString& table_name);
     static QString getTraktorMusicDatabase();
     // private fields
-    TreeItemModel* m_pSidebarModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     // A separate db connection for the worker parsing thread
     QSqlDatabase m_database;
     TraktorTrackModel* m_pTraktorTableModel;
