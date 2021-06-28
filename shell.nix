@@ -174,7 +174,8 @@ let
     cmake --build . --parallel $NIX_BUILD_CORES "$@"
     if [ -f ./mixxx ]; then
       echo "run ${wrapperCmd} mixxx"
-      env shellHook="" nix-shell -p ${wrapper} --command "${wrapperCmd} mixxx --prefix LV2_PATH : ${
+      env shellHook="" nix-shell -p ${wrapper} --command "${wrapperCmd} mixxx \
+      ${ (if lib.lists.length allLv2Plugins > 0 then "--prefix LV2_PATH : " else "") } ${
         lib.makeSearchPath "lib/lv2" allLv2Plugins
       } --prefix LD_LIBRARY_PATH ${pkgs.faad2}/lib"
     fi
@@ -377,7 +378,8 @@ in stdenv.mkDerivation rec {
       [ ]);
 
   postInstall = (if releaseMode then ''
-    ${wrapperCmd} $out/bin/mixxx --prefix LV2_PATH : ${
+    ${wrapperCmd} $out/bin/mixxx  ${
+      (if lib.lists.length allLv2Plugins > 0 then "--prefix LV2_PATH : " else "") } ${
       lib.makeSearchPath "lib/lv2" allLv2Plugins
     } --prefix LD_LIBRARY_PATH ${pkgs.faad2}/lib
   '' else
