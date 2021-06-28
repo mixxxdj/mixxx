@@ -186,8 +186,8 @@ class WTrackMenu : public QMenu {
     TrackModel* const m_pTrackModel;
     QModelIndexList m_trackIndexList;
 
-    // Source of track list when TrackModel is not set.
-    TrackPointerList m_trackPointerList;
+    /// Track being referenced when TrackModel is not set.
+    TrackPointer m_pTrack;
 
     const ControlProxy* m_pNumSamplers{};
     const ControlProxy* m_pNumDecks{};
