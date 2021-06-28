@@ -29,7 +29,6 @@ class SeratoFeature : public BaseExternalLibraryFeature {
     ~SeratoFeature() override;
 
     QVariant title() override;
-    QIcon getIcon() override;
     static bool isSupported();
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
@@ -60,5 +59,4 @@ class SeratoFeature : public BaseExternalLibraryFeature {
     QString m_title;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
-    QIcon m_icon;
 };

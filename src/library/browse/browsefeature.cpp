@@ -31,12 +31,11 @@ BrowseFeature::BrowseFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
         RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary, pConfig),
+        : LibraryFeature(pLibrary, pConfig, QString("computer")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
-          m_pLastRightClickedItem(nullptr),
-          m_icon(":/images/library/ic_library_computer.svg") {
+          m_pLastRightClickedItem(nullptr) {
     connect(this,
             &BrowseFeature::requestAddDir,
             pLibrary,
@@ -211,10 +210,6 @@ void BrowseFeature::slotRemoveQuickLink() {
 
     m_quickLinkList.removeAt(index);
     saveQuickLinks();
-}
-
-QIcon BrowseFeature::getIcon() {
-    return m_icon;
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {

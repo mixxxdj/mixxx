@@ -22,7 +22,6 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
 
     QVariant title();
-    QIcon getIcon();
 
     TreeItemModel* getChildModel();
     // processes the music collection
@@ -58,5 +57,4 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     bool m_cancelImport;
 
     QSharedPointer<BaseTrackCache>  m_trackSource;
-    QIcon m_icon;
 };

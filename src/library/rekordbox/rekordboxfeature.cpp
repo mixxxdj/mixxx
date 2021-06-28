@@ -1325,8 +1325,7 @@ bool RekordboxPlaylistModel::isColumnInternal(int column) {
 RekordboxFeature::RekordboxFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_icon(":/images/library/ic_library_rekordbox.svg") {
+        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("rekordbox")) {
     QString tableName = kRekordboxLibraryTable;
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns;
@@ -1436,10 +1435,6 @@ BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(const QString& 
 
 QVariant RekordboxFeature::title() {
     return m_title;
-}
-
-QIcon RekordboxFeature::getIcon() {
-    return m_icon;
 }
 
 bool RekordboxFeature::isSupported() {

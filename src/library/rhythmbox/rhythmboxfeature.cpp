@@ -15,9 +15,8 @@
 #include "moc_rhythmboxfeature.cpp"
 
 RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_cancelImport(false),
-          m_icon(":/images/library/ic_library_rhythmbox.svg") {
+        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("rhythmbox")),
+          m_cancelImport(false) {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
     QStringList columns;
@@ -106,10 +105,6 @@ bool RhythmboxFeature::isSupported() {
 
 QVariant RhythmboxFeature::title() {
     return m_title;
-}
-
-QIcon RhythmboxFeature::getIcon() {
-    return m_icon;
 }
 
 TreeItemModel* RhythmboxFeature::getChildModel() {

@@ -30,8 +30,7 @@ class BrowseFeature : public LibraryFeature {
             RecordingManager* pRecordingManager);
     virtual ~BrowseFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
@@ -73,6 +72,5 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
-    QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };

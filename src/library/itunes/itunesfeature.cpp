@@ -63,9 +63,8 @@ QString localhost_token() {
 } // anonymous namespace
 
 ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_cancelImport(false),
-          m_icon(":/images/library/ic_library_itunes.svg") {
+        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("itunes")),
+          m_cancelImport(false) {
     QString tableName = "itunes_library";
     QString idColumn = "id";
     QStringList columns;
@@ -150,10 +149,6 @@ bool ITunesFeature::isSupported() {
 
 QVariant ITunesFeature::title() {
     return m_title;
-}
-
-QIcon ITunesFeature::getIcon() {
-    return m_icon;
 }
 
 void ITunesFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

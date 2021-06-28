@@ -17,9 +17,8 @@ const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 QString BansheeFeature::m_databaseFile;
 
 BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_cancelImport(false),
-          m_icon(":/images/library/ic_library_banshee.svg") {
+        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("banshee")),
+          m_cancelImport(false) {
     Q_UNUSED(pConfig);
     m_pBansheePlaylistModel = new BansheePlaylistModel(
             this, m_pLibrary->trackCollectionManager(), &m_connection);
@@ -56,10 +55,6 @@ void BansheeFeature::prepareDbPath(UserSettingsPointer pConfig) {
 
 QVariant BansheeFeature::title() {
     return m_title;
-}
-
-QIcon BansheeFeature::getIcon() {
-    return m_icon;
 }
 
 void BansheeFeature::activate() {

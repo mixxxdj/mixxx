@@ -24,7 +24,6 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
 
     QVariant title() override;
-    QIcon getIcon() override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* getChildModel() override;
@@ -69,5 +68,4 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QSharedPointer<BaseTrackCache> m_trackSource;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
-    QIcon m_icon;
 };

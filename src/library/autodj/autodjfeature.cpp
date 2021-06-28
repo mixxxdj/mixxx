@@ -48,14 +48,13 @@ namespace {
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         PlayerManagerInterface* pPlayerManager)
-        : LibraryFeature(pLibrary, pConfig),
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("autodj")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
           m_pAutoDJProcessor(nullptr),
           m_pAutoDJView(nullptr),
-          m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig),
-          m_icon(":/images/library/ic_library_autodj.svg") {
+          m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig) {
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(this,
             m_pConfig,
@@ -108,10 +107,6 @@ AutoDJFeature::~AutoDJFeature() {
 
 QVariant AutoDJFeature::title() {
     return tr("Auto DJ");
-}
-
-QIcon AutoDJFeature::getIcon() {
-    return m_icon;
 }
 
 void AutoDJFeature::bindLibraryWidget(

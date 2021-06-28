@@ -16,19 +16,14 @@ const QString kViewName = QStringLiteral("Recording");
 } // anonymous namespace
 
 RecordingFeature::RecordingFeature(Library* pLibrary,
-                                   UserSettingsPointer pConfig,
-                                   RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary, pConfig),
-          m_pRecordingManager(pRecordingManager),
-          m_icon(":/images/library/ic_library_recordings.svg") {
+        UserSettingsPointer pConfig,
+        RecordingManager* pRecordingManager)
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("recordings")),
+          m_pRecordingManager(pRecordingManager) {
 }
 
 QVariant RecordingFeature::title() {
     return QVariant(tr("Recordings"));
-}
-
-QIcon RecordingFeature::getIcon() {
-    return m_icon;
 }
 
 TreeItemModel* RecordingFeature::getChildModel() {

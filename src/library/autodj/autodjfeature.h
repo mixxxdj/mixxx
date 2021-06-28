@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QAction>
-#include <QIcon>
 #include <QList>
 #include <QModelIndex>
 #include <QObject>
@@ -34,7 +33,6 @@ class AutoDJFeature : public LibraryFeature {
     virtual ~AutoDJFeature();
 
     QVariant title() override;
-    QIcon getIcon() override;
 
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
@@ -83,7 +81,6 @@ class AutoDJFeature : public LibraryFeature {
     // auto-DJ list.
     QAction *m_pRemoveCrateFromAutoDj;
 
-    QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
   private slots:

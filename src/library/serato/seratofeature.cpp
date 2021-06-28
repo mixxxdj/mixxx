@@ -846,8 +846,7 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 SeratoFeature::SeratoFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_icon(":/images/library/ic_library_serato.svg") {
+        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("serato")) {
     QStringList columns;
     columns << LIBRARYTABLE_ID
             << LIBRARYTABLE_TITLE
@@ -957,10 +956,6 @@ BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(const QString& pla
 
 QVariant SeratoFeature::title() {
     return m_title;
-}
-
-QIcon SeratoFeature::getIcon() {
-    return m_icon;
 }
 
 bool SeratoFeature::isSupported() {

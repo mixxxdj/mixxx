@@ -24,7 +24,6 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     static void prepareDbPath(UserSettingsPointer pConfig);
 
     virtual QVariant title();
-    virtual QIcon getIcon();
 
     virtual TreeItemModel* getChildModel();
 
@@ -50,7 +49,6 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     QFuture<TreeItem*> m_future;
     QString m_title;
     bool m_cancelImport;
-    QIcon m_icon;
 
     static QString m_databaseFile;
 
