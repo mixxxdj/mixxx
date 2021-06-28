@@ -33,19 +33,19 @@ class BrowseFeature : public LibraryFeature {
     QVariant title() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+            KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
   public slots:
     void slotAddQuickLink();
     void slotRemoveQuickLink();
     void slotAddToLibrary();
-    void activate();
-    void activateChild(const QModelIndex& index);
-    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index);
-    void onLazyChildExpandation(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
+    void onLazyChildExpandation(const QModelIndex& index) override;
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
 
