@@ -298,6 +298,8 @@ in stdenv.mkDerivation rec {
   else
     null;
 
+  dontWrapQtApps = true;
+
   nativeBuildInputs = [ pkgs.cmake ] ++ (if !releaseMode then
     (with pkgs;
       [
