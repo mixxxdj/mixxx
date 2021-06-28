@@ -2073,7 +2073,7 @@ TraktorS3.Controller.prototype.lightDeck = function(group, sendPackets) {
         deck.colorOutput(0, "!PreviewTrack");
         deck.colorOutput(0, "!LibraryFocus");
         deck.colorOutput(0, "!MaximizeLibrary");
-        deck.colorOutput(TraktorS3.JogDefaultOn, "!jogButton");
+        deck.colorOutput(deck.jogToggled, "!jogButton");
         if (group === "[Channel4]") {
             this.basicOutput(0, "[Master]", "!extButton");
         }
