@@ -51,6 +51,7 @@ AnalysisFeature::AnalysisFeature(
         : LibraryFeature(pLibrary, pConfig, QStringLiteral("prepare")),
           m_baseTitle(tr("Analyze")),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAnalysisView(nullptr),
           m_title(m_baseTitle) {
 }
@@ -110,8 +111,8 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(kViewName, m_pAnalysisView);
 }
 
-TreeItemModel* AnalysisFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* AnalysisFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void AnalysisFeature::refreshLibraryModels() {

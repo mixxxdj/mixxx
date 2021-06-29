@@ -47,7 +47,7 @@ void SidebarModel::addLibraryFeature(LibraryFeature* pFeature) {
             this,
             &SidebarModel::slotFeatureSelect);
 
-    QAbstractItemModel* model = pFeature->getChildModel();
+    QAbstractItemModel* model = pFeature->sidebarModel();
 
     connect(model,
             &QAbstractItemModel::modelAboutToBeReset,
@@ -110,7 +110,7 @@ QModelIndex SidebarModel::index(int row, int column,
          * we return its associated childmodel
          */
         if (parent.internalPointer() == this) {
-            const QAbstractItemModel* childModel = m_sFeatures[parent.row()]->getChildModel();
+            const QAbstractItemModel* childModel = m_sFeatures[parent.row()]->sidebarModel();
             QModelIndex childIndex = childModel->index(row, column);
             TreeItem* pTreeItem = static_cast<TreeItem*>(childIndex.internalPointer());
             if (pTreeItem && childIndex.isValid()) {
@@ -181,7 +181,7 @@ int SidebarModel::rowCount(const QModelIndex& parent) const {
     //qDebug() << "SidebarModel::rowCount parent=" << parent.getData();
     if (parent.isValid()) {
         if (parent.internalPointer() == this) {
-            return m_sFeatures[parent.row()]->getChildModel()->rowCount();
+            return m_sFeatures[parent.row()]->sidebarModel()->rowCount();
         } else {
             // We support tree models deeper than 1 level
             TreeItem* pTreeItem = static_cast<TreeItem*>(parent.internalPointer());
@@ -209,7 +209,7 @@ bool SidebarModel::hasChildren(const QModelIndex& parent) const {
             TreeItem* pTreeItem = static_cast<TreeItem*>(parent.internalPointer());
             if (pTreeItem) {
                 LibraryFeature* pFeature = pTreeItem->feature();
-                return pFeature->getChildModel()->hasChildren(parent);
+                return pFeature->sidebarModel()->hasChildren(parent);
             }
         }
     }
@@ -413,7 +413,7 @@ QModelIndex SidebarModel::translateIndex(
         //Comment from Tobias Rafreider --> Dead Code????
 
         for (int i = 0; i < m_sFeatures.size(); ++i) {
-            if (m_sFeatures[i]->getChildModel() == pModel) {
+            if (m_sFeatures[i]->sidebarModel() == pModel) {
                 translatedIndex = createIndex(i, 0, this);
             }
         }

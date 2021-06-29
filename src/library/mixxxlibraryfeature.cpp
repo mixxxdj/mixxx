@@ -74,6 +74,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           kHiddenTitle(tr("Hidden Tracks")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_pLibraryTableModel(nullptr),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
     QStringList columns = DEFAULT_COLUMNS;
@@ -109,7 +110,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     pRootItem->appendChild(kMissingTitle);
     pRootItem->appendChild(kHiddenTitle);
 
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
 
 #ifdef __ENGINEPRIME__
     m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
@@ -143,8 +144,8 @@ QVariant MixxxLibraryFeature::title() {
     return tr("Tracks");
 }
 
-TreeItemModel* MixxxLibraryFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* MixxxLibraryFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {

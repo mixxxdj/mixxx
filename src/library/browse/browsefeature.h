@@ -36,7 +36,7 @@ class BrowseFeature : public LibraryFeature {
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void slotAddQuickLink();
@@ -65,7 +65,7 @@ class BrowseFeature : public LibraryFeature {
 
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
-    FolderTreeModel m_childModel;
+    FolderTreeModel* m_pSidebarModel;
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     QAction* m_pAddtoLibraryAction;

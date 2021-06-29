@@ -65,6 +65,7 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
 
 TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("traktor")),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     QString tableName = "traktor_library";
     QString idColumn = "id";
@@ -146,8 +147,8 @@ bool TraktorFeature::isSupported() {
     return (QFile::exists(getTraktorMusicDatabase()));
 }
 
-TreeItemModel* TraktorFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* TraktorFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void TraktorFeature::refreshLibraryModels() {
@@ -614,7 +615,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 void TraktorFeature::onTrackCollectionLoaded() {
     std::unique_ptr<TreeItem> root(m_future.result());
     if (root) {
-        m_childModel.setRootItem(std::move(root));
+        m_pSidebarModel->setRootItem(std::move(root));
         // Tell the traktor track source that it should re-build its index.
         m_trackSource->buildIndex();
 

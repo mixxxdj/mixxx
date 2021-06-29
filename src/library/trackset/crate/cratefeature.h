@@ -39,7 +39,7 @@ class CrateFeature : public BaseTrackSetFeature {
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activateChild(const QModelIndex& index) override;

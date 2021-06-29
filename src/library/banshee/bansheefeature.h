@@ -25,7 +25,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
 
     virtual QVariant title();
 
-    virtual TreeItemModel* getChildModel();
+    virtual TreeItemModel* sidebarModel() const;
 
   public slots:
     virtual void activate();
@@ -35,7 +35,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     QStringList m_playlists;
 
     //a new DB connection for the worker thread

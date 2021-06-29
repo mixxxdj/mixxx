@@ -18,6 +18,7 @@ QString BansheeFeature::m_databaseFile;
 
 BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("banshee")),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     Q_UNUSED(pConfig);
     m_pBansheePlaylistModel = new BansheePlaylistModel(
@@ -97,7 +98,7 @@ void BansheeFeature::activate() {
             // append the playlist to the child model
             pRootItem->appendChild(playlist.name, playlist.playlistId);
         }
-        m_childModel.setRootItem(std::move(pRootItem));
+        m_pSidebarModel->setRootItem(std::move(pRootItem));
 
         if (m_isActivated) {
             activate();
@@ -125,8 +126,8 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
     }
 }
 
-TreeItemModel* BansheeFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* BansheeFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) {

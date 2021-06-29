@@ -24,7 +24,7 @@ class RecordingFeature final : public LibraryFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -37,5 +37,5 @@ class RecordingFeature final : public LibraryFeature {
   private:
     RecordingManager* const m_pRecordingManager;
 
-    FolderTreeModel m_childModel;
+    FolderTreeModel* m_pSidebarModel;
 };

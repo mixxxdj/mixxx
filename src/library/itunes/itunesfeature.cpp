@@ -64,6 +64,7 @@ QString localhost_token() {
 
 ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("itunes")),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
     QString tableName = "itunes_library";
     QString idColumn = "id";
@@ -232,8 +233,8 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     emit enableCoverArtDisplay(false);
 }
 
-TreeItemModel* ITunesFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* ITunesFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
@@ -815,7 +816,7 @@ void ITunesFeature::clearTable(const QString& table_name) {
 void ITunesFeature::onTrackCollectionLoaded() {
     std::unique_ptr<TreeItem> root(m_future.result());
     if (root) {
-        m_childModel.setRootItem(std::move(root));
+        m_pSidebarModel->setRootItem(std::move(root));
 
         // Tell the rhythmbox track source that it should re-build its index.
         m_trackSource->buildIndex();

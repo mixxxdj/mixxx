@@ -1,17 +1,18 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QUrl>
-#include <QObject>
-#include <QVariant>
 #include <QIcon>
 #include <QList>
+#include <QObject>
+#include <QStringListModel>
+#include <QUrl>
+#include <QVariant>
 
-#include "library/libraryfeature.h"
-#include "library/dlganalysis.h"
-#include "library/treeitemmodel.h"
 #include "analyzer/trackanalysisscheduler.h"
+#include "library/dlganalysis.h"
+#include "library/libraryfeature.h"
+#include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class TrackCollection;
 
@@ -31,7 +32,7 @@ class AnalysisFeature : public LibraryFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
     void refreshLibraryModels();
 
   signals:
@@ -63,7 +64,7 @@ class AnalysisFeature : public LibraryFeature {
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAnalysis* m_pAnalysisView;
 
     // The title is dynamic and reflects the current progress
