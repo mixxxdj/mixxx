@@ -31,12 +31,12 @@ BrowseFeature::BrowseFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
         RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary, pConfig),
+        : LibraryFeature(pLibrary, pConfig, QString("computer")),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
-          m_pLastRightClickedItem(nullptr),
-          m_icon(":/images/library/ic_library_computer.svg") {
+          m_pSidebarModel(new FolderTreeModel(this)),
+          m_pLastRightClickedItem(nullptr) {
     connect(this,
             &BrowseFeature::requestAddDir,
             pLibrary,
@@ -131,7 +131,7 @@ BrowseFeature::BrowseFeature(
     }
 
     // initialize the model
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
 }
 
 BrowseFeature::~BrowseFeature() {
@@ -150,12 +150,12 @@ void BrowseFeature::slotAddQuickLink() {
     QString spath = vpath.toString();
     QString name = extractNameFromPath(spath);
 
-    QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
+    QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
     auto pNewChild = std::make_unique<TreeItem>(name, vpath);
     QList<TreeItem*> rows;
     rows.append(pNewChild.get());
     pNewChild.release();
-    m_childModel.insertTreeItemRows(rows, m_pQuickLinkItem->childRows(), parent);
+    m_pSidebarModel->insertTreeItemRows(rows, m_pQuickLinkItem->childRows(), parent);
 
     m_quickLinkList.append(spath);
     saveQuickLinks();
@@ -206,19 +206,15 @@ void BrowseFeature::slotRemoveQuickLink() {
         return;
     }
 
-    QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
-    m_childModel.removeRow(index, parent);
+    QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
+    m_pSidebarModel->removeRow(index, parent);
 
     m_quickLinkList.removeAt(index);
     saveQuickLinks();
 }
 
-QIcon BrowseFeature::getIcon() {
-    return m_icon;
-}
-
-TreeItemModel* BrowseFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* BrowseFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
@@ -392,7 +388,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     }
 
     // Before we populate the subtree, we need to delete old subtrees
-    m_childModel.removeRows(0, item->childRows(), index);
+    m_pSidebarModel->removeRows(0, item->childRows(), index);
 
     // List of subfolders or drive letters
     QList<TreeItem*> folders;
@@ -428,7 +424,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
     // has no subfolders
     if (!folders.isEmpty()) {
-        m_childModel.insertTreeItemRows(folders, 0, index);
+        m_pSidebarModel->insertTreeItemRows(folders, 0, index);
     }
 }
 

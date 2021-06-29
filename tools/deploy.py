@@ -81,7 +81,7 @@ def git_info(info, path="."):
 
 def splitext(filename):
     """
-    Split filename into name without extenstion and file extension.
+    Split filename into name without extension and file extension.
 
     This includes a workaround for ".tar.gz" files.
     """

@@ -42,20 +42,16 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
                   new PlaylistTableModel(nullptr,
                           pLibrary->trackCollectionManager(),
                           "mixxx.db.model.playlist"),
-                  QStringLiteral("PLAYLISTHOME")),
-          m_icon(QStringLiteral(":/images/library/ic_library_playlist.svg")) {
+                  QStringLiteral("PLAYLISTHOME"),
+                  QStringLiteral("playlist")) {
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
     constructChildModel(kInvalidPlaylistId);
 }
 
 QVariant PlaylistFeature::title() {
     return tr("Playlists");
-}
-
-QIcon PlaylistFeature::getIcon() {
-    return m_icon;
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
@@ -261,11 +257,11 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertTreeItemRows(data_list, 0);
+    m_pSidebarModel->insertTreeItemRows(data_list, 0);
     if (selectedRow == -1) {
         return QModelIndex();
     }
-    return m_childModel.index(selectedRow, 0);
+    return m_pSidebarModel->index(selectedRow, 0);
 }
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {

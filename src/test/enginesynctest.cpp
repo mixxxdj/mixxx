@@ -1670,17 +1670,21 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 140, 0.0);
     m_pTrack2->trySetBeats(pBeats2);
 
+    // Mixxx will choose the first playing deck to be master.  Let's start deck 2 first.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "volume"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "volume"))->set(1.0);
+    ProcessBuffer();
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))
-            ->set(SYNC_FOLLOWER);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))
-            ->set(SYNC_FOLLOWER);
-
-    // Mixxx will choose the first playing deck to be master.  Let's start deck 2 first.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
+    ProcessBuffer();
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
+
+    ASSERT_TRUE(isSoftMaster(m_sGroup2));
+    ASSERT_TRUE(isFollower(m_sGroup1));
 
     EXPECT_EQ(0.5,
             m_pChannel1->getEngineBuffer()
@@ -1777,9 +1781,15 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
 
     // We expect that m_sGroup1 has adjusted its own bpm to the second deck and becomes a single master.
-    // When the second deck is synced the master bpm is adopted by the internal clock
+    // The internal clock is initialized right away.
     EXPECT_TRUE(isSoftMaster(m_sGroup1));
     EXPECT_TRUE(isFollower(m_sGroup2));
+    EXPECT_DOUBLE_EQ(1.0,
+            m_pChannel1->getEngineBuffer()
+                    ->m_pSyncControl->m_masterBpmAdjustFactor);
+    EXPECT_DOUBLE_EQ(2.0,
+            m_pChannel2->getEngineBuffer()
+                    ->m_pSyncControl->m_masterBpmAdjustFactor);
     EXPECT_DOUBLE_EQ(87.5,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
@@ -1790,9 +1800,10 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     EXPECT_DOUBLE_EQ(87.5 / 80,
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate_ratio"))
                     ->get());
-    EXPECT_DOUBLE_EQ(1,
+    EXPECT_DOUBLE_EQ(1.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate_ratio"))
                     ->get());
+    // Local bpms are not adjusted by the multiplier
     EXPECT_DOUBLE_EQ(80,
             ControlObject::getControl(ConfigKey(m_sGroup1, "local_bpm"))
                     ->get());
@@ -1828,13 +1839,19 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ProcessBuffer();
     pButtonSyncEnabled2->slotSet(1.0);
     pButtonSyncEnabled1->slotSet(1.0);
+    EXPECT_DOUBLE_EQ(0.5,
+            m_pChannel1->getEngineBuffer()
+                    ->m_pSyncControl->m_masterBpmAdjustFactor);
+    EXPECT_DOUBLE_EQ(1.0,
+            m_pChannel2->getEngineBuffer()
+                    ->m_pSyncControl->m_masterBpmAdjustFactor);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
     EXPECT_DOUBLE_EQ(87.5 / 80,
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate_ratio"))
                     ->get());
-    EXPECT_DOUBLE_EQ(1,
+    EXPECT_DOUBLE_EQ(1.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate_ratio"))
                     ->get());
 
@@ -2601,7 +2618,7 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     pHotCue2Activate->set(1.0);
     ProcessBuffer();
 
-    // Beat_distance is the distance to the previous beat wich has already passed.
+    // Beat_distance is the distance to the previous beat which has already passed.
     // We compare here the distance to the next beat (1 - beat_distance) and
     // scale it by the different tempos.
     EXPECT_NEAR(

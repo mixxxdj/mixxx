@@ -188,7 +188,7 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
     }
 
     // Convert array of bytes read in a JavaScript compatible return type
-    // For compatibilty with the array provided by HidController::poll the reportID is contained as prefix
+    // For compatibility with the array provided by HidController::poll the reportID is contained as prefix
     QList<int> dataList;
     dataList.reserve(bytesRead);
     for (int i = 0; i < bytesRead; i++) {
@@ -324,7 +324,7 @@ QList<int> HidController::getFeatureReport(
     }
 
     // Convert array of bytes read in a JavaScript compatible return type
-    // For compatibilty with input array HidController::sendFeatureReport, a reportID prefix is not added here
+    // For compatibility with input array HidController::sendFeatureReport, a reportID prefix is not added here
     QList<int> dataList;
     dataList.reserve(bytesRead - kReportIdSize);
     for (int i = kReportIdSize; i < bytesRead; i++) {

@@ -399,7 +399,7 @@ bool Track::trySetBeatsWhileLocked(
         mixxx::BeatsPointer pBeats,
         bool lockBpmAfterSet) {
     if (m_pBeats && m_record.getBpmLocked()) {
-        // Track has already a valid and locked beats object, abbort.
+        // Track has already a valid and locked beats object, abort.
         qDebug() << "Track beats is already set and BPM-locked. Discard the new beats";
         return false;
     }
@@ -1615,7 +1615,7 @@ void Track::setAudioProperties(
     QMutexLocker lock(&m_qMutex);
     // These properties are stored separately in the database
     // and are also imported from file tags. They will be
-    // overriden by the actual properties from the audio
+    // overridden by the actual properties from the audio
     // source later.
     DEBUG_ASSERT(!m_record.hasStreamInfoFromSource());
     if (compareAndSet(

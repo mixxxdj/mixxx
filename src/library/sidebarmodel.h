@@ -15,6 +15,12 @@ class SidebarModel : public QAbstractItemModel {
     // for parented_ptr
     using QObject::parent;
 
+    enum Roles {
+        IconNameRole = Qt::UserRole + 1,
+        DataRole,
+    };
+    Q_ENUM(Roles);
+
     explicit SidebarModel(
             QObject* parent = nullptr);
     ~SidebarModel() override = default;

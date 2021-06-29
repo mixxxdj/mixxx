@@ -48,12 +48,12 @@ AnalyzerModeFlags getAnalyzerModeFlags(
 AnalysisFeature::AnalysisFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
-        m_baseTitle(tr("Analyze")),
-        m_icon(":/images/library/ic_library_prepare.svg"),
-        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
-        m_pAnalysisView(nullptr),
-        m_title(m_baseTitle) {
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("prepare")),
+          m_baseTitle(tr("Analyze")),
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
+          m_pAnalysisView(nullptr),
+          m_title(m_baseTitle) {
 }
 
 void AnalysisFeature::resetTitle() {
@@ -111,8 +111,8 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(kViewName, m_pAnalysisView);
 }
 
-TreeItemModel* AnalysisFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* AnalysisFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void AnalysisFeature::refreshLibraryModels() {

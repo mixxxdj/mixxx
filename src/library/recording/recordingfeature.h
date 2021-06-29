@@ -20,12 +20,11 @@ class RecordingFeature final : public LibraryFeature {
     ~RecordingFeature() override = default;
 
     QVariant title() override;
-    QIcon getIcon() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -37,7 +36,6 @@ class RecordingFeature final : public LibraryFeature {
 
   private:
     RecordingManager* const m_pRecordingManager;
-    const QIcon m_icon;
 
-    FolderTreeModel m_childModel;
+    FolderTreeModel* m_pSidebarModel;
 };

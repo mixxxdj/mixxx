@@ -91,7 +91,7 @@ WOverview #PassthroughLabel {
 /* Lay out all context menus and the track table header with relative sizes,
 adjusting to the system-chosen font (size). Same is done for the Played checkedbox
 and the BPM lock icon in the library above.
-Appearantly, the mainmenubar needs special treatment -- see default-menu-styles-linux7windows.qss */
+Apparently, the mainmenubar needs special treatment -- see default-menu-styles-linux7windows.qss */
 QToolTip,
 #MainMenu QMenu,
 WLibrarySidebar QMenu,
