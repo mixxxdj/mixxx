@@ -166,7 +166,13 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     int oldDeck = m_currentlyPlayingDeck.fetchAndStoreRelease(maxDeck);
     if (maxDeck != oldDeck) {
         emit currentPlayingDeckChanged(maxDeck);
-        emit currentPlayingTrackChanged(getCurrentPlayingTrack());
+        // Note: When starting Auto-DJ "play" might be processed before a new
+        // is track is fully loaded. currentPlayingTrackChanged() is then emitted
+        // later setTrackInfo()
+        TrackPointer pTrack = getCurrentPlayingTrack();
+        if (pTrack) {
+            emit currentPlayingTrackChanged(pTrack);
+        }
     }
 }
 

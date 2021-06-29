@@ -312,6 +312,8 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
         return TrackPointer();
     }
 
+    PlayerInfo::instance().setTrackInfo(getGroup(), TrackPointer());
+
     // Save the loops that are currently set in a loop cue. If no loop cue is
     // currently on the track, then create a new one.
     double loopStart = m_pLoopInPoint->get();
