@@ -140,7 +140,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     EXPECT_EQ(position, prevBeat);
     EXPECT_EQ(position + beatLengthSamples, nextBeat);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_EQ(position, prevBeat);
     EXPECT_EQ(position + beatLengthSamples, nextBeat);
@@ -183,7 +183,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     EXPECT_EQ(kClosestBeat, prevBeat);
     EXPECT_EQ(kClosestBeat + beatLengthSamples, nextBeat);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_EQ(kClosestBeat - beatLengthSamples, prevBeat);
     EXPECT_EQ(kClosestBeat, nextBeat);
@@ -274,7 +274,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     EXPECT_EQ(previousBeat, foundPrevBeat);
     EXPECT_EQ(nextBeat, foundNextBeat);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pMap->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, false);
     EXPECT_EQ(previousBeat, foundPrevBeat);
     EXPECT_EQ(nextBeat, foundNextBeat);
