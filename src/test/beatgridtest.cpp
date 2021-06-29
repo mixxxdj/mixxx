@@ -80,7 +80,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     EXPECT_NEAR(position, prevBeat, kMaxBeatError);
     EXPECT_NEAR(position + beatLength, nextBeat, kMaxBeatError);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_NEAR(position, prevBeat, kMaxBeatError);
     EXPECT_NEAR(position + beatLength, nextBeat, kMaxBeatError);
@@ -121,7 +121,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
     EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_NEAR(kClosestBeat - beatLength, prevBeat, kMaxBeatError);
     EXPECT_NEAR(kClosestBeat, nextBeat, kMaxBeatError);
@@ -162,7 +162,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
     EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
     EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
@@ -204,7 +204,7 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
     EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, false);
     EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
     EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);

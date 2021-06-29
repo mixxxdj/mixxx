@@ -66,7 +66,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             const double sampleEndPosition = pMark->getSampleEndPosition();
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // Pixmaps are expected to have the mark stroke at the center,
-                // and preferrably have an odd width in order to have the stroke
+                // and preferably have an odd width in order to have the stroke
                 // exactly at the sample position.
                 const int markHalfWidth =
                         static_cast<int>(pMark->m_image.width() / 2.0 /
@@ -226,7 +226,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
                     image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
             //WImageStore::correctImageColors(&pMark->m_image);
             // Set the pixel/device ratio AFTER loading the image in order to get
-            // a truely scaled source image.
+            // a truly scaled source image.
             // See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
             // Also, without this some Qt-internal issue results in an offset
             // image when calculating the center line of pixmaps in draw().

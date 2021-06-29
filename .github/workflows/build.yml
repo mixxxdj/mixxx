@@ -160,7 +160,7 @@ jobs:
       # Studio on Windows comes with its own CMake version anyway.
       if: runner.os == 'macOS'
       with:
-        # This should always match the mininum required version in
+        # This should always match the minimum required version in
         # our CMakeLists.txt
         cmake-version: '3.16.x'
 
