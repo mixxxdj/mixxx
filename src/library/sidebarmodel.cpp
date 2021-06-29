@@ -226,44 +226,48 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
 
     if (index.internalPointer() == this) {
         //If it points to SidebarModel
-        if (role == Qt::DisplayRole) {
+        switch (role) {
+        case Qt::DisplayRole:
             return m_sFeatures[index.row()]->title();
-        } else if (role == Qt::DecorationRole) {
+        case Qt::DecorationRole:
             return m_sFeatures[index.row()]->icon();
-        } else if (role == SidebarModel::IconNameRole) {
+        case SidebarModel::IconNameRole:
             return m_sFeatures[index.row()]->iconName();
+        default:
+            return QVariant();
         }
-    }
-
-    if (index.internalPointer() != this) {
+    } else {
         // If it points to a TreeItem
         TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-        if (pTreeItem) {
-            if (role == Qt::DisplayRole) {
+        if (!pTreeItem) {
+            return QVariant();
+        }
+
+        switch (role) {
+        case Qt::DisplayRole:
+            return pTreeItem->getLabel();
+        case Qt::ToolTipRole: {
+            // If it's the "Quick Links" node, display it's name
+            if (pTreeItem->getData().toString() == QUICK_LINK_NODE) {
                 return pTreeItem->getLabel();
-            } else if (role == Qt::ToolTipRole) {
-                // If it's the "Quick Links" node, display it's name
-                if (pTreeItem->getData().toString() == QUICK_LINK_NODE) {
-                    return pTreeItem->getLabel();
-                } else {
-                    return pTreeItem->getData();
-                }
-            } else if (role == Qt::FontRole) {
-                QFont font;
-                font.setBold(pTreeItem->isBold());
-                return font;
-            } else if (role == Qt::DecorationRole) {
-                return pTreeItem->getIcon();
-            } else if (role == SidebarModel::DataRole) {
-                return pTreeItem->getData();
-            } else if (role == SidebarModel::IconNameRole) {
-                // TODO: Add support for icon names in tree items
-                return QString();
             }
+            return pTreeItem->getData();
+        }
+        case Qt::FontRole: {
+            QFont font;
+            font.setBold(pTreeItem->isBold());
+            return font;
+        }
+        case Qt::DecorationRole:
+            return pTreeItem->getIcon();
+        case SidebarModel::DataRole:
+            return pTreeItem->getData();
+        case SidebarModel::IconNameRole:
+            // TODO: Add support for icon names in tree items
+        default:
+            return QVariant();
         }
     }
-
-    return QVariant();
 }
 
 void SidebarModel::startPressedUntilClickedTimer(const QModelIndex& pressedIndex) {
