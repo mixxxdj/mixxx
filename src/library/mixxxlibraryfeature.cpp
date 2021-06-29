@@ -69,10 +69,9 @@ const QStringList DEFAULT_COLUMNS = {
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
-          m_icon(":/images/library/ic_library_tracks.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_pLibraryTableModel(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
@@ -143,10 +142,6 @@ void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 
 QVariant MixxxLibraryFeature::title() {
     return tr("Tracks");
-}
-
-QIcon MixxxLibraryFeature::getIcon() {
-    return m_icon;
 }
 
 TreeItemModel* MixxxLibraryFeature::sidebarModel() const {

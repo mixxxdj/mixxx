@@ -48,9 +48,8 @@ AnalyzerModeFlags getAnalyzerModeFlags(
 AnalysisFeature::AnalysisFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("prepare")),
           m_baseTitle(tr("Analyze")),
-          m_icon(":/images/library/ic_library_prepare.svg"),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAnalysisView(nullptr),

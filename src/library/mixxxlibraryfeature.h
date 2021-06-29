@@ -34,7 +34,6 @@ class MixxxLibraryFeature final : public LibraryFeature {
     ~MixxxLibraryFeature() override = default;
 
     QVariant title() override;
-    QIcon getIcon() override;
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
     TreeItemModel* sidebarModel() const override;
@@ -67,7 +66,6 @@ class MixxxLibraryFeature final : public LibraryFeature {
   private:
     const QString kMissingTitle;
     const QString kHiddenTitle;
-    const QIcon m_icon;
     TrackCollection* const m_pTrackCollection;
 
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;

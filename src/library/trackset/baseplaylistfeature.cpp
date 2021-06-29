@@ -31,8 +31,9 @@ constexpr QChar kUnsafeFilenameReplacement = '-';
 BasePlaylistFeature::BasePlaylistFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         PlaylistTableModel* pModel,
-        const QString& rootViewName)
-        : BaseTrackSetFeature(pLibrary, pConfig, rootViewName),
+        const QString& rootViewName,
+        const QString& iconName)
+        : BaseTrackSetFeature(pLibrary, pConfig, rootViewName, iconName),
           m_playlistDao(pLibrary->trackCollectionManager()
                                 ->internalCollection()
                                 ->getPlaylistDAO()),

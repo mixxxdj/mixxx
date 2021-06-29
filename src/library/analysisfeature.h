@@ -27,10 +27,6 @@ class AnalysisFeature : public LibraryFeature {
         return m_title;
     }
 
-    QIcon getIcon() override {
-        return m_icon;
-    }
-
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
     void bindLibraryWidget(WLibrary* libraryWidget,
@@ -65,7 +61,6 @@ class AnalysisFeature : public LibraryFeature {
     void setTitleProgress(int currentTrackNumber, int totalTracksCount);
 
     const QString m_baseTitle;
-    const QIcon m_icon;
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 

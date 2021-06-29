@@ -229,7 +229,9 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
         if (role == Qt::DisplayRole) {
             return m_sFeatures[index.row()]->title();
         } else if (role == Qt::DecorationRole) {
-            return m_sFeatures[index.row()]->getIcon();
+            return m_sFeatures[index.row()]->icon();
+        } else if (role == SidebarModel::IconNameRole) {
+            return m_sFeatures[index.row()]->iconName();
         }
     }
 
@@ -246,15 +248,17 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
                 } else {
                     return pTreeItem->getData();
                 }
-            } else if (role == TreeItemModel::kDataRole) {
-                // We use Qt::UserRole to ask for the datapath.
-                return pTreeItem->getData();
             } else if (role == Qt::FontRole) {
                 QFont font;
                 font.setBold(pTreeItem->isBold());
                 return font;
             } else if (role == Qt::DecorationRole) {
                 return pTreeItem->getIcon();
+            } else if (role == SidebarModel::DataRole) {
+                return pTreeItem->getData();
+            } else if (role == SidebarModel::IconNameRole) {
+                // TODO: Add support for icon names in tree items
+                return QString();
             }
         }
     }

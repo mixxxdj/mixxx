@@ -9,7 +9,8 @@ class BaseTrackSetFeature : public LibraryFeature {
   public:
     BaseTrackSetFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
-            const QString& rootViewName);
+            const QString& rootViewName,
+            const QString& iconName);
 
   signals:
     void analyzeTracks(const QList<TrackId>&);
