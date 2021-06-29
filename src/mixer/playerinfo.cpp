@@ -56,21 +56,26 @@ TrackPointer PlayerInfo::getTrackInfo(const QString& group) {
     return m_loadedTrackMap.value(group);
 }
 
-void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& track) {
+void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& pTrack) {
     TrackPointer pOld;
     { // Scope
         QMutexLocker locker(&m_mutex);
         pOld = m_loadedTrackMap.value(group);
-        m_loadedTrackMap.insert(group, track);
+        m_loadedTrackMap.insert(group, pTrack);
     }
     if (pOld) {
         emit trackUnloaded(group, pOld);
     }
-    emit trackLoaded(group, track);
+    if (pTrack) {
+        emit trackLoaded(group, pTrack);
 
-    if (m_currentlyPlayingDeck >= 0 &&
-            group == PlayerManager::groupForDeck(m_currentlyPlayingDeck)) {
-        emit currentPlayingTrackChanged(track);
+        updateCurrentPlayingDeck();
+
+        int playingDeck = m_currentlyPlayingDeck;
+        if (playingDeck >= 0 &&
+                group == PlayerManager::groupForDeck(playingDeck)) {
+            emit currentPlayingTrackChanged(pTrack);
+        }
     }
 }
 
