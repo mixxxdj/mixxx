@@ -75,7 +75,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     }
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(QCoreApplication::translate("main",
+    parser.setApplicationDescription(QCoreApplication::translate("CmdlineArgs",
             "Mixxx is an open source DJ software. For more information, "
             "see " MIXXX_MANUAL_COMMANDLINEOPTIONS_URL
             "\n."
@@ -86,11 +86,11 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     const QCommandLineOption fullscreen(QStringList() << "f"
                                                       << "full-screen"
                                                       << "fullScreen",
-            QCoreApplication::translate("main", "Starts Mixxx in full-screen mode"));
+            QCoreApplication::translate("CmdlineArgs", "Starts Mixxx in full-screen mode"));
     parser.addOption(fullscreen);
 
     const QCommandLineOption locale(QStringLiteral("locale"),
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "Use a custom locale for loading translations. (e.g "
                     "'fr')"));
     parser.addOption(locale);
@@ -98,7 +98,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     // An option with a value
     const QCommandLineOption settingsPath(QStringList() << "settings-path"
                                                         << "settingsPath",
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "Top-level directory where Mixxx should look for settings. "
                     "Default is:") +
                     getSettingsPath().toLocal8Bit().constData(),
@@ -107,7 +107,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
 
     QCommandLineOption resourcePath(QStringList() << "resource-path"
                                                   << "resourcePath",
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "Top-level directory where Mixxx should look for its "
                     "resource files such as MIDI mappings, overriding the "
                     "default installation location."),
@@ -116,34 +116,34 @@ bool CmdlineArgs::parse(int argc, char** argv) {
 
     const QCommandLineOption timelinePath(QStringList() << "timeline-path"
                                                         << "timelinePath",
-            QCoreApplication::translate("main", "Path the timeline is written to"));
+            QCoreApplication::translate("CmdlineArgs", "Path the timeline is written to"));
     parser.addOption(timelinePath);
 
     const QCommandLineOption controllerDebug(QStringList() << "controller-debug"
                                                            << "controllerDebug"
                                                            << "midi-debug"
                                                            << "midiDebug",
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "Causes Mixxx to display/log all of the controller data it "
                     "receives and script functions it loads"));
     parser.addOption(controllerDebug);
 
     const QCommandLineOption developer(QStringLiteral("developer"),
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "Enables developer-mode. Includes extra log info, stats on "
                     "performance, and a Developer tools menu."));
     parser.addOption(developer);
 
     const QCommandLineOption safeMode(QStringList() << "safe-mode"
                                                     << "safeMode",
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "Enables safe-mode. Disables OpenGL waveforms, and "
                     "spinning vinyl widgets. Try this option if Mixxx is "
                     "crashing on startup."));
     parser.addOption(safeMode);
 
     const QCommandLineOption color(QStringLiteral("color"),
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "[auto|always|never] Use colors on the console output."),
             QStringLiteral("color"),
             QStringLiteral("auto"));
@@ -151,7 +151,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
 
     const QCommandLineOption logLevel(QStringList() << "log-level"
                                                     << "logLevel",
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "Sets the verbosity of command line logging.\n"
                     "critical - Critical/Fatal only\n"
                     "warning  - Above + Warnings\n"
@@ -163,7 +163,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
 
     const QCommandLineOption logFlushLevel(QStringList() << "log-flush-level"
                                                          << "logFlushLevel",
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "Sets the the logging level at which the log buffer is "
                     "flushed to mixxx.log. LEVEL is one of the values defined "
                     "at --logLevel above."),
@@ -173,7 +173,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
 #ifdef MIXXX_BUILD_DEBUG
     QCommandLineOption debugAssertBreak(QStringList() << "debug-assert-break"
                                                       << "debugAssertBreak",
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to "
                     "false. Under a debugger you can continue afterwards."));
     parser.addOption(debugAssertBreak);
@@ -183,7 +183,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     const QCommandLineOption versionOption = parser.addVersionOption();
 
     parser.addPositionalArgument(QStringLiteral("file"),
-            QCoreApplication::translate("main",
+            QCoreApplication::translate("CmdlineArgs",
                     "Load the specified music file(s) at start-up. Each file "
                     "you specify will be loaded into the next virtual deck."));
 
