@@ -65,7 +65,7 @@ bool parseLogLevel(
 
 bool CmdlineArgs::parse(int argc, char** argv) {
     if (argc == 1) {
-        // We have got the binary name only, noting to do
+        // Mixxx was run with the binary name only, nothing to do
         return true;
     }
     QStringList arguments;
