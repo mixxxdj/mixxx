@@ -260,6 +260,7 @@ class EngineMaster : public QObject, public AudioSource {
     // m_activeTalkoverChannels with each channel that is active for the
     // respective output.
     void processChannels(int iBufferSize);
+    void finishStartup();
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     void applyMasterEffects();
@@ -349,4 +350,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
+
+    const qint64 m_cpuId;
+    const QString m_cpuSet;
 };

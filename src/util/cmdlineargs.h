@@ -28,6 +28,12 @@ class CmdlineArgs final {
     bool getMidiDebug() const { return m_midiDebug; }
     bool getDeveloper() const { return m_developer; }
     bool getSafeMode() const { return m_safeMode; }
+    qint64 getEngineCpuId() const {
+        return m_engineCpuId;
+    }
+    const QString& getEngineCpuSet() const {
+        return m_engineCpuSet;
+    }
     bool useColors() const {
         return m_useColors;
     }
@@ -53,6 +59,8 @@ class CmdlineArgs final {
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
     bool m_useColors;       // should colors be used
+    qint64 m_engineCpuId;
+    QString m_engineCpuSet;
     mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing
     QString m_locale;
