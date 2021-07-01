@@ -539,27 +539,29 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     // lower bound, then iterate forward from there to the upper bound.
     // a value of -1 indicates we went off the map -- count from the beginning.
     double lowerSample = findNthBeat(curSample, -n);
+    mixxx::audio::FramePos lowerFrame;
     if (lowerSample == -1) {
-        lowerSample = mixxx::audio::FramePos(m_beats.first().frame_position()).toEngineSamplePos();
+        lowerFrame = mixxx::audio::FramePos(m_beats.first().frame_position());
+    } else {
+        lowerFrame = mixxx::audio::FramePos::fromEngineSamplePos(lowerSample);
     }
 
     // If we hit the end of the beat map, recalculate the lower bound.
-    double upperSample = findNthBeat(lowerSample, n * 2);
+    const double upperSample = findNthBeat(lowerSample, n * 2);
+    mixxx::audio::FramePos upperFrame;
     if (upperSample == -1) {
-        upperSample = mixxx::audio::FramePos(m_beats.last().frame_position()).toEngineSamplePos();
-        lowerSample = findNthBeat(upperSample, n * -2);
+        upperFrame = mixxx::audio::FramePos(m_beats.last().frame_position());
+        lowerSample = findNthBeat(upperFrame.toEngineSamplePos(), n * -2);
         // Super edge-case -- the track doesn't have n beats!  Do the best
         // we can.
         if (lowerSample == -1) {
-            lowerSample =
-                    mixxx::audio::FramePos(m_beats.first().frame_position())
-                            .toEngineSamplePos();
+            lowerFrame = mixxx::audio::FramePos(m_beats.first().frame_position());
+        } else {
+            lowerFrame = mixxx::audio::FramePos::fromEngineSamplePos(lowerSample);
         }
+    } else {
+        upperFrame = mixxx::audio::FramePos::fromEngineSamplePos(upperSample);
     }
-
-    // TODO: Reduce back and forth frame<->sample conversions
-    mixxx::audio::FramePos lowerFrame = mixxx::audio::FramePos::fromEngineSamplePos(lowerSample);
-    mixxx::audio::FramePos upperFrame = mixxx::audio::FramePos::fromEngineSamplePos(upperSample);
 
     VERIFY_OR_DEBUG_ASSERT(lowerFrame < upperFrame) {
         return -1;
