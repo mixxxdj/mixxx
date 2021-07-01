@@ -18,43 +18,43 @@ class FramePos final {
     static constexpr value_t kInvalidValue = std::numeric_limits<FramePos::value_t>::quiet_NaN();
 
     constexpr FramePos()
-            : m_dFramePos(kStartValue) {
+            : m_framePosition(kStartValue) {
     }
 
-    constexpr explicit FramePos(value_t dFramePos)
-            : m_dFramePos(dFramePos) {
+    constexpr explicit FramePos(value_t framePosition)
+            : m_framePosition(framePosition) {
     }
 
-    void setValue(value_t dFramePos) {
-        m_dFramePos = dFramePos;
+    void setValue(value_t framePosition) {
+        m_framePosition = framePosition;
     }
 
     value_t getValue() const {
-        return m_dFramePos;
+        return m_framePosition;
     }
 
     FramePos& operator+=(FrameDiff_t increment) {
-        m_dFramePos += increment;
+        m_framePosition += increment;
         return *this;
     }
 
     FramePos& operator-=(FrameDiff_t decrement) {
-        m_dFramePos -= decrement;
+        m_framePosition -= decrement;
         return *this;
     }
 
     FramePos& operator*=(double multiple) {
-        m_dFramePos *= multiple;
+        m_framePosition *= multiple;
         return *this;
     }
 
     FramePos& operator/=(double divisor) {
-        m_dFramePos /= divisor;
+        m_framePosition /= divisor;
         return *this;
     }
 
   private:
-    value_t m_dFramePos;
+    value_t m_framePosition;
 };
 
 /// FramePos can be added to a FrameDiff_t
