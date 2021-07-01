@@ -50,7 +50,7 @@ class FramePos final {
 
     bool isFractional() const {
         value_t integerPart;
-        return std::modf(value(), &integerPart) == 0;
+        return std::modf(value(), &integerPart) != 0;
     }
 
     [[nodiscard]] FramePos toFullFrames() const {
