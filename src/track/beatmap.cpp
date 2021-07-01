@@ -22,7 +22,7 @@ namespace {
 
 constexpr int kMinNumberOfBeats = 2; // a map needs at least two beats to have a tempo
 
-Beat beatFromFramePos(mixxx::audio::FramePos beatPosition) {
+inline Beat beatFromFramePos(mixxx::audio::FramePos beatPosition) {
     DEBUG_ASSERT(beatPosition.isValid());
     // TODO: Before the introduction of the FramePos class, we didn't check
     // consistently that all beat positions are not fractional. Because the
@@ -36,7 +36,7 @@ Beat beatFromFramePos(mixxx::audio::FramePos beatPosition) {
     return beat;
 }
 
-mixxx::audio::FrameDiff_t frameDiffFromSampleDiff(double sampleDiff) {
+inline mixxx::audio::FrameDiff_t frameDiffFromSampleDiff(double sampleDiff) {
     return std::floor(sampleDiff / mixxx::kEngineChannelCount);
 }
 
