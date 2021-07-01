@@ -83,25 +83,84 @@ public:
         return displayValueText(m_value);
     }
 
+    Bpm& operator+=(double increment) {
+        m_value += increment;
+        return *this;
+    }
+
+    Bpm& operator-=(double decrement) {
+        m_value -= decrement;
+        return *this;
+    }
+
+    Bpm& operator*=(double multiple) {
+        m_value *= multiple;
+        return *this;
+    }
+
+    Bpm& operator/=(double divisor) {
+        m_value /= divisor;
+        return *this;
+    }
+
 private:
     double m_value;
 };
 
-inline
-bool operator==(const Bpm& lhs, const Bpm& rhs) {
-    return lhs.compareEq(rhs);
+/// Bpm can be added to a double
+inline Bpm operator+(Bpm bpm, double bpmDiff) {
+    return Bpm(bpm.getValue() + bpmDiff);
 }
 
-inline
-bool operator!=(const Bpm& lhs, const Bpm& rhs) {
-    return !(lhs == rhs);
+/// Bpm can be subtracted from a double
+inline Bpm operator-(Bpm bpm, double bpmDiff) {
+    return Bpm(bpm.getValue() - bpmDiff);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const Bpm& arg) {
-    return dbg << arg.getValue();
+/// Two Bpm values can be subtracted to get a double
+inline double operator-(Bpm bpm1, Bpm bpm2) {
+    return bpm1.getValue() - bpm2.getValue();
 }
 
+// Adding two Bpm is not allowed, because it makes no sense semantically.
+
+/// Bpm can be multiplied or divided by a double
+inline Bpm operator*(Bpm bpm, double multiple) {
+    return Bpm(bpm.getValue() * multiple);
+}
+
+inline Bpm operator/(Bpm bpm, double divisor) {
+    return Bpm(bpm.getValue() / divisor);
+}
+
+inline bool operator<(Bpm bpm1, Bpm bpm2) {
+    return bpm1.getValue() < bpm2.getValue();
+}
+
+inline bool operator<=(Bpm bpm1, Bpm bpm2) {
+    return bpm1.getValue() <= bpm2.getValue();
+}
+
+inline bool operator>(Bpm bpm1, Bpm bpm2) {
+    return bpm1.getValue() > bpm2.getValue();
+}
+
+inline bool operator>=(Bpm bpm1, Bpm bpm2) {
+    return bpm1.getValue() >= bpm2.getValue();
+}
+
+inline bool operator==(Bpm bpm1, Bpm bpm2) {
+    return bpm1.getValue() == bpm2.getValue();
+}
+
+inline bool operator!=(Bpm bpm1, Bpm bpm2) {
+    return !(bpm1.getValue() == bpm2.getValue());
+}
+
+inline QDebug operator<<(QDebug dbg, Bpm arg) {
+    dbg << arg.getValue();
+    return dbg;
+}
 }
 
 Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);
