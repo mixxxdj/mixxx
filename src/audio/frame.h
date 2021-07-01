@@ -44,7 +44,7 @@ class FramePos final {
         m_framePosition = framePosition;
     }
 
-    value_t getValue() const {
+    value_t value() const {
         return m_framePosition;
     }
 
@@ -74,17 +74,17 @@ class FramePos final {
 
 /// FramePos can be added to a FrameDiff_t
 inline FramePos operator+(FramePos framePos, FrameDiff_t frameDiff) {
-    return FramePos(framePos.getValue() + frameDiff);
+    return FramePos(framePos.value() + frameDiff);
 }
 
 /// FramePos can be subtracted from a FrameDiff_t
 inline FramePos operator-(FramePos framePos, FrameDiff_t frameDiff) {
-    return FramePos(framePos.getValue() - frameDiff);
+    return FramePos(framePos.value() - frameDiff);
 }
 
 /// Two FramePos can be subtracted to get a FrameDiff_t
 inline FrameDiff_t operator-(FramePos framePos1, FramePos framePos2) {
-    return framePos1.getValue() - framePos2.getValue();
+    return framePos1.value() - framePos2.value();
 }
 
 // Adding two FramePos is not allowed since every FramePos shares a common
@@ -92,39 +92,39 @@ inline FrameDiff_t operator-(FramePos framePos1, FramePos framePos2) {
 
 /// FramePos can be multiplied or divided by a double
 inline FramePos operator*(FramePos framePos, double multiple) {
-    return FramePos(framePos.getValue() * multiple);
+    return FramePos(framePos.value() * multiple);
 }
 
 inline FramePos operator/(FramePos framePos, double divisor) {
-    return FramePos(framePos.getValue() / divisor);
+    return FramePos(framePos.value() / divisor);
 }
 
 inline bool operator<(FramePos frame1, FramePos frame2) {
-    return frame1.getValue() < frame2.getValue();
+    return frame1.value() < frame2.value();
 }
 
 inline bool operator<=(FramePos frame1, FramePos frame2) {
-    return frame1.getValue() <= frame2.getValue();
+    return frame1.value() <= frame2.value();
 }
 
 inline bool operator>(FramePos frame1, FramePos frame2) {
-    return frame1.getValue() > frame2.getValue();
+    return frame1.value() > frame2.value();
 }
 
 inline bool operator>=(FramePos frame1, FramePos frame2) {
-    return frame1.getValue() >= frame2.getValue();
+    return frame1.value() >= frame2.value();
 }
 
 inline bool operator==(FramePos frame1, FramePos frame2) {
-    return frame1.getValue() == frame2.getValue();
+    return frame1.value() == frame2.value();
 }
 
 inline bool operator!=(FramePos frame1, FramePos frame2) {
-    return !(frame1.getValue() == frame2.getValue());
+    return !(frame1.value() == frame2.value());
 }
 
 inline QDebug operator<<(QDebug dbg, FramePos arg) {
-    dbg << arg.getValue();
+    dbg << arg.value();
     return dbg;
 }
 
