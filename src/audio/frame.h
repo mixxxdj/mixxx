@@ -48,6 +48,15 @@ class FramePos final {
         return m_framePosition;
     }
 
+    bool isFractional() const {
+        value_t integerPart;
+        return std::modf(value(), &integerPart) == 0;
+    }
+
+    [[nodiscard]] FramePos toFullFrames() const {
+        return FramePos(std::floor(value()));
+    }
+
     FramePos& operator+=(FrameDiff_t increment) {
         m_framePosition += increment;
         return *this;
