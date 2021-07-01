@@ -28,11 +28,11 @@ class FramePos final {
             : m_framePosition(framePosition) {
     }
 
-    static FramePos fromEngineSamplePos(double engineSamplePos) {
+    static constexpr FramePos fromEngineSamplePos(double engineSamplePos) {
         return FramePos(engineSamplePos / mixxx::kEngineChannelCount);
     }
 
-    double toEngineSamplePos() const {
+    constexpr double toEngineSamplePos() const {
         return value() * mixxx::kEngineChannelCount;
     }
 
@@ -44,7 +44,7 @@ class FramePos final {
         m_framePosition = framePosition;
     }
 
-    value_t value() const {
+    constexpr value_t value() const {
         return m_framePosition;
     }
 
