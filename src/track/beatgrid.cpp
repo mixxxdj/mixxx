@@ -333,8 +333,7 @@ BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
         return BeatsPointer(new BeatGrid(*this));
     }
 
-    // TODO: Check if we can remove getMaxBpm and replace it with Bpm::hasValue instead
-    if (bpm.getValue() > getMaxBpm()) {
+    if (!bpm.hasValue()) {
         return BeatsPointer(new BeatGrid(*this));
     }
 
@@ -345,9 +344,8 @@ BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
 }
 
 BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
-    // FIXME: Shouldn't we use mixxx::Bpm::hasValue() here?
-    if (bpm.getValue() > getMaxBpm()) {
-        bpm.setValue(getMaxBpm());
+    VERIFY_OR_DEBUG_ASSERT(bpm.hasValue()) {
+        return nullptr;
     }
     mixxx::track::io::BeatGrid grid = m_grid;
     grid.mutable_bpm()->set_bpm(bpm.getValue());

@@ -10,10 +10,6 @@
 #include "util/memory.h"
 #include "util/types.h"
 
-namespace {
-    double kMaxBpm = 500;
-}
-
 namespace mixxx {
 
 class Beats;
@@ -131,10 +127,6 @@ class Beats {
     // curSample.  (An n of 4 results in an averaging of 8 beats).  Invalid
     // BPM returns -1.
     virtual mixxx::Bpm getBpmAroundPosition(double curSample, int n) const = 0;
-
-    virtual double getMaxBpm() const {
-        return kMaxBpm;
-    }
 
     virtual audio::SampleRate getSampleRate() const = 0;
 

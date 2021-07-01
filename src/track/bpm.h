@@ -12,7 +12,7 @@ class Bpm final {
 public:
     static constexpr double kValueUndefined = 0.0;
     static constexpr double kValueMin = 0.0; // lower bound (exclusive)
-    static constexpr double kValueMax = 300.0; // higher bound (inclusive)
+    static constexpr double kValueMax = 500.0; // higher bound (inclusive)
 
     constexpr Bpm()
             : Bpm(kValueUndefined) {
