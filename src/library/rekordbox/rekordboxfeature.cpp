@@ -1629,7 +1629,13 @@ void RekordboxFeature::onTracksFound() {
     qDebug() << "onTracksFound";
     m_pSidebarModel->triggerRepaint();
 
-    QString devicePlaylist = m_tracksFuture.result();
+    QString devicePlaylist;
+    try {
+        devicePlaylist = m_tracksFuture.result();
+    } catch (const std::exception& e) {
+        qWarning() << "Failed to load Rekordbox database:" << e.what();
+        return;
+    }
 
     qDebug() << "Show Rekordbox Device Playlist: " << devicePlaylist;
 
