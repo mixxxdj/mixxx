@@ -239,7 +239,7 @@ BeatsPointer BeatMap::makeBeatMap(
 
     mixxx::audio::FramePos previousBeatPos = mixxx::audio::kInvalidFramePos;
 
-    for (const mixxx::audio::FramePos originalBeatPos : beats) {
+    for (const mixxx::audio::FramePos& originalBeatPos : beats) {
         VERIFY_OR_DEBUG_ASSERT(originalBeatPos.isValid()) {
             qWarning() << "BeatMap::makeBeatMap: Beats is invalid, discarding beat";
             continue;
