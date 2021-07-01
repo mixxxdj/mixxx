@@ -581,15 +581,15 @@ void bindTrackLibraryValues(
     QString beatsVersion;
     QString beatsSubVersion;
     // Fall back on cached BPM
-    const mixxx::Bpm bpm = trackInfo.getBpm();
-    double dBpm = bpm.hasValue() ? bpm.getValue() : mixxx::Bpm::kValueUndefined;
+    mixxx::Bpm bpm = trackInfo.getBpm();
     if (!pBeats.isNull()) {
         beatsBlob = pBeats->toByteArray();
         beatsVersion = pBeats->getVersion();
         beatsSubVersion = pBeats->getSubVersion();
-        dBpm = pBeats->getBpm();
+        bpm = pBeats->getBpm();
     }
-    pTrackLibraryQuery->bindValue(":bpm", dBpm);
+    const double bpmValue = bpm.hasValue() ? bpm.getValue() : mixxx::Bpm::kValueUndefined;
+    pTrackLibraryQuery->bindValue(":bpm", bpmValue);
     pTrackLibraryQuery->bindValue(":beats_version", beatsVersion);
     pTrackLibraryQuery->bindValue(":beats_sub_version", beatsSubVersion);
     pTrackLibraryQuery->bindValue(":beats", beatsBlob);

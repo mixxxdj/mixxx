@@ -516,7 +516,7 @@ void SyncControl::notifySeek(double dNewPlaypos) {
 double SyncControl::fileBpm() const {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        return pBeats->getBpm();
+        return pBeats->getBpm().getValue();
     }
     return 0.0;
 }
