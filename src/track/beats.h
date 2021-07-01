@@ -6,6 +6,7 @@
 #include <QString>
 
 #include "audio/types.h"
+#include "track/bpm.h"
 #include "util/memory.h"
 #include "util/types.h"
 
@@ -124,12 +125,12 @@ class Beats {
 
     // Return the average BPM over the entire track if the BPM is
     // valid, otherwise returns -1
-    virtual double getBpm() const = 0;
+    virtual mixxx::Bpm getBpm() const = 0;
 
     // Return the average BPM over the range of n*2 beats centered around
     // curSample.  (An n of 4 results in an averaging of 8 beats).  Invalid
     // BPM returns -1.
-    virtual double getBpmAroundPosition(double curSample, int n) const = 0;
+    virtual mixxx::Bpm getBpmAroundPosition(double curSample, int n) const = 0;
 
     virtual double getMaxBpm() const {
         return kMaxBpm;
@@ -150,9 +151,9 @@ class Beats {
     // class must have the capability BEATSCAP_SCALE.
     virtual BeatsPointer scale(enum BPMScale scale) const = 0;
 
-    // Adjust the beats so the global average BPM matches dBpm. Beats class must
+    // Adjust the beats so the global average BPM matches bpm. Beats class must
     // have the capability BEATSCAP_SET.
-    virtual BeatsPointer setBpm(double dBpm) = 0;
+    virtual BeatsPointer setBpm(mixxx::Bpm bpm) = 0;
 };
 
 } // namespace mixxx

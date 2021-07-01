@@ -143,7 +143,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     if (!pBeats) {
         return true;
     }
-    if (!mixxx::Bpm::isValidValue(pBeats->getBpm())) {
+    if (!pBeats->getBpm().hasValue()) {
         // Tracks with an invalid bpm <= 0 should be re-analyzed,
         // independent of the preference settings. We expect that
         // all tracks have a bpm > 0 when analyzed. Users that want
@@ -228,7 +228,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
                 m_bPreferencesFixedTempo,
                 m_sampleRate);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
-                 << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : 0.0);
+                 << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : mixxx::Bpm());
     } else {
         mixxx::Bpm bpm = m_pPlugin->getBpm();
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;

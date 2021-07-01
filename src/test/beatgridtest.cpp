@@ -26,32 +26,32 @@ TEST(BeatGridTest, Scale) {
     int sampleRate = 44100;
     TrackPointer pTrack = newTrack(sampleRate);
 
-    const auto bpm = 60.0;
-    pTrack->trySetBpm(bpm);
+    constexpr mixxx::Bpm bpm(60.0);
+    pTrack->trySetBpm(bpm.getValue());
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
             QString(),
             mixxx::Bpm(bpm),
             mixxx::audio::kStartFramePos);
 
-    EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
+    EXPECT_DOUBLE_EQ(bpm.getValue(), pGrid->getBpm().getValue());
     pGrid = pGrid->scale(Beats::DOUBLE);
-    EXPECT_DOUBLE_EQ(2 * bpm, pGrid->getBpm());
+    EXPECT_DOUBLE_EQ(2 * bpm.getValue(), pGrid->getBpm().getValue());
 
     pGrid = pGrid->scale(Beats::HALVE);
-    EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
+    EXPECT_DOUBLE_EQ(bpm.getValue(), pGrid->getBpm().getValue());
 
     pGrid = pGrid->scale(Beats::TWOTHIRDS);
-    EXPECT_DOUBLE_EQ(bpm * 2 / 3, pGrid->getBpm());
+    EXPECT_DOUBLE_EQ(bpm.getValue() * 2 / 3, pGrid->getBpm().getValue());
 
     pGrid = pGrid->scale(Beats::THREEHALVES);
-    EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
+    EXPECT_DOUBLE_EQ(bpm.getValue(), pGrid->getBpm().getValue());
 
     pGrid = pGrid->scale(Beats::THREEFOURTHS);
-    EXPECT_DOUBLE_EQ(bpm * 3 / 4, pGrid->getBpm());
+    EXPECT_DOUBLE_EQ(bpm.getValue() * 3 / 4, pGrid->getBpm().getValue());
 
     pGrid = pGrid->scale(Beats::FOURTHIRDS);
-    EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
+    EXPECT_DOUBLE_EQ(bpm.getValue(), pGrid->getBpm().getValue());
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
@@ -229,12 +229,12 @@ TEST(BeatGridTest, FromMetadata) {
     int sampleRate = 44100;
     TrackPointer pTrack = newTrack(sampleRate);
 
-    const auto bpm = mixxx::Bpm(60.1);
+    constexpr mixxx::Bpm bpm(60.1);
     ASSERT_TRUE(pTrack->trySetBpm(bpm.getValue()));
     EXPECT_DOUBLE_EQ(pTrack->getBpm(), bpm.getValue());
 
     auto pBeats = pTrack->getBeats();
-    EXPECT_DOUBLE_EQ(pBeats->getBpm(), bpm.getValue());
+    EXPECT_DOUBLE_EQ(pBeats->getBpm().getValue(), bpm.getValue());
 
     // Invalid bpm resets the bpm
     ASSERT_TRUE(pTrack->trySetBpm(-60.1));

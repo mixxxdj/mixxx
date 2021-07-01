@@ -1295,9 +1295,9 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "EngineBuffer::postProcess";
     }
-    double localBpm = m_pBpmControl->updateLocalBpm();
+    const mixxx::Bpm localBpm = m_pBpmControl->updateLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
-    m_pSyncControl->setLocalBpm(localBpm);
+    m_pSyncControl->setLocalBpm(localBpm.getValue());
     m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (isMaster(mode)) {

@@ -3,7 +3,6 @@
 #include "audio/frame.h"
 #include "proto/beats.pb.h"
 #include "track/beats.h"
-#include "track/bpm.h"
 
 #define BEAT_GRID_1_VERSION "BeatGrid-1.0"
 #define BEAT_GRID_2_VERSION "BeatGrid-2.0"
@@ -55,8 +54,8 @@ class BeatGrid final : public Beats {
     double findNthBeat(double dSamples, int n) const override;
     std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
     bool hasBeatInRange(double startSample, double stopSample) const override;
-    double getBpm() const override;
-    double getBpmAroundPosition(double curSample, int n) const override;
+    mixxx::Bpm getBpm() const override;
+    mixxx::Bpm getBpmAroundPosition(double curSample, int n) const override;
 
     audio::SampleRate getSampleRate() const override {
         return m_sampleRate;
@@ -68,7 +67,7 @@ class BeatGrid final : public Beats {
 
     BeatsPointer translate(double dNumSamples) const override;
     BeatsPointer scale(enum BPMScale scale) const override;
-    BeatsPointer setBpm(double dBpm) override;
+    BeatsPointer setBpm(mixxx::Bpm bpm) override;
 
   private:
     BeatGrid(
@@ -81,7 +80,7 @@ class BeatGrid final : public Beats {
     BeatGrid(const BeatGrid& other);
 
     double firstBeatSample() const;
-    double bpm() const;
+    mixxx::Bpm bpm() const;
 
     // For internal use only.
     bool isValid() const;
