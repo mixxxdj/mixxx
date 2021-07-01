@@ -57,15 +57,17 @@ class FramePos final {
     value_t m_dFramePos;
 };
 
-// FramePos can be added to and subtracted from a FrameDiff_t
+/// FramePos can be added to a FrameDiff_t
 inline FramePos operator+(FramePos framePos, FrameDiff_t frameDiff) {
     return FramePos(framePos.getValue() + frameDiff);
 }
 
+/// FramePos can be subtracted from a FrameDiff_t
 inline FramePos operator-(FramePos framePos, FrameDiff_t frameDiff) {
     return FramePos(framePos.getValue() - frameDiff);
 }
 
+/// Two FramePos can be subtracted to get a FrameDiff_t
 inline FrameDiff_t operator-(FramePos framePos1, FramePos framePos2) {
     return framePos1.getValue() - framePos2.getValue();
 }
@@ -73,7 +75,7 @@ inline FrameDiff_t operator-(FramePos framePos1, FramePos framePos2) {
 // Adding two FramePos is not allowed since every FramePos shares a common
 // reference or origin i.e. the start of the track.
 
-// FramePos can be multiplied or divided by a double
+/// FramePos can be multiplied or divided by a double
 inline FramePos operator*(FramePos framePos, double multiple) {
     return FramePos(framePos.getValue() * multiple);
 }
