@@ -18,7 +18,7 @@ class FramePos final {
     static constexpr value_t kInvalidValue = std::numeric_limits<FramePos::value_t>::quiet_NaN();
 
     constexpr FramePos()
-            : m_framePosition(kStartValue) {
+            : m_framePosition(kInvalidValue) {
     }
 
     constexpr explicit FramePos(value_t framePosition)
