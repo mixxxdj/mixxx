@@ -4,6 +4,7 @@
 #include <limits>
 
 namespace mixxx {
+namespace audio {
 /// FrameDiff_t can be used to store the difference in position between
 /// two frames and to store the length of a segment of track in terms of frames.
 typedef double FrameDiff_t;
@@ -112,7 +113,8 @@ inline QDebug operator<<(QDebug dbg, FramePos arg) {
 
 constexpr FramePos kInvalidFramePos = FramePos(FramePos::kInvalidValue);
 constexpr FramePos kStartFramePos = FramePos(FramePos::kStartValue);
+} // namespace audio
 } // namespace mixxx
 
-Q_DECLARE_TYPEINFO(mixxx::FramePos, Q_MOVABLE_TYPE);
-Q_DECLARE_METATYPE(mixxx::FramePos);
+Q_DECLARE_TYPEINFO(mixxx::audio::FramePos, Q_MOVABLE_TYPE);
+Q_DECLARE_METATYPE(mixxx::audio::FramePos);
