@@ -5,6 +5,7 @@
 #include <limits>
 
 #include "engine/engine.h"
+#include "util/fpclassify.h"
 
 namespace mixxx {
 namespace audio {
@@ -37,7 +38,7 @@ class FramePos final {
     }
 
     bool isValid() const {
-        return !std::isnan(m_framePosition);
+        return !util_isnan(m_framePosition);
     }
 
     void setValue(value_t framePosition) {
