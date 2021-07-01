@@ -581,8 +581,11 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // The cue point should be set on a beat, so this seems
             // to be a good alternative
             CuePosition cue = m_pLoadedTrack->getCuePoint();
-            m_pBeatsClone = BeatFactory::makeBeatGrid(
-                    m_pLoadedTrack->getSampleRate(), spinBpm->value(), cue.getPosition());
+            m_pBeatsClone =
+                    BeatFactory::makeBeatGrid(m_pLoadedTrack->getSampleRate(),
+                            spinBpm->value(),
+                            mixxx::audio::FramePos::fromEngineSamplePos(
+                                    cue.getPosition()));
         } else {
             m_pBeatsClone.clear();
         }
@@ -618,7 +621,9 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     if (!m_pBeatsClone) {
         CuePosition cue = m_pLoadedTrack->getCuePoint();
         m_pBeatsClone = BeatFactory::makeBeatGrid(
-                m_pLoadedTrack->getSampleRate(), value, cue.getPosition());
+                m_pLoadedTrack->getSampleRate(),
+                value,
+                mixxx::audio::FramePos::fromEngineSamplePos(cue.getPosition()));
     }
 
     double oldValue = m_pBeatsClone->getBpm();

@@ -925,7 +925,7 @@ void readAnalyze(TrackPointer track,
                     static_cast<rekordbox_anlz_t::beat_grid_tag_t*>(
                             (*section)->body());
 
-            QVector<double> beats;
+            QVector<mixxx::audio::FramePos> beats;
 
             for (std::vector<rekordbox_anlz_t::beat_grid_beat_t*>::iterator
                             beat = beatGridTag->beats()->begin();
@@ -936,7 +936,7 @@ void readAnalyze(TrackPointer track,
                 if (time < 1) {
                     time = 1;
                 }
-                beats << (sampleRateKhz * static_cast<double>(time));
+                beats << mixxx::audio::FramePos(sampleRateKhz * static_cast<double>(time));
             }
 
             const auto pBeats = mixxx::BeatMap::makeBeatMap(

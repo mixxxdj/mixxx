@@ -3,6 +3,7 @@
 #include <QVector>
 #include <memory>
 
+#include "audio/frame.h"
 #include "audio/streaminfo.h"
 
 namespace mixxx {
@@ -17,7 +18,7 @@ class BeatsImporter {
 
     /// Determines the timing offset and returns a Vector of frame positions
     /// to use as input for the BeatMap constructor
-    virtual QVector<double> importBeatsAndApplyTimingOffset(
+    virtual QVector<mixxx::audio::FramePos> importBeatsAndApplyTimingOffset(
             const QString& filePath, const audio::StreamInfo& streamInfo) = 0;
 };
 

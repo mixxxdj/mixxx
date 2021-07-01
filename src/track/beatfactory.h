@@ -2,6 +2,7 @@
 
 #include <QHash>
 
+#include "audio/frame.h"
 #include "audio/types.h"
 #include "track/beats.h"
 
@@ -17,7 +18,7 @@ class BeatFactory {
     static mixxx::BeatsPointer makeBeatGrid(
             mixxx::audio::SampleRate sampleRate,
             double dBpm,
-            double dFirstBeatSample);
+            mixxx::audio::FramePos firstBeatFramePos);
 
     static QString getPreferredVersion(bool fixedTempo);
 
@@ -25,7 +26,7 @@ class BeatFactory {
             const QHash<QString, QString>& extraVersionInfo);
 
     static mixxx::BeatsPointer makePreferredBeats(
-            const QVector<double>& beats,
+            const QVector<mixxx::audio::FramePos>& beats,
             const QHash<QString, QString>& extraVersionInfo,
             bool fixedTempo,
             mixxx::audio::SampleRate sampleRate);

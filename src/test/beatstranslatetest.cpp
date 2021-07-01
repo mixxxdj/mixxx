@@ -8,16 +8,16 @@ class BeatsTranslateTest : public MockedEngineBackendTest {
 TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Set up BeatGrids for decks 1 and 2.
     const double bpm = 60.0;
-    const double firstBeat = 0.0;
+    constexpr auto firstBeat = mixxx::audio::kStartFramePos;
     auto grid1 = mixxx::BeatGrid::makeBeatGrid(
             m_pTrack1->getSampleRate(), QString(), bpm, firstBeat);
     m_pTrack1->trySetBeats(grid1);
-    ASSERT_DOUBLE_EQ(firstBeat, grid1->findClosestBeat(0));
+    ASSERT_DOUBLE_EQ(firstBeat.value(), grid1->findClosestBeat(0));
 
     auto grid2 = mixxx::BeatGrid::makeBeatGrid(
             m_pTrack2->getSampleRate(), QString(), bpm, firstBeat);
     m_pTrack2->trySetBeats(grid2);
-    ASSERT_DOUBLE_EQ(firstBeat, grid2->findClosestBeat(0));
+    ASSERT_DOUBLE_EQ(firstBeat.value(), grid2->findClosestBeat(0));
 
     // Seek deck 1 forward a bit.
     const double delta = 2222.0;

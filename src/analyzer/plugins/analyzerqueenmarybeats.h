@@ -40,7 +40,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
         return true;
     }
 
-    QVector<double> getBeats() const override {
+    QVector<mixxx::audio::FramePos> getBeats() const override {
         return m_resultBeats;
     }
 
@@ -51,7 +51,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     int m_windowSize;
     int m_stepSize;
     std::vector<double> m_detectionResults;
-    QVector<double> m_resultBeats;
+    QVector<mixxx::audio::FramePos> m_resultBeats;
 };
 
 } // namespace mixxx

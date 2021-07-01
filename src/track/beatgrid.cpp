@@ -74,7 +74,7 @@ BeatsPointer BeatGrid::makeBeatGrid(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         double dBpm,
-        double dFirstBeatSample) {
+        mixxx::audio::FramePos firstBeatPos) {
     if (dBpm < 0) {
         dBpm = 0.0;
     }
@@ -83,7 +83,7 @@ BeatsPointer BeatGrid::makeBeatGrid(
 
     grid.mutable_bpm()->set_bpm(dBpm);
     grid.mutable_first_beat()->set_frame_position(
-            static_cast<google::protobuf::int32>(dFirstBeatSample / kFrameSize));
+            static_cast<google::protobuf::int32>(firstBeatPos.value()));
     // Calculate beat length as sample offsets
     double beatLength = (60.0 * sampleRate / dBpm) * kFrameSize;
 
@@ -106,9 +106,9 @@ BeatsPointer BeatGrid::makeBeatGrid(
         return BeatsPointer(new BeatGrid(sampleRate, QString(), grid, 0));
     }
     const BeatGridData* blob = reinterpret_cast<const BeatGridData*>(byteArray.constData());
+    const auto firstBeat = mixxx::audio::FramePos(blob->firstBeat);
 
-    // We serialize into frame offsets but use sample offsets at runtime
-    return makeBeatGrid(sampleRate, subVersion, blob->bpm, blob->firstBeat * kFrameSize);
+    return makeBeatGrid(sampleRate, subVersion, blob->bpm, firstBeat);
 }
 
 QByteArray BeatGrid::toByteArray() const {

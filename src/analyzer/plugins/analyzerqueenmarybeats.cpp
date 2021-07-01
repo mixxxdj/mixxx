@@ -107,7 +107,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
     for (size_t i = 0; i < beats.size(); ++i) {
         // we add the halve m_stepSize here, because the beat
         // is detected between the two samples.
-        double result = (beats.at(i) * m_stepSize) + m_stepSize / 2;
+        const auto result = mixxx::audio::FramePos((beats.at(i) * m_stepSize) + m_stepSize / 2);
         m_resultBeats.push_back(result);
     }
 

@@ -345,7 +345,9 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
     } else if (!m_pBeats) {
         // No beat grid available -> create and initialize
         double cue = m_record.getCuePoint().getPosition();
-        auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(), bpmValue, cue);
+        auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(),
+                bpmValue,
+                mixxx::audio::FramePos::fromEngineSamplePos(cue));
         return trySetBeatsWhileLocked(std::move(pBeats));
     } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
             m_pBeats->getBpm() != bpmValue) {
