@@ -4,6 +4,8 @@
 #include <cmath>
 #include <limits>
 
+#include "engine/engine.h"
+
 namespace mixxx {
 namespace audio {
 /// FrameDiff_t can be used to store the difference in position between
@@ -24,6 +26,14 @@ class FramePos final {
 
     constexpr explicit FramePos(value_t framePosition)
             : m_framePosition(framePosition) {
+    }
+
+    static FramePos fromEngineSamplePos(double engineSamplePos) {
+        return FramePos(engineSamplePos / mixxx::kEngineChannelCount);
+    }
+
+    double toEngineSamplePos() const {
+        return value() * mixxx::kEngineChannelCount;
     }
 
     bool isValid() const {
