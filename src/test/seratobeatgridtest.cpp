@@ -113,7 +113,7 @@ TEST_F(SeratoBeatGridTest, ParseEmptyDataFLAC) {
 
 TEST_F(SeratoBeatGridTest, SerializeBeatgrid) {
     // Create a const beatgrid at 120 BPM
-    constexpr double bpm = 120.0;
+    const auto bpm = mixxx::Bpm(120.0);
     const auto sampleRate = mixxx::audio::SampleRate(44100);
     EXPECT_EQ(sampleRate.isValid(), true);
     const auto pBeats = mixxx::BeatGrid::makeBeatGrid(
@@ -126,7 +126,7 @@ TEST_F(SeratoBeatGridTest, SerializeBeatgrid) {
     seratoBeatGrid.setBeats(pBeats, signalInfo, duration, 0);
     EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 0);
     EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
-    EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm));
+    EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm.getValue()));
 }
 
 TEST_F(SeratoBeatGridTest, SerializeBeatMap) {

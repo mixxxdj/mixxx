@@ -174,10 +174,10 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
-        double centerBpm = math_max(kBpmAdjustMin, bpm + deltaBpm);
-        double adjustedBpm = BeatUtils::roundBpmWithinRange(
+        const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm + deltaBpm));
+        mixxx::Bpm adjustedBpm = BeatUtils::roundBpmWithinRange(
                 centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);
-        pTrack->trySetBeats(pBeats->setBpm(adjustedBpm));
+        pTrack->trySetBeats(pBeats->setBpm(adjustedBpm.getValue()));
     }
 }
 
@@ -257,11 +257,11 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
-    double averageBpm = 60.0 * 1000.0 / averageLength / rateRatio;
+    auto averageBpm = mixxx::Bpm(60.0 * 1000.0 / averageLength / rateRatio);
     averageBpm = BeatUtils::roundBpmWithinRange(averageBpm - kBpmTabRounding,
             averageBpm,
             averageBpm + kBpmTabRounding);
-    pTrack->trySetBeats(pBeats->setBpm(averageBpm));
+    pTrack->trySetBeats(pBeats->setBpm(averageBpm.getValue()));
 }
 
 void BpmControl::slotControlBeatSyncPhase(double value) {

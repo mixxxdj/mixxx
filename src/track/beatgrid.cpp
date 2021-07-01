@@ -73,19 +73,20 @@ BeatGrid::BeatGrid(const BeatGrid& other)
 BeatsPointer BeatGrid::makeBeatGrid(
         audio::SampleRate sampleRate,
         const QString& subVersion,
-        double dBpm,
+        mixxx::Bpm bpm,
         mixxx::audio::FramePos firstBeatPos) {
-    if (dBpm < 0) {
-        dBpm = 0.0;
+    // FIXME: Should this be a debug assertion?
+    if (!bpm.hasValue()) {
+        return nullptr;
     }
 
     mixxx::track::io::BeatGrid grid;
 
-    grid.mutable_bpm()->set_bpm(dBpm);
+    grid.mutable_bpm()->set_bpm(bpm.getValue());
     grid.mutable_first_beat()->set_frame_position(
             static_cast<google::protobuf::int32>(firstBeatPos.value()));
     // Calculate beat length as sample offsets
-    double beatLength = (60.0 * sampleRate / dBpm) * kFrameSize;
+    double beatLength = (60.0 * sampleRate / bpm.getValue()) * kFrameSize;
 
     return BeatsPointer(new BeatGrid(sampleRate, subVersion, grid, beatLength));
 }
@@ -107,8 +108,9 @@ BeatsPointer BeatGrid::makeBeatGrid(
     }
     const BeatGridData* blob = reinterpret_cast<const BeatGridData*>(byteArray.constData());
     const auto firstBeat = mixxx::audio::FramePos(blob->firstBeat);
+    const auto bpm = mixxx::Bpm(blob->bpm);
 
-    return makeBeatGrid(sampleRate, subVersion, blob->bpm, firstBeat);
+    return makeBeatGrid(sampleRate, subVersion, bpm, firstBeat);
 }
 
 QByteArray BeatGrid::toByteArray() const {
@@ -305,7 +307,7 @@ BeatsPointer BeatGrid::translate(double dNumSamples) const {
 
 BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
     mixxx::track::io::BeatGrid grid = m_grid;
-    double bpm = grid.bpm().bpm();
+    auto bpm = mixxx::Bpm(grid.bpm().bpm());
 
     switch (scale) {
     case DOUBLE:
@@ -331,13 +333,14 @@ BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
         return BeatsPointer(new BeatGrid(*this));
     }
 
-    if (bpm > getMaxBpm()) {
+    // TODO: Check if we can remove getMaxBpm and replace it with Bpm::hasValue instead
+    if (bpm.getValue() > getMaxBpm()) {
         return BeatsPointer(new BeatGrid(*this));
     }
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
-    grid.mutable_bpm()->set_bpm(bpm);
-    double beatLength = (60.0 * m_sampleRate / bpm) * kFrameSize;
+    grid.mutable_bpm()->set_bpm(bpm.getValue());
+    double beatLength = (60.0 * m_sampleRate / bpm.getValue()) * kFrameSize;
     return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 

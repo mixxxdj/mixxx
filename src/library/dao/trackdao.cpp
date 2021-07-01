@@ -1240,7 +1240,7 @@ bool setTrackAudioProperties(
 
 bool setTrackBeats(const QSqlRecord& record, const int column,
                    TrackPointer pTrack) {
-    double bpm = record.value(column).toDouble();
+    const auto bpm = mixxx::Bpm(record.value(column).toDouble());
     QString beatsVersion = record.value(column + 1).toString();
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();

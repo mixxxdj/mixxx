@@ -6,7 +6,6 @@
 #include <QtDebug>
 #include <algorithm>
 
-#include "track/bpm.h"
 #include "util/math.h"
 
 namespace {
@@ -23,23 +22,23 @@ constexpr int kMinRegionBeatCount = 16;
 
 } // namespace
 
-double BeatUtils::calculateAverageBpm(int numberOfBeats,
+mixxx::Bpm BeatUtils::calculateAverageBpm(int numberOfBeats,
         mixxx::audio::SampleRate sampleRate,
         mixxx::audio::FramePos lowerFrame,
         mixxx::audio::FramePos upperFrame) {
     mixxx::audio::FrameDiff_t frames = upperFrame - lowerFrame;
     DEBUG_ASSERT(frames > 0);
     if (numberOfBeats < 1) {
-        return 0;
+        return mixxx::Bpm();
     }
-    return 60.0 * numberOfBeats * sampleRate / frames;
+    return mixxx::Bpm(60.0 * numberOfBeats * sampleRate / frames);
 }
 
-double BeatUtils::calculateBpm(
+mixxx::Bpm BeatUtils::calculateBpm(
         const QVector<mixxx::audio::FramePos>& beats,
         mixxx::audio::SampleRate sampleRate) {
     if (beats.size() < 2) {
-        return 0;
+        return mixxx::Bpm();
     }
 
     // If we don't have enough beats for our regular approach, just divide the #
@@ -141,7 +140,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
 }
 
 // static
-double BeatUtils::makeConstBpm(
+mixxx::Bpm BeatUtils::makeConstBpm(
         const QVector<BeatUtils::ConstRegion>& constantRegions,
         mixxx::audio::SampleRate sampleRate,
         mixxx::audio::FramePos* pFirstBeat) {
@@ -178,7 +177,7 @@ double BeatUtils::makeConstBpm(
 
     if (longestRegionLength == 0) {
         // no betas, we default to
-        return 128;
+        return mixxx::Bpm(128);
     }
 
     int longestRegionNumberOfBeats = static_cast<int>(
@@ -300,13 +299,13 @@ double BeatUtils::makeConstBpm(
 
     // Create a const region region form the first beat of the first region to the last beat of the last region.
 
-    const double minRoundBpm = 60.0 * sampleRate / longestRegionBeatLengthMax;
-    const double maxRoundBpm = 60.0 * sampleRate / longestRegionBeatLengthMin;
-    const double centerBpm = 60.0 * sampleRate / longestRegionBeatLength;
+    const mixxx::Bpm minRoundBpm = mixxx::Bpm(60.0 * sampleRate / longestRegionBeatLengthMax);
+    const mixxx::Bpm maxRoundBpm = mixxx::Bpm(60.0 * sampleRate / longestRegionBeatLengthMin);
+    const mixxx::Bpm centerBpm = mixxx::Bpm(60.0 * sampleRate / longestRegionBeatLength);
 
     //qDebug() << "minRoundBpm" << minRoundBpm;
     //qDebug() << "maxRoundBpm" << maxRoundBpm;
-    const double roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
+    const mixxx::Bpm roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
 
     if (pFirstBeat) {
         // Move the first beat as close to the start of the track as we can. This is
@@ -314,7 +313,7 @@ double BeatUtils::makeConstBpm(
         // bpm adjustments are made.
         // This is a temporary fix, ideally the anchor point for the BPM grid should
         // be the first proper downbeat, or perhaps the CUE point.
-        const double roundedBeatLength = 60.0 * sampleRate / roundBpm;
+        const double roundedBeatLength = 60.0 * sampleRate / roundBpm.getValue();
         *pFirstBeat = mixxx::audio::FramePos(
                 fmod(constantRegions[startRegionIndex].firstBeat.value(),
                         roundedBeatLength));
@@ -323,9 +322,10 @@ double BeatUtils::makeConstBpm(
 }
 
 // static
-double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double maxBpm) {
+mixxx::Bpm BeatUtils::roundBpmWithinRange(
+        mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm) {
     // First try to snap to a full integer BPM
-    double snapBpm = round(centerBpm);
+    auto snapBpm = mixxx::Bpm(round(centerBpm.getValue()));
     if (snapBpm > minBpm && snapBpm < maxBpm) {
         // Success
         return snapBpm;
@@ -336,23 +336,23 @@ double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double ma
     if (roundBpmWidth > 0.5) {
         // 0.5 BPM are only reasonable if the double value is not insane
         // or the 2/3 value is not too small.
-        if (centerBpm < 85.0) {
+        if (centerBpm < mixxx::Bpm(85.0)) {
             // this cane be actually up to 175 BPM
             // allow halve BPM values
-            return round(centerBpm * 2) / 2;
-        } else if (centerBpm > 127.0) {
+            return mixxx::Bpm(round(centerBpm.getValue() * 2) / 2);
+        } else if (centerBpm > mixxx::Bpm(127.0)) {
             // optimize for 2/3 going down to 85
-            return round(centerBpm / 3 * 2) * 3 / 2;
+            return mixxx::Bpm(round(centerBpm.getValue() / 3 * 2) * 3 / 2);
         }
     }
 
     if (roundBpmWidth > 1.0 / 12) {
         // this covers all sorts of 1/2 2/3 and 3/4 multiplier
-        return round(centerBpm * 12) / 12;
+        return mixxx::Bpm(round(centerBpm.getValue() * 12) / 12);
     } else {
         // We are here if we have more that ~75 beats and ~30 s
         // try to snap to a 1/12 Bpm
-        snapBpm = round(centerBpm * 12) / 12;
+        snapBpm = mixxx::Bpm(round(centerBpm.getValue() * 12) / 12);
         if (snapBpm > minBpm && snapBpm < maxBpm) {
             // Success
             return snapBpm;
@@ -384,10 +384,10 @@ QVector<mixxx::audio::FramePos> BeatUtils::getBeats(
 // static
 mixxx::audio::FramePos BeatUtils::adjustPhase(
         mixxx::audio::FramePos firstBeat,
-        double bpm,
+        mixxx::Bpm bpm,
         mixxx::audio::SampleRate sampleRate,
         const QVector<mixxx::audio::FramePos>& beats) {
-    const double beatLength = 60 * sampleRate / bpm;
+    const double beatLength = 60 * sampleRate / bpm.getValue();
     const mixxx::audio::FramePos startOffset =
             mixxx::audio::FramePos(fmod(firstBeat.value(), beatLength));
     mixxx::audio::FrameDiff_t offsetAdjust = 0;

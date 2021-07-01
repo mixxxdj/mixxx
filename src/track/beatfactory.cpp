@@ -33,9 +33,9 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
 
 mixxx::BeatsPointer BeatFactory::makeBeatGrid(
         mixxx::audio::SampleRate sampleRate,
-        double dBpm,
+        mixxx::Bpm bpm,
         mixxx::audio::FramePos firstBeatFramePos) {
-    return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), dBpm, firstBeatFramePos);
+    return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), bpm, firstBeatFramePos);
 }
 
 // static
@@ -102,7 +102,8 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
 
     if (version == BEAT_GRID_2_VERSION) {
         mixxx::audio::FramePos firstBeat = mixxx::audio::kStartFramePos;
-        double constBPM = BeatUtils::makeConstBpm(constantRegions, sampleRate, &firstBeat);
+        const mixxx::Bpm constBPM = BeatUtils::makeConstBpm(
+                constantRegions, sampleRate, &firstBeat);
         firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
         auto pGrid = mixxx::BeatGrid::makeBeatGrid(
                 sampleRate, subVersion, constBPM, firstBeat);
