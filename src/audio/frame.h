@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDebug>
+#include <cmath>
 #include <limits>
 
 namespace mixxx {
@@ -23,6 +24,10 @@ class FramePos final {
 
     constexpr explicit FramePos(value_t framePosition)
             : m_framePosition(framePosition) {
+    }
+
+    bool isValid() const {
+        return !std::isnan(m_framePosition);
     }
 
     void setValue(value_t framePosition) {
