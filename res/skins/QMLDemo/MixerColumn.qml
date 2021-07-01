@@ -7,6 +7,7 @@ Item {
     id: root
 
     property string group // required
+    property color color: Theme.mixerColor
 
     Rectangle {
         id: gainKnobFrame
@@ -18,6 +19,21 @@ Item {
         color: Theme.knobBackgroundColor
         radius: 5
 
+        Text {
+            id: labelText
+
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            horizontalAlignment: Text.AlignHCenter
+            elide: Text.ElideRight
+            font.family: Theme.fontFamily
+            font.bold: true
+            font.pixelSize: Theme.knobFontPixelSize
+            color: Theme.buttonNormalColor
+            text: "Gain"
+        }
+
         Skin.ControlKnob {
             id: gainKnob
 
@@ -26,7 +42,7 @@ Item {
             height: 48
             group: root.group
             key: "pregain"
-            color: Theme.gainKnobColor
+            color: root.color
         }
 
     }
@@ -63,7 +79,7 @@ Item {
             anchors.fill: parent
             group: root.group
             key: "volume"
-            barColor: Theme.volumeSliderBarColor
+            barColor: root.color
             bg: Theme.imgVolumeSliderBackground
         }
 
@@ -78,7 +94,7 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         text: "PFL"
-        activeColor: Theme.pflActiveButtonColor
+        activeColor: root.color
         toggleable: true
     }
 

@@ -10,11 +10,26 @@ Rectangle {
     property alias knob: knob
     property string statusGroup: root.knob.group // required
     property string statusKey // required
+    property alias label: labelText.text
 
     color: Theme.knobBackgroundColor
     width: 56
     height: 56
     radius: 5
+
+    Text {
+        id: labelText
+
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        horizontalAlignment: Text.AlignHCenter
+        elide: Text.ElideRight
+        font.family: Theme.fontFamily
+        font.bold: true
+        font.pixelSize: Theme.knobFontPixelSize
+        color: Theme.buttonNormalColor
+    }
 
     Skin.ControlKnob {
         id: knob
