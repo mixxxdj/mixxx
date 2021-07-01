@@ -1508,6 +1508,7 @@ add_executable(mixxx-test
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
   src/test/fileinfo_test.cpp
+  src/test/frametest.cpp
   src/test/globaltrackcache_test.cpp
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
