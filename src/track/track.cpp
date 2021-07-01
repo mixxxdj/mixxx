@@ -338,7 +338,8 @@ mixxx::Bpm Track::getBpmWhileLocked() const {
 }
 
 bool Track::trySetBpmWhileLocked(double bpmValue) {
-    if (!mixxx::Bpm::isValidValue(bpmValue)) {
+    const auto bpm = mixxx::Bpm(bpmValue);
+    if (!bpm.hasValue()) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
         return trySetBeatsWhileLocked(nullptr);
@@ -346,16 +347,16 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
         // No beat grid available -> create and initialize
         double cue = m_record.getCuePoint().getPosition();
         auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(),
-                bpmValue,
+                bpm,
                 mixxx::audio::FramePos::fromEngineSamplePos(cue));
         return trySetBeatsWhileLocked(std::move(pBeats));
     } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
-            m_pBeats->getBpm() != bpmValue) {
+            m_pBeats->getBpm() != bpm.getValue()) {
         // Continue with the regular cases
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpmValue));
+        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpm.getValue()));
     }
     return false;
 }

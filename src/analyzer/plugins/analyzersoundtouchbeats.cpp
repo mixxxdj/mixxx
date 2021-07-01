@@ -8,15 +8,14 @@
 namespace mixxx {
 
 AnalyzerSoundTouchBeats::AnalyzerSoundTouchBeats()
-        : m_downmixBuffer(kAnalysisFramesPerChunk), // mono, i.e. 1 sample per frame
-          m_fResultBpm(0.0f) {
+        : m_downmixBuffer(kAnalysisFramesPerChunk) {
 }
 
 AnalyzerSoundTouchBeats::~AnalyzerSoundTouchBeats() {
 }
 
 bool AnalyzerSoundTouchBeats::initialize(int samplerate) {
-    m_fResultBpm = 0.0f;
+    m_resultBpm = mixxx::Bpm();
     m_pSoundTouch = std::make_unique<soundtouch::BPMDetect>(2, samplerate);
     return true;
 }
@@ -42,7 +41,7 @@ bool AnalyzerSoundTouchBeats::finalize() {
     if (!m_pSoundTouch) {
         return false;
     }
-    m_fResultBpm = m_pSoundTouch->getBpm();
+    m_resultBpm = mixxx::Bpm(m_pSoundTouch->getBpm());
     m_pSoundTouch.reset();
     return true;
 }
