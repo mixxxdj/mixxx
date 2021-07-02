@@ -18,6 +18,7 @@ TEST_F(FrameTest, TestFramePosValid) {
     // Denormals
     EXPECT_TRUE(mixxx::audio::FramePos(0.0).isValid());
     EXPECT_TRUE(mixxx::audio::FramePos(std::numeric_limits<double>::min() / 2.0).isValid());
+    EXPECT_FALSE(mixxx::audio::FramePos(std::numeric_limits<double>::infinity()).isValid());
     // NaN
     EXPECT_FALSE(mixxx::audio::FramePos().isValid());
     EXPECT_FALSE(mixxx::audio::FramePos(std::numeric_limits<double>::quiet_NaN()).isValid());

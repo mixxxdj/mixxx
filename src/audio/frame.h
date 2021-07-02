@@ -38,7 +38,7 @@ class FramePos final {
     }
 
     bool isValid() const {
-        return !util_isnan(m_framePosition);
+        return !util_isnan(m_framePosition) && !util_isinf(m_framePosition);
     }
 
     void setValue(value_t framePosition) {
