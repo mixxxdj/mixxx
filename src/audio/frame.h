@@ -50,6 +50,7 @@ class FramePos final {
     }
 
     bool isFractional() const {
+        DEBUG_ASSERT(isValid());
         value_t integerPart;
         return std::modf(value(), &integerPart) != 0;
     }
