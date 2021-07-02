@@ -157,9 +157,8 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
                 sampleRate, QString("Test"), beatPositionsFrames);
         // Check that the first section's BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(
-                                  static_cast<SINT>(initialFrameOffset +
-                                          framesPerBeat * kNumBeats120BPM / 2)),
+                          mixxx::audio::FramePos(initialFrameOffset +
+                                  framesPerBeat * kNumBeats120BPM / 2),
                           1),
                 bpm);
 
@@ -196,17 +195,15 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
                 sampleRate, QString("Test"), beatPositionsFrames);
         // Check that the first section'd BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(
-                                  static_cast<SINT>(initialFrameOffset +
-                                          framesPerBeat * kNumBeats120BPM / 2)),
+                          mixxx::audio::FramePos(initialFrameOffset +
+                                  framesPerBeat * kNumBeats120BPM / 2),
                           1),
                 bpm);
         // Check that the second section'd BPM is 50
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(
-                                  static_cast<SINT>(initialFrameOffset +
-                                          framesPerBeat * kNumBeats120BPM +
-                                          framesPerBeat * kNumBeats60BPM / 2)),
+                          mixxx::audio::FramePos(initialFrameOffset +
+                                  framesPerBeat * kNumBeats120BPM +
+                                  framesPerBeat * kNumBeats60BPM / 2),
                           1),
                 bpm / 2);
 
@@ -249,25 +246,22 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
                 sampleRate, QString("Test"), beatPositionsFrames);
         // Check that the first section's BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(
-                                  static_cast<SINT>(initialFrameOffset +
-                                          framesPerBeat * kNumBeats120BPM / 2)),
+                          mixxx::audio::FramePos(initialFrameOffset +
+                                  framesPerBeat * kNumBeats120BPM / 2),
                           1),
                 bpm);
         // Check that the second section's BPM is 50
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(
-                                  static_cast<SINT>(initialFrameOffset +
-                                          framesPerBeat * kNumBeats120BPM +
-                                          framesPerBeat * kNumBeats60BPM / 2)),
+                          mixxx::audio::FramePos(initialFrameOffset +
+                                  framesPerBeat * kNumBeats120BPM +
+                                  framesPerBeat * kNumBeats60BPM / 2),
                           1),
                 bpm / 2);
         // Check that the third section's BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(static_cast<SINT>(
-                                  initialFrameOffset +
+                          mixxx::audio::FramePos(initialFrameOffset +
                                   framesPerBeat * kNumBeats120BPM * 1.5 +
-                                  framesPerBeat * kNumBeats60BPM)),
+                                  framesPerBeat * kNumBeats60BPM),
                           1),
                 bpm / 2);
 

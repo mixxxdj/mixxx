@@ -193,21 +193,24 @@ void exportMetadata(djinterop::database* pDatabase,
         // starts at the beginning of a bar, then move backwards towards the
         // beginning of the track in 4-beat decrements to find the first beat
         // in the track that also aligns with the start of a bar.
-        double firstBeatPlayPos = beats->findNextBeat(0);
-        double cueBeatPlayPos = beats->findClosestBeat(cuePlayPos);
+        const auto firstBeatPlayPos = beats->findNextBeat(mixxx::audio::kStartFramePos);
+        const auto cueBeatPlayPos = beats->findClosestBeat(
+                mixxx::audio::FramePos::fromEngineSamplePos(cuePlayPos));
         int numBeatsToCue = beats->numBeatsInRange(firstBeatPlayPos, cueBeatPlayPos);
-        double firstBarAlignedBeatPlayPos = beats->findNBeatsFromSample(
+        const auto firstBarAlignedBeatPlayPos = beats->findNBeatsFromSample(
                 cueBeatPlayPos, numBeatsToCue & ~0x3);
 
         // We will treat the first bar-aligned beat as beat zero.  Find the
         // number of beats from there until the end of the track in order to
         // correctly assign an index for the last beat.
-        double lastBeatPlayPos = beats->findPrevBeat(sampleOffsetToPlayPos(sampleCount));
+        const auto lastBeatPlayPos =
+                beats->findPrevBeat(mixxx::audio::FramePos::fromEngineSamplePos(
+                        sampleOffsetToPlayPos(sampleCount)));
         int numBeats = beats->numBeatsInRange(firstBarAlignedBeatPlayPos, lastBeatPlayPos);
         if (numBeats > 0) {
             std::vector<djinterop::beatgrid_marker> beatgrid{
-                    {0, playPosToSampleOffset(firstBarAlignedBeatPlayPos)},
-                    {numBeats, playPosToSampleOffset(lastBeatPlayPos)}};
+                    {0, playPosToSampleOffset(firstBarAlignedBeatPlayPos.toEngineSamplePos())},
+                    {numBeats, playPosToSampleOffset(lastBeatPlayPos.toEngineSamplePos())}};
             beatgrid = el::normalize_beatgrid(std::move(beatgrid), sampleCount);
             snapshot.default_beatgrid = beatgrid;
             snapshot.adjusted_beatgrid = beatgrid;
