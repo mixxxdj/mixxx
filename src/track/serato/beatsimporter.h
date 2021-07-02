@@ -18,14 +18,14 @@ class SeratoBeatsImporter : public BeatsImporter {
     ~SeratoBeatsImporter() override = default;
 
     bool isEmpty() const override;
-    QVector<double> importBeatsAndApplyTimingOffset(
+    QVector<mixxx::audio::FramePos> importBeatsAndApplyTimingOffset(
             const QString& filePath,
             const audio::StreamInfo& streamInfo) override;
 
   private:
     FRIEND_TEST(SeratoBeatGridTest, SerializeBeatMap);
 
-    QVector<double> importBeatsAndApplyTimingOffset(
+    QVector<mixxx::audio::FramePos> importBeatsAndApplyTimingOffset(
             double timingOffsetMillis, const audio::SignalInfo& signalInfo);
 
     QList<SeratoBeatGridNonTerminalMarkerPointer> m_nonTerminalMarkers;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/frame.h"
 #include "proto/beats.pb.h"
 #include "track/beats.h"
 
@@ -21,7 +22,7 @@ class BeatGrid final : public Beats {
             audio::SampleRate sampleRate,
             const QString& subVersion,
             double dBpm,
-            double dFirstBeatSample);
+            mixxx::audio::FramePos firstBeatPos);
 
     static BeatsPointer makeBeatGrid(
             audio::SampleRate sampleRate,
