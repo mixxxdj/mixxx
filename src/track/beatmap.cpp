@@ -32,10 +32,6 @@ inline Beat beatFromFramePos(mixxx::audio::FramePos beatPosition) {
     return beat;
 }
 
-inline mixxx::audio::FrameDiff_t frameDiffFromSampleDiff(double sampleDiff) {
-    return std::floor(sampleDiff / mixxx::kEngineChannelCount);
-}
-
 bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
