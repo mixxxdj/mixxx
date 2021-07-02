@@ -49,7 +49,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     DownmixAndOverlapHelper m_helper;
     int m_iSampleRate;
     int m_windowSize;
-    int m_stepSize;
+    int m_stepSizeFrames;
     std::vector<double> m_detectionResults;
     QVector<mixxx::audio::FramePos> m_resultBeats;
 };
