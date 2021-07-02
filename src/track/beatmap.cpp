@@ -24,16 +24,18 @@ constexpr int kMinNumberOfBeats = 2; // a map needs at least two beats to have a
 
 inline Beat beatFromFramePos(mixxx::audio::FramePos beatPosition) {
     DEBUG_ASSERT(beatPosition.isValid());
-    // TODO: Before the introduction of the FramePos class, we didn't check
-    // consistently that all beat positions are not fractional. Because the
-    // protobuf Beat object stores integers internally, all fractional
-    // positions are lost.
-    //
-    // Hence, this check should be enabled in the future, after checking our code for correctness.
-    //DEBUG_ASSERT(!beatPosition.isFractional());
+    // Because the protobuf Beat object stores integers internally, all
+    // fractional positions are lost.
+    DEBUG_ASSERT(!beatPosition.isFractional());
     Beat beat;
     beat.set_frame_position(static_cast<google::protobuf::int32>(beatPosition.value()));
     return beat;
+}
+
+inline Beat beatFromEngineSamplePos(double beatPositionSamples) {
+    return beatFromFramePos(
+            mixxx::audio::FramePos::fromEngineSamplePos(beatPositionSamples)
+                    .toLowerFrameBoundary());
 }
 
 inline mixxx::audio::FrameDiff_t frameDiffFromSampleDiff(double sampleDiff) {
@@ -317,9 +319,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
         return -1;
     }
 
-    Beat beat = beatFromFramePos(
-            mixxx::audio::FramePos::fromEngineSamplePos(dSamples)
-                    .toFullFrames());
+    Beat beat = beatFromEngineSamplePos(dSamples);
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
@@ -409,7 +409,7 @@ bool BeatMap::findPrevNextBeats(double dSamples,
         return false;
     }
 
-    Beat beat = beatFromFramePos(mixxx::audio::FramePos::fromEngineSamplePos(dSamples));
+    Beat beat = beatFromEngineSamplePos(dSamples);
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
@@ -494,8 +494,8 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(double startSample, double stop
         return std::unique_ptr<BeatIterator>();
     }
 
-    Beat startBeat = beatFromFramePos(mixxx::audio::FramePos::fromEngineSamplePos(startSample));
-    Beat stopBeat = beatFromFramePos(mixxx::audio::FramePos::fromEngineSamplePos(stopSample));
+    Beat startBeat = beatFromEngineSamplePos(startSample);
+    Beat stopBeat = beatFromEngineSamplePos(stopSample);
 
     BeatList::const_iterator curBeat =
             std::lower_bound(m_beats.constBegin(), m_beats.constEnd(),

@@ -54,7 +54,9 @@ class FramePos final {
         return std::modf(value(), &integerPart) != 0;
     }
 
-    [[nodiscard]] FramePos toFullFrames() const {
+    /// Return position rounded to the next lower full frame position, without
+    /// the fractional part.
+    [[nodiscard]] FramePos toLowerFrameBoundary() const {
         return FramePos(std::floor(value()));
     }
 
