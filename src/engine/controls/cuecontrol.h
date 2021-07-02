@@ -195,7 +195,16 @@ class CueControl : public EngineControl {
     void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
     void updateIndicators();
+
     bool isTrackAtIntroCue();
+    /// Returns true if the current position is inside the intro.
+    /// Returns false if not, or if the intro is not enabled.
+    bool inIntro() const;
+
+    /// Returns true if the current position is inside the outro.
+    /// Returns false if not, or if the outro is not enabled.
+    bool inOutro() const;
+
     void resetIndicators();
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
