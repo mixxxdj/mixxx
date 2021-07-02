@@ -588,7 +588,7 @@ void bindTrackLibraryValues(
         beatsSubVersion = pBeats->getSubVersion();
         bpm = pBeats->getBpm();
     }
-    pTrackLibraryQuery->bindValue(":bpm", bpm.getValue());
+    pTrackLibraryQuery->bindValue(":bpm", bpm.value());
     pTrackLibraryQuery->bindValue(":beats_version", beatsVersion);
     pTrackLibraryQuery->bindValue(":beats_sub_version", beatsSubVersion);
     pTrackLibraryQuery->bindValue(":beats", beatsBlob);

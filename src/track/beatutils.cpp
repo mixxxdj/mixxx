@@ -313,7 +313,7 @@ mixxx::Bpm BeatUtils::makeConstBpm(
         // bpm adjustments are made.
         // This is a temporary fix, ideally the anchor point for the BPM grid should
         // be the first proper downbeat, or perhaps the CUE point.
-        const double roundedBeatLength = 60.0 * sampleRate / roundBpm.getValue();
+        const double roundedBeatLength = 60.0 * sampleRate / roundBpm.value();
         *pFirstBeat = mixxx::audio::FramePos(
                 fmod(constantRegions[startRegionIndex].firstBeat.value(),
                         roundedBeatLength));
@@ -325,7 +325,7 @@ mixxx::Bpm BeatUtils::makeConstBpm(
 mixxx::Bpm BeatUtils::roundBpmWithinRange(
         mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm) {
     // First try to snap to a full integer BPM
-    auto snapBpm = mixxx::Bpm(round(centerBpm.getValue()));
+    auto snapBpm = mixxx::Bpm(round(centerBpm.value()));
     if (snapBpm > minBpm && snapBpm < maxBpm) {
         // Success
         return snapBpm;
@@ -339,20 +339,20 @@ mixxx::Bpm BeatUtils::roundBpmWithinRange(
         if (centerBpm < mixxx::Bpm(85.0)) {
             // this cane be actually up to 175 BPM
             // allow halve BPM values
-            return mixxx::Bpm(round(centerBpm.getValue() * 2) / 2);
+            return mixxx::Bpm(round(centerBpm.value() * 2) / 2);
         } else if (centerBpm > mixxx::Bpm(127.0)) {
             // optimize for 2/3 going down to 85
-            return mixxx::Bpm(round(centerBpm.getValue() / 3 * 2) * 3 / 2);
+            return mixxx::Bpm(round(centerBpm.value() / 3 * 2) * 3 / 2);
         }
     }
 
     if (roundBpmWidth > 1.0 / 12) {
         // this covers all sorts of 1/2 2/3 and 3/4 multiplier
-        return mixxx::Bpm(round(centerBpm.getValue() * 12) / 12);
+        return mixxx::Bpm(round(centerBpm.value() * 12) / 12);
     } else {
         // We are here if we have more that ~75 beats and ~30 s
         // try to snap to a 1/12 Bpm
-        snapBpm = mixxx::Bpm(round(centerBpm.getValue() * 12) / 12);
+        snapBpm = mixxx::Bpm(round(centerBpm.value() * 12) / 12);
         if (snapBpm > minBpm && snapBpm < maxBpm) {
             // Success
             return snapBpm;
@@ -387,7 +387,7 @@ mixxx::audio::FramePos BeatUtils::adjustPhase(
         mixxx::Bpm bpm,
         mixxx::audio::SampleRate sampleRate,
         const QVector<mixxx::audio::FramePos>& beats) {
-    const double beatLength = 60 * sampleRate / bpm.getValue();
+    const double beatLength = 60 * sampleRate / bpm.value();
     const mixxx::audio::FramePos startOffset =
             mixxx::audio::FramePos(fmod(firstBeat.value(), beatLength));
     mixxx::audio::FrameDiff_t offsetAdjust = 0;

@@ -514,7 +514,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
             1);
 
     setTerminalMarker(std::make_shared<SeratoBeatGridTerminalMarker>(
-            positionSecs - timingOffsetSecs, static_cast<float>(bpm.getValue())));
+            positionSecs - timingOffsetSecs, static_cast<float>(bpm.value())));
     setNonTerminalMarkers(nonTerminalMarkers);
 }
 

@@ -1297,7 +1297,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     }
     const mixxx::Bpm localBpm = m_pBpmControl->updateLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
-    m_pSyncControl->setLocalBpm(localBpm.getValue());
+    m_pSyncControl->setLocalBpm(localBpm.value());
     m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (isMaster(mode)) {

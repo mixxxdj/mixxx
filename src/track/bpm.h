@@ -40,10 +40,10 @@ public:
         return kValueMin < value;
     }
 
-    bool hasValue() const {
+    bool isValid() const {
         return isValidValue(m_value);
     }
-    double getValue() const {
+    double value() const {
         return m_value;
     }
     void setValue(double value) {
@@ -70,12 +70,12 @@ public:
             Comparison cmp = Comparison::Default) const {
         switch (cmp) {
         case Comparison::Integer:
-            return Bpm::valueToInteger(getValue()) == Bpm::valueToInteger(bpm.getValue());
+            return Bpm::valueToInteger(value()) == Bpm::valueToInteger(bpm.value());
         case Comparison::String:
-            return Bpm::valueToString(getValue()) == Bpm::valueToString(bpm.getValue());
+            return Bpm::valueToString(value()) == Bpm::valueToString(bpm.value());
         case Comparison::Default:
         default:
-            return getValue() == bpm.getValue();
+            return value() == bpm.value();
         }
     }
 
@@ -109,56 +109,56 @@ private:
 
 /// Bpm can be added to a double
 inline Bpm operator+(Bpm bpm, double bpmDiff) {
-    return Bpm(bpm.getValue() + bpmDiff);
+    return Bpm(bpm.value() + bpmDiff);
 }
 
 /// Bpm can be subtracted from a double
 inline Bpm operator-(Bpm bpm, double bpmDiff) {
-    return Bpm(bpm.getValue() - bpmDiff);
+    return Bpm(bpm.value() - bpmDiff);
 }
 
 /// Two Bpm values can be subtracted to get a double
 inline double operator-(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() - bpm2.getValue();
+    return bpm1.value() - bpm2.value();
 }
 
 // Adding two Bpm is not allowed, because it makes no sense semantically.
 
 /// Bpm can be multiplied or divided by a double
 inline Bpm operator*(Bpm bpm, double multiple) {
-    return Bpm(bpm.getValue() * multiple);
+    return Bpm(bpm.value() * multiple);
 }
 
 inline Bpm operator/(Bpm bpm, double divisor) {
-    return Bpm(bpm.getValue() / divisor);
+    return Bpm(bpm.value() / divisor);
 }
 
 inline bool operator<(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() < bpm2.getValue();
+    return bpm1.value() < bpm2.value();
 }
 
 inline bool operator<=(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() <= bpm2.getValue();
+    return bpm1.value() <= bpm2.value();
 }
 
 inline bool operator>(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() > bpm2.getValue();
+    return bpm1.value() > bpm2.value();
 }
 
 inline bool operator>=(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() >= bpm2.getValue();
+    return bpm1.value() >= bpm2.value();
 }
 
 inline bool operator==(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() == bpm2.getValue();
+    return bpm1.value() == bpm2.value();
 }
 
 inline bool operator!=(Bpm bpm1, Bpm bpm2) {
-    return !(bpm1.getValue() == bpm2.getValue());
+    return !(bpm1.value() == bpm2.value());
 }
 
 inline QDebug operator<<(QDebug dbg, Bpm arg) {
-    dbg << arg.getValue();
+    dbg << arg.value();
     return dbg;
 }
 }

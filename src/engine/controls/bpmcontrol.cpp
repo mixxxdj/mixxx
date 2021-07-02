@@ -174,7 +174,7 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         mixxx::Bpm bpm = pBeats->getBpm();
-        const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm.getValue() + deltaBpm));
+        const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm.value() + deltaBpm));
         mixxx::Bpm adjustedBpm = BeatUtils::roundBpmWithinRange(
                 centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);
         pTrack->trySetBeats(pBeats->setBpm(adjustedBpm));
@@ -1071,7 +1071,7 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
     if (pBeats) {
         localBpm = pBeats->getBpmAroundPosition(
                 getSampleOfTrack().current, kLocalBpmSpan);
-        if (!localBpm.hasValue()) {
+        if (!localBpm.isValid()) {
             localBpm = pBeats->getBpm();
         }
     }
@@ -1079,7 +1079,7 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << getGroup() << "BpmControl::updateLocalBpm" << localBpm;
         }
-        m_pLocalBpm->set(localBpm.getValue());
+        m_pLocalBpm->set(localBpm.value());
         slotUpdateEngineBpm();
     }
     return localBpm;
