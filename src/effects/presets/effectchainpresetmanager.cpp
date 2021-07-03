@@ -158,6 +158,9 @@ void EffectChainPresetManager::importPreset() {
                 }
             }
 
+            if (!savePresetXml(pPreset)) {
+                continue;
+            }
             m_effectChainPresets.insert(pPreset->name(), pPreset);
             m_effectChainPresetsSorted.append(pPreset);
             m_quickEffectChainPresetsSorted.append(pPreset);
