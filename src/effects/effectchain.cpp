@@ -219,7 +219,8 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
 
     m_presetName = pPreset->name();
     emit presetNameChanged(m_presetName);
-    // add 1 to make the ControlObject 1-indexed like other ControlObjects
+
+    setControlLoadedPresetIndex(presetIndex());
     m_pControlLoadedPreset->setAndConfirm(presetIndex() + 1);
 }
 
@@ -347,6 +348,11 @@ void EffectChain::slotControlLoadedChainPresetRequest(double value) {
     loadChainPreset(presetAtIndex(index));
 }
 
+void EffectChain::setControlLoadedPresetIndex(uint index) {
+    // add 1 to make the ControlObject 1-indexed like other ControlObjects
+    m_pControlLoadedPreset->setAndConfirm(index + 1);
+}
+
 void EffectChain::slotControlChainNextPreset(double value) {
     if (value > 0) {
         loadChainPreset(presetAtIndex(presetIndex() + 1));
@@ -369,8 +375,7 @@ void EffectChain::slotChannelStatusChanged(
 }
 
 void EffectChain::slotPresetListUpdated() {
-    // add 1 to make the ControlObject 1-indexed like other ControlObjects
-    m_pControlLoadedPreset->setAndConfirm(presetIndex() + 1);
+    setControlLoadedPresetIndex(presetIndex());
     m_pControlNumPresetsAvailable->forceSet(numPresets());
 }
 
