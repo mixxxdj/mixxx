@@ -73,21 +73,25 @@ class FramePos final {
     }
 
     FramePos& operator+=(FrameDiff_t increment) {
+        DEBUG_ASSERT(isValid());
         m_framePosition += increment;
         return *this;
     }
 
     FramePos& operator-=(FrameDiff_t decrement) {
+        DEBUG_ASSERT(isValid());
         m_framePosition -= decrement;
         return *this;
     }
 
     FramePos& operator*=(double multiple) {
+        DEBUG_ASSERT(isValid());
         m_framePosition *= multiple;
         return *this;
     }
 
     FramePos& operator/=(double divisor) {
+        DEBUG_ASSERT(isValid());
         m_framePosition /= divisor;
         return *this;
     }
