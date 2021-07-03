@@ -18,16 +18,6 @@ Rectangle {
     visible: true
 
     Column {
-        //FIXME
-        //EffectRow {
-        //id: effects
-        //width: parent.width
-        //visible: root.showEffects
-        //FadeBehavior on visible {
-        //fadeTarget: effects
-        //}
-        //}
-
         anchors.fill: parent
 
         Rectangle {
@@ -123,6 +113,18 @@ Rectangle {
 
             FadeBehavior on visible {
                 fadeTarget: samplers
+            }
+
+        }
+
+        EffectRow {
+            id: effects
+
+            width: parent.width
+            visible: root.showEffects
+
+            FadeBehavior on visible {
+                fadeTarget: effects
             }
 
         }
