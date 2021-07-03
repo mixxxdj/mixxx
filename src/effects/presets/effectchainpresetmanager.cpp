@@ -123,24 +123,8 @@ void EffectChainPresetManager::importPreset() {
                 new EffectChainPreset(doc.documentElement()));
         if (!pPreset->isEmpty() && !pPreset->name().isEmpty()) {
             if (m_effectChainPresets.contains(pPreset->name())) {
-                QString newName = pPreset->name();
-                while (m_effectChainPresets.contains(newName) || newName.isEmpty()) {
-                    bool okay = false;
-                    newName = QInputDialog::getText(nullptr,
-                            tr("Rename effect chain preset"),
-                            tr("An effect chain preset with the name \"%1\" "
-                               "already exists. Enter a new name for the "
-                               "imported effect chain preset:")
-                                    .arg(pPreset->name()),
-                            QLineEdit::Normal,
-                            QString(),
-                            &okay)
-                                      .trimmed();
-                    if (!okay) {
-                        continue;
-                    }
-                }
-                pPreset->setName(newName);
+                pPreset->setName(pPreset->name() +
+                        QLatin1String(" (") + tr("duplicate") + QLatin1String(")"));
             }
 
             // An imported chain preset might contain an LV2 plugin that the user does not
