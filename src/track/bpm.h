@@ -138,7 +138,7 @@ inline bool operator<(Bpm bpm1, Bpm bpm2) {
 }
 
 inline bool operator<=(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() <= bpm2.getValue();
+    return (!bpm1.hasValue() && !bpm2.hasValue()) || bpm1.getValue() <= bpm2.getValue();
 }
 
 inline bool operator>(Bpm bpm1, Bpm bpm2) {
@@ -146,7 +146,7 @@ inline bool operator>(Bpm bpm1, Bpm bpm2) {
 }
 
 inline bool operator>=(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() >= bpm2.getValue();
+    return (!bpm1.hasValue() && !bpm2.hasValue()) || bpm1.getValue() >= bpm2.getValue();
 }
 
 inline bool operator==(Bpm bpm1, Bpm bpm2) {
