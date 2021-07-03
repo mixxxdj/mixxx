@@ -57,14 +57,14 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     // implementation of fdk-aac, we believe that the FDK AAC license is
     // GPL compatible.
     QStringList libnames;
-#if __WINDOWS__
+#if defined(__WINDOWS__)
     // Search for library from B.U.T.T.
     QString buttFdkAacPath = buttWindowsFdkAac();
     if (!buttFdkAacPath.isEmpty()) {
         kLogger.debug() << "Found libfdk-aac at" << buttFdkAacPath;
         libnames << buttFdkAacPath;
     }
-#elif __APPLE__
+#elif defined(__APPLE__)
     // Homebrew
     libnames << QStringLiteral("/usr/local/lib/libfdk-aac");
     // MacPorts
@@ -77,7 +77,7 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
 #endif
     libnames << QStringLiteral("fdk-aac");
     // Although the line above should suffice, detection of the fdk-aac library
-    // does not work on Ubuntu 18.04 LTS and Ubuntu 20.04 LTS:
+    // does not work on Ubuntu 20.04 LTS:
     //
     //     $ dpkg -L libfdk-aac1 | grep so
     //     /usr/lib/x86_64-linux-gnu/libfdk-aac.so.1.0.0
@@ -359,7 +359,7 @@ void EncoderFdkAac::encodeBuffer(const CSAMPLE* samples, const int sampleCount) 
     int writeCount = sampleCount;
     int writeAvailable = m_pInputFifo->writeAvailable();
     if (writeCount > writeAvailable) {
-        kLogger.warning() << "FIFO buffer too small, loosing samples!"
+        kLogger.warning() << "FIFO buffer too small, losing samples!"
                           << "required:" << writeCount
                           << "; available: " << writeAvailable;
         writeCount = writeAvailable;

@@ -7,7 +7,7 @@
 #include <QEvent>
 
 #include "library/libraryview.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/wbasewidget.h"
 
 class KeyboardEventFilter;

@@ -2,7 +2,7 @@
 
 #include <QDomNode>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/weffectparameternamebase.h"
 #include "widget/wlabel.h"
 

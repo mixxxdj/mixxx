@@ -199,51 +199,9 @@
               <Size>-1me,-1me</Size>
               <Children>
 
-                <WidgetGroup><!-- Parallel Waveforms -->
-                  <ObjectName>Waveforms</ObjectName>
-                  <Layout>vertical</Layout>
-                  <Connection>
-                    <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
-                  <Children>
-
-                    <WidgetGroup>
-                      <Connection>
-                        <ConfigKey>[Skin],show_4decks</ConfigKey>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
-                      <Layout>vertical</Layout>
-                      <Children>
-                        <SingletonContainer>
-                          <ObjectName>DeckVisualRow3</ObjectName>
-                        </SingletonContainer>
-                      </Children>
-                    </WidgetGroup>
-
-                    <SingletonContainer>
-                      <ObjectName>DeckVisualRow1</ObjectName>
-                    </SingletonContainer>
-
-                    <SingletonContainer>
-                      <ObjectName>DeckVisualRow2</ObjectName>
-                    </SingletonContainer>
-
-                    <WidgetGroup>
-                      <Connection>
-                        <ConfigKey>[Skin],show_4decks</ConfigKey>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
-                      <Layout>vertical</Layout>
-                      <Children>
-                        <SingletonContainer>
-                          <ObjectName>DeckVisualRow4</ObjectName>
-                        </SingletonContainer>
-                      </Children>
-                    </WidgetGroup>
-
-                  </Children>
-                </WidgetGroup><!-- /Parallel Waveforms -->
+                <!-- Waveforms & spinnies are shown here as stack or
+                  separatley in each deck -->
+                <Template src="skin:../Deere/parallel_waveforms.xml"/>
 
                 <WidgetGroup><!-- Main section -->
                   <Layout>vertical</Layout>

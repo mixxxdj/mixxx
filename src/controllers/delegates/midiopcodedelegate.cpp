@@ -19,13 +19,14 @@ QWidget* MidiOpCodeDelegate::createEditor(QWidget* parent,
     QComboBox* pComboBox = new QComboBox(parent);
 
     QList<MidiOpCode> choices;
-    choices.append(MIDI_NOTE_ON);
-    choices.append(MIDI_NOTE_OFF);
-    choices.append(MIDI_CC);
-    choices.append(MIDI_PITCH_BEND);
+    choices.append(MidiOpCode::NoteOn);
+    choices.append(MidiOpCode::NoteOff);
+    choices.append(MidiOpCode::ControlChange);
+    choices.append(MidiOpCode::PitchBendChange);
 
-    foreach (MidiOpCode choice, choices) {
-        pComboBox->addItem(MidiUtils::opCodeToTranslatedString(choice), choice);
+    for (const MidiOpCode choice : qAsConst(choices)) {
+        pComboBox->addItem(MidiUtils::opCodeToTranslatedString(choice),
+                static_cast<uint8_t>(choice));
     }
     return pComboBox;
 }

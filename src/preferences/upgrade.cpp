@@ -200,7 +200,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
-#elif __WINDOWS__
+#elif defined(__WINDOWS__)
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
         // Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/Local Settings/Application Data/Mixxx/mixxx.cfg")));
@@ -227,7 +227,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             return config;
 #ifdef __APPLE__
         }
-#elif __WINDOWS__
+#elif defined(__WINDOWS__)
         }
 #endif
     }
@@ -450,7 +450,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
 bool Upgrade::askReScanLibrary() {
     QMessageBox msgBox;
-    msgBox.setIconPixmap(QPixmap(":/images/mixxx_icon.svg"));
+    msgBox.setIconPixmap(QPixmap(":/images/icons/mixxx.svg"));
     msgBox.setWindowTitle(QMessageBox::tr("Upgrading Mixxx"));
     msgBox.setText(QMessageBox::tr("Mixxx now supports displaying cover art.\n"
                       "Do you want to scan your library for cover files now?"));
@@ -482,7 +482,7 @@ bool Upgrade::askReanalyzeBeats() {
     QString generateNew = QMessageBox::tr("Generate New Beatgrids");
 
     QMessageBox msgBox;
-    msgBox.setIconPixmap(QPixmap(":/images/mixxx_icon.svg"));
+    msgBox.setIconPixmap(QPixmap(":/images/icons/mixxx.svg"));
     msgBox.setWindowTitle(windowTitle);
     msgBox.setText(QString("<html><h2>%1</h2><p>%2</p><p>%3</p><p>%4</p></html>")
                    .arg(mainHeading, paragraph1, paragraph2, paragraph3));

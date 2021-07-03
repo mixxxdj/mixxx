@@ -197,12 +197,9 @@ TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
     }
     DEBUG_ASSERT(pTrack->getDateAdded().isValid());
 
-    // The dirty flag is reset while saving the track in the internal
-    // collection!
-    if (!pTrack->isDirty()) {
-        return SaveTrackResult::Skipped;
-    }
-
+    // The track might have been marked for metadata export even
+    // if it is not dirty, e.g. when it has already been saved
+    // in the database before to avoid stale data after editing.
     const auto fileInfo = pTrack->getFileInfo();
     if (fileInfo.checkFileExists()) {
         // The metadata must be exported while the cache is locked to
@@ -216,6 +213,12 @@ TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
         kLogger.debug()
                 << "Skip saving of missing track"
                 << fileInfo.location();
+        return SaveTrackResult::Skipped;
+    }
+
+    // The dirty flag is reset while saving the track in the internal
+    // collection!
+    if (!pTrack->isDirty()) {
         return SaveTrackResult::Skipped;
     }
 

@@ -47,27 +47,32 @@ class Track : public QObject {
             const QString& filePath,
             TrackId trackId);
 
-    Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
-    Q_PROPERTY(QString title READ getTitle WRITE setTitle)
-    Q_PROPERTY(QString album READ getAlbum WRITE setAlbum)
-    Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist)
-    Q_PROPERTY(QString genre READ getGenre WRITE setGenre)
-    Q_PROPERTY(QString composer READ getComposer WRITE setComposer)
-    Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping)
-    Q_PROPERTY(QString year READ getYear WRITE setYear)
-    Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
-    Q_PROPERTY(QString track_total READ getTrackTotal WRITE setTrackTotal)
-    Q_PROPERTY(int times_played READ getTimesPlayed)
-    Q_PROPERTY(QString comment READ getComment WRITE setComment)
-    Q_PROPERTY(double bpm READ getBpm)
-    Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
-    Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
-    Q_PROPERTY(double duration READ getDuration)
-    Q_PROPERTY(QString durationFormatted READ getDurationTextSeconds STORED false)
-    Q_PROPERTY(QString durationFormattedCentiseconds READ getDurationTextCentiseconds STORED false)
-    Q_PROPERTY(QString durationFormattedMilliseconds READ getDurationTextMilliseconds STORED false)
-    Q_PROPERTY(QString info READ getInfo STORED false)
-    Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false)
+    Q_PROPERTY(QString artist READ getArtist WRITE setArtist NOTIFY artistChanged)
+    Q_PROPERTY(QString title READ getTitle WRITE setTitle NOTIFY titleChanged)
+    Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
+    Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist
+                    NOTIFY albumArtistChanged)
+    Q_PROPERTY(QString genre READ getGenre WRITE setGenre NOTIFY genreChanged)
+    Q_PROPERTY(QString composer READ getComposer WRITE setComposer NOTIFY composerChanged)
+    Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping NOTIFY groupingChanged)
+    Q_PROPERTY(QString year READ getYear WRITE setYear NOTIFY yearChanged)
+    Q_PROPERTY(QString trackNumber READ getTrackNumber WRITE setTrackNumber
+                    NOTIFY trackNumberChanged)
+    Q_PROPERTY(QString trackTotal READ getTrackTotal WRITE setTrackTotal NOTIFY trackTotalChanged)
+    Q_PROPERTY(int timesPlayed READ getTimesPlayed NOTIFY timesPlayedChanged)
+    Q_PROPERTY(QString comment READ getComment WRITE setComment NOTIFY commentChanged)
+    Q_PROPERTY(double bpm READ getBpm NOTIFY bpmChanged)
+    Q_PROPERTY(QString bpmText READ getBpmText STORED false NOTIFY bpmChanged)
+    Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyChanged)
+    Q_PROPERTY(double duration READ getDuration NOTIFY durationChanged)
+    Q_PROPERTY(QString durationText READ getDurationTextSeconds STORED false NOTIFY durationChanged)
+    Q_PROPERTY(QString durationTextCentiseconds READ getDurationTextCentiseconds
+                    STORED false NOTIFY durationChanged)
+    Q_PROPERTY(QString durationTextMilliseconds READ getDurationTextMilliseconds
+                    STORED false NOTIFY durationChanged)
+    Q_PROPERTY(QString info READ getInfo STORED false NOTIFY infoChanged)
+    Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false NOTIFY infoChanged)
+    Q_PROPERTY(QDateTime sourceSynchronizedAt READ getSourceSynchronizedAt STORED false)
 
     mixxx::FileAccess getFileAccess() const {
         // Copying QFileInfo is thread-safe due to implicit sharing,
@@ -144,9 +149,18 @@ class Track : public QObject {
     mixxx::ReplayGain getReplayGain() const;
 
     // Indicates if the metadata has been parsed from file tags.
-    bool isMetadataSynchronized() const;
-    // Only used by a free function in TrackDAO!
-    void setMetadataSynchronized(bool metadataSynchronized);
+    bool isSourceSynchronized() const;
+
+    void setHeaderParsedFromTrackDAO(bool headerParsed) {
+        // Always operating on a newly created, exclusive instance! No need
+        // to lock the mutex.
+        DEBUG_ASSERT(!m_record.m_headerParsed);
+        m_record.m_headerParsed = headerParsed;
+    }
+
+    // The date/time of the last import or export of metadata
+    void setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt);
+    QDateTime getSourceSynchronizedAt() const;
 
     void setDateAdded(const QDateTime& dateAdded);
     QDateTime getDateAdded() const;
@@ -326,23 +340,22 @@ class Track : public QObject {
     bool refreshCoverImageDigest(
             const QImage& loadedImage = QImage());
 
-    // Set/get track metadata all at once.
-    void importMetadata(
-            mixxx::TrackMetadata importedMetadata,
-            const QDateTime& metadataSynchronized = QDateTime());
-
-    /// Merge additional metadata that is not (yet) stored in the database
-    /// and only available from file tags.
+    /// Set track metadata after importing from the source.
     ///
-    /// Returns true if the track has been modified and false otherwise.
-    bool mergeImportedMetadata(
-            const mixxx::TrackMetadata& importedMetadata);
+    /// The timestamp tracks when metadata has last been synchronized
+    /// with file tags, either by importing or exporting the metadata.
+    void replaceMetadataFromSource(
+            mixxx::TrackMetadata importedMetadata,
+            const QDateTime& sourceSynchronizedAt);
 
     mixxx::TrackMetadata getMetadata(
-            bool* pMetadataSynchronized = nullptr) const;
+            bool* pHeaderParsed = nullptr) const;
 
     mixxx::TrackRecord getRecord(
             bool* pDirty = nullptr) const;
+    bool replaceRecord(
+            mixxx::TrackRecord newRecord,
+            mixxx::BeatsPointer pOptionalBeats = nullptr);
 
     // Mark the track dirty if it isn't already.
     void markDirty();
@@ -364,13 +377,27 @@ class Track : public QObject {
             const mixxx::audio::StreamInfo& streamInfo);
 
   signals:
+    void artistChanged(const QString&);
+    void titleChanged(const QString&);
+    void albumChanged(const QString&);
+    void albumArtistChanged(const QString&);
+    void genreChanged(const QString&);
+    void composerChanged(const QString&);
+    void groupingChanged(const QString&);
+    void yearChanged(const QString&);
+    void trackNumberChanged(const QString&);
+    void trackTotalChanged(const QString&);
+    void commentChanged(const QString&);
+    void bpmChanged();
+    void keyChanged();
+    void timesPlayedChanged();
+    void durationChanged();
+    void infoChanged();
+
     void waveformUpdated();
     void waveformSummaryUpdated();
     void coverArtUpdated();
-    void bpmUpdated(double bpm);
     void beatsUpdated();
-    void keyUpdated(double key);
-    void keysUpdated();
     void replayGainUpdated(mixxx::ReplayGain replayGain);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
@@ -402,10 +429,12 @@ class Track : public QObject {
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
     void afterKeysUpdated(QMutexLocker* pLock);
-    void emitKeysUpdated(mixxx::track::io::key::ChromaticKey newKey);
 
     void afterBeatsAndBpmUpdated(QMutexLocker* pLock);
-    void emitBeatsAndBpmUpdated(mixxx::Bpm newBpm);
+    void emitBeatsAndBpmUpdated();
+
+    /// Emits a changed signal for each Q_PROPERTY
+    void emitChangedSignalsForAllMetadata();
 
     /// Sets beats and returns a boolean to indicate if BPM/Beats were updated.
     /// Only supposed to be called while the caller guards this a lock.
@@ -445,10 +474,16 @@ class Track : public QObject {
     void importPendingCueInfosMarkDirtyAndUnlock(
             QMutexLocker* pLock);
 
+    /// Merge additional metadata that is not (yet) stored in the database
+    /// and only available from file tags.
+    ///
+    /// Returns true if the track has been modified and false otherwise.
+    bool mergeExtraMetadataFromSource(
+            const mixxx::TrackMetadata& importedMetadata);
 
     ExportTrackMetadataResult exportMetadata(
-            mixxx::MetadataSourcePointer pMetadataSource,
-            UserSettingsPointer pConfig);
+            const mixxx::MetadataSource& metadataSource,
+            const UserSettingsPointer& pConfig);
 
     // Information about the actual properties of the
     // audio stream is only available after opening the

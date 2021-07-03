@@ -536,7 +536,9 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     // we don't adjust the reported distance the track will try to adjust
     // sync against itself.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::getBeatDistance" << dThisPosition;
+        kLogger.trace() << getGroup()
+                        << "BpmControl::getBeatDistance. dThisPosition:"
+                        << dThisPosition;
     }
     double dPrevBeat = m_pPrevBeat->get();
     double dNextBeat = m_pNextBeat->get();
@@ -560,7 +562,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     }
 
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::getBeatDistance"
+        kLogger.trace() << getGroup() << "BpmControl::getBeatDistance. dBeatPercentage:"
                         << dBeatPercentage << "-  offset "
                         << m_dUserOffset.getValue() << " =  "
                         << (dBeatPercentage - m_dUserOffset.getValue());
@@ -787,6 +789,12 @@ double BpmControl::getBeatMatchPosition(
     if (!m_pBeats) {
         return dThisPosition;
     }
+    const double dThisRateRatio = m_pRateRatio->get();
+    if (dThisRateRatio == 0.0) {
+        // We can't continue without a rate.
+        // This avoids also a division by zero in the following calculations
+        return dThisPosition;
+    }
 
     EngineBuffer* pOtherEngineBuffer = nullptr;
     pOtherEngineBuffer = pickSyncTarget();
@@ -861,7 +869,6 @@ double BpmControl::getBeatMatchPosition(
 
     const double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
     const double dThisSampleRate = m_pBeats->getSampleRate();
-    const double dThisRateRatio = m_pRateRatio->get();
 
     // Seek our next beat to the other next beat near our beat.
     // This is the only thing we can do if the track has different BPM,
@@ -1097,7 +1104,7 @@ void BpmControl::setTargetBeatDistance(double beatDistance) {
     m_dSyncTargetBeatDistance.setValue(beatDistance);
 }
 
-void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
+void BpmControl::updateInstantaneousBpm(double instantaneousBpm) {
     m_dSyncInstantaneousBpm = instantaneousBpm;
 }
 

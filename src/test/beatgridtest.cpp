@@ -29,7 +29,10 @@ TEST(BeatGridTest, Scale) {
     double bpm = 60.0;
     pTrack->trySetBpm(bpm);
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
+            QString(),
+            bpm,
+            mixxx::audio::kStartFramePos);
 
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
     pGrid = pGrid->scale(Beats::DOUBLE);
@@ -60,7 +63,10 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
+            QString(),
+            bpm,
+            mixxx::audio::kStartFramePos);
     // Pretend we're on the 20th beat;
     double position = beatLength * 20;
 
@@ -80,7 +86,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     EXPECT_NEAR(position, prevBeat, kMaxBeatError);
     EXPECT_NEAR(position + beatLength, nextBeat, kMaxBeatError);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_NEAR(position, prevBeat, kMaxBeatError);
     EXPECT_NEAR(position + beatLength, nextBeat, kMaxBeatError);
@@ -99,7 +105,10 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
+            QString(),
+            bpm,
+            mixxx::audio::kStartFramePos);
 
     // Pretend we're just before the 20th beat.
     const double kClosestBeat = 20 * beatLength;
@@ -121,7 +130,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
     EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_NEAR(kClosestBeat - beatLength, prevBeat, kMaxBeatError);
     EXPECT_NEAR(kClosestBeat, nextBeat, kMaxBeatError);
@@ -140,7 +149,10 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
+            QString(),
+            bpm,
+            mixxx::audio::kStartFramePos);
 
     // Pretend we're just before the 20th beat.
     const double kClosestBeat = 20 * beatLength;
@@ -162,7 +174,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
     EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
     EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
@@ -181,7 +193,10 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
+            QString(),
+            bpm,
+            mixxx::audio::kStartFramePos);
 
     // Pretend we're half way between the 20th and 21st beat
     double previousBeat = beatLength * 20.0;
@@ -204,7 +219,7 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
     EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);
 
-    // Also test prev/next beat calculation without snaping tolerance
+    // Also test prev/next beat calculation without snapping tolerance
     pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, false);
     EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
     EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);

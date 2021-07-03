@@ -5,7 +5,7 @@
 
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectchainpresetmanager.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
 

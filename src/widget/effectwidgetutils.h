@@ -6,7 +6,7 @@
 #include "effects/effectchain.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class EffectWidgetUtils {
   public:

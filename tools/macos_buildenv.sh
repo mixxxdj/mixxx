@@ -8,9 +8,6 @@ if [ -z "${GITHUB_ENV}" ] && ! $(return 0 2>/dev/null); then
   exit 1
 fi
 
-COMMAND=$1
-shift 1
-
 realpath() {
     OLDPWD="${PWD}"
     cd "$1" || exit 1
@@ -28,7 +25,7 @@ read -r -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/packaging/macos/bu
 
 [ -z "$BUILDENV_BASEPATH" ] && BUILDENV_BASEPATH="${MIXXX_ROOT}/buildenv"
 
-case "$COMMAND" in
+case "$1" in
     name)
         if [ -n "${GITHUB_ENV}" ]; then
             echo "BUILDENV_NAME=$BUILDENV_NAME" >> "${GITHUB_ENV}"
@@ -122,5 +119,13 @@ case "$COMMAND" in
             echo "Exported environment variables:"
             echo_exported_variables
         fi
+        ;;
+    *)
+        echo "Usage: source macos_buildenv.sh [options]"
+        echo ""
+        echo "options:"
+        echo "   help       Displays this help."
+        echo "   name       Displays the name of the required build environment."
+        echo "   setup      Installs the build environment."
         ;;
 esac

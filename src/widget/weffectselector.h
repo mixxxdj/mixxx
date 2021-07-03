@@ -4,7 +4,7 @@
 #include <QDomNode>
 
 #include "effects/effectslot.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class EffectsManager;
 

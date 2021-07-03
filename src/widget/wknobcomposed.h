@@ -1,16 +1,16 @@
 #pragma once
 
-#include <QWidget>
-#include <QPaintEvent>
 #include <QMouseEvent>
+#include <QPaintEvent>
 #include <QWheelEvent>
+#include <QWidget>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/widgetrendertimer.h"
-#include "widget/wwidget.h"
 #include "widget/knobeventhandler.h"
-#include "widget/wpixmapstore.h"
 #include "widget/wimagestore.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
 
 // This is used for knobs, if the knob value can be displayed
 // by rotating a single SVG image.

@@ -47,7 +47,7 @@ class BpmControl : public EngineControl {
     }
 
     void setTargetBeatDistance(double beatDistance);
-    void setInstantaneousBpm(double instantaneousBpm);
+    void updateInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
     double updateLocalBpm();
     /// updateBeatDistance is adjusted to include the user offset so

@@ -1794,13 +1794,13 @@ decks, samplers, mic, aux, fx */
       background-color: #101010;
       width: 11px;
       height: 20px; */
-      image: url(skin:../Tango/buttons/btn_menu_arrow.svg) no-repeat center center;
+      image: url(skin:/../Tango/buttons/btn_arrow_down.svg) no-repeat center center;
       }
       WEffectChainPresetButton::menu-indicator:hover,
       WEffectSelector::down-arrow:hover,
       WEffectChainPresetSelector::down-arrow:hover,
       #fadeModeCombobox::down-arrow:hover {
-        image: url(skin:../Tango/buttons/btn_menu_arrow_hover.svg) no-repeat center center;
+        image: url(skin:/../Tango/buttons/btn_arrow_down_hover.svg) no-repeat center center;
       }
 
     WEffectSelector QAbstractScrollArea,

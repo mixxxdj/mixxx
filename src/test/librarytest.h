@@ -7,10 +7,11 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "test/mixxxdbtest.h"
+#include "test/soundsourceproviderregistration.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 
-class LibraryTest : public MixxxDbTest {
+class LibraryTest : public MixxxDbTest, SoundSourceProviderRegistration {
   protected:
     LibraryTest();
     ~LibraryTest() override = default;

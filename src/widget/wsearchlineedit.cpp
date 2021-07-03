@@ -8,7 +8,7 @@
 #include <QStyle>
 
 #include "moc_wsearchlineedit.cpp"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/assert.h"
 #include "util/logger.h"
 #include "wskincolor.h"

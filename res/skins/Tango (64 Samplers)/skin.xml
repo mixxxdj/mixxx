@@ -247,7 +247,7 @@
     <SingletonDefinition>
       <ObjectName>SpinnyCoverMini_Singleton1</ObjectName>
       <Children>
-        <Template src="skin:../Tango/spinny_cover_mini.xml">
+        <Template src="skin:../Tango/decks/spinny_cover_mini.xml">
           <SetVariable name="chanNum">1</SetVariable>
           <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_12"/></SetVariable>
         </Template>
@@ -257,7 +257,7 @@
     <SingletonDefinition>
       <ObjectName>SpinnyCoverMini_Singleton2</ObjectName>
       <Children>
-        <Template src="skin:../Tango/spinny_cover_mini.xml">
+        <Template src="skin:../Tango/decks/spinny_cover_mini.xml">
           <SetVariable name="chanNum">2</SetVariable>
           <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_12"/></SetVariable>
         </Template>
@@ -267,7 +267,7 @@
     <SingletonDefinition>
       <ObjectName>SpinnyCoverMini_Singleton3</ObjectName>
       <Children>
-        <Template src="skin:../Tango/spinny_cover_mini.xml">
+        <Template src="skin:../Tango/decks/spinny_cover_mini.xml">
           <SetVariable name="chanNum">3</SetVariable>
           <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_34"/></SetVariable>
         </Template>
@@ -277,7 +277,7 @@
     <SingletonDefinition>
       <ObjectName>SpinnyCoverMini_Singleton4</ObjectName>
       <Children>
-        <Template src="skin:../Tango/spinny_cover_mini.xml">
+        <Template src="skin:../Tango/decks/spinny_cover_mini.xml">
           <SetVariable name="chanNum">4</SetVariable>
           <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_34"/></SetVariable>
         </Template>
@@ -287,7 +287,7 @@
     <SingletonDefinition>
       <ObjectName>VUMeterDeck1</ObjectName>
       <Children>
-        <Template src="skin:../Tango/vumeter_single.xml">
+        <Template src="skin:../Tango/mixer/vumeter_single.xml">
           <SetVariable name="group">[Channel1]</SetVariable>
         </Template>
       </Children>
@@ -296,7 +296,7 @@
     <SingletonDefinition>
       <ObjectName>VUMeterDeck2</ObjectName>
       <Children>
-        <Template src="skin:../Tango/vumeter_single.xml">
+        <Template src="skin:../Tango/mixer/vumeter_single.xml">
           <SetVariable name="group">[Channel2]</SetVariable>
         </Template>
       </Children>
@@ -305,7 +305,7 @@
     <SingletonDefinition>
       <ObjectName>VUMeterDeck3</ObjectName>
       <Children>
-        <Template src="skin:../Tango/vumeter_single.xml">
+        <Template src="skin:../Tango/mixer/vumeter_single.xml">
           <SetVariable name="group">[Channel3]</SetVariable>
         </Template>
       </Children>
@@ -314,7 +314,7 @@
     <SingletonDefinition>
       <ObjectName>VUMeterDeck4</ObjectName>
       <Children>
-        <Template src="skin:../Tango/vumeter_single.xml">
+        <Template src="skin:../Tango/mixer/vumeter_single.xml">
           <SetVariable name="group">[Channel4]</SetVariable>
         </Template>
       </Children>
@@ -333,7 +333,7 @@
               <MaximumSize>-1,136</MaximumSize>
               <SizePolicy>min,me</SizePolicy>
               <Children>
-                <Template src="skin:../Tango/vumeter_single.xml">
+                <Template src="skin:../Tango/mixer/vumeter_single.xml">
                   <SetVariable name="group">[Master]</SetVariable>
                 </Template>
                 <WidgetGroup><Size>0f,5f</Size></WidgetGroup>
@@ -504,9 +504,7 @@
                     </Splitter>
                     <!-- regular library with decks etc. -->
 
-                    <!-- maximized library:
-                        [minimal decks]
-                        [Library] -->
+                    <!-- maximized library with minimal decks -->
                     <WidgetGroup>
                       <Layout>vertical</Layout>
                       <SizePolicy>me,me</SizePolicy>
@@ -555,7 +553,7 @@
 
                   </Children>
                 </WidgetStack>
-            <!-- regular / maximized library -->
+                <!-- regular / maximized library -->
 
               </Children>
             </WidgetGroup><!-- topbar + skin elements -->
@@ -567,7 +565,7 @@
 
         <!-- Detect if Star rating fits into deck buttons row.
             Do this here, so it doesn't interfere with expanded skin menu -->
-        <Template src="skin:../Tango/size_detector_stars.xml"/>
+        <Template src="skin:../Tango/helpers/size_detector_stars.xml"/>
 
       </Children>
     </WidgetGroup>

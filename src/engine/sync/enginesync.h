@@ -103,20 +103,24 @@ class EngineSync : public SyncableListener {
     double masterBaseBpm() const;
 
     /// Set the BPM on every sync-enabled Syncable except pSource.
-    void setMasterBpm(Syncable* pSource, double bpm);
+    void updateMasterBpm(Syncable* pSource, double bpm);
 
     /// Set the master instantaneous BPM on every sync-enabled Syncable except
     /// pSource.
-    void setMasterInstantaneousBpm(Syncable* pSource, double bpm);
+    void updateMasterInstantaneousBpm(Syncable* pSource, double bpm);
 
     /// Set the master beat distance on every sync-enabled Syncable except
     /// pSource.
-    void setMasterBeatDistance(Syncable* pSource, double beatDistance);
+    void updateMasterBeatDistance(Syncable* pSource, double beatDistance);
 
-    void setMasterParams(Syncable* pSource);
+    /// Initialize the master parameters using the provided syncable as the source.
+    /// This should only be called for "major" updates, like a new track or change in
+    /// master. Should not be called on every buffer callback.
+    void reinitMasterParams(Syncable* pSource);
 
-    /// Check if there are no playing followers left.
-    bool noPlayingFollowers() const;
+    /// Iff there is a single playing syncable in sync mode, return it.
+    /// This is used to initialize master params.
+    Syncable* getUniquePlayingSyncedDeck() const;
 
     /// Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);

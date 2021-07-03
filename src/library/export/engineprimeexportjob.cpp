@@ -151,8 +151,12 @@ void exportMetadata(djinterop::database* pDatabase,
     snapshot.comment = pTrack->getComment().toStdString();
     snapshot.composer = pTrack->getComposer().toStdString();
     snapshot.key = toDjinteropKey(pTrack->getKey());
-    int64_t lastModifiedMillisSinceEpoch =
-            pTrack->getFileInfo().lastModified().toMSecsSinceEpoch();
+    int64_t lastModifiedMillisSinceEpoch = 0;
+    const QDateTime fileLastModified = pTrack->getFileInfo().lastModified();
+    if (fileLastModified.isValid()) {
+        // Only defined if valid
+        lastModifiedMillisSinceEpoch = fileLastModified.toMSecsSinceEpoch();
+    }
     std::chrono::system_clock::time_point lastModifiedAt{
             std::chrono::milliseconds{lastModifiedMillisSinceEpoch}};
     snapshot.last_modified_at = lastModifiedAt;
@@ -242,7 +246,14 @@ void exportMetadata(djinterop::database* pDatabase,
         djinterop::hot_cue hotCue{};
         hotCue.label = label.toStdString();
         hotCue.sample_offset = playPosToSampleOffset(pCue->getPosition());
-        hotCue.color = el::standard_pad_colors::pads[hotCueIndex];
+
+        auto color = mixxx::RgbColor::toQColor(pCue->getColor());
+        hotCue.color = djinterop::pad_color{
+                static_cast<uint_least8_t>(color.red()),
+                static_cast<uint_least8_t>(color.green()),
+                static_cast<uint_least8_t>(color.blue()),
+                255};
+
         snapshot.hot_cues[hotCueIndex] = hotCue;
     }
 

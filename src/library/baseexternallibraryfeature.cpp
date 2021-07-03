@@ -18,8 +18,9 @@ const mixxx::Logger kLogger("BaseExternalLibraryFeature");
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
+        UserSettingsPointer pConfig,
+        const QString& iconName)
+        : LibraryFeature(pLibrary, pConfig, iconName),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()) {
     m_pAddToAutoDJAction = make_parented<QAction>(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,

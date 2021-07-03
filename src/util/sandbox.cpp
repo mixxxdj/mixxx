@@ -90,48 +90,50 @@ bool Sandbox::canAccessDir(const QDir& dir) {
 bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
     // We always want read/write access because we wouldn't want to have to
     // re-ask for access in the future if we need to write.
+    if (sDebug) {
+        qDebug() << "Sandbox: Requesting user access to" << pFileInfo;
+    }
+    if (!enabled()) {
+        // Pretend we have access.
+        return true;
+    }
+
+    if (!pFileInfo->exists()) {
+        // We cannot grant access to a not existing file
+        return false;
+    }
+
     if (canAccess(pFileInfo)) {
         return true;
     }
 
-    const QString canonicalLocation = pFileInfo->canonicalLocation();
-    if (canonicalLocation.isEmpty()) {
-        // File does not exist
-        return false;
-    }
-
-    if (sDebug) {
-        qDebug() << "Sandbox: Requesting user access to" << canonicalLocation;
-    }
+    const QString location = pFileInfo->location();
     const QString fileName = pFileInfo->fileName();
     const QString title = QObject::tr("Mixxx Needs Access to: %1").arg(fileName);
-    QMessageBox::question(nullptr,
+    QMessageBox::information(nullptr,
             title,
             QObject::tr(
-                    "Due to Mac Sandboxing, we need your permission to access "
-                    "this file:"
+                    "Your permission is required to access "
+                    "the following location:"
                     "\n\n%1\n\n"
                     "After clicking OK, you will see a file picker. "
-                    "To give Mixxx permission, you must select '%2' to "
-                    "proceed. "
-                    "If you do not want to grant Mixxx access click Cancel on "
-                    "the file picker. "
-                    "We're sorry for this inconvenience.\n\n"
-                    "To abort this action, press Cancel on the file dialog.")
-                    .arg(canonicalLocation, fileName));
+                    "Please select '%2' to proceed or click Cancel if "
+                    "you don't want to grant Mixxx access and abort "
+                    "this action.")
+                    .arg(location, fileName));
 
     mixxx::FileInfo resultInfo;
     while (true) {
         QString result;
         if (pFileInfo->isFile()) {
-            result = QFileDialog::getOpenFileName(nullptr, title, canonicalLocation);
+            result = QFileDialog::getOpenFileName(nullptr, title, location);
         } else if (pFileInfo->isDir()) {
-            result = QFileDialog::getExistingDirectory(nullptr, title, canonicalLocation);
+            result = QFileDialog::getExistingDirectory(nullptr, title, location);
         }
 
         if (result.isNull()) {
             if (sDebug) {
-                qDebug() << "Sandbox: User rejected access to" << canonicalLocation;
+                qDebug() << "Sandbox: User rejected access to" << location;
             }
             return false;
         }
@@ -147,7 +149,7 @@ bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
         if (sDebug) {
             qDebug() << "User selected the wrong file.";
         }
-        QMessageBox::question(
+        QMessageBox::information(
                 nullptr, title, QObject::tr("You selected the wrong file. To grant Mixxx access, "
                                             "please select the file '%1'. If you do not want to "
                                             "continue, press Cancel.")
@@ -397,6 +399,7 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
     return nullptr;
 }
 
+#ifdef __APPLE__
 QString Sandbox::migrateOldSettings() {
     // QStandardPaths::DataLocation returns a different location depending on whether the build
     // is signed (and therefore sandboxed with the hardened runtime), so use the absolute path
@@ -469,7 +472,6 @@ QString Sandbox::migrateOldSettings() {
         return sandboxedPath;
     }
 
-#ifdef __APPLE__
     CFURLRef url = CFURLCreateWithFileSystemPath(
             kCFAllocatorDefault, QStringToCFString(legacySettingsPath), kCFURLPOSIXPathStyle, true);
     if (url) {
@@ -529,9 +531,9 @@ QString Sandbox::migrateOldSettings() {
             }
         }
     }
-#endif
     return sandboxedPath;
 }
+#endif
 
 #ifdef __APPLE__
 SandboxSecurityToken::SandboxSecurityToken(const QString& path, CFURLRef url)

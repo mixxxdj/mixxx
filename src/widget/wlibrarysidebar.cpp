@@ -259,4 +259,7 @@ bool WLibrarySidebar::event(QEvent* pEvent) {
 
 void WLibrarySidebar::slotSetFont(const QFont& font) {
     setFont(font);
+    // Resize the feature icons to be a bit taller than the label's capital
+    int iconSize = static_cast<int>(QFontMetrics(font).height() * 0.8);
+    setIconSize(QSize(iconSize, iconSize));
 }

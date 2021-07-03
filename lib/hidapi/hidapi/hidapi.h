@@ -53,7 +53,7 @@
 
 	@ingroup API
 */
-#define HID_API_VERSION_PATCH 0
+#define HID_API_VERSION_PATCH 1
 
 /* Helper macros */
 #define HID_API_AS_STR_IMPL(x) #x
@@ -96,10 +96,10 @@ extern "C" {
 			/** Product string */
 			wchar_t *product_string;
 			/** Usage Page for this Device/Interface
-			    (Windows/Mac only). */
+			    (Windows/Mac/hidraw only) */
 			unsigned short usage_page;
 			/** Usage for this Device/Interface
-			    (Windows/Mac only).*/
+			    (Windows/Mac/hidraw only) */
 			unsigned short usage;
 			/** The USB interface which this logical device
 			    represents.
@@ -124,7 +124,7 @@ extern "C" {
 			needed.  This function should be called at the beginning of
 			execution however, if there is a chance of HIDAPI handles
 			being opened by different threads simultaneously.
-			
+
 			@ingroup API
 
 			@returns
@@ -478,7 +478,7 @@ extern "C" {
 			@returns
 				Pointer to statically allocated struct, that contains version.
 		*/
-		HID_API_EXPORT const  struct hid_api_version* HID_API_CALL hid_version();
+		HID_API_EXPORT const  struct hid_api_version* HID_API_CALL hid_version(void);
 
 
 		/** @brief Get a runtime version string of the library.
@@ -488,7 +488,7 @@ extern "C" {
 			@returns
 				Pointer to statically allocated string, that contains version string.
 		*/
-		HID_API_EXPORT const char* HID_API_CALL hid_version_str();
+		HID_API_EXPORT const char* HID_API_CALL hid_version_str(void);
 
 #ifdef __cplusplus
 }

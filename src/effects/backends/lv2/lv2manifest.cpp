@@ -1,7 +1,7 @@
 #include "effects/backends/lv2/lv2manifest.h"
 
 #include "effects/backends/effectmanifestparameter.h"
-#include "util/math.h"
+#include "util/fpclassify.h"
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
         QHash<QString, LilvNode*>& properties)
@@ -51,7 +51,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                         m_pLV2plugin, port, properties["enumeration_port"]) &&
                 !lilv_port_has_property(
                         m_pLV2plugin, port, properties["button_port"])) {
-            if (isnan(m_minimum[i]) || isnan(m_maximum[i])) {
+            if (util_isnan(m_minimum[i]) || util_isnan(m_maximum[i])) {
                 continue;
             }
             controlPortIndices.append(i);
@@ -69,7 +69,8 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             // node must not be freed here, it is owned by port
 
             param->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
-            if (isnan(m_default[i]) || m_default[i] < m_minimum[i] || m_default[i] > m_maximum[i]) {
+            if (util_isnan(m_default[i]) || m_default[i] < m_minimum[i] ||
+                    m_default[i] > m_maximum[i]) {
                 m_default[i] = m_minimum[i];
             }
             param->setRange(m_minimum[i], m_default[i], m_maximum[i]);
@@ -125,13 +126,13 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             double defaultValue = 0;
             double maximum = param->getSteps().size() - 1;
 
-            if (!isnan(m_minimum[i])) {
+            if (!util_isnan(m_minimum[i])) {
                 minimum = m_minimum[i];
             }
-            if (!isnan(m_default[i])) {
+            if (!util_isnan(m_default[i])) {
                 defaultValue = m_default[i];
             }
-            if (!isnan(m_maximum[i])) {
+            if (!util_isnan(m_maximum[i])) {
                 maximum = m_maximum[i];
             }
 

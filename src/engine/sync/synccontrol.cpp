@@ -22,8 +22,10 @@ namespace {
 const mixxx::Logger kLogger("SyncControl");
 } // namespace
 
-SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
-                         EngineChannel* pChannel, SyncableListener* pEngineSync)
+SyncControl::SyncControl(const QString& group,
+        UserSettingsPointer pConfig,
+        EngineChannel* pChannel,
+        SyncableListener* pEngineSync)
         : EngineControl(group, pConfig),
           m_sGroup(group),
           m_pChannel(pChannel),
@@ -145,7 +147,7 @@ void SyncControl::setSyncMode(SyncMode mode) {
     }
 }
 
-void SyncControl::notifyOnlyPlayingSyncable() {
+void SyncControl::notifyUniquePlaying() {
     // If we are the only remaining playing sync deck, we can reset the user
     // tweak info.
     m_pBpmControl->resetSyncAdjustment();
@@ -159,7 +161,7 @@ void SyncControl::requestSync() {
     if (isPlaying() && m_pQuantize->toBool()) {
         // only sync phase if the deck is playing and if quantize is enabled.
         // this way the it is up to the user to decide if a seek is desired or not.
-        // This is helpful if the beatgrid of the track doe not fit at the current
+        // This is helpful if the beatgrid of the track does not fit at the current
         // playposition
         m_pChannel->getEngineBuffer()->requestSyncPhase();
     }
@@ -177,7 +179,7 @@ double SyncControl::adjustSyncBeatDistance(double beatDistance) const {
     // Similar to adjusting the target beat distance, when we report our beat
     // distance we need to adjust it by the master bpm adjustment factor.  If
     // we've been doubling the master bpm, we need to divide it in half.  If
-    // we'be been halving the master bpm, we need to double it.  Both operations
+    // we've been halving the master bpm, we need to double it.  Both operations
     // also need to account for if the longer beat is past its halfway point.
     //
     // This is the inverse of the updateTargetBeatDistance function below.
@@ -204,7 +206,7 @@ double SyncControl::getBaseBpm() const {
     return m_pLocalBpm->get() / m_masterBpmAdjustFactor;
 }
 
-void SyncControl::setMasterBeatDistance(double beatDistance) {
+void SyncControl::updateMasterBeatDistance(double beatDistance) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::setMasterBeatDistance"
                         << beatDistance;
@@ -217,7 +219,7 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
     updateTargetBeatDistance();
 }
 
-void SyncControl::setMasterBpm(double bpm) {
+void SyncControl::updateMasterBpm(double bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::setMasterBpm" << bpm;
     }
@@ -238,21 +240,19 @@ void SyncControl::setMasterBpm(double bpm) {
     }
 }
 
-void SyncControl::setMasterParams(
+void SyncControl::notifyMasterParamSource() {
+    m_masterBpmAdjustFactor = kBpmUnity;
+}
+
+void SyncControl::reinitMasterParams(
         double beatDistance, double baseBpm, double bpm) {
-    // Calculate the factor for the file bpm. That gives the best
-    // result at any rate slider position.
-    double masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
-    if (isMaster(getSyncMode())) {
-        // In Master mode we adjust the incoming Bpm for the initial sync.
-        bpm *= masterBpmAdjustFactor;
-        m_masterBpmAdjustFactor = kBpmUnity;
-    } else {
-        // in Follower mode we keep the factor when reporting our BPM
-        m_masterBpmAdjustFactor = masterBpmAdjustFactor;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::setMasterParams" << getGroup()
+                        << beatDistance << baseBpm << bpm;
     }
-    setMasterBpm(bpm);
-    setMasterBeatDistance(beatDistance);
+    m_masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
+    updateMasterBpm(bpm);
+    updateMasterBeatDistance(beatDistance);
 }
 
 double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
@@ -274,7 +274,10 @@ double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const
 void SyncControl::updateTargetBeatDistance() {
     double targetDistance = m_unmultipliedTargetBeatDistance;
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::updateTargetBeatDistance, unmult distance" << targetDistance;
+        kLogger.trace()
+                << getGroup()
+                << "SyncControl::updateTargetBeatDistance, unmult distance"
+                << targetDistance << m_masterBpmAdjustFactor;
     }
 
     // Determining the target distance is not as simple as x2 or /2.  Since one
@@ -289,7 +292,8 @@ void SyncControl::updateTargetBeatDistance() {
         targetDistance *= kBpmDouble;
     } else if (m_masterBpmAdjustFactor == kBpmHalve) {
         targetDistance *= kBpmHalve;
-        if (m_pBeatDistance->get() >= 0.5) {
+        // Our beat distance CO is still a buffer behind, so take the current value.
+        if (m_pBpmControl->getBeatDistance(getSampleOfTrack().current) >= 0.5) {
             targetDistance += 0.5;
         }
     }
@@ -301,14 +305,23 @@ void SyncControl::updateTargetBeatDistance() {
 
 double SyncControl::getBpm() const {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::getBpm()";
+        kLogger.trace() << getGroup() << "SyncControl::getBpm()"
+                        << m_pBpm->get() << "/" << m_masterBpmAdjustFactor;
     }
     return m_pBpm->get() / m_masterBpmAdjustFactor;
 }
 
-void SyncControl::setInstantaneousBpm(double bpm) {
+void SyncControl::updateInstantaneousBpm(double bpm) {
     // Adjust the incoming bpm by the multiplier.
-    m_pBpmControl->setInstantaneousBpm(bpm * m_masterBpmAdjustFactor);
+    m_pBpmControl->updateInstantaneousBpm(bpm * m_masterBpmAdjustFactor);
+}
+
+void SyncControl::reportTrackPosition(double fractionalPlaypos) {
+    // If we're close to the end, and master, disable master so we don't stop
+    // the party.
+    if (isMaster(getSyncMode()) && fractionalPlaypos >= 1.0) {
+        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+    }
 }
 
 // called from an engine worker thread

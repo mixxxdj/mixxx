@@ -16,7 +16,6 @@ class SetlogFeature : public BasePlaylistFeature {
     virtual ~SetlogFeature();
 
     QVariant title() override;
-    QIcon getIcon() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
@@ -48,6 +47,5 @@ class SetlogFeature : public BasePlaylistFeature {
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pStartNewPlaylist;
     int m_playlistId;
-    WLibrary* m_libraryWidget;
-    const QIcon m_icon;
+    QPointer<WLibrary> m_libraryWidget;
 };

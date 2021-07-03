@@ -37,7 +37,8 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     const int kFrameSize = 2;
     const double expectedBeatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    const mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack->getSampleRate(), bpm, 0);
+    const mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(
+            pTrack->getSampleRate(), bpm, mixxx::audio::kStartFramePos);
 
     // On a beat.
     double prevBeat, nextBeat, beatLength, beatPercentage;

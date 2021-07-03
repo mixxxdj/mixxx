@@ -21,6 +21,7 @@
 #include "mixer/sampler.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+#include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "util/defs.h"
 #include "util/memory.h"
@@ -55,7 +56,7 @@ class TestEngineMaster : public EngineMaster {
     }
 };
 
-class BaseSignalPathTest : public MixxxTest {
+class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     BaseSignalPathTest() {
         m_pGuiTick = std::make_unique<GuiTick>();

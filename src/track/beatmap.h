@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "audio/frame.h"
 #include "proto/beats.pb.h"
 #include "track/beats.h"
 
@@ -31,7 +32,7 @@ class BeatMap final : public Beats {
     static BeatsPointer makeBeatMap(
             audio::SampleRate sampleRate,
             const QString& subVersion,
-            const QVector<double>& beats);
+            const QVector<mixxx::audio::FramePos>& beats);
 
     Beats::CapabilitiesFlags getCapabilities() const override {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |

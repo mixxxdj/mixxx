@@ -2,26 +2,46 @@
 
 #include <QString>
 
+#include "audio/frame.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "util/types.h"
 
 namespace mixxx {
 
-struct AnalyzerPluginInfo {
+class AnalyzerPluginInfo {
+  public:
     AnalyzerPluginInfo(const QString& id,
             const QString& author,
             const QString& name,
             bool isConstantTempoSupported)
-            : id(id),
-              author(author),
-              name(name),
-              constantTempoSupported(isConstantTempoSupported) {
+            : m_id(id),
+              m_author(author),
+              m_name(name),
+              m_isConstantTempoSupported(isConstantTempoSupported) {
     }
-    QString id;
-    QString author;
-    QString name;
-    bool constantTempoSupported;
+
+    const QString& id() const {
+        return m_id;
+    }
+
+    const QString& author() const {
+        return m_author;
+    }
+
+    const QString& name() const {
+        return m_name;
+    }
+
+    bool isConstantTempoSupported() const {
+        return m_isConstantTempoSupported;
+    }
+
+  private:
+    QString m_id;
+    QString m_author;
+    QString m_name;
+    bool m_isConstantTempoSupported;
 };
 
 class AnalyzerPlugin {
@@ -29,13 +49,13 @@ class AnalyzerPlugin {
     virtual ~AnalyzerPlugin() = default;
 
     virtual QString id() const {
-        return info().id;
+        return info().id();
     }
     virtual QString author() const {
-        return info().author;
+        return info().author();
     }
     virtual QString name() const {
-        return info().name;
+        return info().name();
     }
     virtual AnalyzerPluginInfo info() const = 0;
 
@@ -52,8 +72,8 @@ class AnalyzerBeatsPlugin : public AnalyzerPlugin {
     virtual float getBpm() const {
         return 0.0f;
     }
-    virtual QVector<double> getBeats() const {
-        return QVector<double>();
+    virtual QVector<mixxx::audio::FramePos> getBeats() const {
+        return {};
     }
 };
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QAction>
-#include <QIcon>
 #include <QList>
 #include <QModelIndex>
 #include <QObject>
@@ -16,6 +15,7 @@
 #include "library/trackset/crate/crate.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class DlgAutoDJ;
 class Library;
@@ -34,7 +34,6 @@ class AutoDJFeature : public LibraryFeature {
     virtual ~AutoDJFeature();
 
     QVariant title() override;
-    QIcon getIcon() override;
 
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
@@ -43,7 +42,7 @@ class AutoDJFeature : public LibraryFeature {
                     KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
     bool hasTrackTable() override {
         return true;
@@ -62,7 +61,7 @@ class AutoDJFeature : public LibraryFeature {
     // The id of the AutoDJ playlist.
     int m_iAutoDJPlaylistId;
     AutoDJProcessor* m_pAutoDJProcessor;
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAutoDJ* m_pAutoDJView;
 
     // Initialize the list of crates loaded into the auto-DJ queue.
@@ -83,7 +82,6 @@ class AutoDJFeature : public LibraryFeature {
     // auto-DJ list.
     QAction *m_pRemoveCrateFromAutoDj;
 
-    QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
   private slots:

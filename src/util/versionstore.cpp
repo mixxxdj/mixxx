@@ -28,9 +28,8 @@
 #include <taglib/taglib.h>
 #include <vorbis/codec.h>
 
+#include "util/gitinfostore.h"
 #include "version.h"
-#define VERSION_STORE
-#include "gitinfo.h"
 
 namespace {
 
@@ -38,9 +37,6 @@ const QVersionNumber kMixxxVersionNumber = QVersionNumber(
         MIXXX_VERSION_MAJOR, MIXXX_VERSION_MINOR, MIXXX_VERSION_PATCH);
 const QString kMixxxVersionSuffix = QString(MIXXX_VERSION_SUFFIX);
 const QString kMixxx = QStringLiteral("Mixxx");
-const QString kGitBranch = QString(GIT_BRANCH);
-const QString kGitDescribe = QString(GIT_DESCRIBE);
-const QDateTime kGitCommitDate = QDateTime::fromString(GIT_COMMIT_DATE, Qt::ISODate);
 const QString kBuildFlags = QString(MIXXX_BUILD_FLAGS);
 
 } // namespace
@@ -65,7 +61,7 @@ QString VersionStore::versionSuffix() {
 }
 
 QDateTime VersionStore::date() {
-    return kGitCommitDate;
+    return QDateTime::fromString(GitInfoStore::date(), Qt::ISODate);
 }
 
 // static
@@ -114,24 +110,24 @@ QString VersionStore::platform() {
 
 // static
 QString VersionStore::gitBranch() {
-    return kGitBranch;
+    return GitInfoStore::branch();
 }
 
 // static
 QString VersionStore::gitDescribe() {
-    return kGitDescribe;
+    return GitInfoStore::describe();
 }
 
 // static
 QString VersionStore::gitVersion() {
-    QString gitVersion = VersionStore::gitDescribe();
+    QString gitVersion = GitInfoStore::describe();
     if (gitVersion.isEmpty()) {
         gitVersion = QStringLiteral("unknown");
     }
 
     QString gitBranch = VersionStore::gitBranch();
-    if (!gitBranch.isEmpty()) {
-        gitVersion.append(QStringLiteral(" (") + gitBranch + QStringLiteral(" branch)"));
+    if (!gitBranch.isEmpty() && !gitVersion.startsWith(gitBranch)) {
+        gitVersion.append(QStringLiteral(" (") + gitBranch + QChar(')'));
     }
 
     return gitVersion;

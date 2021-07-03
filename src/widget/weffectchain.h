@@ -5,7 +5,7 @@
 #include <QWidget>
 
 #include "effects/effectchain.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/wlabel.h"
 
 class EffectsManager;
