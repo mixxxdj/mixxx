@@ -6,6 +6,7 @@
 #include <memory>
 #include <type_traits> // static_assert
 
+#include "audio/frame.h"
 #include "audio/types.h"
 #include "track/cueinfo.h"
 #include "util/color/rgbcolor.h"
@@ -114,6 +115,10 @@ class Cue : public QObject {
     friend class Track;
     friend class CueDAO;
 };
+
+static_assert(mixxx::audio::FramePos::kLegacyInvalidEnginePosition ==
+                Cue::kNoPosition,
+        "Invalid engine position value mismatch");
 
 class CuePointer : public std::shared_ptr<Cue> {
   public:
