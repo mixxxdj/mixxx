@@ -2096,7 +2096,8 @@ target_link_libraries(mixxx-lib PRIVATE mixxx-proto)
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
-find_package(Qt5
+find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
     Concurrent
     Core
@@ -2115,23 +2116,22 @@ find_package(Qt5
 )
 # PUBLIC is required below to find included headers
 target_link_libraries(mixxx-lib PUBLIC
-  Qt5::Concurrent
-  Qt5::Core
-  Qt5::Gui
-  Qt5::Network
-  Qt5::OpenGL
-  Qt5::PrintSupport
-  Qt5::Qml
-  Qt5::QuickWidgets
-  Qt5::Sql
-  Qt5::Svg
-  Qt5::Test
-  Qt5::Widgets
-  Qt5::Xml)
+  Qt${QT_VERSION_MAJOR}::Concurrent
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Network
+  Qt${QT_VERSION_MAJOR}::OpenGL
+  Qt${QT_VERSION_MAJOR}::PrintSupport
+  Qt${QT_VERSION_MAJOR}::Qml
+  Qt${QT_VERSION_MAJOR}::QuickWidgets
+  Qt${QT_VERSION_MAJOR}::Sql
+  Qt${QT_VERSION_MAJOR}::Svg
+  Qt${QT_VERSION_MAJOR}::Test
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Xml)
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
-is_static_library(Qt5_IS_STATIC Qt5::Core)
-if(Qt5_IS_STATIC)
-
+is_static_library(Qt_IS_STATIC Qt${QT_VERSION_MAJOR}::Core)
+if(Qt_IS_STATIC)
   # NOTE(rryan): If you are adding a plugin here, you must also
   # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
   # for it. Not all imageformats plugins are built as .libs when
@@ -2172,7 +2172,7 @@ endif()
 
 
 if(APPLE)
-  if(Qt5_IS_STATIC)
+  if(Qt_IS_STATIC)
     target_link_libraries(mixxx-lib PRIVATE
         "-weak_framework Accelerate"
         "-weak_framework AppKit"
@@ -2201,11 +2201,11 @@ elseif(UNIX)
   target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
   target_link_libraries(mixxx-lib PRIVATE
     "${X11_LIBRARIES}"
-    Qt5::X11Extras
-    Qt5::DBus
+    Qt${QT_VERSION_MAJOR}::X11Extras
+    Qt${QT_VERSION_MAJOR}::DBus
   )
 elseif(WIN32)
-  if(Qt5_IS_STATIC)
+  if(Qt_IS_STATIC)
     target_link_libraries(mixxx-lib PRIVATE
       # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
       # QtCore
@@ -2230,7 +2230,6 @@ elseif(WIN32)
       # QtNetwork openssl-linked
       crypt32
 
-      # New libraries required by Qt5.
       dwmapi      # qtwindows
       iphlpapi    # qt5network
       mpr         # qt5core
@@ -2241,14 +2240,14 @@ elseif(WIN32)
       wtsapi32    # ?
     )
 
-    find_library(QT5FONTDATABASESUPPORT_LIBRARY Qt5FontDatabaseSupport)
-    target_link_libraries(mixxx-lib PRIVATE "${QT5FONTDATABASESUPPORT_LIBRARY}")
-    find_library(QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY Qt5WindowsUIAutomationSupport)
-    target_link_libraries(mixxx-lib PRIVATE "${QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY}")
-    find_library(QT5EVENTDISPATCHERSUPPORT_LIBRARY Qt5EventDispatcherSupport)
-    target_link_libraries(mixxx-lib PRIVATE "${QT5EVENTDISPATCHERSUPPORT_LIBRARY}")
-    find_library(QT5THEMESUPPORT_LIBRARY Qt5ThemeSupport)
-    target_link_libraries(mixxx-lib PRIVATE "${QT5THEMESUPPORT_LIBRARY}")
+    find_library(QTFONTDATABASESUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}FontDatabaseSupport)
+    target_link_libraries(mixxx-lib PRIVATE "${QTFONTDATABASESUPPORT_LIBRARY}")
+    find_library(QTWINDOWSUIAUTOMATIONSUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}WindowsUIAutomationSupport)
+    target_link_libraries(mixxx-lib PRIVATE "${QTWINDOWSUIAUTOMATIONSUPPORT_LIBRARY}")
+    find_library(QTEVENTDISPATCHERSUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}EventDispatcherSupport)
+    target_link_libraries(mixxx-lib PRIVATE "${QTEVENTDISPATCHERSUPPORT_LIBRARY}")
+    find_library(QTTHEMESUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}ThemeSupport)
+    target_link_libraries(mixxx-lib PRIVATE "${QTTHEMESUPPORT_LIBRARY}")
 
     find_library(QTFREETYPE_LIBRARY qtfreetype)
     target_link_libraries(mixxx-lib PRIVATE "${QTFREETYPE_LIBRARY}")
@@ -2335,7 +2334,7 @@ if(MSVC)
   target_compile_definitions(Reverb PRIVATE _USE_MATH_DEFINES)
 endif()
 target_include_directories(Reverb PRIVATE src)
-target_link_libraries(Reverb PRIVATE Qt5::Core)
+target_link_libraries(Reverb PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)
 target_link_libraries(mixxx-lib PRIVATE Reverb)
 
@@ -2915,9 +2914,12 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" 
 include(CPack)
 
 if(APPLE AND MACOS_BUNDLE)
-    if(NOT Qt5_IS_STATIC)
+    if(NOT Qt_IS_STATIC)
         macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
-            get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
+            # Somehow trying to use Qt${QT_VERSION_MAJOR} breaks the get_target_property call below,
+            # so hack around that by creating a temporary variable.
+            set(QT_PLUGIN_TARGET "Qt${QT_VERSION_MAJOR}::${_qt_plugin_name}")
+            get_target_property(_qt_plugin_path "${QT_PLUGIN_TARGET}" LOCATION)
             if(EXISTS "${_qt_plugin_path}")
                 get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
                 get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
@@ -2932,15 +2934,15 @@ if(APPLE AND MACOS_BUNDLE)
             endif()
         endmacro()
 
-        install_qt5_plugin(Qt5::QCocoaIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QMacStylePlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QOffscreenIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QMinimalIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QSvgPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QJpegPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QICOPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QSQLiteDriverPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(QCocoaIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(QMacStylePlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(QOffscreenIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(QMinimalIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(QSvgPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(QJpegPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(QICOPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(QSQLiteDriverPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
     endif()
 
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
