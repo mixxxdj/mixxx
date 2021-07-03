@@ -38,6 +38,8 @@ case "$1" in
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
             cmake \
+            clazy \
+            clang-tidy \
             debhelper \
             devscripts \
             docbook-to-man \
