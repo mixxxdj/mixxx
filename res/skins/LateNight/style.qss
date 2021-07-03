@@ -17,17 +17,18 @@ WBeatSpinBox,
 WOverview #PassthroughLabel,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
-WOverview /* Hotcue labels in the overview */,
+WCueMenuPopup QLineEdit,
+WOverview, /* Hotcue labels in the overview */
 WEffectName,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-#LibraryContainer QPushButton,
-#LibraryContainer QLabel,
-#LibraryContainer QRadioButton,
-#LibraryContainer QHeaderView,
-#LibraryContainer QHeaderView::section {
+WLibrary QPushButton,
+WLibrary QLabel,
+WLibrary QRadioButton,
+WTrackTableViewHeader,
+WTrackTableViewHeader::section {
   /* On Linux all weight variants of Open Sans are identified
   as "Open Sans".
   On Windows however, the semi-bold variant is identified as
@@ -83,14 +84,19 @@ WOverview #PassthroughLabel {
 #SkinSettingsText,
 QToolTip,
 WLibrarySidebar QMenu,
-WLibrary QHeaderView QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
+WTrackMenu QMenu,
+WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
 WCoverArtMenu,
 QLabel#labelRecPrefix,
 QLabel#labelRecStatistics {
   font-family: "Open Sans";
   font-weight: normal;
+  font-style: normal;
 }
 
 /* It is difficult to achieve identical styles WMainMenuBar #MainMenu
@@ -106,30 +112,10 @@ QLabel#labelRecStatistics {
   margin-bottom: 0px;
   padding-bottom: 0px;
 }
-/* Checkbox preceeding menu items (Options, ) */
-#MainMenu QMenu::indicator {
-/* Make it big: the highlighted background of the hovered box
-  should be as tall as the text highlight */
-  width: 1em;
-  height: 1em;
-}
-/* In all other menus the checkboxes are compiled from a css border
-  and a SVG checkmark icon  individually per state
-  (i.e. indeterminate, checked:selected, checked:disabled)
 
-  In the menu bar we only need to display two states
-  * checked / checked:selected
-  * unchecked / unchecked:selected
-  and we want identical appearance on both Wind'ohs and Linux
-  (avoid rendering issues) thus we use complete SVG checkboxes.
-
-  Checkbox icons are set per theme. */
-
-#MainMenu QMenu::separator {
-  height: 0px;
-  margin: 0.25em;
-}
-#MainMenu QMenu::right-arrow {
+#MainMenu QMenu::right-arrow,
+WTrackMenu::right-arrow,
+WTrackMenu QMenu::right-arrow {
   width: 0.7em;
   height: 0.7em;
 }
@@ -174,70 +160,9 @@ WEffectSelector::item:selected,
   border: 0px;
 }
 
-WLibrarySidebar QMenu::separator,
-WTrackMenu::separator,
-WTrackMenu QMenu::separator,
-QLineEdit QMenu::separator {
-  height: 0px;
-  margin: 4px;
-}
-
-/* All menus that have at least one item with a checkbox*/
-WLibrarySidebar QMenu::item,
-WLibrary QHeaderView QMenu::item,
-#CratesMenu::item {
-/* padding-right reserves space for the submenu expand arrow
-  padding-left should be bigger than the menu icon width +
-  icon margin-left/-right */
-  padding: 5px 12px 5px 26px;
-}
-
-WTrackMenu::item,
-WTrackMenu QMenu::item,
-/* This catches context menus of
-  - property cells in the tracks table
-  - WCueMenuPopup cue label editor
-  - WBeatSpinBox
-  - AutoDJ transition QSpinBox*/
-QLineEdit QMenu::item,
-WCoverArtMenu::item,
-/* for the sake of completeness: html root view of Crates, Rec etc. */
-QTextBrowser QMenu::item {
-  padding: 5px 12px 5px 12px;
-}
-
-/* Icons in those menus (copy, paste, cut, delete) */
-QLineEdit QMenu::icon,
-QTextBrowser QMenu::icon,
-/* - checkbox in Crate name context menu
-    "[ ] Auto DJ Track Source" */
-WLibrarySidebar QMenu::indicator,
-/* Column checkboxes in the table header menu */
-WLibrary QHeaderView QMenu::indicator {
-  /* Qt 5.12.8: negative margin-right increases the overall item width but has no effect
-                on the indicator itself.
-                positive margin-right pushes icon to the right...
-     Qt 5.15.2: needs negative margin-right in order to eliminate the item's
-                padding-left (necessary to avoid text/icon overlap); */
-  margin: 0px -20px 0px 5px;
-}
-
-/* items in Crate sub menu */
-WTrackMenu QMenu QCheckBox {
-  padding: 3px 10px 3px 5px;
-}
-
-  WTrackMenu::right-arrow,
-  WTrackMenu QMenu::right-arrow,
-  #LibraryContainer QTableView::indicator {
-    width: 10px;
-    height: 10px;
-  }
   WLibrarySidebar QMenu::indicator,
-  WLibrary QHeaderView QMenu::indicator,
+  WTrackTableViewHeader QMenu::indicator,
   WTrackMenu QMenu QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
     border: 1px solid #333;
     border-radius: 1px;
     background-color: #000;
@@ -353,19 +278,19 @@ WRecordingDuration {
 }
 
 
-#LibraryContainer QHeaderView::item {
+WTrackTableViewHeader::item {
   /* Don't set a font size to pick up the system font size. */
   border-bottom: 1px solid #000;
   }
-  #LibraryContainer QHeaderView::section {
+  WTrackTableViewHeader::section {
     height: 1.1em;
-    border: 0px;
-    padding: 2px;
+    border: 0;
+    padding: 0.1em;
   }
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
+  WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
     width: 0.8em;
-    padding: 0px 3px;
+    padding: 0 0.15em;
     }
 
 
@@ -792,7 +717,7 @@ WEffectSelector {
 
 
 
-/************** Skin setttings ************************************************/
+/************** Skin settings *************************************************/
 
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -833,7 +758,6 @@ WEffectSelector {
   /* This doesn't work as expected:
   it appears LibrarySingleton is displayed twice (nested in itself),
   so padding/margin would double.
-  Placed a plain spacer in library.xml which works reliably
   padding-top: 5px;*/
 }
 
@@ -903,7 +827,7 @@ QLabel#labelRecStatistics {
   margin: 3px 0px 3px 0px;
 }
 
-#LibraryContainer QTreeView {
+WLibrarySidebar {
   show-decoration-selected: 0;
 }
 /************** Library *******************************************************/
