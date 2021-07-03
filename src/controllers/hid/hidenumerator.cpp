@@ -81,16 +81,16 @@ QList<Controller*> HidEnumerator::queryDevices() {
 
         if (!recognizeDevice(*device_info)) {
             qInfo()
-                    << "Excluding USB HID device"
+                    << "Excluding HID device"
                     << deviceInfo;
             continue;
         }
-        qInfo() << "Found USB HID device:"
+        qInfo() << "Found HID device:"
                 << deviceInfo;
 
         if (!deviceInfo.isValid()) {
-            qWarning() << "USB permissions problem or device error."
-                       << "Your account needs write access to USB HID controllers.";
+            qWarning() << "HID device permissions problem or device error."
+                       << "Your account needs write access to HID controllers.";
             continue;
         }
 
