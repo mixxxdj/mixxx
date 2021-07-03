@@ -1475,6 +1475,7 @@ add_executable(mixxx-test
   src/test/beatgridtest.cpp
   src/test/beatmaptest.cpp
   src/test/beatstranslatetest.cpp
+  src/test/bpmtest.cpp
   src/test/bpmcontrol_test.cpp
   src/test/broadcastprofile_test.cpp
   src/test/broadcastsettings_test.cpp
