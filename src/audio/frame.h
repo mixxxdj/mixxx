@@ -37,18 +37,24 @@ class FramePos final {
         return value() * mixxx::kEngineChannelCount;
     }
 
+    /// Return true if the frame position is valid. Any finite value is
+    /// considered valid, i.e. any value except NaN and negative/positive
+    /// infinity.
     bool isValid() const {
-        return !util_isnan(m_framePosition) && !util_isinf(m_framePosition);
+        return util_isfinite(m_framePosition);
     }
 
     void setValue(value_t framePosition) {
         m_framePosition = framePosition;
     }
 
+    /// Return the underlying primitive value for this frame position.
     constexpr value_t value() const {
         return m_framePosition;
     }
 
+    /// Return true if the frame position has a fractional part, i.e. if it is
+    /// not located at a full frame boundary.
     bool isFractional() const {
         DEBUG_ASSERT(isValid());
         value_t integerPart;
