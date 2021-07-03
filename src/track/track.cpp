@@ -363,7 +363,11 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
 
 double Track::getBpm() const {
     const QMutexLocker lock(&m_qMutex);
-    return getBpmWhileLocked().value();
+    const auto bpm = getBpmWhileLocked();
+    if (!bpm.isValid()) {
+        return mixxx::Bpm::kValueUndefined;
+    }
+    return bpm.value();
 }
 
 bool Track::trySetBpm(double bpmValue) {

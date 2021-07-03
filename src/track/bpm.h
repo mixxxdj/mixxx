@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "util/fpclassify.h"
 #include "util/math.h"
 
 namespace mixxx {
@@ -37,13 +38,16 @@ public:
     }
 
     static bool isValidValue(double value) {
-        return kValueMin < value;
+        return util_isfinite(value) && kValueMin < value;
     }
 
     bool isValid() const {
         return isValidValue(m_value);
     }
     double value() const {
+        VERIFY_OR_DEBUG_ASSERT(isValid()) {
+            return mixxx::Bpm::kValueUndefined;
+        }
         return m_value;
     }
     void setValue(double value) {
@@ -84,22 +88,34 @@ public:
     }
 
     Bpm& operator+=(double increment) {
-        m_value += increment;
+        DEBUG_ASSERT(isValid());
+        if (isValid()) {
+            m_value += increment;
+        }
         return *this;
     }
 
     Bpm& operator-=(double decrement) {
-        m_value -= decrement;
+        DEBUG_ASSERT(isValid());
+        if (isValid()) {
+            m_value -= decrement;
+        }
         return *this;
     }
 
     Bpm& operator*=(double multiple) {
-        m_value *= multiple;
+        DEBUG_ASSERT(isValid());
+        if (isValid()) {
+            m_value *= multiple;
+        }
         return *this;
     }
 
     Bpm& operator/=(double divisor) {
-        m_value /= divisor;
+        DEBUG_ASSERT(isValid());
+        if (isValid()) {
+            m_value /= divisor;
+        }
         return *this;
     }
 
@@ -109,16 +125,28 @@ private:
 
 /// Bpm can be added to a double
 inline Bpm operator+(Bpm bpm, double bpmDiff) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
+        return Bpm();
+    }
+
     return Bpm(bpm.value() + bpmDiff);
 }
 
 /// Bpm can be subtracted from a double
 inline Bpm operator-(Bpm bpm, double bpmDiff) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
+        return Bpm();
+    }
+
     return Bpm(bpm.value() - bpmDiff);
 }
 
 /// Two Bpm values can be subtracted to get a double
 inline double operator-(Bpm bpm1, Bpm bpm2) {
+    VERIFY_OR_DEBUG_ASSERT(bpm1.isValid() && bpm2.isValid()) {
+        return mixxx::Bpm::kValueUndefined;
+    }
+
     return bpm1.value() - bpm2.value();
 }
 
@@ -126,39 +154,66 @@ inline double operator-(Bpm bpm1, Bpm bpm2) {
 
 /// Bpm can be multiplied or divided by a double
 inline Bpm operator*(Bpm bpm, double multiple) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
+        return Bpm();
+    }
+
     return Bpm(bpm.value() * multiple);
 }
 
 inline Bpm operator/(Bpm bpm, double divisor) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
+        return Bpm();
+    }
+
     return Bpm(bpm.value() / divisor);
 }
 
 inline bool operator<(Bpm bpm1, Bpm bpm2) {
+    VERIFY_OR_DEBUG_ASSERT(bpm1.isValid() && bpm2.isValid()) {
+        return false;
+    }
     return bpm1.value() < bpm2.value();
 }
 
 inline bool operator<=(Bpm bpm1, Bpm bpm2) {
+    VERIFY_OR_DEBUG_ASSERT(bpm1.isValid() && bpm2.isValid()) {
+        return !bpm1.isValid() && !bpm2.isValid();
+    }
     return bpm1.value() <= bpm2.value();
 }
 
 inline bool operator>(Bpm bpm1, Bpm bpm2) {
+    VERIFY_OR_DEBUG_ASSERT(bpm1.isValid() && bpm2.isValid()) {
+        return false;
+    }
     return bpm1.value() > bpm2.value();
 }
 
 inline bool operator>=(Bpm bpm1, Bpm bpm2) {
+    VERIFY_OR_DEBUG_ASSERT(bpm1.isValid() && bpm2.isValid()) {
+        return !bpm1.isValid() && !bpm2.isValid();
+    }
     return bpm1.value() >= bpm2.value();
 }
 
 inline bool operator==(Bpm bpm1, Bpm bpm2) {
+    if (!bpm1.isValid() || !bpm2.isValid()) {
+        return !bpm1.isValid() && !bpm2.isValid();
+    }
     return bpm1.value() == bpm2.value();
 }
 
 inline bool operator!=(Bpm bpm1, Bpm bpm2) {
-    return !(bpm1.value() == bpm2.value());
+    return !(bpm1 == bpm2);
 }
 
 inline QDebug operator<<(QDebug dbg, Bpm arg) {
-    dbg << arg.value();
+    if (arg.isValid()) {
+        dbg << arg.value();
+    } else {
+        dbg.nospace() << "<Invalid FramePos>";
+    }
     return dbg;
 }
 }
