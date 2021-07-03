@@ -135,7 +135,15 @@ inline bool operator>=(FramePos frame1, FramePos frame2) {
 }
 
 inline bool operator==(FramePos frame1, FramePos frame2) {
-    return frame1.value() == frame2.value();
+    if (frame1.isValid() && frame1.isValid()) {
+        return frame1.value() == frame2.value();
+    }
+
+    if (!frame1.isValid() && !frame1.isValid()) {
+        return true;
+    }
+
+    return false;
 }
 
 inline bool operator!=(FramePos frame1, FramePos frame2) {
