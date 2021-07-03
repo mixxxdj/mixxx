@@ -74,6 +74,7 @@ case "$1" in
             libsqlite3-dev \
             libssl-dev \
             libtag1-dev \
+            libudev-dev \
             libupower-glib-dev \
             libusb-1.0-0-dev \
             libwavpack-dev \
