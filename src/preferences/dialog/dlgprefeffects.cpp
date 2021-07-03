@@ -74,7 +74,7 @@ void DlgPrefEffects::setupManifestTableView(QTableView* pTableView) {
 }
 
 void DlgPrefEffects::setupChainListView(QListView* pListView) {
-    auto pModel = make_parented<EffectChainPresetListModel>(pListView);
+    auto pModel = make_parented<EffectChainPresetListModel>(pListView, m_pChainPresetManager);
     pListView->setModel(pModel);
     pListView->setDropIndicatorShown(true);
     pListView->setDragDropMode(QAbstractItemView::DragDrop);

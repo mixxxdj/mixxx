@@ -2,13 +2,16 @@
 
 #include <QMimeData>
 
+#include "effects/presets/effectchainpresetmanager.h"
+
 namespace {
 constexpr QChar kMimeTextDelimiter('\n');
 const QStringList kAcceptedMimeTypes = {QStringLiteral("text/plain")};
 } // anonymous namespace
 
-EffectChainPresetListModel::EffectChainPresetListModel(QObject* parent)
-        : QStringListModel(parent) {
+EffectChainPresetListModel::EffectChainPresetListModel(
+        QObject* parent, EffectChainPresetManagerPointer pPresetManager)
+        : QStringListModel(parent), m_pPresetManager(pPresetManager) {
 }
 
 QMimeData* EffectChainPresetListModel::mimeData(const QModelIndexList& indexes) const {
@@ -41,9 +44,18 @@ bool EffectChainPresetListModel::dropMimeData(
             row = stringList().size();
         }
     }
+    QStringList presetNames;
+    for (const auto& pPreset : m_pPresetManager->getPresetsSorted()) {
+        presetNames.append(pPreset->name());
+    }
+
     const QStringList mimeTextLines = data->text().split(kMimeTextDelimiter);
     QStringList chainList = stringList();
     for (const auto& line : mimeTextLines) {
+        if (!presetNames.contains(line)) {
+            continue;
+        }
+
         int oldIndex = chainList.indexOf(line);
         chainList.insert(row, line);
         // Remove duplicate
