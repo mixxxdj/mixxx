@@ -15,6 +15,8 @@ typedef double FrameDiff_t;
 
 /// FramePos defines the position of a frame in a track
 /// with respect to a fixed origin, i.e. start of the track.
+///
+/// Note that all invalid frame positions are considered equal.
 class FramePos final {
   public:
     typedef double value_t;
@@ -33,7 +35,7 @@ class FramePos final {
         return FramePos(engineSamplePos / mixxx::kEngineChannelCount);
     }
 
-    constexpr double toEngineSamplePos() const {
+    double toEngineSamplePos() const {
         return value() * mixxx::kEngineChannelCount;
     }
 
@@ -49,7 +51,10 @@ class FramePos final {
     }
 
     /// Return the underlying primitive value for this frame position.
-    constexpr value_t value() const {
+    value_t value() const {
+        VERIFY_OR_DEBUG_ASSERT(isValid()) {
+            return FramePos::kInvalidValue;
+        }
         return m_framePosition;
     }
 
@@ -135,11 +140,11 @@ inline bool operator>=(FramePos frame1, FramePos frame2) {
 }
 
 inline bool operator==(FramePos frame1, FramePos frame2) {
-    if (frame1.isValid() && frame1.isValid()) {
+    if (frame1.isValid() && frame2.isValid()) {
         return frame1.value() == frame2.value();
     }
 
-    if (!frame1.isValid() && !frame1.isValid()) {
+    if (!frame1.isValid() && !frame2.isValid()) {
         return true;
     }
 
@@ -147,11 +152,15 @@ inline bool operator==(FramePos frame1, FramePos frame2) {
 }
 
 inline bool operator!=(FramePos frame1, FramePos frame2) {
-    return !(frame1.value() == frame2.value());
+    return !(frame1 == frame2);
 }
 
 inline QDebug operator<<(QDebug dbg, FramePos arg) {
-    dbg << arg.value();
+    if (arg.isValid()) {
+        dbg.nospace() << "FramePos(" << arg.value() << ")";
+    } else {
+        dbg << "FramePos()";
+    }
     return dbg;
 }
 

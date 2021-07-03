@@ -48,7 +48,6 @@ TEST_F(FrameTest, TestFramePosEquality) {
 
     // Check that invalid positions are equal to each other
     EXPECT_EQ(mixxx::audio::FramePos(), mixxx::audio::kInvalidFramePos);
-    EXPECT_EQ(mixxx::audio::FramePos(), mixxx::audio::kInvalidFramePos / 2);
     EXPECT_EQ(mixxx::audio::FramePos(),
             mixxx::audio::FramePos(mixxx::audio::FramePos::kInvalidValue));
     EXPECT_EQ(mixxx::audio::FramePos(),
