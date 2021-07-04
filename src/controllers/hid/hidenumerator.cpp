@@ -73,6 +73,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
         auto deviceInfo = mixxx::hid::DeviceInfo(*device_info);
         // The hidraw backend of hidapi on Linux returns many duplicate hid_device_info's from hid_enumerate,
         // so filter them out.
+        // https://github.com/libusb/hidapi/issues/298
         if (enumeratedDevices.contains(deviceInfo.pathRaw())) {
             qInfo() << "Duplicate HID device, excluding" << deviceInfo;
             continue;
