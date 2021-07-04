@@ -180,7 +180,11 @@ inline bool operator!=(Bpm bpm1, Bpm bpm2) {
 }
 
 inline QDebug operator<<(QDebug dbg, Bpm arg) {
-    dbg << arg.getValue();
+    if (arg.hasValue()) {
+        dbg.nospace() << "Bpm(" << arg.getValue() << ")";
+    } else {
+        dbg << "Bpm(Invalid)";
+    }
     return dbg;
 }
 }
