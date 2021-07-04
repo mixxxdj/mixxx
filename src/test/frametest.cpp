@@ -35,3 +35,33 @@ TEST_F(FrameTest, TestFramePosFractional) {
     EXPECT_TRUE(mixxx::audio::FramePos(128.5).isFractional());
     EXPECT_TRUE(mixxx::audio::FramePos(135.67).isFractional());
 }
+
+TEST_F(FrameTest, TestFramePosEquality) {
+    EXPECT_EQ(mixxx::audio::FramePos(0), mixxx::audio::FramePos(0));
+    EXPECT_EQ(mixxx::audio::FramePos(-100), mixxx::audio::FramePos(-100));
+    EXPECT_EQ(mixxx::audio::FramePos(100), mixxx::audio::FramePos(100));
+    EXPECT_EQ(mixxx::audio::FramePos(50) * 2, mixxx::audio::FramePos(100));
+
+    EXPECT_NE(mixxx::audio::FramePos(100), mixxx::audio::FramePos(200));
+    EXPECT_NE(mixxx::audio::FramePos(100), mixxx::audio::FramePos());
+    EXPECT_NE(mixxx::audio::FramePos(0), mixxx::audio::FramePos());
+
+    // Check that invalid positions are equal to each other
+    EXPECT_EQ(mixxx::audio::FramePos(), mixxx::audio::kInvalidFramePos);
+    EXPECT_EQ(mixxx::audio::FramePos(),
+            mixxx::audio::FramePos(mixxx::audio::FramePos::kInvalidValue));
+    EXPECT_EQ(mixxx::audio::FramePos(),
+            mixxx::audio::FramePos(std::numeric_limits<
+                    mixxx::audio::FramePos::value_t>::quiet_NaN()));
+    EXPECT_EQ(mixxx::audio::FramePos(),
+            mixxx::audio::FramePos(std::numeric_limits<
+                    mixxx::audio::FramePos::value_t>::infinity()));
+    EXPECT_EQ(mixxx::audio::FramePos(),
+            mixxx::audio::FramePos(
+                    -std::numeric_limits<
+                            mixxx::audio::FramePos::value_t>::infinity()));
+    EXPECT_EQ(mixxx::audio::FramePos(std::numeric_limits<
+                      mixxx::audio::FramePos::value_t>::quiet_NaN()),
+            mixxx::audio::FramePos(std::numeric_limits<
+                    mixxx::audio::FramePos::value_t>::infinity()));
+}
