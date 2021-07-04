@@ -10,9 +10,11 @@
 #include "library/library.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
+#if QT_VERSION <= QT_VERSION_CHECK(6, 0, 0)
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"
 #include "skin/legacy/legacyskinparser.h"
+#endif
 #include "skin/qml/qmlskin.h"
 #include "util/debug.h"
 #include "util/timer.h"
@@ -21,7 +23,10 @@
 namespace mixxx {
 namespace skin {
 
+#if QT_VERSION <= QT_VERSION_CHECK(6, 0, 0)
 using legacy::LegacySkin;
+#endif
+
 using qml::QmlSkin;
 
 SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
@@ -29,7 +34,9 @@ SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
 }
 
 SkinLoader::~SkinLoader() {
+#if QT_VERSION <= QT_VERSION_CHECK(6, 0, 0)
     LegacySkinParser::clearSharedGroupStrings();
+#endif
 }
 
 QList<SkinPointer> SkinLoader::getSkins() const {
@@ -128,7 +135,10 @@ SkinPointer SkinLoader::getConfiguredSkin() const {
 }
 
 QString SkinLoader::getDefaultSkinName() const {
+#if QT_VERSION <= QT_VERSION_CHECK(6, 0, 0)
     return "LateNight";
+#endif
+    return "QMLDemo";
 }
 
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
@@ -207,17 +217,22 @@ QString SkinLoader::pickResizableSkin(const QString& oldSkin) const {
 }
 
 SkinPointer SkinLoader::skinFromDirectory(const QDir& dir) const {
-    SkinPointer pSkin = LegacySkin::fromDirectory(dir);
+    SkinPointer pSkin;
+#if QT_VERSION <= QT_VERSION_CHECK(6, 0, 0)
+    pSkin = LegacySkin::fromDirectory(dir);
     if (pSkin && pSkin->isValid()) {
         return pSkin;
     }
 
     if (m_pConfig->getValue(ConfigKey("[Config]", "experimental_qml_skin_support"), false)) {
+#endif
         pSkin = QmlSkin::fromDirectory(dir);
         if (pSkin && pSkin->isValid()) {
             return pSkin;
         }
+#if QT_VERSION <= QT_VERSION_CHECK(6, 0, 0)
     }
+#endif
 
     return nullptr;
 }
