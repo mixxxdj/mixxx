@@ -45,6 +45,9 @@ public:
         return isValidValue(m_value);
     }
     double getValue() const {
+        VERIFY_OR_DEBUG_ASSERT(hasValue()) {
+            return kValueUndefined;
+        }
         return m_value;
     }
     void setValue(double value) {
@@ -96,21 +99,25 @@ public:
     }
 
     Bpm& operator+=(double increment) {
+        DEBUG_ASSERT(hasValue());
         m_value += increment;
         return *this;
     }
 
     Bpm& operator-=(double decrement) {
+        DEBUG_ASSERT(hasValue());
         m_value -= decrement;
         return *this;
     }
 
     Bpm& operator*=(double multiple) {
+        DEBUG_ASSERT(hasValue());
         m_value *= multiple;
         return *this;
     }
 
     Bpm& operator/=(double divisor) {
+        DEBUG_ASSERT(hasValue());
         m_value /= divisor;
         return *this;
     }
