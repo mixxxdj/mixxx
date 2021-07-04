@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "util/fpclassify.h"
 #include "util/math.h"
 
 namespace mixxx {
@@ -37,7 +38,7 @@ public:
     }
 
     static bool isValidValue(double value) {
-        return kValueMin < value;
+        return util_isfinite(value) && kValueMin < value;
     }
 
     bool hasValue() const {
@@ -68,6 +69,17 @@ public:
     bool compareEq(
             const Bpm& bpm,
             Comparison cmp = Comparison::Default) const {
+        if (!hasValue() && !bpm.hasValue()) {
+            // Both values are invalid and thus equal.
+            return true;
+        }
+
+        if (hasValue() != bpm.hasValue()) {
+            // One value is valid, one is not.
+            return false;
+        }
+
+        // At this point both values are valid
         switch (cmp) {
         case Comparison::Integer:
             return Bpm::valueToInteger(getValue()) == Bpm::valueToInteger(bpm.getValue());
