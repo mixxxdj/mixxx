@@ -122,7 +122,7 @@ void EffectChainPresetManager::importPreset() {
         EffectChainPresetPointer pPreset(
                 new EffectChainPreset(doc.documentElement()));
         if (!pPreset->isEmpty() && !pPreset->name().isEmpty()) {
-            if (m_effectChainPresets.contains(pPreset->name())) {
+            while (m_effectChainPresets.contains(pPreset->name())) {
                 pPreset->setName(pPreset->name() +
                         QLatin1String(" (") + tr("duplicate") + QLatin1String(")"));
             }
