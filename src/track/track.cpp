@@ -171,7 +171,8 @@ void Track::replaceMetadataFromSource(
         // Need to set BPM after sample rate since beat grid creation depends on
         // knowing the sample rate. Bug #1020438.
         auto beatsAndBpmModified = false;
-        if (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm())) {
+        if (importedBpm.hasValue() &&
+                (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
             // Only use the imported BPM if the current beat grid is either
             // missing or not valid! The BPM value in the metadata might be
             // imprecise (normalized or rounded), e.g. ID3v2 only supports
@@ -363,7 +364,8 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
 
 double Track::getBpm() const {
     const QMutexLocker lock(&m_qMutex);
-    return getBpmWhileLocked().getValue();
+    const mixxx::Bpm bpm = getBpmWhileLocked();
+    return bpm.hasValue() ? bpm.getValue() : mixxx::Bpm::kValueUndefined;
 }
 
 bool Track::trySetBpm(double bpmValue) {
