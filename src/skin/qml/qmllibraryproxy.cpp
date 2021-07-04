@@ -3,18 +3,21 @@
 #include <QAbstractItemModel>
 
 #include "library/library.h"
+#include "skin/qml/qmllibrarytracklistmodel.h"
 
 namespace mixxx {
 namespace skin {
 namespace qml {
 
 QmlLibraryProxy::QmlLibraryProxy(Library* pLibrary, QObject* parent)
-        : QObject(parent), m_pLibrary(pLibrary) {
+        : QObject(parent),
+          m_pLibrary(pLibrary),
+          m_pModel(
+                  new QmlLibraryTrackListModel(m_pLibrary->trackTableModel())) {
 }
 
-QAbstractItemModel* QmlLibraryProxy::model() {
-    // TODO
-    return nullptr;
+QmlLibraryProxy::~QmlLibraryProxy() {
+    delete m_pModel;
 }
 
 } // namespace qml

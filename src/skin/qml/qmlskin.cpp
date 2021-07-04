@@ -12,6 +12,7 @@
 #include "skin/qml/qmleffectslotproxy.h"
 #include "skin/qml/qmleffectsmanagerproxy.h"
 #include "skin/qml/qmllibraryproxy.h"
+#include "skin/qml/qmllibrarytracklistmodel.h"
 #include "skin/qml/qmlplayermanagerproxy.h"
 #include "skin/qml/qmlplayerproxy.h"
 #include "skin/qml/qmlvisibleeffectsmodel.h"
@@ -205,6 +206,12 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
                         return pConfigProxy;
                     }));
 
+    qmlRegisterUncreatableType<QmlLibraryTrackListModel>("Mixxx",
+            0,
+            1,
+            "LibraryTrackListModel",
+            "LibraryTrackListModel objects can't be created directly, "
+            "please use Mixxx.Library.model");
     qmlRegisterSingletonType<QmlLibraryProxy>("Mixxx",
             0,
             1,
