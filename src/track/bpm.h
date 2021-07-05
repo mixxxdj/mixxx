@@ -152,22 +152,6 @@ inline Bpm operator/(Bpm bpm, double divisor) {
     return Bpm(bpm.getValue() / divisor);
 }
 
-inline bool operator<(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() < bpm2.getValue();
-}
-
-inline bool operator<=(Bpm bpm1, Bpm bpm2) {
-    return (!bpm1.hasValue() && !bpm2.hasValue()) || bpm1.getValue() <= bpm2.getValue();
-}
-
-inline bool operator>(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() > bpm2.getValue();
-}
-
-inline bool operator>=(Bpm bpm1, Bpm bpm2) {
-    return (!bpm1.hasValue() && !bpm2.hasValue()) || bpm1.getValue() >= bpm2.getValue();
-}
-
 inline bool operator==(Bpm bpm1, Bpm bpm2) {
     if (!bpm1.hasValue() && !bpm2.hasValue()) {
         return true;
@@ -177,6 +161,22 @@ inline bool operator==(Bpm bpm1, Bpm bpm2) {
 
 inline bool operator!=(Bpm bpm1, Bpm bpm2) {
     return !(bpm1 == bpm2);
+}
+
+inline bool operator<(Bpm bpm1, Bpm bpm2) {
+    return bpm1.getValue() < bpm2.getValue();
+}
+
+inline bool operator<=(Bpm bpm1, Bpm bpm2) {
+    return (bpm1 == bpm2) || bpm1 < bpm2;
+}
+
+inline bool operator>(Bpm bpm1, Bpm bpm2) {
+    return bpm2 < bpm1;
+}
+
+inline bool operator>=(Bpm bpm1, Bpm bpm2) {
+    return bpm2 <= bpm1;
 }
 
 inline QDebug operator<<(QDebug dbg, Bpm arg) {
