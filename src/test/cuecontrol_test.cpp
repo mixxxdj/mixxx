@@ -398,8 +398,8 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     CuePointer pCue = pTrack->findCueByType(mixxx::CueType::Intro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(100.0, pCue->getPosition());
-        EXPECT_DOUBLE_EQ(0.0, pCue->getLength());
+        EXPECT_DOUBLE_EQ(100.0, pCue->getPosition().toEngineSamplePos());
+        EXPECT_DOUBLE_EQ(0.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
     }
 
     // Set intro end cue
@@ -414,8 +414,8 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     pCue = pTrack->findCueByType(mixxx::CueType::Intro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(100.0, pCue->getPosition());
-        EXPECT_DOUBLE_EQ(400.0, pCue->getLength());
+        EXPECT_DOUBLE_EQ(100.0, pCue->getPosition().toEngineSamplePos());
+        EXPECT_DOUBLE_EQ(400.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
     }
 
     // Clear intro start cue
@@ -429,8 +429,8 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     pCue = pTrack->findCueByType(mixxx::CueType::Intro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(Cue::kNoPosition, pCue->getPosition());
-        EXPECT_DOUBLE_EQ(500.0, pCue->getLength());
+        EXPECT_EQ(mixxx::audio::kInvalidFramePos, pCue->getPosition());
+        EXPECT_DOUBLE_EQ(500.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
     }
 
     // Clear intro end cue
@@ -459,8 +459,8 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     CuePointer pCue = pTrack->findCueByType(mixxx::CueType::Outro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(750.0, pCue->getPosition());
-        EXPECT_DOUBLE_EQ(0.0, pCue->getLength());
+        EXPECT_DOUBLE_EQ(750.0, pCue->getPosition().toEngineSamplePos());
+        EXPECT_DOUBLE_EQ(0.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
     }
 
     // Set outro end cue
@@ -475,8 +475,8 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     pCue = pTrack->findCueByType(mixxx::CueType::Outro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(750.0, pCue->getPosition());
-        EXPECT_DOUBLE_EQ(250.0, pCue->getLength());
+        EXPECT_DOUBLE_EQ(750.0, pCue->getPosition().toEngineSamplePos());
+        EXPECT_DOUBLE_EQ(250.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
     }
 
     // Clear outro start cue
@@ -490,8 +490,8 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     pCue = pTrack->findCueByType(mixxx::CueType::Outro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(Cue::kNoPosition, pCue->getPosition());
-        EXPECT_DOUBLE_EQ(1000.0, pCue->getLength());
+        EXPECT_EQ(mixxx::audio::kInvalidFramePos, pCue->getPosition());
+        EXPECT_DOUBLE_EQ(1000.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
     }
 
     // Clear outro end cue

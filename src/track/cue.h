@@ -29,8 +29,8 @@ class Cue : public QObject {
             "Conflicting definitions of invalid and first hot cue index");
 
     struct StartAndEndPositions {
-        double startPosition;
-        double endPosition;
+        mixxx::audio::FramePos startPosition;
+        mixxx::audio::FramePos endPosition;
     };
 
     Cue() = delete;
@@ -45,8 +45,8 @@ class Cue : public QObject {
     Cue(
             DbId id,
             mixxx::CueType type,
-            double position,
-            double length,
+            mixxx::audio::FramePos position,
+            mixxx::audio::FrameDiff_t length,
             int hotCue,
             const QString& label,
             mixxx::RgbColor color);
@@ -55,8 +55,8 @@ class Cue : public QObject {
     Cue(
             mixxx::CueType type,
             int hotCueIndex,
-            double sampleStartPosition,
-            double sampleEndPosition);
+            mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition);
 
     ~Cue() override = default;
 
@@ -66,17 +66,42 @@ class Cue : public QObject {
     mixxx::CueType getType() const;
     void setType(mixxx::CueType type);
 
-    double getPosition() const;
-    void setStartPosition(
-            double samplePosition);
-    void setEndPosition(
-            double samplePosition);
+    mixxx::audio::FramePos getPosition() const;
+    void setStartPosition(mixxx::audio::FramePos position);
+    void setStartPosition(double samplePosition) {
+        mixxx::audio::FramePos position;
+        if (samplePosition != Cue::kNoPosition) {
+            position = mixxx::audio::FramePos::fromEngineSamplePos(samplePosition);
+        }
+        setStartPosition(position);
+    }
+    void setEndPosition(mixxx::audio::FramePos position);
+    void setEndPosition(double samplePosition) {
+        mixxx::audio::FramePos position;
+        if (samplePosition != Cue::kNoPosition) {
+            position = mixxx::audio::FramePos::fromEngineSamplePos(samplePosition);
+        }
+        setEndPosition(position);
+    }
+    void setStartAndEndPosition(
+            mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition);
     void setStartAndEndPosition(
             double sampleStartPosition,
-            double sampleEndPosition);
-    void shiftPositionFrames(double frameOffset);
+            double sampleEndPosition) {
+        mixxx::audio::FramePos startPosition;
+        mixxx::audio::FramePos endPosition;
+        if (sampleStartPosition != Cue::kNoPosition) {
+            startPosition = mixxx::audio::FramePos::fromEngineSamplePos(sampleStartPosition);
+        }
+        if (sampleEndPosition != Cue::kNoPosition) {
+            endPosition = mixxx::audio::FramePos::fromEngineSamplePos(sampleEndPosition);
+        }
+        setStartAndEndPosition(startPosition, endPosition);
+    }
+    void shiftPositionFrames(mixxx::audio::FrameDiff_t frameOffset);
 
-    double getLength() const;
+    mixxx::audio::FrameDiff_t getLengthFrames() const;
 
     int getHotCue() const;
 
@@ -86,7 +111,7 @@ class Cue : public QObject {
     mixxx::RgbColor getColor() const;
     void setColor(mixxx::RgbColor color);
 
-    double getEndPosition() const;
+    mixxx::audio::FramePos getEndPosition() const;
 
     StartAndEndPositions getStartAndEndPosition() const;
 
@@ -106,8 +131,8 @@ class Cue : public QObject {
     bool m_bDirty;
     DbId m_dbId;
     mixxx::CueType m_type;
-    double m_sampleStartPosition;
-    double m_sampleEndPosition;
+    mixxx::audio::FramePos m_startPosition;
+    mixxx::audio::FramePos m_endPosition;
     const int m_iHotCue;
     QString m_label;
     mixxx::RgbColor m_color;

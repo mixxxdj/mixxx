@@ -127,7 +127,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
                 continue;
             }
 
-            double cue_position = pCue->getPosition();
+            double cue_position = pCue->getPosition().toEngineSamplePosMaybeInvalid();
             // pick cues closest to new_playpos
             if ((nearest_playpos == -1) ||
                 (fabs(new_playpos - cue_position) < shortest_distance)) {

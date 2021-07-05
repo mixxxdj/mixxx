@@ -880,8 +880,8 @@ void Track::setCuePoint(CuePosition cue) {
             pLoadCue = CuePointer(new Cue(
                     mixxx::CueType::MainCue,
                     Cue::kNoHotCue,
-                    position,
-                    Cue::kNoPosition));
+                    mixxx::audio::FramePos::fromEngineSamplePos(position),
+                    mixxx::audio::kInvalidFramePos));
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
             // same thread as their host, namely this->thread().
@@ -937,8 +937,8 @@ CuePointer Track::createAndAddCue(
     CuePointer pCue(new Cue(
             type,
             hotCueIndex,
-            sampleStartPosition,
-            sampleEndPosition));
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(sampleStartPosition),
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(sampleEndPosition)));
     // While this method could be called from any thread,
     // associated Cue objects should always live on the
     // same thread as their host, namely this->thread().
@@ -1187,7 +1187,7 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
                 this,
                 &Track::slotCueUpdated);
         if (pCue->getType() == mixxx::CueType::MainCue) {
-            m_record.setCuePoint(CuePosition(pCue->getPosition()));
+            m_record.setCuePoint(CuePosition(pCue->getPosition().toEngineSamplePosMaybeInvalid()));
         }
     }
     return true;
