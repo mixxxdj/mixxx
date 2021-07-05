@@ -96,7 +96,8 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     const QCommandLineOption locale(QStringLiteral("locale"),
             QCoreApplication::translate("CmdlineArgs",
                     "Use a custom locale for loading translations. (e.g "
-                    "'fr')"));
+                    "'fr')"),
+            QStringLiteral("locale"));
     parser.addOption(locale);
 
     // An option with a value
@@ -109,6 +110,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     QCommandLineOption settingsPathDeprecated(
             QStringLiteral("settingsPath"));
     settingsPathDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    settingsPathDeprecated.setValueName(settingsPath.valueName());
     parser.addOption(settingsPath);
     parser.addOption(settingsPathDeprecated);
 
@@ -121,6 +123,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     QCommandLineOption resourcePathDeprecated(
             QStringLiteral("resourcePath"));
     resourcePathDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    resourcePathDeprecated.setValueName(resourcePath.valueName());
     parser.addOption(resourcePath);
     parser.addOption(resourcePathDeprecated);
 
@@ -131,6 +134,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     QCommandLineOption timelinePathDeprecated(
             QStringLiteral("timelinePath"), timelinePath.description());
     timelinePathDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    timelinePathDeprecated.setValueName(timelinePath.valueName());
     parser.addOption(timelinePath);
     parser.addOption(timelinePathDeprecated);
 
@@ -179,6 +183,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
             QStringLiteral("level"));
     QCommandLineOption logLevelDeprecated(QStringLiteral("logLevel"), logLevel.description());
     logLevelDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    logLevelDeprecated.setValueName(logLevel.valueName());
     parser.addOption(logLevel);
     parser.addOption(logLevelDeprecated);
 
@@ -191,6 +196,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     QCommandLineOption logFlushLevelDeprecated(
             QStringLiteral("logFlushLevel"), logLevel.description());
     logFlushLevelDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    logFlushLevelDeprecated.setValueName(logFlushLevel.valueName());
     parser.addOption(logFlushLevel);
     parser.addOption(logFlushLevelDeprecated);
 
@@ -233,7 +239,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
         return false;
     }
 
-    m_startInFullscreen = parser.isSet(fullScreen);
+    m_startInFullscreen = parser.isSet(fullScreen) || parser.isSet(fullScreenDeprecated);
 
     if (parser.isSet(locale)) {
         m_locale = parser.value(locale);
