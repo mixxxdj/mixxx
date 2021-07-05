@@ -263,13 +263,9 @@ void AutoDJCratesDAO::createAndConnectAutoDjCratesDatabase() {
     // These count as auto-DJ references, i.e. prevent the track from being
     // selected randomly.
     connect(&PlayerInfo::instance(),
-            &PlayerInfo::trackLoaded,
+            &PlayerInfo::trackChanged,
             this,
-            &AutoDJCratesDAO::slotPlayerInfoTrackLoaded);
-    connect(&PlayerInfo::instance(),
-            &PlayerInfo::trackUnloaded,
-            this,
-            &AutoDJCratesDAO::slotPlayerInfoTrackUnloaded);
+            &AutoDJCratesDAO::slotPlayerInfoTrackChanged);
 
     // Remember that the auto-DJ-crates database has been created.
     m_bAutoDjCratesDbCreated = true;
@@ -1074,8 +1070,14 @@ void AutoDJCratesDAO::slotPlaylistTrackRemoved(int playlistId,
     }
 }
 
+void AutoDJCratesDAO::slotPlayerInfoTrackChanged(
+        const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    playerInfoTrackUnloaded(group, pOldTrack);
+    playerInfoTrackLoaded(group, pNewTrack);
+}
+
 // Signaled by the PlayerInfo singleton when a track is loaded to a deck.
-void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(const QString& a_strGroup,
+void AutoDJCratesDAO::playerInfoTrackLoaded(const QString& a_strGroup,
         TrackPointer a_pTrack) {
     // This gets called with a null track during an unload.  Filter that out.
     if (a_pTrack == nullptr) {
@@ -1106,7 +1108,7 @@ void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(const QString& a_strGroup,
 }
 
 // Signaled by the PlayerInfo singleton when a track is unloaded from a deck.
-void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(const QString& group,
+void AutoDJCratesDAO::playerInfoTrackUnloaded(const QString& group,
         TrackPointer pTrack) {
     // This counts as an auto-DJ reference.  The idea is to prevent tracks that
     // are loaded into a deck from being randomly chosen.
