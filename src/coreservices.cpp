@@ -123,6 +123,12 @@ void CoreServices::initializeSettings() {
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }
 
+void CoreServices::preInitialize() {
+    ScopedTimer t("CoreServices::preInitialize");
+    initializeSettings();
+    initializeKeyboard();
+}
+
 void CoreServices::initialize(QApplication* pApp) {
     m_runtime_timer.start();
     mixxx::Time::start();

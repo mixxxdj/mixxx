@@ -37,8 +37,11 @@ class CoreServices : public QObject {
     ~CoreServices() = default;
 
     void initializeSettings();
-    // FIXME: should be private, but WMainMenuBar needs it initialized early
     void initializeKeyboard();
+
+    // The short first run that is done without start up screen
+    void preInitialize();
+    // The secondary long run which should be called after displaying the start up screen
     void initialize(QApplication* pApp);
     void shutdown();
 
