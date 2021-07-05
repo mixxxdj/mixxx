@@ -38,9 +38,10 @@ class CoreServices : public QObject {
 
     void initializeSettings();
     void initializeKeyboard();
+    void initializeLogging();
 
     // The short first run that is done without start up screen
-    void preInitialize();
+    void preInitialize(QApplication* pApp);
     // The secondary long run which should be called after displaying the start up screen
     void initialize(QApplication* pApp);
     void shutdown();

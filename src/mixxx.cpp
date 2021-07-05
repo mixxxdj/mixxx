@@ -104,7 +104,7 @@ MixxxMainWindow::MixxxMainWindow(
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON) {
     DEBUG_ASSERT(pApp);
     DEBUG_ASSERT(pCoreServices);
-    m_pCoreServices->preInitialize();
+    m_pCoreServices->preInitialize(pApp);
     // These depend on the settings
     createMenuBar();
     m_pMenuBar->hide();
