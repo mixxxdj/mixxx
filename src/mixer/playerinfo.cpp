@@ -63,12 +63,9 @@ void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& pTrack) 
         pOld = m_loadedTrackMap.value(group);
         m_loadedTrackMap.insert(group, pTrack);
     }
-    if (pOld) {
-        emit trackUnloaded(group, pOld);
-    }
-    if (pTrack) {
-        emit trackLoaded(group, pTrack);
+    emit trackChanged(group, pTrack, pOld);
 
+    if (pTrack) {
         updateCurrentPlayingDeck();
 
         int playingDeck = m_currentlyPlayingDeck;
