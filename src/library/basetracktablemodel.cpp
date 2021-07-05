@@ -109,9 +109,9 @@ BaseTrackTableModel::BaseTrackTableModel(
             this,
             &BaseTrackTableModel::slotRefreshAllRows);
     connect(&PlayerInfo::instance(),
-            &PlayerInfo::trackLoaded,
+            &PlayerInfo::trackChanged,
             this,
-            &BaseTrackTableModel::slotTrackLoaded);
+            &BaseTrackTableModel::slotTrackChanged);
 }
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
@@ -941,9 +941,11 @@ QMimeData* BaseTrackTableModel::mimeData(
     }
 }
 
-void BaseTrackTableModel::slotTrackLoaded(
+void BaseTrackTableModel::slotTrackChanged(
         const QString& group,
-        TrackPointer pTrack) {
+        TrackPointer pNewTrack,
+        TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
@@ -957,7 +959,7 @@ void BaseTrackTableModel::slotTrackLoaded(
                 emit dataChanged(topLeft, bottomRight);
             }
         }
-        m_previewDeckTrackId = doGetTrackId(pTrack);
+        m_previewDeckTrackId = doGetTrackId(pNewTrack);
     }
 }
 
