@@ -2,7 +2,9 @@
 
 #include <QString>
 
+#include "audio/frame.h"
 #include "track/beats.h"
+#include "track/bpm.h"
 #include "track/keys.h"
 #include "util/types.h"
 
@@ -68,11 +70,11 @@ class AnalyzerBeatsPlugin : public AnalyzerPlugin {
     ~AnalyzerBeatsPlugin() override = default;
 
     virtual bool supportsBeatTracking() const = 0;
-    virtual float getBpm() const {
-        return 0.0f;
+    virtual mixxx::Bpm getBpm() const {
+        return mixxx::Bpm();
     }
-    virtual QVector<double> getBeats() const {
-        return QVector<double>();
+    virtual QVector<mixxx::audio::FramePos> getBeats() const {
+        return {};
     }
 };
 

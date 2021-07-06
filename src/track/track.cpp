@@ -173,7 +173,8 @@ void Track::replaceMetadataFromSource(
         // Need to set BPM after sample rate since beat grid creation depends on
         // knowing the sample rate. Bug #1020438.
         auto beatsAndBpmModified = false;
-        if (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm())) {
+        if (importedBpm.hasValue() &&
+                (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
             // Only use the imported BPM if the current beat grid is either
             // missing or not valid! The BPM value in the metadata might be
             // imprecise (normalized or rounded), e.g. ID3v2 only supports
@@ -342,29 +343,33 @@ mixxx::Bpm Track::getBpmWhileLocked() const {
 }
 
 bool Track::trySetBpmWhileLocked(double bpmValue) {
-    if (!mixxx::Bpm::isValidValue(bpmValue)) {
+    const auto bpm = mixxx::Bpm(bpmValue);
+    if (!bpm.hasValue()) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
         return trySetBeatsWhileLocked(nullptr);
     } else if (!m_pBeats) {
         // No beat grid available -> create and initialize
         double cue = m_record.getCuePoint().getPosition();
-        auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(), bpmValue, cue);
+        auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(),
+                bpm,
+                mixxx::audio::FramePos::fromEngineSamplePos(cue));
         return trySetBeatsWhileLocked(std::move(pBeats));
     } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
-            m_pBeats->getBpm() != bpmValue) {
+            m_pBeats->getBpm() != bpm.getValue()) {
         // Continue with the regular cases
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpmValue));
+        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpm.getValue()));
     }
     return false;
 }
 
 double Track::getBpm() const {
     const QMutexLocker lock(&m_qMutex);
-    return getBpmWhileLocked().getValue();
+    const mixxx::Bpm bpm = getBpmWhileLocked();
+    return bpm.hasValue() ? bpm.getValue() : mixxx::Bpm::kValueUndefined;
 }
 
 bool Track::trySetBpm(double bpmValue) {

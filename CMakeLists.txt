@@ -1482,6 +1482,7 @@ add_executable(mixxx-test
   src/test/beatgridtest.cpp
   src/test/beatmaptest.cpp
   src/test/beatstranslatetest.cpp
+  src/test/bpmtest.cpp
   src/test/bpmcontrol_test.cpp
   src/test/broadcastprofile_test.cpp
   src/test/broadcastsettings_test.cpp
@@ -1516,6 +1517,7 @@ add_executable(mixxx-test
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
   src/test/fileinfo_test.cpp
+  src/test/frametest.cpp
   src/test/globaltrackcache_test.cpp
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
@@ -1916,6 +1918,7 @@ if(KEYFINDER)
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
+        -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
       BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}

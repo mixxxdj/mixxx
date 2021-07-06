@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "util/fpclassify.h"
 #include "util/math.h"
 
 namespace mixxx {
@@ -37,13 +38,16 @@ public:
     }
 
     static bool isValidValue(double value) {
-        return kValueMin < value;
+        return util_isfinite(value) && kValueMin < value;
     }
 
     bool hasValue() const {
         return isValidValue(m_value);
     }
     double getValue() const {
+        VERIFY_OR_DEBUG_ASSERT(hasValue()) {
+            return kValueUndefined;
+        }
         return m_value;
     }
     void setValue(double value) {
@@ -68,6 +72,17 @@ public:
     bool compareEq(
             const Bpm& bpm,
             Comparison cmp = Comparison::Default) const {
+        if (!hasValue() && !bpm.hasValue()) {
+            // Both values are invalid and thus equal.
+            return true;
+        }
+
+        if (hasValue() != bpm.hasValue()) {
+            // One value is valid, one is not.
+            return false;
+        }
+
+        // At this point both values are valid
         switch (cmp) {
         case Comparison::Integer:
             return Bpm::valueToInteger(getValue()) == Bpm::valueToInteger(bpm.getValue());
@@ -83,25 +98,95 @@ public:
         return displayValueText(m_value);
     }
 
+    Bpm& operator+=(double increment) {
+        DEBUG_ASSERT(hasValue());
+        m_value += increment;
+        return *this;
+    }
+
+    Bpm& operator-=(double decrement) {
+        DEBUG_ASSERT(hasValue());
+        m_value -= decrement;
+        return *this;
+    }
+
+    Bpm& operator*=(double multiple) {
+        DEBUG_ASSERT(hasValue());
+        m_value *= multiple;
+        return *this;
+    }
+
+    Bpm& operator/=(double divisor) {
+        DEBUG_ASSERT(hasValue());
+        m_value /= divisor;
+        return *this;
+    }
+
 private:
     double m_value;
 };
 
-inline
-bool operator==(const Bpm& lhs, const Bpm& rhs) {
-    return lhs.compareEq(rhs);
+/// Bpm can be added to a double
+inline Bpm operator+(Bpm bpm, double bpmDiff) {
+    return Bpm(bpm.getValue() + bpmDiff);
 }
 
-inline
-bool operator!=(const Bpm& lhs, const Bpm& rhs) {
-    return !(lhs == rhs);
+/// Bpm can be subtracted from a double
+inline Bpm operator-(Bpm bpm, double bpmDiff) {
+    return Bpm(bpm.getValue() - bpmDiff);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const Bpm& arg) {
-    return dbg << arg.getValue();
+/// Two Bpm values can be subtracted to get a double
+inline double operator-(Bpm bpm1, Bpm bpm2) {
+    return bpm1.getValue() - bpm2.getValue();
 }
 
+// Adding two Bpm is not allowed, because it makes no sense semantically.
+
+/// Bpm can be multiplied or divided by a double
+inline Bpm operator*(Bpm bpm, double multiple) {
+    return Bpm(bpm.getValue() * multiple);
+}
+
+inline Bpm operator/(Bpm bpm, double divisor) {
+    return Bpm(bpm.getValue() / divisor);
+}
+
+inline bool operator==(Bpm bpm1, Bpm bpm2) {
+    if (!bpm1.hasValue() && !bpm2.hasValue()) {
+        return true;
+    }
+    return bpm1.hasValue() && bpm2.hasValue() && bpm1.getValue() == bpm2.getValue();
+}
+
+inline bool operator!=(Bpm bpm1, Bpm bpm2) {
+    return !(bpm1 == bpm2);
+}
+
+inline bool operator<(Bpm bpm1, Bpm bpm2) {
+    return bpm1.getValue() < bpm2.getValue();
+}
+
+inline bool operator<=(Bpm bpm1, Bpm bpm2) {
+    return (bpm1 == bpm2) || bpm1 < bpm2;
+}
+
+inline bool operator>(Bpm bpm1, Bpm bpm2) {
+    return bpm2 < bpm1;
+}
+
+inline bool operator>=(Bpm bpm1, Bpm bpm2) {
+    return bpm2 <= bpm1;
+}
+
+inline QDebug operator<<(QDebug dbg, Bpm arg) {
+    if (arg.hasValue()) {
+        dbg.nospace() << "Bpm(" << arg.getValue() << ")";
+    } else {
+        dbg << "Bpm(Invalid)";
+    }
+    return dbg;
+}
 }
 
 Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);

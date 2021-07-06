@@ -20,15 +20,26 @@ using mixxx::track::io::Beat;
 
 namespace {
 
-constexpr int kFrameSize = 2;
 constexpr int kMinNumberOfBeats = 2; // a map needs at least two beats to have a tempo
 
-inline double samplesToFrames(const double samples) {
-    return floor(samples / kFrameSize);
+inline Beat beatFromFramePos(mixxx::audio::FramePos beatPosition) {
+    DEBUG_ASSERT(beatPosition.isValid());
+    // Because the protobuf Beat object stores integers internally, all
+    // fractional positions are lost.
+    DEBUG_ASSERT(!beatPosition.isFractional());
+    Beat beat;
+    beat.set_frame_position(static_cast<google::protobuf::int32>(beatPosition.value()));
+    return beat;
 }
 
-inline double framesToSamples(const int frames) {
-    return frames * kFrameSize;
+inline Beat beatFromEngineSamplePos(double beatPositionSamples) {
+    return beatFromFramePos(
+            mixxx::audio::FramePos::fromEngineSamplePos(beatPositionSamples)
+                    .toLowerFrameBoundary());
+}
+
+inline mixxx::audio::FrameDiff_t frameDiffFromSampleDiff(double sampleDiff) {
+    return std::floor(sampleDiff / mixxx::kEngineChannelCount);
 }
 
 bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
@@ -128,17 +139,17 @@ void scaleFourth(BeatList* pBeats) {
     }
 }
 
-double calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate sampleRate) {
-    QVector<double> beatvect;
+mixxx::Bpm calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate sampleRate) {
+    QVector<mixxx::audio::FramePos> beatvect;
     beatvect.reserve(beats.size());
     for (const auto& beat : beats) {
         if (beat.enabled()) {
-            beatvect.append(beat.frame_position());
+            beatvect.append(mixxx::audio::FramePos(beat.frame_position()));
         }
     }
 
     if (beatvect.size() < 2) {
-        return -1;
+        return mixxx::Bpm();
     }
 
     return BeatUtils::calculateBpm(beatvect, mixxx::audio::SampleRate(sampleRate));
@@ -164,12 +175,12 @@ class BeatMapIterator : public BeatIterator {
     }
 
     double next() override {
-        double beat = framesToSamples(m_currentBeat->frame_position());
+        const auto beat = mixxx::audio::FramePos(m_currentBeat->frame_position());
         ++m_currentBeat;
         while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
             ++m_currentBeat;
         }
-        return beat;
+        return beat.toEngineSamplePos();
     }
 
   private:
@@ -204,7 +215,7 @@ BeatsPointer BeatMap::makeBeatMap(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
-    double nominalBpm = 0.0;
+    auto nominalBpm = mixxx::Bpm();
     BeatList beatList;
 
     track::io::BeatMap map;
@@ -218,33 +229,39 @@ BeatsPointer BeatMap::makeBeatMap(
         qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
                  << byteArray.size();
     }
-    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
+    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm.getValue()));
 }
 
 // static
 BeatsPointer BeatMap::makeBeatMap(
         audio::SampleRate sampleRate,
         const QString& subVersion,
-        const QVector<double>& beats) {
+        const QVector<mixxx::audio::FramePos>& beats) {
     BeatList beatList;
 
-    double previous_beatpos = -1;
-    Beat beat;
+    mixxx::audio::FramePos previousBeatPos = mixxx::audio::kInvalidFramePos;
 
-    foreach (double beatpos, beats) {
-        // beatpos is in frames. Do not accept fractional frames.
-        beatpos = floor(beatpos);
-        if (beatpos <= previous_beatpos || beatpos < 0) {
-            qDebug() << "BeatMap::createFromVector: beats not in increasing order or negative";
-            qDebug() << "discarding beat " << beatpos;
-        } else {
-            beat.set_frame_position(static_cast<google::protobuf::int32>(beatpos));
-            beatList.append(beat);
-            previous_beatpos = beatpos;
+    for (const mixxx::audio::FramePos& originalBeatPos : beats) {
+        VERIFY_OR_DEBUG_ASSERT(originalBeatPos.isValid()) {
+            qWarning() << "BeatMap::makeBeatMap: Beats is invalid, discarding beat";
+            continue;
         }
+
+        // Do not accept fractional frames.
+        const auto beatPos = mixxx::audio::FramePos(std::floor(originalBeatPos.value()));
+        if (previousBeatPos.isValid() && beatPos <= previousBeatPos) {
+            qWarning() << "BeatMap::makeBeatMap: Beats not in increasing "
+                          "order, discarding beat "
+                       << beatPos;
+            continue;
+        }
+
+        Beat beat = beatFromFramePos(beatPos);
+        beatList.append(beat);
+        previousBeatPos = beatPos;
     }
-    double nominalBpm = calculateNominalBpm(beatList, sampleRate);
-    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
+    const auto nominalBpm = calculateNominalBpm(beatList, sampleRate);
+    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm.getValue()));
 }
 
 QByteArray BeatMap::toByteArray() const {
@@ -302,9 +319,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
         return -1;
     }
 
-    Beat beat;
-    // Reduce sample offset to a frame offset.
-    beat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(dSamples)));
+    Beat beat = beatFromEngineSamplePos(dSamples);
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
@@ -359,7 +374,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
             }
             if (n == 1) {
                 // Return a sample offset
-                return framesToSamples(next_beat->frame_position());
+                return mixxx::audio::FramePos(next_beat->frame_position()).toEngineSamplePos();
             }
             --n;
         }
@@ -368,7 +383,9 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
             if (previous_beat->enabled()) {
                 if (n == -1) {
                     // Return a sample offset
-                    return framesToSamples(previous_beat->frame_position());
+                    return mixxx::audio::FramePos(
+                            previous_beat->frame_position())
+                            .toEngineSamplePos();
                 }
                 ++n;
             }
@@ -392,9 +409,7 @@ bool BeatMap::findPrevNextBeats(double dSamples,
         return false;
     }
 
-    Beat beat;
-    // Reduce sample offset to a frame offset.
-    beat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(dSamples)));
+    Beat beat = beatFromEngineSamplePos(dSamples);
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
@@ -450,13 +465,16 @@ bool BeatMap::findPrevNextBeats(double dSamples,
         if (!next_beat->enabled()) {
             continue;
         }
-        *dpNextBeatSamples = framesToSamples(next_beat->frame_position());
+        *dpNextBeatSamples = mixxx::audio::FramePos(next_beat->frame_position())
+                                     .toEngineSamplePos();
         break;
     }
     if (previous_beat != m_beats.end()) {
         for (; true; --previous_beat) {
             if (previous_beat->enabled()) {
-                *dpPrevBeatSamples = framesToSamples(previous_beat->frame_position());
+                *dpPrevBeatSamples =
+                        mixxx::audio::FramePos(previous_beat->frame_position())
+                                .toEngineSamplePos();
                 break;
             }
 
@@ -476,10 +494,8 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(double startSample, double stop
         return std::unique_ptr<BeatIterator>();
     }
 
-    Beat startBeat, stopBeat;
-    startBeat.set_frame_position(
-            static_cast<google::protobuf::int32>(samplesToFrames(startSample)));
-    stopBeat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(stopSample)));
+    Beat startBeat = beatFromEngineSamplePos(startSample);
+    Beat stopBeat = beatFromEngineSamplePos(stopSample);
 
     BeatList::const_iterator curBeat =
             std::lower_bound(m_beats.constBegin(), m_beats.constEnd(),
@@ -523,24 +539,29 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     // lower bound, then iterate forward from there to the upper bound.
     // a value of -1 indicates we went off the map -- count from the beginning.
     double lowerSample = findNthBeat(curSample, -n);
+    mixxx::audio::FramePos lowerFrame;
     if (lowerSample == -1) {
-        lowerSample = framesToSamples(m_beats.first().frame_position());
+        lowerFrame = mixxx::audio::FramePos(m_beats.first().frame_position());
+    } else {
+        lowerFrame = mixxx::audio::FramePos::fromEngineSamplePos(lowerSample);
     }
 
     // If we hit the end of the beat map, recalculate the lower bound.
-    double upperSample = findNthBeat(lowerSample, n * 2);
+    const double upperSample = findNthBeat(lowerSample, n * 2);
+    mixxx::audio::FramePos upperFrame;
     if (upperSample == -1) {
-        upperSample = framesToSamples(m_beats.last().frame_position());
-        lowerSample = findNthBeat(upperSample, n * -2);
+        upperFrame = mixxx::audio::FramePos(m_beats.last().frame_position());
+        lowerSample = findNthBeat(upperFrame.toEngineSamplePos(), n * -2);
         // Super edge-case -- the track doesn't have n beats!  Do the best
         // we can.
         if (lowerSample == -1) {
-            lowerSample = framesToSamples(m_beats.first().frame_position());
+            lowerFrame = mixxx::audio::FramePos(m_beats.first().frame_position());
+        } else {
+            lowerFrame = mixxx::audio::FramePos::fromEngineSamplePos(lowerSample);
         }
+    } else {
+        upperFrame = mixxx::audio::FramePos::fromEngineSamplePos(upperSample);
     }
-
-    double lowerFrame = samplesToFrames(lowerSample);
-    double upperFrame = samplesToFrames(upperSample);
 
     VERIFY_OR_DEBUG_ASSERT(lowerFrame < upperFrame) {
         return -1;
@@ -550,7 +571,7 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
 
     int numberOfBeats = 0;
     for (const auto& beat : m_beats) {
-        double pos = beat.frame_position() + kFrameEpsilon;
+        const auto pos = mixxx::audio::FramePos(beat.frame_position() + kFrameEpsilon);
         if (pos > upperFrame) {
             break;
         }
@@ -559,7 +580,9 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
         }
     }
 
-    return BeatUtils::calculateAverageBpm(numberOfBeats, m_sampleRate, lowerFrame, upperFrame);
+    return BeatUtils::calculateAverageBpm(
+            numberOfBeats, m_sampleRate, lowerFrame, upperFrame)
+            .getValue();
 }
 
 BeatsPointer BeatMap::translate(double dNumSamples) const {
@@ -569,12 +592,15 @@ BeatsPointer BeatMap::translate(double dNumSamples) const {
     }
 
     BeatList beats = m_beats;
-    double dNumFrames = samplesToFrames(dNumSamples);
+    const mixxx::audio::FrameDiff_t offset = frameDiffFromSampleDiff(dNumSamples);
     for (BeatList::iterator it = beats.begin();
             it != beats.end();) {
-        double newpos = it->frame_position() + dNumFrames;
-        if (newpos >= 0) {
-            it->set_frame_position(static_cast<google::protobuf::int32>(newpos));
+        const auto oldPosition = mixxx::audio::FramePos(it->frame_position());
+        mixxx::audio::FramePos newPosition = oldPosition + offset;
+
+        // FIXME: Don't we allow negative positions?
+        if (newPosition >= mixxx::audio::kStartFramePos) {
+            it->set_frame_position(static_cast<google::protobuf::int32>(newPosition.value()));
             ++it;
         } else {
             it = beats.erase(it);
@@ -628,7 +654,7 @@ BeatsPointer BeatMap::scale(enum BPMScale scale) const {
         return BeatsPointer(new BeatMap(*this));
     }
 
-    double bpm = calculateNominalBpm(beats, m_sampleRate);
+    double bpm = calculateNominalBpm(beats, m_sampleRate).getValue();
     return BeatsPointer(new BeatMap(*this, beats, bpm));
 }
 

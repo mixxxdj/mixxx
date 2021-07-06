@@ -26,10 +26,13 @@ TEST(BeatGridTest, Scale) {
     int sampleRate = 44100;
     TrackPointer pTrack = newTrack(sampleRate);
 
-    double bpm = 60.0;
+    const auto bpm = 60.0;
     pTrack->trySetBpm(bpm);
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
+            QString(),
+            mixxx::Bpm(bpm),
+            mixxx::audio::kStartFramePos);
 
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
     pGrid = pGrid->scale(Beats::DOUBLE);
@@ -60,7 +63,10 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
+            QString(),
+            mixxx::Bpm(bpm),
+            mixxx::audio::kStartFramePos);
     // Pretend we're on the 20th beat;
     double position = beatLength * 20;
 
@@ -99,7 +105,10 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
+            QString(),
+            mixxx::Bpm(bpm),
+            mixxx::audio::kStartFramePos);
 
     // Pretend we're just before the 20th beat.
     const double kClosestBeat = 20 * beatLength;
@@ -140,7 +149,10 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
+            QString(),
+            mixxx::Bpm(bpm),
+            mixxx::audio::kStartFramePos);
 
     // Pretend we're just before the 20th beat.
     const double kClosestBeat = 20 * beatLength;
@@ -176,12 +188,15 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     int sampleRate = 44100;
     TrackPointer pTrack = newTrack(sampleRate);
 
-    double bpm = 60.1;
+    const auto bpm = mixxx::Bpm(60.1);
     const int kFrameSize = 2;
-    pTrack->trySetBpm(bpm);
-    double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
+    pTrack->trySetBpm(bpm.getValue());
+    double beatLength = (60.0 * sampleRate / bpm.getValue()) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
+            QString(),
+            bpm,
+            mixxx::audio::kStartFramePos);
 
     // Pretend we're half way between the 20th and 21st beat
     double previousBeat = beatLength * 20.0;
@@ -214,12 +229,12 @@ TEST(BeatGridTest, FromMetadata) {
     int sampleRate = 44100;
     TrackPointer pTrack = newTrack(sampleRate);
 
-    double bpm = 60.1;
-    ASSERT_TRUE(pTrack->trySetBpm(bpm));
-    EXPECT_DOUBLE_EQ(pTrack->getBpm(), bpm);
+    const auto bpm = mixxx::Bpm(60.1);
+    ASSERT_TRUE(pTrack->trySetBpm(bpm.getValue()));
+    EXPECT_DOUBLE_EQ(pTrack->getBpm(), bpm.getValue());
 
     auto pBeats = pTrack->getBeats();
-    EXPECT_DOUBLE_EQ(pBeats->getBpm(), bpm);
+    EXPECT_DOUBLE_EQ(pBeats->getBpm(), bpm.getValue());
 
     // Invalid bpm resets the bpm
     ASSERT_TRUE(pTrack->trySetBpm(-60.1));
