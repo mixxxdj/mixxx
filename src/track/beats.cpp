@@ -5,11 +5,12 @@ namespace mixxx {
 int Beats::numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const {
     audio::FramePos lastPosition = audio::kStartFramePos;
     int i = 1;
-    for (; lastPosition < endPosition; i++) {
+    while (lastPosition < endPosition) {
         lastPosition = findNthBeat(startPosition, i);
         if (!lastPosition.isValid()) {
             break;
         }
+        i++;
     }
     return i - 2;
 };
