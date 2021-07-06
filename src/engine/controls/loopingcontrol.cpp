@@ -542,7 +542,7 @@ void LoopingControl::setBeatLoop(double startPositionSamples, bool enabled) {
     // TODO(XXX): This is not realtime safe. See this Zulip discussion for details:
     // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/getting.20locks.20out.20of.20Beats
     const auto startPosition = mixxx::audio::FramePos::fromEngineSamplePos(startPositionSamples);
-    const auto endPosition = pBeats->findNBeatsFromSample(startPosition, beatloopSize);
+    const auto endPosition = pBeats->findNBeatsFromPosition(startPosition, beatloopSize);
 
     if (startPosition.isValid() && endPosition.isValid()) {
         setLoop(startPositionSamples, endPosition.toEngineSamplePos(), enabled);
@@ -1109,7 +1109,7 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
 
     // Calculate where the loop out point would be if it is a beatloop
     const auto loopStartPosition = mixxx::audio::FramePos::fromEngineSamplePos(loopSamples.start);
-    const auto loopEndPosition = pBeats->findNBeatsFromSample(
+    const auto loopEndPosition = pBeats->findNBeatsFromPosition(
             loopStartPosition, m_pCOBeatLoopSize->get());
     const double beatLoopOutPoint = loopEndPosition.isValid()
             ? loopEndPosition.toEngineSamplePos()
@@ -1127,7 +1127,7 @@ double LoopingControl::findBeatloopSizeForLoop(double start, double end) const {
 
     const auto loopStartPosition = mixxx::audio::FramePos::fromEngineSamplePos(start);
     for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
-        const auto loopEndPosition = pBeats->findNBeatsFromSample(
+        const auto loopEndPosition = pBeats->findNBeatsFromPosition(
                 loopStartPosition, s_dBeatSizes[i]);
         if (loopEndPosition.isValid()) {
             const double beatLoopOutPoint = loopEndPosition.toEngineSamplePos();
@@ -1271,7 +1271,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 
     const auto newLoopStartPosition =
             mixxx::audio::FramePos::fromEngineSamplePos(newloopSamples.start);
-    const auto newLoopEndPosition = pBeats->findNBeatsFromSample(newLoopStartPosition, beats);
+    const auto newLoopEndPosition = pBeats->findNBeatsFromPosition(newLoopStartPosition, beats);
     newloopSamples.end = newLoopEndPosition.isValid() ? newLoopEndPosition.toEngineSamplePos() : -1;
 
     if (newloopSamples.start >= newloopSamples.end // happens when the call above fails
@@ -1282,7 +1282,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         // a smaller size, but not get larger.
         double previousBeatloopSize = m_pCOBeatLoopSize->get();
         const mixxx::audio::FramePos previousLoopEndPosition =
-                pBeats->findNBeatsFromSample(
+                pBeats->findNBeatsFromPosition(
                         newLoopStartPosition, previousBeatloopSize);
         double previousBeatloopOutPoint = previousLoopEndPosition.isValid()
                 ? previousLoopEndPosition.toEngineSamplePos()
@@ -1391,7 +1391,7 @@ void LoopingControl::slotBeatJump(double beats) {
     } else {
         // seekExact bypasses Quantize, because a beat jump is implicit quantized
         const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(currentSample);
-        const auto seekPosition = pBeats->findNBeatsFromSample(currentPosition, beats);
+        const auto seekPosition = pBeats->findNBeatsFromPosition(currentPosition, beats);
         if (seekPosition.isValid()) {
             seekExact(seekPosition.toEngineSamplePos());
         }
@@ -1425,10 +1425,10 @@ void LoopingControl::slotLoopMove(double beats) {
         const auto loopStartPosition =
                 mixxx::audio::FramePos::fromEngineSamplePos(loopSamples.start);
         const auto loopEndPosition = mixxx::audio::FramePos::fromEngineSamplePos(loopSamples.end);
-        const auto newLoopStartPosition = pBeats->findNBeatsFromSample(loopStartPosition, beats);
+        const auto newLoopStartPosition = pBeats->findNBeatsFromPosition(loopStartPosition, beats);
         const auto newLoopEndPosition = currentLoopMatchesBeatloopSize()
-                ? pBeats->findNBeatsFromSample(newLoopStartPosition, m_pCOBeatLoopSize->get())
-                : pBeats->findNBeatsFromSample(loopEndPosition, beats);
+                ? pBeats->findNBeatsFromPosition(newLoopStartPosition, m_pCOBeatLoopSize->get())
+                : pBeats->findNBeatsFromPosition(loopEndPosition, beats);
         double new_loop_in = newLoopStartPosition.isValid()
                 ? newLoopStartPosition.toEngineSamplePos()
                 : kNoTrigger;

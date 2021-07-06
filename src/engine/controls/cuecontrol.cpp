@@ -771,7 +771,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
                 const auto cueStartPositionFrames =
                         mixxx::audio::FramePos::fromEngineSamplePos(
                                 cueStartPosition);
-                cueEndPositionFrames = pBeats->findNBeatsFromSample(
+                cueEndPositionFrames = pBeats->findNBeatsFromPosition(
                         cueStartPositionFrames, beatloopSize);
             }
             cueEndPosition = cueEndPositionFrames.isValid()

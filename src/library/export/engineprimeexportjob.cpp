@@ -197,7 +197,7 @@ void exportMetadata(djinterop::database* pDatabase,
         const auto cueBeatPlayPos = beats->findClosestBeat(
                 mixxx::audio::FramePos::fromEngineSamplePos(cuePlayPos));
         int numBeatsToCue = beats->numBeatsInRange(firstBeatPlayPos, cueBeatPlayPos);
-        const auto firstBarAlignedBeatPlayPos = beats->findNBeatsFromSample(
+        const auto firstBarAlignedBeatPlayPos = beats->findNBeatsFromPosition(
                 cueBeatPlayPos, numBeatsToCue & ~0x3);
 
         // We will treat the first bar-aligned beat as beat zero.  Find the

@@ -14,7 +14,7 @@ int Beats::numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPos
     return i - 2;
 };
 
-audio::FramePos Beats::findNBeatsFromSample(audio::FramePos position, double beats) const {
+audio::FramePos Beats::findNBeatsFromPosition(audio::FramePos position, double beats) const {
     audio::FramePos prevBeatPosition;
     audio::FramePos nextBeatPosition;
 

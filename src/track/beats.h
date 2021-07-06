@@ -115,7 +115,7 @@ class Beats {
 
     /// Find the frame position N beats away from `position`. The number of beats may be
     /// negative and does not need to be an integer.
-    audio::FramePos findNBeatsFromSample(audio::FramePos position, double beats) const;
+    audio::FramePos findNBeatsFromPosition(audio::FramePos position, double beats) const;
 
     /// Reutns an iterator that yields frame position of every beat occurring
     /// between `startPosition` and `endPosition`. `BeatIterator` must be iterated
