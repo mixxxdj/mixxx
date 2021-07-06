@@ -11,6 +11,7 @@
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
+#include "track/bpm.h"
 #include "track/track_decl.h"
 #include "util/rotary.h"
 #include "util/types.h"
@@ -97,10 +98,10 @@ class EngineBuffer : public EngineObject {
     double getSpeed() const;
     bool getScratching() const;
     bool isReverse() const;
-    // Returns current bpm value (not thread-safe)
-    double getBpm() const;
-    // Returns the BPM of the loaded track around the current position (not thread-safe)
-    double getLocalBpm() const;
+    /// Returns current bpm value (not thread-safe)
+    mixxx::Bpm getBpm() const;
+    /// Returns the BPM of the loaded track around the current position (not thread-safe)
+    mixxx::Bpm getLocalBpm() const;
     /// Sets a beatloop for the loaded track (not thread safe)
     void setBeatLoop(double startPosition, bool enabled);
     /// Sets a loop for the loaded track (not thread safe)

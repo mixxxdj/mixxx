@@ -162,8 +162,8 @@ BpmControl::~BpmControl() {
     delete m_pAdjustBeatsSlower;
 }
 
-double BpmControl::getBpm() const {
-    return m_pEngineBpm->get();
+mixxx::Bpm BpmControl::getBpm() const {
+    return mixxx::Bpm(m_pEngineBpm->get());
 }
 
 void BpmControl::adjustBeatsBpm(double deltaBpm) {
@@ -311,14 +311,14 @@ bool BpmControl::syncTempo() {
         return false;
     }
 
-    double fThisBpm = m_pEngineBpm->get();
-    double fThisLocalBpm = m_pLocalBpm->get();
+    const auto thisBpm = getBpm();
+    const auto thisLocalBpm = getLocalBpm();
 
-    double fOtherBpm = pOtherEngineBuffer->getBpm();
-    double fOtherLocalBpm = pOtherEngineBuffer->getLocalBpm();
+    const auto otherBpm = pOtherEngineBuffer->getBpm();
+    const auto otherLocalBpm = pOtherEngineBuffer->getLocalBpm();
 
-    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisLocalBpm;
-    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherLocalBpm;
+    //qDebug() << "this" << "bpm" << thisBpm << "filebpm" << thisLocalBpm;
+    //qDebug() << "other" << "bpm" << otherBpm << "filebpm" << otherLocalBpm;
 
     ////////////////////////////////////////////////////////////////////////////
     // Rough proof of how syncing works -- rryan 3/2011
@@ -346,21 +346,21 @@ bool BpmControl::syncTempo() {
     //
     // thisRateScale = ((otherFileBpm * (1.0 + otherRate)) / thisFileBpm - 1.0) / (thisRateDir * thisRateRange)
 
-    if (fOtherBpm > 0.0 && fThisBpm > 0.0) {
+    if (otherBpm.isValid() && thisBpm.isValid() && thisLocalBpm.isValid()) {
         // The desired rate is the other decks effective rate divided by this
         // deck's file BPM. This gives us the playback rate that will produce an
         // effective BPM equivalent to the other decks.
-        double desiredRate = fOtherBpm / fThisLocalBpm;
+        double desiredRate = otherBpm / thisLocalBpm;
 
         // Test if this buffer's bpm is the double of the other one, and adjust
         // the rate scale. I believe this is intended to account for our BPM
         // algorithm sometimes finding double or half BPMs. This avoids drastic
         // scales.
 
-        double fFileBpmDelta = fabs(fThisLocalBpm - fOtherLocalBpm);
-        if (fabs(fThisLocalBpm * 2.0 - fOtherLocalBpm) < fFileBpmDelta) {
+        const double fileBpmDelta = fabs(thisLocalBpm - otherLocalBpm);
+        if (fabs(thisLocalBpm * 2.0 - otherLocalBpm) < fileBpmDelta) {
             desiredRate /= 2.0;
-        } else if (fabs(fThisLocalBpm - 2.0 * fOtherLocalBpm) < fFileBpmDelta) {
+        } else if (fabs(thisLocalBpm - otherLocalBpm * 2.0) < fileBpmDelta) {
             desiredRate *= 2.0;
         }
 
