@@ -265,11 +265,13 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         }
 
         if (pLoopCue) {
-            double loopStart = pLoopCue->getPosition().toEngineSamplePosMaybeInvalid();
-            double loopEnd = loopStart + (pLoopCue->getLengthFrames() * mixxx::kEngineChannelCount);
-            if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
-                m_pLoopInPoint->set(loopStart);
-                m_pLoopOutPoint->set(loopEnd);
+            const mixxx::audio::FramePos loopStart = pLoopCue->getPosition();
+            if (loopStart.isValid()) {
+                const mixxx::audio::FramePos loopEnd = loopStart + pLoopCue->getLengthFrames();
+                if (loopEnd.isValid() && loopStart <= loopEnd) {
+                    m_pLoopInPoint->set(loopStart.toEngineSamplePos());
+                    m_pLoopOutPoint->set(loopEnd.toEngineSamplePos());
+                }
             }
         }
     } else {
@@ -294,9 +296,13 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
 
     // Save the loops that are currently set in a loop cue. If no loop cue is
     // currently on the track, then create a new one.
-    double loopStart = m_pLoopInPoint->get();
-    double loopEnd = m_pLoopOutPoint->get();
-    if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
+    const auto loopStart =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_pLoopInPoint->get());
+    const auto loopEnd =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_pLoopOutPoint->get());
+    if (loopStart.isValid() && loopEnd.isValid() && loopStart <= loopEnd) {
         CuePointer pLoopCue;
         QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
         QListIterator<CuePointer> it(cuePoints);
