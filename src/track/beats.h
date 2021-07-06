@@ -98,6 +98,12 @@ class Beats {
             audio::FramePos* nextBeatPosition,
             bool snapToNearBeats) const = 0;
 
+    /// Return the frame position of the first beat in the track, or an invalid
+    /// position if none exists.
+    audio::FramePos firstBeat() const {
+        return findNextBeat(mixxx::audio::kStartFramePos);
+    }
+
     /// Starting from frame position `position`, return the frame position of
     /// the closest beat in the track, or an invalid positon if none exists.
     virtual audio::FramePos findClosestBeat(audio::FramePos position) const = 0;

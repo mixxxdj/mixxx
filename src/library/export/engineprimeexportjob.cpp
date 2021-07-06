@@ -193,7 +193,7 @@ void exportMetadata(djinterop::database* pDatabase,
         // starts at the beginning of a bar, then move backwards towards the
         // beginning of the track in 4-beat decrements to find the first beat
         // in the track that also aligns with the start of a bar.
-        const auto firstBeatPlayPos = beats->findNextBeat(mixxx::audio::kStartFramePos);
+        const auto firstBeatPlayPos = beats->firstBeat();
         const auto cueBeatPlayPos = beats->findClosestBeat(
                 mixxx::audio::FramePos::fromEngineSamplePos(cuePlayPos));
         int numBeatsToCue = beats->numBeatsInRange(firstBeatPlayPos, cueBeatPlayPos);
