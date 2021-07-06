@@ -76,17 +76,17 @@ BeatsPointer BeatGrid::makeBeatGrid(
         mixxx::Bpm bpm,
         mixxx::audio::FramePos firstBeatPos) {
     // FIXME: Should this be a debug assertion?
-    if (!bpm.hasValue()) {
+    if (!bpm.isValid()) {
         return nullptr;
     }
 
     mixxx::track::io::BeatGrid grid;
 
-    grid.mutable_bpm()->set_bpm(bpm.getValue());
+    grid.mutable_bpm()->set_bpm(bpm.value());
     grid.mutable_first_beat()->set_frame_position(
             static_cast<google::protobuf::int32>(firstBeatPos.value()));
     // Calculate beat length as sample offsets
-    double beatLength = (60.0 * sampleRate / bpm.getValue()) * kFrameSize;
+    double beatLength = (60.0 * sampleRate / bpm.value()) * kFrameSize;
 
     return BeatsPointer(new BeatGrid(sampleRate, subVersion, grid, beatLength));
 }
@@ -123,8 +123,8 @@ double BeatGrid::firstBeatSample() const {
     return m_grid.first_beat().frame_position() * kFrameSize;
 }
 
-double BeatGrid::bpm() const {
-    return m_grid.bpm().bpm();
+mixxx::Bpm BeatGrid::bpm() const {
+    return mixxx::Bpm(m_grid.bpm().bpm());
 }
 
 QString BeatGrid::getVersion() const {
@@ -137,7 +137,7 @@ QString BeatGrid::getSubVersion() const {
 
 // internal use only
 bool BeatGrid::isValid() const {
-    return m_sampleRate.isValid() && bpm() > 0;
+    return m_sampleRate.isValid() && bpm().isValid();
 }
 
 // This could be implemented in the Beats Class itself.
@@ -275,20 +275,20 @@ bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
     return false;
 }
 
-double BeatGrid::getBpm() const {
+mixxx::Bpm BeatGrid::getBpm() const {
     if (!isValid()) {
-        return mixxx::Bpm::kValueUndefined;
+        return {};
     }
     return bpm();
 }
 
 // Note: Also called from the engine thread
-double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
+mixxx::Bpm BeatGrid::getBpmAroundPosition(double curSample, int n) const {
     Q_UNUSED(curSample);
     Q_UNUSED(n);
 
     if (!isValid()) {
-        return -1;
+        return {};
     }
     return bpm();
 }
@@ -333,24 +333,23 @@ BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
         return BeatsPointer(new BeatGrid(*this));
     }
 
-    // TODO: Check if we can remove getMaxBpm and replace it with Bpm::hasValue instead
-    if (bpm.getValue() > getMaxBpm()) {
+    if (!bpm.isValid()) {
         return BeatsPointer(new BeatGrid(*this));
     }
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
-    grid.mutable_bpm()->set_bpm(bpm.getValue());
-    double beatLength = (60.0 * m_sampleRate / bpm.getValue()) * kFrameSize;
+    grid.mutable_bpm()->set_bpm(bpm.value());
+    double beatLength = (60.0 * m_sampleRate / bpm.value()) * kFrameSize;
     return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 
-BeatsPointer BeatGrid::setBpm(double dBpm) {
-    if (dBpm > getMaxBpm()) {
-        dBpm = getMaxBpm();
+BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
+        return nullptr;
     }
     mixxx::track::io::BeatGrid grid = m_grid;
-    grid.mutable_bpm()->set_bpm(dBpm);
-    double beatLength = (60.0 * m_sampleRate / dBpm) * kFrameSize;
+    grid.mutable_bpm()->set_bpm(bpm.value());
+    double beatLength = (60.0 * m_sampleRate / bpm.value()) * kFrameSize;
     return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 

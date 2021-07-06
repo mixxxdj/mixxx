@@ -509,12 +509,12 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
             currentBeatPositionFrames + beatgridFrameOffset;
     const double positionSecs = signalInfo.frames2secsFractional(
             currentBeatPositionFramesWithOffset);
-    const double bpm = pBeats->getBpmAroundPosition(
+    const mixxx::Bpm bpm = pBeats->getBpmAroundPosition(
             signalInfo.getChannelCount() * currentBeatPositionFramesWithOffset,
             1);
 
     setTerminalMarker(std::make_shared<SeratoBeatGridTerminalMarker>(
-            positionSecs - timingOffsetSecs, bpm));
+            positionSecs - timingOffsetSecs, static_cast<float>(bpm.value())));
     setNonTerminalMarkers(nonTerminalMarkers);
 }
 

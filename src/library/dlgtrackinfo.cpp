@@ -464,7 +464,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     m_pBeatsClone = track.getBeats();
     if (m_pBeatsClone) {
-        spinBpm->setValue(m_pBeatsClone->getBpm());
+        spinBpm->setValue(m_pBeatsClone->getBpm().value());
     } else {
         spinBpm->setValue(0.0);
     }
@@ -625,43 +625,43 @@ void DlgTrackInfo::clear() {
 void DlgTrackInfo::slotBpmDouble() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::DOUBLE);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmHalve() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::HALVE);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::TWOTHIRDS);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::THREEFOURTHS);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmFourThirds() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::FOURTHIRDS);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmThreeHalves() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::THREEHALVES);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmClear() {
@@ -712,13 +712,13 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
             averageBpm + kBpmTabRounding);
     if (averageBpm != m_lastTapedBpm) {
         m_lastTapedBpm = averageBpm;
-        spinBpm->setValue(averageBpm.getValue());
+        spinBpm->setValue(averageBpm.value());
     }
 }
 
 void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     const auto bpm = mixxx::Bpm(value);
-    if (!bpm.hasValue()) {
+    if (!bpm.isValid()) {
         m_pBeatsClone.clear();
         return;
     }
@@ -731,18 +731,18 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
                 mixxx::audio::FramePos::fromEngineSamplePos(cue.getPosition()));
     }
 
-    double oldValue = m_pBeatsClone->getBpm();
-    if (oldValue == bpm.getValue()) {
+    const mixxx::Bpm oldValue = m_pBeatsClone->getBpm();
+    if (oldValue == bpm) {
         return;
     }
 
     if (m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) {
-        m_pBeatsClone = m_pBeatsClone->setBpm(bpm.getValue());
+        m_pBeatsClone = m_pBeatsClone->setBpm(bpm);
     }
 
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 mixxx::UpdateResult DlgTrackInfo::updateKeyText() {

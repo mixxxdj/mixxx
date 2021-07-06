@@ -149,7 +149,7 @@ mixxx::Bpm calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate s
     }
 
     if (beatvect.size() < 2) {
-        return mixxx::Bpm();
+        return {};
     }
 
     return BeatUtils::calculateBpm(beatvect, mixxx::audio::SampleRate(sampleRate));
@@ -192,14 +192,14 @@ BeatMap::BeatMap(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         BeatList beats,
-        double nominalBpm)
+        mixxx::Bpm nominalBpm)
         : m_subVersion(subVersion),
           m_sampleRate(sampleRate),
           m_nominalBpm(nominalBpm),
           m_beats(std::move(beats)) {
 }
 
-BeatMap::BeatMap(const BeatMap& other, BeatList beats, double nominalBpm)
+BeatMap::BeatMap(const BeatMap& other, BeatList beats, mixxx::Bpm nominalBpm)
         : m_subVersion(other.m_subVersion),
           m_sampleRate(other.m_sampleRate),
           m_nominalBpm(nominalBpm),
@@ -229,7 +229,7 @@ BeatsPointer BeatMap::makeBeatMap(
         qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
                  << byteArray.size();
     }
-    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm.getValue()));
+    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
 }
 
 // static
@@ -261,7 +261,7 @@ BeatsPointer BeatMap::makeBeatMap(
         previousBeatPos = beatPos;
     }
     const auto nominalBpm = calculateNominalBpm(beatList, sampleRate);
-    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm.getValue()));
+    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
 }
 
 QByteArray BeatMap::toByteArray() const {
@@ -522,17 +522,17 @@ bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {
     return false;
 }
 
-double BeatMap::getBpm() const {
+mixxx::Bpm BeatMap::getBpm() const {
     if (!isValid()) {
-        return mixxx::Bpm::kValueUndefined;
+        return {};
     }
     return m_nominalBpm;
 }
 
 // Note: Also called from the engine thread
-double BeatMap::getBpmAroundPosition(double curSample, int n) const {
+mixxx::Bpm BeatMap::getBpmAroundPosition(double curSample, int n) const {
     if (!isValid()) {
-        return -1;
+        return {};
     }
 
     // To make sure we are always counting n beats, iterate backward to the
@@ -564,7 +564,7 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     }
 
     VERIFY_OR_DEBUG_ASSERT(lowerFrame < upperFrame) {
-        return -1;
+        return {};
     }
 
     const int kFrameEpsilon = m_sampleRate / 20;
@@ -581,8 +581,7 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     }
 
     return BeatUtils::calculateAverageBpm(
-            numberOfBeats, m_sampleRate, lowerFrame, upperFrame)
-            .getValue();
+            numberOfBeats, m_sampleRate, lowerFrame, upperFrame);
 }
 
 BeatsPointer BeatMap::translate(double dNumSamples) const {
@@ -654,12 +653,12 @@ BeatsPointer BeatMap::scale(enum BPMScale scale) const {
         return BeatsPointer(new BeatMap(*this));
     }
 
-    double bpm = calculateNominalBpm(beats, m_sampleRate).getValue();
+    mixxx::Bpm bpm = calculateNominalBpm(beats, m_sampleRate);
     return BeatsPointer(new BeatMap(*this, beats, bpm));
 }
 
-BeatsPointer BeatMap::setBpm(double dBpm) {
-    Q_UNUSED(dBpm);
+BeatsPointer BeatMap::setBpm(mixxx::Bpm bpm) {
+    Q_UNUSED(bpm);
     DEBUG_ASSERT(!"BeatMap::setBpm() not implemented");
     return BeatsPointer(new BeatMap(*this));
 

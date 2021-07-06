@@ -49,7 +49,7 @@ class BpmControl : public EngineControl {
     void setTargetBeatDistance(double beatDistance);
     void updateInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
-    double updateLocalBpm();
+    mixxx::Bpm updateLocalBpm();
     /// updateBeatDistance is adjusted to include the user offset so
     /// it's transparent to other decks.
     double updateBeatDistance();

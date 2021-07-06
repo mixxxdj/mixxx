@@ -71,8 +71,11 @@ inline TagLib::String uuidToTString(
 
 inline QString formatBpm(
         const TrackMetadata& trackMetadata) {
-    return Bpm::valueToString(
-            trackMetadata.getTrackInfo().getBpm().getValue());
+    const Bpm bpm = trackMetadata.getTrackInfo().getBpm();
+    if (!bpm.isValid()) {
+        return {};
+    }
+    return Bpm::valueToString(bpm.value());
 }
 
 bool parseBpm(

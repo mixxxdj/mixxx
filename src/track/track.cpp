@@ -173,13 +173,12 @@ void Track::replaceMetadataFromSource(
         // Need to set BPM after sample rate since beat grid creation depends on
         // knowing the sample rate. Bug #1020438.
         auto beatsAndBpmModified = false;
-        if (importedBpm.hasValue() &&
-                (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
+        if (importedBpm.isValid() && (!m_pBeats || !m_pBeats->getBpm().isValid())) {
             // Only use the imported BPM if the current beat grid is either
             // missing or not valid! The BPM value in the metadata might be
             // imprecise (normalized or rounded), e.g. ID3v2 only supports
             // integer values.
-            beatsAndBpmModified = trySetBpmWhileLocked(importedBpm.getValue());
+            beatsAndBpmModified = trySetBpmWhileLocked(importedBpm.value());
         }
         modified |= beatsAndBpmModified;
 
@@ -293,7 +292,7 @@ bool Track::replaceRecord(
     } else {
         // Setting the bpm manually may in turn update the beat grid
         bpmUpdatedFlag = trySetBpmWhileLocked(
-                newRecord.getMetadata().getTrackInfo().getBpm().getValue());
+                newRecord.getMetadata().getTrackInfo().getBpm().value());
     }
     // The bpm in m_record has already been updated. Read it and copy it into
     // the new record to ensure it will be consistent with the new beat grid.
@@ -344,7 +343,7 @@ mixxx::Bpm Track::getBpmWhileLocked() const {
 
 bool Track::trySetBpmWhileLocked(double bpmValue) {
     const auto bpm = mixxx::Bpm(bpmValue);
-    if (!bpm.hasValue()) {
+    if (!bpm.isValid()) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
         return trySetBeatsWhileLocked(nullptr);
@@ -356,12 +355,12 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
                 mixxx::audio::FramePos::fromEngineSamplePos(cue));
         return trySetBeatsWhileLocked(std::move(pBeats));
     } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
-            m_pBeats->getBpm() != bpm.getValue()) {
+            m_pBeats->getBpm() != bpm) {
         // Continue with the regular cases
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpm.getValue()));
+        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpm));
     }
     return false;
 }
@@ -369,7 +368,7 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
 double Track::getBpm() const {
     const QMutexLocker lock(&m_qMutex);
     const mixxx::Bpm bpm = getBpmWhileLocked();
-    return bpm.hasValue() ? bpm.getValue() : mixxx::Bpm::kValueUndefined;
+    return bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined;
 }
 
 bool Track::trySetBpm(double bpmValue) {
