@@ -345,10 +345,15 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
         return trySetBeatsWhileLocked(nullptr);
     } else if (!m_pBeats) {
         // No beat grid available -> create and initialize
-        double cue = m_record.getCuePoint().getPosition();
+        mixxx::audio::FramePos cuePosition =
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        m_record.getCuePoint().getPosition());
+        if (!cuePosition.isValid()) {
+            cuePosition = mixxx::audio::kStartFramePos;
+        }
         auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(),
                 bpm,
-                mixxx::audio::FramePos::fromEngineSamplePos(cue));
+                cuePosition);
         return trySetBeatsWhileLocked(std::move(pBeats));
     } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
             m_pBeats->getBpm() != bpm) {
@@ -862,25 +867,25 @@ void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
     emit waveformSummaryUpdated();
 }
 
-void Track::setCuePoint(CuePosition cue) {
+void Track::setMainCuePosition(mixxx::audio::FramePos position) {
     QMutexLocker lock(&m_qMutex);
 
-    if (!compareAndSet(m_record.ptrCuePoint(), cue)) {
+    const auto positionLegacy = CuePosition(position.toEngineSamplePosMaybeInvalid());
+    if (!compareAndSet(m_record.ptrCuePoint(), positionLegacy)) {
         // Nothing changed.
         return;
     }
 
     // Store the cue point as main cue
     CuePointer pLoadCue = findCueByType(mixxx::CueType::MainCue);
-    double position = cue.getPosition();
-    if (position != -1.0) {
+    if (position.isValid()) {
         if (pLoadCue) {
             pLoadCue->setStartPosition(position);
         } else {
             pLoadCue = CuePointer(new Cue(
                     mixxx::CueType::MainCue,
                     Cue::kNoHotCue,
-                    mixxx::audio::FramePos::fromEngineSamplePos(position),
+                    position,
                     mixxx::audio::kInvalidFramePos));
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
@@ -919,9 +924,10 @@ void Track::analysisFinished() {
     emit analyzed();
 }
 
-CuePosition Track::getCuePoint() const {
+mixxx::audio::FramePos Track::getMainCuePosition() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getCuePoint();
+    return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+            m_record.getCuePoint().getPosition());
 }
 
 void Track::slotCueUpdated() {
@@ -932,13 +938,13 @@ void Track::slotCueUpdated() {
 CuePointer Track::createAndAddCue(
         mixxx::CueType type,
         int hotCueIndex,
-        double sampleStartPosition,
-        double sampleEndPosition) {
+        mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition) {
     CuePointer pCue(new Cue(
             type,
             hotCueIndex,
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(sampleStartPosition),
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(sampleEndPosition)));
+            startPosition,
+            endPosition));
     // While this method could be called from any thread,
     // associated Cue objects should always live on the
     // same thread as their host, namely this->thread().
@@ -1187,7 +1193,9 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
                 this,
                 &Track::slotCueUpdated);
         if (pCue->getType() == mixxx::CueType::MainCue) {
-            m_record.setCuePoint(CuePosition(pCue->getPosition().toEngineSamplePosMaybeInvalid()));
+            const auto positionLegacy = CuePosition(
+                    pCue->getPosition().toEngineSamplePosMaybeInvalid());
+            m_record.setCuePoint(positionLegacy);
         }
     }
     return true;
