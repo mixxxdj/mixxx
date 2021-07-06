@@ -345,9 +345,7 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
         return trySetBeatsWhileLocked(nullptr);
     } else if (!m_pBeats) {
         // No beat grid available -> create and initialize
-        mixxx::audio::FramePos cuePosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_record.getCuePoint().getPosition());
+        mixxx::audio::FramePos cuePosition = m_record.getMainCuePosition();
         if (!cuePosition.isValid()) {
             cuePosition = mixxx::audio::kStartFramePos;
         }
@@ -870,8 +868,7 @@ void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
 void Track::setMainCuePosition(mixxx::audio::FramePos position) {
     QMutexLocker lock(&m_qMutex);
 
-    const auto positionLegacy = CuePosition(position.toEngineSamplePosMaybeInvalid());
-    if (!compareAndSet(m_record.ptrCuePoint(), positionLegacy)) {
+    if (!compareAndSet(m_record.ptrMainCuePosition(), position)) {
         // Nothing changed.
         return;
     }
@@ -926,8 +923,7 @@ void Track::analysisFinished() {
 
 mixxx::audio::FramePos Track::getMainCuePosition() const {
     QMutexLocker lock(&m_qMutex);
-    return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-            m_record.getCuePoint().getPosition());
+    return m_record.getMainCuePosition();
 }
 
 void Track::slotCueUpdated() {
@@ -994,7 +990,7 @@ void Track::removeCue(const CuePointer& pCue) {
     disconnect(pCue.get(), nullptr, this, nullptr);
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == mixxx::CueType::MainCue) {
-        m_record.setCuePoint(CuePosition());
+        m_record.setMainCuePosition(mixxx::audio::kStartFramePos);
     }
     markDirtyAndUnlock(&lock);
     emit cuesUpdated();
@@ -1013,7 +1009,7 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             dirty = true;
         }
     }
-    if (compareAndSet(m_record.ptrCuePoint(), CuePosition())) {
+    if (compareAndSet(m_record.ptrMainCuePosition(), mixxx::audio::kStartFramePos)) {
         dirty = true;
     }
     if (dirty) {
@@ -1193,9 +1189,7 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
                 this,
                 &Track::slotCueUpdated);
         if (pCue->getType() == mixxx::CueType::MainCue) {
-            const auto positionLegacy = CuePosition(
-                    pCue->getPosition().toEngineSamplePosMaybeInvalid());
-            m_record.setCuePoint(positionLegacy);
+            m_record.setMainCuePosition(pCue->getPosition());
         }
     }
     return true;

@@ -15,6 +15,7 @@ const Logger kLogger("TrackRecord");
 
 TrackRecord::TrackRecord(TrackId id)
         : m_id(std::move(id)),
+          m_mainCuePosition(mixxx::audio::kStartFramePos),
           m_rating(0),
           m_bpmLocked(false),
           m_headerParsed(false) {
@@ -321,7 +322,7 @@ bool operator==(const TrackRecord& lhs, const TrackRecord& rhs) {
             lhs.getUrl() == rhs.getUrl() &&
             lhs.getPlayCounter() == rhs.getPlayCounter() &&
             lhs.getColor() == rhs.getColor() &&
-            lhs.getCuePoint() == rhs.getCuePoint() &&
+            lhs.getMainCuePosition() == rhs.getMainCuePosition() &&
             lhs.getBpmLocked() == rhs.getBpmLocked() &&
             lhs.getKeys() == rhs.getKeys() &&
             lhs.getRating() == rhs.getRating() &&
