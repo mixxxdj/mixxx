@@ -664,11 +664,11 @@ QVariant BaseTrackTableModel::roleValue(
                     bpm = mixxx::Bpm(bpmValue);
                 }
             }
-            if (bpm.hasValue()) {
+            if (bpm.isValid()) {
                 if (role == Qt::ToolTipRole || role == kDataExportRole) {
-                    return QString::number(bpm.getValue(), 'f', 4);
+                    return QString::number(bpm.value(), 'f', 4);
                 } else {
-                    return QString::number(bpm.getValue(), 'f', 1);
+                    return QString::number(bpm.value(), 'f', 1);
                 }
             } else {
                 return QChar('-');
@@ -782,7 +782,7 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
-            return ok ? bpmValue : mixxx::Bpm().getValue();
+            return ok ? bpmValue : mixxx::Bpm().value();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return index.sibling(

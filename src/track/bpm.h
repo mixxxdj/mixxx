@@ -41,11 +41,11 @@ public:
         return util_isfinite(value) && kValueMin < value;
     }
 
-    bool hasValue() const {
+    bool isValid() const {
         return isValidValue(m_value);
     }
-    double getValue() const {
-        VERIFY_OR_DEBUG_ASSERT(hasValue()) {
+    double value() const {
+        VERIFY_OR_DEBUG_ASSERT(isValid()) {
             return kValueUndefined;
         }
         return m_value;
@@ -72,12 +72,12 @@ public:
     bool compareEq(
             const Bpm& bpm,
             Comparison cmp = Comparison::Default) const {
-        if (!hasValue() && !bpm.hasValue()) {
+        if (!isValid() && !bpm.isValid()) {
             // Both values are invalid and thus equal.
             return true;
         }
 
-        if (hasValue() != bpm.hasValue()) {
+        if (isValid() != bpm.isValid()) {
             // One value is valid, one is not.
             return false;
         }
@@ -85,12 +85,12 @@ public:
         // At this point both values are valid
         switch (cmp) {
         case Comparison::Integer:
-            return Bpm::valueToInteger(getValue()) == Bpm::valueToInteger(bpm.getValue());
+            return Bpm::valueToInteger(value()) == Bpm::valueToInteger(bpm.value());
         case Comparison::String:
-            return Bpm::valueToString(getValue()) == Bpm::valueToString(bpm.getValue());
+            return Bpm::valueToString(value()) == Bpm::valueToString(bpm.value());
         case Comparison::Default:
         default:
-            return getValue() == bpm.getValue();
+            return value() == bpm.value();
         }
     }
 
@@ -99,25 +99,25 @@ public:
     }
 
     Bpm& operator+=(double increment) {
-        DEBUG_ASSERT(hasValue());
+        DEBUG_ASSERT(isValid());
         m_value += increment;
         return *this;
     }
 
     Bpm& operator-=(double decrement) {
-        DEBUG_ASSERT(hasValue());
+        DEBUG_ASSERT(isValid());
         m_value -= decrement;
         return *this;
     }
 
     Bpm& operator*=(double multiple) {
-        DEBUG_ASSERT(hasValue());
+        DEBUG_ASSERT(isValid());
         m_value *= multiple;
         return *this;
     }
 
     Bpm& operator/=(double divisor) {
-        DEBUG_ASSERT(hasValue());
+        DEBUG_ASSERT(isValid());
         m_value /= divisor;
         return *this;
     }
@@ -128,35 +128,35 @@ private:
 
 /// Bpm can be added to a double
 inline Bpm operator+(Bpm bpm, double bpmDiff) {
-    return Bpm(bpm.getValue() + bpmDiff);
+    return Bpm(bpm.value() + bpmDiff);
 }
 
 /// Bpm can be subtracted from a double
 inline Bpm operator-(Bpm bpm, double bpmDiff) {
-    return Bpm(bpm.getValue() - bpmDiff);
+    return Bpm(bpm.value() - bpmDiff);
 }
 
 /// Two Bpm values can be subtracted to get a double
 inline double operator-(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() - bpm2.getValue();
+    return bpm1.value() - bpm2.value();
 }
 
 // Adding two Bpm is not allowed, because it makes no sense semantically.
 
 /// Bpm can be multiplied or divided by a double
 inline Bpm operator*(Bpm bpm, double multiple) {
-    return Bpm(bpm.getValue() * multiple);
+    return Bpm(bpm.value() * multiple);
 }
 
 inline Bpm operator/(Bpm bpm, double divisor) {
-    return Bpm(bpm.getValue() / divisor);
+    return Bpm(bpm.value() / divisor);
 }
 
 inline bool operator==(Bpm bpm1, Bpm bpm2) {
-    if (!bpm1.hasValue() && !bpm2.hasValue()) {
+    if (!bpm1.isValid() && !bpm2.isValid()) {
         return true;
     }
-    return bpm1.hasValue() && bpm2.hasValue() && bpm1.getValue() == bpm2.getValue();
+    return bpm1.isValid() && bpm2.isValid() && bpm1.value() == bpm2.value();
 }
 
 inline bool operator!=(Bpm bpm1, Bpm bpm2) {
@@ -164,7 +164,7 @@ inline bool operator!=(Bpm bpm1, Bpm bpm2) {
 }
 
 inline bool operator<(Bpm bpm1, Bpm bpm2) {
-    return bpm1.getValue() < bpm2.getValue();
+    return bpm1.value() < bpm2.value();
 }
 
 inline bool operator<=(Bpm bpm1, Bpm bpm2) {
@@ -180,8 +180,8 @@ inline bool operator>=(Bpm bpm1, Bpm bpm2) {
 }
 
 inline QDebug operator<<(QDebug dbg, Bpm arg) {
-    if (arg.hasValue()) {
-        dbg.nospace() << "Bpm(" << arg.getValue() << ")";
+    if (arg.isValid()) {
+        dbg.nospace() << "Bpm(" << arg.value() << ")";
     } else {
         dbg << "Bpm(Invalid)";
     }

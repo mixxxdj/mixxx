@@ -1299,8 +1299,8 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     double beatDistance = m_pBpmControl->updateBeatDistance();
     // FIXME: Double check if calling setLocalBpm with an invalid value is correct and intended.
     double localBpmValue = mixxx::Bpm::kValueUndefined;
-    if (localBpm.hasValue()) {
-        localBpmValue = localBpm.getValue();
+    if (localBpm.isValid()) {
+        localBpmValue = localBpm.value();
     }
     m_pSyncControl->setLocalBpm(localBpmValue);
     m_pSyncControl->updateAudible();

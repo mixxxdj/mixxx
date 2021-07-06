@@ -27,31 +27,31 @@ TEST(BeatGridTest, Scale) {
     TrackPointer pTrack = newTrack(sampleRate);
 
     constexpr mixxx::Bpm bpm(60.0);
-    pTrack->trySetBpm(bpm.getValue());
+    pTrack->trySetBpm(bpm.value());
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
             QString(),
             mixxx::Bpm(bpm),
             mixxx::audio::kStartFramePos);
 
-    EXPECT_DOUBLE_EQ(bpm.getValue(), pGrid->getBpm().getValue());
+    EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
     pGrid = pGrid->scale(Beats::DOUBLE);
-    EXPECT_DOUBLE_EQ(2 * bpm.getValue(), pGrid->getBpm().getValue());
+    EXPECT_DOUBLE_EQ(2 * bpm.value(), pGrid->getBpm().value());
 
     pGrid = pGrid->scale(Beats::HALVE);
-    EXPECT_DOUBLE_EQ(bpm.getValue(), pGrid->getBpm().getValue());
+    EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
 
     pGrid = pGrid->scale(Beats::TWOTHIRDS);
-    EXPECT_DOUBLE_EQ(bpm.getValue() * 2 / 3, pGrid->getBpm().getValue());
+    EXPECT_DOUBLE_EQ(bpm.value() * 2 / 3, pGrid->getBpm().value());
 
     pGrid = pGrid->scale(Beats::THREEHALVES);
-    EXPECT_DOUBLE_EQ(bpm.getValue(), pGrid->getBpm().getValue());
+    EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
 
     pGrid = pGrid->scale(Beats::THREEFOURTHS);
-    EXPECT_DOUBLE_EQ(bpm.getValue() * 3 / 4, pGrid->getBpm().getValue());
+    EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4, pGrid->getBpm().value());
 
     pGrid = pGrid->scale(Beats::FOURTHIRDS);
-    EXPECT_DOUBLE_EQ(bpm.getValue(), pGrid->getBpm().getValue());
+    EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
@@ -190,8 +190,8 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
 
     const auto bpm = mixxx::Bpm(60.1);
     const int kFrameSize = 2;
-    pTrack->trySetBpm(bpm.getValue());
-    double beatLength = (60.0 * sampleRate / bpm.getValue()) * kFrameSize;
+    pTrack->trySetBpm(bpm.value());
+    double beatLength = (60.0 * sampleRate / bpm.value()) * kFrameSize;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
             QString(),
@@ -230,11 +230,11 @@ TEST(BeatGridTest, FromMetadata) {
     TrackPointer pTrack = newTrack(sampleRate);
 
     constexpr mixxx::Bpm bpm(60.1);
-    ASSERT_TRUE(pTrack->trySetBpm(bpm.getValue()));
-    EXPECT_DOUBLE_EQ(pTrack->getBpm(), bpm.getValue());
+    ASSERT_TRUE(pTrack->trySetBpm(bpm.value()));
+    EXPECT_DOUBLE_EQ(pTrack->getBpm(), bpm.value());
 
     auto pBeats = pTrack->getBeats();
-    EXPECT_DOUBLE_EQ(pBeats->getBpm().getValue(), bpm.getValue());
+    EXPECT_DOUBLE_EQ(pBeats->getBpm().value(), bpm.value());
 
     // Invalid bpm resets the bpm
     ASSERT_TRUE(pTrack->trySetBpm(-60.1));

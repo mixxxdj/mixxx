@@ -381,10 +381,10 @@ bool exportTrackMetadataIntoTag(
     writeAtom(pTag, "\251grp", toTString(trackMetadata.getTrackInfo().getGrouping()));
 
     // Write both BPM fields (just in case)
-    if (trackMetadata.getTrackInfo().getBpm().hasValue()) {
+    if (trackMetadata.getTrackInfo().getBpm().isValid()) {
         // 16-bit integer value
         const int tmpoValue =
-                Bpm::valueToInteger(trackMetadata.getTrackInfo().getBpm().getValue());
+                Bpm::valueToInteger(trackMetadata.getTrackInfo().getBpm().value());
         pTag->setItem("tmpo", tmpoValue);
     } else {
         pTag->removeItem("tmpo");

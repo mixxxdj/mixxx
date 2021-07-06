@@ -588,7 +588,7 @@ void bindTrackLibraryValues(
         beatsSubVersion = pBeats->getSubVersion();
         bpm = pBeats->getBpm();
     }
-    const double bpmValue = bpm.hasValue() ? bpm.getValue() : mixxx::Bpm::kValueUndefined;
+    const double bpmValue = bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined;
     pTrackLibraryQuery->bindValue(":bpm", bpmValue);
     pTrackLibraryQuery->bindValue(":beats_version", beatsVersion);
     pTrackLibraryQuery->bindValue(":beats_sub_version", beatsSubVersion);
