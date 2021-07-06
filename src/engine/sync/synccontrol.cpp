@@ -518,5 +518,5 @@ double SyncControl::fileBpm() const {
     if (pBeats) {
         return pBeats->getBpm().getValue();
     }
-    return 0.0;
+    return mixxx::Bpm::kValueUndefined;
 }
