@@ -273,7 +273,3 @@ mixxx::audio::FramePos Cue::getEndPosition() const {
     QMutexLocker lock(&m_mutex);
     return m_endPosition;
 }
-
-bool operator==(const CuePosition& lhs, const CuePosition& rhs) {
-    return lhs.getPosition() == rhs.getPosition();
-}
