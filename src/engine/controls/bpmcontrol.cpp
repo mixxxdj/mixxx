@@ -207,7 +207,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (pBeats &&
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         const double sampleOffset = getSampleOfTrack().rate * -0.01;
-        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / 2;
+        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         pTrack->trySetBeats(pBeats->translate(frameOffset));
     }
 }
@@ -225,7 +225,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const double sampleOffset = getSampleOfTrack().rate * 0.01;
-        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / 2;
+        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         pTrack->trySetBeats(pBeats->translate(frameOffset));
     }
 }
@@ -1067,7 +1067,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         m_dUserOffset.setValue(0.0);
 
         double sampleOffset = getPhaseOffset(getSampleOfTrack().current);
-        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / 2;
+        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         pTrack->trySetBeats(pBeats->translate(-frameOffset));
     }
 }
