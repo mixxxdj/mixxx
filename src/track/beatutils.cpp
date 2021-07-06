@@ -29,7 +29,7 @@ mixxx::Bpm BeatUtils::calculateAverageBpm(int numberOfBeats,
     mixxx::audio::FrameDiff_t frames = upperFrame - lowerFrame;
     DEBUG_ASSERT(frames > 0);
     if (numberOfBeats < 1) {
-        return mixxx::Bpm();
+        return {};
     }
     return mixxx::Bpm(60.0 * numberOfBeats * sampleRate / frames);
 }
@@ -38,7 +38,7 @@ mixxx::Bpm BeatUtils::calculateBpm(
         const QVector<mixxx::audio::FramePos>& beats,
         mixxx::audio::SampleRate sampleRate) {
     if (beats.size() < 2) {
-        return mixxx::Bpm();
+        return {};
     }
 
     // If we don't have enough beats for our regular approach, just divide the #

@@ -149,7 +149,7 @@ mixxx::Bpm calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate s
     }
 
     if (beatvect.size() < 2) {
-        return mixxx::Bpm();
+        return {};
     }
 
     return BeatUtils::calculateBpm(beatvect, mixxx::audio::SampleRate(sampleRate));
@@ -524,7 +524,7 @@ bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {
 
 mixxx::Bpm BeatMap::getBpm() const {
     if (!isValid()) {
-        return mixxx::Bpm();
+        return {};
     }
     return m_nominalBpm;
 }
@@ -532,7 +532,7 @@ mixxx::Bpm BeatMap::getBpm() const {
 // Note: Also called from the engine thread
 mixxx::Bpm BeatMap::getBpmAroundPosition(double curSample, int n) const {
     if (!isValid()) {
-        return mixxx::Bpm();
+        return {};
     }
 
     // To make sure we are always counting n beats, iterate backward to the
