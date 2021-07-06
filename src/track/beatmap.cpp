@@ -139,7 +139,7 @@ void scaleFourth(BeatList* pBeats) {
     }
 }
 
-double calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate sampleRate) {
+mixxx::Bpm calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate sampleRate) {
     QVector<mixxx::audio::FramePos> beatvect;
     beatvect.reserve(beats.size());
     for (const auto& beat : beats) {
@@ -149,7 +149,7 @@ double calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate sampl
     }
 
     if (beatvect.size() < 2) {
-        return -1;
+        return mixxx::Bpm();
     }
 
     return BeatUtils::calculateBpm(beatvect, mixxx::audio::SampleRate(sampleRate));
@@ -215,7 +215,7 @@ BeatsPointer BeatMap::makeBeatMap(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
-    double nominalBpm = 0.0;
+    auto nominalBpm = mixxx::Bpm();
     BeatList beatList;
 
     track::io::BeatMap map;
@@ -229,7 +229,7 @@ BeatsPointer BeatMap::makeBeatMap(
         qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
                  << byteArray.size();
     }
-    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
+    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm.getValue()));
 }
 
 // static
@@ -260,8 +260,8 @@ BeatsPointer BeatMap::makeBeatMap(
         beatList.append(beat);
         previousBeatPos = beatPos;
     }
-    double nominalBpm = calculateNominalBpm(beatList, sampleRate);
-    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
+    const auto nominalBpm = calculateNominalBpm(beatList, sampleRate);
+    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm.getValue()));
 }
 
 QByteArray BeatMap::toByteArray() const {
@@ -580,7 +580,9 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
         }
     }
 
-    return BeatUtils::calculateAverageBpm(numberOfBeats, m_sampleRate, lowerFrame, upperFrame);
+    return BeatUtils::calculateAverageBpm(
+            numberOfBeats, m_sampleRate, lowerFrame, upperFrame)
+            .getValue();
 }
 
 BeatsPointer BeatMap::translate(double dNumSamples) const {
@@ -652,7 +654,7 @@ BeatsPointer BeatMap::scale(enum BPMScale scale) const {
         return BeatsPointer(new BeatMap(*this));
     }
 
-    double bpm = calculateNominalBpm(beats, m_sampleRate);
+    double bpm = calculateNominalBpm(beats, m_sampleRate).getValue();
     return BeatsPointer(new BeatMap(*this, beats, bpm));
 }
 

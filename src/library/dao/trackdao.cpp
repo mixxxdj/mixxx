@@ -581,7 +581,8 @@ void bindTrackLibraryValues(
     QString beatsVersion;
     QString beatsSubVersion;
     // Fall back on cached BPM
-    double dBpm = trackInfo.getBpm().getValue();
+    const mixxx::Bpm bpm = trackInfo.getBpm();
+    double dBpm = bpm.hasValue() ? bpm.getValue() : mixxx::Bpm::kValueUndefined;
     if (!pBeats.isNull()) {
         beatsBlob = pBeats->toByteArray();
         beatsVersion = pBeats->getVersion();
@@ -1240,7 +1241,7 @@ bool setTrackAudioProperties(
 
 bool setTrackBeats(const QSqlRecord& record, const int column,
                    TrackPointer pTrack) {
-    double bpm = record.value(column).toDouble();
+    const auto bpm = mixxx::Bpm(record.value(column).toDouble());
     QString beatsVersion = record.value(column + 1).toString();
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();

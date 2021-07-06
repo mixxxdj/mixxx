@@ -4,6 +4,7 @@
 
 #include "audio/frame.h"
 #include "audio/types.h"
+#include "track/bpm.h"
 #include "util/math.h"
 
 class BeatUtils {
@@ -13,30 +14,31 @@ class BeatUtils {
         mixxx::audio::FrameDiff_t beatLength;
     };
 
-    static double calculateBpm(const QVector<mixxx::audio::FramePos>& beats,
+    static mixxx::Bpm calculateBpm(const QVector<mixxx::audio::FramePos>& beats,
             mixxx::audio::SampleRate sampleRate);
 
     static QVector<ConstRegion> retrieveConstRegions(
             const QVector<mixxx::audio::FramePos>& coarseBeats,
             mixxx::audio::SampleRate sampleRate);
 
-    static double calculateAverageBpm(int numberOfBeats,
+    static mixxx::Bpm calculateAverageBpm(int numberOfBeats,
             mixxx::audio::SampleRate sampleRate,
             mixxx::audio::FramePos lowerFrame,
             mixxx::audio::FramePos upperFrame);
 
-    static double makeConstBpm(
+    static mixxx::Bpm makeConstBpm(
             const QVector<ConstRegion>& constantRegions,
             mixxx::audio::SampleRate sampleRate,
             mixxx::audio::FramePos* pFirstBeat);
 
     static mixxx::audio::FramePos adjustPhase(
             mixxx::audio::FramePos firstBeat,
-            double bpm,
+            mixxx::Bpm bpm,
             mixxx::audio::SampleRate sampleRate,
             const QVector<mixxx::audio::FramePos>& beats);
 
     static QVector<mixxx::audio::FramePos> getBeats(const QVector<ConstRegion>& constantRegions);
 
-    static double roundBpmWithinRange(double minBpm, double centerBpm, double maxBpm);
+    static mixxx::Bpm roundBpmWithinRange(
+            mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm);
 };
