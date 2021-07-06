@@ -143,7 +143,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     if (!pBeats) {
         return true;
     }
-    if (!pBeats->getBpm().hasValue()) {
+    if (!pBeats->getBpm().isValid()) {
         // Tracks with an invalid bpm <= 0 should be re-analyzed,
         // independent of the preference settings. We expect that
         // all tracks have a bpm > 0 when analyzed. Users that want

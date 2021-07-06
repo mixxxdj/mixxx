@@ -561,12 +561,12 @@ inline QImage loadImageFromPictureFrame(
 
 inline QString formatBpmInteger(
         const TrackMetadata& trackMetadata) {
-    if (!trackMetadata.getTrackInfo().getBpm().hasValue()) {
+    if (!trackMetadata.getTrackInfo().getBpm().isValid()) {
         return QString();
     }
     return QString::number(
             Bpm::valueToInteger(
-                    trackMetadata.getTrackInfo().getBpm().getValue()));
+                    trackMetadata.getTrackInfo().getBpm().value()));
 }
 
 } // anonymous namespace
@@ -795,7 +795,7 @@ void importTrackMetadataFromTag(
     if (!bpmFrames.isEmpty()) {
         parseBpm(pTrackMetadata,
                 firstNonEmptyFrameToQString(bpmFrames));
-        double bpmValue = pTrackMetadata->getTrackInfo().getBpm().getValue();
+        double bpmValue = pTrackMetadata->getTrackInfo().getBpm().value();
         // Some software use (or used) to write decimated values without comma,
         // so the number reads as 1352 or 14525 when it is 135.2 or 145.25
         if (bpmValue < Bpm::kValueMin || bpmValue > 1000 * Bpm::kValueMax) {
