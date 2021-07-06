@@ -233,7 +233,9 @@ class EngineBuffer : public EngineObject {
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay);
     void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);
+    void processTrackLocked(CSAMPLE* pOutput,
+            const int iBufferSize,
+            mixxx::audio::SampleRate sampleRate);
 
     // Holds the name of the control group
     const QString m_group;
@@ -310,7 +312,7 @@ class EngineBuffer : public EngineObject {
     double m_trackSamplesOld;
 
     // Copy of file sample rate
-    double m_trackSampleRateOld;
+    mixxx::audio::SampleRate m_trackSampleRateOld;
 
     // Mutex controlling whether the process function is in pause mode. This happens
     // during seek and loading of a new track
@@ -397,7 +399,7 @@ class EngineBuffer : public EngineObject {
     bool m_bPlayAfterLoading;
     // Records the sample rate so we can detect when it changes. Initialized to
     // 0 to guarantee we see a change on the first callback.
-    int m_iSampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
 
     TrackPointer m_pCurrentTrack;
 #ifdef __SCALER_DEBUG__

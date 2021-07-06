@@ -79,7 +79,6 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_baserate_old(0),
           m_rate_old(0.),
           m_trackSamplesOld(0),
-          m_trackSampleRateOld(0),
           m_dSlipPosition(0.),
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
@@ -92,7 +91,6 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_iSyncModeQueued(SYNC_INVALID),
           m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
-          m_iSampleRate(0),
           m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_bCrossfadeReady(false),
           m_iLastBufferSize(0) {
@@ -790,15 +788,15 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
 }
 
 void EngineBuffer::processTrackLocked(
-        CSAMPLE* pOutput, const int iBufferSize, int sample_rate) {
+        CSAMPLE* pOutput, const int iBufferSize, mixxx::audio::SampleRate sampleRate) {
     ScopedTimer t("EngineBuffer::process_pauselock");
 
-    m_trackSampleRateOld = m_pTrackSampleRate->get();
+    m_trackSampleRateOld = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     m_trackSamplesOld = m_pTrackSamples->get();
 
     double baserate = 0.0;
-    if (sample_rate > 0) {
-        baserate = m_trackSampleRateOld / sample_rate;
+    if (sampleRate.isValid()) {
+        baserate = m_trackSampleRateOld / sampleRate;
     }
 
     // Sync requests can affect rate, so process those first.
@@ -1113,19 +1111,18 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
 
-    m_iSampleRate = static_cast<int>(m_pSampleRate->get());
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
 
     // If the sample rate has changed, force Rubberband to reset so that
     // it doesn't reallocate when the user engages keylock during playback.
     // We do this even if rubberband is not active.
-    const auto sampleRate = mixxx::audio::SampleRate(m_iSampleRate);
-    m_pScaleLinear->setSampleRate(sampleRate);
-    m_pScaleST->setSampleRate(sampleRate);
-    m_pScaleRB->setSampleRate(sampleRate);
+    m_pScaleLinear->setSampleRate(m_sampleRate);
+    m_pScaleST->setSampleRate(m_sampleRate);
+    m_pScaleRB->setSampleRate(m_sampleRate);
 
     bool bTrackLoading = atomicLoadRelaxed(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
-        processTrackLocked(pOutput, iBufferSize, m_iSampleRate);
+        processTrackLocked(pOutput, iBufferSize, m_sampleRate);
         // release the pauselock
         m_pause.unlock();
     } else {
@@ -1325,7 +1322,7 @@ bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) const {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    if (m_trackSampleRateOld == 0) {
+    if (!m_trackSampleRateOld.isValid()) {
         // This happens if Deck Passthrough is active but no track is loaded.
         // We skip indicator updates.
         return;
