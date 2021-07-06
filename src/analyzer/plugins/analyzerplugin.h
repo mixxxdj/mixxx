@@ -71,7 +71,7 @@ class AnalyzerBeatsPlugin : public AnalyzerPlugin {
 
     virtual bool supportsBeatTracking() const = 0;
     virtual mixxx::Bpm getBpm() const {
-        return mixxx::Bpm();
+        return {};
     }
     virtual QVector<mixxx::audio::FramePos> getBeats() const {
         return {};

@@ -171,8 +171,7 @@ void Track::replaceMetadataFromSource(
         // Need to set BPM after sample rate since beat grid creation depends on
         // knowing the sample rate. Bug #1020438.
         auto beatsAndBpmModified = false;
-        if (importedBpm.hasValue() &&
-                (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
+        if (importedBpm.hasValue() && (!m_pBeats || !m_pBeats->getBpm().hasValue())) {
             // Only use the imported BPM if the current beat grid is either
             // missing or not valid! The BPM value in the metadata might be
             // imprecise (normalized or rounded), e.g. ID3v2 only supports
@@ -352,12 +351,12 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
                 mixxx::audio::FramePos::fromEngineSamplePos(cue));
         return trySetBeatsWhileLocked(std::move(pBeats));
     } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
-            m_pBeats->getBpm() != bpm.getValue()) {
+            m_pBeats->getBpm() != bpm) {
         // Continue with the regular cases
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpm.getValue()));
+        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpm));
     }
     return false;
 }
