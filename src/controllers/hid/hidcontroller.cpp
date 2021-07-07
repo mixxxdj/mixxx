@@ -168,6 +168,8 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
     int bytesRead;
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
+    // FIXME: implement upstream for hidraw backend on Linux
+    // https://github.com/libusb/hidapi/issues/259
     bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
 
     controllerDebug(bytesRead

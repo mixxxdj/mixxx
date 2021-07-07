@@ -38,6 +38,8 @@ case "$1" in
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
             cmake \
+            clazy \
+            clang-tidy \
             debhelper \
             devscripts \
             docbook-to-man \
@@ -72,6 +74,7 @@ case "$1" in
             libsqlite3-dev \
             libssl-dev \
             libtag1-dev \
+            libudev-dev \
             libupower-glib-dev \
             libusb-1.0-0-dev \
             libwavpack-dev \
