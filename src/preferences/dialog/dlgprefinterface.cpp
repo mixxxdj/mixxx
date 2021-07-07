@@ -11,7 +11,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "mixxx.h"
+#include "mixxxmainwindow.h"
 #include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
 #include "skin/legacy/legacyskinparser.h"

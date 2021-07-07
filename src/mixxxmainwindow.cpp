@@ -1,4 +1,4 @@
-#include "mixxx.h"
+#include "mixxxmainwindow.h"
 
 #include <QDesktopServices>
 #include <QFileDialog>
@@ -18,7 +18,7 @@
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemaster.h"
-#include "moc_mixxx.cpp"
+#include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgpreferences.h"
