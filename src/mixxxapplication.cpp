@@ -4,6 +4,7 @@
 #include <QTouchEvent>
 #include <QtDebug>
 
+#include "audio/frame.h"
 #include "audio/types.h"
 #include "control/controlproxy.h"
 #include "library/trackset/crate/crateid.h"
@@ -57,6 +58,7 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
           m_rightPressedButtons(0),
           m_pTouchShift(nullptr) {
     registerMetaTypes();
+    setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 
     // Increase the size of the global thread pool to at least
     // 4 threads, even if less cores are available. These threads
@@ -96,6 +98,7 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::cache_key_t>("mixxx::cache_key_t");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<mixxx::audio::FramePos>("mixxx::audio::FramePos");
     qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");
     qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
 }

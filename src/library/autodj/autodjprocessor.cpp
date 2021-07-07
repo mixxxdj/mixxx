@@ -860,7 +860,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
             m_pAutoDJTableModel->index(0, 0));
 
         if (nextTrack) {
-            if (nextTrack->checkFileExists()) {
+            if (nextTrack->getFileInfo().checkFileExists()) {
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist.

@@ -64,7 +64,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, const QString& location
     Q_UNUSED(index);
 
     // This will only succeed if the file actually exist.
-    TrackFile fileInfo(location);
+    mixxx::FileInfo fileInfo(location);
     if (!fileInfo.checkFileExists()) {
         qDebug() << "CrateTableModel::addTrack:"
                  << "File" << location << "not found";
@@ -132,8 +132,8 @@ int CrateTableModel::addTracks(
     Q_UNUSED(index);
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this crate.
-    QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()
-                                      ->resolveTrackIdsFromLocations(locations);
+    QList<TrackId> trackIds =
+            m_pTrackCollectionManager->resolveTrackIdsFromLocations(locations);
     if (!m_pTrackCollectionManager->internalCollection()->addCrateTracks(
                 m_selectedCrate, trackIds)) {
         qWarning() << "CrateTableModel::addTracks could not add"

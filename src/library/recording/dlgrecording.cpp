@@ -26,7 +26,7 @@ DlgRecording::DlgRecording(
                           pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           true)),
-          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
+          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),

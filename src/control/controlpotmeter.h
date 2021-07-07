@@ -41,9 +41,11 @@ class PotmeterControls : public QObject {
     void toggleValue(double);
     // Toggles the value between -1.0 and 0.0.
     void toggleMinusValue(double);
+    void setIsDefault(bool isDefault);
 
   private:
     ControlProxy* m_pControl;
+    ControlPushButton* m_pControlDefault;
     int m_stepCount;
     double m_smallStepCount;
 };
@@ -59,7 +61,7 @@ class ControlPotmeter : public ControlObject {
             bool bTrack = false,
             bool bPersist = false,
             double defaultValue = 0.0);
-    virtual ~ControlPotmeter();
+    ~ControlPotmeter() override = default;
 
     // Sets the step count of the associated PushButtons.
     void setStepCount(int count);
@@ -70,6 +72,10 @@ class ControlPotmeter : public ControlObject {
     // Sets the minimum and maximum allowed value. The control value is reset
     // when calling this method
     void setRange(double dMinValue, double dMaxValue, bool allowOutOfBounds);
+
+  private slots:
+    // Used to check if the current control value matches the default value.
+    void privateValueChanged(double dValue, QObject* pSender);
 
   protected:
     bool m_bAllowOutOfBounds;

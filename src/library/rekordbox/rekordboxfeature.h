@@ -28,13 +28,13 @@
 #include <QFutureWatcher>
 #include <QStringListModel>
 #include <QtConcurrentRun>
-
 #include <fstream>
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/baseexternalplaylistmodel.h"
 #include "library/baseexternaltrackmodel.h"
 #include "library/treeitemmodel.h"
+#include "util/parented_ptr.h"
 
 class TrackCollectionManager;
 class BaseExternalPlaylistModel;
@@ -59,12 +59,11 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     ~RekordboxFeature() override;
 
     QVariant title() override;
-    QIcon getIcon() override;
     static bool isSupported();
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -80,7 +79,7 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     QString formatRootViewHtml() const;
     BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
 
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     RekordboxPlaylistModel* m_pRekordboxPlaylistModel;
 
     QFutureWatcher<QList<TreeItem*>> m_devicesFutureWatcher;
@@ -90,5 +89,4 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     QString m_title;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
-    QIcon m_icon;
 };

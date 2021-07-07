@@ -22,14 +22,11 @@ class EngineSync : public SyncableListener {
     /// Syncable::notifySyncModeChanged.
     void requestSyncMode(Syncable* pSyncable, SyncMode state) override;
 
-    /// Used by Syncables to tell EngineSync it wants to be enabled in any mode
-    /// (master/follower).
-    void requestEnableSync(Syncable* pSyncable, bool enabled) override;
-
     /// Syncables notify EngineSync directly about various events. EngineSync
     /// does not have a say in whether these succeed or not, they are simply
     /// notifications.
     void notifyBaseBpmChanged(Syncable* pSyncable, double bpm) override;
+    void notifyRateChanged(Syncable* pSyncable, double bpm) override;
     void requestBpmUpdate(Syncable* pSyncable, double bpm) override;
 
     /// Instantaneous BPM refers to the actual, honest-to-god speed of playback
@@ -40,7 +37,7 @@ class EngineSync : public SyncableListener {
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) override;
 
     /// Notify the engine that a syncable has started or stopped playing
-    void notifyPlaying(Syncable* pSyncable, bool playing) override;
+    void notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) override;
     void notifyScratching(Syncable* pSyncable, bool scratching) override;
 
     /// Used to pick a sync target for cases where master sync mode is not sufficient.
@@ -54,7 +51,8 @@ class EngineSync : public SyncableListener {
     Syncable* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;
 
     /// Used to test whether changing the rate of a Syncable would change the rate
-    /// of other Syncables that are playing
+    /// of other Syncables that are playing. Returns true even if the other decks
+    /// are not audible.
     bool otherSyncedPlaying(const QString& group);
 
     void addSyncableDeck(Syncable* pSyncable);
@@ -82,6 +80,9 @@ class EngineSync : public SyncableListener {
     /// beatDistance to match the master.
     void activateFollower(Syncable* pSyncable);
 
+    // Activate a specific syncable as master, with the appropriate submode.
+    void activateMaster(Syncable* pSyncable, SyncMode masterType);
+
     /// Unsets all sync state on a Syncable.
     void deactivateSync(Syncable* pSyncable);
 
@@ -102,20 +103,24 @@ class EngineSync : public SyncableListener {
     double masterBaseBpm() const;
 
     /// Set the BPM on every sync-enabled Syncable except pSource.
-    void setMasterBpm(Syncable* pSource, double bpm);
+    void updateMasterBpm(Syncable* pSource, double bpm);
 
     /// Set the master instantaneous BPM on every sync-enabled Syncable except
     /// pSource.
-    void setMasterInstantaneousBpm(Syncable* pSource, double bpm);
+    void updateMasterInstantaneousBpm(Syncable* pSource, double bpm);
 
     /// Set the master beat distance on every sync-enabled Syncable except
     /// pSource.
-    void setMasterBeatDistance(Syncable* pSource, double beatDistance);
+    void updateMasterBeatDistance(Syncable* pSource, double beatDistance);
 
-    void setMasterParams(Syncable* pSource, double beatDistance, double baseBpm, double bpm);
+    /// Initialize the master parameters using the provided syncable as the source.
+    /// This should only be called for "major" updates, like a new track or change in
+    /// master. Should not be called on every buffer callback.
+    void reinitMasterParams(Syncable* pSource);
 
-    /// Check if there is only one playing syncable deck, and notify it if so.
-    void checkUniquePlayingSyncable();
+    /// Iff there is a single playing syncable in sync mode, return it.
+    /// This is used to initialize master params.
+    Syncable* getUniquePlayingSyncedDeck() const;
 
     /// Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);
@@ -125,11 +130,31 @@ class EngineSync : public SyncableListener {
         return m_pMasterSyncable;
     }
 
+    bool isSyncMaster(Syncable* pSyncable) {
+        if (isMaster(pSyncable->getSyncMode())) {
+            DEBUG_ASSERT(m_pMasterSyncable == pSyncable);
+            return true;
+        }
+        return false;
+    }
+
+    // TODO: Remove pick algorithms during 2.4 development phase when new beatgrid detection
+    // and editing code is committed and we no longer need the lock bpm fallback option.
+    // If this code makes it to release we will all be very sad.
+    enum SyncLockAlgorithm {
+        // New behavior, which should work if beatgrids are reliable.
+        PREFER_IMPLICIT_MASTER,
+        // Old 2.3 behavior, which works around some issues with bad beatgrid detection, mostly
+        // for auto DJ mode.
+        PREFER_LOCK_BPM
+    };
+
     FRIEND_TEST(EngineSyncTest, EnableOneDeckInitsMaster);
     FRIEND_TEST(EngineSyncTest, EnableOneDeckInitializesMaster);
     FRIEND_TEST(EngineSyncTest, SyncToNonSyncDeck);
     FRIEND_TEST(EngineSyncTest, SetFileBpmUpdatesLocalBpm);
     FRIEND_TEST(EngineSyncTest, BpmAdjustFactor);
+    FRIEND_TEST(EngineSyncTest, MomentarySyncAlgorithmTwo);
     friend class EngineSyncTest;
 
     UserSettingsPointer m_pConfig;

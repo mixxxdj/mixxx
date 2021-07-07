@@ -110,9 +110,9 @@ BaseTrackTableModel::BaseTrackTableModel(
             this,
             &BaseTrackTableModel::slotRefreshAllRows);
     connect(&PlayerInfo::instance(),
-            &PlayerInfo::trackLoaded,
+            &PlayerInfo::trackChanged,
             this,
-            &BaseTrackTableModel::slotTrackLoaded);
+            &BaseTrackTableModel::slotTrackChanged);
 }
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
@@ -237,10 +237,7 @@ void BaseTrackTableModel::setHeaderProperties(
         int defaultWidth) {
     int section = fieldIndex(column);
     if (section < 0) {
-        kLogger.debug()
-                << "Skipping header properties for unsupported column"
-                << column
-                << title;
+        // Skipping header properties for unsupported column
         return;
     }
     if (section >= m_columnHeaders.size()) {
@@ -622,11 +619,16 @@ QVariant BaseTrackTableModel::roleValue(
             return QString("(%1)").arg(timesPlayed);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
-        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED: {
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
                 return QVariant();
             }
-            return mixxx::localDateTimeFromUtc(rawValue.toDateTime());
+            QDateTime dt = mixxx::localDateTimeFromUtc(rawValue.toDateTime());
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return dt;
+            }
+            return dt.date();
+        }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
             if (rawValue.type() == QVariant::String) {
@@ -640,7 +642,11 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             DEBUG_ASSERT(lastPlayedAt.timeSpec() == Qt::UTC);
-            return mixxx::localDateTimeFromUtc(lastPlayedAt);
+            QDateTime dt = mixxx::localDateTimeFromUtc(lastPlayedAt);
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return dt;
+            }
+            return dt.date();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             mixxx::Bpm bpm;
@@ -659,9 +665,9 @@ QVariant BaseTrackTableModel::roleValue(
                     bpm = mixxx::Bpm(bpmValue);
                 }
             }
-            if (bpm.hasValue()) {
+            if (bpm.isValid()) {
                 if (role == Qt::ToolTipRole || role == kDataExportRole) {
-                    return QString::number(bpm.getValue(), 'f', 4);
+                    return QString::number(bpm.value(), 'f', 4);
                 } else {
                     return bpm.displayString();
                 }
@@ -777,7 +783,7 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
-            return ok ? bpmValue : mixxx::Bpm().getValue();
+            return ok ? bpmValue : mixxx::Bpm().value();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return index.sibling(
@@ -916,7 +922,7 @@ QList<QUrl> BaseTrackTableModel::collectUrls(
             continue;
         }
         visitedRows.insert(index.row());
-        QUrl url = TrackFile(getTrackLocation(index)).toUrl();
+        QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
         if (url.isValid()) {
             urls.append(url);
         }
@@ -936,9 +942,11 @@ QMimeData* BaseTrackTableModel::mimeData(
     }
 }
 
-void BaseTrackTableModel::slotTrackLoaded(
+void BaseTrackTableModel::slotTrackChanged(
         const QString& group,
-        TrackPointer pTrack) {
+        TrackPointer pNewTrack,
+        TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
@@ -952,7 +960,7 @@ void BaseTrackTableModel::slotTrackLoaded(
                 emit dataChanged(topLeft, bottomRight);
             }
         }
-        m_previewDeckTrackId = doGetTrackId(pTrack);
+        m_previewDeckTrackId = doGetTrackId(pNewTrack);
     }
 }
 
@@ -1027,7 +1035,7 @@ void BaseTrackTableModel::emitDataChangedForMultipleRowsInColumn(
 
 TrackPointer BaseTrackTableModel::getTrackByRef(
         const TrackRef& trackRef) const {
-    return m_pTrackCollectionManager->internalCollection()->getTrackByRef(trackRef);
+    return m_pTrackCollectionManager->getTrackByRef(trackRef);
 }
 
 TrackId BaseTrackTableModel::doGetTrackId(

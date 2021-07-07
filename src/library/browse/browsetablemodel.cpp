@@ -19,7 +19,6 @@
 #include "moc_browsetablemodel.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
-#include "util/fileaccess.h"
 #include "widget/wlibrarytableview.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
@@ -156,10 +155,12 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
             Qt::QueuedConnection);
 
     connect(&PlayerInfo::instance(),
-            &PlayerInfo::trackLoaded,
+            &PlayerInfo::trackChanged,
             this,
-            &BrowseTableModel::trackLoaded);
-    trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
+            &BrowseTableModel::trackChanged);
+    trackChanged(m_previewDeckGroup,
+            PlayerInfo::instance().getTrackInfo(m_previewDeckGroup),
+            TrackPointer());
 }
 
 BrowseTableModel::~BrowseTableModel() {
@@ -191,7 +192,7 @@ void BrowseTableModel::setPath(mixxx::FileAccess path) {
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
-    return getTrackByRef(TrackRef::fromFileInfo(getTrackLocation(index)));
+    return getTrackByRef(TrackRef::fromFilePath(getTrackLocation(index)));
 }
 
 TrackPointer BrowseTableModel::getTrackByRef(const TrackRef& trackRef) const {
@@ -298,7 +299,7 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList& indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url = TrackFile(getTrackLocation(index)).toUrl();
+                QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
                 if (!url.isValid()) {
                     qDebug() << "ERROR invalid url" << url;
                     continue;
@@ -436,7 +437,9 @@ bool BrowseTableModel::setData(
     return true;
 }
 
-void BrowseTableModel::trackLoaded(const QString& group, TrackPointer pTrack) {
+void BrowseTableModel::trackChanged(
+        const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (group == m_previewDeckGroup) {
         for (int row = 0; row < rowCount(); ++row) {
             QModelIndex i = index(row, COLUMN_PREVIEW);
@@ -445,8 +448,8 @@ void BrowseTableModel::trackLoaded(const QString& group, TrackPointer pTrack) {
                 item->setText("0");
             }
         }
-        if (pTrack) {
-            QString trackLocation = pTrack->getLocation();
+        if (pNewTrack) {
+            QString trackLocation = pNewTrack->getLocation();
             for (int row = 0; row < rowCount(); ++row) {
                 QModelIndex i = index(row, COLUMN_PREVIEW);
                 QString location = getTrackLocation(i);

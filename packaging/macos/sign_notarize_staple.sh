@@ -17,8 +17,11 @@ xcrun altool --notarize-app --primary-bundle-id "${APPLE_BUNDLE_ID}" --username 
     --password "${APPLE_APP_SPECIFIC_PASSWORD}" --asc-provider "${ASC_PROVIDER}" --file "${DMG_FILE}" \
     --output-format xml > notarize_result.plist
 UUID="$(/usr/libexec/PlistBuddy -c 'Print notarization-upload:RequestUUID' notarize_result.plist)"
-echo "Notorization UUID: $UUID"
+echo "Notarization UUID: $UUID"
 rm notarize_result.plist
+
+# Wait a few seconds to avoid "Could not find the RequestUUID." error
+sleep 5
 
 # wait for confirmation that notarization finished
 while true; do

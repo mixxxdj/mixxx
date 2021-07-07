@@ -30,10 +30,11 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     BasePlaylistFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
             PlaylistTableModel* pModel,
-            const QString& rootViewName);
+            const QString& rootViewName,
+            const QString& iconName);
     ~BasePlaylistFeature() override = default;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;

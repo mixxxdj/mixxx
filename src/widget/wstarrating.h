@@ -6,7 +6,7 @@
 
 #include "control/controlpushbutton.h"
 #include "library/starrating.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "widget/wwidget.h"
@@ -21,6 +21,11 @@ class WStarRating : public WWidget {
 
     virtual void setup(const QDomNode& node, const SkinContext& context);
     QSize sizeHint() const override;
+
+    /// Manually set a custom rating
+    ///
+    /// The value must be consistent with the current track if connected.
+    void setRating(int rating);
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack = TrackPointer());
@@ -44,7 +49,7 @@ class WStarRating : public WWidget {
     mutable QRect m_contentRect;
 
   private:
-    void updateRating();
+    void updateRatingFromTrack();
     int starAtPosition(int x);
     std::unique_ptr<ControlPushButton> m_pStarsUp;
     std::unique_ptr<ControlPushButton> m_pStarsDown;

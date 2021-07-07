@@ -1,23 +1,23 @@
 #pragma once
+#include <QStandardItem>
 #include <QStandardItemModel>
+#include <QVariant>
 
 #include "util/color/colorpalette.h"
 
 // Model that is used by the QTableView of the ColorPaletteEditor.
-// Takes of displaying palette colors and provides a getter/setter for
+// Takes care of displaying palette colors and provides a getter/setter for
 // ColorPalette instances.
 class ColorPaletteEditorModel : public QStandardItemModel {
     Q_OBJECT
   public:
-    static constexpr int kNoHotcueIndex = -1;
-
     ColorPaletteEditorModel(QObject* parent = nullptr);
 
     bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) override;
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
     void setColor(int row, const QColor& color);
-    void appendRow(const QColor& color, int hotcueIndex = kNoHotcueIndex);
+    void appendRow(const QColor& color, const QList<int>& hotcueIndicies);
 
     void setDirty(bool bDirty) {
         if (m_bDirty == bDirty) {
@@ -45,4 +45,28 @@ class ColorPaletteEditorModel : public QStandardItemModel {
   private:
     bool m_bEmpty;
     bool m_bDirty;
+};
+
+class HotcueIndexListItem : public QStandardItem {
+  public:
+    HotcueIndexListItem(const QList<int>& hotcueList = {});
+
+    void setData(const QVariant& value, int role = Qt::UserRole + 1) override;
+    QVariant data(int role = Qt::UserRole + 1) const override;
+
+    int type() const override {
+        return QStandardItem::UserType;
+    };
+
+    const QList<int>& getHotcueIndexList() const {
+        return m_hotcueIndexList;
+    }
+    void setHotcueIndexList(const QList<int>& list) {
+        m_hotcueIndexList = QList(list);
+    }
+
+    void removeIndicies(const QList<int>& otherIndicies);
+
+  private:
+    QList<int> m_hotcueIndexList;
 };

@@ -93,12 +93,12 @@ QString exportFile(const QSharedPointer<EnginePrimeExportRequest> pRequest,
     // been modified (or the destination doesn't exist).  To ensure no
     // chance of filename clashes, and to keep things simple, we will prefix
     // the destination files with the DB track identifier.
-    TrackFile srcFileInfo = pTrack->getFileInfo();
+    mixxx::FileInfo srcFileInfo = pTrack->getFileInfo();
     const auto trackId = pTrack->getId().value();
     QString dstFilename = QString::number(trackId) + " - " + srcFileInfo.fileName();
     QString dstPath = pRequest->musicFilesDir.filePath(dstFilename);
     if (!QFile::exists(dstPath) ||
-            srcFileInfo.fileLastModified() > QFileInfo{dstPath}.lastModified()) {
+            srcFileInfo.lastModified() > QFileInfo{dstPath}.lastModified()) {
         const auto srcPath = srcFileInfo.location();
         QFile::copy(srcPath, dstPath);
     }
@@ -151,8 +151,12 @@ void exportMetadata(djinterop::database* pDatabase,
     snapshot.comment = pTrack->getComment().toStdString();
     snapshot.composer = pTrack->getComposer().toStdString();
     snapshot.key = toDjinteropKey(pTrack->getKey());
-    int64_t lastModifiedMillisSinceEpoch =
-            pTrack->getFileInfo().fileLastModified().toMSecsSinceEpoch();
+    int64_t lastModifiedMillisSinceEpoch = 0;
+    const QDateTime fileLastModified = pTrack->getFileInfo().lastModified();
+    if (fileLastModified.isValid()) {
+        // Only defined if valid
+        lastModifiedMillisSinceEpoch = fileLastModified.toMSecsSinceEpoch();
+    }
     std::chrono::system_clock::time_point lastModifiedAt{
             std::chrono::milliseconds{lastModifiedMillisSinceEpoch}};
     snapshot.last_modified_at = lastModifiedAt;
@@ -189,21 +193,24 @@ void exportMetadata(djinterop::database* pDatabase,
         // starts at the beginning of a bar, then move backwards towards the
         // beginning of the track in 4-beat decrements to find the first beat
         // in the track that also aligns with the start of a bar.
-        double firstBeatPlayPos = beats->findNextBeat(0);
-        double cueBeatPlayPos = beats->findClosestBeat(cuePlayPos);
+        const auto firstBeatPlayPos = beats->firstBeat();
+        const auto cueBeatPlayPos = beats->findClosestBeat(
+                mixxx::audio::FramePos::fromEngineSamplePos(cuePlayPos));
         int numBeatsToCue = beats->numBeatsInRange(firstBeatPlayPos, cueBeatPlayPos);
-        double firstBarAlignedBeatPlayPos = beats->findNBeatsFromSample(
+        const auto firstBarAlignedBeatPlayPos = beats->findNBeatsFromPosition(
                 cueBeatPlayPos, numBeatsToCue & ~0x3);
 
         // We will treat the first bar-aligned beat as beat zero.  Find the
         // number of beats from there until the end of the track in order to
         // correctly assign an index for the last beat.
-        double lastBeatPlayPos = beats->findPrevBeat(sampleOffsetToPlayPos(sampleCount));
+        const auto lastBeatPlayPos =
+                beats->findPrevBeat(mixxx::audio::FramePos::fromEngineSamplePos(
+                        sampleOffsetToPlayPos(sampleCount)));
         int numBeats = beats->numBeatsInRange(firstBarAlignedBeatPlayPos, lastBeatPlayPos);
         if (numBeats > 0) {
             std::vector<djinterop::beatgrid_marker> beatgrid{
-                    {0, playPosToSampleOffset(firstBarAlignedBeatPlayPos)},
-                    {numBeats, playPosToSampleOffset(lastBeatPlayPos)}};
+                    {0, playPosToSampleOffset(firstBarAlignedBeatPlayPos.toEngineSamplePos())},
+                    {numBeats, playPosToSampleOffset(lastBeatPlayPos.toEngineSamplePos())}};
             beatgrid = el::normalize_beatgrid(std::move(beatgrid), sampleCount);
             snapshot.default_beatgrid = beatgrid;
             snapshot.adjusted_beatgrid = beatgrid;
@@ -242,7 +249,14 @@ void exportMetadata(djinterop::database* pDatabase,
         djinterop::hot_cue hotCue{};
         hotCue.label = label.toStdString();
         hotCue.sample_offset = playPosToSampleOffset(pCue->getPosition());
-        hotCue.color = el::standard_pad_colors::pads[hotCueIndex];
+
+        auto color = mixxx::RgbColor::toQColor(pCue->getColor());
+        hotCue.color = djinterop::pad_color{
+                static_cast<uint_least8_t>(color.red()),
+                static_cast<uint_least8_t>(color.green()),
+                static_cast<uint_least8_t>(color.blue()),
+                255};
+
         snapshot.hot_cues[hotCueIndex] = hotCue;
     }
 
@@ -408,8 +422,7 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
                 const auto location = m_pTrackCollectionManager->internalCollection()
                                               ->getTrackDAO()
                                               .getTrackLocation(trackId);
-                const auto trackFile = TrackFile(location);
-                m_trackRefs.append(TrackRef::fromFileInfo(trackFile, trackId));
+                m_trackRefs.append(TrackRef::fromFilePath(location, trackId));
             }
         }
     }

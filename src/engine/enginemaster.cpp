@@ -369,6 +369,9 @@ void EngineMaster::processChannels(int iBufferSize) {
 
     // Do internal master sync post-processing before the other
     // channels.
+    // Note, because we call this on the internal clock first,
+    // it will have an up-to-date beatDistance, whereas the other
+    // Syncables will not.
     m_pMasterSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
 
     // After all the engines have been processed, trigger post-processing
@@ -423,7 +426,7 @@ void EngineMaster::process(const int iBufferSize) {
 
     if (headphoneEnabled) {
         // Process effects and mix PFL channels together for the headphones.
-        // Effects will be reprocessed post-fader for the crossfader busses
+        // Effects will be reprocessed post-fader for the crossfader buses
         // and master mix, so the channel input buffers cannot be modified here.
         ChannelMixer::applyEffectsAndMixChannels(
             m_headphoneGain, &m_activeHeadphoneChannels,
@@ -792,6 +795,7 @@ void EngineMaster::processHeadphones(const CSAMPLE_GAIN masterMixGainInHeadphone
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
+    pChannel->setChannelIndex(pChannelInfo->m_index);
     pChannelInfo->m_pChannel = pChannel;
     const QString& group = pChannel->getGroup();
     pChannelInfo->m_handle = m_pChannelHandleFactory->getOrCreateHandle(group);
@@ -834,6 +838,13 @@ EngineChannel* EngineMaster::getChannel(const QString& group) {
         }
     }
     return nullptr;
+}
+
+CSAMPLE_GAIN EngineMaster::getMasterGain(int channelIndex) const {
+    if (channelIndex >= 0 && channelIndex < m_channelMasterGainCache.size()) {
+        return m_channelMasterGainCache[channelIndex].m_gain;
+    }
+    return CSAMPLE_GAIN_ZERO;
 }
 
 const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {

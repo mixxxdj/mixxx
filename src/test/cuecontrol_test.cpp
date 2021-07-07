@@ -28,7 +28,8 @@ class CueControlTest : public BaseSignalPathTest {
 
     TrackPointer createTestTrack() const {
         const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
-        const auto pTrack = Track::newTemporary(kTrackLocationTest, SecurityTokenPointer());
+        const auto pTrack = Track::newTemporary(
+                mixxx::FileAccess(mixxx::FileInfo(kTrackLocationTest)));
         pTrack->setAudioProperties(
                 mixxx::audio::ChannelCount(2),
                 mixxx::audio::SampleRate(44100),
@@ -54,8 +55,9 @@ class CueControlTest : public BaseSignalPathTest {
         return m_pChannel1->getEngineBuffer()->m_pCueControl->getSampleOfTrack().current;
     }
 
-    void setCurrentSample(double sample) {
-        m_pChannel1->getEngineBuffer()->queueNewPlaypos(sample, EngineBuffer::SEEK_STANDARD);
+    void setCurrentSample(double samplePosition) {
+        const auto position = mixxx::audio::FramePos::fromEngineSamplePos(samplePosition);
+        m_pChannel1->getEngineBuffer()->queueNewPlaypos(position, EngineBuffer::SEEK_STANDARD);
         ProcessBuffer();
     }
 

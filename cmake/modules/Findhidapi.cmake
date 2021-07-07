@@ -62,6 +62,15 @@ find_library(hidapi_LIBRARY
 )
 mark_as_advanced(hidapi_LIBRARY)
 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  find_library(hidapi-hidraw_LIBRARY
+    NAMES hidapi-hidraw
+    PATHS ${PC_hidapi_LIBRARY_DIRS}
+    DOC "hidap-hidraw library"
+  )
+  mark_as_advanced(hidapi-hidraw_LIBRARY)
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   hidapi
@@ -98,5 +107,14 @@ if(hidapi_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_hidapi_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${hidapi_INCLUDE_DIR}"
     )
+   if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+     add_library(hidapi::hidraw UNKNOWN IMPORTED)
+     set_target_properties(hidapi::hidraw
+       PROPERTIES
+         IMPORTED_LOCATION "${hidapi-hidraw_LIBRARY}"
+         INTERFACE_COMPILE_OPTIONS "${PC_hidapi_CFLAGS_OTHER}"
+         INTERFACE_INCLUDE_DIRECTORIES "${hidapi_INCLUDE_DIR}"
+      )
+    endif()
   endif()
 endif()

@@ -68,13 +68,13 @@ const QStringList DEFAULT_COLUMNS = {
 } // namespace
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-                                         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
+        UserSettingsPointer pConfig)
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
-          m_icon(":/images/library/ic_library_tracks.svg"),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_pLibraryTableModel(nullptr),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
     QStringList columns = DEFAULT_COLUMNS;
@@ -102,13 +102,15 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     m_pTrackCollection->connectTrackSource(m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, pLibrary->trackCollections(), "mixxx.db.model.library");
+    m_pLibraryTableModel = new LibraryTableModel(this,
+            pLibrary->trackCollectionManager(),
+            "mixxx.db.model.library");
 
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     pRootItem->appendChild(kMissingTitle);
     pRootItem->appendChild(kHiddenTitle);
 
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
 
 #ifdef __ENGINEPRIME__
     m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
@@ -142,12 +144,8 @@ QVariant MixxxLibraryFeature::title() {
     return tr("Tracks");
 }
 
-QIcon MixxxLibraryFeature::getIcon() {
-    return m_icon;
-}
-
-TreeItemModel* MixxxLibraryFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* MixxxLibraryFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {
@@ -197,7 +195,7 @@ bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) 
     if (pSource) {
         return false;
     } else {
-        QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(
+        QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
                 urls, true);
         return trackIds.size() > 0;
     }

@@ -25,8 +25,11 @@ class BpmControl : public EngineControl {
     BpmControl(const QString& group, UserSettingsPointer pConfig);
     ~BpmControl() override;
 
-    double getBpm() const;
-    double getLocalBpm() const { return m_pLocalBpm ? m_pLocalBpm->get() : 0.0; }
+    mixxx::Bpm getBpm() const;
+    mixxx::Bpm getLocalBpm() const {
+        return m_pLocalBpm ? mixxx::Bpm(m_pLocalBpm->get()) : mixxx::Bpm();
+    }
+
     // When in master sync mode, ratecontrol calls calcSyncedRate to figure out
     // how fast the track should play back.  The returned rate is usually just
     // the correct pitch to match bpms.  The usertweak argument represents
@@ -42,11 +45,14 @@ class BpmControl : public EngineControl {
     /// getBeatDistance is adjusted to include the user offset so it's
     /// transparent to other decks.
     double getBeatDistance(double dThisPosition) const;
+    double getUserOffset() const {
+        return m_dUserOffset.getValue();
+    }
 
     void setTargetBeatDistance(double beatDistance);
-    void setInstantaneousBpm(double instantaneousBpm);
+    void updateInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
-    double updateLocalBpm();
+    mixxx::Bpm updateLocalBpm();
     /// updateBeatDistance is adjusted to include the user offset so
     /// it's transparent to other decks.
     double updateBeatDistance();
@@ -109,6 +115,7 @@ class BpmControl : public EngineControl {
     }
     bool syncTempo();
     double calcSyncAdjustment(bool userTweakingSync);
+    void adjustBeatsBpm(double deltaBpm);
 
     friend class SyncControl;
 
@@ -155,6 +162,9 @@ class BpmControl : public EngineControl {
 
     ControlProxy* m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;
+    // The user offset is a beat distance percentage value that the user has tweaked a deck
+    // to bring it in sync with the other decks. This value is added to the reported beat
+    // distance to get the virtual beat distance used for sync.
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
     ControlProxy* m_pSyncMode;
@@ -168,6 +178,6 @@ class BpmControl : public EngineControl {
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
 
-    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
+    FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInMasterChange);
 };

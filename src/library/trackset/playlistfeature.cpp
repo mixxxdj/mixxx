@@ -40,22 +40,18 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BasePlaylistFeature(pLibrary,
                   pConfig,
                   new PlaylistTableModel(nullptr,
-                          pLibrary->trackCollections(),
+                          pLibrary->trackCollectionManager(),
                           "mixxx.db.model.playlist"),
-                  QStringLiteral("PLAYLISTHOME")),
-          m_icon(QStringLiteral(":/images/library/ic_library_playlist.svg")) {
+                  QStringLiteral("PLAYLISTHOME"),
+                  QStringLiteral("playlist")) {
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
     constructChildModel(kInvalidPlaylistId);
 }
 
 QVariant PlaylistFeature::title() {
     return tr("Playlists");
-}
-
-QIcon PlaylistFeature::getIcon() {
-    return m_icon;
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
@@ -110,8 +106,7 @@ bool PlaylistFeature::dropAcceptChild(
     // playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pLibrary->trackCollections()
-                                      ->internalCollection()
+    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()
                                       ->resolveTrackIdsFromUrls(urls, !pSource);
     if (!trackIds.size()) {
         return false;
@@ -132,7 +127,7 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& 
 
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
     QSqlDatabase database =
-            m_pLibrary->trackCollections()->internalCollection()->database();
+            m_pLibrary->trackCollectionManager()->internalCollection()->database();
 
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     QString queryString = QStringLiteral(
@@ -201,7 +196,7 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
     QSqlDatabase database =
-            m_pLibrary->trackCollections()->internalCollection()->database();
+            m_pLibrary->trackCollectionManager()->internalCollection()->database();
     QSqlTableModel playlistTableModel(this, database);
     playlistTableModel.setTable("PlaylistsCountsDurations");
     QString filter = "id=" + QString::number(playlistId);
@@ -262,11 +257,11 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertTreeItemRows(data_list, 0);
+    m_pSidebarModel->insertTreeItemRows(data_list, 0);
     if (selectedRow == -1) {
         return QModelIndex();
     }
-    return m_childModel.index(selectedRow, 0);
+    return m_pSidebarModel->index(selectedRow, 0);
 }
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {

@@ -30,7 +30,7 @@
     <!-- Allow access to files selected with an Open/Save dialog -->
     <key>com.apple.security.files.user-selected.read-write</key>
     <true/>
-    <!-- Persists access permission for files selected with an Open/Save dialog accross restarts -->
+    <!-- Persists access permission for files selected with an Open/Save dialog across restarts -->
     <key>com.apple.security.files.bookmarks.app-scope</key>
     <true/>
 

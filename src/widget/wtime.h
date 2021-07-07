@@ -6,7 +6,7 @@
 #include <QTimer>
 
 #include "widget/wlabel.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class WTime: public WLabel {
     Q_OBJECT

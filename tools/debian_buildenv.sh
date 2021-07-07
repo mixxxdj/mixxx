@@ -3,12 +3,10 @@
 # shellcheck disable=SC1091
 set -o pipefail
 
-COMMAND=$1
-shift
-
-case "$COMMAND" in
+case "$1" in
     name)
-        echo "No build environment needed for Ubuntu, please install dependencies using apt." >&2
+        echo "No build environment name required for Debian based distros." >&2
+        echo "This script installs the build dependencies via apt using the \"setup\" option." >&2
         ;;
 
     setup)
@@ -21,8 +19,7 @@ case "$COMMAND" in
                 ;;
             *) # libmp4v2 was removed from Debian 10 & Ubuntu 20.04 due to lack of maintenance, so use FFMPEG instead
                 PACKAGES_EXTRA=(
-                    libavcodec-dev
-                    libavutil-dev
+                    libavformat-dev
                 )
         esac
 
@@ -41,6 +38,8 @@ case "$COMMAND" in
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
             cmake \
+            clazy \
+            clang-tidy \
             debhelper \
             devscripts \
             docbook-to-man \
@@ -48,7 +47,6 @@ case "$COMMAND" in
             fonts-open-sans \
             fonts-ubuntu \
             g++ \
-            libavformat-dev \
             libchromaprint-dev \
             libdistro-info-perl \
             libebur128-dev \
@@ -76,6 +74,7 @@ case "$COMMAND" in
             libsqlite3-dev \
             libssl-dev \
             libtag1-dev \
+            libudev-dev \
             libupower-glib-dev \
             libusb-1.0-0-dev \
             libwavpack-dev \
@@ -84,5 +83,18 @@ case "$COMMAND" in
             protobuf-compiler \
             qt5keychain-dev \
             qtdeclarative5-dev \
+            qml-module-qtquick-controls \
+            qml-module-qtquick-controls2 \
+            qml-module-qt-labs-qmlmodels \
+            qml-module-qtquick-shapes \
             "${PACKAGES_EXTRA[@]}"
+        ;;
+    *)
+        echo "Usage: $0 [options]"
+        echo ""
+        echo "options:"
+        echo "   help       Displays this help."
+        echo "   name       Displays the name of the required build environment."
+        echo "   setup      Installs the build environment."
+        ;;
 esac

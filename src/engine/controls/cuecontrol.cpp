@@ -85,8 +85,12 @@ CueControl::CueControl(const QString& group,
           m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
           m_bypassCueSetByPlay(false),
           m_iNumHotCues(NUM_HOT_CUES),
-          m_pCurrentSavedLoopControl(nullptr),
-          m_trackMutex(QMutex::Recursive) {
+          m_pCurrentSavedLoopControl(nullptr)
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+          ,
+          m_trackMutex(QMutex::Recursive)
+#endif
+{
     // To silence a compiler warning about CUE_MODE_PIONEER.
     Q_UNUSED(CUE_MODE_PIONEER);
     createControls();
@@ -762,7 +766,17 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
             if (beatloopSize <= 0 || !pBeats) {
                 return;
             }
-            cueEndPosition = pBeats->findNBeatsFromSample(cueStartPosition, beatloopSize);
+            mixxx::audio::FramePos cueEndPositionFrames;
+            if (cueStartPosition != Cue::kNoPosition) {
+                const auto cueStartPositionFrames =
+                        mixxx::audio::FramePos::fromEngineSamplePos(
+                                cueStartPosition);
+                cueEndPositionFrames = pBeats->findNBeatsFromPosition(
+                        cueStartPositionFrames, beatloopSize);
+            }
+            cueEndPosition = cueEndPositionFrames.isValid()
+                    ? cueEndPositionFrames.toEngineSamplePos()
+                    : Cue::kNoPosition;
         }
         cueType = mixxx::CueType::Loop;
         break;
@@ -1975,10 +1989,12 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    double closestBeat = pBeats->findClosestBeat(cuePos);
+    const auto cuePosition = mixxx::audio::FramePos::fromEngineSamplePos(cuePos);
+    const auto closestBeatPosition = pBeats->findClosestBeat(cuePosition);
     // The closest beat can be an unreachable  interpolated beat past the end of
     // the track.
-    if (closestBeat != -1.0 && closestBeat <= total) {
+    const double closestBeat = closestBeatPosition.toEngineSamplePos();
+    if (closestBeatPosition.isValid() && closestBeat <= total) {
         return closestBeat;
     }
 

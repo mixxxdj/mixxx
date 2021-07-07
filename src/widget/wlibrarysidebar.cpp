@@ -45,9 +45,9 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
         // drag so for now we accept all drags. Since almost every
         // LibraryFeature accepts all files in the drop and accepts playlist
         // drops we default to those flags to DragAndDropHelper.
-        QList<TrackFile> files = DragAndDropHelper::supportedTracksFromUrls(
+        QList<mixxx::FileInfo> fileInfos = DragAndDropHelper::supportedTracksFromUrls(
                 event->mimeData()->urls(), false, true);
-        if (!files.isEmpty()) {
+        if (!fileInfos.isEmpty()) {
             event->acceptProposedAction();
             return;
         }
@@ -259,4 +259,7 @@ bool WLibrarySidebar::event(QEvent* pEvent) {
 
 void WLibrarySidebar::slotSetFont(const QFont& font) {
     setFont(font);
+    // Resize the feature icons to be a bit taller than the label's capital
+    int iconSize = static_cast<int>(QFontMetrics(font).height() * 0.8);
+    setIconSize(QSize(iconSize, iconSize));
 }
