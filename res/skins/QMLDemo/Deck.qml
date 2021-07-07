@@ -365,16 +365,12 @@ Item {
 
         }
 
-        Skin.ControlButton {
+        Skin.SyncButton {
             id: syncButton
 
             anchors.right: parent.right
             anchors.top: parent.top
-            text: "Sync"
             group: root.group
-            key: "sync_enabled"
-            toggleable: true
-            activeColor: Theme.deckActiveColor
         }
 
         FadeBehavior on visible {
