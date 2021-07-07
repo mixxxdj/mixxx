@@ -1,7 +1,7 @@
 # Get the current commit ref
 if(NOT GIT_DESCRIBE)
   execute_process(
-    COMMAND git describe --tags --always --dirty=-modified
+    COMMAND git describe --tags --always --first-parent --dirty=-modified
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     OUTPUT_VARIABLE GIT_DESCRIBE
     OUTPUT_STRIP_TRAILING_WHITESPACE
