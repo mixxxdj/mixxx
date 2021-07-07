@@ -15,6 +15,7 @@ ControlProxy::ControlProxy(const char* g, const char* i, QObject* pParent, Contr
 
 ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent, ControlFlags flags)
         : QObject(pParent),
+          m_bValueChangesAreQuickActionsRecordable(false),
           m_pControl(nullptr) {
     DEBUG_ASSERT(key.isValid() || flags.testFlag(ControlFlag::AllowInvalidKey));
     m_key = key;

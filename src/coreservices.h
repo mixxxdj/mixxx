@@ -1,6 +1,7 @@
 #pragma once
 
 #include "control/controlpushbutton.h"
+#include "control/quickactionsmanager.h"
 #include "preferences/configobject.h"
 #include "preferences/constants.h"
 #include "preferences/settingsmanager.h"
@@ -109,6 +110,7 @@ class CoreServices : public QObject {
   private:
     bool initializeDatabase();
 
+    std::shared_ptr<QuickActionsManager> m_pQuickActionsManager;
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     // owned by EffectsManager
