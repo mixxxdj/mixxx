@@ -15,20 +15,20 @@ const QHash<int, QByteArray> kRoleNames = {
 
 QVariant QmlLibraryTrackListModel::data(const QModelIndex& proxyIndex, int role) const {
     if (!proxyIndex.isValid()) {
-        return QVariant();
+        return {};
     }
 
     VERIFY_OR_DEBUG_ASSERT(checkIndex(proxyIndex)) {
-        return QVariant();
+        return {};
     }
 
     const auto pSourceModel = static_cast<LibraryTableModel*>(sourceModel());
     VERIFY_OR_DEBUG_ASSERT(pSourceModel) {
-        return QVariant();
+        return {};
     }
 
     if (proxyIndex.column() > 0) {
-        return QVariant();
+        return {};
     }
 
     int column = -1;
@@ -51,7 +51,7 @@ QVariant QmlLibraryTrackListModel::data(const QModelIndex& proxyIndex, int role)
                 proxyIndex.siblingAtColumn(column), Qt::DisplayRole)
                                          .toString();
         if (location.isEmpty()) {
-            return QVariant();
+            return {};
         }
         return QUrl::fromLocalFile(location);
     }
@@ -60,7 +60,7 @@ QVariant QmlLibraryTrackListModel::data(const QModelIndex& proxyIndex, int role)
     }
 
     if (column < 0) {
-        return QVariant();
+        return {};
     }
 
     return QIdentityProxyModel::data(proxyIndex.siblingAtColumn(column), Qt::DisplayRole);
