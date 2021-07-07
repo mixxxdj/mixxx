@@ -35,16 +35,13 @@ case "$1" in
         ;;
 
     setup)
-        # Minimum required by Qt 5.12
-        MACOSX_DEPLOYMENT_TARGET=10.12
-
         BUILDENV_PATH="${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
         mkdir -p "${BUILDENV_BASEPATH}"
         if [ ! -d "${BUILDENV_PATH}" ]; then
             if [ "$1" != "--profile" ]; then
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading it..."
-                curl "https://downloads.mixxx.org/dependencies/buildserver/2.3.x-macosx/${BUILDENV_NAME}.tar.gz" -o "${BUILDENV_PATH}.tar.gz"
-                OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.tar.gz"|cut -f 1 -d' ')
+                curl "https://downloads.mixxx.org/dependencies/2.4/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
+                OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.zip"|cut -f 1 -d' ')
                 if [[ "$OBSERVED_SHA256" == "$BUILDENV_SHA256" ]]; then
                     echo "Download matched expected SHA256 sum $BUILDENV_SHA256"
                 else
@@ -55,7 +52,7 @@ case "$1" in
                 fi
                 echo ""
                 echo "Extracting ${BUILDENV_NAME}.tar.gz..."
-                tar xf "${BUILDENV_PATH}.tar.gz" -C "${BUILDENV_BASEPATH}" && \
+                unzip "${BUILDENV_PATH}.zip" -d "${BUILDENV_BASEPATH}" && \
                 echo "Successfully extracted ${BUILDENV_NAME}.tar.gz"
             else
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, run the command below to download it."
@@ -90,26 +87,16 @@ case "$1" in
             rm "${SDKROOT}.tar.xz"
         fi
 
-        Qt5_DIR="$(find "${BUILDENV_PATH}" -type d -path "*/cmake/Qt5")"
-        [ -z "${Qt5_DIR}" ] && echo "Failed to locate Qt5_DIR!" >&2
-        QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${BUILDENV_PATH}" -type d -path "*/plugins")"
-        [ -z "${QT_QPA_PLATFORM_PLUGIN_PATH}" ] && echo "Failed to locate QT_QPA_PLATFORM_PLUGIN_PATH" >&2
-        export CC="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
-        export CXX="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
-        export PATH="${BUILDENV_PATH}/bin:${PATH}"
-        export CMAKE_PREFIX_PATH="${BUILDENV_PATH}"
-        export Qt5_DIR
-        export QT_QPA_PLATFORM_PLUGIN_PATH
+        export VCPKG_ROOT="${BUILDENV_PATH}"
+        export VCPKG_OVERLAY_TRIPLETS="${BUILDENV_PATH}/overlay/triplets"
+        export VCPKG_DEFAULT_TRIPLET=x64-osx
+        export X_VCPKG_APPLOCAL_DEPS_INSTALL=ON
 
         echo_exported_variables() {
-            echo "CC=${CC}"
-            echo "CXX=${CXX}"
-            echo "SDKROOT=${SDKROOT}"
-            echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
-            echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
-            echo "Qt5_DIR=${Qt5_DIR}"
-            echo "QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
-            echo "PATH=${PATH}"
+            echo "VCPKG_ROOT=${VCPKG_ROOT}"
+            echo "VCPKG_OVERLAY_TRIPLETS=${VCPKG_OVERLAY_TRIPLETS}"
+            echo "VCPKG_DEFAULT_TRIPLET=${VCPKG_DEFAULT_TRIPLET}"
+            echo "X_VCPKG_APPLOCAL_DEPS_INSTALL=${X_VCPKG_APPLOCAL_DEPS_INSTALL}"
         }
 
         if [ -n "${GITHUB_ENV}" ]; then
