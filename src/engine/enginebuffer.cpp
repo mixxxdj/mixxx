@@ -457,7 +457,9 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 }
 
 void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
-    doSeekPlayPos(pOtherBuffer->getExactPlayPos(), SEEK_EXACT);
+    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(
+            pOtherBuffer->getExactPlayPos());
+    doSeekPlayPos(position, SEEK_EXACT);
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -584,7 +586,7 @@ void EngineBuffer::ejectTrack() {
     m_pause.lock();
 
     m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0);
-    doSeekPlayPos(0.0, SEEK_EXACT);
+    doSeekPlayPos(mixxx::audio::kStartFramePos, SEEK_EXACT);
 
     m_pCurrentTrack.reset();
     m_pTrackSamples->set(0);
@@ -654,12 +656,16 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double playPosition) {
-    doSeekPlayPos(playPosition, SEEK_STANDARD);
+    // TODO: Check if we can assert a valid play position here
+    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(playPosition);
+    doSeekPlayPos(position, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekExact(double playPosition) {
-    doSeekPlayPos(playPosition, SEEK_EXACT);
+    // TODO: Check if we can assert a valid play position here
+    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(playPosition);
+    doSeekPlayPos(position, SEEK_EXACT);
 }
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
@@ -697,11 +703,6 @@ void EngineBuffer::doSeekPlayPos(mixxx::audio::FramePos position, enum SeekReque
 #endif
 
     queueNewPlaypos(position, seekType);
-}
-
-void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
-    // FIXME: Use maybe invalid here
-    doSeekPlayPos(mixxx::audio::FramePos::fromEngineSamplePos(new_playpos), seekType);
 }
 
 bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {

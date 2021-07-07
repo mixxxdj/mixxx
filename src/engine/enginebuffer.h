@@ -217,7 +217,6 @@ class EngineBuffer : public EngineObject {
 
     void doSeekFractional(double fractionalPos, enum SeekRequest seekType);
     void doSeekPlayPos(mixxx::audio::FramePos position, enum SeekRequest seekType);
-    void doSeekPlayPos(double playpos, enum SeekRequest seekType);
 
     // Read one buffer from the current scaler into the crossfade buffer.  Used
     // for transitioning from one scaler to another, or reseeking a scaler
