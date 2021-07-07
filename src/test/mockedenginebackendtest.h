@@ -80,6 +80,7 @@ class MockedEngineBackendTest : public BaseSignalPathTest {
         m_pTrack1 = m_pMixerDeck1->loadFakeTrack(false, 0.0);
         m_pTrack2 = m_pMixerDeck2->loadFakeTrack(false, 0.0);
         m_pTrack3 = m_pMixerDeck3->loadFakeTrack(false, 0.0);
+        ProcessBuffer();
     }
 
     ~MockedEngineBackendTest() override {
