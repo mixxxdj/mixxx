@@ -53,7 +53,7 @@ class TrackRecord final {
     MIXXX_DECL_PROPERTY(QString, url, Url)
     MIXXX_DECL_PROPERTY(PlayCounter, playCounter, PlayCounter)
     MIXXX_DECL_PROPERTY(RgbColor::optional_t, color, Color)
-    MIXXX_DECL_PROPERTY(CuePosition, cuePoint, CuePoint)
+    MIXXX_DECL_PROPERTY(mixxx::audio::FramePos, mainCuePosition, MainCuePosition)
     MIXXX_DECL_PROPERTY(bool, bpmLocked, BpmLocked)
 
   public:

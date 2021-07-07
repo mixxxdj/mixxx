@@ -158,7 +158,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
         return m_bPreferencesReanalyzeImported;
     }
 
-    if (subVersion.isEmpty() && pBeats->findNextBeat(0) <= 0.0 &&
+    if (subVersion.isEmpty() && pBeats->firstBeat() <= mixxx::audio::kStartFramePos &&
             m_pluginId != mixxx::AnalyzerSoundTouchBeats::pluginInfo().id()) {
         // This happens if the beat grid was created from the metadata BPM value.
         qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";

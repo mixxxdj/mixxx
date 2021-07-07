@@ -60,12 +60,12 @@ TEST_F(AnalyzerSilenceTest, SilenceTrack) {
     EXPECT_DOUBLE_EQ(0.0, cue.getPosition());
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getPosition());
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kStartFramePos, pIntroCue->getPosition());
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLengthFrames() * kChannelCount);
 
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, pOutroCue->getPosition());
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pOutroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pOutroCue->getLengthFrames() * kChannelCount);
 }
 
 TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
@@ -81,12 +81,12 @@ TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
     EXPECT_DOUBLE_EQ(0.0, cue.getPosition());
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getPosition());
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kStartFramePos, pIntroCue->getPosition());
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLengthFrames() * kChannelCount);
 
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, pOutroCue->getPosition());
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pOutroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pOutroCue->getLengthFrames() * kChannelCount);
 }
 
 TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
@@ -112,12 +112,12 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
     EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, cue.getPosition());
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, pIntroCue->getPosition());
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, pIntroCue->getPosition().toEngineSamplePos());
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLengthFrames() * kChannelCount);
 
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, pOutroCue->getPosition());
-    EXPECT_DOUBLE_EQ(3 * nTrackSampleDataLength / 4, pOutroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(3 * nTrackSampleDataLength / 4, pOutroCue->getLengthFrames() * kChannelCount);
 }
 
 TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
@@ -155,12 +155,12 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
     EXPECT_DOUBLE_EQ(oneFifthOfTrackLength, cue.getPosition());
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
-    EXPECT_DOUBLE_EQ(oneFifthOfTrackLength, pIntroCue->getPosition());
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_DOUBLE_EQ(oneFifthOfTrackLength, pIntroCue->getPosition().toEngineSamplePos());
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLengthFrames() * kChannelCount);
 
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, pOutroCue->getPosition());
-    EXPECT_DOUBLE_EQ(4 * oneFifthOfTrackLength, pOutroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(4 * oneFifthOfTrackLength, pOutroCue->getLengthFrames() * kChannelCount);
 }
 
 TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
@@ -199,11 +199,11 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
     CuePosition cue = pTrack->getCuePoint();
     EXPECT_DOUBLE_EQ(kManualCuePosition, cue.getPosition());
 
-    EXPECT_DOUBLE_EQ(kManualIntroPosition, pIntroCue->getPosition());
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_DOUBLE_EQ(kManualIntroPosition, pIntroCue->getPosition().toEngineSamplePos());
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLengthFrames() * kChannelCount);
 
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, pOutroCue->getPosition());
-    EXPECT_DOUBLE_EQ(kManualOutroPosition, pOutroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(kManualOutroPosition, pOutroCue->getLengthFrames() * kChannelCount);
 }
 
 } // namespace

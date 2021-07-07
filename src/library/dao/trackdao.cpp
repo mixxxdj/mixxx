@@ -547,7 +547,8 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":comment", trackInfo.getComment());
     pTrackLibraryQuery->bindValue(":url", track.getUrl());
     pTrackLibraryQuery->bindValue(":rating", track.getRating());
-    pTrackLibraryQuery->bindValue(":cuepoint", track.getCuePoint().getPosition());
+    pTrackLibraryQuery->bindValue(":cuepoint",
+            track.getMainCuePosition().toEngineSamplePosMaybeInvalid());
     pTrackLibraryQuery->bindValue(":bpm_lock", track.getBpmLocked() ? 1 : 0);
     pTrackLibraryQuery->bindValue(":replaygain", trackInfo.getReplayGain().getRatio());
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
@@ -1163,7 +1164,8 @@ bool setTrackRating(const QSqlRecord& record, const int column,
 
 bool setTrackCuePoint(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
-    pTrack->setCuePoint(CuePosition(record.value(column).toDouble()));
+    pTrack->setMainCuePosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+            record.value(column).toDouble()));
     return false;
 }
 

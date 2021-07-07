@@ -336,12 +336,20 @@ class Track : public QObject {
     ConstWaveformPointer getWaveformSummary() const;
     void setWaveformSummary(ConstWaveformPointer pWaveform);
 
-    // Get the track's main cue point
-    CuePosition getCuePoint() const;
+    /// Get the track's main cue point
+    mixxx::audio::FramePos getMainCuePosition() const;
+    CuePosition getCuePoint() const {
+        return getMainCuePosition().toEngineSamplePosMaybeInvalid();
+    };
     // Set the track's main cue point
-    void setCuePoint(CuePosition cue);
+    void setMainCuePosition(mixxx::audio::FramePos position);
+    void setCuePoint(CuePosition position) {
+        setMainCuePosition(
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        position.getPosition()));
+    }
     /// Shift all cues by a constant offset
-    void shiftCuePositionsMillis(double milliseconds);
+    void shiftCuePositionsMillis(mixxx::audio::FrameDiff_t milliseconds);
     // Call when analysis is done.
     void analysisFinished();
 
@@ -349,8 +357,20 @@ class Track : public QObject {
     CuePointer createAndAddCue(
             mixxx::CueType type,
             int hotCueIndex,
-            double sampleStartPosition,
-            double sampleEndPosition);
+            mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition);
+    CuePointer createAndAddCue(
+            mixxx::CueType type,
+            int hotCueIndex,
+            double startPositionSamples,
+            double endPositionSamples) {
+        return createAndAddCue(type,
+                hotCueIndex,
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        startPositionSamples),
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        endPositionSamples));
+    }
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;
     void removeCue(const CuePointer& pCue);

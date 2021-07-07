@@ -5,6 +5,7 @@
 #include <QList>
 #include <QObject>
 
+#include "audio/frame.h"
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -17,6 +18,9 @@ class EngineMaster;
 class EngineBuffer;
 
 const int kNoTrigger = -1;
+static_assert(
+        mixxx::audio::FramePos::kLegacyInvalidEnginePosition == kNoTrigger,
+        "Invalid engine position value mismatch");
 
 /**
  * EngineControl is an abstract base class for objects which implement

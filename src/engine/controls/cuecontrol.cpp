@@ -484,7 +484,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                 pNewTrack->findCueByType(mixxx::CueType::AudibleSound);
         double audibleSoundPosition = Cue::kNoPosition;
         if (pAudibleSound) {
-            audibleSoundPosition = pAudibleSound->getPosition();
+            audibleSoundPosition = pAudibleSound->getPosition().toEngineSamplePosMaybeInvalid();
         }
         if (audibleSoundPosition != Cue::kNoPosition) {
             seekOnLoad(audibleSoundPosition);
@@ -581,8 +581,8 @@ void CueControl::loadCuesFromTrack() {
             } else {
                 // If the old hotcue is the same, then we only need to update
                 Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
-                pControl->setPosition(pos.startPosition);
-                pControl->setEndPosition(pos.endPosition);
+                pControl->setPosition(pos.startPosition.toEngineSamplePosMaybeInvalid());
+                pControl->setEndPosition(pos.endPosition.toEngineSamplePosMaybeInvalid());
                 pControl->setColor(pCue->getColor());
                 pControl->setType(pCue->getType());
             }
@@ -604,8 +604,8 @@ void CueControl::loadCuesFromTrack() {
     }
 
     if (pIntroCue) {
-        double startPosition = pIntroCue->getPosition();
-        double endPosition = pIntroCue->getEndPosition();
+        double startPosition = pIntroCue->getPosition().toEngineSamplePosMaybeInvalid();
+        double endPosition = pIntroCue->getEndPosition().toEngineSamplePosMaybeInvalid();
 
         m_pIntroStartPosition->set(quantizeCuePoint(startPosition));
         m_pIntroStartEnabled->forceSet(
@@ -621,8 +621,8 @@ void CueControl::loadCuesFromTrack() {
     }
 
     if (pOutroCue) {
-        double startPosition = pOutroCue->getPosition();
-        double endPosition = pOutroCue->getEndPosition();
+        double startPosition = pOutroCue->getPosition().toEngineSamplePosMaybeInvalid();
+        double endPosition = pOutroCue->getEndPosition().toEngineSamplePosMaybeInvalid();
 
         m_pOutroStartPosition->set(quantizeCuePoint(startPosition));
         m_pOutroStartEnabled->forceSet(
@@ -642,7 +642,7 @@ void CueControl::loadCuesFromTrack() {
     // The mixxx::CueType::MainCue from getCuePoints() has the priority
     CuePosition mainCuePoint;
     if (pMainCue) {
-        double position = pMainCue->getPosition();
+        double position = pMainCue->getPosition().toEngineSamplePosMaybeInvalid();
         mainCuePoint.setPosition(position);
         // adjust the track cue accordingly
         m_pLoadedTrack->setCuePoint(mainCuePoint);
@@ -766,7 +766,17 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
             if (beatloopSize <= 0 || !pBeats) {
                 return;
             }
-            cueEndPosition = pBeats->findNBeatsFromSample(cueStartPosition, beatloopSize);
+            mixxx::audio::FramePos cueEndPositionFrames;
+            if (cueStartPosition != Cue::kNoPosition) {
+                const auto cueStartPositionFrames =
+                        mixxx::audio::FramePos::fromEngineSamplePos(
+                                cueStartPosition);
+                cueEndPositionFrames = pBeats->findNBeatsFromPosition(
+                        cueStartPositionFrames, beatloopSize);
+            }
+            cueEndPosition = cueEndPositionFrames.isValid()
+                    ? cueEndPositionFrames.toEngineSamplePos()
+                    : Cue::kNoPosition;
         }
         cueType = mixxx::CueType::Loop;
         break;
@@ -889,7 +899,7 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double value) {
         return;
     }
 
-    double startPosition = pCue->getPosition();
+    double startPosition = pCue->getPosition().toEngineSamplePosMaybeInvalid();
     if (startPosition == Cue::kNoPosition) {
         return;
     }
@@ -923,10 +933,10 @@ void CueControl::hotcueCueLoop(HotcueControl* pControl, double value) {
 
     CuePointer pCue = pControl->getCue();
 
-    if (!pCue || pCue->getPosition() == Cue::kNoPosition) {
+    if (!pCue || !pCue->getPosition().isValid()) {
         hotcueSet(pControl, value, HotcueSetMode::Cue);
         pCue = pControl->getCue();
-        VERIFY_OR_DEBUG_ASSERT(pCue && pCue->getPosition() != Cue::kNoPosition) {
+        VERIFY_OR_DEBUG_ASSERT(pCue && pCue->getPosition().isValid()) {
             return;
         }
     }
@@ -941,7 +951,9 @@ void CueControl::hotcueCueLoop(HotcueControl* pControl, double value) {
         } else {
             bool loopActive = pControl->getStatus() == HotcueControl::Status::Active;
             Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
-            setLoop(pos.startPosition, pos.endPosition, !loopActive);
+            setLoop(pos.startPosition.toEngineSamplePosMaybeInvalid(),
+                    pos.endPosition.toEngineSamplePosMaybeInvalid(),
+                    !loopActive);
         }
     } break;
     case mixxx::CueType::HotCue: {
@@ -949,7 +961,7 @@ void CueControl::hotcueCueLoop(HotcueControl* pControl, double value) {
         // create a beatloop starting at the hotcue position. This is useful for
         // mapping the CUE LOOP mode labeled on some controllers.
         setCurrentSavedLoopControlAndActivate(nullptr);
-        double startPosition = pCue->getPosition();
+        double startPosition = pCue->getPosition().toEngineSamplePosMaybeInvalid();
         bool loopActive = m_pLoopEnabled->toBool() &&
                 (startPosition == m_pLoopStartPosition->get());
         setBeatLoop(startPosition, !loopActive);
@@ -968,7 +980,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
     CuePointer pCue = pControl->getCue();
     if (value > 0) {
         // pressed
-        if (pCue && pCue->getPosition() != Cue::kNoPosition &&
+        if (pCue && pCue->getPosition().isValid() &&
                 pCue->getType() != mixxx::CueType::Invalid) {
             if (m_pPlay->toBool() && m_currentlyPreviewingIndex == Cue::kNoHotCue) {
                 // playing by Play button
@@ -983,7 +995,10 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                         bool loopActive = pControl->getStatus() ==
                                 HotcueControl::Status::Active;
                         Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
-                        setLoop(pos.startPosition, pos.endPosition, !loopActive);
+                        setLoop(pos.startPosition
+                                        .toEngineSamplePosMaybeInvalid(),
+                                pos.endPosition.toEngineSamplePosMaybeInvalid(),
+                                !loopActive);
                     }
                     break;
                 default:
@@ -1086,7 +1101,9 @@ void CueControl::hotcuePositionChanged(
         if (newPosition == Cue::kNoPosition) {
             detachCue(pControl);
         } else if (newPosition > 0 && newPosition < m_pTrackSamples->get()) {
-            if (pCue->getType() == mixxx::CueType::Loop && newPosition >= pCue->getEndPosition()) {
+            if (pCue->getType() == mixxx::CueType::Loop &&
+                    newPosition >= pCue->getEndPosition()
+                                           .toEngineSamplePosMaybeInvalid()) {
                 return;
             }
             pCue->setStartPosition(newPosition);
@@ -1105,7 +1122,7 @@ void CueControl::hotcueEndPositionChanged(
             pCue->setType(mixxx::CueType::HotCue);
             pCue->setEndPosition(Cue::kNoPosition);
         } else {
-            if (newEndPosition > pCue->getPosition()) {
+            if (newEndPosition > pCue->getPosition().toEngineSamplePosMaybeInvalid()) {
                 pCue->setEndPosition(newEndPosition);
             }
         }
@@ -1979,10 +1996,12 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    double closestBeat = pBeats->findClosestBeat(cuePos);
+    const auto cuePosition = mixxx::audio::FramePos::fromEngineSamplePos(cuePos);
+    const auto closestBeatPosition = pBeats->findClosestBeat(cuePosition);
     // The closest beat can be an unreachable  interpolated beat past the end of
     // the track.
-    if (closestBeat != -1.0 && closestBeat <= total) {
+    const double closestBeat = closestBeatPosition.toEngineSamplePos();
+    if (closestBeatPosition.isValid() && closestBeat <= total) {
         return closestBeat;
     }
 
@@ -2080,12 +2099,14 @@ void CueControl::setCurrentSavedLoopControlAndActivate(HotcueControl* pControl) 
 
     VERIFY_OR_DEBUG_ASSERT(
             type == mixxx::CueType::Loop &&
-            pos.endPosition != Cue::kNoPosition) {
+            pos.endPosition.isValid()) {
         return;
     }
 
     // Set new control as active
-    setLoop(pos.startPosition, pos.endPosition, true);
+    setLoop(pos.startPosition.toEngineSamplePosMaybeInvalid(),
+            pos.endPosition.toEngineSamplePosMaybeInvalid(),
+            true);
     pControl->setStatus(HotcueControl::Status::Active);
     m_pCurrentSavedLoopControl.storeRelease(pControl);
 }
@@ -2101,14 +2122,14 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
     }
 
     DEBUG_ASSERT(pSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
-    DEBUG_ASSERT(
-            pSavedLoopControl->getCue() &&
+    DEBUG_ASSERT(pSavedLoopControl->getCue() &&
             pSavedLoopControl->getCue()->getPosition() ==
-                    m_pLoopStartPosition->get());
-    DEBUG_ASSERT(
-            pSavedLoopControl->getCue() &&
+                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                            m_pLoopStartPosition->get()));
+    DEBUG_ASSERT(pSavedLoopControl->getCue() &&
             pSavedLoopControl->getCue()->getEndPosition() ==
-                    m_pLoopEndPosition->get());
+                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                            m_pLoopEndPosition->get()));
 
     if (enabled) {
         pSavedLoopControl->setStatus(HotcueControl::Status::Active);
@@ -2409,8 +2430,8 @@ double HotcueControl::getEndPosition() const {
 void HotcueControl::setCue(const CuePointer& pCue) {
     DEBUG_ASSERT(!m_pCue);
     Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
-    setPosition(pos.startPosition);
-    setEndPosition(pos.endPosition);
+    setPosition(pos.startPosition.toEngineSamplePosMaybeInvalid());
+    setEndPosition(pos.endPosition.toEngineSamplePosMaybeInvalid());
     setColor(pCue->getColor());
     setStatus((pCue->getType() == mixxx::CueType::Invalid)
                     ? HotcueControl::Status::Empty

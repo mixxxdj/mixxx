@@ -349,10 +349,13 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
         return trySetBeatsWhileLocked(nullptr);
     } else if (!m_pBeats) {
         // No beat grid available -> create and initialize
-        double cue = m_record.getCuePoint().getPosition();
+        mixxx::audio::FramePos cuePosition = m_record.getMainCuePosition();
+        if (!cuePosition.isValid()) {
+            cuePosition = mixxx::audio::kStartFramePos;
+        }
         auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(),
                 bpm,
-                mixxx::audio::FramePos::fromEngineSamplePos(cue));
+                cuePosition);
         return trySetBeatsWhileLocked(std::move(pBeats));
     } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
             m_pBeats->getBpm() != bpm) {
@@ -852,18 +855,17 @@ void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
     emit waveformSummaryUpdated();
 }
 
-void Track::setCuePoint(CuePosition cue) {
+void Track::setMainCuePosition(mixxx::audio::FramePos position) {
     QMutexLocker lock(&m_qMutex);
 
-    if (!compareAndSet(m_record.ptrCuePoint(), cue)) {
+    if (!compareAndSet(m_record.ptrMainCuePosition(), position)) {
         // Nothing changed.
         return;
     }
 
     // Store the cue point as main cue
     CuePointer pLoadCue = findCueByType(mixxx::CueType::MainCue);
-    double position = cue.getPosition();
-    if (position != -1.0) {
+    if (position.isValid()) {
         if (pLoadCue) {
             pLoadCue->setStartPosition(position);
         } else {
@@ -871,7 +873,7 @@ void Track::setCuePoint(CuePosition cue) {
                     mixxx::CueType::MainCue,
                     Cue::kNoHotCue,
                     position,
-                    Cue::kNoPosition));
+                    mixxx::audio::kInvalidFramePos));
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
             // same thread as their host, namely this->thread().
@@ -909,9 +911,9 @@ void Track::analysisFinished() {
     emit analyzed();
 }
 
-CuePosition Track::getCuePoint() const {
+mixxx::audio::FramePos Track::getMainCuePosition() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getCuePoint();
+    return m_record.getMainCuePosition();
 }
 
 void Track::slotCueUpdated() {
@@ -922,13 +924,13 @@ void Track::slotCueUpdated() {
 CuePointer Track::createAndAddCue(
         mixxx::CueType type,
         int hotCueIndex,
-        double sampleStartPosition,
-        double sampleEndPosition) {
+        mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition) {
     CuePointer pCue(new Cue(
             type,
             hotCueIndex,
-            sampleStartPosition,
-            sampleEndPosition));
+            startPosition,
+            endPosition));
     // While this method could be called from any thread,
     // associated Cue objects should always live on the
     // same thread as their host, namely this->thread().
@@ -978,7 +980,7 @@ void Track::removeCue(const CuePointer& pCue) {
     disconnect(pCue.get(), nullptr, this, nullptr);
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == mixxx::CueType::MainCue) {
-        m_record.setCuePoint(CuePosition());
+        m_record.setMainCuePosition(mixxx::audio::kStartFramePos);
     }
     markDirtyAndUnlock(&lock);
     emit cuesUpdated();
@@ -997,7 +999,7 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             dirty = true;
         }
     }
-    if (compareAndSet(m_record.ptrCuePoint(), CuePosition())) {
+    if (compareAndSet(m_record.ptrMainCuePosition(), mixxx::audio::kStartFramePos)) {
         dirty = true;
     }
     if (dirty) {
@@ -1177,7 +1179,7 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
                 this,
                 &Track::slotCueUpdated);
         if (pCue->getType() == mixxx::CueType::MainCue) {
-            m_record.setCuePoint(CuePosition(pCue->getPosition()));
+            m_record.setMainCuePosition(pCue->getPosition());
         }
     }
     return true;

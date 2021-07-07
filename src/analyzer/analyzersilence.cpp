@@ -15,7 +15,7 @@ bool shouldAnalyze(TrackPointer pTrack) {
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
     CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
 
-    if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLength() <= 0) {
+    if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLengthFrames() <= 0) {
         return true;
     }
     return false;
