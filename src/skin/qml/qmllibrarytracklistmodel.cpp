@@ -67,13 +67,13 @@ QVariant QmlLibraryTrackListModel::data(const QModelIndex& proxyIndex, int role)
 }
 
 int QmlLibraryTrackListModel::columnCount(const QModelIndex& parent) const {
-    // This is a list model, i.e. entries without a parent have exactly one column.
-    if (!parent.isValid()) {
-        return 1;
+    // This is a list model, i.e. no entries have a parent.
+    VERIFY_OR_DEBUG_ASSERT(!parent.isValid()) {
+        return 0;
     }
 
-    // This is not a tree, so all indices with a parent don't have any columns.
-    return 0;
+    // There is exactly one column. All data is exposed as roles.
+    return 1;
 }
 
 QHash<int, QByteArray> QmlLibraryTrackListModel::roleNames() const {
