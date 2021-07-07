@@ -36,7 +36,6 @@ inline mixxx::audio::FramePos positionMillisToFrames(
         return mixxx::audio::kInvalidFramePos;
     }
 
-    // Try to avoid rounding errors
     return mixxx::audio::FramePos((*positionMillis * sampleRate) / 1000);
 }
 } // namespace
