@@ -2081,7 +2081,7 @@ TEST_F(EngineSyncTest, SetFileBpmUpdatesLocalBpm) {
             m_pTrack1->getSampleRate(), mixxx::Bpm(130), mixxx::audio::kStartFramePos);
     m_pTrack1->trySetBeats(pBeats1);
     EXPECT_EQ(
-            130.0, m_pEngineSync->getSyncableForGroup(m_sGroup1)->getBaseBpm());
+            mixxx::Bpm(130.0), m_pEngineSync->getSyncableForGroup(m_sGroup1)->getBaseBpm());
 }
 
 TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
@@ -2905,7 +2905,7 @@ TEST_F(EngineSyncTest, BpmAdjustFactor) {
     ProcessBuffer();
     EXPECT_TRUE(isSoftLeader(m_sGroup2));
     // Pretend a changing beatgrid
-    static_cast<SyncControl*>(m_pEngineSync->getLeaderSyncable())->setLocalBpm(152);
+    static_cast<SyncControl*>(m_pEngineSync->getLeaderSyncable())->setLocalBpm(mixxx::Bpm{152});
     ProcessBuffer();
 
     ControlObject::set(ConfigKey(m_sGroup1, "sync_enabled"), 1.0);

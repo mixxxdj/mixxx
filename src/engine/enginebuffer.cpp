@@ -1317,11 +1317,11 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     const mixxx::Bpm localBpm = m_pBpmControl->updateLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
     // FIXME: Double check if calling setLocalBpm with an invalid value is correct and intended.
-    double localBpmValue = mixxx::Bpm::kValueUndefined;
+    mixxx::Bpm newLocalBpm;
     if (localBpm.isValid()) {
-        localBpmValue = localBpm.value();
+        newLocalBpm = localBpm;
     }
-    m_pSyncControl->setLocalBpm(localBpmValue);
+    m_pSyncControl->setLocalBpm(newLocalBpm);
     m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (isLeader(mode)) {

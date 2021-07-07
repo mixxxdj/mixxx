@@ -12,6 +12,7 @@
 
 namespace {
 const mixxx::Logger kLogger("InternalClock");
+constexpr mixxx::Bpm kDefaultBpm(124.0);
 } // namespace
 
 InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync)
@@ -19,9 +20,9 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
           m_pEngineSync(pEngineSync),
           m_mode(SyncMode::None),
           m_iOldSampleRate(44100),
-          m_dOldBpm(124.0),
-          m_dBaseBpm(124.0),
-          m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
+          m_oldBpm(kDefaultBpm),
+          m_baseBpm(kDefaultBpm),
+          m_dBeatLength(m_iOldSampleRate * 60.0 / m_oldBpm.value()),
           m_dClockPosition(0) {
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the leader BPM. This also creates bpm_up
@@ -84,7 +85,7 @@ void InternalClock::slotSyncLeaderEnabledChangeRequest(double state) {
             return;
         }
         if (mode == SyncMode::None) {
-            m_dBaseBpm = m_dOldBpm;
+            m_baseBpm = m_oldBpm;
         }
         m_pEngineSync->requestSyncMode(this, SyncMode::LeaderExplicit);
     } else {
@@ -115,26 +116,26 @@ void InternalClock::updateLeaderBeatDistance(double beatDistance) {
     m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);
 }
 
-double InternalClock::getBaseBpm() const {
-    return m_dBaseBpm;
+mixxx::Bpm InternalClock::getBaseBpm() const {
+    return m_baseBpm;
 }
 
-double InternalClock::getBpm() const {
-    return m_pClockBpm->get();
+mixxx::Bpm InternalClock::getBpm() const {
+    return mixxx::Bpm(m_pClockBpm->get());
 }
 
-void InternalClock::updateLeaderBpm(double bpm) {
+void InternalClock::updateLeaderBpm(mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "InternalClock::setBpm" << bpm;
     }
-    if (bpm == 0) {
+    if (!bpm.isValid()) {
         return;
     }
-    m_pClockBpm->set(bpm);
+    m_pClockBpm->set(bpm.value());
     updateBeatLength(m_iOldSampleRate, bpm);
 }
 
-void InternalClock::updateInstantaneousBpm(double bpm) {
+void InternalClock::updateInstantaneousBpm(mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "InternalClock::setInstantaneousBpm" << bpm;
     }
@@ -145,28 +146,28 @@ void InternalClock::updateInstantaneousBpm(double bpm) {
 void InternalClock::notifyLeaderParamSource() {
 }
 
-void InternalClock::reinitLeaderParams(double beatDistance, double baseBpm, double bpm) {
+void InternalClock::reinitLeaderParams(double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "InternalClock::reinitLeaderParams" << beatDistance << baseBpm << bpm;
     }
-    if (bpm <= 0.0 || baseBpm <= 0.0) {
+    if (!bpm.isValid() || !baseBpm.isValid()) {
         return;
     }
-    m_dBaseBpm = baseBpm;
+    m_baseBpm = baseBpm;
     updateLeaderBpm(bpm);
     updateLeaderBeatDistance(beatDistance);
 }
 
 void InternalClock::slotBpmChanged(double bpm) {
-    m_dBaseBpm = bpm;
-    updateBeatLength(m_iOldSampleRate, m_dBaseBpm);
+    m_baseBpm = mixxx::Bpm(bpm);
+    updateBeatLength(m_iOldSampleRate, m_baseBpm);
     if (!isSynchronized()) {
         return;
     }
     // The internal clock doesn't have a rate slider, so treat
     // "base" bpm changes as rate changes -- this means the change will be
     // reflected in all synced decks.
-    m_pEngineSync->notifyRateChanged(this, m_dBaseBpm);
+    m_pEngineSync->notifyRateChanged(this, m_baseBpm);
 }
 
 void InternalClock::slotBeatDistanceChanged(double beatDistance) {
@@ -176,8 +177,8 @@ void InternalClock::slotBeatDistanceChanged(double beatDistance) {
     updateLeaderBeatDistance(beatDistance);
 }
 
-void InternalClock::updateBeatLength(int sampleRate, double bpm) {
-    if (m_iOldSampleRate == sampleRate && bpm == m_dOldBpm) {
+void InternalClock::updateBeatLength(int sampleRate, mixxx::Bpm bpm) {
+    if (m_iOldSampleRate == sampleRate && bpm == m_oldBpm) {
         return;
     }
 
@@ -193,13 +194,13 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
 
     // that last term is 1 over bpm.
 
-    if (qFuzzyCompare(bpm, 0)) {
+    if (!bpm.isValid()) {
         qDebug() << "WARNING: Leader bpm reported to be zero, internal clock guessing 124bpm";
         m_dBeatLength = (sampleRate * 60.0) / 124.0;
-        m_dOldBpm = 124.0;
+        m_oldBpm = kDefaultBpm;
     } else {
-        m_dOldBpm = bpm;
-        m_dBeatLength = (sampleRate * 60.0) / bpm;
+        m_oldBpm = bpm;
+        m_dBeatLength = (sampleRate * 60.0) / bpm.value();
         if (m_dBeatLength <= 0) {
             qDebug() << "WARNING: Tried to set samples per beat <=0";
             m_dBeatLength = sampleRate;
@@ -219,7 +220,7 @@ void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
 }
 
 void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
-    updateBeatLength(sampleRate, m_pClockBpm->get());
+    updateBeatLength(sampleRate, getBpm());
 
     // stereo samples, so divide by 2
     m_dClockPosition += bufferSize / 2;
