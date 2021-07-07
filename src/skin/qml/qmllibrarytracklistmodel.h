@@ -1,7 +1,7 @@
 #pragma once
 #include <QIdentityProxyModel>
 
-#include "library/librarytablemodel.h"
+class LibraryTableModel;
 
 namespace mixxx {
 namespace skin {
@@ -18,11 +18,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
     };
     Q_ENUM(Roles);
 
-    QmlLibraryTrackListModel(LibraryTableModel* pModel, QObject* pParent = nullptr)
-            : QIdentityProxyModel(pParent) {
-        pModel->select();
-        setSourceModel(pModel);
-    }
+    QmlLibraryTrackListModel(LibraryTableModel* pModel, QObject* pParent = nullptr);
     ~QmlLibraryTrackListModel() = default;
 
     QVariant data(const QModelIndex& index, int role) const override;

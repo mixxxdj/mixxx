@@ -1,5 +1,7 @@
 #include "skin/qml/qmllibrarytracklistmodel.h"
 
+#include "library/librarytablemodel.h"
+
 namespace mixxx {
 namespace skin {
 namespace qml {
@@ -11,6 +13,12 @@ const QHash<int, QByteArray> kRoleNames = {
         {QmlLibraryTrackListModel::AlbumArtistRole, "albumArtist"},
         {QmlLibraryTrackListModel::FileUrlRole, "fileUrl"},
 };
+}
+
+QmlLibraryTrackListModel::QmlLibraryTrackListModel(LibraryTableModel* pModel, QObject* pParent)
+        : QIdentityProxyModel(pParent) {
+    pModel->select();
+    setSourceModel(pModel);
 }
 
 QVariant QmlLibraryTrackListModel::data(const QModelIndex& proxyIndex, int role) const {
