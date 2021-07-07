@@ -265,11 +265,7 @@ class Track : public QObject {
     /// Get the track's main cue point
     mixxx::audio::FramePos getMainCuePosition() const;
     CuePosition getCuePoint() const {
-        const auto position = getMainCuePosition();
-        if (!position.isValid()) {
-            return {};
-        }
-        return {position.toEngineSamplePos()};
+        return getMainCuePosition().toEngineSamplePosMaybeInvalid();
     };
     // Set the track's main cue point
     void setMainCuePosition(mixxx::audio::FramePos position);
