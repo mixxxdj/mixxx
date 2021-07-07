@@ -222,7 +222,7 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
                         Q_UNUSED(pScriptEngine);
 
                         QmlLibraryProxy* pLibraryProxy = new QmlLibraryProxy(
-                                pCoreServices->getLibrary().get(),
+                                pCoreServices->getLibrary(),
                                 pEngine);
                         return pLibraryProxy;
                     }));
