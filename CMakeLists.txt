@@ -119,6 +119,16 @@ if(NOT BUILD_LOW_MEMORY)
   add_compile_options(-pipe)
 endif()
 
+# Coverage
+#
+# This is only available with GCC, therefore this option is forcibly set to OFF
+# for all other compilers.
+cmake_dependent_option(COVERAGE "Coverage (i.e. gcov) support" OFF "GNU_GCC" OFF)
+if(COVERAGE)
+  add_compile_options(--coverage -fprofile-arcs -ftest-coverage)
+  add_link_options(--coverage -fprofile-arcs -ftest-coverage)
+endif()
+
 # Profiling
 #
 # This is only available on Linux, therefore this option is forcibly set to OFF
