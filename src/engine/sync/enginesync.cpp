@@ -12,6 +12,7 @@
 namespace {
 const mixxx::Logger kLogger("EngineSync");
 const QString kInternalClockGroup = QStringLiteral("[InternalClock]");
+constexpr mixxx::Bpm kDefaultBpm = mixxx::Bpm(124.0);
 } // anonymous namespace
 
 EngineSync::EngineSync(UserSettingsPointer pConfig)
@@ -19,12 +20,15 @@ EngineSync::EngineSync(UserSettingsPointer pConfig)
           m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
           m_pMasterSyncable(nullptr) {
     qRegisterMetaType<SyncMode>("SyncMode");
-    m_pInternalClock->updateMasterBpm(124.0);
+    m_pInternalClock->updateMasterBpm(kDefaultBpm);
 }
 
 EngineSync::~EngineSync() {
     // We use the slider value because that is never set to 0.0.
-    m_pConfig->set(ConfigKey(kInternalClockGroup, "bpm"), ConfigValue(m_pInternalClock->getBpm()));
+    const mixxx::Bpm bpm = m_pInternalClock->getBpm();
+    m_pConfig->set(ConfigKey(kInternalClockGroup, "bpm"),
+            ConfigValue(
+                    bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined));
     delete m_pInternalClock;
 }
 
@@ -45,7 +49,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     switch (mode) {
     case SYNC_MASTER_EXPLICIT:
     case SYNC_MASTER_SOFT: {
-        if (pSyncable->getBaseBpm() > 0) {
+        if (pSyncable->getBaseBpm().isValid()) {
             activateMaster(pSyncable, mode);
         } else {
             // Because we don't have a valid bpm, we can't be the master
@@ -204,7 +208,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     }
     if (m_pMasterSyncable &&
             m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT &&
-            m_pMasterSyncable->getBaseBpm() != 0.0) {
+            m_pMasterSyncable->getBaseBpm().isValid()) {
         return m_pMasterSyncable;
     }
 
@@ -221,7 +225,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     int playing_deck_count = 0;
 
     for (const auto& pSyncable : qAsConst(m_syncables)) {
-        if (pSyncable->getBaseBpm() <= 0.0) {
+        if (!pSyncable->getBaseBpm().isValid()) {
             continue;
         }
 
@@ -307,7 +311,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         if (!pOtherSyncable->getChannel()->isPrimaryDeck()) {
             continue;
         }
-        if (pOtherSyncable->getBaseBpm() == 0.0) {
+        if (!pOtherSyncable->getBaseBpm().isValid()) {
             continue;
         }
 
@@ -382,7 +386,7 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
     Q_UNUSED(scratching);
 }
 
-void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, double bpm) {
+void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineSync::notifyBaseBpmChanged" << pSyncable->getGroup() << bpm;
     }
@@ -392,7 +396,7 @@ void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, double bpm) {
     }
 }
 
-void EngineSync::notifyRateChanged(Syncable* pSyncable, double bpm) {
+void EngineSync::notifyRateChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineSync::notifyRateChanged" << pSyncable->getGroup() << bpm;
     }
@@ -400,13 +404,13 @@ void EngineSync::notifyRateChanged(Syncable* pSyncable, double bpm) {
     updateMasterBpm(pSyncable, bpm);
 }
 
-void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
+void EngineSync::requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineSync::requestBpmUpdate" << pSyncable->getGroup() << bpm;
     }
 
-    double mbaseBpm = 0.0;
-    double mbpm = 0.0;
+    mixxx::Bpm mbaseBpm;
+    mixxx::Bpm mbpm;
     double beatDistance = 0.0;
     if (m_pMasterSyncable) {
         mbaseBpm = m_pMasterSyncable->getBaseBpm();
@@ -414,7 +418,7 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
         beatDistance = m_pMasterSyncable->getBeatDistance();
     }
 
-    if (mbaseBpm != 0.0) {
+    if (mbaseBpm.isValid()) {
         // update from current master
         pSyncable->updateMasterBeatDistance(beatDistance);
         pSyncable->updateMasterBpm(mbpm);
@@ -425,7 +429,7 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
     }
 }
 
-void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
+void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
     }
@@ -546,14 +550,14 @@ Syncable* EngineSync::getSyncableForGroup(const QString& group) {
 
 bool EngineSync::syncDeckExists() const {
     for (const auto& pSyncable : qAsConst(m_syncables)) {
-        if (pSyncable->isSynchronized() && pSyncable->getBaseBpm() > 0) {
+        if (pSyncable->isSynchronized() && pSyncable->getBaseBpm().isValid()) {
             return true;
         }
     }
     return false;
 }
 
-double EngineSync::masterBpm() const {
+mixxx::Bpm EngineSync::masterBpm() const {
     if (m_pMasterSyncable) {
         return m_pMasterSyncable->getBpm();
     }
@@ -567,14 +571,14 @@ double EngineSync::masterBeatDistance() const {
     return m_pInternalClock->getBeatDistance();
 }
 
-double EngineSync::masterBaseBpm() const {
+mixxx::Bpm EngineSync::masterBaseBpm() const {
     if (m_pMasterSyncable) {
         return m_pMasterSyncable->getBaseBpm();
     }
     return m_pInternalClock->getBaseBpm();
 }
 
-void EngineSync::updateMasterBpm(Syncable* pSource, double bpm) {
+void EngineSync::updateMasterBpm(Syncable* pSource, mixxx::Bpm bpm) {
     //qDebug() << "EngineSync::updateMasterBpm" << pSource << bpm;
     if (pSource != m_pInternalClock) {
         m_pInternalClock->updateMasterBpm(bpm);
@@ -588,7 +592,7 @@ void EngineSync::updateMasterBpm(Syncable* pSource, double bpm) {
     }
 }
 
-void EngineSync::updateMasterInstantaneousBpm(Syncable* pSource, double bpm) {
+void EngineSync::updateMasterInstantaneousBpm(Syncable* pSource, mixxx::Bpm bpm) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->updateInstantaneousBpm(bpm);
     }
@@ -648,9 +652,9 @@ void EngineSync::reinitMasterParams(Syncable* pSource) {
             beatDistance = m_pInternalClock->getBeatDistance();
         }
     }
-    const double baseBpm = pSource->getBaseBpm();
-    double bpm = pSource->getBpm();
-    if (bpm <= 0) {
+    const mixxx::Bpm baseBpm = pSource->getBaseBpm();
+    mixxx::Bpm bpm = pSource->getBpm();
+    if (!bpm.isValid()) {
         bpm = baseBpm;
     }
     if (kLogger.traceEnabled()) {

@@ -75,9 +75,6 @@ SyncControl::SyncControl(const QString& group,
 
     m_pQuantize = new ControlProxy(group, "quantize", this);
 
-    // Adopt an invalid to not ignore the first call setLocalBpm()
-    m_prevLocalBpm.setValue(-1);
-
     // BPMControl and RateControl will be initialized later.
 }
 
@@ -202,8 +199,12 @@ double SyncControl::getBeatDistance() const {
     return adjustSyncBeatDistance(beatDistance);
 }
 
-double SyncControl::getBaseBpm() const {
-    return m_pLocalBpm->get() / m_masterBpmAdjustFactor;
+mixxx::Bpm SyncControl::getBaseBpm() const {
+    const mixxx::Bpm bpm = getLocalBpm();
+    if (!bpm.isValid()) {
+        return {};
+    }
+    return mixxx::Bpm(bpm.value() / m_masterBpmAdjustFactor);
 }
 
 void SyncControl::updateMasterBeatDistance(double beatDistance) {
@@ -219,7 +220,7 @@ void SyncControl::updateMasterBeatDistance(double beatDistance) {
     updateTargetBeatDistance();
 }
 
-void SyncControl::updateMasterBpm(double bpm) {
+void SyncControl::updateMasterBpm(mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::setMasterBpm" << bpm;
     }
@@ -234,8 +235,8 @@ void SyncControl::updateMasterBpm(double bpm) {
         return;
     }
 
-    double localBpm = m_pLocalBpm->get();
-    if (localBpm > 0.0) {
+    const auto localBpm = getLocalBpm();
+    if (localBpm.isValid()) {
         m_pRateRatio->set(bpm * m_masterBpmAdjustFactor / localBpm);
     }
 }
@@ -245,7 +246,7 @@ void SyncControl::notifyMasterParamSource() {
 }
 
 void SyncControl::reinitMasterParams(
-        double beatDistance, double baseBpm, double bpm) {
+        double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "SyncControl::setMasterParams" << getGroup()
                         << beatDistance << baseBpm << bpm;
@@ -255,8 +256,8 @@ void SyncControl::reinitMasterParams(
     updateMasterBeatDistance(beatDistance);
 }
 
-double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
-    if (myBpm == 0.0 || targetBpm == 0.0) {
+double SyncControl::determineBpmMultiplier(mixxx::Bpm myBpm, mixxx::Bpm targetBpm) const {
+    if (!myBpm.isValid() || !targetBpm.isValid()) {
         return kBpmUnity;
     }
     double unityRatio = myBpm / targetBpm;
@@ -303,17 +304,25 @@ void SyncControl::updateTargetBeatDistance() {
     m_pBpmControl->setTargetBeatDistance(targetDistance);
 }
 
-double SyncControl::getBpm() const {
+mixxx::Bpm SyncControl::getBpm() const {
+    const auto bpm = mixxx::Bpm(m_pBpm->get());
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::getBpm()"
-                        << m_pBpm->get() << "/" << m_masterBpmAdjustFactor;
+                        << bpm << "/" << m_masterBpmAdjustFactor;
     }
-    return m_pBpm->get() / m_masterBpmAdjustFactor;
+    if (!bpm.isValid()) {
+        return {};
+    }
+
+    return bpm / m_masterBpmAdjustFactor;
 }
 
-void SyncControl::updateInstantaneousBpm(double bpm) {
+void SyncControl::updateInstantaneousBpm(mixxx::Bpm bpm) {
     // Adjust the incoming bpm by the multiplier.
-    m_pBpmControl->updateInstantaneousBpm(bpm * m_masterBpmAdjustFactor);
+    const double bpmValue = bpm.isValid()
+            ? bpm.value() * m_masterBpmAdjustFactor
+            : mixxx::Bpm::kValueUndefined;
+    m_pBpmControl->updateInstantaneousBpm(bpmValue);
 }
 
 void SyncControl::reportTrackPosition(double fractionalPlaypos) {
@@ -442,18 +451,18 @@ void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
     m_pChannel->getEngineBuffer()->requestEnableSync(bEnabled);
 }
 
-void SyncControl::setLocalBpm(double local_bpm) {
-    if (local_bpm == m_prevLocalBpm.getValue()) {
+void SyncControl::setLocalBpm(mixxx::Bpm localBpm) {
+    if (localBpm == m_prevLocalBpm.getValue()) {
         return;
     }
-    m_prevLocalBpm.setValue(local_bpm);
+    m_prevLocalBpm.setValue(localBpm);
 
     SyncMode syncMode = getSyncMode();
     if (syncMode <= SYNC_NONE) {
         return;
     }
 
-    double bpm = local_bpm * m_pRateRatio->get();
+    const mixxx::Bpm bpm = localBpm * m_pRateRatio->get();
 
     if (isFollower(syncMode)) {
         // In this case we need an update from the current master to adjust
@@ -482,11 +491,14 @@ void SyncControl::updateAudible() {
 }
 
 void SyncControl::slotRateChanged() {
-    double bpm = m_pLocalBpm ? m_pLocalBpm->get() * m_pRateRatio->get() : 0.0;
+    mixxx::Bpm bpm = getLocalBpm();
+    if (bpm.isValid()) {
+        bpm *= m_pRateRatio->get();
+    }
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::slotRateChanged" << m_pRateRatio->get() << bpm;
     }
-    if (bpm > 0 && isSynchronized()) {
+    if (bpm.isValid() && isSynchronized()) {
         // When reporting our bpm, remove the multiplier so the masters all
         // think the followers have the same bpm.
         m_pEngineSync->notifyRateChanged(this, bpm / m_masterBpmAdjustFactor);
@@ -502,8 +514,11 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
     }
     // When reporting our speed, remove the multiplier so the masters all
     // think the followers have the same bpm.
-    double instantaneous_bpm = m_pLocalBpm->get() * speed / m_masterBpmAdjustFactor;
-    m_pEngineSync->notifyInstantaneousBpmChanged(this, instantaneous_bpm);
+    mixxx::Bpm localBpm = getLocalBpm();
+    if (localBpm.isValid()) {
+        const mixxx::Bpm instantaneousBpm = localBpm * (speed / m_masterBpmAdjustFactor);
+        m_pEngineSync->notifyInstantaneousBpmChanged(this, instantaneousBpm);
+    }
 }
 
 void SyncControl::notifySeek(double dNewPlaypos) {
@@ -513,10 +528,17 @@ void SyncControl::notifySeek(double dNewPlaypos) {
     updateTargetBeatDistance();
 }
 
-double SyncControl::fileBpm() const {
+mixxx::Bpm SyncControl::fileBpm() const {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        return pBeats->getBpm().value();
+        return pBeats->getBpm();
     }
-    return mixxx::Bpm::kValueUndefined;
+    return {};
+}
+
+mixxx::Bpm SyncControl::getLocalBpm() const {
+    if (m_pLocalBpm) {
+        return mixxx::Bpm(m_pLocalBpm->get());
+    }
+    return {};
 }
