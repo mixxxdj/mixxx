@@ -69,19 +69,11 @@ class Cue : public QObject {
     mixxx::audio::FramePos getPosition() const;
     void setStartPosition(mixxx::audio::FramePos position);
     void setStartPosition(double samplePosition) {
-        mixxx::audio::FramePos position;
-        if (samplePosition != Cue::kNoPosition) {
-            position = mixxx::audio::FramePos::fromEngineSamplePos(samplePosition);
-        }
-        setStartPosition(position);
+        setStartPosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(samplePosition));
     }
     void setEndPosition(mixxx::audio::FramePos position);
     void setEndPosition(double samplePosition) {
-        mixxx::audio::FramePos position;
-        if (samplePosition != Cue::kNoPosition) {
-            position = mixxx::audio::FramePos::fromEngineSamplePos(samplePosition);
-        }
-        setEndPosition(position);
+        setEndPosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(samplePosition));
     }
     void setStartAndEndPosition(
             mixxx::audio::FramePos startPosition,
@@ -89,14 +81,12 @@ class Cue : public QObject {
     void setStartAndEndPosition(
             double sampleStartPosition,
             double sampleEndPosition) {
-        mixxx::audio::FramePos startPosition;
-        mixxx::audio::FramePos endPosition;
-        if (sampleStartPosition != Cue::kNoPosition) {
-            startPosition = mixxx::audio::FramePos::fromEngineSamplePos(sampleStartPosition);
-        }
-        if (sampleEndPosition != Cue::kNoPosition) {
-            endPosition = mixxx::audio::FramePos::fromEngineSamplePos(sampleEndPosition);
-        }
+        const auto startPosition =
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        sampleStartPosition);
+        const auto endPosition =
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        sampleEndPosition);
         setStartAndEndPosition(startPosition, endPosition);
     }
     void shiftPositionFrames(mixxx::audio::FrameDiff_t frameOffset);
