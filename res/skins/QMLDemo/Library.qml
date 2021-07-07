@@ -44,7 +44,7 @@ Item {
 
                     anchors.fill: parent
                     drag.target: dragItem
-                    onPressed: parent.grabToImage(function(result) {
+                    onPressed: parent.grabToImage((result) => {
                         dragItem.Drag.imageSource = result.url;
                     })
                 }
