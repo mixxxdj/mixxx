@@ -1149,10 +1149,10 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     }
 
     // if a seek was queued in the engine buffer move the current sample to its position
-    double p_seekPosition = 0;
-    if (getEngineBuffer()->getQueuedSeekPosition(&p_seekPosition)) {
+    const mixxx::audio::FramePos seekPosition = getEngineBuffer()->queuedSeekPosition();
+    if (seekPosition.isValid()) {
         // seek position is already quantized if quantization is enabled
-        m_currentSample.setValue(p_seekPosition);
+        m_currentSample.setValue(seekPosition.toEngineSamplePos());
     }
 
     double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes)/sizeof(s_dBeatSizes[0]) - 1];
