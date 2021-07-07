@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "audio/frame.h"
 #include "proto/beats.pb.h"
 #include "track/beats.h"
 
@@ -47,19 +46,20 @@ class BeatMap final : public Beats {
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
-    double findNextBeat(double dSamples) const override;
-    double findPrevBeat(double dSamples) const override;
-    bool findPrevNextBeats(double dSamples,
-            double* dpPrevBeatSamples,
-            double* dpNextBeatSamples,
+    audio::FramePos findNextBeat(audio::FramePos position) const override;
+    audio::FramePos findPrevBeat(audio::FramePos position) const override;
+    bool findPrevNextBeats(audio::FramePos position,
+            audio::FramePos* prevBeatPosition,
+            audio::FramePos* nextBeatPosition,
             bool snapToNearBeats) const override;
-    double findClosestBeat(double dSamples) const override;
-    double findNthBeat(double dSamples, int n) const override;
-    std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
-    bool hasBeatInRange(double startSample, double stopSample) const override;
+    audio::FramePos findClosestBeat(audio::FramePos position) const override;
+    audio::FramePos findNthBeat(audio::FramePos position, int n) const override;
+    std::unique_ptr<BeatIterator> findBeats(audio::FramePos startPosition,
+            audio::FramePos endPosition) const override;
+    bool hasBeatInRange(audio::FramePos startPosition, audio::FramePos endPosition) const override;
 
     mixxx::Bpm getBpm() const override;
-    mixxx::Bpm getBpmAroundPosition(double curSample, int n) const override;
+    mixxx::Bpm getBpmAroundPosition(audio::FramePos position, int n) const override;
 
     audio::SampleRate getSampleRate() const override {
         return m_sampleRate;
@@ -69,7 +69,7 @@ class BeatMap final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    BeatsPointer translate(double dNumSamples) const override;
+    BeatsPointer translate(audio::FrameDiff_t offset) const override;
     BeatsPointer scale(enum BPMScale scale) const override;
     BeatsPointer setBpm(mixxx::Bpm bpm) override;
 
