@@ -248,7 +248,7 @@ void exportMetadata(djinterop::database* pDatabase,
 
         djinterop::hot_cue hotCue{};
         hotCue.label = label.toStdString();
-        hotCue.sample_offset = playPosToSampleOffset(pCue->getPosition());
+        hotCue.sample_offset = playPosToSampleOffset(pCue->getPosition().toEngineSamplePos());
 
         auto color = mixxx::RgbColor::toQColor(pCue->getColor());
         hotCue.color = djinterop::pad_color{

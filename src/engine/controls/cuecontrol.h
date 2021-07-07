@@ -112,7 +112,7 @@ class HotcueControl : public QObject {
     /// for the case the cue is deleted during preview.
     void cachePreviewingStartState() {
         if (m_pCue) {
-            m_previewingPosition.setValue(m_pCue->getPosition());
+            m_previewingPosition.setValue(m_pCue->getPosition().toEngineSamplePosMaybeInvalid());
             m_previewingType.setValue(m_pCue->getType());
         } else {
             m_previewingType.setValue(mixxx::CueType::Invalid);

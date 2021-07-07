@@ -265,8 +265,8 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         }
 
         if (pLoopCue) {
-            double loopStart = pLoopCue->getPosition();
-            double loopEnd = loopStart + pLoopCue->getLength();
+            double loopStart = pLoopCue->getPosition().toEngineSamplePosMaybeInvalid();
+            double loopEnd = loopStart + (pLoopCue->getLengthFrames() * mixxx::kEngineChannelCount);
             if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
                 m_pLoopInPoint->set(loopStart);
                 m_pLoopOutPoint->set(loopEnd);

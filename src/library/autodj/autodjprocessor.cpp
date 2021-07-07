@@ -1104,7 +1104,7 @@ double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {
 
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
     if (pFromTrackAudibleSound) {
-        double firstSound = pFromTrackAudibleSound->getPosition();
+        double firstSound = pFromTrackAudibleSound->getPosition().toEngineSamplePosMaybeInvalid();
         if (firstSound > 0.0) {
             return samplePositionToSeconds(firstSound, pDeck);
         }
@@ -1121,8 +1121,9 @@ double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
     if (pFromTrackAudibleSound) {
         Cue::StartAndEndPositions pos = pFromTrackAudibleSound->getStartAndEndPosition();
-        if (pos.endPosition > 0 && (pos.endPosition - pos.startPosition) > 0) {
-            return samplePositionToSeconds(pos.endPosition, pDeck);
+        if (pos.endPosition > mixxx::audio::kStartFramePos &&
+                (pos.endPosition - pos.startPosition) > 0) {
+            return samplePositionToSeconds(pos.endPosition.toEngineSamplePosMaybeInvalid(), pDeck);
         }
     }
     return getEndSecond(pDeck);

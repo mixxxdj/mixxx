@@ -12,8 +12,8 @@ TEST(CueTest, NewCueIsDirty) {
     const auto cue = Cue(
             mixxx::CueType::HotCue,
             1,
-            0.0,
-            Cue::kNoPosition);
+            mixxx::audio::kStartFramePos,
+            mixxx::audio::kInvalidFramePos);
     EXPECT_TRUE(cue.isDirty());
 }
 
