@@ -383,7 +383,7 @@ void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
     }
 }
 
-void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
+void EngineBuffer::queueNewPlaypos(mixxx::audio::FramePos position, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
     // Write the position before the seek type, to reduce a possible race
     // condition effect
@@ -392,7 +392,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
         // use SEEK_STANDARD for that
         seekType = SEEK_STANDARD;
     }
-    m_queuedSeek.setValue({newpos, seekType});
+    m_queuedSeek.setValue({position, seekType});
 }
 
 void EngineBuffer::requestSyncPhase() {
@@ -457,7 +457,9 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 }
 
 void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
-    doSeekPlayPos(pOtherBuffer->getExactPlayPos(), SEEK_EXACT);
+    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(
+            pOtherBuffer->getExactPlayPos());
+    doSeekPlayPos(position, SEEK_EXACT);
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -584,7 +586,7 @@ void EngineBuffer::ejectTrack() {
     m_pause.lock();
 
     m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0);
-    doSeekPlayPos(0.0, SEEK_EXACT);
+    doSeekPlayPos(mixxx::audio::kStartFramePos, SEEK_EXACT);
 
     m_pCurrentTrack.reset();
     m_pTrackSamples->set(0);
@@ -654,12 +656,16 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double playPosition) {
-    doSeekPlayPos(playPosition, SEEK_STANDARD);
+    // TODO: Check if we can assert a valid play position here
+    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(playPosition);
+    doSeekPlayPos(position, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekExact(double playPosition) {
-    doSeekPlayPos(playPosition, SEEK_EXACT);
+    // TODO: Check if we can assert a valid play position here
+    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(playPosition);
+    doSeekPlayPos(position, SEEK_EXACT);
 }
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
@@ -676,11 +682,18 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     VERIFY_OR_DEBUG_ASSERT(!util_isnan(fractionalPos)) {
         return;
     }
-    double newSamplePosition = fractionalPos * m_pTrackSamples->get();
-    doSeekPlayPos(newSamplePosition, seekType);
+
+    // FIXME: Use maybe invalid here
+    const auto trackEndPosition =
+            mixxx::audio::FramePos::fromEngineSamplePos(m_pTrackSamples->get());
+    VERIFY_OR_DEBUG_ASSERT(trackEndPosition.isValid()) {
+        return;
+    }
+    const auto seekPosition = trackEndPosition * fractionalPos;
+    doSeekPlayPos(seekPosition, seekType);
 }
 
-void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
+void EngineBuffer::doSeekPlayPos(mixxx::audio::FramePos position, enum SeekRequest seekType) {
 #ifdef __VINYLCONTROL__
     // Notify the vinyl control that a seek has taken place in case it is in
     // absolute mode and needs be switched to relative.
@@ -689,7 +702,7 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     }
 #endif
 
-    queueNewPlaypos(new_playpos, seekType);
+    queueNewPlaypos(position, seekType);
 }
 
 bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
@@ -1224,12 +1237,7 @@ void EngineBuffer::processSeek(bool paused) {
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
 
     SeekRequests seekType = queuedSeek.seekType;
-    double position = queuedSeek.position;
-
-    // Don't allow the playposition to go past the end.
-    if (position > m_trackSamplesOld) {
-        position = m_trackSamplesOld;
-    }
+    mixxx::audio::FramePos framePosition = queuedSeek.position;
 
     // Add SEEK_PHASE bit, if any
     if (m_iSeekPhaseQueued.fetchAndStoreRelease(0)) {
@@ -1241,7 +1249,7 @@ void EngineBuffer::processSeek(bool paused) {
             return;
         case SEEK_PHASE:
             // only adjust phase
-            position = m_filepos_play;
+            framePosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
             break;
         case SEEK_STANDARD:
             if (m_pQuantize->toBool()) {
@@ -1258,6 +1266,17 @@ void EngineBuffer::processSeek(bool paused) {
             DEBUG_ASSERT(!"Unhandled seek request type");
             m_queuedSeek.setValue(kNoQueuedSeek);
             return;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(framePosition.isValid()) {
+        return;
+    }
+
+    auto position = framePosition.toEngineSamplePos();
+
+    // Don't allow the playposition to go past the end.
+    if (position > m_trackSamplesOld) {
+        position = m_trackSamplesOld;
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
@@ -1315,10 +1334,13 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     updateIndicators(m_speed_old, iBufferSize);
 }
 
-bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) const {
+mixxx::audio::FramePos EngineBuffer::queuedSeekPosition() const {
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
-    *pSeekPosition = queuedSeek.position;
-    return (queuedSeek.seekType != SEEK_NONE);
+    if (queuedSeek.seekType == SEEK_NONE) {
+        return {};
+    }
+
+    return queuedSeek.position;
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {

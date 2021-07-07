@@ -6,6 +6,7 @@
 #include <QMutex>
 #include <cfloat>
 
+#include "audio/frame.h"
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
@@ -110,7 +111,7 @@ class EngineBuffer : public EngineObject {
     void setEngineMaster(EngineMaster*);
 
     // Queues a new seek position. Use SEEK_EXACT or SEEK_STANDARD as seekType
-    void queueNewPlaypos(double newpos, enum SeekRequest seekType);
+    void queueNewPlaypos(mixxx::audio::FramePos newpos, enum SeekRequest seekType);
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);
@@ -121,9 +122,9 @@ class EngineBuffer : public EngineObject {
     void processSlip(int iBufferSize);
     void postProcess(const int iBufferSize);
 
-    /// Return true iff a seek is currently queued but not yet processed
-    /// If no seek was queued, the seek position is set to -1
-    bool getQueuedSeekPosition(double* pSeekPosition) const;
+    /// Returns the seek position iff a seek is currently queued but not yet
+    /// processed. If no seek was queued, and invalid frame position is returned.
+    mixxx::audio::FramePos queuedSeekPosition() const;
 
     bool isTrackLoaded() const;
     TrackPointer getLoadedTrack() const;
@@ -195,7 +196,7 @@ class EngineBuffer : public EngineObject {
 
   private:
     struct QueuedSeek {
-        double position;
+        mixxx::audio::FramePos position;
         enum SeekRequest seekType;
     };
 
@@ -215,7 +216,7 @@ class EngineBuffer : public EngineObject {
     double fractionalPlayposFromAbsolute(double absolutePlaypos);
 
     void doSeekFractional(double fractionalPos, enum SeekRequest seekType);
-    void doSeekPlayPos(double playpos, enum SeekRequest seekType);
+    void doSeekPlayPos(mixxx::audio::FramePos position, enum SeekRequest seekType);
 
     // Read one buffer from the current scaler into the crossfade buffer.  Used
     // for transitioning from one scaler to another, or reseeking a scaler
@@ -391,8 +392,9 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<QueuedSeek> m_queuedSeek;
-    static constexpr QueuedSeek kNoQueuedSeek = {
-            -1.0, SEEK_NONE}; // value used if no seek is queued
+
+    /// Indicates that no seek is queued
+    static constexpr QueuedSeek kNoQueuedSeek = {mixxx::audio::kInvalidFramePos, SEEK_NONE};
     QAtomicPointer<EngineChannel> m_pChannelToCloneFrom;
 
     // Is true if the previous buffer was silent due to pausing
