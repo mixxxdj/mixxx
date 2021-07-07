@@ -361,11 +361,11 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     }
 }
 
-double EngineBuffer::getBpm() const {
+mixxx::Bpm EngineBuffer::getBpm() const {
     return m_pBpmControl->getBpm();
 }
 
-double EngineBuffer::getLocalBpm() const {
+mixxx::Bpm EngineBuffer::getLocalBpm() const {
     return m_pBpmControl->getLocalBpm();
 }
 

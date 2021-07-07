@@ -152,6 +152,11 @@ inline Bpm operator/(Bpm bpm, double divisor) {
     return Bpm(bpm.value() / divisor);
 }
 
+/// Bpm can be divided by another Bpm to get a ratio (represented as a double).
+inline double operator/(Bpm bpm, Bpm otherBpm) {
+    return bpm.value() / otherBpm.value();
+}
+
 inline bool operator==(Bpm bpm1, Bpm bpm2) {
     if (!bpm1.isValid() && !bpm2.isValid()) {
         return true;
