@@ -2208,6 +2208,8 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     auto pHotCue2Activate = std::make_unique<ControlProxy>(m_sGroup2, "hotcue_1_activate");
     m_pTrack2->setBpm(100);
 
+    ProcessBuffer();
+
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
 
     // store a hot cue at 0:00

@@ -68,7 +68,9 @@ class HotcueControlTest : public BaseSignalPathTest {
     }
 
     TrackPointer createAndLoadFakeTrack() {
-        return m_pMixerDeck1->loadFakeTrack(false, 0.0);
+        TrackPointer pTrack = m_pMixerDeck1->loadFakeTrack(false, 0.0);
+        ProcessBuffer();
+        return pTrack;
     }
 
     void unloadTrack() {

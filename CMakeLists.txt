@@ -28,6 +28,10 @@ if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
+if(POLICY CMP0069)
+  cmake_policy(SET CMP0069 NEW)
+endif()
+
 #######################################################################
 # Compilers and toolchains
 
@@ -81,8 +85,24 @@ endif()
 #
 # Optimizations
 #
-set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy, fastbuild)")
+
+set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy)")
+string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
+
+# CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
+# We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset (IPO disabled) to save
+# build time at the cost of a bigger memory footprint at run-time.
+# See https://github.com/mixxxdj/mixxx/pull/3589 for some test results
+# Note: IPO has caused issues on Fedora https://bugzilla.rpmfusion.org/show_bug.cgi?id=5829
+# Uncomment the following code to enable IPO for Release builds
+#if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL "off")
+#  include(CheckIPOSupported)
+#  check_ipo_supported(RESULT HAVE_IPO)
+#  if(HAVE_IPO)
+#    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+#  endif()
+#endif()
 
 if(MSVC)
   # Microsoft Visual Studio Compiler
@@ -91,6 +111,18 @@ if(MSVC)
     message(STATUS "x64 Enabling SS2 CPU optimizations (>= Pentium 4)")
     # Define gcc/clang style defines for SSE and SSE2 for compatibility
     add_compile_definitions("__SSE__" "__SSE2__")
+  endif()
+
+  # Needed for sccache
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+  elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+  elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
   endif()
 
   if(NOT OPTIMIZE STREQUAL "off")
@@ -104,37 +136,25 @@ if(MSVC)
     # http://msdn.microsoft.com/en-us/library/xsa71f43.aspx
     # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
     add_compile_options(/Gy)
-    add_link_options(/OPT:REF /OPT:ICF)
 
-    # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
-    # In general, you should pick /O2 over /Ox
-    add_compile_options($<$<NOT:$<CONFIG:Debug>>:/O2>)
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+      #optimize Debug Builds as well, to have "normal" behaviour of mixxx during development
+      string(REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
+      string(REPLACE "/Od" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS}")
+      string(REPLACE "/Ob0" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
+      string(REPLACE "/Ob0" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS}")
 
-    # Remove /RTC1 flag (conflicts with /O2)
-    string(REGEX REPLACE "/RTC[^ ]*" "" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
-
-    # Re-add /RTC1 for Debug builds
-    add_compile_options($<$<CONFIG:Debug>:/RTC1>)
-
-
-    if(OPTIMIZE STREQUAL "fastbuild")
-      # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
-      # !!! /GL is incompatible with /ZI, which is set by mscvdebug
-      add_compile_options(/GL-)
-
-      # Do link-time code generation (and don't show a progress indicator
-      # -- this relies on ANSI control characters and tends to overwhelm
-      # Jenkins logs) Should we turn on PGO ?
-      # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
-      add_link_options(/LTCG:OFF)
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-      add_compile_options(/GL-)
+      add_compile_options(/O2) # this implies /Od2
+      # Remove /RTC1 flag set by CMAKE by default (conflicts with /O2)
+      string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
+      string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
     else()
-      add_compile_options(/GL)
-      add_link_options(/LTCG:NOSTATUS)
+      # Squeeze binary in Release builds
+      add_link_options(/OPT:REF /OPT:ICF)
+      # Note: CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
     endif()
 
-    if(OPTIMIZE STREQUAL "portable" OR OPTIMIZE STREQUAL "fastbuild")
+    if(OPTIMIZE STREQUAL "portable")
       if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
         # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
@@ -151,19 +171,38 @@ if(MSVC)
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
       endif()
-        # Define the target processor instruction and other compiler optimization flags here:
-        # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
-        # add_compile_options(/arch:AVX512)
-        message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!")
+      # Define the target processor instruction and other compiler optimization flags here:
+      # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
+      # add_compile_options(/arch:AVX512)
+      message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!")
       add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
     elseif(OPTIMIZE STREQUAL "legacy")
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      message("Enabling pure x64 instruction set (without AVX etc.)")
-    else()
-      message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
-    endif()
+      if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        message("Enabling pure x64 instruction set (without AVX etc.)")
+      else()
+        message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
+      endif()
     else()
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
+    endif()
+  else()
+    # OPTIMIZE=off
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+      #Remove optimize flags set by cmake defaults
+      string(REPLACE "/O2" "" CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}")
+      string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELEASE  "${CMAKE_C_FLAGS_RELEASE}")
+      string(REPLACE "/Ob2" "" CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}")
+      string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELEASE  "${CMAKE_C_FLAGS_RELEASE}")
+      add_compile_options(/Od) # this implies /Ob0
+      add_compile_options(/RTC1)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+      #Remove optimize flags set by cmake defaults
+      string(REPLACE "/O2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/Ob2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+      add_compile_options(/Od) # this implies /Ob0
+      add_compile_options(/RTC1)
     endif()
   endif()
 elseif(GNU_GCC OR LLVM_CLANG)
@@ -179,7 +218,6 @@ elseif(GNU_GCC OR LLVM_CLANG)
       -ffast-math
       -funroll-loops
     )
-
     # set -fomit-frame-pointer when we don't profile and are not using
     # Clang sanitizers.
     # Note: It is only included in -O on machines where it does not
@@ -188,7 +226,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
       add_compile_options(-fomit-frame-pointer)
     endif()
 
-    if(OPTIMIZE STREQUAL "portable" OR OPTIMIZE STREQUAL "fastbuild")
+    if(OPTIMIZE STREQUAL "portable")
       # portable: sse2 CPU (>= Pentium 4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
@@ -309,19 +347,18 @@ if(GIT_WORKTREE_DIRTY EQUAL "1")
 endif()
 message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
 if(MSVC)
-  # clcache support
-  find_program(CLCACHE_EXECUTABLE "clcache")
-  if(CLCACHE_EXECUTABLE)
-    message(STATUS "Found clcache: ${CLCACHE_EXECUTABLE}")
+  # sccache support
+  find_program(SCCACHE_EXECUTABLE "sccache")
+  if(SCCACHE_EXECUTABLE)
+    message(STATUS "Found sccache: ${SCCACHE_EXECUTABLE}")
   else()
-      message(STATUS "Could NOT find clcache (missing executable)")
+    message(STATUS "Could NOT find sccache (missing executable)")
   endif()
-  cmake_dependent_option(CLCACHE_SUPPORT "Enable clcache support" ON "CLCACHE_EXECUTABLE" OFF)
-  if(CLCACHE_SUPPORT)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "clcache")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "clcache")
+  cmake_dependent_option(SCCACHE_SUPPORT "Enable sccache support" ON "SCCACHE_EXECUTABLE" OFF)
+  message(STATUS "Support for sccache: ${SCCACHE_SUPPORT}")
+  if(SCCACHE_SUPPORT)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "sccache")
   endif()
-  message(STATUS "Support for clcache: ${CLCACHE_SUPPORT}")
 else()
   # ccache support
   find_program(CCACHE_EXECUTABLE "ccache")
@@ -1112,8 +1149,6 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC shell32)
 
   if(MSVC)
-    # needed for clcache
-    target_compile_options(mixxx-lib PUBLIC /c)
     if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
       target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
     endif()
@@ -1613,6 +1648,11 @@ if(WIN32)
     src/mixxx.rc
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
   )
+  # sccache fails with RC files
+  # https://github.com/mozilla/sccache/issues/947
+  if(SCCACHE_SUPPORT)
+    set_target_properties(mixxx PROPERTIES RULE_LAUNCH_COMPILE "")
+  endif()
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
