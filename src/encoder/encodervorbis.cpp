@@ -200,11 +200,11 @@ void EncoderVorbis::initStream() {
     m_bStreamInitialized = true;
 }
 
-int EncoderVorbis::initEncoder(int samplerate, QString* pUserErrorMessage) {
+int EncoderVorbis::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
     vorbis_info_init(&m_vinfo);
 
     // initialize VBR quality based mode
-    int ret = vorbis_encode_init(&m_vinfo, m_channels, samplerate, -1, m_bitrate*1000, -1);
+    int ret = vorbis_encode_init(&m_vinfo, m_channels, sampleRate, -1, m_bitrate * 1000, -1);
 
     if (ret != 0) {
         qDebug() << "Error initializing OGG recording. IS OGG/Vorbis library installed? Error code: " << ret;
