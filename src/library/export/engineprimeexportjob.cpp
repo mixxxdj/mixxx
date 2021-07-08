@@ -325,7 +325,7 @@ void exportCrate(
     auto extCrate = pExtRootCrate->create_sub_crate(crate.getName().toStdString());
 
     // Loop through all track ids in this crate and add.
-    for (const auto trackId : trackIds) {
+    for (const auto& trackId : trackIds) {
         const auto extTrackId = mixxxToEnginePrimeTrackIdMap[trackId];
         extCrate.add_track(extTrackId);
     }
