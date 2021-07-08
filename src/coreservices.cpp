@@ -102,8 +102,7 @@ inline QLocale inputLocale() {
 namespace mixxx {
 
 CoreServices::CoreServices(const CmdlineArgs& args)
-        : m_pLV2Backend(nullptr),
-          m_runtime_timer(QLatin1String("CoreServices::runtime")),
+        : m_runtime_timer(QLatin1String("CoreServices::runtime")),
           m_cmdlineArgs(args) {
 }
 
