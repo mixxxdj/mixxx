@@ -19,9 +19,6 @@ jobs:
       uses: actions/checkout@v2
     - name: Install build dependencies
       run: tools/debian_buildenv.sh setup
-    - name: "Install cpp-coveralls"
-      if: matrix.name == 'coverage'
-      run: pip install cpp-coveralls
     - name: Create build directory
       run: mkdir build
     - name: Configure (clazy)
@@ -122,7 +119,21 @@ jobs:
         CTEST_OUTPUT_ON_FAILURE: 1
     - name: "Generate Coverage Report"
       if: matrix.name == 'coverage'
-      run: coveralls --root .. --exclude lib --exclude src/test --exclude build --gcov-options '\-lp'
+      run: >-
+        lcov
+        --capture
+        --directory .
+        --base-directory ..
+        --include "${PWD%/*}/src/*"
+        --exclude "${PWD%/*}/src/test/*"
+        --exclude "${PWD%/*}/build/*"
+        --exclude "${PWD%/*}/lib/*"
+        --output-file lcov.info
       working-directory: build
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+    - name: "Upload Coverage Report to coveralls.io"
+      if: matrix.name == 'coverage'
+      uses: coverallsapp/github-action@master
+      with:
+        flag-name: ubuntu-20.04
+        path-to-lcov: build/lcov.info
+        github-token: ${{ secrets.GITHUB_TOKEN }}
