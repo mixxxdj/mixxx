@@ -536,7 +536,8 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":comment", trackInfo.getComment());
     pTrackLibraryQuery->bindValue(":url", track.getUrl());
     pTrackLibraryQuery->bindValue(":rating", track.getRating());
-    pTrackLibraryQuery->bindValue(":cuepoint", track.getCuePoint().getPosition());
+    pTrackLibraryQuery->bindValue(":cuepoint",
+            track.getMainCuePosition().toEngineSamplePosMaybeInvalid());
     pTrackLibraryQuery->bindValue(":bpm_lock", track.getBpmLocked() ? 1 : 0);
     pTrackLibraryQuery->bindValue(":replaygain", trackInfo.getReplayGain().getRatio());
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
@@ -581,14 +582,15 @@ void bindTrackLibraryValues(
     QString beatsVersion;
     QString beatsSubVersion;
     // Fall back on cached BPM
-    double dBpm = trackInfo.getBpm().getValue();
+    mixxx::Bpm bpm = trackInfo.getBpm();
     if (!pBeats.isNull()) {
         beatsBlob = pBeats->toByteArray();
         beatsVersion = pBeats->getVersion();
         beatsSubVersion = pBeats->getSubVersion();
-        dBpm = pBeats->getBpm();
+        bpm = pBeats->getBpm();
     }
-    pTrackLibraryQuery->bindValue(":bpm", dBpm);
+    const double bpmValue = bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined;
+    pTrackLibraryQuery->bindValue(":bpm", bpmValue);
     pTrackLibraryQuery->bindValue(":beats_version", beatsVersion);
     pTrackLibraryQuery->bindValue(":beats_sub_version", beatsSubVersion);
     pTrackLibraryQuery->bindValue(":beats", beatsBlob);
@@ -1144,7 +1146,8 @@ bool setTrackRating(const QSqlRecord& record, const int column,
 
 bool setTrackCuePoint(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
-    pTrack->setCuePoint(CuePosition(record.value(column).toDouble()));
+    pTrack->setMainCuePosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+            record.value(column).toDouble()));
     return false;
 }
 
@@ -1240,7 +1243,7 @@ bool setTrackAudioProperties(
 
 bool setTrackBeats(const QSqlRecord& record, const int column,
                    TrackPointer pTrack) {
-    double bpm = record.value(column).toDouble();
+    const auto bpm = mixxx::Bpm(record.value(column).toDouble());
     QString beatsVersion = record.value(column + 1).toString();
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();

@@ -2,54 +2,56 @@
 
 namespace mixxx {
 
-int Beats::numBeatsInRange(double dStartSample, double dEndSample) const {
-    double dLastCountedBeat = 0.0;
-    int iBeatsCounter;
-    for (iBeatsCounter = 1; dLastCountedBeat < dEndSample; iBeatsCounter++) {
-        dLastCountedBeat = findNthBeat(dStartSample, iBeatsCounter);
-        if (dLastCountedBeat == -1) {
+int Beats::numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const {
+    audio::FramePos lastPosition = audio::kStartFramePos;
+    int i = 1;
+    while (lastPosition < endPosition) {
+        lastPosition = findNthBeat(startPosition, i);
+        if (!lastPosition.isValid()) {
             break;
         }
+        i++;
     }
-    return iBeatsCounter - 2;
+    return i - 2;
 };
 
-double Beats::findNBeatsFromSample(double fromSample, double beats) const {
-    double nthBeat;
-    double prevBeat;
-    double nextBeat;
+audio::FramePos Beats::findNBeatsFromPosition(audio::FramePos position, double beats) const {
+    audio::FramePos prevBeatPosition;
+    audio::FramePos nextBeatPosition;
 
-    if (!findPrevNextBeats(fromSample, &prevBeat, &nextBeat, true)) {
-        return fromSample;
+    if (!findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true)) {
+        return position;
     }
-    double fromFractionBeats = (fromSample - prevBeat) / (nextBeat - prevBeat);
-    double beatsFromPrevBeat = fromFractionBeats + beats;
+    const audio::FrameDiff_t fromFractionBeats = (position - prevBeatPosition) /
+            (nextBeatPosition - prevBeatPosition);
+    const audio::FrameDiff_t beatsFromPrevBeat = fromFractionBeats + beats;
 
-    int fullBeats = static_cast<int>(beatsFromPrevBeat);
-    double fractionBeats = beatsFromPrevBeat - fullBeats;
+    const int fullBeats = static_cast<int>(beatsFromPrevBeat);
+    const audio::FrameDiff_t fractionBeats = beatsFromPrevBeat - fullBeats;
 
     // Add the length between this beat and the fullbeats'th beat
     // to the end position
+    audio::FramePos nthBeatPosition;
     if (fullBeats > 0) {
-        nthBeat = findNthBeat(nextBeat, fullBeats);
+        nthBeatPosition = findNthBeat(nextBeatPosition, fullBeats);
     } else {
-        nthBeat = findNthBeat(prevBeat, fullBeats - 1);
+        nthBeatPosition = findNthBeat(prevBeatPosition, fullBeats - 1);
     }
 
-    if (nthBeat == -1) {
-        return fromSample;
+    if (!nthBeatPosition.isValid()) {
+        return position;
     }
 
     // Add the fraction of the beat
     if (fractionBeats != 0) {
-        nextBeat = findNthBeat(nthBeat, 2);
-        if (nextBeat == -1) {
-            return fromSample;
+        nextBeatPosition = findNthBeat(nthBeatPosition, 2);
+        if (!nextBeatPosition.isValid()) {
+            return position;
         }
-        nthBeat += (nextBeat - nthBeat) * fractionBeats;
+        nthBeatPosition += (nextBeatPosition - nthBeatPosition) * fractionBeats;
     }
 
-    return nthBeat;
+    return nthBeatPosition;
 };
 
 } // namespace mixxx

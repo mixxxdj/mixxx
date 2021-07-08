@@ -88,10 +88,18 @@ void ClockControl::updateIndicators(const double dRate,
     if (pBeats) {
         if ((currentSample >= m_NextBeatSamples) ||
                 (currentSample <= m_PrevBeatSamples)) {
-            pBeats->findPrevNextBeats(currentSample,
-                    &m_PrevBeatSamples,
-                    &m_NextBeatSamples,
+            mixxx::audio::FramePos prevBeatPosition;
+            mixxx::audio::FramePos nextBeatPosition;
+            pBeats->findPrevNextBeats(mixxx::audio::FramePos::fromEngineSamplePos(currentSample),
+                    &prevBeatPosition,
+                    &nextBeatPosition,
                     false); // Precise compare without tolerance needed
+            m_PrevBeatSamples = prevBeatPosition.isValid()
+                    ? prevBeatPosition.toEngineSamplePos()
+                    : -1;
+            m_NextBeatSamples = nextBeatPosition.isValid()
+                    ? nextBeatPosition.toEngineSamplePos()
+                    : -1;
         }
     } else {
         m_PrevBeatSamples = -1;

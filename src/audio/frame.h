@@ -22,6 +22,7 @@ class FramePos final {
     typedef double value_t;
     static constexpr value_t kStartValue = 0;
     static constexpr value_t kInvalidValue = std::numeric_limits<FramePos::value_t>::quiet_NaN();
+    static constexpr double kLegacyInvalidEnginePosition = -1.0;
 
     constexpr FramePos()
             : m_framePosition(kInvalidValue) {
@@ -31,12 +32,48 @@ class FramePos final {
             : m_framePosition(framePosition) {
     }
 
+    /// Return a `FramePos` from a given engine sample position. To catch
+    /// "invalid" positions (e.g. when parsing values from control objects),
+    /// use `FramePos::fromEngineSamplePosMaybeInvalid` instead.
     static constexpr FramePos fromEngineSamplePos(double engineSamplePos) {
         return FramePos(engineSamplePos / mixxx::kEngineChannelCount);
     }
 
+    /// Return an engine sample position. The `FramePos` is expected to be
+    /// valid. If invalid positions are possible (e.g. for control object
+    /// values), use `FramePos::toEngineSamplePosMaybeInvalid` instead.
     double toEngineSamplePos() const {
+        DEBUG_ASSERT(isValid());
         return value() * mixxx::kEngineChannelCount;
+    }
+
+    /// Return a `FramePos` from a given engine sample position. Sample
+    /// positions that equal `kLegacyInvalidEnginePosition` are considered
+    /// invalid and result in an invalid `FramePos` instead.
+    ///
+    /// In general, using this method should be avoided and is only necessary
+    /// for compatiblity with our control objects and legacy parts of the code
+    /// base. Using a different code path based on the output of `isValid()` is
+    /// preferable.
+    static constexpr FramePos fromEngineSamplePosMaybeInvalid(double engineSamplePos) {
+        if (engineSamplePos == kLegacyInvalidEnginePosition) {
+            return {};
+        }
+        return fromEngineSamplePos(engineSamplePos);
+    }
+
+    /// Return an engine sample position. If the `FramePos` is invalid,
+    /// `kLegacyInvalidEnginePosition` is returned instad.
+    ///
+    /// In general, using this method should be avoided and is only necessary
+    /// for compatiblity with our control objects and legacy parts of the code
+    /// base. Using a different code path based on the output of `isValid()` is
+    /// preferable.
+    double toEngineSamplePosMaybeInvalid() const {
+        if (!isValid()) {
+            return kLegacyInvalidEnginePosition;
+        }
+        return toEngineSamplePos();
     }
 
     /// Return true if the frame position is valid. Any finite value is

@@ -155,10 +155,12 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
             Qt::QueuedConnection);
 
     connect(&PlayerInfo::instance(),
-            &PlayerInfo::trackLoaded,
+            &PlayerInfo::trackChanged,
             this,
-            &BrowseTableModel::trackLoaded);
-    trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
+            &BrowseTableModel::trackChanged);
+    trackChanged(m_previewDeckGroup,
+            PlayerInfo::instance().getTrackInfo(m_previewDeckGroup),
+            TrackPointer());
 }
 
 BrowseTableModel::~BrowseTableModel() {
@@ -435,7 +437,9 @@ bool BrowseTableModel::setData(
     return true;
 }
 
-void BrowseTableModel::trackLoaded(const QString& group, TrackPointer pTrack) {
+void BrowseTableModel::trackChanged(
+        const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (group == m_previewDeckGroup) {
         for (int row = 0; row < rowCount(); ++row) {
             QModelIndex i = index(row, COLUMN_PREVIEW);
@@ -444,8 +448,8 @@ void BrowseTableModel::trackLoaded(const QString& group, TrackPointer pTrack) {
                 item->setText("0");
             }
         }
-        if (pTrack) {
-            QString trackLocation = pTrack->getLocation();
+        if (pNewTrack) {
+            QString trackLocation = pNewTrack->getLocation();
             for (int row = 0; row < rowCount(); ++row) {
                 QModelIndex i = index(row, COLUMN_PREVIEW);
                 QString location = getTrackLocation(i);

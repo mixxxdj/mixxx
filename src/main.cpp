@@ -8,8 +8,8 @@
 
 #include "coreservices.h"
 #include "errordialoghandler.h"
-#include "mixxx.h"
 #include "mixxxapplication.h"
+#include "mixxxmainwindow.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"

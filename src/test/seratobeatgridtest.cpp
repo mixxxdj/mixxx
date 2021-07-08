@@ -113,7 +113,7 @@ TEST_F(SeratoBeatGridTest, ParseEmptyDataFLAC) {
 
 TEST_F(SeratoBeatGridTest, SerializeBeatgrid) {
     // Create a const beatgrid at 120 BPM
-    constexpr double bpm = 120.0;
+    constexpr mixxx::Bpm bpm(120.0);
     const auto sampleRate = mixxx::audio::SampleRate(44100);
     EXPECT_EQ(sampleRate.isValid(), true);
     const auto pBeats = mixxx::BeatGrid::makeBeatGrid(
@@ -126,18 +126,18 @@ TEST_F(SeratoBeatGridTest, SerializeBeatgrid) {
     seratoBeatGrid.setBeats(pBeats, signalInfo, duration, 0);
     EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 0);
     EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
-    EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm));
+    EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm.value()));
 }
 
 TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
     // Create a non-const beatmap
     constexpr double timingOffsetMillis = -10;
-    constexpr int bpm = 120;
+    constexpr mixxx::Bpm bpm(120);
     const auto sampleRate = mixxx::audio::SampleRate(44100);
     const auto signalInfo = mixxx::audio::SignalInfo(mixxx::audio::ChannelCount(2), sampleRate);
     const auto duration = mixxx::Duration::fromSeconds<int>(300);
     const mixxx::audio::FrameDiff_t framesPerMinute = signalInfo.getSampleRate() * 60;
-    const mixxx::audio::FrameDiff_t framesPerBeat = framesPerMinute / bpm;
+    const mixxx::audio::FrameDiff_t framesPerBeat = framesPerMinute / bpm.value();
     const mixxx::audio::FrameDiff_t initialFrameOffset = framesPerBeat / 2;
 
     QVector<mixxx::audio::FramePos> beatPositionsFrames;
@@ -157,9 +157,8 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
                 sampleRate, QString("Test"), beatPositionsFrames);
         // Check that the first section's BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(
-                                  static_cast<SINT>(initialFrameOffset +
-                                          framesPerBeat * kNumBeats120BPM / 2)),
+                          mixxx::audio::FramePos(initialFrameOffset +
+                                  framesPerBeat * kNumBeats120BPM / 2),
                           1),
                 bpm);
 
@@ -167,7 +166,7 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
         seratoBeatGrid.setBeats(pBeats, signalInfo, duration, timingOffsetMillis);
         EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 0);
         EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
-        EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm));
+        EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm.value()));
 
         // Check if the beats can be re-imported losslessly
         mixxx::SeratoBeatsImporter beatsImporter(
@@ -196,17 +195,15 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
                 sampleRate, QString("Test"), beatPositionsFrames);
         // Check that the first section'd BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(
-                                  static_cast<SINT>(initialFrameOffset +
-                                          framesPerBeat * kNumBeats120BPM / 2)),
+                          mixxx::audio::FramePos(initialFrameOffset +
+                                  framesPerBeat * kNumBeats120BPM / 2),
                           1),
                 bpm);
         // Check that the second section'd BPM is 50
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(
-                                  static_cast<SINT>(initialFrameOffset +
-                                          framesPerBeat * kNumBeats120BPM +
-                                          framesPerBeat * kNumBeats60BPM / 2)),
+                          mixxx::audio::FramePos(initialFrameOffset +
+                                  framesPerBeat * kNumBeats120BPM +
+                                  framesPerBeat * kNumBeats60BPM / 2),
                           1),
                 bpm / 2);
 
@@ -217,7 +214,8 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
         ASSERT_EQ(seratoBeatGrid.nonTerminalMarkers()[1]->beatsTillNextMarker(),
                 kNumBeats60BPM - 1);
         EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
-        EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm / 2));
+        EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(),
+                static_cast<float>(bpm.value() / 2));
 
         // Check if the beats can be re-imported losslessly
         mixxx::SeratoBeatsImporter beatsImporter(
@@ -248,25 +246,22 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
                 sampleRate, QString("Test"), beatPositionsFrames);
         // Check that the first section's BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(
-                                  static_cast<SINT>(initialFrameOffset +
-                                          framesPerBeat * kNumBeats120BPM / 2)),
+                          mixxx::audio::FramePos(initialFrameOffset +
+                                  framesPerBeat * kNumBeats120BPM / 2),
                           1),
                 bpm);
         // Check that the second section's BPM is 50
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(
-                                  static_cast<SINT>(initialFrameOffset +
-                                          framesPerBeat * kNumBeats120BPM +
-                                          framesPerBeat * kNumBeats60BPM / 2)),
+                          mixxx::audio::FramePos(initialFrameOffset +
+                                  framesPerBeat * kNumBeats120BPM +
+                                  framesPerBeat * kNumBeats60BPM / 2),
                           1),
                 bpm / 2);
         // Check that the third section's BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
-                          signalInfo.frames2samples(static_cast<SINT>(
-                                  initialFrameOffset +
+                          mixxx::audio::FramePos(initialFrameOffset +
                                   framesPerBeat * kNumBeats120BPM * 1.5 +
-                                  framesPerBeat * kNumBeats60BPM)),
+                                  framesPerBeat * kNumBeats60BPM),
                           1),
                 bpm / 2);
 
@@ -277,7 +272,7 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
         ASSERT_EQ(seratoBeatGrid.nonTerminalMarkers()[1]->beatsTillNextMarker(), kNumBeats60BPM);
         ASSERT_EQ(seratoBeatGrid.nonTerminalMarkers()[2]->beatsTillNextMarker(), kNumBeats60BPM);
         EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
-        EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm));
+        EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm.value()));
 
         // Check if the beats can be re-imported losslessly
         mixxx::SeratoBeatsImporter beatsImporter(

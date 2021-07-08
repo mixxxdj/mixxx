@@ -79,10 +79,17 @@ void QuantizeControl::playPosChanged(double dNewPlaypos) {
 void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        double prevBeat, nextBeat;
-        pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat, true);
-        m_pCOPrevBeat->set(prevBeat);
-        m_pCONextBeat->set(nextBeat);
+        const auto position = mixxx::audio::FramePos::fromEngineSamplePos(dCurrentSample);
+        mixxx::audio::FramePos prevBeatPosition;
+        mixxx::audio::FramePos nextBeatPosition;
+        pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true);
+        // FIXME: -1.0 is a valid frame position, should we set the COs to NaN?
+        m_pCOPrevBeat->set(prevBeatPosition.isValid()
+                        ? prevBeatPosition.toEngineSamplePos()
+                        : -1.0);
+        m_pCONextBeat->set(nextBeatPosition.isValid()
+                        ? nextBeatPosition.toEngineSamplePos()
+                        : -1.0);
     }
 }
 

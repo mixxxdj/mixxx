@@ -44,7 +44,6 @@ DlgTrackInfo::DlgTrackInfo(
         : QDialog(nullptr),
           m_pTrackModel(trackModel),
           m_tapFilter(this, kFilterLength, kMaxInterval),
-          m_dLastTapedBpm(-1.),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this)),
           m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
     init();
@@ -370,7 +369,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     m_pBeatsClone = track.getBeats();
     if (m_pBeatsClone) {
-        spinBpm->setValue(m_pBeatsClone->getBpm());
+        spinBpm->setValue(m_pBeatsClone->getBpm().value());
     } else {
         spinBpm->setValue(0.0);
     }
@@ -521,43 +520,43 @@ void DlgTrackInfo::clear() {
 void DlgTrackInfo::slotBpmDouble() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::DOUBLE);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmHalve() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::HALVE);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::TWOTHIRDS);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::THREEFOURTHS);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmFourThirds() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::FOURTHIRDS);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmThreeHalves() {
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::THREEHALVES);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmClear() {
@@ -580,12 +579,11 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // almost all cases.
             // The cue point should be set on a beat, so this seems
             // to be a good alternative
-            CuePosition cue = m_pLoadedTrack->getCuePoint();
+            const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
             m_pBeatsClone =
                     BeatFactory::makeBeatGrid(m_pLoadedTrack->getSampleRate(),
-                            spinBpm->value(),
-                            mixxx::audio::FramePos::fromEngineSamplePos(
-                                    cue.getPosition()));
+                            mixxx::Bpm(spinBpm->value()),
+                            cuePosition);
         } else {
             m_pBeatsClone.clear();
         }
@@ -602,42 +600,43 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
     if (averageLength == 0) {
         return;
     }
-    double averageBpm = 60.0 * 1000.0 / averageLength;
+    auto averageBpm = mixxx::Bpm(60.0 * 1000.0 / averageLength);
     averageBpm = BeatUtils::roundBpmWithinRange(averageBpm - kBpmTabRounding,
             averageBpm,
             averageBpm + kBpmTabRounding);
-    if (averageBpm != m_dLastTapedBpm) {
-        m_dLastTapedBpm = averageBpm;
-        spinBpm->setValue(averageBpm);
+    if (averageBpm != m_lastTapedBpm) {
+        m_lastTapedBpm = averageBpm;
+        spinBpm->setValue(averageBpm.value());
     }
 }
 
 void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
-    if (value <= 0) {
+    const auto bpm = mixxx::Bpm(value);
+    if (!bpm.isValid()) {
         m_pBeatsClone.clear();
         return;
     }
 
     if (!m_pBeatsClone) {
-        CuePosition cue = m_pLoadedTrack->getCuePoint();
+        const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
         m_pBeatsClone = BeatFactory::makeBeatGrid(
                 m_pLoadedTrack->getSampleRate(),
-                value,
-                mixxx::audio::FramePos::fromEngineSamplePos(cue.getPosition()));
+                bpm,
+                cuePosition);
     }
 
-    double oldValue = m_pBeatsClone->getBpm();
-    if (oldValue == value) {
+    const mixxx::Bpm oldValue = m_pBeatsClone->getBpm();
+    if (oldValue == bpm) {
         return;
     }
 
     if (m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) {
-        m_pBeatsClone = m_pBeatsClone->setBpm(value);
+        m_pBeatsClone = m_pBeatsClone->setBpm(bpm);
     }
 
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue.value());
 }
 
 mixxx::UpdateResult DlgTrackInfo::updateKeyText() {
