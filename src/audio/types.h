@@ -165,7 +165,7 @@ class SampleRate {
         return SampleRate(static_cast<value_t>(value));
     }
 
-    constexpr double toDouble() {
+    constexpr double toDouble() const {
         return static_cast<double>(value());
     }
 
