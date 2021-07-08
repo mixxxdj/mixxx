@@ -167,6 +167,8 @@ void CoreServices::initialize(QApplication* pApp) {
             XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
         }
     }
+#else
+    Q_UNUSED(pApp);
 #endif
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
