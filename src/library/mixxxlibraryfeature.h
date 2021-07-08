@@ -47,6 +47,10 @@ class MixxxLibraryFeature final : public LibraryFeature {
         return true;
     }
 
+    LibraryTableModel* trackTableModel() const {
+        return m_pLibraryTableModel;
+    }
+
     void searchAndActivate(const QString& query);
 
   public slots:
