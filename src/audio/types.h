@@ -161,8 +161,12 @@ class SampleRate {
         return value();
     }
 
-    static constexpr SampleRate fromDouble(double value) {
-        return SampleRate(static_cast<value_t>(value));
+    static SampleRate fromDouble(double value) {
+        const auto sampleRate = SampleRate(static_cast<value_t>(value));
+        // The sample rate should always be an integer value
+        // and this conversion is supposed to be lossless.
+        DEBUG_ASSERT(sampleRate.toDouble() == value);
+        return sampleRate;
     }
 
     constexpr double toDouble() const {
