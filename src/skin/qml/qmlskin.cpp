@@ -134,6 +134,15 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
     qmlRegisterType<QmlControlProxy>("Mixxx", 0, 1, "ControlProxy");
     qmlRegisterType<QmlWaveformOverview>("Mixxx", 0, 1, "WaveformOverview");
 
+    // Any uncreateable non-singleton types registered here require arguments
+    // that we don't want to expose to QML directly. Instead, they can be
+    // retrieved by member properties or methods from the singleton types.
+    //
+    // The alternative would be to register their *arguments* in the QML
+    // system, which would improve nothing, or we had to expose them as
+    // singletons to that they can be accessed by components instantiated by
+    // QML, which would also be suboptimal.
+
     qmlRegisterSingletonType<QmlEffectsManagerProxy>("Mixxx",
             0,
             1,
