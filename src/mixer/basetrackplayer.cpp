@@ -265,18 +265,17 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         }
 
         if (pLoopCue) {
-            const mixxx::audio::FramePos loopStart = pLoopCue->getPosition();
-            if (loopStart.isValid()) {
-                const mixxx::audio::FramePos loopEnd = loopStart + pLoopCue->getLengthFrames();
-                // TODO: A loop cue with a zero-length loop should be
-                // considered invalid. Hence, there should be a DEBUG_ASSERT
-                // that all loop cues have a length. To make this possible, we
-                // need to ensure that all invalid cues are discarded when
-                // saving cues to the database first.
-                if (loopStart <= loopEnd) {
-                    m_pLoopInPoint->set(loopStart.toEngineSamplePos());
-                    m_pLoopOutPoint->set(loopEnd.toEngineSamplePos());
-                }
+            const auto loop = pLoopCue->getStartAndEndPosition();
+            if (loop.startPosition.isValid() && loop.endPosition.isValid() &&
+                    loop.startPosition <= loop.endPosition) {
+                // TODO: For all loop cues, both end and start positions should
+                // be valid and the end position should be greater than the
+                // start positon. We should use a VERIFY_OR_DEBUG_ASSERT to
+                // check this. To make this possible, we need to ensure that
+                // all invalid cues are discarded when saving cues to the
+                // database first.
+                m_pLoopInPoint->set(loop.startPosition.toEngineSamplePos());
+                m_pLoopOutPoint->set(loop.endPosition.toEngineSamplePos());
             }
         }
     } else {
