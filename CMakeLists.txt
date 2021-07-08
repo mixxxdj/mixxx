@@ -2026,6 +2026,7 @@ target_link_libraries(mixxx-lib PRIVATE mixxx-proto)
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
+find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt5
   COMPONENTS
     Concurrent
@@ -2043,18 +2044,18 @@ find_package(Qt5
   REQUIRED
 )
 target_link_libraries(mixxx-lib PUBLIC
-  Qt5::Concurrent
-  Qt5::Core
-  Qt5::Gui
-  Qt5::Network
-  Qt5::OpenGL
-  Qt5::Qml
-  Qt5::QuickWidgets
-  Qt5::Sql
-  Qt5::Svg
-  Qt5::Test
-  Qt5::Widgets
-  Qt5::Xml)
+  Qt${QT_VERSION_MAJOR}::Concurrent
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Network
+  Qt${QT_VERSION_MAJOR}::OpenGL
+  Qt${QT_VERSION_MAJOR}::Qml
+  Qt${QT_VERSION_MAJOR}::QuickWidgets
+  Qt${QT_VERSION_MAJOR}::Sql
+  Qt${QT_VERSION_MAJOR}::Svg
+  Qt${QT_VERSION_MAJOR}::Test
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Xml)
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
@@ -2062,11 +2063,11 @@ if(UNIX AND NOT APPLE)
   target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
   target_link_libraries(mixxx-lib PRIVATE
     "${X11_LIBRARIES}"
-    Qt5::X11Extras
-    Qt5::DBus
+    Qt${QT_VERSION_MAJOR}::X11Extras
+    Qt${QT_VERSION_MAJOR}::DBus
   )
 elseif(WIN32)
-  get_target_property(QT5_TYPE Qt5::Core TYPE)
+  get_target_property(QT5_TYPE Qt${QT_VERSION_MAJOR}::Core TYPE)
   if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
     target_compile_definitions(mixxx-lib PUBLIC QT_NODLL)
     target_link_libraries(mixxx-lib PRIVATE
@@ -2093,7 +2094,7 @@ elseif(WIN32)
       # QtNetwork openssl-linked
       crypt32
 
-      # New libraries required by Qt5.
+      # New libraries required by Qt${QT_VERSION_MAJOR}.
       dwmapi      # qtwindows
       iphlpapi    # qt5network
       mpr         # qt5core
@@ -2111,32 +2112,32 @@ elseif(WIN32)
       # into Qt .libs by default.
 
       # iconengines plugins
-      Qt5::QSvgIconPlugin
+      Qt${QT_VERSION_MAJOR}::QSvgIconPlugin
 
       # imageformats plugins
-      Qt5::QGifPlugin
-      Qt5::QICOPlugin
-      Qt5::QJpegPlugin
-      Qt5::QSvgPlugin
-      Qt5::QTgaPlugin
+      Qt${QT_VERSION_MAJOR}::QGifPlugin
+      Qt${QT_VERSION_MAJOR}::QICOPlugin
+      Qt${QT_VERSION_MAJOR}::QJpegPlugin
+      Qt${QT_VERSION_MAJOR}::QSvgPlugin
+      Qt${QT_VERSION_MAJOR}::QTgaPlugin
 
-      # platform plugins (new in Qt5 for Windows)
-      Qt5::QWindowsIntegrationPlugin
+      # platform plugins (new in Qt${QT_VERSION_MAJOR} for Windows)
+      Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
 
-      # styles (new in Qt5 for Windows)
-      Qt5::QWindowsVistaStylePlugin
+      # styles (new in Qt${QT_VERSION_MAJOR} for Windows)
+      Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
 
-      # sqldrivers (new in Qt5? or did we just start enabling them)
-      Qt5::QSQLiteDriverPlugin
+      # sqldrivers (new in Qt${QT_VERSION_MAJOR}? or did we just start enabling them)
+      Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
     )
 
-    find_library(QT5FONTDATABASESUPPORT_LIBRARY Qt5FontDatabaseSupport)
+    find_library(QT5FONTDATABASESUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}FontDatabaseSupport)
     target_link_libraries(mixxx-lib PRIVATE "${QT5FONTDATABASESUPPORT_LIBRARY}")
-    find_library(QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY Qt5WindowsUIAutomationSupport)
+    find_library(QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}WindowsUIAutomationSupport)
     target_link_libraries(mixxx-lib PRIVATE "${QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY}")
-    find_library(QT5EVENTDISPATCHERSUPPORT_LIBRARY Qt5EventDispatcherSupport)
+    find_library(QT5EVENTDISPATCHERSUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}EventDispatcherSupport)
     target_link_libraries(mixxx-lib PRIVATE "${QT5EVENTDISPATCHERSUPPORT_LIBRARY}")
-    find_library(QT5THEMESUPPORT_LIBRARY Qt5ThemeSupport)
+    find_library(QT5THEMESUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}ThemeSupport)
     target_link_libraries(mixxx-lib PRIVATE "${QT5THEMESUPPORT_LIBRARY}")
 
     find_library(QTFREETYPE_LIBRARY qtfreetype)
@@ -2224,7 +2225,7 @@ if(MSVC)
   target_compile_definitions(Reverb PRIVATE _USE_MATH_DEFINES)
 endif()
 target_include_directories(Reverb PRIVATE src)
-target_link_libraries(Reverb PRIVATE Qt5::Core)
+target_link_libraries(Reverb PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)
 target_link_libraries(mixxx-lib PRIVATE Reverb)
 

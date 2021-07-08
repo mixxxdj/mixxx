@@ -90,15 +90,13 @@ case "$1" in
             rm "${SDKROOT}.tar.xz"
         fi
 
-        Qt5_DIR="$(find "${BUILDENV_PATH}" -type d -path "*/cmake/Qt5")"
-        [ -z "${Qt5_DIR}" ] && echo "Failed to locate Qt5_DIR!" >&2
         QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${BUILDENV_PATH}" -type d -path "*/plugins")"
         [ -z "${QT_QPA_PLATFORM_PLUGIN_PATH}" ] && echo "Failed to locate QT_QPA_PLATFORM_PLUGIN_PATH" >&2
         export CC="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
         export CXX="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
         export PATH="${BUILDENV_PATH}/bin:${PATH}"
-        export CMAKE_PREFIX_PATH="${BUILDENV_PATH}"
-        export Qt5_DIR
+        # TODO: remove hack for Qt installed to its own directory when switching to vcpkg
+        export CMAKE_PREFIX_PATH="${BUILDENV_PATH};${BUILDENV_PATH}/Qt-5.12.3"
         export QT_QPA_PLATFORM_PLUGIN_PATH
 
         echo_exported_variables() {
@@ -107,7 +105,6 @@ case "$1" in
             echo "SDKROOT=${SDKROOT}"
             echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
             echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
-            echo "Qt5_DIR=${Qt5_DIR}"
             echo "QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
             echo "PATH=${PATH}"
         }
