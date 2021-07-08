@@ -5,6 +5,7 @@
 #include "audio/frame.h"
 #include "audio/types.h"
 #include "track/beats.h"
+#include "track/bpm.h"
 
 class Track;
 
@@ -17,7 +18,7 @@ class BeatFactory {
             const QByteArray& beatsSerialized);
     static mixxx::BeatsPointer makeBeatGrid(
             mixxx::audio::SampleRate sampleRate,
-            double dBpm,
+            mixxx::Bpm bpm,
             mixxx::audio::FramePos firstBeatFramePos);
 
     static QString getPreferredVersion(bool fixedTempo);

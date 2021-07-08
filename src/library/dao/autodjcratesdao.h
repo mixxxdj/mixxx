@@ -89,10 +89,13 @@ class AutoDJCratesDAO : public QObject {
 
     // Signaled by the PlayerInfo singleton when a track is loaded to, or
     // unloaded from, a deck.
-    void slotPlayerInfoTrackLoaded(const QString& group, TrackPointer pTrack);
-    void slotPlayerInfoTrackUnloaded(const QString& group, TrackPointer pTrack);
+    void slotPlayerInfoTrackChanged(const QString& group,
+            TrackPointer pNewTrack,
+            TrackPointer pOldTrack);
 
   private:
+    void playerInfoTrackLoaded(const QString& group, TrackPointer pTrack);
+    void playerInfoTrackUnloaded(const QString& group, TrackPointer pTrack);
     void updateAutoDjCrate(CrateId crateId);
     void deleteAutoDjCrate(CrateId crateId);
 

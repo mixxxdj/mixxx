@@ -712,8 +712,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/sampler.cpp
   src/mixer/samplerbank.cpp
   src/coreservices.cpp
-  src/mixxx.cpp
   src/mixxxapplication.cpp
+  src/mixxxmainwindow.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
@@ -1494,6 +1494,7 @@ add_executable(mixxx-test
   src/test/beatgridtest.cpp
   src/test/beatmaptest.cpp
   src/test/beatstranslatetest.cpp
+  src/test/bpmtest.cpp
   src/test/bpmcontrol_test.cpp
   src/test/broadcastprofile_test.cpp
   src/test/broadcastsettings_test.cpp
@@ -1926,6 +1927,7 @@ if(KEYFINDER)
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
+        -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
       BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
@@ -2710,11 +2712,17 @@ if(HID)
         find_library(AppKit_LIBRARY AppKit REQUIRED)
         target_link_libraries(mixxx-hidapi PUBLIC ${AppKit_LIBRARY})
     elseif(UNIX)
-      if(NOT LibUSB_FOUND)
-        message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
+      if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+        find_library(libudev_LIBRARY udev REQUIRED)
+        target_sources(mixxx-hidapi PRIVATE lib/hidapi/linux/hid.c)
+        target_link_libraries(mixxx-hidapi PRIVATE ${libudev_LIBRARY})
+      else()
+        if(NOT LibUSB_FOUND)
+          message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
+        endif()
+        target_sources(mixxx-hidapi PRIVATE lib/hidapi/libusb/hid.c)
+        target_link_libraries(mixxx-hidapi PRIVATE LibUSB::LibUSB)
       endif()
-      target_sources(mixxx-hidapi PRIVATE lib/hidapi/libusb/hid.c)
-      target_link_libraries(mixxx-hidapi PRIVATE LibUSB::LibUSB)
     else()
       message(FATAL_ERROR "USB HID controller support only possible on Windows/Mac OS/Linux/BSD.")
     endif()
@@ -2722,9 +2730,16 @@ if(HID)
   else()
     message(STATUS "Linking libhidapi dynamically")
     if(NOT HIDAPI_FOUND)
-      message(FATAL_ERROR "USB HID controller support requires libhidapi-libusb and its development headers.")
+      message(FATAL_ERROR "USB HID controller support requires hidapi and its development headers.")
     endif()
-    target_link_libraries(mixxx-lib PRIVATE hidapi::hidapi)
+    # hidapi has two backends on Linux, one using the kernel's hidraw API and one using libusb.
+    # libusb obviously does not support Bluetooth HID devices, so use the hidraw backend. The
+    # libusb backend is the default, so hidraw needs to be selected explicitly at link time.
+    if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+      target_link_libraries(mixxx-lib PRIVATE hidapi::hidraw)
+    else()
+      target_link_libraries(mixxx-lib PRIVATE hidapi::hidapi)
+    endif()
   endif()
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp

@@ -165,11 +165,20 @@ class SampleRate {
         return SampleRate(static_cast<value_t>(value));
     }
 
+    constexpr double toDouble() {
+        return static_cast<double>(value());
+    }
+
   private:
     value_t m_value;
 };
 
 QDebug operator<<(QDebug dbg, SampleRate arg);
+
+/// Division of a SampleRate by another SampleRate returns a ratio as double.
+inline double operator/(SampleRate sampleRate1, SampleRate sampleRate2) {
+    return sampleRate1.toDouble() / sampleRate2.toDouble();
+}
 
 // The bitrate is measured in kbit/s (kbps) and provides information
 // about the level of compression for lossily encoded audio streams.

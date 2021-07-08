@@ -115,7 +115,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     bool m_trackHasBeatMap;
 
     TapFilter m_tapFilter;
-    double m_dLastTapedBpm;
+    mixxx::Bpm m_lastTapedBpm;
 
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
     parented_ptr<WStarRating> m_pWStarRating;

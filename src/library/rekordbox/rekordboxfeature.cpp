@@ -65,8 +65,8 @@ constexpr mixxx::RgbColor kColorForIDPurple(0x9808F8);
 constexpr mixxx::RgbColor kColorForIDNoColor(0x0);
 
 struct memory_cue_loop_t {
-    double startPosition;
-    double endPosition;
+    mixxx::audio::FramePos startPosition;
+    mixxx::audio::FramePos endPosition;
     QString comment;
     mixxx::RgbColor::optional_t color;
 };
@@ -855,8 +855,8 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
 }
 
 void setHotCue(TrackPointer track,
-        double startPosition,
-        double endPosition,
+        mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition,
         int id,
         const QString& label,
         mixxx::RgbColor::optional_t color) {
@@ -870,7 +870,7 @@ void setHotCue(TrackPointer track,
     }
 
     mixxx::CueType type = mixxx::CueType::HotCue;
-    if (endPosition != Cue::kNoPosition) {
+    if (endPosition.isValid()) {
         type = mixxx::CueType::Loop;
     }
 
@@ -905,8 +905,7 @@ void readAnalyze(TrackPointer track,
 
     rekordbox_anlz_t anlz = rekordbox_anlz_t(&ks);
 
-    double sampleRateKhz = sampleRate / 1000.0;
-    double samples = sampleRateKhz * mixxx::kEngineChannelCount;
+    const double sampleRateKhz = sampleRate / 1000.0;
 
     QList<memory_cue_loop_t> memoryCuesAndLoops;
     int lastHotCueIndex = 0;
@@ -963,7 +962,8 @@ void readAnalyze(TrackPointer track,
                 if (time < 1) {
                     time = 1;
                 }
-                double position = samples * static_cast<double>(time);
+                const auto position = mixxx::audio::FramePos(
+                        sampleRateKhz * static_cast<double>(time));
 
                 switch (cuesTag->type()) {
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
@@ -971,7 +971,7 @@ void readAnalyze(TrackPointer track,
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
                         memory_cue_loop_t memoryCue;
                         memoryCue.startPosition = position;
-                        memoryCue.endPosition = Cue::kNoPosition;
+                        memoryCue.endPosition = mixxx::audio::kInvalidFramePos;
                         memoryCue.color = mixxx::RgbColor::nullopt();
                         memoryCuesAndLoops << memoryCue;
                     } break;
@@ -984,7 +984,8 @@ void readAnalyze(TrackPointer track,
 
                         memory_cue_loop_t loop;
                         loop.startPosition = position;
-                        loop.endPosition = samples * static_cast<double>(endTime);
+                        loop.endPosition = mixxx::audio::FramePos(
+                                sampleRateKhz * static_cast<double>(endTime));
                         loop.color = mixxx::RgbColor::nullopt();
                         memoryCuesAndLoops << loop;
                     } break;
@@ -998,7 +999,7 @@ void readAnalyze(TrackPointer track,
                     setHotCue(
                             track,
                             position,
-                            Cue::kNoPosition,
+                            mixxx::audio::kInvalidFramePos,
                             hotCueIndex,
                             QString(),
                             mixxx::RgbColor::nullopt());
@@ -1024,7 +1025,8 @@ void readAnalyze(TrackPointer track,
                 if (time < 1) {
                     time = 1;
                 }
-                double position = samples * static_cast<double>(time);
+                const auto position = mixxx::audio::FramePos(
+                        sampleRateKhz * static_cast<double>(time));
 
                 switch (cuesExtendedTag->type()) {
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
@@ -1032,7 +1034,7 @@ void readAnalyze(TrackPointer track,
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
                         memory_cue_loop_t memoryCue;
                         memoryCue.startPosition = position;
-                        memoryCue.endPosition = Cue::kNoPosition;
+                        memoryCue.endPosition = mixxx::audio::kInvalidFramePos;
                         memoryCue.comment = toUnicode((*cueExtendedEntry)->comment());
                         memoryCue.color = colorFromID(static_cast<int>(
                                 (*cueExtendedEntry)->color_id()));
@@ -1050,7 +1052,8 @@ void readAnalyze(TrackPointer track,
 
                         memory_cue_loop_t loop;
                         loop.startPosition = position;
-                        loop.endPosition = samples * static_cast<double>(endTime);
+                        loop.endPosition = mixxx::audio::FramePos(
+                                sampleRateKhz * static_cast<double>(endTime));
                         loop.comment = toUnicode((*cueExtendedEntry)->comment());
                         loop.color = colorFromID(static_cast<int>((*cueExtendedEntry)->color_id()));
                         memoryCuesAndLoops << loop;
@@ -1064,7 +1067,7 @@ void readAnalyze(TrackPointer track,
                     }
                     setHotCue(track,
                             position,
-                            Cue::kNoPosition,
+                            mixxx::audio::kInvalidFramePos,
                             hotCueIndex,
                             toUnicode((*cueExtendedEntry)->comment()),
                             mixxx::RgbColor(qRgb(
@@ -1097,9 +1100,9 @@ void readAnalyze(TrackPointer track,
                 memoryCueOrLoopIndex++) {
             memory_cue_loop_t memoryCueOrLoop = memoryCuesAndLoops[memoryCueOrLoopIndex];
 
-            if (!mainCueFound && memoryCueOrLoop.endPosition == Cue::kNoPosition) {
+            if (!mainCueFound && !memoryCueOrLoop.endPosition.isValid()) {
                 // Set first chronological memory cue as Mixxx MainCue
-                track->setCuePoint(CuePosition(memoryCueOrLoop.startPosition));
+                track->setMainCuePosition(memoryCueOrLoop.startPosition);
                 CuePointer pMainCue = track->findCueByType(mixxx::CueType::MainCue);
                 pMainCue->setLabel(memoryCueOrLoop.comment);
                 pMainCue->setColor(*memoryCueOrLoop.color);
