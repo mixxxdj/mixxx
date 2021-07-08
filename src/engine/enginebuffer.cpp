@@ -809,7 +809,7 @@ void EngineBuffer::processTrackLocked(
 
     double baserate = 0.0;
     if (sampleRate.isValid()) {
-        baserate = m_trackSampleRateOld / sampleRate;
+        baserate = static_cast<double>(m_trackSampleRateOld) / sampleRate;
     }
 
     // Sync requests can affect rate, so process those first.
