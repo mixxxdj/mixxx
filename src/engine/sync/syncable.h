@@ -2,6 +2,8 @@
 
 #include <QString>
 
+#include "track/bpm.h"
+
 class EngineChannel;
 
 enum SyncMode {
@@ -95,12 +97,12 @@ class Syncable {
 
     // Gets the current speed of the syncable in bpm (bpm * rate slider), doesn't
     // include scratch or FF/REW values.
-    virtual double getBpm() const = 0;
+    virtual mixxx::Bpm getBpm() const = 0;
 
     // Gets the beat distance as a fraction from 0 to 1
     virtual double getBeatDistance() const = 0;
     // Gets the speed of the syncable if it was playing at 1.0 rate.
-    virtual double getBaseBpm() const = 0;
+    virtual mixxx::Bpm getBaseBpm() const = 0;
 
     // The following functions are used to tell syncables about the state of the
     // current Sync Master.
@@ -112,7 +114,7 @@ class Syncable {
     // of the current master.
     // Must never result in a call to SyncableListener::notifyBpmChanged or
     // signal loops could occur.
-    virtual void updateMasterBpm(double bpm) = 0;
+    virtual void updateMasterBpm(mixxx::Bpm bpm) = 0;
 
     // Tells a Syncable that it's going to be used as a source for master
     // params. This is a gross hack so that the SyncControl can undo its
@@ -121,13 +123,13 @@ class Syncable {
 
     // Perform a reset of Master parameters. This function also triggers recalculation
     // of half-double multiplier.
-    virtual void reinitMasterParams(double beatDistance, double baseBpm, double bpm) = 0;
+    virtual void reinitMasterParams(double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) = 0;
 
     // Update the playback speed of the master, including scratch values.
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
     // occur.
-    virtual void updateInstantaneousBpm(double bpm) = 0;
+    virtual void updateInstantaneousBpm(mixxx::Bpm bpm) = 0;
 };
 
 /// SyncableListener is an interface class used by EngineSync to receive
@@ -143,14 +145,14 @@ class SyncableListener {
 
     // A Syncable must never call notifyBpmChanged in response to a setMasterBpm()
     // call.
-    virtual void notifyBaseBpmChanged(Syncable* pSyncable, double bpm) = 0;
-    virtual void notifyRateChanged(Syncable* pSyncable, double bpm) = 0;
-    virtual void requestBpmUpdate(Syncable* pSyncable, double bpm) = 0;
+    virtual void notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) = 0;
+    virtual void notifyRateChanged(Syncable* pSyncable, mixxx::Bpm bpm) = 0;
+    virtual void requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) = 0;
 
     // Syncables notify EngineSync directly about various events. EngineSync
     // does not have a say in whether these succeed or not, they are simply
     // notifications.
-    virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
+    virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) = 0;
 
     // Notify Syncable that the Syncable's scratching state changed.
     virtual void notifyScratching(Syncable* pSyncable, bool scratching) = 0;
