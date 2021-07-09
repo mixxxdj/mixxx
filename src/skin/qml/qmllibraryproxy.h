@@ -6,6 +6,9 @@
 #include "util/parented_ptr.h"
 
 class Library;
+class SidebarModel;
+
+QT_FORWARD_DECLARE_CLASS(QAbstractItemModel);
 
 namespace mixxx {
 namespace skin {
@@ -19,6 +22,8 @@ class QmlLibraryProxy : public QObject {
 
   public:
     explicit QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* parent = nullptr);
+
+    Q_INVOKABLE QAbstractItemModel* getSidebarModel();
 
   private:
     std::shared_ptr<Library> m_pLibrary;

@@ -76,6 +76,11 @@ class Library: public QObject {
     /// Needed for exposing models to QML
     LibraryTableModel* trackTableModel() const;
 
+    /// Needed for exposing sidebar to QML
+    SidebarModel* sidebarModel() const {
+        return m_pSidebarModel.get();
+    }
+
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
     }
