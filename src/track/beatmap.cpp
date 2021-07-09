@@ -588,40 +588,40 @@ BeatsPointer BeatMap::translate(audio::FrameDiff_t offset) const {
     return BeatsPointer(new BeatMap(*this, beats, m_nominalBpm));
 }
 
-BeatsPointer BeatMap::scale(enum BPMScale scale) const {
+BeatsPointer BeatMap::scale(BpmScale scale) const {
     if (!isValid() || m_beats.isEmpty()) {
         return BeatsPointer(new BeatMap(*this));
     }
 
     BeatList beats = m_beats;
     switch (scale) {
-    case DOUBLE:
+    case BpmScale::Double:
         // introduce a new beat into every gap
         scaleDouble(&beats);
         break;
-    case HALVE:
+    case BpmScale::Halve:
         // remove every second beat
         scaleHalve(&beats);
         break;
-    case TWOTHIRDS:
+    case BpmScale::TwoThirds:
         // introduce a new beat into every gap
         scaleDouble(&beats);
         // remove every second and third beat
         scaleThird(&beats);
         break;
-    case THREEFOURTHS:
+    case BpmScale::ThreeFourths:
         // introduce two beats into every gap
         scaleTriple(&beats);
         // remove every second third and forth beat
         scaleFourth(&beats);
         break;
-    case FOURTHIRDS:
+    case BpmScale::FourThirds:
         // introduce three beats into every gap
         scaleQuadruple(&beats);
         // remove every second third and forth beat
         scaleThird(&beats);
         break;
-    case THREEHALVES:
+    case BpmScale::ThreeHalves:
         // introduce two beats into every gap
         scaleTriple(&beats);
         // remove every second beat

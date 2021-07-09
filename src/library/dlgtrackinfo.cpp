@@ -518,42 +518,42 @@ void DlgTrackInfo::clear() {
 }
 
 void DlgTrackInfo::slotBpmDouble() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::DOUBLE);
+    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::Double);
     // read back the actual value
     mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmHalve() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::HALVE);
+    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::Halve);
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::TWOTHIRDS);
+    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::TwoThirds);
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::THREEFOURTHS);
+    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::ThreeFourths);
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmFourThirds() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::FOURTHIRDS);
+    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::FourThirds);
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
 }
 
 void DlgTrackInfo::slotBpmThreeHalves() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::THREEHALVES);
+    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::ThreeHalves);
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
