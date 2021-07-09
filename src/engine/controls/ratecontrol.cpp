@@ -535,26 +535,24 @@ void RateControl::processTempRate(const int bufferSamples) {
                 }
             }
         } else if (m_eRateRampMode == RampMode::Linear) {
-            if (rampDirection != RampDirection::None) {
-                if (!m_bTempStarted) {
-                    m_bTempStarted = true;
-                    double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
-                    m_dRateTempRampChange = (latrate / ((double)m_iRateRampSensitivity / 100.));
-                }
+            if (!m_bTempStarted) {
+                m_bTempStarted = true;
+                double latrate = bufferSamples / m_pSampleRate->get();
+                m_dRateTempRampChange = latrate / (m_iRateRampSensitivity / 100.0);
+            }
 
-                switch (rampDirection) {
-                case RampDirection::Up:
-                case RampDirection::UpSmall:
-                    addRateTemp(m_dRateTempRampChange * m_pRateRange->get());
-                    break;
-                case RampDirection::Down:
-                case RampDirection::DownSmall:
-                    subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
-                    break;
-                case RampDirection::None:
-                default:
-                    DEBUG_ASSERT(false);
-                }
+            switch (rampDirection) {
+            case RampDirection::Up:
+            case RampDirection::UpSmall:
+                addRateTemp(m_dRateTempRampChange * m_pRateRange->get());
+                break;
+            case RampDirection::Down:
+            case RampDirection::DownSmall:
+                subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
+                break;
+            case RampDirection::None:
+            default:
+                DEBUG_ASSERT(false);
             }
         }
     } else if (m_bTempStarted) {

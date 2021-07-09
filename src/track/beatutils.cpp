@@ -6,7 +6,6 @@
 #include <QtDebug>
 #include <algorithm>
 
-#include "track/bpm.h"
 #include "util/math.h"
 
 namespace {
@@ -23,23 +22,23 @@ constexpr int kMinRegionBeatCount = 16;
 
 } // namespace
 
-double BeatUtils::calculateAverageBpm(int numberOfBeats,
+mixxx::Bpm BeatUtils::calculateAverageBpm(int numberOfBeats,
         mixxx::audio::SampleRate sampleRate,
-        double lowerFrame,
-        double upperFrame) {
-    double frames = upperFrame - lowerFrame;
+        mixxx::audio::FramePos lowerFrame,
+        mixxx::audio::FramePos upperFrame) {
+    mixxx::audio::FrameDiff_t frames = upperFrame - lowerFrame;
     DEBUG_ASSERT(frames > 0);
     if (numberOfBeats < 1) {
-        return 0;
+        return {};
     }
-    return 60.0 * numberOfBeats * sampleRate / frames;
+    return mixxx::Bpm(60.0 * numberOfBeats * sampleRate / frames);
 }
 
-double BeatUtils::calculateBpm(
-        const QVector<double>& beats,
+mixxx::Bpm BeatUtils::calculateBpm(
+        const QVector<mixxx::audio::FramePos>& beats,
         mixxx::audio::SampleRate sampleRate) {
     if (beats.size() < 2) {
-        return 0;
+        return {};
     }
 
     // If we don't have enough beats for our regular approach, just divide the #
@@ -54,7 +53,7 @@ double BeatUtils::calculateBpm(
 }
 
 QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
-        const QVector<double>& coarseBeats,
+        const QVector<mixxx::audio::FramePos>& coarseBeats,
         mixxx::audio::SampleRate sampleRate) {
     // The QM Beat detector has a step size of 512 frames @ 44100 Hz. This means that
     // Single beats have has a jitter of +- 12 ms around the actual position.
@@ -78,23 +77,23 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
         return constantRegions;
     }
 
-    double maxPhaseError = kMaxSecsPhaseError * sampleRate;
-    double maxPhaseErrorSum = kMaxSecsPhaseErrorSum * sampleRate;
+    const mixxx::audio::FrameDiff_t maxPhaseError = kMaxSecsPhaseError * sampleRate;
+    const mixxx::audio::FrameDiff_t maxPhaseErrorSum = kMaxSecsPhaseErrorSum * sampleRate;
     int leftIndex = 0;
     int rightIndex = coarseBeats.size() - 1;
 
     while (leftIndex < coarseBeats.size() - 1) {
         DEBUG_ASSERT(rightIndex > leftIndex);
-        double meanBeatLength =
+        mixxx::audio::FrameDiff_t meanBeatLength =
                 (coarseBeats[rightIndex] - coarseBeats[leftIndex]) /
                 (rightIndex - leftIndex);
         int outliersCount = 0;
-        double ironedBeat = coarseBeats[leftIndex];
-        double phaseErrorSum = 0;
+        mixxx::audio::FramePos ironedBeat = coarseBeats[leftIndex];
+        mixxx::audio::FrameDiff_t phaseErrorSum = 0;
         int i = leftIndex + 1;
         for (; i <= rightIndex; ++i) {
             ironedBeat += meanBeatLength;
-            double phaseError = ironedBeat - coarseBeats[i];
+            const mixxx::audio::FrameDiff_t phaseError = ironedBeat - coarseBeats[i];
             phaseErrorSum += phaseError;
             if (fabs(phaseError) > maxPhaseError) {
                 outliersCount++;
@@ -112,15 +111,17 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
         if (i > rightIndex) {
             // Verify that the first an the last beat are not correction beats in the same direction
             // This would bend meanBeatLength unfavorably away from the optimum.
-            double regionBorderError = 0;
+            mixxx::audio::FrameDiff_t regionBorderError = 0;
             if (rightIndex > leftIndex + 2) {
-                double firstBeatLength = coarseBeats[leftIndex + 1] - coarseBeats[leftIndex];
-                double lastBeatLength = coarseBeats[rightIndex] - coarseBeats[rightIndex - 1];
+                const mixxx::audio::FrameDiff_t firstBeatLength =
+                        coarseBeats[leftIndex + 1] - coarseBeats[leftIndex];
+                const mixxx::audio::FrameDiff_t lastBeatLength =
+                        coarseBeats[rightIndex] - coarseBeats[rightIndex - 1];
                 regionBorderError = fabs(firstBeatLength + lastBeatLength - (2 * meanBeatLength));
             }
             if (regionBorderError < maxPhaseError / 2) {
                 // We have found a constant enough region.
-                double firstBeat = coarseBeats[leftIndex];
+                const mixxx::audio::FramePos firstBeat = coarseBeats[leftIndex];
                 // store the regions for the later stages
                 constantRegions.append({firstBeat, meanBeatLength});
                 // continue with the next region.
@@ -139,15 +140,15 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
 }
 
 // static
-double BeatUtils::makeConstBpm(
+mixxx::Bpm BeatUtils::makeConstBpm(
         const QVector<BeatUtils::ConstRegion>& constantRegions,
         mixxx::audio::SampleRate sampleRate,
-        double* pFirstBeat) {
+        mixxx::audio::FramePos* pFirstBeat) {
     // We assume here the track was recorded with an unhear-able static metronome.
     // This metronome is likely at a full BPM.
     // The track may has intros, outros and bridges without detectable beats.
     // In these regions the detected beat might is floating around and is just wrong.
-    // The track may also has regions with different Rythm giving Instruments. They
+    // The track may also has regions with different Rhythm giving Instruments. They
     // have a different shape of onsets and introduce a static beat offset.
     // The track may also have break beats or other issues that makes the detector
     // hook onto a beat that is by an integer fraction off the original metronome.
@@ -161,10 +162,11 @@ double BeatUtils::makeConstBpm(
     // this functions are based on frames.
 
     int midRegionIndex = 0;
-    double longestRegionLength = 0;
-    double longestRegionBeatLength = 0;
+    mixxx::audio::FrameDiff_t longestRegionLength = 0;
+    mixxx::audio::FrameDiff_t longestRegionBeatLength = 0;
     for (int i = 0; i < constantRegions.size() - 1; ++i) {
-        double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
+        mixxx::audio::FrameDiff_t length =
+                constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
         if (length > longestRegionLength) {
             longestRegionLength = length;
             longestRegionBeatLength = constantRegions[i].beatLength;
@@ -175,39 +177,43 @@ double BeatUtils::makeConstBpm(
 
     if (longestRegionLength == 0) {
         // no betas, we default to
-        return 128;
+        return mixxx::Bpm(128);
     }
 
     int longestRegionNumberOfBeats = static_cast<int>(
             (longestRegionLength / longestRegionBeatLength) + 0.5);
-    double longestRegionBeatLengthMin = longestRegionBeatLength -
+    mixxx::audio::FrameDiff_t longestRegionBeatLengthMin = longestRegionBeatLength -
             ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
-    double longestRegionBeatLengthMax = longestRegionBeatLength +
+    mixxx::audio::FrameDiff_t longestRegionBeatLengthMax = longestRegionBeatLength +
             ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
 
     int startRegionIndex = midRegionIndex;
 
     // Find a region at the beginning of the track with a similar tempo and phase
     for (int i = 0; i < midRegionIndex; ++i) {
-        const double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
+        const mixxx::audio::FrameDiff_t length =
+                constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
         const int numberOfBeats = static_cast<int>((length / constantRegions[i].beatLength) + 0.5);
         if (numberOfBeats < kMinRegionBeatCount) {
             // Request short regions, too unstable.
             continue;
         }
-        const double thisRegionBeatLengthMin = constantRegions[i].beatLength -
+        const mixxx::audio::FrameDiff_t thisRegionBeatLengthMin = constantRegions[i].beatLength -
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
-        const double thisRegionBeatLengthMax = constantRegions[i].beatLength +
+        const mixxx::audio::FrameDiff_t thisRegionBeatLengthMax = constantRegions[i].beatLength +
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
         // check if the tempo of the longest region is part of the rounding range of this region
         if (longestRegionBeatLength > thisRegionBeatLengthMin &&
                 longestRegionBeatLength < thisRegionBeatLengthMax) {
             // Now check if both regions are at the same phase.
-            const double newLongestRegionLength = constantRegions[midRegionIndex + 1].firstBeat -
+            const mixxx::audio::FrameDiff_t newLongestRegionLength =
+                    constantRegions[midRegionIndex + 1].firstBeat -
                     constantRegions[i].firstBeat;
 
-            double beatLengthMin = math_max(longestRegionBeatLengthMin, thisRegionBeatLengthMin);
-            double beatLengthMax = math_min(longestRegionBeatLengthMax, thisRegionBeatLengthMax);
+            mixxx::audio::FrameDiff_t beatLengthMin = math_max(
+                    longestRegionBeatLengthMin, thisRegionBeatLengthMin);
+            mixxx::audio::FrameDiff_t beatLengthMax = math_min(
+                    longestRegionBeatLengthMax, thisRegionBeatLengthMax);
 
             const int maxNumberOfBeats =
                     static_cast<int>(round(newLongestRegionLength / beatLengthMin));
@@ -219,7 +225,7 @@ double BeatUtils::makeConstBpm(
                 continue;
             }
             const int numberOfBeats = minNumberOfBeats;
-            const double newBeatLength = newLongestRegionLength / numberOfBeats;
+            const mixxx::audio::FrameDiff_t newBeatLength = newLongestRegionLength / numberOfBeats;
             if (newBeatLength > longestRegionBeatLengthMin &&
                     newBeatLength < longestRegionBeatLengthMax) {
                 longestRegionLength = newLongestRegionLength;
@@ -237,23 +243,27 @@ double BeatUtils::makeConstBpm(
 
     // Find a region at the end of the track with similar tempo and phase
     for (int i = constantRegions.size() - 2; i > midRegionIndex; --i) {
-        const double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
+        const mixxx::audio::FrameDiff_t length =
+                constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
         const int numberOfBeats = static_cast<int>((length / constantRegions[i].beatLength) + 0.5);
         if (numberOfBeats < kMinRegionBeatCount) {
             continue;
         }
-        const double thisRegionBeatLengthMin = constantRegions[i].beatLength -
+        const mixxx::audio::FrameDiff_t thisRegionBeatLengthMin = constantRegions[i].beatLength -
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
-        const double thisRegionBeatLengthMax = constantRegions[i].beatLength +
+        const mixxx::audio::FrameDiff_t thisRegionBeatLengthMax = constantRegions[i].beatLength +
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
         if (longestRegionBeatLength > thisRegionBeatLengthMin &&
                 longestRegionBeatLength < thisRegionBeatLengthMax) {
             // Now check if both regions are at the same phase.
-            const double newLongestRegionLength = constantRegions[i + 1].firstBeat -
+            const mixxx::audio::FrameDiff_t newLongestRegionLength =
+                    constantRegions[i + 1].firstBeat -
                     constantRegions[startRegionIndex].firstBeat;
 
-            double minBeatLength = math_max(longestRegionBeatLengthMin, thisRegionBeatLengthMin);
-            double maxBeatLength = math_min(longestRegionBeatLengthMax, thisRegionBeatLengthMax);
+            mixxx::audio::FrameDiff_t minBeatLength = math_max(
+                    longestRegionBeatLengthMin, thisRegionBeatLengthMin);
+            mixxx::audio::FrameDiff_t maxBeatLength = math_min(
+                    longestRegionBeatLengthMax, thisRegionBeatLengthMax);
 
             const int maxNumberOfBeats =
                     static_cast<int>(round(newLongestRegionLength / minBeatLength));
@@ -265,7 +275,7 @@ double BeatUtils::makeConstBpm(
                 continue;
             }
             const int numberOfBeats = minNumberOfBeats;
-            const double newBeatLength = newLongestRegionLength / numberOfBeats;
+            const mixxx::audio::FrameDiff_t newBeatLength = newLongestRegionLength / numberOfBeats;
             if (newBeatLength > longestRegionBeatLengthMin &&
                     newBeatLength < longestRegionBeatLengthMax) {
                 longestRegionLength = newLongestRegionLength;
@@ -289,13 +299,13 @@ double BeatUtils::makeConstBpm(
 
     // Create a const region region form the first beat of the first region to the last beat of the last region.
 
-    const double minRoundBpm = 60.0 * sampleRate / longestRegionBeatLengthMax;
-    const double maxRoundBpm = 60.0 * sampleRate / longestRegionBeatLengthMin;
-    const double centerBpm = 60.0 * sampleRate / longestRegionBeatLength;
+    const mixxx::Bpm minRoundBpm = mixxx::Bpm(60.0 * sampleRate / longestRegionBeatLengthMax);
+    const mixxx::Bpm maxRoundBpm = mixxx::Bpm(60.0 * sampleRate / longestRegionBeatLengthMin);
+    const mixxx::Bpm centerBpm = mixxx::Bpm(60.0 * sampleRate / longestRegionBeatLength);
 
     //qDebug() << "minRoundBpm" << minRoundBpm;
     //qDebug() << "maxRoundBpm" << maxRoundBpm;
-    const double roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
+    const mixxx::Bpm roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
 
     if (pFirstBeat) {
         // Move the first beat as close to the start of the track as we can. This is
@@ -303,17 +313,19 @@ double BeatUtils::makeConstBpm(
         // bpm adjustments are made.
         // This is a temporary fix, ideally the anchor point for the BPM grid should
         // be the first proper downbeat, or perhaps the CUE point.
-        const double roundedBeatLength = 60.0 * sampleRate / roundBpm;
-        *pFirstBeat = fmod(constantRegions[startRegionIndex].firstBeat,
-                roundedBeatLength);
+        const double roundedBeatLength = 60.0 * sampleRate / roundBpm.value();
+        *pFirstBeat = mixxx::audio::FramePos(
+                fmod(constantRegions[startRegionIndex].firstBeat.value(),
+                        roundedBeatLength));
     }
     return roundBpm;
 }
 
 // static
-double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double maxBpm) {
+mixxx::Bpm BeatUtils::roundBpmWithinRange(
+        mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm) {
     // First try to snap to a full integer BPM
-    double snapBpm = round(centerBpm);
+    auto snapBpm = mixxx::Bpm(round(centerBpm.value()));
     if (snapBpm > minBpm && snapBpm < maxBpm) {
         // Success
         return snapBpm;
@@ -324,23 +336,23 @@ double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double ma
     if (roundBpmWidth > 0.5) {
         // 0.5 BPM are only reasonable if the double value is not insane
         // or the 2/3 value is not too small.
-        if (centerBpm < 85.0) {
+        if (centerBpm < mixxx::Bpm(85.0)) {
             // this cane be actually up to 175 BPM
             // allow halve BPM values
-            return round(centerBpm * 2) / 2;
-        } else if (centerBpm > 127.0) {
+            return mixxx::Bpm(round(centerBpm.value() * 2) / 2);
+        } else if (centerBpm > mixxx::Bpm(127.0)) {
             // optimize for 2/3 going down to 85
-            return round(centerBpm / 3 * 2) * 3 / 2;
+            return mixxx::Bpm(round(centerBpm.value() / 3 * 2) * 3 / 2);
         }
     }
 
     if (roundBpmWidth > 1.0 / 12) {
         // this covers all sorts of 1/2 2/3 and 3/4 multiplier
-        return round(centerBpm * 12) / 12;
+        return mixxx::Bpm(round(centerBpm.value() * 12) / 12);
     } else {
         // We are here if we have more that ~75 beats and ~30 s
         // try to snap to a 1/12 Bpm
-        snapBpm = round(centerBpm * 12) / 12;
+        snapBpm = mixxx::Bpm(round(centerBpm.value() * 12) / 12);
         if (snapBpm > minBpm && snapBpm < maxBpm) {
             // Success
             return snapBpm;
@@ -352,10 +364,11 @@ double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double ma
 }
 
 // static
-QVector<double> BeatUtils::getBeats(const QVector<BeatUtils::ConstRegion>& constantRegions) {
-    QVector<double> beats;
+QVector<mixxx::audio::FramePos> BeatUtils::getBeats(
+        const QVector<BeatUtils::ConstRegion>& constantRegions) {
+    QVector<mixxx::audio::FramePos> beats;
     for (int i = 0; i < constantRegions.size() - 1; ++i) {
-        double beat = constantRegions[i].firstBeat;
+        mixxx::audio::FramePos beat = constantRegions[i].firstBeat;
         constexpr double epsilon = 100; // Protection against tiny beats due rounding
         while (beat < constantRegions[i + 1].firstBeat - epsilon) {
             beats.append(beat);
@@ -369,17 +382,18 @@ QVector<double> BeatUtils::getBeats(const QVector<BeatUtils::ConstRegion>& const
 }
 
 // static
-double BeatUtils::adjustPhase(
-        double firstBeat,
-        double bpm,
+mixxx::audio::FramePos BeatUtils::adjustPhase(
+        mixxx::audio::FramePos firstBeat,
+        mixxx::Bpm bpm,
         mixxx::audio::SampleRate sampleRate,
-        const QVector<double>& beats) {
-    const double beatLength = 60 * sampleRate / bpm;
-    const double startOffset = fmod(firstBeat, beatLength);
-    double offsetAdjust = 0;
+        const QVector<mixxx::audio::FramePos>& beats) {
+    const double beatLength = 60 * sampleRate / bpm.value();
+    const mixxx::audio::FramePos startOffset =
+            mixxx::audio::FramePos(fmod(firstBeat.value(), beatLength));
+    mixxx::audio::FrameDiff_t offsetAdjust = 0;
     double offsetAdjustCount = 0;
     for (const auto& beat : beats) {
-        double offset = fmod(beat - startOffset, beatLength);
+        mixxx::audio::FrameDiff_t offset = fmod(beat - startOffset, beatLength);
         if (offset > beatLength / 2) {
             offset -= beatLength;
         }

@@ -31,7 +31,7 @@ class BeatMap final : public Beats {
     static BeatsPointer makeBeatMap(
             audio::SampleRate sampleRate,
             const QString& subVersion,
-            const QVector<double>& beats);
+            const QVector<mixxx::audio::FramePos>& beats);
 
     Beats::CapabilitiesFlags getCapabilities() const override {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
@@ -46,19 +46,20 @@ class BeatMap final : public Beats {
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
-    double findNextBeat(double dSamples) const override;
-    double findPrevBeat(double dSamples) const override;
-    bool findPrevNextBeats(double dSamples,
-            double* dpPrevBeatSamples,
-            double* dpNextBeatSamples,
+    audio::FramePos findNextBeat(audio::FramePos position) const override;
+    audio::FramePos findPrevBeat(audio::FramePos position) const override;
+    bool findPrevNextBeats(audio::FramePos position,
+            audio::FramePos* prevBeatPosition,
+            audio::FramePos* nextBeatPosition,
             bool snapToNearBeats) const override;
-    double findClosestBeat(double dSamples) const override;
-    double findNthBeat(double dSamples, int n) const override;
-    std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
-    bool hasBeatInRange(double startSample, double stopSample) const override;
+    audio::FramePos findClosestBeat(audio::FramePos position) const override;
+    audio::FramePos findNthBeat(audio::FramePos position, int n) const override;
+    std::unique_ptr<BeatIterator> findBeats(audio::FramePos startPosition,
+            audio::FramePos endPosition) const override;
+    bool hasBeatInRange(audio::FramePos startPosition, audio::FramePos endPosition) const override;
 
-    double getBpm() const override;
-    double getBpmAroundPosition(double curSample, int n) const override;
+    mixxx::Bpm getBpm() const override;
+    mixxx::Bpm getBpmAroundPosition(audio::FramePos position, int n) const override;
 
     audio::SampleRate getSampleRate() const override {
         return m_sampleRate;
@@ -68,17 +69,17 @@ class BeatMap final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    BeatsPointer translate(double dNumSamples) const override;
-    BeatsPointer scale(enum BPMScale scale) const override;
-    BeatsPointer setBpm(double dBpm) override;
+    BeatsPointer translate(audio::FrameDiff_t offset) const override;
+    BeatsPointer scale(BpmScale scale) const override;
+    BeatsPointer setBpm(mixxx::Bpm bpm) override;
 
   private:
     BeatMap(audio::SampleRate sampleRate,
             const QString& subVersion,
             BeatList beats,
-            double nominalBpm);
+            mixxx::Bpm nominalBpm);
     // Constructor to update the beat map
-    BeatMap(const BeatMap& other, BeatList beats, double nominalBpm);
+    BeatMap(const BeatMap& other, BeatList beats, mixxx::Bpm nominalBpm);
     BeatMap(const BeatMap& other);
 
     // For internal use only.
@@ -86,7 +87,7 @@ class BeatMap final : public Beats {
 
     const QString m_subVersion;
     const audio::SampleRate m_sampleRate;
-    const double m_nominalBpm;
+    const mixxx::Bpm m_nominalBpm;
     const BeatList m_beats;
 };
 

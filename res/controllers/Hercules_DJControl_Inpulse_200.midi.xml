@@ -1303,7 +1303,7 @@
                 <on>0x07</on>
                 <off>0x05</off>
             </output>
-            <!-- LED Assitant button-->
+            <!-- LED Assistant button-->
             <output>
                 <group>[AutoDJ]</group>
                 <key>enabled</key>

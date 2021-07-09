@@ -1,4 +1,4 @@
-#include "mixxx.h"
+#include "mixxxmainwindow.h"
 
 #include <QDesktopServices>
 #include <QFileDialog>
@@ -18,7 +18,7 @@
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemaster.h"
-#include "moc_mixxx.cpp"
+#include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -1072,7 +1072,7 @@ void MixxxMainWindow::rebootMixxxView() {
     if (wasFullScreen) {
         slotViewFullScreen(true);
     } else {
-        // Programatic placement at this point is very problematic.
+        // Programmatic placement at this point is very problematic.
         // The screen() method returns stale data (primary screen)
         // until the user interacts with mixxx again. Keyboard shortcuts
         // do not count, moving window, opening menu etc does

@@ -33,9 +33,9 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
 
 mixxx::BeatsPointer BeatFactory::makeBeatGrid(
         mixxx::audio::SampleRate sampleRate,
-        double dBpm,
-        double dFirstBeatSample) {
-    return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), dBpm, dFirstBeatSample);
+        mixxx::Bpm bpm,
+        mixxx::audio::FramePos firstBeatFramePos) {
+    return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), bpm, firstBeatFramePos);
 }
 
 // static
@@ -77,7 +77,7 @@ QString BeatFactory::getPreferredSubVersion(
 }
 
 mixxx::BeatsPointer BeatFactory::makePreferredBeats(
-        const QVector<double>& beats,
+        const QVector<mixxx::audio::FramePos>& beats,
         const QHash<QString, QString>& extraVersionInfo,
         bool fixedTempo,
         mixxx::audio::SampleRate sampleRate) {
@@ -85,8 +85,8 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
 #ifdef DEBUG_PRINT_BEATS
-    for (double beat : beats) {
-        qDebug().noquote() << QString::number(beat, 'g', 8);
+    for (mixxx::audio::FramePos beat : beats) {
+        qDebug().noquote() << QString::number(beat.value(), 'g', 8);
     }
 #endif
 
@@ -95,20 +95,21 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
 
 #ifdef DEBUG_PRINT_BEATS
     for (auto& region : constantRegions) {
-        qDebug().noquote() << QString::number(region.firstBeat, 'g', 8)
+        qDebug().noquote() << QString::number(region.firstBeat.value(), 'g', 8)
                            << QString::number(region.beatLength, 'g', 8);
     }
 #endif
 
     if (version == BEAT_GRID_2_VERSION) {
-        double firstBeat = 0;
-        double constBPM = BeatUtils::makeConstBpm(constantRegions, sampleRate, &firstBeat);
+        mixxx::audio::FramePos firstBeat = mixxx::audio::kStartFramePos;
+        const mixxx::Bpm constBPM = BeatUtils::makeConstBpm(
+                constantRegions, sampleRate, &firstBeat);
         firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
         auto pGrid = mixxx::BeatGrid::makeBeatGrid(
-                sampleRate, subVersion, constBPM, firstBeat * 2);
+                sampleRate, subVersion, constBPM, firstBeat);
         return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
-        QVector<double> ironedBeats = BeatUtils::getBeats(constantRegions);
+        QVector<mixxx::audio::FramePos> ironedBeats = BeatUtils::getBeats(constantRegions);
         auto pBeatMap = mixxx::BeatMap::makeBeatMap(sampleRate, subVersion, ironedBeats);
         return pBeatMap;
     } else {

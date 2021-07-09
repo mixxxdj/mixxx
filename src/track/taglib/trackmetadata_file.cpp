@@ -55,7 +55,7 @@ FileType getFileTypeFromFileName(
     if (QStringLiteral("mp3") == fileExt) {
         return FileType::MP3;
     }
-    if (QStringLiteral("m4a") == fileExt) {
+    if ((QStringLiteral("m4a") == fileExt) || (QStringLiteral("m4v") == fileExt)) {
         return FileType::MP4;
     }
     if (QStringLiteral("flac") == fileExt) {

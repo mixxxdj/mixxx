@@ -13,6 +13,27 @@ Item {
     property bool minimized: false
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
 
+    Drag.active: dragArea.drag.active
+    Drag.dragType: Drag.Automatic
+    Drag.supportedActions: Qt.CopyAction
+    Drag.mimeData: {
+        let data = {
+            "mixxx/player": group
+        };
+        const trackLocationUrl = deckPlayer.trackLocationUrl;
+        if (trackLocationUrl)
+            data["text/uri-list"] = trackLocationUrl;
+
+        return data;
+    }
+
+    MouseArea {
+        id: dragArea
+
+        anchors.fill: root
+        drag.target: root
+    }
+
     Skin.SectionBackground {
         anchors.fill: parent
     }
@@ -344,16 +365,12 @@ Item {
 
         }
 
-        Skin.ControlButton {
+        Skin.SyncButton {
             id: syncButton
 
             anchors.right: parent.right
             anchors.top: parent.top
-            text: "Sync"
             group: root.group
-            key: "sync_enabled"
-            toggleable: true
-            activeColor: Theme.deckActiveColor
         }
 
         FadeBehavior on visible {

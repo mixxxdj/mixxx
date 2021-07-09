@@ -21,7 +21,7 @@ AnalyzerEbur128::~AnalyzerEbur128() {
 }
 
 bool AnalyzerEbur128::initialize(TrackPointer tio,
-        int sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
     if (m_rgSettings.isAnalyzerDisabled(2, tio) || totalSamples == 0) {
         qDebug() << "Skipping AnalyzerEbur128";

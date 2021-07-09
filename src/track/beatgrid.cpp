@@ -23,71 +23,76 @@ namespace mixxx {
 
 class BeatGridIterator : public BeatIterator {
   public:
-    BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample)
-            : m_dBeatLength(dBeatLength),
-              m_dCurrentSample(dFirstBeat),
-              m_dEndSample(dEndSample) {
+    BeatGridIterator(audio::FrameDiff_t beatLengthFrames,
+            audio::FramePos firstBeatPosition,
+            audio::FramePos endPosition)
+            : m_beatLengthFrames(beatLengthFrames),
+              m_endPosition(endPosition),
+              m_currentPosition(firstBeatPosition) {
     }
 
     bool hasNext() const override {
-        return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
+        return m_beatLengthFrames > 0 && m_currentPosition <= m_endPosition;
     }
 
-    double next() override {
-        double beat = m_dCurrentSample;
-        m_dCurrentSample += m_dBeatLength;
-        return beat;
+    audio::FramePos next() override {
+        const audio::FramePos beatPosition = m_currentPosition;
+        m_currentPosition += m_beatLengthFrames;
+        return beatPosition;
     }
 
   private:
-    double m_dBeatLength;
-    double m_dCurrentSample;
-    double m_dEndSample;
+    const audio::FrameDiff_t m_beatLengthFrames;
+    const audio::FramePos m_endPosition;
+    audio::FramePos m_currentPosition;
 };
 
 BeatGrid::BeatGrid(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const mixxx::track::io::BeatGrid& grid,
-        double beatLength)
+        audio::FrameDiff_t beatLengthFrames)
         : m_subVersion(subVersion),
           m_sampleRate(sampleRate),
           m_grid(grid),
-          m_dBeatLength(beatLength) {
+          m_beatLengthFrames(beatLengthFrames) {
     // BeatGrid should live in the same thread as the track it is associated
     // with.
 }
 
-BeatGrid::BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength)
+BeatGrid::BeatGrid(const BeatGrid& other,
+        const mixxx::track::io::BeatGrid& grid,
+        audio::FrameDiff_t beatLengthFrames)
         : m_subVersion(other.m_subVersion),
           m_sampleRate(other.m_sampleRate),
           m_grid(grid),
-          m_dBeatLength(beatLength) {
+          m_beatLengthFrames(beatLengthFrames) {
 }
 
 BeatGrid::BeatGrid(const BeatGrid& other)
-        : BeatGrid(other, other.m_grid, other.m_dBeatLength) {
+        : BeatGrid(other, other.m_grid, other.m_beatLengthFrames) {
 }
 
 // static
 BeatsPointer BeatGrid::makeBeatGrid(
         audio::SampleRate sampleRate,
         const QString& subVersion,
-        double dBpm,
-        double dFirstBeatSample) {
-    if (dBpm < 0) {
-        dBpm = 0.0;
+        mixxx::Bpm bpm,
+        mixxx::audio::FramePos firstBeatPosition) {
+    // FIXME: Should this be a debug assertion?
+    if (!bpm.isValid() || !firstBeatPosition.isValid()) {
+        return nullptr;
     }
 
     mixxx::track::io::BeatGrid grid;
 
-    grid.mutable_bpm()->set_bpm(dBpm);
+    grid.mutable_bpm()->set_bpm(bpm.value());
     grid.mutable_first_beat()->set_frame_position(
-            static_cast<google::protobuf::int32>(dFirstBeatSample / kFrameSize));
+            static_cast<google::protobuf::int32>(firstBeatPosition.value()));
     // Calculate beat length as sample offsets
-    double beatLength = (60.0 * sampleRate / dBpm) * kFrameSize;
+    const audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm.value();
 
-    return BeatsPointer(new BeatGrid(sampleRate, subVersion, grid, beatLength));
+    return BeatsPointer(new BeatGrid(sampleRate, subVersion, grid, beatLengthFrames));
 }
 
 // static
@@ -97,8 +102,8 @@ BeatsPointer BeatGrid::makeBeatGrid(
         const QByteArray& byteArray) {
     mixxx::track::io::BeatGrid grid;
     if (grid.ParseFromArray(byteArray.constData(), byteArray.length())) {
-        double beatLength = (60.0 * sampleRate / grid.bpm().bpm()) * kFrameSize;
-        return BeatsPointer(new BeatGrid(sampleRate, subVersion, grid, beatLength));
+        const audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / grid.bpm().bpm());
+        return BeatsPointer(new BeatGrid(sampleRate, subVersion, grid, beatLengthFrames));
     }
 
     // Legacy fallback for BeatGrid-1.0
@@ -106,9 +111,10 @@ BeatsPointer BeatGrid::makeBeatGrid(
         return BeatsPointer(new BeatGrid(sampleRate, QString(), grid, 0));
     }
     const BeatGridData* blob = reinterpret_cast<const BeatGridData*>(byteArray.constData());
+    const auto firstBeat = mixxx::audio::FramePos(blob->firstBeat);
+    const auto bpm = mixxx::Bpm(blob->bpm);
 
-    // We serialize into frame offsets but use sample offsets at runtime
-    return makeBeatGrid(sampleRate, subVersion, blob->bpm, blob->firstBeat * kFrameSize);
+    return makeBeatGrid(sampleRate, subVersion, bpm, firstBeat);
 }
 
 QByteArray BeatGrid::toByteArray() const {
@@ -117,12 +123,12 @@ QByteArray BeatGrid::toByteArray() const {
     return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
-double BeatGrid::firstBeatSample() const {
-    return m_grid.first_beat().frame_position() * kFrameSize;
+audio::FramePos BeatGrid::firstBeatPosition() const {
+    return audio::FramePos(m_grid.first_beat().frame_position());
 }
 
-double BeatGrid::bpm() const {
-    return m_grid.bpm().bpm();
+mixxx::Bpm BeatGrid::bpm() const {
+    return mixxx::Bpm(m_grid.bpm().bpm());
 }
 
 QString BeatGrid::getVersion() const {
@@ -135,44 +141,50 @@ QString BeatGrid::getSubVersion() const {
 
 // internal use only
 bool BeatGrid::isValid() const {
-    return m_sampleRate.isValid() && bpm() > 0;
+    return m_sampleRate.isValid() && bpm().isValid() && firstBeatPosition().isValid();
 }
 
 // This could be implemented in the Beats Class itself.
 // If necessary, the child class can redefine it.
-double BeatGrid::findNextBeat(double dSamples) const {
-    return findNthBeat(dSamples, +1);
+audio::FramePos BeatGrid::findNextBeat(audio::FramePos position) const {
+    return findNthBeat(position, 1);
 }
 
 // This could be implemented in the Beats Class itself.
 // If necessary, the child class can redefine it.
-double BeatGrid::findPrevBeat(double dSamples) const {
-    return findNthBeat(dSamples, -1);
+audio::FramePos BeatGrid::findPrevBeat(audio::FramePos position) const {
+    return findNthBeat(position, -1);
 }
 
 // This is an internal call. This could be implemented in the Beats Class itself.
-double BeatGrid::findClosestBeat(double dSamples) const {
+audio::FramePos BeatGrid::findClosestBeat(audio::FramePos position) const {
     if (!isValid()) {
-        return -1;
+        return audio::kInvalidFramePos;
     }
-    double prevBeat;
-    double nextBeat;
-    findPrevNextBeats(dSamples, &prevBeat, &nextBeat, true);
-    if (prevBeat == -1) {
-        // If both values are -1, we correctly return -1.
-        return nextBeat;
-    } else if (nextBeat == -1) {
-        return prevBeat;
+    audio::FramePos prevBeatPosition;
+    audio::FramePos nextBeatPosition;
+    findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true);
+    if (!prevBeatPosition.isValid()) {
+        // If both positions are invalid, we correctly return an invalid position.
+        return nextBeatPosition;
     }
-    return (nextBeat - dSamples > dSamples - prevBeat) ? prevBeat : nextBeat;
+
+    if (!nextBeatPosition.isValid()) {
+        return prevBeatPosition;
+    }
+
+    // Both position are valid, return the closest position.
+    return (nextBeatPosition - position > position - prevBeatPosition)
+            ? prevBeatPosition
+            : nextBeatPosition;
 }
 
-double BeatGrid::findNthBeat(double dSamples, int n) const {
+audio::FramePos BeatGrid::findNthBeat(audio::FramePos position, int n) const {
     if (!isValid() || n == 0) {
-        return -1;
+        return audio::kInvalidFramePos;
     }
 
-    double beatFraction = (dSamples - firstBeatSample()) / m_dBeatLength;
+    double beatFraction = (position - firstBeatPosition()) / m_beatLengthFrames;
     double prevBeat = floor(beatFraction);
     double nextBeat = ceil(beatFraction);
 
@@ -194,38 +206,34 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
         nextBeat = prevBeat;
     }
 
-    double dClosestBeat;
+    audio::FramePos closestBeatPosition;
     if (n > 0) {
         // We're going forward, so use ceil to round up to the next multiple of
         // m_dBeatLength
-        dClosestBeat = nextBeat * m_dBeatLength + firstBeatSample();
+        closestBeatPosition = firstBeatPosition() + nextBeat * m_beatLengthFrames;
         n = n - 1;
     } else {
         // We're going backward, so use floor to round down to the next multiple
         // of m_dBeatLength
-        dClosestBeat = prevBeat * m_dBeatLength + firstBeatSample();
+        closestBeatPosition = firstBeatPosition() + prevBeat * m_beatLengthFrames;
         n = n + 1;
     }
 
-    double dResult = dClosestBeat + n * m_dBeatLength;
-    return dResult;
+    const audio::FramePos result = closestBeatPosition + n * m_beatLengthFrames;
+    return result;
 }
 
-bool BeatGrid::findPrevNextBeats(double dSamples,
-        double* dpPrevBeatSamples,
-        double* dpNextBeatSamples,
+bool BeatGrid::findPrevNextBeats(audio::FramePos position,
+        audio::FramePos* prevBeatPosition,
+        audio::FramePos* nextBeatPosition,
         bool snapToNearBeats) const {
-    double dFirstBeatSample;
-    double dBeatLength;
     if (!isValid()) {
-        *dpPrevBeatSamples = -1.0;
-        *dpNextBeatSamples = -1.0;
+        *prevBeatPosition = audio::kInvalidFramePos;
+        *nextBeatPosition = audio::kInvalidFramePos;
         return false;
     }
-    dFirstBeatSample = firstBeatSample();
-    dBeatLength = m_dBeatLength;
 
-    double beatFraction = (dSamples - dFirstBeatSample) / dBeatLength;
+    double beatFraction = (position - firstBeatPosition()) / m_beatLengthFrames;
     double prevBeat = floor(beatFraction);
     double nextBeat = ceil(beatFraction);
 
@@ -244,86 +252,90 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
         // And nextBeat needs to be incremented.
         ++nextBeat;
     }
-    *dpPrevBeatSamples = prevBeat * dBeatLength + dFirstBeatSample;
-    *dpNextBeatSamples = nextBeat * dBeatLength + dFirstBeatSample;
+    *prevBeatPosition = firstBeatPosition() + prevBeat * m_beatLengthFrames;
+    *nextBeatPosition = firstBeatPosition() + nextBeat * m_beatLengthFrames;
     return true;
 }
 
-std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double stopSample) const {
-    if (!isValid() || startSample > stopSample) {
+std::unique_ptr<BeatIterator> BeatGrid::findBeats(
+        audio::FramePos startPosition, audio::FramePos endPosition) const {
+    // FIXME: Should this be a VERIFY_OR_DEBUG_ASSERT?
+    if (!isValid() || !startPosition.isValid() || !endPosition.isValid() ||
+            startPosition > endPosition) {
         return std::unique_ptr<BeatIterator>();
     }
-    //qDebug() << "BeatGrid::findBeats startSample" << startSample << "stopSample"
-    //         << stopSample << "beatlength" << m_dBeatLength << "BPM" << bpm();
-    double curBeat = findNextBeat(startSample);
-    if (curBeat == -1.0) {
+    const audio::FramePos startBeatPosition = findNextBeat(startPosition);
+    if (!startBeatPosition.isValid()) {
         return std::unique_ptr<BeatIterator>();
     }
-    return std::make_unique<BeatGridIterator>(m_dBeatLength, curBeat, stopSample);
+    return std::make_unique<BeatGridIterator>(m_beatLengthFrames, startBeatPosition, endPosition);
 }
 
-bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
-    if (!isValid() || startSample > stopSample) {
+bool BeatGrid::hasBeatInRange(audio::FramePos startPosition, audio::FramePos endPosition) const {
+    // FIXME: Should this be a VERIFY_OR_DEBUG_ASSERT?
+    if (!isValid() || !startPosition.isValid() || !endPosition.isValid() ||
+            startPosition > endPosition) {
         return false;
     }
-    double curBeat = findNextBeat(startSample);
-    if (curBeat != -1.0 && curBeat <= stopSample) {
+    const audio::FramePos currentPosition = findNextBeat(startPosition);
+    if (currentPosition.isValid() && currentPosition <= endPosition) {
         return true;
     }
     return false;
 }
 
-double BeatGrid::getBpm() const {
+mixxx::Bpm BeatGrid::getBpm() const {
     if (!isValid()) {
-        return mixxx::Bpm::kValueUndefined;
+        return {};
     }
     return bpm();
 }
 
 // Note: Also called from the engine thread
-double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
-    Q_UNUSED(curSample);
+mixxx::Bpm BeatGrid::getBpmAroundPosition(audio::FramePos position, int n) const {
+    Q_UNUSED(position);
     Q_UNUSED(n);
 
     if (!isValid()) {
-        return -1;
+        return {};
     }
     return bpm();
 }
 
-BeatsPointer BeatGrid::translate(double dNumSamples) const {
+BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
     if (!isValid()) {
         return BeatsPointer(new BeatGrid(*this));
     }
     mixxx::track::io::BeatGrid grid = m_grid;
-    double newFirstBeatFrames = (firstBeatSample() + dNumSamples) / kFrameSize;
+    const audio::FramePos newFirstBeatPosition = firstBeatPosition() + offset;
     grid.mutable_first_beat()->set_frame_position(
-            static_cast<google::protobuf::int32>(newFirstBeatFrames));
+            static_cast<google::protobuf::int32>(
+                    newFirstBeatPosition.toLowerFrameBoundary().value()));
 
-    return BeatsPointer(new BeatGrid(*this, grid, m_dBeatLength));
+    return BeatsPointer(new BeatGrid(*this, grid, m_beatLengthFrames));
 }
 
-BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
+BeatsPointer BeatGrid::scale(BpmScale scale) const {
     mixxx::track::io::BeatGrid grid = m_grid;
-    double bpm = grid.bpm().bpm();
+    auto bpm = mixxx::Bpm(grid.bpm().bpm());
 
     switch (scale) {
-    case DOUBLE:
+    case BpmScale::Double:
         bpm *= 2;
         break;
-    case HALVE:
+    case BpmScale::Halve:
         bpm *= 1.0 / 2;
         break;
-    case TWOTHIRDS:
+    case BpmScale::TwoThirds:
         bpm *= 2.0 / 3;
         break;
-    case THREEFOURTHS:
+    case BpmScale::ThreeFourths:
         bpm *= 3.0 / 4;
         break;
-    case FOURTHIRDS:
+    case BpmScale::FourThirds:
         bpm *= 4.0 / 3;
         break;
-    case THREEHALVES:
+    case BpmScale::ThreeHalves:
         bpm *= 3.0 / 2;
         break;
     default:
@@ -331,23 +343,23 @@ BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
         return BeatsPointer(new BeatGrid(*this));
     }
 
-    if (bpm > getMaxBpm()) {
+    if (!bpm.isValid()) {
         return BeatsPointer(new BeatGrid(*this));
     }
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
-    grid.mutable_bpm()->set_bpm(bpm);
-    double beatLength = (60.0 * m_sampleRate / bpm) * kFrameSize;
+    grid.mutable_bpm()->set_bpm(bpm.value());
+    double beatLength = (60.0 * m_sampleRate / bpm.value()) * kFrameSize;
     return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 
-BeatsPointer BeatGrid::setBpm(double dBpm) {
-    if (dBpm > getMaxBpm()) {
-        dBpm = getMaxBpm();
+BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
+        return nullptr;
     }
     mixxx::track::io::BeatGrid grid = m_grid;
-    grid.mutable_bpm()->set_bpm(dBpm);
-    double beatLength = (60.0 * m_sampleRate / dBpm) * kFrameSize;
+    grid.mutable_bpm()->set_bpm(bpm.value());
+    double beatLength = (60.0 * m_sampleRate / bpm.value()) * kFrameSize;
     return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 

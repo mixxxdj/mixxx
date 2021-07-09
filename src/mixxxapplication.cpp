@@ -4,6 +4,7 @@
 #include <QTouchEvent>
 #include <QtDebug>
 
+#include "audio/frame.h"
 #include "audio/types.h"
 #include "control/controlproxy.h"
 #include "library/trackset/crate/crateid.h"
@@ -97,6 +98,7 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::cache_key_t>("mixxx::cache_key_t");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
+    qRegisterMetaType<mixxx::audio::FramePos>("mixxx::audio::FramePos");
     qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");
     qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
 }

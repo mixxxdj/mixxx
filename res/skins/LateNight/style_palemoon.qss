@@ -351,7 +351,7 @@ WSearchLineEdit {
   border-radius: 1px;
 }
 
-/* Disbled for now since the hover effect is stuck as soon as the
+/* Disabled for now since the hover effect is stuck as soon as the
   track menu is opened.
 #TitleText[highlight="1"]:hover, #TitleTextSmall[highlight="1"]:hover,
 #ArtistText[highlight="1"]:hover, #ArtistTextSmall[highlight="1"]:hover {
@@ -1371,6 +1371,7 @@ WEffectSelector QAbstractScrollArea,
 #BroadcastButton[displayValue="1"], /* connecting */
 #BroadcastButton[displayValue="2"], /* broadcasting */
 #BroadcastButton[displayValue="3"], /* failure */
+#BroadcastButton[displayValue="4"], /* warning */
 #RecDuration[highlight="1"],  /* initializing */
 #RecDuration[highlight="2"],  /* recording */
 #SkinSettingsToggle[displayValue="1"],
@@ -1457,6 +1458,7 @@ WEffectSelector:!editable,
   #BroadcastButton[displayValue="1"],
   #BroadcastButton[displayValue="2"],
   #BroadcastButton[displayValue="3"],
+  #BroadcastButton[displayValue="4"],
   #SkinSettingsToggle[displayValue="1"],
   #LibraryFeatureControls QPushButton:pressed
   QPushButton#pushButtonAutoDJ:checked,
@@ -1603,7 +1605,7 @@ WBeatSpinBox::down-button {
   WPushButton#MicAuxAdd {
     background-color: #1e1e20;
   }
-  /* brigth buttons in dimmed containers
+  /* bright buttons in dimmed containers
   #BeatgridControls WPushButton[displayValue="0"], */
   #CueDeleteButton,
   #SplitCue[displayValue="0"],
@@ -1640,6 +1642,7 @@ WPushButton#Reverse[pressed="true"],
 #MicDucking[value="2"],
 #VinylButton[displayValue="1"],
 #PassthroughButton[displayValue="1"],
+#BroadcastButton[displayValue="4"], /* warning */
 QPushButton#pushButtonAutoDJ:checked,
 QPushButton#pushButtonAnalyze:checked {
   background-color: #b24c12;
@@ -1776,7 +1779,7 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 
 /* Yellow */
 #RecFeedback[displayValue="1"],     /* initialize recording */
-#BroadcastButton[displayValue="1"]  /* connecting */ {
+#BroadcastButton[displayValue="1"] {  /* connecting */
   background-color: #d09300;
 }
 
@@ -2392,7 +2395,8 @@ WPushButton#PlayDeck[value="0"] {
   }
   #BroadcastButton[displayValue="1"],
   #BroadcastButton[displayValue="2"],
-  #BroadcastButton[displayValue="3"] {
+  #BroadcastButton[displayValue="3"],
+  #BroadcastButton[displayValue="4"] {
     image: url(skin:/palemoon/buttons/btn__broadcast_on.svg) no-repeat left top;
   }
 

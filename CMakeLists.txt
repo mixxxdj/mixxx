@@ -25,6 +25,39 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
+# Check if any relevant env vars were set from the build env scripts
+if(DEFINED ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL} AND NOT DEFINED X_VCPKG_APPLOCAL_DEPS_INSTALL)
+  set(X_VCPKG_APPLOCAL_DEPS_INSTALL "$ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL}" CACHE BOOL "")
+endif()
+
+if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
+  set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}" CACHE STRING "")
+endif()
+
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+  set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+endif()
+
+# Set a default build type if none was specified
+# See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
+set(default_build_type "RelWithDebInfo")
+if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND NOT WIN32)
+  # On Windows, Debug builds are linked to unoptimized libs
+  # generating unusable slow Mixxx builds.
+  set(default_build_type "Debug")
+endif()
+
+if(NOT CMAKE_CONFIGURATION_TYPES)
+  if(NOT CMAKE_BUILD_TYPE)
+    message(STATUS "Setting CMAKE_BUILD_TYPE to '${default_build_type}' as none was specified.")
+    set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
+  elseif(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo)$")
+    message(FATAL_ERROR "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} is not supported, use one of Debug, Release or RelWithDebInfo.")
+  endif()
+endif()
+
 project(mixxx VERSION 2.4.0)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha-pre") # set to "alpha-pre" "beta" or ""
@@ -101,6 +134,7 @@ endif()
 #
 
 set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy)")
+set_property(CACHE OPTIMIZE PROPERTY STRINGS "off" "portable" "native" "legacy")
 string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
 
@@ -181,10 +215,11 @@ if(MSVC)
         string(REPLACE "/INCREMENTAL" "/INCREMENTAL:NO" CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
       endif()
       # Note: CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
-    elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-      # Settings for MinSizeRel builds
     elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-      # Settings for Release builds
+      # Reduce the size of the binary in Release builds
+      # Do not use /OPT:ICF because it has no effect.
+      # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
+      add_link_options(/OPT:REF)
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
@@ -668,8 +703,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/sampler.cpp
   src/mixer/samplerbank.cpp
   src/coreservices.cpp
-  src/mixxx.cpp
   src/mixxxapplication.cpp
+  src/mixxxmainwindow.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
@@ -736,9 +771,15 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/qml/asyncimageprovider.cpp
   src/skin/qml/qmlcontrolproxy.cpp
   src/skin/qml/qmlconfigproxy.cpp
+  src/skin/qml/qmleffectmanifestparametersmodel.cpp
+  src/skin/qml/qmleffectsmanagerproxy.cpp
+  src/skin/qml/qmleffectslotproxy.cpp
+  src/skin/qml/qmllibraryproxy.cpp
+  src/skin/qml/qmllibrarytracklistmodel.cpp
   src/skin/qml/qmlplayermanagerproxy.cpp
   src/skin/qml/qmlplayerproxy.cpp
   src/skin/qml/qmlskin.cpp
+  src/skin/qml/qmlvisibleeffectsmodel.cpp
   src/skin/qml/qmlwaveformoverview.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
@@ -976,6 +1017,12 @@ set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY 
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
+endif()
+
+# QML Debugging
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_definitions(mixxx-lib PRIVATE QT_QML_DEBUG)
+  message(STATUS "Enabling QML Debugging! This poses a security risk as Mixxx will open a TCP port for debugging")
 endif()
 
 # Disable warnings in generated source files
@@ -1430,6 +1477,7 @@ add_executable(mixxx-test
   src/test/beatgridtest.cpp
   src/test/beatmaptest.cpp
   src/test/beatstranslatetest.cpp
+  src/test/bpmtest.cpp
   src/test/bpmcontrol_test.cpp
   src/test/broadcastprofile_test.cpp
   src/test/broadcastsettings_test.cpp
@@ -1463,6 +1511,7 @@ add_executable(mixxx-test
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
   src/test/fileinfo_test.cpp
+  src/test/frametest.cpp
   src/test/globaltrackcache_test.cpp
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
@@ -1861,6 +1910,7 @@ if(KEYFINDER)
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
+        -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
       BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
@@ -2355,13 +2405,7 @@ find_package(MP4)
 find_package(MP4v2)
 # It is enabled by default on Linux only, because other targets have other
 # solutions. It requires MP4 or MP4v2.
-# Note, we use if() here, because the following line does not work with cmake 3.16.3
-# default_option(FAAD "FAAD AAC audio file decoder support" "UNIX;NOT APPLE;(MP4_FOUND OR MP4v2_FOUND)")
-if (UNIX AND NOT APPLE AND (MP4_FOUND OR MP4v2_FOUND))
-  option(FAAD "FAAD AAC audio file decoder support" ON)
-else()
-  option(FAAD "FAAD AAC audio file decoder support" OFF)
-endif()
+default_option(FAAD "FAAD AAC audio file decoder support" "UNIX;NOT APPLE;MP4_FOUND OR MP4v2_FOUND")
 if(FAAD)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
     message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2 with development headers.")
@@ -2623,12 +2667,9 @@ if(MODPLUG)
 endif()
 
 # QtKeychain
-find_package(Qt5Keychain QUIET)
 option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" ON)
 if(QTKEYCHAIN)
-  if(NOT Qt5Keychain_FOUND)
-    message(FATAL_ERROR "Secure credential storage support requires the Qt5::Keychain component.")
-  endif()
+  find_package(Qt5Keychain REQUIRED)
   target_compile_definitions(mixxx-lib PUBLIC __QTKEYCHAIN__)
   target_link_libraries(mixxx-lib PRIVATE ${QTKEYCHAIN_LIBRARIES})
   target_include_directories(mixxx-lib SYSTEM PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
@@ -2655,11 +2696,17 @@ if(HID)
         find_library(AppKit_LIBRARY AppKit REQUIRED)
         target_link_libraries(mixxx-hidapi PUBLIC ${AppKit_LIBRARY})
     elseif(UNIX)
-      if(NOT LibUSB_FOUND)
-        message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
+      if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+        find_library(libudev_LIBRARY udev REQUIRED)
+        target_sources(mixxx-hidapi PRIVATE lib/hidapi/linux/hid.c)
+        target_link_libraries(mixxx-hidapi PRIVATE ${libudev_LIBRARY})
+      else()
+        if(NOT LibUSB_FOUND)
+          message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
+        endif()
+        target_sources(mixxx-hidapi PRIVATE lib/hidapi/libusb/hid.c)
+        target_link_libraries(mixxx-hidapi PRIVATE LibUSB::LibUSB)
       endif()
-      target_sources(mixxx-hidapi PRIVATE lib/hidapi/libusb/hid.c)
-      target_link_libraries(mixxx-hidapi PRIVATE LibUSB::LibUSB)
     else()
       message(FATAL_ERROR "USB HID controller support only possible on Windows/Mac OS/Linux/BSD.")
     endif()
@@ -2667,9 +2714,16 @@ if(HID)
   else()
     message(STATUS "Linking libhidapi dynamically")
     if(NOT HIDAPI_FOUND)
-      message(FATAL_ERROR "USB HID controller support requires libhidapi-libusb and its development headers.")
+      message(FATAL_ERROR "USB HID controller support requires hidapi and its development headers.")
     endif()
-    target_link_libraries(mixxx-lib PRIVATE hidapi::hidapi)
+    # hidapi has two backends on Linux, one using the kernel's hidraw API and one using libusb.
+    # libusb obviously does not support Bluetooth HID devices, so use the hidraw backend. The
+    # libusb backend is the default, so hidraw needs to be selected explicitly at link time.
+    if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+      target_link_libraries(mixxx-lib PRIVATE hidapi::hidraw)
+    else()
+      target_link_libraries(mixxx-lib PRIVATE hidapi::hidapi)
+    endif()
   endif()
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp

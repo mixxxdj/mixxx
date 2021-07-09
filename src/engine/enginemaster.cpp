@@ -426,7 +426,7 @@ void EngineMaster::process(const int iBufferSize) {
 
     if (headphoneEnabled) {
         // Process effects and mix PFL channels together for the headphones.
-        // Effects will be reprocessed post-fader for the crossfader busses
+        // Effects will be reprocessed post-fader for the crossfader buses
         // and master mix, so the channel input buffers cannot be modified here.
         ChannelMixer::applyEffectsAndMixChannels(
             m_headphoneGain, &m_activeHeadphoneChannels,

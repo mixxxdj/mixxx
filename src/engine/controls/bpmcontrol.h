@@ -25,8 +25,11 @@ class BpmControl : public EngineControl {
     BpmControl(const QString& group, UserSettingsPointer pConfig);
     ~BpmControl() override;
 
-    double getBpm() const;
-    double getLocalBpm() const { return m_pLocalBpm ? m_pLocalBpm->get() : 0.0; }
+    mixxx::Bpm getBpm() const;
+    mixxx::Bpm getLocalBpm() const {
+        return m_pLocalBpm ? mixxx::Bpm(m_pLocalBpm->get()) : mixxx::Bpm();
+    }
+
     // When in sync lock mode, ratecontrol calls calcSyncedRate to figure out
     // how fast the track should play back.  The returned rate is usually just
     // the correct pitch to match bpms.  The usertweak argument represents
@@ -49,7 +52,7 @@ class BpmControl : public EngineControl {
     void setTargetBeatDistance(double beatDistance);
     void updateInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
-    double updateLocalBpm();
+    mixxx::Bpm updateLocalBpm();
     /// updateBeatDistance is adjusted to include the user offset so
     /// it's transparent to other decks.
     double updateBeatDistance();

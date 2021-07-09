@@ -42,7 +42,9 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_iCurrentSample(0) {
 }
 
-bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSamples) {
+bool AnalyzerBeats::initialize(TrackPointer pTrack,
+        mixxx::audio::SampleRate sampleRate,
+        int totalSamples) {
     if (totalSamples == 0) {
         return false;
     }
@@ -143,7 +145,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     if (!pBeats) {
         return true;
     }
-    if (!mixxx::Bpm::isValidValue(pBeats->getBpm())) {
+    if (!pBeats->getBpm().isValid()) {
         // Tracks with an invalid bpm <= 0 should be re-analyzed,
         // independent of the preference settings. We expect that
         // all tracks have a bpm > 0 when analyzed. Users that want
@@ -158,7 +160,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
         return m_bPreferencesReanalyzeImported;
     }
 
-    if (subVersion.isEmpty() && pBeats->findNextBeat(0) <= 0.0 &&
+    if (subVersion.isEmpty() && pBeats->firstBeat() <= mixxx::audio::kStartFramePos &&
             m_pluginId != mixxx::AnalyzerSoundTouchBeats::pluginInfo().id()) {
         // This happens if the beat grid was created from the metadata BPM value.
         qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
@@ -219,7 +221,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
 
     mixxx::BeatsPointer pBeats;
     if (m_pPlugin->supportsBeatTracking()) {
-        QVector<double> beats = m_pPlugin->getBeats();
+        QVector<mixxx::audio::FramePos> beats = m_pPlugin->getBeats();
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
                 m_pluginId, m_bPreferencesFastAnalysis);
         pBeats = BeatFactory::makePreferredBeats(
@@ -228,11 +230,11 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
                 m_bPreferencesFixedTempo,
                 m_sampleRate);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
-                 << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : 0.0);
+                 << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : mixxx::Bpm());
     } else {
-        float bpm = m_pPlugin->getBpm();
+        mixxx::Bpm bpm = m_pPlugin->getBpm();
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
-        pBeats = BeatFactory::makeBeatGrid(m_sampleRate, bpm, 0.0f);
+        pBeats = BeatFactory::makeBeatGrid(m_sampleRate, bpm, mixxx::audio::kStartFramePos);
     }
 
     pTrack->trySetBeats(pBeats);

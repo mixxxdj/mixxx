@@ -109,9 +109,9 @@ BaseTrackTableModel::BaseTrackTableModel(
             this,
             &BaseTrackTableModel::slotRefreshAllRows);
     connect(&PlayerInfo::instance(),
-            &PlayerInfo::trackLoaded,
+            &PlayerInfo::trackChanged,
             this,
-            &BaseTrackTableModel::slotTrackLoaded);
+            &BaseTrackTableModel::slotTrackChanged);
 }
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
@@ -664,11 +664,11 @@ QVariant BaseTrackTableModel::roleValue(
                     bpm = mixxx::Bpm(bpmValue);
                 }
             }
-            if (bpm.hasValue()) {
+            if (bpm.isValid()) {
                 if (role == Qt::ToolTipRole || role == kDataExportRole) {
-                    return QString::number(bpm.getValue(), 'f', 4);
+                    return QString::number(bpm.value(), 'f', 4);
                 } else {
-                    return QString::number(bpm.getValue(), 'f', 1);
+                    return QString::number(bpm.value(), 'f', 1);
                 }
             } else {
                 return QChar('-');
@@ -782,7 +782,7 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
-            return ok ? bpmValue : mixxx::Bpm().getValue();
+            return ok ? bpmValue : mixxx::Bpm().value();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return index.sibling(
@@ -941,9 +941,11 @@ QMimeData* BaseTrackTableModel::mimeData(
     }
 }
 
-void BaseTrackTableModel::slotTrackLoaded(
+void BaseTrackTableModel::slotTrackChanged(
         const QString& group,
-        TrackPointer pTrack) {
+        TrackPointer pNewTrack,
+        TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
@@ -957,7 +959,7 @@ void BaseTrackTableModel::slotTrackLoaded(
                 emit dataChanged(topLeft, bottomRight);
             }
         }
-        m_previewDeckTrackId = doGetTrackId(pTrack);
+        m_previewDeckTrackId = doGetTrackId(pNewTrack);
     }
 }
 

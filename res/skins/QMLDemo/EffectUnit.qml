@@ -1,75 +1,119 @@
 import "." as Skin
+import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import "Theme"
 
 Item {
+    id: root
+
     property int unitNumber // required
 
-    Skin.SectionBackground {
-        anchors.fill: parent
-    }
+    implicitHeight: effectContainer.height
 
-    RowLayout {
+    Item {
+        id: effectContainer
+
+        anchors.margins: 5
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.right: effectSuperKnobFrame.left
-        anchors.rightMargin: 5
+        anchors.right: effectUnitControlsFrame.left
+        height: 60
 
-        Repeater {
-            model: 3
+        EffectSlot {
+            id: effect1
 
-            Item {
-                id: effect
+            anchors.top: parent.top
+            anchors.left: parent.left
+            width: parent.width / 3
+            unitNumber: root.unitNumber
+            effectNumber: 1
+            expanded: false
+        }
 
-                property string group: "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + (index + 1) + "]"
+        EffectSlot {
+            id: effect2
 
-                height: 50
-                Layout.fillWidth: true
+            anchors.top: parent.top
+            anchors.left: effect1.right
+            width: parent.width / 3
+            unitNumber: root.unitNumber
+            effectNumber: 2
+            expanded: false
+        }
 
-                Skin.ControlButton {
-                    id: effectEnableButton
+        EffectSlot {
+            id: effect3
 
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.margins: 5
-                    width: 40
-                    group: effect.group
-                    key: "enabled"
-                    toggleable: true
-                    text: "ON"
-                    activeColor: Theme.effectColor
-                }
+            anchors.top: parent.top
+            anchors.left: effect2.right
+            width: parent.width / 3
+            unitNumber: root.unitNumber
+            effectNumber: 3
+            expanded: false
+        }
 
-                Skin.ComboBox {
-                    id: effectSelector
+        states: State {
+            when: expandButton.checked
+            name: "expanded"
 
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.left: effectEnableButton.right
-                    anchors.right: effectMetaKnob.left
-                    anchors.margins: 5
-                    // TODO: Add a way to retrieve effect names here
-                    model: ["---", "Effect 1", "Effect 2", "Effect 3", "Effect 4"]
-                }
+            AnchorChanges {
+                target: effect1
+                anchors.left: effectContainer.left
+            }
 
-                Skin.ControlMiniKnob {
-                    id: effectMetaKnob
+            AnchorChanges {
+                target: effect2
+                anchors.left: effectContainer.left
+                anchors.top: effect1.bottom
+            }
 
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.margins: 5
-                    arcStart: 0
-                    width: 40
-                    group: effect.group
-                    key: "meta"
-                    color: Theme.effectColor
-                }
+            AnchorChanges {
+                target: effect3
+                anchors.left: effectContainer.left
+                anchors.top: effect2.bottom
+            }
 
+            PropertyChanges {
+                target: effect1
+                width: parent.width
+                expanded: true
+            }
+
+            PropertyChanges {
+                target: effect2
+                width: parent.width
+                expanded: true
+            }
+
+            PropertyChanges {
+                target: effect3
+                width: parent.width
+                expanded: true
+            }
+
+            PropertyChanges {
+                target: effectContainer
+                height: 160
+            }
+
+            PropertyChanges {
+                target: superKnob
+                visible: true
+            }
+
+            PropertyChanges {
+                target: dryWetKnob
+                visible: true
+            }
+
+        }
+
+        transitions: Transition {
+            AnchorAnimation {
+                targets: [effect1, effect2, effect3]
+                duration: 150
             }
 
         }
@@ -77,26 +121,90 @@ Item {
     }
 
     Rectangle {
-        id: effectSuperKnobFrame
+        id: effectUnitControlsFrame
 
         anchors.margins: 5
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        width: height
+        width: effectUnitControls.width
         color: Theme.knobBackgroundColor
         radius: 5
 
-        Skin.ControlKnob {
-            id: effectSuperKnob
+        Column {
+            id: effectUnitControls
 
-            anchors.centerIn: parent
-            width: 48
-            height: 48
-            arcStart: 0
-            group: "[EffectRack1_EffectUnit" + unitNumber + "]"
-            key: "super1"
-            color: Theme.effectUnitColor
+            anchors.top: parent.top
+            anchors.right: parent.right
+            padding: 5
+            spacing: 10
+
+            Item {
+                width: 40
+                height: width
+
+                Skin.Button {
+                    id: expandButton
+
+                    anchors.fill: parent
+                    activeColor: Theme.effectUnitColor
+                    text: "▼"
+                    checkable: true
+                }
+
+            }
+
+            Skin.ControlKnob {
+                id: superKnob
+
+                height: 40
+                width: height
+                arcStart: Knob.ArcStart.Minimum
+                group: "[EffectRack1_EffectUnit" + unitNumber + "]"
+                key: "super1"
+                color: Theme.effectUnitColor
+                visible: false
+
+                Skin.FadeBehavior on visible {
+                    fadeTarget: superKnob
+                }
+
+            }
+
+            Skin.ControlKnob {
+                id: dryWetKnob
+
+                height: 40
+                width: height
+                arcStart: Knob.ArcStart.Minimum
+                group: "[EffectRack1_EffectUnit" + unitNumber + "]"
+                key: "mix"
+                color: Theme.effectUnitColor
+                visible: false
+
+                Skin.FadeBehavior on visible {
+                    fadeTarget: dryWetKnob
+                }
+
+            }
+
+            add: Transition {
+                NumberAnimation {
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 150
+                }
+
+                NumberAnimation {
+                    property: "scale"
+                    from: 0
+                    to: 1
+                    duration: 150
+                }
+
+            }
+
         }
 
     }

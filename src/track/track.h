@@ -72,6 +72,7 @@ class Track : public QObject {
                     STORED false NOTIFY durationChanged)
     Q_PROPERTY(QString info READ getInfo STORED false NOTIFY infoChanged)
     Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false NOTIFY infoChanged)
+    Q_PROPERTY(QDateTime sourceSynchronizedAt READ getSourceSynchronizedAt STORED false)
 
     mixxx::FileAccess getFileAccess() const {
         // Copying QFileInfo is thread-safe due to implicit sharing,
@@ -148,9 +149,18 @@ class Track : public QObject {
     mixxx::ReplayGain getReplayGain() const;
 
     // Indicates if the metadata has been parsed from file tags.
-    bool isMetadataSynchronized() const;
-    // Only used by a free function in TrackDAO!
-    void setMetadataSynchronized(bool metadataSynchronized);
+    bool isSourceSynchronized() const;
+
+    void setHeaderParsedFromTrackDAO(bool headerParsed) {
+        // Always operating on a newly created, exclusive instance! No need
+        // to lock the mutex.
+        DEBUG_ASSERT(!m_record.m_headerParsed);
+        m_record.m_headerParsed = headerParsed;
+    }
+
+    // The date/time of the last import or export of metadata
+    void setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt);
+    QDateTime getSourceSynchronizedAt() const;
 
     void setDateAdded(const QDateTime& dateAdded);
     QDateTime getDateAdded() const;
@@ -252,12 +262,20 @@ class Track : public QObject {
     ConstWaveformPointer getWaveformSummary() const;
     void setWaveformSummary(ConstWaveformPointer pWaveform);
 
-    // Get the track's main cue point
-    CuePosition getCuePoint() const;
+    /// Get the track's main cue point
+    mixxx::audio::FramePos getMainCuePosition() const;
+    CuePosition getCuePoint() const {
+        return getMainCuePosition().toEngineSamplePosMaybeInvalid();
+    };
     // Set the track's main cue point
-    void setCuePoint(CuePosition cue);
+    void setMainCuePosition(mixxx::audio::FramePos position);
+    void setCuePoint(CuePosition position) {
+        setMainCuePosition(
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        position.getPosition()));
+    }
     /// Shift all cues by a constant offset
-    void shiftCuePositionsMillis(double milliseconds);
+    void shiftCuePositionsMillis(mixxx::audio::FrameDiff_t milliseconds);
     // Call when analysis is done.
     void analysisFinished();
 
@@ -265,8 +283,20 @@ class Track : public QObject {
     CuePointer createAndAddCue(
             mixxx::CueType type,
             int hotCueIndex,
-            double sampleStartPosition,
-            double sampleEndPosition);
+            mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition);
+    CuePointer createAndAddCue(
+            mixxx::CueType type,
+            int hotCueIndex,
+            double startPositionSamples,
+            double endPositionSamples) {
+        return createAndAddCue(type,
+                hotCueIndex,
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        startPositionSamples),
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        endPositionSamples));
+    }
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;
     void removeCue(const CuePointer& pCue);
@@ -336,10 +366,10 @@ class Track : public QObject {
     /// with file tags, either by importing or exporting the metadata.
     void replaceMetadataFromSource(
             mixxx::TrackMetadata importedMetadata,
-            const QDateTime& metadataSynchronized);
+            const QDateTime& sourceSynchronizedAt);
 
     mixxx::TrackMetadata getMetadata(
-            bool* pMetadataSynchronized = nullptr) const;
+            bool* pHeaderParsed = nullptr) const;
 
     mixxx::TrackRecord getRecord(
             bool* pDirty = nullptr) const;

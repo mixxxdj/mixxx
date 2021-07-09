@@ -61,13 +61,13 @@ void ClockControl::updateIndicators(const double dRate,
         const double currentSample,
         const double sampleRate) {
     /* This method sets the control beat_active is set to the following values:
-    *  0.0 --> No beat indication (ouside 20% area or play direction changed while indication was on)
+    *  0.0 --> No beat indication (outside 20% area or play direction changed while indication was on)
     *  1.0 --> Forward playing, set at the beat and set back to 0.0 at 20% of beat distance
     *  2.0 --> Reverse playing, set at the beat and set back to 0.0 at -20% of beat distance
     */
 
     // No position change since last indicator update (e.g. deck stopped) -> No indicator update needed
-    // The kSignificiantRateThreshold condition ensures an immidiate indicator update, when the play/cue button is pressed
+    // The kSignificiantRateThreshold condition ensures an immediate indicator update, when the play/cue button is pressed
     if ((currentSample <= (m_lastEvaluatedSample + kStandStillTolerance * sampleRate)) &&
             (currentSample >= (m_lastEvaluatedSample - kStandStillTolerance * sampleRate)) &&
             (fabs(dRate) <= kSignificiantRateThreshold)) {
@@ -88,10 +88,18 @@ void ClockControl::updateIndicators(const double dRate,
     if (pBeats) {
         if ((currentSample >= m_NextBeatSamples) ||
                 (currentSample <= m_PrevBeatSamples)) {
-            pBeats->findPrevNextBeats(currentSample,
-                    &m_PrevBeatSamples,
-                    &m_NextBeatSamples,
+            mixxx::audio::FramePos prevBeatPosition;
+            mixxx::audio::FramePos nextBeatPosition;
+            pBeats->findPrevNextBeats(mixxx::audio::FramePos::fromEngineSamplePos(currentSample),
+                    &prevBeatPosition,
+                    &nextBeatPosition,
                     false); // Precise compare without tolerance needed
+            m_PrevBeatSamples = prevBeatPosition.isValid()
+                    ? prevBeatPosition.toEngineSamplePos()
+                    : -1;
+            m_NextBeatSamples = nextBeatPosition.isValid()
+                    ? nextBeatPosition.toEngineSamplePos()
+                    : -1;
         }
     } else {
         m_PrevBeatSamples = -1;

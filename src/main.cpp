@@ -8,8 +8,8 @@
 
 #include "coreservices.h"
 #include "errordialoghandler.h"
-#include "mixxx.h"
 #include "mixxxapplication.h"
+#include "mixxxmainwindow.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -79,14 +79,19 @@ int main(int argc, char * argv[]) {
     // the main thread. Bug #1748636.
     ErrorDialogHandler::instance();
 
+    MixxxApplication app(argc, argv);
+
 #ifdef __APPLE__
-    Sandbox::checkSandboxed();
+    // TODO: At this point it is too late to provide the same settings path to all components
+    // and too early to log errors and give users advises in their system language.
+    // Calling this from main.cpp before the QApplication is initialized may cause a crash
+    // due to potential QMessageBox invocations within migrateOldSettings().
+    // Solution: Start Mixxx with default settings, migrate the preferences, and then restart
+    // immediately.
     if (!args.getSettingsPathSet()) {
-        args.setSettingsPath(Sandbox::migrateOldSettings());
+        CmdlineArgs::Instance().setSettingsPath(Sandbox::migrateOldSettings());
     }
 #endif
-
-    MixxxApplication app(argc, argv);
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

@@ -1181,7 +1181,10 @@ WBeatSpinBox, #spinBoxTransition,
 #FxAssignButtons WPushButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
-#BroadcastButton[displayValue="1"], /* connecting: yellow */
+#BroadcastButton[displayValue="1"],
+#BroadcastButton[displayValue="2"],
+#BroadcastButton[displayValue="3"],
+#BroadcastButton[displayValue="4"],
 #RecDuration[highlight="1"],
 #RecDuration[highlight="2"],
 #SkinSettingsToggle[displayValue="1"],
@@ -1274,6 +1277,7 @@ WPushButton#FxAssignButton1[displayValue="1"],
 #BroadcastButton[displayValue="1"],
 #BroadcastButton[displayValue="2"],
 #BroadcastButton[displayValue="3"],
+#BroadcastButton[displayValue="4"],
 #SkinSettingsToggle[displayValue="1"],
 #LibraryFeatureControls QPushButton:pressed,
 QPushButton#pushButtonAutoDJ:checked,
@@ -1449,7 +1453,8 @@ QPushButton#pushButtonRepeatPlaylist:checked {
   background-color: #888;
 }
 
-#BroadcastButton[displayValue="3"] {
+#BroadcastButton[displayValue="3"],
+#BroadcastButton[displayValue="4"] {
   /* pink */
   background-color: #f856e7;
 }
@@ -1888,7 +1893,8 @@ WPushButton#SamplerExpand[displayValue="0"],
   }
   #BroadcastButton[displayValue="1"],
   #BroadcastButton[displayValue="2"],
-  #BroadcastButton[displayValue="3"] {
+  #BroadcastButton[displayValue="3"],
+  #BroadcastButton[displayValue="4"] {
     image: url(skin:/classic/buttons/btn__broadcast_on.svg) no-repeat left top;
   }
 

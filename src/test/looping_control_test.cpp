@@ -69,8 +69,9 @@ class LoopingControlTest : public MockedEngineBackendTest {
         return m_pLoopEnabled->get() > 0.0;
     }
 
-    void seekToSampleAndProcess(double new_pos) {
-        m_pChannel1->getEngineBuffer()->queueNewPlaypos(new_pos, EngineBuffer::SEEK_STANDARD);
+    void seekToSampleAndProcess(double samplePosition) {
+        const auto position = mixxx::audio::FramePos::fromEngineSamplePos(samplePosition);
+        m_pChannel1->getEngineBuffer()->queueNewPlaypos(position, EngineBuffer::SEEK_STANDARD);
         ProcessBuffer();
     }
 
@@ -536,8 +537,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_EQ(44110, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
 
     // Move backward so that the current position is outside the new location of the loop
-    m_pChannel1->getEngineBuffer()->queueNewPlaypos(44300, EngineBuffer::SEEK_STANDARD);
-    ProcessBuffer();
+    seekToSampleAndProcess(44300);
     m_pButtonBeatMoveBackward->set(1.0);
     m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();
@@ -565,8 +565,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
             kLoopPositionMaxAbsError);
 
     // Move backward so that the current position is outside the new location of the loop
-    m_pChannel1->getEngineBuffer()->queueNewPlaypos(500, EngineBuffer::SEEK_STANDARD);
-    ProcessBuffer();
+    seekToSampleAndProcess(500);
     m_pButtonBeatMoveBackward->set(1.0);
     m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();

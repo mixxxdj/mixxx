@@ -65,16 +65,6 @@ std::optional<djinterop::musical_key> toDjinteropKey(
     return keyMap[key];
 }
 
-inline double playPosToSampleOffset(double playPos) {
-    // Play positions are twice the sample offset expected by libdjinterop.
-    return playPos / 2;
-}
-
-inline double sampleOffsetToPlayPos(double sampleOffset) {
-    // Play positions are twice the sample offset expected by libdjinterop.
-    return sampleOffset * 2;
-}
-
 QString exportFile(const QSharedPointer<EnginePrimeExportRequest> pRequest,
         TrackPointer pTrack) {
     if (!pRequest->engineLibraryDbDir.exists()) {
@@ -151,8 +141,12 @@ void exportMetadata(djinterop::database* pDatabase,
     snapshot.comment = pTrack->getComment().toStdString();
     snapshot.composer = pTrack->getComposer().toStdString();
     snapshot.key = toDjinteropKey(pTrack->getKey());
-    int64_t lastModifiedMillisSinceEpoch =
-            pTrack->getFileInfo().lastModified().toMSecsSinceEpoch();
+    int64_t lastModifiedMillisSinceEpoch = 0;
+    const QDateTime fileLastModified = pTrack->getFileInfo().lastModified();
+    if (fileLastModified.isValid()) {
+        // Only defined if valid
+        lastModifiedMillisSinceEpoch = fileLastModified.toMSecsSinceEpoch();
+    }
     std::chrono::system_clock::time_point lastModifiedAt{
             std::chrono::milliseconds{lastModifiedMillisSinceEpoch}};
     snapshot.last_modified_at = lastModifiedAt;
@@ -160,9 +154,9 @@ void exportMetadata(djinterop::database* pDatabase,
     snapshot.rating = pTrack->getRating() * 20; // note rating is in range 0-100
 
     // Frames used interchangeably with "samples" here.
-    const auto sampleCount = static_cast<int64_t>(pTrack->getDuration() * pTrack->getSampleRate());
+    const auto frameCount = static_cast<int64_t>(pTrack->getDuration() * pTrack->getSampleRate());
     snapshot.sampling = djinterop::sampling_info{
-            static_cast<double>(pTrack->getSampleRate()), sampleCount};
+            static_cast<double>(pTrack->getSampleRate()), frameCount};
 
     // Set track loudness.
     // Note that the djinterop API method for setting loudness may be revised
@@ -173,10 +167,10 @@ void exportMetadata(djinterop::database* pDatabase,
     snapshot.average_loudness = pTrack->getReplayGain().getRatio();
 
     // Set main cue-point.
-    double cuePlayPos = pTrack->getCuePoint().getPosition();
-    double cueSampleOffset = playPosToSampleOffset(cuePlayPos);
-    snapshot.default_main_cue = cueSampleOffset;
-    snapshot.adjusted_main_cue = cueSampleOffset;
+    mixxx::audio::FramePos cuePlayPos = pTrack->getMainCuePosition();
+    // FIXME: What if the cuePlayPos is invalid?
+    snapshot.default_main_cue = cuePlayPos.value();
+    snapshot.adjusted_main_cue = cuePlayPos.value();
 
     // Fill in beat grid.  For now, assume a constant average BPM across
     // the whole track.  Note that points in the track are specified as
@@ -189,22 +183,22 @@ void exportMetadata(djinterop::database* pDatabase,
         // starts at the beginning of a bar, then move backwards towards the
         // beginning of the track in 4-beat decrements to find the first beat
         // in the track that also aligns with the start of a bar.
-        double firstBeatPlayPos = beats->findNextBeat(0);
-        double cueBeatPlayPos = beats->findClosestBeat(cuePlayPos);
+        const auto firstBeatPlayPos = beats->firstBeat();
+        const auto cueBeatPlayPos = beats->findClosestBeat(cuePlayPos);
         int numBeatsToCue = beats->numBeatsInRange(firstBeatPlayPos, cueBeatPlayPos);
-        double firstBarAlignedBeatPlayPos = beats->findNBeatsFromSample(
+        const auto firstBarAlignedBeatPlayPos = beats->findNBeatsFromPosition(
                 cueBeatPlayPos, numBeatsToCue & ~0x3);
 
         // We will treat the first bar-aligned beat as beat zero.  Find the
         // number of beats from there until the end of the track in order to
         // correctly assign an index for the last beat.
-        double lastBeatPlayPos = beats->findPrevBeat(sampleOffsetToPlayPos(sampleCount));
+        const auto lastBeatPlayPos = beats->findPrevBeat(mixxx::audio::kStartFramePos + frameCount);
         int numBeats = beats->numBeatsInRange(firstBarAlignedBeatPlayPos, lastBeatPlayPos);
         if (numBeats > 0) {
             std::vector<djinterop::beatgrid_marker> beatgrid{
-                    {0, playPosToSampleOffset(firstBarAlignedBeatPlayPos)},
-                    {numBeats, playPosToSampleOffset(lastBeatPlayPos)}};
-            beatgrid = el::normalize_beatgrid(std::move(beatgrid), sampleCount);
+                    {0, firstBarAlignedBeatPlayPos.value()},
+                    {numBeats, lastBeatPlayPos.value()}};
+            beatgrid = el::normalize_beatgrid(std::move(beatgrid), frameCount);
             snapshot.default_beatgrid = beatgrid;
             snapshot.adjusted_beatgrid = beatgrid;
         } else {
@@ -241,8 +235,15 @@ void exportMetadata(djinterop::database* pDatabase,
 
         djinterop::hot_cue hotCue{};
         hotCue.label = label.toStdString();
-        hotCue.sample_offset = playPosToSampleOffset(pCue->getPosition());
-        hotCue.color = el::standard_pad_colors::pads[hotCueIndex];
+        hotCue.sample_offset = pCue->getPosition().value();
+
+        auto color = mixxx::RgbColor::toQColor(pCue->getColor());
+        hotCue.color = djinterop::pad_color{
+                static_cast<uint_least8_t>(color.red()),
+                static_cast<uint_least8_t>(color.green()),
+                static_cast<uint_least8_t>(color.blue()),
+                255};
+
         snapshot.hot_cues[hotCueIndex] = hotCue;
     }
 
@@ -252,6 +253,8 @@ void exportMetadata(djinterop::database* pDatabase,
     // from a set of stored loops (and is easily overwritten), we do not export
     // it to the external database here.
     //
+    // TODO: This comment above is wrong, it does support saved loops now.
+    //
     // Note also that the loops on any existing track are not modified here.
 
     // Write waveform.
@@ -260,7 +263,7 @@ void exportMetadata(djinterop::database* pDatabase,
     if (pWaveform) {
         int64_t samplesPerEntry =
                 el::required_waveform_samples_per_entry(pTrack->getSampleRate());
-        int64_t externalWaveformSize = (sampleCount + samplesPerEntry - 1) / samplesPerEntry;
+        int64_t externalWaveformSize = (frameCount + samplesPerEntry - 1) / samplesPerEntry;
         std::vector<djinterop::waveform_entry> externalWaveform;
         externalWaveform.reserve(externalWaveformSize);
         for (int64_t i = 0; i < externalWaveformSize; ++i) {
@@ -322,7 +325,7 @@ void exportCrate(
     auto extCrate = pExtRootCrate->create_sub_crate(crate.getName().toStdString());
 
     // Loop through all track ids in this crate and add.
-    for (const auto trackId : trackIds) {
+    for (const auto& trackId : trackIds) {
         const auto extTrackId = mixxxToEnginePrimeTrackIdMap[trackId];
         extCrate.add_track(extTrackId);
     }
