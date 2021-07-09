@@ -516,6 +516,7 @@ WLibrary QRadioButton::indicator:unchecked {
 }
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
+#BeatgridLockButton,
 #LibraryFeatureControls QPushButton {
   margin: 9px 3px 6px 3px;
   padding: 3px 4px;

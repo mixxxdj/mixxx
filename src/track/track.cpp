@@ -264,7 +264,8 @@ mixxx::TrackRecord Track::getRecord(
 
 bool Track::replaceRecord(
         mixxx::TrackRecord newRecord,
-        mixxx::BeatsPointer pOptionalBeats) {
+        mixxx::BeatsPointer pOptionalBeats,
+        bool forceBpm) {
     const auto newKey = newRecord.getGlobalKey();
     const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
     const auto newColor = newRecord.getColor();
@@ -279,6 +280,14 @@ bool Track::replaceRecord(
     const auto oldReplayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     const auto oldColor = m_record.getColor();
 
+    bool wasLocked;
+
+    // unlock the bpmLock in case force is requested
+    if (forceBpm) {
+        wasLocked = isBpmLocked();
+        setBpmLocked(false);
+    }
+
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
         bpmUpdatedFlag = trySetBeatsWhileLocked(std::move(pOptionalBeats));
@@ -289,6 +298,10 @@ bool Track::replaceRecord(
         // Setting the bpm manually may in turn update the beat grid
         bpmUpdatedFlag = trySetBpmWhileLocked(
                 newRecord.getMetadata().getTrackInfo().getBpm().value());
+    }
+
+    if (forceBpm) {
+        setBpmLocked(wasLocked);
     }
     // The bpm in m_record has already been updated. Read it and copy it into
     // the new record to ensure it will be consistent with the new beat grid.
@@ -1384,6 +1397,7 @@ void Track::setBpmLocked(bool bpmLocked) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(m_record.ptrBpmLocked(), bpmLocked)) {
         markDirtyAndUnlock(&lock);
+        emit bpmLockUpdated(bpmLocked);
     }
 }
 

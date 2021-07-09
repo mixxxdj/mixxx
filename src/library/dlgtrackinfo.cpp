@@ -34,8 +34,9 @@ constexpr int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
-
 } // namespace
+
+int DlgTrackInfo::s_lastTabOpened = 0;
 
 DlgTrackInfo::DlgTrackInfo(
         const TrackModel* trackModel)
@@ -63,6 +64,7 @@ void DlgTrackInfo::init() {
     starsLayout->insertWidget(0, m_pWStarRating.get());
     // This is necessary to pass on mouseMove events to WStarRating
     m_pWStarRating->setMouseTracking(true);
+    tabWidget->setCurrentIndex(DlgTrackInfo::s_lastTabOpened);
 
     if (m_pTrackModel) {
         connect(btnNext,
@@ -93,6 +95,13 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotCancel);
 
+    connect(btnRevert,
+            &QPushButton::clicked,
+            this,
+            [this]() {
+                updateFromTrack(*m_pLoadedTrack);
+            });
+
     connect(bpmDouble,
             &QPushButton::clicked,
             this,
@@ -121,11 +130,22 @@ void DlgTrackInfo::init() {
             &QPushButton::clicked,
             this,
             &DlgTrackInfo::slotBpmClear);
+    connect(bpmRound,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmRound);
 
     connect(bpmConst,
             &QCheckBox::stateChanged,
             this,
             &DlgTrackInfo::slotBpmConstChanged);
+    connect(beatgridLock,
+            &QCheckBox::stateChanged,
+            this,
+            [this](int state) {
+                enableBpmControls(state == Qt::Unchecked);
+                m_trackRecord.setBpmLocked(state == Qt::Checked);
+            });
 
     connect(spinBpm,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
@@ -218,6 +238,13 @@ void DlgTrackInfo::init() {
             &QPushButton::clicked,
             this,
             &DlgTrackInfo::slotOpenInFileBrowser);
+
+    connect(tabWidget,
+            &QTabWidget::currentChanged,
+            [this](int index) {
+                Q_UNUSED(this);
+                DlgTrackInfo::s_lastTabOpened = index;
+            });
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -376,15 +403,31 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     m_trackHasBeatMap = m_pBeatsClone &&
             !(m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM);
     bpmConst->setChecked(!m_trackHasBeatMap);
-    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
-    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
-    bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
+    bpmConst->setEnabled(m_trackHasBeatMap);
 
-    if (track.isBpmLocked()) {
-        tabBPM->setEnabled(false);
-    } else {
-        tabBPM->setEnabled(true);
+    m_beatsChanged = false;
+    beatgridLock->setChecked(track.isBpmLocked());
+}
+
+void DlgTrackInfo::enableBpmControls(bool enabled) {
+    bool canSetBpm = false;
+    if (m_pLoadedTrack) {
+        mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+        if (pBeats) {
+            canSetBpm = pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM;
+        }
     }
+    spinBpm->setEnabled(enabled && canSetBpm);
+    bpmRound->setEnabled(enabled && canSetBpm);
+    bpmConst->setEnabled(enabled && !canSetBpm);
+    bpmTap->setEnabled(enabled && canSetBpm);
+    bpmDouble->setEnabled(enabled);
+    bpmHalve->setEnabled(enabled);
+    bpmTwoThirds->setEnabled(enabled);
+    bpmThreeFourth->setEnabled(enabled);
+    bpmThreeHalves->setEnabled(enabled);
+    bpmFourThirds->setEnabled(enabled);
+    bpmClear->setEnabled(enabled);
 }
 
 void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
@@ -480,10 +523,6 @@ void DlgTrackInfo::saveTrack() {
     // and repopulate all these fields.
     const QSignalBlocker signalBlocker(this);
 
-    // Special case handling for the comment field that is not
-    // updated by the editingFinished signal.
-    m_trackRecord.refMetadata().refTrackInfo().setComment(txtComment->toPlainText());
-
     // If the user is editing the bpm or key and hits enter to close DlgTrackInfo,
     // the editingFinished signal will not fire in time. Invoke the connected
     // handlers manually to capture any changes. If the bpm or key was unchanged
@@ -492,7 +531,8 @@ void DlgTrackInfo::saveTrack() {
     static_cast<void>(updateKeyText()); // discard result
 
     // Update the cached track
-    m_pLoadedTrack->replaceRecord(std::move(m_trackRecord), std::move(m_pBeatsClone));
+    m_pLoadedTrack->replaceRecord(
+            std::move(m_trackRecord), std::move(m_pBeatsClone), m_beatsChanged);
 
     // Repopulate the dialog and update the UI
     updateFromTrack(*m_pLoadedTrack);
@@ -515,48 +555,92 @@ void DlgTrackInfo::clear() {
     m_pBeatsClone.clear();
 
     txtLocation->setText("");
+    txtBitrate->setText("");
+    txtBpm->setText("");
+    txtKey->setText("");
+    txtReplayGain->setText("");
+
+    auto loadedCoverInfo = CoverInfo();
+    m_pWCoverArtLabel->setCoverArt(loadedCoverInfo, QPixmap());
+    m_beatsChanged = false;
+}
+
+void DlgTrackInfo::slotBpmRound() {
+    if (!m_pBeatsClone) {
+        return;
+    }
+    if (m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) {
+        mixxx::Bpm newValue = m_pBeatsClone->getBpm();
+        newValue.roundToInteger();
+        slotSpinBpmValueChanged(newValue.value());
+    }
 }
 
 void DlgTrackInfo::slotBpmDouble() {
+    if (!m_pBeatsClone) {
+        return;
+    }
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::DOUBLE);
     // read back the actual value
     mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
+    m_beatsChanged = true;
 }
 
 void DlgTrackInfo::slotBpmHalve() {
+    if (!m_pBeatsClone) {
+        return;
+    }
+    m_pBeatsClone->scale(mixxx::Beats::HALVE);
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::HALVE);
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
+    m_beatsChanged = true;
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
+    if (!m_pBeatsClone) {
+        return;
+    }
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::TWOTHIRDS);
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
+    m_beatsChanged = true;
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
+    if (!m_pBeatsClone) {
+        return;
+    }
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::THREEFOURTHS);
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
+    m_beatsChanged = true;
 }
 
 void DlgTrackInfo::slotBpmFourThirds() {
+    if (!m_pBeatsClone) {
+        return;
+    }
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::FOURTHIRDS);
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
+    m_beatsChanged = true;
 }
 
 void DlgTrackInfo::slotBpmThreeHalves() {
+    if (!m_pBeatsClone) {
+        return;
+    }
     m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::THREEHALVES);
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
+    m_beatsChanged = true;
 }
 
 void DlgTrackInfo::slotBpmClear() {
@@ -567,6 +651,7 @@ void DlgTrackInfo::slotBpmClear() {
     bpmConst->setEnabled(m_trackHasBeatMap);
     spinBpm->setEnabled(true);
     bpmTap->setEnabled(true);
+    m_beatsChanged = true;
 }
 
 void DlgTrackInfo::slotBpmConstChanged(int state) {
@@ -589,10 +674,12 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
         }
         spinBpm->setEnabled(true);
         bpmTap->setEnabled(true);
+        bpmRound->setEnabled(true);
     } else {
         // try to reload BeatMap from the Track
         reloadTrackBeats(*m_pLoadedTrack);
     }
+    m_beatsChanged = true;
 }
 
 void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
@@ -608,12 +695,14 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
         m_lastTapedBpm = averageBpm;
         spinBpm->setValue(averageBpm.value());
     }
+    m_beatsChanged = true;
 }
 
 void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     const auto bpm = mixxx::Bpm(value);
     if (!bpm.isValid()) {
         m_pBeatsClone.clear();
+        m_beatsChanged = true;
         return;
     }
 
@@ -637,6 +726,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     // read back the actual value
     const mixxx::Bpm newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue.value());
+    m_beatsChanged = true;
 }
 
 mixxx::UpdateResult DlgTrackInfo::updateKeyText() {

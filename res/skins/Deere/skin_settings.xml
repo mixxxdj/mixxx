@@ -103,6 +103,12 @@
 
           <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">Beatgrid Lock</SetVariable>
+            <SetVariable name="skinsetting">[Deere],show_beatgrid_lock</SetVariable>
+          </Template>
+
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="text">Star Rating</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_starrating</SetVariable>
           </Template>

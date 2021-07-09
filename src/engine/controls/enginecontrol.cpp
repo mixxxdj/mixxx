@@ -30,6 +30,10 @@ void EngineControl::trackLoaded(TrackPointer pNewTrack) {
     Q_UNUSED(pNewTrack);
 }
 
+void EngineControl::trackUnloaded(TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
+}
+
 void EngineControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     Q_UNUSED(pBeats);
 }

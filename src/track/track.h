@@ -375,7 +375,8 @@ class Track : public QObject {
             bool* pDirty = nullptr) const;
     bool replaceRecord(
             mixxx::TrackRecord newRecord,
-            mixxx::BeatsPointer pOptionalBeats = nullptr);
+            mixxx::BeatsPointer pOptionalBeats = nullptr,
+            bool forceBpm = false);
 
     // Mark the track dirty if it isn't already.
     void markDirty();
@@ -417,6 +418,7 @@ class Track : public QObject {
     void waveformUpdated();
     void waveformSummaryUpdated();
     void coverArtUpdated();
+    void bpmLockUpdated(bool locked);
     void beatsUpdated();
     void replayGainUpdated(mixxx::ReplayGain replayGain);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
