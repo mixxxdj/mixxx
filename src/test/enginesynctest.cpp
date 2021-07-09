@@ -1361,6 +1361,26 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
 
+TEST_F(EngineSyncTest, BeatDistanceBeforeStart) {
+    // https://bugs.launchpad.net/mixxx/+bug/1930143
+    // If the start position is before zero, we should still initialize the beat distance
+    // correctly.  Unfortunately, this currently doesn't work.
+
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(
+            m_pTrack1->getSampleRate(), 128, 0);
+    m_pTrack1->trySetBeats(pBeats1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition"), -.05);
+    ProcessBuffer();
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ProcessBuffer();
+    // This fraction is one buffer beyond the seek position -- indicating that
+    // we seeked correctly.
+    EXPECT_NEAR(0.49143461829176116,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            kMaxBeatDistanceEpsilon);
+}
+
 TEST_F(EngineSyncTest, ZeroLatencyRateChangeNoQuant) {
     // Confirm that a rate change in an explicit master is instantly communicated
     // to followers.

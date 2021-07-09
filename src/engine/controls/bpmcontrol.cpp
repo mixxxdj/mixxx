@@ -812,9 +812,11 @@ double BpmControl::getBeatMatchPosition(
     }
     if (playing) {
         if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
-            // "this" track is playing, or just starting
-            // only match phase if the sync target is playing as well
-            // else use the previous phase of "this" track before the seek
+            // "this" track is playing, or just starting.
+            // Only match phase if the sync target is playing as well,
+            // otherwise use the previous phase of "this" track before the seek.
+            // This occurs when the DJ does a quantized seek -- we preserve
+            // the exact beat distance.
             pOtherEngineBuffer = getEngineBuffer();
         }
     } else if (!pOtherEngineBuffer) {
