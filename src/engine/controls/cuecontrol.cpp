@@ -1161,15 +1161,15 @@ void CueControl::hotcueEndPositionChanged(
 }
 
 void CueControl::hintReader(HintVector* pHintList) {
-    Hint cue_hint;
+    Hint cueHint;
     const auto mainCuePosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pCuePoint->get());
     if (mainCuePosition.isValid()) {
-        cue_hint.frame = SampleUtil::floorPlayPosToFrame(mainCuePosition.toEngineSamplePos());
-        cue_hint.frameCount = Hint::kFrameCountForward;
-        cue_hint.priority = 10;
-        pHintList->append(cue_hint);
+        cueHint.frame = static_cast<SINT>(mainCuePosition.toLowerFrameBoundary().value());
+        cueHint.frameCount = Hint::kFrameCountForward;
+        cueHint.priority = 10;
+        pHintList->append(cueHint);
     }
 
     // this is called from the engine thread
@@ -1178,10 +1178,10 @@ void CueControl::hintReader(HintVector* pHintList) {
     for (const auto& pControl : qAsConst(m_hotcueControls)) {
         const mixxx::audio::FramePos position = pControl->getPosition();
         if (position.isValid()) {
-            cue_hint.frame = SampleUtil::floorPlayPosToFrame(position.toEngineSamplePos());
-            cue_hint.frameCount = Hint::kFrameCountForward;
-            cue_hint.priority = 10;
-            pHintList->append(cue_hint);
+            cueHint.frame = static_cast<SINT>(position.toLowerFrameBoundary().value());
+            cueHint.frameCount = Hint::kFrameCountForward;
+            cueHint.priority = 10;
+            pHintList->append(cueHint);
         }
     }
 }
