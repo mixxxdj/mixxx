@@ -109,6 +109,12 @@ class FramePos final {
         return FramePos(std::floor(value()));
     }
 
+    /// Return position rounded to the nearest full frame position, without
+    /// the fractional part.
+    [[nodiscard]] FramePos toNearestFrameBoundary() const {
+        return FramePos(std::round(value()));
+    }
+
     FramePos& operator+=(FrameDiff_t increment) {
         DEBUG_ASSERT(isValid());
         m_framePosition += increment;
