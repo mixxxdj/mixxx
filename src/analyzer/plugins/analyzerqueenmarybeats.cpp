@@ -39,22 +39,21 @@ DFConfig makeDetectionFunctionConfig(int stepSizeFrames, int windowSize) {
 } // namespace
 
 AnalyzerQueenMaryBeats::AnalyzerQueenMaryBeats()
-        : m_iSampleRate(0),
-          m_windowSize(0),
+        : m_windowSize(0),
           m_stepSizeFrames(0) {
 }
 
 AnalyzerQueenMaryBeats::~AnalyzerQueenMaryBeats() {
 }
 
-bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
+bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
     m_detectionResults.clear();
-    m_iSampleRate = samplerate;
-    m_stepSizeFrames = static_cast<int>(m_iSampleRate * kStepSecs);
-    m_windowSize = MathUtilities::nextPowerOfTwo(m_iSampleRate / kMaximumBinSizeHz);
+    m_sampleRate = sampleRate;
+    m_stepSizeFrames = static_cast<int>(m_sampleRate * kStepSecs);
+    m_windowSize = MathUtilities::nextPowerOfTwo(m_sampleRate / kMaximumBinSizeHz);
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
             makeDetectionFunctionConfig(m_stepSizeFrames, m_windowSize));
-    qDebug() << "input sample rate is " << m_iSampleRate << ", step size is " << m_stepSizeFrames;
+    qDebug() << "input sample rate is " << m_sampleRate << ", step size is " << m_stepSizeFrames;
 
     m_helper.initialize(
             m_windowSize, m_stepSizeFrames, [this](double* pWindow, size_t) {
@@ -97,7 +96,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
         beatPeriod.push_back(0.0);
     }
 
-    TempoTrackV2 tt(m_iSampleRate, m_stepSizeFrames);
+    TempoTrackV2 tt(m_sampleRate, m_stepSizeFrames);
     tt.calculateBeatPeriod(df, beatPeriod, tempi);
 
     std::vector<double> beats;
