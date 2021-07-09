@@ -662,7 +662,6 @@ void CueControl::loadCuesFromTrack() {
     DEBUG_ASSERT(mainCuePosition.isValid());
     const auto quantizedMainCuePosition = quantizeCuePoint(mainCuePosition);
     m_pCuePoint->set(quantizedMainCuePosition.toEngineSamplePosMaybeInvalid());
-    qWarning() << m_pCuePoint->get();
 }
 
 void CueControl::trackAnalyzed() {
