@@ -66,7 +66,7 @@ class BeatGrid final : public Beats {
     ////////////////////////////////////////////////////////////////////////////
 
     BeatsPointer translate(audio::FrameDiff_t offset) const override;
-    BeatsPointer scale(enum BPMScale scale) const override;
+    BeatsPointer scale(BpmScale scale) const override;
     BeatsPointer setBpm(mixxx::Bpm bpm) override;
 
   private:

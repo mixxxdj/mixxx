@@ -54,22 +54,22 @@ TEST_F(BeatMapTest, Scale) {
     auto pMap = BeatMap::makeBeatMap(m_pTrack->getSampleRate(), QString(), beats);
 
     EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
-    pMap = pMap->scale(Beats::DOUBLE);
+    pMap = pMap->scale(Beats::BpmScale::Double);
     EXPECT_DOUBLE_EQ(2 * bpm.value(), pMap->getBpm().value());
 
-    pMap = pMap->scale(Beats::HALVE);
+    pMap = pMap->scale(Beats::BpmScale::Halve);
     EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
 
-    pMap = pMap->scale(Beats::TWOTHIRDS);
+    pMap = pMap->scale(Beats::BpmScale::TwoThirds);
     EXPECT_DOUBLE_EQ(bpm.value() * 2 / 3, pMap->getBpm().value());
 
-    pMap = pMap->scale(Beats::THREEHALVES);
+    pMap = pMap->scale(Beats::BpmScale::ThreeHalves);
     EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
 
-    pMap = pMap->scale(Beats::THREEFOURTHS);
+    pMap = pMap->scale(Beats::BpmScale::ThreeFourths);
     EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4, pMap->getBpm().value());
 
-    pMap = pMap->scale(Beats::FOURTHIRDS);
+    pMap = pMap->scale(Beats::BpmScale::FourThirds);
     EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
 }
 

@@ -46,13 +46,13 @@ class Beats {
     /// Allows us to do ORing
     typedef int CapabilitiesFlags;
 
-    enum BPMScale {
-        DOUBLE,
-        HALVE,
-        TWOTHIRDS,
-        THREEFOURTHS,
-        FOURTHIRDS,
-        THREEHALVES,
+    enum class BpmScale {
+        Double,
+        Halve,
+        TwoThirds,
+        ThreeFourths,
+        FourThirds,
+        ThreeHalves,
     };
 
     /// Retrieve the capabilities supported by the beats implementation.
@@ -159,7 +159,7 @@ class Beats {
 
     /// Scale the position of every beat in the song by `scale`. The `Beats`
     /// class must have the capability `BEATSCAP_SCALE`.
-    virtual BeatsPointer scale(enum BPMScale scale) const = 0;
+    virtual BeatsPointer scale(BpmScale scale) const = 0;
 
     /// Adjust the beats so the global average BPM matches `bpm`. The `Beats`
     /// class must have the capability `BEATSCAP_SET`.
