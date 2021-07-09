@@ -1162,11 +1162,11 @@ void CueControl::hotcueEndPositionChanged(
 
 void CueControl::hintReader(HintVector* pHintList) {
     Hint cue_hint;
-    const auto cuePoint =
+    const auto mainCuePosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pCuePoint->get());
-    if (cuePoint.isValid()) {
-        cue_hint.frame = SampleUtil::floorPlayPosToFrame(cuePoint.toEngineSamplePos());
+    if (mainCuePosition.isValid()) {
+        cue_hint.frame = SampleUtil::floorPlayPosToFrame(mainCuePosition.toEngineSamplePos());
         cue_hint.frameCount = Hint::kFrameCountForward;
         cue_hint.priority = 10;
         pHintList->append(cue_hint);
