@@ -109,6 +109,12 @@ class FramePos final {
         return FramePos(std::floor(value()));
     }
 
+    /// Return position rounded to the next upper full frame position, without
+    /// the fractional part.
+    [[nodiscard]] FramePos toUpperFrameBoundary() const {
+        return FramePos(std::ceil(value()));
+    }
+
     /// Return position rounded to the nearest full frame position, without
     /// the fractional part.
     [[nodiscard]] FramePos toNearestFrameBoundary() const {
