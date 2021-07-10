@@ -315,7 +315,7 @@ audio::FramePos BeatMap::findNthBeat(audio::FramePos position, int n) const {
         return audio::kInvalidFramePos;
     }
 
-    Beat beat = beatFromFramePos(position);
+    Beat beat = beatFromFramePos(position.toNearestFrameBoundary());
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
@@ -401,7 +401,7 @@ bool BeatMap::findPrevNextBeats(audio::FramePos position,
         return false;
     }
 
-    Beat beat = beatFromFramePos(position);
+    Beat beat = beatFromFramePos(position.toNearestFrameBoundary());
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
@@ -481,8 +481,8 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(
         return std::unique_ptr<BeatIterator>();
     }
 
-    Beat startBeat = beatFromFramePos(startPosition);
-    Beat endBeat = beatFromFramePos(endPosition);
+    Beat startBeat = beatFromFramePos(startPosition.toUpperFrameBoundary());
+    Beat endBeat = beatFromFramePos(endPosition.toLowerFrameBoundary());
 
     BeatList::const_iterator curBeat =
             std::lower_bound(m_beats.constBegin(), m_beats.constEnd(),
