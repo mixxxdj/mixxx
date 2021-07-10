@@ -10,7 +10,7 @@ using namespace mixxx;
 
 namespace {
 
-int countBeatsInIterator(std::unique_ptr<BeatIterator> pIterator) {
+int countRemainingBeats(std::unique_ptr<BeatIterator> pIterator) {
     int numBeatsFound = 0;
     while (pIterator->hasNext()) {
         pIterator->next();
@@ -351,34 +351,34 @@ TEST_F(BeatMapTest, FindBeatsWithFractionalPos) {
 
     // All beats are in range
     auto it = pMap->findBeats(mixxx::audio::kStartFramePos, lastBeatPos);
-    int numBeatsFound = countBeatsInIterator(std::move(it));
+    int numBeatsFound = countRemainingBeats(std::move(it));
     EXPECT_EQ(numBeats, numBeatsFound);
 
     // Only half the beats are in range
     const auto halfBeatsPosition = mixxx::audio::kStartFramePos +
             beatLengthFrames * ((numBeats / 2) - 1);
     it = pMap->findBeats(mixxx::audio::kStartFramePos, halfBeatsPosition);
-    numBeatsFound = countBeatsInIterator(std::move(it));
+    numBeatsFound = countRemainingBeats(std::move(it));
     EXPECT_EQ(numBeats / 2, numBeatsFound);
 
     // First beat is not in range
     it = pMap->findBeats(mixxx::audio::kStartFramePos + 0.5, lastBeatPos + 0.5);
-    numBeatsFound = countBeatsInIterator(std::move(it));
+    numBeatsFound = countRemainingBeats(std::move(it));
     EXPECT_EQ(numBeats - 1, numBeatsFound);
 
     // Last beat is not in range
     it = pMap->findBeats(mixxx::audio::kStartFramePos - 0.5, lastBeatPos - 0.5);
-    numBeatsFound = countBeatsInIterator(std::move(it));
+    numBeatsFound = countRemainingBeats(std::move(it));
     EXPECT_EQ(numBeats - 1, numBeatsFound);
 
     // All beats are in range
     it = pMap->findBeats(mixxx::audio::kStartFramePos - 0.5, lastBeatPos + 0.5);
-    numBeatsFound = countBeatsInIterator(std::move(it));
+    numBeatsFound = countRemainingBeats(std::move(it));
     EXPECT_EQ(numBeats, numBeatsFound);
 
     // First and last beats in range
     it = pMap->findBeats(mixxx::audio::kStartFramePos + 0.5, lastBeatPos - 0.5);
-    numBeatsFound = countBeatsInIterator(std::move(it));
+    numBeatsFound = countRemainingBeats(std::move(it));
     EXPECT_EQ(numBeats - 2, numBeatsFound);
 }
 
