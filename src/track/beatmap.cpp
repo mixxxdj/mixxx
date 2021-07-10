@@ -481,6 +481,11 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(
         return std::unique_ptr<BeatIterator>();
     }
 
+    // Beats can only appear a full frame positions. If the start position is
+    // fractional, it needs to be rounded up to avoid finding a beat that
+    // appears *before* the requested start position. For the end position, the
+    // opposite applies, i.e. we need to round down to avoid finding a beat
+    // *after* the requested end position.
     Beat startBeat = beatFromFramePos(startPosition.toUpperFrameBoundary());
     Beat endBeat = beatFromFramePos(endPosition.toLowerFrameBoundary());
 
