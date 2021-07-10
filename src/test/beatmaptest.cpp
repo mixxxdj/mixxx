@@ -10,6 +10,15 @@ using namespace mixxx;
 
 namespace {
 
+int countBeatsInIterator(std::unique_ptr<BeatIterator> pIterator) {
+    int numBeatsFound = 0;
+    while (pIterator->hasNext()) {
+        pIterator->next();
+        numBeatsFound++;
+    }
+    return numBeatsFound;
+}
+
 class BeatMapTest : public testing::Test {
   protected:
     BeatMapTest()
@@ -324,6 +333,53 @@ TEST_F(BeatMapTest, TestBpmAround) {
                         mixxx::audio::kStartFramePos + 1 * approx_beat_length,
                         4)
                     .value());
+}
+
+TEST_F(BeatMapTest, FindBeatsWithFractionalPos) {
+    constexpr mixxx::Bpm bpm(60.0);
+    constexpr int numBeats = 120;
+    const mixxx::audio::FrameDiff_t beatLengthFrames = getBeatLengthFrames(bpm);
+    ASSERT_EQ(beatLengthFrames, std::round(beatLengthFrames));
+
+    mixxx::audio::FramePos beatPos = mixxx::audio::kStartFramePos;
+    const mixxx::audio::FramePos lastBeatPos = beatPos + beatLengthFrames * (numBeats - 1);
+    QVector<mixxx::audio::FramePos> beats;
+    for (; beatPos <= lastBeatPos; beatPos += beatLengthFrames) {
+        beats.append(beatPos);
+    }
+    const auto pMap = BeatMap::makeBeatMap(m_pTrack->getSampleRate(), QString(), beats);
+
+    // All beats are in range
+    auto it = pMap->findBeats(mixxx::audio::kStartFramePos, lastBeatPos);
+    int numBeatsFound = countBeatsInIterator(std::move(it));
+    EXPECT_EQ(numBeats, numBeatsFound);
+
+    // Only half the beats are in range
+    const auto halfBeatsPosition = mixxx::audio::kStartFramePos +
+            beatLengthFrames * ((numBeats / 2) - 1);
+    it = pMap->findBeats(mixxx::audio::kStartFramePos, halfBeatsPosition);
+    numBeatsFound = countBeatsInIterator(std::move(it));
+    EXPECT_EQ(numBeats / 2, numBeatsFound);
+
+    // First beat is not in range
+    it = pMap->findBeats(mixxx::audio::kStartFramePos + 0.5, lastBeatPos + 0.5);
+    numBeatsFound = countBeatsInIterator(std::move(it));
+    EXPECT_EQ(numBeats - 1, numBeatsFound);
+
+    // Last beat is not in range
+    it = pMap->findBeats(mixxx::audio::kStartFramePos - 0.5, lastBeatPos - 0.5);
+    numBeatsFound = countBeatsInIterator(std::move(it));
+    EXPECT_EQ(numBeats - 1, numBeatsFound);
+
+    // All beats are in range
+    it = pMap->findBeats(mixxx::audio::kStartFramePos - 0.5, lastBeatPos + 0.5);
+    numBeatsFound = countBeatsInIterator(std::move(it));
+    EXPECT_EQ(numBeats, numBeatsFound);
+
+    // First and last beats in range
+    it = pMap->findBeats(mixxx::audio::kStartFramePos + 0.5, lastBeatPos - 0.5);
+    numBeatsFound = countBeatsInIterator(std::move(it));
+    EXPECT_EQ(numBeats - 2, numBeatsFound);
 }
 
 }  // namespace
