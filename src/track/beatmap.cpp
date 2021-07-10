@@ -503,8 +503,8 @@ bool BeatMap::hasBeatInRange(audio::FramePos startPosition, audio::FramePos endP
             startPosition > endPosition) {
         return false;
     }
-    audio::FramePos beatPosition = findNextBeat(startPosition);
-    if (beatPosition <= endPosition) {
+    audio::FramePos beatPosition = findNextBeat(startPosition.toUpperFrameBoundary());
+    if (beatPosition.isValid() && beatPosition <= endPosition.toLowerFrameBoundary()) {
         return true;
     }
     return false;
