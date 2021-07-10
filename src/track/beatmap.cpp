@@ -503,6 +503,12 @@ bool BeatMap::hasBeatInRange(audio::FramePos startPosition, audio::FramePos endP
         return false;
     }
     audio::FramePos beatPosition = findNextBeat(startPosition.toUpperFrameBoundary());
+
+    // FIXME: The following assertion should always hold true, but it doesn't,
+    // because the position matching in findNthBeat() is fuzzy. This should be
+    // resolved, and moved to the calling code, to only use fuzzy matches when
+    // actually desired.
+    // DEBUG_ASSERT(beatPosition >= startPosition.toUpperFrameBoundary());
     if (beatPosition.isValid() && beatPosition <= endPosition.toLowerFrameBoundary()) {
         return true;
     }
