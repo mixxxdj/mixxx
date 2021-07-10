@@ -48,7 +48,7 @@ SyncControl::SyncControl(const QString& group,
 
     m_pSyncMode.reset(new ControlPushButton(ConfigKey(group, "sync_mode")));
     m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSyncMode->setStates(SYNC_NUM_MODES);
+    m_pSyncMode->setStates(static_cast<int>(SyncMode::NumModes));
     m_pSyncMode->connectValueChangeRequest(
             this, &SyncControl::slotSyncModeChangeRequest, Qt::DirectConnection);
 
@@ -127,16 +127,16 @@ void SyncControl::setSyncMode(SyncMode mode) {
     }
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
-    m_pSyncMode->setAndConfirm(mode);
-    m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
-    m_pSyncLeaderEnabled->setAndConfirm(SyncModeToLeaderLight(mode));
-    if (mode == SYNC_FOLLOWER) {
+    m_pSyncMode->setAndConfirm(static_cast<double>(mode));
+    m_pSyncEnabled->setAndConfirm(mode != SyncMode::None);
+    m_pSyncLeaderEnabled->setAndConfirm(static_cast<double>(SyncModeToLeaderLight(mode)));
+    if (mode == SyncMode::Follower) {
         if (m_pVCEnabled && m_pVCEnabled->toBool()) {
             // If follower mode is enabled, disable vinyl control.
             m_pVCEnabled->set(0.0);
         }
     }
-    if (mode != SYNC_NONE && m_pPassthroughEnabled->toBool()) {
+    if (mode != SyncMode::None && m_pPassthroughEnabled->toBool()) {
         // If any sync mode is enabled and passthrough was on somehow, disable passthrough.
         // This is very unlikely to happen so this deserves a warning.
         qWarning() << "Notified of sync mode change when passthrough was "
@@ -144,7 +144,7 @@ void SyncControl::setSyncMode(SyncMode mode) {
                       "must disable passthrough";
         m_pPassthroughEnabled->set(0.0);
     }
-    if (mode == SYNC_NONE) {
+    if (mode == SyncMode::None) {
         m_leaderBpmAdjustFactor = kBpmUnity;
     }
 }
@@ -227,7 +227,7 @@ void SyncControl::updateLeaderBpm(double bpm) {
     }
 
     VERIFY_OR_DEBUG_ASSERT(isSynchronized()) {
-        qWarning() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
+        qWarning() << "WARNING: Logic Error: setBpm called on SyncMode::None syncable.";
         return;
     }
 
@@ -322,7 +322,7 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     // If we're close to the end, and leader, disable leader so we don't stop
     // the party.
     if (isLeader(getSyncMode()) && fractionalPlaypos >= 1.0) {
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+        m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
     }
 }
 
@@ -355,7 +355,7 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
         if (!m_pBeats) {
             // If the track was ejected or suddenly has no beats, we can no longer
             // be leader.
-            m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+            m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
         } else {
             // We are remaining leader, so notify the engine with our update.
             m_pBpmControl->updateLocalBpm();
@@ -378,16 +378,16 @@ void SyncControl::slotControlPlay(double play) {
 }
 
 void SyncControl::slotVinylControlChanged(double enabled) {
-    if (enabled != 0 && getSyncMode() == SYNC_FOLLOWER) {
+    if (enabled != 0 && getSyncMode() == SyncMode::Follower) {
         // If vinyl control was enabled and we're a follower, disable sync mode.
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
+        m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::None);
     }
 }
 
 void SyncControl::slotPassthroughChanged(double enabled) {
     if (enabled != 0 && isSynchronized()) {
         // If passthrough was enabled and sync was on, disable it.
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
+        m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::None);
     }
 }
 
@@ -396,7 +396,7 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
         kLogger.trace() << getGroup() << "SyncControl::slotSyncModeChangeRequest";
     }
     SyncMode mode = syncModeFromDouble(state);
-    if (m_pPassthroughEnabled->toBool() && mode != SYNC_NONE) {
+    if (m_pPassthroughEnabled->toBool() && mode != SyncMode::None) {
         qDebug() << "Disallowing enabling of sync mode when passthrough active";
     } else {
         m_pChannel->getEngineBuffer()->requestSyncMode(mode);
@@ -413,15 +413,15 @@ void SyncControl::slotSyncLeaderEnabledChangeRequest(double state) {
             qDebug() << "Disallowing enabling of sync mode when passthrough active";
             return;
         }
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_LEADER_EXPLICIT);
+        m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::LeaderExplicit);
     } else {
         // Turning off leader goes back to follower mode.
         switch (mode) {
-        case SYNC_LEADER_EXPLICIT:
-            m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_LEADER_SOFT);
+        case SyncMode::LeaderExplicit:
+            m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::LeaderSoft);
             break;
-        case SYNC_LEADER_SOFT:
-            m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+        case SyncMode::LeaderSoft:
+            m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
             break;
         default:
             return;
@@ -451,7 +451,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
     m_prevLocalBpm.setValue(local_bpm);
 
     SyncMode syncMode = getSyncMode();
-    if (syncMode <= SYNC_NONE) {
+    if (syncMode <= SyncMode::None) {
         return;
     }
 

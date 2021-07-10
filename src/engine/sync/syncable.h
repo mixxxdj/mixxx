@@ -1,66 +1,84 @@
 #pragma once
 
+#include <QDebug>
 #include <QString>
 
 class EngineChannel;
 
-enum SyncMode {
-    SYNC_INVALID = -1,
-    SYNC_NONE = 0,
-    SYNC_FOLLOWER = 1,
-    // SYNC_LEADER_SOFT is a leader that Mixxx has chosen automatically.
+enum class SyncMode {
+    Invalid = -1,
+    None = 0,
+    Follower = 1,
+    // LeaderSoft is a leader that Mixxx has chosen automatically.
     // depending on how decks stop and start, it may reassign soft leader at will.
-    SYNC_LEADER_SOFT = 2,
-    // SYNC_LEADER_EXPLICIT represents an explicit request that the synacable be
-    // leader. Mixxx will only remove a SYNC_LEADER_SOFT if the track is stopped or
+    LeaderSoft = 2,
+    // LeaderExplicit represents an explicit request that the syncable be
+    // leader. Mixxx will only remove a LeaderSoft if the track is stopped or
     // ejected.
-    SYNC_LEADER_EXPLICIT = 3,
-    SYNC_NUM_MODES
+    LeaderExplicit = 3,
+    NumModes
 };
 
+inline QDebug operator<<(QDebug debug, const SyncMode& mode) {
+    switch (mode) {
+    case SyncMode::Invalid:
+        return debug << "SyncMode::Invalid";
+    case SyncMode::None:
+        return debug << "SyncMode::None";
+    case SyncMode::Follower:
+        return debug << "SyncMode::Follower";
+    case SyncMode::LeaderSoft:
+        return debug << "SyncMode::LeaderSoft";
+    case SyncMode::LeaderExplicit:
+        return debug << "SyncMode::LeaderExplicit";
+    case SyncMode::NumModes:
+        return debug << "SyncMode::NumModes";
+    }
+    return debug << "SyncMode::Invalid (not in switch/case)";
+}
 inline SyncMode syncModeFromDouble(double value) {
     // msvs does not allow to cast from double to an enum
     SyncMode mode = static_cast<SyncMode>(int(value));
-    if (mode >= SYNC_NUM_MODES || mode < 0) {
-        return SYNC_NONE;
+    if (mode >= SyncMode::NumModes || mode == SyncMode::Invalid) {
+        return SyncMode::None;
     }
     return mode;
 }
 
 inline bool toSynchronized(SyncMode mode) {
-    return mode > SYNC_NONE;
+    return mode > SyncMode::None;
 }
 
 inline bool isFollower(SyncMode mode) {
-    return (mode == SYNC_FOLLOWER);
+    return (mode == SyncMode::Follower);
 }
 
 inline bool isLeader(SyncMode mode) {
-    return (mode == SYNC_LEADER_SOFT || mode == SYNC_LEADER_EXPLICIT);
+    return (mode == SyncMode::LeaderSoft || mode == SyncMode::LeaderExplicit);
 }
 
-enum SyncLeaderLight {
-    LEADER_INVALID = -1,
-    LEADER_OFF = 0,
-    LEADER_SOFT = 1,
-    LEADER_EXPLICIT = 2,
+enum class SyncLeaderLight {
+    Invalid = -1,
+    Off = 0,
+    Soft = 1,
+    Explicit = 2,
 };
 
 inline SyncLeaderLight SyncModeToLeaderLight(SyncMode mode) {
     switch (mode) {
-    case SYNC_INVALID:
-    case SYNC_NONE:
-    case SYNC_FOLLOWER:
-        return LEADER_OFF;
-    case SYNC_LEADER_SOFT:
-        return LEADER_SOFT;
-    case SYNC_LEADER_EXPLICIT:
-        return LEADER_EXPLICIT;
+    case SyncMode::Invalid:
+    case SyncMode::None:
+    case SyncMode::Follower:
+        return SyncLeaderLight::Off;
+    case SyncMode::LeaderSoft:
+        return SyncLeaderLight::Soft;
+    case SyncMode::LeaderExplicit:
+        return SyncLeaderLight::Explicit;
         break;
-    case SYNC_NUM_MODES:
+    case SyncMode::NumModes:
         break;
     }
-    return LEADER_INVALID;
+    return SyncLeaderLight::Invalid;
 }
 
 /// Syncable is an abstract base class for any object that wants to participate

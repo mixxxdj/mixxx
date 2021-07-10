@@ -17,7 +17,7 @@ const mixxx::Logger kLogger("InternalClock");
 InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync)
         : m_group(group),
           m_pEngineSync(pEngineSync),
-          m_mode(SYNC_NONE),
+          m_mode(SyncMode::None),
           m_iOldSampleRate(44100),
           m_dOldBpm(124.0),
           m_dBaseBpm(124.0),
@@ -59,7 +59,7 @@ void InternalClock::setSyncMode(SyncMode mode) {
     // Syncable has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_mode = mode;
-    m_pSyncLeaderEnabled->setAndConfirm(SyncModeToLeaderLight(mode));
+    m_pSyncLeaderEnabled->setAndConfirm(static_cast<double>(SyncModeToLeaderLight(mode)));
 }
 
 void InternalClock::notifyUniquePlaying() {
@@ -74,26 +74,26 @@ void InternalClock::slotSyncLeaderEnabledChangeRequest(double state) {
     SyncMode mode = m_mode;
     //Note: internal clock is always sync enabled
     if (state > 0.0) {
-        if (mode == SYNC_LEADER_EXPLICIT) {
+        if (mode == SyncMode::LeaderExplicit) {
             // Already leader.
             return;
         }
-        if (mode == SYNC_LEADER_SOFT) {
+        if (mode == SyncMode::LeaderSoft) {
             // user request: make leader explicit
-            m_mode = SYNC_LEADER_EXPLICIT;
+            m_mode = SyncMode::LeaderExplicit;
             return;
         }
-        if (mode == SYNC_NONE) {
+        if (mode == SyncMode::None) {
             m_dBaseBpm = m_dOldBpm;
         }
-        m_pEngineSync->requestSyncMode(this, SYNC_LEADER_EXPLICIT);
+        m_pEngineSync->requestSyncMode(this, SyncMode::LeaderExplicit);
     } else {
         // Turning off leader goes back to follower mode.
-        if (mode == SYNC_FOLLOWER) {
+        if (mode == SyncMode::Follower) {
             // Already not leader.
             return;
         }
-        m_pEngineSync->requestSyncMode(this, SYNC_FOLLOWER);
+        m_pEngineSync->requestSyncMode(this, SyncMode::Follower);
     }
 }
 

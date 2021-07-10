@@ -86,7 +86,7 @@ class EngineSync : public SyncableListener {
     /// Unsets all sync state on a Syncable.
     void deactivateSync(Syncable* pSyncable);
 
-    /// This utility method returns true if it finds a deck not in SYNC_NONE mode.
+    /// This utility method returns true if it finds a deck not in SyncMode::None.
     bool syncDeckExists() const;
 
     /// Return the current BPM of the Leader Syncable. If no Leader syncable is
