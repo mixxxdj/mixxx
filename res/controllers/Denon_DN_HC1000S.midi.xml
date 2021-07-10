@@ -1,0 +1,788 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3">
+    <info>
+        <name>Denon HC1000S mapping</name>
+        <author>le3d, based on many existing Denon other mappings, re-using bits and pieces</author>
+        <forums>https://mixxx.discourse.group/t/denon-dn-hc1000s-for-dvs/20217</forums>
+    </info>
+    <controller id="HC1000S">
+        <scriptfiles>
+            <file filename="lodash.mixxx.js" functionprefix=""/>
+            <file filename="midi-components-0.0.js" functionprefix=""/>
+            <file filename="Denon-HC1000S-scripts.js" functionprefix="DenonHC1000S"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.reverseRoll</key>
+                <description>Censor (Rev) A Off</description>
+                <status>0x80</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.reverseRoll</key>
+                <description>Censor (Rev) A On</description>
+                <status>0x90</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.bpmTabButton</key>
+                <description>BPM tap A</description>
+                <status>0x90</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.jumpFwd</key>
+                <description>jumpFwd A</description>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.jumpBack</key>
+                <description>jumpBack A</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.pitchBendUp</key>
+                <description>pitchBendUp A Off</description>
+                <status>0x80</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.pitchBendUp</key>
+                <description>pitchBendUp A On</description>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.pitchBendDown</key>
+                <description>pitchBendDown A Off</description>
+                <status>0x80</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.pitchBendDown</key>
+                <description>pitchBendDown A On</description>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.resizeLoopButton</key>
+                <description>LoopCUT A WheelPush OFF</description>
+                <status>0x80</status>
+                <midino>0x15</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.resizeLoopButton</key>
+                <description>LoopCUT A WheelPush</description>
+                <status>0x90</status>
+                <midino>0x15</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE1 A Off</description>
+                <status>0x80</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE1 A On</description>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE2 A Off</description>
+                <status>0x80</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE2 A On</description>
+                <status>0x90</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE3 A Off</description>
+                <status>0x80</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE3 A On</description>
+                <status>0x90</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.autoLoop</key>
+                <description>AutoLoop B</description>
+                <status>0x90</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE4 A Off</description>
+                <status>0x80</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE4 A On</description>
+                <status>0x90</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE5 A Off</description>
+                <status>0x80</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE5 A On</description>
+                <status>0x90</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>DenonHC1000S.recvTrackSelectButton</key>
+                <description>TrackSelect Button On</description>
+                <status>0x90</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveRight</key>
+                <description>Library_MoveRight</description>
+                <status>0x90</status>
+                <midino>0x29</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveLeft</key>
+                <description>Library_MoveLeft</description>
+                <status>0x90</status>
+                <midino>0x30</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>LoopIN A Off</description>
+                <status>0x80</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>LoopIN A On</description>
+                <status>0x90</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOut</key>
+                <description>LoopOUT A Off</description>
+                <status>0x80</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOut</key>
+                <description>LoopOUT A On</description>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>LOOP A Off</description>
+                <status>0x80</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>LOOP A On</description>
+                <status>0x90</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.beatLoopRoll</key>
+                <description>LoopRoll A OFF</description>
+                <status>0x80</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.beatLoopRoll</key>
+                <description>LoopRoll A ON</description>
+                <status>0x90</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>DenonHC1000S.recvTrackSelectKnob</key>
+                <description>TrackSelect Wheel</description>
+                <status>0xB0</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.resizeLoop</key>
+                <description>LoopCUT A Wheel</description>
+                <status>0xB0</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.resizeLoop</key>
+                <description>LoopCUT B Wheel</description>
+                <status>0xB0</status>
+                <midino>0x5A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.reverseRoll</key>
+                <description>Censor (Rev) B Off</description>
+                <status>0x80</status>
+                <midino>0x5E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.reverseRoll</key>
+                <description>Censor (Rev) B On</description>
+                <status>0x90</status>
+                <midino>0x5E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.bpmTabButton</key>
+                <description>BPM tap B</description>
+                <status>0x90</status>
+                <midino>0x5F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>DenonHC1000S.shiftButton</key>
+                <description>SHIFT Off</description>
+                <status>0x80</status>
+                <midino>0x60</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key>DenonHC1000S.shiftButton</key>
+                <description>SHIFT On</description>
+                <status>0x90</status>
+                <midino>0x60</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.shiftSampleLeftButton</key>
+                <description>SHIFT_sampleA OFF</description>
+                <status>0x80</status>
+                <midino>0x61</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.shiftSampleLeftButton</key>
+                <description>SHIFT_sampleA ON</description>
+                <status>0x90</status>
+                <midino>0x61</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonHC1000S.LoadTrack</key>
+                <description>File-LOAD A On</description>
+                <status>0x90</status>
+                <midino>0x62</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.LoadTrack</key>
+                <description>File-LOAD B On</description>
+                <status>0x90</status>
+                <midino>0x63</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveFocus</key>
+                <description>File-FILE Button On</description>
+                <status>0x90</status>
+                <midino>0x64</midino>
+                <options>
+                    <switch/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveFocusForward</key>
+                <description>File-BROWSE On</description>
+                <status>0x90</status>
+                <midino>0x65</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>AutoDjAddTop</key>
+                <description>File-PREPARE Button On</description>
+                <status>0x90</status>
+                <midino>0x67</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.jumpFwd</key>
+                <description>jumpFwd B</description>
+                <status>0x90</status>
+                <midino>0x70</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.jumpBack</key>
+                <description>jumpBack B</description>
+                <status>0x90</status>
+                <midino>0x71</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.pitchBendUp</key>
+                <description>pitchBendUp B Off</description>
+                <status>0x80</status>
+                <midino>0x72</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.pitchBendUp</key>
+                <description>pitchBendUp B On</description>
+                <status>0x90</status>
+                <midino>0x72</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.pitchBendDown</key>
+                <description>pitchBendDown B Off</description>
+                <status>0x80</status>
+                <midino>0x73</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.pitchBendDown</key>
+                <description>pitchBendDown B On</description>
+                <status>0x90</status>
+                <midino>0x73</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.resizeLoopButton</key>
+                <description>LoopCUT B WheelPush OFF</description>
+                <status>0x80</status>
+                <midino>0x74</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.resizeLoopButton</key>
+                <description>LoopCUT B WheelPush</description>
+                <status>0x90</status>
+                <midino>0x74</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE1 B Off</description>
+                <status>0x80</status>
+                <midino>0x75</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE1 B On</description>
+                <status>0x90</status>
+                <midino>0x75</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE2 B Off</description>
+                <status>0x80</status>
+                <midino>0x76</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE2 B On</description>
+                <status>0x90</status>
+                <midino>0x76</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE3 B Off</description>
+                <status>0x80</status>
+                <midino>0x77</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE3 B Off</description>
+                <status>0x90</status>
+                <midino>0x77</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE4 B Off</description>
+                <status>0x80</status>
+                <midino>0x78</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE4 B Off</description>
+                <status>0x90</status>
+                <midino>0x78</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE5 B Off</description>
+                <status>0x80</status>
+                <midino>0x79</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>CUE5 B Off</description>
+                <status>0x90</status>
+                <midino>0x79</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.autoLoop</key>
+                <description>AutoLoop A</description>
+                <status>0x90</status>
+                <midino>0x7A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>LoopIN</description>
+                <status>0x80</status>
+                <midino>0x7B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>LoopIN B Off</description>
+                <status>0x90</status>
+                <midino>0x7B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOut</key>
+                <description>LoopOUT B Off</description>
+                <status>0x80</status>
+                <midino>0x7C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOut</key>
+                <description>LoopOUT B On</description>
+                <status>0x90</status>
+                <midino>0x7C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>LOOP</description>
+                <status>0x80</status>
+                <midino>0x7D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.loopOrHotcues</key>
+                <description>LOOP B Off</description>
+                <status>0x90</status>
+                <midino>0x7D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.beatLoopRoll</key>
+                <description>LoopRoll B OFF</description>
+                <status>0x80</status>
+                <midino>0x7E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.beatLoopRoll</key>
+                <description>LoopRoll B ON</description>
+                <status>0x90</status>
+                <midino>0x7E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.shiftSampleRightButton</key>
+                <description>SHIFT_sampleB OFF</description>
+                <status>0x80</status>
+                <midino>0x7F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonHC1000S.shiftSampleRightButton</key>
+                <description>SHIFT_sampleB ON</description>
+                <status>0x90</status>
+                <midino>0x7F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+        </controls>
+        <outputs/>
+    </controller>
+</MixxxControllerPreset>
