@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/types.h"
 #include "util/assert.h"
 #include "util/types.h"
 
@@ -21,7 +22,9 @@ class Analyzer {
     //  1. Check if the track needs to be analyzed, otherwise return false.
     //  2. Perform the initialization and return true on success.
     //  3. If the initialization failed log the internal error and return false.
-    virtual bool initialize(TrackPointer tio, int sampleRate, int totalSamples) = 0;
+    virtual bool initialize(TrackPointer tio,
+            mixxx::audio::SampleRate sampleRate,
+            int totalSamples) = 0;
 
     /////////////////////////////////////////////////////////////////////////
     // All following methods will only be invoked after initialize()
@@ -66,7 +69,7 @@ class AnalyzerWithState final {
         return m_active;
     }
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+    bool initialize(TrackPointer tio, mixxx::audio::SampleRate sampleRate, int totalSamples) {
         DEBUG_ASSERT(!m_active);
         return m_active = m_analyzer->initialize(tio, sampleRate, totalSamples);
     }

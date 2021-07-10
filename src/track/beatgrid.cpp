@@ -315,27 +315,27 @@ BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
     return BeatsPointer(new BeatGrid(*this, grid, m_beatLengthFrames));
 }
 
-BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
+BeatsPointer BeatGrid::scale(BpmScale scale) const {
     mixxx::track::io::BeatGrid grid = m_grid;
     auto bpm = mixxx::Bpm(grid.bpm().bpm());
 
     switch (scale) {
-    case DOUBLE:
+    case BpmScale::Double:
         bpm *= 2;
         break;
-    case HALVE:
+    case BpmScale::Halve:
         bpm *= 1.0 / 2;
         break;
-    case TWOTHIRDS:
+    case BpmScale::TwoThirds:
         bpm *= 2.0 / 3;
         break;
-    case THREEFOURTHS:
+    case BpmScale::ThreeFourths:
         bpm *= 3.0 / 4;
         break;
-    case FOURTHIRDS:
+    case BpmScale::FourThirds:
         bpm *= 4.0 / 3;
         break;
-    case THREEHALVES:
+    case BpmScale::ThreeHalves:
         bpm *= 3.0 / 2;
         break;
     default:

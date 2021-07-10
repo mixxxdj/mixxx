@@ -19,7 +19,9 @@ class AnalyzerKey : public Analyzer {
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
     static mixxx::AnalyzerPluginInfo defaultPlugin();
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
+    bool initialize(TrackPointer tio,
+            mixxx::audio::SampleRate sampleRate,
+            int totalSamples) override;
     bool processSamples(const CSAMPLE *pIn, const int iLen) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;

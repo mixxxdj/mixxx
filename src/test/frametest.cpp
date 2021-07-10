@@ -65,3 +65,16 @@ TEST_F(FrameTest, TestFramePosEquality) {
             mixxx::audio::FramePos(std::numeric_limits<
                     mixxx::audio::FramePos::value_t>::infinity()));
 }
+
+TEST_F(FrameTest, LowerFrameBoundary) {
+    EXPECT_EQ(mixxx::audio::FramePos(0), mixxx::audio::FramePos(0).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(0), mixxx::audio::FramePos(0.5).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(0), mixxx::audio::FramePos(0.9).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(100), mixxx::audio::FramePos(100).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(100), mixxx::audio::FramePos(100.1).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(100), mixxx::audio::FramePos(100.9).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-100), mixxx::audio::FramePos(-99.9).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-100), mixxx::audio::FramePos(-99.1).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-101), mixxx::audio::FramePos(-100.1).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-101), mixxx::audio::FramePos(-100.9).toLowerFrameBoundary());
+}

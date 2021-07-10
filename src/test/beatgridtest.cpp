@@ -35,22 +35,22 @@ TEST(BeatGridTest, Scale) {
             mixxx::audio::kStartFramePos);
 
     EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
-    pGrid = pGrid->scale(Beats::DOUBLE);
+    pGrid = pGrid->scale(Beats::BpmScale::Double);
     EXPECT_DOUBLE_EQ(2 * bpm.value(), pGrid->getBpm().value());
 
-    pGrid = pGrid->scale(Beats::HALVE);
+    pGrid = pGrid->scale(Beats::BpmScale::Halve);
     EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
 
-    pGrid = pGrid->scale(Beats::TWOTHIRDS);
+    pGrid = pGrid->scale(Beats::BpmScale::TwoThirds);
     EXPECT_DOUBLE_EQ(bpm.value() * 2 / 3, pGrid->getBpm().value());
 
-    pGrid = pGrid->scale(Beats::THREEHALVES);
+    pGrid = pGrid->scale(Beats::BpmScale::ThreeHalves);
     EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
 
-    pGrid = pGrid->scale(Beats::THREEFOURTHS);
+    pGrid = pGrid->scale(Beats::BpmScale::ThreeFourths);
     EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4, pGrid->getBpm().value());
 
-    pGrid = pGrid->scale(Beats::FOURTHIRDS);
+    pGrid = pGrid->scale(Beats::BpmScale::FourThirds);
     EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
 }
 

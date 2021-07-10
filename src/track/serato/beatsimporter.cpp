@@ -62,8 +62,9 @@ QVector<mixxx::audio::FramePos> SeratoBeatsImporter::importBeatsAndApplyTimingOf
 
         beats.reserve(beats.size() + pMarker->beatsTillNextMarker());
         for (quint32 j = 0; j < pMarker->beatsTillNextMarker(); ++j) {
-            beats.append(mixxx::audio::FramePos(signalInfo.millis2frames(
-                    beatPositionMillis + timingOffsetMillis)));
+            const auto beatPosition = mixxx::audio::FramePos(signalInfo.millis2frames(
+                    beatPositionMillis + timingOffsetMillis));
+            beats.append(beatPosition.toNearestFrameBoundary());
             beatPositionMillis += beatLengthMillis;
         }
     }
@@ -99,8 +100,9 @@ QVector<mixxx::audio::FramePos> SeratoBeatsImporter::importBeatsAndApplyTimingOf
     // Now fill the range with beats until the end is reached. Add a half beat
     // length, to make sure that the last beat is actually included.
     while (beatPositionMillis <= (rangeEndBeatPositionMillis + beatLengthMillis / 2)) {
-        beats.append(mixxx::audio::FramePos(signalInfo.millis2frames(
-                beatPositionMillis + timingOffsetMillis)));
+        const auto beatPosition = mixxx::audio::FramePos(signalInfo.millis2frames(
+                beatPositionMillis + timingOffsetMillis));
+        beats.append(beatPosition.toNearestFrameBoundary());
         beatPositionMillis += beatLengthMillis;
     }
 
