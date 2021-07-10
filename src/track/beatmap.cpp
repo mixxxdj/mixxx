@@ -32,7 +32,7 @@ inline Beat beatFromFramePos(mixxx::audio::FramePos beatPosition) {
     return beat;
 }
 
-bool beatLessThan(const Beat& beat1, const Beat& beat2) {
+inline bool beatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
 
