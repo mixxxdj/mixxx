@@ -238,7 +238,7 @@ BeatsPointer BeatMap::makeBeatMap(
         }
 
         // Do not accept fractional frames.
-        const auto beatPos = mixxx::audio::FramePos(std::floor(originalBeatPos.value()));
+        const auto beatPos = originalBeatPos.toLowerFrameBoundary();
         if (previousBeatPos.isValid() && beatPos <= previousBeatPos) {
             qWarning() << "BeatMap::makeBeatMap: Beats not in increasing "
                           "order, discarding beat "
