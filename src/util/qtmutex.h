@@ -29,12 +29,12 @@
 #define QT_MUTEX_LOCKER QT_MUTEX_LOCKER_TYPE(QMutex)
 #define QT_RECURSIVE_MUTEX_LOCKER QT_MUTEX_LOCKER_TYPE(QT_RECURSIVE_MUTEX)
 
-inline QT_MUTEX_LOCKER lockMutex(QMutex* pMutex) {
+[[nodiscard]] inline QT_MUTEX_LOCKER lockMutex(QMutex* pMutex) {
     return QT_MUTEX_LOCKER(pMutex);
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-inline QT_RECURSIVE_MUTEX_LOCKER lockMutex(QRecursiveMutex* pMutex) {
+[[nodiscard]] inline QT_RECURSIVE_MUTEX_LOCKER lockMutex(QRecursiveMutex* pMutex) {
     return QT_RECURSIVE_MUTEX_LOCKER(pMutex);
 }
 #endif
