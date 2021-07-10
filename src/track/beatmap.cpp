@@ -508,7 +508,7 @@ bool BeatMap::hasBeatInRange(audio::FramePos startPosition, audio::FramePos endP
     // because the position matching in findNthBeat() is fuzzy. This should be
     // resolved, and moved to the calling code, to only use fuzzy matches when
     // actually desired.
-    // DEBUG_ASSERT(beatPosition >= startPosition.toUpperFrameBoundary());
+    // DEBUG_ASSERT(!beatPosition.isValid() || beatPosition >= startPosition.toUpperFrameBoundary());
     if (beatPosition.isValid() && beatPosition <= endPosition.toLowerFrameBoundary()) {
         return true;
     }
