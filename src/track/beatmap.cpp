@@ -32,7 +32,7 @@ inline Beat beatFromFramePos(mixxx::audio::FramePos beatPosition) {
     return beat;
 }
 
-bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
+bool beatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
 
@@ -319,7 +319,7 @@ audio::FramePos BeatMap::findNthBeat(audio::FramePos position, int n) const {
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, beatLessThan);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -405,7 +405,7 @@ bool BeatMap::findPrevNextBeats(audio::FramePos position,
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, beatLessThan);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -485,11 +485,10 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(
     Beat endBeat = beatFromFramePos(endPosition.toLowerFrameBoundary());
 
     BeatList::const_iterator curBeat =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(),
-                        startBeat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), startBeat, beatLessThan);
 
     BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), endBeat, BeatLessThan);
+            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), endBeat, beatLessThan);
 
     if (curBeat >= lastBeat) {
         return std::unique_ptr<BeatIterator>();
