@@ -1493,7 +1493,7 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
 
-TEST_F(EngineSyncTest, DISABLED_BeatDistanceBeforeStart) {
+TEST_F(EngineSyncTest, BeatDistanceBeforeStart) {
     // https://bugs.launchpad.net/mixxx/+bug/1930143
     // If the start position is before zero, we should still initialize the beat distance
     // correctly.  Unfortunately, this currently doesn't work.
@@ -1501,14 +1501,15 @@ TEST_F(EngineSyncTest, DISABLED_BeatDistanceBeforeStart) {
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(
             m_pTrack1->getSampleRate(), mixxx::Bpm(128), mixxx::audio::kStartFramePos);
     m_pTrack1->trySetBeats(pBeats1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "playposition"), -.05);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))
-            ->set(SYNC_MASTER_SOFT);
+    ProcessBuffer();
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
-    EXPECT_NEAR(
+    // This fraction is one buffer beyond the seek position -- indicating that
+    // we seeked correctly.
+    EXPECT_NEAR(0.49143461829176116,
             ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
-            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
             kMaxBeatDistanceEpsilon);
 }
 

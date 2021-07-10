@@ -2450,8 +2450,6 @@ QLineEdit QMenu::item:disabled {
   }
 
   WLibrarySidebar QMenu::indicator:checked,
-  WTrackTableViewHeader QMenu::indicator:checked,
-  WTrackTableView::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
@@ -2490,18 +2488,13 @@ QLineEdit QMenu::item:disabled {
 
 /* This is the only way to select the 'Played' checkbox.
   Note that this also selects the BPM lock. */
-WTrackTableView::indicator {
-  /* border is added to size defined in style.qss */
-  border: 1px solid transparent;
-  margin: 0px;
-  padding: 0px;
-  }
   WTrackTableView::indicator:checked {
-    border: 1px solid #ff6600;
+    image: url(skin:/classic/buttons/btn__lib_checkbox_checked.svg);
     }
   WTrackTableView::indicator:unchecked {
-    border: 1px solid rgba(151,151,151,128);
+    image: url(skin:/classic/buttons/btn__lib_checkbox.svg);
     }
+
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
   WTrackTableViewHeader QMenu::separator,
@@ -2520,8 +2513,6 @@ WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
 WTrackTableViewHeader QMenu::indicator:unchecked,
 WTrackTableViewHeader QMenu::indicator:unchecked:selected,
-WTrackTableView::indicator:unchecked,
-WTrackTableView::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,
