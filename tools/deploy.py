@@ -68,7 +68,13 @@ def git_info(info, path="."):
     elif info == "describe":
         # A dirty git state should only be possible on local builds, but since
         # this script may be used locally we'll add it here.
-        cmd = ("git", "describe", "--always", "--dirty=-modified")
+        cmd = (
+            "git",
+            "describe",
+            "--always",
+            "--first-parent",
+            "--dirty=-modified",
+        )
     else:
         raise ValueError("Invalid git info type!")
 

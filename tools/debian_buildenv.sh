@@ -47,6 +47,7 @@ case "$1" in
             fonts-open-sans \
             fonts-ubuntu \
             g++ \
+            lcov \
             libchromaprint-dev \
             libdistro-info-perl \
             libebur128-dev \
