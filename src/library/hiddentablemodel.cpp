@@ -89,5 +89,7 @@ Qt::ItemFlags HiddenTableModel::flags(const QModelIndex& index) const {
 }
 
 TrackModel::Capabilities HiddenTableModel::getCapabilities() const {
-    return Capability::Purge | Capability::Unhide;
+    return Capability::Purge |
+            Capability::Unhide |
+            Capability::RemoveFromDisk;
 }
