@@ -6,9 +6,10 @@ This document describes how our community has agreed to collaborate together eff
 All Mixxx contributors, including the core team members, are volunteers. This means that Mixxx is made possible by their passion and commitment to the project on their free time. This is why it's so important to treat everyone with respect and understanding, and be patient if things sometimes move a bit slower than you would like. Don't forget to read and follow our [Code Of Conduct](https://github.com/mixxxdj/mixxx/blob/master/CODE_OF_CONDUCT.md), as it provides a framework for everyone to feel accepted, respected and safe in all their interactions within the mixxx community.
 
 ## Table of Contents ##
-1. [Orientation](#Orientation)
-   1. [Git Repositories](#Git-Repositories)
-2. [Git Workflow](#Git-Workflow)
+1. [Getting in touch with the community](#getting-in-touch-with-the-community)
+2. [How can I contribute?](#how-can-i-contribute)
+3. [Git Repositories](#Git-Repositories)
+4. [Git Workflow](#Git-Workflow)
    1. [All Contributors](#All-Contributors)
    2. [Core Team](#Core-Team)
 
@@ -27,7 +28,7 @@ We also have lots of additional information for users and developers on the [Mix
 There are lots of ways you can contribute to Mixxx. Even if you don't know how to program you can help making Mixxx accessible to more users:
 
  - [Help translate Mixxx to other languages](https://github.com/mixxxdj/mixxx/wiki/Internationalization)
- - [Improve the Mixxx Manual](https://github.com/mixxxdj/manual).
+ - [Improve the Mixxx Manual](https://github.com/mixxxdj/manual#readme).
 
 If you have some coding skills, or you are willing to learn them you can do even more:
 
@@ -36,10 +37,7 @@ If you have some coding skills, or you are willing to learn them you can do even
 
 We welcome programmers of all backgrounds and skill levels, and our community will do their best to help you with any problems you encounter.
 
-## Orientation ##
-We have lots more helpful information for users and developers on the [Mixxx wiki](https://mixxx.org/wiki/doku.php/start), including [build instructions](https://mixxx.org/wiki/doku.php/start#compile_mixxx_from_source_code).
-
-### Git Repositories ###
+## Git Repositories ##
 This repository contains the Mixxx source code, skins, controller mappings, and some helpful scripts. We have a few other Git repositories too:
 * [mixxxdj/website](https://github.com/mixxxdj/website): content for the main [mixxx.org](https://mixxx.org/) website which is generated with the [Cactus static site generator](https://github.com/eudicots/Cactus)
 * [mixxxdj/manual](https://github.com/mixxxdj/manual): content for the Mixxx manual, which uses [Sphinx](https://www.sphinx-doc.org/)
