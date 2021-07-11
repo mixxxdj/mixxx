@@ -39,15 +39,6 @@ We welcome programmers of all backgrounds and skill levels, and our community wi
 ## Orientation ##
 We have lots more helpful information for users and developers on the [Mixxx wiki](https://mixxx.org/wiki/doku.php/start), including [build instructions](https://mixxx.org/wiki/doku.php/start#compile_mixxx_from_source_code).
 
-## Help Translate Mixxx ##
-
-Help to spread Mixxx with translations into more languages, as well as to update and ensure the accuracy of existing translations.
-
-- [Help translate content]
-- [Mixxx i18n wiki]
-- [Mixxx localization forum]
-- [Mixxx glossary]
-
 ### Git Repositories ###
 This repository contains the Mixxx source code, skins, controller mappings, and some helpful scripts. We have a few other Git repositories too:
 * [mixxxdj/website](https://github.com/mixxxdj/website): content for the main [mixxx.org](https://mixxx.org/) website which is generated with the [Cactus static site generator](https://github.com/eudicots/Cactus)
