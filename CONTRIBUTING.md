@@ -20,6 +20,8 @@ We use [Zulip chat](https://mixxx.zulipchat.com/) to discuss and coordinate ever
 - If you need help with your contribution, the Mixxx codebase or anything else related to Mixxx development don't hesitate to ask on the [development help channel](https://mixxx.zulipchat.com/#narrow/stream/247620-development-help).
 - The [development channel](https://mixxx.zulipchat.com/#narrow/stream/109171-development) is where day to day discussion about code, new features and releases happens.
 
+We also have lots of additional information for users and developers on the [Mixxx wiki](https://github.com/mixxxdj/mixxx/wiki), make sure to check it out if there's some piece of information you can't find.
+
 ## How can I contribute? ##
 
 There are lots of ways you can contribute to Mixxx. Even if you don't know how to program you can help making Mixxx accessible to more users:
@@ -29,7 +31,7 @@ There are lots of ways you can contribute to Mixxx. Even if you don't know how t
 
 If you have some coding skills, or you are willing to learn them you can do even more:
 
- - Add native compatibility to new hardware controllers
+ - [Add native support for new hardware controllers](https://github.com/mixxxdj/mixxx/wiki/Contributing%20mappings)
  - Fix bugs or program new features
 
 We welcome programmers of all backgrounds and skill levels, and our community will do their best to help you with any problems you encounter.
