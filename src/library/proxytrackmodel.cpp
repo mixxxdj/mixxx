@@ -41,6 +41,11 @@ CoverInfo ProxyTrackModel::getCoverInfo(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getCoverInfo(indexSource) : CoverInfo();
 }
 
+QImage ProxyTrackModel::getCoverThumbnail(const QModelIndex& index) const {
+    QModelIndex indexSource = mapToSource(index);
+    return m_pTrackModel ? m_pTrackModel->getCoverThumbnail(indexSource) : QImage();
+}
+
 const QVector<int> ProxyTrackModel::getTrackRows(TrackId trackId) const {
     return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : QVector<int>();
 }
@@ -111,6 +116,20 @@ QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* 
 TrackModel::Capabilities ProxyTrackModel::getCapabilities() const {
     return m_pTrackModel ? m_pTrackModel->getCapabilities() : Capability::None;
 }
+
+bool ProxyTrackModel::updateTrackGenreText(
+        Track* pTrack,
+        const mixxx::TagLabel::value_t& genreText) const {
+    return m_pTrackModel ? m_pTrackModel->updateTrackGenreText(pTrack, genreText) : false;
+}
+
+#if defined(__EXTRA_METADATA__)
+bool ProxyTrackModel::updateTrackMoodText(
+        Track* pTrack,
+        const mixxx::TagLabel::value_t& moodText) const {
+    return m_pTrackModel ? m_pTrackModel->updateTrackMoodText(pTrack, moodText) : false;
+}
+#endif // __EXTRA_METADATA__
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         const QModelIndex& sourceParent) const {

@@ -2,6 +2,7 @@
 
 #include <QThreadPool>
 #include <QTouchEvent>
+#include <QUrl>
 #include <QtDebug>
 
 #include "audio/frame.h"
@@ -10,6 +11,7 @@
 #include "library/trackset/crate/crateid.h"
 #include "moc_mixxxapplication.cpp"
 #include "soundio/soundmanagerutil.h"
+#include "tagging/taggingconfig.h"
 #include "track/track.h"
 #include "track/trackref.h"
 #include "util/cache.h"
@@ -92,6 +94,20 @@ void MixxxApplication::registerMetaTypes() {
     // Sound devices
     qRegisterMetaType<SoundDeviceId>();
     QMetaType::registerComparators<SoundDeviceId>();
+
+    // Custom tags
+    qRegisterMetaType<mixxx::TagFacet>("mixxx::TagFacet");
+    qRegisterMetaType<mixxx::TagLabel>("mixxx::TagLabel");
+    qRegisterMetaType<mixxx::TagScore>("mixxx::TagScore");
+    qRegisterMetaType<mixxx::Tag>("mixxx::Tag");
+    qRegisterMetaType<mixxx::TagVector>("mixxx::TagVector");
+    qRegisterMetaType<mixxx::FacetedTagConfig>("mixxx::FacetedTagConfig");
+    qRegisterMetaType<mixxx::TagMappingConfig>("mixxx::TagMappingConfig");
+    qRegisterMetaType<mixxx::TaggingConfig>("mixxx::TaggingConfig");
+
+    // QUrl
+    qRegisterMetaType<QList<QUrl>>();
+    qRegisterMetaType<QMap<QUrl, QString>>();
 
     // Various custom data types
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");

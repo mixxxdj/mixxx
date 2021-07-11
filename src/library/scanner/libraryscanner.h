@@ -16,6 +16,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/scanner/scannerglobal.h"
+#include "tagging/taggingconfig.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
@@ -35,7 +36,7 @@ class LibraryScanner : public QThread {
   public slots:
     // Call from any thread to start a scan. Does nothing if a scan is already
     // in progress.
-    void scan();
+    void scan(const mixxx::TaggingConfig& taggingConfig);
 
     // Call from any thread to cancel the scan.
     void slotCancel();
@@ -52,7 +53,7 @@ class LibraryScanner : public QThread {
 
     // Emitted by scan() to invoke slotStartScan in the scanner thread's event
     // loop.
-    void startScan();
+    void startScan(const mixxx::TaggingConfig& taggingConfig);
 
   protected:
     void run() override;
@@ -61,7 +62,7 @@ class LibraryScanner : public QThread {
     void queueTask(ScannerTask* pTask);
 
   private slots:
-    void slotStartScan();
+    void slotStartScan(const mixxx::TaggingConfig& taggingConfig);
     void slotFinishHashedScan();
     void slotFinishUnhashedScan();
 
@@ -118,6 +119,8 @@ class LibraryScanner : public QThread {
     QSemaphore m_stateSema;
     // this is accessed main and LibraryScanner thread
     volatile ScannerState m_state;
+
+    mixxx::TaggingConfig m_taggingConfig;
 
     QList<mixxx::FileInfo> m_libraryRootDirs;
     QScopedPointer<LibraryScannerDlg> m_pProgressDlg;

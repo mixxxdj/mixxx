@@ -26,7 +26,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
           m_columnCache(columns),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection)),
+          m_pQueryParser(new SearchQueryParser(pTrackCollection, idColumn)),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_database(pTrackCollection->database()) {
@@ -370,7 +370,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT) == column) {
         trackValue.setValue(pTrack->getLastPlayedAt());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
-        trackValue.setValue(pTrack->getGenre());
+        trackValue.setValue(pTrack->getGenreText());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
         trackValue.setValue(pTrack->getComposer());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) == column) {

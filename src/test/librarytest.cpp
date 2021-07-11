@@ -32,6 +32,7 @@ LibraryTest::LibraryTest()
         : MixxxDbTest(kInMemoryDbConnection),
           m_pTrackCollectionManager(newTrackCollectionManager(config(), dbConnectionPooler())),
           m_keyNotationCO(ConfigKey("[Library]", "key_notation")) {
+    m_pTrackCollectionManager->refTaggingContext().restoreDefaultConfig();
 }
 
 TrackPointer LibraryTest::getOrAddTrackByLocation(

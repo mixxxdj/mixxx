@@ -7,6 +7,7 @@
 
 #include "library/coverart.h"
 #include "library/dao/settingsdao.h"
+#include "tagging/tags.h"
 #include "track/track_decl.h"
 #include "track/trackref.h"
 
@@ -111,6 +112,8 @@ class TrackModel {
 
     virtual CoverInfo getCoverInfo(const QModelIndex& index) const = 0;
 
+    virtual QImage getCoverThumbnail(const QModelIndex& index) const = 0;
+
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
     virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
@@ -202,6 +205,15 @@ class TrackModel {
 
     virtual void select() {
     }
+
+    virtual bool updateTrackGenreText(
+            Track* pTrack,
+            const mixxx::TagLabel::value_t& genreText) const = 0;
+#if defined(__EXTRA_METADATA__)
+    virtual bool updateTrackMoodText(
+            Track* pTrack,
+            const mixxx::TagLabel::value_t& moodText) const = 0;
+#endif // __EXTRA_METADATA__
 
   private:
     QSqlDatabase m_db;

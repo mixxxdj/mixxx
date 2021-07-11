@@ -407,4 +407,30 @@ void Logging::flushLogFile() {
     }
 }
 
+// static
+void Logging::writeMessage(
+        const QByteArray& message) {
+    VERIFY_OR_DEBUG_ASSERT(!message.isEmpty()) {
+        return;
+    }
+    DEBUG_ASSERT(message.back() == '\n');
+    {
+        QMutexLocker locked(&s_mutexLogfile);
+        // Writing to a closed QFile could cause an infinite recursive loop
+        // by logging to qWarning!
+        if (s_logfile.isOpen()) {
+            const int written = s_logfile.write(message);
+            Q_UNUSED(written);
+            DEBUG_ASSERT(written == message.size());
+        }
+    }
+    {
+        QMutexLocker locked(&s_mutexStdErr);
+        const size_t written = fwrite(
+                message.constData(), sizeof(char), message.size(), stderr);
+        Q_UNUSED(written);
+        DEBUG_ASSERT(written == static_cast<size_t>(message.size()));
+    }
+}
+
 } // namespace mixxx

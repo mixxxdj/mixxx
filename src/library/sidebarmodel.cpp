@@ -257,8 +257,13 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             // If it's the "Quick Links" node, display it's name
             if (pTreeItem->getData().toString() == QUICK_LINK_NODE) {
                 return pTreeItem->getLabel();
+            } else {
+                if (pTreeItem->getToolTip().isEmpty()) {
+                    return pTreeItem->getData();
+                } else {
+                    return pTreeItem->getToolTip();
+                }
             }
-            return pTreeItem->getData();
         }
         case Qt::FontRole: {
             QFont font;

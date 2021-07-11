@@ -30,6 +30,9 @@ const TagLib::String kAtomKeyReplayGainTrackPeak = "----:com.apple.iTunes:replay
 const TagLib::String kAtomKeyReplayGainAlbumGain = "----:com.apple.iTunes:replaygain_album_gain";
 const TagLib::String kAtomKeyReplayGainAlbumPeak = "----:com.apple.iTunes:replaygain_album_peak";
 
+// Mixxx atom keys
+const TagLib::String kAtomKeyMixxxCustomTags = "----:org.mixxx.dj:CustomTags";
+
 // Serato atom keys
 const TagLib::String kAtomKeySeratoBeatGrid = "----:com.serato.dj:beatgrid";
 const TagLib::String kAtomKeySeratoMarkers = "----:com.serato.dj:markers";
@@ -306,6 +309,15 @@ void importTrackMetadataFromTag(
     }
 #endif // __EXTRA_METADATA__
 
+    // Mixxx custom tags
+    TagLib::String dumpCustomTags;
+    if (readAtom(
+                tag,
+                kAtomKeyMixxxCustomTags,
+                &dumpCustomTags)) {
+        parseCustomTagsFromStringDump(pTrackMetadata, dumpCustomTags);
+    }
+
     // Serato tags
     TagLib::String seratoBeatGridData;
     if (readAtom(
@@ -449,6 +461,12 @@ bool exportTrackMetadataIntoTag(
     writeAtom(pTag, "\251wrk", toTString(trackMetadata.getTrackInfo().getWork()));
     writeAtom(pTag, "\251mvn", toTString(trackMetadata.getTrackInfo().getMovement()));
 #endif // __EXTRA_METADATA__
+
+    // Mixxx custom tags
+    writeAtom(
+            pTag,
+            kAtomKeyMixxxCustomTags,
+            dumpCustomTagsString(trackMetadata));
 
     // Serato tags
     if (trackMetadata.getTrackInfo().getSeratoTags().status() != SeratoTags::ParserStatus::Failed) {

@@ -28,6 +28,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     QString getTrackLocation(const QModelIndex& index) const final;
     TrackId getTrackId(const QModelIndex& index) const final;
     CoverInfo getCoverInfo(const QModelIndex& index) const final;
+    QImage getCoverThumbnail(const QModelIndex& index) const final;
     const QVector<int> getTrackRows(TrackId trackId) const final;
     void search(const QString& searchText,const QString& extraFilter = QString()) final;
     const QString currentSearch() const final;
@@ -40,6 +41,14 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     bool setModelSetting(const QString& name, const QVariant& value) final;
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) const override;
     int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
+    bool updateTrackGenreText(
+            Track* pTrack,
+            const mixxx::TagLabel::value_t& genreText) const override;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMoodText(
+            Track* pTrack,
+            const mixxx::TagLabel::value_t& moodText) const override;
+#endif // __EXTRA_METADATA__
 
     // Inherited from QSortFilterProxyModel
     bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const final;

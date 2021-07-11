@@ -211,9 +211,11 @@ void TrackCollection::relocateDirectory(const QString& oldDir, const QString& ne
 }
 
 QList<TrackId> TrackCollection::resolveTrackIds(
+        const mixxx::TaggingConfig& taggingConfig,
         const QList<mixxx::FileInfo>& trackFiles,
         TrackDAO::ResolveTrackIdFlags flags) {
     QList<TrackId> trackIds = m_trackDao.resolveTrackIds(
+            taggingConfig,
             trackFiles,
             flags);
     if (flags & TrackDAO::ResolveTrackIdFlag::UnhideHidden) {
@@ -223,6 +225,7 @@ QList<TrackId> TrackCollection::resolveTrackIds(
 }
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
+        const mixxx::TaggingConfig& taggingConfig,
         const QList<QUrl>& urls,
         bool addMissing) {
     QList<mixxx::FileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
@@ -235,10 +238,11 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
     if (addMissing) {
         flags |= TrackDAO::ResolveTrackIdFlag::AddMissing;
     }
-    return resolveTrackIds(files, flags);
+    return resolveTrackIds(taggingConfig, files, flags);
 }
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
+        const mixxx::TaggingConfig& taggingConfig,
         const QList<QString>& locations) {
     QList<mixxx::FileInfo> fileInfos;
     fileInfos.reserve(locations.size());
@@ -246,6 +250,7 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
         fileInfos.append(mixxx::FileInfo(location));
     }
     return resolveTrackIds(
+            taggingConfig,
             fileInfos,
             TrackDAO::ResolveTrackIdFlag::UnhideHidden | TrackDAO::ResolveTrackIdFlag::AddMissing);
 }
@@ -539,17 +544,19 @@ void TrackCollection::saveTrack(Track* pTrack) const {
 }
 
 TrackPointer TrackCollection::getTrackById(
+        const mixxx::TaggingConfig& taggingConfig,
         TrackId trackId) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_trackDao.getTrackById(trackId);
+    return m_trackDao.getTrackById(taggingConfig, trackId);
 }
 
 TrackPointer TrackCollection::getTrackByRef(
+        const mixxx::TaggingConfig& taggingConfig,
         const TrackRef& trackRef) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_trackDao.getTrackByRef(trackRef);
+    return m_trackDao.getTrackByRef(taggingConfig, trackRef);
 }
 
 TrackId TrackCollection::getTrackIdByRef(
@@ -558,11 +565,12 @@ TrackId TrackCollection::getTrackIdByRef(
 }
 
 TrackPointer TrackCollection::getOrAddTrack(
+        const mixxx::TaggingConfig& taggingConfig,
         const TrackRef& trackRef,
         bool* pAlreadyInLibrary) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_trackDao.getOrAddTrack(trackRef, pAlreadyInLibrary);
+    return m_trackDao.getOrAddTrack(taggingConfig, trackRef, pAlreadyInLibrary);
 }
 
 TrackId TrackCollection::addTrack(

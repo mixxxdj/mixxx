@@ -10,6 +10,10 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/logger.h"
 
+#if defined(__AOIDE__)
+#include "aoide/trackcollection.h"
+#endif
+
 namespace {
 
 const mixxx::Logger kLogger("TrackCollectionManager");
@@ -54,7 +58,9 @@ TrackCollectionManager::TrackCollectionManager(
     if (deleteTrackForTestingFn) {
         kLogger.info() << "External collections are disabled in test mode";
     } else {
-        // TODO: Add external collections
+#if defined(__AOIDE__)
+        m_externalCollections.append(new aoide::TrackCollection(this, pConfig));
+#endif
     }
     for (const auto& externalCollection : qAsConst(m_externalCollections)) {
         kLogger.info()
@@ -165,7 +171,7 @@ TrackCollectionManager::~TrackCollectionManager() {
 
 void TrackCollectionManager::startLibraryScan() {
     DEBUG_ASSERT(m_pScanner);
-    m_pScanner->scan();
+    m_pScanner->scan(taggingConfig());
 }
 
 void TrackCollectionManager::stopLibraryScan() {
@@ -285,7 +291,10 @@ void TrackCollectionManager::exportTrackMetadata(
         switch (mode) {
         case TrackMetadataExportMode::Immediate:
             // Export track metadata now by saving as file tags.
-            SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack, m_pConfig);
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                    pTrack,
+                    m_pConfig,
+                    taggingConfig());
             break;
         case TrackMetadataExportMode::Deferred:
             // Export track metadata later when the track object goes out
@@ -435,7 +444,10 @@ TrackPointer TrackCollectionManager::getOrAddTrack(
         alreadyInLibrary = *pAlreadyInLibrary;
     }
     // Forward call to internal collection
-    auto pTrack = m_pInternalCollection->getOrAddTrack(trackRef, &alreadyInLibrary);
+    auto pTrack = m_pInternalCollection->getOrAddTrack(
+            taggingConfig(),
+            trackRef,
+            &alreadyInLibrary);
     if (pAlreadyInLibrary) {
         *pAlreadyInLibrary = alreadyInLibrary;
     }
@@ -528,12 +540,14 @@ void TrackCollectionManager::afterTracksRelocated(
 TrackPointer TrackCollectionManager::getTrackById(
         TrackId trackId) const {
     return internalCollection()->getTrackById(
+            taggingConfig(),
             trackId);
 }
 
 TrackPointer TrackCollectionManager::getTrackByRef(
         const TrackRef& trackRef) const {
     return internalCollection()->getTrackByRef(
+            taggingConfig(),
             trackRef);
 }
 
@@ -541,6 +555,7 @@ QList<TrackId> TrackCollectionManager::resolveTrackIdsFromUrls(
         const QList<QUrl>& urls,
         bool addMissing) const {
     return internalCollection()->resolveTrackIdsFromUrls(
+            taggingConfig(),
             urls,
             addMissing);
 }
@@ -548,5 +563,24 @@ QList<TrackId> TrackCollectionManager::resolveTrackIdsFromUrls(
 QList<TrackId> TrackCollectionManager::resolveTrackIdsFromLocations(
         const QList<QString>& locations) const {
     return internalCollection()->resolveTrackIdsFromLocations(
+            taggingConfig(),
             locations);
 }
+
+bool TrackCollectionManager::updateTrackGenreText(
+        Track* pTrack,
+        const mixxx::TagLabel::value_t& genreText) const {
+    return pTrack->updateGenreText(
+            taggingConfig(),
+            genreText);
+}
+
+#if defined(__EXTRA_METADATA__)
+bool TrackCollectionManager::updateTrackMoodText(
+        Track* pTrack,
+        const mixxx::TagLabel::value_t& moodText) const {
+    return pTrack->updateMoodText(
+            taggingConfig(),
+            moodText);
+}
+#endif // __EXTRA_METADATA__
