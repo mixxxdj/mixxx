@@ -29,6 +29,7 @@ There are lots of ways you can contribute to Mixxx. Even if you don't know how t
 
  - [Help translate Mixxx to other languages](https://github.com/mixxxdj/mixxx/wiki/Internationalization)
  - [Improve the Mixxx Manual](https://github.com/mixxxdj/manual#readme).
+ - [Improve Mixxx website](https://github.com/mixxxdj/website)
 
 If you have some coding skills, or you are willing to learn them you can do even more:
 
@@ -36,6 +37,8 @@ If you have some coding skills, or you are willing to learn them you can do even
  - Fix bugs or program new features
 
 We welcome programmers of all backgrounds and skill levels, and our community will do their best to help you with any problems you encounter.
+
+## Your first Mixxx code contribution ##
 
 ## Git Repositories ##
 This repository contains the Mixxx source code, skins, controller mappings, and some helpful scripts. We have a few other Git repositories too:
