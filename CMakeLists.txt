@@ -379,7 +379,8 @@ if(MSVC)
   default_option(SCCACHE_SUPPORT "Enable sccache support" "SCCACHE_EXECUTABLE")
   message(STATUS "Support for sccache: ${SCCACHE_SUPPORT}")
   if(SCCACHE_SUPPORT)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "sccache")
+    set( CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}" )
+    set( CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}" )
   endif()
 else()
   # ccache support
@@ -395,8 +396,8 @@ else()
       # without this compiler messages in `make` backend would be uncolored
       set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=${BUILD_COLORS}")
     endif()
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "ccache")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
+    set( CMAKE_C_COMPILER_LAUNCHER "${CCACHE_EXECUTABLE}" )
+    set( CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXECUTABLE}" )
   endif()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
@@ -1740,11 +1741,6 @@ if(WIN32)
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
     "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
   )
-  # sccache fails with RC files
-  # https://github.com/mozilla/sccache/issues/947
-  if(SCCACHE_SUPPORT)
-    set_target_properties(mixxx PROPERTIES RULE_LAUNCH_COMPILE "")
-  endif()
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
