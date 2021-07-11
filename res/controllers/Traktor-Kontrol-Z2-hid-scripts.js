@@ -965,7 +965,14 @@ TraktorZ2.pregainHandler = function(field) {
 };
 
 TraktorZ2.faderHandler = function(field) {
-    engine.setParameter(field.group, field.name, script.absoluteLin(field.value, 0, 1, 100, 3095));
+    // To ensure that the faders alsways shut completly,
+    // all values from 0 to 100 are rated as zero,
+    // and all values from 3995 to 4095 are rated as one.
+    // Todo: NI provides a tool, to calibrate the Z2 faders.
+    //       If the interaction between this calibration tool
+    //       and the values in Mixxx is understood,
+    //       this implementation might be improved
+    engine.setParameter(field.group, field.name, script.absoluteLin(field.value, 0, 1, 100, 3995));
 };
 
 TraktorZ2.messageCallback = function(_packet, data) {
@@ -1936,7 +1943,7 @@ TraktorZ2.init = function(_id) {
 
     HIDDebug("TraktorZ2: Init done!");
 
-    engine.beginTimer(20, this.displayLEDs);
+    engine.beginTimer(40, this.displayLEDs);
 
     engine.beginTimer(50, function() {
         TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", kLedVuMeterBrightness, true);
