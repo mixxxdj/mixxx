@@ -82,11 +82,11 @@ class HotcueControl : public QObject {
     void setCue(const CuePointer& pCue);
     void resetCue();
 
-    double getPosition() const;
-    void setPosition(double position);
+    mixxx::audio::FramePos getPosition() const;
+    void setPosition(mixxx::audio::FramePos position);
 
-    double getEndPosition() const;
-    void setEndPosition(double endPosition);
+    mixxx::audio::FramePos getEndPosition() const;
+    void setEndPosition(mixxx::audio::FramePos endPosition);
 
     void setType(mixxx::CueType type);
 
@@ -104,8 +104,9 @@ class HotcueControl : public QObject {
 
     /// Used for caching the preview state of this hotcue control
     /// for the case the cue is deleted during preview.
-    double getPreviewingPosition() const {
-        return m_previewingPosition.getValue();
+    mixxx::audio::FramePos getPreviewingPosition() const {
+        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                m_previewingPosition.getValue());
     }
 
     /// Used for caching the preview state of this hotcue control
@@ -269,10 +270,10 @@ class CueControl : public EngineControl {
     void detachCue(HotcueControl* pControl);
     void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
     void loadCuesFromTrack();
-    double quantizeCuePoint(double position);
-    double getQuantizedCurrentPosition();
+    mixxx::audio::FramePos quantizeCuePoint(mixxx::audio::FramePos position);
+    mixxx::audio::FramePos getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
-    void seekOnLoad(double seekOnLoadPosition);
+    void seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition);
     void setHotcueFocusIndex(int hotcueIndex);
     int getHotcueFocusIndex() const;
 
