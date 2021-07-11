@@ -27,7 +27,7 @@ We also have lots of additional information for users and developers on the [Mix
 There are lots of ways you can contribute to Mixxx. Even if you don't know how to program you can help making Mixxx accessible to more users:
 
  - [Help translate Mixxx to other languages](https://github.com/mixxxdj/mixxx/wiki/Internationalization)
- - Improve the Mixxx [Manual](https://github.com/mixxxdj/manual).
+ - [Improve the Mixxx Manual](https://github.com/mixxxdj/manual).
 
 If you have some coding skills, or you are willing to learn them you can do even more:
 
