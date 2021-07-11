@@ -6,12 +6,12 @@ This document describes how our community has agreed to collaborate together eff
 All Mixxx contributors, including the core team members, are volunteers. This means that Mixxx is made possible by their passion and commitment to the project on their free time. This is why it's so important to treat everyone with respect and understanding, and be patient if things sometimes move a bit slower than you would like. Don't forget to read and follow our [Code Of Conduct](https://github.com/mixxxdj/mixxx/blob/master/CODE_OF_CONDUCT.md), as it provides a framework for everyone to feel accepted, respected and safe in all their interactions within the mixxx community.
 
 ## Table of Contents ##
-1. [Getting in touch with the community](#getting-in-touch-with-the-community)
-2. [How can I contribute?](#how-can-i-contribute)
-3. [Git Repositories](#Git-Repositories)
-4. [Git Workflow](#Git-Workflow)
-   1. [All Contributors](#All-Contributors)
-   2. [Core Team](#Core-Team)
+- [Getting in touch with the community](#getting-in-touch-with-the-community)
+- [How can I contribute?](#how-can-i-contribute)
+- [Git Repositories](#Git-Repositories)
+- [Git Workflow](#Git-Workflow)
+   - [All Contributors](#All-Contributors)
+   - [Core Team](#Core-Team)
 
 ## Getting in touch with the community ##
 
@@ -27,8 +27,10 @@ We also have lots of additional information for users and developers on the [Mix
 
 There are lots of ways you can contribute to Mixxx. Even if you don't know how to program you can help making Mixxx accessible to more users:
 
+ - [Report a bug](https://github.com/mixxxdj/mixxx/wiki/Reporting%20bugs)
+ - [Help testing the latest developments](https://github.com/mixxxdj/mixxx/wiki/Testing)
  - [Help translate Mixxx to other languages](https://github.com/mixxxdj/mixxx/wiki/Internationalization)
- - [Improve the Mixxx Manual](https://github.com/mixxxdj/manual#readme).
+ - [Improve the Mixxx Manual](https://github.com/mixxxdj/manual#readme)
  - [Improve Mixxx website](https://github.com/mixxxdj/website)
 
 If you have some coding skills, or you are willing to learn them you can do even more:
@@ -39,6 +41,19 @@ If you have some coding skills, or you are willing to learn them you can do even
 We welcome programmers of all backgrounds and skill levels, and our community will do their best to help you with any problems you encounter.
 
 ## Your first Mixxx code contribution ##
+### ??? ###
+We use [git](https://git-scm.com/) for source control. Git is a distributed version control system that allows us to keep track of how our code changes and work together on it.
+
+### Compile Mixxx for the first time ###
+Your first goal is to get the Mixxx source code and compile it. The steps to do so depend on your operating system:
+- [Compiling on Linux](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux)
+- [Compiling on Windows](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Windows)
+- [Compiling on macOS](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20macOS)
+
+### Pick an issue to work on ###
+You might already have in mind that feature you always dreamed of! If you aren't sure were to start, or you want to start with something easy, you can ask for ideas on [Zulip](https://mixxx.zulipchat.com/#narrow/stream/247620-development-help) or pick an [easy issue](https://bugs.launchpad.net/mixxx/+bugs?field.tag=easy).
+
+### Time to code ###
 
 ## Git Repositories ##
 This repository contains the Mixxx source code, skins, controller mappings, and some helpful scripts. We have a few other Git repositories too:
