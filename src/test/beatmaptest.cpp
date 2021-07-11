@@ -10,6 +10,15 @@ using namespace mixxx;
 
 namespace {
 
+int countRemainingBeats(std::unique_ptr<BeatIterator> pIterator) {
+    int numBeatsFound = 0;
+    while (pIterator->hasNext()) {
+        pIterator->next();
+        numBeatsFound++;
+    }
+    return numBeatsFound;
+}
+
 class BeatMapTest : public testing::Test {
   protected:
     BeatMapTest()
@@ -324,6 +333,85 @@ TEST_F(BeatMapTest, TestBpmAround) {
                         mixxx::audio::kStartFramePos + 1 * approx_beat_length,
                         4)
                     .value());
+}
+
+TEST_F(BeatMapTest, FindBeatsWithFractionalPos) {
+    constexpr mixxx::Bpm bpm(60.0);
+    constexpr int numBeats = 120;
+    const mixxx::audio::FrameDiff_t beatLengthFrames = getBeatLengthFrames(bpm);
+    ASSERT_EQ(beatLengthFrames, std::round(beatLengthFrames));
+
+    mixxx::audio::FramePos beatPos = mixxx::audio::kStartFramePos;
+    const mixxx::audio::FramePos lastBeatPos = beatPos + beatLengthFrames * (numBeats - 1);
+    QVector<mixxx::audio::FramePos> beats;
+    for (; beatPos <= lastBeatPos; beatPos += beatLengthFrames) {
+        beats.append(beatPos);
+    }
+    const auto pMap = BeatMap::makeBeatMap(m_pTrack->getSampleRate(), QString(), beats);
+
+    // All beats are in range
+    auto it = pMap->findBeats(mixxx::audio::kStartFramePos, lastBeatPos);
+    int numBeatsFound = countRemainingBeats(std::move(it));
+    EXPECT_EQ(numBeats, numBeatsFound);
+
+    // Only half the beats are in range
+    const auto halfBeatsPosition = mixxx::audio::kStartFramePos +
+            beatLengthFrames * ((numBeats / 2) - 1);
+    it = pMap->findBeats(mixxx::audio::kStartFramePos, halfBeatsPosition);
+    numBeatsFound = countRemainingBeats(std::move(it));
+    EXPECT_EQ(numBeats / 2, numBeatsFound);
+
+    // First beat is not in range
+    it = pMap->findBeats(mixxx::audio::kStartFramePos + 0.5, lastBeatPos + 0.5);
+    numBeatsFound = countRemainingBeats(std::move(it));
+    EXPECT_EQ(numBeats - 1, numBeatsFound);
+
+    // Last beat is not in range
+    it = pMap->findBeats(mixxx::audio::kStartFramePos - 0.5, lastBeatPos - 0.5);
+    numBeatsFound = countRemainingBeats(std::move(it));
+    EXPECT_EQ(numBeats - 1, numBeatsFound);
+
+    // All beats are in range
+    it = pMap->findBeats(mixxx::audio::kStartFramePos - 0.5, lastBeatPos + 0.5);
+    numBeatsFound = countRemainingBeats(std::move(it));
+    EXPECT_EQ(numBeats, numBeatsFound);
+
+    // First and last beats in range
+    it = pMap->findBeats(mixxx::audio::kStartFramePos + 0.5, lastBeatPos - 0.5);
+    numBeatsFound = countRemainingBeats(std::move(it));
+    EXPECT_EQ(numBeats - 2, numBeatsFound);
+}
+
+TEST_F(BeatMapTest, HasBeatInRangeWithFractionalPos) {
+    constexpr mixxx::Bpm bpm(60.0);
+    constexpr int numBeats = 120;
+    const mixxx::audio::FrameDiff_t beatLengthFrames = getBeatLengthFrames(bpm);
+    ASSERT_EQ(beatLengthFrames, std::round(beatLengthFrames));
+
+    mixxx::audio::FramePos beatPos = mixxx::audio::kStartFramePos;
+    const mixxx::audio::FramePos lastBeatPos = beatPos + beatLengthFrames * (numBeats - 1);
+    QVector<mixxx::audio::FramePos> beats;
+    for (; beatPos <= lastBeatPos; beatPos += beatLengthFrames) {
+        beats.append(beatPos);
+    }
+    const auto pMap = BeatMap::makeBeatMap(m_pTrack->getSampleRate(), QString(), beats);
+
+    const mixxx::audio::FrameDiff_t halfBeatLengthFrames = beatLengthFrames / 2;
+    EXPECT_TRUE(pMap->hasBeatInRange(mixxx::audio::kStartFramePos,
+            mixxx::audio::kStartFramePos + halfBeatLengthFrames));
+    EXPECT_TRUE(pMap->hasBeatInRange(mixxx::audio::kStartFramePos - 0.2,
+            mixxx::audio::kStartFramePos + halfBeatLengthFrames));
+    // FIXME: The next comparison is broken due to fuzzy matching in BeatMap::findNthBeat()
+    //EXPECT_FALSE(pMap->hasBeatInRange(mixxx::audio::kStartFramePos + 0.2, mixxx::audio::kStartFramePos + halfBeatLengthFrames));
+    EXPECT_TRUE(pMap->hasBeatInRange(
+            mixxx::audio::kStartFramePos - halfBeatLengthFrames,
+            mixxx::audio::kStartFramePos));
+    EXPECT_FALSE(pMap->hasBeatInRange(
+            mixxx::audio::kStartFramePos - halfBeatLengthFrames,
+            mixxx::audio::kStartFramePos - 0.2));
+    EXPECT_TRUE(pMap->hasBeatInRange(
+            mixxx::audio::kStartFramePos - halfBeatLengthFrames,
+            mixxx::audio::kStartFramePos + 0.2));
 }
 
 }  // namespace

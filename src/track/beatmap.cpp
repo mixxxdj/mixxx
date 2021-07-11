@@ -32,7 +32,7 @@ inline Beat beatFromFramePos(mixxx::audio::FramePos beatPosition) {
     return beat;
 }
 
-bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
+inline bool beatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
 
@@ -315,11 +315,11 @@ audio::FramePos BeatMap::findNthBeat(audio::FramePos position, int n) const {
         return audio::kInvalidFramePos;
     }
 
-    Beat beat = beatFromFramePos(position);
+    Beat beat = beatFromFramePos(position.toNearestFrameBoundary());
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, beatLessThan);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -401,11 +401,11 @@ bool BeatMap::findPrevNextBeats(audio::FramePos position,
         return false;
     }
 
-    Beat beat = beatFromFramePos(position);
+    Beat beat = beatFromFramePos(position.toNearestFrameBoundary());
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, beatLessThan);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -481,15 +481,19 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(
         return std::unique_ptr<BeatIterator>();
     }
 
-    Beat startBeat = beatFromFramePos(startPosition);
-    Beat endBeat = beatFromFramePos(endPosition);
+    // Beats can only appear a full frame positions. If the start position is
+    // fractional, it needs to be rounded up to avoid finding a beat that
+    // appears *before* the requested start position. For the end position, the
+    // opposite applies, i.e. we need to round down to avoid finding a beat
+    // *after* the requested end position.
+    Beat startBeat = beatFromFramePos(startPosition.toUpperFrameBoundary());
+    Beat endBeat = beatFromFramePos(endPosition.toLowerFrameBoundary());
 
     BeatList::const_iterator curBeat =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(),
-                        startBeat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), startBeat, beatLessThan);
 
     BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), endBeat, BeatLessThan);
+            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), endBeat, beatLessThan);
 
     if (curBeat >= lastBeat) {
         return std::unique_ptr<BeatIterator>();
@@ -503,8 +507,14 @@ bool BeatMap::hasBeatInRange(audio::FramePos startPosition, audio::FramePos endP
             startPosition > endPosition) {
         return false;
     }
-    audio::FramePos beatPosition = findNextBeat(startPosition);
-    if (beatPosition <= endPosition) {
+    audio::FramePos beatPosition = findNextBeat(startPosition.toUpperFrameBoundary());
+
+    // FIXME: The following assertion should always hold true, but it doesn't,
+    // because the position matching in findNthBeat() is fuzzy. This should be
+    // resolved, and moved to the calling code, to only use fuzzy matches when
+    // actually desired.
+    // DEBUG_ASSERT(!beatPosition.isValid() || beatPosition >= startPosition.toUpperFrameBoundary());
+    if (beatPosition.isValid() && beatPosition <= endPosition.toLowerFrameBoundary()) {
         return true;
     }
     return false;
