@@ -3,16 +3,24 @@ Thank you for contributing to [Mixxx](https://mixxx.org/)! Your work helps DJs a
 
 This document describes how our community has agreed to collaborate together effectively. Reading and following these guidelines shows other collaborators that you respect their time and effort. In return, they will do their best to address your issue and help you get your contributiuons merged.
 
-All Mixxx contributors, including the core team members are volunteers. This means that all this is made possible by their passion and commitment to the project on their free time. This is why it's so important to treat everyone with respect and understanding and be patient if things sometimes move a bit slower than you would like. Don't forget to read and follow our [Code Of Conduct](https://github.com/mixxxdj/mixxx/blob/master/CODE_OF_CONDUCT.md), as it provides a framework for everyone to feel accepted, respected and safe in all their interactions with the mixxx community.
+All Mixxx contributors, including the core team members, are volunteers. This means that Mixxx is made possible by their passion and commitment to the project on their free time. This is why it's so important to treat everyone with respect and understanding, and be patient if things sometimes move a bit slower than you would like. Don't forget to read and follow our [Code Of Conduct](https://github.com/mixxxdj/mixxx/blob/master/CODE_OF_CONDUCT.md), as it provides a framework for everyone to feel accepted, respected and safe in all their interactions within the mixxx community.
 
-We encourage you to introduce yourself on our [Zulip chat](https://mixxx.zulipchat.com/) before starting to contribute code to Mixxx.
+We encourage you to introduce yourself on our [Zulip chat](https://mixxx.zulipchat.com/#narrow/stream/109123-introduce-yourself) before starting to contribute code to Mixxx.
 
-Table of Contents
+## Table of Contents ##
 1. [Orientation](#Orientation)
    1. [Git Repositories](#Git-Repositories)
 2. [Git Workflow](#Git-Workflow)
    1. [All Contributors](#All-Contributors)
    2. [Core Team](#Core-Team)
+
+## Getting in touch with the community ##
+
+We use [Zulip chat](https://mixxx.zulipchat.com/) to discuss and coordinate everything related to Mixxx development (and more!).
+
+- We encourage you to say hi on the [introduce yourself channel](https://mixxx.zulipchat.com/#narrow/stream/109123-introduce-yourself) and share what you would like to contribute.
+- If you need help with your contribution, the Mixxx codebase or anything else related to Mixxx development don't hesitate to ask on the [development help channel](https://mixxx.zulipchat.com/#narrow/stream/247620-development-help).
+- The [development channel](https://mixxx.zulipchat.com/#narrow/stream/109171-development) is where day to day discussion about code, new features and releases happens.
 
 ## Orientation ##
 We have lots more helpful information for users and developers on the [Mixxx wiki](https://mixxx.org/wiki/doku.php/start), including [build instructions](https://mixxx.org/wiki/doku.php/start#compile_mixxx_from_source_code).
