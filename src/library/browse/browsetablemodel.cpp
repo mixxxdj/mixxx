@@ -409,7 +409,7 @@ bool BrowseTableModel::setData(
         pTrack->setComment(value.toString());
         break;
     case COLUMN_GENRE:
-        pTrack->setGenre(value.toString());
+        m_pTrackCollectionManager->updateTrackGenreText(pTrack.get(), value.toString());
         break;
     case COLUMN_COMPOSER:
         pTrack->setComposer(value.toString());
@@ -475,3 +475,17 @@ QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject*
     }
     return nullptr;
 }
+
+bool BrowseTableModel::updateTrackGenreText(
+        Track* pTrack,
+        const QString& genreText) const {
+    return m_pTrackCollectionManager->updateTrackGenreText(pTrack, genreText);
+}
+
+#if defined(__EXTRA_METADATA__)
+bool BrowseTableModel::updateTrackMoodText(
+        Track* pTrack,
+        const QString& moodText) const {
+    return m_pTrackCollectionManager->updateTrackMoodText(pTrack, moodText);
+}
+#endif // __EXTRA_METADATA__

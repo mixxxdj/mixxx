@@ -451,7 +451,7 @@ void Track::emitChangedSignalsForAllMetadata() {
     emit titleChanged(getTitle());
     emit albumChanged(getAlbum());
     emit albumArtistChanged(getAlbumArtist());
-    emit genreChanged(getGenre());
+    emit genreTextChanged(getGenreText());
     emit composerChanged(getComposer());
     emit groupingChanged(getGrouping());
     emit yearChanged(getYear());
@@ -629,20 +629,6 @@ void Track::setYear(const QString& s) {
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrYear(), value)) {
         markDirtyAndUnlock(&locked);
         emit yearChanged(value);
-    }
-}
-
-QString Track::getGenre() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getGenre();
-}
-
-void Track::setGenre(const QString& s) {
-    QMutexLocker lock(&m_qMutex);
-    const QString value = s.trimmed();
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGenre(), value)) {
-        markDirtyAndUnlock(&lock);
-        emit genreChanged(value);
     }
 }
 
@@ -1684,3 +1670,55 @@ void Track::updateStreamInfoFromSource(
         emit cuesUpdated();
     }
 }
+
+QString Track::getGenreText() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getMetadata().getTrackInfo().getGenre();
+}
+
+void Track::setGenreTextInternal(
+        const QString& genreText) {
+    auto locked = lockMutex(&m_qMutex);
+    if (compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrGenre(),
+                genreText)) {
+        markDirtyAndUnlock(&locked);
+    }
+}
+
+bool Track::updateGenreText(
+        const QString& genreText) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrGenre(),
+                genreText)) {
+        return false;
+    }
+    const auto newGenreText =
+            m_record.getMetadata().getTrackInfo().getGenre();
+    markDirtyAndUnlock(&locked);
+    emit genreTextChanged(newGenreText);
+    return true;
+}
+
+#if defined(__EXTRA_METADATA__)
+QString Track::getMoodText() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getMetadata().getTrackInfo().getMood();
+}
+
+bool Track::updateMoodText(
+        const QString& moodText) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrMood(),
+                moodText)) {
+        return false;
+    }
+    const auto newMoodText =
+            m_record.getMetadata().getTrackInfo().getMood();
+    markDirtyAndUnlock(&locked);
+    emit moodTextChanged(newMoodText);
+    return true;
+}
+#endif // __EXTRA_METADATA__

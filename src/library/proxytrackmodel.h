@@ -40,6 +40,14 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     bool setModelSetting(const QString& name, const QVariant& value) final;
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) const override;
     int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
+    bool updateTrackGenreText(
+            Track* pTrack,
+            const QString& genreText) const override;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMoodText(
+            Track* pTrack,
+            const QString& moodText) const override;
+#endif // __EXTRA_METADATA__
 
     // Inherited from QSortFilterProxyModel
     bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const final;

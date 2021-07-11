@@ -24,7 +24,7 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     } else if (column == LIBRARYTABLE_DATETIMEADDED) {
         return pTrack->getDateAdded();
     } else if (column == LIBRARYTABLE_GENRE) {
-        return pTrack->getGenre();
+        return pTrack->getGenreText();
     } else if (column == LIBRARYTABLE_COMPOSER) {
         return pTrack->getComposer();
     } else if (column == LIBRARYTABLE_GROUPING) {
