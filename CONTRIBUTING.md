@@ -1,5 +1,11 @@
 # Mixxx Contribution Guidelines #
-Thank you for contributing to [Mixxx](https://mixxx.org/)! Your work helps DJs all over the world! We are global, all volunteer team that works by consensus and we are excited to have you join us. This document specifies technical aspects of our workflow. For social aspects please refer to [CODE_OF_CONDUCT.md](https://github.com/mixxxdj/mixxx/blob/master/CODE_OF_CONDUCT.md) in this repository. We encourage you to introduce yourself on our [Zulip chat](https://mixxx.zulipchat.com/) before starting to contribute code to Mixxx.
+Thank you for contributing to [Mixxx](https://mixxx.org/)! Your work helps DJs all over the world! We are a global team that works by consensus and we are excited to have you join us.
+
+This document describes how our community has agreed to collaborate together effectively. Reading and following these guidelines shows other collaborators that you respect their time and effort. In return, they will do their best to address your issue and help you get your contributiuons merged.
+
+All Mixxx contributors, including the core team members are volunteers. This means that all this is made possible by their passion and commitment to the project on their free time. This is why it's so important to treat everyone with respect and understanding and be patient if things sometimes move a bit slower than you would like. Don't forget to read and follow our [Code Of Conduct](https://github.com/mixxxdj/mixxx/blob/master/CODE_OF_CONDUCT.md), as it provides a framework for everyone to feel accepted, respected and safe in all their interactions with the mixxx community.
+
+We encourage you to introduce yourself on our [Zulip chat](https://mixxx.zulipchat.com/) before starting to contribute code to Mixxx.
 
 Table of Contents
 1. [Orientation](#Orientation)
