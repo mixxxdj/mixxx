@@ -966,7 +966,7 @@ TraktorZ2.pregainHandler = function(field) {
 
 TraktorZ2.faderHandler = function(field) {
     // To ensure that the faders alsways shut completly,
-    // all values from 0 to 100 are rated as zero,
+    // all values below 100 are rated as zero,
     // and all values from 3995 to 4095 are rated as one.
     // Todo: NI provides a tool, to calibrate the Z2 faders.
     //       If the interaction between this calibration tool
@@ -1694,7 +1694,11 @@ TraktorZ2.registerOutputPackets = function() {
 
     this.controller.registerOutputPacket(outputA);
 
-    // Headphone buttons
+    // Microphone button LED
+    outputB.addOutput("[Microphone]", "talkover", 0x22, "B", 0x7F);
+    engine.makeConnection("[Microphone]", "talkover", TraktorZ2.basicOutputHandler);
+
+    // Headphone button LEDs
     outputB.addOutput("[Channel1]", "pfl", 0x23, "B", 0x7F);
     engine.makeConnection("[Channel1]", "pfl", TraktorZ2.pflOutputHandler);
     engine.trigger("[Channel1]", "pfl");
