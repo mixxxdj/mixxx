@@ -5,8 +5,6 @@ This document describes how our community has agreed to collaborate together eff
 
 All Mixxx contributors, including the core team members, are volunteers. This means that Mixxx is made possible by their passion and commitment to the project on their free time. This is why it's so important to treat everyone with respect and understanding, and be patient if things sometimes move a bit slower than you would like. Don't forget to read and follow our [Code Of Conduct](https://github.com/mixxxdj/mixxx/blob/master/CODE_OF_CONDUCT.md), as it provides a framework for everyone to feel accepted, respected and safe in all their interactions within the mixxx community.
 
-We encourage you to introduce yourself on our [Zulip chat](https://mixxx.zulipchat.com/#narrow/stream/109123-introduce-yourself) before starting to contribute code to Mixxx.
-
 ## Table of Contents ##
 1. [Orientation](#Orientation)
    1. [Git Repositories](#Git-Repositories)
