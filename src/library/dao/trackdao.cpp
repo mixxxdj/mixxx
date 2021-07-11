@@ -760,9 +760,10 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
 
         // Time stamps are stored with timezone UTC in the database
         const auto trackDateAdded = QDateTime::currentDateTimeUtc();
+        const auto trackRecord = pTrack->getRecord();
         if (!insertTrackLibrary(
                     m_pQueryLibraryInsert.get(),
-                    pTrack->getRecord(),
+                    trackRecord,
                     pTrack->getBeats(),
                     trackLocationId,
                     fileAccess.info(),
@@ -1092,7 +1093,7 @@ bool setTrackYear(const QSqlRecord& record, const int column,
 
 bool setTrackGenre(const QSqlRecord& record, const int column,
                    TrackPointer pTrack) {
-    pTrack->setGenre(record.value(column).toString());
+    pTrack->setGenreInternal(record.value(column).toString());
     return false;
 }
 
@@ -1655,9 +1656,10 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
 
     query.bindValue(":track_id", trackId.toVariant());
 
+    const auto trackRecord = pTrack->getRecord();
     bindTrackLibraryValues(
             &query,
-            pTrack->getRecord(),
+            trackRecord,
             pTrack->getBeats());
 
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {

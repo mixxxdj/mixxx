@@ -51,7 +51,10 @@ class Track : public QObject {
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
     Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist
                     NOTIFY albumArtistChanged)
-    Q_PROPERTY(QString genre READ getGenre WRITE setGenre NOTIFY genreChanged)
+    Q_PROPERTY(QString genre READ getGenre STORED false NOTIFY genreChanged)
+#if defined(__EXTRA_METADATA__)
+    Q_PROPERTY(QString mood READ getMood STORED false NOTIFY moodChanged)
+#endif // __EXTRA_METADATA__
     Q_PROPERTY(QString composer READ getComposer WRITE setComposer NOTIFY composerChanged)
     Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping NOTIFY groupingChanged)
     Q_PROPERTY(QString year READ getYear WRITE setYear NOTIFY yearChanged)
@@ -190,10 +193,6 @@ class Track : public QObject {
     QString getYear() const;
     // Set year
     void setYear(const QString&);
-    // Return genre
-    QString getGenre() const;
-    // Set genre
-    void setGenre(const QString&);
     // Returns the track color
     mixxx::RgbColor::optional_t getColor() const;
     // Sets the track color
@@ -216,6 +215,26 @@ class Track : public QObject {
     // Set track number/total
     void setTrackNumber(const QString&);
     void setTrackTotal(const QString&);
+
+    /// Return the genre as text
+    QString getGenre() const;
+    /// !!!DO NOT USE!!!
+    /// Set the genre text WITHOUT updating the corresponding custom tags.
+    ///
+    /// Only allowed to be used by TrackDAO!!! Unfortunately, the
+    /// design of TrackDAO does not allow to hide this method by
+    /// making it private.
+    void setGenreInternal(
+            const QString& genre);
+    bool updateGenre(
+            const QString& genre);
+
+#if defined(__EXTRA_METADATA__)
+    /// Return the mood as text
+    QString getMood() const;
+    bool updateMood(
+            const QString& mood);
+#endif // __EXTRA_METADATA__
 
     PlayCounter getPlayCounter() const;
     void setPlayCounter(const PlayCounter& playCounter);
@@ -398,6 +417,9 @@ class Track : public QObject {
     void albumChanged(const QString&);
     void albumArtistChanged(const QString&);
     void genreChanged(const QString&);
+#if defined(__EXTRA_METADATA__)
+    void moodChanged(const QString&);
+#endif // __EXTRA_METADATA__
     void composerChanged(const QString&);
     void groupingChanged(const QString&);
     void yearChanged(const QString&);

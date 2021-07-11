@@ -550,3 +550,21 @@ QList<TrackId> TrackCollectionManager::resolveTrackIdsFromLocations(
     return internalCollection()->resolveTrackIdsFromLocations(
             locations);
 }
+
+bool TrackCollectionManager::updateTrackGenre(
+        Track* pTrack,
+        const QString& genre) const {
+    return pTrack->updateGenre(
+            // TODO: Pass tagging config
+            genre);
+}
+
+#if defined(__EXTRA_METADATA__)
+bool TrackCollectionManager::updateTrackMood(
+        Track* pTrack,
+        const QString& mood) const {
+    return pTrack->updateMood(
+            // TODO: Pass tagging config
+            mood);
+}
+#endif // __EXTRA_METADATA__
