@@ -22,10 +22,10 @@ We use [Zulip chat](https://mixxx.zulipchat.com/) to discuss and coordinate ever
 
 ## How can I contribute? ##
 
-There are lots of ways you can contribute to Mixxx. Even if you don't know how to program you can help making Mixxx accessible to more users by:
+There are lots of ways you can contribute to Mixxx. Even if you don't know how to program you can help making Mixxx accessible to more users:
 
- - Helping translate Mixxx to other languages
- - Improving user documentation
+ - [Help translate Mixxx to other languages](https://github.com/mixxxdj/mixxx/wiki/Internationalization)
+ - Improve user documentation
 
 If you have some coding skills, or you are willing to learn them you can do even more:
 
@@ -36,6 +36,15 @@ We welcome programmers of all backgrounds and skill levels, and our community wi
 
 ## Orientation ##
 We have lots more helpful information for users and developers on the [Mixxx wiki](https://mixxx.org/wiki/doku.php/start), including [build instructions](https://mixxx.org/wiki/doku.php/start#compile_mixxx_from_source_code).
+
+## Help Translate Mixxx ##
+
+Help to spread Mixxx with translations into more languages, as well as to update and ensure the accuracy of existing translations.
+
+- [Help translate content]
+- [Mixxx i18n wiki]
+- [Mixxx localization forum]
+- [Mixxx glossary]
 
 ### Git Repositories ###
 This repository contains the Mixxx source code, skins, controller mappings, and some helpful scripts. We have a few other Git repositories too:
