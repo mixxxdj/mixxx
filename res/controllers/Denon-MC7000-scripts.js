@@ -37,7 +37,7 @@ var MC7000 = {};
 // 1) Beat LED in Slicer mode (counts every 8 beats AFTER the CUE point)
 //    only works for CONSTANT TEMPO tracks
 //    needs beat grid and CUE point set
-MC7000.experimental = false;
+MC7000.experimental = true;
 
 // Wanna have Needle Search active while playing a track ?
 // In any case Needle Search is available holding "SHIFT" down.
@@ -46,6 +46,7 @@ MC7000.needleSearchPlay = false;
 
 // Possible pitchfader rate ranges given in percent.
 // can be cycled through by the RANGE buttons.
+// All default values are the same as selectable in Preferences
 MC7000.rateRanges = [
     4/100,  // default: 4/100
     6/100,  // default: 6/100
@@ -53,6 +54,8 @@ MC7000.rateRanges = [
     10/100, // default: 10/100
     16/100, // default: 16/100
     24/100, // default: 24/100
+    50/100, // default: 50/100
+    90/100, // default: 90/100
 ];
 
 // Platter Ring LED mode
@@ -79,7 +82,7 @@ MC7000.scratchParams = {
 // set to 1 with audio buffer set to 25ms
 // set to 3 with audio buffer set to 5ms
 
-MC7000.jogSensitivity = 1; // default: 1.0 with audio buffer set to 23ms
+MC7000.jogSensitivity = 1.4;
 
 /*/////////////////////////////////
 //      USER VARIABLES END       //
@@ -208,13 +211,10 @@ MC7000.init = function() {
     }
 
     // send Controller Status SysEx message delayed to avoid conflicts with Softtakeover
-    engine.beginTimer(2000, MC7000.delayedSysEx, true);
-};
-
-// SysEx message to receive all knob and fader positions
-MC7000.delayedSysEx = function() {
-    var ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
-    midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+    engine.beginTimer(2000, function() {
+        var ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
+        midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+    }, true);
 };
 
 // Sampler Volume Control
@@ -496,7 +496,12 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 engine.setValue(group, "hotcue_" + i + "_activate", true);
             } else if (control === 0x14 + i - 1 && value === 0x00) {
                 engine.setValue(group, "hotcue_" + i + "_activate", false);
-                engine.setValue(group, "slip_enabled", 0);
+                if (engine.getValue(group, "slip_enabled")) {
+                    engine.setValue(group, "slip_enabled", false);
+                    engine.beginTimer(250, function() {
+                        engine.setValue(group, "slip_enabled", true);
+                    }, true);
+                }
             } else if (control === 0x1C + i - 1 && value === 0x7F) {
                 engine.setValue(group, "hotcue_" + i + "_clear", true);
                 midi.sendShortMsg(0x94 + deckOffset, 0x1C + i - 1, MC7000.padColor.hotcueoff);
@@ -649,7 +654,12 @@ MC7000.wheelTouch = function(channel, control, value, status, group) {
                 MC7000.scratchParams.beta);
         } else {
             engine.scratchDisable(deckNumber);
-            engine.setValue(group, "slip_enabled", 0);
+            if (engine.getValue(group, "slip_enabled")) {
+                engine.setValue(group, "slip_enabled", false);
+                engine.beginTimer(250, function() {
+                    engine.setValue(group, "slip_enabled", true);
+                }, true);
+            }
         }
     }
 };
@@ -845,6 +855,9 @@ MC7000.censor = function(channel, control, value, status, group) {
         } else {
             engine.setValue(group, "reverseroll", 0);
         }
+        engine.beginTimer(250, function() {
+            engine.setValue(group, "slip_enabled", true);
+        }, true);
     } else {
         // reverse play while button pressed
         if (value > 0) {
