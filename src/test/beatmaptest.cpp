@@ -96,12 +96,27 @@ TEST_F(BeatMapTest, TestNthBeat) {
     // Check edge cases
     const mixxx::audio::FramePos firstBeat = startOffsetFrames + beatLengthFrames * 0;
     const mixxx::audio::FramePos lastBeat = startOffsetFrames + beatLengthFrames * (numBeats - 1);
+    EXPECT_EQ(lastBeat, pMap->findNthBeat(lastBeat, -1));
+    EXPECT_EQ(lastBeat, pMap->findNthBeat(lastBeat + beatLengthFrames, -1));
+    EXPECT_EQ(lastBeat - beatLengthFrames, pMap->findNthBeat(lastBeat, -2));
+    EXPECT_EQ(lastBeat - beatLengthFrames, pMap->findNthBeat(lastBeat + beatLengthFrames, -2));
+    EXPECT_EQ(lastBeat - 2 * beatLengthFrames, pMap->findNthBeat(lastBeat, -3));
+    EXPECT_EQ(lastBeat, pMap->findPrevBeat(lastBeat));
     EXPECT_EQ(lastBeat, pMap->findNthBeat(lastBeat, 1));
     EXPECT_EQ(lastBeat, pMap->findNextBeat(lastBeat));
     EXPECT_FALSE(pMap->findNthBeat(lastBeat, 2).isValid());
+    EXPECT_FALSE(pMap->findNthBeat(lastBeat + beatLengthFrames, 2).isValid());
+
+    EXPECT_EQ(firstBeat, pMap->findNthBeat(firstBeat, 1));
+    EXPECT_EQ(firstBeat, pMap->findNthBeat(firstBeat - beatLengthFrames, 1));
+    EXPECT_EQ(firstBeat + beatLengthFrames, pMap->findNthBeat(firstBeat, 2));
+    EXPECT_EQ(firstBeat + beatLengthFrames, pMap->findNthBeat(firstBeat - beatLengthFrames, 2));
+    EXPECT_EQ(firstBeat + 2 * beatLengthFrames, pMap->findNthBeat(firstBeat, 3));
+    EXPECT_EQ(firstBeat, pMap->findNextBeat(firstBeat));
     EXPECT_EQ(firstBeat, pMap->findNthBeat(firstBeat, -1));
     EXPECT_EQ(firstBeat, pMap->findPrevBeat(firstBeat));
     EXPECT_FALSE(pMap->findNthBeat(firstBeat, -2).isValid());
+    EXPECT_FALSE(pMap->findNthBeat(firstBeat - beatLengthFrames, -1).isValid());
 
     mixxx::audio::FramePos prevBeat, nextBeat;
     pMap->findPrevNextBeats(lastBeat, &prevBeat, &nextBeat, true);
