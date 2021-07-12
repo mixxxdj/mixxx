@@ -1,34 +1,35 @@
-#ifndef DIRECTORYDAO_H
-#define DIRECTORYDAO_H
+#pragma once
 
-#include <QSqlDatabase>
-#include "library/dao/trackdao.h"
+#include <QList>
 
-const QString DIRECTORYDAO_DIR = "directory";
-const QString DIRECTORYDAO_TABLE = "directories";
-
-enum ReturnCodes {
-    SQL_ERROR,
-    ALREADY_WATCHING,
-    ALL_FINE
-};
+#include "library/dao/dao.h"
+#include "library/relocatedtrack.h"
+#include "util/fileinfo.h"
 
 class DirectoryDAO : public DAO {
   public:
-    void initialize(const QSqlDatabase& database) override {
-        m_database = database;
-    }
+    ~DirectoryDAO() override = default;
 
-    int addDirectory(const QString& dir);
-    int removeDirectory(const QString& dir);
+    QList<mixxx::FileInfo> loadAllDirectories(
+            bool skipInvalidOrMissing = false) const;
+
+    enum class AddResult {
+        Ok,
+        AlreadyWatching,
+        InvalidOrMissingDirectory,
+        SqlError,
+    };
+    AddResult addDirectory(const mixxx::FileInfo& newDir) const;
+
+    enum class RemoveResult {
+        Ok,
+        NotFound,
+        SqlError,
+    };
+    RemoveResult removeDirectory(const mixxx::FileInfo& oldDir) const;
+
+    // TODO: Move this function out of the DAO
     QList<RelocatedTrack> relocateDirectory(
             const QString& oldFolder,
-            const QString& newFolder);
-    QStringList getDirs();
-
-  private:
-    bool isChildDir(QString testDir, QString dirStr);
-    QSqlDatabase m_database;
+            const QString& newFolder) const;
 };
-
-#endif //DIRECTORYDAO_H

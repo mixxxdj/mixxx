@@ -19,7 +19,7 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
         return pluginInfo();
     }
 
-    bool initialize(int samplerate) override;
+    bool initialize(mixxx::audio::SampleRate sampleRate) override;
     bool processSamples(const CSAMPLE* pIn, const int iLen) override;
     bool finalize() override;
 
@@ -33,7 +33,6 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
     KeyFinder::AudioData m_audioData;
 
     SINT m_currentFrame;
-    mixxx::track::io::key::ChromaticKey m_previousKey;
     KeyChangeList m_resultKeys;
 };
 

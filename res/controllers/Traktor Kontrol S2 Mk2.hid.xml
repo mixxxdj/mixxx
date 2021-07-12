@@ -4,7 +4,7 @@
         <name>Native Instruments Traktor Kontrol S2 MK2</name>
         <author>Be</author>
         <description>Native Instruments Traktor Kontrol S2 MK2</description>
-        <wiki>https://github.com/mixxxdj/mixxx/wiki/Native-Instruments-Traktor-Kontrol-S2-Mk2</wiki>
+        <manual>native_instruments_traktor_kontrol_s2_mk2</manual>
         <devices>
             <product protocol="hid" vendor_id="0x17cc" product_id="0x1320"
                      usage_page="0x0" usage="0x0" interface_number="0x3" />

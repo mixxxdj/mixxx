@@ -11,10 +11,12 @@
 // construct the default QPixmap in CoverArtCache
 class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
   protected:
-    void loadCoverFromMetadata(QString trackLocation) {
-        const QImage img = SoundSourceProxy::importTemporaryCoverImage(
-                trackLocation,
-                Sandbox::openSecurityToken(QDir(trackLocation), true));
+    void loadCoverFromMetadata(const QString& trackLocation) {
+        QImage img;
+        SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
+                mixxx::FileAccess(mixxx::FileInfo(trackLocation)),
+                nullptr,
+                &img);
         ASSERT_FALSE(img.isNull());
 
         CoverInfo info;
@@ -31,7 +33,9 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         EXPECT_TRUE(res.coverArt.coverLocation.isNull());
     }
 
-    void loadCoverFromFile(QString trackLocation, QString coverLocation, QString absoluteCoverLocation) {
+    void loadCoverFromFile(const QString& trackLocation,
+            const QString& coverLocation,
+            const QString& absoluteCoverLocation) {
         const QImage img = QImage(absoluteCoverLocation);
         ASSERT_FALSE(img.isNull());
 
@@ -71,8 +75,14 @@ const QString kTrackLocationTest(QDir::currentPath() %
 // - empty trackLocation
 // - absolute coverLocation
 
-TEST_F(CoverArtCacheTest, loadCover) {
+TEST_F(CoverArtCacheTest, loadCoverFromMetadata) {
     loadCoverFromMetadata(kTrackLocationTest);
-    loadCoverFromFile(kTrackLocationTest, kCoverFileTest, kCoverLocationTest); //relative
-    loadCoverFromFile(QString(), kCoverLocationTest, kCoverLocationTest); //absolute
+}
+
+TEST_F(CoverArtCacheTest, loadCoverFromFileRelative) {
+    loadCoverFromFile(kTrackLocationTest, kCoverFileTest, kCoverLocationTest);
+}
+
+TEST_F(CoverArtCacheTest, loadCoverFromFileAbsolute) {
+    loadCoverFromFile(QString(), kCoverLocationTest, kCoverLocationTest);
 }

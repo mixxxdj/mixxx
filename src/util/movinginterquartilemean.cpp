@@ -50,14 +50,15 @@ double MovingInterquartileMean::mean() {
     }
 
     m_bChanged = false;
-    if (m_list.size() <= 4) {
+    const int listSize = size();
+    if (listSize <= 4) {
         double d_sum = 0;
         foreach (double d, m_list) {
             d_sum += d;
         }
-        m_dMean = d_sum / m_list.size();
-    } else if (m_list.size() % 4 == 0) {
-        int quartileSize = m_list.size() / 4;
+        m_dMean = d_sum / listSize;
+    } else if (listSize % 4 == 0) {
+        int quartileSize = listSize / 4;
         double interQuartileRange = 2 * quartileSize;
         double d_sum = 0;
         std::list<double>::iterator it = m_list.begin();
@@ -68,9 +69,9 @@ double MovingInterquartileMean::mean() {
         m_dMean = d_sum / interQuartileRange;
     } else {
         // http://en.wikipedia.org/wiki/Interquartile_mean#Dataset_not_divisible_by_four
-        double quartileSize = m_list.size() / 4.0;
+        double quartileSize = listSize / 4.0;
         double interQuartileRange = 2 * quartileSize;
-        int nFullValues = m_list.size() - 2*static_cast<int>(quartileSize) - 2;
+        int nFullValues = listSize - 2 * static_cast<int>(quartileSize) - 2;
         double quartileWeight = (interQuartileRange - nFullValues) / 2;
         std::list<double>::iterator it = m_list.begin();
         std::advance(it, static_cast<int>(quartileSize));
@@ -86,7 +87,7 @@ double MovingInterquartileMean::mean() {
 }
 
 int MovingInterquartileMean::size() const {
-    return m_list.size();
+    return static_cast<int>(m_list.size());
 }
 
 int MovingInterquartileMean::listMaxSize() const {

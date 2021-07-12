@@ -1,13 +1,12 @@
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <QDebug>
 
-#include "track/keyutils.h"
 #include "proto/keys.pb.h"
+#include "track/keyutils.h"
 
-using ::testing::ElementsAre;
-
-namespace {
+using ::testing::UnorderedElementsAre;
 
 class KeyUtilsTest : public testing::Test {
 };
@@ -206,8 +205,9 @@ TEST_F(KeyUtilsTest, ShortestStepsToKey) {
 }
 
 TEST_F(KeyUtilsTest, GetCompatibleKeys) {
-    // The relative major, the perfect 4th and the perfect 5th are all
-    // compatible. This is easily checked with the Circle of Fifths.
+    // The relative major/minor, the perfect 4th major/minor and the
+    // perfect 5th major/minor are all compatible. This is easily
+    // checked with the Circle of Fifths.
 
     // Test keys on the boundary between 1 and 12 to check that wrap-around
     // works.
@@ -215,21 +215,21 @@ TEST_F(KeyUtilsTest, GetCompatibleKeys) {
             mixxx::track::io::key::A_MINOR;
     QList<mixxx::track::io::key::ChromaticKey> compatible =
             KeyUtils::getCompatibleKeys(key);
-    std::sort(compatible.begin(), compatible.end());
-    EXPECT_THAT(compatible, ElementsAre(
-        mixxx::track::io::key::C_MAJOR,
-        mixxx::track::io::key::D_MINOR,
-        mixxx::track::io::key::E_MINOR,
-        mixxx::track::io::key::A_MINOR));
+    EXPECT_THAT(compatible,
+            UnorderedElementsAre(mixxx::track::io::key::C_MAJOR,
+                    mixxx::track::io::key::F_MAJOR,
+                    mixxx::track::io::key::G_MAJOR,
+                    mixxx::track::io::key::D_MINOR,
+                    mixxx::track::io::key::E_MINOR,
+                    mixxx::track::io::key::A_MINOR));
 
     key = mixxx::track::io::key::F_MAJOR;
     compatible = KeyUtils::getCompatibleKeys(key);
-    std::sort(compatible.begin(), compatible.end());
-    EXPECT_THAT(compatible, ElementsAre(
-        mixxx::track::io::key::C_MAJOR,
-        mixxx::track::io::key::F_MAJOR,
-        mixxx::track::io::key::B_FLAT_MAJOR,
-        mixxx::track::io::key::D_MINOR));
+    EXPECT_THAT(compatible,
+            UnorderedElementsAre(mixxx::track::io::key::C_MAJOR,
+                    mixxx::track::io::key::F_MAJOR,
+                    mixxx::track::io::key::B_FLAT_MAJOR,
+                    mixxx::track::io::key::D_MINOR,
+                    mixxx::track::io::key::A_MINOR,
+                    mixxx::track::io::key::G_MINOR));
 }
-
-}  // namespace

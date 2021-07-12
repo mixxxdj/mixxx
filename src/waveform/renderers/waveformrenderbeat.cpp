@@ -5,7 +5,6 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 #include "control/controlobject.h"
-#include "track/beats.h"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
@@ -28,16 +27,19 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
-    if (!trackInfo)
+    if (!trackInfo) {
         return;
+    }
 
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
-    if (!trackBeats)
+    if (!trackBeats) {
         return;
+    }
 
-    int alpha = m_waveformRenderer->beatGridAlpha();
-    if (alpha == 0)
+    int alpha = m_waveformRenderer->getBeatGridAlpha();
+    if (alpha == 0) {
         return;
+    }
     m_beatColor.setAlphaF(alpha/100.0);
 
     const int trackSamples = m_waveformRenderer->getTrackSamples();
@@ -55,8 +57,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     //          << "lastDisplayedPosition" << lastDisplayedPosition;
 
     std::unique_ptr<mixxx::BeatIterator> it(trackBeats->findBeats(
-            firstDisplayedPosition * trackSamples,
-            lastDisplayedPosition * trackSamples));
+            mixxx::audio::FramePos::fromEngineSamplePos(firstDisplayedPosition * trackSamples),
+            mixxx::audio::FramePos::fromEngineSamplePos(lastDisplayedPosition * trackSamples)));
 
     // if no beat do not waste time saving/restoring painter
     if (!it || !it->hasNext()) {
@@ -78,7 +80,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     int beatCount = 0;
 
     while (it->hasNext()) {
-        double beatPosition = it->next();
+        double beatPosition = it->next().toEngineSamplePos();
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 

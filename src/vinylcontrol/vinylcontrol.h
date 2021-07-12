@@ -1,5 +1,4 @@
-#ifndef VINYLCONTROL_H
-#define VINYLCONTROL_H
+#pragma once
 
 #include <QString>
 
@@ -11,7 +10,7 @@ class ControlProxy;
 
 class VinylControl : public QObject {
   public:
-    VinylControl(UserSettingsPointer pConfig, QString group);
+    VinylControl(UserSettingsPointer pConfig, const QString& group);
     virtual ~VinylControl();
 
     virtual void toggleVinylControl(bool enable);
@@ -79,5 +78,3 @@ class VinylControl : public QObject {
     // Whether this VinylControl instance is enabled.
     bool m_bIsEnabled;
 };
-
-#endif

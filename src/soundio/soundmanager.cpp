@@ -1,26 +1,10 @@
-/**
- * @file soundmanager.cpp
- * @author Albert Santoni <gamegod at users dot sf dot net>
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20070815
- */
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "soundio/soundmanager.h"
 
-#include <QtDebug>
-#include <cstring> // for memcpy and strcmp
+#include <portaudio.h>
 
 #include <QLibrary>
-#include <portaudio.h>
+#include <QtDebug>
+#include <cstring> // for memcpy and strcmp
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -28,17 +12,18 @@
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
+#include "moc_soundmanager.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
-#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
+#include "util/compatibility.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/sleep.h"
-#include "util/version.h"
+#include "util/versionstore.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 typedef PaError (*SetJackClientName)(const char *name);
@@ -59,13 +44,12 @@ const unsigned int kSleepSecondsAfterClosingDevice = 5;
 } // anonymous namespace
 
 SoundManager::SoundManager(UserSettingsPointer pConfig,
-                           EngineMaster *pMaster)
+        EngineMaster* pMaster)
         : m_pMaster(pMaster),
           m_pConfig(pConfig),
           m_paInitialized(false),
-          m_jackSampleRate(-1),
           m_config(this),
-          m_pErrorDevice(NULL),
+          m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
@@ -119,10 +103,10 @@ SoundManager::~SoundManager() {
 }
 
 QList<SoundDevicePointer> SoundManager::getDeviceList(
-    QString filterAPI, bool bOutputDevices, bool bInputDevices) const {
+        const QString& filterAPI, bool bOutputDevices, bool bInputDevices) const {
     //qDebug() << "SoundManager::getDeviceList";
 
-    if (filterAPI == "None") {
+    if (filterAPI == SoundManagerConfig::kDefaultAPI) {
         return QList<SoundDevicePointer>();
     }
 
@@ -207,7 +191,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 
     while (!m_inputBuffers.isEmpty()) {
         CSAMPLE* pBuffer = m_inputBuffers.takeLast();
-        if (pBuffer != NULL) {
+        if (pBuffer != nullptr) {
             SampleUtil::free(pBuffer);
         }
     }
@@ -233,12 +217,14 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     }
 }
 
-QList<unsigned int> SoundManager::getSampleRates(QString api) const {
+QList<unsigned int> SoundManager::getSampleRates(const QString& api) const {
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
         QList<unsigned int> samplerates;
-        samplerates.append(m_jackSampleRate);
+        if (m_jackSampleRate.isValid()) {
+            samplerates.append(m_jackSampleRate);
+        }
         return samplerates;
     }
     return m_samplerates;
@@ -314,12 +300,14 @@ void SoundManager::queryDevicesPortaudio() {
             PaTime  defaultHighOutputLatency
             double  defaultSampleRate
          */
+        const auto deviceTypeId = paApiIndexToTypeId.value(deviceInfo->hostApi);
         auto currentDevice = SoundDevicePointer(new SoundDevicePortAudio(
-                m_pConfig, this, deviceInfo, i, paApiIndexToTypeId));
+                m_pConfig, this, deviceInfo, deviceTypeId, i));
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {
-            m_jackSampleRate = deviceInfo->defaultSampleRate;
+            m_jackSampleRate = static_cast<mixxx::audio::SampleRate::value_t>(
+                    deviceInfo->defaultSampleRate);
         }
     }
 }
@@ -379,8 +367,8 @@ SoundDeviceError SoundManager::setupDevices() {
         pDevice->clearInputs();
         pDevice->clearOutputs();
         m_pErrorDevice = pDevice;
-        for (const auto& in:
-                 m_config.getInputs().values(pDevice->getDeviceId())) {
+        const auto inputs = m_config.getInputs().values(pDevice->getDeviceId());
+        for (const auto& in : inputs) {
             mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
@@ -422,14 +410,16 @@ SoundDeviceError SoundManager::setupDevices() {
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
             const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
-            if (pBuffer == NULL) {
+            if (pBuffer == nullptr) {
                 qDebug() << "AudioSource returned null for" << out.getString();
                 continue;
             }
 
             AudioOutputBuffer aob(out, pBuffer);
             err = pDevice->addOutput(aob);
-            if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
+            if (err != SOUNDDEVICE_ERROR_OK) {
+                goto closeAndError;
+            }
 
             if (!m_config.getForceNetworkClock()) {
                 if (out.getType() == AudioOutput::MASTER) {
@@ -477,7 +467,9 @@ SoundDeviceError SoundManager::setupDevices() {
             syncBuffers = 2;
         }
         err = pDevice->open(pNewMasterClockRef == pDevice, syncBuffers);
-        if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
+        if (err != SOUNDDEVICE_ERROR_OK) {
+            goto closeAndError;
+        }
         devicesNotFound.remove(pDevice->getDeviceId());
         if (mode.isOutput) {
             ++outputDevicesOpened;
@@ -555,7 +547,7 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-SoundDeviceError SoundManager::setConfig(SoundManagerConfig config) {
+SoundDeviceError SoundManager::setConfig(const SoundManagerConfig& config) {
     SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     m_config = config;
     checkConfig();
@@ -630,21 +622,18 @@ void SoundManager::readProcess() const {
     }
 }
 
-void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
-    if (m_registeredSources.contains(output)) {
-        qDebug() << "WARNING: AudioOutput already registered!";
+void SoundManager::registerOutput(const AudioOutput& output, AudioSource* src) {
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredSources.contains(output)) {
+        return;
     }
     m_registeredSources.insert(output, src);
     emit outputRegistered(output, src);
 }
 
-void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
-    if (m_registeredDestinations.contains(input)) {
-        // note that this can be totally ok if we just want a certain
-        // AudioInput to be going to a different AudioDest -bkgood
-        qDebug() << "WARNING: AudioInput already registered!";
-    }
-
+void SoundManager::registerInput(const AudioInput& input, AudioDestination* dest) {
+    // Vinyl control inputs are registered twice, once for timecode and once for
+    // passthrough, each with different outputs. So unlike outputs, do not assert
+    // that the input has not been registered yet.
     m_registeredDestinations.insert(input, dest);
 
     emit inputRegistered(input, dest);
@@ -670,8 +659,10 @@ void SoundManager::setJACKName() const {
             // PortAudio does not make a copy of the string we provide it so we
             // need to make sure it will last forever so we intentionally leak
             // this string.
-            char* jackNameCopy = strdup(Version::applicationName().toLocal8Bit().constData());
-            if (!func(jackNameCopy)) qDebug() << "JACK client name set";
+            char* jackNameCopy = strdup(VersionStore::applicationName().toLocal8Bit().constData());
+            if (!func(jackNameCopy)) {
+                qDebug() << "JACK client name set";
+            }
         } else {
             qWarning() << "failed to resolve JACK name method";
         }

@@ -4,6 +4,7 @@
     <name>Vestax VCI-100</name>
     <author>Anders Gunnarsson</author>
     <description>Preliminary controller mapping for Vestax VCI-100 with scripts</description>
+    <manual>vestax_vci_100mki</manual>
   </info>
   <controller id="Vestax VCI-100">
     <scriptfiles>

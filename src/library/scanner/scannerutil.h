@@ -1,5 +1,4 @@
-#ifndef SCANNERUTIL_H
-#define SCANNERUTIL_H
+#pragma once
 
 #include <QDir>
 #include <QStandardPaths>
@@ -31,5 +30,3 @@ class ScannerUtil {
   private:
     ScannerUtil() {}
 };
-
-#endif /* SCANNERUTIL_H */

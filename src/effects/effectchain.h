@@ -1,5 +1,4 @@
-#ifndef EFFECTCHAIN_H
-#define EFFECTCHAIN_H
+#pragma once
 
 #include <QObject>
 #include <QMap>
@@ -128,5 +127,3 @@ class EffectChain : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectChain);
 };
-
-#endif /* EFFECTCHAIN_H */

@@ -5,7 +5,7 @@
         <author>Matthew Nicholson</author>
         <description>Numark Mixtrack Platinum mapping with support for LCD screens and 4 deck playback.</description>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=8863</forums>
-        <wiki>https://www.mixxx.org/wiki/doku.php/numark_mixtrack_platinum</wiki>
+        <manual>numark_mixtrack_platinum</manual>
     </info>
     <controller id="MixTrack">
         <scriptfiles>

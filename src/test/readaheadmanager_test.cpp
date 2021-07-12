@@ -14,7 +14,7 @@
 
 namespace {
 const QString kGroup = "[test]";
-}
+} // namespace
 
 class StubReader : public CachingReader {
   public:

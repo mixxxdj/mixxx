@@ -1,10 +1,12 @@
+#include "effects/effectbuttonparameterslot.h"
+
 #include <QtDebug>
 
 #include "control/controleffectknob.h"
-#include "effects/effectbuttonparameterslot.h"
-#include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "effects/effectxmlelements.h"
+#include "moc_effectbuttonparameterslot.cpp"
 #include "util/math.h"
 #include "util/xml.h"
 
@@ -21,8 +23,10 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
     m_pControlType = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_type")));
 
-    connect(m_pControlValue, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueChanged(double)));
+    connect(m_pControlValue,
+            &ControlObject::valueChanged,
+            this,
+            &EffectButtonParameterSlot::slotValueChanged);
 
     // Read-only controls.
     m_pControlType->setReadOnly();
@@ -78,8 +82,10 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->forceSet(1.0);
 
-            connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
-                    this, SLOT(slotParameterValueChanged(double)));
+            connect(m_pEffectParameter,
+                    &EffectParameter::valueChanged,
+                    this,
+                    &EffectButtonParameterSlot::slotParameterValueChanged);
         }
     }
     emit updated();
@@ -89,7 +95,7 @@ void EffectButtonParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
-        m_pEffectParameter = NULL;
+        m_pEffectParameter = nullptr;
     }
 
     m_pEffect.clear();

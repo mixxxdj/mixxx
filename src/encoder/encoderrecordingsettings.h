@@ -28,7 +28,7 @@ class EncoderRecordingSettings : public EncoderSettings {
 
     // Selects the option by its index. If it is a single-element option,
     // index 0 means disabled and 1 enabled.
-    virtual void setGroupOption(QString groupCode, int optionIndex) {
+    virtual void setGroupOption(const QString& groupCode, int optionIndex) {
         Q_UNUSED(groupCode);
         Q_UNUSED(optionIndex);
         DEBUG_ASSERT(!"unimplemented");

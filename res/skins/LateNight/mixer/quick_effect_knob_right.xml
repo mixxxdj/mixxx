@@ -30,7 +30,7 @@
                 <ArcColor><Variable name="ArcColorFx12Quick"/></ArcColor>
                 <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
                 <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
-                <KnobCenterYOffset>1.598</KnobCenterYOffset>
+                <KnobCenterYOffset>1.998</KnobCenterYOffset>
                 <Connection>
                   <ConfigKey><Variable name="QuickEffectGroup"/>,super1</ConfigKey>
                 </Connection>
@@ -39,7 +39,7 @@
               <PushButton>
                 <TooltipId>QuickEffectRack_enabled</TooltipId>
                 <ObjectName>QuickEffectDot</ObjectName>
-                <Pos>34,28</Pos>
+                <Pos>32,27</Pos>
                 <Size><Variable name="EqKillDotSize"/></Size>
                 <NumberStates>2</NumberStates>
                 <RightClickIsPushButton>false</RightClickIsPushButton>

@@ -1,5 +1,4 @@
-#ifndef WWIDGETSTACK_H
-#define WWIDGETSTACK_H
+#pragma once
 
 #include <QWidget>
 #include <QObject>
@@ -86,5 +85,3 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     // A map of the individual page triggers so we can rectify state if needed.
     QMap<int, WidgetStackControlListener*> m_listeners;
 };
-
-#endif /* WWIDGETSTACK_H */

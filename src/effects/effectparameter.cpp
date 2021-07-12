@@ -1,8 +1,10 @@
+#include "effects/effectparameter.h"
+
 #include <QtDebug>
 
-#include "effects/effectparameter.h"
-#include "effects/effectsmanager.h"
 #include "effects/effect.h"
+#include "effects/effectsmanager.h"
+#include "moc_effectparameter.cpp"
 #include "util/assert.h"
 
 EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,

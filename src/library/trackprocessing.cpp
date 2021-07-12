@@ -4,6 +4,7 @@
 
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_trackprocessing.cpp"
 #include "util/logger.h"
 
 namespace mixxx {

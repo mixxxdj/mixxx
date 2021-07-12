@@ -1,23 +1,24 @@
+#include "waveform/renderers/waveformrendermark.h"
+
 #include <QDomNode>
 #include <QPainter>
 #include <QPainterPath>
 
-#include "waveform/renderers/waveformrendermark.h"
-
 #include "control/controlproxy.h"
 #include "engine/controls/cuecontrol.h"
+#include "moc_waveformrendermark.cpp"
 #include "track/track.h"
 #include "util/color/color.h"
+#include "util/painterscope.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
+#include "widget/wimagestore.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-#include "widget/wimagestore.h"
-#include "util/painterscope.h"
 
 namespace {
     const int kMaxCueLabelLength = 23;
-}
+    } // namespace
 
 WaveformRenderMark::WaveformRenderMark(
         WaveformWidgetRenderer* waveformWidgetRenderer) :
@@ -43,43 +44,111 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     painter->setWorldMatrixEnabled(false);
 
-    for (auto& pMark: m_marks) {
-        if (!pMark->isValid())
+    for (const auto& pMark : m_marks) {
+        if (!pMark->isValid()) {
             continue;
+        }
 
         if (pMark->hasVisible() && !pMark->isVisible()) {
             continue;
         }
 
-        // Generate image on first paint can't be done in setup since we need
-        // render widget to be resized yet ...
+        // Generate image on first paint can't be done in setup since we need to
+        // wait for the render widget to be resized yet.
         if (pMark->m_image.isNull()) {
             generateMarkImage(pMark);
         }
 
-        double samplePosition = pMark->getSamplePosition();
-        if (samplePosition != -1.0) {
-            double currentMarkPoint =
+        const double samplePosition = pMark->getSamplePosition();
+        if (samplePosition != Cue::kNoPosition) {
+            const double currentMarkPoint =
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
+            const double sampleEndPosition = pMark->getSampleEndPosition();
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-                // NOTE: vRince I guess image width is odd to display the center on the exact line !
-                // external image should respect that ...
-                const int markHalfWidth = pMark->m_image.width() / 2.0
-                        / m_waveformRenderer->getDevicePixelRatio();
+                // Pixmaps are expected to have the mark stroke at the center,
+                // and preferably have an odd width in order to have the stroke
+                // exactly at the sample position.
+                const int markHalfWidth =
+                        static_cast<int>(pMark->m_image.width() / 2.0 /
+                                m_waveformRenderer->getDevicePixelRatio());
+                const int drawOffset = static_cast<int>(currentMarkPoint) - markHalfWidth;
 
+                bool visible = false;
                 // Check if the current point needs to be displayed.
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
-                    int drawOffset = currentMarkPoint - markHalfWidth;
-                    painter->drawImage(QPoint(drawOffset, 0), pMark->m_image);
+                    painter->drawImage(drawOffset, 0, pMark->m_image);
+                    visible = true;
+                }
+
+                // Check if the range needs to be displayed.
+                if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
+                    DEBUG_ASSERT(samplePosition < sampleEndPosition);
+                    const double currentMarkEndPoint =
+                            m_waveformRenderer->transformSamplePositionInRendererWorld(
+                                    sampleEndPosition);
+                    if (visible || currentMarkEndPoint > 0) {
+                        QColor color = pMark->fillColor();
+                        color.setAlphaF(0.4);
+
+                        QLinearGradient gradient(QPointF(0, 0),
+                                QPointF(0, m_waveformRenderer->getHeight()));
+                        gradient.setColorAt(0, color);
+                        gradient.setColorAt(0.25, QColor(Qt::transparent));
+                        gradient.setColorAt(0.75, QColor(Qt::transparent));
+                        gradient.setColorAt(1, color);
+                        painter->fillRect(
+                                QRectF(QPointF(currentMarkPoint, 0),
+                                        QPointF(currentMarkEndPoint,
+                                                m_waveformRenderer
+                                                        ->getHeight())),
+                                QBrush(gradient));
+                        visible = true;
+                    }
+                }
+
+                if (visible) {
                     marksOnScreen[pMark] = drawOffset;
                 }
             } else {
-                const int markHalfHeight = pMark->m_image.height() / 2.0;
+                const int markHalfHeight = static_cast<int>(pMark->m_image.height() / 2.0);
+                const int drawOffset = static_cast<int>(currentMarkPoint) - markHalfHeight;
+
+                bool visible = false;
+                // Check if the current point needs to be displayed.
                 if (currentMarkPoint > -markHalfHeight &&
                         currentMarkPoint < m_waveformRenderer->getHeight() +
                                         markHalfHeight) {
-                    int drawOffset = currentMarkPoint - markHalfHeight;
-                    painter->drawImage(QPoint(0, drawOffset), pMark->m_image);
+                    painter->drawImage(drawOffset, 0, pMark->m_image);
+                    visible = true;
+                }
+
+                // Check if the range needs to be displayed.
+                if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
+                    DEBUG_ASSERT(samplePosition < sampleEndPosition);
+                    double currentMarkEndPoint =
+                            m_waveformRenderer
+                                    ->transformSamplePositionInRendererWorld(
+                                            sampleEndPosition);
+                    if (currentMarkEndPoint < m_waveformRenderer->getHeight()) {
+                        QColor color = pMark->fillColor();
+                        color.setAlphaF(0.4);
+
+                        QLinearGradient gradient(QPointF(0, 0),
+                                QPointF(m_waveformRenderer->getWidth(), 0));
+                        gradient.setColorAt(0, color);
+                        gradient.setColorAt(0.25, QColor(Qt::transparent));
+                        gradient.setColorAt(0.75, QColor(Qt::transparent));
+                        gradient.setColorAt(1, color);
+                        painter->fillRect(
+                                QRectF(QPointF(0, currentMarkPoint),
+                                        QPointF(m_waveformRenderer->getWidth(),
+                                                currentMarkEndPoint)),
+                                QBrush(gradient));
+                        visible = true;
+                    }
+                }
+
+                if (visible) {
                     marksOnScreen[pMark] = drawOffset;
                 }
             }
@@ -134,17 +203,21 @@ void WaveformRenderMark::slotCuesUpdated() {
                 !pMark->fillColor().isValid() ||
                 newColor != pMark->fillColor()) {
             pMark->m_text = newLabel;
-            pMark->setBaseColor(newColor);
+            int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
+            pMark->setBaseColor(newColor, dimBrightThreshold);
             generateMarkImage(pMark);
         }
     }
 }
 
 void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
-    // Load the pixmap from file -- takes precedence over text.
+    // Load the pixmap from file.
+    // If that succeeds loading the text and stroke is skipped.
+    float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     if (!pMark->m_pixmapPath.isEmpty()) {
         QString path = pMark->m_pixmapPath;
-        QImage image = *WImageStore::getImage(path, scaleFactor());
+        // Use devicePixelRatio to properly scale the image
+        QImage image = *WImageStore::getImage(path, devicePixelRatio);
         //QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
@@ -152,6 +225,12 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
             pMark->m_image =
                     image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
             //WImageStore::correctImageColors(&pMark->m_image);
+            // Set the pixel/device ratio AFTER loading the image in order to get
+            // a truly scaled source image.
+            // See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
+            // Also, without this some Qt-internal issue results in an offset
+            // image when calculating the center line of pixmaps in draw().
+            pMark->m_image.setDevicePixelRatio(devicePixelRatio);
             return;
         }
     }
@@ -170,12 +249,22 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         }
     }
 
-    //QFont font("Bitstream Vera Sans");
-    //QFont font("Helvetica");
-    QFont font; // Uses the application default
-    font.setPointSizeF(10 * scaleFactor());
-    font.setStretch(100);
-    font.setWeight(75);
+    // This alone would pick the OS default font, or that set by Qt5 Settings (qt5ct)
+    // respectively. This would mostly not be notable since contemporary OS and distros
+    // use a proven sans-serif anyway. Though, some user fonts may be lacking glyphs
+    // we use for the intro/outro markers for example.
+    QFont font;
+    // So, let's just use Open Sans which is used by all official skins to achieve
+    // a consistent skin design.
+    font.setFamily("Open Sans");
+    // Use a pixel size like everywhere else in Mixxx, which can be scaled well
+    // in general.
+    // Point sizes would work if only explicit Qt scaling QT_SCALE_FACTORS is used,
+    // though as soon as other OS-based font and app scaling mechanics join the
+    // party the resulting font size is hard to predict (affects all supported OS).
+    font.setPixelSize(13);
+    font.setWeight(75); // bold
+    font.setItalic(false);
 
     QFontMetrics metrics(font);
 
@@ -205,11 +294,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         height = 2 * labelRectHeight + 1;
     }
 
-    pMark->m_image = QImage(width * m_waveformRenderer->getDevicePixelRatio(),
-            height * m_waveformRenderer->getDevicePixelRatio(),
+    pMark->m_image = QImage(
+            static_cast<int>(width * devicePixelRatio),
+            static_cast<int>(height * devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied);
-    pMark->m_image.setDevicePixelRatio(
-            m_waveformRenderer->getDevicePixelRatio());
+    pMark->m_image.setDevicePixelRatio(devicePixelRatio);
 
     Qt::Alignment markAlignH = pMark->m_align & Qt::AlignHorizontal_Mask;
     Qt::Alignment markAlignV = pMark->m_align & Qt::AlignVertical_Mask;
@@ -243,20 +332,20 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         if (markAlignH == Qt::AlignHCenter) {
             if (labelRect.top() > 0) {
                 painter.setPen(pMark->fillColor());
-                painter.drawLine(middle, 0, middle, labelRect.top());
+                painter.drawLine(QLineF(middle, 0, middle, labelRect.top()));
 
                 painter.setPen(pMark->borderColor());
-                painter.drawLine(middle - 1, 0, middle - 1, labelRect.top());
-                painter.drawLine(middle + 1, 0, middle + 1, labelRect.top());
+                painter.drawLine(QLineF(middle - 1, 0, middle - 1, labelRect.top()));
+                painter.drawLine(QLineF(middle + 1, 0, middle + 1, labelRect.top()));
             }
 
             if (labelRect.bottom() < height) {
                 painter.setPen(pMark->fillColor());
-                painter.drawLine(middle, labelRect.bottom(), middle, height);
+                painter.drawLine(QLineF(middle, labelRect.bottom(), middle, height));
 
                 painter.setPen(pMark->borderColor());
-                painter.drawLine(middle - 1, labelRect.bottom(), middle - 1, height);
-                painter.drawLine(middle + 1, labelRect.bottom(), middle + 1, height);
+                painter.drawLine(QLineF(middle - 1, labelRect.bottom(), middle - 1, height));
+                painter.drawLine(QLineF(middle + 1, labelRect.bottom(), middle + 1, height));
             }
         } else { // AlignLeft || AlignRight
             painter.setPen(pMark->fillColor());
@@ -272,20 +361,20 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         if (markAlignV == Qt::AlignVCenter) {
             if (labelRect.left() > 0) {
                 painter.setPen(pMark->fillColor());
-                painter.drawLine(0, middle, labelRect.left(), middle);
+                painter.drawLine(QLineF(0, middle, labelRect.left(), middle));
 
                 painter.setPen(pMark->borderColor());
-                painter.drawLine(0, middle - 1, labelRect.left(), middle - 1);
-                painter.drawLine(0, middle + 1, labelRect.left(), middle + 1);
+                painter.drawLine(QLineF(0, middle - 1, labelRect.left(), middle - 1));
+                painter.drawLine(QLineF(0, middle + 1, labelRect.left(), middle + 1));
             }
 
             if (labelRect.right() < width) {
                 painter.setPen(pMark->fillColor());
-                painter.drawLine(labelRect.right(), middle, width, middle);
+                painter.drawLine(QLineF(labelRect.right(), middle, width, middle));
 
                 painter.setPen(pMark->borderColor());
-                painter.drawLine(labelRect.right(), middle - 1, width, middle - 1);
-                painter.drawLine(labelRect.right(), middle + 1, width, middle + 1);
+                painter.drawLine(QLineF(labelRect.right(), middle - 1, width, middle - 1));
+                painter.drawLine(QLineF(labelRect.right(), middle + 1, width, middle + 1));
             }
         } else { // AlignTop || AlignBottom
             painter.setPen(pMark->fillColor());

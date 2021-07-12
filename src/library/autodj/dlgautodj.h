@@ -1,17 +1,17 @@
-#ifndef DLGAUTODJ_H
-#define DLGAUTODJ_H
+#pragma once
 
-#include <QWidget>
+#include <QLineEdit>
 #include <QString>
+#include <QWidget>
 
-#include "library/autodj/ui_dlgautodj.h"
-#include "preferences/usersettings.h"
-#include "track/track.h"
-#include "library/libraryview.h"
-#include "library/library.h"
-#include "library/trackcollection.h"
-#include "library/autodj/autodjprocessor.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/autodj/autodjprocessor.h"
+#include "library/autodj/ui_dlgautodj.h"
+#include "library/library.h"
+#include "library/libraryview.h"
+#include "library/trackcollection.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class PlaylistTableModel;
 class WLibrary;
@@ -31,7 +31,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     bool hasFocus() const override;
     void onSearch(const QString& text) override;
     void loadSelectedTrack() override;
-    void loadSelectedTrackToGroup(QString group, bool play) override;
+    void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
 
   public slots:
@@ -47,15 +47,15 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void slotRepeatPlaylistChanged(int checkedState);
 
   signals:
-    void addRandomButton(bool buttonChecked);
+    void addRandomTrackButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group, bool);
+    void loadTrackToPlayer(TrackPointer tio, const QString& group, bool);
     void trackSelected(TrackPointer pTrack);
 
   private:
     void setupActionButton(QPushButton* pButton,
             void (DlgAutoDJ::*pSlot)(bool),
-            QString fallbackText);
+            const QString& fallbackText);
 
     const UserSettingsPointer m_pConfig;
 
@@ -68,5 +68,3 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     QString m_enableBtnTooltip;
     QString m_disableBtnTooltip;
 };
-
-#endif //DLGAUTODJ_H

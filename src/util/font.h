@@ -1,5 +1,4 @@
-#ifndef FONT_H
-#define FONT_H
+#pragma once
 
 #include <QFontDatabase>
 #include <QString>
@@ -13,7 +12,15 @@ class FontUtils {
     static void initializeFonts(const QString& resourcePath) {
         QDir fontsDir(resourcePath);
         if (!fontsDir.cd("fonts")) {
-            qWarning("FontUtils::initializeFonts: cd fonts failed");
+#ifdef __LINUX__
+            // If the fonts already have been installed via the package
+            // manager, this is okay. We currently have no way to verify that
+            // though.
+            qDebug()
+#else
+            qWarning()
+#endif
+                    << "No fonts directory found in" << resourcePath;
             return;
         }
 
@@ -65,5 +72,3 @@ class FontUtils {
   private:
     FontUtils() {}
 };
-
-#endif /* FONT_H */

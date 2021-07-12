@@ -1,5 +1,6 @@
 #include "track/trackref.h"
 
+#include <QDebugStateSaver>
 
 bool TrackRef::verifyConsistency() const {
     // Class invariant: The location can only be set together with
@@ -16,17 +17,25 @@ bool TrackRef::verifyConsistency() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const TrackRef& trackRef) {
-    return os << '[' << trackRef.getLocation().toStdString()
-            << " | " << trackRef.getCanonicalLocation().toStdString()
-            << " | " << trackRef.getId()
-            << ']';
-
+    return os
+            << "TrackRef{"
+            << trackRef.getLocation().toStdString()
+            << ','
+            << trackRef.getCanonicalLocation().toStdString()
+            << ','
+            << trackRef.getId()
+            << '}';
 }
 
-QDebug operator<<(QDebug debug, const TrackRef& trackRef) {
-    debug.nospace() << '[' << trackRef.getLocation()
-                    << " | " << trackRef.getCanonicalLocation()
-                    << " | " << trackRef.getId()
-                    << ']';
-    return debug.space();
+QDebug operator<<(QDebug dbg, const TrackRef& trackRef) {
+    const QDebugStateSaver saver(dbg);
+    dbg = dbg.maybeSpace() << "TrackRef";
+    return dbg.nospace()
+            << '{'
+            << trackRef.getLocation()
+            << ','
+            << trackRef.getCanonicalLocation()
+            << ','
+            << trackRef.getId()
+            << '}';
 }

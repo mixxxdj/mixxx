@@ -1,0 +1,14 @@
+<svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb">
+  <title>Mixxx 1.12+ iconset</title>
+  <g id="a" transform="translate(1)" fill="#fff">
+    <path d="m16.5 12h3c0.277 0 0.5 0.223 0.5 0.5v13c0 0.277-0.223 0.5-0.5 0.5h-3c-0.277 0-0.5-0.223-0.5-0.5v-13c0-0.277 0.223-0.5 0.5-0.5z"/>
+    <path d="m22.5 12h3c0.277 0 0.5 0.223 0.5 0.5v13c0 0.277-0.223 0.5-0.5 0.5h-3c-0.277 0-0.5-0.223-0.5-0.5v-13c0-0.277 0.223-0.5 0.5-0.5z"/>
+    <path d="m1.5 28h27c0.277 0 0.5 0.223 0.5 0.5v1c0 0.277-0.223 0.5-0.5 0.5h-27c-0.277 0-0.5-0.223-0.5-0.5v-1c0-0.277 0.223-0.5 0.5-0.5z"/>
+    <path d="m4.5 12h3c0.277 0 0.5 0.223 0.5 0.5v13c0 0.277-0.223 0.5-0.5 0.5h-3c-0.277 0-0.5-0.223-0.5-0.5v-13c0-0.277 0.223-0.5 0.5-0.5z"/>
+    <path d="m10.5 12h3c0.277 0 0.5 0.223 0.5 0.5v13c0 0.277-0.223 0.5-0.5 0.5h-3c-0.277 0-0.5-0.223-0.5-0.5v-13c0-0.277 0.223-0.5 0.5-0.5z"/>
+    <g shape-rendering="auto">
+      <path d="m15 2.4986-14.501 7.0028h29.003zm0 1.0004c1.3808 0 2.5002 1.1197 2.5002 2.501s-1.1194 2.501-2.5002 2.501-2.5002-1.1197-2.5002-2.501 1.1194-2.501 2.5002-2.501z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" solid-color="#000000" stop-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+      <path d="m14.986 2a0.49867 0.49867 0 0 0-0.20312 0.048828l-14.502 7.0039a0.49867 0.49867 0 0 0 0.2168 0.94727h29.004a0.49867 0.49867 0 0 0 0.2168-0.94727l-14.502-7.0039a0.49867 0.49867 0 0 0-0.23047-0.048828zm0.013672 1.998c1.1113 0 2.002 0.89009 2.002 2.002s-0.89066 2.002-2.002 2.002-2.002-0.89009-2.002-2.002 0.89066-2.002 2.002-2.002zm-2.2207 0.12695c-0.43717 0.52146-0.77734 1.1448-0.77734 1.875 0 1.6507 1.3476 3 2.998 3s2.998-1.3493 2.998-3c0-0.7302-0.34017-1.3535-0.77734-1.875l10.1 4.877h-24.641l10.1-4.877z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" solid-color="#000000" stop-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+    </g>
+  </g>
+</svg>

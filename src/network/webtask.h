@@ -1,203 +1,217 @@
 #pragma once
 
-#include <QMetaMethod>
+#include <QMimeType>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QPair>
 #include <QPointer>
 #include <QUrl>
 
 #include "network/httpstatuscode.h"
+#include "network/networktask.h"
+#include "util/optional.h"
+#include "util/performancetimer.h"
 
 namespace mixxx {
 
 namespace network {
 
-struct WebResponse {
+class WebResponse final {
   public:
     static void registerMetaType();
 
     WebResponse()
-            : statusCode(kHttpStatusCodeInvalid) {
+            : m_statusCode(kHttpStatusCodeInvalid) {
     }
     explicit WebResponse(
-            QUrl replyUrl,
+            QUrl requestUrl,
+            QUrl replyUrl = QUrl(),
             HttpStatusCode statusCode = kHttpStatusCodeInvalid)
-            : replyUrl(std::move(replyUrl)),
-              statusCode(statusCode) {
+            : m_requestUrl(std::move(requestUrl)),
+              m_replyUrl(std::move(replyUrl)),
+              m_statusCode(statusCode) {
     }
     WebResponse(const WebResponse&) = default;
     WebResponse(WebResponse&&) = default;
-    virtual ~WebResponse() = default;
 
     WebResponse& operator=(const WebResponse&) = default;
     WebResponse& operator=(WebResponse&&) = default;
 
-    bool isStatusCodeValid() const {
-        return HttpStatusCode_isValid(statusCode);
-    }
     bool isStatusCodeSuccess() const {
-        return HttpStatusCode_isSuccess(statusCode);
-    }
-    bool isStatusCodeRedirection() const {
-        return HttpStatusCode_isRedirection(statusCode);
-    }
-    bool isStatusCodeClientError() const {
-        return HttpStatusCode_isClientError(statusCode);
-    }
-    bool isStatusCodeServerError() const {
-        return HttpStatusCode_isServerError(statusCode);
-    }
-    bool isStatusCodeCustomError() const {
-        return HttpStatusCode_isCustomError(statusCode);
-    }
-    bool isStatusCodeError() const {
-        return HttpStatusCode_isError(statusCode);
+        return HttpStatusCode_isSuccess(m_statusCode);
     }
 
-    QUrl replyUrl;
-    HttpStatusCode statusCode;
+    const QUrl& requestUrl() const {
+        return m_requestUrl;
+    }
+
+    const QUrl& replyUrl() const {
+        return m_replyUrl;
+    }
+
+    HttpStatusCode statusCode() const {
+        return m_statusCode;
+    }
+
+    friend QDebug operator<<(QDebug dbg, const WebResponse& arg);
+
+  private:
+    QUrl m_requestUrl;
+    QUrl m_replyUrl;
+    HttpStatusCode m_statusCode;
 };
 
-QDebug operator<<(QDebug dbg, const WebResponse& arg);
-
-struct CustomWebResponse : public WebResponse {
+class WebResponseWithContent final {
   public:
     static void registerMetaType();
 
-    CustomWebResponse() = default;
-    CustomWebResponse(
-            WebResponse response,
-            QByteArray content)
-            : WebResponse(std::move(response)),
-              content(std::move(content)) {
+    WebResponseWithContent() = default;
+    WebResponseWithContent(
+            WebResponse&& response,
+            QMimeType&& contentType,
+            QByteArray&& contentData)
+            : m_response(response),
+              m_contentType(contentType),
+              m_contentData(contentData) {
     }
-    CustomWebResponse(const CustomWebResponse&) = default;
-    CustomWebResponse(CustomWebResponse&&) = default;
-    ~CustomWebResponse() override = default;
+    WebResponseWithContent(const WebResponseWithContent&) = default;
+    WebResponseWithContent(WebResponseWithContent&&) = default;
 
-    CustomWebResponse& operator=(const CustomWebResponse&) = default;
-    CustomWebResponse& operator=(CustomWebResponse&&) = default;
+    WebResponseWithContent& operator=(const WebResponseWithContent&) = default;
+    WebResponseWithContent& operator=(WebResponseWithContent&&) = default;
 
-    QByteArray content;
+    bool isStatusCodeSuccess() const {
+        return m_response.isStatusCodeSuccess();
+    }
+
+    HttpStatusCode statusCode() const {
+        return m_response.statusCode();
+    }
+
+    const QUrl& requestUrl() const {
+        return m_response.requestUrl();
+    }
+
+    const QUrl& replyUrl() const {
+        return m_response.replyUrl();
+    }
+
+    const QMimeType& contentType() const {
+        return m_contentType;
+    }
+
+    const QByteArray& contentData() const {
+        return m_contentData;
+    }
+
+    friend QDebug operator<<(QDebug dbg, const WebResponseWithContent& arg);
+
+  private:
+    WebResponse m_response;
+    QMimeType m_contentType;
+    QByteArray m_contentData;
 };
 
-QDebug operator<<(QDebug dbg, const CustomWebResponse& arg);
-
-// A transient task for performing a single HTTP network request
-// asynchronously.
-//
-// The results are transmitted by emitting signals. Only a single
-// receiver can be connected to each signal by using Qt::UniqueConnection.
-// The receiver of the signal is responsible for destroying the task
-// by invoking QObject::deleteLater(). If no receiver is connected to
-// a signal the task will destroy itself.
-//
-// Instances of this class must not be parented due to their built-in
-// self-destruction mechanism. All pointers to tasks should be wrapped
-// into QPointer. Otherwise plain pointers might become dangling!
-class WebTask : public QObject {
+/// A transient task for performing a single HTTP network request
+/// asynchronously.
+class WebTask : public NetworkTask {
     Q_OBJECT
 
   public:
+    static QMimeType readContentType(
+            const QNetworkReply& reply);
+    static std::optional<QByteArray> readContentData(
+            QNetworkReply* reply);
+
     explicit WebTask(
             QNetworkAccessManager* networkAccessManager,
             QObject* parent = nullptr);
-    ~WebTask() override;
+    ~WebTask() override = default;
 
-    // timeoutMillis <= 0: No timeout (unlimited)
-    // timeoutMillis > 0: Implicitly aborted after timeout expired
-    void invokeStart(
-            int timeoutMillis = 0);
-
-    // Cancel a pending request.
-    void invokeAbort();
-
-    // Cancel a pending request from the event loop thread.
-    QUrl abort();
+  signals:
+    /// Network or server-side abort/timeout/failure
+    void networkError(
+            QNetworkReply::NetworkError errorCode,
+            const QString& errorString,
+            const mixxx::network::WebResponseWithContent& responseWithContent);
 
   public slots:
     void slotStart(
-            int timeoutMillis);
-    void slotAbort();
+            int timeoutMillis) override;
+    void slotAbort() override;
 
-  signals:
-    // The receiver is responsible for deleting the task in the
-    // corresponding slot handler!! Otherwise the task will remain
-    // in memory as a dysfunctional zombie until its parent object
-    // is finally deleted. If no receiver is connected the task
-    // will be deleted implicitly.
-    void aborted(
-            QUrl requestUrl);
-    void networkError(
-            QUrl requestUrl,
-            QNetworkReply::NetworkError errorCode,
-            QString errorString,
-            QByteArray errorContent);
+  private slots:
+    void slotNetworkReplyFinished();
 
   protected:
-    template<typename S>
-    bool isSignalFuncConnected(
-            S signalFunc) {
-        const QMetaMethod signal = QMetaMethod::fromSignal(signalFunc);
-        return isSignalConnected(signal);
-    }
-
     void timerEvent(QTimerEvent* event) final;
 
-    enum class Status {
+    enum class State {
+        // Initial state
         Idle,
+        // Pending state
         Pending,
+        // Terminal states
         Aborted,
         TimedOut,
+        Failed,
         Finished,
     };
 
-    QUrl abortPendingNetworkReply(
-            QNetworkReply* pendingNetworkReply);
-    QUrl timeOutPendingNetworkReply(
-            QNetworkReply* pendingNetworkReply);
+    State state() const {
+        return m_state;
+    }
 
-    QPair<QNetworkReply*, HttpStatusCode> receiveNetworkReply();
+    bool hasTerminated() const {
+        return state() == State::Aborted ||
+                state() == State::TimedOut ||
+                state() == State::Failed ||
+                state() == State::Finished;
+    }
 
-    // Handle status changes and ensure that the task eventually
-    // gets deleted. The default implementations emit a signal
-    // if connected or otherwise implicitly delete the task.
-    virtual void onAborted(
-            QUrl&& requestUrl);
-    virtual void onTimedOut(
-            QUrl&& requestUrl);
-
-    // Handle the abort and ensure that the task eventually
-    // gets deleted. The default implementation logs a warning
-    // and deletes the task.
-    virtual void onNetworkError(
-            QUrl&& requestUrl,
+    /// Send a signal after a failed network response.
+    void emitNetworkError(
             QNetworkReply::NetworkError errorCode,
-            QString&& errorString,
-            QByteArray&& errorContent);
+            const QString& errorString,
+            const WebResponseWithContent& responseWithContent);
 
   private:
-    // Try to compose and send the actual network request. If
-    // true is returned than the network request is running
-    // and a reply is pending.
-    virtual bool doStart(
+    QUrl abortPendingNetworkReply();
+
+    /// Try to compose and send the actual network request.
+    /// Return nullptr on failure.
+    virtual QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) = 0;
 
-    // Handle status change requests by aborting a running request
-    // and return the request URL. If no request is running or if
-    // the request has already been finished the QUrl() must be
-    // returned.
-    virtual QUrl doAbort() = 0;
-    virtual QUrl doTimeOut() = 0;
+    /// Optional: Do something after aborted.
+    virtual void doNetworkReplyAborted(
+            QNetworkReply* abortedNetworkReply) {
+        Q_UNUSED(abortedNetworkReply);
+    }
 
-    // All member variables must only be accessed from
-    // the event loop thread!!
-    const QPointer<QNetworkAccessManager> m_networkAccessManager;
+    /// Handle network response.
+    virtual void doNetworkReplyFinished(
+            QNetworkReply* finishedNetworkReply,
+            HttpStatusCode statusCode) = 0;
+
+    /// Handle the abort and ensure that the task eventually
+    /// gets deleted. The default implementation logs a warning
+    /// and deletes the task.
+    void onNetworkError(
+            QNetworkReply::NetworkError errorCode,
+            const QString& errorString,
+            const WebResponseWithContent& responseWithContent);
+
+    /// All member variables must only be accessed from
+    /// the event loop thread!!
+
+    State m_state;
+
+    PerformanceTimer m_timer;
 
     int m_timeoutTimerId;
-    Status m_status;
+
+    SafeQPointer<QNetworkReply> m_pendingNetworkReplyWeakPtr;
 };
 
 } // namespace network
@@ -206,4 +220,4 @@ class WebTask : public QObject {
 
 Q_DECLARE_METATYPE(mixxx::network::WebResponse);
 
-Q_DECLARE_METATYPE(mixxx::network::CustomWebResponse);
+Q_DECLARE_METATYPE(mixxx::network::WebResponseWithContent);

@@ -1,30 +1,18 @@
-/***************************************************************************
-                          controlpotmeter.cpp  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include "control/controlpushbutton.h"
 #include "control/controlpotmeter.h"
-#include "control/controlproxy.h"
 
-ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
-                                 bool allowOutOfBounds,
-                                 bool bIgnoreNops,
-                                 bool bTrack,
-                                 bool bPersist,
-                                 double defaultValue)
+#include "control/control.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "moc_controlpotmeter.cpp"
+
+ControlPotmeter::ControlPotmeter(const ConfigKey& key,
+        double dMinValue,
+        double dMaxValue,
+        bool allowOutOfBounds,
+        bool bIgnoreNops,
+        bool bTrack,
+        bool bPersist,
+        double defaultValue)
         : ControlObject(key, bIgnoreNops, bTrack, bPersist, defaultValue),
           m_controls(key) {
     setRange(dMinValue, dMaxValue, allowOutOfBounds);
@@ -33,10 +21,16 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
     if (!bPersist) {
         set(default_value);
     }
-    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
-}
+    //qDebug() << "" << this << ", min " << dMinValue << ", max " << dMaxValue << ", default " << default_value;
 
-ControlPotmeter::~ControlPotmeter() {
+    if (m_pControl) {
+        connect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlPotmeter::privateValueChanged,
+                Qt::DirectConnection);
+    }
+    m_controls.setIsDefault(get() == default_value);
 }
 
 void ControlPotmeter::setStepCount(int count) {
@@ -55,6 +49,12 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
         m_pControl->setBehavior(
                 new ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds));
     }
+}
+
+// slot
+void ControlPotmeter::privateValueChanged(double dValue, QObject* pSender) {
+    Q_UNUSED(pSender);
+    m_controls.setIsDefault(dValue == defaultValue());
 }
 
 PotmeterControls::PotmeterControls(const ConfigKey& key)
@@ -97,10 +97,10 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
             this,
             &PotmeterControls::decSmallValue);
 
-    ControlPushButton* controlDefault = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_set_default"));
-    controlDefault->setParent(this);
-    connect(controlDefault,
+    m_pControlDefault = new ControlPushButton(
+            ConfigKey(key.group, QString(key.item) + "_set_default"));
+    m_pControlDefault->setParent(this);
+    connect(m_pControlDefault,
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::setToDefault);
@@ -214,4 +214,8 @@ void PotmeterControls::toggleMinusValue(double v) {
         double value = m_pControl->get();
         m_pControl->set(value > 0.0 ? -1.0 : 1.0);
     }
+}
+
+void PotmeterControls::setIsDefault(bool isDefault) {
+    m_pControlDefault->forceSet(isDefault ? 1.0 : 0.0);
 }

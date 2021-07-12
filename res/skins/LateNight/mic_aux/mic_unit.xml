@@ -69,7 +69,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <Template src="skin:/controls/knob_textless.xml">
+                  <Template src="skin:/controls/knob.xml">
                     <SetVariable name="TooltipId">microphone_pregain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="KnobColor">orange</SetVariable>

@@ -1,5 +1,6 @@
 #include "library/externaltrackcollection.h"
 
+#include "moc_externaltrackcollection.cpp"
 
 void ExternalTrackCollection::relocateTracks(
         const QList<RelocatedTrack>& relocatedTracks) {

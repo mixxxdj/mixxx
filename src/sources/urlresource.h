@@ -1,5 +1,4 @@
-#ifndef MIXXX_URLRESOURCE_H
-#define MIXXX_URLRESOURCE_H
+#pragma once
 
 #include "util/assert.h"
 
@@ -19,7 +18,7 @@ class UrlResource {
     }
 
   protected:
-    explicit UrlResource(QUrl url)
+    explicit UrlResource(const QUrl& url)
             : m_url(url) {
     }
 
@@ -41,5 +40,3 @@ class UrlResource {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_URLRESOURCE_H

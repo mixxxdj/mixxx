@@ -1,6 +1,7 @@
-#include "tracksettablemodel.h"
+#include "library/trackset/tracksettablemodel.h"
 
 #include "mixer/playermanager.h"
+#include "moc_tracksettablemodel.cpp"
 
 TrackSetTableModel::TrackSetTableModel(
         QObject* parent,

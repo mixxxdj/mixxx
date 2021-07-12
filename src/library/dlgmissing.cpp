@@ -2,9 +2,10 @@
 
 #include "library/missingtablemodel.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_dlgmissing.cpp"
+#include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
-#include "util/assert.h"
 
 DlgMissing::DlgMissing(
         WLibrary* parent,
@@ -17,14 +18,14 @@ DlgMissing::DlgMissing(
                   new WTrackTableView(
                           this,
                           pConfig,
-                          pLibrary->trackCollections(),
+                          pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
-                          false)) {
+                          true)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     // Install our own trackTable
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
@@ -32,7 +33,7 @@ DlgMissing::DlgMissing(
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pMissingTableModel = new MissingTableModel(this, pLibrary->trackCollections());
+    m_pMissingTableModel = new MissingTableModel(this, pLibrary->trackCollectionManager());
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
     connect(btnPurge, &QPushButton::clicked, m_pTrackTableView, &WTrackTableView::slotPurge);

@@ -1,5 +1,4 @@
-#ifndef UTIL_BATTERY_BATTERYLINUX_H
-#define UTIL_BATTERY_BATTERYLINUX_H
+#pragma once
 
 #include "util/battery/battery.h"
 
@@ -14,5 +13,3 @@ class BatteryLinux : public Battery {
   private:
     void* m_client;
 };
-
-#endif /* UTIL_BATTERY_BATTERYLINUX_H */

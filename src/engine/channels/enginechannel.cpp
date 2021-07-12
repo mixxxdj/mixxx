@@ -1,24 +1,8 @@
-/***************************************************************************
-                          enginechannel.cpp  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "engine/channels/enginechannel.h"
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "moc_enginechannel.cpp"
 
 EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
         EngineChannel::ChannelOrientation defaultOrientation,
@@ -31,7 +15,8 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
           m_pSampleRate(new ControlProxy("[Master]", "samplerate")),
           m_sampleBuffer(nullptr),
           m_bIsPrimaryDeck(isPrimaryDeck),
-          m_bIsTalkoverChannel(isTalkoverChannel) {
+          m_bIsTalkoverChannel(isTalkoverChannel),
+          m_channelIndex(-1) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));

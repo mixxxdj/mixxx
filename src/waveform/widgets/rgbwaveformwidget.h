@@ -1,5 +1,4 @@
-#ifndef RGBWAVEFORMWIDGET_H
-#define RGBWAVEFORMWIDGET_H
+#pragma once
 
 #include <QWidget>
 
@@ -26,5 +25,3 @@ class RGBWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     RGBWaveformWidget(const QString& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
-
-#endif // RGBWAVEFORMWIDGET_H

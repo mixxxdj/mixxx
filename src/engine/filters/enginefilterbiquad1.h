@@ -1,5 +1,4 @@
-#ifndef ENGINEFILTERBIQUAD1_H
-#define ENGINEFILTERBIQUAD1_H
+#pragma once
 
 #include "engine/filters/enginefilteriir.h"
 
@@ -74,5 +73,3 @@ class EngineFilterBiquad1High : public EngineFilterIIR<2, IIR_HP> {
   private:
     char m_spec[FIDSPEC_LENGTH];
 };
-
-#endif // ENGINEFILTERBIQUAD1_H

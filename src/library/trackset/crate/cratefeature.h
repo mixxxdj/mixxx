@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QAction>
-#include <QIcon>
 #include <QList>
 #include <QModelIndex>
 #include <QPoint>
@@ -14,7 +13,7 @@
 #include "library/trackset/crate/cratetablemodel.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
 // forward declaration(s)
@@ -30,22 +29,29 @@ class CrateFeature : public BaseTrackSetFeature {
     ~CrateFeature() override = default;
 
     QVariant title() override;
-    QIcon getIcon() override;
 
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource) override;
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) override;
+    bool dropAcceptChild(const QModelIndex& index,
+            const QList<QUrl>& urls,
+            QObject* pSource) override;
+    bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
+
+#ifdef __ENGINEPRIME__
+  signals:
+    void exportAllCrates();
+    void exportCrate(CrateId crateId);
+#endif
 
   private slots:
     void slotDeleteCrate();
@@ -90,7 +96,6 @@ class CrateFeature : public BaseTrackSetFeature {
 
     QString formatRootViewHtml() const;
 
-    const QIcon m_cratesIcon;
     const QIcon m_lockedCrateIcon;
 
     TrackCollection* const m_pTrackCollection;
@@ -110,6 +115,10 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pCreateImportPlaylistAction;
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
+#ifdef __ENGINEPRIME__
+    parented_ptr<QAction> m_pExportAllCratesAction;
+    parented_ptr<QAction> m_pExportCrateAction;
+#endif
     parented_ptr<QAction> m_pAnalyzeCrateAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;

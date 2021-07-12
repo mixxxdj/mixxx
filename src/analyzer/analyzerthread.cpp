@@ -9,14 +9,12 @@
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
-
-#include "library/dao/analysisdao.h"
-
 #include "engine/engine.h"
-
+#include "library/dao/analysisdao.h"
+#include "moc_analyzerthread.cpp"
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
-
+#include "track/track.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
@@ -257,7 +255,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                                 chunkFrameRange,
                                 mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
         // The returned range fits into the requested range
-        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= chunkFrameRange);
+        DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isSubrangeOf(chunkFrameRange));
 
         // Sometimes the duration of the audio source is inaccurate and adjusted
         // while reading. We need to adjust all frame ranges to reflect this new
@@ -268,7 +266,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         chunkFrameRange = intersect(chunkFrameRange, audioSourceProxy.frameIndexRange());
         // The audio data that has just been read should still fit into the adjusted
         // chunk range.
-        DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= chunkFrameRange);
+        DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isSubrangeOf(chunkFrameRange));
 
         // We also need to adjust the remaining frame range for the next requests.
         remainingFrameRange = intersect(remainingFrameRange, audioSourceProxy.frameIndexRange());
@@ -280,7 +278,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
                 // If we have read an incomplete chunk while the range has grown
                 // we need to discard the read results and re-read the current
                 // chunk!
-                remainingFrameRange = span(remainingFrameRange, chunkFrameRange);
+
+                remainingFrameRange.growFront(chunkFrameRange.length());
                 continue;
             }
             DEBUG_ASSERT(remainingFrameRange.end() < audioSourceProxy.frameIndexRange().end());
@@ -314,11 +313,12 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
             const double frameProgress =
                     double(audioSource->frameLength() - remainingFrameRange.length()) /
                     double(audioSource->frameLength());
+            // math_min is required to compensate rounding errors
             const AnalyzerProgress progress =
-                    frameProgress *
-                    (kAnalyzerProgressFinalizing - kAnalyzerProgressNone);
+                    math_min(kAnalyzerProgressFinalizing,
+                            frameProgress *
+                                    (kAnalyzerProgressFinalizing - kAnalyzerProgressNone));
             DEBUG_ASSERT(progress > kAnalyzerProgressNone);
-            DEBUG_ASSERT(progress <= kAnalyzerProgressFinalizing);
             emitBusyProgress(progress);
         } else {
             // Unreadable audio source

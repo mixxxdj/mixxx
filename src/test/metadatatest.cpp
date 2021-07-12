@@ -11,7 +11,7 @@ namespace {
 
 class MetadataTest : public testing::Test {
   protected:
-    double parseBpm(QString inputValue, bool expectedResult, double expectedValue) {
+    double parseBpm(const QString& inputValue, bool expectedResult, double expectedValue) {
         //qDebug() << "parseBpm" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
@@ -48,7 +48,7 @@ class MetadataTest : public testing::Test {
         mixxx::TrackMetadata trackMetadata;
         mixxx::taglib::id3v2::importTrackMetadataFromTag(&trackMetadata, tag);
 
-        EXPECT_DOUBLE_EQ(expectedValue, trackMetadata.getTrackInfo().getBpm().getValue());
+        EXPECT_DOUBLE_EQ(expectedValue, trackMetadata.getTrackInfo().getBpm().value());
     }
 };
 

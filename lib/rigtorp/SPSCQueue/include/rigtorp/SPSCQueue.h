@@ -186,7 +186,10 @@ public:
   size_t capacity() const noexcept { return capacity_ - 1; }
 
 private:
-#ifdef __cpp_lib_hardware_interference_size
+// on macOS there is a bug in libc++ where __cpp_lib_hardware_interference_size
+// is defined but std::hardware_destructive_interference_size is not actually implemented
+// https://bugs.llvm.org/show_bug.cgi?id=41423
+#if defined(__cpp_lib_hardware_interference_size) && ! defined(__APPLE__)
   static constexpr size_t kCacheLineSize =
       std::hardware_destructive_interference_size;
 #else

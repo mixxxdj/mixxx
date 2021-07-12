@@ -5,12 +5,13 @@
 #include <QMouseEvent>
 
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/parented_ptr.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
-class TrackCollectionManager;
+class Library;
 class WTrackMenu;
 
 class WTrackText : public WLabel, public TrackDropTarget {
@@ -19,26 +20,29 @@ class WTrackText : public WLabel, public TrackDropTarget {
     WTrackText(
             QWidget* pParent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             const QString& group);
     ~WTrackText() override;
 
   signals:
-    void trackDropped(QString fileName, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& fileName, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
+  protected:
+    void contextMenuEvent(QContextMenuEvent* event) override;
+
   private slots:
     void slotTrackChanged(TrackId);
-    void contextMenuEvent(QContextMenuEvent* event) override;
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
 
     void updateLabel();
 

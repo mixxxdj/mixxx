@@ -19,7 +19,7 @@ class DownmixAndOverlapHelper {
     bool initialize(
             size_t windowSize,
             size_t stepSize,
-            WindowReadyCallback callback);
+            const WindowReadyCallback& callback);
 
     bool processStereoSamples(
             const CSAMPLE* pInput,

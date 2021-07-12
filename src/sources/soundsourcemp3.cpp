@@ -10,15 +10,15 @@ namespace mixxx {
 
 namespace {
 
-const Logger kLogger("SoundSourceMP3");
+const Logger kLogger("SoundSourceMp3");
 
 // MP3 does only support 1 or 2 channels
-const SINT kChannelCountMax = 2;
+constexpr SINT kChannelCountMax = 2;
 
-const SINT kMaxBytesPerMp3Frame = 1441;
+constexpr SINT kMaxBytesPerMp3Frame = 1441;
 
 // mp3 supports 9 different sample rates
-const int kSampleRateCount = 9;
+constexpr int kSampleRateCount = 9;
 
 int getIndexBySampleRate(audio::SampleRate sampleRate) {
     switch (sampleRate) {
@@ -72,17 +72,18 @@ audio::SampleRate getSampleRateByIndex(int sampleRateIndex) {
     }
 }
 
-const CSAMPLE kMadScale = CSAMPLE_PEAK / CSAMPLE(MAD_F_ONE);
+constexpr CSAMPLE kMadScale = CSAMPLE_PEAK / CSAMPLE(MAD_F_ONE);
 
 inline CSAMPLE madScaleSampleValue(mad_fixed_t sampleValue) {
     return sampleValue * kMadScale;
 }
 
 // Optimization: Reserve initial capacity for seek frame list
-const SINT kMinutesPerFile = 10;        // enough for the majority of files (tunable)
-const SINT kSecondsPerMinute = 60;      // fixed
-const SINT kMaxMp3FramesPerSecond = 39; // fixed: 1 MP3 frame = 26 ms -> ~ 1000 / 26
-const SINT kSeekFrameListCapacity = kMinutesPerFile * kSecondsPerMinute * kMaxMp3FramesPerSecond;
+constexpr SINT kMinutesPerFile = 10;        // enough for the majority of files (tunable)
+constexpr SINT kSecondsPerMinute = 60;      // fixed
+constexpr SINT kMaxMp3FramesPerSecond = 39; // fixed: 1 MP3 frame = 26 ms -> ~ 1000 / 26
+constexpr SINT kSeekFrameListCapacity =
+        kMinutesPerFile * kSecondsPerMinute * kMaxMp3FramesPerSecond;
 
 inline QString formatHeaderFlags(int headerFlags) {
     return QString("0x%1").arg(headerFlags, 4, 16, QLatin1Char('0'));
@@ -158,8 +159,16 @@ bool decodeFrameHeader(
 
 } // anonymous namespace
 
+//static
+const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
+
+//static
+const QStringList SoundSourceProviderMp3::kSupportedFileExtensions = {
+        QStringLiteral("mp3"),
+};
+
 SoundSourceMp3::SoundSourceMp3(const QUrl& url)
-        : SoundSource(url, "mp3"),
+        : SoundSource(url),
           m_file(getLocalFileName()),
           m_fileSize(0),
           m_pFileData(nullptr),
@@ -389,7 +398,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     }
 
     // Terminate m_seekFrameList
-    addSeekFrame(m_curFrameIndex, 0);
+    addSeekFrame(m_curFrameIndex, nullptr);
     DEBUG_ASSERT(m_seekFrameList.back().frameIndex == frameIndexMax());
 
     // Restart decoding at the beginning of the audio stream
@@ -521,7 +530,7 @@ SINT SoundSourceMp3::findSeekFrameIndex(
 }
 
 ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if ((m_curFrameIndex != firstFrameIndex)) {
@@ -675,7 +684,8 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             DEBUG_ASSERT(isStreamValid(m_madStream));
 
 #ifndef QT_NO_DEBUG_OUTPUT
-            const SINT madFrameChannelCount = MAD_NCHANNELS(&m_madFrame.header);
+            const auto madFrameChannelCount =
+                    mixxx::audio::ChannelCount{MAD_NCHANNELS(&m_madFrame.header)};
             if (madFrameChannelCount != getSignalInfo().getChannelCount()) {
                 kLogger.warning() << "MP3 frame header with mismatching number of channels"
                                   << madFrameChannelCount << "<>" << getSignalInfo().getChannelCount()
@@ -687,7 +697,8 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             // Once decoded the frame is synthesized to PCM samples
             mad_synth_frame(&m_madSynth, &m_madFrame);
 #ifndef QT_NO_DEBUG_OUTPUT
-            const SINT madSynthSampleRate = m_madSynth.pcm.samplerate;
+            const auto madSynthSampleRate =
+                    mixxx::audio::SampleRate{m_madSynth.pcm.samplerate};
             if (madSynthSampleRate != getSignalInfo().getSampleRate()) {
                 kLogger.warning() << "Reading MP3 data with different sample rate"
                                   << madSynthSampleRate << "<>" << getSignalInfo().getSampleRate()
@@ -769,16 +780,6 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
                     std::min(writableSampleFrames.writableLength(), getSignalInfo().frames2samples(numberOfFrames))));
-}
-
-QString SoundSourceProviderMp3::getName() const {
-    return "MAD: MPEG Audio Decoder";
-}
-
-QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("mp3");
-    return supportedFileExtensions;
 }
 
 } // namespace mixxx

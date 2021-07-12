@@ -1,10 +1,12 @@
-#include <QtDebug>
-#include <QMutexLocker>
-#include <QTextStream>
+#include "util/statsmanager.h"
+
 #include <QFile>
 #include <QMetaType>
+#include <QMutexLocker>
+#include <QTextStream>
+#include <QtDebug>
 
-#include "util/statsmanager.h"
+#include "moc_statsmanager.cpp"
 #include "util/cmdlineargs.h"
 #include "util/compatibility.h"
 

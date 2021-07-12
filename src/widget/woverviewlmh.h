@@ -1,5 +1,4 @@
-#ifndef WOVERVIEWLMH_H
-#define WOVERVIEWLMH_H
+#pragma once
 
 #include "widget/woverview.h"
 
@@ -14,5 +13,3 @@ class WOverviewLMH : public WOverview {
   private:
     bool drawNextPixmapPart() override;
 };
-
-#endif // WOVERVIEWLMH_H

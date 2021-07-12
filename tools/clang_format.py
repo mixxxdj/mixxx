@@ -21,7 +21,7 @@ BREAK_BEFORE = 80
 
 def get_clang_format_config_with_columnlimit(rootdir, limit):
     """Create a temporary config with ColumnLimit set to 80."""
-    cpp_file = os.path.join(rootdir, "src/mixxx.cpp")
+    cpp_file = os.path.join(rootdir, "src/main.cpp")
     proc = subprocess.run(
         ["clang-format", "--dump-config", cpp_file],
         capture_output=True,
@@ -42,7 +42,12 @@ def run_clang_format_on_lines(rootdir, file_to_format, stylepath=None):
     ]
     assert line_arguments
 
-    logger.info("Reformatting %s...", file_to_format.filename)
+    logger.info(
+        "Reformatting %s [%s]...",
+        file_to_format.filename,
+        ", ".join("{}-{}".format(*x) for x in file_to_format.lines),
+    )
+
     filename = os.path.join(rootdir, file_to_format.filename)
     cmd = [
         "clang-format",
@@ -65,7 +70,9 @@ def run_clang_format_on_lines(rootdir, file_to_format, stylepath=None):
         proc.check_returncode()
     except subprocess.CalledProcessError:
         logger.error(
-            "Error while executing command %s: %s", cmd, proc.stderr,
+            "Error while executing command %s: %s",
+            cmd,
+            proc.stderr,
         )
         raise
 

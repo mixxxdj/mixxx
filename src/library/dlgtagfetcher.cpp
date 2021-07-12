@@ -3,26 +3,27 @@
 #include <QTreeWidget>
 #include <QtDebug>
 
+#include "moc_dlgtagfetcher.cpp"
+#include "track/track.h"
 #include "track/tracknumbers.h"
 
 namespace {
 
 QStringList trackColumnValues(
         const Track& track) {
-    mixxx::TrackMetadata trackMetadata;
-    track.readTrackMetadata(&trackMetadata);
+    const mixxx::TrackMetadata trackMetadata = track.getMetadata();
     const QString trackNumberAndTotal = TrackNumbers::joinAsString(
             trackMetadata.getTrackInfo().getTrackNumber(),
             trackMetadata.getTrackInfo().getTrackTotal());
     QStringList columnValues;
     columnValues.reserve(6);
     columnValues
-            << trackMetadata.getTrackInfo().getYear()
-            << trackMetadata.getAlbumInfo().getTitle()
-            << trackMetadata.getAlbumInfo().getArtist()
-            << trackNumberAndTotal
             << trackMetadata.getTrackInfo().getTitle()
-            << trackMetadata.getTrackInfo().getArtist();
+            << trackMetadata.getTrackInfo().getArtist()
+            << trackMetadata.getAlbumInfo().getTitle()
+            << trackMetadata.getTrackInfo().getYear()
+            << trackNumberAndTotal
+            << trackMetadata.getAlbumInfo().getArtist();
     return columnValues;
 }
 
@@ -34,12 +35,12 @@ QStringList trackReleaseColumnValues(
     QStringList columnValues;
     columnValues.reserve(6);
     columnValues
-            << trackRelease.date
-            << trackRelease.albumTitle
-            << trackRelease.albumArtist
-            << trackNumberAndTotal
             << trackRelease.title
-            << trackRelease.artist;
+            << trackRelease.artist
+            << trackRelease.albumTitle
+            << trackRelease.date
+            << trackNumberAndTotal
+            << trackRelease.albumArtist;
     return columnValues;
 }
 
@@ -49,16 +50,19 @@ void addTrack(
         QTreeWidget* parent) {
     QTreeWidgetItem* item = new QTreeWidgetItem(parent, trackRow);
     item->setData(0, Qt::UserRole, resultIndex);
-    item->setData(0, Qt::TextAlignmentRole, Qt::AlignRight);
+    item->setData(0, Qt::TextAlignmentRole, Qt::AlignLeft);
 }
 
 } // anonymous namespace
 
-DlgTagFetcher::DlgTagFetcher(QWidget* parent, const TrackModel* trackModel)
-        : QDialog(parent),
-          m_tagFetcher(parent),
-          m_networkResult(NetworkResult::Ok),
-          m_pTrackModel(trackModel) {
+DlgTagFetcher::DlgTagFetcher(
+        const TrackModel* pTrackModel)
+        // No parent because otherwise it inherits the style parent's
+        // style which can make it unreadable. Bug #673411
+        : QDialog(nullptr),
+          m_pTrackModel(pTrackModel),
+          m_tagFetcher(this),
+          m_networkResult(NetworkResult::Ok) {
     init();
 }
 
@@ -79,14 +83,6 @@ void DlgTagFetcher::init() {
     connect(&m_tagFetcher, &TagFetcher::resultAvailable, this, &DlgTagFetcher::fetchTagFinished);
     connect(&m_tagFetcher, &TagFetcher::fetchProgress, this, &DlgTagFetcher::fetchTagProgress);
     connect(&m_tagFetcher, &TagFetcher::networkError, this, &DlgTagFetcher::slotNetworkResult);
-
-    // Resize columns, this can't be set in the ui file
-    results->setColumnWidth(0, 50);  // Year column
-    results->setColumnWidth(1, 160); // Album column
-    results->setColumnWidth(2, 160); // Album artist column
-    results->setColumnWidth(3, 50);  // Track (numbers) column
-    results->setColumnWidth(4, 160); // Title column
-    results->setColumnWidth(5, 160); // Artist column
 }
 
 void DlgTagFetcher::slotNext() {
@@ -161,8 +157,7 @@ void DlgTagFetcher::apply() {
     DEBUG_ASSERT(resultIndex < m_data.m_results.size());
     const mixxx::musicbrainz::TrackRelease& trackRelease =
             m_data.m_results[resultIndex];
-    mixxx::TrackMetadata trackMetadata;
-    m_track->readTrackMetadata(&trackMetadata);
+    mixxx::TrackMetadata trackMetadata = m_track->getMetadata();
     if (!trackRelease.artist.isEmpty()) {
         trackMetadata.refTrackInfo().setArtist(
                 trackRelease.artist);
@@ -217,7 +212,7 @@ void DlgTagFetcher::apply() {
                 trackRelease.releaseGroupId);
     }
 #endif // __EXTRA_METADATA__
-    m_track->importMetadata(
+    m_track->replaceMetadataFromSource(
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
             // by explicitly setting the synchronization time stamp
@@ -230,14 +225,14 @@ void DlgTagFetcher::quit() {
     accept();
 }
 
-void DlgTagFetcher::fetchTagProgress(QString text) {
+void DlgTagFetcher::fetchTagProgress(const QString& text) {
     QString status = tr("Status: %1");
     loadingStatus->setText(status.arg(text));
 }
 
 void DlgTagFetcher::fetchTagFinished(
         TrackPointer pTrack,
-        QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases) {
+        const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases) {
     VERIFY_OR_DEBUG_ASSERT(pTrack == m_track) {
         return;
     }
@@ -247,7 +242,8 @@ void DlgTagFetcher::fetchTagFinished(
     updateStack();
 }
 
-void DlgTagFetcher::slotNetworkResult(int httpError, QString app, QString message, int code) {
+void DlgTagFetcher::slotNetworkResult(
+        int httpError, const QString& app, const QString& message, int code) {
     m_networkResult = httpError == 0 ? NetworkResult::UnknownError : NetworkResult::HttpError;
     m_data.m_pending = false;
     QString strError = tr("HTTP Status: %1");
@@ -301,6 +297,12 @@ void DlgTagFetcher::updateStack() {
         }
     }
 
+    for (int i = 0; i < results->model()->columnCount(); i++) {
+        results->resizeColumnToContents(i);
+        int sectionSize = (results->columnWidth(i) + 10);
+        results->header()->resizeSection(i, sectionSize);
+    }
+
     // Find the item that was selected last time
     for (int i = 0; i < results->model()->rowCount(); ++i) {
         const QModelIndex index = results->model()->index(i, 0);
@@ -325,8 +327,9 @@ void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* parent) const {
 }
 
 void DlgTagFetcher::resultSelected() {
-    if (!results->currentItem())
+    if (!results->currentItem()) {
         return;
+    }
 
     const int resultIndex = results->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedResult = resultIndex;

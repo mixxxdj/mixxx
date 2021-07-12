@@ -1,12 +1,4 @@
-/**
-* @file dlgcontrollerlearning.h
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Thu 12 Apr 2012
-* @brief The controller mapping learning wizard
-*
-*/
-#ifndef DLGCONTROLLERLEARNING_H
-#define DLGCONTROLLERLEARNING_H
+#pragma once
 
 #include <QDialog>
 #include <QList>
@@ -22,25 +14,20 @@
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/controller.h"
-#include "controllers/controllervisitor.h"
 #include "preferences/usersettings.h"
 
-class ControllerPreset;
+class LegacyControllerMapping;
 
 //#define CONTROLLERLESSTESTING
 
+/// The controller mapping learning wizard
 class DlgControllerLearning : public QDialog,
-                              public ControllerVisitor,
                               public Ui::DlgControllerLearning {
     Q_OBJECT
 
   public:
     DlgControllerLearning(QWidget *parent, Controller *controller);
     virtual ~DlgControllerLearning();
-
-    void visit(MidiController* pController);
-    void visit(HidController* pController);
-    void visit(BulkController* pController);
 
   signals:
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
@@ -58,7 +45,7 @@ class DlgControllerLearning : public QDialog,
 
   public slots:
     // Triggered when the user picks a control from the menu.
-    void controlPicked(ConfigKey control);
+    void controlPicked(const ConfigKey& control);
     // Triggered when user clicks a control from the GUI
     void controlClicked(ControlObject* pControl);
     void comboboxIndexChanged(int index);
@@ -79,18 +66,17 @@ class DlgControllerLearning : public QDialog,
     void showControlMenu();
 #ifdef CONTROLLERLESSTESTING
     void DEBUGFakeMidiMessage();
-    void DEBUGFakeMidiMessage2();
+    void DEBUGFakeMidiMessage();
 #endif
 
   private:
-    void loadControl(const ConfigKey& key, QString title, QString description);
+    void loadControl(const ConfigKey& key, const QString& title, QString description);
     void startListening();
     void commitMapping();
     void resetWizard(bool keepCurrentControl = false);
     void populateComboBox();
 
     Controller* m_pController;
-    MidiController* m_pMidiController;
     ControlPickerMenu m_controlPickerMenu;
     ConfigKey m_currentControl;
     bool m_messagesLearned;
@@ -99,5 +85,3 @@ class DlgControllerLearning : public QDialog,
     QList<QPair<MidiKey, unsigned char> > m_messages;
     MidiInputMappings m_mappings;
 };
-
-#endif

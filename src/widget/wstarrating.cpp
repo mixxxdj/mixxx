@@ -1,11 +1,14 @@
-#include <QStylePainter>
-#include <QStyleOption>
-#include <QSize>
-#include <QApplication>
-
 #include "widget/wstarrating.h"
 
-WStarRating::WStarRating(QString group, QWidget* pParent)
+#include <QApplication>
+#include <QSize>
+#include <QStyleOption>
+#include <QStylePainter>
+
+#include "moc_wstarrating.cpp"
+#include "track/track.h"
+
+WStarRating::WStarRating(const QString& group, QWidget* pParent)
         : WWidget(pParent),
           m_starRating(0, 5),
           m_group(group),
@@ -16,8 +19,11 @@ WStarRating::WStarRating(QString group, QWidget* pParent)
     if (!m_group.isEmpty()) {
         m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_up"));
         m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_down"));
-        connect(m_pStarsUp.get(), SIGNAL(valueChanged(double)), this, SLOT(slotStarsUp(double)));
-        connect(m_pStarsDown.get(), SIGNAL(valueChanged(double)), this, SLOT(slotStarsDown(double)));
+        connect(m_pStarsUp.get(), &ControlObject::valueChanged, this, &WStarRating::slotStarsUp);
+        connect(m_pStarsDown.get(),
+                &ControlObject::valueChanged,
+                this,
+                &WStarRating::slotStarsDown);
     }
 }
 
@@ -57,22 +63,29 @@ void WStarRating::slotTrackLoaded(TrackPointer pTrack) {
                     &WStarRating::slotTrackChanged);
             m_pCurrentTrack = pTrack;
         }
-        updateRating();
+        updateRatingFromTrack();
     }
 }
 
-void WStarRating::updateRating() {
-    if (m_pCurrentTrack) {
-        m_starRating.setStarCount(m_pCurrentTrack->getRating());
-    } else {
-        m_starRating.setStarCount(0);
-    }
+void WStarRating::setRating(int rating) {
+    // Check consistency with the connected track
+    DEBUG_ASSERT(!m_pCurrentTrack ||
+            m_pCurrentTrack->getRating() == rating);
+    m_starRating.setStarCount(rating);
     update();
+}
+
+void WStarRating::updateRatingFromTrack() {
+    if (m_pCurrentTrack) {
+        setRating(m_pCurrentTrack->getRating());
+    } else {
+        setRating(0);
+    }
 }
 
 void WStarRating::slotTrackChanged(TrackId trackId) {
     Q_UNUSED(trackId);
-    updateRating();
+    updateRatingFromTrack();
 }
 
 void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
@@ -126,7 +139,7 @@ void WStarRating::slotStarsDown(double v) {
 
 void WStarRating::leaveEvent(QEvent* /*unused*/) {
     m_focused = false;
-    updateRating();
+    updateRatingFromTrack();
 }
 
 // The method uses basic linear algebra to find out which star is under the cursor.

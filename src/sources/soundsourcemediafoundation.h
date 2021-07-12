@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H
-#define MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H
+#pragma once
 
 #include <mfidl.h>
 #include <mfreadwrite.h>
@@ -25,7 +24,8 @@ class StreamUnitConverter final {
         // The stream units should actually be much shorter than
         // sample frames to minimize jitter and rounding. Even a
         // frame at 192 kHz has a length of about 5000 ns >> 100 ns.
-        DEBUG_ASSERT(m_fromStreamUnitsToSampleFrames >= 50);
+        DEBUG_ASSERT(m_fromSampleFramesToStreamUnits > 50);
+        DEBUG_ASSERT(m_fromStreamUnitsToSampleFrames < 0.02);
     }
 
     LONGLONG fromFrameIndex(SINT frameIndex) const {
@@ -55,6 +55,8 @@ class StreamUnitConverter final {
 
 class SoundSourceMediaFoundation : public SoundSource {
   public:
+    static const QString kDisplayName;
+
     explicit SoundSourceMediaFoundation(const QUrl& url);
     ~SoundSourceMediaFoundation() override;
 
@@ -62,7 +64,7 @@ class SoundSourceMediaFoundation : public SoundSource {
 
   protected:
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override;
+            const WritableSampleFrames& sampleFrames) override;
 
   private:
     OpenResult tryOpen(
@@ -88,13 +90,21 @@ class SoundSourceMediaFoundation : public SoundSource {
 
 class SoundSourceProviderMediaFoundation : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
-    QStringList getSupportedFileExtensions() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
+
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override;
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H

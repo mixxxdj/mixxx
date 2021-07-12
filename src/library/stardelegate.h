@@ -1,23 +1,4 @@
-/***************************************************************************
-                           stardelegate.h
-                              -------------------
-     copyright            : (C) 2010 Tobias Rafreider
-     copyright            : (C) 2009 Nokia Corporation
-
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-
-#ifndef STARDELEGATE_H
-#define STARDELEGATE_H
+#pragma once
 
 #include "library/tableitemdelegate.h"
 
@@ -57,5 +38,3 @@ class StarDelegate : public TableItemDelegate {
     QPersistentModelIndex m_currentEditedCellIndex;
     bool m_isOneCellInEditMode;
 };
-
-#endif

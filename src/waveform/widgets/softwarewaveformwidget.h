@@ -1,5 +1,4 @@
-#ifndef SOFTWAREWAVEFORMWIDGET_H
-#define SOFTWAREWAVEFORMWIDGET_H
+#pragma once
 
 #include <QWidget>
 
@@ -26,5 +25,3 @@ class SoftwareWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     SoftwareWaveformWidget(const QString& groupp, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
-
-#endif // SOFTWAREWAVEFORMWIDGET_H

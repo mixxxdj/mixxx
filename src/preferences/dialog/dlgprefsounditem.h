@@ -1,20 +1,4 @@
-/**
- * @file dlgprefsounditem.h
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100704
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFSOUNDITEM_H
-#define DLGPREFSOUNDITEM_H
+#pragma once
 
 #include "preferences/dialog/ui_dlgprefsounditem.h"
 #include "soundio/soundmanagerutil.h"
@@ -69,5 +53,3 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     QPoint m_savedChannel;
     bool m_inhibitSettingChanged;
 };
-
-#endif

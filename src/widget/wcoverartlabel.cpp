@@ -2,51 +2,62 @@
 
 #include <QtDebug>
 
-#include "library/dlgcoverartfullsize.h"
 #include "library/coverartutils.h"
+#include "library/dlgcoverartfullsize.h"
+#include "moc_wcoverartlabel.cpp"
+#include "track/track.h"
 #include "util/compatibility.h"
+#include "widget/wcoverartmenu.h"
 
-static const QSize s_labelDisplaySize = QSize(100, 100);
+namespace {
+
+constexpr QSize kDeviceIndependentCoverLabelSize = QSize(100, 100);
+
+inline QPixmap scaleCoverLabel(
+        QWidget* parent,
+        QPixmap pixmap) {
+    const auto devicePixelRatioF = getDevicePixelRatioF(parent);
+    pixmap.setDevicePixelRatio(devicePixelRatioF);
+    return pixmap.scaled(
+            kDeviceIndependentCoverLabelSize * devicePixelRatioF,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+}
+
+QPixmap createDefaultCover(QWidget* parent) {
+    auto defaultCover = QPixmap(CoverArtUtils::defaultCoverLocation());
+    return scaleCoverLabel(parent, defaultCover);
+}
+
+} // anonymous namespace
 
 WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
           m_pCoverMenu(make_parented<WCoverArtMenu>(this)),
           m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(this)),
-          m_defaultCover(CoverArtUtils::defaultCoverLocation()) {
+          m_defaultCover(createDefaultCover(this)) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
-    setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-            this, SIGNAL(coverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
-            this, SIGNAL(reloadCoverArt()));
+    connect(m_pCoverMenu,
+            &WCoverArtMenu::coverInfoSelected,
+            this,
+            &WCoverArtLabel::coverInfoSelected);
+    connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WCoverArtLabel::reloadCoverArt);
 
-    m_defaultCover.setDevicePixelRatio(getDevicePixelRatioF(this));
-    m_defaultCover = m_defaultCover.scaled(s_labelDisplaySize * getDevicePixelRatioF(this),
-                                           Qt::KeepAspectRatio,
-                                           Qt::SmoothTransformation);
     setPixmap(m_defaultCover);
 }
 
-WCoverArtLabel::~WCoverArtLabel() {
-    // Nothing to do
-}
+WCoverArtLabel::~WCoverArtLabel() = default;
 
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
-                                 QPixmap px) {
-    qDebug() << "WCoverArtLabel::setCoverArt" << coverInfo << px.size();
-
+        const QPixmap& px) {
     m_pCoverMenu->setCoverArt(coverInfo);
     if (px.isNull()) {
         m_loadedCover = px;
         setPixmap(m_defaultCover);
     } else {
-        m_loadedCover = px.scaled(s_labelDisplaySize * getDevicePixelRatioF(this),
-                Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        m_loadedCover.setDevicePixelRatio(getDevicePixelRatioF(this));
+        m_loadedCover = scaleCoverLabel(this, px);
         setPixmap(m_loadedCover);
     }
 
@@ -62,6 +73,11 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
 
 void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
     m_pCoverMenu->popup(mapToGlobal(pos));
+}
+
+void WCoverArtLabel::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
+    m_pCoverMenu->popup(event->globalPos());
 }
 
 void WCoverArtLabel::loadTrack(TrackPointer pTrack) {

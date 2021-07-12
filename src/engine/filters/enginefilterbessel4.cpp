@@ -1,6 +1,13 @@
 #include "engine/filters/enginefilterbessel4.h"
+
+#include "moc_enginefilterbessel4.cpp"
 #include "util/math.h"
 
+namespace {
+constexpr char kFidSpecLowPassBessel4[] = "LpBe4";
+constexpr char kFidSpecBandPassBessel4[] = "BpBe4";
+constexpr char kFidSpecHighPassBessel4[] = "HpBe4";
+} // namespace
 
 EngineFilterBessel4Low::EngineFilterBessel4Low(int sampleRate,
                                                double freqCorner1) {
@@ -10,7 +17,7 @@ EngineFilterBessel4Low::EngineFilterBessel4Low(int sampleRate,
 void EngineFilterBessel4Low::setFrequencyCorners(int sampleRate,
                                                  double freqCorner1) {
     // Copy the old coefficients into m_oldCoef
-    setCoefs("LpBe4", sampleRate, freqCorner1);
+    setCoefs(kFidSpecLowPassBessel4, sizeof(kFidSpecLowPassBessel4), sampleRate, freqCorner1);
 }
 
 int EngineFilterBessel4Low::setFrequencyCornersForIntDelay(
@@ -53,7 +60,7 @@ int EngineFilterBessel4Low::setFrequencyCornersForIntDelay(
         quantizedRatio = delayRatioTable[iDelay];
     }
 
-    setCoefs("LpBe4", 1, quantizedRatio);
+    setCoefs(kFidSpecLowPassBessel4, sizeof(kFidSpecLowPassBessel4), 1, quantizedRatio);
     return iDelay;
 }
 
@@ -66,7 +73,11 @@ EngineFilterBessel4Band::EngineFilterBessel4Band(int sampleRate,
 void EngineFilterBessel4Band::setFrequencyCorners(int sampleRate,
                                                   double freqCorner1,
                                                   double freqCorner2) {
-    setCoefs("BpBe4", sampleRate, freqCorner1, freqCorner2);
+    setCoefs(kFidSpecBandPassBessel4,
+            sizeof(kFidSpecBandPassBessel4),
+            sampleRate,
+            freqCorner1,
+            freqCorner2);
 }
 
 
@@ -77,5 +88,5 @@ EngineFilterBessel4High::EngineFilterBessel4High(int sampleRate,
 
 void EngineFilterBessel4High::setFrequencyCorners(int sampleRate,
                                                   double freqCorner1) {
-    setCoefs("HpBe4", sampleRate, freqCorner1);
+    setCoefs(kFidSpecHighPassBessel4, sizeof(kFidSpecHighPassBessel4), sampleRate, freqCorner1);
 }

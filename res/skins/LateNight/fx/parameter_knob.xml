@@ -32,6 +32,7 @@
             <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
             <ArcColor><Variable name="ArcColorFxParameter"/></ArcColor>
             <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
+            <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
             <ArcUnipolar>true</ArcUnipolar>
             <Connection>
               <ConfigKey>[<Variable name="FxRack_FxUnit_FxNum"/>],parameter<Variable name="FxParameter"/></ConfigKey>

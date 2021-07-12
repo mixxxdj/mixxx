@@ -1,5 +1,4 @@
-#ifndef CONTROLPROXY_H
-#define CONTROLPROXY_H
+#pragma once
 
 #include <QObject>
 #include <QSharedPointer>
@@ -207,5 +206,3 @@ class ControlProxy : public QObject {
     // Pointer to connected control.
     QSharedPointer<ControlDoublePrivate> m_pControl;
 };
-
-#endif // CONTROLPROXY_H

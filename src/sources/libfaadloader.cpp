@@ -29,10 +29,10 @@ LibLoader::LibLoader()
           m_neAACDecGetVersion(nullptr) {
     // Load shared library
     QStringList libnames;
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__)
     // http://www.rarewares.org/aac-decoders.php
     libnames << "libfaad2.dll";
-#elif __APPLE__
+#elif defined(__APPLE__)
     // First try default location
     libnames << "libfaad2.dylib";
     // Using Homebrew ('brew install faad2' command):
@@ -40,10 +40,11 @@ LibLoader::LibLoader()
     // Using MacPorts ('sudo port install faad2' command):
     libnames << "/opt/local/lib/libfaad2.dylib";
 #else
-    libnames << "libfaad.so";
+    libnames << "libfaad.so.2"
+             << "libfaad.so";
 #endif
 
-    for (const auto& libname : libnames) {
+    for (const auto& libname : qAsConst(libnames)) {
         m_pLibrary.reset();
         m_pLibrary = std::make_unique<QLibrary>(libname, 0);
         if (m_pLibrary->load()) {

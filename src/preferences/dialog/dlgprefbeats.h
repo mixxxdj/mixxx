@@ -1,19 +1,14 @@
-//  Created on: 28/apr/2011
-//      Author: vittorio
+#pragma once
 
-
-#ifndef DLGPREFBEATS_H
-#define DLGPREFBEATS_H
-
-#include <QWidget>
-#include <QString>
 #include <QList>
+#include <QString>
+#include <QWidget>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/beatdetectionsettings.h"
-#include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbeatsdlg.h"
+#include "preferences/usersettings.h"
 
 class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     Q_OBJECT
@@ -33,11 +28,9 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     void pluginSelected(int i);
     void analyzerEnabled(int i);
     void fixedtempoEnabled(int i);
-    void offsetEnabled(int i);
     void fastAnalysisEnabled(int i);
-    void minBpmRangeChanged(int value);
-    void maxBpmRangeChanged(int value);
     void slotReanalyzeChanged(int value);
+    void slotReanalyzeImportedChanged(int value);
 
   private:
     void loadSettings();
@@ -45,13 +38,9 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     BeatDetectionSettings m_bpmSettings;
     QList<mixxx::AnalyzerPluginInfo> m_availablePlugins;
     QString m_selectedAnalyzerId;
-    int m_minBpm;
-    int m_maxBpm;
-    bool m_banalyzerEnabled;
-    bool m_bfixedtempoEnabled;
-    bool m_boffsetEnabled;
-    bool m_FastAnalysisEnabled;
+    bool m_bAnalyzerEnabled;
+    bool m_bFixedTempoEnabled;
+    bool m_bFastAnalysisEnabled;
     bool m_bReanalyze;
+    bool m_bReanalyzeImported;
 };
-
-#endif // DLGPREFBEATS_H

@@ -1,14 +1,12 @@
-#ifndef ANALYZER_ANALYZERWAVEFORM_H
-#define ANALYZER_ANALYZERWAVEFORM_H
+#pragma once
 
 #include <QImage>
 #include <QSqlDatabase>
-
+#include <cmath>
 #include <limits>
 
 #include "analyzer/analyzer.h"
 #include "library/dao/analysisdao.h"
-#include "util/math.h"
 #include "util/performancetimer.h"
 #include "waveform/waveform.h"
 
@@ -21,10 +19,10 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     if (invalue == 0.0) {
         return 0;
     } else if (index == Low || index == Mid) {
-        //return pow(invalue, 2 * 0.5);
+        //return std::pow(invalue, 2 * 0.5);
         return invalue;
     } else {
-        return pow(invalue, 2.0f * 0.316f);
+        return std::pow(invalue, 2.0f * 0.316f);
     }
 }
 
@@ -139,10 +137,12 @@ class AnalyzerWaveform : public Analyzer {
   public:
     AnalyzerWaveform(
             UserSettingsPointer pConfig,
-            QSqlDatabase dbConnection);
+            const QSqlDatabase& dbConnection);
     ~AnalyzerWaveform() override;
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
+    bool initialize(TrackPointer tio,
+            mixxx::audio::SampleRate sampleRate,
+            int totalSamples) override;
     bool processSamples(const CSAMPLE* buffer, const int bufferLength) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
@@ -153,7 +153,7 @@ class AnalyzerWaveform : public Analyzer {
     void storeCurrentStridePower();
     void resetCurrentStride();
 
-    void createFilters(int sampleRate);
+    void createFilters(mixxx::audio::SampleRate sampleRate);
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
 
@@ -178,5 +178,3 @@ class AnalyzerWaveform : public Analyzer {
     QImage* test_heatMap;
 #endif
 };
-
-#endif /* ANALYZER_ANALYZERWAVEFORM_H */

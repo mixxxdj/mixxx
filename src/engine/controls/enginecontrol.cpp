@@ -1,19 +1,18 @@
-// enginecontrol.cpp
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/controls/enginecontrol.h"
-#include "engine/enginemaster.h"
+
 #include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/playermanager.h"
+#include "moc_enginecontrol.cpp"
 
-EngineControl::EngineControl(QString group,
-                             UserSettingsPointer pConfig)
+EngineControl::EngineControl(const QString& group,
+        UserSettingsPointer pConfig)
         : m_group(group),
           m_pConfig(pConfig),
           m_pEngineMaster(nullptr),
           m_pEngineBuffer(nullptr) {
-    setCurrentSample(0.0, 0.0, 0.0);
+    setCurrentSample(EngineBuffer::kInitalSamplePosition, 0.0, 0.0);
 }
 
 EngineControl::~EngineControl() {
@@ -69,6 +68,18 @@ EngineMaster* EngineControl::getEngineMaster() {
 
 EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
+}
+
+void EngineControl::setBeatLoop(double startPosition, bool enabled) {
+    if (m_pEngineBuffer) {
+        return m_pEngineBuffer->setBeatLoop(startPosition, enabled);
+    }
+}
+
+void EngineControl::setLoop(double startPosition, double endPosition, bool enabled) {
+    if (m_pEngineBuffer) {
+        return m_pEngineBuffer->setLoop(startPosition, endPosition, enabled);
+    }
 }
 
 void EngineControl::seekAbs(double samplePosition) {

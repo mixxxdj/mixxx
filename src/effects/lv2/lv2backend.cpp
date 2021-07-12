@@ -1,5 +1,7 @@
 #include "effects/lv2/lv2backend.h"
+
 #include "effects/lv2/lv2manifest.h"
+#include "moc_lv2backend.cpp"
 
 LV2Backend::LV2Backend(QObject* pParent)
         : EffectsBackend(pParent, EffectBackendType::LV2) {

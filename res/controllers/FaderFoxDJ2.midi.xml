@@ -4,7 +4,7 @@
     <name>FaderFox DJ2</name>
     <author>Sacha Berger, Gosseyn</author>
     <description>MIDI Mapping for FaderFoxDJ2</description>
-    <wiki>http://www.mixxx.org/wiki/doku.php/faderfox_dj2</wiki>
+    <manual>faderfox_dj2</manual>
   </info>
   <controller id="FaderFoxDJ2" port="Port">
     <controls>

@@ -70,9 +70,9 @@
           <WidgetGroup><!-- CrossfaderContainer -->
             <ObjectName>CrossfaderContainer</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <MaximumSize>-1,40</MaximumSize>
+            <Size>-1me,44f</Size>
             <Children>
+              <WidgetGroup><Size>2f,0f</Size></WidgetGroup>
 
               <WidgetGroup>
                 <Layout>vertical</Layout>
@@ -122,7 +122,7 @@
                   <SliderComposed>
                     <TooltipId>crossfader</TooltipId>
                     <Size>1me,40f</Size>
-                    <MaximumSize>200,40</MaximumSize>
+                    <MaximumSize>200,</MaximumSize>
                     <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
                     <Handle scalemode="STRETCH_ASPECT">handle-crossfader-orange.svg</Handle>
                     <Horizontal>true</Horizontal>
@@ -176,6 +176,7 @@
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
+              <WidgetGroup><Size>2f,0f</Size></WidgetGroup>
             </Children>
             <Connection>
               <ConfigKey>[Skin],show_xfader</ConfigKey>

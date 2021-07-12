@@ -85,4 +85,4 @@ TEST_F(ControlObjectTest, Persistence_ValidValue) {
     EXPECT_DOUBLE_EQ(5.0, co.get());
 }
 
-}
+} // namespace

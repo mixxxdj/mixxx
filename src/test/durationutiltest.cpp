@@ -29,7 +29,7 @@ class DurationUtilTest : public testing::Test {
         }
     }
 
-    void formatTime(QString expectedMilliseconds, double dSeconds) {
+    void formatTime(const QString& expectedMilliseconds, double dSeconds) {
         const QString actualSeconds =
             mixxx::Duration::formatTime(dSeconds, mixxx::Duration::Precision::SECONDS);
         const QString expectedSeconds =
@@ -45,7 +45,7 @@ class DurationUtilTest : public testing::Test {
         EXPECT_EQ(expectedMilliseconds, actualMilliseconds);
     }
 
-    void formatSeconds(QString expectedMilliseconds, double dSeconds) {
+    void formatSeconds(const QString& expectedMilliseconds, double dSeconds) {
         ASSERT_LE(4, expectedMilliseconds.length()); // 3 digits + 1 decimal point
         const QString actualSeconds =
             mixxx::Duration::formatSeconds(dSeconds, mixxx::Duration::Precision::SECONDS);
@@ -62,7 +62,7 @@ class DurationUtilTest : public testing::Test {
         EXPECT_EQ(expectedMilliseconds, actualMilliseconds);
     }
 
-    void formatSecondsLong(QString expectedMilliseconds, double dSeconds) {
+    void formatSecondsLong(const QString& expectedMilliseconds, double dSeconds) {
         ASSERT_LE(4, expectedMilliseconds.length()); // 3 digits + 1 decimal point
         const QString actualSeconds =
             mixxx::Duration::formatSecondsLong(dSeconds, mixxx::Duration::Precision::SECONDS);
@@ -79,7 +79,7 @@ class DurationUtilTest : public testing::Test {
         EXPECT_EQ(expectedMilliseconds, actualMilliseconds);
     }
 
-    void formatKiloSeconds(QString expectedMilliseconds, double dSeconds) {
+    void formatKiloSeconds(const QString& expectedMilliseconds, double dSeconds) {
         ASSERT_LE(4, expectedMilliseconds.length()); // 3 digits + 1 decimal point
         const QString actualSeconds =
             mixxx::Duration::formatKiloSeconds(dSeconds, mixxx::Duration::Precision::SECONDS);

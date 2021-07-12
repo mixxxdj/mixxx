@@ -1,5 +1,4 @@
-#ifndef WWAVEFORMVIEWER_H
-#define WWAVEFORMVIEWER_H
+#pragma once
 
 #include <QDateTime>
 #include <QDragEnterEvent>
@@ -8,8 +7,8 @@
 #include <QList>
 #include <QMutex>
 
-#include "skin/skincontext.h"
-#include "track/track.h"
+#include "skin/legacy/skincontext.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmark.h"
 #include "widget/trackdroptarget.h"
@@ -43,8 +42,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void leaveEvent(QEvent* /*unused*/) override;
 
   signals:
-    void trackDropped(QString filename, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -87,6 +86,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
 
     WaveformWidgetAbstract* m_waveformWidget;
 
+    int m_dimBrightThreshold;
+
     friend class WaveformWidgetFactory;
 
     CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark) const;
@@ -94,5 +95,3 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void unhighlightMark(WaveformMarkPointer pMark);
     bool isPlaying() const;
 };
-
-#endif

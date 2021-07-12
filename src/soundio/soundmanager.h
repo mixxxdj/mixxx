@@ -1,37 +1,19 @@
-/**
- * @file soundmanager.h
- * @author Albert Santoni <gamegod at users dot sf dot net>
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20070815
- */
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef SOUNDMANAGER_H
-#define SOUNDMANAGER_H
-
+#include <QHash>
+#include <QList>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
 #include <memory>
 
-#include <QObject>
-#include <QString>
-#include <QList>
-#include <QHash>
-#include <QSharedPointer>
-
-#include "preferences/usersettings.h"
+#include "audio/types.h"
 #include "engine/sidechain/enginenetworkstream.h"
-#include "soundio/soundmanagerconfig.h"
+#include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
-#include "util/types.h"
+#include "soundio/soundmanagerconfig.h"
 #include "util/cmdlineargs.h"
-
+#include "util/types.h"
 
 class EngineMaster;
 class AudioOutput;
@@ -64,7 +46,7 @@ class SoundManager : public QObject {
     // filterApi, and have at least one output or input channel if the
     // bOutputDevices or bInputDevices are set, respectively.
     QList<SoundDevicePointer> getDeviceList(
-            QString filterAPI, bool bOutputDevices, bool bInputDevices) const;
+            const QString& filterAPI, bool bOutputDevices, bool bInputDevices) const;
 
     // Creates a list of sound devices
     void clearAndQueryDevices();
@@ -85,7 +67,7 @@ class SoundManager : public QObject {
     QString getLastErrorMessage(SoundDeviceError err) const;
 
     // Returns a list of samplerates we will attempt to support for a given API.
-    QList<unsigned int> getSampleRates(QString api) const;
+    QList<unsigned int> getSampleRates(const QString& api) const;
 
     // Convenience overload for SoundManager::getSampleRates(QString)
     QList<unsigned int> getSampleRates() const;
@@ -93,7 +75,7 @@ class SoundManager : public QObject {
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
     SoundManagerConfig getConfig() const;
-    SoundDeviceError setConfig(SoundManagerConfig config);
+    SoundDeviceError setConfig(const SoundManagerConfig& config);
     void checkConfig();
 
     void onDeviceOutputCallback(const SINT iFramesPerBuffer);
@@ -107,8 +89,8 @@ class SoundManager : public QObject {
     void writeProcess() const;
     void readProcess() const;
 
-    void registerOutput(AudioOutput output, AudioSource *src);
-    void registerInput(AudioInput input, AudioDestination *dest);
+    void registerOutput(const AudioOutput& output, AudioSource* src);
+    void registerInput(const AudioInput& input, AudioDestination* dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
@@ -130,8 +112,8 @@ class SoundManager : public QObject {
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
-    void outputRegistered(AudioOutput output, AudioSource *src);
-    void inputRegistered(AudioInput input, AudioDestination *dest);
+    void outputRegistered(const AudioOutput& output, AudioSource* src);
+    void inputRegistered(const AudioInput& input, AudioDestination* dest);
 
   private:
     // Closes all the devices and empties the list of devices we have.
@@ -148,7 +130,7 @@ class SoundManager : public QObject {
     EngineMaster *m_pMaster;
     UserSettingsPointer m_pConfig;
     bool m_paInitialized;
-    unsigned int m_jackSampleRate;
+    mixxx::audio::SampleRate m_jackSampleRate;
     QList<SoundDevicePointer> m_devices;
     QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
@@ -167,5 +149,3 @@ class SoundManager : public QObject {
     ControlProxy* m_pMasterAudioLatencyOverloadCount;
     ControlProxy* m_pMasterAudioLatencyOverload;
 };
-
-#endif

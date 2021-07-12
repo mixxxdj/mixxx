@@ -1,5 +1,4 @@
-#ifndef QTSIMPLEWAVEFORMWIDGET_H
-#define QTSIMPLEWAVEFORMWIDGET_H
+#pragma once
 
 #include <QGLWidget>
 
@@ -28,5 +27,3 @@ class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-
-#endif // QTSIMPLEWAVEFORMWIDGET_H

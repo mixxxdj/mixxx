@@ -1,13 +1,16 @@
-#include <QtDebug>
-#include <QApplication>
-
 #include "widget/wwidgetstack.h"
 
-WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
-        ControlObject* pControl,
-        int index)
+#include <QApplication>
+#include <QtDebug>
+
+#include "moc_wwidgetstack.cpp"
+
+WidgetStackControlListener::WidgetStackControlListener(
+        QObject* pParent, ControlObject* pControl, int index)
         : QObject(pParent),
-          m_control(pControl ? pControl->getKey() : ConfigKey(), this, ControlFlag::AllowEmptyKey),
+          m_control(pControl ? pControl->getKey() : ConfigKey(),
+                  this,
+                  ControlFlag::AllowInvalidKey),
           m_index(index) {
     m_control.connectValueChanged(this, &WidgetStackControlListener::slotValueChanged);
 }
@@ -34,10 +37,10 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
         const ConfigKey& currentPageConfigKey)
         : QStackedWidget(pParent),
           WBaseWidget(this),
-          m_nextControl(nextConfigKey, this, ControlFlag::AllowEmptyKey),
-          m_prevControl(prevConfigKey, this, ControlFlag::AllowEmptyKey),
+          m_nextControl(nextConfigKey, this, ControlFlag::AllowInvalidKey),
+          m_prevControl(prevConfigKey, this, ControlFlag::AllowInvalidKey),
           m_currentPageControl(
-                  currentPageConfigKey, this, ControlFlag::AllowEmptyKey) {
+                  currentPageConfigKey, this, ControlFlag::AllowInvalidKey) {
     m_nextControl.connectValueChanged(this, &WWidgetStack::onNextControlChanged);
     m_prevControl.connectValueChanged(this, &WWidgetStack::onPrevControlChanged);
     m_currentPageControl.connectValueChanged(this, &WWidgetStack::onCurrentPageControlChanged);
@@ -46,8 +49,7 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
 // override
 void WWidgetStack::Init() {
     WBaseWidget::Init();
-    connect(this, SIGNAL(currentChanged(int)),
-            this, SLOT(onCurrentPageChanged(int)));
+    connect(this, &WWidgetStack::currentChanged, this, &WWidgetStack::onCurrentPageChanged);
 }
 
 QSize WWidgetStack::sizeHint() const {
@@ -138,7 +140,7 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
                                         int on_hide_select) {
     int index = addWidget(pWidget);
     if (pControl) {
-        auto pListener = new WidgetStackControlListener(this, pControl, index);
+        auto* pListener = new WidgetStackControlListener(this, pControl, index);
         m_listeners[index] = pListener;
         if (pControl->get() > 0) {
             setCurrentIndex(count()-1);

@@ -1,5 +1,4 @@
-#ifndef WKEY_H
-#define WKEY_H
+#pragma once
 
 #include <QLabel>
 
@@ -26,5 +25,3 @@ class WKey : public WLabel  {
     ControlProxy m_keyNotation;
     ControlProxy m_engineKeyDistance;
 };
-
-#endif /* WKEY_H */

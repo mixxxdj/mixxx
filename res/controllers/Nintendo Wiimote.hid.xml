@@ -4,6 +4,7 @@
         <author>Ilkka Tuohela</author>
         <description>HID mapping for Nintendo Wii Remote Game Controller</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3939</forums>
+        <manual>nintendo_wiimote</manual>
         <devices>
             <product protocol="hid" vendor_id="0x57e" product_id="0x306" usage_page="0x1" usage="0x5" interface_number="0x1" />
             <!-- TODO check correct usage page/usage for wii remote plus -->

@@ -1,24 +1,8 @@
-/***************************************************************************
-                          wlabel.cpp  -  description
-                             -------------------
-    begin                : Wed Jan 5 2005
-    copyright            : (C) 2003 by Tue Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "widget/wlabel.h"
 
 #include <QFont>
 
+#include "moc_wlabel.cpp"
 #include "widget/wskincolor.h"
 
 WLabel::WLabel(QWidget* pParent)
@@ -132,7 +116,8 @@ bool WLabel::event(QEvent* pEvent) {
         // resetting the font to the original css values.
         // Only scale pixel size fonts, point size fonts are scaled by the OS
         if (fonti.pixelSize() > 0) {
-            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
+            const_cast<QFont&>(fonti).setPixelSize(
+                    static_cast<int>(fonti.pixelSize() * m_scaleFactor));
         }
         // measure text with the new font
         setText(m_longText);

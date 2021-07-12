@@ -3,9 +3,10 @@
     schemaVersion="1">
     <info>
         <!-- In Geany, go to Document and then Fold All for easier format. -->
-        <name>Hercules DJ Console RMX 2</name>
+        <name>Hercules DJ Console RMX2</name>
         <author>Circuitfry</author>
         <description>This console's mapping comes with a script.</description>
+        <manual>hercules_dj_console_rmx2</manual>
     </info>
     <controller id="DJConsole">
         <scriptfiles>

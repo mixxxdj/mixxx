@@ -1,8 +1,4 @@
-// browsefeature.h
-// Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef BROWSEFEATURE_H
-#define BROWSEFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
@@ -34,34 +30,33 @@ class BrowseFeature : public LibraryFeature {
             RecordingManager* pRecordingManager);
     virtual ~BrowseFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+            KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void slotAddQuickLink();
     void slotRemoveQuickLink();
     void slotAddToLibrary();
-    void activate();
-    void activateChild(const QModelIndex& index);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-    void onLazyChildExpandation(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
+    void onLazyChildExpandation(const QModelIndex& index) override;
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
 
   signals:
     void setRootIndex(const QModelIndex&);
-    void requestAddDir(QString);
+    void requestAddDir(const QString&);
     void scanLibrary();
 
   private:
     QString getRootViewHtml() const;
-    QString extractNameFromPath(QString spath);
+    QString extractNameFromPath(const QString& spath);
     QStringList getDefaultQuickLinks() const;
     void saveQuickLinks();
     void loadQuickLinks();
@@ -70,15 +65,12 @@ class BrowseFeature : public LibraryFeature {
 
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
-    FolderTreeModel m_childModel;
+    FolderTreeModel* m_pSidebarModel;
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     QAction* m_pAddtoLibraryAction;
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
-    QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
-
-#endif // BROWSEFEATURE_H

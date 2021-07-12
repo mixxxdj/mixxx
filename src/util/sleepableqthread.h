@@ -1,5 +1,4 @@
-// sleepableqthread.h
-// Created May 21, 2012 by Bill Good <bkgood at gmail dot com>
+#pragma once
 
 #include <QThread>
 

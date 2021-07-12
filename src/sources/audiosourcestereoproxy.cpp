@@ -9,15 +9,14 @@ namespace {
 
 const Logger kLogger("AudioSourceStereoProxy");
 
-constexpr audio::ChannelCount kChannelCount = audio::ChannelCount(2);
+constexpr audio::ChannelCount kChannelCount = audio::ChannelCount::stereo();
 
 audio::SignalInfo proxySignalInfo(
         const audio::SignalInfo& signalInfo) {
     DEBUG_ASSERT(signalInfo.isValid());
     return audio::SignalInfo(
             kChannelCount,
-            signalInfo.getSampleRate(),
-            signalInfo.getSampleLayout());
+            signalInfo.getSampleRate());
 }
 
 } // anonymous namespace
@@ -65,7 +64,7 @@ inline bool isDisjunct(
 } // namespace
 
 ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
-        WritableSampleFrames sampleFrames) {
+        const WritableSampleFrames& sampleFrames) {
     if (m_pAudioSource->getSignalInfo().getChannelCount() == kChannelCount) {
         return readSampleFramesClampedOn(*m_pAudioSource, sampleFrames);
     }
@@ -104,8 +103,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
         return readableSampleFrames;
     }
     DEBUG_ASSERT(
-            readableSampleFrames.frameIndexRange() <=
-            sampleFrames.frameIndexRange());
+            readableSampleFrames.frameIndexRange().isSubrangeOf(sampleFrames.frameIndexRange()));
     DEBUG_ASSERT(
             readableSampleFrames.frameIndexRange().start() >=
             sampleFrames.frameIndexRange().start());

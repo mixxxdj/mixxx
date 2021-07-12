@@ -116,14 +116,14 @@ class IAudioSourceReader {
     // empty the internal memory pointer of the returned buffer might
     // be null.
     virtual ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) = 0;
+            const WritableSampleFrames& sampleFrames) = 0;
 
     // The following function is required for accessing the protected
     // read function from siblings implementing this interface, e.g.
     // for proxies and adapters.
     static ReadableSampleFrames readSampleFramesClampedOn(
             IAudioSourceReader& that,
-            WritableSampleFrames sampleFrames) {
+            const WritableSampleFrames& sampleFrames) {
         return that.readSampleFramesClamped(sampleFrames);
     }
 };
@@ -141,15 +141,6 @@ class IAudioSourceReader {
 class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSourceReader {
   public:
     ~AudioSource() override = default;
-
-    // All sources are required to produce a signal of frames
-    // where each frame contains samples from all channels that are
-    // coincident in time.
-    //
-    // A frame for a mono signal contains a single sample. A frame
-    // for a stereo signal contains a pair of samples, one for the
-    // left and right channel respectively.
-    static constexpr audio::SampleLayout kSampleLayout = mixxx::kEngineSampleLayout;
 
     /// Defines how thoroughly the stream properties should be verified
     /// when opening an audio stream.
@@ -178,7 +169,7 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
         /// internal errors of if the format of the content is not
         /// supported it should return Aborted.
         ///
-        /// Returing this error result gives other decoders with a
+        /// Returning this error result gives other decoders with a
         /// lower priority the chance to open the same file.
         /// Example: A SoundSourceProvider has been registered for
         /// files with a certain extension, but the corresponding
@@ -201,16 +192,13 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     // Parameters for opening audio sources
     class OpenParams {
       public:
-        OpenParams()
-                : m_signalInfo(kSampleLayout) {
-        }
+        OpenParams() = default;
         OpenParams(
                 audio::ChannelCount channelCount,
                 audio::SampleRate sampleRate)
                 : m_signalInfo(
                           channelCount,
-                          sampleRate,
-                          kSampleLayout) {
+                          sampleRate) {
         }
 
         const audio::SignalInfo& getSignalInfo() const {
@@ -311,13 +299,13 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     bool verifyReadable();
 
     ReadableSampleFrames readSampleFrames(
-            WritableSampleFrames sampleFrames);
+            const WritableSampleFrames& sampleFrames);
 
   protected:
-    explicit AudioSource(QUrl url);
+    explicit AudioSource(const QUrl& url);
 
     bool initChannelCountOnce(audio::ChannelCount channelCount);
-    bool initChannelCountOnce(SINT channelCount) {
+    bool initChannelCountOnce(int channelCount) {
         return initChannelCountOnce(audio::ChannelCount(channelCount));
     }
 
@@ -384,12 +372,8 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
             const AudioSource& inner,
             const audio::SignalInfo& signalInfo);
 
-    WritableSampleFrames clampWritableSampleFrames(
-            WritableSampleFrames sampleFrames) const;
-    IndexRange clampFrameIndexRange(
-            IndexRange frameIndexRange) const {
-        return intersect(frameIndexRange, this->frameIndexRange());
-    }
+    std::optional<WritableSampleFrames> clampWritableSampleFrames(
+            const WritableSampleFrames& sampleFrames) const;
 
     audio::SignalInfo m_signalInfo;
 

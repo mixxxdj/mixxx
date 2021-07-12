@@ -1,5 +1,4 @@
-#ifndef CONTROLMODEL_H
-#define CONTROLMODEL_H
+#pragma once
 
 #include <QAbstractTableModel>
 #include <QVariant>
@@ -58,5 +57,3 @@ class ControlModel final : public QAbstractTableModel {
     QVector<QHash<int, QVariant> > m_headerInfo;
     QList<ControlInfo> m_controls;
 };
-
-#endif /* CONTROLMODEL_H */

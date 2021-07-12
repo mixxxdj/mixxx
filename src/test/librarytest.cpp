@@ -1,5 +1,7 @@
 #include "test/librarytest.h"
 
+#include "track/track.h"
+
 namespace {
 
 const bool kInMemoryDbConnection = true;
@@ -24,7 +26,7 @@ std::unique_ptr<TrackCollectionManager> newTrackCollectionManager(
             deleteTrack);
 }
 
-}
+} // namespace
 
 LibraryTest::LibraryTest()
         : MixxxDbTest(kInMemoryDbConnection),
@@ -33,7 +35,7 @@ LibraryTest::LibraryTest()
 }
 
 TrackPointer LibraryTest::getOrAddTrackByLocation(
-        const QString& trackLocation) {
+        const QString& trackLocation) const {
     return m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(trackLocation));
+            TrackRef::fromFilePath(trackLocation));
 }

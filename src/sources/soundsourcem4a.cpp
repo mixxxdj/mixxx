@@ -185,8 +185,29 @@ inline bool startsWithADTSHeader(
 
 } // anonymous namespace
 
+//static
+const QString SoundSourceProviderM4A::kDisplayName = QStringLiteral("Nero FAAD2");
+
+//static
+const QStringList SoundSourceProviderM4A::kSupportedFileExtensions = {
+        QStringLiteral("m4a"),
+        QStringLiteral("mp4"),
+};
+
+QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
+    if (faad2::LibLoader::Instance()->isLoaded()) {
+        return kSupportedFileExtensions;
+    } else {
+        return QStringList(); // none available
+    }
+}
+
+SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
+    return newSoundSourceFromUrl<SoundSourceM4A>(url);
+}
+
 SoundSourceM4A::SoundSourceM4A(const QUrl& url)
-        : SoundSource(url, "m4a"),
+        : SoundSource(url),
           m_pFaad(faad2::LibLoader::Instance()),
           m_hFile(MP4_INVALID_FILE_HANDLE),
           m_trackId(MP4_INVALID_TRACK_ID),
@@ -338,7 +359,7 @@ bool SoundSourceM4A::openDecoder() {
 }
 
 bool SoundSourceM4A::reopenDecoder() {
-    auto hNewDecoder = m_pFaad->Open();
+    faad2::DecoderHandle hNewDecoder = m_pFaad->Open();
     if (!hNewDecoder) {
         kLogger.warning() << "Failed to open the AAC decoder";
         return false;
@@ -430,12 +451,12 @@ bool SoundSourceM4A::replaceDecoder(
             return false;
         }
     } else {
-        if (m_pFaad->Init2(
+        if (static_cast<signed char>(m_pFaad->Init2(
                     hNewDecoder,
                     m_pMP4ESConfigBuffer,
                     m_sizeofMP4ESConfigBuffer,
                     &sampleRate,
-                    &channelCount) < 0) {
+                    &channelCount)) < 0) {
             free(m_pMP4ESConfigBuffer);
             m_pMP4ESConfigBuffer = nullptr;
             kLogger.warning() << "Failed to initialize the AAC decoder from "
@@ -507,7 +528,7 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 }
 
 ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     bool retryAfterReopeningDecoder = false;
@@ -726,7 +747,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                 // Either abort or retry by exiting the inner loop
                 break;
             } else {
-                // Reset the retry flag after succesfully decoding a block
+                // Reset the retry flag after successfully decoding a block
                 retryAfterReopeningDecoder = false;
             }
             // Upon a pending retry the inner loop is exited immediately and
@@ -738,19 +759,19 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                     pDecodeBuffer); // verify the in/out parameter
 
             // Verify the decoded sample data for consistency
-            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getChannelCount() ==
-                    decFrameInfo.channels) {
-                kLogger.critical() << "Corrupt or unsupported AAC file:"
-                                   << "Unexpected number of channels"
-                                   << decFrameInfo.channels << "<>"
-                                   << getSignalInfo().getChannelCount();
+            const auto channelCount = mixxx::audio::ChannelCount(decFrameInfo.channels);
+            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getChannelCount() == channelCount) {
+                kLogger.warning() << "Corrupt or unsupported AAC file:"
+                                  << "Unexpected number of channels"
+                                  << channelCount << "<>"
+                                  << getSignalInfo().getChannelCount();
                 break; // abort
             }
-            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getSampleRate() ==
-                    SINT(decFrameInfo.samplerate)) {
-                kLogger.critical()
+            const auto sampleRate = mixxx::audio::SampleRate(decFrameInfo.samplerate);
+            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getSampleRate() == sampleRate) {
+                kLogger.warning()
                         << "Corrupt or unsupported AAC file:"
-                        << "Unexpected sample rate" << decFrameInfo.samplerate
+                        << "Unexpected sample rate" << sampleRate
                         << "<>" << getSignalInfo().getSampleRate();
                 break; // abort
             }
@@ -816,23 +837,6 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
     } while (retryAfterReopeningDecoder);
     DEBUG_ASSERT(!"unreachable");
     return {};
-}
-
-QString SoundSourceProviderM4A::getName() const {
-    return "Nero FAAD2";
-}
-
-QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    if (faad2::LibLoader::Instance()->isLoaded()) {
-        supportedFileExtensions.append("m4a");
-        supportedFileExtensions.append("mp4");
-    }
-    return supportedFileExtensions;
-}
-
-SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
-    return newSoundSourceFromUrl<SoundSourceM4A>(url);
 }
 
 } // namespace mixxx

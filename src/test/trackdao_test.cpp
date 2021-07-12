@@ -1,7 +1,8 @@
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include "test/librarytest.h"
+#include "track/track.h"
 
 using ::testing::UnorderedElementsAre;
 
@@ -14,13 +15,13 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
 
     QString filename = QStringLiteral("file.mp3");
 
-    TrackFile oldFile(QDir(QDir::tempPath() + QStringLiteral("/old/dir1")), filename);
-    TrackFile newFile(QDir(QDir::tempPath() + QStringLiteral("/new/dir1")), filename);
-    TrackFile otherFile(QDir(QDir::tempPath() + QStringLiteral("/new")), filename);
+    mixxx::FileInfo oldFile(QDir(QDir::tempPath() + QStringLiteral("/old/dir1")), filename);
+    mixxx::FileInfo newFile(QDir(QDir::tempPath() + QStringLiteral("/new/dir1")), filename);
+    mixxx::FileInfo otherFile(QDir(QDir::tempPath() + QStringLiteral("/new")), filename);
 
-    TrackPointer pOldTrack = Track::newTemporary(oldFile);
-    TrackPointer pNewTrack = Track::newTemporary(newFile);
-    TrackPointer pOtherTrack = Track::newTemporary(otherFile);
+    TrackPointer pOldTrack = Track::newTemporary(mixxx::FileAccess(oldFile));
+    TrackPointer pNewTrack = Track::newTemporary(mixxx::FileAccess(newFile));
+    TrackPointer pOtherTrack = Track::newTemporary(mixxx::FileAccess(otherFile));
 
     // Arbitrary duration
     pOldTrack->setDuration(135);
@@ -44,7 +45,7 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
 
     QSet<TrackId> updatedTrackIds;
     QSet<TrackId> removedTrackIds;
-    for (const auto& relocatedTrack : relocatedTracks) {
+    for (const auto& relocatedTrack : qAsConst(relocatedTracks)) {
         updatedTrackIds.insert(relocatedTrack.updatedTrackRef().getId());
         removedTrackIds.insert(relocatedTrack.deletedTrackId());
     }

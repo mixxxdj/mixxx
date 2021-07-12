@@ -2,8 +2,9 @@
 
 #include <QtDebug>
 
-#include "control/controlproxy.h"
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "moc_visualplayposition.cpp"
 #include "util/math.h"
 #include "waveform/vsyncthread.h"
 
@@ -38,7 +39,7 @@ void VisualPlayPosition::set(double playPos, double rate, double positionStep,
         double slipPosition, double tempoTrackSeconds) {
     VisualPlayPositionData data;
     data.m_referenceTime = m_timeInfoTime;
-    data.m_callbackEntrytoDac = m_dCallbackEntryToDacSecs * 1000000; // s to µs
+    data.m_callbackEntrytoDac = static_cast<int>(m_dCallbackEntryToDacSecs * 1000000); // s to µs
     data.m_enginePlayPos = playPos;
     data.m_rate = rate;
     data.m_positionStep = positionStep;
@@ -112,7 +113,7 @@ void VisualPlayPosition::slotAudioBufferSizeChanged(double sizeMillis) {
 }
 
 //static
-QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(QString group) {
+QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(const QString& group) {
     QSharedPointer<VisualPlayPosition> vpp = m_listVisualPlayPosition.value(group);
     if (vpp.isNull()) {
         vpp = QSharedPointer<VisualPlayPosition>(new VisualPlayPosition(group));

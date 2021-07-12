@@ -45,17 +45,17 @@ default_language_version:
   python: python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.1.0
+  rev: v3.3.0
   hooks:
-  - id: check-byte-order-marker
+  - id: fix-byte-order-marker
     exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
   - id: check-case-conflict
   - id: check-json
   - id: check-merge-conflict
   - id: check-xml
   - id: check-yaml
+    exclude: ^\.clang-format$
   - id: end-of-file-fixer
-    exclude: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
     stages:
     - commit
     - manual
@@ -66,8 +66,15 @@ repos:
     - commit
     - manual
   - id: no-commit-to-branch
+- repo: https://github.com/codespell-project/codespell
+  rev: v1.17.1
+  hooks:
+  - id: codespell
+    # ignore-regex is substituted by ' '
+    entry: tools/codespell.py --ignore-file .codespellignore --ignore-regex "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))" --files
+    exclude: ^(\.codespellignore|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v7.2.0
+  rev: v7.12.1
   hooks:
   - id: eslint
     args: [--fix, --report-unused-disable-directives]
@@ -86,19 +93,21 @@ repos:
     - manual
     language: python
     files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
-    additional_dependencies:
-    - clang-format
 - repo: https://github.com/psf/black
-  rev: stable
+  rev: 20.8b1
   hooks:
   - id: black
     files: ^tools/.*$
 - repo: https://gitlab.com/pycqa/flake8
-  rev: '3.8.3'
+  rev: '3.8.4'
   hooks:
   - id: flake8
     files: ^tools/.*$
     types: [text, python]
+- repo: https://github.com/shellcheck-py/shellcheck-py
+  rev: v0.7.1.1
+  hooks:
+  - id: shellcheck
 - repo: local
   hooks:
   - id: qsscheck
@@ -115,3 +124,18 @@ repos:
     stages:
     - commit
     - manual
+  - id: qmlformat
+    name: qmlformat
+    entry: tools/qmlformat.py
+    pass_filenames: true
+    language: system
+    types: [text]
+    files: ^.*\.qml$
+  - id: qmllint
+    name: qmllint
+    entry: qmllint
+    pass_filenames: true
+    require_serial: true
+    language: system
+    types: [text]
+    files: ^.*\.qml$

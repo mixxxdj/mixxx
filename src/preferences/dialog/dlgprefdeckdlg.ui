@@ -207,7 +207,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
      <layout class="QGridLayout" name="gridLayout_7">
       <item row="0" column="0">
        <layout class="QGridLayout" name="GridLayoutSpeedOptions">
-        <item row="7" column="1">
+        <item row="9" column="2">
          <widget class="QDoubleSpinBox" name="spinBoxPermanentRateCoarse">
           <property name="toolTip">
            <string>Permanent rate change when left-clicking</string>
@@ -235,7 +235,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="8" column="1">
+        <item row="9" column="1">
          <widget class="QDoubleSpinBox" name="spinBoxPermanentRateFine">
           <property name="toolTip">
            <string>Permanent rate change when right-clicking</string>
@@ -283,7 +283,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </attribute>
          </widget>
         </item>
-        <item row="8" column="2">
+        <item row="8" column="1">
          <widget class="QDoubleSpinBox" name="spinBoxTemporaryRateFine">
           <property name="enabled">
            <bool>false</bool>
@@ -314,7 +314,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="1">
+        <item row="9" column="0">
          <widget class="QLabel" name="labelSpeedPermanent">
           <property name="text">
            <string>Permanent</string>
@@ -324,7 +324,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="1" colspan="2">
+        <item row="6" column="1" colspan="2">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QSlider" name="SliderRateRampSensitivity">
@@ -372,7 +372,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </item>
          </layout>
         </item>
-        <item row="6" column="2">
+        <item row="8" column="0">
          <widget class="QLabel" name="labelSpeedTemporary">
           <property name="enabled">
            <bool>false</bool>
@@ -395,7 +395,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
+        <item row="6" column="0">
          <widget class="QLabel" name="labelSpeedRampSensitivity">
           <property name="enabled">
            <bool>false</bool>
@@ -408,7 +408,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="labelSpeedBendBehavior">
           <property name="text">
            <string>Pitch bend behavior</string>
@@ -428,7 +428,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </attribute>
          </widget>
         </item>
-        <item row="7" column="2">
+        <item row="8" column="2">
          <widget class="QDoubleSpinBox" name="spinBoxTemporaryRateCoarse">
           <property name="enabled">
            <bool>false</bool>
@@ -464,9 +464,6 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           <property name="text">
            <string>Speed/Tempo</string>
           </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedPitchReset</string>
-          </attribute>
          </widget>
         </item>
         <item row="1" column="1">
@@ -474,19 +471,16 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           <property name="text">
            <string>Key/Pitch</string>
           </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedPitchReset</string>
-          </attribute>
          </widget>
         </item>
-        <item row="6" column="0">
+        <item row="7" column="0">
          <widget class="QLabel" name="labelSpeedAdjustment">
           <property name="text">
            <string>Adjustment buttons:</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="0">
+        <item row="7" column="2">
          <widget class="QLabel" name="labelSpeedCoarse">
           <property name="enabled">
            <bool>true</bool>
@@ -501,7 +495,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
            <string>Coarse</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <set>Qt::AlignCenter</set>
           </property>
           <property name="wordWrap">
            <bool>false</bool>
@@ -511,7 +505,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="8" column="0">
+        <item row="7" column="1">
          <widget class="QLabel" name="labelSpeedFine">
           <property name="enabled">
            <bool>true</bool>
@@ -526,7 +520,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
            <string>Fine</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <set>Qt::AlignCenter</set>
           </property>
           <property name="wordWrap">
            <bool>false</bool>
@@ -575,7 +569,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="2">
+        <item row="5" column="2">
          <widget class="QRadioButton" name="radioButtonRateRampModeStepping">
           <property name="text">
            <string>Abrupt jump</string>
@@ -585,7 +579,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </attribute>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="5" column="1">
          <widget class="QRadioButton" name="radioButtonRateRampModeLinear">
           <property name="toolTip">
            <string>Smoothly adjusts deck speed when temporary change buttons are held down</string>
@@ -625,13 +619,26 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </attribute>
          </widget>
         </item>
+        <item row="4" column="0">
+         <spacer name="verticalSpacer1">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>15</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </item>
      </layout>
     </widget>
    </item>
    <item row="2" column="0">
-    <spacer name="verticalSpacer">
+    <spacer name="verticalSpacer2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -648,10 +655,14 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>ComboBoxCueMode</tabstop>
+  <tabstop>checkBoxIntroStartMove</tabstop>
   <tabstop>radioButtonElapsed</tabstop>
   <tabstop>radioButtonRemaining</tabstop>
   <tabstop>radioButtonElapsedAndRemaining</tabstop>
+  <tabstop>comboBoxTimeFormat</tabstop>
+  <tabstop>comboBoxLoadPoint</tabstop>
   <tabstop>checkBoxDisallowLoadToPlayingDeck</tabstop>
+  <tabstop>checkBoxCloneDeckOnLoadDoubleTap</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
   <tabstop>checkBoxInvertSpeedSlider</tabstop>
   <tabstop>checkBoxResetPitch</tabstop>
@@ -670,145 +681,10 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>spinBoxTemporaryRateFine</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>SliderRateRampSensitivity</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpinBoxRateRampSensitivity</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>372</x>
-     <y>442</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>437</x>
-     <y>445</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SpinBoxRateRampSensitivity</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SliderRateRampSensitivity</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>437</x>
-     <y>445</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>372</x>
-     <y>442</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeLinear</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>labelSpeedRampSensitivity</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>438</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>117</x>
-     <y>446</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeLinear</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SliderRateRampSensitivity</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>438</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>372</x>
-     <y>442</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeLinear</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SpinBoxRateRampSensitivity</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>438</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>437</x>
-     <y>445</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeStepping</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>labelSpeedTemporary</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>438</x>
-     <y>467</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeStepping</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>spinBoxTemporaryRateCoarse</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>438</x>
-     <y>493</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeStepping</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>spinBoxTemporaryRateFine</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>438</x>
-     <y>521</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
  <buttongroups>
   <buttongroup name="buttonGroupTrackTime"/>
   <buttongroup name="buttonGroupKeyUnlockMode"/>
   <buttongroup name="buttonGroupKeyLockMode"/>
   <buttongroup name="buttonGroupSpeedBendBehavior"/>
-  <buttongroup name="buttonGroupSpeedPitchReset">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
  </buttongroups>
 </ui>

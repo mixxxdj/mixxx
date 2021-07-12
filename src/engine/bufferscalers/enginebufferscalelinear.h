@@ -1,5 +1,4 @@
-#ifndef ENGINEBUFFERSCALELINEAR_H
-#define ENGINEBUFFERSCALELINEAR_H
+#pragma once
 
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/readaheadmanager.h"
@@ -45,5 +44,3 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
     double m_dCurrentFrame;
     double m_dNextFrame;
 };
-
-#endif

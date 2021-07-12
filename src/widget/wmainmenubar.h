@@ -1,5 +1,4 @@
-#ifndef WIDGET_WMAINMENUBAR
-#define WIDGET_WMAINMENUBAR
+#pragma once
 
 #include <QAction>
 #include <QList>
@@ -17,9 +16,11 @@ class VisibilityControlConnection : public QObject {
     VisibilityControlConnection(QObject* pParent, QAction* pAction,
                                 const ConfigKey& key);
 
-  private slots:
+  public slots:
     void slotClearControl();
     void slotReconnectControl();
+
+  private slots:
     void slotControlChanged();
     void slotActionToggled(bool toggle);
 
@@ -47,6 +48,7 @@ class WMainMenuBar : public QMenuBar {
     void onFullScreenStateChange(bool fullscreen);
     void onVinylControlDeckEnabledStateChange(int deck, bool enabled);
     void onNumberOfDecksChanged(int decks);
+    void onKeywheelChange(int state);
 
   signals:
     void createCrate();
@@ -54,7 +56,11 @@ class WMainMenuBar : public QMenuBar {
     void loadTrackToDeck(int deck);
     void reloadSkin();
     void rescanLibrary();
+#ifdef __ENGINEPRIME__
+    void exportLibrary();
+#endif
     void showAbout();
+    void showKeywheel(bool visible);
     void showPreferences();
     void toggleDeveloperTools(bool toggle);
     void toggleFullScreen(bool toggle);
@@ -62,7 +68,7 @@ class WMainMenuBar : public QMenuBar {
     void toggleBroadcasting(bool toggle);
     void toggleRecording(bool enabled);
     void toggleVinylControl(int deck);
-    void visitUrl(QString url);
+    void visitUrl(const QString& url);
     void quit();
 
     void internalRecordingStateChange(bool recording);
@@ -70,6 +76,7 @@ class WMainMenuBar : public QMenuBar {
     void internalFullScreenStateChange(bool fullscreen);
     void internalLibraryScanActive(bool active);
     void internalDeveloperToolsStateChange(bool visible);
+    void internalKeywheelStateChanged(int state);
     void internalOnNewSkinLoaded();
     void internalOnNewSkinAboutToLoad();
 
@@ -84,9 +91,8 @@ class WMainMenuBar : public QMenuBar {
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     UserSettingsPointer m_pConfig;
+    QAction* m_pViewKeywheel;
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;
 };
-
-#endif /* WIDGET_WMAINMENUBAR */

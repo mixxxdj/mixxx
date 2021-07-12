@@ -48,7 +48,7 @@
                   <WidgetGroup>
                     <Size>1f,0min</Size>
                     <Connection>
-                      <ConfigKey persist="true">[Skin],show_rate_key_controls_compact</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -61,6 +61,28 @@
 
             </Children>
           </WidgetGroup><!-- DeckRows2345 -->
+
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>DeckRateSpacer</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Children/>
+                <Connection>
+                  <ConfigKey persist="true">[LateNight],show_vumeters_compact</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
           <Template src="skin:/decks/rate_controls_compact.xml"/>
 

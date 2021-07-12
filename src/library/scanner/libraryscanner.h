@@ -1,24 +1,24 @@
-#ifndef MIXXX_LIBRARYSCANNER_H
-#define MIXXX_LIBRARYSCANNER_H
+#pragma once
 
+#include <gtest/gtest_prod.h>
+
+#include <QList>
+#include <QScopedPointer>
+#include <QSemaphore>
+#include <QString>
 #include <QThread>
 #include <QThreadPool>
-#include <QString>
-#include <QStringList>
-#include <QSemaphore>
-#include <QScopedPointer>
 
+#include "library/dao/analysisdao.h"
 #include "library/dao/cuedao.h"
-#include "library/dao/libraryhashdao.h"
 #include "library/dao/directorydao.h"
+#include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
-#include "library/dao/analysisdao.h"
 #include "library/scanner/scannerglobal.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
-
-#include <gtest/gtest.h>
 
 class ScannerTask;
 class LibraryScannerDlg;
@@ -43,12 +43,12 @@ class LibraryScanner : public QThread {
   signals:
     void scanStarted();
     void scanFinished();
-    void progressHashing(QString);
-    void progressLoading(QString path);
-    void progressCoverArt(QString file);
+    void progressHashing(const QString&);
+    void progressLoading(const QString& path);
+    void progressCoverArt(const QString& file);
     void trackAdded(TrackPointer pTrack);
-    void tracksChanged(QSet<TrackId> changedTrackIds);
-    void tracksRelocated(QList<RelocatedTrack> relocatedTracks);
+    void tracksChanged(const QSet<TrackId>& changedTrackIds);
+    void tracksRelocated(const QList<RelocatedTrack>& relocatedTracks);
 
     // Emitted by scan() to invoke slotStartScan in the scanner thread's event
     // loop.
@@ -119,8 +119,6 @@ class LibraryScanner : public QThread {
     // this is accessed main and LibraryScanner thread
     volatile ScannerState m_state;
 
-    QStringList m_libraryRootDirs;
+    QList<mixxx::FileInfo> m_libraryRootDirs;
     QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
 };
-
-#endif // MIXXX_LIBRARYSCANNER_H

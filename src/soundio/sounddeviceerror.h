@@ -1,5 +1,4 @@
-#ifndef SOUNDDEVICEERROR_H
-#define SOUNDDEVICEERROR_H
+#pragma once
 
 // Used for returning errors from sounddevice functions.
 enum SoundDeviceError {
@@ -10,5 +9,3 @@ enum SoundDeviceError {
     SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL,
     SOUNDDEVICE_ERROR_DEVICE_COUNT
 };
-
-#endif /* SOUNDDEVICEERROR_H */

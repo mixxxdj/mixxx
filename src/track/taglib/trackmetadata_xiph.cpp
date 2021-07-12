@@ -31,6 +31,7 @@ const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredPictureTypes{{
         TagLib::FLAC::Picture::Other,
 }};
 
+const TagLib::String kCommentFieldKeySeratoBeatGrid = "SERATO_BEATGRID";
 const TagLib::String kCommentFieldKeySeratoMarkers2FLAC = "SERATO_MARKERS_V2";
 const TagLib::String kCommentFieldKeySeratoMarkers2Ogg = "SERATO_MARKERS2";
 
@@ -78,7 +79,7 @@ void writeCommentField(
         const TagLib::String& value) {
     if (value.isEmpty()) {
         // Purge empty fields
-        pTag->removeField(key);
+        pTag->removeFields(key);
     } else {
         const bool replace = true;
         pTag->addField(key, value, replace);
@@ -130,7 +131,7 @@ QImage importCoverImageFromPictureList(
     }
 
     for (const auto coverArtType : kPreferredPictureTypes) {
-        for (const auto pPicture : pictures) {
+        for (auto* const pPicture : pictures) {
             DEBUG_ASSERT(pPicture); // trust TagLib
             if (pPicture->type() == coverArtType) {
                 const QImage image(loadImageFromPicture(*pPicture));
@@ -147,7 +148,7 @@ QImage importCoverImageFromPictureList(
     }
 
     // Fallback: No best match -> Create image from first loadable picture of any type
-    for (const auto pPicture : pictures) {
+    for (auto* const pPicture : pictures) {
         DEBUG_ASSERT(pPicture); // trust TagLib
         const QImage image(loadImageFromPicture(*pPicture));
         if (image.isNull()) {
@@ -471,6 +472,16 @@ void importTrackMetadataFromTag(
     // FIXME: We're only parsing FLAC tags for now, since the Ogg format is
     // different we don't support it yet.
     if (fileType == FileType::FLAC) {
+        TagLib::String seratoBeatGridData;
+        if (readCommentField(tag,
+                    kCommentFieldKeySeratoBeatGrid,
+                    &seratoBeatGridData)) {
+            parseSeratoBeatGrid(
+                    pTrackMetadata,
+                    seratoBeatGridData,
+                    fileType);
+        }
+
         TagLib::String seratoMarkers2Data;
         if (readCommentField(tag,
                     kCommentFieldKeySeratoMarkers2FLAC,
@@ -590,22 +601,23 @@ bool exportTrackMetadataIntoTag(
             pTag, "DISCNUMBER", toTString(trackMetadata.getTrackInfo().getDiscNumber()));
 #endif // __EXTRA_METADATA__
 
-    // Export of Serato markers is disabled, because Mixxx
-    // does not modify them.
-#if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
     //
     // FIXME: We're only dumping FLAC tags for now, since the Ogg format is
     // different we don't support it yet.
-    if (fileType == FileType::FLAC) {
+    if (fileType == FileType::FLAC &&
+            trackMetadata.getTrackInfo().getSeratoTags().status() !=
+                    SeratoTags::ParserStatus::Failed) {
+        writeCommentField(
+                pTag,
+                kCommentFieldKeySeratoBeatGrid,
+                dumpSeratoBeatGrid(trackMetadata, fileType));
+
         writeCommentField(
                 pTag,
                 kCommentFieldKeySeratoMarkers2FLAC,
                 dumpSeratoMarkers2(trackMetadata, fileType));
     }
-#else
-    Q_UNUSED(fileType);
-#endif // __EXPORT_SERATO_MARKERS__
 
     return true;
 }

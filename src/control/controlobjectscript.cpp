@@ -1,9 +1,12 @@
-#include <QtDebug>
-
 #include "control/controlobjectscript.h"
 
+#include <QtDebug>
+
+#include "controllers/controllerdebug.h"
+#include "moc_controlobjectscript.cpp"
+
 ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
-        : ControlProxy(key, pParent, ControlFlag::NoAssertIfMissing) {
+        : ControlProxy(key, pParent, ControllerDebug::controlFlags()) {
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
@@ -22,7 +25,7 @@ bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
                 Qt::QueuedConnection);
     }
 
-    for (const auto& priorConnection: m_scriptConnections) {
+    for (const auto& priorConnection : qAsConst(m_scriptConnections)) {
         if (conn == priorConnection) {
             qWarning() << "Connection " + conn.id.toString() +
                           " already connected to (" +
@@ -66,7 +69,7 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
 
 void ControlObjectScript::disconnectAllConnectionsToFunction(const QJSValue& function) {
     // Make a local copy of m_scriptConnections because items are removed within the loop.
-    const QList<ScriptConnection> connections = m_scriptConnections;
+    const QVector<ScriptConnection> connections = m_scriptConnections;
     for (const auto& conn: connections) {
         if (conn.callback.strictlyEquals(function)) {
             removeScriptConnection(conn);
@@ -79,7 +82,7 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // This allows a script to disconnect a callback from inside the
     // the callback. Otherwise the this may crash since the disconnect call
     // happens during conn.function.call() in the middle of the loop below.
-    const QList<ScriptConnection> connections = m_scriptConnections;
+    const QVector<ScriptConnection> connections = m_scriptConnections;
     for (auto&& conn: connections) {
         conn.executeCallback(value);
     }

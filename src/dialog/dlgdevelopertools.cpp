@@ -3,9 +3,10 @@
 #include <QDateTime>
 
 #include "control/control.h"
+#include "moc_dlgdevelopertools.cpp"
 #include "util/cmdlineargs.h"
-#include "util/statsmanager.h"
 #include "util/logging.h"
+#include "util/statsmanager.h"
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      UserSettingsPointer pConfig)
@@ -26,7 +27,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                       pControl->description());
 
             ConfigKey aliasKey = controlAliases[pControl->getKey()];
-            if (!aliasKey.isNull()) {
+            if (aliasKey.isValid()) {
                 m_controlModel.addControl(aliasKey, pControl->name(),
                                           "Alias for " + pControl->getKey().group + pControl->getKey().item);
             }

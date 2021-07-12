@@ -1,5 +1,7 @@
 #include "util/tapfilter.h"
 
+#include "moc_tapfilter.cpp"
+
 TapFilter::TapFilter(QObject* pParent, int filterLength, mixxx::Duration maxInterval)
         : QObject(pParent),
           m_mean(MovingInterquartileMean(filterLength)),

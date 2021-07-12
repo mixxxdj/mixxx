@@ -1,20 +1,3 @@
-/***************************************************************************
-                          dlgprefkey.cpp  -  description
-                             -------------------
-    begin                : Thu Jun 7 2012
-    copyright            : (C) 2012 by Keith Salisbury
-    email                : keithsalisbury@gmail.com
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "preferences/dialog/dlgprefkey.h"
 
 #include <QLineEdit>
@@ -22,6 +5,7 @@
 
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "moc_dlgprefkey.cpp"
 #include "util/compatibility.h"
 #include "util/xml.h"
 
@@ -60,8 +44,8 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
 
     m_availablePlugins = AnalyzerKey::availablePlugins();
-    for (const auto& info : m_availablePlugins) {
-        plugincombo->addItem(info.name, info.id);
+    for (const auto& info : qAsConst(m_availablePlugins)) {
+        plugincombo->addItem(info.name(), info.id());
     }
 
     m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
@@ -158,7 +142,7 @@ void DlgPrefKey::slotResetToDefaults() {
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysisDefault();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChangeDefault();
     if (m_availablePlugins.size() > 0) {
-        m_selectedAnalyzerId = m_availablePlugins[0].id;
+        m_selectedAnalyzerId = m_availablePlugins[0].id();
     }
 
     KeyUtils::KeyNotation notation_type;
@@ -185,7 +169,7 @@ void DlgPrefKey::pluginSelected(int i) {
     if (i == -1) {
         return;
     }
-    m_selectedAnalyzerId = m_availablePlugins[i].id;
+    m_selectedAnalyzerId = m_availablePlugins[i].id();
     slotUpdate();
 }
 
@@ -268,7 +252,7 @@ void DlgPrefKey::slotUpdate() {
         bool found = false;
         for (int i = 0; i < m_availablePlugins.size(); ++i) {
             const auto& info = m_availablePlugins.at(i);
-            if (info.id == m_selectedAnalyzerId) {
+            if (info.id() == m_selectedAnalyzerId) {
                 plugincombo->setCurrentIndex(i);
                 found = true;
                 break;
@@ -276,7 +260,7 @@ void DlgPrefKey::slotUpdate() {
         }
         if (!found) {
             plugincombo->setCurrentIndex(0);
-            m_selectedAnalyzerId = m_availablePlugins[0].id;
+            m_selectedAnalyzerId = m_availablePlugins[0].id();
         }
     }
 }

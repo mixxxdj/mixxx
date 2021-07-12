@@ -1,11 +1,15 @@
 #include "library/trackset/basetracksetfeature.h"
 
+#include "moc_basetracksetfeature.cpp"
+
 BaseTrackSetFeature::BaseTrackSetFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
-        const QString& rootViewName)
-        : LibraryFeature(pLibrary, pConfig),
-          m_rootViewName(rootViewName) {
+        const QString& rootViewName,
+        const QString& iconName)
+        : LibraryFeature(pLibrary, pConfig, iconName),
+          m_rootViewName(rootViewName),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)) {
 }
 
 void BaseTrackSetFeature::activate() {

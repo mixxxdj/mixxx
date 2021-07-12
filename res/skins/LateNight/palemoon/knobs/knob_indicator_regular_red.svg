@@ -223,7 +223,7 @@
          stop-opacity="0"
          offset="1"
          id="stop6-2"
-         style="stop-color:#aa0000;stop-opacity:1" />
+         style="stop-color:#da0606;stop-opacity:1" />
     </radialGradient>
     <linearGradient
        id="b-6"
@@ -248,7 +248,7 @@
      d="m 17.309704,6.9472657 0.01953,6.8964843 c 7.77e-4,0.689172 0.276853,1.179881 0.758656,1.570312 0.482287,0.390825 1.127815,0.541246 1.867187,0.541246 0.703131,0 1.348346,-0.09195 1.857422,-0.457261 0.509076,-0.365309 0.806399,-0.88929 0.87389,-1.558594 l 0.0039,-0.04297 v -0.04101 l 0.002,-6.8515627 C 20.169753,6.3462161 19.847674,6.3199505 17.309704,6.9472657 Z"
      id="path19" />
   <path
-     style="fill:#aa0000;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style="fill:#da0606;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="m 20,5.692956 c 1.108,0 1.84375,0.609531 1.84375,1.717531 l 0,6.043005 c 0,1.108 -0.73575,1.701689 -1.84375,1.701689 -1.108,0 -1.84375,-0.593689 -1.84375,-1.701689 l 0,-6.043005 c 0,-1.108 0.73575,-1.717531 1.84375,-1.717531 z"
      id="rect825-9" />
   <path

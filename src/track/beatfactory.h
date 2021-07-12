@@ -1,41 +1,34 @@
-#ifndef BEATFACTORY_H
-#define BEATFACTORY_H
+#pragma once
 
 #include <QHash>
 
+#include "audio/frame.h"
+#include "audio/types.h"
 #include "track/beats.h"
-#include "track/track.h"
+#include "track/bpm.h"
+
+class Track;
 
 class BeatFactory {
   public:
-    static mixxx::BeatsPointer loadBeatsFromByteArray(const Track& track,
-            QString beatsVersion,
-            QString beatsSubVersion,
+    static mixxx::BeatsPointer loadBeatsFromByteArray(
+            mixxx::audio::SampleRate sampleRate,
+            const QString& beatsVersion,
+            const QString& beatsSubVersion,
             const QByteArray& beatsSerialized);
-    static mixxx::BeatsPointer makeBeatGrid(const Track& track,
-            double dBpm,
-            double dFirstBeatSample);
+    static mixxx::BeatsPointer makeBeatGrid(
+            mixxx::audio::SampleRate sampleRate,
+            mixxx::Bpm bpm,
+            mixxx::audio::FramePos firstBeatFramePos);
 
-    static QString getPreferredVersion(const bool bEnableFixedTempoCorrection);
+    static QString getPreferredVersion(bool fixedTempo);
 
     static QString getPreferredSubVersion(
-        const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iMinBpm, const int iMaxBpm,
-        const QHash<QString, QString> extraVersionInfo);
+            const QHash<QString, QString>& extraVersionInfo);
 
-    static mixxx::BeatsPointer makePreferredBeats(const Track& track,
-            QVector<double> beats,
-            const QHash<QString, QString> extraVersionInfo,
-            const bool bEnableFixedTempoCorrection,
-            const bool bEnableOffsetCorrection,
-            const int iSampleRate,
-            const int iTotalSamples,
-            const int iMinBpm,
-            const int iMaxBpm);
-
-  private:
-    static void deleteBeats(mixxx::Beats* pBeats);
+    static mixxx::BeatsPointer makePreferredBeats(
+            const QVector<mixxx::audio::FramePos>& beats,
+            const QHash<QString, QString>& extraVersionInfo,
+            bool fixedTempo,
+            mixxx::audio::SampleRate sampleRate);
 };
-
-#endif /* BEATFACTORY_H */

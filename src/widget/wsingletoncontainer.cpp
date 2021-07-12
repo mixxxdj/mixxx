@@ -2,10 +2,10 @@
 
 #include <QLayout>
 
+#include "moc_wsingletoncontainer.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/assert.h"
-#include "skin/skincontext.h"
 #include "widget/wlibrary.h"
-
 
 WSingletonContainer::WSingletonContainer(QWidget* pParent)
         : WWidgetGroup(pParent), m_pWidget(nullptr), m_pLayout(nullptr) { }
@@ -58,7 +58,7 @@ void WSingletonContainer::showEvent(QShowEvent* event) {
     }
 }
 
-void SingletonMap::insertSingleton(QString objectName, QWidget* widget) {
+void SingletonMap::insertSingleton(const QString& objectName, QWidget* widget) {
     if (m_singletons.contains(objectName)){
         qWarning() << "ERROR: Tried to insert a singleton with a name that has"
                    << "already been inserted:" << objectName;
@@ -67,6 +67,6 @@ void SingletonMap::insertSingleton(QString objectName, QWidget* widget) {
     m_singletons.insert(objectName, widget);
 }
 
-QWidget* SingletonMap::getSingletonWidget(QString objectName) const {
+QWidget* SingletonMap::getSingletonWidget(const QString& objectName) const {
     return m_singletons.value(objectName, nullptr);
 }

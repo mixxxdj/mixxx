@@ -52,9 +52,19 @@
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
+                  <!-- Indicates if this FxUnit can currently be accessed by controller.
+                       To be used with default midi-components.js mapping -->
+                  <Label>
+                    <ObjectName>FxUnitControllerInputIndicator</ObjectName>
+                    <Size>2f,0min</Size>
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],controller_input_active</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </Label>
                   <WidgetGroup>
                     <SizePolicy>me,min</SizePolicy>
-                    <MinimumSize>1,0</MinimumSize>
+                    <MinimumSize>3,0</MinimumSize>
                   </WidgetGroup>
                   <Label>
                     <ObjectName>FxUnitLabel</ObjectName>
@@ -62,6 +72,10 @@
                     <MinimunSize>30,20</MinimunSize>
                     <MaximumSize>38,</MaximumSize>
                     <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],controller_input_active</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
                   </Label>
                   <WidgetGroup>
                     <SizePolicy>me,min</SizePolicy>
@@ -84,6 +98,7 @@
                   </PushButton>
                 </Children>
               </WidgetGroup><!-- Fx label & icon -->
+
             </Children>
           </WidgetGroup><!-- transparent expand button on top of Fx label & icon -->
         </Children>
@@ -121,7 +136,7 @@
             </Connection>
           </PushButton>
           <Template src="skin:/controls/button_2state.xml">
-            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
             <SetVariable name="ObjectName">PflButton</SetVariable>
             <SetVariable name="Size">26f,26f</SetVariable>
             <SetVariable name="BtnSize">square</SetVariable>
@@ -139,11 +154,11 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:/controls/knob_textless.xml">
-            <SetVariable name="Size">40f,34f</SetVariable>
+          <Template src="skin:/controls/knob.xml">
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="ObjectName">SuperKnob</SetVariable>
-            <SetVariable name="KnobBg">regular</SetVariable>
-            <SetVariable name="KnobIndicator">regular</SetVariable>
+            <SetVariable name="KnobBg">small</SetVariable>
+            <SetVariable name="KnobIndicator">small</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorSuper"/></SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="Group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
@@ -162,11 +177,11 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:/controls/knob_textless.xml">
-            <SetVariable name="Size">40f,34f</SetVariable>
+          <Template src="skin:/controls/knob.xml">
+            <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="ObjectName">DryWetKnob</SetVariable>
-            <SetVariable name="KnobBg">regular</SetVariable>
-            <SetVariable name="KnobIndicator">regular</SetVariable>
+            <SetVariable name="KnobBg">small</SetVariable>
+            <SetVariable name="KnobIndicator">small</SetVariable>
             <SetVariable name="KnobColor">red</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorFxMix"/></SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>

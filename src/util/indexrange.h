@@ -1,14 +1,12 @@
 #pragma once
 
-
 #include <QtDebug>
-
 #include <iosfwd>
 #include <utility>
 
 #include "util/assert.h"
+#include "util/optional.h"
 #include "util/types.h"
-
 
 namespace mixxx {
 
@@ -142,6 +140,8 @@ class IndexRange final: private std::pair<SINT, SINT> {
     // the length of this range.
     IndexRange splitAndShrinkBack(SINT backLength);
 
+    bool isSubrangeOf(IndexRange outerIndexRange) const;
+
     friend
     bool operator==(IndexRange lhs, IndexRange rhs) {
         return (lhs.first == rhs.first) && (lhs.second == rhs.second);
@@ -153,35 +153,26 @@ class IndexRange final: private std::pair<SINT, SINT> {
     }
 };
 
-IndexRange reverse(IndexRange arg);
+/// Intersect two ranges with compatible orientations.
+///
+/// Returns std::nullopt of the ranges are disconnected without
+/// any junction point or on orientation mismatch.
+///
+/// TODO: Rename as intersect() after removing the original function
+/// with the non-optional return type
+std::optional<IndexRange> intersect2(IndexRange lhs, IndexRange rhs);
 
-IndexRange intersect(IndexRange lhs, IndexRange rhs);
-
-IndexRange span(IndexRange lhs, IndexRange rhs);
+/// Deprecated, only needed for backward compatibility
+///
+/// TODO: Replace with intersect2()
+inline IndexRange intersect(IndexRange lhs, IndexRange rhs) {
+    auto res = intersect2(lhs, rhs);
+    return res ? *res : IndexRange();
+}
 
 inline
 bool operator!=(IndexRange lhs, IndexRange rhs) {
     return !(lhs == rhs);
-}
-
-inline
-bool operator<=(IndexRange lhs, IndexRange rhs) {
-    return intersect(lhs, rhs) == lhs;
-}
-
-inline
-bool operator>=(IndexRange lhs, IndexRange rhs) {
-    return rhs <= lhs;
-}
-
-inline
-bool operator<(IndexRange lhs, IndexRange rhs) {
-    return (lhs.length() < rhs.length()) && (lhs <= rhs);
-}
-
-inline
-bool operator>(IndexRange lhs, IndexRange rhs) {
-    return rhs < lhs;
 }
 
 std::ostream& operator<<(std::ostream& os, IndexRange arg);

@@ -1,5 +1,4 @@
-#ifndef THREEBANDBIQUADEQEFFECT_H
-#define THREEBANDBIQUADEQEFFECT_H
+#pragma once
 
 #include "control/controlproxy.h"
 #include "effects/effect.h"
@@ -39,7 +38,7 @@ class ThreeBandBiquadEQEffectGroupState final : public EffectState {
     double m_loFreqCorner;
     double m_highFreqCorner;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 };
 
 class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffectGroupState> {
@@ -79,5 +78,3 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
     std::unique_ptr<ControlProxy> m_pLoFreqCorner;
     std::unique_ptr<ControlProxy> m_pHiFreqCorner;
 };
-
-#endif // THREEBANDBIQUADEQEFFECT_H

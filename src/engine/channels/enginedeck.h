@@ -45,16 +45,17 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // the soundcard this AudioDestination was registered for! Beware, in the
     // case of multiple soundcards, this method is not re-entrant but it may be
     // concurrent with EngineMaster processing.
-    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                               unsigned int nFrames);
+    virtual void receiveBuffer(const AudioInput& input,
+            const CSAMPLE* pBuffer,
+            unsigned int nFrames);
 
     // Called by SoundManager whenever the passthrough input is connected to a
     // soundcard input.
-    virtual void onInputConfigured(AudioInput input);
+    virtual void onInputConfigured(const AudioInput& input);
 
     // Called by SoundManager whenever the passthrough input is disconnected
     // from a soundcard input.
-    virtual void onInputUnconfigured(AudioInput input);
+    virtual void onInputUnconfigured(const AudioInput& input);
 
     // Return whether or not passthrough is active
     bool isPassthroughActive() const;

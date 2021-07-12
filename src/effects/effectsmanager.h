@@ -1,5 +1,4 @@
-#ifndef EFFECTSMANAGER_H
-#define EFFECTSMANAGER_H
+#pragma once
 
 #include <QObject>
 #include <QHash>
@@ -24,6 +23,8 @@ class EffectsBackend;
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
+    static const QString kNoEffectString;
+
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
 
     EffectsManager(QObject* pParent,
@@ -143,6 +144,3 @@ class EffectsManager : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
-
-
-#endif /* EFFECTSMANAGER_H */

@@ -2,6 +2,7 @@
 
 #include <QMessageBox>
 
+#include "moc_dlgtrackmetadataexport.cpp"
 
 namespace mixxx {
 

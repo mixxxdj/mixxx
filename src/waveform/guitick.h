@@ -1,5 +1,4 @@
-#ifndef GUITICK_H
-#define GUITICK_H
+#pragma once
 
 #include <QObject>
 
@@ -22,5 +21,3 @@ class GuiTick {
     mixxx::Duration m_lastUpdateTime;
     mixxx::Duration m_cpuTimeLastTick;
 };
-
-#endif // GUITICK_H

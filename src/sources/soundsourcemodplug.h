@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCEMODPLUG_H
-#define MIXXX_SOUNDSOURCEMODPLUG_H
+#pragma once
 
 #include "sources/soundsourceprovider.h"
 
@@ -16,9 +15,9 @@ namespace mixxx {
 // in RAM to allow seeking and smooth operation in Mixxx.
 class SoundSourceModPlug : public SoundSource {
   public:
-    static constexpr SINT kChannelCount = 2;
-    static constexpr SINT kSampleRate = 44100;
-    static constexpr SINT kBitsPerSample = 16;
+    static constexpr int kChannelCount = 2;
+    static constexpr int kSampleRate = 44100;
+    static constexpr int kBitsPerSample = 16;
 
     // apply settings for decoding
     static void configure(unsigned int bufferSizeLimit,
@@ -35,7 +34,7 @@ class SoundSourceModPlug : public SoundSource {
 
   protected:
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override;
+            const WritableSampleFrames& sampleFrames) override;
 
   private:
     OpenResult tryOpen(
@@ -53,7 +52,11 @@ class SoundSourceModPlug : public SoundSource {
 
 class SoundSourceProviderModPlug : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
 
     QStringList getSupportedFileExtensions() const override;
 
@@ -63,5 +66,3 @@ class SoundSourceProviderModPlug : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEMODPLUG_H

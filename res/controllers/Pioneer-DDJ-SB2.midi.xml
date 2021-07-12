@@ -4,8 +4,8 @@
         <name>Pioneer DDJ-SB2</name>
         <author>Be, Michael Stahl (DG3NEC)</author>
         <description>Pioneer DDJ-SB2</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=7509</forums>
-        <wiki>http://mixxx.org/wiki/doku.php/pioneer_ddj-sb2</wiki>
+        <forums>https://mixxx.discourse.group/t/pinoneer-ddj-sb2-midi-mapping/15373</forums>
+        <manual>pioneer_ddj_sb2</manual>
     </info>
     <controller id="DDJ-SB2">
         <scriptfiles>

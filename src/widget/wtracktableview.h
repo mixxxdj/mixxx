@@ -7,7 +7,6 @@
 #include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "preferences/usersettings.h"
-#include "track/track.h"
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 #include "widget/wlibrarytableview.h"
@@ -15,8 +14,8 @@
 class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
-class TrackCollectionManager;
 class ExternalTrackCollection;
+class Library;
 class WTrackMenu;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
@@ -28,7 +27,7 @@ class WTrackTableView : public WLibraryTableView {
     WTrackTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             double backgroundColorOpacity,
             bool sorting);
     ~WTrackTableView() override;
@@ -38,9 +37,10 @@ class WTrackTableView : public WLibraryTableView {
     bool hasFocus() const override;
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
-    void loadSelectedTrackToGroup(QString group, bool play) override;
+    void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
+    TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
     void saveCurrentVScrollBarPos();
@@ -48,6 +48,11 @@ class WTrackTableView : public WLibraryTableView {
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
+    }
+
+    Q_PROPERTY(QColor focusBorderColor MEMBER m_pFocusBorderColor DESIGNABLE true);
+    QColor getFocusBorderColor() const {
+        return m_pFocusBorderColor;
     }
 
   public slots:
@@ -92,12 +97,13 @@ class WTrackTableView : public WLibraryTableView {
     void initTrackMenu();
 
     const UserSettingsPointer m_pConfig;
-    TrackCollectionManager* const m_pTrackCollectionManager;
+    Library* const m_pLibrary;
 
     // Context menu container
     parented_ptr<WTrackMenu> m_pTrackMenu;
 
     const double m_backgroundColorOpacity;
+    QColor m_pFocusBorderColor;
     bool m_sorting;
 
     // Control the delay to load a cover art.

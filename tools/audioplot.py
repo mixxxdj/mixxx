@@ -14,10 +14,10 @@ def createSlice(columns):
 
 
 def combine_files(files):
-    """reads a bunch of files and stacks their content together into one numpy
-       array. The number of data points in the columns will be set to the
-       shortest file.
-
+    """
+    reads a bunch of files and stacks their content together into one numpy
+    array. The number of data points in the columns will be set to the
+    shortest file.
     """
     raw = []
     min_len = sys.maxsize  # max integer

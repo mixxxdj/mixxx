@@ -1,5 +1,7 @@
 #include "widget/hexspinbox.h"
 
+#include "moc_hexspinbox.cpp"
+
 HexSpinBox::HexSpinBox(QWidget* pParent)
         : QSpinBox(pParent) {
     setRange(0, 255);

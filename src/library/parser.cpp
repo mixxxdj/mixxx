@@ -19,11 +19,6 @@
 
 #include "library/parser.h"
 
-/**
-   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
- **/
-
-
 Parser::Parser() {
 }
 
@@ -36,33 +31,6 @@ void Parser::clearLocations() {
 
 long Parser::countParsed() {
     return (long)m_sLocations.count();
-}
-
-bool Parser::isBinary(QString filename) {
-    char firstByte;
-    QFile file(filename);
-    if (file.open(QIODevice::ReadOnly) && file.getChar(&firstByte)) {
-        // If starting byte is not an ASCII character then the file
-        // probably contains binary data.
-        if (firstByte >= 32 && firstByte <= 126) {
-            // Valid ASCII character
-            return false;
-        }
-        // Check for UTF-8 BOM
-        if (firstByte == static_cast<char>(0xEF)) {
-            char nextChar;
-            if (file.getChar(&nextChar) &&
-                    nextChar == static_cast<char>(0xBB) &&
-                    file.getChar(&nextChar) &&
-                    nextChar == static_cast<char>(0xBF)) {
-                // UTF-8 text file
-                return false;
-            }
-            return true;
-        }
-    }
-    qDebug() << "Parser: Error reading from" << filename;
-    return true; //should this raise an exception?
 }
 
 // The following public domain code is taken from
@@ -147,19 +115,19 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
-TrackFile Parser::playlistEntryToTrackFile(
+mixxx::FileInfo Parser::playlistEntryToFileInfo(
         const QString& playlistEntry,
         const QString& basePath) {
     if (playlistEntry.startsWith("file:")) {
         // URLs are always absolute
-        return TrackFile::fromUrl(QUrl(playlistEntry));
+        return mixxx::FileInfo::fromQUrl(QUrl(playlistEntry));
     }
     auto filePath = QString(playlistEntry).replace('\\', '/');
-    auto trackFile = TrackFile(filePath);
-    if (basePath.isEmpty() || trackFile.asFileInfo().isAbsolute()) {
+    auto trackFile = mixxx::FileInfo(filePath);
+    if (basePath.isEmpty() || trackFile.isAbsolute()) {
         return trackFile;
     } else {
         // Fallback: Relative to base path
-        return TrackFile(QDir(basePath), filePath);
+        return mixxx::FileInfo(QDir(basePath), filePath);
     }
 }

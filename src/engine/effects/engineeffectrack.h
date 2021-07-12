@@ -1,5 +1,4 @@
-#ifndef ENGINEEFFECTRACK_H
-#define ENGINEEFFECTRACK_H
+#pragma once
 
 #include <QList>
 
@@ -47,5 +46,3 @@ class EngineEffectRack : public EffectsRequestHandler {
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectRack);
 };
-
-#endif /* ENGINEEFFECTRACK_H */

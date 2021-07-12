@@ -1,5 +1,4 @@
-#ifndef EXPERIMENT_H
-#define EXPERIMENT_H
+#pragma once
 
 #include <QtDebug>
 
@@ -47,5 +46,3 @@ class Experiment {
 
     static volatile Mode s_mode;
 };
-
-#endif /* EXPERIMENT_H */

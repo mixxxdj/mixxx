@@ -1,9 +1,11 @@
+#include "preferences/dialog/dlgprefcrossfader.h"
+
 #include <QButtonGroup>
 #include <QtDebug>
 
-#include "preferences/dialog/dlgprefcrossfader.h"
 #include "control/controlobject.h"
 #include "engine/enginexfader.h"
+#include "moc_dlgprefcrossfader.cpp"
 #include "util/math.h"
 #include "util/rescaler.h"
 
@@ -11,7 +13,7 @@ DlgPrefCrossfader::DlgPrefCrossfader(
         QWidget* parent, UserSettingsPointer config)
         : DlgPreferencePage(parent),
           m_config(config),
-          m_pxfScene(NULL),
+          m_pxfScene(nullptr),
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
           m_transform(EngineXfader::kTransformDefault),
           m_cal(0.0),
@@ -29,21 +31,18 @@ DlgPrefCrossfader::DlgPrefCrossfader(
 
     loadSettings();
 
-    connect(SliderXFader, SIGNAL(valueChanged(int)), this,
-            SLOT(slotUpdateXFader()));
-    connect(SliderXFader, SIGNAL(sliderMoved(int)), this,
-            SLOT(slotUpdateXFader()));
-    connect(SliderXFader, SIGNAL(sliderReleased()), this,
-            SLOT(slotUpdateXFader()));
-    connect(SliderXFader, SIGNAL(sliderReleased()), this,
-            SLOT(slotApply()));
+    connect(SliderXFader,
+            QOverload<int>::of(&QSlider::valueChanged),
+            this,
+            &DlgPrefCrossfader::slotUpdateXFader);
+    connect(SliderXFader, &QSlider::sliderMoved, this, &DlgPrefCrossfader::slotUpdateXFader);
+    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefCrossfader::slotUpdateXFader);
+    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefCrossfader::slotApply);
 
     // Update the crossfader curve graph and other settings when the
     // crossfader mode is changed.
-    connect(radioButtonAdditive, SIGNAL(clicked(bool)), this,
-            SLOT(slotUpdate()));
-    connect(radioButtonConstantPower, SIGNAL(clicked(bool)), this,
-            SLOT(slotUpdate()));
+    connect(radioButtonAdditive, &QRadioButton::clicked, this, &DlgPrefCrossfader::slotUpdate);
+    connect(radioButtonConstantPower, &QRadioButton::clicked, this, &DlgPrefCrossfader::slotUpdate);
 }
 
 DlgPrefCrossfader::~DlgPrefCrossfader() {
@@ -89,7 +88,7 @@ void DlgPrefCrossfader::slotResetToDefaults() {
             EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
             SliderXFader->minimum(),
             SliderXFader->maximum());
-    SliderXFader->setValue(sliderVal);
+    SliderXFader->setValue(static_cast<int>(sliderVal));
 
     m_xFaderMode = MIXXX_XFADER_ADDITIVE;
     radioButtonAdditive->setChecked(true);
@@ -137,7 +136,7 @@ void DlgPrefCrossfader::drawXfaderDisplay()
     // Initialize Scene
     if (m_pxfScene) {
         delete m_pxfScene;
-        m_pxfScene = NULL;
+        m_pxfScene = nullptr;
     }
     m_pxfScene = new QGraphicsScene();
     m_pxfScene->setSceneRect(0,0,sizeX, sizeY);
@@ -166,7 +165,7 @@ void DlgPrefCrossfader::drawXfaderDisplay()
     // reduced by 2 x 1 for border + 2 x 1 for inner distance to border
     double xfadeStep = 2. / (pointCount - 1);
     for (int i = 0; i < pointCount; i++) {
-        double gain1, gain2;
+        CSAMPLE_GAIN gain1, gain2;
         EngineXfader::getXfadeGains((-1. + (xfadeStep * i)),
                                     m_transform, m_cal,
                                     m_xFaderMode,
@@ -175,9 +174,9 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 
         double gain = sqrt(gain1 * gain1 + gain2 * gain2);
         // scale for graph
-        gain1 *= 0.71;
-        gain2 *= 0.71;
-        gain *= 0.71;
+        gain1 *= 0.71f;
+        gain2 *= 0.71f;
+        gain *= 0.71f;
 
         // draw it
         pointTotal = QPointF(i + 1, (1. - gain) * (sizeY) - 3);

@@ -9,8 +9,8 @@
 
       <WidgetGroup>
         <ObjectName>SamplerPlayBoxMini</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <Layout>stacked</Layout>
+        <SizePolicy>max,max</SizePolicy>
         <Children>
           <Template src="skin:/controls/button_2state_right_display.xml">
             <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
@@ -20,13 +20,28 @@
             <SetVariable name="BtnSize">square_big</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="Group"/>,cue_gotoandplay</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,cue_default</SetVariable>
-            <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play_latched</SetVariable>
           </Template>
+          <PushButton>
+            <ObjectName>PreviewIndicator</ObjectName>
+            <Size>34f,34f</Size>
+            <NumberStates>2</NumberStates>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,play</ConfigKey>
+            </Connection>
+          </PushButton>
+          <PushButton>
+            <ObjectName>PlayIndicator</ObjectName>
+            <Size>34f,34f</Size>
+            <NumberStates>2</NumberStates>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,play_indicator</ConfigKey>
+            </Connection>
+          </PushButton>
         </Children>
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName></ObjectName>
         <Layout>vertical</Layout>
         <Size>0me,36f</Size>
         <Children>
@@ -34,7 +49,7 @@
           <WidgetGroup>
             <ObjectName>SamplerTitleBoxMini</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>i,f</SizePolicy>
+            <SizePolicy>i,min</SizePolicy>
             <MinimumSize>,18</MinimumSize>
             <Children>
               <TrackProperty>
@@ -55,7 +70,7 @@
             <Children>
               <Number>
                 <TooltipId>visual_bpm</TooltipId>
-                <ObjectName>SamplerBpm</ObjectName>
+                <ObjectName>SamplerBpmMini</ObjectName>
                 <Size>45f,18f</Size>
                 <Group><Variable name="Group"/></Group>
                 <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
@@ -76,6 +91,13 @@
                 <Layout>horizontal</Layout>
                 <Size>43f,18f</Size>
                 <Children>
+                  <Template src="skin:/controls/button_1state.xml">
+                    <SetVariable name="TooltipId">eject</SetVariable>
+                    <SetVariable name="ObjectName">EjectButton12</SetVariable>
+                    <SetVariable name="BtnType"></SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
+                    <SetVariable name="Size">21f,18f</SetVariable>
+                  </Template>
                   <PushButton>
                     <TooltipId>orientation</TooltipId>
                     <Size>21f,18f</Size>
@@ -100,13 +122,6 @@
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                   </PushButton>
-                  <Template src="skin:/controls/button_1state.xml">
-                    <SetVariable name="TooltipId">eject</SetVariable>
-                    <SetVariable name="ObjectName">EjectButton12</SetVariable>
-                    <SetVariable name="BtnType"></SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
-                    <SetVariable name="Size">21f,18f</SetVariable>
-                  </Template>
                 </Children>
               </WidgetGroup><!-- SamplerControlsMini -->
 

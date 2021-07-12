@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_PLATFORM_H
-#define MIXXX_UTIL_PLATFORM_H
+#pragma once
 
 #if defined(__GNUC__) && !defined(__INTEL_COMPILER)
 // Clang and GCC
@@ -39,5 +38,3 @@
   do {                         \
   } while (0)
 #endif
-
-#endif /* MIXXX_UTIL_PLATFORM_H */

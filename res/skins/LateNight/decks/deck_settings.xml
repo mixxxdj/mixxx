@@ -1,11 +1,12 @@
 <Template>
   <WidgetGroup>
+    <SizePolicy>min,min</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
       <WidgetGroup>
         <ObjectName>DeckSettings</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>f,min</SizePolicy>
+        <Size>76min,0min</Size>
         <Children>
 
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
@@ -16,9 +17,8 @@
             <Size>0min,15f</Size>
             <Children>
               <StarRating>
-                <Size>0min,15f</Size>
-                <Alignment>center</Alignment>
                 <TooltipId>starrating</TooltipId>
+                <Size>75f,15f</Size>
                 <Channel><Variable name="ChanNum"/></Channel>
               </StarRating>
             </Children>

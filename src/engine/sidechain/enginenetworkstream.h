@@ -1,5 +1,4 @@
-#ifndef ENGINENETWORKSTREAM_H_
-#define ENGINENETWORKSTREAM_H_
+#pragma once
 
 #include <engine/sidechain/networkoutputstreamworker.h>
 #include <engine/sidechain/networkinputstreamworker.h>
@@ -62,5 +61,3 @@ class EngineNetworkStream {
     // onto the thread-unsafe QVector
     QVector<NetworkOutputStreamWorkerPtr> m_outputWorkers;
 };
-
-#endif /* ENGINENETWORKSTREAM_H_ */

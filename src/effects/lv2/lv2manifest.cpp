@@ -1,6 +1,7 @@
 #include "effects/lv2/lv2manifest.h"
+
 #include "effects/effectmanifestparameter.h"
-#include "util/math.h"
+#include "util/fpclassify.h"
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                          QHash<QString, LilvNode*>& properties)
@@ -41,11 +42,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             if (lilv_port_is_a(m_pLV2plugin, port, properties["input_port"])) {
                 audioPortIndices.append(i);
                 inputPorts++;
-                info = lilv_port_get_name(m_pLV2plugin, port);
             } else if (lilv_port_is_a(m_pLV2plugin, port, properties["output_port"])) {
                 audioPortIndices.append(i);
                 outputPorts++;
-                info = lilv_port_get_name(m_pLV2plugin, port);
             }
         }
 
@@ -120,19 +119,19 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             // Some plugins don't specify minimum, maximum and default values
             // In this case set the minimum and default values to 0 and
             // the maximum to the number of scale points
-            if (isnan(m_default[i])) {
+            if (util_isnan(m_default[i])) {
                 param->setDefault(0);
             } else {
                 param->setDefault(m_default[i]);
             }
 
-            if (isnan(m_minimum[i])) {
+            if (util_isnan(m_minimum[i])) {
                 param->setMinimum(0);
             } else {
                 param->setMinimum(m_minimum[i]);
             }
 
-            if (isnan(m_maximum[i])) {
+            if (util_isnan(m_maximum[i])) {
                 param->setMaximum(param->getSteps().size() - 1);
             } else {
                 param->setMaximum(m_maximum[i]);
@@ -154,9 +153,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 }
 
 LV2Manifest::~LV2Manifest() {
-    delete m_minimum;
-    delete m_maximum;
-    delete m_default;
+    delete[] m_minimum;
+    delete[] m_maximum;
+    delete[] m_default;
 }
 
 EffectManifestPointer LV2Manifest::getEffectManifest() const {
@@ -191,11 +190,11 @@ void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
         const LilvNode* description = lilv_scale_point_get_label(option);
         const LilvNode* value = lilv_scale_point_get_value(option);
         QString strDescription(lilv_node_as_string(description));
-        param->appendStep(qMakePair(strDescription, 
-		(double)lilv_node_as_float(value)));
+        param->appendStep(qMakePair(strDescription,
+                static_cast<double>(lilv_node_as_float(value))));
     }
 
-    if (options != NULL) {
+    if (options != nullptr) {
         lilv_scale_points_free(options);
     }
 }

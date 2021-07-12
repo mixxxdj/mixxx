@@ -16,17 +16,18 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   public:
     BaseExternalLibraryFeature(
             Library* pLibrary,
-            UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig,
+            const QString& iconName);
     ~BaseExternalLibraryFeature() override = default;
 
   public slots:
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
     void onRightClick(const QPoint& globalPos) override;
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
 
   protected:
     // Must be implemented by external Libraries copied to Mixxx DB
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) {
+    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) {
         Q_UNUSED(playlist);
         return nullptr;
     }

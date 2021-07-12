@@ -1,11 +1,10 @@
-#ifndef WEFFECTPARAMETERBASE_H
-#define WEFFECTPARAMETERBASE_H
+#pragma once
 
 #include <QDomNode>
 
 #include "widget/wlabel.h"
 #include "effects/effectparameterslotbase.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class EffectsManager;
 
@@ -27,5 +26,3 @@ class WEffectParameterBase : public WLabel {
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
 };
-
-#endif /* WEFFECTPARAMETERBASE_H */

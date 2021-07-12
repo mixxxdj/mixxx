@@ -1,11 +1,10 @@
-#ifndef WAVEFORMRENDERERENDOFTRACK_H
-#define WAVEFORMRENDERERENDOFTRACK_H
+#pragma once
 
 #include <QColor>
 #include <QTime>
 //#include <QLinearGradient>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -41,5 +40,3 @@ class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererEndOfTrack);
 };
-
-#endif // WAVEFORMRENDERERENDOFTRACK_H

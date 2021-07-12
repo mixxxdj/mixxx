@@ -4,8 +4,8 @@
         <name>Reloop Jockey 3 ME</name>
         <author>Chris2000SP</author>
         <description>v1.0.3 Mapping for 2.0.x</description>
-        <wiki>https://www.mixxx.org/wiki/doku.php/reloop_jockey_3_me</wiki>
-        <forums>https://mixxx.org/forums/viewtopic.php?f=7&amp;t=5418</forums>
+        <forums>https://mixxx.discourse.group/t/create-a-mapping-for-reloop-jockey-3-me/13703</forums>
+        <manual>reloop_jockey_3_master_edition</manual>
     </info>
     <controller id="Reloop">
         <scriptfiles>

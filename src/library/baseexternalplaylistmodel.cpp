@@ -5,6 +5,8 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "moc_baseexternalplaylistmodel.cpp"
+#include "track/track.h"
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
@@ -32,7 +34,7 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
@@ -54,8 +56,9 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
         QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
         pTrack->setGenre(genre);
 
-        float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
-        pTrack->setBpm(bpm);
+        float bpm = index.sibling(
+                index.row(), fieldIndex("bpm")).data().toString().toFloat();
+        pTrack->trySetBpm(bpm);
     }
     return pTrack;
 }
@@ -79,7 +82,7 @@ Qt::ItemFlags BaseExternalPlaylistModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 
-void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
+void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
     QSqlQuery finder_query(m_database);
     finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(m_playlistsTable));
     finder_query.bindValue(":name", playlist_path);
@@ -97,37 +100,42 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     }
 
     if (playlistId == -1) {
-        qDebug() << "ERROR: Could not get the playlist ID for playlist:" << playlist_path;
+        qWarning() << "ERROR: Could not get the playlist ID for playlist:" << playlist_path;
         return;
     }
 
-    QString playlistViewTable = QString("%1_%2").arg(m_playlistTracksTable,
-            QString::number(playlistId));
-
-    QStringList columns;
-    columns << "track_id";
-    columns << "position";
-    columns << "'' AS " + LIBRARYTABLE_PREVIEW;
-
-    QSqlQuery query(m_database);
-    FieldEscaper f(m_database);
-    QString queryString =
+    const auto playlistIdNumber =
+            QString::number(playlistId);
+    const auto playlistViewTable =
+            QStringLiteral("%1_%2")
+                    .arg(
+                            m_playlistTracksTable,
+                            playlistIdNumber);
+    // The ordering of columns is relevant (see below)!
+    auto playlistViewColumns = QStringList{
+            QStringLiteral("track_id"),
+            QStringLiteral("position"),
+            QStringLiteral("'' AS ") + LIBRARYTABLE_PREVIEW};
+    const auto queryString =
             QStringLiteral(
                     "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-                    "SELECT %2 FROM %3 WHERE playlist_id = :playlist_id")
-                    .arg(f.escapeString(playlistViewTable),
-                            columns.join(","),
-                            m_playlistTracksTable);
-    query.prepare(queryString);
-    query.bindValue(":playlist_id", playlistId);
+                    "SELECT %2 FROM %3 WHERE playlist_id=%4")
+                    .arg(FieldEscaper(m_database)
+                                    .escapeString(playlistViewTable),
+                            playlistViewColumns.join(","),
+                            m_playlistTracksTable,
+                            // Using bindValue() for playlist_id would fail: Parameter count mismatch
+                            playlistIdNumber);
 
+    QSqlQuery query(m_database);
+    query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Error creating temporary view for playlist.";
         return;
     }
 
-    columns[2] = LIBRARYTABLE_PREVIEW;
-    setTable(playlistViewTable, columns[0], columns, m_trackSource);
+    playlistViewColumns.last() = LIBRARYTABLE_PREVIEW;
+    setTable(playlistViewTable, playlistViewColumns.first(), playlistViewColumns, m_trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
     setSearch("");

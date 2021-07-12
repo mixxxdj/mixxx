@@ -1,5 +1,4 @@
-#ifndef SINGLETON_H
-#define SINGLETON_H
+#pragma once
 
 #include <QtDebug>
 
@@ -48,5 +47,3 @@ class Singleton {
 
 template<class T>
 T* Singleton<T>::m_instance = nullptr;
-
-#endif // SINGLETON_H

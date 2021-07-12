@@ -2,9 +2,10 @@
 
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QStandardPaths>
 #include <QMessageBox>
+#include <QStandardPaths>
 
+#include "moc_trackexportwizard.cpp"
 #include "util/assert.h"
 
 void TrackExportWizard::exportTracks() {
@@ -21,7 +22,7 @@ bool TrackExportWizard::selectDestinationDirectory() {
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     QString destDir = QFileDialog::getExistingDirectory(
-            NULL, tr("Export Track Files To"), lastExportDirectory);
+            nullptr, tr("Export Track Files To"), lastExportDirectory);
     if (destDir.isEmpty()) {
         return false;
     }

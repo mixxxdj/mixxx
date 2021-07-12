@@ -12,19 +12,19 @@ namespace mixxx {
 
 class AlbumInfo final {
     // Properties in alphabetical order
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    artist,                    Artist)
+    MIXXX_DECL_PROPERTY(QString, artist, Artist)
 #if defined(__EXTRA_METADATA__)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    copyright,                 Copyright)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    license,                   License)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzArtistId,       MusicBrainzArtistId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseGroupId, MusicBrainzReleaseGroupId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId,      MusicBrainzReleaseId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    recordLabel,               RecordLabel)
-    PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,                ReplayGain)
+    MIXXX_DECL_PROPERTY(QString, copyright, Copyright)
+    MIXXX_DECL_PROPERTY(QString, license, License)
+    MIXXX_DECL_PROPERTY(QUuid, musicBrainzArtistId, MusicBrainzArtistId)
+    MIXXX_DECL_PROPERTY(QUuid, musicBrainzReleaseGroupId, MusicBrainzReleaseGroupId)
+    MIXXX_DECL_PROPERTY(QUuid, musicBrainzReleaseId, MusicBrainzReleaseId)
+    MIXXX_DECL_PROPERTY(QString, recordLabel, RecordLabel)
+    MIXXX_DECL_PROPERTY(ReplayGain, replayGain, ReplayGain)
 #endif // __EXTRA_METADATA__
-    PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                     Title)
+    MIXXX_DECL_PROPERTY(QString, title, Title)
 
-public:
+  public:
     AlbumInfo() = default;
     AlbumInfo(AlbumInfo&&) = default;
     AlbumInfo(const AlbumInfo&) = default;

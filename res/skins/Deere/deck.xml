@@ -19,26 +19,56 @@
         <SizePolicy>me,me</SizePolicy>
         <Children>
           <Template src="skin:deck_text_row.xml"/>
-          <!--Hides if the stacked waveforms option is activated in the skin settings -->
+
+          <!-- Hides if the 'Parallel Waveforms' option is activated in the skin settings -->
           <WidgetGroup>
-            <Layout>vertical</Layout>
+            <Layout>horizontal</Layout>
             <Children>
+
               <WidgetGroup>
-                <ObjectName>Spacer22</ObjectName>
-                <Size>0me,1f</Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Connection>
+                      <ConfigKey>[Skin],show_coverart</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                    <Children>
+                      <Template src="skin:../Deere/deck_spinny.xml">
+                        <SetVariable name="cover">true</SetVariable>
+                        <SetVariable name="Size">55f,55f</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Connection>
+                      <ConfigKey>[Skin],show_coverart</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                    <Children>
+                      <Template src="skin:../Deere/deck_spinny.xml">
+                        <SetVariable name="cover">false</SetVariable>
+                        <SetVariable name="Size">55f,55f</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
               </WidgetGroup>
+
               <SingletonContainer>
-                <ObjectName>DeckVisualRow<Variable name="i" /></ObjectName>
+                <ObjectName>DeckWaveform<Variable name="i"/></ObjectName>
               </SingletonContainer>
             </Children>
             <Connection>
               <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
-              <Transform>
-                <Not/>
-              </Transform>
             </Connection>
           </WidgetGroup>
+
           <Template src="skin:deck_overview_row.xml"/>
           <Template src="skin:deck_controls_row.xml"/>
         </Children>

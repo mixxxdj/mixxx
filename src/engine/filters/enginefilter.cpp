@@ -1,32 +1,18 @@
-/***************************************************************************
- *      enginefilter.cpp - Wrapper for FidLib Filter Library               *
- *          ----------------------                             *
- *   copyright      : (C) 2007 by John Sully                               *
- *   email          : jsully@scs.ryerson.ca                                *
- *                                                                         *
- **************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+// Wrapper for FidLib Filter Library
 
 #include "engine/filters/enginefilter.h"
+
 #include <QtDebug>
 
+#include "moc_enginefilter.cpp"
 
-EngineFilter::EngineFilter(char * conf, int predefinedType)
+EngineFilter::EngineFilter(char* conf, int predefinedType)
         : iir(0),
           fir(0),
           tmp(0),
-          ff(NULL),
-          funcp(NULL),
-          run(NULL)
-{
+          ff(nullptr),
+          funcp(nullptr),
+          run(nullptr) {
     switch(predefinedType)
     {
     case PREDEF_BP:
@@ -45,7 +31,7 @@ EngineFilter::EngineFilter(char * conf, int predefinedType)
         fbuf2 = buf2;
         break;
     default:
-        ff = fid_design(conf, 44100., -1., -1., 1, NULL);
+        ff = fid_design(conf, 44100., -1., -1., 1, nullptr);
         qDebug() << "Filter " << conf << " Setup: 0x" << ff;
         run = fid_run_new(ff, &funcp);
         fbuf1 = fid_run_newbuf(run);
@@ -53,8 +39,9 @@ EngineFilter::EngineFilter(char * conf, int predefinedType)
         processSample = funcp;
     }
     int i;
-    for(i=0; i < FILTER_BUF_SIZE; i++)
+    for (i = 0; i < FILTER_BUF_SIZE; i++) {
         buf1[i] = buf2[i] = 0;
+    }
 }
 
 EngineFilter::~EngineFilter()

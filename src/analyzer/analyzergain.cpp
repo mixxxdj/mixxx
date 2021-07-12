@@ -9,8 +9,8 @@
 
 AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig)
         : m_rgSettings(pConfig),
-          m_pLeftTempBuffer(NULL),
-          m_pRightTempBuffer(NULL),
+          m_pLeftTempBuffer(nullptr),
+          m_pRightTempBuffer(nullptr),
           m_iBufferSize(0) {
     m_pReplayGain = new ReplayGain();
 }
@@ -21,13 +21,15 @@ AnalyzerGain::~AnalyzerGain() {
     delete m_pReplayGain;
 }
 
-bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerGain::initialize(TrackPointer tio,
+        mixxx::audio::SampleRate sampleRate,
+        int totalSamples) {
     if (m_rgSettings.isAnalyzerDisabled(1, tio) || totalSamples == 0) {
         qDebug() << "Skipping AnalyzerGain";
         return false;
     }
 
-    return m_pReplayGain->initialise((long)sampleRate, 2);
+    return m_pReplayGain->initialise(static_cast<long>(sampleRate), 2);
 }
 
 void AnalyzerGain::cleanup() {

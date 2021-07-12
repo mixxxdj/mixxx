@@ -1,5 +1,4 @@
-#ifndef WAVEFORMRENDERERFILTEREDSIGNAL_H
-#define WAVEFORMRENDERERFILTEREDSIGNAL_H
+#pragma once
 
 #include <vector>
 #include <QLineF>
@@ -26,5 +25,3 @@ class WaveformRendererFilteredSignal : public WaveformRendererSignalBase {
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererFilteredSignal);
 };
-
-#endif // WAVEFORMRENDERERFILTEREDSIGNAL_H

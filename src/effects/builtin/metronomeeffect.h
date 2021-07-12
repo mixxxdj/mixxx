@@ -1,5 +1,4 @@
-#ifndef METRONOMEEFFECT_H
-#define METRONOMEEFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -22,7 +21,7 @@ class MetronomeGroupState final : public EffectState {
     ~MetronomeGroupState() {
     }
 
-    unsigned int m_framesSinceClickStart;
+    SINT m_framesSinceClickStart;
 };
 
 class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
@@ -46,5 +45,3 @@ class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(MetronomeEffect);
 };
-
-#endif /* METRONOMEEFFECT_H */

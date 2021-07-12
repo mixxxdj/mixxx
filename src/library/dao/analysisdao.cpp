@@ -26,11 +26,11 @@ AnalysisDao::AnalysisDao(UserSettingsPointer pConfig)
 }
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(TrackId trackId) {
-    if (!m_db.isOpen() || !trackId.isValid()) {
+    if (!m_database.isOpen() || !trackId.isValid()) {
         return QList<AnalysisInfo>();
     }
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     query.prepare(QString(
         "SELECT id, type, description, version, data_checksum FROM %1 "
         "WHERE track_id=:trackId").arg(s_analysisTableName));
@@ -41,11 +41,11 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(TrackId trackI
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
     TrackId trackId, AnalysisType type) {
-    if (!m_db.isOpen() || !trackId.isValid()) {
+    if (!m_database.isOpen() || !trackId.isValid()) {
         return QList<AnalysisInfo>();
     }
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     query.prepare(QString(
         "SELECT id, type, description, version, data_checksum FROM %1 "
         "WHERE track_id=:trackId AND type=:type").arg(s_analysisTableName));
@@ -103,7 +103,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
 }
 
 bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
-    if (!m_db.isOpen() || info == NULL) {
+    if (!m_database.isOpen() || info == nullptr) {
         return false;
     }
 
@@ -118,7 +118,7 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     int checksum = qChecksum(compressedData.constData(),
                              compressedData.length());
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     if (info->analysisId == -1) {
         query.prepare(QString(
             "INSERT INTO %1 (track_id, type, description, version, data_checksum) "
@@ -178,7 +178,7 @@ bool AnalysisDao::deleteAnalysis(const int analysisId) {
     if (analysisId == -1) {
         return false;
     }
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     query.prepare(QString(
         "DELETE FROM %1 WHERE id = :id").arg(s_analysisTableName));
     query.bindValue(":id", analysisId);
@@ -199,7 +199,7 @@ void AnalysisDao::deleteAnalyses(const QList<TrackId>& trackIds) {
     for (const auto& trackId: trackIds) {
         idList << trackId.toString();
     }
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     query.prepare(QString("SELECT track_analysis.id FROM track_analysis WHERE "
                           "track_id in (%1)").arg(idList.join(",")));
     if (!query.exec()) {
@@ -223,7 +223,7 @@ bool AnalysisDao::deleteAnalysesForTrack(TrackId trackId) {
     if (!trackId.isValid()) {
         return false;
     }
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     query.prepare(QString(
         "SELECT id FROM %1 where track_id = :track_id").arg(s_analysisTableName));
     query.bindValue(":track_id", trackId.toVariant());

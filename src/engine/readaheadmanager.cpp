@@ -1,6 +1,3 @@
-// readaheadmanager.cpp
-// Created 8/2/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/readaheadmanager.h"
 
 #include "engine/cachingreader/cachingreader.h"
@@ -13,25 +10,25 @@
 static const int kNumChannels = 2;
 
 ReadAheadManager::ReadAheadManager()
-        : m_pLoopingControl(NULL),
-          m_pRateControl(NULL),
+        : m_pLoopingControl(nullptr),
+          m_pRateControl(nullptr),
           m_currentPosition(0),
-          m_pReader(NULL),
+          m_pReader(nullptr),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_cacheMissHappened(false) {
     // For testing only: ReadAheadManagerMock
 }
 
 ReadAheadManager::ReadAheadManager(CachingReader* pReader,
-                                   LoopingControl* pLoopingControl)
+        LoopingControl* pLoopingControl)
         : m_pLoopingControl(pLoopingControl),
-          m_pRateControl(NULL),
+          m_pRateControl(nullptr),
           m_currentPosition(0),
           m_pReader(pReader),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_cacheMissHappened(false) {
-    DEBUG_ASSERT(m_pLoopingControl != NULL);
-    DEBUG_ASSERT(m_pReader != NULL);
+    DEBUG_ASSERT(m_pLoopingControl != nullptr);
+    DEBUG_ASSERT(m_pReader != nullptr);
 }
 
 ReadAheadManager::~ReadAheadManager() {

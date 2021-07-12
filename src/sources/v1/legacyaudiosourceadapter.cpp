@@ -20,8 +20,8 @@ LegacyAudioSourceAdapter::LegacyAudioSourceAdapter(
 }
 
 ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
-    const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
+        const WritableSampleFrames& originalWritableSampleFrames) {
+    const SINT firstFrameIndex = originalWritableSampleFrames.frameIndexRange().start();
 
     const SINT seekFrameIndex = m_pImpl->seekSampleFrame(firstFrameIndex);
     if (seekFrameIndex < firstFrameIndex) {
@@ -39,6 +39,7 @@ ReadableSampleFrames LegacyAudioSourceAdapter::readSampleFramesClamped(
     }
     DEBUG_ASSERT(seekFrameIndex >= firstFrameIndex);
 
+    WritableSampleFrames writableSampleFrames = originalWritableSampleFrames;
     if (seekFrameIndex > firstFrameIndex) {
         const SINT unreadableFrameOffset = seekFrameIndex - firstFrameIndex;
         kLogger.warning()

@@ -58,8 +58,8 @@
       <Knob>
         <Pos>38,3</Pos>
         <TooltipId>EffectSlot_metaknob</TooltipId>
-        <NumberStates>63</NumberStates>
-        <Path>knobs/knob_rotary_s%1.png</Path>
+        <NumberStates>64</NumberStates>
+        <Path>knobs_no_center/knob_rotary_s%1.png</Path>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],meta</ConfigKey>
         </Connection>

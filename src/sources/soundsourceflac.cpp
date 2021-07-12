@@ -13,7 +13,7 @@ const Logger kLogger("SoundSourceFLAC");
 // The maximum number of retries to fix seek errors. On a seek error
 // the next seek will start one (or more) sample blocks before the
 // position of the preceding seek operation that has failed.
-const int kSeekErrorMaxRetryCount = 3;
+constexpr int kSeekErrorMaxRetryCount = 3;
 
 // begin callbacks (have to be regular functions because normal libFLAC isn't C++-aware)
 
@@ -67,12 +67,28 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
 
 // end callbacks
 
-const unsigned kBitsPerSampleDefault = 0;
+const SINT kBitsPerSampleDefault = 0;
 
 } // namespace
 
+//static
+const QString SoundSourceProviderFLAC::kDisplayName = QStringLiteral("Xiph.org libFLAC");
+
+//static
+const QStringList SoundSourceProviderFLAC::kSupportedFileExtensions = {
+        QStringLiteral("flac"),
+};
+
+SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::Higher;
+}
+
 SoundSourceFLAC::SoundSourceFLAC(const QUrl& url)
-        : SoundSource(url, "flac"),
+        : SoundSource(url),
           m_file(getLocalFileName()),
           m_decoder(nullptr),
           m_maxBlocksize(0),
@@ -143,7 +159,7 @@ void SoundSourceFLAC::close() {
 }
 
 ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
@@ -383,35 +399,52 @@ namespace {
 // https://bugs.launchpad.net/mixxx/+bug/1769717
 // https://hydrogenaud.io/index.php/topic,61792.msg559045.html#msg559045
 
-// We will shift decoded samples left by (32 - m_bitsPerSample) to
-// get rid of the garbage in the most significant bits before scaling
-// to the range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon] with
-// epsilon = 1 / 2 ^ bitsPerSample.
-constexpr CSAMPLE kSampleScaleFactor = CSAMPLE_PEAK /
+// We multiply the decoded samples by 2 ^ (32 - m_bitsPerSample) to
+// get rid of the garbage in the most significant bits which get shifted
+// out to the left. The resulting, upscaled integer value is then scaled
+// down to the floating point range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon]
+// with epsilon = 1 / 2 ^ bitsPerSample.
+//
+// We have to negate the nominator to compensate for the negative denominator!
+// Otherwise the phase would be inverted: https://bugs.launchpad.net/mixxx/+bug/1933001
+constexpr CSAMPLE kSampleScaleFactor = -CSAMPLE_PEAK /
         (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
 
 inline CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample) {
-    DEBUG_ASSERT(std::numeric_limits<FLAC__int32>::is_signed);
-    return (decodedSample << ((std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample)) * kSampleScaleFactor;
+    static_assert(std::numeric_limits<FLAC__int32>::is_signed);
+    static_assert(kSampleScaleFactor > CSAMPLE_ZERO, "preserve phase of decoded signal");
+    // Multiples by 2 ^ (32 - bitsPerSample)
+    const auto upscaleShift = (std::numeric_limits<FLAC__int32>::digits + 1) - bitsPerSample;
+    const auto upscaledSample = decodedSample << upscaleShift;
+    // upscaledSample is now a 32-bit signed integer that needs to scaled
+    // to the range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon]
+    return upscaledSample * kSampleScaleFactor;
 }
 
 } // anonymous namespace
 
 FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
-    const SINT numChannels = frame->header.channels;
-    if (getSignalInfo().getChannelCount() > numChannels) {
+    VERIFY_OR_DEBUG_ASSERT(frame->header.channels > 0) {
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
+    const auto channelCount = mixxx::audio::ChannelCount::fromInt(frame->header.channels);
+    if (getSignalInfo().getChannelCount() > channelCount) {
         kLogger.warning()
                 << "Corrupt or unsupported FLAC file:"
                 << "Invalid number of channels in FLAC frame header"
-                << frame->header.channels << "<>" << getSignalInfo().getChannelCount();
+                << channelCount << "<>" << getSignalInfo().getChannelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    if (getSignalInfo().getSampleRate() != SINT(frame->header.sample_rate)) {
+    VERIFY_OR_DEBUG_ASSERT(frame->header.sample_rate > 0) {
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
+    const auto sampleRate = mixxx::audio::SampleRate(frame->header.sample_rate);
+    if (getSignalInfo().getSampleRate() != sampleRate) {
         kLogger.warning()
                 << "Corrupt or unsupported FLAC file:"
                 << "Invalid sample rate in FLAC frame header"
-                << frame->header.sample_rate << "<>" << getSignalInfo().getSampleRate();
+                << sampleRate << "<>" << getSignalInfo().getSampleRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     const SINT numReadableFrames = frame->header.blocksize;
@@ -444,7 +477,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     }
 
     CSAMPLE* pSampleBuffer = writableSlice.data();
-    DEBUG_ASSERT(getSignalInfo().getChannelCount() <= numChannels);
+    DEBUG_ASSERT(getSignalInfo().getChannelCount() <= channelCount);
     switch (getSignalInfo().getChannelCount()) {
     case 1: {
         // optimized code for 1 channel (mono)
@@ -488,7 +521,8 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         0,
                         metadata->data.stream_info.total_samples));
 
-        const unsigned bitsPerSample = metadata->data.stream_info.bits_per_sample;
+        const SINT bitsPerSample = metadata->data.stream_info.bits_per_sample;
+        DEBUG_ASSERT(bitsPerSample > 0);
         DEBUG_ASSERT(kBitsPerSampleDefault != bitsPerSample);
         if (kBitsPerSampleDefault == m_bitsPerSample) {
             // not set before
@@ -507,15 +541,19 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         << bitsPerSample << " <> " << m_bitsPerSample;
             }
         }
-        m_maxBlocksize = metadata->data.stream_info.max_blocksize;
-        if (0 >= m_maxBlocksize) {
+        DEBUG_ASSERT(m_maxBlocksize >= 0);
+        m_maxBlocksize = math_max(
+                m_maxBlocksize,
+                static_cast<SINT>(metadata->data.stream_info.max_blocksize));
+        if (m_maxBlocksize > 0) {
+            const SINT sampleBufferCapacity =
+                    m_maxBlocksize * getSignalInfo().getChannelCount();
+            if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
+                m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
+            }
+        } else {
             kLogger.warning()
                     << "Invalid max. blocksize" << m_maxBlocksize;
-        }
-        const SINT sampleBufferCapacity =
-                m_maxBlocksize * getSignalInfo().getChannelCount();
-        if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
-            m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
         }
         break;
     }
@@ -549,23 +587,6 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     // not much else to do here... whatever function that initiated whatever
     // decoder method resulted in this error will return an error, and the caller
     // will bail. libFLAC docs say to not close the decoder here -- bkgood
-}
-
-QString SoundSourceProviderFLAC::getName() const {
-    return "Xiph.org libFLAC";
-}
-
-QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("flac");
-    return supportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // This reference decoder is supposed to produce more accurate
-    // and reliable results than any other DEFAULT provider.
-    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

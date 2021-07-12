@@ -1,5 +1,4 @@
-#ifndef INTERNALCLOCK_H
-#define INTERNALCLOCK_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -7,12 +6,12 @@
 
 #include "engine/sync/clock.h"
 #include "engine/sync/syncable.h"
-#include "engine/channels/enginechannel.h"
 
 class ControlObject;
 class ControlLinPotmeter;
 class ControlPushButton;
 class EngineSync;
+class EngineChannel;
 
 /// Internal Clock is a Master Sync object that provides a source of constant
 /// tempo when needed.  The EngineSync will decide when to make the Internal
@@ -33,7 +32,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
     }
 
     void setSyncMode(SyncMode mode) override;
-    void notifyOnlyPlayingSyncable() override;
+    void notifyUniquePlaying() override;
     void requestSync() override;
     SyncMode getSyncMode() const override {
         return m_mode;
@@ -44,22 +43,26 @@ class InternalClock : public QObject, public Clock, public Syncable {
     bool isPlaying() const override {
         return false;
     }
+    bool isAudible() const override {
+        return false;
+    }
 
     double getBeatDistance() const override;
-    void setMasterBeatDistance(double beatDistance) override;
+    void updateMasterBeatDistance(double beatDistance) override;
 
     double getBaseBpm() const override;
-    void setMasterBpm(double bpm) override;
+    void updateMasterBpm(double bpm) override;
+    void notifyMasterParamSource() override;
     double getBpm() const override;
-    void setInstantaneousBpm(double bpm) override;
-    void setMasterParams(double beatDistance, double baseBpm, double bpm) override;
+    void updateInstantaneousBpm(double bpm) override;
+    void reinitMasterParams(double beatDistance, double baseBpm, double bpm) override;
 
     void onCallbackStart(int sampleRate, int bufferSize);
     void onCallbackEnd(int sampleRate, int bufferSize);
 
   private slots:
-    void slotBpmChanged(double bpm);
-    void slotBeatDistanceChanged(double beat_distance);
+    void slotBaseBpmChanged(double baseBpm);
+    void slotBeatDistanceChanged(double beatDistance);
     void slotSyncMasterEnabledChangeRequest(double state);
 
   private:
@@ -74,8 +77,11 @@ class InternalClock : public QObject, public Clock, public Syncable {
 
     int m_iOldSampleRate;
     double m_dOldBpm;
+
+    // This is the BPM value at unity adopted when sync is enabled.
+    // It is used to relate the followers and must not change when
+    // the bpm is adjusted to avoid sudden double/half rate changes.
     double m_dBaseBpm;
-    QAtomicInteger<bool> m_bClockUpdated;
 
     // The internal clock rate is stored in terms of samples per beat.
     // Fractional values are allowed.
@@ -85,5 +91,3 @@ class InternalClock : public QObject, public Clock, public Syncable {
     // distance is m_dClockPosition / m_dBeatLength).
     double m_dClockPosition;
 };
-
-#endif /* INTERNALCLOCK_H */

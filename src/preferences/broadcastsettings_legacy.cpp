@@ -30,11 +30,12 @@ const char* kStreamGenre = "stream_genre";
 const char* kStreamName = "stream_name";
 const char* kStreamPublic = "stream_public";
 const char* kStreamWebsite = "stream_website";
-}
+} // namespace
 
 void BroadcastSettings::loadLegacySettings(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return;
+    }
 
     // For each value, the current value is kept if it can't be found in the
     // general settings file.

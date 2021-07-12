@@ -1,5 +1,5 @@
 <Template>
-  <SetVariable name="ArcRadius"><Variable name="ArcRadiusBig"/></SetVariable>
+  <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
   <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
   <SetVariable name="ArcUnipolar">true</SetVariable>
 

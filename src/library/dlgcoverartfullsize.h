@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QDialog>
-#include <QTimer>
 #include <QPoint>
+#include <QTimer>
 
-#include "library/ui_dlgcoverartfullsize.h"
 #include "library/coverart.h"
+#include "library/ui_dlgcoverartfullsize.h"
 #include "mixer/basetrackplayer.h"
-#include "track/track.h"
-#include "widget/wcoverartmenu.h"
+#include "track/track_decl.h"
 #include "util/parented_ptr.h"
+#include "widget/wcoverartmenu.h"
 
 class DlgCoverArtFullSize
         : public QDialog,
@@ -25,6 +25,7 @@ class DlgCoverArtFullSize
     void mouseMoveEvent(QMouseEvent* ) override;
     void resizeEvent(QResizeEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
+    void closeEvent(QCloseEvent* event) override;
 
   public slots:
     void slotLoadTrack(TrackPointer);

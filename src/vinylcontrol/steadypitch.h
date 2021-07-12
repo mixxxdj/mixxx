@@ -1,5 +1,4 @@
-#ifndef STEADYPITCH_H
-#define STEADYPITCH_H
+#pragma once
 
 #include <QTime>
 
@@ -23,5 +22,3 @@ class SteadyPitch {
         double m_dPitchThreshold;
         int m_iPlayDirection;
 };
-
-#endif

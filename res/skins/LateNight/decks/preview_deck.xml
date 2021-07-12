@@ -4,7 +4,7 @@
 
   <!-- This wrapper makes the PreviewDeck borders work correctly -->
   <WidgetGroup>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
@@ -126,6 +126,7 @@
                     <Children>
                       <Template src="skin:/decks/overview.xml">
                         <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizePreview"/></SetVariable>
+                        <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
                       </Template>
                     </Children>
                     <Connection>
@@ -163,6 +164,12 @@
 
         </Children>
       </WidgetGroup><!-- PreviewDeck -->
+
+      <WidgetGroup>
+        <ObjectName>PreviewDeckRightSpacer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children/>
+      </WidgetGroup>
 
     </Children>
     <Connection>

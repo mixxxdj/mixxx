@@ -4,6 +4,7 @@
     <name>Hercules DJ Console Mk2</name>
     <author>Garth Dahlstrom</author>
     <description>This is a complete mapping for a Hercules DJ Console Mk2.</description>
+    <manual>hercules_dj_console_mk2</manual>
   </info>
   <controller id="Hercules DJ Console Mk2 MIDI">
     <scriptfiles>

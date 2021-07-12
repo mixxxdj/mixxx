@@ -1,5 +1,4 @@
-#ifndef ENGINEBUFFERSCALERUBBERBAND_H
-#define ENGINEBUFFERSCALERUBBERBAND_H
+#pragma once
 
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "util/memory.h"
@@ -47,6 +46,3 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
     // Holds the playback direction
     bool m_bBackwards;
 };
-
-
-#endif /* ENGINEBUFFERSCALERUBBERBAND_H */

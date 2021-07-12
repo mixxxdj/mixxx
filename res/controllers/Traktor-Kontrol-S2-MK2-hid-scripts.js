@@ -1,7 +1,7 @@
 /****************************************************************/
 /*      Traktor Kontrol S2 MK2 HID controller script            */
 /*      Copyright (C) 2020, Be <be@mixxx.org>                   */
-/*      Copyright (C) 2017, douteiful                           */
+/*      Copyright (C) 2017, z411 <z411@omaera.org>              */
 /*      Based on:                                               */
 /*      Traktor Kontrol S4 MK2 HID controller script v1.00      */
 /*      Copyright (C) 2015, the Mixxx Team                      */
@@ -141,7 +141,7 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageShort.addControl("[Channel1]", "!left_encoder_press", 0x0F, "B", 0x01, false, this.leftEncoderPress);
     MessageShort.addControl("[Channel1]", "!right_encoder_press", 0x0F, "B", 0x02, false, this.rightEncoderPress);
     MessageShort.addControl("[Channel1]", "!jog_touch", 0x0A, "B", 0x01, false, this.jogTouch);
-    MessageShort.addControl("[Channel1]", "!jog_wheel", 0x01, "I", null, false, this.jogMove);
+    MessageShort.addControl("[Channel1]", "!jog_wheel", 0x01, "I", 0xFFFFFFFF, false, this.jogMove);
     MessageShort.addControl("[Channel1]", "!load_track", 0x0C, "B", 0x08, false, this.loadTrackButton);
     MessageShort.addControl("[EffectRack1_EffectUnit1]", "!effect_focus_button",
         0x0E, "B", 0x10, false, this.effectFocusButton);
@@ -165,7 +165,7 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageShort.addControl("[Channel2]", "!left_encoder_press", 0x0F, "B", 0x08, false, this.leftEncoderPress);
     MessageShort.addControl("[Channel2]", "!right_encoder_press", 0x0F, "B", 0x10, false, this.rightEncoderPress);
     MessageShort.addControl("[Channel2]", "!jog_touch", 0x0A, "B", 0x02, false, this.jogTouch);
-    MessageShort.addControl("[Channel2]", "!jog_wheel", 0x05, "I", null, false, this.jogMove);
+    MessageShort.addControl("[Channel2]", "!jog_wheel", 0x05, "I", 0xFFFFFFFF, false, this.jogMove);
     MessageShort.addControl("[Channel2]", "!load_track", 0x0C, "B", 0x04, false, this.loadTrackButton);
     MessageShort.addControl("[EffectRack1_EffectUnit2]", "!effect_focus_button",
         0xD, "B", 0x04, false, this.effectFocusButton);
@@ -194,31 +194,20 @@ TraktorS2MK2.registerInputPackets = function() {
     // There are also some 4 bit encoders.
     MessageLong.addControl("[Channel1]", "rate", 0x07, "H");
     MessageLong.addControl("[Channel2]", "rate", 0x09, "H");
-    engine.softTakeover("[Channel1]", "rate", true);
-    engine.softTakeover("[Channel2]", "rate", true);
     MessageLong.addControl("[Channel1]", "!left_encoder", 0x01, "B", 0x0F, false, this.leftEncoder);
     MessageLong.addControl("[Channel1]", "!right_encoder", 0x01, "B", 0xF0, false, this.rightEncoder);
     MessageLong.addControl("[Channel2]", "!left_encoder", 0x02, "B", 0xF0, false, this.leftEncoder);
     MessageLong.addControl("[Channel2]", "!right_encoder", 0x03, "B", 0x0F, false, this.rightEncoder);
 
     MessageLong.addControl("[EffectRack1_EffectUnit1]", "mix", 0x17, "H");
-    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob1", 0x19, "H", null, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob2", 0x1B, "H", null, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob3", 0x1D, "H", null, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob1", 0x19, "H", 0xFFFF, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob2", 0x1B, "H", 0xFFFF, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit1]", "!effectknob3", 0x1D, "H", 0xFFFF, false, this.effectKnob);
 
     MessageLong.addControl("[EffectRack1_EffectUnit2]", "mix", 0x1F, "H");
-    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob1", 0x21, "H", null, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob2", 0x23, "H", null, false, this.effectKnob);
-    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob3", 0x25, "H", null, false, this.effectKnob);
-
-    for (var i = 1; i <= 2; i++) {
-        engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "meta", true);
-        engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "meta", true);
-        for (var j = 1; j <= 2; j++) {
-            engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "parameter" + j, true);
-            engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "parameter" + j, true);
-        }
-    }
+    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob1", 0x21, "H", 0xFFFF, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob2", 0x23, "H", 0xFFFF, false, this.effectKnob);
+    MessageLong.addControl("[EffectRack1_EffectUnit2]", "!effectknob3", 0x25, "H", 0xFFFF, false, this.effectKnob);
 
     MessageLong.addControl("[Channel1]", "volume", 0x13, "H");
     MessageLong.addControl("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x27, "H");
@@ -241,6 +230,37 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageLong.setCallback("[Master]", "!samplerGain", this.samplerGainKnob);
     MessageLong.addControl("[Playlist]", "!browse", 0x02, "B", 0x0F, false, this.browseEncoder);
 
+    // Soft takeover for knobs
+    engine.softTakeover("[Channel1]", "rate", true);
+    engine.softTakeover("[Channel2]", "rate", true);
+
+    engine.softTakeover("[Channel1]", "volume", true);
+    engine.softTakeover("[Channel2]", "volume", true);
+
+    engine.softTakeover("[Channel1]", "pregain", true);
+    engine.softTakeover("[Channel2]", "pregain", true);
+
+    engine.softTakeover("[Master]", "crossfader", true);
+    engine.softTakeover("[Master]", "headMix", true);
+
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", true);
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", true);
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", true);
+
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", true);
+
+    for (var i = 1; i <= 3; i++) {
+        engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "meta", true);
+        engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "meta", true);
+        for (var j = 1; j <= 3; j++) {
+            engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "parameter" + j, true);
+            engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "parameter" + j, true);
+        }
+    }
+
+    // Set scalers
     TraktorS2MK2.scalerParameter.useSetParameter = true;
     this.controller.setScaler("volume", this.scalerVolume);
     this.controller.setScaler("headMix", this.scalerSlider);
@@ -251,6 +271,8 @@ TraktorS2MK2.registerInputPackets = function() {
     this.controller.setScaler("crossfader", this.scalerSlider);
     this.controller.setScaler("rate", this.scalerSlider);
     this.controller.setScaler("mix", this.scalerParameter);
+
+    // Register packet
     this.controller.registerInputPacket(MessageLong);
 };
 

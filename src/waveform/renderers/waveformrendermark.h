@@ -1,9 +1,8 @@
-#ifndef WAVEFORMRENDERMARK_H
-#define WAVEFORMRENDERMARK_H
+#pragma once
 
 #include <QObject>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/class.h"
 #include "util/color/color.h"
 #include "waveform/renderers/waveformmarkset.h"
@@ -38,5 +37,3 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     WaveformMarkSet m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
-
-#endif

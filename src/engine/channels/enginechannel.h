@@ -1,22 +1,4 @@
-/***************************************************************************
-                          enginechannel.h  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINECHANNEL_H
-#define ENGINECHANNEL_H
+#pragma once
 
 #include "control/controlproxy.h"
 #include "effects/effectsmanager.h"
@@ -67,6 +49,12 @@ class EngineChannel : public EngineObject {
     inline bool isPrimaryDeck() {
         return m_bIsPrimaryDeck;
     };
+    int getChannelIndex() {
+        return m_channelIndex;
+    }
+    void setChannelIndex(int channelIndex) {
+        m_channelIndex = channelIndex;
+    }
 
     virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
     virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const = 0;
@@ -103,6 +91,5 @@ class EngineChannel : public EngineObject {
     ControlPushButton* m_pOrientationCenter;
     ControlPushButton* m_pTalkover;
     bool m_bIsTalkoverChannel;
+    int m_channelIndex;
 };
-
-#endif

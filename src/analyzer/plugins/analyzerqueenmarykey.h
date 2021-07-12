@@ -1,5 +1,4 @@
-#ifndef ANALYZER_PLUGINS_ANALYZERQUEENMARYKEY_H
-#define ANALYZER_PLUGINS_ANALYZERQUEENMARYKEY_H
+#pragma once
 
 #include <vector>
 
@@ -33,7 +32,7 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
         return pluginInfo();
     }
 
-    bool initialize(int samplerate) override;
+    bool initialize(mixxx::audio::SampleRate sampleRate) override;
     bool processSamples(const CSAMPLE* pIn, const int iLen) override;
     bool finalize() override;
 
@@ -50,5 +49,3 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
 };
 
 } // namespace mixxx
-
-#endif /* ANALYZER_PLUGINS_ANALYZERQUEENMARYKEY_H */

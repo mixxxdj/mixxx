@@ -1,6 +1,8 @@
+#include "util/statmodel.h"
+
 #include <limits>
 
-#include "util/statmodel.h"
+#include "moc_statmodel.cpp"
 #include "util/math.h"
 
 StatModel::StatModel(QObject* pParent)

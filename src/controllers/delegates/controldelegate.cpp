@@ -1,13 +1,15 @@
-#include <QtDebug>
+#include "controllers/delegates/controldelegate.h"
+
 #include <QLineEdit>
 #include <QStringList>
+#include <QtDebug>
 
-#include "controllers/delegates/controldelegate.h"
 #include "controllers/midi/midimessage.h"
+#include "moc_controldelegate.cpp"
 
 ControlDelegate::ControlDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent),
-          m_pPicker(new ControlPickerMenu(NULL)),
+          m_pPicker(new ControlPickerMenu(nullptr)),
           m_iMidiOptionsColumn(-1),
           m_bIsIndexScript(false) {
 }
@@ -32,7 +34,7 @@ void ControlDelegate::paint(QPainter* painter,
         QModelIndex optionsColumn = index.sibling(index.row(),
                                                   m_iMidiOptionsColumn);
         MidiOptions options = optionsColumn.data().value<MidiOptions>();
-        m_bIsIndexScript = options.script;
+        m_bIsIndexScript = options.testFlag(MidiOption::Script);
     }
 
     QStyledItemDelegate::paint(painter, option, index);
@@ -48,7 +50,7 @@ QString ControlDelegate::displayText(const QVariant& value,
     }
 
     if (m_bIsIndexScript) {
-        return tr("Script: %1(%2)").arg(key.item, key.group);
+        return tr("%1 %2").arg(key.group, key.item);
     }
 
     QString description = m_pPicker->descriptionForConfigKey(key);
@@ -63,8 +65,8 @@ void ControlDelegate::setEditorData(QWidget* editor,
                                     const QModelIndex& index) const {
     ConfigKey key = index.data(Qt::EditRole).value<ConfigKey>();
 
-    QLineEdit* pLineEdit = dynamic_cast<QLineEdit*>(editor);
-    if (pLineEdit == NULL) {
+    QLineEdit* pLineEdit = qobject_cast<QLineEdit*>(editor);
+    if (pLineEdit == nullptr) {
         return;
     }
 
@@ -79,7 +81,7 @@ void ControlDelegate::setModelData(QWidget* editor,
                                    QAbstractItemModel* model,
                                    const QModelIndex& index) const {
     QLineEdit* pLineEdit = qobject_cast<QLineEdit*>(editor);
-    if (pLineEdit == NULL) {
+    if (pLineEdit == nullptr) {
         return;
     }
 

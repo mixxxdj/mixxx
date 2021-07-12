@@ -1,6 +1,3 @@
-// readaheadmanager.h
-// Created 8/2/2009 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QList>

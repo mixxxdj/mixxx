@@ -1,10 +1,3 @@
-/**
-* @file encoderbroadcastsettings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of broadcast settings for the encoders.
-*/
-
 #include "encoder/encoderbroadcastsettings.h"
 #include "broadcast/defs_broadcast.h"
 
@@ -59,4 +52,3 @@ EncoderSettings::ChannelMode EncoderBroadcastSettings::getChannelMode() const {
 QString EncoderBroadcastSettings::getFormat() const {
     return m_pProfile->getFormat();
 }
-

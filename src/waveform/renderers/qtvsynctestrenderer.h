@@ -1,5 +1,4 @@
-#ifndef QTVSYNCTESTRENDERER_H
-#define QTVSYNCTESTRENDERER_H
+#pragma once
 
 #include "waveformrenderersignalbase.h"
 
@@ -15,5 +14,3 @@ class QtVSyncTestRenderer : public WaveformRendererSignalBase {
   private:
     int m_drawcount;
 };
-
-#endif // QTVSYNCTESTRENDERER_H

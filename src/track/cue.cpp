@@ -1,44 +1,44 @@
-// cue.cpp
-// Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "track/cue.h"
 
 #include <QMutexLocker>
 #include <QtDebug>
 
+#include "audio/frame.h"
 #include "engine/engine.h"
+#include "moc_cue.cpp"
 #include "util/assert.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {
 
-inline std::optional<double> positionSamplesToMillis(
-        double positionSamples,
+inline std::optional<double> positionFramesToMillis(
+        mixxx::audio::FramePos position,
         mixxx::audio::SampleRate sampleRate) {
     VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
-        return Cue::kNoPosition;
+        return std::nullopt;
     }
-    if (positionSamples == Cue::kNoPosition) {
+    if (!position.isValid()) {
         return std::nullopt;
     }
     // Try to avoid rounding errors
-    return (positionSamples * 1000) / (sampleRate * mixxx::kEngineChannelCount);
+    return (position.value() * 1000) / sampleRate;
 }
 
-inline double positionMillisToSamples(
+inline mixxx::audio::FramePos positionMillisToFrames(
         std::optional<double> positionMillis,
         mixxx::audio::SampleRate sampleRate) {
     VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
-        return Cue::kNoPosition;
+        return mixxx::audio::kInvalidFramePos;
     }
+
     if (!positionMillis) {
-        return Cue::kNoPosition;
+        return mixxx::audio::kInvalidFramePos;
     }
-    // Try to avoid rounding errors
-    return (*positionMillis * sampleRate * mixxx::kEngineChannelCount) / 1000;
+
+    return mixxx::audio::FramePos((*positionMillis * sampleRate) / 1000);
 }
-}
+} // namespace
 
 //static
 void CuePointer::deleteLater(Cue* pCue) {
@@ -47,61 +47,64 @@ void CuePointer::deleteLater(Cue* pCue) {
     }
 }
 
-Cue::Cue()
-        : m_bDirty(false),
-          m_iId(-1),
-          m_type(mixxx::CueType::Invalid),
-          m_sampleStartPosition(Cue::kNoPosition),
-          m_sampleEndPosition(Cue::kNoPosition),
-          m_iHotCue(Cue::kNoHotCue),
-          m_color(mixxx::PredefinedColorPalettes::kDefaultCueColor) {
-}
-
 Cue::Cue(
-        int id,
-        TrackId trackId,
+        DbId id,
         mixxx::CueType type,
-        double position,
-        double length,
+        mixxx::audio::FramePos position,
+        mixxx::audio::FrameDiff_t length,
         int hotCue,
-        QString label,
+        const QString& label,
         mixxx::RgbColor color)
-        : m_bDirty(false),
-          m_iId(id),
-          m_trackId(trackId),
+        : m_bDirty(false), // clear flag after loading from database
+          m_dbId(id),
           m_type(type),
-          m_sampleStartPosition(position),
+          m_startPosition(position),
           m_iHotCue(hotCue),
           m_label(label),
           m_color(color) {
-    if (length) {
-        if (position != Cue::kNoPosition) {
-            m_sampleEndPosition = position + length;
+    DEBUG_ASSERT(m_dbId.isValid());
+    if (length != 0) {
+        if (position.isValid()) {
+            m_endPosition = position + length;
         } else {
-            m_sampleEndPosition = length;
+            m_endPosition = mixxx::audio::kStartFramePos + length;
         }
-    } else {
-        m_sampleEndPosition = Cue::kNoPosition;
     }
 }
 
 Cue::Cue(
         const mixxx::CueInfo& cueInfo,
-        mixxx::audio::SampleRate sampleRate)
-        : m_bDirty(false),
-          m_iId(-1),
+        mixxx::audio::SampleRate sampleRate,
+        bool setDirty)
+        : m_bDirty(setDirty),
           m_type(cueInfo.getType()),
-          m_sampleStartPosition(
-                  positionMillisToSamples(
+          m_startPosition(
+                  positionMillisToFrames(
                           cueInfo.getStartPositionMillis(),
                           sampleRate)),
-          m_sampleEndPosition(
-                  positionMillisToSamples(
+          m_endPosition(
+                  positionMillisToFrames(
                           cueInfo.getEndPositionMillis(),
                           sampleRate)),
-          m_iHotCue(cueInfo.getHotCueNumber() ? *cueInfo.getHotCueNumber() : kNoHotCue),
+          m_iHotCue(cueInfo.getHotCueIndex() ? *cueInfo.getHotCueIndex() : kNoHotCue),
           m_label(cueInfo.getLabel()),
           m_color(cueInfo.getColor().value_or(mixxx::PredefinedColorPalettes::kDefaultCueColor)) {
+    DEBUG_ASSERT(!m_dbId.isValid());
+}
+
+/// Initialize new cue points
+Cue::Cue(
+        mixxx::CueType type,
+        int hotCueIndex,
+        mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition)
+        : m_bDirty(true), // not yet in database, needs to be saved
+          m_type(type),
+          m_startPosition(startPosition),
+          m_endPosition(endPosition),
+          m_iHotCue(hotCueIndex),
+          m_color(mixxx::PredefinedColorPalettes::kDefaultCueColor) {
+    DEBUG_ASSERT(!m_dbId.isValid());
 }
 
 mixxx::CueInfo Cue::getCueInfo(
@@ -109,47 +112,27 @@ mixxx::CueInfo Cue::getCueInfo(
     QMutexLocker lock(&m_mutex);
     return mixxx::CueInfo(
             m_type,
-            positionSamplesToMillis(m_sampleStartPosition, sampleRate),
-            positionSamplesToMillis(m_sampleEndPosition, sampleRate),
+            positionFramesToMillis(m_startPosition, sampleRate),
+            positionFramesToMillis(m_endPosition, sampleRate),
             m_iHotCue == kNoHotCue ? std::nullopt : std::make_optional(m_iHotCue),
             m_label,
             m_color);
 }
 
-int Cue::getId() const {
+DbId Cue::getId() const {
     QMutexLocker lock(&m_mutex);
-    return m_iId;
+    return m_dbId;
 }
 
-void Cue::setId(int cueId) {
+void Cue::setId(DbId cueId) {
     QMutexLocker lock(&m_mutex);
-    m_iId = cueId;
+    m_dbId = cueId;
     // Neither mark as dirty nor do emit the updated() signal.
     // This function is only called after adding the Cue object
     // to the database. The id is not visible for anyone else.
     // Unintended side effects with the LibraryScanner occur
     // when adding new tracks that have their cue points stored
     // in Serato marker tags!!
-}
-
-TrackId Cue::getTrackId() const {
-    QMutexLocker lock(&m_mutex);
-    return m_trackId;
-}
-
-void Cue::setTrackId(TrackId trackId) {
-    QMutexLocker lock(&m_mutex);
-    if (m_trackId == trackId) {
-        return;
-    }
-    m_trackId = trackId;
-    // Mark as dirty, but DO NOT emit the updated() signal.
-    // The receiver is the corresponding Track object that
-    // would in turn be marked as dirty. This could cause
-    // unintended side effects with the LibraryScanner when
-    // adding new tracks that have their cue points stored
-    // in Serato marker tags!!
-    m_bDirty = true;
 }
 
 mixxx::CueType Cue::getType() const {
@@ -168,55 +151,75 @@ void Cue::setType(mixxx::CueType type) {
     emit updated();
 }
 
-double Cue::getPosition() const {
+mixxx::audio::FramePos Cue::getPosition() const {
     QMutexLocker lock(&m_mutex);
-    return m_sampleStartPosition;
+    return m_startPosition;
 }
 
-void Cue::setStartPosition(double samplePosition) {
+void Cue::setStartPosition(mixxx::audio::FramePos position) {
     QMutexLocker lock(&m_mutex);
-    if (m_sampleStartPosition == samplePosition) {
+    if (m_startPosition == position) {
         return;
     }
-    m_sampleStartPosition = samplePosition;
+    m_startPosition = position;
     m_bDirty = true;
     lock.unlock();
     emit updated();
 }
 
-void Cue::setEndPosition(double samplePosition) {
+void Cue::setEndPosition(mixxx::audio::FramePos position) {
     QMutexLocker lock(&m_mutex);
-    if (m_sampleEndPosition == samplePosition) {
+    if (m_endPosition == position) {
         return;
     }
-    m_sampleEndPosition = samplePosition;
+    m_endPosition = position;
     m_bDirty = true;
     lock.unlock();
     emit updated();
 }
 
-void Cue::shiftPositionFrames(double frameOffset) {
+void Cue::setStartAndEndPosition(
+        mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition) {
     QMutexLocker lock(&m_mutex);
-    if (m_sampleStartPosition != kNoPosition) {
-        m_sampleStartPosition += frameOffset * mixxx::kEngineChannelCount;
+    if (m_startPosition == startPosition &&
+            m_endPosition == endPosition) {
+        return;
     }
-    if (m_sampleEndPosition != kNoPosition) {
-        m_sampleEndPosition += frameOffset * mixxx::kEngineChannelCount;
+    m_startPosition = startPosition;
+    m_endPosition = endPosition;
+    m_bDirty = true;
+    lock.unlock();
+    emit updated();
+}
+
+Cue::StartAndEndPositions Cue::getStartAndEndPosition() const {
+    QMutexLocker lock(&m_mutex);
+    return {m_startPosition, m_endPosition};
+}
+
+void Cue::shiftPositionFrames(mixxx::audio::FrameDiff_t frameOffset) {
+    QMutexLocker lock(&m_mutex);
+    if (m_startPosition.isValid()) {
+        m_startPosition += frameOffset;
+    }
+    if (m_endPosition.isValid()) {
+        m_endPosition += frameOffset;
     }
     m_bDirty = true;
     lock.unlock();
     emit updated();
 }
 
-double Cue::getLength() const {
+mixxx::audio::FrameDiff_t Cue::getLengthFrames() const {
     QMutexLocker lock(&m_mutex);
-    if (m_sampleEndPosition == Cue::kNoPosition) {
+    if (!m_endPosition.isValid()) {
         return 0;
     }
-    if (m_sampleStartPosition == Cue::kNoPosition) {
-        return m_sampleEndPosition;
+    if (!m_startPosition.isValid()) {
+        return m_endPosition.value();
     }
-    return m_sampleEndPosition - m_sampleStartPosition;
+    return m_endPosition - m_startPosition;
 }
 
 int Cue::getHotCue() const {
@@ -224,24 +227,12 @@ int Cue::getHotCue() const {
     return m_iHotCue;
 }
 
-void Cue::setHotCue(int hotCue) {
-    QMutexLocker lock(&m_mutex);
-    // TODO(XXX) enforce uniqueness?
-    if (m_iHotCue == hotCue) {
-        return;
-    }
-    m_iHotCue = hotCue;
-    m_bDirty = true;
-    lock.unlock();
-    emit updated();
-}
-
 QString Cue::getLabel() const {
     QMutexLocker lock(&m_mutex);
     return m_label;
 }
 
-void Cue::setLabel(const QString label) {
+void Cue::setLabel(const QString& label) {
     QMutexLocker lock(&m_mutex);
     if (m_label == label) {
         return;
@@ -278,9 +269,9 @@ void Cue::setDirty(bool dirty) {
     m_bDirty = dirty;
 }
 
-double Cue::getEndPosition() const {
+mixxx::audio::FramePos Cue::getEndPosition() const {
     QMutexLocker lock(&m_mutex);
-    return m_sampleEndPosition;
+    return m_endPosition;
 }
 
 bool operator==(const CuePosition& lhs, const CuePosition& rhs) {

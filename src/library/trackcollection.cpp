@@ -1,8 +1,9 @@
-#include <QApplication>
-
 #include "library/trackcollection.h"
 
+#include <QApplication>
+
 #include "library/basetrackcache.h"
+#include "moc_trackcollection.cpp"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"
 #include "util/db/sqltransaction.h"
@@ -63,17 +64,18 @@ TrackCollection::~TrackCollection() {
     DEBUG_ASSERT(!m_database.isOpen());
 }
 
-void TrackCollection::repairDatabase(QSqlDatabase database) {
+void TrackCollection::repairDatabase(const QSqlDatabase& database) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
 }
 
-void TrackCollection::connectDatabase(QSqlDatabase database) {
+void TrackCollection::connectDatabase(const QSqlDatabase& database) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.info() << "Connecting database";
+    DEBUG_ASSERT(database.isOpen());
     m_database = database;
     m_trackDao.initialize(database);
     m_playlistDao.initialize(database);
@@ -140,41 +142,48 @@ QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
     return pWeakPtr;
 }
 
-bool TrackCollection::addDirectory(const QString& dir) {
+QList<mixxx::FileInfo> TrackCollection::loadRootDirs(bool skipInvalidOrMissing) const {
+    return m_directoryDao.loadAllDirectories(skipInvalidOrMissing);
+}
+
+bool TrackCollection::addDirectory(const mixxx::FileInfo& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     SqlTransaction transaction(m_database);
-    switch (m_directoryDao.addDirectory(dir)) {
-    case SQL_ERROR:
-        return false;
-    case ALREADY_WATCHING:
-        return true;
-    case ALL_FINE:
+    switch (m_directoryDao.addDirectory(rootDir)) {
+    case DirectoryDAO::AddResult::Ok:
         transaction.commit();
         return true;
+    case DirectoryDAO::AddResult::AlreadyWatching:
+        return true;
+    case DirectoryDAO::AddResult::InvalidOrMissingDirectory:
+    case DirectoryDAO::AddResult::SqlError:
+        return false;
     default:
         DEBUG_ASSERT("unreachable");
     }
     return false;
 }
 
-bool TrackCollection::removeDirectory(const QString& dir) {
+bool TrackCollection::removeDirectory(const mixxx::FileInfo& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     SqlTransaction transaction(m_database);
-    switch (m_directoryDao.removeDirectory(dir)) {
-    case SQL_ERROR:
-        return false;
-    case ALL_FINE:
+    switch (m_directoryDao.removeDirectory(rootDir)) {
+    case DirectoryDAO::RemoveResult::Ok:
         transaction.commit();
         return true;
+    case DirectoryDAO::RemoveResult::NotFound:
+        return true;
+    case DirectoryDAO::RemoveResult::SqlError:
+        return false;
     default:
         DEBUG_ASSERT("unreachable");
     }
     return false;
 }
 
-void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
+void TrackCollection::relocateDirectory(const QString& oldDir, const QString& newDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // We only call this method if the user has picked a relocated directory via
@@ -183,7 +192,7 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     // have permission so that we can access the folder on future runs. We need
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
-    Sandbox::createSecurityToken(QDir(newDir));
+    Sandbox::createSecurityTokenForDir(QDir(newDir));
 
     SqlTransaction transaction(m_database);
     QList<RelocatedTrack> relocatedTracks =
@@ -202,9 +211,11 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
 }
 
 QList<TrackId> TrackCollection::resolveTrackIds(
-        const QList<TrackFile>& trackFiles,
+        const QList<mixxx::FileInfo>& trackFiles,
         TrackDAO::ResolveTrackIdFlags flags) {
-    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(trackFiles, flags);
+    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(
+            trackFiles,
+            flags);
     if (flags & TrackDAO::ResolveTrackIdFlag::UnhideHidden) {
         unhideTracks(trackIds);
     }
@@ -212,8 +223,9 @@ QList<TrackId> TrackCollection::resolveTrackIds(
 }
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
-        const QList<QUrl>& urls, bool addMissing) {
-    QList<TrackFile> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+        const QList<QUrl>& urls,
+        bool addMissing) {
+    QList<mixxx::FileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     if (files.isEmpty()) {
         return QList<TrackId>();
     }
@@ -228,14 +240,14 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
         const QList<QString>& locations) {
-    QList<TrackFile> trackFiles;
-    trackFiles.reserve(locations.size());
+    QList<mixxx::FileInfo> fileInfos;
+    fileInfos.reserve(locations.size());
     for (const QString& location : locations) {
-        trackFiles.append(TrackFile(location));
+        fileInfos.append(mixxx::FileInfo(location));
     }
-    return resolveTrackIds(trackFiles,
-            TrackDAO::ResolveTrackIdFlag::UnhideHidden
-                    | TrackDAO::ResolveTrackIdFlag::AddMissing);
+    return resolveTrackIds(
+            fileInfos,
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden | TrackDAO::ResolveTrackIdFlag::AddMissing);
 }
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
@@ -246,7 +258,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     for (const auto& trackId: trackIds) {
         QSet<int> playlistIds;
         m_playlistDao.getPlaylistsTrackIsIn(trackId, &playlistIds);
-        for (const auto& playlistId: playlistIds) {
+        for (const auto& playlistId : qAsConst(playlistIds)) {
             if (m_playlistDao.getHiddenType(playlistId) != PlaylistDAO::PLHT_SET_LOG) {
                 allPlaylistIds.insert(playlistId);
             }
@@ -520,7 +532,7 @@ bool TrackCollection::updateAutoDjCrate(
     return updateCrate(crate);
 }
 
-void TrackCollection::saveTrack(Track* pTrack) {
+void TrackCollection::saveTrack(Track* pTrack) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     m_trackDao.saveTrack(pTrack);

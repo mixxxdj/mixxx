@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8.0+">
   <info>
-    <name>Vestax VCI-100 Mixvibes 3Dex editon</name>
+    <name>Vestax VCI-100 (MixVibes 3DEX Editon)</name>
     <author>Julius Alexander Kohout edler von Dolnobransky</author>
     <description>Preliminary controller mapping for Vestax VCI-100 with scripts</description>
+    <manual>vestax_vci_100_mixvibes_3dex_edition</manual>
   </info>
   <controller id="Vestax VCI-100-3DEX ">
     <scriptfiles>

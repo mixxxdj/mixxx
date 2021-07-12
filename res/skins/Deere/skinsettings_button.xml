@@ -25,7 +25,7 @@
       <Alignment>left</Alignment>
     </State>
     <Connection>
-      <ConfigKey><Variable name="skinsetting"/></ConfigKey>
+      <ConfigKey persist="true"><Variable name="skinsetting"/></ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>

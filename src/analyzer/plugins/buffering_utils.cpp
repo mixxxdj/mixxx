@@ -7,7 +7,9 @@
 
 namespace mixxx {
 
-bool DownmixAndOverlapHelper::initialize(size_t windowSize, size_t stepSize, WindowReadyCallback callback) {
+bool DownmixAndOverlapHelper::initialize(size_t windowSize,
+        size_t stepSize,
+        const WindowReadyCallback& callback) {
     m_buffer.assign(windowSize, 0.0);
     m_callback = callback;
     m_windowSize = windowSize;

@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCEOPUS_H
-#define MIXXX_SOUNDSOURCEOPUS_H
+#pragma once
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <opus/opusfile.h>
@@ -22,7 +21,7 @@ class SoundSourceOpus final : public SoundSource {
 
   protected:
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override;
+            const WritableSampleFrames& sampleFrames) override;
 
   private:
     OpenResult tryOpen(
@@ -38,9 +37,16 @@ class SoundSourceOpus final : public SoundSource {
 
 class SoundSourceProviderOpus : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
-    QStringList getSupportedFileExtensions() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
 
     SoundSourceProviderPriority getPriorityHint(
             const QString& supportedFileExtension) const override;
@@ -51,5 +57,3 @@ class SoundSourceProviderOpus : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEOPUS_H

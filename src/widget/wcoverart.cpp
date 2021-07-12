@@ -1,20 +1,23 @@
+#include "widget/wcoverart.h"
+
 #include <QAction>
 #include <QApplication>
 #include <QBitmap>
-#include <QLabel>
 #include <QIcon>
-#include <QStylePainter>
+#include <QLabel>
 #include <QStyleOption>
+#include <QStylePainter>
 
 #include "control/controlobject.h"
-#include "widget/wcoverart.h"
-#include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "moc_wcoverart.cpp"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/math.h"
+#include "widget/wskincolor.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      UserSettingsPointer pConfig,
@@ -38,16 +41,12 @@ WCoverArt::WCoverArt(QWidget* parent,
                 this,
                 &WCoverArt::slotCoverFound);
     }
-    connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pMenu, SIGNAL(reloadCoverArt()),
-            this, SLOT(slotReloadCoverArt()));
+    connect(m_pMenu, &WCoverArtMenu::coverInfoSelected, this, &WCoverArt::slotCoverInfoSelected);
+    connect(m_pMenu, &WCoverArtMenu::reloadCoverArt, this, &WCoverArt::slotReloadCoverArt);
 
     if (m_pPlayer != nullptr) {
-        connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                this, SLOT(slotLoadTrack(TrackPointer)));
-        connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-                this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+        connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WCoverArt::slotLoadTrack);
+        connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WCoverArt::slotLoadingTrack);
 
         // just in case a track is already loaded
         slotLoadTrack(m_pPlayer->getLoadedTrack());
@@ -172,8 +171,10 @@ void WCoverArt::slotCoverFound(
 
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                   this, SLOT(slotTrackCoverArtUpdated()));
+        disconnect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WCoverArt::slotTrackCoverArtUpdated);
     }
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
@@ -234,15 +235,21 @@ void WCoverArt::resizeEvent(QResizeEvent* /*unused*/) {
     m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
 
+void WCoverArt::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
+    if (m_loadedTrack) {
+        m_pMenu->setCoverArt(m_lastRequestedCover);
+        m_pMenu->popup(event->globalPos());
+    }
+}
+
 void WCoverArt::mousePressEvent(QMouseEvent* event) {
     if (!m_bEnable) {
         return;
     }
 
-    if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
-        m_pMenu->setCoverArt(m_lastRequestedCover);
-        m_pMenu->popup(event->globalPos());
-    } else if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton) {
+        event->accept();
         // do nothing if left button is pressed,
         // wait for button release
         m_clickTimer.setSingleShot(true);
@@ -259,14 +266,18 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
             m_clickTimer.isActive()) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
-        } else {
+        } else if (!m_loadedCover.isNull()) {
+            // Only show the fullsize cover art dialog if the current track
+            // actually has a cover.  The `init` method already shows the
+            // window and then emits a signal to load the cover, so this can't
+            // be handled by the method itself.
             m_pDlgFullSize->init(m_loadedTrack);
         }
     } // else it was a long leftclick or a right click that's already been processed
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
-    if ((event->buttons() & Qt::LeftButton) && m_loadedTrack) {
+    if ((event->buttons().testFlag(Qt::LeftButton)) && m_loadedTrack) {
         DragAndDropHelper::dragTrack(m_loadedTrack, this, m_group);
     }
 }

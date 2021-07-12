@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_WAVEFORMSETTINGS_H
-#define PREFERENCES_WAVEFORMSETTINGS_H
+#pragma once
 
 #include "preferences/usersettings.h"
 
@@ -30,5 +29,3 @@ class WaveformSettings {
   private:
     UserSettingsPointer m_pConfig;
 };
-
-#endif /* PREFERENCES_WAVEFORMSETTINGS_H */

@@ -2,33 +2,24 @@
 
 #include <QDateTime>
 
-#include "audio/types.h"
+#include "audio/streaminfo.h"
 #include "track/albuminfo.h"
 #include "track/trackinfo.h"
 
 namespace mixxx {
-
-namespace audio {
-
-class StreamInfo;
-
-} // namespace audio
 
 class TrackMetadata final {
     // Audio properties
     //  - read-only
     //  - stored in file tags
     //  - adjusted when opening the audio stream (if available)
-    PROPERTY_SET_BYVAL_GET_BYREF(audio::ChannelCount, channels, ChannelCount)
-    PROPERTY_SET_BYVAL_GET_BYREF(audio::SampleRate, sampleRate, SampleRate)
-    PROPERTY_SET_BYVAL_GET_BYREF(audio::Bitrate, bitrate, Bitrate)
-    PROPERTY_SET_BYVAL_GET_BYREF(Duration, duration, Duration)
+    MIXXX_DECL_PROPERTY(audio::StreamInfo, streamInfo, StreamInfo)
 
     // Track properties
     //   - read-write
     //   - stored in file tags
-    PROPERTY_SET_BYVAL_GET_BYREF(AlbumInfo, albumInfo, AlbumInfo)
-    PROPERTY_SET_BYVAL_GET_BYREF(TrackInfo, trackInfo, TrackInfo)
+    MIXXX_DECL_PROPERTY(AlbumInfo, albumInfo, AlbumInfo)
+    MIXXX_DECL_PROPERTY(TrackInfo, trackInfo, TrackInfo)
 
   public:
     TrackMetadata() = default;
@@ -39,7 +30,7 @@ class TrackMetadata final {
     TrackMetadata& operator=(TrackMetadata&&) = default;
     TrackMetadata& operator=(const TrackMetadata&) = default;
 
-    bool updateAudioPropertiesFromStream(
+    bool updateStreamInfoFromSource(
             const audio::StreamInfo& streamInfo);
 
     // Adjusts floating-point values to match their string representation
@@ -57,26 +48,34 @@ class TrackMetadata final {
             const TrackMetadata& importedFromFile,
             Bpm::Comparison cmpBpm = Bpm::Comparison::Default) const;
 
+    QString getBitrateText() const;
+
+    double getDurationSecondsRounded() const {
+        return std::round(getStreamInfo().getDuration().toDoubleSeconds());
+    }
+    QString getDurationText(
+            Duration::Precision precision) const;
+
     // Parse an format date/time values according to ISO 8601
-    static QDate parseDate(QString str) {
+    static QDate parseDate(const QString& str) {
         return QDate::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
-    static QDateTime parseDateTime(QString str) {
+    static QDateTime parseDateTime(const QString& str) {
         return QDateTime::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
     static QString formatDate(QDate date) {
         return date.toString(Qt::ISODate);
     }
-    static QString formatDateTime(QDateTime dateTime) {
+    static QString formatDateTime(const QDateTime& dateTime) {
         return dateTime.toString(Qt::ISODate);
     }
 
     // Parse and format the calendar year (for simplified display)
     static constexpr int kCalendarYearInvalid = 0;
-    static int parseCalendarYear(QString year, bool* pValid = nullptr);
-    static QString formatCalendarYear(QString year, bool* pValid = nullptr);
+    static int parseCalendarYear(const QString& year, bool* pValid = nullptr);
+    static QString formatCalendarYear(const QString& year, bool* pValid = nullptr);
 
-    static QString reformatYear(QString year);
+    static QString reformatYear(const QString& year);
 };
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs);

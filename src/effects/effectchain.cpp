@@ -1,13 +1,14 @@
 #include "effects/effectchain.h"
 
-#include "engine/engine.h"
 #include "effects/effectchainmanager.h"
-#include "effects/effectsmanager.h"
 #include "effects/effectprocessor.h"
+#include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffectrack.h"
 #include "engine/effects/message.h"
+#include "engine/engine.h"
+#include "moc_effectchain.cpp"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/xml.h"
@@ -179,7 +180,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup
     // EffectStates are passed to the EffectRequest and the EffectProcessorImpls
     // store the pointers. The containers of EffectState* pointers get deleted
     // by ~EffectsRequest, but the EffectStates are managed by EffectProcessorImpl.
-    auto pEffectStatesMapArray = new EffectStatesMapArray;
+    auto* pEffectStatesMapArray = new EffectStatesMapArray;
 
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(

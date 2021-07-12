@@ -1,5 +1,4 @@
-#ifndef BASEEXTERNALTRACKMODEL_H
-#define BASEEXTERNALTRACKMODEL_H
+#pragma once
 
 #include <QModelIndex>
 #include <QObject>
@@ -29,5 +28,3 @@ class BaseExternalTrackModel : public BaseSqlTableModel {
   private:
     TrackId doGetTrackId(const TrackPointer& pTrack) const override;
 };
-
-#endif /* BASEEXTERNALTRACKMODEL_H */

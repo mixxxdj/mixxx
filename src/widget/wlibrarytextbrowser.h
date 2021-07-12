@@ -1,8 +1,4 @@
-// wlibrarytextbrowser.h
-// Created 10/23/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef WLIBRARYTEXTBROWSER_H
-#define WLIBRARYTEXTBROWSER_H
+#pragma once
 
 #include <QTextBrowser>
 
@@ -15,5 +11,3 @@ class WLibraryTextBrowser : public QTextBrowser, public LibraryView {
     void onShow() override {}
     bool hasFocus() const override;
 };
-
-#endif /* WLIBRARYTEXTBROWSER_H */

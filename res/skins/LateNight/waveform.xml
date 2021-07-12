@@ -1,5 +1,7 @@
 <Template>
   <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+  <SetVariable name="BtnType">embedded</SetVariable>
+  <SetVariable name="BtnSize">library</SetVariable>
 
   <WidgetGroup>
     <ObjectName>Waveform</ObjectName>
@@ -16,14 +18,18 @@
             <Channel><Variable name="ChanNum"/></Channel>
             <BgColor><Variable name="BgColorWaveform"/></BgColor>
             <SignalColor><Variable name="SignalColor"/></SignalColor>
-            <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-            <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-            <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+            <SignalHighColor><Variable name="SignalHighColor"/></SignalHighColor>
+            <SignalMidColor><Variable name="SignalMidColor"/></SignalMidColor>
+            <SignalLowColor><Variable name="SignalLowColor"/></SignalLowColor>
+            <SignalRGBHighColor><Variable name="SignalHighColor"/></SignalRGBHighColor>
+            <SignalRGBMidColor><Variable name="SignalMidColor"/></SignalRGBMidColor>
+            <SignalRGBLowColor><Variable name="SignalLowColor"/></SignalRGBLowColor>
             <BeatColor><Variable name="BeatColor"/></BeatColor>
             <AxesColor><Variable name="AxesColor"/></AxesColor>
             <BeatHighlightColor></BeatHighlightColor>
             <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
             <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+            <DimBrightThreshold><Variable name="DimBrightThresholdWaveform"/></DimBrightThreshold>
             <!--
             The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
               - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
@@ -49,19 +55,21 @@
               <EndControl>loop_end_position</EndControl>
               <EnabledControl>loop_enabled</EnabledControl>
               <Color><Variable name="LoopColor"/></Color>
+              <Opacity>0.8</Opacity>
               <DisabledColor>#FFFFFF</DisabledColor>
+              <DisabledOpacity>0.5</DisabledOpacity>
             </MarkRange>
             <Mark>
               <Control>loop_start_position</Control>
-              <!--Text>IN</Text-->
-              <Align>bottom|right</Align>
+              <Text>&#8635;</Text>
+              <Align>top|left</Align>
               <Color><Variable name="LoopColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
             </Mark>
             <Mark>
               <Control>loop_end_position</Control>
-              <!--Text>OUT</Text-->
-              <Align>bottom|right</Align>
+              <!-- <Text>&#8635;</Text> -->
+              <Align>top|right</Align>
               <Color><Variable name="LoopColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
             </Mark>
@@ -69,51 +77,53 @@
             <MarkRange>
               <StartControl>intro_start_position</StartControl>
               <EndControl>intro_end_position</EndControl>
-              <Color><Variable name="IntroOutroColor"/></Color>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+              <Color><Variable name="IntroOutroColor"/></Color>
+              <Opacity>0.1</Opacity>
               <DurationTextColor>#ffffff</DurationTextColor>
               <DurationTextLocation>after</DurationTextLocation>
             </MarkRange>
             <Mark>
               <Control>intro_start_position</Control>
-              <Text></Text>
+              <Text>&#9698;</Text>
+              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
               <Align>top|right</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
-              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
             </Mark>
             <Mark>
               <Control>intro_end_position</Control>
+              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
               <Text>&#9698;</Text>
               <Align>top|left</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
-              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
             </Mark>
             <!-- Outro -->
             <MarkRange>
               <StartControl>outro_start_position</StartControl>
               <EndControl>outro_end_position</EndControl>
-              <Color><Variable name="IntroOutroColor"/></Color>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+              <Color><Variable name="IntroOutroColor"/></Color>
+              <Opacity>0.1</Opacity>
               <DurationTextColor>#ffffff</DurationTextColor>
               <DurationTextLocation>before</DurationTextLocation>
             </MarkRange>
             <Mark>
               <Control>outro_start_position</Control>
+              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
               <Text>&#9699;</Text>
               <Align>top|right</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
-              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
             </Mark>
             <Mark>
               <Control>outro_end_position</Control>
-              <Text></Text>
+              <Text>&#9699;</Text>
+              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
               <Align>top|left</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
-              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
             </Mark>
           </Visual>
         </Children>
@@ -130,73 +140,22 @@
         <Children>
           <WidgetGroup><Size>0me,1me</Size></WidgetGroup>
 
-          <WidgetGroup><!-- beat grid buttons row -->
+          <WidgetGroup><!-- beat grid & hotcue shift buttons row -->
             <Layout>horizontal</Layout>
             <SizePolicy>f,f</SizePolicy>
             <Children>
 
               <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
-              <WidgetGroup><!-- CurPos only -->
-                <Layout>vertical</Layout>
-                <Size>26f,52f</Size>
-                <Children>
-  	              <Template src="skin:/controls/button_1state_right.xml">
-  	                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-  	                <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
-  	                <SetVariable name="Size">26f,52f</SetVariable>
-  	                <SetVariable name="BtnSize">library_tall</SetVariable>
-  	                <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
-  	                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
-  	              </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],timing_shift_buttons</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- CurPos + hotcue shift -->
-                <Layout>vertical</Layout>
-                <Size>52f,52f</Size>
-                <Children>
-                  <Template src="skin:/controls/button_1state_right.xml">
-                    <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                    <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
-                    <SetVariable name="Size">52f,26f</SetVariable>
-                    <SetVariable name="BtnSize">library_wide</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><!-- hotcue shift -->
-                    <Layout>horizontal</Layout>
-                    <Size>52f,26f</Size>
-                    <Children>
-                      <Template src="skin:/controls/button_1state_right.xml">
-                        <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
-                        <SetVariable name="ObjectName">HotcuesEarlier</SetVariable>
-                        <SetVariable name="Size">26f,26f</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="Group"/>,shift_cues_earlier</SetVariable>
-                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,shift_cues_earlier_small</SetVariable>
-                      </Template>
-
-                      <Template src="skin:/controls/button_1state_right.xml">
-                        <SetVariable name="TooltipId">shift_cues_later</SetVariable>
-                        <SetVariable name="ObjectName">HotcuesLater</SetVariable>
-                        <SetVariable name="Size">26f,26f</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="Group"/>,shift_cues_later</SetVariable>
-                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,shift_cues_later_small</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup><!-- hotcue shift -->
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],timing_shift_buttons</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup><!-- CurPos + hotcue shift -->
+              <!-- CurPos -->
+              <Template src="skin:/controls/button_1state_right.xml">
+                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
+                <SetVariable name="Size">26f,52f</SetVariable>
+                <SetVariable name="BtnSize">library_tall</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
+              </Template>
 
               <WidgetGroup><!-- beats earlier & faster -->
                 <Layout>vertical</Layout>
@@ -208,7 +167,6 @@
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_earlier</SetVariable>
                   </Template>
-
                   <Template src="skin:/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatsFaster</SetVariable>
@@ -226,20 +184,46 @@
                     <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                     <SetVariable name="ObjectName">BeatsLater</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_later</SetVariable>
                   </Template>
-
                   <Template src="skin:/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatsSlower</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_adjust_slower</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /beats later & slower -->
+
+              <WidgetGroup><!-- Hotcue shift -->
+                <Layout>vertical</Layout>
+                  <Size>26f,52f</Size>
+                  <Children>
+                    <Template src="skin:/controls/button_1state_right.xml">
+                      <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
+                      <SetVariable name="ObjectName">HotcuesEarlier</SetVariable>
+                      <SetVariable name="Size">26f,26f</SetVariable>
+                      <SetVariable name="ConfigKey"><Variable name="Group"/>,shift_cues_earlier</SetVariable>
+                      <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,shift_cues_earlier_small</SetVariable>
+                    </Template>
+                    <Template src="skin:/controls/button_1state_right.xml">
+                      <SetVariable name="TooltipId">shift_cues_later</SetVariable>
+                      <SetVariable name="ObjectName">HotcuesLater</SetVariable>
+                      <SetVariable name="Size">26f,26f</SetVariable>
+                      <SetVariable name="ConfigKey"><Variable name="Group"/>,shift_cues_later</SetVariable>
+                      <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,shift_cues_later_small</SetVariable>
+                    </Template>
+                  </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],timing_shift_buttons</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- Hotcue shift -->
             </Children>
-          </WidgetGroup><!-- /beat grid buttons row -->
+          </WidgetGroup><!-- /beat grid & hotcue shift buttons row -->
 
           <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
         </Children>
@@ -247,7 +231,7 @@
           <ConfigKey persist="true">[Skin],show_beatgrid_controls</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Transparent container for beatgrid buttons -->
+      </WidgetGroup><!-- BeatgridControls -->
     </Children>
   </WidgetGroup>
 </Template>

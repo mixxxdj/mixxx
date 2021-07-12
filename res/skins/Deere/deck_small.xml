@@ -49,7 +49,7 @@
 
                   <WidgetGroup><!-- Title/*** / PlayPos -->
                     <Layout>horizontal</Layout>
-                    <Size>200min,24f</Size>
+                    <Size>200min,23f</Size>
                     <Children>
 
                       <WidgetGroup>
@@ -103,10 +103,16 @@
                     </Children>
                   </WidgetGroup><!-- Title/*** / PlayPos -->
 
+                  <TrackWidgetGroup>
+                    <Size>0me,2f</Size>
+                    <Group><Variable name="group"/></Group>
+                    <TrackColorAlpha>255</TrackColorAlpha>
+                  </TrackWidgetGroup>
+
                   <WidgetGroup><!-- Artist / Key / BPM -->
                     <ObjectName>ArtistKeyBpmGutterSmall</ObjectName>
                     <Layout>horizontal</Layout>
-                    <Size>200min,22f</Size>
+                    <Size>200min,21f</Size>
                     <Children>
                       <!-- We allow to hide track/artist info (aka AM-Mode) in the skin settings,
                           display just a label with asterixes instead. -->
@@ -140,6 +146,7 @@
                       <Key>
                         <TooltipId>visual_key</TooltipId>
                         <ObjectName>BpmKeyTextSmall</ObjectName>
+                        <Group><Variable name="group"/></Group>
                         <Alignment>center</Alignment>
                         <Size>30min,22f</Size>
                         <Alignment>center</Alignment>
@@ -162,33 +169,63 @@
                       </NumberBpm>
 
                     </Children>
-                  </WidgetGroup><!-- PositionKeyBpmGutter -->
+                  </WidgetGroup><!-- ArtistKeyBpmGutterSmall -->
 
                 </Children>
               </WidgetGroup><!-- DeckTextRowSmall -->
 
-              <WidgetGroup><!-- Play button + play_indicator -->
-                <ObjectName>PlayGutterSmall</ObjectName>
-                <Layout>stacked</Layout>
-                <SizePolicy>f,me</SizePolicy>
+              <WidgetGroup><!-- Cue + Play button -->
+                <ObjectName>PlayCueContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <Size>32min,46f</Size>
                 <Children>
-                  <Template src="skin:left_right_2state_button.xml">
-                    <SetVariable name="TooltipId">play_cue_default</SetVariable>
-                    <SetVariable name="ObjectName">PlayToggle</SetVariable>
-                    <SetVariable name="MinimumSize">24,30</SetVariable>
-                    <SetVariable name="MaximumSize">24,</SetVariable>
-                    <SetVariable name="SizePolicy">f,me</SetVariable>
-                    <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
-                    <SetVariable name="right_connection_control"><Variable name="group"/>,cue_default</SetVariable>
+
+                  <Template src="skin:left_right_display_2state_button.xml">
+                    <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
+                    <SetVariable name="ObjectName">DeckCue</SetVariable>
+                    <SetVariable name="MinimumSize">30,21</SetVariable>
+                    <SetVariable name="MaximumSize">30,21</SetVariable>
+                    <SetVariable name="SizePolicy">f,f</SetVariable>
+                    <SetVariable name="LeftClickIsPushButton">true</SetVariable>
+                    <SetVariable name="state_0_text">CUE</SetVariable>
+                    <SetVariable name="state_1_text">CUE</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,cue_default</SetVariable>
+                    <SetVariable name="right_connection_control"><Variable name="group"/>,cue_gotoandstop</SetVariable>
+                    <SetVariable name="display_connection_control"><Variable name="group"/>,cue_indicator</SetVariable>
                   </Template>
-                  <Template src="skin:left_2state_button.xml">
-                    <SetVariable name="MinimumSize">24,30</SetVariable>
-                    <SetVariable name="MaximumSize">24,</SetVariable>
-                    <SetVariable name="SizePolicy">f,me</SetVariable>
-                    <SetVariable name="left_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
-                  </Template>
+
+                  <WidgetGroup><!-- Play button + preview indicator + play_indicator -->
+                    <Layout>stacked</Layout>
+                    <SizePolicy>f,me</SizePolicy>
+                    <Children>
+                      <Template src="skin:left_right_display_2state_button.xml">
+                        <SetVariable name="TooltipId">play_cue_default</SetVariable>
+                        <SetVariable name="ObjectName">PlayToggle</SetVariable>
+                        <SetVariable name="MinimumSize">30,21</SetVariable>
+                        <SetVariable name="MaximumSize">30,21</SetVariable>
+                        <SetVariable name="SizePolicy">f,f</SetVariable>
+                        <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
+                        <SetVariable name="right_connection_control"><Variable name="group"/>,cue_set</SetVariable>
+                        <SetVariable name="display_connection_control"><Variable name="group"/>,play_latched</SetVariable>
+                      </Template>
+                      <Template src="skin:left_2state_button.xml">
+                        <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
+                        <SetVariable name="MinimumSize">30,21</SetVariable>
+                        <SetVariable name="MaximumSize">30,21</SetVariable>
+                        <SetVariable name="SizePolicy">f,f</SetVariable>
+                        <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
+                      </Template>
+                      <Template src="skin:left_2state_button.xml">
+                        <SetVariable name="MinimumSize">30,21</SetVariable>
+                        <SetVariable name="MaximumSize">30,21</SetVariable>
+                        <SetVariable name="SizePolicy">f,f</SetVariable>
+                        <SetVariable name="left_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- PlayGutterSmall -->
 
             </Children>
           </WidgetGroup>

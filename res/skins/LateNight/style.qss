@@ -1,178 +1,245 @@
 /* LateNight 2.3 // common layout settings */
 
 /************** font settings *************************************************/
-#Mixxx, WWidget,
-WEffect,
-WEffectSelector,
+
+#Mixxx,
+WWidget,
+WLabel, QLabel,
+WNumber, WNumberPos,
+WPushButton,
 WKey,
-WLabel, WLibrary QLabel,
-WNumber,
-WNumberPos,
-WPushButton, WLibrary QPushButton,
-WRecordingDuration,
 WTime,
 WTrackText,
 WTrackProperty,
-WBeatSpinBox,
+WRecordingDuration,
 QSpinBox,
-QComboBox,
-WLibrary QHeaderView,
-QToolTip,
+WBeatSpinBox,
 WOverview #PassthroughLabel,
-#LibraryContainer QMenu,
 WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCoverArtMenu,
-WTrackMenu,
-WTrackMenu QMenu,
-WOverview /* Hotcue labels in the overview */,
+WCueMenuPopup QLabel,
+WCueMenuPopup QLineEdit,
+WOverview, /* Hotcue labels in the overview */
+WEffect,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-WLibrary QRadioButton {
-  font-family: "Open Sans";
+WLibrary QPushButton,
+WLibrary QLabel,
+WLibrary QRadioButton,
+WTrackTableViewHeader,
+WTrackTableViewHeader::section {
+  /* On Linux all weight variants of Open Sans are identified
+  as "Open Sans".
+  On Windows however, the semi-bold variant is identified as
+  "Open Sans Semibold", so look for that first. */
+  font-family: "Open Sans Semibold", "Open Sans";
   font-weight: 500; /* semi-bold */
   font-style: normal;
   text-transform: none;
 }
 
 /* Bold */
-#KnobLabel,
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel,
-#EQKillButton,
-#FxUnitLabel,
-#MicAuxLabel, #MicAuxLabelUnconfigured,
-#LatencyLabel,
+/* QLabel / WLabel / WPushButton required to override styles set above */
+WLabel#KnobLabel,
+WLabel#FxUnitLabel,
+WLabel#MicAuxLabel, WLabel#MicAuxLabelUnconfigured,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
-#SamplerTitleMini,
-/* ToolBar */
-#GuiToggleButton,
-#RecFeedback, #RecDuration,
-#BroadcastButton,
+WPushButton#GuiToggleButton,
+WLabel#RecFeedback, WLabel#RecDuration,
+WPushButton#BroadcastButton,
+WPushButton#SkinSettingsToggle,
+#LibraryFeatureControls QPushButton,
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel,
+WPushButton#EQKillButton,
+WLabel#LatencyLabel,
+WLabel#SamplerTitleMini,
 /* SKin settings & Library */
-#SkinSettingsToggle,
-#DeckSizeButton[value="1"],
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton,
-#labelRecFilename,
-WEffectSelector,
-#fadeModeCombobox,
+WPushButton#SkinSettingsNumToggle[value="1"],
+QLabel#labelRecFilename,
 WOverview #PassthroughLabel {
+  font-family: "Open Sans";
   font-weight: bold;
-}
-WLibrary QHeaderView {
-  /* not applied: */;
-  font-weight: 500;
 }
 
 /* All capitals */
 #KnobLabel,
 #FxUnitLabel,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
-#LatencyLabel,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
-/* ToolBar */
 #GuiToggleButton,
 #RecFeedback, #RecDuration,
 #BroadcastButton,
 #SkinSettingsToggle,
-WLibrary QPushButton {
+#LibraryFeatureControls QPushButton {
   text-transform: uppercase;
 }
 /* regular font weight */
 #SkinSettingsButton,
-#DeckSizeButton,
+#SkinSettingsNumToggle,
 #SkinSettingsMixerToggle,
 #SkinSettingsText,
 QToolTip,
-#LibraryContainer QMenu,
-WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCoverArtMenu,
+WLibrarySidebar QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
-WBeatSpinBox QMenu,
-#labelRecPrefix,
-#labelRecStatistics {
+WTrackMenu QMenu QCheckBox,
+QLineEdit QMenu,
+WCoverArtMenu,
+QLabel#labelRecPrefix,
+QLabel#labelRecStatistics {
+  font-family: "Open Sans";
   font-weight: normal;
+  font-style: normal;
 }
 
+/* It is difficult to achieve identical styles WMainMenuBar #MainMenu
+  on Windows AND Linux because item and checkbox properties are rendered
+  slightly different.
+  For details see
+    * default-menu-styles-linux.qss
+    * default-menu-styles-windows.qss
+  Common styles are set here.
+  Luckily we don't need to care about macOS here -Woohoo!- because
+  there the menu bar is always styled natively. */
+#MainMenu {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
 
+#MainMenu QMenu::right-arrow,
+WTrackMenu::right-arrow,
+WTrackMenu QMenu::right-arrow {
+  width: 0.7em;
+  height: 0.7em;
+}
+
+WEffectSelector QAbstractScrollArea {
+  /* This would set the maximum width only. The minimum seems to be
+    defined by the widget itself. Unfortunately, the widget width
+    is also used to calculate the text elide (center) TODO(ronso0) */
+  min-width: 160px;
+}
+#fadeModeCombobox QAbstractScrollArea {
+  min-width: 185px;
+  }
+  WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    margin: 2px;
+  }
+  WEffectSelector::down-arrow,
+  #fadeModeCombobox::down-arrow,
+  WTrackTableView::indicator {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+WEffectSelector::checked, /* selected item */
+WEffectSelector::indicator, /* checkbox, tick mark */
+WEffectSelector::indicator:unchecked,
+WEffectSelector::drop-down,
+#fadeModeCombobox::checked, /* selected mode */
+#fadeModeCombobox::indicator, /* checkbox, tick mark */
+#fadeModeCombobox::indicator:unchecked,
+#fadeModeCombobox::drop-down {
+  padding: 0px;
+  margin: 0px;
+  image: none;
+  outline: none;
+  border: 0px solid transparent;
+}
+/* Remove 3D border from unchecked effects checkmark space */
+WEffectSelector::item:selected,
+#fadeModeCombobox::item:selected {
+  border: 0px;
+}
+
+  WLibrarySidebar QMenu::indicator,
+  WTrackTableViewHeader QMenu::indicator,
+  WTrackMenu QMenu QCheckBox::indicator {
+    border: 1px solid #333;
+    border-radius: 1px;
+    background-color: #000;
+    /* remove OS focus indicator */
+    outline: none;
+  }
 
 /************** font sizes / alignment ****************************************/
 
 #KnobLabel,
 #FxKnobLabel,
 #FxButtonLabel,
+#RateRangeText,
 #LatencyLabel {
   font-size: 10px;
   text-align: center;
 }
 
-WPushButton, WLibrary QPushButton,
+WPushButton,
+#LibraryFeatureControls QPushButton,
 #RecDuration[highlight="0"],
 #RecDuration[highlight="1"] {
   font-size: 11px;
 }
 
+#RateRangePrefix,
 #RecDuration[highlight="2"],
 #SamplerTitleMini,
 #EQKillButton,
-#RateText,
-#SamplerBPM,
+#SamplerBpmMini,
 #PreviewBPM,
-WLibrary QRadioButton {
+#LibraryFeatureControls QRadioButton {
 	font-size: 12px;
 }
 
 WKey,
-#DurationText,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-#labelRecPrefix,
-#labelRecFilename,
-#labelRecStatistics,
+#LibraryFeatureControls QLabel,
 #SkinSettingsButton,
-#DeckSizeButton,
+#SkinSettingsNumToggle,
 #SkinSettingsMixerToggle,
-#SkinSettingsText  {
+#SkinSettingsText {
   font-size: 13px;
 }
 
 #PlayPositionTextSmall,
-#SamplerTitleMini,
+#DurationText,
+#RateText,
+#SamplerTitleMini, #SamplerBpm,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
 #PreviewTitle,
 #PreviewLabel,
 WBeatSpinBox,
-#spinBoxTransition,
-WTime {
+#spinBoxTransition {
   font-size: 14px;
-  text-align: left;
 }
 
 #TitleTextSmall,
 #ArtistTextSmall,
 #PlayPositionText,
-#BpmText, #BpmTextSmall,
+#BpmText,
+#BpmTextSmall,
 #FxUnitLabel,
-#SamplerTitle {
+#SamplerTitle,
+WTime,
+WRecordingDuration {
   font-size: 16px;
 }
 
 #SkinSettingsLabelButton,
-#CategoryLabel  {
+#CategoryLabel,
+#SkinSettingsNumToggleHeader  {
   font-size: 17px;
-  text-align: left;
 }
 
 #ArtistText,
@@ -180,19 +247,29 @@ WTime {
   font-size: 18px;
 }
 
-#RateText,
+#PlayPositionTextSmall,
+#SamplerTitle,
+#SamplerTitleMini,
 #MicAuxLabel,
-#PreviewBPM,
-WBeatSpinBox, #spinBoxTransition {
-  text-align: center;
-}
-WBeatSpinBox, #spinBoxTransition {
-  qproperty-alignment: 'AlignHCenter';
+#MicAuxLabelUnconfigured,
+#PreviewTitle,
+#PreviewLabel {
+  text-align: left;
 }
 
-#SamplerTitle,
-#SamplerTitleMini {
-  text-align: left;
+#RateText,
+#MicAuxLabel,
+#PreviewBPM {
+  text-align: center;
+  }
+  WBeatSpinBox,
+  #spinBoxTransition {
+    qproperty-alignment: 'AlignHCenter';
+  }
+
+#SamplerBpm,
+#SamplerBpmMini {
+  text-align: right;
 }
 
 #KnobLabel,
@@ -202,23 +279,41 @@ WBeatSpinBox, #spinBoxTransition {
 }
 
 
-#LibraryContainer QHeaderView {
-  /* use relative font size, adjusts with OS font size */
-  font-size: 1em;
-  line-height: 1.2em;
+WTrackTableViewHeader::item {
+  /* Don't set a font size to pick up the system font size. */
   border-bottom: 1px solid #000;
   }
-  #LibraryContainer QHeaderView::section {
-    height: 1.2em;
-    border: 0px;
-    padding: 0px 2px;
+  WTrackTableViewHeader::section {
+    height: 1.1em;
+    border: 0;
+    padding: 0.1em;
   }
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
+  WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
     width: 0.8em;
-    padding: 0px 3px;
+    padding: 0 0.15em;
     }
 
+
+#HotcueButton {
+  /* ronso0
+  TEST pixel fonts instead of icons
+  FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
+
+  font-size: tried a lot of integers as well as .5 values
+  didn't find the magic number.. it's some unintuitive floating point value
+  that aligns font pixels to screen pixels so the fonts look sharp.
+
+  font-family: "Acknowledge TT (BRK)";
+  font-family: "Bulky Pixels";
+  font-family: "Irresistor";
+  font-family: "Visitor TT1 BRK";
+  font-family: "Boxy Bold";
+  font-family: "Pixel Intv";
+  font-size: 13px;
+  color: #eee;
+  */
+}
 
 /* This does NOT style the cue labels in the overview
 WOverview {
@@ -288,8 +383,11 @@ WOverview QLabel {
   #TitleRow {
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   }
-  #PlayPositionGutter, #DurationGutter {
-    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+ #TrackColorFullCompact {
+    padding: 0px 3px 0px 5px;
+  }
+  #TrackColorMini {
+    padding: 0px 0px 0px 5px;
   }
 
 #DeckSettings {
@@ -319,16 +417,21 @@ WSpinny { /*
 }
 
 #BpmText,
-#RateText {
+#RateText,
+#RateRangePrefix,
+#RateRangeText {
   qproperty-alignment: 'AlignCenter';
 }
 
 #RateContainer,
 #RateContainerCompact,
-#BpmContainer,
+#BpmTapContainer,
 #RateButtons
 #SyncBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+#BpmRateTapContainer {
+  margin: 1px;
 }
 
 #RateControls {
@@ -385,8 +488,13 @@ WSpinny { /*
   padding: 1px;
 }
 #VuMeterBoxMaster {
-  /* gap in between Master lft/right Vu */
-  qproperty-layoutSpacing: 1;
+  /* gap in between Master lft/right Vu
+  qproperty-layoutSpacing: 1; */
+  }
+  #VuMeterBoxFull {
+    /* push all VU meters to the right to visullay center it
+      below Pfl buttons */
+    margin-left: 1px;
   }
   #VuMeterChannel_2Decks,
   #VuMeterChannel_4Decks,
@@ -413,7 +521,10 @@ WSpinny { /*
   #MasterControls,
   #HeadphoneControls {
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  }
+    }
+    #BoothLabelBox {
+      qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    }
   #MasterHeadphoneSeparator {
   }
 
@@ -435,7 +546,14 @@ WSpinny { /*
 #FxUnitHeader {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
-#FxUnitControlsExpanded, #FxUnitControlsCollapsed {
+#FxUnitControlsExpanded,
+#FxUnitControlsCollapsed,
+#FxSlotContainer,
+#FxSlotControls,
+#FxFocusButtonBox,
+#FxMetaKnob,
+#FxParameterKnob,
+#LibExpandBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
@@ -443,14 +561,6 @@ WSpinny { /*
 #FxSlot2,
 #FxSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  }
-
-#FxFocusButtonBox {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-}
-
-#FxMetaKnob {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #FxParameterKnobBox {
@@ -458,7 +568,6 @@ WSpinny { /*
 }
 
 #FxParameterKnob {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   margin-left: 1px;
 }
 
@@ -484,19 +593,14 @@ WEffectSelector {
 
   WEffectSelector QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
-    width: 142px;
-    /* padding-left: 6px; */
-    /* On Linux, this is not applied but font color from
-      WEffectSelector is inherited.
-      On Windows, it must be defined here */
     border: 1px solid #444;
     border-radius: 2px;
     padding: 0px;
     margin: 0px;
   }
   /* selected item */
-  WEffectSelector::checked,
-  #fadeModeCombobox::checked {
+  WEffectSelector:checked,
+  #fadeModeCombobox:checked {
     /* not applied
     padding-left: 5px;	*/
     padding: 0px;
@@ -563,7 +667,7 @@ WEffectSelector {
     }
 
     #SamplerPitchSlider {
-      qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+      qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
     }
 
 /************** Samplers *****************************************************/
@@ -614,7 +718,7 @@ WEffectSelector {
 
 
 
-/************** Skin setttings ************************************************/
+/************** Skin settings *************************************************/
 
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -655,7 +759,6 @@ WEffectSelector {
   /* This doesn't work as expected:
   it appears LibrarySingleton is displayed twice (nested in itself),
   so padding/margin would double.
-  Placed a plain spacer in library.xml which works reliably
   padding-top: 5px;*/
 }
 
@@ -672,68 +775,60 @@ WEffectSelector {
 
 /************ Library feature controls / tree view / table view *************/
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
-WLibrary QLabel, WLibrary QRadioButton {
-  background: transparent;
-}
-
-/* Additional space for QRadionButtons */
-WLibrary QRadioButton {
-  /* bottom margin! */
-  margin: 2px 3px 2px 3px;
-}
-
-/* Additional space for QLabels */
-#DlgAnalysis QLabel,
-#DlgAutoDJ QLabel {
-  margin: 2px 5px 5px 1px;
-}
 
 /* Library feature pushbuttons
   Don't use 'WLibrary QPushButton' here, as this would apply padding
   to the Preview & BPM lock buttons as well.
   Define the buttons fore every Library feature instead. */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
+#LibraryFeatureControls QPushButton {
   margin: 0px 2px 3px 0px;
-  padding: 0px;
+  padding: 0px 5px;
   /* Note: border-width is added, so the effective minimal size
     is 24 x 36 px */
   height: 20px;
   min-width: 32px;
   }
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
-  padding: 0px 5px;
-  }
-  QPushButton#pushButtonAutoDJ {
-    min-width: 40px;
-  }
-  /* Space in between 'Enable AutoDJ' and transition time spinbox */
-  #DlgAutoDJ > #horizontalSpacer {
-    width: 100px;
+  #DlgAutoDJ #LibraryFeatureControls QPushButton {
+    padding: 0px;
+    }
+    QPushButton#pushButtonAutoDJ {
+      min-width: 40px;
+    }
+
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
+  background: transparent;
+}
+
+/* Additional space for QRadionButtons */
+#LibraryFeatureControls QRadioButton {
+  margin: 2px 3px 2px 3px;
   }
   /* Push 'New' radio button away from corner */
-  #radioButtonRecentlyAdded {
-    margin-left: 10px;
+  QRadioButton#radioButtonRecentlyAdded {
+    margin-left: 5px;
   }
   /* Space in between 'All' radio button and 'Select All' button */
-  QPushButton#pushButtonSelectAll {
-    margin-left: 12px;
+  QRadioButton#radioButtonAllSongs {
+    margin-right: 10px;
   }
 
-#labelRecPrefix,
-#labelRecFilename,
-#labelRecStatistics {
+/* Additional space for QLabels */
+QLabel#labelTransitionAppendix {
+  margin-left: 3px;
+}
+QLabel#labelProgress, /* Analysis progress */
+QLabel#labelSelectionInfo /* AutoDJ track selection info */ {
+  margin: 2px 5px 5px 1px;
+}
+QLabel#labelRecPrefix,
+QLabel#labelRecFilename,
+QLabel#labelRecStatistics {
   text-transform: none;
-  padding: 0px 0px 3px 0px;
-  }
+  margin: 3px 0px 3px 0px;
+}
 
-#LibraryContainer QTreeView {
+WLibrarySidebar {
   show-decoration-selected: 0;
 }
 /************** Library *******************************************************/

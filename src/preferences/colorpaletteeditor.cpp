@@ -10,12 +10,13 @@
 #include <QStandardItemModel>
 #include <QTableView>
 
+#include "moc_colorpaletteeditor.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {
 const QColor kDefaultPaletteColor(0, 0, 0);
-}
+} // namespace
 
 ColorPaletteEditor::ColorPaletteEditor(QWidget* parent, bool showHotcueNumbers)
         : QDialog(parent),
@@ -185,7 +186,7 @@ void ColorPaletteEditor::slotTableViewDoubleClicked(const QModelIndex& index) {
 }
 
 void ColorPaletteEditor::slotAddColor() {
-    m_pModel->appendRow(kDefaultPaletteColor);
+    m_pModel->appendRow(kDefaultPaletteColor, {});
     m_pTableView->scrollToBottom();
     m_pTableView->setCurrentIndex(
             m_pModel->index(m_pModel->rowCount() - 1, 0));

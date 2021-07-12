@@ -57,7 +57,7 @@ void WhiteNoiseEffect::processChannel(
 
     WhiteNoiseGroupState& gs = *pGroupState;
 
-    CSAMPLE drywet = m_pDryWetParameter->value();
+    CSAMPLE drywet = static_cast<CSAMPLE>(m_pDryWetParameter->value());
     RampingValue<CSAMPLE_GAIN> drywet_ramping_value(
             drywet, gs.previous_drywet, bufferParameters.framesPerBuffer());
 

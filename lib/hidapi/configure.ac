@@ -1,13 +1,6 @@
 AC_PREREQ(2.63)
 
-# Version number. This is currently the only place.
-m4_define([HIDAPI_MAJOR],   0)
-m4_define([HIDAPI_MINOR],   9)
-m4_define([HIDAPI_RELEASE], 0)
-m4_define([HIDAPI_RC],       )
-m4_define([VERSION_STRING], HIDAPI_MAJOR[.]HIDAPI_MINOR[.]HIDAPI_RELEASE[]HIDAPI_RC)
-
-AC_INIT([hidapi],[VERSION_STRING],[alan@signal11.us])
+AC_INIT([hidapi],[m4_normalize(m4_builtin([include], VERSION))],[https://github.com/libusb/hidapi/issues])
 
 # Library soname version
 # Follow the following rules (particularly the ones in the second link):
@@ -79,7 +72,7 @@ case $host in
 	backend="mac"
 	os="darwin"
 	threads="pthreads"
-	LIBS="${LIBS} -framework IOKit -framework CoreFoundation"
+	LIBS="${LIBS} -framework IOKit -framework CoreFoundation -framework AppKit"
 	;;
 *-freebsd*)
 	AC_MSG_RESULT([ (FreeBSD back-end)])
@@ -92,9 +85,10 @@ case $host in
 	CFLAGS="$CFLAGS -I/usr/local/include"
 	LDFLAGS="$LDFLAGS -L/usr/local/lib"
 	LIBS="${LIBS}"
-	AC_CHECK_LIB([usb], [libusb_init], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -lusb"], [hidapi_lib_error libusb])
+	PKG_CHECK_MODULES([libusb], [libusb-1.0 >= 1.0.9], true, [hidapi_lib_error libusb-1.0])
+	LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} $libusb_LIBS"
+	CFLAGS_LIBUSB="${CFLAGS_LIBUSB} $libusb_CFLAGS"
 	AC_CHECK_LIB([iconv], [iconv_open], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -liconv"], [hidapi_lib_error libiconv])
-	echo libs_priv: $LIBS_LIBUSB_PRIVATE
 	;;
 *-kfreebsd*)
 	AC_MSG_RESULT([ (kFreeBSD back-end)])
@@ -104,8 +98,22 @@ case $host in
 	os="kfreebsd"
 	threads="pthreads"
 
-	AC_CHECK_LIB([usb], [libusb_init], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -lusb"], [hidapi_lib_error libusb])
-	echo libs_priv: $LIBS_LIBUSB_PRIVATE
+	PKG_CHECK_MODULES([libusb], [libusb-1.0 >= 1.0.9], true, [hidapi_lib_error libusb-1.0])
+	LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} $libusb_LIBS"
+	CFLAGS_LIBUSB="${CFLAGS_LIBUSB} $libusb_CFLAGS"
+	;;
+*-*-haiku)
+	AC_MSG_RESULT([ (Haiku back-end)])
+	AC_DEFINE(OS_HAIKU, 1, [Haiku implementation])
+	AC_SUBST(OS_HAIKU)
+	backend="libusb"
+	os="haiku"
+	threads="pthreads"
+
+	PKG_CHECK_MODULES([libusb], [libusb-1.0 >= 1.0.9], true, [hidapi_lib_error libusb-1.0])
+	LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} $libusb_LIBS"
+	CFLAGS_LIBUSB="${CFLAGS_LIBUSB} $libusb_CFLAGS"
+	AC_CHECK_LIB([iconv], [libiconv_open], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -liconv"], [hidapi_lib_error libiconv])
 	;;
 *-mingw*)
 	AC_MSG_RESULT([ (Windows back-end, using MinGW)])
@@ -213,6 +221,7 @@ AM_CONDITIONAL(OS_LINUX, test "x$os" = xlinux)
 AM_CONDITIONAL(OS_DARWIN, test "x$os" = xdarwin)
 AM_CONDITIONAL(OS_FREEBSD, test "x$os" = xfreebsd)
 AM_CONDITIONAL(OS_KFREEBSD, test "x$os" = xkfreebsd)
+AM_CONDITIONAL(OS_HAIKU, test "x$os" = xhaiku)
 AM_CONDITIONAL(OS_WINDOWS, test "x$os" = xwindows)
 
 AC_CONFIG_HEADERS([config.h])

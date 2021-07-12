@@ -232,13 +232,11 @@ inline QDebug operator<<(QDebug dbg, RgbColor color) {
     return dbg << RgbColor::toQString(color).toLatin1().constData();
 }
 
-inline QDebug operator<<(QDebug dbg, RgbColor::optional_t optionalColor) {
+inline QDebug operator<<(QDebug dbg, const RgbColor::optional_t& optionalColor) {
     return dbg << RgbColor::toQString(optionalColor).toLatin1().constData();
 }
 
 } // namespace mixxx
 
-// Assumption: A primitive type wrapped into std::optional is
-// still a primitive type.
-Q_DECLARE_TYPEINFO(std::optional<mixxx::RgbColor>, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(std::optional<mixxx::RgbColor>, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(std::optional<mixxx::RgbColor>)

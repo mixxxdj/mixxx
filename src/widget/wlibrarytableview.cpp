@@ -1,24 +1,23 @@
-// wlibrarytableview.cpp
-// Created 10/19/2009 by RJ Ryan (rryan@mit.edu)
+#include "widget/wlibrarytableview.h"
 
+#include <QFocusEvent>
+#include <QFontMetrics>
 #include <QHeaderView>
 #include <QPalette>
 #include <QScrollBar>
-#include <QFontMetrics>
 
 #include "library/trackmodel.h"
-#include "widget/wwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wlibrarytableview.h"
+#include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
-                                     UserSettingsPointer pConfig,
-                                     ConfigKey vScrollBarPosKey)
+        UserSettingsPointer pConfig,
+        const ConfigKey& vScrollBarPosKey)
         : QTableView(parent),
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
-
     loadVScrollBarPosState();
 
     // Setup properties for table
@@ -45,8 +44,10 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
-    connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SIGNAL(scrollValueChanged(int)));
+    connect(verticalScrollBar(),
+            &QScrollBar::valueChanged,
+            this,
+            &WLibraryTableView::scrollValueChanged);
 
     setTabKeyNavigation(false);
 }
@@ -131,14 +132,24 @@ void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
     setFont(font);
-    setTrackTableRowHeight(verticalHeader()->defaultSectionSize());
+    QFontMetrics metrics(font);
+    verticalHeader()->setMinimumSectionSize(metrics.height());
+    // Resize the 'Played' checkbox and the BPM lock icon.
+    // Note: this works well for library font sizes up to ~200% of the original
+    // system font's size (that set with Qt5 Settings respectively). Above that,
+    // the indicators start to overlap the item text because the painter rectangle
+    // is not resized (also depending on the system font size).
+    setStyleSheet(QStringLiteral(
+            "WTrackTableView::indicator,"
+            "#LibraryBPMButton::indicator {"
+            "height: %1px;"
+            "width: %1px;}")
+                          .arg(metrics.height() * 0.7));
 }
 
 void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
-    QFontMetrics metrics(font());
-    int fontHeightPx = metrics.height();
     verticalHeader()->setDefaultSectionSize(math_max(
-                                                rowHeight, fontHeightPx));
+            rowHeight, verticalHeader()->minimumSectionSize()));
 }
 
 void WLibraryTableView::setSelectedClick(bool enable) {
@@ -146,5 +157,45 @@ void WLibraryTableView::setSelectedClick(bool enable) {
         setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
     } else {
         setEditTriggers(QAbstractItemView::EditKeyPressed);
+    }
+}
+
+void WLibraryTableView::focusInEvent(QFocusEvent* event) {
+    QTableView::focusInEvent(event);
+
+    if (event->reason() == Qt::TabFocusReason ||
+            event->reason() == Qt::BacktabFocusReason) {
+        // On FocusIn caused by a tab action with no focused item, select the
+        // current or first track which can then instantly be loaded to a deck.
+        // This is especially helpful if the table has only one track, which can
+        // not be selected with up/down buttons, either physical or emulated via
+        // [Library],MoveVertical controls. See lp:1808632
+        if (model()->rowCount() > 0) {
+            if (selectionModel()->hasSelection()) {
+                DEBUG_ASSERT(!selectionModel()->selectedIndexes().isEmpty());
+                if (!currentIndex().isValid() ||
+                        !selectionModel()->isSelected(currentIndex())) {
+                    // Reselect the first selected index
+                    selectRow(selectionModel()->selectedIndexes().first().row());
+                }
+            } else {
+                if (!currentIndex().isValid()) {
+                    // Select the first row if no row is focused
+                    selectRow(0);
+                    DEBUG_ASSERT(currentIndex().row() == 0);
+                } else {
+                    // Select the row of the currently focused index.
+                    // For some reason selectRow(currentIndex().row()) would not
+                    // select for the first Qt::BacktabFocusReason in a session
+                    // even though currentIndex() is valid.
+                    selectionModel()->select(currentIndex(),
+                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                }
+            }
+            DEBUG_ASSERT(currentIndex().isValid());
+            DEBUG_ASSERT(selectionModel()->isSelected(currentIndex()));
+            // scrollTo() doesn't always seem to work!?
+            scrollTo(currentIndex());
+        }
     }
 }

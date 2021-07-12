@@ -1,4 +1,3 @@
-
 #include "util/desktophelper.h"
 
 #include <QtDebug>
@@ -173,4 +172,3 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
 }
 
 } // namespace mixxx
-

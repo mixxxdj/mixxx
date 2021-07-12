@@ -1,5 +1,4 @@
-#ifndef LIBRARYMIDICONTROL_H
-#define LIBRARYMIDICONTROL_H
+#pragma once
 
 #include <QObject>
 
@@ -23,7 +22,7 @@ class LoadToGroupController : public QObject {
     virtual ~LoadToGroupController();
 
   signals:
-    void loadToGroup(QString group, bool);
+    void loadToGroup(const QString& group, bool);
 
   public slots:
     void slotLoadToGroup(double v);
@@ -50,7 +49,7 @@ class LibraryControl : public QObject {
 
   public slots:
     // Deprecated navigation slots
-    void slotLoadSelectedTrackToGroup(QString group, bool play);
+    void slotLoadSelectedTrackToGroup(const QString& group, bool play);
 
   private slots:
     void libraryWidgetDeleted();
@@ -144,6 +143,11 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
     std::unique_ptr<ControlPushButton> m_pTrackColorNext;
 
+    // Controls to navigate search history
+    std::unique_ptr<ControlPushButton> m_pSelectHistoryNext;
+    std::unique_ptr<ControlPushButton> m_pSelectHistoryPrev;
+    std::unique_ptr<ControlEncoder> m_pSelectHistorySelect;
+
     // Font sizes
     std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;
     std::unique_ptr<ControlPushButton> m_pFontSizeDecrement;
@@ -170,5 +174,3 @@ class LibraryControl : public QObject {
     ControlProxy m_numPreviewDecks;
     std::map<QString, std::unique_ptr<LoadToGroupController>> m_loadToGroupControllers;
 };
-
-#endif //LIBRARYMIDICONTROL_H

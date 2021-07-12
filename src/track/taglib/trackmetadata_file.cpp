@@ -25,22 +25,22 @@ void readAudioProperties(
     DEBUG_ASSERT(pTrackMetadata);
 
     // NOTE(uklotzde): All audio properties will be updated
-    // with the actual (and more precise) values when reading
-    // the audio data for this track. Often those properties
-    // stored in tags don't match with the corresponding
-    // audio data in the file.
-    pTrackMetadata->setChannelCount(
-            audio::ChannelCount(audioProperties.channels()));
-    pTrackMetadata->setSampleRate(
-            audio::SampleRate(audioProperties.sampleRate()));
-    pTrackMetadata->setBitrate(
-            audio::Bitrate(audioProperties.bitrate()));
-#if (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
-    const auto duration = Duration::fromMillis(audioProperties.lengthInMilliseconds());
+    // with the actual (and more precise) values when opening
+    // the audio source for this track. Often those properties
+    // stored in tags are imprecise and don't match the actual
+    // audio data of the stream.
+    pTrackMetadata->setStreamInfo(audio::StreamInfo {
+        audio::SignalInfo{
+                audio::ChannelCount(audioProperties.channels()),
+                audio::SampleRate(audioProperties.sampleRate()),
+        },
+                audio::Bitrate(audioProperties.bitrate()),
+#if defined(TAGLIB_HAS_LENGTH_IN_MILLISECONDS) && (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
+                Duration::fromMillis(audioProperties.lengthInMilliseconds()),
 #else
-    const auto duration = Duration::fromSeconds(audioProperties.length());
+                        Duration::fromSeconds(audioProperties.length()),
 #endif
-    pTrackMetadata->setDuration(duration);
+    });
 }
 
 } // anonymous namespace
@@ -55,7 +55,7 @@ FileType getFileTypeFromFileName(
     if (QStringLiteral("mp3") == fileExt) {
         return FileType::MP3;
     }
-    if (QStringLiteral("m4a") == fileExt) {
+    if ((QStringLiteral("m4a") == fileExt) || (QStringLiteral("m4v") == fileExt)) {
         return FileType::MP4;
     }
     if (QStringLiteral("flac") == fileExt) {
@@ -151,7 +151,7 @@ bool hasMP4Tag(TagLib::MP4::File& file) {
     // Note (TagLib 1.11.1): For MP4 files without file tags
     // TagLib still reports that the MP4 tag exists. Additionally
     // we need to check that the tag itself is not empty.
-#if (TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY)
+#if defined(TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY) && (TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY)
     return file.hasMP4Tag() && !file.tag()->isEmpty();
 #else
     return file.tag() != nullptr;

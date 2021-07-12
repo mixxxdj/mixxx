@@ -6,20 +6,22 @@
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "widget/wlibrarysidebar.h"
+#include "moc_baseexternallibraryfeature.cpp"
 #include "util/logger.h"
+#include "widget/wlibrarysidebar.h"
 
 namespace {
 
 const mixxx::Logger kLogger("BaseExternalLibraryFeature");
 
-}
+} // namespace
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()) {
+        UserSettingsPointer pConfig,
+        const QString& iconName)
+        : LibraryFeature(pLibrary, pConfig, iconName),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()) {
     m_pAddToAutoDJAction = make_parented<QAction>(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,
             &QAction::triggered,
@@ -55,7 +57,8 @@ void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 }
 
-void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void BaseExternalLibraryFeature::onRightClickChild(
+        const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QMenu menu(m_pSidebarWidget);
@@ -115,10 +118,9 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
     } else {
         // Do not change strings here without also changing strings in
         // src/library/trackset/baseplaylistfeature.cpp
-        QMessageBox::warning(NULL,
-                             tr("Playlist Creation Failed"),
-                             tr("An unknown error occurred while creating playlist: ")
-                             + playlist);
+        QMessageBox::warning(nullptr,
+                tr("Playlist Creation Failed"),
+                tr("An unknown error occurred while creating playlist: ") + playlist);
     }
 }
 

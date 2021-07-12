@@ -7,6 +7,7 @@
 #include <QVector>
 
 #include "util/assert.h"
+#include "util/optional.h"
 
 namespace mixxx {
 

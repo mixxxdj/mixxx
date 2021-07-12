@@ -216,7 +216,9 @@
   ############################################################################################
   -->
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss" src-mac="skin:style_mac.qss"/>
+  <Style src="skin:style.qss"
+         src-linux="skin:../default-menu-styles-linux.qss"
+         src-windows="skin:../default-menu-styles-windows.qss"/>
   <Size>1008e,500e</Size>
   <Layout>vertical</Layout>
     <LaunchImageStyle>
@@ -256,24 +258,6 @@
     ############################################################################################
     -->
     <SingletonDefinition>
-      <ObjectName>Waveform1</ObjectName>
-      <Children>
-        <Template src="skin:waveform.xml">
-          <SetVariable name="channum">1</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>Waveform2</ObjectName>
-      <Children>
-        <Template src="skin:waveform.xml">
-          <SetVariable name="channum">2</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
       <ObjectName>Overview1</ObjectName>
       <Children>
         <Template src="skin:deck_overview.xml">
@@ -292,14 +276,12 @@
     </SingletonDefinition>
 
     <SingletonDefinition>
-      <ObjectName>LibraryTable</ObjectName>
+      <ObjectName>Library</ObjectName>
       <Children>
-        <Library>
-          <ShowButtonText>false</ShowButtonText>
-          <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
-        </Library>
+        <Template src="skin:library.xml"/>
       </Children>
     </SingletonDefinition>
+
     <!--
     ############################################################################################
     ############################################################################################
@@ -423,65 +405,9 @@
         <!-- minimal decks, visible with maximized library -->
         <Template src="skin:decks_row_small.xml"/>
 
-        <!--
-        **********************************************
-        Library / Preview Deck / Search / Tree view
-        **********************************************
-        -->
-        <WidgetGroup>
-          <ObjectName>LibraryContainer</ObjectName>
-          <SizePolicy>me,i</SizePolicy>
-          <Layout>horizontal</Layout>
-          <Style>
-          </Style>
-          <Children>
-            <Splitter>
-              <Size>me,me</Size>
-              <SplitSizes>1,6</SplitSizes>
-              <Collapsible>1,0</Collapsible>
-              <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
-              <Children>
-                <!-- Sidebar etc. -->
-                <WidgetGroup>
-                  <Layout>vertical</Layout>
-                  <Children>
-                    <Template src="skin:preview_deck.xml"/>
-
-                    <!--Search Input Field-->
-                    <SearchBox></SearchBox>
-
-                    <WidgetGroup><Size>,5f</Size></WidgetGroup>
-
-                    <!--Library Tree View-->
-                    <Splitter>
-                      <Size>e,me</Size>
-                      <SplitSizes>1,e</SplitSizes>
-                      <Collapsible>0,0</Collapsible>
-                      <Children>
-                        <LibrarySidebar></LibrarySidebar>
-                        <!--Cover Art-->
-                        <CoverArt>
-                          <MinimumSize>16,16</MinimumSize>
-                          <SizePolicy>me,me</SizePolicy>
-                          <Connection>
-                            <ConfigKey>[Library],show_coverart</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                          </Connection>
-                        </CoverArt>
-                      </Children>
-                    </Splitter>
-
-                  </Children>
-                </WidgetGroup><!-- Sidebar etc. -->
-
-                <SingletonContainer>
-                  <ObjectName>LibraryTable</ObjectName>
-                </SingletonContainer>
-
-              </Children>
-            </Splitter>
-          </Children>
-        </WidgetGroup><!-- LibraryContainer -->
+        <SingletonContainer>
+          <ObjectName>Library</ObjectName>
+        </SingletonContainer>
       </Children>
     </WidgetGroup>
   </Children>

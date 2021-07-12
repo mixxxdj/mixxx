@@ -7,8 +7,8 @@
 #include <QtDebug>
 
 #include "library/coverart.h"
+#include "track/track_decl.h"
 #include "util/singleton.h"
-#include "track/track.h"
 
 class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     Q_OBJECT

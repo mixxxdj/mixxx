@@ -1,18 +1,16 @@
-#ifndef ENGINE_CACHINGREADERWORKER_H
-#define ENGINE_CACHINGREADERWORKER_H
+#pragma once
 
-#include <QtDebug>
 #include <QMutex>
 #include <QSemaphore>
-#include <QThread>
 #include <QString>
+#include <QThread>
+#include <QtDebug>
 
 #include "engine/cachingreader/cachingreaderchunk.h"
-#include "track/track.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
+#include "track/track_decl.h"
 #include "util/fifo.h"
-
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {
@@ -98,7 +96,7 @@ class CachingReaderWorker : public EngineWorker {
 
   public:
     // Construct a CachingReader with the given group.
-    CachingReaderWorker(QString group,
+    CachingReaderWorker(const QString& group,
             FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
             FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
     ~CachingReaderWorker() override = default;
@@ -116,7 +114,7 @@ class CachingReaderWorker : public EngineWorker {
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
     void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
-    void trackLoadFailed(TrackPointer pTrack, QString reason);
+    void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:
     const QString m_group;
@@ -148,6 +146,3 @@ class CachingReaderWorker : public EngineWorker {
 
     QAtomicInt m_stop;
 };
-
-
-#endif /* ENGINE_CACHINGREADERWORKER_H */

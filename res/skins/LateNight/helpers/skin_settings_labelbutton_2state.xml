@@ -11,7 +11,7 @@ Variables:
   <PushButton>
     <TooltipId><Variable name="TooltipId"/></TooltipId>
     <ObjectName>SkinSettingsLabelButton</ObjectName>
-    <Size>190me,21f</Size>
+    <Size><Variable name="Width"/>,23f</Size>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
@@ -21,7 +21,8 @@ Variables:
     </State>
     <State>
       <Number>1</Number>
-      <Text> &#9745; <Variable name="Text"/></Text>
+      <!-- <Text> &#9745; <Variable name="Text"/></Text> -->
+      <Text>&#8202;&#8202;&#8202;&#10004;&#8202;&#8202;&#8202;<Variable name="Text"/></Text>
       <Alignment>left</Alignment>
     </State>
     <Connection>

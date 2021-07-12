@@ -4,8 +4,8 @@
     <name>Hercules DJ Control MP3 e2 / MP3 LE / Glow</name>
     <author>Gianfe, Taucher and SBlaisot</author>
     <description>Hercules DJ Control MP3 e2 / MP3 LE / Glow mapping. These three controllers have identical controls and share the same mapping.</description>
-     <wiki>http://www.mixxx.org/wiki/doku.php/hercules_dj_control_mp3_e2</wiki>
-    <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=7173</forums>
+    <forums>https://mixxx.discourse.group/t/hercules-dj-control-mp3-e2-4-deck-mapping-for-mixxx-1-12/15056</forums>
+    <manual>hercules_djcontrol_mp3_e2</manual>
   </info>
   <controller id="Hercules DJ Control MP3 e2" port="">
     <scriptfiles>

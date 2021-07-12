@@ -5,7 +5,8 @@
 
 #include <QModelIndex>
 
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/itemiterator.h"
 
 namespace mixxx {

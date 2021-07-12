@@ -8,13 +8,17 @@
     </Connection>
     <BgColor><Variable name="BgColor"/></BgColor>
     <SignalColor><Variable name="SignalColor"/></SignalColor>
-    <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-    <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-    <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+    <SignalHighColor><Variable name="SignalHighColor"/></SignalHighColor>
+    <SignalMidColor><Variable name="SignalMidColor"/></SignalMidColor>
+    <SignalLowColor><Variable name="SignalLowColor"/></SignalLowColor>
+    <SignalRGBHighColor><Variable name="SignalHighColor"/></SignalRGBHighColor>
+    <SignalRGBMidColor><Variable name="SignalMidColor"/></SignalRGBMidColor>
+    <SignalRGBLowColor><Variable name="SignalLowColor"/></SignalRGBLowColor>
     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
     <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
     <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
     <LabelFontSize><Variable name="OverviewFontSize"/></LabelFontSize>
+    <DimBrightThreshold><Variable name="DimBrightThresholdOverview"/></DimBrightThreshold>
     <!--LabelTextColor>#fff</LabelTextColor>
     <LabelBackgroundColor>rgba(0,0,0,255)</LabelBackgroundColor>
     <LabelBackgroundColor>0,0,0,255</LabelBackgroundColor>
@@ -29,7 +33,7 @@
     <!-- Cue -->
     <Mark>
       <Control>cue_point</Control>
-      <Text> C </Text>
+      <Text>C</Text>
       <Align>top|right</Align>
       <Color><Variable name="CueColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
@@ -40,71 +44,77 @@
       <EndControl>loop_end_position</EndControl>
       <EnabledControl>loop_enabled</EnabledControl>
       <Color><Variable name="LoopColor"/></Color>
+      <Opacity>0.7</Opacity>
       <DisabledColor>#FFFFFF</DisabledColor>
+      <DisabledOpacity>0.6</DisabledOpacity>
     </MarkRange>
     <Mark>
       <Control>loop_start_position</Control>
-      <!--Text>IN</Text-->
-      <Align>bottom|right</Align>
+      <Text>&#8635;</Text>
+      <Align>top|left</Align>
       <Color><Variable name="LoopColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
     </Mark>
     <Mark>
       <Control>loop_end_position</Control>
+      <VisibilityControl><Variable name="Group"/>,loop_enabled</VisibilityControl>
       <!--Text>OUT</Text-->
       <Align>bottom|right</Align>
       <Color><Variable name="LoopColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl><Variable name="Group"/>,loop_enabled</VisibilityControl>
     </Mark>
     <!-- Intro -->
     <MarkRange>
       <StartControl>intro_start_position</StartControl>
       <EndControl>intro_end_position</EndControl>
-      <Color><Variable name="IntroOutroColor"/></Color>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <Color><Variable name="IntroOutroColor"/></Color>
+      <Opacity>0.6</Opacity>
       <DurationTextColor>#ffffff</DurationTextColor>
       <DurationTextLocation>after</DurationTextLocation>
     </MarkRange>
     <Mark>
       <Control>intro_start_position</Control>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
       <Text></Text>
       <Align>top|right</Align>
       <Color><Variable name="IntroOutroColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
-      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <Mark>
       <Control>intro_end_position</Control>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
       <Text>&#9698;</Text>
       <Align>top|left</Align>
       <Color><Variable name="IntroOutroColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
-      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <!-- Outro -->
     <MarkRange>
       <StartControl>outro_start_position</StartControl>
       <EndControl>outro_end_position</EndControl>
-      <Color><Variable name="IntroOutroColor"/></Color>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <Color><Variable name="IntroOutroColor"/></Color>
+      <Opacity>0.6</Opacity>
       <DurationTextColor>#ffffff</DurationTextColor>
       <DurationTextLocation>before</DurationTextLocation>
     </MarkRange>
     <Mark>
       <Control>outro_start_position</Control>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
       <Text>&#9699;</Text>
       <Align>top|right</Align>
       <Color><Variable name="IntroOutroColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
-      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <Mark>
       <Control>outro_end_position</Control>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
       <Text></Text>
       <Align>top|left</Align>
       <Color><Variable name="IntroOutroColor"/></Color>
       <TextColor>#FFFFFF</TextColor>
-      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
   </Overview>
 </Template>

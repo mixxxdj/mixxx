@@ -1,9 +1,4 @@
-// loopingcontrol.h
-// Created on Sep 23, 2008
-// Author: asantoni, rryan
-
-#ifndef LOOPINGCONTROL_H
-#define LOOPINGCONTROL_H
+#pragma once
 
 #include <QObject>
 #include <QStack>
@@ -13,7 +8,8 @@
 #include "engine/controls/ratecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
-#include "track/track.h"
+#include "track/cue.h"
+#include "track/track_decl.h"
 
 #define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples
 
@@ -29,7 +25,7 @@ class LoopingControl : public EngineControl {
   public:
     static QList<double> getBeatSizes();
 
-    LoopingControl(QString group, UserSettingsPointer pConfig);
+    LoopingControl(const QString& group, UserSettingsPointer pConfig);
     ~LoopingControl() override;
 
     // process() updates the internal state of the LoopingControl to reflect the
@@ -51,11 +47,19 @@ class LoopingControl : public EngineControl {
     double getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos);
 
     void notifySeek(double dNewPlaypos) override;
+
+    void setBeatLoop(double startPosition, bool enabled);
+    void setLoop(double startPosition, double endPosition, bool enabled);
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+
+  signals:
+    void loopReset();
+    void loopEnabledChanged(bool enabled);
+    void loopUpdated(double startPosition, double endPosition);
 
   public slots:
     void slotLoopIn(double pressed);
@@ -91,12 +95,20 @@ class LoopingControl : public EngineControl {
     void slotLoopDouble(double pressed);
     void slotLoopHalve(double pressed);
 
+  private slots:
+    void slotLoopEnabledValueChangeRequest(double enabled);
+
   private:
+    enum class LoopSeekMode {
+        Changed, // force the playposition to be inside the loop after adjusting it.
+        MovedOut,
+        None,
+    };
 
     struct LoopSamples {
         double start;
         double end;
-        bool seek; // force the playposition to be inside the loop after adjusting it.
+        LoopSeekMode seekMode;
     };
 
     void setLoopingEnabled(bool enabled);
@@ -179,7 +191,7 @@ class LoopingControl : public EngineControl {
 class LoopMoveControl : public QObject {
     Q_OBJECT
   public:
-    LoopMoveControl(QString group, double size);
+    LoopMoveControl(const QString& group, double size);
     virtual ~LoopMoveControl();
 
   signals:
@@ -200,7 +212,7 @@ class LoopMoveControl : public QObject {
 class BeatJumpControl : public QObject {
     Q_OBJECT
   public:
-    BeatJumpControl(QString group, double size);
+    BeatJumpControl(const QString& group, double size);
     virtual ~BeatJumpControl();
 
   signals:
@@ -221,7 +233,7 @@ class BeatJumpControl : public QObject {
 class BeatLoopingControl : public QObject {
     Q_OBJECT
   public:
-    BeatLoopingControl(QString group, double size);
+    BeatLoopingControl(const QString& group, double size);
     virtual ~BeatLoopingControl();
 
     void activate();
@@ -250,5 +262,3 @@ class BeatLoopingControl : public QObject {
     ControlPushButton* m_pToggle;
     ControlObject* m_pEnabled;
 };
-
-#endif /* LOOPINGCONTROL_H */

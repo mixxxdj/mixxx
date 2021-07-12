@@ -1,13 +1,15 @@
+#include "library/recording/dlgrecording.h"
+
 #include <QDesktopServices>
 
 #include "control/controlobject.h"
-#include "library/recording/dlgrecording.h"
 #include "library/trackcollectionmanager.h"
-#include "widget/wwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wlibrary.h"
-#include "widget/wtracktableview.h"
+#include "moc_dlgrecording.cpp"
 #include "util/assert.h"
+#include "widget/wlibrary.h"
+#include "widget/wskincolor.h"
+#include "widget/wtracktableview.h"
+#include "widget/wwidget.h"
 
 DlgRecording::DlgRecording(
         WLibrary* parent,
@@ -21,10 +23,10 @@ DlgRecording::DlgRecording(
                   new WTrackTableView(
                           this,
                           pConfig,
-                          pLibrary->trackCollections(),
+                          pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           true)),
-          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
+          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
@@ -68,7 +70,7 @@ DlgRecording::DlgRecording(
             this,
             &DlgRecording::slotDurationRecorded);
 
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
@@ -81,7 +83,7 @@ DlgRecording::DlgRecording(
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
 
-    m_browseModel.setPath(m_recordingDir);
+    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
     m_pTrackTableView->loadTrackModel(&m_proxyModel);
 
     connect(pushButtonRecording,
@@ -103,7 +105,7 @@ DlgRecording::~DlgRecording() {
 
 void DlgRecording::onShow() {
     m_recordingDir = m_pRecordingManager->getRecordingDir();
-    m_browseModel.setPath(m_recordingDir);
+    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
 }
 
 bool DlgRecording::hasFocus() const {
@@ -111,7 +113,7 @@ bool DlgRecording::hasFocus() const {
 }
 
 void DlgRecording::refreshBrowseModel() {
-     m_browseModel.setPath(m_recordingDir);
+    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
 }
 
 void DlgRecording::onSearch(const QString& text) {
@@ -138,7 +140,7 @@ void DlgRecording::slotAddToAutoDJReplace() {
     m_pTrackTableView->slotAddToAutoDJReplace();
 }
 
-void DlgRecording::loadSelectedTrackToGroup(QString group, bool play) {
+void DlgRecording::loadSelectedTrackToGroup(const QString& group, bool play) {
     m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }
 
@@ -166,7 +168,7 @@ void DlgRecording::slotRecordingStateChanged(bool isRecording) {
         labelRecStatistics->hide();
     }
     //This will update the recorded track table view
-    m_browseModel.setPath(m_recordingDir);
+    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
 }
 
 // gets number of recorded bytes and update label
@@ -177,7 +179,7 @@ void DlgRecording::slotBytesRecorded(int bytes) {
 }
 
 // gets recorded duration and update label
-void DlgRecording::slotDurationRecorded(QString durationRecorded) {
+void DlgRecording::slotDurationRecorded(const QString& durationRecorded) {
     m_durationRecordedStr = durationRecorded;
     refreshLabels();
 }
@@ -185,9 +187,9 @@ void DlgRecording::slotDurationRecorded(QString durationRecorded) {
 // update label besides start/stop button
 void DlgRecording::refreshLabels() {
     QString recFile = m_pRecordingManager->getRecordingFile();
-    QString recData = QString(QStringLiteral("(") + tr("%1 MiB written in %2") + QStringLiteral(")"))
-            .arg(m_bytesRecordedStr)
-            .arg(m_durationRecordedStr);
+    QString recData = QString(QStringLiteral("(") + tr("%1 MiB written in %2") +
+            QStringLiteral(")"))
+                              .arg(m_bytesRecordedStr, m_durationRecordedStr);
     labelRecFilename->setText(recFile);
     labelRecStatistics->setText(recData);
 }

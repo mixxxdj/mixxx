@@ -1,9 +1,3 @@
-//
-//   FFMPEG encoder class..
-//     - Supports what FFMPEG is compiled to supported
-//     - Same interface for all codecs
-//
-
 #include "encoder/encoderffmpegcore.h"
 
 #include <stdlib.h>
@@ -203,14 +197,14 @@ void EncoderFfmpegCore::updateMetaData(const QString& artist, const QString& tit
     m_strMetaDataAlbum = album;
 }
 
-int EncoderFfmpegCore::initEncoder(int samplerate, QString errorMessage) {
-
+int EncoderFfmpegCore::initEncoder(
+        mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
 #ifndef avformat_alloc_output_context2
     qDebug() << "EncoderFfmpegCore::initEncoder: Old Style initialization";
     m_pEncodeFormatCtx = avformat_alloc_context();
 #endif
 
-    m_lSampleRate = samplerate;
+    m_lSampleRate = sampleRate;
     QString codecString;
 
 #if LIBAVCODEC_VERSION_INT > 3544932

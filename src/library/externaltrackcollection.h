@@ -4,8 +4,8 @@
 #include <QList>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/relocatedtrack.h"
+#include "preferences/usersettings.h"
 
 class Library;
 class LibraryFeature;
@@ -116,7 +116,7 @@ Q_OBJECT
     }
 
   signals:
-    void connectionStateChanged(ConnectionState state);
+    void connectionStateChanged(ExternalTrackCollection::ConnectionState state);
 
   protected:
     explicit ExternalTrackCollection(QObject* parent = nullptr)

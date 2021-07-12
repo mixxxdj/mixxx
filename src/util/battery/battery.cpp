@@ -1,5 +1,7 @@
 #include "util/battery/battery.h"
 
+#include "moc_battery.cpp"
+
 // Do not include platform-specific battery implementation unless we are built
 // with battery support (__BATTERY__).
 #ifdef __BATTERY__
@@ -22,7 +24,7 @@ Battery::Battery(QObject* parent)
           m_dPercentage(0.0),
           m_iMinutesLeft(0),
           m_timer(this) {
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+    connect(&m_timer, &GuiTickTimer::timeout, this, &Battery::update);
     m_timer.start(mixxx::Duration::fromMillis(kiUpdateInterval));
 }
 

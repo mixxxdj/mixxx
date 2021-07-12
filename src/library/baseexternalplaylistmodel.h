@@ -1,5 +1,4 @@
-#ifndef BASEEXTERNALPLAYLISTMODEL_H
-#define BASEEXTERNALPLAYLISTMODEL_H
+#pragma once
 
 #include <QtSql>
 #include <QItemDelegate>
@@ -22,7 +21,7 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
 
     ~BaseExternalPlaylistModel() override;
 
-    void setPlaylist(QString path_name);
+    void setPlaylist(const QString& path_name);
 
     TrackPointer getTrack(const QModelIndex& index) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
@@ -37,5 +36,3 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     QString m_playlistTracksTable;
     QSharedPointer<BaseTrackCache> m_trackSource;
 };
-
-#endif /* BASEEXTERNALPLAYLISTMODEL_H */

@@ -1,7 +1,9 @@
+#include "control/controlproxy.h"
+
 #include <QtDebug>
 
-#include "control/controlproxy.h"
 #include "control/control.h"
+#include "moc_controlproxy.cpp"
 
 ControlProxy::ControlProxy(const QString& g, const QString& i, QObject* pParent, ControlFlags flags)
         : ControlProxy(ConfigKey(g, i), pParent, flags) {
@@ -14,10 +16,10 @@ ControlProxy::ControlProxy(const char* g, const char* i, QObject* pParent, Contr
 ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent, ControlFlags flags)
         : QObject(pParent),
           m_pControl(nullptr) {
-    DEBUG_ASSERT(!key.isNull() || flags.testFlag(ControlFlag::AllowEmptyKey));
+    DEBUG_ASSERT(key.isValid() || flags.testFlag(ControlFlag::AllowInvalidKey));
     m_key = key;
 
-    if (!m_key.isNull()) {
+    if (m_key.isValid()) {
         initialize(flags);
     }
 }
@@ -27,7 +29,7 @@ void ControlProxy::initialize(ControlFlags flags) {
     DEBUG_ASSERT(!m_pControl);
 
     // Prevent empty keys
-    VERIFY_OR_DEBUG_ASSERT(!m_key.isNull() || flags.testFlag(ControlFlag::AllowEmptyKey)) {
+    VERIFY_OR_DEBUG_ASSERT(m_key.isValid() || flags.testFlag(ControlFlag::AllowInvalidKey)) {
         return;
     }
 

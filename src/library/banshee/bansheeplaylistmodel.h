@@ -1,5 +1,4 @@
-#ifndef BANSHEEPLAYLISTMODEL_H
-#define BANSHEEPLAYLISTMODEL_H
+#pragma once
 
 #include <QHash>
 #include <QtSql>
@@ -28,9 +27,6 @@ class BansheePlaylistModel final : public BaseSqlTableModel {
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     Capabilities getCapabilities() const final;
 
-  private slots:
-    void tracksChanged(QSet<TrackId> trackIds);
-
   private:
     TrackId doGetTrackId(const TrackPointer& pTrack) const final;
 
@@ -42,5 +38,3 @@ class BansheePlaylistModel final : public BaseSqlTableModel {
     int m_playlistId;
     QString m_tempTableName;
 };
-
-#endif // BANSHEEPLAYLISTMODEL_H

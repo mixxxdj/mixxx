@@ -664,22 +664,19 @@
     };
 
     var Deck = function(deckNumbers) {
-        if (deckNumbers !== undefined) {
-            if (Array.isArray(deckNumbers)) {
-                // These must be unique to each instance,
-                // so they cannot be in the prototype.
-                this.currentDeck = "[Channel" + deckNumbers[0] + "]";
-                this.deckNumbers = deckNumbers;
-            } else if (typeof deckNumbers === "number" &&
-                      Math.floor(deckNumbers) === deckNumbers &&
-                      isFinite(deckNumbers)) {
-                this.currentDeck = "[Channel" + deckNumbers + "]";
-                this.deckNumbers = [deckNumbers];
-            }
+        if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
+            // These must be unique to each instance,
+            // so they cannot be in the prototype.
+            this.deckNumbers = deckNumbers;
+        } else if (deckNumbers !== undefined && typeof deckNumbers === "number" &&
+                Math.floor(deckNumbers) === deckNumbers &&
+                isFinite(deckNumbers)) {
+            this.deckNumbers = [deckNumbers];
         } else {
             print("ERROR! new Deck() called without specifying any deck numbers");
             return;
         }
+        this.currentDeck = "[Channel" + this.deckNumbers[0] + "]";
     };
     Deck.prototype = new ComponentContainer({
         setCurrentDeck: function(newGroup) {
@@ -751,6 +748,8 @@
 
         this.setCurrentUnit = function(newNumber) {
             this.currentUnitNumber = newNumber;
+            this.group = "[EffectRack1_EffectUnit" + newNumber + "]";
+
             if (allowFocusWhenParametersHidden) {
                 engine.setValue(this.group, "show_focus", 0);
             } else {
@@ -760,8 +759,6 @@
                 delete this.previouslyFocusedEffect;
             }
             engine.setValue(this.group, "controller_input_active", 0);
-
-            this.group = "[EffectRack1_EffectUnit" + newNumber + "]";
 
             if (allowFocusWhenParametersHidden) {
                 engine.setValue(this.group, "show_focus", 1);
@@ -818,20 +815,19 @@
             this.setCurrentUnit(this.unitNumbers[index]);
         };
 
-        if (unitNumbers !== undefined) {
-            if (Array.isArray(unitNumbers)) {
-                this.unitNumbers = unitNumbers;
-                this.setCurrentUnit(unitNumbers[0]);
-            } else if (typeof unitNumbers === "number" &&
-                      Math.floor(unitNumbers) === unitNumbers &&
-                      isFinite(unitNumbers)) {
-                this.unitNumbers = [unitNumbers];
-                this.setCurrentUnit(unitNumbers);
-            }
+        if (unitNumbers !== undefined && Array.isArray(unitNumbers)) {
+            this.unitNumbers = unitNumbers;
+        } else if (unitNumbers !== undefined && typeof unitNumbers === "number" &&
+                  Math.floor(unitNumbers) === unitNumbers &&
+                  isFinite(unitNumbers)) {
+            this.unitNumbers = [unitNumbers];
         } else {
             print("ERROR! new EffectUnit() called without specifying any unit numbers!");
             return;
         }
+
+        this.group = "[EffectRack1_EffectUnit" + this.unitNumbers[0] + "]";
+        this.setCurrentUnit(this.unitNumbers[0]);
 
         this.dryWetKnob = new Pot({
             group: this.group,
@@ -871,6 +867,7 @@
         };
         this.EffectUnitKnob.prototype = new Pot({
             group: this.group,
+            number: this.currentUnitNumber,
             unshift: function() {
                 this.input = function(channel, control, value, _status, _group) {
                     if (this.MSB !== undefined) {
@@ -900,6 +897,14 @@
                     if (this.MSB !== undefined) {
                         value = (this.MSB << 7) + value;
                     }
+
+                    // Prevent attempt to set the effect_selector CO to NaN
+                    if (this.valueAtLastEffectSwitch === undefined) {
+                        this.valueAtLastEffectSwitch = value;
+                        this.previousValueReceived = value;
+                        return;
+                    }
+
                     var change = value - this.valueAtLastEffectSwitch;
                     if (Math.abs(change) >= this.changeThreshold
                         // this.valueAtLastEffectSwitch can be undefined if

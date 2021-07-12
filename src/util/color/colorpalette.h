@@ -10,9 +10,9 @@
 class ColorPalette final {
   public:
     ColorPalette(
-            QString name,
-            QList<mixxx::RgbColor> colorList,
-            QList<int> colorIndicesByHotcue = {})
+            const QString& name,
+            const QList<mixxx::RgbColor>& colorList,
+            const QList<int>& colorIndicesByHotcue = {})
             : m_name(name),
               m_colorList(colorList),
               m_colorIndicesByHotcue(colorIndicesByHotcue) {
@@ -49,7 +49,7 @@ class ColorPalette final {
         return m_name;
     }
 
-    void setName(const QString name) {
+    void setName(const QString& name) {
         m_name = name;
     }
 

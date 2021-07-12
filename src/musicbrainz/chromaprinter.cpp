@@ -1,14 +1,16 @@
 #include "musicbrainz/chromaprinter.h"
 
 #include <chromaprint.h>
-#include <vector>
 
 #include <QtDebug>
+#include <vector>
 
-#include "sources/soundsourceproxy.h"
+#include "moc_chromaprinter.cpp"
 #include "sources/audiosourcestereoproxy.h"
-#include "util/sample.h"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/performancetimer.h"
+#include "util/sample.h"
 
 namespace
 {
@@ -78,12 +80,12 @@ QString calcFingerprint(
         return QString();
     }
 
-    uint32_p fprint = NULL;
+    uint32_p fprint = nullptr;
     int size = 0;
     int ret = chromaprint_get_raw_fingerprint(ctx, &fprint, &size);
     QByteArray fingerprint;
     if (ret == 1) {
-        char_p encoded = NULL;
+        char_p encoded = nullptr;
         int encoded_size = 0;
         chromaprint_encode_fingerprint(fprint, size,
                                        CHROMAPRINT_ALGORITHM_DEFAULT,

@@ -9,8 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef PARSERPLS_H
-#define PARSERPLS_H
+#pragma once
 
 #include "library/parser.h"
 
@@ -24,7 +23,7 @@ class ParserPls : public Parser {
     ParserPls();
     virtual ~ParserPls();
     /**Can be called to parse a pls file**/
-    QList<QString> parse(QString);
+    QList<QString> parse(const QString&);
     //Playlist Export
     static bool writePLSFile(const QString &file, const QList<QString> &items, bool useRelativePath);
 
@@ -35,5 +34,3 @@ class ParserPls : public Parser {
     QString getFilePath(QTextStream*, const QString& basePath);
 
 };
-
-#endif

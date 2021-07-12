@@ -11,8 +11,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef PARSERCSV_H
-#define PARSERCSV_H
+#pragma once
 
 #include <QList>
 #include <QString>
@@ -28,7 +27,7 @@ public:
     ParserCsv();
     virtual ~ParserCsv();
     /**Overwriting function parse in class Parser**/
-    QList<QString> parse(QString);
+    QList<QString> parse(const QString&);
     // Playlist Export
     static bool writeCSVFile(const QString &file, BaseSqlTableModel* pPlaylistTableModel, bool useRelativePath);
     // Readable Text export
@@ -39,5 +38,3 @@ private:
 
 
 };
-
-#endif

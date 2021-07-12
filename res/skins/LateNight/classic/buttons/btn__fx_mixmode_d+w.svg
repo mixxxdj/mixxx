@@ -1,8 +1,53 @@
-<svg width="28" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
-	<g transform="translate(-.55235449)" fill="none" stroke-linecap="round">
-		<path d="m4.0142425 8.0017027h20.9715155" stroke="#0d0505" stroke-opacity=".99608005" stroke-width="3.20000005"/>
-		<path d="m4.0142425 8.0017026h20.9715155" stroke="#b5b5b5" stroke-opacity=".99216003" stroke-width="2"/>
-		<path d="m24.985558 8.0017027c-14.679661 3.7456013-20.9715155 9.9882003-20.9715155 9.9882003" stroke="#0d0505" stroke-opacity=".99608005" stroke-width="3.20000005"/>
-		<path d="m24.985558 8.0017026c-14.679661 3.7456004-20.9715155 9.9882004-20.9715155 9.9882004" stroke="#da0606" stroke-width="2"/>
-	</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg12"
+   version="1.1"
+   height="24"
+   width="28">
+  <metadata
+     id="metadata18">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs16" />
+  <path
+     d="M 3.461888,8.0017027 H 24.433404"
+     stroke="#0d0505"
+     stroke-opacity="0.99608"
+     stroke-width="3.2"
+     id="path2"
+     style="fill:none;stroke-linecap:round" />
+  <path
+     d="M 3.461888,8.0017026 H 24.433404"
+     stroke="#b5b5b5"
+     stroke-opacity="0.99216"
+     stroke-width="2"
+     id="path4"
+     style="fill:none;stroke-linecap:round" />
+  <path
+     d="M 24.433204,8.0017027 C 9.7535425,11.747304 3.461688,17.989903 3.461688,17.989903"
+     stroke="#0d0505"
+     stroke-opacity="0.99608"
+     stroke-width="3.2"
+     id="path6"
+     style="fill:none;stroke-linecap:round;stroke-width:3.4;stroke-miterlimit:4;stroke-dasharray:none" />
+  <path
+     d="M 24.433204,8.0017026 C 9.7535425,11.747303 3.461688,17.989903 3.461688,17.989903"
+     stroke="#da0606"
+     stroke-width="2"
+     id="path8"
+     style="fill:none;stroke-linecap:round;stroke-width:2.3;stroke-miterlimit:4;stroke-dasharray:none;stroke:#ff1a1a;stroke-opacity:1" />
 </svg>

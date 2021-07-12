@@ -1,3 +1,5 @@
+#ifdef __BROADCAST__
+
 #include <QFile>
 #include <QString>
 
@@ -102,3 +104,5 @@ TEST_F(BroadcastSettingsTest, AddRemoveUpdateFromModel) {
 }
 
 } // namespace
+
+#endif // __BROADCAST__

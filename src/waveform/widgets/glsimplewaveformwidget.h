@@ -1,11 +1,8 @@
-#ifndef GLSIMPLEWAVEFORMWIDGET_H
-#define GLSIMPLEWAVEFORMWIDGET_H
+#pragma once
 
-#include <QGLWidget>
+#include "waveform/widgets/glwaveformwidgetabstract.h"
 
-#include "waveformwidgetabstract.h"
-
-class GLSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class GLSimpleWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     GLSimpleWaveformWidget(const QString& group, QWidget* parent);
@@ -27,4 +24,3 @@ class GLSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-#endif // GLSIMPLEWAVEFORMWIDGET_H

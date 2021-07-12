@@ -1,16 +1,13 @@
-// encoderopus.h
-// Create on August 15th 2017 by Palakis
+#pragma once
 
-#ifndef ENCODER_ENCODEROPUS_H
-#define ENCODER_ENCODEROPUS_H
+#include <ogg/ogg.h>
+#include <opus/opus.h>
 
 #include <QMap>
 #include <QString>
 #include <QVector>
 
-#include <ogg/ogg.h>
-#include <opus/opus.h>
-
+#include "audio/types.h"
 #include "encoder/encoder.h"
 #include "encoder/encodercallback.h"
 #include "util/fifo.h"
@@ -20,13 +17,13 @@
 
 class EncoderOpus: public Encoder {
   public:
-    static int getMasterSamplerate();
+    static mixxx::audio::SampleRate getMasterSamplerate();
     static QString getInvalidSamplerateMessage();
 
     explicit EncoderOpus(EncoderCallback* pCallback = nullptr);
     ~EncoderOpus() override;
 
-    int initEncoder(int samplerate, QString errorMessage) override;
+    int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
@@ -42,7 +39,7 @@ class EncoderOpus: public Encoder {
     int m_bitrate;
     int m_bitrateMode;
     int m_channels;
-    int m_samplerate;
+    mixxx::audio::SampleRate m_sampleRate;
     int m_readRequired;
     EncoderCallback* m_pCallback;
     FIFO<CSAMPLE> m_fifoBuffer;
@@ -56,5 +53,3 @@ class EncoderOpus: public Encoder {
     ogg_int64_t m_granulePos;
     QMap<QString, QString> m_opusComments;
 };
-
-#endif // ENCODER_ENCODEROPUS_H

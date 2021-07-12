@@ -1,19 +1,21 @@
 #include "preferences/dialog/dlgprefeffects.h"
 
-#include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectsbackend.h"
+#include "effects/effectsmanager.h"
+#include "moc_dlgprefeffects.cpp"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
-                               UserSettingsPointer pConfig,
-                               EffectsManager* pEffectsManager)
+        UserSettingsPointer pConfig,
+        std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_pEffectsManager(pEffectsManager) {
     setupUi(this);
 
-    m_availableEffectsModel.resetFromEffectManager(pEffectsManager);
-    for (auto& profile : m_availableEffectsModel.profiles()) {
+    m_availableEffectsModel.resetFromEffectManager(pEffectsManager.get());
+    const QList<EffectProfilePtr> effectProfiles = m_availableEffectsModel.profiles();
+    for (const auto& profile : effectProfiles) {
         EffectManifestPointer pManifest = profile->pManifest;
 
         // Users are likely to have lots of external plugins installed and
@@ -27,11 +29,12 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         m_pEffectsManager->setEffectVisibility(pManifest, visible);
     }
     availableEffectsList->setModel(&m_availableEffectsModel);
+    availableEffectsList->setTabKeyNavigation(false);
 
     connect(availableEffectsList->selectionModel(),
-            SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
+            &QItemSelectionModel::currentRowChanged,
             this,
-            SLOT(availableEffectsListItemSelected(const QModelIndex&)));
+            &DlgPrefEffects::availableEffectsListItemSelected);
 
     // Highlight first row
     availableEffectsList->selectRow(0);
@@ -46,7 +49,7 @@ DlgPrefEffects::~DlgPrefEffects() {
 
 void DlgPrefEffects::slotUpdate() {
     clear();
-    m_availableEffectsModel.resetFromEffectManager(m_pEffectsManager);
+    m_availableEffectsModel.resetFromEffectManager(m_pEffectsManager.get());
 
     if (!m_availableEffectsModel.isEmpty()) {
         availableEffectsList->selectRow(0);
@@ -59,7 +62,8 @@ void DlgPrefEffects::slotUpdate() {
 }
 
 void DlgPrefEffects::slotApply() {
-    for (EffectProfilePtr profile : m_availableEffectsModel.profiles()) {
+    const QList<EffectProfilePtr> effectProfiles = m_availableEffectsModel.profiles();
+    for (const EffectProfilePtr& profile : effectProfiles) {
         EffectManifestPointer pManifest = profile->pManifest;
         m_pEffectsManager->setEffectVisibility(pManifest, profile->bIsVisible);
 

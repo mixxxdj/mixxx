@@ -1,5 +1,4 @@
-#ifndef VISUALPLAYPOSITION_H
-#define VISUALPLAYPOSITION_H
+#pragma once
 
 #include <QMutex>
 #include <QTime>
@@ -55,12 +54,15 @@ class VisualPlayPosition : public QObject {
 
     // WARNING: Not thread safe. This function must only be called from the main
     // thread.
-    static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(QString group);
+    static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(const QString& group);
 
     // This is called by SoundDevicePortAudio just after the callback starts.
     static void setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time);
 
     void setInvalid() { m_valid = false; };
+    bool isValid() const {
+        return m_valid;
+    }
 
   private slots:
     void slotAudioBufferSizeChanged(double sizeMs);
@@ -78,5 +80,3 @@ class VisualPlayPosition : public QObject {
     // Time stamp for m_timeInfo in main CPU time
     static PerformanceTimer m_timeInfoTime;
 };
-
-#endif // VISUALPLAYPOSITION_H

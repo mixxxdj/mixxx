@@ -138,7 +138,7 @@ NumarkDJ2Go.deck = function(deckNum) {
 	this.pitchTimer= 0;
 	//The alternative mode to scratching for the jog wheel.
 	this.pitchBend = function(forwards) {
-		//For some reason the ramping pitchbend option in Mixx menu together with temp_rate_up/down doesn't seem
+		//For some reason the ramping pitchbend option in Mixxx menu together with temp_rate_up/down doesn't seem
 		//to work for the jog wheel. So this function allows the pitch bend to ramp the faster/more
 		//revolutions of the wheel.
 		if (this.pitchTimer !== 0)

@@ -43,7 +43,7 @@ Description:
                 <!-- minSize so that 8 Preview HotCues fit nicely, 23+1px each -->
                 <Size>159min,74me</Size>
                 <Children>
-                  <Template src="skin:preview_deck.xml"/>
+                  <Template src="skin:../Tango/decks/preview_deck.xml"/>
 
                   <WidgetGroup>
                     <Size>1me,5f</Size>
@@ -79,7 +79,7 @@ Description:
                                 <Layout>horizontal</Layout>
                                 <Size>19f,15min</Size>
                                 <Children>
-                                  <Template src="skin:button_2state_persist.xml">
+                                  <Template src="skin:../Tango/controls/button_2state_persist.xml">
                                     <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
                                     <SetVariable name="Size">19f,15f</SetVariable>
                                     <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
@@ -115,7 +115,7 @@ Description:
                     <BgColor>#585858</BgColor>
                     <FgColor>#eece33</FgColor>
                     <ShowButtonText>false</ShowButtonText>
-                    <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
+                    <TrackTableBackgroundColorOpacity>0.2</TrackTableBackgroundColorOpacity>
                   </Library>
                 </Children>
               </WidgetGroup><!-- /Library Table -->

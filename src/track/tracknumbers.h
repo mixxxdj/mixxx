@@ -1,5 +1,4 @@
-#ifndef TRACKNUMBERS_H
-#define TRACKNUMBERS_H
+#pragma once
 
 #include <QString>
 #include <QMetaType>
@@ -97,7 +96,7 @@ public:
     // output parameters pActualText and pTotalText are
     // optional and the caller might pass a nullptr.
     static void splitString(
-            QString str,
+            const QString& str,
             QString* pActualText = nullptr,
             QString* pTotalText = nullptr);
     // Joins the actual and total strings
@@ -123,5 +122,3 @@ bool operator!=(const TrackNumbers& lhs, const TrackNumbers& rhs) {
 
 Q_DECLARE_TYPEINFO(TrackNumbers, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(TrackNumbers)
-
-#endif // TRACKNUMBERS_H

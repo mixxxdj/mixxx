@@ -1,5 +1,4 @@
-#ifndef ANALYZER_ANALYZEREBUR128_H_
-#define ANALYZER_ANALYZEREBUR128_H_
+#pragma once
 
 #include <ebur128.h>
 
@@ -15,7 +14,9 @@ class AnalyzerEbur128 : public Analyzer {
         return rgSettings.isAnalyzerEnabled(2);
     }
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
+    bool initialize(TrackPointer tio,
+            mixxx::audio::SampleRate sampleRate,
+            int totalSamples) override;
     bool processSamples(const CSAMPLE* pIn, const int iLen) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
@@ -24,5 +25,3 @@ class AnalyzerEbur128 : public Analyzer {
     ReplayGainSettings m_rgSettings;
     ebur128_state* m_pState;
 };
-
-#endif /* ANALYZER_ANALYZEREBUR128_H_ */

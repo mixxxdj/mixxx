@@ -54,7 +54,7 @@ QString normalizeNumberString(const QString& number, bool* pValid) {
 
 } // anonymous namespace
 
-double ReplayGain::ratioFromString(QString dbGain, bool* pValid) {
+double ReplayGain::ratioFromString(const QString& dbGain, bool* pValid) {
     if (pValid) {
         *pValid = false;
     }
@@ -110,7 +110,7 @@ double ReplayGain::normalizeRatio(double ratio) {
     }
 }
 
-CSAMPLE ReplayGain::peakFromString(QString strPeak, bool* pValid) {
+CSAMPLE ReplayGain::peakFromString(const QString& strPeak, bool* pValid) {
     if (pValid) {
         *pValid = false;
     }
@@ -120,7 +120,7 @@ CSAMPLE ReplayGain::peakFromString(QString strPeak, bool* pValid) {
         return kPeakUndefined;
     }
     isValid = false;
-    const CSAMPLE peak = normalizedPeak.toDouble(&isValid);
+    const CSAMPLE peak = normalizedPeak.toFloat(&isValid);
     if (isValid) {
         if (isValidPeak(peak)) {
             if (pValid) {

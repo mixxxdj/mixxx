@@ -1,6 +1,4 @@
-#ifndef MIXXX_SQLTRANSACTION_H
-#define MIXXX_SQLTRANSACTION_H
-
+#pragma once
 
 #include <QSqlDatabase>
 
@@ -30,6 +28,3 @@ class SqlTransaction final {
     QSqlDatabase m_database;
     bool m_active;
 };
-
-
-#endif // MIXXX_SQLTRANSACTION_H

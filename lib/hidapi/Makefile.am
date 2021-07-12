@@ -31,6 +31,10 @@ if OS_KFREEBSD
 SUBDIRS += libusb
 endif
 
+if OS_HAIKU
+SUBDIRS += libusb
+endif
+
 if OS_WINDOWS
 SUBDIRS += windows
 endif

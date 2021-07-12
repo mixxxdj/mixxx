@@ -11,5 +11,5 @@ State BenchmarkInstance::Run(IterationCount iters, int thread_id,
   return st;
 }
 
-}  // internal
-}  // benchmark
+} // namespace internal
+} // namespace benchmark

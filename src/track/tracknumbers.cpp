@@ -66,7 +66,7 @@ TrackNumbers::ParseResult TrackNumbers::parseFromString(
 
 //static
 void TrackNumbers::splitString(
-        QString str,
+        const QString& str,
         QString* pActualText,
         QString* pTotalText) {
     // NOTE(uklotzde): The input string must be passed by value and

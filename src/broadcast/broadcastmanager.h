@@ -1,5 +1,4 @@
-#ifndef BROADCAST_BROADCASTMANAGER_H
-#define BROADCAST_BROADCASTMANAGER_H
+#pragma once
 
 #include <QObject>
 
@@ -16,10 +15,10 @@ class BroadcastManager : public QObject {
   public:
     enum StatusCOStates {
         STATUSCO_UNCONNECTED = 0, // IDLE state, no error
-        STATUSCO_CONNECTING = 1, // 30 s max
-        STATUSCO_CONNECTED = 2, // On Air
-        STATUSCO_FAILURE = 3, // Happens when all connection fails
-        STATUSCO_WARNING = 4
+        STATUSCO_CONNECTING = 1,  // 30 s max
+        STATUSCO_CONNECTED = 2,   // On Air
+        STATUSCO_FAILURE = 3,     // Happens when all connection fail
+        STATUSCO_WARNING = 4      // Happens when at least one but not all fail
     };
 
     BroadcastManager(SettingsManager* pSettingsManager,
@@ -56,5 +55,3 @@ class BroadcastManager : public QObject {
     ControlPushButton* m_pBroadcastEnabled;
     ControlObject* m_pStatusCO;
 };
-
-#endif /* BROADCAST_BROADCASTMANAGER_H */

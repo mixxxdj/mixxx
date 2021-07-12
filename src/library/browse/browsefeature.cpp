@@ -1,5 +1,4 @@
-// browsefeature.cpp
-// Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
+#include "library/browse/browsefeature.h"
 
 #include <QAction>
 #include <QDirModel>
@@ -11,17 +10,16 @@
 #include <QTreeView>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/browse/browsefeature.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_browsefeature.cpp"
 #include "track/track.h"
 #include "util/memory.h"
-#include "util/sandbox.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextbrowser.h"
 
 namespace {
 
@@ -33,12 +31,12 @@ BrowseFeature::BrowseFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
         RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary, pConfig),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
-          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
+        : LibraryFeature(pLibrary, pConfig, QString("computer")),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
+          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
-          m_pLastRightClickedItem(nullptr),
-          m_icon(":/images/library/ic_library_computer.svg") {
+          m_pSidebarModel(new FolderTreeModel(this)),
+          m_pLastRightClickedItem(nullptr) {
     connect(this,
             &BrowseFeature::requestAddDir,
             pLibrary,
@@ -133,7 +131,7 @@ BrowseFeature::BrowseFeature(
     }
 
     // initialize the model
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
 }
 
 BrowseFeature::~BrowseFeature() {
@@ -152,12 +150,12 @@ void BrowseFeature::slotAddQuickLink() {
     QString spath = vpath.toString();
     QString name = extractNameFromPath(spath);
 
-    QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
+    QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
     auto pNewChild = std::make_unique<TreeItem>(name, vpath);
     QList<TreeItem*> rows;
     rows.append(pNewChild.get());
     pNewChild.release();
-    m_childModel.insertTreeItemRows(rows, m_pQuickLinkItem->childRows(), parent);
+    m_pSidebarModel->insertTreeItemRows(rows, m_pQuickLinkItem->childRows(), parent);
 
     m_quickLinkList.append(spath);
     saveQuickLinks();
@@ -208,19 +206,15 @@ void BrowseFeature::slotRemoveQuickLink() {
         return;
     }
 
-    QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
-    m_childModel.removeRow(index, parent);
+    QModelIndex parent = m_pSidebarModel->index(m_pQuickLinkItem->parentRow(), 0);
+    m_pSidebarModel->removeRow(index, parent);
 
     m_quickLinkList.removeAt(index);
     saveQuickLinks();
 }
 
-QIcon BrowseFeature::getIcon() {
-    return m_icon;
-}
-
-TreeItemModel* BrowseFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* BrowseFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
@@ -251,27 +245,28 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 
     QString path = item->getData().toString();
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
-        m_browseModel.setPath(MDir());
+        m_browseModel.setPath({});
     } else {
         // Open a security token for this path and if we do not have access, ask
         // for it.
-        MDir dir(path);
-        if (!dir.canAccess()) {
-            if (Sandbox::askForAccess(path)) {
+        auto dirInfo = mixxx::FileInfo(path);
+        auto dirAccess = mixxx::FileAccess(dirInfo);
+        if (!dirAccess.isReadable()) {
+            if (Sandbox::askForAccess(&dirInfo)) {
                 // Re-create to get a new token.
-                dir = MDir(path);
+                dirAccess = mixxx::FileAccess(dirInfo);
             } else {
                 // TODO(rryan): Activate an info page about sandboxing?
                 return;
             }
         }
-        m_browseModel.setPath(dir);
+        m_browseModel.setPath(std::move(dirAccess));
     }
     emit showTrackModel(&m_proxyModel);
     emit enableCoverArtDisplay(false);
 }
 
-void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     m_pLastRightClickedItem = item;
 
@@ -360,7 +355,7 @@ QList<TreeItem*> getRemovableDevices() {
 #endif
     return ret;
 }
-}
+} // namespace
 
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
@@ -393,7 +388,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     }
 
     // Before we populate the subtree, we need to delete old subtrees
-    m_childModel.removeRows(0, item->childRows(), index);
+    m_pSidebarModel->removeRows(0, item->childRows(), index);
 
     // List of subfolders or drive letters
     QList<TreeItem*> folders;
@@ -404,10 +399,10 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     } else {
         // we assume that the path refers to a folder in the file system
         // populate childs
-        MDir dir(path);
+        const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
 
-        QFileInfoList all = dir.dir().entryInfoList(
-            QDir::Dirs | QDir::NoDotAndDotDot);
+        QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
+                QDir::Dirs | QDir::NoDotAndDotDot);
 
         // loop through all the item and construct the childs
         foreach (QFileInfo one, all) {
@@ -429,7 +424,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
     // has no subfolders
     if (!folders.isEmpty()) {
-        m_childModel.insertTreeItemRows(folders, 0, index);
+        m_pSidebarModel->insertTreeItemRows(folders, 0, index);
     }
 }
 
@@ -458,7 +453,7 @@ void BrowseFeature::loadQuickLinks() {
     }
 }
 
-QString BrowseFeature::extractNameFromPath(QString spath) {
+QString BrowseFeature::extractNameFromPath(const QString& spath) {
     QString path = spath.left(spath.count()-1);
     int index = path.lastIndexOf("/");
     QString name = (spath.count() > 1) ? path.mid(index+1) : spath;
@@ -467,7 +462,6 @@ QString BrowseFeature::extractNameFromPath(QString spath) {
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {
     // Default configuration
-    QStringList mixxxMusicDirs = m_pTrackCollection->getDirectoryDAO().getDirs();
     QDir osMusicDir(QStandardPaths::writableLocation(
             QStandardPaths::MusicLocation));
     QDir osDocumentsDir(QStandardPaths::writableLocation(
@@ -487,12 +481,15 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     bool osDownloadsDirIncluded = false;
     bool osDesktopDirIncluded = false;
     bool osDocumentsDirIncluded = false;
-    foreach (QString dirPath, mixxxMusicDirs) {
-        QDir dir(dirPath);
+    const auto rootDirs = m_pLibrary->trackCollectionManager()
+                                  ->internalCollection()
+                                  ->loadRootDirs();
+    for (mixxx::FileInfo fileInfo : rootDirs) {
         // Skip directories we don't have permission to.
-        if (!Sandbox::canAccessFile(dir)) {
+        if (!Sandbox::canAccess(&fileInfo)) {
             continue;
         }
+        const auto dir = fileInfo.toQDir();
         if (dir == osMusicDir) {
             osMusicDirIncluded = true;
         }
@@ -508,22 +505,20 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
         result << dir.canonicalPath() + "/";
     }
 
-    if (!osMusicDirIncluded && Sandbox::canAccessFile(osMusicDir)) {
+    if (!osMusicDirIncluded && Sandbox::canAccessDir(osMusicDir)) {
         result << osMusicDir.canonicalPath() + "/";
     }
 
     if (downloadsExists && !osDownloadsDirIncluded &&
-            Sandbox::canAccessFile(osDownloadsDir)) {
+            Sandbox::canAccessDir(osDownloadsDir)) {
         result << osDownloadsDir.canonicalPath() + "/";
     }
 
-    if (!osDesktopDirIncluded &&
-            Sandbox::canAccessFile(osDesktopDir)) {
+    if (!osDesktopDirIncluded && Sandbox::canAccessDir(osDesktopDir)) {
         result << osDesktopDir.canonicalPath() + "/";
     }
 
-    if (!osDocumentsDirIncluded &&
-            Sandbox::canAccessFile(osDocumentsDir)) {
+    if (!osDocumentsDirIncluded && Sandbox::canAccessDir(osDocumentsDir)) {
         result << osDocumentsDir.canonicalPath() + "/";
     }
 

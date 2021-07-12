@@ -1,12 +1,11 @@
-#ifndef WKNOBCOMPOSED_H
-#define WKNOBCOMPOSED_H
+#pragma once
 
 #include <QWidget>
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QWheelEvent>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/widgetrendertimer.h"
 #include "widget/wwidget.h"
 #include "widget/knobeventhandler.h"
@@ -38,11 +37,11 @@ class WKnobComposed : public WWidget {
     void inputActivity();
     void clear();
     void setPixmapBackground(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
     void setPixmapKnob(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
     void drawArc(QPainter* pPainter);
@@ -67,5 +66,3 @@ class WKnobComposed : public WWidget {
 
     friend class KnobEventHandler<WKnobComposed>;
 };
-
-#endif /* WKNOBCOMPOSED_H */

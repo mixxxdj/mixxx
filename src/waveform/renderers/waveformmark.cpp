@@ -1,13 +1,13 @@
 #include <QtDebug>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "widget/wskincolor.h"
 
 #include "waveformmark.h"
 
 namespace {
-Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFlags) {
+Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment defaultFlags) {
     QStringList stringFlags = alignString.toLower()
                                       .split('|',
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -19,7 +19,7 @@ Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFla
     Qt::Alignment hflags;
     Qt::Alignment vflags;
 
-    for (auto stringFlag : stringFlags) {
+    for (const auto& stringFlag : stringFlags) {
         if (stringFlag == "center") {
             hflags |= Qt::AlignHCenter;
             vflags |= Qt::AlignVCenter;
@@ -56,20 +56,26 @@ WaveformMark::WaveformMark(const QString& group,
                            const WaveformSignalColors& signalColors,
                            int hotCue)
         : m_iHotCue(hotCue) {
-    QString control;
+    QString positionControl;
+    QString endPositionControl;
     if (hotCue != Cue::kNoHotCue) {
-        control = "hotcue_" + QString::number(hotCue + 1) + "_position";
+        positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
+        endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
     } else {
-        control = context.selectString(node, "Control");
+        positionControl = context.selectString(node, "Control");
     }
-    if (!control.isEmpty()) {
-        m_pPointCos = std::make_unique<ControlProxy>(group, control);
+
+    if (!positionControl.isEmpty()) {
+        m_pPositionCO = std::make_unique<ControlProxy>(group, positionControl);
+    }
+    if (!endPositionControl.isEmpty()) {
+        m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
     }
 
     QString visibilityControl = context.selectString(node, "VisibilityControl");
     if (!visibilityControl.isEmpty()) {
         ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
-        m_pVisibleCos = std::make_unique<ControlProxy>(key);
+        m_pVisibleCO = std::make_unique<ControlProxy>(key);
     }
 
     QColor color(context.selectString(node, "Color"));
@@ -80,7 +86,8 @@ WaveformMark::WaveformMark(const QString& group,
     } else {
         color = WSkinColor::getCorrectColor(color);
     }
-    setBaseColor(color);
+    int dimBrightThreshold = signalColors.getDimBrightThreshold();
+    setBaseColor(color, dimBrightThreshold);
 
     m_textColor = context.selectString(node, "TextColor");
     if (!m_textColor.isValid()) {
@@ -103,11 +110,14 @@ WaveformMark::WaveformMark(const QString& group,
     }
 }
 
-void WaveformMark::setBaseColor(QColor baseColor) {
+void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
     m_image = QImage();
     m_fillColor = baseColor;
-    m_borderColor = Color::chooseContrastColor(baseColor);
-    m_labelColor = Color::chooseColorByBrightness(baseColor, QColor(255,255,255,255), QColor(0,0,0,255));
+    m_borderColor = Color::chooseContrastColor(baseColor, dimBrightThreshold);
+    m_labelColor = Color::chooseColorByBrightness(baseColor,
+            QColor(255, 255, 255, 255),
+            QColor(0, 0, 0, 255),
+            dimBrightThreshold);
 };
 
 bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {

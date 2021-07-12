@@ -1,20 +1,17 @@
-// itunesfeaturefeature.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+#pragma once
 
-#ifndef ITUNESFEATURE_H
-#define ITUNESFEATURE_H
-
-#include <QStringListModel>
-#include <QtSql>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
 #include <QPointer>
+#include <QStringListModel>
+#include <QtConcurrentRun>
+#include <QtSql>
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
-#include "library/treeitemmodel.h"
 #include "library/treeitem.h"
+#include "library/treeitemmodel.h"
+#include "util/parented_ptr.h"
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;
@@ -28,10 +25,9 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
 
     QVariant title() override;
-    QIcon getIcon() override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -41,7 +37,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     void onTrackCollectionLoaded();
 
   private:
-    BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
+    BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
     static QString getiTunesMusicPath();
     // returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
@@ -51,12 +47,12 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     TreeItem* parsePlaylists(QXmlStreamReader &xml);
     void parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query1,
                        QSqlQuery &query2, TreeItem*);
-    void clearTable(QString table_name);
+    void clearTable(const QString& table_name);
     bool readNextStartElement(QXmlStreamReader& xml);
 
     BaseExternalTrackModel* m_pITunesTrackModel;
     BaseExternalPlaylistModel* m_pITunesPlaylistModel;
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     QStringList m_playlists;
     // a new DB connection for the worker thread
     QSqlDatabase m_database;
@@ -73,7 +69,4 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
     QSharedPointer<BaseTrackCache> m_trackSource;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
-    QIcon m_icon;
 };
-
-#endif // ITUNESFEATURE_H

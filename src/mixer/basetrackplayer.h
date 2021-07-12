@@ -1,5 +1,4 @@
-#ifndef MIXER_BASETRACKPLAYER_H
-#define MIXER_BASETRACKPLAYER_H
+#pragma once
 
 #include <QObject>
 #include <QScopedPointer>
@@ -9,7 +8,9 @@
 #include "engine/channels/enginedeck.h"
 #include "mixer/baseplayer.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/replaygain.h"
+#include "track/track_decl.h"
+#include "util/color/rgbcolor.h"
 #include "util/memory.h"
 #include "util/parented_ptr.h"
 
@@ -56,7 +57,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
-            VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             const ChannelHandleAndGroup& handleGroup,
             bool defaultMaster,
@@ -80,14 +80,15 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotCloneFromGroup(const QString& group) final;
     void slotCloneDeck() final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotLoadFailed(TrackPointer pTrack, QString reason);
+    void slotLoadFailed(TrackPointer pTrack, const QString& reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
-    void slotSetTrackColor(mixxx::RgbColor::optional_t color);
+    void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
     void slotPlayToggled(double);
 
   private slots:
     void slotCloneChannel(EngineChannel* pChannel);
     void slotCloneFromDeck(double deck);
+    void slotCloneFromSampler(double sampler);
     void slotTrackColorChangeRequest(double value);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
@@ -115,6 +116,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // Deck clone control
     std::unique_ptr<ControlObject> m_pCloneFromDeck;
+    std::unique_ptr<ControlObject> m_pCloneFromSampler;
 
     // Track color control
     std::unique_ptr<ControlObject> m_pTrackColor;
@@ -155,5 +157,3 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     parented_ptr<ControlProxy> m_pVinylControlEnabled;
     parented_ptr<ControlProxy> m_pVinylControlStatus;
 };
-
-#endif // MIXER_BASETRACKPLAYER_H

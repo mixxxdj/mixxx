@@ -1,4 +1,6 @@
 #include "widget/wkey.h"
+
+#include "moc_wkey.cpp"
 #include "track/keys.h"
 #include "track/keyutils.h"
 
@@ -6,7 +8,10 @@ WKey::WKey(const QString& group, QWidget* pParent)
         : WLabel(pParent),
           m_dOldValue(0),
           m_keyNotation("[Library]", "key_notation", this),
-          m_engineKeyDistance(group, "visual_key_distance", this, ControlFlag::NoAssertIfMissing) {
+          m_engineKeyDistance(group,
+                  "visual_key_distance",
+                  this,
+                  ControlFlag::AllowMissingOrInvalid) {
     setValue(m_dOldValue);
     m_keyNotation.connectValueChanged(this, &WKey::keyNotationChanged);
     m_engineKeyDistance.connectValueChanged(this, &WKey::setCents);

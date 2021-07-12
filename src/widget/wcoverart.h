@@ -1,5 +1,4 @@
-#ifndef WCOVERART_H
-#define WCOVERART_H
+#pragma once
 
 #include <QColor>
 #include <QDomNode>
@@ -9,9 +8,8 @@
 
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
 #include "library/coverartcache.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
@@ -34,8 +32,8 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     void slotEnable(bool);
 
   signals:
-    void trackDropped(QString filename, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   private slots:
     void slotCoverFound(
@@ -51,8 +49,9 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
   protected:
     void paintEvent(QPaintEvent* /*unused*/) override;
     void resizeEvent(QResizeEvent* /*unused*/) override;
-    void mousePressEvent(QMouseEvent* /*unused*/) override;
-    void mouseReleaseEvent(QMouseEvent* /*unused*/) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
@@ -76,5 +75,3 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     DlgCoverArtFullSize* m_pDlgFullSize;
     QTimer m_clickTimer;
 };
-
-#endif // WCOVERART_H

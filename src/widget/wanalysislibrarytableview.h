@@ -1,5 +1,4 @@
-#ifndef WANALYSISLIBRARYTABLEVIEW_H
-#define WANALYSISLIBRARYTABLEVIEW_H
+#pragma once
 
 #include <QWidget>
 
@@ -11,10 +10,8 @@ class WAnalysisLibraryTableView : public WTrackTableView {
     WAnalysisLibraryTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             double trackTableBackgroundColorOpacity);
 
     void onSearch(const QString& text) override;
 };
-
-#endif

@@ -8,7 +8,11 @@ class PredefinedColorPalettes {
     static const ColorPalette kMixxxHotcueColorPalette;
     static const ColorPalette kSeratoTrackMetadataHotcueColorPalette;
     static const ColorPalette kSeratoDJProHotcueColorPalette;
+    static const ColorPalette kRekordboxCOLD1HotcueColorPalette;
+    static const ColorPalette kRekordboxCOLD2HotcueColorPalette;
+    static const ColorPalette kRekordboxCOLORFULHotcueColorPalette;
 
+    static const ColorPalette kMixxxTrackColorPalette;
     static const ColorPalette kRekordboxTrackColorPalette;
     static const ColorPalette kSeratoDJProTrackColorPalette;
     static const ColorPalette kTraktorProTrackColorPalette;
@@ -19,6 +23,7 @@ class PredefinedColorPalettes {
 
     static const QList<ColorPalette> kPalettes;
     static const mixxx::RgbColor kDefaultCueColor;
+    static const mixxx::RgbColor kDefaultLoopColor;
 };
 
 } // namespace mixxx

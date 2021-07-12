@@ -12,21 +12,24 @@ namespace {
 
 class SeratoMarkers2Test : public testing::Test {
   protected:
-    void parseBpmlockEntry(const QByteArray inputValue, bool valid, bool locked) {
-        const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2BpmlockEntry::parse(inputValue);
+    void parseBpmLockEntry(const QByteArray& inputValue, bool valid, bool locked) {
+        const mixxx::SeratoMarkers2EntryPointer parsedEntry =
+                mixxx::SeratoMarkers2BpmLockEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
             return;
         }
         EXPECT_TRUE(valid);
-        const mixxx::SeratoMarkers2BpmlockEntry *bpmlockEntry = static_cast<mixxx::SeratoMarkers2BpmlockEntry*>(parsedEntry.get());
+        const mixxx::SeratoMarkers2BpmLockEntry* bpmlockEntry =
+                static_cast<mixxx::SeratoMarkers2BpmLockEntry*>(
+                        parsedEntry.get());
 
         EXPECT_EQ(locked, bpmlockEntry->isLocked());
 
         EXPECT_EQ(inputValue, bpmlockEntry->dump());
     }
 
-    void parseColorEntry(const QByteArray inputValue, bool valid, mixxx::RgbColor color) {
+    void parseColorEntry(const QByteArray& inputValue, bool valid, mixxx::RgbColor color) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2ColorEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -41,12 +44,12 @@ class SeratoMarkers2Test : public testing::Test {
     }
 
     void parseCueEntry(
-            const QByteArray inputValue,
+            const QByteArray& inputValue,
             bool valid,
             quint8 index,
             quint32 position,
             mixxx::RgbColor color,
-            QString label) {
+            const QString& label) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2CueEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -63,13 +66,13 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, cueEntry->dump());
     }
 
-    void parseLoopEntry(const QByteArray inputValue,
+    void parseLoopEntry(const QByteArray& inputValue,
             bool valid,
             quint8 index,
             quint32 startposition,
             quint32 endposition,
             bool locked,
-            QString label) {
+            const QString& label) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2LoopEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -87,7 +90,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, loopEntry->dump());
     }
 
-    bool parseMarkers2Data(const QByteArray inputValue,
+    bool parseMarkers2Data(const QByteArray& inputValue,
             bool valid,
             mixxx::taglib::FileType fileType,
             QByteArray* output = nullptr) {
@@ -149,10 +152,10 @@ class SeratoMarkers2Test : public testing::Test {
     }
 };
 
-TEST_F(SeratoMarkers2Test, ParseBpmlockEntry) {
-    parseBpmlockEntry(QByteArray("\x00", 1), true, false);
-    parseBpmlockEntry(QByteArray("\x01", 1), true, true);
-    parseBpmlockEntry(QByteArray("\x00\x00", 2), false, false); // Invalid size
+TEST_F(SeratoMarkers2Test, ParseBpmLockEntry) {
+    parseBpmLockEntry(QByteArray("\x00", 1), true, false);
+    parseBpmLockEntry(QByteArray("\x01", 1), true, true);
+    parseBpmLockEntry(QByteArray("\x00\x00", 2), false, false); // Invalid size
 }
 
 TEST_F(SeratoMarkers2Test, ParseColorEntry) {
@@ -424,7 +427,7 @@ TEST_F(SeratoMarkers2Test, ParseEmptyDataMP4) {
 
 TEST_F(SeratoMarkers2Test, ParseAndDumpBase64EncodedXiph) {
     // No cue points from a FLAC file
-    const char* referenceData =
+    constexpr char referenceData[] =
             "YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtAABTZXJhdG8gTWFya2VyczIAAQFBUUZEVDB4UFVn\n"
             "QUFBQUFFQVAvLy8wSlFUVXhQUTBzQUFBQUFBUUFBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
@@ -436,12 +439,8 @@ TEST_F(SeratoMarkers2Test, ParseAndDumpBase64EncodedXiph) {
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
             "AAAAAAAAAAAAAAAAAAAAAA";
-    const auto inputData = QByteArray(referenceData);
-    mixxx::SeratoMarkers2 seratoMarkers2;
-    EXPECT_TRUE(mixxx::SeratoMarkers2::parseBase64Encoded(&seratoMarkers2, inputData));
-    const auto outputData = seratoMarkers2.dumpBase64Encoded();
-    EXPECT_EQ(inputData.size(), outputData.size());
-    EXPECT_EQ(inputData, outputData);
+    const auto inputData = QByteArray::fromRawData(referenceData, sizeof(referenceData) - 1);
+    EXPECT_TRUE(parseMarkers2Data(inputData, true, mixxx::taglib::FileType::FLAC));
 }
 
 } // namespace

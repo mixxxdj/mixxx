@@ -5,19 +5,23 @@
 #include <QModelIndex>
 #include <QObject>
 #include <QPair>
+#include <QPointer>
 #include <QSet>
 #include <QString>
 #include <QUrl>
 
 #include "library/dao/playlistdao.h"
 #include "library/trackset/basetracksetfeature.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 
 class WLibrary;
 class KeyboardEventFilter;
 class PlaylistTableModel;
 class TrackCollectionManager;
 class TreeItem;
+class WLibrarySidebar;
+
+constexpr int kInvalidPlaylistId = -1;
 
 class BasePlaylistFeature : public BaseTrackSetFeature {
     Q_OBJECT
@@ -26,13 +30,17 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     BasePlaylistFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
             PlaylistTableModel* pModel,
-            const QString& rootViewName);
+            const QString& rootViewName,
+            const QString& iconName);
     ~BasePlaylistFeature() override = default;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
+    void selectPlaylistInSidebar(int playlistId, bool select = true);
+    int getSiblingPlaylistIdOf(QModelIndex& start);
 
   public slots:
     void activateChild(const QModelIndex& index) override;
@@ -40,8 +48,16 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void htmlLinkClicked(const QUrl& link);
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
+    void slotPlaylistTableChangedAndSelect(int playlistId) {
+        slotPlaylistTableChanged(playlistId);
+        selectPlaylistInSidebar(playlistId);
+    };
+    void slotPlaylistTableChangedAndScrollTo(int playlistId) {
+        slotPlaylistTableChanged(playlistId);
+        selectPlaylistInSidebar(playlistId, false);
+    };
+    virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
     virtual void slotPlaylistContentChanged(QSet<int> playlistIds) = 0;
-    virtual void slotPlaylistTableRenamed(int playlistId, QString newName) = 0;
     void slotCreatePlaylist();
 
   protected slots:
@@ -66,21 +82,20 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
         QString label;
     };
 
-    virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selected_id);
     virtual void clearChildModel();
-    virtual QList<IdAndLabel> createPlaylistLabels() = 0;
     virtual QString fetchPlaylistLabel(int playlistId) = 0;
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
     virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
-    int playlistIdFromIndex(QModelIndex index);
+    int playlistIdFromIndex(const QModelIndex& index);
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
 
     PlaylistDAO& m_playlistDao;
     QModelIndex m_lastRightClickedIndex;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 
     QAction* m_pCreatePlaylistAction;
     QAction* m_pDeletePlaylistAction;
@@ -97,6 +112,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QAction* m_pAnalyzePlaylistAction;
 
     PlaylistTableModel* m_pPlaylistTableModel;
+    QSet<int> m_playlistIdsOfSelectedTrack;
 
   private slots:
     void slotTrackSelected(TrackPointer pTrack);
@@ -105,8 +121,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
   private:
     void initActions();
     virtual QString getRootViewHtml() const = 0;
+    void markTreeItem(TreeItem* pTreeItem);
 
     TrackPointer m_pSelectedTrack;
-
-    QSet<int> m_playlistsSelectedTrackIsIn;
 };

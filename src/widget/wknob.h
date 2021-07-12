@@ -1,5 +1,4 @@
-#ifndef WKNOB_H
-#define WKNOB_H
+#pragma once
 
 #include <QPixmap>
 #include <QString>
@@ -33,5 +32,3 @@ class WKnob : public WDisplay {
     KnobEventHandler<WKnob> m_handler;
     friend class KnobEventHandler<WKnob>;
 };
-
-#endif

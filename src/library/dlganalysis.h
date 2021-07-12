@@ -1,5 +1,4 @@
-#ifndef DLGANALYSIS_H
-#define DLGANALYSIS_H
+#pragma once
 
 #include <QButtonGroup>
 #include <QItemSelection>
@@ -27,7 +26,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void onShow() override;
     bool hasFocus() const override;
     void loadSelectedTrack() override;
-    void loadSelectedTrackToGroup(QString group, bool play) override;
+    void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;
@@ -50,8 +49,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
 
   signals:
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString player);
-    void analyzeTracks(QList<TrackId> trackIds);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& player);
+    void analyzeTracks(const QList<TrackId>& trackIds);
     void stopAnalysis();
     void trackSelected(TrackPointer pTrack);
 
@@ -63,5 +62,3 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     WAnalysisLibraryTableView* m_pAnalysisLibraryTableView;
     AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;
 };
-
-#endif //DLGTRIAGE_H

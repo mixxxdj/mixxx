@@ -1,5 +1,4 @@
-#ifndef MIXER_PREVIEWDECK_H
-#define MIXER_PREVIEWDECK_H
+#pragma once
 
 #include "mixer/basetrackplayer.h"
 
@@ -10,10 +9,7 @@ class PreviewDeck : public BaseTrackPlayerImpl {
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
-            VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             const ChannelHandleAndGroup& handleGroup);
     ~PreviewDeck() override = default;
 };
-
-#endif /* MIXER_PREVIEWDECK_H */

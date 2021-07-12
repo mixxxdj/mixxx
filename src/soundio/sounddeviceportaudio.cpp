@@ -1,32 +1,10 @@
-/***************************************************************************
-                          sounddeviceportaudio.cpp
-                             -------------------
-    begin                : Sun Aug 15, 2007 (Stardate -315378.5417935057)
-    copyright            : (C) 2007 Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "soundio/sounddeviceportaudio.h"
 
-#include <portaudio.h>
 #include <float.h>
 
-#include <QtDebug>
 #include <QRegularExpression>
 #include <QThread>
-
-#ifdef __LINUX__
-#include <QLibrary>
-#endif
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -34,21 +12,28 @@
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/denormalsarezero.h"
+#include "util/fifo.h"
+#include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "util/math.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
 
+#ifdef __LINUX__
+// for PaAlsa_EnableRealtimeScheduling
+#include <pa_linux_alsa.h>
+#endif
 
 namespace {
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
-const int kDriftReserve = 1;
+constexpr int kDriftReserve = 1;
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
-const int kFifoSize = 2 * kDriftReserve + 1;
+constexpr int kFifoSize = 2 * kDriftReserve + 1;
+
+constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
 
 // We warn only at invalid timing 3, since the first two
 // callbacks can be always wrong due to a setup/open jitter
@@ -88,18 +73,17 @@ const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))
 
 } // anonymous namespace
 
-
-
 SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
-                                           SoundManager* sm,
-                                           const PaDeviceInfo* deviceInfo,
-                                           unsigned int devIndex,
-                                           QHash<PaHostApiIndex, PaHostApiTypeId> apiIndexToTypeId)
+        SoundManager* sm,
+        const PaDeviceInfo* deviceInfo,
+        PaHostApiTypeId deviceTypeId,
+        unsigned int devIndex)
         : SoundDevice(config, sm),
-          m_pStream(NULL),
+          m_pStream(nullptr),
           m_deviceInfo(deviceInfo),
-          m_outputFifo(NULL),
-          m_inputFifo(NULL),
+          m_deviceTypeId(deviceTypeId),
+          m_outputFifo(nullptr),
+          m_inputFifo(nullptr),
           m_outputDrift(false),
           m_inputDrift(false),
           m_bSetThreadPriority(false),
@@ -110,7 +94,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
-    if (apiIndexToTypeId.value(deviceInfo->hostApi) == paALSA) {
+    if (m_deviceTypeId == paALSA) {
         // PortAudio gives the device name including the ALSA hw device. The
         // ALSA hw device is an only somewhat reliable identifier; it may change
         // when an audio interface is unplugged or Linux is restarted. Separating
@@ -129,7 +113,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         m_deviceId.name = deviceInfo->name;
     }
     m_deviceId.portAudioIndex = devIndex;
-    m_strDisplayName = QString::fromLocal8Bit(deviceInfo->name);
+    m_strDisplayName = QString::fromUtf8(deviceInfo->name);
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 
@@ -140,13 +124,13 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     m_inputParams.channelCount = 0;
     m_inputParams.sampleFormat = 0;
     m_inputParams.suggestedLatency = 0.0;
-    m_inputParams.hostApiSpecificStreamInfo = NULL;
+    m_inputParams.hostApiSpecificStreamInfo = nullptr;
 
     m_outputParams.device = 0;
     m_outputParams.channelCount = 0;
     m_outputParams.sampleFormat = 0;
     m_outputParams.suggestedLatency = 0.0;
-    m_outputParams.hostApiSpecificStreamInfo = NULL;
+    m_outputParams.hostApiSpecificStreamInfo = nullptr;
 }
 
 SoundDevicePortAudio::~SoundDevicePortAudio() {
@@ -173,7 +157,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // so we can figure out how many output channels we need to open.
     if (m_audioOutputs.empty()) {
         m_outputParams.channelCount = 0;
-        pOutputParams = NULL;
+        pOutputParams = nullptr;
     } else {
         foreach (AudioOutput out, m_audioOutputs) {
             ChannelGroup channelGroup = out.getChannelGroup();
@@ -189,7 +173,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // so we can figure out how many input channels we need to open.
     if (m_audioInputs.empty()) {
         m_inputParams.channelCount = 0;
-        pInputParams = NULL;
+        pInputParams = nullptr;
     } else {
         foreach (AudioInput in, m_audioInputs) {
             ChannelGroup channelGroup = in.getChannelGroup();
@@ -209,7 +193,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // in stereo and only take the first channel.
     // TODO(rryan): Remove once PortAudio has a solution built in (and
     // released).
-    if (m_deviceInfo->hostApi == paALSA) {
+    if (m_deviceTypeId == paALSA) {
         // Only engage workaround if the device has enough input and output
         // channels.
         if (m_deviceInfo->maxInputChannels >= 2 &&
@@ -221,7 +205,6 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
             m_outputParams.channelCount = 2;
         }
     }
-
 
     // Sample rate
     if (m_dSampleRate <= 0) {
@@ -250,12 +233,12 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     m_outputParams.device = m_deviceId.portAudioIndex;
     m_outputParams.sampleFormat = paFloat32;
     m_outputParams.suggestedLatency = bufferMSec / 1000.0;
-    m_outputParams.hostApiSpecificStreamInfo = NULL;
+    m_outputParams.hostApiSpecificStreamInfo = nullptr;
 
     m_inputParams.device  = m_deviceId.portAudioIndex;
     m_inputParams.sampleFormat  = paFloat32;
     m_inputParams.suggestedLatency = bufferMSec / 1000.0;
-    m_inputParams.hostApiSpecificStreamInfo = NULL;
+    m_inputParams.hostApiSpecificStreamInfo = nullptr;
 
     qDebug() << "Opening stream with id" << m_deviceId.portAudioIndex;
 
@@ -264,7 +247,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     m_syncBuffers = syncBuffers;
 
     // Create the callback function pointer.
-    PaStreamCallback* callback = NULL;
+    PaStreamCallback* callback = nullptr;
     if (isClkRefDevice) {
         callback = paV19CallbackClkRef;
     } else if (m_syncBuffers == 2) { // "Default (long delay)"
@@ -352,20 +335,10 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
 
 
 #ifdef __LINUX__
-    //Attempt to dynamically load and resolve stuff in the PortAudio library
-    //in order to enable RT priority with ALSA.
-    QLibrary portaudio("libportaudio.so.2");
-    if (!portaudio.load())
-       qWarning() << "Failed to dynamically load PortAudio library";
-    else
-       qDebug() << "Dynamically loaded PortAudio library";
-
-    EnableAlsaRT enableRealtime = (EnableAlsaRT) portaudio.resolve(
-            "PaAlsa_EnableRealtimeScheduling");
-    if (enableRealtime) {
-        enableRealtime(pStream, 1);
+    if (m_deviceTypeId == paALSA) {
+        qInfo() << "Enabling ALSA real-time scheduling";
+        PaAlsa_EnableRealtimeScheduling(pStream, 1);
     }
-    portaudio.unload();
 #endif
 
     // Start stream
@@ -404,13 +377,13 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
 }
 
 bool SoundDevicePortAudio::isOpen() const {
-    return m_pStream != NULL;
+    return m_pStream != nullptr;
 }
 
 SoundDeviceError SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << m_deviceId;
     PaStream* pStream = m_pStream;
-    m_pStream = NULL;
+    m_pStream = nullptr;
     if (pStream) {
         // Make sure the stream is not stopped before we try stopping it.
         PaError err = Pa_IsStreamStopped(pStream);
@@ -458,8 +431,8 @@ SoundDeviceError SoundDevicePortAudio::close() {
         }
     }
 
-    m_outputFifo = NULL;
-    m_inputFifo = NULL;
+    m_outputFifo = nullptr;
+    m_inputFifo = nullptr;
     m_bSetThreadPriority = false;
 
     return SOUNDDEVICE_ERROR_OK;
@@ -931,6 +904,21 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         qWarning() << "No SSE: No denormals to zero mode available. EQs and effects may suffer high CPU load";
 #endif
 #endif
+
+#ifdef aarch64
+        // Flush-to-zero on aarch64 is controlled by the Floating-point Control Register
+        // Load the register into our variable.
+        int savedFPCR;
+        asm volatile("mrs %[savedFPCR], FPCR"
+                     : [ savedFPCR ] "=r"(savedFPCR));
+
+        qDebug() << "aarch64 FPCR: setting bit 24 to 1 to enable Flush-to-zero";
+        // Bit 24 is the flush-to-zero mode control bit. Setting it to 1 flushes denormals to 0.
+        asm volatile("msr FPCR, %[src]"
+                     :
+                     : [ src ] "r"(savedFPCR | (1 << 24)));
+#endif
+
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
@@ -1074,8 +1062,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 void SoundDevicePortAudio::updateAudioLatencyUsage(
         const SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate
-            > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_dSampleRate / kCpuUsageUpdateRate)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_pMasterAudioLatencyUsage->set(
                 secInAudioCb

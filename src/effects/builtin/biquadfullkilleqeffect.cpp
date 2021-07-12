@@ -4,17 +4,16 @@
 #include "util/math.h"
 
 namespace {
-static const double kStartupSamplerate = 44100;
-static const double kMinimumFrequency = 10.0;
-static const double kMaximumFrequency = kStartupSamplerate / 2;
-static const double kStartupMidFreq = 1100.0;
-static const double kQBoost = 0.3;
-static const double kQKill = 0.9;
-static const double kQLowKillShelve = 0.4;
-static const double kQHighKillShelve = 0.4;
-static const double kKillGain = -23;
-static const double kBesselStartRatio = 0.25;
-
+constexpr mixxx::audio::SampleRate kStartupSamplerate(44100);
+constexpr double kMinimumFrequency = 10.0;
+constexpr double kMaximumFrequency = static_cast<double>(kStartupSamplerate) / 2.0;
+constexpr double kStartupMidFreq = 1100.0;
+constexpr double kQBoost = 0.3;
+constexpr double kQKill = 0.9;
+constexpr double kQLowKillShelve = 0.4;
+constexpr double kQHighKillShelve = 0.4;
+constexpr double kKillGain = -23;
+constexpr double kBesselStartRatio = 0.25;
 
 double getCenterFrequency(double low, double high) {
     double scaleLow = log10(low);
@@ -70,8 +69,8 @@ EffectManifestPointer BiquadFullKillEQEffect::getManifest() {
 }
 
 BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState(
-      const mixxx::EngineParameters& bufferParameters) :
-          EffectState(bufferParameters),
+        const mixxx::EngineParameters& bufferParameters)
+        : EffectState(bufferParameters),
           m_pLowBuf(bufferParameters.samplesPerBuffer()),
           m_pBandBuf(bufferParameters.samplesPerBuffer()),
           m_pHighBuf(bufferParameters.samplesPerBuffer()),
@@ -87,33 +86,41 @@ BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState(
           m_oldHigh(1.0),
           m_loFreqCorner(0),
           m_highFreqCorner(0),
-          m_rampHoldOff(kRampDone),
+          m_rampHoldOff(LVMixEQEffectGroupStateConstants::kRampDone),
           m_groupDelay(0),
           m_oldSampleRate(kStartupSamplerate) {
-
     // Initialize the filters with default parameters
 
     m_lowBoost = std::make_unique<EngineFilterBiquad1Peaking>(
-            kStartupSamplerate, kStartupLoFreq, kQBoost);
+            kStartupSamplerate, LVMixEQEffectGroupStateConstants::kStartupLoFreq, kQBoost);
     m_midBoost = std::make_unique<EngineFilterBiquad1Peaking>(
             kStartupSamplerate, kStartupMidFreq, kQBoost);
     m_highBoost = std::make_unique<EngineFilterBiquad1Peaking>(
-            kStartupSamplerate, kStartupHiFreq, kQBoost);
-    m_lowKill = std::make_unique<EngineFilterBiquad1LowShelving>(
-            kStartupSamplerate, kStartupLoFreq * 2, kQLowKillShelve);
+            kStartupSamplerate, LVMixEQEffectGroupStateConstants::kStartupHiFreq, kQBoost);
+    m_lowKill =
+            std::make_unique<EngineFilterBiquad1LowShelving>(kStartupSamplerate,
+                    LVMixEQEffectGroupStateConstants::kStartupLoFreq * 2,
+                    kQLowKillShelve);
     m_midKill = std::make_unique<EngineFilterBiquad1Peaking>(
             kStartupSamplerate, kStartupMidFreq, kQKill);
     m_highKill = std::make_unique<EngineFilterBiquad1HighShelving>(
-            kStartupSamplerate, kStartupHiFreq / 2, kQHighKillShelve);
+            kStartupSamplerate,
+            LVMixEQEffectGroupStateConstants::kStartupHiFreq / 2,
+            kQHighKillShelve);
     m_lvMixIso = std::make_unique<
             LVMixEQEffectGroupState<EngineFilterBessel4Low>>(bufferParameters);
 
-    setFilters(kStartupSamplerate, kStartupLoFreq, kStartupHiFreq);
+    setFilters(
+            mixxx::audio::SampleRate(
+                    static_cast<mixxx::audio::SampleRate::value_t>(kStartupSamplerate)),
+            LVMixEQEffectGroupStateConstants::kStartupLoFreq,
+            LVMixEQEffectGroupStateConstants::kStartupHiFreq);
 }
 
 void BiquadFullKillEQEffectGroupState::setFilters(
-        int sampleRate, double lowFreqCorner, double highFreqCorner) {
-
+        mixxx::audio::SampleRate sampleRate,
+        double lowFreqCorner,
+        double highFreqCorner) {
     double lowCenter = getCenterFrequency(kMinimumFrequency, lowFreqCorner);
     double midCenter = getCenterFrequency(lowFreqCorner, highFreqCorner);
     double highCenter = getCenterFrequency(highFreqCorner, kMaximumFrequency);

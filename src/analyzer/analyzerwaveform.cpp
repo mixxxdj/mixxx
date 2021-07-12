@@ -16,16 +16,16 @@ mixxx::Logger kLogger("AnalyzerWaveform");
 
 AnalyzerWaveform::AnalyzerWaveform(
         UserSettingsPointer pConfig,
-        QSqlDatabase dbConnection)
+        const QSqlDatabase& dbConnection)
         : m_analysisDao(pConfig),
           m_waveformData(nullptr),
           m_waveformSummaryData(nullptr),
           m_stride(0, 0),
           m_currentStride(0),
           m_currentSummaryStride(0) {
-    m_filter[0] = 0;
-    m_filter[1] = 0;
-    m_filter[2] = 0;
+    m_filter[0] = nullptr;
+    m_filter[1] = nullptr;
+    m_filter[2] = nullptr;
     m_analysisDao.initialize(dbConnection);
 }
 
@@ -34,7 +34,9 @@ AnalyzerWaveform::~AnalyzerWaveform() {
     destroyFilters();
 }
 
-bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerWaveform::initialize(TrackPointer tio,
+        mixxx::audio::SampleRate sampleRate,
+        int totalSamples) {
     if (totalSamples == 0) {
         qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
         return false;
@@ -145,7 +147,7 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-void AnalyzerWaveform::createFilters(int sampleRate) {
+void AnalyzerWaveform::createFilters(mixxx::audio::SampleRate sampleRate) {
     // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
     // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
     // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
@@ -162,7 +164,7 @@ void AnalyzerWaveform::destroyFilters() {
     for (int i = 0; i < FilterCount; ++i) {
         if (m_filter[i]) {
             delete m_filter[i];
-            m_filter[i] = 0;
+            m_filter[i] = nullptr;
         }
     }
 }

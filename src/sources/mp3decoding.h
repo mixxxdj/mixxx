@@ -1,5 +1,4 @@
-#ifndef MIXXX_MP3DECODING_H
-#define MIXXX_MP3DECODING_H
+#pragma once
 
 #include "util/types.h"
 
@@ -12,5 +11,3 @@ namespace mixxx {
 constexpr SINT kMp3SeekFramePrefetchCount = 29;
 
 } // namespace mixxx
-
-#endif // MIXXX_MP3DECODING_H

@@ -43,6 +43,8 @@ ChromaticKey chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t key) {
         return ChromaticKey::E_FLAT_MAJOR;
     case (KeyFinder::E_FLAT_MINOR):
         return ChromaticKey::E_FLAT_MINOR;
+    case (KeyFinder::E_MAJOR):
+        return ChromaticKey::E_MAJOR;
     case (KeyFinder::E_MINOR):
         return ChromaticKey::E_MINOR;
     case (KeyFinder::F_MAJOR):
@@ -71,16 +73,15 @@ ChromaticKey chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t key) {
 namespace mixxx {
 
 AnalyzerKeyFinder::AnalyzerKeyFinder()
-        : m_currentFrame(0),
-          m_previousKey(mixxx::track::io::key::INVALID) {
+        : m_currentFrame(0) {
 }
 
 AnalyzerPluginInfo AnalyzerKeyFinder::pluginInfo() {
     return AnalyzerPluginInfo(pluginId, pluginAuthor, pluginName, false);
 }
 
-bool AnalyzerKeyFinder::initialize(int samplerate) {
-    m_audioData.setFrameRate(samplerate);
+bool AnalyzerKeyFinder::initialize(mixxx::audio::SampleRate sampleRate) {
+    m_audioData.setFrameRate(sampleRate);
     m_audioData.setChannels(kAnalysisChannels);
     return true;
 }

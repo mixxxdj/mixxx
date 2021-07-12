@@ -1,22 +1,18 @@
-// analysisfeature.cpp
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-// Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
+#include "library/analysisfeature.h"
 
 #include <QtDebug>
 
-#include "library/library.h"
-#include "library/analysisfeature.h"
-
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/dlganalysis.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/trackcollection.h"
-#include "library/dlganalysis.h"
-#include "widget/wlibrary.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/trackcollectionmanager.h"
+#include "moc_analysisfeature.cpp"
 #include "sources/soundsourceproxy.h"
-#include "util/dnd.h"
 #include "util/debug.h"
+#include "util/dnd.h"
 #include "util/logger.h"
+#include "widget/wlibrary.h"
 
 namespace {
 
@@ -52,12 +48,12 @@ AnalyzerModeFlags getAnalyzerModeFlags(
 AnalysisFeature::AnalysisFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
-        m_baseTitle(tr("Analyze")),
-        m_icon(":/images/library/ic_library_prepare.svg"),
-        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
-        m_pAnalysisView(nullptr),
-        m_title(m_baseTitle) {
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("prepare")),
+          m_baseTitle(tr("Analyze")),
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
+          m_pAnalysisView(nullptr),
+          m_title(m_baseTitle) {
 }
 
 void AnalysisFeature::resetTitle() {
@@ -67,9 +63,9 @@ void AnalysisFeature::resetTitle() {
 
 void AnalysisFeature::setTitleProgress(int currentTrackNumber, int totalTracksCount) {
     m_title = QString("%1 (%2 / %3)")
-            .arg(m_baseTitle)
-            .arg(QString::number(currentTrackNumber))
-            .arg(QString::number(totalTracksCount));
+                      .arg(m_baseTitle,
+                              QString::number(currentTrackNumber),
+                              QString::number(totalTracksCount));
     emit featureIsLoading(this, false);
 }
 
@@ -85,7 +81,7 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     connect(m_pAnalysisView,
             &DlgAnalysis::loadTrackToPlayer,
             this,
-            [=](TrackPointer track, QString group) {
+            [=](TrackPointer track, const QString& group) {
                 emit loadTrackToPlayer(track, group, false);
             });
     connect(m_pAnalysisView,
@@ -115,8 +111,8 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(kViewName, m_pAnalysisView);
 }
 
-TreeItemModel* AnalysisFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* AnalysisFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void AnalysisFeature::refreshLibraryModels() {
@@ -134,7 +130,7 @@ void AnalysisFeature::activate() {
     emit enableCoverArtDisplay(true);
 }
 
-void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
+void AnalysisFeature::analyzeTracks(const QList<TrackId>& trackIds) {
     if (!m_pTrackAnalysisScheduler) {
         const int numAnalyzerThreads = numberOfAnalyzerThreads();
         kLogger.info()
@@ -229,13 +225,15 @@ void AnalysisFeature::onTrackAnalysisSchedulerFinished() {
     emit analysisActive(false);
 }
 
-bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    QList<TrackId> trackIds = m_pLibrary->trackCollection().resolveTrackIdsFromUrls(urls,
-            !pSource);
+bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
+                    urls,
+                    !pSource);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }
 
-bool AnalysisFeature::dragMoveAccept(QUrl url) {
+bool AnalysisFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url);
 }

@@ -1,10 +1,9 @@
 #include "analyzer/trackanalysisscheduler.h"
 
 #include "library/library.h"
-#include "library/trackcollection.h"
-
+#include "library/trackcollectionmanager.h"
+#include "moc_trackanalysisscheduler.cpp"
 #include "util/logger.h"
-
 
 namespace {
 
@@ -109,7 +108,7 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
     DEBUG_ASSERT(m_pendingTrackIds.size() <=
             static_cast<size_t>(m_dequeuedTracksCount));
     const int finishedTracksCount =
-            m_dequeuedTracksCount - m_pendingTrackIds.size();
+            m_dequeuedTracksCount - static_cast<int>(m_pendingTrackIds.size());
 
     AnalyzerProgress workerProgressSum = 0;
     int workerProgressCount = 0;
@@ -164,7 +163,7 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
         }
     }
     const int totalTracksCount =
-            m_dequeuedTracksCount + m_queuedTrackIds.size();
+            m_dequeuedTracksCount + static_cast<int>(m_queuedTrackIds.size());
     DEBUG_ASSERT(m_currentTrackNumber <= m_dequeuedTracksCount);
     DEBUG_ASSERT(m_dequeuedTracksCount <= totalTracksCount);
     emit progress(
@@ -276,7 +275,7 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
         DEBUG_ASSERT(nextTrackId.isValid());
         if (nextTrackId.isValid()) {
             TrackPointer nextTrack =
-                    m_library->trackCollection().getTrackById(nextTrackId);
+                    m_library->trackCollectionManager()->getTrackById(nextTrackId);
             if (nextTrack) {
                 if (m_pendingTrackIds.insert(nextTrackId).second) {
                     if (worker->submitNextTrack(std::move(nextTrack))) {
@@ -331,7 +330,7 @@ void TrackAnalysisScheduler::stop() {
 
 QList<TrackId> TrackAnalysisScheduler::stopAndCollectScheduledTrackIds() {
     QList<TrackId> scheduledTrackIds;
-    scheduledTrackIds.reserve(m_queuedTrackIds.size() + m_pendingTrackIds.size());
+    scheduledTrackIds.reserve(static_cast<int>(m_queuedTrackIds.size() + m_pendingTrackIds.size()));
     for (auto queuedTrackId: m_queuedTrackIds) {
         scheduledTrackIds.append(std::move(queuedTrackId));
     }

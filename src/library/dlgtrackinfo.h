@@ -1,22 +1,22 @@
-#ifndef DLGTRACKINFO_H
-#define DLGTRACKINFO_H
+#pragma once
 
 #include <QDialog>
-#include <QHash>
-#include <QList>
-#include <QMutex>
-#include <QScopedPointer>
+#include <QModelIndex>
+#include <memory>
 
 #include "library/coverart.h"
-#include "library/dlgtagfetcher.h"
-#include "library/trackmodel.h"
 #include "library/ui_dlgtrackinfo.h"
-#include "track/track.h"
+#include "track/beats.h"
+#include "track/keys.h"
+#include "track/track_decl.h"
+#include "track/trackrecord.h"
+#include "util/parented_ptr.h"
 #include "util/tapfilter.h"
-#include "util/types.h"
-#include "widget/wcoverartlabel.h"
-#include "widget/wcoverartmenu.h"
-#include "widget/wstarrating.h"
+
+class TrackModel;
+class DlgTagFetcher;
+class WCoverArtLabel;
+class WStarRating;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
@@ -26,16 +26,15 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
     // TODO: Remove dependency on TrackModel
-    DlgTrackInfo(QWidget* parent,
-            UserSettingsPointer pConfig,
+    explicit DlgTrackInfo(
             const TrackModel* trackModel = nullptr);
-    virtual ~DlgTrackInfo();
+    ~DlgTrackInfo() override = default;
 
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
     void loadTrack(TrackPointer pTrack);
-    void loadTrack(QModelIndex index);
+    void loadTrack(const QModelIndex& index);
 
   signals:
     void next();
@@ -84,28 +83,42 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void loadNextTrack();
     void loadPrevTrack();
     void loadTrackInternal(const TrackPointer& pTrack);
-    void populateFields(const Track& track);
     void reloadTrackBeats(const Track& track);
     void saveTrack();
-    void unloadTrack(bool save);
     void clear();
     void init();
+
+    mixxx::UpdateResult updateKeyText();
+    void displayKeyText();
+
+    void updateFromTrack(const Track& track);
+
+    void replaceTrackRecord(
+            mixxx::TrackRecord trackRecord,
+            const QString& trackLocation);
+    void resetTrackRecord() {
+        replaceTrackRecord(
+                mixxx::TrackRecord(),
+                QString());
+    }
+
+    void updateTrackMetadataFields();
+    const TrackModel* const m_pTrackModel;
+
     TrackPointer m_pLoadedTrack;
+
+    QModelIndex m_currentTrackIndex;
+
+    mixxx::TrackRecord m_trackRecord;
+
     mixxx::BeatsPointer m_pBeatsClone;
-    Keys m_keysClone;
     bool m_trackHasBeatMap;
 
-    QScopedPointer<TapFilter> m_pTapFilter;
-    QScopedPointer<DlgTagFetcher> m_pTagFetcher;
-    double m_dLastTapedBpm;
+    TapFilter m_tapFilter;
+    mixxx::Bpm m_lastTapedBpm;
 
-    CoverInfo m_loadedCoverInfo;
-    WCoverArtLabel* m_pWCoverArtLabel;
-    WStarRating* m_pWStarRating;
-    UserSettingsPointer m_pConfig;
+    parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
+    parented_ptr<WStarRating> m_pWStarRating;
 
-    const TrackModel* m_pTrackModel;
-    QModelIndex m_currentTrackIndex;
+    std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 };
-
-#endif /* DLGTRACKINFO_H */

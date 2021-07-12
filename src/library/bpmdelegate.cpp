@@ -1,22 +1,25 @@
-#include <QItemEditorFactory>
-#include <QItemEditorCreatorBase>
-#include <QDoubleSpinBox>
-#include <QRect>
-#include <QPalette>
-#include <QTableView>
-#include <QPainter>
-
 #include "library/bpmdelegate.h"
+
+#include <QDoubleSpinBox>
+#include <QItemEditorCreatorBase>
+#include <QItemEditorFactory>
+#include <QPainter>
+#include <QPalette>
+#include <QRect>
+#include <QTableView>
+
 #include "library/trackmodel.h"
+#include "moc_bpmdelegate.cpp"
 
 // We override the typical QDoubleSpinBox editor by registering this class with
 // a QItemEditorFactory for the BPMDelegate.
 class BpmEditorCreator : public QItemEditorCreatorBase {
   public:
     BpmEditorCreator() {}
-    virtual ~BpmEditorCreator() {}
+    ~BpmEditorCreator() override {
+    }
 
-    virtual QWidget* createWidget (QWidget* parent) const {
+    QWidget* createWidget(QWidget* parent) const override {
         QDoubleSpinBox* pBpmSpinbox = new QDoubleSpinBox(parent);
         pBpmSpinbox->setFrame(false);
         pBpmSpinbox->setMinimum(0);
@@ -27,7 +30,7 @@ class BpmEditorCreator : public QItemEditorCreatorBase {
         return pBpmSpinbox;
     }
 
-    virtual QByteArray valuePropertyName() const {
+    QByteArray valuePropertyName() const override {
         return QByteArray("value");
     }
 };
@@ -77,9 +80,9 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
 
-    if (m_pTableView != NULL) {
+    if (m_pTableView != nullptr) {
         QStyle* style = m_pTableView->style();
-        if (style != NULL) {
+        if (style != nullptr) {
             style->drawControl(QStyle::CE_ItemViewItem, &opt, painter,
                                m_pCheckBox);
         }

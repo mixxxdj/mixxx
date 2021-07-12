@@ -4,7 +4,7 @@
     <name>Reloop Terminal Mix 2/4</name>
     <author>Sean M. Pappalardo (1.11), ronso0 (2.1 update)</author>
     <description>A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.</description>
-    <wiki>http://mixxx.org/wiki/doku.php/reloop_terminal_mix</wiki>
+    <manual>reloop_terminal_mix_series</manual>
   </info>
   <controller id="TerminalMix">
     <scriptfiles>

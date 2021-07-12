@@ -1,10 +1,9 @@
-#ifndef MIXXX_SOUNDSOURCEWV_H
-#define MIXXX_SOUNDSOURCEWV_H
+#pragma once
 
 #include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
 
-class QFile;
+QT_FORWARD_DECLARE_CLASS(QFile);
 
 namespace mixxx {
 
@@ -26,7 +25,7 @@ class SoundSourceWV : public SoundSource {
 
   protected:
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override;
+            const WritableSampleFrames& sampleFrames) override;
 
   private:
     OpenResult tryOpen(
@@ -34,12 +33,12 @@ class SoundSourceWV : public SoundSource {
             const OpenParams& params) override;
 
     // A WavpackContext* type
-    // we cannot use the type directly, because it has 
-    // changing definitions with different wavpack.h versions. 
-    // wavpack.h can't be included here, because it has concurrent definitions 
-    // with other decoder's header.     
+    // we cannot use the type directly, because it has
+    // changing definitions with different wavpack.h versions.
+    // wavpack.h can't be included here, because it has concurrent definitions
+    // with other decoder's header.
     void* m_wpc;
- 
+
     CSAMPLE m_sampleScaleFactor;
     QFile* m_pWVFile;
     QFile* m_pWVCFile;
@@ -49,9 +48,16 @@ class SoundSourceWV : public SoundSource {
 
 class SoundSourceProviderWV : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
-    QStringList getSupportedFileExtensions() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
 
     SoundSourceProviderPriority getPriorityHint(
             const QString& supportedFileExtension) const override;
@@ -60,5 +66,3 @@ class SoundSourceProviderWV : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEWV_H

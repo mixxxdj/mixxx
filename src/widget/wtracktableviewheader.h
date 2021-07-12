@@ -1,8 +1,4 @@
-// wtracktableviewheader.h
-// Created 1/2/2010 by RJ Ryan (rryan@mit.edu)
-
-#ifndef WTRACKTABLEVIEWHEADER_H
-#define WTRACKTABLEVIEWHEADER_H
+#pragma once
 
 #include <QAction>
 #include <QHeaderView>
@@ -80,5 +76,3 @@ class WTrackTableViewHeader : public QHeaderView {
     QMenu m_menu;
     QMap<int, QAction*> m_columnActions;
 };
-
-#endif /* WTRACKTABLEVIEWHEADER_H */

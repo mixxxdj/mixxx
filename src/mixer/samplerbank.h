@@ -1,5 +1,4 @@
-#ifndef MIXER_SAMPLERBANK_H
-#define MIXER_SAMPLERBANK_H
+#pragma once
 
 #include <QObject>
 #include "util/memory.h"
@@ -30,5 +29,3 @@ class SamplerBank : public QObject {
     std::unique_ptr<ControlObject> m_pCOSaveBank;
     ControlProxy* m_pCONumSamplers;
 };
-
-#endif /* MIXER_SAMPLERBANK_H */

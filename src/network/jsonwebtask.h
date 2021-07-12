@@ -25,28 +25,45 @@ struct JsonWebRequest final {
     QJsonDocument content;
 };
 
-struct JsonWebResponse : public WebResponse {
+class JsonWebResponse final {
   public:
     static void registerMetaType();
 
     JsonWebResponse() = default;
     JsonWebResponse(
-            WebResponse response,
-            QJsonDocument content)
-            : WebResponse(std::move(response)),
-              content(std::move(content)) {
+            WebResponse&& response,
+            QJsonDocument&& content)
+            : m_response(response),
+              m_content(content) {
     }
     JsonWebResponse(const JsonWebResponse&) = default;
     JsonWebResponse(JsonWebResponse&&) = default;
-    ~JsonWebResponse() override = default;
 
     JsonWebResponse& operator=(const JsonWebResponse&) = default;
     JsonWebResponse& operator=(JsonWebResponse&&) = default;
 
-    QJsonDocument content;
-};
+    bool isStatusCodeSuccess() const {
+        return m_response.isStatusCodeSuccess();
+    }
 
-QDebug operator<<(QDebug dbg, const JsonWebResponse& arg);
+    HttpStatusCode statusCode() const {
+        return m_response.statusCode();
+    }
+
+    const QUrl& replyUrl() const {
+        return m_response.replyUrl();
+    }
+
+    const QJsonDocument& content() const {
+        return m_content;
+    }
+
+    friend QDebug operator<<(QDebug dbg, const JsonWebResponse& arg);
+
+  private:
+    WebResponse m_response;
+    QJsonDocument m_content;
+};
 
 class JsonWebTask : public WebTask {
     Q_OBJECT
@@ -54,17 +71,14 @@ class JsonWebTask : public WebTask {
   public:
     JsonWebTask(
             QNetworkAccessManager* networkAccessManager,
-            const QUrl& baseUrl,
+            QUrl baseUrl,
             JsonWebRequest&& request,
             QObject* parent = nullptr);
-    ~JsonWebTask() override;
+    ~JsonWebTask() override = default;
 
   signals:
     void failed(
-            network::JsonWebResponse response);
-
-  private slots:
-    void slotNetworkReplyFinished();
+            const network::JsonWebResponse& response);
 
   protected:
     // Customizable in derived classes
@@ -75,29 +89,30 @@ class JsonWebTask : public WebTask {
             const QJsonDocument& content);
 
     void emitFailed(
-            network::JsonWebResponse&& response);
+            const network::JsonWebResponse& response);
 
   private:
-    // Handle the response and ensure that the task eventually
-    // gets deleted. The default implementation discards the
-    // response and deletes the task.
+    /// Handle the response and ensure that the task eventually
+    /// gets deleted.
+    ///
+    /// Could be overridden by derived classes. The default
+    /// implementation discards the response and deletes the task.
     virtual void onFinished(
-            JsonWebResponse&& response);
+            const JsonWebResponse& jsonResponse);
     virtual void onFinishedCustom(
-            CustomWebResponse&& response);
+            const WebResponseWithContent& customResponse);
 
-    bool doStart(
+    QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) override;
-    QUrl doAbort() override;
-    QUrl doTimeOut() override;
+    void doNetworkReplyFinished(
+            QNetworkReply* finishedNetworkReply,
+            HttpStatusCode statusCode) override;
 
     // All member variables must only be accessed from
     // the event loop thread!!
     const QUrl m_baseUrl;
     const JsonWebRequest m_request;
-
-    QPointer<QNetworkReply> m_pendingNetworkReply;
 };
 
 } // namespace network

@@ -266,21 +266,20 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         unshift: function () {
             this.input = function (channel, control, value, status) {
                 direction = (value === 1) ? 1 : -1;
-                var gain = engine.getValue(this.group, "pregain");
-                engine.setValue(this.group, "pregain", gain + 0.025 * direction);
+                engine.setValue(this.group, "jog", direction * 3);
             };
         },
         shift: function () {
             this.input = function (channel, control, value, status) {
                 direction = (value === 1) ? 1 : -1;
-                engine.setValue(this.group, "jog", direction);
+                var gain = engine.getValue(this.group, "pregain");
+                engine.setValue(this.group, "pregain", gain + 0.025 * direction);
             };
         },
         supershift: function () {
             this.input = function (channel, control, value, status) {
                 direction = (value === 1) ? 1 : -1;
-                var pitch = engine.getValue(this.group, "pitch");
-                engine.setValue(this.group, "pitch", pitch + (.05 * direction));
+                engine.setValue('[QuickEffectRack1_' + theDeck.deckString + ']', 'chain_selector', direction);
             };
         },
     });
@@ -288,26 +287,57 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
     this.encoderPress = new components.Button({
         outKey: 'sync_enabled',
         unshift: function () {
-            this.inKey = 'pregain_set_one';
-            this.type = components.Button.prototype.types.push;
-        },
-        shift: function () {
+            this.group = theDeck.deckString;
             this.inKey = 'sync_enabled';
             this.type = components.Button.prototype.types.toggle;
         },
+        shift: function () {
+            this.group = '[QuickEffectRack1_' + theDeck.deckString + ']';
+            this.inKey = 'enabled';
+            this.type = components.Button.prototype.types.toggle;
+        },
         supershift: function () {
-            this.inKey = 'reset_key';
+            this.group = theDeck.deckString;
+            this.inKey = 'rate_set_zero';
             this.type = components.Button.prototype.types.push;
         },
     });
 
     this.knobs = new components.ComponentContainer();
-    for (var k = 1; k <= 3; k++) {
+    for (var k = 1; k <= 2; k++) {
         this.knobs[k] = new components.Pot({
             group: '[EqualizerRack1_' + this.deckString + '_Effect1]',
             inKey: 'parameter' + (4-k),
         });
     }
+    // Low EQ knob. With shift, switches to QuickEffect superknob. Stays as
+    // QuickEffect superknob until shift is pressed again to allow using the
+    // QuickEffect superknob without having to keep shift held down. This
+    // allows using the QuickEffect superknob for a transition while using
+    // the other hand for another control.
+    this.knobs[3] = new components.Pot({
+        hasBeenTurnedSinceShiftToggle: false,
+        input: function (channel, control, value, status) {
+            components.Pot.prototype.input.call(this, channel, control, value, status);
+            this.hasBeenTurnedSinceShiftToggle = true;
+        },
+        unshift: function() {
+            if (!this.hasBeenTurnedSinceShiftToggle) {
+                this.disconnect();
+                this.group = '[EqualizerRack1_' + theDeck.deckString + '_Effect1]';
+                this.inKey = 'parameter1';
+                this.connect();
+            }
+            this.hasBeenTurnedSinceShiftToggle = false;
+        },
+        shift: function() {
+            this.disconnect();
+            this.group = '[QuickEffectRack1_' + theDeck.deckString + ']';
+            this.inKey = 'super1';
+            this.connect();
+            this.hasBeenTurnedSinceShiftToggle = false;
+        }
+    });
 
     this.fader = new components.Pot({inKey: 'volume'});
 

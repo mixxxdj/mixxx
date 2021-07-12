@@ -39,9 +39,8 @@
                     <Layout>horizontal</Layout>
                     <Style>
                       QLabel {
-                        font: bold 9px sans-serif;
-                        font-family: "Open Sans";
-                        background-color: transparent;
+                        font-size: 13px;
+                        font-weight: bold;
                         color: #191F24;
                       }
                     </Style>
@@ -51,16 +50,13 @@
                       <TrackProperty>
                         <TooltipId>track_title</TooltipId>
                         <Style>QLabel {
-                          font: bold 13px sans-serif;
-                          font-family: "Open Sans";
-                          color: #191F24;
                           text-align: left;
-                          padding: 0px 2px;
+                          padding: 1px 2px;
                         }
                         </Style>
                         <Property>titleInfo</Property>
                         <Channel><Variable name="channum"/></Channel>
-                        <SizePolicy>me,f</SizePolicy>
+                        <SizePolicy>e,f</SizePolicy>
                         <MinimumSize>50,19</MinimumSize>
                         <Alignment>left</Alignment>
                         <Elide>right</Elide>
@@ -71,16 +67,17 @@
                         <BackPath>style/style_component_border.png</BackPath>
                       </WidgetGroup>
 
+                      <WidgetGroup>
+                        <Size>4f,19f</Size>
+                      </WidgetGroup>
+
                       <NumberPos>
                         <TooltipId>track_time</TooltipId>
-                        <Size>55min,19f</Size>
+                        <Size>50min,19f</Size>
                         <Style>QLabel {
-                          font: bold 13px sans-serif;
-                          font-family: Open Sans;
-                          color: #191F24;
                           text-align: right;
                           padding: 3px 0px 2px 0px;
-                          margin: 0px 0px 0px 10px;
+                          margin: 0px 0px 0px 0px;
                         }
                         </Style>
                         <Group><Variable name="group"/></Group>
@@ -89,10 +86,11 @@
                     </Children>
                   </WidgetGroup>
 
-                  <WidgetGroup>
-                    <Size>1min,1f</Size>
-                    <BackPath>style/style_component_border.png</BackPath>
-                  </WidgetGroup>
+                  <TrackWidgetGroup>
+                    <Size>0e,1f</Size>
+                    <Group><Variable name="group"/></Group>
+                    <TrackColorAlpha>255</TrackColorAlpha>
+                  </TrackWidgetGroup>
 
                   <!-- Artist / Key /BPM -->
                   <WidgetGroup>
@@ -100,9 +98,8 @@
                     <Layout>horizontal</Layout>
                     <Style>
                       QLabel {
-                        font: bold 9px sans-serif;
-                        font-family: "Open Sans";
-                        background-color: transparent;
+                        font-size: 13px;
+                        font-weight: bold;
                         color: #191F24;
                       }
                     </Style>
@@ -112,12 +109,8 @@
                       <TrackProperty>
                         <TooltipId>track_title</TooltipId>
                         <Style>QLabel {
-                          font: bold 13px sans-serif;
-                          font-family: "Open Sans";
-                          background-color: transparent;
-                          color: #191F24;
                           text-align: left;
-                          padding: 2px 2px;
+                          padding: 1px 2px;
                         }
                         </Style>
                         <Property>artist</Property>
@@ -138,9 +131,7 @@
                         <TooltipId>visual_key</TooltipId>
                         <Size>30min,18f</Size>
                         <Style>QLabel {
-                          font: bold 13px sans-serif;
-                          font-family: "Open Sans";
-                          text-align: left;
+                          text-align: center;
                           padding: 3px 1px 3px 0px;
                         }
                         </Style>
@@ -162,8 +153,6 @@
                         <TooltipId>visual_bpm</TooltipId>
                         <Size>42f,18f</Size>
                         <Style>QLabel {
-                          font: bold 13px sans-serif;
-                          font-family: "Open Sans";
                           padding: 3px 1px 3px 0px;
                         }
                         </Style>
@@ -188,7 +177,9 @@
               <!-- Play -->
               <WidgetGroup>
                 <Size>41f,38f</Size>
+                <BackPath>style/style_bg_deck_blank.png</BackPath>
                 <Children>
+                  <!-- Play indicator, blinks depending on Cue mode -->
                   <PushButton>
                     <Pos>5,8</Pos>
                     <NumberStates>2</NumberStates>
@@ -206,6 +197,23 @@
                       <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
                     </Connection>
                   </PushButton>
+                  <!-- Preview indicator -->
+                  <PushButton>
+                    <Pos>5,8</Pos>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_play_deck_small_preview.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_deck_small_preview.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                    </Connection>
+                  </PushButton>
+                  <!-- Play -->
                   <PushButton>
                     <TooltipId>play_cue_default</TooltipId>
                     <Pos>5,8</Pos>
@@ -227,6 +235,10 @@
                     <Connection>
                       <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play_latched</ConfigKey>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
                     </Connection>
                   </PushButton>
                 </Children>

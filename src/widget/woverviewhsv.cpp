@@ -91,7 +91,8 @@ bool WOverviewHSV::drawNextPixmapPart() {
             maxHigh[1] = pWaveform->getHigh(currentCompletion+1);
 
             total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
-                     maxHigh[0] + maxHigh[1]) * 1.2;
+                            maxHigh[0] + maxHigh[1]) *
+                    1.2f;
 
             // Prevent division by zero
             if (total > 0) {

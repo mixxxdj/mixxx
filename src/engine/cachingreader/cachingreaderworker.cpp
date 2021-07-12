@@ -1,15 +1,16 @@
-#include <QtDebug>
+#include "engine/cachingreader/cachingreaderworker.h"
+
 #include <QFileInfo>
 #include <QMutexLocker>
+#include <QtDebug>
 
 #include "control/controlobject.h"
-
-#include "engine/cachingreader/cachingreaderworker.h"
+#include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/event.h"
 #include "util/logger.h"
-
 
 namespace {
 
@@ -18,7 +19,7 @@ mixxx::Logger kLogger("CachingReaderWorker");
 } // anonymous namespace
 
 CachingReaderWorker::CachingReaderWorker(
-        QString group,
+        const QString& group,
         FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
         FIFO<ReaderStatusUpdate>* pReaderStatusFIFO)
         : m_group(group),
@@ -39,7 +40,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     // actually available.
     auto chunkFrameIndexRange = pChunk->frameIndexRange(m_pAudioSource);
     DEBUG_ASSERT(!m_pAudioSource ||
-            chunkFrameIndexRange <= m_pAudioSource->frameIndexRange());
+            chunkFrameIndexRange.isSubrangeOf(m_pAudioSource->frameIndexRange()));
     if (chunkFrameIndexRange.empty()) {
         ReaderStatusUpdate result;
         result.init(CHUNK_READ_INVALID, pChunk, m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
@@ -51,11 +52,11 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
             m_pAudioSource,
             mixxx::SampleBuffer::WritableSlice(m_tempReadBuffer));
     DEBUG_ASSERT(!m_pAudioSource ||
-            bufferedFrameIndexRange <= m_pAudioSource->frameIndexRange());
+            bufferedFrameIndexRange.isSubrangeOf(m_pAudioSource->frameIndexRange()));
     // The readable frame range might have changed
     chunkFrameIndexRange = intersect(chunkFrameIndexRange, m_pAudioSource->frameIndexRange());
     DEBUG_ASSERT(bufferedFrameIndexRange.empty() ||
-            bufferedFrameIndexRange <= chunkFrameIndexRange);
+            bufferedFrameIndexRange.isSubrangeOf(chunkFrameIndexRange));
 
     ReaderStatus status = bufferedFrameIndexRange.empty() ? CHUNK_READ_EOF : CHUNK_READ_SUCCESS;
     if (bufferedFrameIndexRange != chunkFrameIndexRange) {
@@ -134,16 +135,16 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // Emit that a new track is loading, stops the current track
     emit trackLoading();
 
-    QString filename = pTrack->getLocation();
-    if (filename.isEmpty() || !pTrack->checkFileExists()) {
+    if (!pTrack->getFileInfo().checkFileExists()) {
         kLogger.warning()
                 << m_group
                 << "File not found"
-                << filename;
+                << pTrack->getFileInfo();
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
-        emit trackLoadFailed(
-                pTrack, QString("The file '%1' could not be found.").arg(QDir::toNativeSeparators(filename)));
+        emit trackLoadFailed(pTrack,
+                tr("The file '%1' could not be found.")
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
         return;
     }
 
@@ -154,11 +155,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         kLogger.warning()
                 << m_group
                 << "Failed to open file"
-                << filename;
+                << pTrack->getFileInfo();
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
-        emit trackLoadFailed(
-                pTrack, QString("The file '%1' could not be loaded").arg(filename));
+        emit trackLoadFailed(pTrack,
+                tr("The file '%1' could not be loaded.")
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
         return;
     }
 
@@ -170,11 +172,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         kLogger.warning()
                 << m_group
                 << "Failed to open empty file"
-                << filename;
+                << pTrack->getFileInfo();
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
-        emit trackLoadFailed(
-                pTrack, QString("The file '%1' is empty and could not be loaded").arg(filename));
+        emit trackLoadFailed(pTrack,
+                tr("The file '%1' is empty and could not be loaded.")
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
         return;
     }
 

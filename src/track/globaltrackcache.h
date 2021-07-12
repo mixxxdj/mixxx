@@ -4,17 +4,19 @@
 #include <map>
 #include <unordered_map>
 
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "track/trackref.h"
-
+#include "util/fileaccess.h"
+#include "util/sandbox.h"
 
 // forward declaration(s)
 class GlobalTrackCache;
 
 enum class GlobalTrackCacheLookupResult {
-    NONE,
-    HIT,
-    MISS
+    None,
+    Hit,
+    Miss,
+    ConflictCanonicalLocation
 };
 
 // Find the updated location of a track in the database when
@@ -24,12 +26,12 @@ private:
     friend class GlobalTrackCache;
     // Try to determine and return the relocated file info
     // or otherwise return just the provided file info.
-    virtual TrackFile relocateCachedTrack(
+    virtual mixxx::FileAccess relocateCachedTrack(
             TrackId trackId,
-            TrackFile fileInfo) = 0;
+            mixxx::FileAccess fileAccess) = 0;
 
-protected:
-  virtual ~GlobalTrackCacheRelocator() = default;
+  protected:
+    virtual ~GlobalTrackCacheRelocator() = default;
 };
 
 typedef void (*deleteTrackFn_t)(Track*);
@@ -131,19 +133,17 @@ protected:
 
 class GlobalTrackCacheResolver final: public GlobalTrackCacheLocker {
 public:
-    GlobalTrackCacheResolver(
-                TrackFile fileInfo,
-                SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
-    GlobalTrackCacheResolver(
-                TrackFile fileInfo,
-                TrackId trackId,
-                SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
-    GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
-    GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
+  GlobalTrackCacheResolver(
+          mixxx::FileAccess fileAccess);
+  GlobalTrackCacheResolver(
+          mixxx::FileAccess fileAccess,
+          TrackId trackId);
+  GlobalTrackCacheResolver(const GlobalTrackCacheResolver&) = delete;
+  GlobalTrackCacheResolver(GlobalTrackCacheResolver&&) = default;
 
-    GlobalTrackCacheLookupResult getLookupResult() const {
-        return m_lookupResult;
-    }
+  GlobalTrackCacheLookupResult getLookupResult() const {
+      return m_lookupResult;
+  }
 
     const TrackPointer& getTrack() const {
         return m_strongPtr;
@@ -240,21 +240,28 @@ class GlobalTrackCache : public QObject {
 
     TrackPointer lookupById(
             const TrackId& trackId);
+    TrackPointer lookupByCanonicalLocation(
+            const QString& canonicalLocation);
+
+    /// Lookup the track either by id (primary) or by
+    /// canonical location (secondary). The id of the
+    /// returned track might differ from the requested
+    /// id due to file system aliasing!!
     TrackPointer lookupByRef(
             const TrackRef& trackRef);
+
     QSet<TrackId> getCachedTrackIds() const;
 
     TrackPointer revive(GlobalTrackCacheEntryPointer entryPtr);
 
     void resolve(
             GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
-            TrackFile /*in*/ fileInfo,
-            TrackId /*in*/ trackId,
-            SecurityTokenPointer /*in*/ pSecurityToken);
+            mixxx::FileAccess /*in*/ fileAccess,
+            TrackId /*in*/ trackId);
 
     TrackRef initTrackId(
             const TrackPointer& strongPtr,
-            TrackRef trackRef,
+            const TrackRef& trackRef,
             TrackId trackId);
 
     void purgeTrackId(TrackId trackId);
@@ -269,7 +276,11 @@ class GlobalTrackCache : public QObject {
     void saveEvictedTrack(Track* pEvictedTrack) const;
 
     // Managed by GlobalTrackCacheLocker
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    mutable QRecursiveMutex m_mutex;
+#else
     mutable QMutex m_mutex;
+#endif
 
     GlobalTrackCacheSaver* m_pSaver;
 

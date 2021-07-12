@@ -49,6 +49,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     TrackId getTrackId(const QModelIndex& index) const override;
     QString getTrackLocation(const QModelIndex& index) const override;
 
+    CoverInfo getCoverInfo(const QModelIndex& index) const override;
+
     const QVector<int> getTrackRows(TrackId trackId) const override {
         return m_trackIdToRows.value(trackId);
     }
@@ -56,8 +58,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
     const QString currentSearch() const override;
 
-    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int column) override;
-    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
+    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int column) const override;
+    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
 
     void hideTracks(const QModelIndexList& indices) override;
 
@@ -75,10 +77,6 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     ///////////////////////////////////////////////////////////////////////////
     QVariant rawValue(
             const QModelIndex& index) const override;
-    QVariant roleValue(
-            const QModelIndex& index,
-            QVariant&& rawValue,
-            int role) const override;
 
     bool setTrackValueForColumn(
             const TrackPointer& pTrack,
@@ -100,18 +98,13 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QSqlDatabase m_database;
 
     QString m_tableOrderBy;
-    int m_columnIndexBySortColumnId[NUM_SORTCOLUMNIDS];
+    int m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::IdMax)];
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
 
   private slots:
-    void tracksChanged(QSet<TrackId> trackIds);
-
-    void slotRefreshCoverRows(QList<int> rows);
+    void tracksChanged(const QSet<TrackId>& trackIds);
 
   private:
-    BaseCoverArtDelegate* doCreateCoverArtDelegate(
-            QTableView* pTableView) const final;
-
     void setTrackValueForColumn(
             TrackPointer pTrack, int column, QVariant value);
 

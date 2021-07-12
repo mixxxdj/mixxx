@@ -36,6 +36,7 @@
                     <Size>3me,me</Size>
                     <MinimumSize>8,40</MinimumSize>
                     <MaximumSize>8,-1</MaximumSize>
+                    <PathBack scalemode="STRETCH">vumeter_v_bg.png</PathBack>
                     <PathVu scalemode="STRETCH">vumeter_v.png</PathVu>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
@@ -64,6 +65,7 @@
                     <Size>3me,me</Size>
                     <MinimumSize>8,60</MinimumSize>
                     <MaximumSize>8,-1</MaximumSize>
+                    <PathBack scalemode="STRETCH">vumeter_v_bg.png</PathBack>
                     <PathVu scalemode="STRETCH">vumeter_v.png</PathVu>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>

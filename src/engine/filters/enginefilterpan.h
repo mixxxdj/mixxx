@@ -1,5 +1,4 @@
-#ifndef ENGINEFILTERPAN_H
-#define ENGINEFILTERPAN_H
+#pragma once
 
 #include <string.h>
 
@@ -128,5 +127,3 @@ class EngineFilterPan : public EngineObjectConstIn {
     bool m_doRamping;
     bool m_doStart;
 };
-
-#endif // ENGINEFILTERPAN_H
