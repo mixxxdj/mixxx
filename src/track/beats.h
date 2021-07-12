@@ -137,7 +137,7 @@ class Beats {
             audio::FramePos endPosition) const = 0;
 
     /// Return the average BPM over the entire track if the BPM is valid,
-    /// otherwise returns -1
+    /// otherwise returns an invalid bpm value.
     virtual mixxx::Bpm getBpm() const = 0;
 
     /// Return the average BPM over the range of n*2 beats centered around
