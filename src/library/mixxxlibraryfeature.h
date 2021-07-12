@@ -16,9 +16,7 @@
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
-#ifdef __ENGINEPRIME__
 #include "util/parented_ptr.h"
-#endif
 
 class DlgHidden;
 class DlgMissing;
