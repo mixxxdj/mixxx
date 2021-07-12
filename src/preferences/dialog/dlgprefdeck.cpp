@@ -301,13 +301,13 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
     int configSPAutoReset = m_pConfig->getValue<int>(
-                    ConfigKey("[Controls]", "SpeedAutoReset"),
-                    BaseTrackPlayer::RESET_PITCH);
+            ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::RESET_PITCH);
 
-    m_speedAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_SPEED ||
-                        configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
-    m_pitchAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_PITCH ||
-                        configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
+    m_speedAutoReset = (configSPAutoReset == BaseTrackPlayer::RESET_SPEED ||
+            configSPAutoReset == BaseTrackPlayer::RESET_PITCH_AND_SPEED);
+    m_pitchAutoReset = (configSPAutoReset == BaseTrackPlayer::RESET_PITCH ||
+            configSPAutoReset == BaseTrackPlayer::RESET_PITCH_AND_SPEED);
 
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
@@ -419,7 +419,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
 }
 
 DlgPrefDeck::~DlgPrefDeck() {
-    qDeleteAll(m_rateControls);
     qDeleteAll(m_rateDirectionControls);
     qDeleteAll(m_cueControls);
     qDeleteAll(m_rateRangeControls);
@@ -561,21 +560,12 @@ void DlgPrefDeck::slotRateInversionCheckbox(bool inverted) {
 }
 
 void DlgPrefDeck::setRateDirectionForAllDecks(bool inverted) {
-    double oldRateDirectionMultiplier = m_rateDirectionControls[0]->get();
     double rateDirectionMultiplier = 1.0;
     if (inverted) {
         rateDirectionMultiplier = kRateDirectionInverted;
     }
     for (ControlProxy* pControl : qAsConst(m_rateDirectionControls)) {
         pControl->set(rateDirectionMultiplier);
-    }
-
-    // If the rate slider direction setting has changed,
-    // multiply the rate by -1 so the current sound does not change.
-    if (rateDirectionMultiplier != oldRateDirectionMultiplier) {
-        for (ControlProxy* pControl : qAsConst(m_rateControls)) {
-            pControl->set(-1 * pControl->get());
-        }
     }
 }
 
@@ -757,8 +747,6 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
 
     for (int i = m_iNumConfiguredDecks; i < numdecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_rateControls.push_back(new ControlProxy(
-                group, "rate"));
         m_rateRangeControls.push_back(new ControlProxy(
                 group, "rateRange"));
         m_rateDirectionControls.push_back(new ControlProxy(
@@ -790,8 +778,6 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
 
     for (int i = m_iNumConfiguredSamplers; i < numsamplers; ++i) {
         QString group = PlayerManager::groupForSampler(i);
-        m_rateControls.push_back(new ControlProxy(
-                group, "rate"));
         m_rateRangeControls.push_back(new ControlProxy(
                 group, "rateRange"));
         m_rateDirectionControls.push_back(new ControlProxy(

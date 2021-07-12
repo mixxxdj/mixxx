@@ -418,10 +418,18 @@ TEST_F(EngineSyncTest, InternalMasterSetFollowerSliderMoves) {
     pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
-    EXPECT_DOUBLE_EQ(getRateSliderValue(1.25),
-            ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
-    EXPECT_DOUBLE_EQ(100.0,
-            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_DOUBLE_EQ(1.25,
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(1.25),
+    //                ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    //EXPECT_DOUBLE_EQ(getRateUltraValue(1),
+    //                ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1),
+            ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(1.25),
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+    EXPECT_DOUBLE_EQ(100.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
 }
 
 TEST_F(EngineSyncTest, AnySyncDeckSliderStays) {
@@ -496,11 +504,20 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     EXPECT_TRUE(isFollower(m_sGroup2));
 
     // The rate should not have changed -- deck 1 still matches deck 2.
-    EXPECT_DOUBLE_EQ(getRateSliderValue(1.3),
-            ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    EXPECT_DOUBLE_EQ(1.3,
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(1.3),
+    //    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    //EXPECT_DOUBLE_EQ(getRateUltraValue(1),
+    //                ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1),
+            ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(1.3),
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
 
     // Reset channel 2 rate, set channel 2 to play, and process a buffer.
-    ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
     ProcessBuffer();
     // Deck 1 still master
@@ -647,8 +664,16 @@ TEST_F(EngineSyncTest, RateChangeTest) {
             120.0, ControlObject::get(ConfigKey(m_sGroup2, "file_bpm")));
 
     // rate slider for channel 2 should now be 1.6 = 160 * 1.2 / 120.
-    EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
-            ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(1.6, ControlObject::get(ConfigKey(m_sGroup2, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
+    //        ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(1.6),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+
     EXPECT_DOUBLE_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 }
 
@@ -678,8 +703,17 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.2));
 
     // Rate slider for channel 2 should now be 1.6 = (160 * 1.2 / 120) - 1.0.
-    EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
-            ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(1.6, ControlObject::get(ConfigKey(m_sGroup2, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
+    //        ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(1.6),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+
+    EXPECT_DOUBLE_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Internal Master BPM should read the same.
@@ -718,8 +752,18 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
     ProcessBuffer();
 
     // Follower should immediately set its slider.
-    EXPECT_NEAR(getRateSliderValue(1.3333333333),
-            ControlObject::get(ConfigKey(m_sGroup2, "rate")),
+    EXPECT_NEAR(1.3333333333,
+            ControlObject::get(ConfigKey(m_sGroup2, "rate_ratio")),
+            kMaxFloatingPointErrorLowPrecision);
+    // rate_ultra mode disabled
+    //EXPECT_NEAR(getRateSliderValue(1.3333333333),
+    //        ControlObject::get(ConfigKey(m_sGroup2, "rate")),
+    //        kMaxFloatingPointErrorLowPrecision);
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_NEAR(getRateUltraValue(1.3333333333),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")),
             kMaxFloatingPointErrorLowPrecision);
     EXPECT_DOUBLE_EQ(160.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(
@@ -750,21 +794,40 @@ TEST_F(EngineSyncTest, FollowerRateChange) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.2));
 
     // Rate slider for channel 2 should now be 1.6 = (160 * 1.2 / 120).
-    EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
-            ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(1.6, ControlObject::get(ConfigKey(m_sGroup2, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
+    //        ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(1.6),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+
     EXPECT_DOUBLE_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Try to twiddle the rate slider on channel 2.
-    auto pSlider2 = std::make_unique<ControlProxy>(m_sGroup2, "rate");
-    pSlider2->set(getRateSliderValue(0.8));
+    ControlObject::set(ConfigKey(m_sGroup2, "rate_ultra"), 0);
+    ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(0.8));
     ProcessBuffer();
 
-    // Rates should still be changed even though it's a follower.
-    EXPECT_DOUBLE_EQ(getRateSliderValue(0.8),
-            ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    // Rates should still be unchanged even though it's a follower.
+    EXPECT_DOUBLE_EQ(0.8, ControlObject::get(ConfigKey(m_sGroup2, "rate_ratio")));
+    EXPECT_DOUBLE_EQ(getRateSliderValue(0.8), ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+
     EXPECT_DOUBLE_EQ(96.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_DOUBLE_EQ(getRateSliderValue(0.6),
-            ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+
+    EXPECT_DOUBLE_EQ(0.6, ControlObject::get(ConfigKey(m_sGroup1, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(0.6),
+    //        ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.2), ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(.4),
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+
     EXPECT_DOUBLE_EQ(96.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
 }
 
@@ -803,21 +866,35 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
             std::make_unique<ControlProxy>(m_sInternalClockGroup, "bpm");
     pMasterSyncSlider->set(150.0);
     EXPECT_DOUBLE_EQ(150.0,
-            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
-                    ->get());
+            ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     // Set decks playing, and process a buffer to update all the COs.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ProcessBuffer();
     // Rate sliders for channels 1 and 2 should change appropriately.
-    EXPECT_DOUBLE_EQ(getRateSliderValue(0.9375),
-            ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
-    EXPECT_DOUBLE_EQ(150.0,
-            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_DOUBLE_EQ(getRateSliderValue(1.25),
-            ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
-    EXPECT_DOUBLE_EQ(150.0,
-            ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+    EXPECT_DOUBLE_EQ(0.9375, ControlObject::get(ConfigKey(m_sGroup1, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(0.9375)),
+    //        ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(0.9375),
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+
+    EXPECT_DOUBLE_EQ(150.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    EXPECT_DOUBLE_EQ(1.25, ControlObject::get(ConfigKey(m_sGroup2, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(1.25)),
+    //        ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup12 "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(1.25),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+
+    EXPECT_DOUBLE_EQ(150.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Set the internal rate to 140.
     pMasterSyncSlider->set(140.0);
@@ -826,15 +903,33 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     ProcessBuffer();
 
     // Rate sliders for channels 1 and 2 should change appropriately.
-    EXPECT_DOUBLE_EQ(getRateSliderValue(.875),
-            ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
-    EXPECT_DOUBLE_EQ(140.0,
-            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_NEAR(getRateSliderValue(1.16666667),
-            ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get(),
+    EXPECT_DOUBLE_EQ(.875,
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(.875)),
+    //        ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(.875),
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+
+    EXPECT_DOUBLE_EQ(140.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    EXPECT_NEAR(1.16666667,
+            ControlObject::get(ConfigKey(m_sGroup2, "rate_ratio")),
             kMaxFloatingPointErrorLowPrecision);
-    EXPECT_DOUBLE_EQ(140.0,
-            ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+    // rate_ultra mode disabled
+    //EXPECT_NEAR(getRateSliderValue(1.16666667),
+    //        ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get(),
+    //        kMaxFloatingPointErrorLowPrecision);
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(.875),
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+
+    EXPECT_DOUBLE_EQ(140.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 }
 
 TEST_F(EngineSyncTest, MasterStopSliderCheck) {
@@ -865,16 +960,30 @@ TEST_F(EngineSyncTest, MasterStopSliderCheck) {
     ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_DOUBLE_EQ(getRateSliderValue(0.9375),
-            ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(0.9375, ControlObject::get(ConfigKey(m_sGroup2, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(0.9375)),
+    //        ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup12 "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(0.9375),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
 
     pChannel1Play->set(0.0);
 
     ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    EXPECT_DOUBLE_EQ(getRateSliderValue(0.9375),
-            ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(0.9375, ControlObject::get(ConfigKey(m_sGroup2, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(0.9375)),
+    //        ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    //EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup12 "rate_ultra")));
+    // rate_ultra mode enabled
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(0.9375),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
 }
 
 TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
@@ -1105,9 +1214,10 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
             ConfigValue(BaseTrackPlayer::RESET_NONE));
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
-    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
-    ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
-    track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_ratio"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), 1.0);
+    m_pMixerDeck1->slotLoadTrack(track1, true);
+    m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
     EXPECT_DOUBLE_EQ(
@@ -1208,11 +1318,18 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     EXPECT_DOUBLE_EQ(
             130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     assertSyncOff(m_sGroup2);
-    EXPECT_DOUBLE_EQ(getRateSliderValue(1.3),
+    EXPECT_DOUBLE_EQ(1.3, ControlObject::get(ConfigKey(m_sGroup2, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_EQ(getRateSliderValue(1.3),
+    //                ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    //EXPECT_DOUBLE_EQ(getRateUltraValue(1),
+    //                ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
-
+    EXPECT_DOUBLE_EQ(getRateUltraValue(1.3),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate_ultra")));
     // Reset the pitch of deck 2.
-    ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), 1.0);
 
     // The same should work in reverse.
     pButtonSyncEnabled1->set(1.0);
@@ -1230,8 +1347,17 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     EXPECT_EQ(SYNC_NONE, ControlObject::get(ConfigKey(m_sGroup1, "sync_mode")));
     EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "sync_enabled")));
     EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "sync_master")));
-    EXPECT_DOUBLE_EQ(getRateSliderValue(100.0 / 130.0),
+    EXPECT_DOUBLE_EQ(100.0 / 130.0,
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ratio")));
+    // rate_ultra mode disabled
+    //EXPECT_DOUBLE_(getRateSliderValue(100.0 / 130.0),
+    //                ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    //EXPECT_DOUBLE_EQ(getRateUltraValue(1),
+    //                ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1),
             ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    EXPECT_DOUBLE_EQ(getRateUltraValue(100.0 / 130.0),
+            ControlObject::get(ConfigKey(m_sGroup1, "rate_ultra")));
 
     // Reset again.
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
@@ -1324,7 +1450,7 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
 
     // But it doesn't work if deck 2 isn't playing and deck 1 is. (This would
     // cause deck1 to suddenly change bpm while playing back).
-    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_ratio"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 0.0);
     ProcessBuffer();

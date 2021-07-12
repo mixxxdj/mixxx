@@ -218,6 +218,10 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         return (rate - 1.0) / kRateRangeDivisor;
     }
 
+    double getRateUltraValue(double rate) const {
+        return (rate - 1.0) / kRateUltraRange;
+    }
+
     void ProcessBuffer() {
         qDebug() << "------- Process Buffer -------";
         m_pEngineMaster->process(kProcessBufferSize);
@@ -243,6 +247,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     static const double kDefaultRateRange;
     static const double kDefaultRateDir;
     static const double kRateRangeDivisor;
+    static const double kRateUltraRange;
     static const int kProcessBufferSize;
 };
 

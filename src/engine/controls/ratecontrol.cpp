@@ -30,6 +30,10 @@ RateControl::RampMode RateControl::m_eRateRampMode;
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
 
+namespace {
+const double kRateUltraRange = 0.5; // +-50 %
+} // anonymous namespace
+
 RateControl::RateControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
@@ -63,6 +67,17 @@ RateControl::RateControl(const QString& group,
             ConfigKey(group, "rate"), -1.0, 1.0, true);
     connect(m_pRateSlider, &ControlObject::valueChanged,
             this, &RateControl::slotRateSliderChanged,
+            Qt::DirectConnection);
+
+    // Allow rate utra slider to go out of bounds so that master sync rate
+    // adjustments are not capped.
+    m_pRateUltraSlider = new ControlPotmeter(
+            ConfigKey(group, "rate_ultra"), -1.0, 1.0, true);
+    connect(
+            m_pRateUltraSlider,
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotRateSliderChanged,
             Qt::DirectConnection);
 
     // Search rate. Rate used when searching in sound. This overrules the
@@ -177,6 +192,7 @@ RateControl::RateControl(const QString& group,
 RateControl::~RateControl() {
     delete m_pRateRatio;
     delete m_pRateSlider;
+    delete m_pRateUltraSlider;
     delete m_pRateRange;
     delete m_pRateDir;
     delete m_pSyncMode;
@@ -279,19 +295,33 @@ void RateControl::slotRateRangeChanged(double) {
     slotRateRatioChanged(m_pRateRatio->get());
 }
 
-void RateControl::slotRateSliderChanged(double v) {
-    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * v;
+void RateControl::slotRateSliderChanged() {
+    double rateRatio = 1.0 +
+            m_pRateDir->get() *
+                    (m_pRateSlider->get() * m_pRateRange->get() +
+                            m_pRateUltraSlider->get() * kRateUltraRange);
     m_pRateRatio->set(rateRatio);
 }
 
 void RateControl::slotRateRatioChanged(double v) {
+    /* Classic mode without rate_ultra
     double rateRange = m_pRateRange->get();
     if (rateRange > 0.0) {
         double newRate = m_pRateDir->get() * (v - 1) / rateRange;
         m_pRateSlider->set(newRate);
+        m_pRateUltraSlider->set(0.0);
     } else {
         m_pRateSlider->set(0);
+        m_pRateUltraSlider->set(0.0);
     }
+    */
+
+    // never change rate slider programatically
+    double newRateUltra =
+            (((v - 1) * m_pRateDir->get()) -
+                    (m_pRateRange->get() * m_pRateSlider->get())) /
+            kRateUltraRange;
+    m_pRateUltraSlider->set(newRateUltra);
 }
 
 void RateControl::slotReverseRollActivate(double v) {
@@ -327,7 +357,7 @@ void RateControl::slotControlRatePermDown(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
                 m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100 * m_pRateRange->get()));
-        slotRateSliderChanged(m_pRateSlider->get());
+        slotRateSliderChanged();
     }
 }
 
@@ -336,7 +366,7 @@ void RateControl::slotControlRatePermDownSmall(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
                 m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
-        slotRateSliderChanged(m_pRateSlider->get());
+        slotRateSliderChanged();
     }
 }
 
@@ -345,7 +375,7 @@ void RateControl::slotControlRatePermUp(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
                 m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100. * m_pRateRange->get()));
-        slotRateSliderChanged(m_pRateSlider->get());
+        slotRateSliderChanged();
     }
 }
 
@@ -353,8 +383,9 @@ void RateControl::slotControlRatePermUpSmall(double v) {
     // Adjusts temp rate up if button pressed
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
-                           m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
-        slotRateSliderChanged(m_pRateSlider->get());
+                m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() /
+                        (100. * m_pRateRange->get()));
+        slotRateSliderChanged();
     }
 }
 

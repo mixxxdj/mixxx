@@ -247,6 +247,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* speedMenu = addSubmenu(tr("Speed"));
     addDeckAndSamplerControl("rate", tr("Playback Speed"),
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
+    addDeckAndSamplerControl("rate_ultra",
+            tr("Wide Range Playback Speed"),
+            tr("Playback speed control with a wide range (Vinyl "
+               "\"Ultra-Pitch\" slider)"),
+            speedMenu,
+            true);
     speedMenu->addSeparator();
     addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
                              tr("Adjust speed faster (coarse)"), speedMenu);
@@ -1282,8 +1288,13 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
         if (resetControlMenu) {
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-            addSingleControl(group, resetControl, resetTitle, resetDescription,
-                    resetControlMenu, prefix, prefix);
+            addSingleControl(group,
+                    resetControl,
+                    resetTitle,
+                    resetDescription,
+                    resetControlMenu,
+                    prefix,
+                    prefix);
         }
     }
 
@@ -1302,8 +1313,13 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
         if (resetControlMenu) {
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-            addSingleControl(group, resetControl, resetTitle, resetDescription,
-                    resetControlMenu, prefix, prefix);
+            addSingleControl(group,
+                    resetControl,
+                    resetTitle,
+                    resetDescription,
+                    resetControlMenu,
+                    prefix,
+                    prefix);
         }
     }
 
@@ -1372,8 +1388,13 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
             if (resetControlMenu) {
                 QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-                addSingleControl(group, resetControl, resetTitle, resetDescription,
-                        resetControlMenu, prefix, prefix);
+                addSingleControl(group,
+                        resetControl,
+                        resetTitle,
+                        resetDescription,
+                        resetControlMenu,
+                        prefix,
+                        prefix);
             }
         }
     }
@@ -1390,8 +1411,13 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
             if (resetControlMenu) {
                 QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
-                addSingleControl(group, resetControl, resetTitle, resetDescription,
-                        resetControlMenu, prefix, prefix);
+                addSingleControl(group,
+                        resetControl,
+                        resetTitle,
+                        resetDescription,
+                        resetControlMenu,
+                        prefix,
+                        prefix);
             }
         }
     }
