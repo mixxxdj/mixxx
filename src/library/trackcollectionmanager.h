@@ -57,6 +57,15 @@ class TrackCollectionManager: public QObject,
     QList<TrackId> resolveTrackIdsFromLocations(
             const QList<QString>& locations) const;
 
+    bool updateTrackGenreText(
+            Track* pTrack,
+            const QString& genreText) const;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMoodText(
+            Track* pTrack,
+            const QString& moodText) const;
+#endif // __EXTRA_METADATA__
+
     bool hideTracks(const QList<TrackId>& trackIds) const;
     bool unhideTracks(const QList<TrackId>& trackIds) const;
     void hideAllTracks(const QDir& rootDir) const;

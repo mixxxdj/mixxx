@@ -203,6 +203,15 @@ class TrackModel {
     virtual void select() {
     }
 
+    virtual bool updateTrackGenreText(
+            Track* pTrack,
+            const QString& genreText) const = 0;
+#if defined(__EXTRA_METADATA__)
+    virtual bool updateTrackMoodText(
+            Track* pTrack,
+            const QString& moodText) const = 0;
+#endif // __EXTRA_METADATA__
+
   private:
     QSqlDatabase m_db;
     QString m_settingsNamespace;
