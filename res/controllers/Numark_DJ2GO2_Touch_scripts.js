@@ -15,6 +15,8 @@ DJ2GO2Touch.shutdown = function() {
     DJ2GO2Touch.rightDeck.shutdown();
 };
 
+DJ2GO2Touch.PAD_SIZE = 4;
+
 DJ2GO2Touch.browseEncoder = new components.Encoder({
     longPressTimer: 0,
     longPressTimeout: 250,
@@ -143,12 +145,13 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
         this.hotcueButtons[i] = new components.HotcueButton({
             group: "[Channel" + deckNumbers + "]",
             midi: [0x94 + midiChannel, 0x01 + i],
-            number: i,
+            number: i
         });
+        this.sampler = i + (midiChannel * DJ2GO2Touch.PAD_SIZE);
         this.samplerButtons[i] = new components.SamplerButton({
-            group: "[Sampler" + (i + (midiChannel * 4)) + "]",
+            group: "[Sampler" + this.sampler + "]",
             midi: [0x94 + midiChannel, 0x31 + i],
-            number: i + (midiChannel * 4),
+            number: this.sampler
         });
         this.beatloopButtons[i] = new components.Button({
             group: "[Channel" + deckNumbers + "]",
