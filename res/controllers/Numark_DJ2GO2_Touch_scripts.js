@@ -147,7 +147,7 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
             midi: [0x94 + midiChannel, 0x01 + i],
             number: i
         });
-        var sampler = i + (midiChannel * DJ2GO2Touch.PAD_SIZE);
+        var sampler = i + (midiChannel * DJ2GO2Touch.padsPerDeck);
         this.samplerButtons[i] = new components.SamplerButton({
             group: "[Sampler" + sampler + "]",
             midi: [0x94 + midiChannel, 0x31 + i],
