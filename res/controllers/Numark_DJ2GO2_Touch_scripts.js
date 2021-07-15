@@ -18,13 +18,11 @@ DJ2GO2Touch.shutdown = function() {
 DJ2GO2Touch.padsPerDeck = 4;
 
 DJ2GO2Touch.browseEncoder = new components.Encoder({
-    longPressTimer: 0,
-    longPressTimeout: 250,
     previewSeekEnabled: false,
     previewSeekHappened: false,
     onKnobEvent: function(rotateValue) {
         if (rotateValue !== 0) {
-            if (this.previewSeekEnabled) {
+            if (this.previewSeekEnabled  && engine.getValue("[PreviewDeck1]", "play")) {
                 var oldPos = engine.getValue("[PreviewDeck1]", "playposition");
                 var newPos = Math.max(0, oldPos + (0.05 * rotateValue));
                 engine.setValue("[PreviewDeck1]", "playposition", newPos);
@@ -35,13 +33,6 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
     },
     onButtonEvent: function(value) {
         if (value) {
-            this.isLongPressed = false;
-            this.longPressTimer = engine.beginTimer(
-                this.longPressTimeout,
-                function() { this.isLongPressed = true; },
-                true
-            );
-
             this.previewStarted = false;
             if (!engine.getValue("[PreviewDeck1]", "play")) {
                 engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
@@ -52,12 +43,7 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
             this.previewSeekEnabled = true;
             print(engine.getValue("[PreviewDeck1]", "play"));
         } else {
-            if (this.longPressTimer !== 0) {
-                engine.stopTimer(this.longPressTimer);
-                this.longPressTimer = 0;
-            }
-
-            if (!this.isLongPressed && !this.previewStarted && engine.getValue("[PreviewDeck1]", "play")) {
+            if (!this.previewStarted && engine.getValue("[PreviewDeck1]", "play")) {
                 script.triggerControl("[PreviewDeck1]", "stop");
             }
             this.previewSeekEnabled = false;
