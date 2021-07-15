@@ -16,9 +16,10 @@ class QuantizeControl : public EngineControl {
     QuantizeControl(const QString& group, UserSettingsPointer pConfig);
     ~QuantizeControl() override;
 
-    void setCurrentSample(const double dCurrentSample,
-            const double dTotalSamples, const double dTrackSampleRate) override;
-    void notifySeek(double dNewPlaypos) override;
+    void setCurrentSample(
+            const double dCurrentSample,
+            const double dTotalSamples,
+            const double dTrackSampleRate) override;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
