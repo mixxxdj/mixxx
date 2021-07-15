@@ -14,8 +14,6 @@
       <file functionprefix="DJ2GO2Touch" filename="Numark_DJ2GO2_Touch_scripts.js"/>
     </scriptfiles>
     <controls>
-    <!-- Deck 1 -->
-      <!-- Load selected track-->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.loadButton.input</key>
@@ -34,7 +32,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Wheel touch -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.wheelTouch</key>
@@ -53,10 +50,8 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Wheel turn -->
       <control>
         <group>[Channel1]</group>
-        <!-- <key>counterHandler</key> -->
         <key>DJ2GO2Touch.leftDeck.wheelTurn</key>
         <status>0xB0</status>
         <midino>0x06</midino>
@@ -64,7 +59,6 @@
           <script-binding/>
         </options>
       </control> -->
-      <!-- Create beat loop -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.beatloopButtons[0].input</key>
@@ -137,7 +131,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Cue button -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.cueButton.input</key>
@@ -156,7 +149,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Set hotcue 1 -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.hotcueButtons[1].input</key>
@@ -175,7 +167,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Set hotcue 2 -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.hotcueButtons[2].input</key>
@@ -194,7 +185,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Set hotcue 3 -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.hotcueButtons[3].input</key>
@@ -213,7 +203,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Set hotcue 4 -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.hotcueButtons[4].input</key>
@@ -232,7 +221,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Loop in -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.loopIn.input</key>
@@ -251,7 +239,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Loop out -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.loopOut.input</key>
@@ -270,7 +257,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Headphone listen -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.pflButton.input</key>
@@ -289,7 +275,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Play button -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.playButton.input</key>
@@ -308,7 +293,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Playback speed control -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.tempoFader.inputMSB</key>
@@ -327,7 +311,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Loop -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.LoopToggleButton.input</key>
@@ -346,7 +329,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Pregain -> Effect -->
       <control>
         <group>[QuickEffectRack1_[Channel1]]</group>
         <key>DJ2GO2Touch.leftDeck.preGain.input</key>
@@ -356,7 +338,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Sync -->
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.syncButton.input</key>
@@ -375,8 +356,6 @@
           <script-binding/>
         </options>
       </control>
-    <!-- Deck 2 -->
-      <!-- Load selected track-->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.loadButton.input</key>
@@ -395,7 +374,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Wheel touch -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.wheelTouch</key>
@@ -414,7 +392,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Wheel turn -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.wheelTurn</key>
@@ -424,7 +401,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Create beat loop -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.beatloopButtons[0].input</key>
@@ -497,7 +473,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Cue button -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.cueButton.input</key>
@@ -516,7 +491,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Set hotcue 1 -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.hotcueButtons[1].input</key>
@@ -535,7 +509,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Set hotcue 2 -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.hotcueButtons[2].input</key>
@@ -554,7 +527,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Set hotcue 3 -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.hotcueButtons[3].input</key>
@@ -573,7 +545,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Set hotcue 4 -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.hotcueButtons[4].input</key>
@@ -592,7 +563,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Loop in -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.loopIn.input</key>
@@ -602,7 +572,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Loop out -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.loopOut.input</key>
@@ -612,7 +581,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Headphone listen -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.pflButton.input</key>
@@ -631,7 +599,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Play button -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.playButton.input</key>
@@ -650,7 +617,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Playback speed control -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.tempoFader.inputMSB</key>
@@ -669,7 +635,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Loop -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.LoopToggleButton.input</key>
@@ -688,7 +653,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Pregain -> Effect -->
       <control>
         <group>[QuickEffectRack1_[Channel2]]</group>
         <key>DJ2GO2Touch.rightDeck.preGain.input</key>
@@ -698,7 +662,6 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Sync -->
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.syncButton.input</key>
