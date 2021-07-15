@@ -174,8 +174,8 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
 
     this.LoopToggleButton = new components.LoopToggleButton([0x94 + midiChannel, 0x23]);
 
-    this.wheelTouch = function(channel, control, value, _status, _group) {
-        if ((_status & 0xF0) === 0x90) {
+    this.wheelTouch = function(channel, control, value, status, _group) {
+        if ((status & 0xF0) === 0x90) {
             var alpha = 1.0/8;
             var beta = alpha/32;
             engine.scratchEnable(script.deckFromGroup(this.currentDeck), 236, 33+1/3, alpha, beta);
