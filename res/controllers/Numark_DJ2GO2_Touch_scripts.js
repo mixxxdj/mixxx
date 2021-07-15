@@ -161,7 +161,6 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
         });
     }
 
-
     this.loopIn = new components.Button({
         midi: [0x94 + midiChannel, 0x21],
         key: "loop_in",
