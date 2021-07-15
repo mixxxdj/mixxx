@@ -31,23 +31,15 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
             }
         }
     },
-    onButtonEvent: function(value) {
-        if (value) {
+    onButtonEvent: function() {
+        if (this.previewStarted && engine.getValue("[PreviewDeck1]", "play")) {
+            script.triggerControl("[PreviewDeck1]", "stop");
             this.previewStarted = false;
-            if (!engine.getValue("[PreviewDeck1]", "play")) {
-                engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
-                this.previewStarted = true;
-            }
-            // Track in PreviewDeck1 is playing, either the user
-            // wants to stop the track or seek in it
-            this.previewSeekEnabled = true;
-            print(engine.getValue("[PreviewDeck1]", "play"));
-        } else {
-            if (!this.previewStarted && engine.getValue("[PreviewDeck1]", "play")) {
-                script.triggerControl("[PreviewDeck1]", "stop");
-            }
             this.previewSeekEnabled = false;
-            this.previewStarted = false;
+        } else if (!this.previewStarted && !engine.getValue("[PreviewDeck1]", "play")) {
+            engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
+            this.previewStarted = true;
+            this.previewSeekEnabled = true;
         }
     },
     input: function(channel, control, value, status, _group) {
@@ -57,7 +49,7 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
             this.onKnobEvent(rotateValue);
             break;
         case 0x9F: // Push.
-            this.onButtonEvent(value);
+            this.onButtonEvent();
         }
     }
 });
