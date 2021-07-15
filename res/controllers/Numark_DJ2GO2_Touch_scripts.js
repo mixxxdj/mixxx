@@ -11,6 +11,8 @@ DJ2GO2Touch.init = function() {
 
 DJ2GO2Touch.shutdown = function() {
     // send whatever MIDI messages you need to turn off the lights of your controller
+    DJ2GO2Touch.leftDeck.shutdown();
+    DJ2GO2Touch.rightDeck.shutdown();
 };
 
 DJ2GO2Touch.browseEncoder = new components.Encoder({
