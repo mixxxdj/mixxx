@@ -143,10 +143,6 @@ class ControlProxy : public QObject {
     }
 
   public slots:
-    /// Set the control to a new value. Non-blocking.
-    inline void slotSet(double v) {
-        set(v);
-    }
     /// Sets the control value to v. Thread safe, non-blocking.
     void set(double v) {
         if (m_pControl) {
