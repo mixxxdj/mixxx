@@ -31,13 +31,11 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
         }
     },
     onButtonEvent: function() {
-        if (this.previewStarted && engine.getValue("[PreviewDeck1]", "play")) {
+        if (engine.getValue("[PreviewDeck1]", "play")) {
             script.triggerControl("[PreviewDeck1]", "stop");
-            this.previewStarted = false;
             this.previewSeekEnabled = false;
-        } else if (!this.previewStarted && !engine.getValue("[PreviewDeck1]", "play")) {
+        } else if (!engine.getValue("[PreviewDeck1]", "play")) {
             engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
-            this.previewStarted = true;
             this.previewSeekEnabled = true;
         }
     },
@@ -105,13 +103,9 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
 
     engine.setValue(this.currentDeck, "rate_dir", -1);
     this.tempoFader = new components.Pot({
-        group: "[Channel" + deckNumbers + "]",
+        group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
         midi: [0xB0 + midiChannel, 0x09],
-        key: "rate",
-        connect: function() {
-            engine.softTakeover(this.group, "rate", true);
-            components.Pot.prototype.connect.apply(this, arguments);
-        }
+        key: "rate"
     });
 
     this.hotcueButtons = [];
@@ -119,7 +113,7 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
     this.beatloopButtons = [];
     for (var i = 1; i <= 4; i++) {
         this.hotcueButtons[i] = new components.HotcueButton({
-            group: "[Channel" + deckNumbers + "]",
+            group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
             midi: [0x94 + midiChannel, 0x01 + i],
             number: i
         });
@@ -130,7 +124,7 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
             number: sampler
         });
         this.beatloopButtons[i] = new components.Button({
-            group: "[Channel" + deckNumbers + "]",
+            group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
             midi: [0x94 + midiChannel, 0x11 + i],
             number: i,
             key: "beatloop_" + Math.pow(2, i-1) + "_toggle"
