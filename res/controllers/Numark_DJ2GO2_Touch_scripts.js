@@ -30,7 +30,7 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
         if (engine.getValue("[PreviewDeck1]", "play")) {
             script.triggerControl("[PreviewDeck1]", "stop");
             this.previewSeekEnabled = false;
-        } else if (!engine.getValue("[PreviewDeck1]", "play")) {
+        } else {
             engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
             this.previewSeekEnabled = true;
         }
