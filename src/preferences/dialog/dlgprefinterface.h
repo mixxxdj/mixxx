@@ -18,6 +18,7 @@ class MixxxMainWindow;
 class ControlObject;
 
 namespace mixxx {
+class ScreensaverManager;
 namespace skin {
 class SkinLoader;
 }
@@ -29,6 +30,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     DlgPrefInterface(
             QWidget* parent,
             MixxxMainWindow* mixxx,
+            std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
             std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
             UserSettingsPointer pConfig);
     ~DlgPrefInterface() override = default;
@@ -62,6 +64,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     UserSettingsPointer m_pConfig;
     ControlObject* m_pControlTrackTimeDisplay;
     MixxxMainWindow *m_mixxx;
+    std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
 
     QMap<QString, mixxx::skin::SkinPointer> m_skins;

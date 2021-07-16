@@ -51,6 +51,7 @@ class DlgPrefModplug;
 #endif // __MODPLUG__
 
 namespace mixxx {
+class ScreensaverManager;
 namespace skin {
 class SkinLoader;
 }
@@ -71,6 +72,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     };
 
     DlgPreferences(MixxxMainWindow* mixxx,
+            std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
             std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
             std::shared_ptr<SoundManager> pSoundManager,
             std::shared_ptr<PlayerManager> pPlayerManager,

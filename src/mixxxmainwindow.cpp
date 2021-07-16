@@ -130,19 +130,9 @@ MixxxMainWindow::MixxxMainWindow(
             this,
             &MixxxMainWindow::initializationProgressUpdate);
 
-    // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
-    UserSettingsPointer pConfig = m_pCoreServices->getSettings();
-    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), -1);
-    if (inhibit == -1) {
-        inhibit = static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON);
-        pConfig->setValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), inhibit);
-    }
-    m_inhibitScreensaver = static_cast<mixxx::ScreenSaverPreference>(inhibit);
-    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON) {
-        mixxx::ScreenSaverHelper::inhibit();
-    }
-
     m_pCoreServices->initialize(pApp);
+
+    UserSettingsPointer pConfig = m_pCoreServices->getSettings();
 
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
@@ -230,6 +220,7 @@ MixxxMainWindow::MixxxMainWindow(
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(
             this,
+            m_pCoreServices->getScreensaverManager(),
             m_pSkinLoader,
             m_pCoreServices->getSoundManager(),
             m_pCoreServices->getPlayerManager(),
@@ -346,19 +337,11 @@ MixxxMainWindow::MixxxMainWindow(
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &MixxxMainWindow::slotUpdateWindowTitle);
-    connect(&PlayerInfo::instance(),
-            &PlayerInfo::currentPlayingDeckChanged,
-            this,
-            &MixxxMainWindow::slotChangedPlayingDeck);
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
     Timer t("~MixxxMainWindow");
     t.start();
-
-    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
-        mixxx::ScreenSaverHelper::uninhibit();
-    }
 
     // Save the current window state (position, maximized, etc)
     // Note(ronso0): Unfortunately saveGeometry() also stores the fullscreen state.
@@ -439,10 +422,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pGuiTick;
     delete m_pVisualsManager;
-
-    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
-        mixxx::ScreenSaverHelper::uninhibit();
-    }
 
     m_pCoreServices->shutdown();
 }
@@ -985,17 +964,6 @@ void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
     }
 }
 
-void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
-    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
-        if (deck==-1) {
-            // If no deck is playing, allow the screensaver to run.
-            mixxx::ScreenSaverHelper::uninhibit();
-        } else {
-            mixxx::ScreenSaverHelper::inhibit();
-        }
-    }
-}
-
 void MixxxMainWindow::slotHelpAbout() {
     DlgAbout* about = new DlgAbout(this);
     about->show();
@@ -1217,30 +1185,6 @@ bool MixxxMainWindow::confirmExit() {
     }
 
     return true;
-}
-
-void MixxxMainWindow::setInhibitScreensaver(mixxx::ScreenSaverPreference newInhibit)
-{
-    UserSettingsPointer pConfig = m_pCoreServices->getSettings();
-
-    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
-        mixxx::ScreenSaverHelper::uninhibit();
-    }
-
-    if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON) {
-        mixxx::ScreenSaverHelper::inhibit();
-    } else if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY
-            && PlayerInfo::instance().getCurrentPlayingDeck()!=-1) {
-        mixxx::ScreenSaverHelper::inhibit();
-    }
-    int inhibit_int = static_cast<int>(newInhibit);
-    pConfig->setValue<int>(ConfigKey("[Config]","InhibitScreensaver"), inhibit_int);
-    m_inhibitScreensaver = newInhibit;
-}
-
-mixxx::ScreenSaverPreference MixxxMainWindow::getInhibitScreensaver()
-{
-    return m_inhibitScreensaver;
 }
 
 void MixxxMainWindow::initializationProgressUpdate(int progress, const QString& serviceName) {

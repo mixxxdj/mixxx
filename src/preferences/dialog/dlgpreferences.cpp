@@ -53,6 +53,7 @@
 
 DlgPreferences::DlgPreferences(
         MixxxMainWindow* mixxx,
+        std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
         std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
         std::shared_ptr<SoundManager> pSoundManager,
         std::shared_ptr<PlayerManager> pPlayerManager,
@@ -133,9 +134,13 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
-    addPageWidget(PreferencesPage(
-                          new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+    addPageWidget(PreferencesPage(new DlgPrefInterface(this,
+                                          mixxx,
+                                          pScreensaverManager,
+                                          pSkinLoader,
+                                          m_pConfig),
+                          new QTreeWidgetItem(
+                                  contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Interface"),
             "ic_preferences_interface.svg");
 
