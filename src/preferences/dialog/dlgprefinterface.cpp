@@ -26,13 +26,11 @@ using mixxx::skin::SkinPointer;
 
 DlgPrefInterface::DlgPrefInterface(
         QWidget* parent,
-        MixxxMainWindow* mixxx,
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
         std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
-          m_mixxx(mixxx),
           m_pScreensaverManager(pScreensaverManager),
           m_pSkinLoader(pSkinLoader),
           m_pSkin(pSkinLoader->getConfiguredSkin()),

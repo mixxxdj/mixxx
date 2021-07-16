@@ -52,7 +52,6 @@
 #include "util/widgethelper.h"
 
 DlgPreferences::DlgPreferences(
-        MixxxMainWindow* mixxx,
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
         std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
         std::shared_ptr<SoundManager> pSoundManager,
@@ -135,7 +134,6 @@ DlgPreferences::DlgPreferences(
 #endif // __VINYLCONTROL__
 
     DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
-            mixxx,
             pScreensaverManager,
             pSkinLoader,
             m_pConfig);
@@ -154,7 +152,7 @@ DlgPreferences::DlgPreferences(
             tr("Interface"),
             "ic_preferences_interface.svg");
 
-    DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
+    DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, m_pConfig, pLibrary);
     addPageWidget(PreferencesPage(
                           pWaveformPage,
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),

@@ -219,7 +219,6 @@ MixxxMainWindow::MixxxMainWindow(
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(
-            this,
             m_pCoreServices->getScreensaverManager(),
             m_pSkinLoader,
             m_pCoreServices->getSoundManager(),

@@ -14,7 +14,6 @@
 #include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
 
-class MixxxMainWindow;
 class SoundManager;
 class DlgPrefSound;
 class DlgPrefLibrary;
@@ -72,7 +71,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
         QTreeWidgetItem* pTreeItem;
     };
 
-    DlgPreferences(MixxxMainWindow* mixxx,
+    DlgPreferences(
             std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
             std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
             std::shared_ptr<SoundManager> pSoundManager,

@@ -11,13 +11,11 @@
 
 DlgPrefWaveform::DlgPrefWaveform(
         QWidget* pParent,
-        MixxxMainWindow* pMixxx,
         UserSettingsPointer pConfig,
         std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
-          m_pMixxx(pMixxx) {
+          m_pLibrary(pLibrary) {
     setupUi(this);
 
     // Waveform overview init
