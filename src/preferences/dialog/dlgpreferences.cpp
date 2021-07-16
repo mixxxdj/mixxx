@@ -154,11 +154,17 @@ DlgPreferences::DlgPreferences(
             tr("Interface"),
             "ic_preferences_interface.svg");
 
+    DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
     addPageWidget(PreferencesPage(
-                          new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary),
+                          pWaveformPage,
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Waveforms"),
             "ic_preferences_waveforms.svg");
+    connect(pWaveformPage,
+            &DlgPrefWaveform::reloadUserInterface,
+            this,
+            &DlgPreferences::reloadUserInterface,
+            Qt::DirectConnection);
 
     addPageWidget(PreferencesPage(
                           new DlgPrefColors(this, m_pConfig, pLibrary),

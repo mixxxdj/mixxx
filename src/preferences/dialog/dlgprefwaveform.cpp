@@ -257,7 +257,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
 
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
     m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
-    m_pMixxx->rebootMixxxView();
+    emit reloadUserInterface();
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {

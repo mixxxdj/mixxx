@@ -42,6 +42,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetBeatGridAlpha(int alpha);
     void slotSetPlayMarkerPosition(int position);
 
+  signals:
+    void reloadUserInterface();
+
   private:
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
