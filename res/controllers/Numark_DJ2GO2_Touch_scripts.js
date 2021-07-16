@@ -108,7 +108,6 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
         group: "[Channel" + deckNumbers + "]",
         midi: [0xB0 + midiChannel, 0x09],
         key: "rate",
-        inSetParameter: components.Pot.prototype.inSetParameter,
         connect: function() {
             engine.softTakeover(this.group, "rate", true);
             components.Pot.prototype.connect.apply(this, arguments);
