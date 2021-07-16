@@ -190,10 +190,9 @@ QScreen* DlgPrefInterface::getScreen() const {
     auto* pScreen =
             mixxx::widgethelper::getScreen(*this);
     if (!pScreen) {
-        // Obtain the screen from the main widget as a fallback. This
-        // is necessary if no window is available before the widget
-        // is displayed.
-        pScreen = mixxx::widgethelper::getScreen(*m_mixxx);
+        // Obtain the primary screen. This is necessary if no window is
+        // available before the widget is displayed.
+        pScreen = qGuiApp->primaryScreen();
     }
     DEBUG_ASSERT(pScreen);
     return pScreen;
