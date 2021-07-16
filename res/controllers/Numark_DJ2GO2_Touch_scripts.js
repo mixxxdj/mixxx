@@ -1,21 +1,17 @@
-// Declare the variable for your controller and assign it to an empty object
 var DJ2GO2Touch = {};
+DJ2GO2Touch.ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
+DJ2GO2Touch.padsPerDeck = 4;
 
-// Mixxx calls this function on startup or when the controller
-// is enabled in the Mixxx Preferences
 DJ2GO2Touch.init = function() {
-    // create an instance of your custom Deck object for each side of your controller
     DJ2GO2Touch.leftDeck = new DJ2GO2Touch.Deck([1], 0);
     DJ2GO2Touch.rightDeck = new DJ2GO2Touch.Deck([2], 1);
+    midi.sendSysexMsg(DJ2GO2Touch.ControllerStatusSysex, DJ2GO2Touch.ControllerStatusSysex.length);
 };
 
 DJ2GO2Touch.shutdown = function() {
-    // send whatever MIDI messages you need to turn off the lights of your controller
     DJ2GO2Touch.leftDeck.shutdown();
     DJ2GO2Touch.rightDeck.shutdown();
 };
-
-DJ2GO2Touch.padsPerDeck = 4;
 
 DJ2GO2Touch.browseEncoder = new components.Encoder({
     previewSeekEnabled: false,
@@ -25,7 +21,7 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
                 var oldPos = engine.getValue("[PreviewDeck1]", "playposition");
                 var newPos = Math.max(0, oldPos + (0.05 * rotateValue));
                 engine.setValue("[PreviewDeck1]", "playposition", newPos);
-            } else {
+            } else if (!this.previewSeekEnabled) {
                 engine.setValue("[Playlist]", "SelectTrackKnob", rotateValue);
             }
         }
@@ -41,11 +37,11 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
     },
     input: function(channel, control, value, status, _group) {
         switch (status) {
-        case 0xBF: // Rotate.
+        case 0xBF:
             var rotateValue = (value === 127) ? -1 : ((value === 1) ? 1 : 0);
             this.onKnobEvent(rotateValue);
             break;
-        case 0x9F: // Push.
+        case 0x9F:
             this.onButtonEvent();
         }
     }
@@ -69,14 +65,8 @@ DJ2GO2Touch.crossfader = new components.Pot({
     key: "crossfader"
 });
 
-// implement a constructor for a custom Deck object specific to your controller
 DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
-    // Call the generic Deck constructor to setup the currentDeck and deckNumbers properties,
-    // using Function.prototype.call to assign the custom Deck being constructed
-    // to 'this' in the context of the generic components.Deck constructor
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call
     components.Deck.call(this, deckNumbers);
-
     this.playButton = new components.PlayButton([0x90 + midiChannel, 0x00]);
     this.cueButton = new components.CueButton([0x90 + midiChannel, 0x01]);
     this.syncButton = new components.SyncButton([0x90 + midiChannel, 0x02]);
@@ -148,7 +138,7 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
             var alpha = 1.0/8;
             var beta = alpha/32;
             engine.scratchEnable(script.deckFromGroup(this.currentDeck), 236, 33+1/3, alpha, beta);
-        } else {    // If button up
+        } else {
             engine.scratchDisable(script.deckFromGroup(this.currentDeck));
         }
     };
@@ -166,19 +156,11 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
         }
     };
 
-    // Set the group properties of the above Components and connect their output callback functions
-    // Without this, the group property for each Component would have to be specified to its
-    // constructor.
     this.reconnectComponents(function(c) {
         if (c.group === undefined) {
-            // 'this' inside a function passed to reconnectComponents refers to the ComponentContainer
-            // so 'this' refers to the custom Deck object being constructed
             c.group = this.currentDeck;
         }
     });
-    // when called with JavaScript's 'new' keyword, a constructor function
-    // implicitly returns 'this'
 };
 
-// give your custom Deck all the methods of the generic Deck in the Components library
 DJ2GO2Touch.Deck.prototype = new components.Deck();
