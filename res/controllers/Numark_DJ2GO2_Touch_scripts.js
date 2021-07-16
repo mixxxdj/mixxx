@@ -19,7 +19,6 @@ DJ2GO2Touch.padsPerDeck = 4;
 
 DJ2GO2Touch.browseEncoder = new components.Encoder({
     previewSeekEnabled: false,
-    previewSeekHappened: false,
     onKnobEvent: function(rotateValue) {
         if (rotateValue !== 0) {
             if (this.previewSeekEnabled  && engine.getValue("[PreviewDeck1]", "play")) {
