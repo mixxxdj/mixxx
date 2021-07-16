@@ -236,6 +236,11 @@ MixxxMainWindow::MixxxMainWindow(
             &DlgPreferences::tooltipModeChanged,
             this,
             &MixxxMainWindow::slotTooltipModeChanged);
+    connect(m_pPrefDlg,
+            &DlgPreferences::reloadUserInterface,
+            this,
+            &MixxxMainWindow::rebootMixxxView,
+            Qt::DirectConnection);
 
     // Connect signals to the menubar. Should be done before emit newSkinLoaded.
     connectMenuBar();

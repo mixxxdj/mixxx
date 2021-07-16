@@ -430,7 +430,7 @@ void DlgPrefInterface::slotApply() {
     }
 
     if (m_bRebootMixxxView) {
-        m_mixxx->rebootMixxxView();
+        emit reloadUserInterface();
         // Allow switching skins multiple times without closing the dialog
         m_skinNameOnUpdate = m_pSkin->name();
     }

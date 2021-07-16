@@ -51,6 +51,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotSetScaleFactorAuto(bool checked);
 
   signals:
+    void reloadUserInterface();
     void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
 
   private:

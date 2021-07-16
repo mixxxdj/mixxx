@@ -108,6 +108,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void resetToDefaults();
 
   signals:
+    void reloadUserInterface();
     void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
 
   protected:

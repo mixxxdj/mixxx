@@ -143,6 +143,11 @@ DlgPreferences::DlgPreferences(
             &DlgPrefInterface::tooltipModeChanged,
             this,
             &DlgPreferences::tooltipModeChanged);
+    connect(pInterfacePage,
+            &DlgPrefInterface::reloadUserInterface,
+            this,
+            &DlgPreferences::reloadUserInterface,
+            Qt::DirectConnection);
     addPageWidget(PreferencesPage(pInterfacePage,
                           new QTreeWidgetItem(
                                   contentsTreeWidget, QTreeWidgetItem::Type)),
