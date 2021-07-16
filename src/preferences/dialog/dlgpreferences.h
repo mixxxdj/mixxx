@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "control/controlpushbutton.h"
+#include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/settingsmanager.h"
@@ -105,6 +106,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void cancelPreferences();
     // Emitted if the user clicks Reset to Defaults.
     void resetToDefaults();
+
+  signals:
+    void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
 
   protected:
     bool eventFilter(QObject*, QEvent*);

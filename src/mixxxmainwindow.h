@@ -56,9 +56,6 @@ class MixxxMainWindow : public QMainWindow {
     void setInhibitScreensaver(mixxx::ScreenSaverPreference inhibit);
     mixxx::ScreenSaverPreference getInhibitScreensaver();
 
-    void setToolTipsCfg(mixxx::TooltipsPreference tt);
-    inline mixxx::TooltipsPreference getToolTipsCfg() { return m_toolTipsCfg; }
-
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
   public slots:
@@ -84,6 +81,9 @@ class MixxxMainWindow : public QMainWindow {
     void slotNoAuxiliaryInputConfigured();
     void slotNoDeckPassthroughInputConfigured();
     void slotNoVinylControlInputConfigured();
+
+  private slots:
+    void slotTooltipModeChanged(mixxx::TooltipsPreference tt);
 
   signals:
     void skinLoaded();

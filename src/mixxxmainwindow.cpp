@@ -232,6 +232,10 @@ MixxxMainWindow::MixxxMainWindow(
             m_pCoreServices->getLibrary());
     m_pPrefDlg->setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
     m_pPrefDlg->setHidden(true);
+    connect(m_pPrefDlg,
+            &DlgPreferences::tooltipModeChanged,
+            this,
+            &MixxxMainWindow::slotTooltipModeChanged);
 
     // Connect signals to the menubar. Should be done before emit newSkinLoaded.
     connectMenuBar();
@@ -986,10 +990,7 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
     }
 }
 
-void MixxxMainWindow::setToolTipsCfg(mixxx::TooltipsPreference tt) {
-    UserSettingsPointer pConfig = m_pCoreServices->getSettings();
-    pConfig->set(ConfigKey("[Controls]","Tooltips"),
-                 ConfigValue(static_cast<int>(tt)));
+void MixxxMainWindow::slotTooltipModeChanged(mixxx::TooltipsPreference tt) {
     m_toolTipsCfg = tt;
 }
 

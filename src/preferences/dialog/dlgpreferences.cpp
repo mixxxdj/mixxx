@@ -134,11 +134,16 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
-    addPageWidget(PreferencesPage(new DlgPrefInterface(this,
-                                          mixxx,
-                                          pScreensaverManager,
-                                          pSkinLoader,
-                                          m_pConfig),
+    DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
+            mixxx,
+            pScreensaverManager,
+            pSkinLoader,
+            m_pConfig);
+    connect(pInterfacePage,
+            &DlgPrefInterface::tooltipModeChanged,
+            this,
+            &DlgPreferences::tooltipModeChanged);
+    addPageWidget(PreferencesPage(pInterfacePage,
                           new QTreeWidgetItem(
                                   contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Interface"),

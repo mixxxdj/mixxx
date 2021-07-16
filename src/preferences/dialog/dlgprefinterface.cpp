@@ -410,7 +410,9 @@ void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
 
-    m_mixxx->setToolTipsCfg(m_tooltipMode);
+    m_pConfig->set(ConfigKey("[Controls]", "Tooltips"),
+            ConfigValue(static_cast<int>(m_tooltipMode)));
+    emit tooltipModeChanged(m_tooltipMode);
 
     // screensaver mode update
     int screensaverComboBoxState = comboBoxScreensaver->itemData(
@@ -436,17 +438,20 @@ void DlgPrefInterface::slotApply() {
 }
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
-    mixxx::TooltipsPreference configTooltips = m_mixxx->getToolTipsCfg();
-    switch (configTooltips) {
-        case mixxx::TooltipsPreference::TOOLTIPS_OFF:
-            radioButtonTooltipsOff->setChecked(true);
-            break;
-        case mixxx::TooltipsPreference::TOOLTIPS_ON:
-            radioButtonTooltipsLibraryAndSkin->setChecked(true);
-            break;
-        case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
-            radioButtonTooltipsLibrary->setChecked(true);
-            break;
+    const auto tooltipMode = static_cast<mixxx::TooltipsPreference>(
+            m_pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
+                    static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+    switch (tooltipMode) {
+    case mixxx::TooltipsPreference::TOOLTIPS_OFF:
+        radioButtonTooltipsOff->setChecked(true);
+        break;
+    case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
+        radioButtonTooltipsLibrary->setChecked(true);
+        break;
+    case mixxx::TooltipsPreference::TOOLTIPS_ON:
+    default:
+        radioButtonTooltipsLibraryAndSkin->setChecked(true);
+        break;
     }
-    m_tooltipMode = configTooltips;
+    m_tooltipMode = tooltipMode;
 }

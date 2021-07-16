@@ -50,6 +50,9 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotSetScaleFactor(double newValue);
     void slotSetScaleFactorAuto(bool checked);
 
+  signals:
+    void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
+
   private:
     void notifyRebootNecessary();
     void loadTooltipPreferenceFromConfig();
