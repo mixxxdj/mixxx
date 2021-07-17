@@ -1186,9 +1186,6 @@ if(WIN32)
   target_link_libraries(mixxx-lib PRIVATE shell32)
 
   if(MSVC)
-    if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
-      target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
-    endif()
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
     # Force MSVS to generate a manifest (MSVC2010)
     target_link_options(mixxx-lib PUBLIC /manifest)
@@ -1792,14 +1789,6 @@ option(STATIC_DEPS "Link dependencies statically" OFF)
 # Chromaprint
 find_package(Chromaprint REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
-if(WIN32)
-  if(STATIC_DEPS)
-    target_compile_definitions(mixxx-lib PUBLIC CHROMAPRINT_NODLL)
-  endif()
-   # Chromaprint is always built statically and needs fftw.
-  find_package(FFTW REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE FFTW::FFTW)
-endif()
 
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
@@ -1988,9 +1977,6 @@ endif()
 # FLAC
 find_package(FLAC REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
-if(WIN32 AND STATIC_DEPS)
-  target_compile_definitions(mixxx-lib PUBLIC FLAC__NO_DLL)
-endif()
 
 # FpClassify This is a wrapper around the fpclassify function that prevents
 # inlining It is compiled without optimization and allows to use these function
@@ -2340,10 +2326,6 @@ target_compile_definitions(mixxx-lib PUBLIC __SNDFILE__)
 if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
   target_compile_definitions(mixxx-lib PUBLIC SFC_SUPPORTS_SET_COMPRESSION_LEVEL)
 endif()
-if(WIN32 AND STATIC_DEPS)
-  find_package(G72X REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE G72X::G72X)
-endif()
 
 # SoundTouch
 find_package(SoundTouch)
@@ -2376,9 +2358,6 @@ endif()
 # TagLib
 find_package(TagLib REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE TagLib::TagLib)
-if(WIN32 AND STATIC_DEPS)
-  target_compile_definitions(mixxx-lib PUBLIC TAGLIB_STATIC)
-endif()
 
 # Threads
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -2660,10 +2639,11 @@ if(LOCALECOMPARE)
 endif()
 
 # Opus (RFC 6716)
+find_package(OpusFile)
 find_package(Opus)
-default_option(OPUS "Opus (RFC 6716) support" "Opus_FOUND")
+default_option(OPUS "Opus (RFC 6716) support" "OpusFile_FOUND")
 if(OPUS)
-  if(NOT Opus_FOUND)
+  if(NOT OpusFile_FOUND OR NOT Opus_FOUND)
     message(FATAL_ERROR "Opus support requires libopus and libopusfile with development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE
@@ -2672,21 +2652,8 @@ if(OPUS)
     src/encoder/encoderopussettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
-  target_include_directories(mixxx-lib SYSTEM PUBLIC ${Opus_INCLUDE_DIRS})
-  target_link_libraries(mixxx-lib PRIVATE ${Opus_LIBRARIES})
-  if(WIN32 AND STATIC_DEPS)
-    find_package(Celt)
-    if(NOT Celt_FOUND)
-      message(FATAL_ERROR "Opus support with static dependencies requires the celt library.")
-    endif()
-    target_link_libraries(mixxx-lib PRIVATE Celt::Celt)
-
-    find_package(Silk)
-    if(NOT Silk_FOUND)
-      message(FATAL_ERROR "Opus support with static dependencies requires the silk library.")
-    endif()
-    target_link_libraries(mixxx-lib PRIVATE Silk::Float)
-  endif()
+  target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile)
+  target_link_libraries(mixxx-lib PRIVATE Opus::Opus)
 endif()
 
 # MAD MP3 Decoder

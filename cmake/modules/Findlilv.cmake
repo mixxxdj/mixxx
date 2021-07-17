@@ -84,5 +84,15 @@ if(lilv_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_lilv_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${lilv_INCLUDE_DIR}"
     )
+    get_target_property(LILV_TYPE lilv::lilv TYPE)
+    if(LILV_TYPE STREQUAL "STATIC_LIBRARY")
+      find_package(lv2 CONFIG REQUIRED)
+      find_package(serd CONFIG REQUIRED)
+      find_package(sord CONFIG REQUIRED)
+      find_package(sratom CONFIG REQUIRED)
+      set_property(TARGET lilv::lilv APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+             lv2::lv2 serd::serd sord::sord sratom::sratom
+      )
+    endif()
   endif()
 endif()

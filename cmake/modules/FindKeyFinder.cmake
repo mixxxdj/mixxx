@@ -82,5 +82,12 @@ if(KeyFinder_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_KeyFinder_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${KeyFinder_INCLUDE_DIR}"
     )
+    get_target_property(KEYFINDER_TYPE KeyFinder::KeyFinder TYPE)
+    if(KEYFINDER_TYPE STREQUAL "STATIC_LIBRARY")
+      find_package(FFTW REQUIRED)
+      set_property(TARGET Chromaprint::Chromaprint APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        FFTW::FFTW
+      )
+    endif()
   endif()
 endif()

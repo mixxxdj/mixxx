@@ -82,5 +82,13 @@ if(FLAC_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_FLAC_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${FLAC_INCLUDE_DIR}"
     )
+    get_target_property(FLAC_TYPE FLAC::FLAC TYPE)
+    if(FLAC_TYPE STREQUAL "STATIC_LIBRARY")
+      if(WIN32)
+        set_property(TARGET FLAC::FLAC APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
+          FLAC__NO_DLL
+        )
+      endif()
+    endif()
   endif()
 endif()

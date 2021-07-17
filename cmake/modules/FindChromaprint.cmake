@@ -83,5 +83,18 @@ if(Chromaprint_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_Chromaprint_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${Chromaprint_INCLUDE_DIR}"
     )
+    get_target_property(CHROMAPRINT_TYPE Chromaprint::Chromaprint TYPE)
+    if(CHROMAPRINT_TYPE STREQUAL "STATIC_LIBRARY")
+      if(WIN32)
+        # used in chomaprint.h to set dllexport for windows
+        set_property(TARGET Chromaprint::Chromaprint APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
+          CHROMAPRINT_NODLL
+        )
+      endif()
+      find_package(FFTW REQUIRED)
+      set_property(TARGET Chromaprint::Chromaprint APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        FFTW::FFTW
+      )
+    endif()
   endif()
 endif()
