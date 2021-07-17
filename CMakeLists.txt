@@ -53,6 +53,8 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
     # Set the possible values of build type for cmake-gui
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
+  elseif(CMAKE_BUILD_TYPE MATCHES "^(None)$")
+    message(WARNING "Building with custom compiler flags is discouraged and can cause unexpected problems.")
   elseif(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo)$")
     message(FATAL_ERROR "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} is not supported, use one of Debug, Release or RelWithDebInfo.")
   endif()
