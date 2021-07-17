@@ -37,7 +37,7 @@
     </ul>
   </description>
   <provides>
-    <!-- Keep these IDs in sync with res/linux/mixxx-usb-uaccess.rules -->
+    <!-- Keep these IDs in sync with packaging/linux/69-mixxx-usb-uaccess.rules -->
     <modalias>usb:v22F0p0008d*</modalias>
     <modalias>usb:v1C75p*</modalias>
     <modalias>usb:v1397p*</modalias>

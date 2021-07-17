@@ -33,11 +33,11 @@ configure_file(${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/con
                @ONLY)
 file(REMOVE ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control.in)
 
-file(COPY ${CPACK_DEBIAN_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules
+file(COPY ${CPACK_DEBIAN_SOURCE_DIR}/packaging/linux/69-mixxx-usb-uaccess.rules
     DESTINATION ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian)
 file(RENAME
-    ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/mixxx-usb-uaccess.rules
-    ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/mixxx.mixxx-usb-uaccess.udev)
+    ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/69-mixxx-usb-uaccess.rules
+    ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/mixxx.69-mixxx-usb-uaccess.udev)
 
 execute_process(
     COMMAND ${CPACK_DEBIAN_DOCBOOK_TO_MAN} debian/mixxx.sgml

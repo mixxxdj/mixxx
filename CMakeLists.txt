@@ -1373,23 +1373,19 @@ if(UNIX AND NOT APPLE)
   if (INSTALL_USER_UDEV_RULES)
     install(
       FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
+        "${CMAKE_CURRENT_SOURCE_DIR}/packaging/linux/69-mixxx-usb-uaccess.rules"
       DESTINATION
-        "${MIXXX_INSTALL_DATADIR}/udev/rules.d"
+        "${CMAKE_INSTALL_LIBDIR}/udev/rules.d"
     )
     install(CODE "
     message(STATUS \"Important Note: Installation of udev rules\n\"
         \"The udev rule file for USB HID and Bulk controller permissions will be\n\"
         \"installed to:\n\"
-        \"    ${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}/udev/rules.d.\n\"
+        \"    ${CMAKE_INSTALL_LIBDIR}/udev/rules.d.\n\"
         \"If you are installing Mixxx from source for your own use, copy\n\"
-        \"mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n\"
+        \"69-mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n\"
         \"    udevadm control --reload-rules && udevadm trigger\n\"
-        \"as root to load the rules.\n\"
-        \"If you are building a package for a distribution, the correct directory for\n\"
-        \"system rules is either /lib/udev/rules.d (e.g. Debian, Fedora) or\n\"
-        \"/usr/lib/udev/rules.d (e.g. Arch Linux) with an appropriate priority prefix.\n\"
-        \"Adjust your package script accordingly and set -DINSTALL_USER_UDEV_RULES=OFF\")
+        \"as root to load the rules.\n\")
     ")
   endif()
 endif()
