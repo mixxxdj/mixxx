@@ -204,8 +204,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats &&
-            (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (pBeats) {
         const double sampleOffset = getSampleOfTrack().rate * -0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         pTrack->trySetBeats(pBeats->translate(frameOffset));
@@ -221,8 +220,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats &&
-            (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (pBeats) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const double sampleOffset = getSampleOfTrack().rate * 0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
@@ -1043,7 +1041,7 @@ void BpmControl::slotBeatsTranslate(double v) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (pBeats) {
         const auto currentPosition =
                 mixxx::audio::FramePos::fromEngineSamplePos(
                         getSampleOfTrack().current)
@@ -1063,7 +1061,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (pBeats) {
         // Must reset the user offset *before* calling getPhaseOffset(),
         // otherwise it will always return 0 if master sync is active.
         m_dUserOffset.setValue(0.0);
