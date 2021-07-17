@@ -12,6 +12,7 @@
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
+#include "library/clementine/clementinefeature.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
@@ -175,6 +176,11 @@ Library::Library(
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pConfig));
         }
+    }
+    if (ClementineFeature::isSupported() &&
+            m_pConfig->getValue(
+                    ConfigKey(kConfigGroup, "ShowClementineLibrary"), true)) {
+        addFeature(new ClementineFeature(this, m_pConfig));
     }
     if (ITunesFeature::isSupported() &&
             m_pConfig->getValue(

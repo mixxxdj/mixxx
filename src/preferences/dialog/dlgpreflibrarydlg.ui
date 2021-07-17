@@ -14,7 +14,6 @@
    <string notr="true">Library Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-
    <item>
     <widget class="QGroupBox" name="groupBoxLibrary">
      <property name="title">
@@ -101,7 +100,6 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupBox_AudioFileFormats">
      <property name="title">
@@ -124,7 +122,6 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupBox_AudioFileTags">
      <property name="title">
@@ -248,7 +245,6 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupBox_4">
      <property name="toolTip">
@@ -292,7 +288,6 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
@@ -360,6 +355,16 @@
        </widget>
       </item>
       <item row="6" column="0">
+       <widget class="QCheckBox" name="checkBox_show_clementine">
+        <property name="text">
+         <string>Show Clementine Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>All external libraries shown are write protected.</string>
@@ -369,7 +374,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
          <string>You will need to restart Mixxx for these settings to take effect.</string>
@@ -461,7 +466,6 @@
   <tabstop>checkBox_show_traktor</tabstop>
   <tabstop>checkBox_show_rekordbox</tabstop>
   <tabstop>checkBox_show_serato</tabstop>
-  <tabstop>PushButtonOpenSettingsDir</tabstop>
  </tabstops>
  <resources/>
  <connections/>
