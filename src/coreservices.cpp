@@ -36,6 +36,8 @@
 #include "util/translations.h"
 #include "util/versionstore.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#include "waveform/guitick.h"
+#include "waveform/visualsmanager.h"
 
 #ifdef __APPLE__
 #include "util/sandbox.h"
@@ -189,6 +191,9 @@ void CoreServices::initialize(QApplication* pApp) {
 
     emit initializationProgressUpdate(20, tr("effects"));
     m_pEffectsManager = std::make_shared<EffectsManager>(this, pConfig, pChannelHandleFactory);
+
+    m_pGuiTick = std::make_shared<GuiTick>();
+    m_pVisualsManager = std::make_shared<VisualsManager>();
 
     m_pEngine = std::make_shared<EngineMaster>(
             pConfig,

@@ -94,7 +94,6 @@ MixxxMainWindow::MixxxMainWindow(
         : m_pCoreServices(pCoreServices),
           m_pCentralWidget(nullptr),
           m_pLaunchImage(nullptr),
-          m_pGuiTick(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_pKeywheel(nullptr),
@@ -120,9 +119,6 @@ MixxxMainWindow::MixxxMainWindow(
 
     show();
     pApp->processEvents();
-
-    m_pGuiTick = new GuiTick();
-    m_pVisualsManager = new VisualsManager();
 
     connect(
             m_pCoreServices.get(),
@@ -170,7 +166,7 @@ MixxxMainWindow::MixxxMainWindow(
     DEBUG_ASSERT(m_pCoreServices->getPlayerManager());
     const QStringList visualGroups = m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
     for (const QString& group : visualGroups) {
-        m_pVisualsManager->addDeck(group);
+        m_pCoreServices->getVisualsManager()->addDeck(group);
     }
 
     // Before creating the first skin we need to create a QGLWidget so that all
@@ -205,7 +201,9 @@ MixxxMainWindow::MixxxMainWindow(
 
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
+    WaveformWidgetFactory::instance()->startVSync(
+            m_pCoreServices->getGuiTick().get(),
+            m_pCoreServices->getVisualsManager().get());
 
     connect(this,
             &MixxxMainWindow::skinLoaded,
@@ -427,9 +425,6 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pPrefDlg;
 
     WaveformWidgetFactory::destroy();
-
-    delete m_pGuiTick;
-    delete m_pVisualsManager;
 
     m_pCoreServices->shutdown();
 }

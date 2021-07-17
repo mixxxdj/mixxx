@@ -22,10 +22,8 @@ class DlgDeveloperTools;
 class DlgPreferences;
 class DlgKeywheel;
 class EngineMaster;
-class GuiTick;
 class LaunchImage;
 class Library;
-class VisualsManager;
 class WMainMenuBar;
 
 namespace mixxx {
@@ -55,8 +53,6 @@ class MixxxMainWindow : public QMainWindow {
     void connectMenuBar();
     void setInhibitScreensaver(mixxx::ScreenSaverPreference inhibit);
     mixxx::ScreenSaverPreference getInhibitScreensaver();
-
-    inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
   public slots:
     void rebootMixxxView();
@@ -121,8 +117,6 @@ class MixxxMainWindow : public QMainWindow {
     LaunchImage* m_pLaunchImage;
 
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
-    GuiTick* m_pGuiTick;
-    VisualsManager* m_pVisualsManager;
 
     parented_ptr<WMainMenuBar> m_pMenuBar;
 

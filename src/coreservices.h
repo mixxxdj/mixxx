@@ -10,6 +10,7 @@
 
 class QApplication;
 class CmdlineArgs;
+class GuiTick;
 class KeyboardEventFilter;
 class EffectsManager;
 class EngineMaster;
@@ -21,6 +22,7 @@ class BroadcastManager;
 #endif
 class ControllerManager;
 class VinylControlManager;
+class VisualsManager;
 class TrackCollectionManager;
 class Library;
 class LV2Backend;
@@ -52,6 +54,10 @@ class CoreServices : public QObject {
         return m_pKbdConfig;
     }
 
+    std::shared_ptr<GuiTick> getGuiTick() const {
+        return m_pGuiTick;
+    }
+
     std::shared_ptr<SoundManager> getSoundManager() const {
         return m_pSoundManager;
     }
@@ -76,6 +82,10 @@ class CoreServices : public QObject {
 
     std::shared_ptr<VinylControlManager> getVinylControlManager() const {
         return m_pVCManager;
+    }
+
+    std::shared_ptr<VisualsManager> getVisualsManager() const {
+        return m_pVisualsManager;
     }
 
     LV2Backend* getLV2Backend() const {
@@ -119,6 +129,7 @@ class CoreServices : public QObject {
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     // owned by EffectsManager
     LV2Backend* m_pLV2Backend;
+    std::shared_ptr<GuiTick> m_pGuiTick;
     std::shared_ptr<EngineMaster> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
@@ -129,6 +140,7 @@ class CoreServices : public QObject {
     std::shared_ptr<ControllerManager> m_pControllerManager;
 
     std::shared_ptr<VinylControlManager> m_pVCManager;
+    std::shared_ptr<VisualsManager> m_pVisualsManager;
 
     std::shared_ptr<DbConnectionPool> m_pDbConnectionPool;
     std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
