@@ -54,7 +54,7 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
         pTrack->setYear(year);
 
         QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
-        pTrack->setGenre(genre);
+        updateTrackGenreText(pTrack.get(), genre);
 
         float bpm = index.sibling(
                 index.row(), fieldIndex("bpm")).data().toString().toFloat();

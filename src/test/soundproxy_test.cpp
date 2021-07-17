@@ -3,6 +3,7 @@
 
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
+#include "tagging/taggingcontext.h"
 #include "test/mixxxtest.h"
 #include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
@@ -162,6 +163,12 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
         : m_skipSampleBuffer(kMaxReadFrameCount) {
     }
 
+    void SetUp() override {
+        m_taggingContext.restoreDefaultConfig();
+    }
+
+    mixxx::TaggingContext m_taggingContext;
+
   private:
     mixxx::SampleBuffer m_skipSampleBuffer;
 };
@@ -213,7 +220,7 @@ TEST_F(SoundSourceProxyTest, openEmptyFile) {
 TEST_F(SoundSourceProxyTest, readArtist) {
     auto pTrack = Track::newTemporary(kTestDir, "artist.mp3");
     SoundSourceProxy proxy(pTrack);
-    EXPECT_TRUE(proxy.updateTrackFromSource());
+    EXPECT_TRUE(proxy.updateTrackFromSource(m_taggingContext.getConfig()));
     EXPECT_EQ("Test Artist", pTrack->getArtist());
 }
 
@@ -224,12 +231,13 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
     auto pTrack1 = Track::newTemporary(
             kTestDir, "empty.mp3");
     SoundSourceProxy proxy1(pTrack1);
-    EXPECT_TRUE(proxy1.updateTrackFromSource());
+    EXPECT_TRUE(proxy1.updateTrackFromSource(m_taggingContext.getConfig()));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a reload also works
     pTrack1->setTitle("");
     EXPECT_TRUE(proxy1.updateTrackFromSource(
+            m_taggingContext.getConfig(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Again));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
@@ -237,12 +245,13 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
     auto pTrack2 = Track::newTemporary(
             kTestDir, "cover-test-png.mp3");
     SoundSourceProxy proxy2(pTrack2);
-    EXPECT_TRUE(proxy2.updateTrackFromSource());
+    EXPECT_TRUE(proxy2.updateTrackFromSource(m_taggingContext.getConfig()));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a reload also works
     pTrack2->setTitle("");
     EXPECT_TRUE(proxy2.updateTrackFromSource(
+            m_taggingContext.getConfig(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Again));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
@@ -250,7 +259,7 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
     auto pTrack3 = Track::newTemporary(
             kTestDir, "cover-test-jpg.mp3");
     SoundSourceProxy proxy3(pTrack3);
-    EXPECT_TRUE(proxy3.updateTrackFromSource());
+    EXPECT_TRUE(proxy3.updateTrackFromSource(m_taggingContext.getConfig()));
     EXPECT_EQ("test22kMono", pTrack3->getTitle());
 }
 

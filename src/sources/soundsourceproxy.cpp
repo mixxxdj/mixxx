@@ -306,7 +306,8 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
 ExportTrackMetadataResult
 SoundSourceProxy::exportTrackMetadataBeforeSaving(
         Track* pTrack,
-        const UserSettingsPointer& pConfig) {
+        const UserSettingsPointer& pConfig,
+        const mixxx::TaggingConfig& taggingConfig) {
     DEBUG_ASSERT(pTrack);
     const auto fileInfo = pTrack->getFileInfo();
     mixxx::MetadataSourcePointer pMetadataSource;
@@ -333,7 +334,8 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
     if (pMetadataSource) {
         return pTrack->exportMetadata(
                 *pMetadataSource,
-                pConfig);
+                pConfig,
+                taggingConfig);
     } else {
         kLogger.warning()
                 << "Unable to export track metadata into file"
@@ -517,6 +519,7 @@ SoundSourceProxy::importTrackMetadataAndCoverImage(
 }
 
 bool SoundSourceProxy::updateTrackFromSource(
+        const mixxx::TaggingConfig& taggingConfig,
         UpdateTrackFromSourceMode mode) {
     DEBUG_ASSERT(m_pTrack);
 
@@ -602,7 +605,9 @@ bool SoundSourceProxy::updateTrackFromSource(
         if (metadataImportedFromSource.first == mixxx::MetadataSource::ImportResult::Succeeded) {
             // Partial import of properties that are not (yet) stored
             // in the database
-            return m_pTrack->mergeExtraMetadataFromSource(trackMetadata);
+            return m_pTrack->mergeExtraMetadataFromSource(
+                    taggingConfig,
+                    trackMetadata);
         } else {
             // Nothing to do if no metadata has been imported
             return false;
@@ -687,6 +692,7 @@ bool SoundSourceProxy::updateTrackFromSource(
     }
 
     m_pTrack->replaceMetadataFromSource(
+            taggingConfig,
             std::move(trackMetadata),
             metadataImportedFromSource.second);
 

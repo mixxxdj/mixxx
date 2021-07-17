@@ -3,10 +3,14 @@
 #include <QDateTime>
 
 #include "audio/streaminfo.h"
+#include "tagging/customtags.h"
 #include "track/albuminfo.h"
 #include "track/trackinfo.h"
 
 namespace mixxx {
+
+class TaggingConfig;
+class TagMappingConfig;
 
 class TrackMetadata final {
     // Audio properties
@@ -20,6 +24,8 @@ class TrackMetadata final {
     //   - stored in file tags
     MIXXX_DECL_PROPERTY(AlbumInfo, albumInfo, AlbumInfo)
     MIXXX_DECL_PROPERTY(TrackInfo, trackInfo, TrackInfo)
+
+    MIXXX_DECL_PROPERTY(CustomTags, customTags, CustomTags)
 
   public:
     TrackMetadata() = default;
@@ -56,6 +62,65 @@ class TrackMetadata final {
     QString getDurationText(
             Duration::Precision precision) const;
 
+    // Custom tags and their corresponding text fields
+    //
+    // Every modification of custom tags will in turn also
+    // update the corresponding text fields.
+    bool hasCustomTags() const {
+        return !getCustomTags().isEmpty();
+    }
+    bool updateCustomTags(
+            const TaggingConfig& config,
+            const mixxx::CustomTags& customTags);
+    bool mergeReplaceCustomTags(
+            const TaggingConfig& config,
+            const mixxx::CustomTags& customTags);
+    bool replaceCustomTag(
+            const TaggingConfig& config,
+            const Tag& tag,
+            const TagFacet& facet = TagFacet());
+    bool appendCustomTag(
+            const TaggingConfig& config,
+            const TagLabel& newLabel,
+            const TagFacet& facet);
+    bool removeCustomTag(
+            const TaggingConfig& config,
+            const TagLabel& oldLabel,
+            const TagFacet& facet = TagFacet());
+
+    bool updateTextFieldsFromCustomTags(
+            const TaggingConfig& config);
+    bool allTextFieldsSynchronizedWithCustomTags(
+            const TaggingConfig& config) const;
+
+    TagLabel joinFacetTextFromCustomTags(
+            const TagMappingConfig& config,
+            const TagFacet& facet) const;
+    bool splitFacetTextIntoCustomTags(
+            const TagMappingConfig& config,
+            const TagFacet& facet,
+            const TagLabel::value_t& text);
+
+    // Update text fields and the corresponding custom tags
+    bool updateGenreText(
+            const TaggingConfig& config,
+            const TagLabel::value_t& genreText) {
+        return updateTextField(
+                config,
+                CustomTags::kFacetGenre,
+                genreText);
+    }
+#if defined(__EXTRA_METADATA__)
+    bool updateMoodText(
+            const TaggingConfig& config,
+            const mixxx::TagLabel::value_t& moodText) {
+        return updateTextField(
+                config,
+                CustomTags::kFacetMood,
+                moodText);
+    }
+#endif // __EXTRA_METADATA__
+
     // Parse an format date/time values according to ISO 8601
     static QDate parseDate(const QString& str) {
         return QDate::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
@@ -76,6 +141,70 @@ class TrackMetadata final {
     static QString formatCalendarYear(const QString& year, bool* pValid = nullptr);
 
     static QString reformatYear(const QString& year);
+
+  private:
+    TagLabel::value_t* ptrTextField(
+            const TagFacet& facet);
+
+    // Complete the corresponding text fields or custom tags if either
+    // of both is empty or missing respectively. Replace the custom tags
+    // if inconsistent with their corresponding text field.
+    //
+    // Needed for both the initial migration of the genre text property
+    // into custom genre tags and later for synchronization in case
+    // one of them has been lost along the way.
+    //
+    // Returns true if track has been updated and false otherwise.
+    friend class TrackRecord;
+    bool synchronizeTextFieldsWithCustomTags(
+            const TaggingConfig& config);
+
+    bool isTextFieldSynchronizedWithCustomTags(
+            const TaggingConfig& config,
+            const TagFacet& facet) const;
+    bool isTextFieldSynchronizedWithCustomTags(
+            const TagMappingConfig& config,
+            const TagFacet& facet) const;
+    bool isTextFieldSynchronizedWithCustomTags(
+            const TagMappingConfig& config,
+            const TagFacet& facet,
+            const TagLabel::value_t& textField) const;
+
+    bool synchronizeTextFieldWithCustomTags(
+            const TaggingConfig& config,
+            const TagFacet& facet);
+    bool synchronizeTextFieldWithCustomTags(
+            const TagMappingConfig& config,
+            const TagFacet& facet);
+    bool synchronizeTextFieldWithCustomTags(
+            const TagMappingConfig& config,
+            const TagFacet& facet,
+            TagLabel::value_t* pTextField);
+
+    bool updateTextField(
+            const TaggingConfig& config,
+            const TagFacet& facet,
+            const TagLabel::value_t& newText);
+    bool updateTextField(
+            const TagMappingConfig& config,
+            const TagFacet& facet,
+            const TagLabel::value_t& newText);
+    bool updateTextField(
+            const TagMappingConfig& config,
+            const TagFacet& facet,
+            const TagLabel::value_t& newText,
+            TagLabel::value_t* pTextField);
+
+    bool updateTextFieldFromCustomTags(
+            const TaggingConfig& config,
+            const TagFacet& facet);
+    bool updateTextFieldFromCustomTags(
+            const TagMappingConfig& config,
+            const TagFacet& facet);
+    bool updateTextFieldFromCustomTags(
+            const TagMappingConfig& config,
+            const TagFacet& facet,
+            TagLabel::value_t* pTextField);
 };
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs);

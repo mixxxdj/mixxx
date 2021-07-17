@@ -812,6 +812,13 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/sources/soundsourceproviderregistry.cpp
   src/sources/soundsourceproxy.cpp
   src/sources/soundsourcesndfile.cpp
+  src/tagging/customtags.cpp
+  src/tagging/customtagsdb.cpp
+  src/tagging/taggingconfig.cpp
+  src/tagging/taggingcontext.cpp
+  src/tagging/taggingui.cpp
+  src/tagging/tagmapping.cpp
+  src/tagging/tags.cpp
   src/track/albuminfo.cpp
   src/track/beatfactory.cpp
   src/track/beatgrid.cpp
@@ -1507,6 +1514,7 @@ add_executable(mixxx-test
   src/test/cratestorage_test.cpp
   src/test/cue_test.cpp
   src/test/cuecontrol_test.cpp
+  src/test/customtags_test.cpp
   src/test/dbconnectionpool_test.cpp
   src/test/dbidtest.cpp
   src/test/directorydaotest.cpp
@@ -1568,6 +1576,8 @@ add_executable(mixxx-test
   src/test/sqliteliketest.cpp
   src/test/synccontroltest.cpp
   src/test/tableview_test.cpp
+  src/test/tagging_tests.cpp
+  src/test/tagmapping_test.cpp
   src/test/taglibtest.cpp
   src/test/trackdao_test.cpp
   src/test/trackexport_test.cpp

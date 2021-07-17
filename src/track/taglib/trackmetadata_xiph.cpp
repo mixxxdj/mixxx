@@ -23,6 +23,8 @@ namespace taglib {
 
 namespace {
 
+const TagLib::String kCommentFieldKeyMixxxCustomTags = "MIXXX_CUSTOM_TAGS";
+
 // Preferred picture types for cover art sorted by priority
 const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredPictureTypes{{
         TagLib::FLAC::Picture::FrontCover,   // Front cover image of the album
@@ -467,6 +469,15 @@ void importTrackMetadataFromTag(
     }
 #endif // __EXTRA_METADATA__
 
+    // Mixxx custom tags
+    TagLib::String dumpCustomTags;
+    if (readCommentField(
+                tag,
+                kCommentFieldKeyMixxxCustomTags,
+                &dumpCustomTags)) {
+        parseCustomTagsFromStringDump(pTrackMetadata, dumpCustomTags);
+    }
+
     // Serato tags
     //
     // FIXME: We're only parsing FLAC tags for now, since the Ogg format is
@@ -600,6 +611,12 @@ bool exportTrackMetadataIntoTag(
     writeCommentField(
             pTag, "DISCNUMBER", toTString(trackMetadata.getTrackInfo().getDiscNumber()));
 #endif // __EXTRA_METADATA__
+
+    // Mixxx custom tags
+    writeCommentField(
+            pTag,
+            kCommentFieldKeyMixxxCustomTags,
+            dumpCustomTagsString(trackMetadata));
 
     // Serato tags
     //

@@ -533,7 +533,7 @@ TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     searchColumns << "artist";
 
     auto pQuery(
-        m_parser.parseQuery("asdf", searchColumns, "1 > 2"));
+            m_parser.parseQuery("asdf", searchColumns, "1 > 2"));
 
     TrackPointer pTrack = newTestTrack(44100);
     pTrack->setArtist("zxcv");
@@ -542,8 +542,8 @@ TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(1 > 2) AND (artist LIKE '%asdf%')")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("(artist LIKE '%asdf%') AND (1 > 2)")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {

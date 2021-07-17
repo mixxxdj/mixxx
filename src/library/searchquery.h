@@ -40,6 +40,10 @@ class GroupNode : public QueryNode {
         m_nodes.push_back(std::move(pNode));
     }
 
+    bool isEmpty() const {
+        return m_nodes.empty();
+    }
+
   protected:
     // NOTE(uklotzde): std::vector is more suitable (efficiency)
     // than a QList for a private member. And QList from Qt 4

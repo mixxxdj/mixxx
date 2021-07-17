@@ -2,8 +2,7 @@
 
 #include "library/coverart.h"
 #include "sources/soundsourceproxy.h"
-#include "test/mixxxtest.h"
-#include "test/soundsourceproviderregistration.h"
+#include "test/librarytest.h"
 #include "track/track.h"
 
 namespace {
@@ -13,7 +12,7 @@ const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 } // anonymous namespace
 
 // Test for updating track metadata and cover art from files.
-class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
+class TrackUpdateTest : public LibraryTest {
   protected:
     static bool hasTrackMetadata(const TrackPointer& pTrack) {
         return !pTrack->getArtist().isEmpty();
@@ -27,9 +26,10 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
         return Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
     }
 
-    static TrackPointer newTestTrackParsed() {
+    TrackPointer newTestTrackParsed() const {
         auto pTrack = newTestTrack();
-        EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource());
+        EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+                trackCollectionManager()->taggingConfig()));
         EXPECT_TRUE(pTrack->isSourceSynchronized());
         EXPECT_TRUE(hasTrackMetadata(pTrack));
         EXPECT_TRUE(hasCoverArt(pTrack));
@@ -38,7 +38,7 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
         return pTrack;
     }
 
-    static TrackPointer newTestTrackParsedModified() {
+    TrackPointer newTestTrackParsedModified() const {
         auto pTrack = newTestTrackParsed();
         pTrack->setArtist(pTrack->getArtist() + pTrack->getArtist());
         auto coverInfo = pTrack->getCoverInfo();
@@ -60,6 +60,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanOnce) {
 
     // Re-update from source should have no effect
     ASSERT_FALSE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            trackCollectionManager()->taggingConfig(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Once));
 
     const auto trackMetadataAfter = pTrack->getMetadata();
@@ -80,6 +81,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainSkipCover) {
     const auto coverInfoBefore = pTrack->getCoverInfo();
 
     EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            trackCollectionManager()->taggingConfig(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Again));
 
     const auto trackMetadataAfter = pTrack->getMetadata();
@@ -104,6 +106,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainUpdateCover) {
     const auto coverInfoBefore = pTrack->getCoverInfo();
 
     EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            trackCollectionManager()->taggingConfig(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Again));
 
     const auto trackMetadataAfter = pTrack->getMetadata();
@@ -123,6 +126,7 @@ TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     const auto coverInfoBefore = pTrack->getCoverInfo();
 
     EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            trackCollectionManager()->taggingConfig(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Again));
 
     const auto trackMetadataAfter = pTrack->getMetadata();

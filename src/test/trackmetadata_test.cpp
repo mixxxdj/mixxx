@@ -1,8 +1,11 @@
 #include <gtest/gtest.h>
 
+#include "tagging/taggingcontext.h"
 #include "track/trackrecord.h"
 
 class TrackMetadataTest : public testing::Test {
+  protected:
+    const mixxx::TaggingContext m_taggingContext;
 };
 
 TEST_F(TrackMetadataTest, parseArtistTitleFromFileName) {
@@ -156,7 +159,7 @@ TEST_F(TrackMetadataTest, mergeExtraMetadataFromSource) {
     mixxx::TrackRecord mergedTrackRecord = oldTrackRecord;
     ASSERT_EQ(mergedTrackRecord.getMetadata(), oldTrackRecord.getMetadata());
     ASSERT_NE(newTrackMetadata, *pOldTrackMetadata);
-    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(m_taggingContext.getConfig(), newTrackMetadata);
 
     mixxx::TrackMetadata* pMergedTrackMetadata = mergedTrackRecord.ptrMetadata();
     EXPECT_EQ(pOldTrackMetadata->getStreamInfo(), pMergedTrackMetadata->getStreamInfo());
@@ -225,7 +228,7 @@ TEST_F(TrackMetadataTest, mergeExtraMetadataFromSource) {
     pMergedTrackInfo->setTitle(QString());
     pMergedAlbumInfo->setArtist("");
     pMergedAlbumInfo->setTitle(QString());
-    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(m_taggingContext.getConfig(), newTrackMetadata);
     EXPECT_EQ(QString(""), pMergedTrackInfo->getArtist());
     EXPECT_EQ(QString(), pMergedTrackInfo->getTitle());
     EXPECT_EQ(QString(""), pMergedAlbumInfo->getArtist());
@@ -234,11 +237,11 @@ TEST_F(TrackMetadataTest, mergeExtraMetadataFromSource) {
     // Check that the placeholder for track total is replaced with the actual property
     ASSERT_NE(mixxx::TrackRecord::kTrackTotalPlaceholder, pNewTrackInfo->getTrackTotal());
     pMergedTrackInfo->setTrackTotal(mixxx::TrackRecord::kTrackTotalPlaceholder);
-    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(m_taggingContext.getConfig(), newTrackMetadata);
     EXPECT_EQ(pNewTrackInfo->getTrackTotal(), pMergedTrackInfo->getTrackTotal());
     // ...but if track total is missing entirely it should be preserved
     ASSERT_NE(QString(), pNewTrackInfo->getTrackTotal());
     pMergedTrackInfo->setTrackTotal(QString());
-    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(m_taggingContext.getConfig(), newTrackMetadata);
     EXPECT_EQ(QString(), pMergedTrackInfo->getTrackTotal());
 }
