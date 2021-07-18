@@ -61,7 +61,7 @@
       </control> -->
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.beatloopButtons[0].input</key>
+        <key>DJ2GO2Touch.leftDeck.beatloopButtons[1].input</key>
         <status>0x84</status>
         <midino>0x11</midino>
         <options>
@@ -70,7 +70,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.beatloopButtons[0].input</key>
+        <key>DJ2GO2Touch.leftDeck.beatloopButtons[1].input</key>
         <status>0x94</status>
         <midino>0x11</midino>
         <options>
@@ -79,7 +79,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.beatloopButtons[1].input</key>
+        <key>DJ2GO2Touch.leftDeck.beatloopButtons[2].input</key>
         <status>0x84</status>
         <midino>0x12</midino>
         <options>
@@ -88,7 +88,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.beatloopButtons[1].input</key>
+        <key>DJ2GO2Touch.leftDeck.beatloopButtons[2].input</key>
         <status>0x94</status>
         <midino>0x12</midino>
         <options>
@@ -97,17 +97,8 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.beatloopButtons[2].input</key>
+        <key>DJ2GO2Touch.leftDeck.beatloopButtons[3].input</key>
         <status>0x84</status>
-        <midino>0x13</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.beatloopButtons[2].input</key>
-        <status>0x94</status>
         <midino>0x13</midino>
         <options>
           <script-binding/>
@@ -116,6 +107,15 @@
       <control>
         <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.beatloopButtons[3].input</key>
+        <status>0x94</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.beatloopButtons[4].input</key>
         <status>0x84</status>
         <midino>0x14</midino>
         <options>
@@ -124,7 +124,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.beatloopButtons[3].input</key>
+        <key>DJ2GO2Touch.leftDeck.beatloopButtons[4].input</key>
         <status>0x94</status>
         <midino>0x14</midino>
         <options>
@@ -403,7 +403,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.beatloopButtons[0].input</key>
+        <key>DJ2GO2Touch.rightDeck.beatloopButtons[1].input</key>
         <status>0x85</status>
         <midino>0x11</midino>
         <options>
@@ -412,7 +412,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.beatloopButtons[0].input</key>
+        <key>DJ2GO2Touch.rightDeck.beatloopButtons[1].input</key>
         <status>0x95</status>
         <midino>0x11</midino>
         <options>
@@ -421,17 +421,8 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.beatloopButtons[1].input</key>
+        <key>DJ2GO2Touch.rightDeck.beatloopButtons[2].input</key>
         <status>0x85</status>
-        <midino>0x12</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.beatloopButtons[1].input</key>
-        <status>0x95</status>
         <midino>0x12</midino>
         <options>
           <script-binding/>
@@ -440,6 +431,15 @@
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.beatloopButtons[2].input</key>
+        <status>0x95</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.beatloopButtons[3].input</key>
         <status>0x85</status>
         <midino>0x13</midino>
         <options>
@@ -448,7 +448,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.beatloopButtons[2].input</key>
+        <key>DJ2GO2Touch.rightDeck.beatloopButtons[3].input</key>
         <status>0x95</status>
         <midino>0x13</midino>
         <options>
@@ -457,7 +457,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.rightDeck.beatloopButtons[3].input</key>
+        <key>DJ2GO2Touch.rightDeck.beatloopButtons[4].input</key>
         <status>0x85</status>
         <midino>0x14</midino>
         <options>
@@ -466,7 +466,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.rightDeck.beatloopButtons[3].input</key>
+        <key>DJ2GO2Touch.rightDeck.beatloopButtons[4].input</key>
         <status>0x95</status>
         <midino>0x14</midino>
         <options>
