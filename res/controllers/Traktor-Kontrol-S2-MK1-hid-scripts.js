@@ -120,14 +120,6 @@ var TraktorS2MK1 = new function() {
         "[EffectRack1_EffectUnit1]": [],
         "[EffectRack1_EffectUnit2]": []
     };
-    this.playIndicatorConnections = {
-        "[Channel1]": [],
-        "[Channel2]": [],
-    };
-    this.pflConnections = {
-        "[Channel1]": [],
-        "[Channel2]": [],
-    };
 };
 
 TraktorS2MK1.registerInputPackets = function() {
@@ -314,9 +306,9 @@ TraktorS2MK1.registerOutputPackets = function() {
     Output.addOutput("[Channel2]", "loop_in", 0x22, "B");
     Output.addOutput("[Channel2]", "loop_out", 0x21, "B");
 
-    Output.addOutput("[Channel1]", "!pfl", 0x20, "B");
+    Output.addOutput("[Channel1]", "pfl", 0x20, "B");
     Output.addOutput("[Master]", "!warninglight", 0x31, "B");
-    Output.addOutput("[Channel2]", "!pfl", 0x1D, "B");
+    Output.addOutput("[Channel2]", "pfl", 0x1D, "B");
 
     Output.addOutput("[EffectRack1_EffectUnit1]", "!effect_focus_button", 0x1C, "B");
     Output.addOutput("[EffectRack1_EffectUnit1]", "!effectbutton1", 0x1B, "B");
@@ -339,7 +331,7 @@ TraktorS2MK1.registerOutputPackets = function() {
     Output.addOutput("[Channel1]", "!shift", 0x08, "B");
     Output.addOutput("[Channel1]", "sync_enabled", 0x04, "B");
     Output.addOutput("[Channel1]", "cue_indicator", 0x07, "B");
-    Output.addOutput("[Channel1]", "!play_indicator", 0x03, "B");
+    Output.addOutput("[Channel1]", "play_indicator", 0x03, "B");
 
     Output.addOutput("[Channel1]", "!pad_1_G", 0x0C, "B");
     Output.addOutput("[Channel1]", "!pad_1_B", 0x10, "B");
@@ -356,7 +348,7 @@ TraktorS2MK1.registerOutputPackets = function() {
     Output.addOutput("[Channel2]", "!shift", 0x28, "B");
     Output.addOutput("[Channel2]", "sync_enabled", 0x24, "B");
     Output.addOutput("[Channel2]", "cue_indicator", 0x27, "B");
-    Output.addOutput("[Channel2]", "!play_indicator", 0x23, "B");
+    Output.addOutput("[Channel2]", "play_indicator", 0x23, "B");
 
     Output.addOutput("[Channel2]", "!pad_1_G", 0x2C, "B");
     Output.addOutput("[Channel2]", "!pad_1_B", 0x30, "B");
@@ -375,10 +367,7 @@ TraktorS2MK1.registerOutputPackets = function() {
     // Link up control objects to their outputs
     TraktorS2MK1.linkDeckOutputs("sync_enabled", TraktorS2MK1.outputCallback);
     TraktorS2MK1.linkDeckOutputs("cue_indicator", TraktorS2MK1.outputCallback);
-    TraktorS2MK1.setPlayIndicatorMode("[Channel1]", true);
-    TraktorS2MK1.setPlayIndicatorMode("[Channel2]", true);
-    TraktorS2MK1.setPflMode("[Channel1]", true);
-    TraktorS2MK1.setPflMode("[Channel2]", true);
+    TraktorS2MK1.linkDeckOutputs("play_indicator", TraktorS2MK1.outputCallback);
 
     TraktorS2MK1.setPadMode("[Channel1]", TraktorS2MK1.padModes.hotcue);
     TraktorS2MK1.setPadMode("[Channel2]", TraktorS2MK1.padModes.hotcue);
@@ -387,6 +376,8 @@ TraktorS2MK1.registerOutputPackets = function() {
     TraktorS2MK1.linkDeckOutputs("loop_out", TraktorS2MK1.outputCallbackLoop);
     TraktorS2MK1.linkDeckOutputs("LoadSelectedTrack", TraktorS2MK1.outputCallback);
     TraktorS2MK1.linkDeckOutputs("slip_enabled", TraktorS2MK1.outputCallback);
+    TraktorS2MK1.linkChannelOutput("[Channel1]", "pfl", TraktorS2MK1.outputChannelCallback);
+    TraktorS2MK1.linkChannelOutput("[Channel2]", "pfl", TraktorS2MK1.outputChannelCallback);
     TraktorS2MK1.linkChannelOutput("[Channel1]", "track_loaded", TraktorS2MK1.outputChannelCallback);
     TraktorS2MK1.linkChannelOutput("[Channel2]", "track_loaded", TraktorS2MK1.outputChannelCallback);
     TraktorS2MK1.linkChannelOutput("[Channel1]", "PeakIndicator", TraktorS2MK1.outputChannelCallbackDark);
@@ -544,8 +535,6 @@ TraktorS2MK1.shift = function(field) {
     TraktorS2MK1.controller.setOutput(field.group, "!shift",
         shiftPressed ? ButtonBrightnessOn : ButtonBrightnessOff, field.group, "!shift",
         !TraktorS2MK1.batchingLEDUpdate);
-    TraktorS2MK1.setPlayIndicatorMode(field.group, !shiftPressed);
-    TraktorS2MK1.setPflMode(field.group, !shiftPressed);
 };
 
 TraktorS2MK1.loadTrackButton = function(field) {
@@ -1369,40 +1358,4 @@ TraktorS2MK1.onVuMeterChanged = function(value, group, _key) {
 TraktorS2MK1.onLoopEnabledChanged = function(value, group, _key) {
     TraktorS2MK1.outputCallbackLoop(value, group, "loop_in");
     TraktorS2MK1.outputCallbackLoop(value, group, "loop_out");
-};
-
-TraktorS2MK1.setPlayIndicatorMode = function(group, value) {
-    TraktorS2MK1.playIndicatorConnections[group].forEach(function(connection) {
-        connection.disconnect();
-    });
-    var connection = engine.makeConnection(group, value ? "play_indicator" : "keylock",
-        TraktorS2MK1.makeLEDCallback("!play_indicator"));
-
-    TraktorS2MK1.playIndicatorConnections[group] = [connection];
-    connection.trigger();
-};
-
-TraktorS2MK1.makeLEDCallback = function(control) {
-    return function(value, group, _control) {
-        var ledValue = value ? ButtonBrightnessOn : ButtonBrightnessOff;
-        TraktorS2MK1.controller.setOutput(group, control, ledValue, !TraktorS2MK1.batchingLEDUpdate);
-    };
-};
-
-TraktorS2MK1.setPflMode = function(group, value) {
-    TraktorS2MK1.pflConnections[group].forEach(function(connection) {
-        connection.disconnect();
-    });
-    var pflLEDCallback = function(value, group, _control) {
-        var ledValue = value ? ButtonBrightnessOn : 0x05;
-        TraktorS2MK1.controller.setOutput(group, "!pfl", ledValue, !TraktorS2MK1.batchingLEDUpdate);
-    };
-    var connection;
-    if (value) {
-        connection = engine.makeConnection(group, "pfl", pflLEDCallback);
-    } else {
-        connection = engine.makeConnection(group, "quantize", TraktorS2MK1.makeLEDCallback("!pfl"));
-    }
-    TraktorS2MK1.pflConnections[group] = [connection];
-    connection.trigger();
 };
