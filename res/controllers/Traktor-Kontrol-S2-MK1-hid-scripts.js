@@ -33,7 +33,6 @@ var ButtonBrightnessOn = 0x1F;
 // * The effect button LEDs briefly flicker when pressing the effect focus button.
 
 // eslint definitions
-/* global controller, HIDController, HIDPacket */
 var TraktorS2MK1 = new function() {
     this.controller = new HIDController();
 
