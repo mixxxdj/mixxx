@@ -26,11 +26,11 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #  include <windows.h>
 #elif defined(Q_OS_LINUX)
 #  include <QtDBus>
-#elif HAVE_XSCREENSAVER_SUSPEND
+#elif defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND
 #  include <X11/extensions/scrnsaver.h>
 #endif // Q_OS_WIN
 
-#if defined(Q_OS_LINUX) || HAVE_XSCREENSAVER_SUSPEND
+#if defined(Q_OS_LINUX) || (defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND)
 #  define None XNone
 #  define Window XWindow
 #  include <X11/Xlib.h>
