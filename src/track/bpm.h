@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "util/duration.h"
 #include "util/fpclassify.h"
 #include "util/math.h"
 
@@ -96,6 +97,11 @@ public:
 
     QString displayText() const {
         return displayValueText(m_value);
+    }
+
+    /// Get the duration between two beats for this BPM.
+    mixxx::Duration beatLength() const {
+        return mixxx::Duration::fromSeconds(60.0 / value());
     }
 
     Bpm& operator+=(double increment) {
