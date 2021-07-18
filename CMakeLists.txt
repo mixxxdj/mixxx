@@ -90,6 +90,13 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using regular Clang or AppleClang
   set(LLVM_CLANG true)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0" AND
+     CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(WARNING "Found LLVM < 10 which has known optimization bugs with \
+    certain glibc versions. In case your build fails with linking errors. \
+    Use try using gcc if possible. Pass -DFAST_MATH=off to allow compilation
+    to a slow binary. See https://bugs.llvm.org/show_bug.cgi?id=45034")
+  endif()
 else()
   set(LLVM_CLANG false)
 endif()
@@ -128,10 +135,14 @@ endif()
 #
 # Optimizations
 #
-
 set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy)")
 set_property(CACHE OPTIMIZE PROPERTY STRINGS "off" "portable" "native" "legacy")
 string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
+
+# certain combinations of llvm and glibc cause problems with fastmath at link time. Add option to disable
+# fast-math but still allow other optimizations
+option(FAST_MATH "Use -fast-math optimization. Only disable this when linking fails with LLVM/GCC." ON)
+
 message(STATUS "Optimization level: ${OPTIMIZE}")
 
 # CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
@@ -279,9 +290,14 @@ elseif(GNU_GCC OR LLVM_CLANG)
     # faster, measured on a Atom CPU.
     add_compile_options(
       -O3
-      -ffast-math
       -funroll-loops
     )
+    if(FAST_MATH)
+      add_compile_options(
+        -ffast-math
+      )
+    endif()
+
     # set -fomit-frame-pointer when we don't profile and are not using
     # Clang sanitizers.
     # Note: It is only included in -O on machines where it does not
