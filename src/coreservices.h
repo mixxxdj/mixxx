@@ -37,8 +37,12 @@ class CoreServices : public QObject {
     ~CoreServices() = default;
 
     void initializeSettings();
-    // FIXME: should be private, but WMainMenuBar needs it initialized early
     void initializeKeyboard();
+    void initializeLogging();
+
+    // The short first run that is done without start up screen
+    void preInitialize(QApplication* pApp);
+    // The secondary long run which should be called after displaying the start up screen
     void initialize(QApplication* pApp);
     void shutdown();
 
@@ -112,7 +116,7 @@ class CoreServices : public QObject {
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     // owned by EffectsManager
-    LV2Backend* m_pLV2Backend;
+    LV2Backend* m_pLV2Backend{};
     std::shared_ptr<EngineMaster> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
