@@ -424,8 +424,8 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
 
     // Set intro start cue
     setCurrentFramePos(mixxx::audio::FramePos(100.0));
-    m_pIntroStartSet->slotSet(1);
-    m_pIntroStartSet->slotSet(0);
+    m_pIntroStartSet->set(1);
+    m_pIntroStartSet->set(0);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(100.0), m_pIntroStartPosition);
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition);
@@ -440,8 +440,8 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
 
     // Set intro end cue
     setCurrentFramePos(mixxx::audio::FramePos(500.0));
-    m_pIntroEndSet->slotSet(1);
-    m_pIntroEndSet->slotSet(0);
+    m_pIntroEndSet->set(1);
+    m_pIntroEndSet->set(0);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(100.0), m_pIntroStartPosition);
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(500.0), m_pIntroEndPosition);
@@ -455,8 +455,8 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     }
 
     // Clear intro start cue
-    m_pIntroStartClear->slotSet(1);
-    m_pIntroStartClear->slotSet(0);
+    m_pIntroStartClear->set(1);
+    m_pIntroStartClear->set(0);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition);
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(500.0), m_pIntroEndPosition);
@@ -470,8 +470,8 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     }
 
     // Clear intro end cue
-    m_pIntroEndClear->slotSet(1);
-    m_pIntroEndClear->slotSet(0);
+    m_pIntroEndClear->set(1);
+    m_pIntroEndClear->set(0);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition);
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition);
@@ -485,8 +485,8 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
 
     // Set outro start cue
     setCurrentFramePos(mixxx::audio::FramePos(750.0));
-    m_pOutroStartSet->slotSet(1);
-    m_pOutroStartSet->slotSet(0);
+    m_pOutroStartSet->set(1);
+    m_pOutroStartSet->set(0);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(750.0), m_pOutroStartPosition);
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition);
@@ -501,8 +501,8 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
 
     // Set outro end cue
     setCurrentFramePos(mixxx::audio::FramePos(1000.0));
-    m_pOutroEndSet->slotSet(1);
-    m_pOutroEndSet->slotSet(0);
+    m_pOutroEndSet->set(1);
+    m_pOutroEndSet->set(0);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(750.0), m_pOutroStartPosition);
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(1000.0), m_pOutroEndPosition);
@@ -516,8 +516,8 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     }
 
     // Clear outro start cue
-    m_pOutroStartClear->slotSet(1);
-    m_pOutroStartClear->slotSet(0);
+    m_pOutroStartClear->set(1);
+    m_pOutroStartClear->set(0);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition);
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(1000.0), m_pOutroEndPosition);
@@ -531,8 +531,8 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     }
 
     // Clear outro end cue
-    m_pOutroEndClear->slotSet(1);
-    m_pOutroEndClear->slotSet(0);
+    m_pOutroEndClear->set(1);
+    m_pOutroEndClear->set(0);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition);
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition);
