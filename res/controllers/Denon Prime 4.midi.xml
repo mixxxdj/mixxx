@@ -536,9 +536,9 @@
               </options>
             </control>
             <control> <!-- Deck A - Cue Button -->
-              <group></group>
-              <key></key>
-              <description>Cue</description>
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.cueButton.input</key>
+              <description>Deck A - Cue Button</description>
               <status>0x94</status>
               <midino>0x09</midino>
               <options>
@@ -546,9 +546,9 @@
               </options>
             </control>
             <control> <!-- Deck A - Play/Stop Button / Stutter Button -->
-              <group></group>
-              <key></key>
-              <description>Play/Stop</description>
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.playButton.input</key>
+              <description>Deck A - Play/Stop Button</description>
               <status>0x94</status>
               <midino>0x0A</midino>
               <options>

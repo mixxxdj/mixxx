@@ -10,16 +10,18 @@ Prime4.shutdown = function() {
     // TODO: Add shutdown sequence
 };
 
-/*
 Prime4.Deck = function(deckNumbers, midiChannel) {
     components.Deck.call(this, deckNumbers);
+    this.playButton = new components.PlayButton([0x90 + midiChannel, 0x0A]);
+    this.cueButton = new components.CueButton([0x90 + midiChannel, 0x09]);
+    this.syncButton = new components.SyncButton([0x90 + midiChannel, 0x08]);
     // TODO: Define necessary components
+
     this.reconnectComponents(function(c) {
         if (c.group === undefined) {
             c.group = this.currentDeck;
         }
     });
 };
-*/
 
 Prime4.Deck.prototype = new components.Deck();
