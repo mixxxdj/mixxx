@@ -1077,24 +1077,25 @@ void AutoDJCratesDAO::slotPlaylistTrackRemoved(int playlistId,
 
 void AutoDJCratesDAO::slotPlayerInfoTrackChanged(
         const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    playerInfoTrackUnloaded(group, pOldTrack);
-    playerInfoTrackLoaded(group, pNewTrack);
+    if (pOldTrack) {
+        playerInfoTrackUnloaded(group, pOldTrack->getId());
+    }
+    if (pNewTrack) {
+        playerInfoTrackLoaded(group, pNewTrack->getId());
+    }
 }
 
 // Signaled by the PlayerInfo singleton when a track is loaded to a deck.
-void AutoDJCratesDAO::playerInfoTrackLoaded(const QString& a_strGroup,
-        TrackPointer a_pTrack) {
-    // This gets called with a null track during an unload.  Filter that out.
-    if (a_pTrack == nullptr) {
+void AutoDJCratesDAO::playerInfoTrackLoaded(const QString& group,
+        TrackId trackId) {
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         return;
     }
-
     // This counts as an auto-DJ reference.  The idea is to prevent tracks that
     // are loaded into a deck from being randomly chosen.
-    TrackId trackId(a_pTrack->getId());
     unsigned int numDecks = PlayerManager::numDecks();
     for (unsigned int i = 0; i < numDecks; ++i) {
-        if (a_strGroup == PlayerManager::groupForDeck(i)) {
+        if (group == PlayerManager::groupForDeck(i)) {
             // Update the number of auto-DJ-playlist references to this track.
             QSqlQuery oQuery(m_database);
             // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs + 1
@@ -1114,10 +1115,12 @@ void AutoDJCratesDAO::playerInfoTrackLoaded(const QString& a_strGroup,
 
 // Signaled by the PlayerInfo singleton when a track is unloaded from a deck.
 void AutoDJCratesDAO::playerInfoTrackUnloaded(const QString& group,
-        TrackPointer pTrack) {
+        TrackId trackId) {
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+        return;
+    }
     // This counts as an auto-DJ reference.  The idea is to prevent tracks that
     // are loaded into a deck from being randomly chosen.
-    TrackId trackId(pTrack->getId());
     unsigned int numDecks = PlayerManager::numDecks();
     for (unsigned int i = 0; i < numDecks; ++i) {
         if (group == PlayerManager::groupForDeck(i)) {
