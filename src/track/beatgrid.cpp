@@ -184,27 +184,9 @@ audio::FramePos BeatGrid::findNthBeat(audio::FramePos position, int n) const {
         return audio::kInvalidFramePos;
     }
 
-    double beatFraction = (position - firstBeatPosition()) / m_beatLengthFrames;
-    double prevBeat = floor(beatFraction);
-    double nextBeat = ceil(beatFraction);
-
-    // If the position is within 1/100th of the next or previous beat, treat it
-    // as if it is that beat.
-    const double kEpsilon = .01;
-
-    if (fabs(nextBeat - beatFraction) < kEpsilon) {
-        // If we are going to pretend we were actually on nextBeat then prevBeat
-        // needs to be re-calculated. Since it is floor(beatFraction), that's
-        // the same as nextBeat.  We only use prevBeat so no need to increment
-        // nextBeat.
-        prevBeat = nextBeat;
-    } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
-        // If we are going to pretend we were actually on prevBeat then nextBeat
-        // needs to be re-calculated. Since it is ceil(beatFraction), that's
-        // the same as prevBeat.  We will only use nextBeat so no need to
-        // decrement prevBeat.
-        nextBeat = prevBeat;
-    }
+    const double beatFraction = (position - firstBeatPosition()) / m_beatLengthFrames;
+    const double prevBeat = floor(beatFraction);
+    const double nextBeat = ceil(beatFraction);
 
     audio::FramePos closestBeatPosition;
     if (n > 0) {
