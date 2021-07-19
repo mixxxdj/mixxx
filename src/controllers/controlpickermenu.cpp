@@ -224,8 +224,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("One-time beat sync (phase only)"),
             syncMenu);
     syncMenu->addSeparator();
-    addControl("[InternalClock]", "sync_master", tr("Internal Sync Master"),
-               tr("Toggle Internal Sync Master"), syncMenu);
+    addControl("[InternalClock]",
+            "sync_leader",
+            tr("Internal Sync Leader"),
+            tr("Toggle Internal Sync Leader"),
+            syncMenu);
     addControl("[InternalClock]", "bpm", tr("Internal Master BPM"),
                tr("Internal Master BPM"), syncMenu);
     addControl("[InternalClock]", "bpm_up", tr("Internal Master BPM +1"),
@@ -239,7 +242,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[InternalClock]", "bpm_down_small", tr("Internal Master BPM -0.1"),
                tr("Decrease internal master BPM by 0.1"), syncMenu);
     syncMenu->addSeparator();
-    addDeckAndSamplerControl("sync_master", tr("Sync Master"), tr("Toggle sync master"), syncMenu);
+    addDeckAndSamplerControl("sync_leader", tr("Sync Leader"), tr("Toggle sync master"), syncMenu);
     addDeckAndSamplerControl("sync_mode", tr("Sync Mode"),
                              tr("Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)"), syncMenu);
 

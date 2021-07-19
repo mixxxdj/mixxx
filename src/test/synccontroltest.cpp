@@ -1,4 +1,4 @@
-// Tests for Master Sync.
+// Tests for Sync Lock.
 // There are no tests for actual deck playback, since I don't know how to mock that out yet.
 // The following manual tests should probably be performed:
 // * Quantize mode nudges tracks in sync, whether internal or deck master.

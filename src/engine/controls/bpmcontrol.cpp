@@ -302,7 +302,7 @@ void BpmControl::slotControlBeatSync(double value) {
 }
 
 bool BpmControl::syncTempo() {
-    if (getSyncMode() == SYNC_MASTER_EXPLICIT) {
+    if (getSyncMode() == SyncMode::LeaderExplicit) {
         return false;
     }
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
@@ -1063,7 +1063,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats) {
         // Must reset the user offset *before* calling getPhaseOffset(),
-        // otherwise it will always return 0 if master sync is active.
+        // otherwise it will always return 0 if sync lock is active.
         m_dUserOffset.setValue(0.0);
 
         double sampleOffset = getPhaseOffset(getSampleOfTrack().current);
