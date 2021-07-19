@@ -1,6 +1,12 @@
 # Changelog
 
-## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0)
+## 2.3.1
+* AutoDJCratesDAO: Fix crash after loading/unloading tracks. [lp1936396](https://bugs.launchpad.net/mixxx/ [#4107](https://github.com/mixxxdj/mixxx/pull/4107)+bug/1936396)
+* Fix bad phase seek when starting from preroll. [lp1930143](https://bugs.launchpad.net/mixxx/+bug/1930143) [#4093](https://github.com/mixxxdj/mixxx/pull/4093)
+* Fix wrong track being recorded in History [lp1933991](https://bugs.launchpad.net/mixxx/+bug/1933991) [#4041](https://github.com/mixxxdj/mixxx/pull/4041)
+* Rekordbox: Handle exception when parsing corrupt .pdb files [lp1933853](https://bugs.launchpad.net/mixxx/+bug/1933853) [#4040](https://github.com/mixxxdj/mixxx/pull/4040)
+
+## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (2021-06-28)
 ### Hotcues ###
 * Add hotcue colors and custom labels by right clicking hotcue buttons or right clicking hotcues on overview waveforms [#2016](https://github.com/mixxxdj/mixxx/pull/2016) [#2520](https://github.com/mixxxdj/mixxx/pull/2520) [#2238](https://github.com/mixxxdj/mixxx/pull/2238) [#2560](https://github.com/mixxxdj/mixxx/pull/2560) [#2557](https://github.com/mixxxdj/mixxx/pull/2557) [#2362](https://github.com/mixxxdj/mixxx/pull/2362)
 * Mouse hover cues on overview waveform to show time remaining until the cue [#2238](https://github.com/mixxxdj/mixxx/pull/2238)
