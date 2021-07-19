@@ -916,14 +916,8 @@ class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPoint
 } // anonymous namespace
 
 void WTrackMenu::slotUpdateReplaygainFromDeckGain() {
-    if (!m_pTrack) {
-        qDebug() << "track pointer nullptr, returning";
-        return;
-    }
-    if (m_deckGroup.isEmpty()) {
-        qDebug() << "Deck group not set";
-        return;
-    }
+    DEBUG_ASSERT(m_pTrack);
+    DEBUG_ASSERT(!m_deckGroup.isEmpty());
 
     const double gain = ControlObject::get(ConfigKey(m_deckGroup, "pregain"));
     // Gain is at unity already, ignore and return.
