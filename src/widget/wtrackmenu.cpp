@@ -346,7 +346,7 @@ void WTrackMenu::createActions() {
         connect(m_pUpdateReplayGain,
                 &QAction::triggered,
                 this,
-                &WTrackMenu::slotUpdateReplaygain);
+                &WTrackMenu::slotUpdateReplaygainFromDeckGain);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -843,10 +843,8 @@ TrackPointer WTrackMenu::getFirstTrackPointer() const {
             // Skip unavailable tracks
         }
         return TrackPointer();
-    } else if (m_pTrack) {
-        return m_pTrack;
     }
-    return TrackPointer();
+    return m_pTrack;
 }
 
 std::unique_ptr<mixxx::TrackPointerIterator> WTrackMenu::newTrackPointerIterator() const {
@@ -917,15 +915,22 @@ class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPoint
 
 } // anonymous namespace
 
-void WTrackMenu::slotUpdateReplaygain() {
+void WTrackMenu::slotUpdateReplaygainFromDeckGain() {
     if (!m_pTrack) {
         qDebug() << "track pointer nullptr, returning";
         return;
     }
     if (m_deckGroup.isEmpty()) {
-        qDebug() << "deck group not set";
+        qDebug() << "Deck group not set";
+        return;
     }
-    m_pTrack->adjustReplayGainFromDeckGain(m_deckGroup);
+
+    const double gain = ControlObject::get(ConfigKey(m_deckGroup, "pregain"));
+    // Gain is at unity already, ignore and return.
+    if (gain == 1.0) {
+        return;
+    }
+    m_pTrack->adjustReplayGainFromDeckGain(gain);
 }
 
 void WTrackMenu::slotImportMetadataFromFileTags() {

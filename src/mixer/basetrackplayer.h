@@ -81,8 +81,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotCloneDeck() final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, const QString& reason);
-    void slotSetReplayGain(mixxx::ReplayGain replayGain,
-            mixxx::ReplayGain::ReplayGainUpdateMode mode);
+    void slotSetReplayGain(mixxx::ReplayGain replayGain);
+    void slotUpdateAndAdjustReplayGain(mixxx::ReplayGain replayGain);
     void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
     void slotPlayToggled(double);
 
@@ -98,6 +98,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotWaveformZoomSetDefault(double pressed);
     void slotShiftCuesMillis(double milliseconds);
     void slotShiftCuesMillisButton(double value, double milliseconds);
+    void slotUpdateReplaygainFromDeckGain(double pressed);
 
   private:
     void setReplayGain(double value);
@@ -142,6 +143,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pShiftCuesLater;
     std::unique_ptr<ControlPushButton> m_pShiftCuesLaterSmall;
     std::unique_ptr<ControlObject> m_pShiftCues;
+
+    std::unique_ptr<ControlObject> m_pUpdateReplayGainFromDeckGain;
 
     parented_ptr<ControlProxy> m_pReplayGain;
     parented_ptr<ControlProxy> m_pPlay;
