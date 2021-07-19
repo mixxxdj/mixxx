@@ -2064,6 +2064,46 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Widgets
   Qt5::Xml)
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
+get_target_property(QT5_TYPE Qt5::Core TYPE)
+if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
+
+  # NOTE(rryan): If you are adding a plugin here, you must also
+  # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
+  # for it. Not all imageformats plugins are built as .libs when
+  # building Qt statically on Windows. Check the build environment
+  # to see exactly what's available as a standalone .lib vs linked
+  # into Qt .libs by default.
+
+  set_property(TARGET mixxx-lib APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+    # platform plugins
+    Qt5::QOffscreenIntegrationPlugin
+    Qt5::QMinimalIntegrationPlugin
+
+    # imageformats plugins
+    Qt5::QGifPlugin
+    Qt5::QICOPlugin
+    Qt5::QJpegPlugin
+
+    # sqldrivers
+    Qt5::QSQLiteDriverPlugin
+  )
+
+  if(WIN32)
+    set_property(TARGET mixxx-lib APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+      Qt5::QWindowsIntegrationPlugin
+      Qt5::QWindowsVistaStylePlugin
+    )
+  endif()
+
+  if(APPLE)
+    set_property(TARGET mixxx-lib APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+      Qt5::QCocoaIntegrationPlugin
+      Qt5::QMacStylePlugin
+    )
+  endif()
+
+endif()
+
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
@@ -2074,9 +2114,7 @@ if(UNIX AND NOT APPLE)
     Qt5::DBus
   )
 elseif(WIN32)
-  get_target_property(QT5_TYPE Qt5::Core TYPE)
   if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
-    target_compile_definitions(mixxx-lib PUBLIC QT_NODLL)
     target_link_libraries(mixxx-lib PRIVATE
       # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
       # QtCore
@@ -2110,32 +2148,6 @@ elseif(WIN32)
       uxtheme     # ?
       version     # ?
       wtsapi32    # ?
-
-      # NOTE(rryan): If you are adding a plugin here, you must also
-      # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
-      # for it. Not all imageformats plugins are built as .libs when
-      # building Qt statically on Windows. Check the build environment
-      # to see exactly what's available as a standalone .lib vs linked
-      # into Qt .libs by default.
-
-      # iconengines plugins
-      Qt5::QSvgIconPlugin
-
-      # imageformats plugins
-      Qt5::QGifPlugin
-      Qt5::QICOPlugin
-      Qt5::QJpegPlugin
-      Qt5::QSvgPlugin
-      Qt5::QTgaPlugin
-
-      # platform plugins (new in Qt5 for Windows)
-      Qt5::QWindowsIntegrationPlugin
-
-      # styles (new in Qt5 for Windows)
-      Qt5::QWindowsVistaStylePlugin
-
-      # sqldrivers (new in Qt5? or did we just start enabling them)
-      Qt5::QSQLiteDriverPlugin
     )
 
     find_library(QT5FONTDATABASESUPPORT_LIBRARY Qt5FontDatabaseSupport)
