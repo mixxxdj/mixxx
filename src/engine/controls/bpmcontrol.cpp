@@ -419,7 +419,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
         rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
     }
 
-    // If we are not quantized, or there are no beats, or we're master,
+    // If we are not quantized, or there are no beats, or we're leader,
     // or we're in reverse, just return the rate as-is.
     if (!m_pQuantize->toBool() || !m_pBeats || m_pReverseButton->toBool()) {
         m_resetSyncAdjustment = true;
@@ -458,10 +458,10 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         m_dLastSyncAdjustment = 1.0;
     }
 
-    // Either shortest distance is directly to the master or backwards.
+    // Either shortest distance is directly to the leader or backwards.
 
     // TODO(rryan): This is kind of backwards because we are measuring distance
-    // from master to my percentage. All of the control code below is based on
+    // from leader to my percentage. All of the control code below is based on
     // this point of reference so I left it this way but I think we should think
     // about things in terms of "my percentage-offset setpoint" that the control
     // loop should aim to maintain.
@@ -478,7 +478,7 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
 
     if (kLogger.traceEnabled()) {
         kLogger.trace() << m_group << "****************";
-        kLogger.trace() << "master beat distance:" << syncTargetBeatDistance;
+        kLogger.trace() << "target beat distance:" << syncTargetBeatDistance;
         kLogger.trace() << "my     beat distance:" << thisBeatDistance;
         kLogger.trace() << "user offset distance:" << curUserOffset;
         kLogger.trace() << "error               :" << error;

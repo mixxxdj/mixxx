@@ -141,7 +141,7 @@ class Syncable {
     // of half-double multiplier.
     virtual void reinitLeaderParams(double beatDistance, double baseBpm, double bpm) = 0;
 
-    // Update the playback speed of the master, including scratch values.
+    // Update the playback speed of the leader, including scratch values.
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
     // occur.

@@ -550,7 +550,7 @@ void Tooltips::addStandardTooltips() {
     // Awesome-Sync (TM)
     add("sync_enabled")
             << tr("Enable Sync Lock")
-            << tr("Tap to sync the tempo to other playing tracks or the master clock.")
+            << tr("Tap to sync the tempo to other playing tracks or the sync leader.")
             << tr("Hold for at least a second to enable sync lock for this deck.")
             << tr("Decks with sync locked will all play at the same tempo, and decks that also have "
                   "quantize enabled will always have their beats lined up.");
@@ -563,8 +563,8 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("Resets the key to the original track key."));
 
     add("sync_leader")
-            << tr("Enable Sync Clock Master")
-            << tr("When enabled, this device will serve as the master clock for all other decks.");
+            << tr("Enable Sync Leader")
+            << tr("When enabled, this device will serve as the sync leader for all other decks.");
 
     add("rate")
             << tr("Speed Control")
