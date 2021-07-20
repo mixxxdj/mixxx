@@ -14,7 +14,6 @@ struct BeatGridData {
     double firstBeat;
 };
 
-constexpr int kFrameSize = 2;
 constexpr double kBpmScaleRounding = 0.001;
 
 } // namespace
@@ -349,8 +348,8 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
     grid.mutable_bpm()->set_bpm(bpm.value());
-    double beatLength = (60.0 * m_sampleRate / bpm.value()) * kFrameSize;
-    return BeatsPointer(new BeatGrid(*this, grid, beatLength));
+    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());
+    return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
 }
 
 BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
@@ -359,8 +358,8 @@ BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
     }
     mixxx::track::io::BeatGrid grid = m_grid;
     grid.mutable_bpm()->set_bpm(bpm.value());
-    double beatLength = (60.0 * m_sampleRate / bpm.value()) * kFrameSize;
-    return BeatsPointer(new BeatGrid(*this, grid, beatLength));
+    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());
+    return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
 }
 
 } // namespace mixxx
