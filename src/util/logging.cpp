@@ -244,7 +244,6 @@ void handleMessage(
         const QString& input) {
     const char* levelName = nullptr;
     WriteFlags writeFlags = WriteFlag::None;
-    bool isDebugAssert = false;
     bool isControllerDebug = false;
     switch (type) {
     case QtDebugMsg:
@@ -291,7 +290,6 @@ void handleMessage(
     case QtCriticalMsg:
         levelName = "Critical";
         writeFlags = WriteFlag::All;
-        isDebugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
         break;
     case QtFatalMsg:
         levelName = "Fatal";
@@ -304,23 +302,6 @@ void handleMessage(
     }
     VERIFY_OR_DEBUG_ASSERT(levelName) {
         return;
-    }
-
-    if (isDebugAssert) {
-        if (s_debugAssertBreak) {
-            writeToLog(type, context, input, WriteFlag::All);
-            raise(SIGINT);
-            // When the debugger returns, continue normally.
-            return;
-        }
-        // If debug assertions are non-fatal, we will fall through to the normal
-        // writeToLog case below.
-#ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
-        // re-send as fatal.
-        // The "%s" is intentional. See -Werror=format-security.
-        qFatal("%s", input.toLocal8Bit().constData());
-        return;
-#endif // MIXXX_DEBUG_ASSERTIONS_FATAL
     }
 
     writeToLog(type, context, input, writeFlags);
