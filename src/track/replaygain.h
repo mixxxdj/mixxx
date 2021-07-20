@@ -1,4 +1,5 @@
 #pragma once
+#include <QtDebug>
 
 #include "util/types.h"
 
