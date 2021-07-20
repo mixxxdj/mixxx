@@ -43,6 +43,7 @@ WWaveformViewer::WWaveformViewer(
     m_pPlayEnabled = new ControlProxy(group, "play", this, ControlFlag::NoAssertIfMissing);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 WWaveformViewer::~WWaveformViewer() {
