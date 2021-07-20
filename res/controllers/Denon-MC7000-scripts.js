@@ -1,5 +1,5 @@
 /**
- * Denon DJ MC7000 DJ controller script for Mixxx 2.3
+ * Denon DJ MC7000 DJ controller script for Mixxx 2.3.1
  *
  * Started in Dec. 2019 by OsZ
  *
@@ -46,6 +46,7 @@ MC7000.needleSearchPlay = false;
 
 // Possible pitchfader rate ranges given in percent.
 // can be cycled through by the RANGE buttons.
+// All default values are the same as selectable in Mixxx Preferences
 MC7000.rateRanges = [
     4/100,  // default: 4/100
     6/100,  // default: 6/100
@@ -53,6 +54,8 @@ MC7000.rateRanges = [
     10/100, // default: 10/100
     16/100, // default: 16/100
     24/100, // default: 24/100
+    50/100, // default: 50/100
+    90/100, // default: 90/100
 ];
 
 // Platter Ring LED mode
@@ -79,7 +82,7 @@ MC7000.scratchParams = {
 // set to 1 with audio buffer set to 25ms
 // set to 3 with audio buffer set to 5ms
 
-MC7000.jogSensitivity = 1; // default: 1.0 with audio buffer set to 23ms
+MC7000.jogSensitivity = 1;
 
 /*/////////////////////////////////
 //      USER VARIABLES END       //
@@ -98,10 +101,6 @@ MC7000.needleSearchTouched = [true, true, true, true];
 
 // initial value for VINYL mode per Deck (see above for user input)
 MC7000.isVinylMode = [MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn];
-
-// used to keep track of which the rateRange of each slider.
-// value used as an index to MC7000.rateRanges
-MC7000.currentRateRangeIndex = [0, 0, 0, 0];
 
 // initialize the "factor" function for Spinback
 MC7000.factor = [];
@@ -212,13 +211,10 @@ MC7000.init = function() {
     }
 
     // send Controller Status SysEx message delayed to avoid conflicts with Softtakeover
-    engine.beginTimer(2000, MC7000.delayedSysEx, true);
-};
-
-// SysEx message to receive all knob and fader positions
-MC7000.delayedSysEx = function() {
-    var ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
-    midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+    engine.beginTimer(2000, function() {
+        var ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
+        midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+    }, true);
 };
 
 // Sampler Volume Control
@@ -496,12 +492,17 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
     // activate and clear Hot Cues
     if (MC7000.PADModeCue[deckNumber] && engine.getValue(group, "track_loaded") === 1) {
         for (i = 1; i <= 8; i++) {
-            if (control === 0x14 + i - 1 && value >= 0x01) {
+            if (control === 0x14 + i - 1 && value === 0x7F) {
                 engine.setValue(group, "hotcue_" + i + "_activate", true);
-            } else {
+            } else if (control === 0x14 + i - 1 && value === 0x00) {
                 engine.setValue(group, "hotcue_" + i + "_activate", false);
-            }
-            if (control === 0x1C + i - 1 && value >= 0x01) {
+                if (engine.getValue(group, "slip_enabled")) {
+                    engine.setValue(group, "slip_enabled", false);
+                    engine.beginTimer(250, function() {
+                        engine.setValue(group, "slip_enabled", true);
+                    }, true);
+                }
+            } else if (control === 0x1C + i - 1 && value === 0x7F) {
                 engine.setValue(group, "hotcue_" + i + "_clear", true);
                 midi.sendShortMsg(0x94 + deckOffset, 0x1C + i - 1, MC7000.padColor.hotcueoff);
             }
@@ -562,6 +563,11 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 if (engine.getValue("[Sampler" + i + "]", "track_loaded") === 0) {
                     engine.setValue("[Sampler" + i + "]", "LoadSelectedTrack", 1);
                 } else if (engine.getValue("[Sampler" + i + "]", "track_loaded") === 1) {
+                    // STOP PLAYING SAMPLERS ...
+                    for (j = 1; j <=8; j++) {
+                        engine.setValue("[Sampler" + j + "]", "cue_gotoandstop", 1);
+                    }
+                    // ... BEFORE THE ACTUAL SAMPLER TO PLAY GETS STARTED
                     engine.setValue("[Sampler" + i + "]", "cue_gotoandplay", 1);
                 }
             } else if (control === 0x1C + i - 1 && value >= 0x01) {
@@ -648,6 +654,12 @@ MC7000.wheelTouch = function(channel, control, value, status, group) {
                 MC7000.scratchParams.beta);
         } else {
             engine.scratchDisable(deckNumber);
+            if (engine.getValue(group, "slip_enabled")) {
+                engine.setValue(group, "slip_enabled", false);
+                engine.beginTimer(250, function() {
+                    engine.setValue(group, "slip_enabled", true);
+                }, true);
+            }
         }
     }
 };
@@ -659,7 +671,7 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
 
     // A: For a control that centers on 0:
     var numTicks = (value < 0x64) ? value : (value - 128);
-    var adjustedSpeed = numTicks * MC7000.jogSensitivity * 25;
+    var adjustedSpeed = numTicks * MC7000.jogSensitivity / 10;
     var deckNumber = script.deckFromGroup(group);
     var deckOffset = deckNumber - 1;
     if (engine.isScratching(deckNumber)) {
@@ -668,13 +680,11 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
     } else {
         if (MC7000.shift[deckOffset]) {
             // While Shift Button pressed -> Search through track
-            var jogSearch = 300 * adjustedSpeed / MC7000.jogWheelTicksPerRevolution;
+            var jogSearch = 100 * adjustedSpeed;
             engine.setValue(group, "jog", jogSearch);
         } else {
             // While Shift Button released -> Pitch Bend
-            var jogDelta = adjustedSpeed / MC7000.jogWheelTicksPerRevolution;
-            var jogAbsolute = jogDelta + engine.getValue(group, "jog");
-            engine.setValue(group, "jog", jogAbsolute);
+            engine.setValue(group, "jog", adjustedSpeed);
         }
     }
 };
@@ -729,13 +739,17 @@ MC7000.nextRateRange = function(midichan, control, value, status, group) {
     if (value === 0) {
         return; // don't respond to note off messages
     }
-    var deckOffset = script.deckFromGroup(group) - 1;
-    // increment currentRateRangeIndex and check for overflow
-    if (++MC7000.currentRateRangeIndex[deckOffset] ===
-      MC7000.rateRanges.length) {
-        MC7000.currentRateRangeIndex[deckOffset] = 0;
+    var currRateRange = engine.getValue(group, "rateRange");
+    engine.setValue(group, "rateRange", MC7000.getNextRateRange(currRateRange));
+};
+
+MC7000.getNextRateRange = function(currRateRange) {
+    for (var i = 0; i < MC7000.rateRanges.length; i++) {
+        if (MC7000.rateRanges[i] > currRateRange) {
+            return MC7000.rateRanges[i];
+        }
     }
-    engine.setValue(group, "rateRange", MC7000.rateRanges[MC7000.currentRateRangeIndex[deckOffset]]);
+    return MC7000.rateRanges[0];
 };
 
 // Previous Rate range toggle
@@ -743,12 +757,17 @@ MC7000.prevRateRange = function(midichan, control, value, status, group) {
     if (value === 0) {
         return; // don't respond to note off messages
     }
-    var deckOffset = script.deckFromGroup(group) - 1;
-    // decrement currentRateRangeIndex and check for underflow
-    if (--MC7000.currentRateRangeIndex[deckOffset] < 0) {
-        MC7000.currentRateRangeIndex[deckOffset] = MC7000.rateRanges.length - 1;
+    var currRateRange = engine.getValue(group, "rateRange");
+    engine.setValue(group, "rateRange", MC7000.getPrevRateRange(currRateRange));
+};
+
+MC7000.getPrevRateRange = function(currRateRange) {
+    for (var i = MC7000.rateRanges.length; i >= 0; i--) {
+        if (MC7000.rateRanges[i] < currRateRange) {
+            return MC7000.rateRanges[i];
+        }
     }
-    engine.setValue(group, "rateRange", MC7000.rateRanges[MC7000.currentRateRangeIndex[deckOffset]]);
+    return MC7000.rateRanges[MC7000.rateRanges.length - 1];
 };
 
 // Key & Waveform zoom Select
@@ -810,11 +829,20 @@ MC7000.stopTime = function(channel, control, value, status, group) {
 MC7000.reverse = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     if (value > 0) {
-        // while the button is pressed spin back
-        engine.brake(deckNumber, true, MC7000.factor[deckNumber], - 15); // start at a rate of -15 and decrease by "factor"
+        if (engine.getValue(group, "slip_enabled"))  {
+        // backspin while button is pressed at a rate of -15 and decrease by "factor"
+            engine.brake(deckNumber, value > 0, MC7000.factor[deckNumber], - 15);
+        } else {
+            engine.brake(deckNumber, true, MC7000.factor[deckNumber], - 15);
+        }
     } else {
-        // when releasing the button the track starts softly again
-        engine.softStart(deckNumber, true, MC7000.factor[deckNumber]);
+        if (engine.getValue(group, "slip_enabled")) {
+            engine.brake(deckNumber, false); // disable brake effect
+            engine.setValue(group, "play", 1);
+            engine.setValue(group, "slip_enabled", 0);
+        } else {
+            engine.softStart(deckNumber, true, MC7000.factor[deckNumber]);
+        }
     }
 };
 
@@ -827,6 +855,9 @@ MC7000.censor = function(channel, control, value, status, group) {
         } else {
             engine.setValue(group, "reverseroll", 0);
         }
+        engine.beginTimer(250, function() {
+            engine.setValue(group, "slip_enabled", true);
+        }, true);
     } else {
         // reverse play while button pressed
         if (value > 0) {
