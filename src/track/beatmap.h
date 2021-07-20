@@ -34,7 +34,7 @@ class BeatMap final : public Beats {
             const QVector<mixxx::audio::FramePos>& beats);
 
     Beats::CapabilitiesFlags getCapabilities() const override {
-        return BEATSCAP_NONE;
+        return BEATSCAP_SETBPM;
     }
 
     QByteArray toByteArray() const override;
