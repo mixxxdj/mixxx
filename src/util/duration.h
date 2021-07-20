@@ -2,10 +2,11 @@
 
 #include <QMetaType>
 #include <QString>
+#include <QTextStreamFunction>
 #include <QtDebug>
 #include <QtGlobal>
-#include <QTextStreamFunction>
 
+#include "audio/types.h"
 #include "util/assert.h"
 
 namespace mixxx {
@@ -60,6 +61,11 @@ class DurationBase {
     // Returns the duration as an integer number of nanoseconds.
     constexpr double toDoubleNanos() const {
         return m_durationNanos;
+    }
+
+    // Returns the duration as an integer number of nanoseconds.
+    constexpr double toFrames(mixxx::audio::SampleRate sampleRate) const {
+        return toDoubleSeconds() * sampleRate;
     }
 
     enum class Precision {
