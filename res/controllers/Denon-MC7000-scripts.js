@@ -1,5 +1,5 @@
 /**
- * Denon DJ MC7000 DJ controller script for Mixxx 2.3
+ * Denon DJ MC7000 DJ controller script for Mixxx 2.3.1
  *
  * Started in Dec. 2019 by OsZ
  *
@@ -37,7 +37,7 @@ var MC7000 = {};
 // 1) Beat LED in Slicer mode (counts every 8 beats AFTER the CUE point)
 //    only works for CONSTANT TEMPO tracks
 //    needs beat grid and CUE point set
-MC7000.experimental = true;
+MC7000.experimental = false;
 
 // Wanna have Needle Search active while playing a track ?
 // In any case Needle Search is available holding "SHIFT" down.
@@ -46,7 +46,7 @@ MC7000.needleSearchPlay = false;
 
 // Possible pitchfader rate ranges given in percent.
 // can be cycled through by the RANGE buttons.
-// All default values are the same as selectable in Preferences
+// All default values are the same as selectable in Mixxx Preferences
 MC7000.rateRanges = [
     4/100,  // default: 4/100
     6/100,  // default: 6/100
@@ -72,8 +72,8 @@ MC7000.VinylModeOn = true; // default: true
 // Scratch algorithm parameters
 MC7000.scratchParams = {
     recordSpeed: 33 + 1/3, // default: 33 + 1/3
-    alpha: (1.0/100),   // default: (1.0/10)
-    beta: (1.0/100)/32  // default: (1.0/10)/32
+    alpha: (1.0/10),   // default: (1.0/10)
+    beta: (1.0/10)/32  // default: (1.0/10)/32
 };
 
 // Sensitivity factor of the jog wheel (also depends on audio latency)
@@ -82,7 +82,7 @@ MC7000.scratchParams = {
 // set to 1 with audio buffer set to 25ms
 // set to 3 with audio buffer set to 5ms
 
-MC7000.jogSensitivity = 1.4;
+MC7000.jogSensitivity = 1;
 
 /*/////////////////////////////////
 //      USER VARIABLES END       //
