@@ -80,10 +80,10 @@
                 <SetVariable name="Size">48f,22f</SetVariable>
                 <SetVariable name="BtnSize">sync</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,sync_enabled</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,sync_master</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,sync_leader</SetVariable>
               </Template>
               <PushButton>
-                  <TooltipId>sync_master</TooltipId>
+                  <TooltipId>sync_leader</TooltipId>
                   <ObjectName>SyncLeader</ObjectName>
                   <Size>48f,22f</Size>
                   <NumberStates>3</NumberStates>
@@ -103,7 +103,7 @@
                       <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Pressed>
                   </State>
                   <Connection>
-                      <ConfigKey><Variable name="Group"/>,sync_master</ConfigKey>
+                      <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                   </Connection>
               </PushButton>
