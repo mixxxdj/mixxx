@@ -24,19 +24,18 @@ TEST_F(BpmControlTest, ShortestPercentageChange) {
 }
 
 TEST_F(BpmControlTest, BeatContext_BeatGrid) {
-    const int sampleRate = 44100;
+    constexpr auto sampleRate = mixxx::audio::SampleRate(44100);
 
     TrackPointer pTrack = Track::newTemporary();
     pTrack->setAudioProperties(
             mixxx::audio::ChannelCount(2),
-            mixxx::audio::SampleRate(sampleRate),
+            sampleRate,
             mixxx::audio::Bitrate(),
             mixxx::Duration::fromSeconds(180));
 
     constexpr auto bpm = mixxx::Bpm(60.0);
     const int kFrameSize = 2;
-    const double expectedBeatLengthSamples =
-            bpm.beatLength().toDoubleSeconds() * sampleRate * kFrameSize;
+    const double expectedBeatLengthSamples = bpm.beatLength().toFrames(sampleRate) * kFrameSize;
 
     const mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(
             pTrack->getSampleRate(), bpm, mixxx::audio::kStartFramePos);

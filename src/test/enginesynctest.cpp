@@ -1988,8 +1988,7 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
     // half-double matching should be consistent
     constexpr auto sampleRate = mixxx::audio::SampleRate(44100);
 
-    mixxx::audio::FrameDiff_t beatLengthFrames =
-            mixxx::Bpm(90.0).beatLength().toDoubleSeconds() * sampleRate;
+    mixxx::audio::FrameDiff_t beatLengthFrames = mixxx::Bpm(90.0).beatLength().toFrames(sampleRate);
     constexpr auto startOffsetFrames = mixxx::audio::kStartFramePos;
     const int numBeats = 100;
     QVector<mixxx::audio::FramePos> beats1 =
@@ -1997,7 +1996,7 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
     auto pBeats1 = mixxx::BeatMap::makeBeatMap(m_pTrack1->getSampleRate(), QString(), beats1);
     m_pTrack1->trySetBeats(pBeats1);
 
-    beatLengthFrames = mixxx::Bpm(145.0).beatLength().toDoubleSeconds() * sampleRate;
+    beatLengthFrames = mixxx::Bpm(145.0).beatLength().toFrames(sampleRate);
     QVector<mixxx::audio::FramePos> beats2 =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
     auto pBeats2 = mixxx::BeatMap::makeBeatMap(m_pTrack2->getSampleRate(), QString(), beats2);

@@ -60,8 +60,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
 
     constexpr auto bpm = mixxx::Bpm(60.1);
     pTrack->trySetBpm(bpm.value());
-    const mixxx::audio::FrameDiff_t beatLengthFrames =
-            bpm.beatLength().toDoubleSeconds() * sampleRate;
+    const mixxx::audio::FrameDiff_t beatLengthFrames = bpm.beatLength().toFrames(sampleRate);
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
             QString(),
@@ -106,8 +105,7 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
 
     constexpr mixxx::Bpm bpm(60.1);
     pTrack->trySetBpm(bpm.value());
-    const mixxx::audio::FrameDiff_t beatLengthFrames =
-            bpm.beatLength().toDoubleSeconds() * sampleRate;
+    const mixxx::audio::FrameDiff_t beatLengthFrames = bpm.beatLength().toFrames(sampleRate);
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
             QString(),

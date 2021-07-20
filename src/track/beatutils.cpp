@@ -313,7 +313,7 @@ mixxx::Bpm BeatUtils::makeConstBpm(
         // bpm adjustments are made.
         // This is a temporary fix, ideally the anchor point for the BPM grid should
         // be the first proper downbeat, or perhaps the CUE point.
-        const double roundedBeatLength = roundBpm.beatLength().toDoubleSeconds() * sampleRate;
+        const double roundedBeatLength = roundBpm.beatLength().toFrames(sampleRate);
         *pFirstBeat = mixxx::audio::FramePos(
                 fmod(constantRegions[startRegionIndex].firstBeat.value(),
                         roundedBeatLength));
@@ -387,8 +387,7 @@ mixxx::audio::FramePos BeatUtils::adjustPhase(
         mixxx::Bpm bpm,
         mixxx::audio::SampleRate sampleRate,
         const QVector<mixxx::audio::FramePos>& beats) {
-    const mixxx::audio::FrameDiff_t beatLengthFrames =
-            bpm.beatLength().toDoubleSeconds() * sampleRate;
+    const mixxx::audio::FrameDiff_t beatLengthFrames = bpm.beatLength().toFrames(sampleRate);
     const mixxx::audio::FramePos startOffset =
             mixxx::audio::FramePos(fmod(firstBeat.value(), beatLengthFrames));
     mixxx::audio::FrameDiff_t offsetAdjust = 0;
