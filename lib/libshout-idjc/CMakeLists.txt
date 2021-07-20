@@ -78,7 +78,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Vorbis::vorbis Vorbis::vorbisenc)
 # OpenSSL
 find_package(OpenSSL REQUIRED)
 target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_OPENSSL)
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${OPENSSL_CRYPTO_LIBRARY} ${OPENSSL_SSL_LIBRARY})
 
 option(SPEEX "Speex support" OFF)
 if(SPEEX)
