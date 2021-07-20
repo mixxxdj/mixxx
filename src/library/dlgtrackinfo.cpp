@@ -30,10 +30,9 @@ namespace {
 
 constexpr double kBpmTabRounding = 1 / 12.0;
 constexpr int kFilterLength = 80;
-constexpr int kMinBpm = 30;
+constexpr auto kMinBpm = mixxx::Bpm(30.0);
 // Maximum allowed interval between beats (calculated from kMinBpm).
-const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
-        static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
+const mixxx::Duration kMaxInterval = kMinBpm.beatLength();
 
 } // namespace
 

@@ -33,9 +33,10 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
             mixxx::audio::Bitrate(),
             mixxx::Duration::fromSeconds(180));
 
-    const auto bpm = mixxx::Bpm(60.0);
+    constexpr auto bpm = mixxx::Bpm(60.0);
     const int kFrameSize = 2;
-    const double expectedBeatLength = (60.0 * sampleRate / bpm.value()) * kFrameSize;
+    const double expectedBeatLengthSamples =
+            bpm.beatLength().toDoubleSeconds() * sampleRate * kFrameSize;
 
     const mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(
             pTrack->getSampleRate(), bpm, mixxx::audio::kStartFramePos);
@@ -46,6 +47,6 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
                                            &beatLength, &beatPercentage));
     EXPECT_DOUBLE_EQ(0.0, prevBeat);
     EXPECT_DOUBLE_EQ(beatLength, nextBeat);
-    EXPECT_DOUBLE_EQ(expectedBeatLength, beatLength);
+    EXPECT_DOUBLE_EQ(expectedBeatLengthSamples, beatLength);
     EXPECT_DOUBLE_EQ(0.0, beatPercentage);
 }

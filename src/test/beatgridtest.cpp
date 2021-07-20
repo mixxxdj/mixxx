@@ -55,19 +55,20 @@ TEST(BeatGridTest, Scale) {
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
-    constexpr int sampleRate = 44100;
+    constexpr auto sampleRate = mixxx::audio::SampleRate(44100);
     TrackPointer pTrack = newTrack(sampleRate);
 
-    constexpr double bpm = 60.1;
-    pTrack->trySetBpm(bpm);
-    constexpr mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm;
+    constexpr auto bpm = mixxx::Bpm(60.1);
+    pTrack->trySetBpm(bpm.value());
+    const mixxx::audio::FrameDiff_t beatLengthFrames =
+            bpm.beatLength().toDoubleSeconds() * sampleRate;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
             QString(),
             mixxx::Bpm(bpm),
             mixxx::audio::kStartFramePos);
     // Pretend we're on the 20th beat;
-    constexpr mixxx::audio::FramePos position(beatLengthFrames * 20);
+    const mixxx::audio::FramePos position(beatLengthFrames * 20);
 
     // The spec dictates that a value of 0 is always invalid and returns an invalid position
     EXPECT_FALSE(pGrid->findNthBeat(position, 0).isValid());
@@ -100,12 +101,13 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
 }
 
 TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
-    constexpr int sampleRate = 44100;
+    constexpr auto sampleRate = mixxx::audio::SampleRate(44100);
     TrackPointer pTrack = newTrack(sampleRate);
 
     constexpr mixxx::Bpm bpm(60.1);
     pTrack->trySetBpm(bpm.value());
-    const mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm.value();
+    const mixxx::audio::FrameDiff_t beatLengthFrames =
+            bpm.beatLength().toDoubleSeconds() * sampleRate;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
             QString(),

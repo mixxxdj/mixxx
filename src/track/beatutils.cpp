@@ -313,7 +313,7 @@ mixxx::Bpm BeatUtils::makeConstBpm(
         // bpm adjustments are made.
         // This is a temporary fix, ideally the anchor point for the BPM grid should
         // be the first proper downbeat, or perhaps the CUE point.
-        const double roundedBeatLength = 60.0 * sampleRate / roundBpm.value();
+        const double roundedBeatLength = roundBpm.beatLength().toDoubleSeconds() * sampleRate;
         *pFirstBeat = mixxx::audio::FramePos(
                 fmod(constantRegions[startRegionIndex].firstBeat.value(),
                         roundedBeatLength));
@@ -387,15 +387,16 @@ mixxx::audio::FramePos BeatUtils::adjustPhase(
         mixxx::Bpm bpm,
         mixxx::audio::SampleRate sampleRate,
         const QVector<mixxx::audio::FramePos>& beats) {
-    const double beatLength = 60 * sampleRate / bpm.value();
+    const mixxx::audio::FrameDiff_t beatLengthFrames =
+            bpm.beatLength().toDoubleSeconds() * sampleRate;
     const mixxx::audio::FramePos startOffset =
-            mixxx::audio::FramePos(fmod(firstBeat.value(), beatLength));
+            mixxx::audio::FramePos(fmod(firstBeat.value(), beatLengthFrames));
     mixxx::audio::FrameDiff_t offsetAdjust = 0;
     double offsetAdjustCount = 0;
     for (const auto& beat : beats) {
-        mixxx::audio::FrameDiff_t offset = fmod(beat - startOffset, beatLength);
-        if (offset > beatLength / 2) {
-            offset -= beatLength;
+        mixxx::audio::FrameDiff_t offset = fmod(beat - startOffset, beatLengthFrames);
+        if (offset > beatLengthFrames / 2) {
+            offset -= beatLengthFrames;
         }
         if (abs(offset) < (kMaxSecsPhaseError * sampleRate)) {
             offsetAdjust += offset;
