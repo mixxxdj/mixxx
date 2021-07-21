@@ -36,7 +36,7 @@ There are lots of ways you can contribute to Mixxx. Even if you don't know how t
 If you have some coding skills, or you are willing to learn them you can do even more:
 
  - [Add native support for new hardware controllers](https://github.com/mixxxdj/mixxx/wiki/Contributing%20mappings)
- - Fix bugs or program new features
+ - [Fix bugs or program new features](#Your-first-Mixxx-code-contribution)
 
 We welcome programmers of all backgrounds and skill levels, and our community will do their best to help you with any problems you encounter.
 
