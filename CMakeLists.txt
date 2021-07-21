@@ -1372,7 +1372,10 @@ if(UNIX AND NOT APPLE)
   option(INSTALL_USER_UDEV_RULES "Install user udev rule file for USB HID and Bulk controllers" ON)
   if(INSTALL_USER_UDEV_RULES)
     set(MIXXX_UDEVDIR "${MIXXX_INSTALL_DATADIR}/udev")
-    if (CMAKE_INSTALL_PREFIX STREQUAL "/usr")
+    if (CMAKE_INSTALL_PREFIX STREQUAL "/usr" OR CMAKE_INSTALL_PREFIX STREQUAL "/" )
+      # /usr and / install prefixes at treated by cmake GNUInstallDirs as
+      # synonym for "system location" in wich case we can lookup the correct udevdir
+      # See: https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#special-cases
       find_package(PkgConfig)
       if (PKG_CONFIG_FOUND)
         pkg_check_modules( PKGCONFIG_UDEV udev)
