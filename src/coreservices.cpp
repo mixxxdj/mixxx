@@ -30,11 +30,14 @@
 #include "util/font.h"
 #include "util/logger.h"
 #include "util/screensaver.h"
+#include "util/screensavermanager.h"
 #include "util/statsmanager.h"
 #include "util/time.h"
 #include "util/translations.h"
 #include "util/versionstore.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#include "waveform/guitick.h"
+#include "waveform/visualsmanager.h"
 
 #ifdef __APPLE__
 #include "util/sandbox.h"
@@ -189,6 +192,9 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(20, tr("effects"));
     m_pEffectsManager = std::make_shared<EffectsManager>(this, pConfig, pChannelHandleFactory);
 
+    m_pGuiTick = std::make_shared<GuiTick>();
+    m_pVisualsManager = std::make_shared<VisualsManager>();
+
     m_pEngine = std::make_shared<EngineMaster>(
             pConfig,
             "[Master]",
@@ -260,6 +266,13 @@ void CoreServices::initialize(QApplication* pApp) {
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
 #endif
+
+    // Inhibit Screensaver
+    m_pScreensaverManager = std::make_shared<ScreensaverManager>(pConfig);
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::currentPlayingDeckChanged,
+            m_pScreensaverManager.get(),
+            &ScreensaverManager::slotCurrentPlayingDeckChanged);
 
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();

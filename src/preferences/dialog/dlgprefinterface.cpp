@@ -18,6 +18,7 @@
 #include "skin/skin.h"
 #include "skin/skinloader.h"
 #include "util/screensaver.h"
+#include "util/screensavermanager.h"
 #include "util/widgethelper.h"
 
 using mixxx::skin::SkinManifest;
@@ -25,12 +26,12 @@ using mixxx::skin::SkinPointer;
 
 DlgPrefInterface::DlgPrefInterface(
         QWidget* parent,
-        MixxxMainWindow* mixxx,
+        std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
         std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
-          m_mixxx(mixxx),
+          m_pScreensaverManager(pScreensaverManager),
           m_pSkinLoader(pSkinLoader),
           m_pSkin(pSkinLoader->getConfiguredSkin()),
           m_dScaleFactorAuto(1.0),
@@ -165,7 +166,7 @@ DlgPrefInterface::DlgPrefInterface(
     comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"),
             static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON_PLAY));
 
-    int inhibitsettings = static_cast<int>(mixxx->getInhibitScreensaver());
+    int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 
     // Tooltip configuration
@@ -187,10 +188,9 @@ QScreen* DlgPrefInterface::getScreen() const {
     auto* pScreen =
             mixxx::widgethelper::getScreen(*this);
     if (!pScreen) {
-        // Obtain the screen from the main widget as a fallback. This
-        // is necessary if no window is available before the widget
-        // is displayed.
-        pScreen = mixxx::widgethelper::getScreen(*m_mixxx);
+        // Obtain the primary screen. This is necessary if no window is
+        // available before the widget is displayed.
+        pScreen = qGuiApp->primaryScreen();
     }
     DEBUG_ASSERT(pScreen);
     return pScreen;
@@ -261,7 +261,7 @@ void DlgPrefInterface::slotUpdate() {
 
     loadTooltipPreferenceFromConfig();
 
-    int inhibitsettings = static_cast<int>(m_mixxx->getInhibitScreensaver());
+    int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 }
 
@@ -408,14 +408,16 @@ void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
 
-    m_mixxx->setToolTipsCfg(m_tooltipMode);
+    m_pConfig->set(ConfigKey("[Controls]", "Tooltips"),
+            ConfigValue(static_cast<int>(m_tooltipMode)));
+    emit tooltipModeChanged(m_tooltipMode);
 
     // screensaver mode update
     int screensaverComboBoxState = comboBoxScreensaver->itemData(
             comboBoxScreensaver->currentIndex()).toInt();
-    int screensaverConfiguredState = static_cast<int>(m_mixxx->getInhibitScreensaver());
+    int screensaverConfiguredState = static_cast<int>(m_pScreensaverManager->status());
     if (screensaverComboBoxState != screensaverConfiguredState) {
-        m_mixxx->setInhibitScreensaver(
+        m_pScreensaverManager->setStatus(
                 static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
@@ -426,7 +428,7 @@ void DlgPrefInterface::slotApply() {
     }
 
     if (m_bRebootMixxxView) {
-        m_mixxx->rebootMixxxView();
+        emit reloadUserInterface();
         // Allow switching skins multiple times without closing the dialog
         m_skinNameOnUpdate = m_pSkin->name();
     }
@@ -434,17 +436,20 @@ void DlgPrefInterface::slotApply() {
 }
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
-    mixxx::TooltipsPreference configTooltips = m_mixxx->getToolTipsCfg();
-    switch (configTooltips) {
-        case mixxx::TooltipsPreference::TOOLTIPS_OFF:
-            radioButtonTooltipsOff->setChecked(true);
-            break;
-        case mixxx::TooltipsPreference::TOOLTIPS_ON:
-            radioButtonTooltipsLibraryAndSkin->setChecked(true);
-            break;
-        case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
-            radioButtonTooltipsLibrary->setChecked(true);
-            break;
+    const auto tooltipMode = static_cast<mixxx::TooltipsPreference>(
+            m_pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
+                    static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+    switch (tooltipMode) {
+    case mixxx::TooltipsPreference::TOOLTIPS_OFF:
+        radioButtonTooltipsOff->setChecked(true);
+        break;
+    case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
+        radioButtonTooltipsLibrary->setChecked(true);
+        break;
+    case mixxx::TooltipsPreference::TOOLTIPS_ON:
+    default:
+        radioButtonTooltipsLibraryAndSkin->setChecked(true);
+        break;
     }
-    m_tooltipMode = configTooltips;
+    m_tooltipMode = tooltipMode;
 }
