@@ -63,11 +63,11 @@ If you have trouble with any of this remember that you can always ask on the [Zu
 Once you finish coding, it's time to show your changes to other Mixxx developers. You do so by [opening a Pull Request](https://github.com/mixxxdj/mixxx/wiki/Using%20Git#open-a-pull-request).
 
 ### How to become a 5-star contributor ###
-Now that you know your basics on how to contribute to Mixxx and engage in its community, it's time to learn a bit more our rules and guidelines.
+Now that you know your basics on how to contribute to Mixxx and engage with its community, it's time to learn a bit more our rules and guidelines.
 
 These rules and guidelines describe how our community has agreed to collaborate together effectively. Reading and following these guidelines shows other collaborators that you respect their time and effort. In return, they will do their best to address your issue and help you get your contributiuons merged.
 
-If you have trouble on how to follow any of this guidelines remember that you can always ask on the [Zulip development help channel](https://mixxx.zulipchat.com/#narrow/stream/247620-development-help).
+If you have trouble following any of this guidelines remember that you can always ask on the [Zulip development help channel](https://mixxx.zulipchat.com/#narrow/stream/247620-development-help).
 
 #### Commits ####
 * Every commit should build. This is important so [git bisect](https://git-scm.com/book/en/v2/Git-Tools-Debugging-with-Git#_binary_search) works.
