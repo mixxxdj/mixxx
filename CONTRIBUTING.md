@@ -12,9 +12,6 @@ All Mixxx contributors, including the core team members, are volunteers. This me
    - [Time to code](#Time-to-code)
    - [Open a Pull Request](#Open-a-Pull-Request)
    - [How to become a 5-star contributor](#How-to-become-a-5-star-contributor)
-- [Git Workflow](#Git-Workflow)
-   - [All Contributors](#All-Contributors)
-   - [Core Team](#Core-Team)
 
 ## Getting in touch with the community ##
 
