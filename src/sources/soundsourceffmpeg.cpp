@@ -968,9 +968,9 @@ const CSAMPLE* SoundSourceFFmpeg::resampleDecodedAVFrame() {
 #if VERBOSE_DEBUG_LOG
         avTrace("Received resampled frame", *m_pavResampledFrame);
 #endif
-        DEBUG_ASSERT(m_pavDecodedFrame->pts == m_pavResampledFrame->pts);
-        DEBUG_ASSERT(m_pavDecodedFrame->nb_samples ==
-                m_pavResampledFrame->nb_samples);
+        DEBUG_ASSERT(m_pavResampledFrame->pts == AV_NOPTS_VALUE ||
+                m_pavResampledFrame->pts == m_pavDecodedFrame->pts);
+        DEBUG_ASSERT(m_pavResampledFrame->nb_samples == m_pavDecodedFrame->nb_samples);
         return reinterpret_cast<const CSAMPLE*>(
                 m_pavResampledFrame->extended_data[0]);
     } else {
