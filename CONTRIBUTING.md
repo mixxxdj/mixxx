@@ -53,7 +53,7 @@ Your first goal is to get the Mixxx source code and compile it. The steps to do 
 You might already have in mind that feature you always dreamed of! If that's not the case or you want to start with something easy, you can ask for ideas on [Zulip](https://mixxx.zulipchat.com/#narrow/stream/247620-development-help) or pick an [easy issue](https://bugs.launchpad.net/mixxx/+bugs?field.tag=easy).
 
 ### Time to code ###
-Now it's time to write some code! 
+Now it's time to write some code!
 We recommend to [set up an IDE](https://github.com/mixxxdj/mixxx/wiki/Developer%20Tools) to assit you in the code writing process.
 
 We use [Git](https://git-scm.com/) for source control. Git is a distributed version control system that allows us to keep track of how our code changes and work together on it. If you are new to Git or source control in general, you can have a look at [Using Git](https://github.com/mixxxdj/mixxx/wiki/Using%20Git) to learn how.
