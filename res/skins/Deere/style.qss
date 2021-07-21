@@ -818,7 +818,7 @@ WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
 WOverview /* Hotcue labels in the overview */,
-WEffect,
+WEffectName,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
@@ -1230,7 +1230,7 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 2;
 }
 
-#EffectMetaKnob, WEffect {
+#EffectMetaKnob, WEffectName {
   font-size: 12px;
   background-color: none;
   border: none;

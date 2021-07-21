@@ -175,7 +175,7 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
             1,
             "EffectSlotProxy",
             "EffectSlotProxy objects can't be created directly, please use "
-            "Mixxx.EffectsManager.getEffectSlot(rackNumber, unitNumber, effectNumber)");
+            "Mixxx.EffectsManager.getEffectSlot(unitNumber, effectNumber)");
 
     qmlRegisterSingletonType<QmlPlayerManagerProxy>("Mixxx",
             0,

@@ -11,8 +11,6 @@ class QmlEffectManifestParametersModel;
 
 class QmlEffectSlotProxy : public QObject {
     Q_OBJECT
-    Q_PROPERTY(int rackNumber READ getRackNumber CONSTANT)
-    Q_PROPERTY(QString rackGroup READ getRackGroup CONSTANT)
     Q_PROPERTY(int chainSlotNumber READ getChainSlotNumber CONSTANT)
     Q_PROPERTY(QString chainSlotGroup READ getChainSlotGroup CONSTANT)
     Q_PROPERTY(int number READ getNumber CONSTANT)
@@ -22,13 +20,13 @@ class QmlEffectSlotProxy : public QObject {
                     READ getParametersModel NOTIFY parametersModelChanged)
 
   public:
-    explicit QmlEffectSlotProxy(EffectRackPointer pEffectRack,
-            EffectChainSlotPointer pChainSlot,
+    explicit QmlEffectSlotProxy(
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            int unitNumber,
+            EffectChainPointer pChainSlot,
             EffectSlotPointer pEffectSlot,
             QObject* parent = nullptr);
 
-    int getRackNumber() const;
-    QString getRackGroup() const;
     int getChainSlotNumber() const;
     QString getChainSlotGroup() const;
     int getNumber() const;
@@ -44,8 +42,15 @@ class QmlEffectSlotProxy : public QObject {
     void parametersModelChanged();
 
   private:
-    const EffectRackPointer m_pRack;
-    const EffectChainSlotPointer m_pChainSlot;
+    /// FIXME: The reference to EffectManager is needed for loading effects.
+    /// Unfortunately, the EffectSlot class doesn't provide a method to load an
+    /// effect directly.
+    const std::shared_ptr<EffectsManager> m_pEffectsManager;
+    /// FIXME: This is a workaround for the missing getChainSlotNumber()
+    /// method, so we need to store it separately. Fortunately, the EffectSlot
+    /// class still has this method, so we don't need to store that, too.
+    const int m_unitNumber;
+    const EffectChainPointer m_pChainSlot;
     const EffectSlotPointer m_pEffectSlot;
 };
 

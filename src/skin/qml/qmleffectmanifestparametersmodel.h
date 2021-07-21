@@ -16,7 +16,7 @@ class QmlEffectManifestParametersModel : public QAbstractListModel {
         NameRole,
         ShortNameRole,
         DescriptionRole,
-        ControlHintRole,
+        TypeRole,
         ControlKeyRole,
     };
     Q_ENUM(Roles)

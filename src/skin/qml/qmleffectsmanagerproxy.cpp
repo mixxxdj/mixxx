@@ -3,8 +3,7 @@
 #include <QQmlEngine>
 #include <memory>
 
-#include "effects/effectchainslot.h"
-#include "effects/effectrack.h"
+#include "effects/effectchain.h"
 #include "skin/qml/qmleffectslotproxy.h"
 #include "skin/qml/qmlvisibleeffectsmodel.h"
 
@@ -20,22 +19,14 @@ QmlEffectsManagerProxy::QmlEffectsManagerProxy(
                   new QmlVisibleEffectsModel(pEffectsManager, this)) {
 }
 
-QmlEffectSlotProxy* QmlEffectsManagerProxy::getEffectSlot(
-        int rackNumber, int unitNumber, int effectNumber) const {
+QmlEffectSlotProxy* QmlEffectsManagerProxy::getEffectSlot(int unitNumber, int effectNumber) const {
     // Subtract 1 from all numbers, because internally our indices are
     // zero-based
-    const int rackIndex = rackNumber - 1;
-    const auto pRack = m_pEffectsManager->getStandardEffectRack(rackIndex);
-    if (!pRack) {
-        qWarning() << "QmlEffectsManagerProxy: Effect Rack" << rackNumber << "not found!";
-        return nullptr;
-    }
-
     const int unitIndex = unitNumber - 1;
-    const auto pEffectUnit = pRack->getEffectChainSlot(unitIndex);
+    const auto pEffectUnit = m_pEffectsManager->getStandardEffectChain(unitIndex);
     if (!pEffectUnit) {
         qWarning() << "QmlEffectsManagerProxy: Effect Unit" << unitNumber
-                   << "in Rack" << rackNumber << "not found!";
+                   << "not found!";
         return nullptr;
     }
 
@@ -43,14 +34,14 @@ QmlEffectSlotProxy* QmlEffectsManagerProxy::getEffectSlot(
     const auto pEffectSlot = pEffectUnit->getEffectSlot(effectIndex);
     if (!pEffectSlot) {
         qWarning() << "QmlEffectsManagerProxy: Effect Slot" << effectNumber
-                   << "in Unit" << unitNumber << "of Rack" << rackNumber
-                   << "not found!";
+                   << "in Unit" << unitNumber << "not found!";
         return nullptr;
     }
 
     // Don't set a parent here, so that the QML engine deletes the object when
     // the corresponding JS object is garbage collected.
-    QmlEffectSlotProxy* pEffectSlotProxy = new QmlEffectSlotProxy(pRack, pEffectUnit, pEffectSlot);
+    QmlEffectSlotProxy* pEffectSlotProxy = new QmlEffectSlotProxy(
+            m_pEffectsManager, unitNumber, pEffectUnit, pEffectSlot);
     QQmlEngine::setObjectOwnership(pEffectSlotProxy, QQmlEngine::JavaScriptOwnership);
     return pEffectSlotProxy;
 }

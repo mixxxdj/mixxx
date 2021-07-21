@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QDomNode>
 #include <QComboBox>
-#include "effects/effectrack.h"
+#include <QDomNode>
+
 #include "effects/effectslot.h"
 #include "skin/legacy/skincontext.h"
 
@@ -15,18 +15,15 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
 
     void setup(const QDomNode& node, const SkinContext& context);
 
-  protected:
-    bool event(QEvent* pEvent) override;
-
   private slots:
     void slotEffectUpdated();
     void slotEffectSelected(int newIndex);
     void populate();
+    bool event(QEvent* pEvent) override;
 
   private:
+    int m_iEffectSlotIndex;
     EffectsManager* m_pEffectsManager;
+    VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectSlotPointer m_pEffectSlot;
-    EffectChainSlotPointer m_pChainSlot;
-    EffectRackPointer m_pRack;
-    double m_scaleFactor;
 };

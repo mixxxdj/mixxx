@@ -19,7 +19,7 @@ WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
 WOverview, /* Hotcue labels in the overview */
-WEffect,
+WEffectName,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,

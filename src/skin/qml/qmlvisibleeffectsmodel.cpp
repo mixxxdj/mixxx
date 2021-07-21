@@ -2,8 +2,10 @@
 
 #include <QModelIndex>
 
-#include "effects/effectmanifest.h"
+#include "effects/backends/effectmanifest.h"
+#include "effects/defs.h"
 #include "effects/effectsmanager.h"
+#include "effects/visibleeffectslist.h"
 
 namespace mixxx {
 namespace skin {
@@ -21,15 +23,15 @@ QmlVisibleEffectsModel::QmlVisibleEffectsModel(
         QObject* parent)
         : QAbstractListModel(parent), m_pEffectsManager(pEffectsManager) {
     slotVisibleEffectsUpdated();
-    connect(m_pEffectsManager.get(),
-            &EffectsManager::visibleEffectsUpdated,
+    connect(m_pEffectsManager->getVisibleEffectsList().get(),
+            &VisibleEffectsList::visibleEffectsListChanged,
             this,
             &QmlVisibleEffectsModel::slotVisibleEffectsUpdated);
 }
 
 void QmlVisibleEffectsModel::slotVisibleEffectsUpdated() {
     beginResetModel();
-    m_visibleEffectManifests = m_pEffectsManager->getVisibleEffectManifests();
+    m_visibleEffectManifests = m_pEffectsManager->getVisibleEffectsList()->getList();
     endResetModel();
 }
 
@@ -37,7 +39,7 @@ QVariant QmlVisibleEffectsModel::data(const QModelIndex& index, int role) const 
     if (index.row() == 0) {
         switch (role) {
         case Qt::DisplayRole:
-            return EffectsManager::kNoEffectString;
+            return kNoEffectString;
         case Qt::ToolTipRole:
             return tr("No effect loaded.");
         default:

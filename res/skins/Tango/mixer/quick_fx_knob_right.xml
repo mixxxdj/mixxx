@@ -45,7 +45,7 @@ Variables:
                   <Template src="skin:../Tango/controls/button_2state.xml">
                     <SetVariable name="ObjectName">QuickFxDisabledUnderlay</SetVariable>
                     <SetVariable name="Size">30f,26f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="QuickFxGroup"/>,enabled</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -66,7 +66,7 @@ Variables:
                         <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
                         <SetVariable name="ObjectName">QuickFXButton</SetVariable>
                         <SetVariable name="Size">12f,24f</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="QuickFxGroup"/>,enabled</SetVariable>
                       </Template>
                     </Children>
                     <Connection>
@@ -99,7 +99,7 @@ Variables:
                     <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
                     <SetVariable name="ObjectName">QuickFXButton</SetVariable>
                     <SetVariable name="Size">24f,12f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="QuickFxGroup"/>,enabled</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
@@ -126,7 +126,7 @@ Variables:
                 <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
                 <SetVariable name="ObjectName">QuickFXButton</SetVariable>
                 <SetVariable name="Size">24f,12f</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="QuickFxGroup"/>,enabled</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -138,20 +138,7 @@ Variables:
           <!-- /QuickFx enable button BELOW when no EQ plugin is loaded -->
 
         </Children>
-        <Connection>
-          <ConfigKey><Variable name="QuickFx"/>,loaded</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
       </WidgetGroup><!-- /QuickEffect knob + enable button -->
-
-      <WidgetGroup><!-- Spacer when no QuickEffect is loaded -->
-        <Size>0min,30f</Size>
-        <Connection>
-          <ConfigKey><Variable name="QuickFx"/>,loaded</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>
