@@ -25,13 +25,13 @@ We also have lots of additional information for users and developers on the [Mix
 
 ## How can I contribute? ##
 
-There are lots of ways you can contribute to Mixxx. Even if you don't know how to program you can help making Mixxx accessible to more users:
+There are lots of ways you can contribute to Mixxx. Even if you don't know how to program, there's plenty of things you can do to help:
 
  - [Report a bug](https://github.com/mixxxdj/mixxx/wiki/Reporting%20bugs)
  - [Help testing the latest developments](https://github.com/mixxxdj/mixxx/wiki/Testing)
  - [Help translate Mixxx to other languages](https://github.com/mixxxdj/mixxx/wiki/Internationalization)
  - [Improve the Mixxx Manual](https://github.com/mixxxdj/manual#readme)
- - [Improve Mixxx website](https://github.com/mixxxdj/website)
+ - [Improve the Mixxx website](https://github.com/mixxxdj/website)
 
 If you have some coding skills, or you are willing to learn them you can do even more:
 
@@ -41,8 +41,8 @@ If you have some coding skills, or you are willing to learn them you can do even
 We welcome programmers of all backgrounds and skill levels, and our community will do their best to help you with any problems you encounter.
 
 ## Your first Mixxx code contribution ##
-### ??? ###
-We use [git](https://git-scm.com/) for source control. Git is a distributed version control system that allows us to keep track of how our code changes and work together on it.
+### Source control ###
+We use [Git](https://git-scm.com/) for source control. Git is a distributed version control system that allows us to keep track of how our code changes and work together on it. If you are new to Git or source control in general, you can have a look at [Using Git](https://github.com/mixxxdj/mixxx/wiki/Using%20Git).
 
 ### Compile Mixxx for the first time ###
 Your first goal is to get the Mixxx source code and compile it. The steps to do so depend on your operating system:
