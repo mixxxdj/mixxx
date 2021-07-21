@@ -916,8 +916,12 @@ class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPoint
 } // anonymous namespace
 
 void WTrackMenu::slotUpdateReplaygainFromDeckGain() {
-    DEBUG_ASSERT(m_pTrack);
-    DEBUG_ASSERT(!m_deckGroup.isEmpty());
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!m_deckGroup.isEmpty()) {
+        return;
+    }
 
     const double gain = ControlObject::get(ConfigKey(m_deckGroup, "pregain"));
     // Gain is at unity already, ignore and return.
@@ -1751,7 +1755,7 @@ void WTrackMenu::slotPurge() {
 
 void WTrackMenu::clearTrackSelection() {
     m_pTrack = nullptr;
-    m_deckGroup.clear();
+    m_deckGroup = QString();
     m_trackIndexList.clear();
 }
 
