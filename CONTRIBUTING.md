@@ -124,11 +124,3 @@ Mixxx core team members are contributors who have write access to the [upstream 
 If you demonstrate good coding skills, help review pull requests, contribute major features, and show a commitment to Mixxx over time, we may invite you to the core team.
 
 Core Team members should follow the [Core Team Memebers Guidelines](https://github.com/mixxxdj/mixxx/wiki/Core-Team-Guidelines).
-
-## Git Repositories ##
-This repository contains the Mixxx source code, skins, controller mappings, and some helpful scripts. We have a few other Git repositories too:
-* [mixxxdj/website](https://github.com/mixxxdj/website): content for the main [mixxx.org](https://mixxx.org/) website which is generated with the [Cactus static site generator](https://github.com/eudicots/Cactus)
-* [mixxxdj/manual](https://github.com/mixxxdj/manual): content for the Mixxx manual, which uses [Sphinx](https://www.sphinx-doc.org/)
-* [mixxxdj/buildserver](https://github.com/mixxxdj/buildserver): scripts for generating our prebuilt dependencies for macOS and Windows
-
-All of these are automatically built and deployed by our [Jenkins build servers](https://builds.renegadetech.mixxx.org/) whenever a change is committed. You are welcome to open a pull request in any of these repositories.
