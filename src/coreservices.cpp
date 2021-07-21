@@ -30,6 +30,7 @@
 #include "util/font.h"
 #include "util/logger.h"
 #include "util/screensaver.h"
+#include "util/screensavermanager.h"
 #include "util/statsmanager.h"
 #include "util/time.h"
 #include "util/translations.h"
@@ -260,6 +261,13 @@ void CoreServices::initialize(QApplication* pApp) {
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
 #endif
+
+    // Inhibit Screensaver
+    m_pScreensaverManager = std::make_shared<ScreensaverManager>(pConfig);
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::currentPlayingDeckChanged,
+            m_pScreensaverManager.get(),
+            &ScreensaverManager::slotCurrentPlayingDeckChanged);
 
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
