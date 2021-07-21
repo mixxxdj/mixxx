@@ -57,7 +57,7 @@ RateControl::RateControl(const QString& group,
             this, &RateControl::slotRateRangeChanged,
             Qt::DirectConnection);
 
-    // Allow rate slider to go out of bounds so that master sync rate
+    // Allow rate slider to go out of bounds so that sync lock rate
     // adjustments are not capped.
     m_pRateSlider = new ControlPotmeter(
             ConfigKey(group, "rate"), -1.0, 1.0, true);
@@ -461,11 +461,11 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             rate = m_pScratchController->getRate();
             *pReportScratching = true;
         } else {
-            // If master sync is on, respond to it -- but vinyl and scratch mode always override.
+            // If sync lock is on, respond to it -- but vinyl and scratch mode always override.
             if (toSynchronized(getSyncMode()) && !paused &&
                     !bVinylControlEnabled && !useScratch2Value) {
                 if (m_pBpmControl == nullptr) {
-                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
+                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during sync lock";
                     return 1.0;
                 }
 

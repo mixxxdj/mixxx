@@ -143,7 +143,7 @@ private:
 
   ControlObject* m_pSampleRate;
 
-  // For Master Sync
+  // For Sync Lock
   BpmControl* m_pBpmControl;
 
   ControlProxy* m_pSyncMode;

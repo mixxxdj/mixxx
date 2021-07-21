@@ -629,8 +629,8 @@ DJ505.Deck = function(deckNumbers, offset) {
                     // If already explicit leader, reset explicit state
                     // (setting it to 0 may still make it implicit leader and
                     // immediately resetting it to 1).
-                    var value = (engine.getValue(this.group, "sync_master") === 2) ? 0 : 2;
-                    engine.setValue(this.group, "sync_master", value);
+                    var value = (engine.getValue(this.group, "sync_leader") === 2) ? 0 : 2;
+                    engine.setValue(this.group, "sync_leader", value);
                 } else {
                     engine.setValue(this.group, "sync_enabled", 1);
                 }

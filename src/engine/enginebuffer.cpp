@@ -88,7 +88,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_bScalerOverride(false),
           m_iSeekPhaseQueued(0),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
-          m_iSyncModeQueued(SYNC_INVALID),
+          m_iSyncModeQueued(static_cast<int>(SyncMode::Invalid)),
           m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
           m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
@@ -404,9 +404,9 @@ void EngineBuffer::requestEnableSync(bool enabled) {
     // If we're not playing, the queued event won't get processed so do it now.
     if (m_playButton->get() == 0.0) {
         if (enabled) {
-            m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
+            m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::Follower);
         } else {
-            m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
+            m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::None);
         }
         return;
     }
@@ -437,7 +437,7 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     if (m_playButton->get() == 0.0) {
         m_pEngineSync->requestSyncMode(m_pSyncControl, mode);
     } else {
-        m_iSyncModeQueued = mode;
+        m_iSyncModeQueued = static_cast<int>(mode);
     }
 }
 
@@ -1168,7 +1168,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     }
 #endif
 
-    if (isMaster(m_pSyncControl->getSyncMode())) {
+    if (isLeader(m_pSyncControl->getSyncMode())) {
         // Report our speed to SyncControl immediately instead of waiting
         // for postProcess so we can broadcast this update to followers.
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
@@ -1206,22 +1206,23 @@ void EngineBuffer::processSyncRequests() {
             static_cast<SyncRequestQueued>(
                     m_iEnableSyncQueued.fetchAndStoreRelease(SYNC_REQUEST_NONE));
     SyncMode mode_request =
-            static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(SYNC_INVALID));
+            static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(
+                    static_cast<int>(SyncMode::Invalid)));
     switch (enable_request) {
     case SYNC_REQUEST_ENABLE:
-        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::Follower);
         break;
     case SYNC_REQUEST_DISABLE:
-        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::None);
         break;
     case SYNC_REQUEST_ENABLEDISABLE:
-        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
-        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::Follower);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::None);
         break;
     case SYNC_REQUEST_NONE:
         break;
     }
-    if (mode_request != SYNC_INVALID) {
+    if (mode_request != SyncMode::Invalid) {
         m_pEngineSync->requestSyncMode(m_pSyncControl,
                 static_cast<SyncMode>(mode_request));
     }
@@ -1321,10 +1322,10 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     m_pSyncControl->setLocalBpm(localBpmValue);
     m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
-    if (isMaster(mode)) {
+    if (isLeader(mode)) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beatDistance);
     } else if (isFollower(mode)) {
-        // Report our speed to SyncControl.  If we are master, we already did this.
+        // Report our speed to SyncControl.  If we are leader, we already did this.
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
         m_pSyncControl->updateTargetBeatDistance();
     }
