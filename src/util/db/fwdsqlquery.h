@@ -3,6 +3,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QString>
+#include <QVariant>
 
 #include "util/assert.h"
 #include "util/db/dbfieldindex.h"
