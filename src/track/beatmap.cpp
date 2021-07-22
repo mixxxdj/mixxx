@@ -315,14 +315,21 @@ audio::FramePos BeatMap::findNthBeat(audio::FramePos position, int n) const {
         return audio::kInvalidFramePos;
     }
 
+    const bool searchForward = n > 0;
     int numBeatsLeft = std::abs(n);
 
-    const auto searchFromPosition = (n > 0) ? position.toUpperFrameBoundary()
-                                            : position.toLowerFrameBoundary();
+    // Beats are stored as full frame positions, so when search forward, the
+    // smalled possible beat we can find is the upper frame boundary of the
+    // search position.
+    //
+    // For searching backwards, the same applies for the lower frame boundary.
+    const auto searchFromPosition = searchForward
+            ? position.toUpperFrameBoundary()
+            : position.toLowerFrameBoundary();
     const Beat searchFromBeat = beatFromFramePos(searchFromPosition);
     auto it = std::lower_bound(m_beats.cbegin(), m_beats.cend(), searchFromBeat, beatLessThan);
 
-    if (n > 0) {
+    if (searchForward) {
         // Search in forward direction
         numBeatsLeft--;
 
@@ -359,8 +366,8 @@ audio::FramePos BeatMap::findNthBeat(audio::FramePos position, int n) const {
 
     const auto foundBeatPosition = mixxx::audio::FramePos(it->frame_position());
 
-    DEBUG_ASSERT(foundBeatPosition >= searchFromPosition || n < 0);
-    DEBUG_ASSERT(foundBeatPosition <= searchFromPosition || n > 0);
+    DEBUG_ASSERT(foundBeatPosition >= searchFromPosition || !searchForward);
+    DEBUG_ASSERT(foundBeatPosition <= searchFromPosition || searchForward);
     return foundBeatPosition;
 }
 
