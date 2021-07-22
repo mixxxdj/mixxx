@@ -11,7 +11,7 @@ inline void mixxx_debug_assert(const char* assertion, const char* file, int line
 #endif
 
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-inline bool mixxx_maybe_debug_assert_return_true(const char* assertion,
+inline bool mixxx_debug_assert_return_true(const char* assertion,
         const char* file,
         int line,
         const char* function) {
@@ -65,7 +65,7 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #define VERIFY_OR_DEBUG_ASSERT(cond)            \
     if (Q_UNLIKELY(!static_cast<bool>(cond)) && \
-            mixxx_maybe_debug_assert_return_true(#cond, __FILE__, __LINE__, ASSERT_FUNCTION))
+            mixxx_debug_assert_return_true(#cond, __FILE__, __LINE__, ASSERT_FUNCTION))
 #else
 #define VERIFY_OR_DEBUG_ASSERT(cond) if (Q_UNLIKELY(!static_cast<bool>(cond)))
 #endif
