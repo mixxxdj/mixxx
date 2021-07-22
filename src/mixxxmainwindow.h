@@ -56,9 +56,6 @@ class MixxxMainWindow : public QMainWindow {
     void setInhibitScreensaver(mixxx::ScreenSaverPreference inhibit);
     mixxx::ScreenSaverPreference getInhibitScreensaver();
 
-    void setToolTipsCfg(mixxx::TooltipsPreference tt);
-    inline mixxx::TooltipsPreference getToolTipsCfg() { return m_toolTipsCfg; }
-
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
   public slots:
@@ -78,13 +75,15 @@ class MixxxMainWindow : public QMainWindow {
     void slotDeveloperToolsClosed();
 
     void slotUpdateWindowTitle(TrackPointer pTrack);
-    void slotChangedPlayingDeck(int deck);
 
     /// warn the user when inputs are not configured.
     void slotNoMicrophoneInputConfigured();
     void slotNoAuxiliaryInputConfigured();
     void slotNoDeckPassthroughInputConfigured();
     void slotNoVinylControlInputConfigured();
+
+  private slots:
+    void slotTooltipModeChanged(mixxx::TooltipsPreference tt);
 
   signals:
     void skinLoaded();

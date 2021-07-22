@@ -32,7 +32,7 @@ class BeatGrid final : public Beats {
     // comments in beats.h
 
     Beats::CapabilitiesFlags getCapabilities() const override {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SETBPM;
+        return BEATSCAP_SETBPM;
     }
 
     QByteArray toByteArray() const override;
