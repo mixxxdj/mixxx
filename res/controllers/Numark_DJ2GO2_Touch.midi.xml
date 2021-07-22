@@ -259,6 +259,24 @@
       </control>
       <control>
         <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.reLoopExit.input</key>
+        <status>0x84</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJ2GO2Touch.leftDeck.reLoopExit.input</key>
+        <status>0x94</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
         <key>DJ2GO2Touch.leftDeck.pflButton.input</key>
         <status>0x80</status>
         <midino>0x1B</midino>
@@ -566,6 +584,15 @@
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.loopIn.input</key>
+        <status>0x85</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.loopIn.input</key>
         <status>0x95</status>
         <midino>0x21</midino>
         <options>
@@ -575,8 +602,26 @@
       <control>
         <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.loopOut.input</key>
-        <status>0x95</status>
+        <status>0x85</status>
         <midino>0x22</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.reLoopExit.input</key>
+        <status>0x95</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.reLoopExit.input</key>
+        <status>0x95</status>
+        <midino>0x24</midino>
         <options>
           <script-binding/>
         </options>

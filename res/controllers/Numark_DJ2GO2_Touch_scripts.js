@@ -133,6 +133,11 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
 
     this.LoopToggleButton = new components.LoopToggleButton([0x94 + midiChannel, 0x23]);
 
+    this.reLoopExit = new components.Button({
+        midi: [0x94 + midiChannel, 0x24],
+        key: "reloop_exit",
+    });
+
     this.wheelTouch = function(channel, control, value, status, _group) {
         if ((status & 0xF0) === 0x90) {
             var alpha = 1.0/8;
