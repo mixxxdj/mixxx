@@ -1,7 +1,7 @@
 # Mixxx Contribution Guidelines #
 Thank you for contributing to [Mixxx](https://mixxx.org/)! Your work helps DJs all over the world! We are a global team that works by consensus and we are excited to have you join us.
 
-All Mixxx contributors, including the core team members, are volunteers. This means that Mixxx is made possible by their passion and commitment to the project on their free time. This is why it's so important to treat everyone with respect and understanding, and be patient if things sometimes move a bit slower than you would like. Don't forget to read and follow our [Code Of Conduct](https://github.com/mixxxdj/mixxx/blob/master/CODE_OF_CONDUCT.md), as it provides a framework for everyone to feel accepted, respected and safe in all their interactions within the mixxx community.
+All Mixxx contributors, including the core team members, are volunteers. This means that Mixxx is made possible by their passion and commitment to the project on their free time. This is why it's so important to treat everyone with respect and understanding, and be patient if things sometimes move a bit slower than you would like. Please read and follow our [Code Of Conduct](https://github.com/mixxxdj/mixxx/blob/master/CODE_OF_CONDUCT.md), as it provides a framework for everyone to feel accepted, respected and safe in all their interactions within the Mixxx community.
 
 ## Table of Contents ##
 - [Getting in touch with the community](#getting-in-touch-with-the-community)
@@ -18,9 +18,9 @@ All Mixxx contributors, including the core team members, are volunteers. This me
 
 We use [Zulip chat](https://mixxx.zulipchat.com/) to discuss and coordinate everything related to Mixxx development (and more!).
 
-- We encourage you to say hi on the [introduce yourself channel](https://mixxx.zulipchat.com/#narrow/stream/109123-introduce-yourself) and share what you would like to contribute.
-- If you need help with your contribution, the Mixxx codebase or anything else related to Mixxx development don't hesitate to ask on the [development help channel](https://mixxx.zulipchat.com/#narrow/stream/247620-development-help).
-- The [development channel](https://mixxx.zulipchat.com/#narrow/stream/109171-development) is where day to day discussion about code, new features and releases happens.
+- We encourage you to say hi on the [introduce yourself stream](https://mixxx.zulipchat.com/#narrow/stream/109123-introduce-yourself) and share what you would like to contribute.
+- If you need help with your contribution, the Mixxx codebase or anything else related to Mixxx development don't hesitate to ask on the [development help stream](https://mixxx.zulipchat.com/#narrow/stream/247620-development-help).
+- The [development stream](https://mixxx.zulipchat.com/#narrow/stream/109171-development) is where day to day discussion about code, new features and releases happens.
 
 We also have lots of additional information for users and developers on the [Mixxx wiki](https://github.com/mixxxdj/mixxx/wiki), make sure to check it out if there's some piece of information you can't find.
 
@@ -29,14 +29,14 @@ We also have lots of additional information for users and developers on the [Mix
 There are lots of ways you can contribute to Mixxx. Even if you don't know how to program, there's plenty of things you can do to help:
 
  - [Report a bug](https://github.com/mixxxdj/mixxx/wiki/Reporting%20bugs)
- - [Help testing the latest developments](https://github.com/mixxxdj/mixxx/wiki/Testing)
- - [Help translate Mixxx to other languages](https://github.com/mixxxdj/mixxx/wiki/Internationalization)
- - [Improve the Mixxx Manual](https://github.com/mixxxdj/manual#readme)
+ - [Test the latest developments](https://github.com/mixxxdj/mixxx/wiki/Testing)
+ - [Translate Mixxx to other languages](https://github.com/mixxxdj/mixxx/wiki/Internationalization)
+ - [Improve the Mixxx manual](https://github.com/mixxxdj/manual#readme)
  - [Improve the Mixxx website](https://github.com/mixxxdj/website)
 
 If you have some coding skills, or you are willing to learn them you can do even more:
 
- - [Add native support for new hardware controllers](https://github.com/mixxxdj/mixxx/wiki/Contributing%20mappings)
+ - [Add a mapping for a new controller](https://github.com/mixxxdj/mixxx/wiki/Contributing%20mappings)
  - [Fix bugs or program new features](#Your-first-Mixxx-code-contribution)
 
 We welcome programmers of all backgrounds and skill levels, and our community will do their best to help you with any problems you encounter.
@@ -58,10 +58,10 @@ We recommend to [set up an IDE](https://github.com/mixxxdj/mixxx/wiki/Developer%
 
 We use [Git](https://git-scm.com/) for source control. Git is a distributed version control system that allows us to keep track of how our code changes and work together on it. If you are new to Git or source control in general, you can have a look at [Using Git](https://github.com/mixxxdj/mixxx/wiki/Using%20Git) to learn how.
 
-If you have trouble with any of this remember that you can always ask on the [Zulip development help channel](https://mixxx.zulipchat.com/#narrow/stream/247620-development-help).
+If you have trouble with any of this remember that you can always ask on the [Zulip development help stream](https://mixxx.zulipchat.com/#narrow/stream/247620-development-help).
 
 ### Open a Pull Request ###
-Once you finish coding, it's time to show your changes to other Mixxx developers. You do so by [opening a Pull Request](https://github.com/mixxxdj/mixxx/wiki/Using%20Git#open-a-pull-request).
+Once you finish coding, it's time to show your changes to other Mixxx developers. You do so by [opening a pull request](https://github.com/mixxxdj/mixxx/wiki/Using%20Git#open-a-pull-request).
 
 ### Contributor Agreement ###
 Because Mixxx is distributed through the macOS AppStore, in order to distribute your changes with Mixxx, we need a record of your permission to distribute them under Mixxx's license. You'll have to read and sign the [Mixxx Contributor Agreement](https://docs.google.com/forms/d/e/1FAIpQLScC9QG327sjLL0eWftmfGUasxFFLxg6LCXJ2xHDYRzFIRqyiw/viewform?formkey=dEpYN2NkVEFnWWQzbkFfM0ZYYUZ5X2c6MQ).
