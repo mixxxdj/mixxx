@@ -504,7 +504,10 @@ MixtrackProFX.Deck = function(number) {
                 MixtrackProFX.browse.unshift();
                 MixtrackProFX.effect.unshift();
             }
-            MixtrackProFX.deck[channel].pads.reconnectComponents(); // for displaying pads lights when shifted
+
+            // for displaying pads lights when shifted
+            MixtrackProFX.deck[0].pads.reconnectComponents();
+            MixtrackProFX.deck[1].pads.reconnectComponents();
         }
     });
 
