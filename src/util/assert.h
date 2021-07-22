@@ -38,7 +38,7 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 /// situations where we know Mixxx cannot take any action without potentially
 /// corrupting user data. Handle errors gracefully whenever possible.
 #define RELEASE_ASSERT(cond)                                              \
-    if (Q_UNLIKELY(!(cond))) {                                            \
+    if (Q_UNLIKELY(!static_cast<bool>(cond))) {                           \
         mixxx_release_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
     }
 
@@ -53,7 +53,7 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 // In release builds, doSomething() is never called!
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #define DEBUG_ASSERT(cond)                                              \
-    if (Q_UNLIKELY(!(cond))) {                                          \
+    if (Q_UNLIKELY(!static_cast<bool>(cond))) {                         \
         mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
     }
 #else
@@ -63,9 +63,9 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 /// Same as DEBUG_ASSERT, but if MIXXX_DEBUG_ASSERTIONS_FATAL is disabled run the specified fallback function.
 /// In most cases you should probably use this rather than DEBUG_ASSERT. Only use DEBUG_ASSERT if there is no appropriate fallback.
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-#define VERIFY_OR_DEBUG_ASSERT(cond) \
-    if (Q_UNLIKELY(!(cond)) &&       \
+#define VERIFY_OR_DEBUG_ASSERT(cond)            \
+    if (Q_UNLIKELY(!static_cast<bool>(cond)) && \
             mixxx_maybe_debug_assert_return_true(#cond, __FILE__, __LINE__, ASSERT_FUNCTION))
 #else
-#define VERIFY_OR_DEBUG_ASSERT(cond) if (Q_UNLIKELY(!(cond)))
+#define VERIFY_OR_DEBUG_ASSERT(cond) if (Q_UNLIKELY(!static_cast<bool>(cond)))
 #endif
