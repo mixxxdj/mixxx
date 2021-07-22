@@ -64,7 +64,7 @@ If you have trouble with any of this remember that you can always ask on the [Zu
 Once you finish coding, it's time to show your changes to other Mixxx developers. You do so by [opening a pull request](https://github.com/mixxxdj/mixxx/wiki/Using%20Git#open-a-pull-request).
 
 ### Contributor Agreement ###
-Because Mixxx is distributed through the macOS AppStore, in order to distribute your changes with Mixxx, we need a record of your permission to distribute them under Mixxx's license. You'll have to read and sign the [Mixxx Contributor Agreement](https://docs.google.com/forms/d/e/1FAIpQLScC9QG327sjLL0eWftmfGUasxFFLxg6LCXJ2xHDYRzFIRqyiw/viewform?formkey=dEpYN2NkVEFnWWQzbkFfM0ZYYUZ5X2c6MQ).
+In the past Mixxx was distributed in the Mac App Store, which has terms conflicting with Mixxx's license, the GNU GPL (version 2 or later). In case we decide to distribute Mixxx in Apple's App Store again, in order to distribute your changes with Mixxx, we need a record of your permission to distribute them in the App Store. You'll have to read and sign the [Mixxx Contributor Agreement](https://docs.google.com/forms/d/e/1FAIpQLScC9QG327sjLL0eWftmfGUasxFFLxg6LCXJ2xHDYRzFIRqyiw/viewform?formkey=dEpYN2NkVEFnWWQzbkFfM0ZYYUZ5X2c6MQ).
 
 ### How to become a 5-star contributor ###
 Now that you know your basics on how to contribute to Mixxx and engage with its community, it's time to learn a bit more our rules and guidelines.
