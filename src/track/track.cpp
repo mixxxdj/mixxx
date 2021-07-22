@@ -328,13 +328,13 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     }
 }
 
-void Track::adjustReplayGainFromDeckGain(double gain) {
+void Track::adjustReplayGainFromPregain(double gain) {
     QMutexLocker lock(&m_qMutex);
     mixxx::ReplayGain replayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     replayGain.setRatio(gain * replayGain.getRatio());
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
         markDirtyAndUnlock(&lock);
-        emit updateAndAdjustReplayGain(replayGain);
+        emit replayGainAdjusted(replayGain);
     }
 }
 

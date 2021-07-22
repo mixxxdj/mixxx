@@ -193,12 +193,12 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pRateRatio = make_parented<ControlProxy>(getGroup(), "rate_ratio", this);
     m_pPitchAdjust = make_parented<ControlProxy>(getGroup(), "pitch_adjust", this);
 
-    m_pUpdateReplayGainFromDeckGain = std::make_unique<ControlPushButton>(
+    m_pUpdateReplayGainFromPregain = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "update_replaygain_from_pregain"));
-    connect(m_pUpdateReplayGainFromDeckGain.get(),
+    connect(m_pUpdateReplayGainFromPregain.get(),
             &ControlObject::valueChanged,
             this,
-            &BaseTrackPlayerImpl::slotUpdateReplaygainFromDeckGain);
+            &BaseTrackPlayerImpl::slotUpdateReplaygainFromPregain);
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -375,9 +375,9 @@ void BaseTrackPlayerImpl::connectLoadedTrack() {
             this,
             &BaseTrackPlayerImpl::slotSetReplayGain);
     connect(m_pLoadedTrack.get(),
-            &Track::updateAndAdjustReplayGain,
+            &Track::replayGainAdjusted,
             this,
-            &BaseTrackPlayerImpl::slotUpdateAndAdjustReplayGain);
+            &BaseTrackPlayerImpl::slotAdjustReplayGain);
 
     connect(m_pLoadedTrack.get(),
             &Track::colorUpdated,
@@ -618,7 +618,7 @@ void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     }
 }
 
-void BaseTrackPlayerImpl::slotUpdateAndAdjustReplayGain(mixxx::ReplayGain replayGain) {
+void BaseTrackPlayerImpl::slotAdjustReplayGain(mixxx::ReplayGain replayGain) {
     const double factor = m_pReplayGain->get() / replayGain.getRatio();
     const double newPregain = m_pPreGain->get() * factor;
 
@@ -739,7 +739,7 @@ void BaseTrackPlayerImpl::slotShiftCuesMillisButton(double value, double millise
     slotShiftCuesMillis(milliseconds);
 }
 
-void BaseTrackPlayerImpl::slotUpdateReplaygainFromDeckGain(double pressed) {
+void BaseTrackPlayerImpl::slotUpdateReplaygainFromPregain(double pressed) {
     if (pressed <= 0) {
         return;
     }
@@ -751,7 +751,7 @@ void BaseTrackPlayerImpl::slotUpdateReplaygainFromDeckGain(double pressed) {
     if (gain == 1.0) {
         return;
     }
-    m_pLoadedTrack->adjustReplayGainFromDeckGain(gain);
+    m_pLoadedTrack->adjustReplayGainFromPregain(gain);
 }
 
 void BaseTrackPlayerImpl::setReplayGain(double value) {

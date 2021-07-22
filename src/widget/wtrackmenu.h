@@ -107,7 +107,7 @@ class WTrackMenu : public QMenu {
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
 
     // Info and metadata
-    void slotUpdateReplaygainFromDeckGain();
+    void slotUpdateReplaygainFromPregain();
     void slotShowDlgTagFetcher();
     void slotImportMetadataFromFileTags();
     void slotExportMetadataIntoFileTags();

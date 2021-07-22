@@ -346,7 +346,7 @@ void WTrackMenu::createActions() {
         connect(m_pUpdateReplayGain,
                 &QAction::triggered,
                 this,
-                &WTrackMenu::slotUpdateReplaygainFromDeckGain);
+                &WTrackMenu::slotUpdateReplaygainFromPregain);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -915,7 +915,7 @@ class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPoint
 
 } // anonymous namespace
 
-void WTrackMenu::slotUpdateReplaygainFromDeckGain() {
+void WTrackMenu::slotUpdateReplaygainFromPregain() {
     VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
         return;
     }
@@ -928,7 +928,7 @@ void WTrackMenu::slotUpdateReplaygainFromDeckGain() {
     if (gain == 1.0) {
         return;
     }
-    m_pTrack->adjustReplayGainFromDeckGain(gain);
+    m_pTrack->adjustReplayGainFromPregain(gain);
 }
 
 void WTrackMenu::slotImportMetadataFromFileTags() {
