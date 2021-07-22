@@ -131,38 +131,38 @@ TEST_F(HotcueControlTest, DefautltControlValues) {
 TEST_F(HotcueControlTest, NoTrackLoaded) {
     TrackPointer pTrack = createTestTrack();
 
-    m_pHotcue1Set->slotSet(1);
-    m_pHotcue1Set->slotSet(0);
+    m_pHotcue1Set->set(1);
+    m_pHotcue1Set->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1SetCue->slotSet(1);
-    m_pHotcue1SetCue->slotSet(0);
+    m_pHotcue1SetCue->set(1);
+    m_pHotcue1SetCue->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1ActivateCue->slotSet(1);
-    m_pHotcue1ActivateCue->slotSet(0);
+    m_pHotcue1ActivateCue->set(1);
+    m_pHotcue1ActivateCue->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1ActivateLoop->slotSet(1);
-    m_pHotcue1ActivateLoop->slotSet(0);
+    m_pHotcue1ActivateLoop->set(1);
+    m_pHotcue1ActivateLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
@@ -175,12 +175,12 @@ TEST_F(HotcueControlTest, SetCueAuto) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pQuantizeEnabled->slotSet(0);
+    m_pQuantizeEnabled->set(0);
     setCurrentSamplePosition(100);
     ProcessBuffer();
 
-    m_pHotcue1Set->slotSet(1);
-    m_pHotcue1Set->slotSet(0);
+    m_pHotcue1Set->set(1);
+    m_pHotcue1Set->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
@@ -193,11 +193,11 @@ TEST_F(HotcueControlTest, SetCueManual) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pQuantizeEnabled->slotSet(0);
+    m_pQuantizeEnabled->set(0);
     setCurrentSamplePosition(100);
 
-    m_pHotcue1SetCue->slotSet(1);
-    m_pHotcue1SetCue->slotSet(0);
+    m_pHotcue1SetCue->set(1);
+    m_pHotcue1SetCue->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
@@ -212,8 +212,8 @@ TEST_F(HotcueControlTest, SetLoopAuto) {
 
     m_pChannel1->getEngineBuffer()->setLoop(100, 200, true);
 
-    m_pHotcue1Set->slotSet(1);
-    m_pHotcue1Set->slotSet(0);
+    m_pHotcue1Set->set(1);
+    m_pHotcue1Set->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
@@ -228,8 +228,8 @@ TEST_F(HotcueControlTest, SetLoopManualWithLoop) {
 
     m_pChannel1->getEngineBuffer()->setLoop(100, 200, true);
 
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
@@ -240,7 +240,7 @@ TEST_F(HotcueControlTest, SetLoopManualWithoutLoop) {
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
-    m_pBeatloopSize->slotSet(4);
+    m_pBeatloopSize->set(4);
     const double beatloopLengthSamples = m_pBeatloopSize->get() * getBeatLengthSamples(pTrack);
 
     setCurrentSamplePosition(8 * beatLengthSamples);
@@ -250,8 +250,8 @@ TEST_F(HotcueControlTest, SetLoopManualWithoutLoop) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(currentSamplePosition(), m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(currentSamplePosition() + beatloopLengthSamples, m_pHotcue1EndPosition->get());
@@ -264,8 +264,8 @@ TEST_F(HotcueControlTest, SetLoopManualWithoutLoopOrBeats) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
@@ -286,8 +286,8 @@ TEST_F(HotcueControlTest, CueGoto) {
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(cuePositionSamples, currentSamplePosition());
 
-    m_pHotcue1SetCue->slotSet(1);
-    m_pHotcue1SetCue->slotSet(0);
+    m_pHotcue1SetCue->set(1);
+    m_pHotcue1SetCue->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
@@ -297,8 +297,8 @@ TEST_F(HotcueControlTest, CueGoto) {
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(0, currentSamplePosition());
 
-    m_pHotcue1Goto->slotSet(1);
-    m_pHotcue1Goto->slotSet(0);
+    m_pHotcue1Goto->set(1);
+    m_pHotcue1Goto->set(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(cuePositionSamples, currentSamplePosition());
 
@@ -323,8 +323,8 @@ TEST_F(HotcueControlTest, CueGotoAndPlay) {
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(cuePositionSamples, currentSamplePosition());
 
-    m_pHotcue1SetCue->slotSet(1);
-    m_pHotcue1SetCue->slotSet(0);
+    m_pHotcue1SetCue->set(1);
+    m_pHotcue1SetCue->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
@@ -334,8 +334,8 @@ TEST_F(HotcueControlTest, CueGotoAndPlay) {
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(0, currentSamplePosition());
 
-    m_pHotcue1GotoAndPlay->slotSet(1);
-    m_pHotcue1GotoAndPlay->slotSet(0);
+    m_pHotcue1GotoAndPlay->set(1);
+    m_pHotcue1GotoAndPlay->set(0);
     ProcessBuffer();
     EXPECT_LE(cuePositionSamples, currentSamplePosition());
 
@@ -355,7 +355,7 @@ TEST_F(HotcueControlTest, CueGotoAndLoop) {
 
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double cuePositionSamples = 8 * beatLengthSamples;
-    m_pBeatloopSize->slotSet(4);
+    m_pBeatloopSize->set(4);
     const double beatloopLengthSamples = m_pBeatloopSize->get() * getBeatLengthSamples(pTrack);
 
     // Seek to cue Position (8th beat)
@@ -363,8 +363,8 @@ TEST_F(HotcueControlTest, CueGotoAndLoop) {
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(cuePositionSamples, currentSamplePosition());
 
-    m_pHotcue1SetCue->slotSet(1);
-    m_pHotcue1SetCue->slotSet(0);
+    m_pHotcue1SetCue->set(1);
+    m_pHotcue1SetCue->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
@@ -374,8 +374,8 @@ TEST_F(HotcueControlTest, CueGotoAndLoop) {
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(0, currentSamplePosition());
 
-    m_pHotcue1GotoAndLoop->slotSet(1);
-    m_pHotcue1GotoAndLoop->slotSet(0);
+    m_pHotcue1GotoAndLoop->set(1);
+    m_pHotcue1GotoAndLoop->set(0);
     ProcessBuffer();
     EXPECT_LE(cuePositionSamples, currentSamplePosition());
 
@@ -392,7 +392,7 @@ TEST_F(HotcueControlTest, SavedLoopGoto) {
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
-    m_pBeatloopSize->slotSet(4);
+    m_pBeatloopSize->set(4);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
     const double cuePositionSamples = 8 * beatLengthSamples;
@@ -407,10 +407,10 @@ TEST_F(HotcueControlTest, SavedLoopGoto) {
     EXPECT_DOUBLE_EQ(cuePositionSamples, currentSamplePosition());
 
     // Set a beatloop this position
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
 
     // Save loop to hotcue slot 1
@@ -419,7 +419,7 @@ TEST_F(HotcueControlTest, SavedLoopGoto) {
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Disable loop
-    m_pLoopEnabled->slotSet(0);
+    m_pLoopEnabled->set(0);
     EXPECT_DOUBLE_EQ(0.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
 
@@ -428,8 +428,8 @@ TEST_F(HotcueControlTest, SavedLoopGoto) {
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(0, currentSamplePosition());
 
-    m_pHotcue1Goto->slotSet(1);
-    m_pHotcue1Goto->slotSet(0);
+    m_pHotcue1Goto->set(1);
+    m_pHotcue1Goto->set(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(cuePositionSamples, currentSamplePosition());
 
@@ -443,7 +443,7 @@ TEST_F(HotcueControlTest, SavedLoopGotoAndPlay) {
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
-    m_pBeatloopSize->slotSet(4);
+    m_pBeatloopSize->set(4);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
     const double cuePositionSamples = 8 * beatLengthSamples;
@@ -458,10 +458,10 @@ TEST_F(HotcueControlTest, SavedLoopGotoAndPlay) {
     EXPECT_DOUBLE_EQ(cuePositionSamples, currentSamplePosition());
 
     // Set a beatloop this position
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
 
     // Save loop to hotcue slot 1
@@ -470,7 +470,7 @@ TEST_F(HotcueControlTest, SavedLoopGotoAndPlay) {
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Disable loop
-    m_pLoopEnabled->slotSet(0);
+    m_pLoopEnabled->set(0);
     EXPECT_DOUBLE_EQ(0.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
 
@@ -479,8 +479,8 @@ TEST_F(HotcueControlTest, SavedLoopGotoAndPlay) {
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(0, currentSamplePosition());
 
-    m_pHotcue1GotoAndPlay->slotSet(1);
-    m_pHotcue1GotoAndPlay->slotSet(0);
+    m_pHotcue1GotoAndPlay->set(1);
+    m_pHotcue1GotoAndPlay->set(0);
     ProcessBuffer();
     EXPECT_LE(cuePositionSamples, currentSamplePosition());
 
@@ -494,7 +494,7 @@ TEST_F(HotcueControlTest, SavedLoopGotoAndLoop) {
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
-    m_pBeatloopSize->slotSet(4);
+    m_pBeatloopSize->set(4);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
     const double cuePositionSamples = 8 * beatLengthSamples;
@@ -509,10 +509,10 @@ TEST_F(HotcueControlTest, SavedLoopGotoAndLoop) {
     EXPECT_DOUBLE_EQ(cuePositionSamples, currentSamplePosition());
 
     // Set a beatloop this position
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
 
     // Save loop to hotcue slot 1
@@ -521,7 +521,7 @@ TEST_F(HotcueControlTest, SavedLoopGotoAndLoop) {
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Disable loop
-    m_pLoopEnabled->slotSet(0);
+    m_pLoopEnabled->set(0);
     EXPECT_DOUBLE_EQ(0.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
 
@@ -530,8 +530,8 @@ TEST_F(HotcueControlTest, SavedLoopGotoAndLoop) {
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(0, currentSamplePosition());
 
-    m_pHotcue1GotoAndLoop->slotSet(1);
-    m_pHotcue1GotoAndLoop->slotSet(0);
+    m_pHotcue1GotoAndLoop->set(1);
+    m_pHotcue1GotoAndLoop->set(0);
     ProcessBuffer();
     EXPECT_LE(cuePositionSamples, currentSamplePosition());
 
@@ -552,15 +552,15 @@ TEST_F(HotcueControlTest, SavedLoopStatus) {
 
     m_pChannel1->getEngineBuffer()->setLoop(100, 200, true);
 
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
 
     // Disable Loop
-    m_pLoopEnabled->slotSet(0);
+    m_pLoopEnabled->set(0);
 
     EXPECT_DOUBLE_EQ(0.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
@@ -568,15 +568,15 @@ TEST_F(HotcueControlTest, SavedLoopStatus) {
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
 
     // Re-Enable Loop
-    m_pLoopEnabled->slotSet(1);
+    m_pLoopEnabled->set(1);
 
     EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1Clear->slotSet(1);
-    m_pHotcue1Clear->slotSet(0);
+    m_pHotcue1Clear->set(1);
+    m_pHotcue1Clear->set(0);
 
     EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty), m_pHotcue1Enabled->get());
@@ -588,7 +588,7 @@ TEST_F(HotcueControlTest, SavedLoopScale) {
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
-    m_pBeatloopSize->slotSet(4);
+    m_pBeatloopSize->set(4);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
 
@@ -597,37 +597,37 @@ TEST_F(HotcueControlTest, SavedLoopScale) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
     // Set a beatloop (4 beats)
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
-    m_pPlay->slotSet(1);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
+    m_pPlay->set(1);
     ProcessBuffer();
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Double loop size (4 => 8 beats)
-    m_pLoopDouble->slotSet(1);
-    m_pLoopDouble->slotSet(0);
+    m_pLoopDouble->set(1);
+    m_pLoopDouble->set(0);
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(2 * loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Halve loop size (8 => 4 beats)
-    m_pLoopHalve->slotSet(1);
-    m_pLoopHalve->slotSet(0);
+    m_pLoopHalve->set(1);
+    m_pLoopHalve->set(0);
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Halve loop size (4 => 2 beats)
-    m_pLoopHalve->slotSet(1);
-    m_pLoopHalve->slotSet(0);
+    m_pLoopHalve->set(1);
+    m_pLoopHalve->set(0);
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples / 2, m_pHotcue1EndPosition->get());
 
-    m_pPlay->slotSet(0);
+    m_pPlay->set(0);
 }
 
 TEST_F(HotcueControlTest, SavedLoopMove) {
@@ -635,7 +635,7 @@ TEST_F(HotcueControlTest, SavedLoopMove) {
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
     constexpr double loopSize = 4;
-    m_pBeatloopSize->slotSet(loopSize);
+    m_pBeatloopSize->set(loopSize);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = loopSize * beatLengthSamples;
 
@@ -644,47 +644,47 @@ TEST_F(HotcueControlTest, SavedLoopMove) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
     // Set a beatloop at position 0
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
-    m_pPlay->slotSet(1);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
+    m_pPlay->set(1);
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Move loop right (0 => 4 beats)
-    m_pLoopMove->slotSet(loopSize);
+    m_pLoopMove->set(loopSize);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(2 * loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Move loop left (4 => 0 beats)
-    m_pLoopMove->slotSet(-loopSize);
+    m_pLoopMove->set(-loopSize);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Move loop left (0 => -4 beats)
-    m_pLoopMove->slotSet(-loopSize);
+    m_pLoopMove->set(-loopSize);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(-loopLengthSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1EndPosition->get());
 
-    m_pPlay->slotSet(0);
+    m_pPlay->set(0);
 }
 
 TEST_F(HotcueControlTest, SavedLoopNoScaleIfDisabled) {
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
-    m_pBeatloopSize->slotSet(4);
+    m_pBeatloopSize->set(4);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
 
@@ -693,41 +693,41 @@ TEST_F(HotcueControlTest, SavedLoopNoScaleIfDisabled) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
     // Set a beatloop (4 beats)
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
-    m_pPlay->slotSet(1);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
+    m_pPlay->set(1);
     ProcessBuffer();
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Disable loop
-    m_pLoopEnabled->slotSet(0);
+    m_pLoopEnabled->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
 
     // Double loop size (4 => 8 beats) while saved loop is disabled
-    m_pLoopDouble->slotSet(1);
-    m_pLoopDouble->slotSet(0);
+    m_pLoopDouble->set(1);
+    m_pLoopDouble->set(0);
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Halve loop size (8 => 4 beats) while saved loop is disabled
-    m_pLoopHalve->slotSet(1);
-    m_pLoopHalve->slotSet(0);
+    m_pLoopHalve->set(1);
+    m_pLoopHalve->set(0);
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Halve loop size (4 => 2 beats) while saved loop is disabled
-    m_pLoopHalve->slotSet(1);
-    m_pLoopHalve->slotSet(0);
+    m_pLoopHalve->set(1);
+    m_pLoopHalve->set(0);
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
-    m_pPlay->slotSet(0);
+    m_pPlay->set(0);
 }
 
 TEST_F(HotcueControlTest, SavedLoopNoMoveIfDisabled) {
@@ -735,7 +735,7 @@ TEST_F(HotcueControlTest, SavedLoopNoMoveIfDisabled) {
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
     constexpr double loopSize = 4;
-    m_pBeatloopSize->slotSet(loopSize);
+    m_pBeatloopSize->set(loopSize);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = loopSize * beatLengthSamples;
 
@@ -744,45 +744,45 @@ TEST_F(HotcueControlTest, SavedLoopNoMoveIfDisabled) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
     // Set a beatloop at position 0
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
-    m_pPlay->slotSet(1);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
+    m_pPlay->set(1);
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Disable Loop
-    m_pLoopEnabled->slotSet(0);
+    m_pLoopEnabled->set(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
 
     // Move loop right (0 => 4 beats) while saved loop is disabled
-    m_pLoopMove->slotSet(loopSize);
+    m_pLoopMove->set(loopSize);
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Move loop left (4 => 0 beats) while saved loop is disabled
-    m_pLoopMove->slotSet(-loopSize);
+    m_pLoopMove->set(-loopSize);
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Move loop left (0 => -4 beats) while saved loop is disabled
-    m_pLoopMove->slotSet(-loopSize);
+    m_pLoopMove->set(-loopSize);
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
-    m_pPlay->slotSet(0);
+    m_pPlay->set(0);
 }
 
 TEST_F(HotcueControlTest, SavedLoopReset) {
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
-    m_pBeatloopSize->slotSet(4);
+    m_pBeatloopSize->set(4);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
 
@@ -791,21 +791,21 @@ TEST_F(HotcueControlTest, SavedLoopReset) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
     // Set a beatloop
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
     ProcessBuffer();
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Set a new beatloop
     setCurrentSamplePosition(loopLengthSamples);
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
     ProcessBuffer();
 
     // Check if setting the new beatloop disabled the current saved loop
@@ -823,16 +823,16 @@ TEST_F(HotcueControlTest, SavedLoopCueLoopWithExistingLoop) {
 
     m_pChannel1->getEngineBuffer()->setLoop(100, 200, true);
 
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(100, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
 
     // Disable Loop
-    m_pHotcue1CueLoop->slotSet(1);
-    m_pHotcue1CueLoop->slotSet(0);
+    m_pHotcue1CueLoop->set(1);
+    m_pHotcue1CueLoop->set(0);
 
     EXPECT_DOUBLE_EQ(0.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
@@ -840,8 +840,8 @@ TEST_F(HotcueControlTest, SavedLoopCueLoopWithExistingLoop) {
     EXPECT_DOUBLE_EQ(200, m_pHotcue1EndPosition->get());
 
     // Re-Enable Loop
-    m_pHotcue1CueLoop->slotSet(1);
-    m_pHotcue1CueLoop->slotSet(0);
+    m_pHotcue1CueLoop->set(1);
+    m_pHotcue1CueLoop->set(0);
 
     EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
@@ -857,8 +857,8 @@ TEST_F(HotcueControlTest, CueLoopWithoutHotcueSetsHotcue) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1CueLoop->slotSet(1);
-    m_pHotcue1CueLoop->slotSet(0);
+    m_pHotcue1CueLoop->set(1);
+    m_pHotcue1CueLoop->set(0);
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
@@ -870,24 +870,24 @@ TEST_F(HotcueControlTest, CueLoopWithSavedLoopToggles) {
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_NE(Cue::kNoPosition, m_pHotcue1EndPosition->get());
     EXPECT_TRUE(m_pLoopEnabled->toBool());
 
-    m_pHotcue1CueLoop->slotSet(1);
-    m_pHotcue1CueLoop->slotSet(0);
+    m_pHotcue1CueLoop->set(1);
+    m_pHotcue1CueLoop->set(0);
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_NE(Cue::kNoPosition, m_pHotcue1EndPosition->get());
     EXPECT_FALSE(m_pLoopEnabled->toBool());
 
-    m_pHotcue1CueLoop->slotSet(1);
-    m_pHotcue1CueLoop->slotSet(0);
+    m_pHotcue1CueLoop->set(1);
+    m_pHotcue1CueLoop->set(0);
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
@@ -902,8 +902,8 @@ TEST_F(HotcueControlTest, CueLoopWithoutLoopOrBeats) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
-    m_pHotcue1CueLoop->slotSet(1);
-    m_pHotcue1CueLoop->slotSet(0);
+    m_pHotcue1CueLoop->set(1);
+    m_pHotcue1CueLoop->set(0);
 
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
@@ -930,15 +930,15 @@ TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
     setCurrentSamplePosition(loopStartPositionSamples);
     ProcessBuffer();
 
-    m_pPlay->slotSet(1);
+    m_pPlay->set(1);
 
     // Set a beatloop
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
@@ -953,8 +953,8 @@ TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Re-Enable loop
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
@@ -964,8 +964,8 @@ TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
     EXPECT_NEAR(beforeLoopPositionSamples, currentSamplePosition(), 2048);
 
     // Disable loop
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
@@ -976,7 +976,7 @@ TEST_F(HotcueControlTest, SavedLoopActivate) {
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
-    m_pBeatloopSize->slotSet(4);
+    m_pBeatloopSize->set(4);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
 
@@ -993,14 +993,14 @@ TEST_F(HotcueControlTest, SavedLoopActivate) {
     ProcessBuffer();
 
     // Set a beatloop
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
 
     m_pPlay->set(1);
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
@@ -1016,8 +1016,8 @@ TEST_F(HotcueControlTest, SavedLoopActivate) {
     EXPECT_DOUBLE_EQ(loopStartPositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Activate saved loop (does not imply seeking to loop start)
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
@@ -1037,8 +1037,8 @@ TEST_F(HotcueControlTest, SavedLoopActivate) {
 
     // Activate saved loop (usually doesn't imply seeking to loop start, but in this case it does
     // because the play position is behind the loop end position)
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPositionSamples, m_pHotcue1Position->get());
@@ -1050,7 +1050,7 @@ TEST_F(HotcueControlTest, SavedLoopActivateWhilePlayingTogglesLoop) {
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
-    m_pBeatloopSize->slotSet(4);
+    m_pBeatloopSize->set(4);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
     const double loopStartPosition = 8 * beatLengthSamples;
@@ -1063,16 +1063,16 @@ TEST_F(HotcueControlTest, SavedLoopActivateWhilePlayingTogglesLoop) {
     // Set a beatloop
     setCurrentSamplePosition(loopStartPosition);
     ProcessBuffer();
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
 
-    m_pQuantizeEnabled->slotSet(1);
-    m_pPlay->slotSet(1);
+    m_pQuantizeEnabled->set(1);
+    m_pPlay->set(1);
     ProcessBuffer();
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(loopStartPosition, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopEndPosition, m_pHotcue1EndPosition->get());
@@ -1080,13 +1080,13 @@ TEST_F(HotcueControlTest, SavedLoopActivateWhilePlayingTogglesLoop) {
     EXPECT_DOUBLE_EQ(m_pHotcue1Position->get(), m_pLoopStartPosition->get());
     EXPECT_DOUBLE_EQ(m_pHotcue1EndPosition->get(), m_pLoopEndPosition->get());
 
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0.0, m_pLoopEnabled->get());
 
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(1.0, m_pLoopEnabled->get());
 }
@@ -1096,7 +1096,7 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestore) {
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
     constexpr double savedLoopSize = 8;
-    m_pBeatloopSize->slotSet(savedLoopSize);
+    m_pBeatloopSize->set(savedLoopSize);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
 
@@ -1105,30 +1105,30 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestore) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
     // Set a beatloop
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
 
     m_pPlay->set(1);
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1ActivateLoop->slotSet(1);
-    m_pHotcue1ActivateLoop->slotSet(0);
+    m_pHotcue1ActivateLoop->set(1);
+    m_pHotcue1ActivateLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Disable loop
-    m_pLoopEnabled->slotSet(0);
+    m_pLoopEnabled->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Set new beatloop size
-    m_pBeatloopSize->slotSet(savedLoopSize / 2);
+    m_pBeatloopSize->set(savedLoopSize / 2);
 
     // Re-enabled saved loop
-    m_pHotcue1ActivateLoop->slotSet(1);
-    m_pHotcue1ActivateLoop->slotSet(0);
+    m_pHotcue1ActivateLoop->set(1);
+    m_pHotcue1ActivateLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(0, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(loopLengthSamples, m_pHotcue1EndPosition->get());
@@ -1142,7 +1142,7 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
     constexpr double savedLoopSize = 4;
-    m_pBeatloopSize->slotSet(savedLoopSize);
+    m_pBeatloopSize->set(savedLoopSize);
     const double beatLengthSamples = getBeatLengthSamples(pTrack);
     const double loopLengthSamples = m_pBeatloopSize->get() * beatLengthSamples;
     const double cuePositionSamples = 8 * beatLengthSamples;
@@ -1159,12 +1159,12 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     EXPECT_DOUBLE_EQ(cuePositionSamples, currentSamplePosition());
 
     // Set a beatloop
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
@@ -1174,20 +1174,20 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     // Check 1: Play position before saved loop
 
     // Disable loop
-    m_pLoopEnabled->slotSet(0);
+    m_pLoopEnabled->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Set new beatloop size
-    m_pBeatloopSize->slotSet(m_pBeatloopSize->get() / 2);
+    m_pBeatloopSize->set(m_pBeatloopSize->get() / 2);
 
     // Seek to position before saved loop
     setCurrentSamplePosition(beforeLoopPositionSamples);
 
     // Re-enable saved loop
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
@@ -1201,20 +1201,20 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
     // Check 2: Play position after saved loop
 
     // Disable loop
-    m_pLoopEnabled->slotSet(0);
+    m_pLoopEnabled->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
 
     // Set new beatloop size
-    m_pBeatloopSize->slotSet(m_pBeatloopSize->get() / 2);
+    m_pBeatloopSize->set(m_pBeatloopSize->get() / 2);
 
     // Seek to position after saved loop
     setCurrentSamplePosition(afterLoopPositionSamples);
 
     // Re-enable saved loop
-    m_pHotcue1Activate->slotSet(1);
-    m_pHotcue1Activate->slotSet(0);
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples, m_pHotcue1Position->get());
     EXPECT_DOUBLE_EQ(cuePositionSamples + loopLengthSamples, m_pHotcue1EndPosition->get());
@@ -1236,13 +1236,13 @@ TEST_F(HotcueControlTest, SavedLoopUnloadTrackWhileActive) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
     // Set a beatloop
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
     ProcessBuffer();
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_NE(Cue::kNoPosition, m_pHotcue1Position->get());
@@ -1271,13 +1271,13 @@ TEST_F(HotcueControlTest, SavedLoopUseLoopInOutWhileActive) {
     EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pHotcue1EndPosition->get());
 
     // Set a beatloop
-    m_pBeatloopActivate->slotSet(1);
-    m_pBeatloopActivate->slotSet(0);
+    m_pBeatloopActivate->set(1);
+    m_pBeatloopActivate->set(0);
     ProcessBuffer();
 
     // Save currently active loop to hotcue slot 1
-    m_pHotcue1SetLoop->slotSet(1);
-    m_pHotcue1SetLoop->slotSet(0);
+    m_pHotcue1SetLoop->set(1);
+    m_pHotcue1SetLoop->set(0);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_NE(Cue::kNoPosition, m_pHotcue1Position->get());
@@ -1285,14 +1285,14 @@ TEST_F(HotcueControlTest, SavedLoopUseLoopInOutWhileActive) {
 
     setCurrentSamplePosition(0);
 
-    pLoopIn->slotSet(1);
-    pLoopIn->slotSet(0);
+    pLoopIn->set(1);
+    pLoopIn->set(0);
     ProcessBuffer();
 
     setCurrentSamplePosition(1000);
 
-    pLoopOut->slotSet(1);
-    pLoopOut->slotSet(0);
+    pLoopOut->set(1);
+    pLoopOut->set(0);
 
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
