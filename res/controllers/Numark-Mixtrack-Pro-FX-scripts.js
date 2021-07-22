@@ -592,14 +592,32 @@ MixtrackProFX.Deck = function(number) {
         group: "[EffectRack1_EffectUnit" + number + "_Effect1]",
         key: "prev_effect",
         midi: [0x98, channel*2],
-        off: 0x01
+        off: 0x01,
+        shift: function() {
+            this.group = "[Channel" + number + "]";
+            this.inKey = "pitch_up";
+            this.outKey = "pitch_up";
+        },
+        unshift: function() {
+            this.group = "[EffectRack1_EffectUnit" + number + "_Effect1]";
+            this.inKey = "prev_effect";
+            this.outKey = "prev_effect";
+        }
     });
 
     this.nextEffect = new components.Button({
         group: "[EffectRack1_EffectUnit" + number + "_Effect1]",
         key: "next_effect",
         midi: [0x99, 0x03 + channel*2],
-        off: 0x01
+        off: 0x01,
+        shift: function() {
+            this.group = "[Channel" + number + "]";
+            this.inKey = "pitch_down";
+        },
+        unshift: function() {
+            this.group = "[EffectRack1_EffectUnit" + number + "_Effect1]";
+            this.inKey = "next_effect";
+        }
     });
 
     this.beatsnap = new components.Button({
