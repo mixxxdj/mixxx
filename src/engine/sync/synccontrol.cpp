@@ -332,19 +332,47 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
     }
-    trackBeatsUpdated(pBeats);
-}
-
-void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // This slot is fired by a new file is loaded or if the user
     // has adjusted the beatgrid.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
+        kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
     }
 
     VERIFY_OR_DEBUG_ASSERT(m_pLocalBpm) {
         // object not initialized
         return;
+    }
+
+    bool hadBeats = m_pBeats != nullptr;
+    m_pBeats = pBeats;
+    m_leaderBpmAdjustFactor = kBpmUnity;
+
+    m_pBpmControl->updateLocalBpm();
+    if (isSynchronized()) {
+        if (!m_pBeats) {
+            // If we were soft leader and now we have no beats, go to follower.
+            // This is a bit of "enginesync" logic that has bled into this Syncable,
+            // is there a better way to handle "soft leaders no longer have bpm"?
+            if (getSyncMode() == SyncMode::LeaderSoft) {
+                m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
+            }
+            return;
+        }
+
+        m_pBpmControl->syncTempo();
+        if (!hadBeats) {
+            // There is a chance we were beatless leader before, so we notify a basebpm change
+            // to possibly reinit leader params.
+            m_pChannel->getEngineBuffer()->requestSyncMode(getSyncMode());
+            m_pEngineSync->notifyBaseBpmChanged(this, getBaseBpm());
+        }
+    }
+}
+
+void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    // This slot is fired by if the user has adjusted the beatgrid.
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
     }
 
     m_pBeats = pBeats;
@@ -357,7 +385,7 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
             // be leader.
             m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
         } else {
-            // We are remaining leader, so notify the engine with our update.
+            // We should not change playback speed.
             m_pBpmControl->updateLocalBpm();
             m_pEngineSync->notifyBaseBpmChanged(this, getBaseBpm());
         }

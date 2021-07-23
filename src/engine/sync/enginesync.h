@@ -56,7 +56,7 @@ class EngineSync : public SyncableListener {
     bool otherSyncedPlaying(const QString& group);
 
     void addSyncableDeck(Syncable* pSyncable);
-    EngineChannel* getLeader() const;
+    EngineChannel* getLeaderChannel() const;
     void onCallbackStart(int sampleRate, int bufferSize);
     void onCallbackEnd(int sampleRate, int bufferSize);
 
