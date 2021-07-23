@@ -17,7 +17,7 @@
 #include "util/fileinfo.h"
 #include "util/math.h"
 
-// When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
+// When linking Qt statically we have to Q_IMPORT_PLUGIN all the
 // plugins we link in build/depends.py.
 #ifdef QT_STATIC
 #include <QtPlugin>
