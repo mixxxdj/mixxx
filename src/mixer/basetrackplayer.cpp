@@ -198,7 +198,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     connect(m_pUpdateReplayGainFromPregain.get(),
             &ControlObject::valueChanged,
             this,
-            &BaseTrackPlayerImpl::slotUpdateReplaygainFromPregain);
+            &BaseTrackPlayerImpl::slotUpdateReplayGainFromPregain);
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -739,7 +739,7 @@ void BaseTrackPlayerImpl::slotShiftCuesMillisButton(double value, double millise
     slotShiftCuesMillis(milliseconds);
 }
 
-void BaseTrackPlayerImpl::slotUpdateReplaygainFromPregain(double pressed) {
+void BaseTrackPlayerImpl::slotUpdateReplayGainFromPregain(double pressed) {
     if (pressed <= 0) {
         return;
     }

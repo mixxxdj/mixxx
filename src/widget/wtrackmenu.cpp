@@ -346,7 +346,7 @@ void WTrackMenu::createActions() {
         connect(m_pUpdateReplayGain,
                 &QAction::triggered,
                 this,
-                &WTrackMenu::slotUpdateReplaygainFromPregain);
+                &WTrackMenu::slotUpdateReplayGainFromPregain);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -915,7 +915,7 @@ class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPoint
 
 } // anonymous namespace
 
-void WTrackMenu::slotUpdateReplaygainFromPregain() {
+void WTrackMenu::slotUpdateReplayGainFromPregain() {
     VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
         return;
     }

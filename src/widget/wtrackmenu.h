@@ -107,7 +107,7 @@ class WTrackMenu : public QMenu {
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
 
     // Info and metadata
-    void slotUpdateReplaygainFromPregain();
+    void slotUpdateReplayGainFromPregain();
     void slotShowDlgTagFetcher();
     void slotImportMetadataFromFileTags();
     void slotExportMetadataIntoFileTags();
@@ -212,7 +212,7 @@ class WTrackMenu : public QMenu {
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
 
-    // Update Replaygain from Track
+    // Update ReplayGain from Track
     QAction* m_pUpdateReplayGain{};
 
     // Reload Track Metadata Action:
