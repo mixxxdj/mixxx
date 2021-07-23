@@ -96,12 +96,12 @@ void DlgPrefKey::loadSettings() {
     QMap<mixxx::track::io::key::ChromaticKey, QString> notation;
     if (notation_name == KEY_NOTATION_CUSTOM) {
         radioNotationCustom->setChecked(true);
+        // Read the custom notation from the config and store it in a temp QMap
         for (auto it = m_keyLineEdits.constBegin();
                 it != m_keyLineEdits.constEnd(); ++it) {
             it.value()->setText(m_keySettings.getCustomKeyNotation(it.key()));
             notation[it.key()] = it.value()->text();
         }
-        setNotationCustom(true);
         notation_type = KeyUtils::KeyNotation::Custom;
     } else {
         if (notation_name == KEY_NOTATION_LANCELOT) {
@@ -128,8 +128,11 @@ void DlgPrefKey::loadSettings() {
         }
     }
 
-    setNotation(notation_type);
+    // Store notation map for later recall...
     KeyUtils::setNotation(notation);
+    // ... BEFORE invoking setNotation() which populates the QLineEdits from
+    // the map retrieved from KeyUtils.
+    setNotation(notation_type);
     m_pKeyNotation->set(static_cast<double>(notation_type));
 
     slotUpdate();
@@ -266,22 +269,17 @@ void DlgPrefKey::slotUpdate() {
 }
 
 void DlgPrefKey::setNotationCustom(bool active) {
-    if (!active) {
-        return;
+    if (active) {
+        setNotation(KeyUtils::KeyNotation::Custom);
     }
-
-    for (auto it = m_keyLineEdits.constBegin();
-            it != m_keyLineEdits.constEnd(); ++it) {
-        it.value()->setEnabled(true);
-    }
-    slotUpdate();
 }
 
 void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
     for (auto it = m_keyLineEdits.constBegin();
             it != m_keyLineEdits.constEnd(); ++it) {
         it.value()->setText(KeyUtils::keyToString(it.key(), notation));
-        it.value()->setEnabled(false);
+        // QLineEdits are only enabled for Custom notation.
+        it.value()->setEnabled(notation == KeyUtils::KeyNotation::Custom);
     }
     slotUpdate();
 }
