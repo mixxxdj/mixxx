@@ -173,7 +173,7 @@ void Track::replaceMetadataFromSource(
             // missing or not valid! The BPM value in the metadata might be
             // imprecise (normalized or rounded), e.g. ID3v2 only supports
             // integer values.
-            beatsAndBpmModified = trySetBpmWhileLocked(importedBpm.value());
+            beatsAndBpmModified = trySetBpmWhileLocked(importedBpm);
         }
         modified |= beatsAndBpmModified;
 
@@ -285,7 +285,7 @@ bool Track::replaceRecord(
     } else {
         // Setting the bpm manually may in turn update the beat grid
         bpmUpdatedFlag = trySetBpmWhileLocked(
-                newRecord.getMetadata().getTrackInfo().getBpm().value());
+                newRecord.getMetadata().getTrackInfo().getBpm());
     }
     // The bpm in m_record has already been updated. Read it and copy it into
     // the new record to ensure it will be consistent with the new beat grid.
@@ -334,8 +334,7 @@ mixxx::Bpm Track::getBpmWhileLocked() const {
     return m_record.getMetadata().getTrackInfo().getBpm();
 }
 
-bool Track::trySetBpmWhileLocked(double bpmValue) {
-    const auto bpm = mixxx::Bpm(bpmValue);
+bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
     if (!bpm.isValid()) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
@@ -367,9 +366,9 @@ double Track::getBpm() const {
     return bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined;
 }
 
-bool Track::trySetBpm(double bpmValue) {
+bool Track::trySetBpm(mixxx::Bpm bpm) {
     auto locked = lockMutex(&m_qMutex);
-    if (!trySetBpmWhileLocked(bpmValue)) {
+    if (!trySetBpmWhileLocked(bpm)) {
         return false;
     }
     afterBeatsAndBpmUpdated(&locked);
