@@ -268,12 +268,6 @@ void DlgPrefKey::slotUpdate() {
     }
 }
 
-void DlgPrefKey::setNotationCustom(bool active) {
-    if (active) {
-        setNotation(KeyUtils::KeyNotation::Custom);
-    }
-}
-
 void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
     for (auto it = m_keyLineEdits.constBegin();
             it != m_keyLineEdits.constEnd(); ++it) {
@@ -282,6 +276,12 @@ void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
         it.value()->setEnabled(notation == KeyUtils::KeyNotation::Custom);
     }
     slotUpdate();
+}
+
+void DlgPrefKey::setNotationCustom(bool active) {
+    if (active) {
+        setNotation(KeyUtils::KeyNotation::Custom);
+    }
 }
 
 void DlgPrefKey::setNotationTraditional(bool active) {
