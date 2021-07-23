@@ -343,7 +343,7 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
         return;
     }
 
-    bool hadBeats = m_pBeats != nullptr;
+    const bool hadBeats = m_pBeats != nullptr;
     m_pBeats = pBeats;
     m_leaderBpmAdjustFactor = kBpmUnity;
 
