@@ -1005,7 +1005,7 @@ TEST_F(EngineSyncTest, LoadTrackInitializesLeader) {
     pButtonSyncEnabled1->set(1.0);
 
     // No leader because this deck has no track.
-    EXPECT_EQ(NULL, m_pEngineSync->getLeaderChannel());
+    EXPECT_EQ(nullptr, m_pEngineSync->getLeaderChannel());
     EXPECT_DOUBLE_EQ(
             0.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
