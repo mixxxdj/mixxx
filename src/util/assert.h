@@ -5,10 +5,10 @@
 #ifdef __OPTIMIZE__
 #ifdef __has_builtin
 #if __has_builtin(__builtin_constant_p)
-#define HAS_BUILDIN_CONSTANT_P
+#define MIXXX_LINK_ASSERTIONS_ENABLED
 #endif
 #elif __GNUC__ < 10
-#define HAS_BUILDIN_CONSTANT_P
+#define MIXXX_LINK_ASSERTIONS_ENABLED
 #endif
 #endif
 
@@ -33,11 +33,13 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
     qFatal("ASSERT: \"%s\" in function %s at %s:%d", assertion, function, file, line);
 }
 
+#ifdef MIXXX_LINK_ASSERTIONS_ENABLED
 /// This function is intentionally not defined to produce a linker error
 /// when the invocation is not dead code and optimized out
 extern void link_assert_failed(void);
 // Note void link_assert_failed(void) = delete; does not work, because
 // it is evaluated before optimizing
+#endif
 
 // These macros provide the demangled function name (including helpful template
 // type information) and are supported on every version of GCC, Clang, and MSVC
@@ -125,7 +127,7 @@ extern void link_assert_failed(void);
 ///
 /// Note that the check and fallback will be included in release builds.
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-#ifdef HAS_BUILDIN_CONSTANT_P
+#ifdef MIXXX_LINK_ASSERTIONS_ENABLED
 #define VERIFY_OR_DEBUG_ASSERT(cond)                                          \
     if (Q_UNLIKELY(__builtin_constant_p(cond) && !static_cast<bool>(cond))) { \
         link_assert_failed();                                                 \
