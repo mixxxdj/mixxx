@@ -648,15 +648,24 @@ void CueControl::loadCuesFromTrack() {
         m_pLoadedTrack->setMainCuePosition(mainCuePosition);
     } else {
         // If no load cue point is stored, read from track
-        // Note: This is 0:00 for new tracks
+        // Note: This is mixxx::audio::kStartFramePos for new tracks
+        // and always a valid position.
         mainCuePosition = m_pLoadedTrack->getMainCuePosition();
-        DEBUG_ASSERT(mainCuePosition == mixxx::audio::kStartFramePos);
-        // Than add the load cue to the list of cue
-        CuePointer pCue = m_pLoadedTrack->createAndAddCue(
-                mixxx::CueType::MainCue,
-                Cue::kNoHotCue,
-                mainCuePosition,
-                mixxx::audio::kInvalidFramePos);
+        DEBUG_ASSERT(mainCuePosition.isValid());
+        // A main cue point only needs to be added if the position
+        // differs from the default position.
+        if (mainCuePosition != mixxx::audio::kStartFramePos) {
+            qInfo()
+                    << "Adding missing main cue point at"
+                    << mainCuePosition
+                    << "for track"
+                    << m_pLoadedTrack->getLocation();
+            m_pLoadedTrack->createAndAddCue(
+                    mixxx::CueType::MainCue,
+                    Cue::kNoHotCue,
+                    mainCuePosition,
+                    mixxx::audio::kInvalidFramePos);
+        }
     }
 
     DEBUG_ASSERT(mainCuePosition.isValid());
