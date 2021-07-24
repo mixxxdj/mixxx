@@ -33,7 +33,7 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
     connect(m_pClockBpm.data(),
             &ControlObject::valueChanged,
             this,
-            &InternalClock::slotBaseBpmChanged,
+            &InternalClock::slotBpmChanged,
             Qt::DirectConnection);
 
     // The relative position between two beats in the range 0.0 ... 1.0
@@ -157,13 +157,16 @@ void InternalClock::reinitLeaderParams(double beatDistance, double baseBpm, doub
     updateLeaderBeatDistance(beatDistance);
 }
 
-void InternalClock::slotBaseBpmChanged(double baseBpm) {
-    m_dBaseBpm = baseBpm;
+void InternalClock::slotBpmChanged(double bpm) {
+    m_dBaseBpm = bpm;
     updateBeatLength(m_iOldSampleRate, m_dBaseBpm);
     if (!isSynchronized()) {
         return;
     }
-    m_pEngineSync->notifyBaseBpmChanged(this, m_dBaseBpm);
+    // The internal clock doesn't have a rate slider, so treat
+    // "base" bpm changes as rate changes -- this means the change will be
+    // reflected in all synced decks.
+    m_pEngineSync->notifyRateChanged(this, m_dBaseBpm);
 }
 
 void InternalClock::slotBeatDistanceChanged(double beatDistance) {
