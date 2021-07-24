@@ -1263,7 +1263,7 @@ void EngineBuffer::processSeek(bool paused) {
             // new position was already set above
             break;
         default:
-            DEBUG_ASSERT(!"Unhandled seek request type");
+            DEBUG_ASSERT_UNREACHABLE(!"Unhandled seek request type");
             m_queuedSeek.setValue(kNoQueuedSeek);
             return;
     }

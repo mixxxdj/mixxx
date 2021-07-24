@@ -615,7 +615,7 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         m_state = IDLE;
         return true;
     default:
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT_UNREACHABLE(false);
         return false;
     }
 }

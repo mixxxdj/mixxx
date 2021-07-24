@@ -512,7 +512,7 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
     // Determine height of the cover art image depending on the screen size
     const QScreen* primaryScreen = getPrimaryScreen();
     if (!primaryScreen) {
-        DEBUG_ASSERT(!"Primary screen not found!");
+        DEBUG_ASSERT_UNREACHABLE(!"Primary screen not found!");
         return QVariant();
     }
     unsigned int absoluteHeightOfCoverartToolTip = static_cast<int>(
@@ -581,7 +581,10 @@ QVariant BaseTrackTableModel::roleValue(
                 }
                 bool ok;
                 durationInSeconds = rawValue.toDouble(&ok);
-                VERIFY_OR_DEBUG_ASSERT(ok && durationInSeconds >= 0) {
+                VERIFY_OR_DEBUG_ASSERT(ok) {
+                    return QVariant();
+                }
+                VERIFY_OR_DEBUG_ASSERT(durationInSeconds >= 0) {
                     return QVariant();
                 }
             }
@@ -598,7 +601,10 @@ QVariant BaseTrackTableModel::roleValue(
             }
             bool ok;
             const auto starCount = rawValue.toInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok && starCount >= StarRating::kMinStarCount) {
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                return QVariant();
+            }
+            VERIFY_OR_DEBUG_ASSERT(starCount >= StarRating::kMinStarCount) {
                 return QVariant();
             }
             return QVariant::fromValue(StarRating(starCount));
@@ -612,7 +618,10 @@ QVariant BaseTrackTableModel::roleValue(
             }
             bool ok;
             const auto timesPlayed = rawValue.toInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok && timesPlayed >= 0) {
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                return QVariant();
+            }
+            VERIFY_OR_DEBUG_ASSERT(timesPlayed >= 0) {
                 return QVariant();
             }
             return QString("(%1)").arg(timesPlayed);
@@ -830,7 +839,7 @@ QVariant BaseTrackTableModel::roleValue(
         }
     }
     default:
-        DEBUG_ASSERT(!"unexpected role");
+        DEBUG_ASSERT_UNREACHABLE(!"unexpected role");
         break;
     }
     return std::move(rawValue);
@@ -969,7 +978,7 @@ void BaseTrackTableModel::slotRefreshCoverRows(
         return;
     }
     const int column = fieldIndex(LIBRARYTABLE_COVERART);
-    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
+    X_VERIFY_OR_DEBUG_ASSERT(column >= 0) {
         return;
     }
     emitDataChangedForMultipleRowsInColumn(rows, column);

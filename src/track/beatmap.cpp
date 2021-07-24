@@ -638,7 +638,7 @@ BeatsPointer BeatMap::scale(BpmScale scale) const {
         scaleHalve(&beats);
         break;
     default:
-        DEBUG_ASSERT(!"scale value invalid");
+        DEBUG_ASSERT_UNREACHABLE(!"scale value invalid");
         return BeatsPointer(new BeatMap(*this));
     }
 
@@ -648,7 +648,7 @@ BeatsPointer BeatMap::scale(BpmScale scale) const {
 
 BeatsPointer BeatMap::setBpm(mixxx::Bpm bpm) {
     Q_UNUSED(bpm);
-    DEBUG_ASSERT(!"BeatMap::setBpm() not implemented");
+    DEBUG_ASSERT_UNREACHABLE(!"BeatMap::setBpm() not implemented");
     return BeatsPointer(new BeatMap(*this));
 
     /*

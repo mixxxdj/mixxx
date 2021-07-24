@@ -71,7 +71,7 @@ void TreeItem::insertChild(int row, TreeItem* pChild) {
 void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
     DEBUG_ASSERT(!m_pFeature ||
             m_pFeature == pFeature);
-    DEBUG_ASSERT(!m_pParent ||
+    X_DEBUG_ASSERT(!m_pParent ||
             m_pParent->m_pFeature == pFeature);
     if (m_pFeature == pFeature) {
         return;

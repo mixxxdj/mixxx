@@ -206,8 +206,10 @@ bool LV2EffectProcessor::loadStatesForInputChannel(const ChannelHandle* inputCha
 
         auto* pState = dynamic_cast<LV2EffectGroupState*>(
                 pStatesMap->at(outputChannel.handle()));
-        VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
-              return false;
+        {
+            VERIFY_OR_DEBUG_ASSERT(pState) {
+                return false;
+            }
         }
         effectSpecificStatesMap.insert(outputChannel.handle(), pState);
     }

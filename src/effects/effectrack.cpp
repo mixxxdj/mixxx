@@ -297,7 +297,7 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
             break;
         }
     }
-    DEBUG_ASSERT(masterHandleAndGroup != nullptr);
+    DEBUG_ASSERT(masterHandleAndGroup);
 
     pChainSlot->registerInputChannel(*masterHandleAndGroup);
     pChain->enableForInputChannel(*masterHandleAndGroup);
@@ -347,7 +347,7 @@ void PerGroupRack::setupForGroup(const QString& groupName) {
             break;
         }
     }
-    DEBUG_ASSERT(handleAndGroup != nullptr);
+    DEBUG_ASSERT(handleAndGroup);
 
     // Register this channel alone with the chain slot.
     pChainSlot->registerInputChannel(*handleAndGroup);

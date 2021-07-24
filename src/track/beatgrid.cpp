@@ -339,7 +339,7 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
         bpm *= 3.0 / 2;
         break;
     default:
-        DEBUG_ASSERT(!"scale value invalid");
+        DEBUG_ASSERT_UNREACHABLE(!"scale value invalid");
         return BeatsPointer(new BeatGrid(*this));
     }
 

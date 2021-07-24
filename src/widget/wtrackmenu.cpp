@@ -1793,7 +1793,7 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
     default:
-        DEBUG_ASSERT(!"unreachable");
+        DEBUG_ASSERT_UNREACHABLE(!"unreachable");
         return false;
     }
 }

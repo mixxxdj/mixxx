@@ -648,7 +648,7 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
         // Give our caller the randomly-selected track.
         return TrackId(oQuery.value(0));
     } else {
-        DEBUG_ASSERT(false); // We should have exit earlier
+        DEBUG_ASSERT_UNREACHABLE(false); // We should have exit earlier
         qDebug() << "No random track available for Auto DJ";
         return TrackId();
     }
@@ -717,7 +717,7 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromAutoDj(int percentActive) {
         // Give our caller the randomly-selected track.
         return TrackId(oQuery.value(0));
     } else {
-        DEBUG_ASSERT(false); // We should have exit earlier
+        DEBUG_ASSERT_UNREACHABLE(false); // We should have exit earlier
         qDebug() << "No random track available for Auto DJ";
         return TrackId();
     }

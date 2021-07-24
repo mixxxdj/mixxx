@@ -64,9 +64,9 @@ template<typename T>
 void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
     std::weak_ptr<T> weak(ref_ptr);
     ref_ptr.reset();
-    if (auto shared = weak.lock()) {
+    auto shared = weak.lock();
+    VERIFY_OR_DEBUG_ASSERT(!shared) {
         qWarning() << name << "was leaked! Use count:" << shared.use_count();
-        DEBUG_ASSERT(false);
     }
 }
 
@@ -541,7 +541,7 @@ void CoreServices::shutdown() {
     {
         const QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
                 ControlDoublePrivate::takeAllInstances();
-        if (!leakedControls.isEmpty()) {
+        VERIFY_OR_DEBUG_ASSERT(leakedControls.isEmpty()) {
             qWarning()
                     << "The following"
                     << leakedControls.size()
@@ -557,7 +557,6 @@ void CoreServices::shutdown() {
                     pCDP->deleteCreatorCO();
                 }
             }
-            DEBUG_ASSERT(!"Controls were leaked!");
         }
         // Finally drop all shared pointers by exiting this scope
     }

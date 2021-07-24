@@ -109,7 +109,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
         } else {
             // This must not happen, because we have already verified above
             // that the PlugInId is valid
-            DEBUG_ASSERT(false);
+            DEBUG_ASSERT_UNREACHABLE(false);
         }
 
         if (m_pPlugin) {

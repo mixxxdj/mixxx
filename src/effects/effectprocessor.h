@@ -224,8 +224,8 @@ class EffectProcessorImpl : public EffectProcessor {
 
               auto pState = dynamic_cast<EffectSpecificState*>(
                         pStatesMap->at(outputChannel.handle()));
-              VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
-                    return false;
+              VERIFY_OR_DEBUG_ASSERT(pState) {
+                  return false;
               }
               effectSpecificStatesMap.insert(outputChannel.handle(), pState);
           }

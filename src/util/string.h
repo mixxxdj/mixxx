@@ -69,7 +69,7 @@ inline QString convertWCStringToQString(
         const wchar_t* wcs,
         std::size_t len) {
     if (!wcs) {
-        DEBUG_ASSERT(len == 0);
+        X_DEBUG_ASSERT(len == 0);
         return QString();
     }
     DEBUG_ASSERT(wcsnlen(wcs, len) == len);
@@ -81,7 +81,7 @@ inline QString convertWCStringToQString(
     case sizeof(uint):
         return QString::fromUcs4(reinterpret_cast<const uint*>(wcs), ilen);
     default:
-        DEBUG_ASSERT(!"unsupported character type");
+        DEBUG_ASSERT_UNREACHABLE(!"unsupported character type");
         return QString();
     }
 }
