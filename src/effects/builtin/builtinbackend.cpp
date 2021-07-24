@@ -23,6 +23,7 @@
 #include "effects/builtin/loudnesscontoureffect.h"
 #include "effects/builtin/metronomeeffect.h"
 #include "effects/builtin/phasereffect.h"
+#include "effects/builtin/transeffect.h"
 #include "effects/builtin/tremoloeffect.h"
 #include "effects/builtin/whitenoiseeffect.h"
 
@@ -47,6 +48,7 @@ BuiltInBackend::BuiltInBackend(QObject* pParent)
     // Fancy effects
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();
+    registerEffect<TransEffect>();
     registerEffect<AutoPanEffect>();
 #ifndef __MACAPPSTORE__
     registerEffect<ReverbEffect>();
