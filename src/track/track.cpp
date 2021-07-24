@@ -932,6 +932,13 @@ CuePointer Track::createAndAddCue(
         int hotCueIndex,
         mixxx::audio::FramePos startPosition,
         mixxx::audio::FramePos endPosition) {
+    VERIFY_OR_DEBUG_ASSERT(hotCueIndex == Cue::kNoHotCue ||
+            hotCueIndex >= mixxx::kFirstHotCueIndex) {
+        return CuePointer{};
+    }
+    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid() || endPosition.isValid()) {
+        return CuePointer{};
+    }
     CuePointer pCue(new Cue(
             type,
             hotCueIndex,
