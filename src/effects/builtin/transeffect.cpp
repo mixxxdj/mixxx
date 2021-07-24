@@ -21,7 +21,7 @@ EffectManifestPointer TransEffect::getManifest() {
     EffectManifestParameterPointer period = pManifest->addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
-    period->setDescription(QObject::tr("Trans period (1/period = repetitions per beat when quantized / otherwise period time in seconds)."));
+    period->setDescription(QObject::tr("Trans period time in seconds (approximate when quantized)."));
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::TIME);
@@ -32,7 +32,7 @@ EffectManifestPointer TransEffect::getManifest() {
     EffectManifestParameterPointer fade_time_frac = pManifest->addParameter();
     fade_time_frac->setId("fadetime");
     fade_time_frac->setName(QObject::tr("Fade Time Fraction"));
-    fade_time_frac->setDescription(QObject::tr("Fraction of time for fade in/out: 100% = 50%% fade-in + 50%% fade-out."));
+    fade_time_frac->setDescription(QObject::tr("Fraction of on-time for fade in/out: 100% = 50%% fade-in + 50%% fade-out."));
     fade_time_frac->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     fade_time_frac->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     fade_time_frac->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -71,7 +71,7 @@ EffectManifestPointer TransEffect::getManifest() {
     quantize->setName(QObject::tr("Quantize"));
     quantize->setShortName(QObject::tr("Quantize"));
     quantize->setDescription(QObject::tr(
-            "Round inverse period to nearest integer per second."));
+            "Round period to nearest integer-multiple in four beats."));
     quantize->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
