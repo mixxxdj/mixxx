@@ -563,11 +563,11 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 if (engine.getValue("[Sampler" + i + "]", "track_loaded") === 0) {
                     engine.setValue("[Sampler" + i + "]", "LoadSelectedTrack", 1);
                 } else if (engine.getValue("[Sampler" + i + "]", "track_loaded") === 1) {
-                    // STOP PLAYING SAMPLERS ...
+                    // stop playing all other samplers ...
                     for (j = 1; j <=8; j++) {
                         engine.setValue("[Sampler" + j + "]", "cue_gotoandstop", 1);
                     }
-                    // ... BEFORE THE ACTUAL SAMPLER TO PLAY GETS STARTED
+                    // ... before the actual sampler to play gets started
                     engine.setValue("[Sampler" + i + "]", "cue_gotoandplay", 1);
                 }
             } else if (control === 0x1C + i - 1 && value >= 0x01) {
@@ -680,7 +680,7 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
     } else {
         if (MC7000.shift[deckOffset]) {
             // While Shift Button pressed -> Search through track
-            var jogSearch = 100 * adjustedSpeed;
+            var jogSearch = 100 * adjustedSpeed; // moves 100 times faster than normal jog
             engine.setValue(group, "jog", jogSearch);
         } else {
             // While Shift Button released -> Pitch Bend
