@@ -318,9 +318,9 @@ audio::FramePos BeatMap::findNthBeat(audio::FramePos position, int n) const {
     const bool searchForward = n > 0;
     int numBeatsLeft = std::abs(n);
 
-    // Beats are stored as full frame positions, so when search forward, the
-    // smalled possible beat we can find is the upper frame boundary of the
-    // search position.
+    // Beats are stored as full frame positions, so when searching forwards the
+    // smallest possible beat position we can find is the upper frame boundary
+    // of the search position.
     //
     // For searching backwards, the same applies for the lower frame boundary.
     const auto searchFromPosition = searchForward
