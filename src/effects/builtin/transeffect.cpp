@@ -3,10 +3,6 @@
 #include "util/rampingvalue.h"
 #include "util/sample.h"
 
-namespace {
-const CSAMPLE dTransFadeTime = CSAMPLE(0.025);
-}
-
 // static
 QString TransEffect::getId() {
     return "org.mixxx.effects.trans";
