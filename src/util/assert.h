@@ -2,12 +2,14 @@
 
 #include <QtDebug>
 
+#ifdef __OPTIMIZE__
 #ifdef __has_builtin
 #if __has_builtin(__builtin_constant_p)
 #define HAS_BUILDIN_CONSTANT_P
 #endif
 #elif __GNUC__ < 10
 #define HAS_BUILDIN_CONSTANT_P
+#endif
 #endif
 
 static constexpr const char* kDebugAssertPrefix = "DEBUG ASSERT";
