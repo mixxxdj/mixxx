@@ -165,7 +165,6 @@ TraktorS3.Deck = function(controller, deckNumber, group) {
     this.deckNumber = deckNumber;
     this.group = group;
     this.activeChannel = "[Channel" + deckNumber + "]";
-    this.previousActiveChannel = undefined;
     // When true, touching the wheel enables scratch mode.  When off, touching the wheel
     // has no special effect
     this.jogToggled = TraktorS3.JogDefaultOn;
@@ -201,7 +200,6 @@ TraktorS3.Deck.prototype.activateChannel = function(channel) {
         HIDDebug("Programming ERROR: tried to activate a channel with a deck that is not its parent");
         return;
     }
-    this.previousActiveChannel = this.activeChannel;
     this.activeChannel = channel.group;
     engine.softTakeoverIgnoreNextValue(this.activeChannel, "rate");
     this.controller.lightDeck(this.activeChannel);
@@ -1795,13 +1793,14 @@ TraktorS3.Controller.prototype.deckSwitchHandler = function(field) {
 
     var channel = this.Channels[field.group];
     var deck = channel.parentDeck;
-    deck.activateChannel(channel);
 
-    var isScratching = engine.getValue(deck.previousActiveChannel, "scratch2_enable");
+    var isScratching = engine.getValue(deck.activeChannel, "scratch2_enable");
     if (isScratching) {
-        engine.setValue(deck.previousActiveChannel, "scratch2", 0.0);
-        engine.setValue(deck.previousActiveChannel, "scratch2_enable", false);
+        engine.setValue(deck.activeChannel, "scratch2", 0.0);
+        engine.setValue(deck.activeChannel, "scratch2_enable", false);
     }
+
+    deck.activateChannel(channel);
 };
 
 TraktorS3.Controller.prototype.extModeHandler = function(field) {
