@@ -1374,7 +1374,8 @@ if(UNIX AND NOT APPLE)
     set(MIXXX_UDEVDIR "${MIXXX_INSTALL_DATADIR}/udev")
     if (CMAKE_INSTALL_PREFIX STREQUAL "/usr" OR CMAKE_INSTALL_PREFIX STREQUAL "/" )
       # /usr and / install prefixes at treated by cmake GNUInstallDirs as
-      # synonym for "system location" in wich case we can lookup the correct udevdir
+      # synonym for "system location". In this case we can look up the correct udevdir
+      # using pkg-config.
       # See: https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#special-cases
       find_package(PkgConfig)
       if (PKG_CONFIG_FOUND)
