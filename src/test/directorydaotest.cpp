@@ -193,6 +193,10 @@ TEST_F(DirectoryDAOTest, relocateDirectory) {
     ASSERT_EQ(DirectoryDAO::AddResult::Ok, dao.addDirectory(mixxx::FileInfo(testdir)));
     ASSERT_EQ(DirectoryDAO::AddResult::Ok, dao.addDirectory(mixxx::FileInfo(test2)));
 
+    const QList<mixxx::FileInfo> oldDirs = dao.loadAllDirectories();
+    ASSERT_EQ(2, oldDirs.size());
+    ASSERT_THAT(oldDirs, UnorderedElementsAre(mixxx::FileInfo(test2), mixxx::FileInfo(testdir)));
+
     // ok now lets create some tracks here
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
@@ -219,7 +223,7 @@ TEST_F(DirectoryDAOTest, relocateDirectory) {
             dao.relocateDirectory(testdir, testnew);
     EXPECT_EQ(2, relocatedTracks.size());
 
-    const QList<mixxx::FileInfo> allDirs = dao.loadAllDirectories();
-    EXPECT_EQ(2, allDirs.size());
-    EXPECT_THAT(allDirs, UnorderedElementsAre(mixxx::FileInfo(test2), mixxx::FileInfo(testnew)));
+    const QList<mixxx::FileInfo> newDirs = dao.loadAllDirectories();
+    EXPECT_EQ(2, newDirs.size());
+    EXPECT_THAT(newDirs, UnorderedElementsAre(mixxx::FileInfo(test2), mixxx::FileInfo(testnew)));
 }
