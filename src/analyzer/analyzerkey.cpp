@@ -41,7 +41,9 @@ AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
           m_bPreferencesReanalyzeEnabled(false) {
 }
 
-bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerKey::initialize(TrackPointer tio,
+        mixxx::audio::SampleRate sampleRate,
+        int totalSamples) {
     if (totalSamples == 0) {
         return false;
     }

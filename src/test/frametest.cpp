@@ -65,3 +65,44 @@ TEST_F(FrameTest, TestFramePosEquality) {
             mixxx::audio::FramePos(std::numeric_limits<
                     mixxx::audio::FramePos::value_t>::infinity()));
 }
+
+TEST_F(FrameTest, LowerFrameBoundary) {
+    EXPECT_EQ(mixxx::audio::FramePos(0), mixxx::audio::FramePos(0).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(0), mixxx::audio::FramePos(0.5).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(0), mixxx::audio::FramePos(0.9).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(100), mixxx::audio::FramePos(100).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(100), mixxx::audio::FramePos(100.1).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(100), mixxx::audio::FramePos(100.9).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-100), mixxx::audio::FramePos(-99.9).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-100), mixxx::audio::FramePos(-99.1).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-101), mixxx::audio::FramePos(-100.1).toLowerFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-101), mixxx::audio::FramePos(-100.9).toLowerFrameBoundary());
+}
+
+TEST_F(FrameTest, UpperFrameBoundary) {
+    EXPECT_EQ(mixxx::audio::FramePos(0), mixxx::audio::FramePos(0).toUpperFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(1), mixxx::audio::FramePos(0.5).toUpperFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(1), mixxx::audio::FramePos(0.9).toUpperFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(100), mixxx::audio::FramePos(100).toUpperFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(101), mixxx::audio::FramePos(100.1).toUpperFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(101), mixxx::audio::FramePos(100.9).toUpperFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-99), mixxx::audio::FramePos(-99.9).toUpperFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-99), mixxx::audio::FramePos(-99.1).toUpperFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-100), mixxx::audio::FramePos(-100.1).toUpperFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-100), mixxx::audio::FramePos(-100.9).toUpperFrameBoundary());
+}
+
+TEST_F(FrameTest, NearestFrameBoundary) {
+    EXPECT_EQ(mixxx::audio::FramePos(0), mixxx::audio::FramePos(0).toNearestFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(1), mixxx::audio::FramePos(0.5).toNearestFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(1), mixxx::audio::FramePos(0.9).toNearestFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(100), mixxx::audio::FramePos(100).toNearestFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(100), mixxx::audio::FramePos(100.1).toNearestFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(101), mixxx::audio::FramePos(100.9).toNearestFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-100), mixxx::audio::FramePos(-99.9).toNearestFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-99), mixxx::audio::FramePos(-99.1).toNearestFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-100),
+            mixxx::audio::FramePos(-100.1).toNearestFrameBoundary());
+    EXPECT_EQ(mixxx::audio::FramePos(-101),
+            mixxx::audio::FramePos(-100.9).toNearestFrameBoundary());
+}

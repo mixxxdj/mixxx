@@ -1,5 +1,6 @@
 #pragma once
 #include <QJSValue>
+#include <QObject>
 #include <memory>
 
 #include "controllers/scripting/colormapper.h"

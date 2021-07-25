@@ -34,8 +34,7 @@ class BeatMap final : public Beats {
             const QVector<mixxx::audio::FramePos>& beats);
 
     Beats::CapabilitiesFlags getCapabilities() const override {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
-                BEATSCAP_MOVEBEAT;
+        return BEATSCAP_NONE;
     }
 
     QByteArray toByteArray() const override;
@@ -70,7 +69,7 @@ class BeatMap final : public Beats {
     ////////////////////////////////////////////////////////////////////////////
 
     BeatsPointer translate(audio::FrameDiff_t offset) const override;
-    BeatsPointer scale(enum BPMScale scale) const override;
+    BeatsPointer scale(BpmScale scale) const override;
     BeatsPointer setBpm(mixxx::Bpm bpm) override;
 
   private:

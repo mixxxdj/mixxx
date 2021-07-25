@@ -6,6 +6,7 @@
 #include <QScreen>
 #include <QUuid>
 #include <QWidget>
+#include <QtDebug>
 
 #include "util/assert.h"
 

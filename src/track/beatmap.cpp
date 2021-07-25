@@ -32,7 +32,7 @@ inline Beat beatFromFramePos(mixxx::audio::FramePos beatPosition) {
     return beat;
 }
 
-bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
+inline bool beatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
 
@@ -238,7 +238,7 @@ BeatsPointer BeatMap::makeBeatMap(
         }
 
         // Do not accept fractional frames.
-        const auto beatPos = mixxx::audio::FramePos(std::floor(originalBeatPos.value()));
+        const auto beatPos = originalBeatPos.toLowerFrameBoundary();
         if (previousBeatPos.isValid() && beatPos <= previousBeatPos) {
             qWarning() << "BeatMap::makeBeatMap: Beats not in increasing "
                           "order, discarding beat "
@@ -315,80 +315,60 @@ audio::FramePos BeatMap::findNthBeat(audio::FramePos position, int n) const {
         return audio::kInvalidFramePos;
     }
 
-    Beat beat = beatFromFramePos(position);
+    const bool searchForward = n > 0;
+    int numBeatsLeft = std::abs(n);
 
-    // it points at the first occurrence of beat or the next largest beat
-    BeatList::const_iterator it =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
+    // Beats are stored as full frame positions, so when searching forwards the
+    // smallest possible beat position we can find is the upper frame boundary
+    // of the search position.
+    //
+    // For searching backwards, the same applies for the lower frame boundary.
+    const auto searchFromPosition = searchForward
+            ? position.toUpperFrameBoundary()
+            : position.toLowerFrameBoundary();
+    const Beat searchFromBeat = beatFromFramePos(searchFromPosition);
+    auto it = std::lower_bound(m_beats.cbegin(), m_beats.cend(), searchFromBeat, beatLessThan);
 
-    // If the position is within 1/10th of a second of the next or previous
-    // beat, pretend we are on that beat.
-    const double kFrameEpsilon = 0.1 * m_sampleRate;
+    if (searchForward) {
+        // Search in forward direction
+        numBeatsLeft--;
 
-    // Back-up by one.
-    if (it != m_beats.begin()) {
-        --it;
-    }
+        while (it != m_beats.cend() && numBeatsLeft > 0) {
+            if (it->enabled()) {
+                numBeatsLeft--;
+            }
+            it++;
+        }
+    } else {
+        // Search in backward direction
+        numBeatsLeft--;
 
-    // Scan forward to find whether we are on a beat.
-    BeatList::const_iterator on_beat = m_beats.constEnd();
-    BeatList::const_iterator previous_beat = m_beats.constEnd();
-    BeatList::const_iterator next_beat = m_beats.constEnd();
-    for (; it != m_beats.end(); ++it) {
-        qint32 delta = it->frame_position() - beat.frame_position();
-
-        // We are "on" this beat.
-        if (abs(delta) < kFrameEpsilon) {
-            on_beat = it;
-            break;
+        if (it == m_beats.cend() || it->frame_position() > searchFromBeat.frame_position()) {
+            // We may be one beat behind the searchFromBeat. In this case, we advance
+            // the reverse iterator by one beat.
+            if (it == m_beats.cbegin()) {
+                return audio::kInvalidFramePos;
+            }
+            it--;
         }
 
-        if (delta < 0) {
-            // If we are not on the beat and delta < 0 then this beat comes
-            // before our current position.
-            previous_beat = it;
-        } else {
-            // If we are past the beat and we aren't on it then this beat comes
-            // after our current position.
-            next_beat = it;
-            // Stop because we have everything we need now.
-            break;
+        while (it != m_beats.cbegin() && numBeatsLeft > 0) {
+            if (it->enabled()) {
+                numBeatsLeft--;
+            }
+            it--;
         }
     }
 
-    // If we are within epsilon samples of a beat then the immediately next and
-    // previous beats are the beat we are on.
-    if (on_beat != m_beats.end()) {
-        next_beat = on_beat;
-        previous_beat = on_beat;
+    if (numBeatsLeft > 0 || it == m_beats.cend()) {
+        return audio::kInvalidFramePos;
     }
 
-    if (n > 0) {
-        for (; next_beat != m_beats.end(); ++next_beat) {
-            if (!next_beat->enabled()) {
-                continue;
-            }
-            if (n == 1) {
-                return mixxx::audio::FramePos(next_beat->frame_position());
-            }
-            --n;
-        }
-    } else if (n < 0 && previous_beat != m_beats.end()) {
-        for (; true; --previous_beat) {
-            if (previous_beat->enabled()) {
-                if (n == -1) {
-                    return mixxx::audio::FramePos(previous_beat->frame_position());
-                }
-                ++n;
-            }
+    const auto foundBeatPosition = mixxx::audio::FramePos(it->frame_position());
 
-            // Don't step before the start of the list.
-            if (previous_beat == m_beats.begin()) {
-                break;
-            }
-        }
-    }
-    return audio::kInvalidFramePos;
+    DEBUG_ASSERT(foundBeatPosition >= searchFromPosition || !searchForward);
+    DEBUG_ASSERT(foundBeatPosition <= searchFromPosition || searchForward);
+    return foundBeatPosition;
 }
 
 bool BeatMap::findPrevNextBeats(audio::FramePos position,
@@ -401,11 +381,11 @@ bool BeatMap::findPrevNextBeats(audio::FramePos position,
         return false;
     }
 
-    Beat beat = beatFromFramePos(position);
+    Beat beat = beatFromFramePos(position.toNearestFrameBoundary());
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, beatLessThan);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -481,15 +461,19 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(
         return std::unique_ptr<BeatIterator>();
     }
 
-    Beat startBeat = beatFromFramePos(startPosition);
-    Beat endBeat = beatFromFramePos(endPosition);
+    // Beats can only appear a full frame positions. If the start position is
+    // fractional, it needs to be rounded up to avoid finding a beat that
+    // appears *before* the requested start position. For the end position, the
+    // opposite applies, i.e. we need to round down to avoid finding a beat
+    // *after* the requested end position.
+    Beat startBeat = beatFromFramePos(startPosition.toUpperFrameBoundary());
+    Beat endBeat = beatFromFramePos(endPosition.toLowerFrameBoundary());
 
     BeatList::const_iterator curBeat =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(),
-                        startBeat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), startBeat, beatLessThan);
 
     BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), endBeat, BeatLessThan);
+            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), endBeat, beatLessThan);
 
     if (curBeat >= lastBeat) {
         return std::unique_ptr<BeatIterator>();
@@ -503,8 +487,14 @@ bool BeatMap::hasBeatInRange(audio::FramePos startPosition, audio::FramePos endP
             startPosition > endPosition) {
         return false;
     }
-    audio::FramePos beatPosition = findNextBeat(startPosition);
-    if (beatPosition <= endPosition) {
+    audio::FramePos beatPosition = findNextBeat(startPosition.toUpperFrameBoundary());
+
+    // FIXME: The following assertion should always hold true, but it doesn't,
+    // because the position matching in findNthBeat() is fuzzy. This should be
+    // resolved, and moved to the calling code, to only use fuzzy matches when
+    // actually desired.
+    // DEBUG_ASSERT(!beatPosition.isValid() || beatPosition >= startPosition.toUpperFrameBoundary());
+    if (beatPosition.isValid() && beatPosition <= endPosition.toLowerFrameBoundary()) {
         return true;
     }
     return false;
@@ -588,40 +578,40 @@ BeatsPointer BeatMap::translate(audio::FrameDiff_t offset) const {
     return BeatsPointer(new BeatMap(*this, beats, m_nominalBpm));
 }
 
-BeatsPointer BeatMap::scale(enum BPMScale scale) const {
+BeatsPointer BeatMap::scale(BpmScale scale) const {
     if (!isValid() || m_beats.isEmpty()) {
         return BeatsPointer(new BeatMap(*this));
     }
 
     BeatList beats = m_beats;
     switch (scale) {
-    case DOUBLE:
+    case BpmScale::Double:
         // introduce a new beat into every gap
         scaleDouble(&beats);
         break;
-    case HALVE:
+    case BpmScale::Halve:
         // remove every second beat
         scaleHalve(&beats);
         break;
-    case TWOTHIRDS:
+    case BpmScale::TwoThirds:
         // introduce a new beat into every gap
         scaleDouble(&beats);
         // remove every second and third beat
         scaleThird(&beats);
         break;
-    case THREEFOURTHS:
+    case BpmScale::ThreeFourths:
         // introduce two beats into every gap
         scaleTriple(&beats);
         // remove every second third and forth beat
         scaleFourth(&beats);
         break;
-    case FOURTHIRDS:
+    case BpmScale::FourThirds:
         // introduce three beats into every gap
         scaleQuadruple(&beats);
         // remove every second third and forth beat
         scaleThird(&beats);
         break;
-    case THREEHALVES:
+    case BpmScale::ThreeHalves:
         // introduce two beats into every gap
         scaleTriple(&beats);
         // remove every second beat

@@ -150,8 +150,10 @@ void exportMetadata(djinterop::database* pDatabase,
     std::chrono::system_clock::time_point lastModifiedAt{
             std::chrono::milliseconds{lastModifiedMillisSinceEpoch}};
     snapshot.last_modified_at = lastModifiedAt;
+    snapshot.last_accessed_at = lastModifiedAt;
     snapshot.bitrate = pTrack->getBitrate();
     snapshot.rating = pTrack->getRating() * 20; // note rating is in range 0-100
+    snapshot.file_bytes = pTrack->getFileInfo().sizeInBytes();
 
     // Frames used interchangeably with "samples" here.
     const auto frameCount = static_cast<int64_t>(pTrack->getDuration() * pTrack->getSampleRate());
@@ -168,9 +170,9 @@ void exportMetadata(djinterop::database* pDatabase,
 
     // Set main cue-point.
     mixxx::audio::FramePos cuePlayPos = pTrack->getMainCuePosition();
-    // FIXME: What if the cuePlayPos is invalid?
-    snapshot.default_main_cue = cuePlayPos.value();
-    snapshot.adjusted_main_cue = cuePlayPos.value();
+    const auto cuePlayPosValue = cuePlayPos.isValid() ? cuePlayPos.value() : 0;
+    snapshot.default_main_cue = cuePlayPosValue;
+    snapshot.adjusted_main_cue = cuePlayPosValue;
 
     // Fill in beat grid.  For now, assume a constant average BPM across
     // the whole track.  Note that points in the track are specified as
@@ -325,7 +327,7 @@ void exportCrate(
     auto extCrate = pExtRootCrate->create_sub_crate(crate.getName().toStdString());
 
     // Loop through all track ids in this crate and add.
-    for (const auto trackId : trackIds) {
+    for (const auto& trackId : trackIds) {
         const auto extTrackId = mixxxToEnginePrimeTrackIdMap[trackId];
         extCrate.add_track(extTrackId);
     }

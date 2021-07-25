@@ -35,6 +35,8 @@ mixxx::BeatsPointer BeatFactory::makeBeatGrid(
         mixxx::audio::SampleRate sampleRate,
         mixxx::Bpm bpm,
         mixxx::audio::FramePos firstBeatFramePos) {
+    DEBUG_ASSERT(firstBeatFramePos.isValid());
+    DEBUG_ASSERT(!firstBeatFramePos.isFractional());
     return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), bpm, firstBeatFramePos);
 }
 

@@ -18,6 +18,13 @@ namespace {
 // been chosen as a compromise between usability and responsiveness.
 const int kPressedUntilClickedTimeoutMillis = 300;
 
+const QHash<int, QByteArray> kRoleNames = {
+        // Only roles that are useful in QML are added here.
+        {Qt::DisplayRole, "display"},
+        {Qt::ToolTipRole, "tooltip"},
+        {SidebarModel::IconNameRole, "iconName"},
+};
+
 } // anonymous namespace
 
 SidebarModel::SidebarModel(
@@ -268,6 +275,10 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             return QVariant();
         }
     }
+}
+
+QHash<int, QByteArray> SidebarModel::roleNames() const {
+    return kRoleNames;
 }
 
 void SidebarModel::startPressedUntilClickedTimer(const QModelIndex& pressedIndex) {

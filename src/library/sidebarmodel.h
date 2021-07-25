@@ -38,6 +38,7 @@ class SidebarModel : public QAbstractItemModel {
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index,
                   int role = Qt::DisplayRole) const override;
+    QHash<int, QByteArray> roleNames() const override;
     bool dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource);
     bool dragMoveAccept(const QModelIndex& index, const QUrl& url);
     bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;

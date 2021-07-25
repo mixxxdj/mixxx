@@ -1,6 +1,20 @@
 #include "engine/controls/cuecontrol.h"
 #include "test/signalpathtest.h"
 
+#define EXPECT_FRAMEPOS_EQ(pos1, pos2)                \
+    EXPECT_EQ(pos1.isValid(), pos2.isValid());        \
+    if (pos1.isValid()) {                             \
+        EXPECT_DOUBLE_EQ(pos1.value(), pos2.value()); \
+    }
+
+#define EXPECT_FRAMEPOS_EQ_CONTROL(position, control)                    \
+    {                                                                    \
+        const auto controlPos =                                          \
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid( \
+                        control->get());                                 \
+        EXPECT_FRAMEPOS_EQ(position, controlPos);                        \
+    }
+
 class CueControlTest : public BaseSignalPathTest {
   protected:
     void SetUp() override {
@@ -51,12 +65,14 @@ class CueControlTest : public BaseSignalPathTest {
         m_pMixerDeck1->slotLoadTrack(TrackPointer(), false);
     }
 
-    double getCurrentSample() {
-        return m_pChannel1->getEngineBuffer()->m_pCueControl->getSampleOfTrack().current;
+    mixxx::audio::FramePos getCurrentFramePos() {
+        return mixxx::audio::FramePos::fromEngineSamplePos(
+                m_pChannel1->getEngineBuffer()
+                        ->m_pCueControl->getSampleOfTrack()
+                        .current);
     }
 
-    void setCurrentSample(double samplePosition) {
-        const auto position = mixxx::audio::FramePos::fromEngineSamplePos(samplePosition);
+    void setCurrentFramePos(mixxx::audio::FramePos position) {
         m_pChannel1->getEngineBuffer()->queueNewPlaypos(position, EngineBuffer::SEEK_STANDARD);
         ProcessBuffer();
     }
@@ -82,26 +98,32 @@ class CueControlTest : public BaseSignalPathTest {
 };
 
 TEST_F(CueControlTest, LoadUnloadTrack) {
+    constexpr auto kCuePosition = mixxx::audio::FramePos(100);
+    constexpr auto kIntroStartPosition = mixxx::audio::FramePos(150);
+    constexpr auto kIntroEndPosition = mixxx::audio::FramePos(200);
+    constexpr auto kOutroStartPosition = mixxx::audio::FramePos(250);
+    constexpr auto kOutroEndPosition = mixxx::audio::FramePos(300);
+
     TrackPointer pTrack = createTestTrack();
-    pTrack->setCuePoint(CuePosition(100.0));
+    pTrack->setMainCuePosition(kCuePosition);
     auto pIntro = pTrack->createAndAddCue(
             mixxx::CueType::Intro,
             Cue::kNoHotCue,
-            150.0,
-            200.0);
+            kIntroStartPosition,
+            kIntroEndPosition);
     auto pOutro = pTrack->createAndAddCue(
             mixxx::CueType::Outro,
             Cue::kNoHotCue,
-            250.0,
-            300.0);
+            kOutroStartPosition,
+            kOutroEndPosition);
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(150.0, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(200.0, m_pIntroEndPosition->get());
-    EXPECT_DOUBLE_EQ(250.0, m_pOutroStartPosition->get());
-    EXPECT_DOUBLE_EQ(300.0, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(kCuePosition, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kIntroStartPosition, m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kIntroEndPosition, m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kOutroStartPosition, m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kOutroEndPosition, m_pOutroEndPosition);
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
     EXPECT_TRUE(m_pIntroEndEnabled->toBool());
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
@@ -109,11 +131,11 @@ TEST_F(CueControlTest, LoadUnloadTrack) {
 
     unloadTrack();
 
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroEndPosition->get());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroStartPosition->get());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition);
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
@@ -121,26 +143,29 @@ TEST_F(CueControlTest, LoadUnloadTrack) {
 }
 
 TEST_F(CueControlTest, LoadTrackWithDetectedCues) {
+    constexpr auto kCuePosition = mixxx::audio::FramePos(100);
+    constexpr auto kOutroEndPosition = mixxx::audio::FramePos(200);
+
     TrackPointer pTrack = createTestTrack();
-    pTrack->setCuePoint(CuePosition(100.0));
+    pTrack->setMainCuePosition(kCuePosition);
     auto pIntro = pTrack->createAndAddCue(
             mixxx::CueType::Intro,
             Cue::kNoHotCue,
-            100.0,
-            Cue::kNoPosition);
+            kCuePosition,
+            mixxx::audio::kInvalidFramePos);
     auto pOutro = pTrack->createAndAddCue(
             mixxx::CueType::Outro,
             Cue::kNoHotCue,
-            Cue::kNoPosition,
-            200.0);
+            mixxx::audio::kInvalidFramePos,
+            kOutroEndPosition);
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(100.0, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroEndPosition->get());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroStartPosition->get());
-    EXPECT_DOUBLE_EQ(200.0, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(kCuePosition, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kCuePosition, m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kOutroEndPosition, m_pOutroEndPosition);
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
@@ -148,25 +173,28 @@ TEST_F(CueControlTest, LoadTrackWithDetectedCues) {
 }
 
 TEST_F(CueControlTest, LoadTrackWithIntroEndAndOutroStart) {
+    constexpr auto kIntroEndPosition = mixxx::audio::FramePos(150);
+    constexpr auto kOutroStartPosition = mixxx::audio::FramePos(250);
+
     TrackPointer pTrack = createTestTrack();
     auto pIntro = pTrack->createAndAddCue(
             mixxx::CueType::Intro,
             Cue::kNoHotCue,
-            Cue::kNoPosition,
-            150.0);
+            mixxx::audio::kInvalidFramePos,
+            kIntroEndPosition);
     auto pOutro = pTrack->createAndAddCue(
             mixxx::CueType::Outro,
             Cue::kNoHotCue,
-            250.0,
-            Cue::kNoPosition);
+            kOutroStartPosition,
+            mixxx::audio::kInvalidFramePos);
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(0.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(150.0, m_pIntroEndPosition->get());
-    EXPECT_DOUBLE_EQ(250.0, m_pOutroStartPosition->get());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kIntroEndPosition, m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kOutroStartPosition, m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition);
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
     EXPECT_TRUE(m_pIntroEndEnabled->toBool());
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
@@ -179,32 +207,40 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    const int frameSize = 2;
     const int sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
-    const double beatLength = (60.0 * sampleRate / bpm) * frameSize;
+    const double beatLengthFrames = (60.0 * sampleRate / bpm);
 
-    pTrack->setCuePoint(CuePosition(1.9 * beatLength));
+    const auto kIntroStartPosition = mixxx::audio::FramePos(2.1 * beatLengthFrames);
+    const auto kQuantizedIntroStartPosition = mixxx::audio::FramePos(2.0 * beatLengthFrames);
+    const auto kIntroEndPosition = mixxx::audio::FramePos(3.7 * beatLengthFrames);
+    const auto kQuantizedIntroEndPosition = mixxx::audio::FramePos(4.0 * beatLengthFrames);
+    const auto kOutroStartPosition = mixxx::audio::FramePos(11.1 * beatLengthFrames);
+    const auto kQuantizedOutroStartPosition = mixxx::audio::FramePos(11.0 * beatLengthFrames);
+    const auto kOutroEndPosition = mixxx::audio::FramePos(15.5 * beatLengthFrames);
+    const auto kQuantizedOutroEndPosition = mixxx::audio::FramePos(16.0 * beatLengthFrames);
+
+    pTrack->setMainCuePosition(mixxx::audio::FramePos(1.9 * beatLengthFrames));
 
     auto pIntro = pTrack->createAndAddCue(
             mixxx::CueType::Intro,
             Cue::kNoHotCue,
-            2.1 * beatLength,
-            3.7 * beatLength);
+            kIntroStartPosition,
+            kIntroEndPosition);
 
     auto pOutro = pTrack->createAndAddCue(
             mixxx::CueType::Outro,
             Cue::kNoHotCue,
-            11.1 * beatLength,
-            15.5 * beatLength);
+            kOutroStartPosition,
+            kOutroEndPosition);
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(2.0 * beatLength, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(2.0 * beatLength, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(4.0 * beatLength, m_pIntroEndPosition->get());
-    EXPECT_DOUBLE_EQ(11.0 * beatLength, m_pOutroStartPosition->get());
-    EXPECT_DOUBLE_EQ(16.0 * beatLength, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedIntroStartPosition, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedIntroStartPosition, m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedIntroEndPosition, m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedOutroStartPosition, m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedOutroEndPosition, m_pOutroEndPosition);
 }
 
 TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabledNoBeats) {
@@ -213,27 +249,28 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabledNoBeats) {
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(0.0);
 
-    pTrack->setCuePoint(CuePosition(100.0));
+    constexpr auto kCuePosition = mixxx::audio::FramePos(100);
+    pTrack->setMainCuePosition(kCuePosition);
 
     auto pIntro = pTrack->createAndAddCue(
             mixxx::CueType::Intro,
             Cue::kNoHotCue,
-            250.0,
-            400.0);
+            mixxx::audio::FramePos(250.0),
+            mixxx::audio::FramePos(400.0));
 
     auto pOutro = pTrack->createAndAddCue(
             mixxx::CueType::Outro,
             Cue::kNoHotCue,
-            550.0,
-            800.0);
+            mixxx::audio::FramePos(550.0),
+            mixxx::audio::FramePos(800.0));
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(250.0, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(400.0, m_pIntroEndPosition->get());
-    EXPECT_DOUBLE_EQ(550.0, m_pOutroStartPosition->get());
-    EXPECT_DOUBLE_EQ(800.0, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(kCuePosition, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(250.0), m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(400.0), m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(550.0), m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(800.0), m_pOutroEndPosition);
 }
 
 TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
@@ -242,27 +279,27 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    pTrack->setCuePoint(CuePosition(240.0));
+    pTrack->setMainCuePosition(mixxx::audio::FramePos(240.0));
 
     auto pIntro = pTrack->createAndAddCue(
             mixxx::CueType::Intro,
             Cue::kNoHotCue,
-            210.0,
-            330.0);
+            mixxx::audio::FramePos(210.0),
+            mixxx::audio::FramePos(330.0));
 
     auto pOutro = pTrack->createAndAddCue(
             mixxx::CueType::Outro,
             Cue::kNoHotCue,
-            770.0,
-            990.0);
+            mixxx::audio::FramePos(770.0),
+            mixxx::audio::FramePos(990.0));
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(240.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(210.0, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(330.0, m_pIntroEndPosition->get());
-    EXPECT_DOUBLE_EQ(770.0, m_pOutroStartPosition->get());
-    EXPECT_DOUBLE_EQ(990.0, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(240.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(210.0), m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(330.0), m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(770.0), m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(990.0), m_pOutroEndPosition);
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault) {
@@ -271,13 +308,13 @@ TEST_F(CueControlTest, SeekOnLoadDefault) {
     auto pIntro = pTrack->createAndAddCue(
             mixxx::CueType::Intro,
             Cue::kNoHotCue,
-            250.0,
-            400.0);
+            mixxx::audio::FramePos(250.0),
+            mixxx::audio::FramePos(400.0));
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(250.0, m_pIntroStartPosition->get());
-    EXPECT_DOUBLE_EQ(250.0, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(250.0), m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(250.0), getCurrentFramePos());
 }
 
 TEST_F(CueControlTest, SeekOnLoadMainCue) {
@@ -287,61 +324,61 @@ TEST_F(CueControlTest, SeekOnLoadMainCue) {
     loadTrack(pTrack);
 
     // We expect a cue point at the very beginning
-    EXPECT_DOUBLE_EQ(0.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, getCurrentFramePos());
 
     // Move cue like silence analysis does and check if track is following it
-    pTrack->setCuePoint(CuePosition(200.0));
+    pTrack->setMainCuePosition(mixxx::audio::FramePos(200.0));
     pTrack->analysisFinished();
     ProcessBuffer();
 
-    EXPECT_DOUBLE_EQ(200.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(200.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(200.0), getCurrentFramePos());
 }
 
 TEST_F(CueControlTest, DontSeekOnLoadMainCue) {
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();
-    pTrack->setCuePoint(CuePosition(100.0));
+    pTrack->setMainCuePosition(mixxx::audio::FramePos(100.0));
 
     // The Track should not follow cue changes due to the analyzer if the
     // track has been manual seeked before.
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(100.0, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(100.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(100.0), getCurrentFramePos());
 
     // Manually seek  the track
-    setCurrentSample(200.0);
+    setCurrentFramePos(mixxx::audio::FramePos(200.0));
 
     // Move cue like silence analysis does and check if track is following it
-    pTrack->setCuePoint(CuePosition(400.0));
+    pTrack->setMainCuePosition(mixxx::audio::FramePos(400.0));
     pTrack->analysisFinished();
     ProcessBuffer();
 
-    EXPECT_DOUBLE_EQ(400.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(400.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(200.0), getCurrentFramePos());
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();
-    pTrack->setCuePoint(CuePosition(-100.0));
+    pTrack->setMainCuePosition(mixxx::audio::FramePos(-100.0));
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(-100.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(-100.0, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(-100.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(-100.0), getCurrentFramePos());
 
     // Move cue like silence analysis does and check if track is following it
-    pTrack->setCuePoint(CuePosition(-200.0));
+    pTrack->setMainCuePosition(mixxx::audio::FramePos(-200.0));
     pTrack->analysisFinished();
     ProcessBuffer();
 
-    EXPECT_DOUBLE_EQ(-200.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(-200.0, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(-200.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(-200.0), getCurrentFramePos());
 }
 
 TEST_F(CueControlTest, FollowCueOnQuantize) {
@@ -350,95 +387,94 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    const int frameSize = 2;
     const int sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
-    const double beatLength = (60.0 * sampleRate / bpm) * frameSize;
-    double cuePos = 1.8 * beatLength;
-    double quantizedCuePos = 2.0 * beatLength;
-    pTrack->setCuePoint(cuePos);
+    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / bpm);
+    const auto cuePos = mixxx::audio::FramePos(1.8 * beatLengthFrames);
+    const auto quantizedCuePos = mixxx::audio::FramePos(2.0 * beatLengthFrames);
+    pTrack->setMainCuePosition(cuePos);
 
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(cuePos, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(cuePos, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ_CONTROL(cuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(cuePos, getCurrentFramePos());
 
     // enable quantization and expect current position to follow
     m_pQuantizeEnabled->set(1);
     ProcessBuffer();
-    EXPECT_DOUBLE_EQ(quantizedCuePos, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(quantizedCuePos, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ_CONTROL(quantizedCuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(quantizedCuePos, getCurrentFramePos());
 
     // move current position to track start
     m_pQuantizeEnabled->set(0);
     ProcessBuffer();
-    setCurrentSample(0.0);
+    setCurrentFramePos(mixxx::audio::kStartFramePos);
     ProcessBuffer();
-    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, getCurrentFramePos());
 
     // enable quantization again and expect play position to stay at track start
     m_pQuantizeEnabled->set(1);
     ProcessBuffer();
-    EXPECT_DOUBLE_EQ(quantizedCuePos, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
+    EXPECT_FRAMEPOS_EQ_CONTROL(quantizedCuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, getCurrentFramePos());
 }
 
 TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     TrackPointer pTrack = createAndLoadFakeTrack();
 
     // Set intro start cue
-    setCurrentSample(100.0);
-    m_pIntroStartSet->slotSet(1);
-    m_pIntroStartSet->slotSet(0);
-    EXPECT_DOUBLE_EQ(100.0, m_pIntroStartPosition->get());
+    setCurrentFramePos(mixxx::audio::FramePos(100.0));
+    m_pIntroStartSet->set(1);
+    m_pIntroStartSet->set(0);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(100.0), m_pIntroStartPosition);
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition);
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
 
     CuePointer pCue = pTrack->findCueByType(mixxx::CueType::Intro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(100.0, pCue->getPosition().toEngineSamplePos());
-        EXPECT_DOUBLE_EQ(0.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
+        EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(100.0), pCue->getPosition());
+        EXPECT_DOUBLE_EQ(0.0, pCue->getLengthFrames());
     }
 
     // Set intro end cue
-    setCurrentSample(500.0);
-    m_pIntroEndSet->slotSet(1);
-    m_pIntroEndSet->slotSet(0);
-    EXPECT_DOUBLE_EQ(100.0, m_pIntroStartPosition->get());
+    setCurrentFramePos(mixxx::audio::FramePos(500.0));
+    m_pIntroEndSet->set(1);
+    m_pIntroEndSet->set(0);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(100.0), m_pIntroStartPosition);
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(500.0, m_pIntroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(500.0), m_pIntroEndPosition);
     EXPECT_TRUE(m_pIntroEndEnabled->toBool());
 
     pCue = pTrack->findCueByType(mixxx::CueType::Intro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(100.0, pCue->getPosition().toEngineSamplePos());
-        EXPECT_DOUBLE_EQ(400.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
+        EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(100.0), pCue->getPosition());
+        EXPECT_DOUBLE_EQ(400.0, pCue->getLengthFrames());
     }
 
     // Clear intro start cue
-    m_pIntroStartClear->slotSet(1);
-    m_pIntroStartClear->slotSet(0);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroStartPosition->get());
+    m_pIntroStartClear->set(1);
+    m_pIntroStartClear->set(0);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition);
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(500.0, m_pIntroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(500.0), m_pIntroEndPosition);
     EXPECT_TRUE(m_pIntroEndEnabled->toBool());
 
     pCue = pTrack->findCueByType(mixxx::CueType::Intro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_EQ(mixxx::audio::kInvalidFramePos, pCue->getPosition());
-        EXPECT_DOUBLE_EQ(500.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
+        EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, pCue->getPosition());
+        EXPECT_DOUBLE_EQ(500.0, pCue->getLengthFrames());
     }
 
     // Clear intro end cue
-    m_pIntroEndClear->slotSet(1);
-    m_pIntroEndClear->slotSet(0);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroStartPosition->get());
+    m_pIntroEndClear->set(1);
+    m_pIntroEndClear->set(0);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition);
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pIntroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition);
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
 
     EXPECT_EQ(nullptr, pTrack->findCueByType(mixxx::CueType::Intro));
@@ -448,58 +484,58 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     TrackPointer pTrack = createAndLoadFakeTrack();
 
     // Set outro start cue
-    setCurrentSample(750.0);
-    m_pOutroStartSet->slotSet(1);
-    m_pOutroStartSet->slotSet(0);
-    EXPECT_DOUBLE_EQ(750.0, m_pOutroStartPosition->get());
+    setCurrentFramePos(mixxx::audio::FramePos(750.0));
+    m_pOutroStartSet->set(1);
+    m_pOutroStartSet->set(0);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(750.0), m_pOutroStartPosition);
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition);
     EXPECT_FALSE(m_pOutroEndEnabled->toBool());
 
     CuePointer pCue = pTrack->findCueByType(mixxx::CueType::Outro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(750.0, pCue->getPosition().toEngineSamplePos());
-        EXPECT_DOUBLE_EQ(0.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
+        EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(750.0), pCue->getPosition());
+        EXPECT_DOUBLE_EQ(0.0, pCue->getLengthFrames());
     }
 
     // Set outro end cue
-    setCurrentSample(1000.0);
-    m_pOutroEndSet->slotSet(1);
-    m_pOutroEndSet->slotSet(0);
-    EXPECT_DOUBLE_EQ(750.0, m_pOutroStartPosition->get());
+    setCurrentFramePos(mixxx::audio::FramePos(1000.0));
+    m_pOutroEndSet->set(1);
+    m_pOutroEndSet->set(0);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(750.0), m_pOutroStartPosition);
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(1000.0, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(1000.0), m_pOutroEndPosition);
     EXPECT_TRUE(m_pOutroEndEnabled->toBool());
 
     pCue = pTrack->findCueByType(mixxx::CueType::Outro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_DOUBLE_EQ(750.0, pCue->getPosition().toEngineSamplePos());
-        EXPECT_DOUBLE_EQ(250.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
+        EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(750.0), pCue->getPosition());
+        EXPECT_DOUBLE_EQ(250.0, pCue->getLengthFrames());
     }
 
     // Clear outro start cue
-    m_pOutroStartClear->slotSet(1);
-    m_pOutroStartClear->slotSet(0);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroStartPosition->get());
+    m_pOutroStartClear->set(1);
+    m_pOutroStartClear->set(0);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition);
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(1000.0, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(1000.0), m_pOutroEndPosition);
     EXPECT_TRUE(m_pOutroEndEnabled->toBool());
 
     pCue = pTrack->findCueByType(mixxx::CueType::Outro);
     EXPECT_NE(nullptr, pCue);
     if (pCue != nullptr) {
-        EXPECT_EQ(mixxx::audio::kInvalidFramePos, pCue->getPosition());
-        EXPECT_DOUBLE_EQ(1000.0, pCue->getLengthFrames() * mixxx::kEngineChannelCount);
+        EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, pCue->getPosition());
+        EXPECT_DOUBLE_EQ(1000.0, pCue->getLengthFrames());
     }
 
     // Clear outro end cue
-    m_pOutroEndClear->slotSet(1);
-    m_pOutroEndClear->slotSet(0);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroStartPosition->get());
+    m_pOutroEndClear->set(1);
+    m_pOutroEndClear->set(0);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition);
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, m_pOutroEndPosition->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition);
     EXPECT_FALSE(m_pOutroEndEnabled->toBool());
 
     EXPECT_EQ(nullptr, pTrack->findCueByType(mixxx::CueType::Outro));

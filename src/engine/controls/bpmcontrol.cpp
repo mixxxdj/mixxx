@@ -204,8 +204,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats &&
-            (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (pBeats) {
         const double sampleOffset = getSampleOfTrack().rate * -0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         pTrack->trySetBeats(pBeats->translate(frameOffset));
@@ -221,8 +220,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats &&
-            (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (pBeats) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const double sampleOffset = getSampleOfTrack().rate * 0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
@@ -304,7 +302,7 @@ void BpmControl::slotControlBeatSync(double value) {
 }
 
 bool BpmControl::syncTempo() {
-    if (getSyncMode() == SYNC_MASTER_EXPLICIT) {
+    if (getSyncMode() == SyncMode::LeaderExplicit) {
         return false;
     }
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
@@ -421,7 +419,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
         rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
     }
 
-    // If we are not quantized, or there are no beats, or we're master,
+    // If we are not quantized, or there are no beats, or we're leader,
     // or we're in reverse, just return the rate as-is.
     if (!m_pQuantize->toBool() || !m_pBeats || m_pReverseButton->toBool()) {
         m_resetSyncAdjustment = true;
@@ -460,10 +458,10 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         m_dLastSyncAdjustment = 1.0;
     }
 
-    // Either shortest distance is directly to the master or backwards.
+    // Either shortest distance is directly to the leader or backwards.
 
     // TODO(rryan): This is kind of backwards because we are measuring distance
-    // from master to my percentage. All of the control code below is based on
+    // from leader to my percentage. All of the control code below is based on
     // this point of reference so I left it this way but I think we should think
     // about things in terms of "my percentage-offset setpoint" that the control
     // loop should aim to maintain.
@@ -480,7 +478,7 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
 
     if (kLogger.traceEnabled()) {
         kLogger.trace() << m_group << "****************";
-        kLogger.trace() << "master beat distance:" << syncTargetBeatDistance;
+        kLogger.trace() << "target beat distance:" << syncTargetBeatDistance;
         kLogger.trace() << "my     beat distance:" << thisBeatDistance;
         kLogger.trace() << "user offset distance:" << curUserOffset;
         kLogger.trace() << "error               :" << error;
@@ -815,9 +813,11 @@ double BpmControl::getBeatMatchPosition(
     }
     if (playing) {
         if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
-            // "this" track is playing, or just starting
-            // only match phase if the sync target is playing as well
-            // else use the previous phase of "this" track before the seek
+            // "this" track is playing, or just starting.
+            // Only match phase if the sync target is playing as well,
+            // otherwise use the previous phase of "this" track before the seek.
+            // This occurs when the DJ does a quantized seek -- we preserve
+            // the exact beat distance.
             pOtherEngineBuffer = getEngineBuffer();
         }
     } else if (!pOtherEngineBuffer) {
@@ -1041,7 +1041,7 @@ void BpmControl::slotBeatsTranslate(double v) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (pBeats) {
         const auto currentPosition =
                 mixxx::audio::FramePos::fromEngineSamplePos(
                         getSampleOfTrack().current)
@@ -1061,9 +1061,9 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (pBeats) {
         // Must reset the user offset *before* calling getPhaseOffset(),
-        // otherwise it will always return 0 if master sync is active.
+        // otherwise it will always return 0 if sync lock is active.
         m_dUserOffset.setValue(0.0);
 
         double sampleOffset = getPhaseOffset(getSampleOfTrack().current);

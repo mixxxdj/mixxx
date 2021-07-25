@@ -606,3 +606,11 @@ std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
             parent, m_pConfig, m_pTrackCollectionManager);
 }
 #endif
+
+LibraryTableModel* Library::trackTableModel() const {
+    VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
+        return nullptr;
+    }
+
+    return m_pMixxxLibraryFeature->trackTableModel();
+}

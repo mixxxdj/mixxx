@@ -28,6 +28,7 @@ class LV2Backend;
 namespace mixxx {
 
 class DbConnectionPool;
+class ScreensaverManager;
 
 class CoreServices : public QObject {
     Q_OBJECT
@@ -38,6 +39,7 @@ class CoreServices : public QObject {
 
     void initializeSettings();
     void initializeKeyboard();
+    void initializeScreensaverManager();
     void initializeLogging();
 
     // The short first run that is done without start up screen
@@ -104,6 +106,10 @@ class CoreServices : public QObject {
         return m_pSettingsManager->settings();
     }
 
+    std::shared_ptr<ScreensaverManager> getScreensaverManager() const {
+        return m_pScreensaverManager;
+    }
+
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);
 
@@ -135,6 +141,8 @@ class CoreServices : public QObject {
     std::shared_ptr<KeyboardEventFilter> m_pKeyboardEventFilter;
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfigEmpty;
+
+    std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
 
     std::unique_ptr<ControlPushButton> m_pTouchShift;
 

@@ -32,7 +32,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
         return pluginInfo();
     }
 
-    bool initialize(int samplerate) override;
+    bool initialize(mixxx::audio::SampleRate sampleRate) override;
     bool processSamples(const CSAMPLE* pIn, const int iLen) override;
     bool finalize() override;
 
@@ -47,7 +47,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
   private:
     std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     DownmixAndOverlapHelper m_helper;
-    int m_iSampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
     int m_windowSize;
     int m_stepSizeFrames;
     std::vector<double> m_detectionResults;

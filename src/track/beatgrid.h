@@ -32,7 +32,7 @@ class BeatGrid final : public Beats {
     // comments in beats.h
 
     Beats::CapabilitiesFlags getCapabilities() const override {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SETBPM;
+        return BEATSCAP_SETBPM;
     }
 
     QByteArray toByteArray() const override;
@@ -66,7 +66,7 @@ class BeatGrid final : public Beats {
     ////////////////////////////////////////////////////////////////////////////
 
     BeatsPointer translate(audio::FrameDiff_t offset) const override;
-    BeatsPointer scale(enum BPMScale scale) const override;
+    BeatsPointer scale(BpmScale scale) const override;
     BeatsPointer setBpm(mixxx::Bpm bpm) override;
 
   private:
