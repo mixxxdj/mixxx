@@ -150,32 +150,34 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
     // mysterious ways for example if a track in the oldFolder also has a zombie
     // track location in newFolder then the replace query will fail because the
     // location column becomes non-unique.
+    const QString oldFolderLocation = mixxx::FileInfo(oldFolder).location();
+    DEBUG_ASSERT(!oldFolderLocation.endsWith('/'));
+    const QString newFolderLocation = mixxx::FileInfo(newFolder).location();
+    DEBUG_ASSERT(!newFolderLocation.endsWith('/'));
+
     QSqlQuery query(m_database);
     query.prepare("UPDATE " % kTable % " SET " % kLocationColumn %
-            "=:newFolder WHERE " % kLocationColumn % " = :oldFolder");
-    query.bindValue(":newFolder", newFolder);
-    query.bindValue(":oldFolder", oldFolder);
+            "=:newFolderLocation WHERE " % kLocationColumn % " = :oldFolderLocation");
+    query.bindValue(":newFolderLocation", newFolderLocation);
+    query.bindValue(":oldFolderLocation", oldFolderLocation);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate directory"
-                                << oldFolder << "to" << newFolder;
+                                << oldFolderLocation << "to" << newFolderLocation;
         return {};
     }
 
-    // on Windows the absolute path starts with the drive name
-    // we also need to check for that
-    QString startsWithOldFolder = SqlLikeWildcardEscaper::apply(
-                                          QDir(oldFolder).absolutePath() + "/", kSqlLikeMatchAll) +
+    // The trailing path separator is crucial!
+    const QString oldLocationPrefix = oldFolderLocation + '/';
+    const QString oldLocationLikeFilter = SqlLikeWildcardEscaper::apply(
+                                                  oldLocationPrefix, kSqlLikeMatchAll) +
             kSqlLikeMatchAll;
-
-    // Also update information in the track_locations table. This is where mixxx
-    // gets the location information for a track.
     query.prepare(QString(
             "SELECT library.id, track_locations.id, track_locations.location "
             "FROM library INNER JOIN track_locations ON "
             "track_locations.id = library.location WHERE "
             "track_locations.location LIKE %1 ESCAPE '%2'")
                           .arg(SqlStringFormatter::format(
-                                       m_database, startsWithOldFolder),
+                                       m_database, oldLocationLikeFilter),
                                   kSqlLikeMatchAll));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
@@ -188,11 +190,17 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
         loc_ids.append(DbId(query.value(1).toInt()));
         auto trackId = TrackId(query.value(0));
         auto oldLocation = query.value(2).toString();
+        if (!oldLocation.startsWith(oldLocationPrefix)) {
+            // LIKE is case-insensitive and may result in false positives
+            qDebug() << "Do not relocate" << oldLocation << "that doesn't match"
+                     << oldLocationPrefix;
+            continue;
+        }
         auto missingTrackRef = TrackRef::fromFilePath(
                 oldLocation,
                 std::move(trackId));
-        const int oldSuffixLen = oldLocation.size() - oldFolder.size();
-        QString newLocation = newFolder + oldLocation.right(oldSuffixLen);
+        const int oldSuffixLen = oldLocation.size() - oldFolderLocation.size();
+        QString newLocation = newFolderLocation + oldLocation.right(oldSuffixLen);
         auto addedTrackRef = TrackRef::fromFilePath(
                 newLocation /*without TrackId*/);
         relocatedTracks.append(RelocatedTrack(
@@ -200,6 +208,8 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
                 std::move(addedTrackRef)));
     }
 
+    // Also update information in the track_locations table. This is where mixxx
+    // gets the location information for a track.
     QString replacement =
             "UPDATE track_locations SET location = :newloc "
             "WHERE id = :id";

@@ -937,18 +937,25 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
-    const QString dirPath = rootDir.absolutePath();
-    QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
+    const QString rootLocation = mixxx::FileInfo(rootDir).location();
+    DEBUG_ASSERT(!rootLocation.endsWith('/'));
+    const QString rootLocationPrefix = rootLocation + '/';
+    const QString rootLocationLikeFilter = SqlLikeWildcardEscaper::apply(
+                                                   rootLocationPrefix, kSqlLikeMatchAll) +
+            kSqlLikeMatchAll;
 
     QSqlQuery query(m_database);
-    query.prepare(QString("SELECT library.id, track_locations.location "
-                          "FROM library INNER JOIN track_locations "
-                          "ON library.location = track_locations.id "
-                          "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
-                  .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
+    query.prepare(
+            QString("SELECT library.id, track_locations.location "
+                    "FROM library INNER JOIN track_locations "
+                    "ON library.location = track_locations.id "
+                    "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
+                    .arg(SqlStringFormatter::format(
+                                 m_database, rootLocationLikeFilter),
+                            kSqlLikeMatchAll));
 
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dirPath;
+        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << rootLocation;
     }
 
     QList<TrackRef> trackRefs;
@@ -957,6 +964,10 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
     while (query.next()) {
         const auto trackId = TrackId(query.value(idColumn));
         const auto fileLocation = query.value(locationColumn).toString();
+        if (!fileLocation.startsWith(rootLocationPrefix)) {
+            // LIKE is case-insensitive and may result in false positives
+            continue;
+        }
         trackRefs.append(TrackRef::fromFilePath(fileLocation, trackId));
     }
 
