@@ -6,6 +6,7 @@
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqllikewildcards.h"
+#include "util/db/sqlstringformatter.h"
 #include "util/logger.h"
 
 namespace {
@@ -167,14 +168,15 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
             kSqlLikeMatchAll;
 
     // Also update information in the track_locations table. This is where mixxx
-    // gets the location information for a track. Put marks around %1 so that
-    // this also works on windows
+    // gets the location information for a track.
     query.prepare(QString(
             "SELECT library.id, track_locations.id, track_locations.location "
             "FROM library INNER JOIN track_locations ON "
             "track_locations.id = library.location WHERE "
-            "track_locations.location LIKE '%1' ESCAPE '%2'")
-                          .arg(startsWithOldFolder, kSqlLikeMatchAll));
+            "track_locations.location LIKE %1 ESCAPE '%2'")
+                          .arg(SqlStringFormatter::format(
+                                       m_database, startsWithOldFolder),
+                                  kSqlLikeMatchAll));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
         return {};
