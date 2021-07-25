@@ -34,6 +34,7 @@ Q_IMPORT_PLUGIN(QOffscreenIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
 
 Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
+Q_IMPORT_PLUGIN(QSvgPlugin)
 Q_IMPORT_PLUGIN(QICOPlugin)
 Q_IMPORT_PLUGIN(QJpegPlugin)
 Q_IMPORT_PLUGIN(QGifPlugin)

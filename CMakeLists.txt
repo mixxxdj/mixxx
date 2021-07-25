@@ -2083,6 +2083,7 @@ if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
     Qt5::QGifPlugin
     Qt5::QICOPlugin
     Qt5::QJpegPlugin
+    Qt5::QSvgPlugin
 
     # sqldrivers
     Qt5::QSQLiteDriverPlugin
@@ -2905,6 +2906,7 @@ if(APPLE AND MACOS_BUNDLE)
         install_qt5_plugin(Qt5::QMacStylePlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
         install_qt5_plugin(Qt5::QOffscreenIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
         install_qt5_plugin(Qt5::QMinimalIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(Qt5::QSvgPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
         install_qt5_plugin(Qt5::QJpegPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
         install_qt5_plugin(Qt5::QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
         install_qt5_plugin(Qt5::QICOPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
