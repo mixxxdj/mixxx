@@ -22,9 +22,10 @@ namespace {
 constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
-int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
-    auto coreServices = std::make_shared<mixxx::CoreServices>(args);
-    MixxxMainWindow mainWindow(app, coreServices);
+int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
+    auto pCoreServices = std::make_shared<mixxx::CoreServices>(args);
+    pCoreServices->preInitialize(pApp);
+    MixxxMainWindow mainWindow(pApp, pCoreServices);
     // If startup produced a fatal error, then don't even start the
     // Qt event loop.
     if (ErrorDialogHandler::instance()->checkError()) {
@@ -34,7 +35,7 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
         mainWindow.show();
 
         qDebug() << "Running Mixxx";
-        return app->exec();
+        return pApp->exec();
     }
 }
 
