@@ -2884,7 +2884,6 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" 
 include(CPack)
 
 if(APPLE AND MACOS_BUNDLE)
-    get_target_property(QT5_TYPE Qt5::Core TYPE)
     if(NOT QT5_TYPE STREQUAL "STATIC_LIBRARY")
         macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
             get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
