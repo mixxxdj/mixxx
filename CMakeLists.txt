@@ -1797,8 +1797,8 @@ if(ENGINEPRIME)
     # External project sources must be downloaded as an archive into DOWNLOAD_DIR
     # from an URL to keep offline builds like for Fedora/RPM Fusion working!
     ExternalProject_Add(libdjinterop
-      URL "https://github.com/xsco/libdjinterop/archive/0.15.2.tar.gz"
-      URL_HASH SHA256=66f64c0b38a53936ba1b471524905e35afd605bc05d29e7aa6fa7ea0005c7d54
+      URL "https://github.com/xsco/libdjinterop/archive/0.16.0.tar.gz"
+      URL_HASH SHA256=c998831fe4d3cc80c5c031491204244c9ed0c61575dd529260304b95d79db588
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libdjinterop"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       LIST_SEPARATOR "|"

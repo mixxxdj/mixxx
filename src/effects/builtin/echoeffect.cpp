@@ -221,7 +221,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                 bufferedSampleLeft * feedback_ramped);
         pGroupState->delay_buf[pGroupState->write_position + 1] = SampleUtil::clampSample(
                 pInput[i + 1] * send_ramped +
-                bufferedSampleLeft * feedback_ramped);
+                bufferedSampleRight * feedback_ramped);
 
         // Pingpong the output.  If the pingpong value is zero, all of the
         // math below should result in a simple copy of delay buf to pOutput.
