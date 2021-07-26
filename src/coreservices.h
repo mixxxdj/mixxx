@@ -40,7 +40,6 @@ class CoreServices : public QObject {
     CoreServices(const CmdlineArgs& args);
     ~CoreServices();
 
-    void initializeScreensaverManager();
     void initialize(QApplication* pApp);
     void shutdown();
 
