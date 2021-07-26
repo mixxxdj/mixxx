@@ -2074,7 +2074,7 @@ if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
   # to see exactly what's available as a standalone .lib vs linked
   # into Qt .libs by default.
 
-  set_property(TARGET mixxx-lib APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+  target_link_libraries(mixxx-lib PRIVATE
     # platform plugins
     Qt5::QOffscreenIntegrationPlugin
     Qt5::QMinimalIntegrationPlugin
@@ -2090,14 +2090,14 @@ if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
   )
 
   if(WIN32)
-    set_property(TARGET mixxx-lib APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+    target_link_libraries(mixxx-lib PRIVATE
       Qt5::QWindowsIntegrationPlugin
       Qt5::QWindowsVistaStylePlugin
     )
   endif()
 
   if(APPLE)
-    set_property(TARGET mixxx-lib APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+    target_link_libraries(mixxx-lib PRIVATE
       Qt5::QCocoaIntegrationPlugin
       Qt5::QMacStylePlugin
     )
