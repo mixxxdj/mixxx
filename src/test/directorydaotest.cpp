@@ -137,50 +137,107 @@ TEST_F(DirectoryDAOTest, relocateDirectory) {
     const QTemporaryDir tempDir2;
     ASSERT_TRUE(tempDir2.isValid());
 
-    //create temp dirs
-    QString testdir(tempDir1.filePath("TestDir"));
-    ASSERT_TRUE(QDir(tempDir1.path()).mkpath(testdir));
-    QString test2(tempDir2.filePath("TestDir2"));
-    ASSERT_TRUE(QDir(tempDir2.path()).mkpath(test2));
-    QString testnew(tempDir2.filePath("TestDirNew"));
-    ASSERT_TRUE(QDir(tempDir2.path()).mkpath(testnew));
+    // Create temp dirs (with LIKE/GLOB wildcards and quotes in name)
+#if defined(__WINDOWS__)
+    // Exclude reserved characters from path names: ", *, ?
+    // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
+    const QString oldDir = tempDir1.filePath("Test'_%Dir");
+    const QString newDir = tempDir2.filePath("TestDir'_%New");
+    const QString otherDir = tempDir2.filePath("TestDir'_%Other");
+#else
+    const QString oldDir = tempDir1.filePath("Test'\"_*%?Dir");
+    const QString newDir = tempDir2.filePath("TestDir'\"_*%?New");
+    const QString otherDir = tempDir2.filePath("TestDir'\"_*%?Other");
+#endif
+    ASSERT_TRUE(QDir(tempDir1.path()).mkpath(oldDir));
+    ASSERT_TRUE(QDir(tempDir2.path()).mkpath(newDir));
+    ASSERT_TRUE(QDir(tempDir2.path()).mkpath(otherDir));
 
     const DirectoryDAO& dao = internalCollection()->getDirectoryDAO();
 
-    ASSERT_EQ(ALL_FINE, dao.addDirectory(testdir));
-    ASSERT_EQ(ALL_FINE, dao.addDirectory(test2));
+    ASSERT_EQ(ALL_FINE, dao.addDirectory(oldDir));
+    ASSERT_EQ(ALL_FINE, dao.addDirectory(otherDir));
 
-    // ok now lets create some tracks here
+    const QStringList oldDirs = dao.getDirs();
+    ASSERT_EQ(2, oldDirs.size());
+    ASSERT_THAT(oldDirs, UnorderedElementsAre(oldDir, otherDir));
+
+    // Add tracks that should be relocated
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        TrackFile(testdir, "a." + getSupportedFileExt())),
+                                        TrackFile(oldDir, "a." + getSupportedFileExt())),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        TrackFile(testdir, "b." + getSupportedFileExt())),
+                                        TrackFile(oldDir, "b." + getSupportedFileExt())),
+                                false)
+                        .isValid());
+
+    // Add tracks that should be unaffected by the relocation
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        TrackFile(newDir, "c." + getSupportedFileExt())),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        TrackFile(test2, "c." + getSupportedFileExt())),
+                                        TrackFile(otherDir, "d." + getSupportedFileExt())),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
                                 Track::newTemporary(
-                                        TrackFile(test2, "d." + getSupportedFileExt())),
+                                        TrackFile(oldDir + "." + getSupportedFileExt())),
                                 false)
                         .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        TrackFile(newDir + "." + getSupportedFileExt())),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        TrackFile(otherDir + "." + getSupportedFileExt())),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        TrackFile(oldDir.toLower(), "a." + getSupportedFileExt())),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        TrackFile(oldDir.toUpper(), "b." + getSupportedFileExt())),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        TrackFile(newDir.toLower(), "c." + getSupportedFileExt())),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(
+            internalCollection()
+                    ->addTrack(
+                            Track::newTemporary(
+                                    TrackFile(otherDir.toUpper(), "d." + getSupportedFileExt())),
+                            false)
+                    .isValid());
 
     QList<RelocatedTrack> relocatedTracks =
-            dao.relocateDirectory(testdir, testnew);
+            dao.relocateDirectory(oldDir, newDir);
     EXPECT_EQ(2, relocatedTracks.size());
 
-    const QStringList allDirs = dao.getDirs();
-    EXPECT_EQ(2, allDirs.size());
-    EXPECT_THAT(allDirs, UnorderedElementsAre(test2, testnew));
+    const QStringList newDirs = dao.getDirs();
+    EXPECT_EQ(2, newDirs.size());
+    EXPECT_THAT(newDirs, UnorderedElementsAre(newDir, otherDir));
 }
