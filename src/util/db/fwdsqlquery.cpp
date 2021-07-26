@@ -121,7 +121,7 @@ inline bool boolFromQVariantInt(const QVariant& variant) {
                 << value;
     }
     // C-style conversion from int to bool
-    DEBUG_ASSERT(kBooleanFalse == 0);
+    static_assert(kBooleanFalse == 0);
     return value != kBooleanFalse;
 }
 
