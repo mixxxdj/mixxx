@@ -18,8 +18,6 @@ TEST_F(CoreServicesTest, DISABLED_TestInitialization) {
     cmdlineArgs.parse(argc, argv);
 
     const auto pCoreServices = std::make_unique<mixxx::CoreServices>(cmdlineArgs);
-    pCoreServices->initializeSettings();
-    pCoreServices->initializeKeyboard();
     pCoreServices->initialize(application());
 
     EXPECT_NE(pCoreServices->getControllerManager(), nullptr);

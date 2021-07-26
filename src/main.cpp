@@ -24,8 +24,6 @@ constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
     const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args);
-    pCoreServices->initializeSettings();
-    pCoreServices->initializeKeyboard();
 
     MixxxMainWindow mainWindow(app, pCoreServices);
     app->installEventFilter(&mainWindow);

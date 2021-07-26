@@ -106,6 +106,8 @@ namespace mixxx {
 CoreServices::CoreServices(const CmdlineArgs& args)
         : m_runtime_timer(QLatin1String("CoreServices::runtime")),
           m_cmdlineArgs(args) {
+    initializeSettings();
+    initializeKeyboard();
 }
 
 CoreServices::~CoreServices() = default;
