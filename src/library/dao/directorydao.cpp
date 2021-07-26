@@ -6,6 +6,7 @@
 #include "library/queryutil.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqllikewildcards.h"
+#include "util/db/sqlstringformatter.h"
 
 namespace {
 
@@ -80,13 +81,15 @@ int DirectoryDAO::removeDirectory(const QString& dir) const {
 QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
         const QString& oldFolder,
         const QString& newFolder) const {
+    DEBUG_ASSERT(oldFolder == QDir(oldFolder).absolutePath());
+    DEBUG_ASSERT(newFolder == QDir(newFolder).absolutePath());
     // TODO(rryan): This method could use error reporting. It can fail in
     // mysterious ways for example if a track in the oldFolder also has a zombie
     // track location in newFolder then the replace query will fail because the
     // location column becomes non-unique.
     QSqlQuery query(m_database);
     query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR %
-                  "=:newFolder WHERE " % DIRECTORYDAO_DIR % " = :oldFolder");
+            "=:newFolder WHERE " % DIRECTORYDAO_DIR % "=:oldFolder");
     query.bindValue(":newFolder", newFolder);
     query.bindValue(":oldFolder", oldFolder);
     if (!query.exec()) {
@@ -95,19 +98,23 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
         return {};
     }
 
-    // on Windows the absolute path starts with the drive name
-    // we also need to check for that
-    QString startsWithOldFolder = SqlLikeWildcardEscaper::apply(
-        QDir(oldFolder).absolutePath() + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
+    // Appending '/' is required to disambiguate files from parent
+    // directories, e.g. "a/b.mp3" and "a/b/c.mp3" where "a/b" would
+    // match both instead of only files in the parent directory "a/b/".
+    DEBUG_ASSERT(!oldFolder.endsWith('/'));
+    const QString oldFolderPrefix = oldFolder + '/';
+    const QString startsWithOldFolder = SqlLikeWildcardEscaper::apply(
+                                                oldFolderPrefix, kSqlLikeMatchAll) +
+            kSqlLikeMatchAll;
 
-    // Also update information in the track_locations table. This is where mixxx
-    // gets the location information for a track. Put marks around %1 so that
-    // this also works on windows
-    query.prepare(QString("SELECT library.id, track_locations.id, track_locations.location "
-                          "FROM library INNER JOIN track_locations ON "
-                          "track_locations.id = library.location WHERE "
-                          "track_locations.location LIKE '%1' ESCAPE '%2'")
-                  .arg(startsWithOldFolder, kSqlLikeMatchAll));
+    query.prepare(QStringLiteral(
+            "SELECT library.id,track_locations.id,track_locations.location "
+            "FROM library INNER JOIN track_locations ON "
+            "track_locations.id=library.location WHERE "
+            "track_locations.location LIKE %1 ESCAPE '%2'")
+                          .arg(SqlStringFormatter::format(
+                                       m_database, startsWithOldFolder),
+                                  kSqlLikeMatchAll));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
         return {};
@@ -131,8 +138,9 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
                 std::move(addedTrackRef)));
     }
 
-    QString replacement = "UPDATE track_locations SET location = :newloc "
-            "WHERE id = :id";
+    // Also update information in the track_locations table. This is where mixxx
+    // gets the location information for a track.
+    const QString replacement = "UPDATE track_locations SET location=:newloc WHERE id=:id";
     query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
         query.bindValue("newloc", relocatedTracks.at(i).updatedTrackRef().getLocation());
