@@ -123,16 +123,25 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
     QList<DbId> loc_ids;
     QList<RelocatedTrack> relocatedTracks;
     while (query.next()) {
+        const auto oldLocation = query.value(2).toString();
+        const int oldSuffixLen = oldLocation.size() - oldFolder.size();
+        QString newLocation = newFolder + oldLocation.right(oldSuffixLen);
+        // LIKE is case-insensitive! We cannot decide if the file system
+        // at the old location was case-sensitive or case-insensitive
+        // and must assume that the stored path is at least case-correct.
+        DEBUG_ASSERT(oldLocation.startsWith(oldFolderPrefix, Qt::CaseInsensitive));
+        if (!oldLocation.startsWith(oldFolderPrefix, Qt::CaseSensitive)) {
+            qDebug() << "Skipping relocation of" << oldLocation
+                     << "to" << newLocation;
+            continue;
+        }
         loc_ids.append(DbId(query.value(1).toInt()));
-        auto trackId = TrackId(query.value(0));
-        auto oldLocation = query.value(2).toString();
+        const auto trackId = TrackId(query.value(0));
         auto missingTrackRef = TrackRef::fromFileInfo(
                 TrackFile(oldLocation),
                 std::move(trackId));
-        const int oldSuffixLen = oldLocation.size() - oldFolder.size();
-        QString newLocation = newFolder + oldLocation.right(oldSuffixLen);
         auto addedTrackRef = TrackRef::fromFileInfo(
-            TrackFile(newLocation) /*without TrackId*/);
+                TrackFile(newLocation)); // without TrackId, because no new track will be added!
         relocatedTracks.append(RelocatedTrack(
                 std::move(missingTrackRef),
                 std::move(addedTrackRef)));
