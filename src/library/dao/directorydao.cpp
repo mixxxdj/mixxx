@@ -6,7 +6,6 @@
 #include "library/queryutil.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqllikewildcards.h"
-#include "util/db/sqlstringformatter.h"
 
 namespace {
 
@@ -111,10 +110,9 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
             "SELECT library.id,track_locations.id,track_locations.location "
             "FROM library INNER JOIN track_locations ON "
             "track_locations.id=library.location WHERE "
-            "track_locations.location LIKE %1 ESCAPE '%2'")
-                          .arg(SqlStringFormatter::format(
-                                       m_database, startsWithOldFolder),
-                                  kSqlLikeMatchAll));
+            "track_locations.location LIKE :startsWithOldFolder ESCAPE :escape"));
+    query.bindValue(":startsWithOldFolder", startsWithOldFolder);
+    query.bindValue(":escape", kSqlLikeMatchAll);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
         return {};
