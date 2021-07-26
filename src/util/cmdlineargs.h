@@ -33,7 +33,7 @@ class CmdlineArgs final {
     }
     bool getDebugAssertBreak() const { return m_debugAssertBreak; }
     bool getSettingsPathSet() const { return m_settingsPathSet; }
-    bool getMidiThrough() const {return m_midiThrough; }
+    bool getMidiThrough() const { return m_midiThrough; }
     mixxx::LogLevel getLogLevel() const { return m_logLevel; }
     mixxx::LogLevel getLogFlushLevel() const { return m_logFlushLevel; }
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
