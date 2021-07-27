@@ -2235,7 +2235,8 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
 #ifdef __SQLITE3__
     if (sqlite3_libversion_number() >= 3033000) {
 #endif // __SQLITE3__
-        FwdSqlQuery query(
+        const QString trackIdList = joinTrackIdList(trackIds);
+        auto updatePlayed = FwdSqlQuery(
                 m_database,
                 QStringLiteral(
                         "UPDATE library SET "
@@ -2249,17 +2250,42 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                         "FROM PlaylistTracks "
                         "JOIN Playlists ON "
                         "PlaylistTracks.playlist_id=Playlists.id "
-                        "WHERE Playlists.hidden=%2 "
+                        "WHERE Playlists.hidden=:playlistHidden "
                         "GROUP BY PlaylistTracks.track_id"
                         ") q "
                         "WHERE library.id=q.id "
                         "AND library.id IN (%1)")
-                        .arg(joinTrackIdList(trackIds),
-                                QString::number(PlaylistDAO::PLHT_SET_LOG)));
-        VERIFY_OR_DEBUG_ASSERT(!query.hasError()) {
+                        .arg(trackIdList));
+        updatePlayed.bindValue(
+                QStringLiteral(":playlistHidden"),
+                PlaylistDAO::PLHT_SET_LOG);
+        VERIFY_OR_DEBUG_ASSERT(!updatePlayed.hasError()) {
             return false;
         }
-        VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        VERIFY_OR_DEBUG_ASSERT(updatePlayed.execPrepared()) {
+            return false;
+        }
+        auto updateNotPlayed = FwdSqlQuery(
+                m_database,
+                QStringLiteral(
+                        "UPDATE library SET "
+                        "timesplayed=0,"
+                        "last_played_at=NULL "
+                        "WHERE library.id NOT IN("
+                        "SELECT PlaylistTracks.track_id "
+                        "FROM PlaylistTracks "
+                        "JOIN Playlists ON "
+                        "PlaylistTracks.playlist_id=Playlists.id "
+                        "WHERE Playlists.hidden=:playlistHidden "
+                        "AND PlaylistTracks.track_id IN (%1))")
+                        .arg(trackIdList));
+        updateNotPlayed.bindValue(
+                QStringLiteral(":playlistHidden"),
+                PlaylistDAO::PLHT_SET_LOG);
+        VERIFY_OR_DEBUG_ASSERT(!updateNotPlayed.hasError()) {
+            return false;
+        }
+        VERIFY_OR_DEBUG_ASSERT(updateNotPlayed.execPrepared()) {
             return false;
         }
 #ifdef __SQLITE3__
