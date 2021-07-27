@@ -9,6 +9,10 @@
 #include <QtDebug>
 #include <QtSql>
 
+#ifdef __SQLITE3__
+#include <sqlite3.h>
+#endif // __SQLITE3__
+
 #include "library/coverart.h"
 #include "library/coverartutils.h"
 #include "library/dao/analysisdao.h"
@@ -2224,33 +2228,49 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     // NOTE: The played flag for the current session is NOT updated!
     // The current session is unaffected, because the corresponding
     // playlist cannot be deleted.
-    FwdSqlQuery query(
-            m_database,
-            QStringLiteral(
-                    "UPDATE library SET "
-                    "timesplayed=q.timesplayed,"
-                    "last_played_at=q.last_played_at "
-                    "FROM("
-                    "SELECT "
-                    "PlaylistTracks.track_id as id,"
-                    "COUNT(PlaylistTracks.track_id) as timesplayed,"
-                    "MAX(PlaylistTracks.pl_datetime_added) as last_played_at "
-                    "FROM PlaylistTracks "
-                    "JOIN Playlists ON "
-                    "PlaylistTracks.playlist_id=Playlists.id "
-                    "WHERE Playlists.hidden=%2 "
-                    "GROUP BY PlaylistTracks.track_id"
-                    ") q "
-                    "WHERE library.id=q.id "
-                    "AND library.id IN (%1)")
-                    .arg(joinTrackIdList(trackIds),
-                            QString::number(PlaylistDAO::PLHT_SET_LOG)));
-    VERIFY_OR_DEBUG_ASSERT(!query.hasError()) {
-        return false;
+    //
+    // https://www.sqlite.org/lang_update.html#upfrom
+    // UPDATE-FROM is supported beginning in SQLite version 3.33.0 (2020-08-14)
+    // https://bugs.launchpad.net/mixxx/+bug/1937941
+#ifdef __SQLITE3__
+    if (sqlite3_libversion_number() >= 3033000) {
+#endif // __SQLITE3__
+        FwdSqlQuery query(
+                m_database,
+                QStringLiteral(
+                        "UPDATE library SET "
+                        "timesplayed=q.timesplayed,"
+                        "last_played_at=q.last_played_at "
+                        "FROM("
+                        "SELECT "
+                        "PlaylistTracks.track_id as id,"
+                        "COUNT(PlaylistTracks.track_id) as timesplayed,"
+                        "MAX(PlaylistTracks.pl_datetime_added) as last_played_at "
+                        "FROM PlaylistTracks "
+                        "JOIN Playlists ON "
+                        "PlaylistTracks.playlist_id=Playlists.id "
+                        "WHERE Playlists.hidden=%2 "
+                        "GROUP BY PlaylistTracks.track_id"
+                        ") q "
+                        "WHERE library.id=q.id "
+                        "AND library.id IN (%1)")
+                        .arg(joinTrackIdList(trackIds),
+                                QString::number(PlaylistDAO::PLHT_SET_LOG)));
+        VERIFY_OR_DEBUG_ASSERT(!query.hasError()) {
+            return false;
+        }
+        VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+            return false;
+        }
+#ifdef __SQLITE3__
+    } else {
+        // FIXME: Update tracks one by one
+        qWarning() << "FIXME: Update play counter of"
+                   << trackIds.size()
+                   << "track(s) from history for SQLite version"
+                   << sqlite3_libversion();
     }
-    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
-        return false;
-    }
+#endif // __SQLITE3__
     // TODO: DAOs should be passive and simply execute queries. They
     // should neither make assumptions about transaction boundaries
     // nor receive or emit any signals.
