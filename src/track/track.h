@@ -128,7 +128,10 @@ class Track : public QObject {
     }
 
     // Sets the BPM if not locked.
-    bool trySetBpm(double bpm);
+    bool trySetBpm(double bpmValue) {
+        return trySetBpm(mixxx::Bpm(bpmValue));
+    }
+    bool trySetBpm(mixxx::Bpm bpm);
 
     // Returns BPM
     double getBpm() const;
@@ -471,7 +474,7 @@ class Track : public QObject {
     bool importPendingCueInfosWhileLocked();
 
     mixxx::Bpm getBpmWhileLocked() const;
-    bool trySetBpmWhileLocked(double bpmValue);
+    bool trySetBpmWhileLocked(mixxx::Bpm bpm);
     bool trySetBeatsWhileLocked(
             mixxx::BeatsPointer pBeats,
             bool lockBpmAfterSet = false);
