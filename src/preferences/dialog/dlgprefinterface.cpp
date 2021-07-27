@@ -47,11 +47,11 @@ DlgPrefInterface::DlgPrefInterface(
     // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
     // m_dDevicePixelRatio must not drop below 1.0 because this creates an
     // unusable GUI with visual artefacts
-    double initialScalefactor = CmdlineArgs::Instance().getScaleFactor();
-    if (initialScalefactor <= 0) {
-        initialScalefactor = 1.0;
+    double initialScaleFactor = CmdlineArgs::Instance().getScaleFactor();
+    if (initialScaleFactor <= 0) {
+        initialScaleFactor = 1.0;
     }
-    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScalefactor;
+    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScaleFactor;
     m_minScaleFactor = 1 / unscaledDevicePixelRatio;
 
     VERIFY_OR_DEBUG_ASSERT(m_pSkin != nullptr) {
