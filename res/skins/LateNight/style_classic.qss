@@ -2439,6 +2439,7 @@ QLineEdit QMenu::item:disabled {
 
   WLibrarySidebar QMenu::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
+  WTrackTableViewHeader QMenu::indicator:checked,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);
