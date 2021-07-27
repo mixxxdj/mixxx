@@ -24,6 +24,19 @@
 using mixxx::skin::SkinManifest;
 using mixxx::skin::SkinPointer;
 
+namespace {
+
+const QString kConfigGroup = QStringLiteral("[Config]");
+const QString kControlsGroup = QStringLiteral("[Controls]");
+const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
+const QString kStartInFullscreenKey = QStringLiteral("StartInFullscreen");
+const QString kSchemeKey = QStringLiteral("Scheme");
+const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
+const QString kLocaleKey = QStringLiteral("Locale");
+const QString kTooltipsKey = QStringLiteral("Tooltips");
+
+} // namespace
+
 DlgPrefInterface::DlgPrefInterface(
         QWidget* parent,
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
@@ -159,8 +172,11 @@ DlgPrefInterface::DlgPrefInterface(
             &DlgPrefInterface::slotSetScheme);
 
     // Start in fullscreen mode
-    checkBoxStartFullScreen->setChecked(m_pConfig->getValueString(
-                    ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
+    checkBoxStartFullScreen->setChecked(
+            m_pConfig
+                    ->getValueString(
+                            ConfigKey(kConfigGroup, kStartInFullscreenKey))
+                    .toInt() == 1);
 
     // Screensaver mode
     comboBoxScreensaver->clear();
@@ -216,7 +232,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
         m_colorScheme = QString();
     } else {
         ComboBoxSchemeconf->setEnabled(true);
-        QString configScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
+        QString configScheme = m_pConfig->getValueString(ConfigKey(kConfigGroup, kSchemeKey));
         bool foundConfigScheme = false;
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
@@ -239,7 +255,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
 
 void DlgPrefInterface::slotUpdate() {
     const QString skinNameOnUpdate =
-            m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
+            m_pConfig->getValueString(ConfigKey(kConfigGroup, kResizableSkinKey));
     const SkinPointer pSkinOnUpdate = m_skins[skinNameOnUpdate];
     if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
         m_skinNameOnUpdate = pSkinOnUpdate->name();
@@ -250,17 +266,18 @@ void DlgPrefInterface::slotUpdate() {
     slotUpdateSchemes();
     m_bRebootMixxxView = false;
 
-    m_localeOnUpdate = m_pConfig->getValueString(ConfigKey("[Config]", "Locale"));
+    m_localeOnUpdate = m_pConfig->getValueString(ConfigKey(kConfigGroup, kLocaleKey));
     ComboBoxLocale->setCurrentIndex(ComboBoxLocale->findData(m_localeOnUpdate));
 
     // The spinbox shows a percentage but Mixxx stores a multiplication factor
     // with 1.00 as no scaling, so multiply the stored value by 100.
     spinBoxScaleFactor->setValue(m_pConfig->getValue(
-                    ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactor) * 100);
+                                         ConfigKey(kConfigGroup, kScaleFactorKey), m_dScaleFactor) *
+            100);
     spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
-            ConfigKey("[Config]", "StartInFullscreen"), m_bStartWithFullScreen));
+            ConfigKey(kConfigGroup, kStartInFullscreenKey), m_bStartWithFullScreen));
 
     loadTooltipPreferenceFromConfig();
 
@@ -367,20 +384,20 @@ void DlgPrefInterface::slotSetSkin(int) {
 }
 
 void DlgPrefInterface::slotApply() {
-    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_pSkin->name());
-    m_pConfig->set(ConfigKey("[Config]", "Scheme"), m_colorScheme);
+    m_pConfig->set(ConfigKey(kConfigGroup, kResizableSkinKey), m_pSkin->name());
+    m_pConfig->set(ConfigKey(kConfigGroup, kSchemeKey), m_colorScheme);
 
     QString locale = ComboBoxLocale->itemData(
             ComboBoxLocale->currentIndex()).toString();
-    m_pConfig->set(ConfigKey("[Config]", "Locale"), locale);
+    m_pConfig->set(ConfigKey(kConfigGroup, kLocaleKey), locale);
 
     double scaleFactor = spinBoxScaleFactor->value() / 100;
-    m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), scaleFactor);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kScaleFactorKey), scaleFactor);
 
-    m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"),
+    m_pConfig->set(ConfigKey(kConfigGroup, kStartInFullscreenKey),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
 
-    m_pConfig->set(ConfigKey("[Controls]", "Tooltips"),
+    m_pConfig->set(ConfigKey(kControlsGroup, kTooltipsKey),
             ConfigValue(static_cast<int>(m_tooltipMode)));
     emit tooltipModeChanged(m_tooltipMode);
 
@@ -410,7 +427,7 @@ void DlgPrefInterface::slotApply() {
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
     const auto tooltipMode = static_cast<mixxx::TooltipsPreference>(
-            m_pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
+            m_pConfig->getValue(ConfigKey(kControlsGroup, kTooltipsKey),
                     static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
     switch (tooltipMode) {
     case mixxx::TooltipsPreference::TOOLTIPS_OFF:
