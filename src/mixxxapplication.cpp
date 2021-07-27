@@ -17,27 +17,28 @@
 #include "util/fileinfo.h"
 #include "util/math.h"
 
-// When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
-// plugins we link in build/depends.py.
-#ifdef QT_NODLL
+// When linking Qt statically, the Q_IMPORT_PLUGIN is needed for each linked plugin.
+// https://doc.qt.io/qt-5/plugins-howto.html#details-of-linking-static-plugins
+#ifdef QT_STATIC
 #include <QtPlugin>
-// sqldrivers plugins
-Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
-// platform plugins
+#if defined(Q_OS_WIN)
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
-// style plugins
 Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
-// imageformats plugins
+#elif defined(Q_OS_MACOS)
+Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin)
+Q_IMPORT_PLUGIN(QMacStylePlugin)
+#else
+#error "Q_IMPORT_PLUGIN() for the current patform is missing"
+#endif
+Q_IMPORT_PLUGIN(QOffscreenIntegrationPlugin)
+Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
+
+Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
 Q_IMPORT_PLUGIN(QSvgPlugin)
-Q_IMPORT_PLUGIN(QSvgIconPlugin)
 Q_IMPORT_PLUGIN(QICOPlugin)
-Q_IMPORT_PLUGIN(QTgaPlugin)
 Q_IMPORT_PLUGIN(QJpegPlugin)
 Q_IMPORT_PLUGIN(QGifPlugin)
-// accessible plugins
-// TODO(rryan): This is supposed to exist but does not in our builds.
-//Q_IMPORT_PLUGIN(AccessibleFactory)
-#endif
+#endif // QT_STATIC
 
 namespace {
 
