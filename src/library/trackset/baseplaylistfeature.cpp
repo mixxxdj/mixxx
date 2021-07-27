@@ -31,8 +31,9 @@ constexpr QChar kUnsafeFilenameReplacement = '-';
 BasePlaylistFeature::BasePlaylistFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         PlaylistTableModel* pModel,
-        const QString& rootViewName)
-        : BaseTrackSetFeature(pLibrary, pConfig, rootViewName),
+        const QString& rootViewName,
+        const QString& iconName)
+        : BaseTrackSetFeature(pLibrary, pConfig, rootViewName, iconName),
           m_playlistDao(pLibrary->trackCollectionManager()
                                 ->internalCollection()
                                 ->getPlaylistDAO()),
@@ -369,7 +370,7 @@ int BasePlaylistFeature::getSiblingPlaylistIdOf(QModelIndex& start) {
     for (int i = start.row() + 1; i >= (start.row() - 1); i -= 2) {
         QModelIndex nextIndex = start.sibling(i, start.column());
         if (nextIndex.isValid()) {
-            TreeItem* pTreeItem = m_childModel.getItem(nextIndex);
+            TreeItem* pTreeItem = m_pSidebarModel->getItem(nextIndex);
             DEBUG_ASSERT(pTreeItem != nullptr);
             if (!pTreeItem->hasChildren()) {
                 return playlistIdFromIndex(nextIndex);
@@ -656,8 +657,8 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     }
 }
 
-TreeItemModel* BasePlaylistFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* BasePlaylistFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
@@ -692,9 +693,9 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
 
     QVariant variantId = QVariant(playlistId);
 
-    for (int row = 0; row < m_childModel.rowCount(); ++row) {
-        QModelIndex index = m_childModel.index(row, 0);
-        TreeItem* pTreeItem = m_childModel.getItem(index);
+    for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
+        QModelIndex index = m_pSidebarModel->index(row, 0);
+        TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
         DEBUG_ASSERT(pTreeItem != nullptr);
         if (!pTreeItem->hasChildren() && // leaf node
                 pTreeItem->getData() == variantId) {
@@ -708,13 +709,13 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
   * Clears the child model dynamically, but the invisible root item remains
   */
 void BasePlaylistFeature::clearChildModel() {
-    m_childModel.removeRows(0, m_childModel.rowCount());
+    m_pSidebarModel->removeRows(0, m_pSidebarModel->rowCount());
 }
 
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     QVariant variantId = QVariant(playlistId);
-    QModelIndexList results = m_childModel.match(
-            m_childModel.getRootIndex(),
+    QModelIndexList results = m_pSidebarModel->match(
+            m_pSidebarModel->getRootIndex(),
             TreeItemModel::kDataRole,
             variantId,
             1,
@@ -733,14 +734,14 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     }
     m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistIdsOfSelectedTrack);
 
-    for (int row = 0; row < m_childModel.rowCount(); ++row) {
-        QModelIndex index = m_childModel.index(row, 0);
-        TreeItem* pTreeItem = m_childModel.getItem(index);
+    for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
+        QModelIndex index = m_pSidebarModel->index(row, 0);
+        TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
         DEBUG_ASSERT(pTreeItem != nullptr);
         markTreeItem(pTreeItem);
     }
 
-    m_childModel.triggerRepaint();
+    m_pSidebarModel->triggerRepaint();
 }
 
 void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {

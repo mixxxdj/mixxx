@@ -396,6 +396,7 @@ void TrackDAO::addTracksPrepare() {
             "played,"
             "mixxx_deleted,"
             "header_parsed,"
+            "source_synchronized_ms,"
             "channels,"
             "samplerate,"
             "bitrate,"
@@ -443,6 +444,7 @@ void TrackDAO::addTracksPrepare() {
             ":played,"
             ":mixxx_deleted,"
             ":header_parsed,"
+            ":source_synchronized_ms,"
             ":channels,"
             ":samplerate,"
             ":bitrate,"
@@ -534,7 +536,8 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":comment", trackInfo.getComment());
     pTrackLibraryQuery->bindValue(":url", track.getUrl());
     pTrackLibraryQuery->bindValue(":rating", track.getRating());
-    pTrackLibraryQuery->bindValue(":cuepoint", track.getCuePoint().getPosition());
+    pTrackLibraryQuery->bindValue(":cuepoint",
+            track.getMainCuePosition().toEngineSamplePosMaybeInvalid());
     pTrackLibraryQuery->bindValue(":bpm_lock", track.getBpmLocked() ? 1 : 0);
     pTrackLibraryQuery->bindValue(":replaygain", trackInfo.getReplayGain().getRatio());
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
@@ -549,7 +552,17 @@ void bindTrackLibraryValues(
             trackMetadata.getStreamInfo().getDuration().toDoubleSeconds());
 
     pTrackLibraryQuery->bindValue(":header_parsed",
-            track.getMetadataSynchronized() ? 1 : 0);
+            track.isSourceSynchronized() ? 1 : 0);
+    const QDateTime sourceSynchronizedAt =
+            track.getSourceSynchronizedAt();
+    if (sourceSynchronizedAt.isValid()) {
+        DEBUG_ASSERT(sourceSynchronizedAt.timeSpec() == Qt::UTC);
+        pTrackLibraryQuery->bindValue(":source_synchronized_ms",
+                sourceSynchronizedAt.toMSecsSinceEpoch());
+    } else {
+        pTrackLibraryQuery->bindValue(":source_synchronized_ms",
+                QVariant());
+    }
 
     const PlayCounter& playCounter = track.getPlayCounter();
     pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
@@ -569,14 +582,15 @@ void bindTrackLibraryValues(
     QString beatsVersion;
     QString beatsSubVersion;
     // Fall back on cached BPM
-    double dBpm = trackInfo.getBpm().getValue();
+    mixxx::Bpm bpm = trackInfo.getBpm();
     if (!pBeats.isNull()) {
         beatsBlob = pBeats->toByteArray();
         beatsVersion = pBeats->getVersion();
         beatsSubVersion = pBeats->getSubVersion();
-        dBpm = pBeats->getBpm();
+        bpm = pBeats->getBpm();
     }
-    pTrackLibraryQuery->bindValue(":bpm", dBpm);
+    const double bpmValue = bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined;
+    pTrackLibraryQuery->bindValue(":bpm", bpmValue);
     pTrackLibraryQuery->bindValue(":beats_version", beatsVersion);
     pTrackLibraryQuery->bindValue(":beats_sub_version", beatsSubVersion);
     pTrackLibraryQuery->bindValue(":beats", beatsBlob);
@@ -828,7 +842,7 @@ TrackPointer TrackDAO::addTracksAddFile(
     // Initially (re-)import the metadata for the newly created track
     // from the file.
     SoundSourceProxy(pTrack).updateTrackFromSource();
-    if (!pTrack->isMetadataSynchronized()) {
+    if (!pTrack->isSourceSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
@@ -1132,7 +1146,8 @@ bool setTrackRating(const QSqlRecord& record, const int column,
 
 bool setTrackCuePoint(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
-    pTrack->setCuePoint(CuePosition(record.value(column).toDouble()));
+    pTrack->setMainCuePosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+            record.value(column).toDouble()));
     return false;
 }
 
@@ -1189,9 +1204,24 @@ bool setTrackFiletype(const QSqlRecord& record, const int column,
     return false;
 }
 
-bool setTrackMetadataSynchronized(const QSqlRecord& record, const int column,
-                          TrackPointer pTrack) {
-    pTrack->setMetadataSynchronized(record.value(column).toBool());
+bool setTrackHeaderParsed(const QSqlRecord& record, const int column, TrackPointer pTrack) {
+    pTrack->setHeaderParsedFromTrackDAO(record.value(column).toBool());
+    return false;
+}
+
+bool setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
+    QDateTime sourceSynchronizedAt;
+    const QVariant value = record.value(column);
+    // Observation (Qt 5.15): QVariant::isValid() may return true even
+    // if the column value is NULL and then converts to 0 (zero). This
+    // is NOT desired and therefore we MUST USE QVariant::isNull() instead!
+    if (!value.isNull() && value.canConvert<quint64>()) {
+        DEBUG_ASSERT(value.isValid());
+        const quint64 msecsSinceEpoch = qvariant_cast<quint64>(value);
+        sourceSynchronizedAt.setTimeSpec(Qt::UTC);
+        sourceSynchronizedAt.setMSecsSinceEpoch(msecsSinceEpoch);
+    }
+    pTrack->setSourceSynchronizedAt(sourceSynchronizedAt);
     return false;
 }
 
@@ -1213,7 +1243,7 @@ bool setTrackAudioProperties(
 
 bool setTrackBeats(const QSqlRecord& record, const int column,
                    TrackPointer pTrack) {
-    double bpm = record.value(column).toDouble();
+    const auto bpm = mixxx::Bpm(record.value(column).toDouble());
     QString beatsVersion = record.value(column + 1).toString();
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
@@ -1228,7 +1258,8 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
         }
     } else {
         // Load a temorary beat grid without offset that will be replaced by the analyzer.
-        const auto pBeats = BeatFactory::makeBeatGrid(pTrack->getSampleRate(), bpm, 0.0);
+        const auto pBeats = BeatFactory::makeBeatGrid(
+                pTrack->getSampleRate(), bpm, mixxx::audio::kStartFramePos);
         pTrack->trySetBeats(pBeats);
     }
     return false;
@@ -1332,7 +1363,8 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"last_played_at", setTrackLastPlayedAt},
             {"played", setTrackPlayed},
             {"datetime_added", setTrackDateAdded},
-            {"header_parsed", setTrackMetadataSynchronized},
+            {"header_parsed", setTrackHeaderParsed},
+            {"source_synchronized_ms", setTrackSourceSynchronizedAt},
 
             // Audio properties are set together at once. Do not change the
             // ordering of these columns or put other columns in between them!
@@ -1600,6 +1632,7 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
             "last_played_at=:last_played_at,"
             "played=:played,"
             "header_parsed=:header_parsed,"
+            "source_synchronized_ms=:source_synchronized_ms,"
             "channels=:channels,"
             "bitrate=:bitrate,"
             "samplerate=:samplerate,"

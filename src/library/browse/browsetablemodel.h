@@ -81,7 +81,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
   public slots:
     void slotClear(BrowseTableModel*);
     void slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*);
-    void trackLoaded(const QString& group, TrackPointer pTrack);
+    void trackChanged(const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private:
     void addSearchColumn(int index);

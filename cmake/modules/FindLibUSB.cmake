@@ -57,7 +57,7 @@ find_path(LibUSB_INCLUDE_DIR
 mark_as_advanced(LibUSB_INCLUDE_DIR)
 
 find_library(LibUSB_LIBRARY
-  NAMES usb-1.0
+  NAMES usb-1.0 usb
   PATHS ${PC_LibUSB_LIBRARY_DIRS}
   DOC "LibUSB library"
 )

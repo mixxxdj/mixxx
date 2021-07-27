@@ -57,7 +57,7 @@ RateControl::RateControl(const QString& group,
             this, &RateControl::slotRateRangeChanged,
             Qt::DirectConnection);
 
-    // Allow rate slider to go out of bounds so that master sync rate
+    // Allow rate slider to go out of bounds so that sync lock rate
     // adjustments are not capped.
     m_pRateSlider = new ControlPotmeter(
             ConfigKey(group, "rate"), -1.0, 1.0, true);
@@ -461,11 +461,11 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             rate = m_pScratchController->getRate();
             *pReportScratching = true;
         } else {
-            // If master sync is on, respond to it -- but vinyl and scratch mode always override.
+            // If sync lock is on, respond to it -- but vinyl and scratch mode always override.
             if (toSynchronized(getSyncMode()) && !paused &&
                     !bVinylControlEnabled && !useScratch2Value) {
                 if (m_pBpmControl == nullptr) {
-                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
+                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during sync lock";
                     return 1.0;
                 }
 
@@ -535,26 +535,24 @@ void RateControl::processTempRate(const int bufferSamples) {
                 }
             }
         } else if (m_eRateRampMode == RampMode::Linear) {
-            if (rampDirection != RampDirection::None) {
-                if (!m_bTempStarted) {
-                    m_bTempStarted = true;
-                    double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
-                    m_dRateTempRampChange = (latrate / ((double)m_iRateRampSensitivity / 100.));
-                }
+            if (!m_bTempStarted) {
+                m_bTempStarted = true;
+                double latrate = bufferSamples / m_pSampleRate->get();
+                m_dRateTempRampChange = latrate / (m_iRateRampSensitivity / 100.0);
+            }
 
-                switch (rampDirection) {
-                case RampDirection::Up:
-                case RampDirection::UpSmall:
-                    addRateTemp(m_dRateTempRampChange * m_pRateRange->get());
-                    break;
-                case RampDirection::Down:
-                case RampDirection::DownSmall:
-                    subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
-                    break;
-                case RampDirection::None:
-                default:
-                    DEBUG_ASSERT(false);
-                }
+            switch (rampDirection) {
+            case RampDirection::Up:
+            case RampDirection::UpSmall:
+                addRateTemp(m_dRateTempRampChange * m_pRateRange->get());
+                break;
+            case RampDirection::Down:
+            case RampDirection::DownSmall:
+                subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
+                break;
+            case RampDirection::None:
+            default:
+                DEBUG_ASSERT(false);
             }
         }
     } else if (m_bTempStarted) {

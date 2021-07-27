@@ -40,6 +40,18 @@ QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
     connect(this, &QmlPlayerProxy::trackChanged, this, &QmlPlayerProxy::slotTrackChanged);
 }
 
+void QmlPlayerProxy::loadTrackFromLocation(const QString& trackLocation) {
+    emit loadTrackFromLocationRequested(trackLocation);
+}
+
+void QmlPlayerProxy::loadTrackFromLocationUrl(const QUrl& trackLocationUrl) {
+    if (trackLocationUrl.isLocalFile()) {
+        loadTrackFromLocation(trackLocationUrl.toLocalFile());
+    } else {
+        qWarning() << "QmlPlayerProxy: URL" << trackLocationUrl << "is not a local file!";
+    }
+}
+
 void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
     m_pCurrentTrack = pTrack;
     if (pTrack != nullptr) {
@@ -127,6 +139,7 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit keyTextChanged();
     emit colorChanged();
     emit coverArtUrlChanged();
+    emit trackLocationUrlChanged();
 }
 
 PROPERTY_IMPL(QString, artist, getArtist, setArtist)
@@ -166,6 +179,15 @@ QUrl QmlPlayerProxy::getCoverArtUrl() const {
 
     const CoverInfo coverInfo = pTrack->getCoverInfoWithLocation();
     return AsyncImageProvider::trackLocationToCoverArtUrl(coverInfo.trackLocation);
+}
+
+QUrl QmlPlayerProxy::getTrackLocationUrl() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack == nullptr) {
+        return QUrl();
+    }
+
+    return QUrl::fromLocalFile(pTrack->getLocation());
 }
 
 } // namespace qml

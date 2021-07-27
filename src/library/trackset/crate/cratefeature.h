@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QAction>
-#include <QIcon>
 #include <QList>
 #include <QModelIndex>
 #include <QPoint>
@@ -30,7 +29,6 @@ class CrateFeature : public BaseTrackSetFeature {
     ~CrateFeature() override = default;
 
     QVariant title() override;
-    QIcon getIcon() override;
 
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
@@ -41,7 +39,7 @@ class CrateFeature : public BaseTrackSetFeature {
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activateChild(const QModelIndex& index) override;
@@ -98,7 +96,6 @@ class CrateFeature : public BaseTrackSetFeature {
 
     QString formatRootViewHtml() const;
 
-    const QIcon m_cratesIcon;
     const QIcon m_lockedCrateIcon;
 
     TrackCollection* const m_pTrackCollection;

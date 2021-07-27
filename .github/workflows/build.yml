@@ -21,7 +21,6 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
-            cmake_generator: Unix Makefiles
             ctest_args:
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
@@ -41,7 +40,6 @@ jobs:
               -DMACOS_BUNDLE=ON
               -DMODPLUG=OFF
               -DWAVPACK=OFF
-            cmake_generator: Unix Makefiles
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
@@ -70,7 +68,6 @@ jobs:
               -DWAVPACK=ON
             cc: cl
             cxx: cl
-            cmake_generator: Ninja
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
@@ -157,10 +154,13 @@ jobs:
       # Possibly related: actions/checkout#290
       run: git fetch origin --force --tags
 
-    - name: "Set up cmake"
-      uses: jwlawson/actions-setup-cmake@v1.4
+    - name: "[macOS] Set up cmake"
+      uses: jwlawson/actions-setup-cmake@v1.9
+      # Ubuntu 20.04 should use the CMake version from the repos, and Visual
+      # Studio on Windows comes with its own CMake version anyway.
+      if: runner.os == 'macOS'
       with:
-        # This should always match the mininum required version in
+        # This should always match the minimum required version in
         # our CMakeLists.txt
         cmake-version: '3.16.x'
 
@@ -241,12 +241,10 @@ jobs:
 
     - name: "Configure"
       run: >-
-        cmake
-        -G "${{ matrix.cmake_generator }}"
+        cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
         -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
-        -DDEBUG_ASSERTIONS_FATAL=ON
-        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
+        -DDEBUG_ASSERTIONS_FATAL=OFF
         -DBATTERY=ON
         -DBROADCAST=ON
         -DDOWNLOAD_MANUAL=ON
@@ -353,7 +351,7 @@ jobs:
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
-          export DEPLOY_PATH='releases/mixxx-{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
+          export DEPLOY_PATH='releases/{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
         else
           export DEPLOY_PATH='snapshots/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
         fi;
@@ -424,7 +422,7 @@ jobs:
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
-          export DEPLOY_PATH='releases/mixxx-{git_describe}/manifest.json';
+          export DEPLOY_PATH='releases/{git_describe}/manifest.json';
         else
           export DEPLOY_PATH='snapshots/{git_branch}/manifest.json';
         fi;

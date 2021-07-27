@@ -31,7 +31,7 @@ DDJ200.init = function() {
             DDJ200.switchPlayLED(d, ch);
         });
 
-        // run switchSyncLED after sync toogle to set LEDs accordingly
+        // run switchSyncLED after sync toggle to set LEDs accordingly
         engine.makeConnection(vgroup, "sync_enabled", function(ch, vgroup) {
             var vDeckNo = script.deckFromGroup(vgroup);
             var d = (vDeckNo % 2) ? 0 : 1;
@@ -181,7 +181,7 @@ DDJ200.headmix = function(channel, control, value) {
     if (value) { // do nothing if button is released, i.e. value === 0
         var masterMixEnabled = (engine.getValue("[Master]", "headMix") > 0);
         engine.setValue("[Master]", "headMix", masterMixEnabled ? -1 : 1);
-        midi.sendShortMsg(0x96, 0x63, masterMixEnabled ? 0x7F : 0); // set LED
+        midi.sendShortMsg(0x96, 0x63, masterMixEnabled ? 0 : 0x7F); // set LED
     }
 };
 

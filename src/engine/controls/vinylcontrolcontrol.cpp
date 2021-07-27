@@ -89,25 +89,35 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
         return;
     }
 
-    double total_samples = getSampleOfTrack().total;
-    double new_playpos = round(fractionalPos * total_samples);
+    const auto trackEndPosition =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    getSampleOfTrack().total);
+    if (!trackEndPosition.isValid()) {
+        return;
+    }
+    const auto newPlayPos = mixxx::audio::kStartFramePos +
+            (trackEndPosition - mixxx::audio::kStartFramePos) * fractionalPos;
 
     if (m_pControlVinylEnabled->get() > 0.0 && m_pControlVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
         int cuemode = (int)m_pControlVinylCueing->get();
 
         //if in preroll, always seek
-        if (new_playpos < 0) {
-            seekExact(new_playpos);
+        if (newPlayPos < mixxx::audio::kStartFramePos) {
+            seekExact(newPlayPos.toEngineSamplePos());
             return;
         }
 
         switch (cuemode) {
         case MIXXX_RELATIVE_CUE_OFF:
             return; // If off, do nothing.
-        case MIXXX_RELATIVE_CUE_ONECUE:
+        case MIXXX_RELATIVE_CUE_ONECUE: {
             //if onecue, just seek to the regular cue
-            seekExact(pTrack->getCuePoint().getPosition());
+            const mixxx::audio::FramePos mainCuePosition = pTrack->getMainCuePosition();
+            if (mainCuePosition.isValid()) {
+                seekExact(mainCuePosition.toEngineSamplePos());
+            }
             return;
+        }
         case MIXXX_RELATIVE_CUE_HOTCUE:
             // Continue processing in this function.
             break;
@@ -116,8 +126,8 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             return;
         }
 
-        double shortest_distance = 0;
-        double nearest_playpos = -1;
+        mixxx::audio::FrameDiff_t shortestDistance = 0;
+        mixxx::audio::FramePos nearestPlayPos;
 
         const QList<CuePointer> cuePoints(pTrack->getCuePoints());
         QListIterator<CuePointer> it(cuePoints);
@@ -127,24 +137,26 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
                 continue;
             }
 
-            double cue_position = pCue->getPosition();
-            // pick cues closest to new_playpos
-            if ((nearest_playpos == -1) ||
-                (fabs(new_playpos - cue_position) < shortest_distance)) {
-                nearest_playpos = cue_position;
-                shortest_distance = fabs(new_playpos - cue_position);
+            const mixxx::audio::FramePos cuePosition = pCue->getPosition();
+            if (!cuePosition.isValid()) {
+                continue;
+            }
+            // pick cues closest to newPlayPos
+            if (!nearestPlayPos.isValid() || (fabs(newPlayPos - cuePosition) < shortestDistance)) {
+                nearestPlayPos = cuePosition;
+                shortestDistance = fabs(newPlayPos - cuePosition);
             }
         }
 
-        if (nearest_playpos == -1) {
-            if (new_playpos >= 0) {
+        if (!nearestPlayPos.isValid()) {
+            if (newPlayPos >= mixxx::audio::kStartFramePos) {
                 //never found an appropriate cue, so don't seek?
                 return;
             }
             //if negative, allow a seek by falling down to the bottom
         } else {
             m_bSeekRequested = true;
-            seekExact(nearest_playpos);
+            seekExact(nearestPlayPos.toEngineSamplePos());
             m_bSeekRequested = false;
             return;
         }
@@ -152,7 +164,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
 
     // Just seek where it wanted to originally.
     m_bSeekRequested = true;
-    seekExact(new_playpos);
+    seekExact(newPlayPos.toEngineSamplePos());
     m_bSeekRequested = false;
 }
 

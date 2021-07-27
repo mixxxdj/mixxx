@@ -9,6 +9,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
 #include "preferences/usersettings.h"
+#include "track/beats.h"
 #include "track/trackref.h"
 #include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
@@ -102,7 +103,7 @@ class WTrackMenu : public QMenu {
     // BPM
     void slotLockBpm();
     void slotUnlockBpm();
-    void slotScaleBpm(int);
+    void slotScaleBpm(mixxx::Beats::BpmScale scale);
 
     // Info and metadata
     void slotShowDlgTagFetcher();

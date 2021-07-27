@@ -747,7 +747,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                 // Either abort or retry by exiting the inner loop
                 break;
             } else {
-                // Reset the retry flag after succesfully decoding a block
+                // Reset the retry flag after successfully decoding a block
                 retryAfterReopeningDecoder = false;
             }
             // Upon a pending retry the inner loop is exited immediately and
@@ -759,19 +759,19 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                     pDecodeBuffer); // verify the in/out parameter
 
             // Verify the decoded sample data for consistency
-            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getChannelCount() ==
-                    decFrameInfo.channels) {
-                kLogger.critical() << "Corrupt or unsupported AAC file:"
-                                   << "Unexpected number of channels"
-                                   << decFrameInfo.channels << "<>"
-                                   << getSignalInfo().getChannelCount();
+            const auto channelCount = mixxx::audio::ChannelCount(decFrameInfo.channels);
+            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getChannelCount() == channelCount) {
+                kLogger.warning() << "Corrupt or unsupported AAC file:"
+                                  << "Unexpected number of channels"
+                                  << channelCount << "<>"
+                                  << getSignalInfo().getChannelCount();
                 break; // abort
             }
-            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getSampleRate() ==
-                    SINT(decFrameInfo.samplerate)) {
-                kLogger.critical()
+            const auto sampleRate = mixxx::audio::SampleRate(decFrameInfo.samplerate);
+            VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getSampleRate() == sampleRate) {
+                kLogger.warning()
                         << "Corrupt or unsupported AAC file:"
-                        << "Unexpected sample rate" << decFrameInfo.samplerate
+                        << "Unexpected sample rate" << sampleRate
                         << "<>" << getSignalInfo().getSampleRate();
                 break; // abort
             }

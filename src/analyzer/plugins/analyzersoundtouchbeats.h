@@ -29,7 +29,7 @@ class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
         return pluginInfo();
     }
 
-    bool initialize(int samplerate) override;
+    bool initialize(mixxx::audio::SampleRate sampleRate) override;
     bool processSamples(const CSAMPLE* pIn, const int iLen) override;
     bool finalize() override;
 
@@ -37,14 +37,15 @@ class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
         return false;
     }
 
-    float getBpm() const override {
-        return m_fResultBpm;
+    mixxx::Bpm getBpm() const override {
+        return m_resultBpm;
     }
 
   private:
     std::unique_ptr<soundtouch::BPMDetect> m_pSoundTouch;
+    /// mono, i.e. 1 sample per frame
     SampleBuffer m_downmixBuffer;
-    float m_fResultBpm;
+    mixxx::Bpm m_resultBpm;
 };
 
 } // namespace mixxx

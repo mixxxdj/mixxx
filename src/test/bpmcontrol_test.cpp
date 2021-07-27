@@ -33,11 +33,12 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
             mixxx::audio::Bitrate(),
             mixxx::Duration::fromSeconds(180));
 
-    const double bpm = 60.0;
+    const auto bpm = mixxx::Bpm(60.0);
     const int kFrameSize = 2;
-    const double expectedBeatLength = (60.0 * sampleRate / bpm) * kFrameSize;
+    const double expectedBeatLength = (60.0 * sampleRate / bpm.value()) * kFrameSize;
 
-    const mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack->getSampleRate(), bpm, 0);
+    const mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(
+            pTrack->getSampleRate(), bpm, mixxx::audio::kStartFramePos);
 
     // On a beat.
     double prevBeat, nextBeat, beatLength, beatPercentage;

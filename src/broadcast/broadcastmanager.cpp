@@ -92,8 +92,7 @@ void BroadcastManager::slotControlEnabled(double v) {
         // Wrap around manually .
         // Wrapping around in WPushbutton does not work
         // since the status button has 4 states, but this CO is bool
-        m_pBroadcastEnabled->set(0.0);
-        emit broadcastEnabled(false);
+        v = 0.0;
     }
 
     if (v > 0.0) {
@@ -116,6 +115,7 @@ void BroadcastManager::slotControlEnabled(double v) {
 
         slotProfilesChanged();
     } else {
+        m_pBroadcastEnabled->set(false);
         m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
         QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
         for(BroadcastProfilePtr profile : profiles) {

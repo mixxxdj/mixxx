@@ -13,7 +13,7 @@ class ControlObject;
 class ControlProxy;
 class ControlPushButton;
 
-/// SyncControl is the Master Sync object for playback decks.
+/// SyncControl is the Sync Lock object for playback decks.
 class SyncControl : public EngineControl, public Syncable {
     Q_OBJECT
   public:
@@ -30,7 +30,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     SyncMode getSyncMode() const override;
     void setSyncMode(SyncMode mode) override;
-    void notifyOnlyPlayingSyncable() override;
+    void notifyUniquePlaying() override;
     void requestSync() override;
     bool isPlaying() const override;
     bool isAudible() const override;
@@ -47,17 +47,17 @@ class SyncControl : public EngineControl, public Syncable {
 
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
-    void setMasterBeatDistance(double beatDistance) override;
-
+    void updateLeaderBeatDistance(double beatDistance) override;
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.
-    void setMasterBpm(double bpm) override;
-    void setMasterParams(double beatDistance, double baseBpm, double bpm) override;
+    void updateLeaderBpm(double bpm) override;
+    void notifyLeaderParamSource() override;
+    void reinitLeaderParams(double beatDistance, double baseBpm, double bpm) override;
 
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
     // occur.
-    void setInstantaneousBpm(double bpm) override;
+    void updateInstantaneousBpm(double bpm) override;
 
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
 
@@ -83,13 +83,13 @@ class SyncControl : public EngineControl, public Syncable {
     // Change request handlers for sync properties.
     void slotSyncModeChangeRequest(double state);
     void slotSyncEnabledChangeRequest(double enabled);
-    void slotSyncMasterEnabledChangeRequest(double state);
+    void slotSyncLeaderEnabledChangeRequest(double state);
 
   private:
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     // Sometimes it's best to match bpms based on half or double the target
     // bpm.  e.g. 70 matches better with 140/2.  This function returns the
-    // best factor for multiplying the master bpm to get a bpm this syncable
+    // best factor for multiplying the leader bpm to get a bpm this syncable
     // should match against.
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
     double fileBpm() const;
@@ -97,7 +97,7 @@ class SyncControl : public EngineControl, public Syncable {
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
     // EngineSync can ask us what our EngineChannel is. EngineMaster in turn
-    // asks EngineSync what EngineChannel is the "master" channel.
+    // asks EngineSync what EngineChannel is the "leader" channel.
     EngineChannel* m_pChannel;
     SyncableListener* m_pEngineSync;
     BpmControl* m_pBpmControl;
@@ -105,11 +105,12 @@ class SyncControl : public EngineControl, public Syncable {
     bool m_bOldScratching;
 
     // When syncing, sometimes it's better to match half or double the
-    // master bpm.
+    // leader bpm.
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
-    // The amount we should multiply the master BPM to find a good sync match.
+    FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
+    // The amount we should multiply the leader BPM by to find a good sync match.
     // Sometimes this is 2 or 0.5.
-    double m_masterBpmAdjustFactor;
+    double m_leaderBpmAdjustFactor;
     // It is handy to store the raw reported target beat distance in case the
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
@@ -117,7 +118,7 @@ class SyncControl : public EngineControl, public Syncable {
     QAtomicInt m_audible;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
-    QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
+    QScopedPointer<ControlPushButton> m_pSyncLeaderEnabled;
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
     QScopedPointer<ControlObject> m_pBeatDistance;
 

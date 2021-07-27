@@ -2,7 +2,7 @@
 
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
-#include "mixxx.h"
+#include "mixxxmainwindow.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
 #include "util/db/dbconnectionpooled.h"
@@ -11,13 +11,11 @@
 
 DlgPrefWaveform::DlgPrefWaveform(
         QWidget* pParent,
-        MixxxMainWindow* pMixxx,
         UserSettingsPointer pConfig,
         std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
-          m_pMixxx(pMixxx) {
+          m_pLibrary(pLibrary) {
     setupUi(this);
 
     // Waveform overview init
@@ -27,11 +25,15 @@ DlgPrefWaveform::DlgPrefWaveform(
 
     // Populate waveform options.
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    // We assume that the original type list order remains constant.
+    // We will use the type index later on to set waveform types and to
+    // update the combobox.
     QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
     for (int i = 0; i < handles.size(); ++i) {
-        waveformTypeComboBox->addItem(handles[i].getDisplayName(),
-                                      handles[i].getType());
+        waveformTypeComboBox->addItem(handles[i].getDisplayName(), i);
     }
+    // Sort the combobox items alphabetically
+    waveformTypeComboBox->model()->sort(0);
 
     // Populate zoom options.
     for (int i = static_cast<int>(WaveformWidgetRenderer::s_waveformMinZoom);
@@ -144,8 +146,8 @@ void DlgPrefWaveform::slotUpdate() {
         openGlStatusIcon->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
     }
 
-    WaveformWidgetType::Type currentType = factory->getType();
-    int currentIndex = waveformTypeComboBox->findData(currentType);
+    // The combobox holds a list of [handle name, handle index]
+    int currentIndex = waveformTypeComboBox->findData(factory->getHandleIndex());
     if (currentIndex != -1 && waveformTypeComboBox->currentIndex() != currentIndex) {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
@@ -194,10 +196,10 @@ void DlgPrefWaveform::slotApply() {
 void DlgPrefWaveform::slotResetToDefaults() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
-    // Get the default we ought to use based on whether the user has OpenGL or
-    // not.
-    WaveformWidgetType::Type defaultType = factory->autoChooseWidgetType();
-    int defaultIndex = waveformTypeComboBox->findData(defaultType);
+    // Get the default we ought to use based on whether the user has OpenGL or not.
+    // Select the combobox index that holds the default handle's index in data column.
+    int defaultIndex = waveformTypeComboBox->findData(
+            factory->findHandleIndexFromType(factory->autoChooseWidgetType()));
     if (defaultIndex != -1 && waveformTypeComboBox->currentIndex() != defaultIndex) {
         waveformTypeComboBox->setCurrentIndex(defaultIndex);
     }
@@ -247,12 +249,13 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     if (index < 0) {
         return;
     }
-    WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index);
+    int handleIndex = waveformTypeComboBox->itemData(index).toInt();
+    WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(handleIndex);
 }
 
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
     m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
-    m_pMixxx->rebootMixxxView();
+    emit reloadUserInterface();
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {

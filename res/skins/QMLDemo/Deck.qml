@@ -11,11 +11,39 @@ Item {
 
     property string group // required
     property bool minimized: false
+    property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
+
+    Drag.active: dragArea.drag.active
+    Drag.dragType: Drag.Automatic
+    Drag.supportedActions: Qt.CopyAction
+    Drag.mimeData: {
+        let data = {
+            "mixxx/player": group
+        };
+        const trackLocationUrl = deckPlayer.trackLocationUrl;
+        if (trackLocationUrl)
+            data["text/uri-list"] = trackLocationUrl;
+
+        return data;
+    }
+
+    MouseArea {
+        id: dragArea
+
+        anchors.fill: root
+        drag.target: root
+    }
+
+    Skin.SectionBackground {
+        anchors.fill: parent
+    }
 
     Skin.DeckInfoBar {
         id: infoBar
 
         anchors.leftMargin: 5
+        anchors.topMargin: 5
+        anchors.rightMargin: 5
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -27,6 +55,7 @@ Item {
 
         visible: !root.minimized
         anchors.topMargin: 5
+        anchors.rightMargin: 5
         anchors.bottomMargin: 5
         anchors.top: infoBar.bottom
         anchors.right: parent.right
@@ -36,7 +65,7 @@ Item {
         key: "rate"
         barStart: 0.5
         barColor: Theme.bpmSliderBarColor
-        bg: "images/slider_bpm.svg"
+        bg: Theme.imgBpmSliderBackground
 
         FadeBehavior on visible {
             fadeTarget: rateSlider
@@ -97,15 +126,9 @@ Item {
                 key: "group_" + root.group + "_enable"
                 activeColor: Theme.deckActiveColor
 
-                foreground: Text {
+                foreground: Skin.EmbeddedText {
                     anchors.centerIn: parent
                     text: "FX 1"
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    font.family: Theme.fontFamily
-                    font.bold: true
-                    font.pixelSize: Theme.textFontPixelSize
-                    color: infoBar.textColor
                 }
 
             }
@@ -130,15 +153,9 @@ Item {
                 key: "group_" + root.group + "_enable"
                 activeColor: Theme.deckActiveColor
 
-                foreground: Text {
+                foreground: Skin.EmbeddedText {
                     anchors.centerIn: parent
                     text: "FX 2"
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    font.family: Theme.fontFamily
-                    font.bold: true
-                    font.pixelSize: Theme.textFontPixelSize
-                    color: infoBar.textColor
                 }
 
             }
@@ -154,18 +171,13 @@ Item {
                 color: infoBar.lineColor
             }
 
-            Text {
+            Skin.EmbeddedText {
                 id: waveformBarPosition
 
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 anchors.left: waveformBarHSeparator2.right
                 anchors.leftMargin: 5
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignLeft
-                font.family: Theme.fontFamily
-                font.pixelSize: Theme.textFontPixelSize
-                color: infoBar.textColor
                 text: {
                     const positionSeconds = samplesControl.value / 2 / sampleRateControl.value * playPositionControl.value;
                     if (isNaN(positionSeconds))
@@ -297,6 +309,8 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.leftMargin: 5
+        anchors.rightMargin: 5
+        anchors.bottomMargin: 5
         height: 56
         visible: !root.minimized
 
@@ -351,22 +365,23 @@ Item {
 
         }
 
-        Skin.ControlButton {
+        Skin.SyncButton {
             id: syncButton
 
             anchors.right: parent.right
             anchors.top: parent.top
-            text: "Sync"
             group: root.group
-            key: "sync_enabled"
-            toggleable: true
-            activeColor: Theme.deckActiveColor
         }
 
         FadeBehavior on visible {
             fadeTarget: buttonBar
         }
 
+    }
+
+    Mixxx.PlayerDropArea {
+        anchors.fill: parent
+        group: root.group
     }
 
 }

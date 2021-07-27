@@ -241,8 +241,8 @@ TEST_F(EngineBufferE2ETest, ScratchTest) {
     // to the other.
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1.1);
-    m_pChannel1->getEngineBuffer()->queueNewPlaypos(450,
-                                                    EngineBuffer::SEEK_EXACT);
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos(225), EngineBuffer::SEEK_EXACT);
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.1);
     ProcessBuffer();
@@ -354,8 +354,8 @@ TEST_F(EngineBufferE2ETest, SeekTest) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
-    m_pChannel1->getEngineBuffer()->queueNewPlaypos(1000,
-                                                    EngineBuffer::SEEK_EXACT);
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos(500), EngineBuffer::SEEK_EXACT);
     ProcessBuffer();
     assertBufferMatchesReference(m_pEngineMaster->masterBuffer(),
                                  kProcessBufferSize, "SeekTest");
@@ -406,7 +406,7 @@ TEST_F(EngineBufferE2ETest, CueGotoAndPlayTest) {
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "cue_point"), 0.0);
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
-            1000, EngineBuffer::SEEK_EXACT);
+            mixxx::audio::FramePos(500), EngineBuffer::SEEK_EXACT);
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandplay"), 1.0);
     ProcessBuffer();
@@ -430,7 +430,7 @@ TEST_F(EngineBufferE2ETest, CueGotoAndPlayDenon) {
     // enable Denon mode Bug #1504934
     ControlObject::set(ConfigKey(m_sGroup1, "cue_mode"), 2.0); // CUE_MODE_DENON
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
-            1000, EngineBuffer::SEEK_EXACT);
+            mixxx::audio::FramePos(500), EngineBuffer::SEEK_EXACT);
     ProcessBuffer();
     double cueBefore = ControlObject::get(ConfigKey(m_sGroup1, "cue_point"));
     ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandplay"), 1.0);

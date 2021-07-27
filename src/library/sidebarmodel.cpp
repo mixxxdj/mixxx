@@ -18,6 +18,13 @@ namespace {
 // been chosen as a compromise between usability and responsiveness.
 const int kPressedUntilClickedTimeoutMillis = 300;
 
+const QHash<int, QByteArray> kRoleNames = {
+        // Only roles that are useful in QML are added here.
+        {Qt::DisplayRole, "display"},
+        {Qt::ToolTipRole, "tooltip"},
+        {SidebarModel::IconNameRole, "iconName"},
+};
+
 } // anonymous namespace
 
 SidebarModel::SidebarModel(
@@ -47,7 +54,7 @@ void SidebarModel::addLibraryFeature(LibraryFeature* pFeature) {
             this,
             &SidebarModel::slotFeatureSelect);
 
-    QAbstractItemModel* model = pFeature->getChildModel();
+    QAbstractItemModel* model = pFeature->sidebarModel();
 
     connect(model,
             &QAbstractItemModel::modelAboutToBeReset,
@@ -110,7 +117,7 @@ QModelIndex SidebarModel::index(int row, int column,
          * we return its associated childmodel
          */
         if (parent.internalPointer() == this) {
-            const QAbstractItemModel* childModel = m_sFeatures[parent.row()]->getChildModel();
+            const QAbstractItemModel* childModel = m_sFeatures[parent.row()]->sidebarModel();
             QModelIndex childIndex = childModel->index(row, column);
             TreeItem* pTreeItem = static_cast<TreeItem*>(childIndex.internalPointer());
             if (pTreeItem && childIndex.isValid()) {
@@ -181,7 +188,7 @@ int SidebarModel::rowCount(const QModelIndex& parent) const {
     //qDebug() << "SidebarModel::rowCount parent=" << parent.getData();
     if (parent.isValid()) {
         if (parent.internalPointer() == this) {
-            return m_sFeatures[parent.row()]->getChildModel()->rowCount();
+            return m_sFeatures[parent.row()]->sidebarModel()->rowCount();
         } else {
             // We support tree models deeper than 1 level
             TreeItem* pTreeItem = static_cast<TreeItem*>(parent.internalPointer());
@@ -209,7 +216,7 @@ bool SidebarModel::hasChildren(const QModelIndex& parent) const {
             TreeItem* pTreeItem = static_cast<TreeItem*>(parent.internalPointer());
             if (pTreeItem) {
                 LibraryFeature* pFeature = pTreeItem->feature();
-                return pFeature->getChildModel()->hasChildren(parent);
+                return pFeature->sidebarModel()->hasChildren(parent);
             }
         }
     }
@@ -226,40 +233,52 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
 
     if (index.internalPointer() == this) {
         //If it points to SidebarModel
-        if (role == Qt::DisplayRole) {
+        switch (role) {
+        case Qt::DisplayRole:
             return m_sFeatures[index.row()]->title();
-        } else if (role == Qt::DecorationRole) {
-            return m_sFeatures[index.row()]->getIcon();
+        case Qt::DecorationRole:
+            return m_sFeatures[index.row()]->icon();
+        case SidebarModel::IconNameRole:
+            return m_sFeatures[index.row()]->iconName();
+        default:
+            return QVariant();
         }
-    }
-
-    if (index.internalPointer() != this) {
+    } else {
         // If it points to a TreeItem
         TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-        if (pTreeItem) {
-            if (role == Qt::DisplayRole) {
+        if (!pTreeItem) {
+            return QVariant();
+        }
+
+        switch (role) {
+        case Qt::DisplayRole:
+            return pTreeItem->getLabel();
+        case Qt::ToolTipRole: {
+            // If it's the "Quick Links" node, display it's name
+            if (pTreeItem->getData().toString() == QUICK_LINK_NODE) {
                 return pTreeItem->getLabel();
-            } else if (role == Qt::ToolTipRole) {
-                // If it's the "Quick Links" node, display it's name
-                if (pTreeItem->getData().toString() == QUICK_LINK_NODE) {
-                    return pTreeItem->getLabel();
-                } else {
-                    return pTreeItem->getData();
-                }
-            } else if (role == TreeItemModel::kDataRole) {
-                // We use Qt::UserRole to ask for the datapath.
-                return pTreeItem->getData();
-            } else if (role == Qt::FontRole) {
-                QFont font;
-                font.setBold(pTreeItem->isBold());
-                return font;
-            } else if (role == Qt::DecorationRole) {
-                return pTreeItem->getIcon();
             }
+            return pTreeItem->getData();
+        }
+        case Qt::FontRole: {
+            QFont font;
+            font.setBold(pTreeItem->isBold());
+            return font;
+        }
+        case Qt::DecorationRole:
+            return pTreeItem->getIcon();
+        case SidebarModel::DataRole:
+            return pTreeItem->getData();
+        case SidebarModel::IconNameRole:
+            // TODO: Add support for icon names in tree items
+        default:
+            return QVariant();
         }
     }
+}
 
-    return QVariant();
+QHash<int, QByteArray> SidebarModel::roleNames() const {
+    return kRoleNames;
 }
 
 void SidebarModel::startPressedUntilClickedTimer(const QModelIndex& pressedIndex) {
@@ -409,7 +428,7 @@ QModelIndex SidebarModel::translateIndex(
         //Comment from Tobias Rafreider --> Dead Code????
 
         for (int i = 0; i < m_sFeatures.size(); ++i) {
-            if (m_sFeatures[i]->getChildModel() == pModel) {
+            if (m_sFeatures[i]->sidebarModel() == pModel) {
                 translatedIndex = createIndex(i, 0, this);
             }
         }

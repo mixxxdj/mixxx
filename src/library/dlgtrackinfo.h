@@ -9,7 +9,7 @@
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/track_decl.h"
-#include "track/trackid.h"
+#include "track/trackrecord.h"
 #include "util/parented_ptr.h"
 #include "util/tapfilter.h"
 
@@ -28,7 +28,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     // TODO: Remove dependency on TrackModel
     explicit DlgTrackInfo(
             const TrackModel* trackModel = nullptr);
-    ~DlgTrackInfo() override;
+    ~DlgTrackInfo() override = default;
 
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
@@ -83,27 +83,39 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void loadNextTrack();
     void loadPrevTrack();
     void loadTrackInternal(const TrackPointer& pTrack);
-    void populateFields(const Track& track);
     void reloadTrackBeats(const Track& track);
     void saveTrack();
-    void unloadTrack(bool save);
     void clear();
     void init();
 
+    mixxx::UpdateResult updateKeyText();
+    void displayKeyText();
+
+    void updateFromTrack(const Track& track);
+
+    void replaceTrackRecord(
+            mixxx::TrackRecord trackRecord,
+            const QString& trackLocation);
+    void resetTrackRecord() {
+        replaceTrackRecord(
+                mixxx::TrackRecord(),
+                QString());
+    }
+
+    void updateTrackMetadataFields();
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
 
     QModelIndex m_currentTrackIndex;
 
+    mixxx::TrackRecord m_trackRecord;
+
     mixxx::BeatsPointer m_pBeatsClone;
-    Keys m_keysClone;
     bool m_trackHasBeatMap;
 
     TapFilter m_tapFilter;
-    double m_dLastTapedBpm;
-
-    CoverInfo m_loadedCoverInfo;
+    mixxx::Bpm m_lastTapedBpm;
 
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
     parented_ptr<WStarRating> m_pWStarRating;

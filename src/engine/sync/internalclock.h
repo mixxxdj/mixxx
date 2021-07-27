@@ -13,11 +13,11 @@ class ControlPushButton;
 class EngineSync;
 class EngineChannel;
 
-/// Internal Clock is a Master Sync object that provides a source of constant
+/// Internal Clock is a Sync Lock object that provides a source of constant
 /// tempo when needed.  The EngineSync will decide when to make the Internal
-/// Clock master.  The Internal Clock should not be given any new sources of
+/// Clock leader.  The Internal Clock should not be given any new sources of
 /// bpm clock.  If someone wants to write a Midi Clock source, it should be
-/// a separate Syncable object that can become master.
+/// a separate Syncable object that can become ledaer.
 class InternalClock : public QObject, public Clock, public Syncable {
     Q_OBJECT
   public:
@@ -32,7 +32,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
     }
 
     void setSyncMode(SyncMode mode) override;
-    void notifyOnlyPlayingSyncable() override;
+    void notifyUniquePlaying() override;
     void requestSync() override;
     SyncMode getSyncMode() const override {
         return m_mode;
@@ -48,21 +48,22 @@ class InternalClock : public QObject, public Clock, public Syncable {
     }
 
     double getBeatDistance() const override;
-    void setMasterBeatDistance(double beatDistance) override;
+    void updateLeaderBeatDistance(double beatDistance) override;
 
     double getBaseBpm() const override;
-    void setMasterBpm(double bpm) override;
+    void updateLeaderBpm(double bpm) override;
+    void notifyLeaderParamSource() override;
     double getBpm() const override;
-    void setInstantaneousBpm(double bpm) override;
-    void setMasterParams(double beatDistance, double baseBpm, double bpm) override;
+    void updateInstantaneousBpm(double bpm) override;
+    void reinitLeaderParams(double beatDistance, double baseBpm, double bpm) override;
 
     void onCallbackStart(int sampleRate, int bufferSize);
     void onCallbackEnd(int sampleRate, int bufferSize);
 
   private slots:
-    void slotBaseBpmChanged(double baseBpm);
+    void slotBpmChanged(double bpm);
     void slotBeatDistanceChanged(double beatDistance);
-    void slotSyncMasterEnabledChangeRequest(double state);
+    void slotSyncLeaderEnabledChangeRequest(double state);
 
   private:
     void updateBeatLength(int sampleRate, double bpm);
@@ -71,7 +72,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
     SyncableListener* m_pEngineSync;
     QScopedPointer<ControlLinPotmeter> m_pClockBpm;
     QScopedPointer<ControlObject> m_pClockBeatDistance;
-    QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
+    QScopedPointer<ControlPushButton> m_pSyncLeaderEnabled;
     SyncMode m_mode;
 
     int m_iOldSampleRate;

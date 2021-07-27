@@ -478,8 +478,8 @@
                 var loopSize = engine.getValue(group, "beatloop_size");
                 var beatjumpSize = engine.getValue(group, "beatjump_size");
                 engine.setValue(group, "beatjump_size", loopSize);
-                script.triggerControl(group, "beatloop_activate");
                 script.triggerControl(group, "beatjump_backward");
+                script.triggerControl(group, "beatloop_activate");
                 engine.setValue(group, "beatjump_size", beatjumpSize);
             } else {
                 script.triggerControl(group, "reloop_toggle");

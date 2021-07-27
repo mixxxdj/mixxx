@@ -221,9 +221,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     }
 
   private slots:
-    void slotTrackLoaded(
+    void slotTrackChanged(
             const QString& group,
-            TrackPointer pTrack);
+            TrackPointer pNewTrack,
+            TrackPointer pOldTrack);
 
     void slotRefreshCoverRows(
             const QList<int>& rows);

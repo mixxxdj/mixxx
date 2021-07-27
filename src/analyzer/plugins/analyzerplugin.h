@@ -2,7 +2,9 @@
 
 #include <QString>
 
+#include "audio/frame.h"
 #include "track/beats.h"
+#include "track/bpm.h"
 #include "track/keys.h"
 #include "util/types.h"
 
@@ -58,7 +60,7 @@ class AnalyzerPlugin {
     }
     virtual AnalyzerPluginInfo info() const = 0;
 
-    virtual bool initialize(int samplerate) = 0;
+    virtual bool initialize(mixxx::audio::SampleRate sampleRate) = 0;
     virtual bool processSamples(const CSAMPLE* pIn, const int iLen) = 0;
     virtual bool finalize() = 0;
 };
@@ -68,11 +70,11 @@ class AnalyzerBeatsPlugin : public AnalyzerPlugin {
     ~AnalyzerBeatsPlugin() override = default;
 
     virtual bool supportsBeatTracking() const = 0;
-    virtual float getBpm() const {
-        return 0.0f;
+    virtual mixxx::Bpm getBpm() const {
+        return {};
     }
-    virtual QVector<double> getBeats() const {
-        return QVector<double>();
+    virtual QVector<mixxx::audio::FramePos> getBeats() const {
+        return {};
     }
 };
 

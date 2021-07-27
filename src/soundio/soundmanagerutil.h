@@ -1,12 +1,13 @@
 #pragma once
 
-#include <QString>
-#include <QMutex>
 #include <QDomElement>
 #include <QList>
+#include <QMutex>
+#include <QString>
+#include <QtDebug>
 
-#include "util/types.h"
 #include "util/fifo.h"
+#include "util/types.h"
 
 /// Describes a group of channels, typically a pair for stereo sound in Mixxx.
 class ChannelGroup {

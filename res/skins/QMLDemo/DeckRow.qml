@@ -22,7 +22,7 @@ Item {
 
             PropertyChanges {
                 target: root
-                implicitHeight: 56
+                implicitHeight: 66
             }
 
             AnchorChanges {
@@ -75,7 +75,6 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        anchors.rightMargin: 5
         group: root.leftDeckGroup
     }
 
@@ -100,7 +99,6 @@ Item {
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.leftMargin: 5
         group: root.rightDeckGroup
     }
 
