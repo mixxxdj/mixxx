@@ -195,9 +195,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 
     m_pUpdateReplayGainFromPregain = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "update_replaygain_from_pregain"));
-    connect(m_pUpdateReplayGainFromPregain.get(),
-            &ControlObject::valueChanged,
-            this,
+    m_pUpdateReplayGainFromPregain->connectValueChangeRequest(this,
             &BaseTrackPlayerImpl::slotUpdateReplayGainFromPregain);
 }
 
