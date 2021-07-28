@@ -89,7 +89,7 @@ BeatsPointer BeatGrid::makeBeatGrid(
     grid.mutable_first_beat()->set_frame_position(
             static_cast<google::protobuf::int32>(firstBeatPosition.value()));
     // Calculate beat length as sample offsets
-    const audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm.value();
+    const audio::FrameDiff_t beatLengthFrames = bpm.beatLength().toFrames(sampleRate);
 
     return BeatsPointer(new BeatGrid(sampleRate, subVersion, grid, beatLengthFrames));
 }
@@ -330,7 +330,7 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
     grid.mutable_bpm()->set_bpm(bpm.value());
-    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());
+    const mixxx::audio::FrameDiff_t beatLengthFrames = bpm.beatLength().toFrames(m_sampleRate);
     return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
 }
 
@@ -340,7 +340,7 @@ BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
     }
     mixxx::track::io::BeatGrid grid = m_grid;
     grid.mutable_bpm()->set_bpm(bpm.value());
-    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());
+    const mixxx::audio::FrameDiff_t beatLengthFrames = bpm.beatLength().toFrames(m_sampleRate);
     return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
 }
 
