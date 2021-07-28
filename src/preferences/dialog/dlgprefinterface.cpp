@@ -173,10 +173,7 @@ DlgPrefInterface::DlgPrefInterface(
 
     // Start in fullscreen mode
     checkBoxStartFullScreen->setChecked(
-            m_pConfig
-                    ->getValueString(
-                            ConfigKey(kConfigGroup, kStartInFullscreenKey))
-                    .toInt() == 1);
+            m_pConfig->getValue(ConfigKey(kConfigGroup, kStartInFullscreenKey), 0) == 1);
 
     // Screensaver mode
     comboBoxScreensaver->clear();
@@ -232,7 +229,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
         m_colorScheme = QString();
     } else {
         ComboBoxSchemeconf->setEnabled(true);
-        QString configScheme = m_pConfig->getValueString(ConfigKey(kConfigGroup, kSchemeKey));
+        QString configScheme = m_pConfig->getValue(ConfigKey(kConfigGroup, kSchemeKey));
         bool foundConfigScheme = false;
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
@@ -255,7 +252,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
 
 void DlgPrefInterface::slotUpdate() {
     const QString skinNameOnUpdate =
-            m_pConfig->getValueString(ConfigKey(kConfigGroup, kResizableSkinKey));
+            m_pConfig->getValue(ConfigKey(kConfigGroup, kResizableSkinKey));
     const SkinPointer pSkinOnUpdate = m_skins[skinNameOnUpdate];
     if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
         m_skinNameOnUpdate = pSkinOnUpdate->name();
@@ -266,14 +263,14 @@ void DlgPrefInterface::slotUpdate() {
     slotUpdateSchemes();
     m_bRebootMixxxView = false;
 
-    m_localeOnUpdate = m_pConfig->getValueString(ConfigKey(kConfigGroup, kLocaleKey));
+    m_localeOnUpdate = m_pConfig->getValue(ConfigKey(kConfigGroup, kLocaleKey));
     ComboBoxLocale->setCurrentIndex(ComboBoxLocale->findData(m_localeOnUpdate));
 
     // The spinbox shows a percentage but Mixxx stores a multiplication factor
     // with 1.00 as no scaling, so multiply the stored value by 100.
-    spinBoxScaleFactor->setValue(m_pConfig->getValue(
-                                         ConfigKey(kConfigGroup, kScaleFactorKey), m_dScaleFactor) *
-            100);
+    double configScaleFactor = m_pConfig->getValue(
+            ConfigKey(kConfigGroup, kScaleFactorKey), m_dScaleFactor);
+    spinBoxScaleFactor->setValue(configScaleFactor * 100);
     spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
