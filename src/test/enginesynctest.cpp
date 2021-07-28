@@ -1225,7 +1225,7 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
                     ConfigKey(m_sInternalClockGroup, "sync_leader")));
     EXPECT_DOUBLE_EQ(
             100.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
-    EXPECT_EQ(NULL, m_pEngineSync->getLeaderChannel());
+    EXPECT_EQ(nullptr, m_pEngineSync->getLeaderChannel());
     EXPECT_EQ(NULL, m_pEngineSync->getLeaderSyncable());
     EXPECT_EQ(static_cast<double>(SyncMode::None),
             ControlObject::get(ConfigKey(m_sGroup1, "sync_mode")));
@@ -1251,7 +1251,7 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
                     ConfigKey(m_sInternalClockGroup, "sync_leader")));
     EXPECT_DOUBLE_EQ(
             100.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
-    EXPECT_EQ(NULL, m_pEngineSync->getLeaderChannel());
+    EXPECT_EQ(nullptr, m_pEngineSync->getLeaderChannel());
     EXPECT_EQ(NULL, m_pEngineSync->getLeaderSyncable());
     EXPECT_EQ(static_cast<double>(SyncMode::None),
             ControlObject::get(ConfigKey(m_sGroup2, "sync_mode")));
