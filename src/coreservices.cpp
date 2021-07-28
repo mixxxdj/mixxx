@@ -7,6 +7,7 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
@@ -107,6 +108,8 @@ CoreServices::CoreServices(const CmdlineArgs& args)
           m_cmdlineArgs(args) {
 }
 
+CoreServices::~CoreServices() = default;
+
 void CoreServices::initializeSettings() {
 #ifdef __APPLE__
     // TODO: At this point it is too late to provide the same settings path to all components
@@ -184,6 +187,8 @@ void CoreServices::initialize(QApplication* pApp) {
     if (!initializeDatabase()) {
         exit(-1);
     }
+
+    m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>(this);
 
     auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
 
@@ -544,6 +549,8 @@ void CoreServices::shutdown() {
     m_pSettingsManager->save();
 
     m_pTouchShift.reset();
+
+    m_pControlIndicatorTimer.reset();
 
     // Check for leaked ControlObjects and give warnings.
     {

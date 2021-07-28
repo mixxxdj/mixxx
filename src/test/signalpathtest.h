@@ -6,6 +6,7 @@
 #include <QTest>
 #include <QtDebug>
 
+#include "control/controlindicatortimer.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/bufferscalers/enginebufferscale.h"
@@ -27,7 +28,6 @@
 #include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
-#include "waveform/guitick.h"
 
 using ::testing::Return;
 using ::testing::_;
@@ -59,7 +59,7 @@ class TestEngineMaster : public EngineMaster {
 class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     BaseSignalPathTest() {
-        m_pGuiTick = std::make_unique<GuiTick>();
+        m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
@@ -225,7 +225,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
-    std::unique_ptr<GuiTick> m_pGuiTick;
+    std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
