@@ -89,7 +89,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     // Provide access to the sync lock so enginebuffers can know what their rate controller is.
     EngineSync* getEngineSync() const{
-        return m_pMasterSync;
+        return m_pEngineSync;
     }
 
     // These are really only exposed for tests to use.
@@ -295,7 +295,7 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE* m_pSidechainMix;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
-    EngineSync* m_pMasterSync;
+    EngineSync* m_pEngineSync;
 
     ControlObject* m_pMasterGain;
     ControlObject* m_pBoothGain;

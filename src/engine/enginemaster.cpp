@@ -78,7 +78,7 @@ EngineMaster::EngineMaster(
     m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"), 0.0, 1.0);
 
     // Master sync controller
-    m_pMasterSync = new EngineSync(pConfig);
+    m_pEngineSync = new EngineSync(pConfig);
 
     // The last-used bpm value is saved in the destructor of EngineSync.
     double default_bpm = pConfig->getValue(
@@ -217,7 +217,7 @@ EngineMaster::~EngineMaster() {
     delete m_pXFaderCurve;
     delete m_pXFaderMode;
 
-    delete m_pMasterSync;
+    delete m_pEngineSync;
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
     delete m_pMasterAudioBufferSize;
@@ -271,7 +271,7 @@ const CSAMPLE* EngineMaster::getSidechainBuffer() const {
 
 void EngineMaster::processChannels(int iBufferSize) {
     // Update internal sync lock rate.
-    m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
+    m_pEngineSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
 
     m_activeBusChannels[EngineChannel::LEFT].clear();
     m_activeBusChannels[EngineChannel::CENTER].clear();
@@ -281,7 +281,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     m_activeChannels.clear();
 
     //ScopedTimer timer("EngineMaster::processChannels");
-    EngineChannel* pMasterChannel = m_pMasterSync->getLeaderChannel();
+    EngineChannel* pLeaderChannel = m_pEngineSync->getLeaderChannel();
     // Reserve the first place for the master channel which
     // should be processed first
     m_activeChannels.append(NULL);
@@ -343,7 +343,7 @@ void EngineMaster::processChannels(int iBufferSize) {
         }
 
         // If necessary, add the channel to the list of buffers to process.
-        if (pChannel == pMasterChannel) {
+        if (pChannel == pLeaderChannel) {
             // If this is the sync master, it should be processed first.
             m_activeChannels.replace(0, pChannelInfo);
             activeChannelsStartIndex = 0;
@@ -372,7 +372,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     // Note, because we call this on the internal clock first,
     // it will have an up-to-date beatDistance, whereas the other
     // Syncables will not.
-    m_pMasterSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
+    m_pEngineSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
 
     // After all the engines have been processed, trigger post-processing
     // which ensures that all channels are updating certain values at the
