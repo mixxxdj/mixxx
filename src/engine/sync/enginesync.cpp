@@ -368,8 +368,8 @@ void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) 
     } else {
         Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
         if (pOnlyPlayer) {
-            // Even if we didn't change leader, if there is only one player (us), then we should
-            // update the beat distance.
+            // Even if we didn't change leader, if there is only one player, then we should
+            // reinit leader params.
             pOnlyPlayer->notifyUniquePlaying();
             reinitLeaderParams(pOnlyPlayer);
         }
