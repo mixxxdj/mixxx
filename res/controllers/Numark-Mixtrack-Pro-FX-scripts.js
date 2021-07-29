@@ -1,6 +1,6 @@
 // controls annotated with "powerWindow workaround" would normally use
-// powerWindow as type. There's a problem when pressing them and releasing
-// quickly makes them act like toggles, which is quite confusing.
+// powerWindow as type. There's a problem - when pressing them and releasing
+// them *quickly* makes them act like toggles, which is quite confusing.
 // the workaround fixes this issue.
 
 var MixtrackProFX = {};
@@ -178,17 +178,9 @@ MixtrackProFX.Deck = function(number) {
         inKey: "play_stutter"
     });
 
-    // powerWindow workaround
-    this.cueButton = new components.Button({
+    this.cueButton = new components.CueButton({
         midi: [0x90 + channel, 0x01],
-        off: 0x01,
-        outKey: "cue_indicator",
-        input: function(channel, control, value, status, group) {
-            if (value === 0x7F) {
-                value = 1;
-            }
-            engine.setValue(group, "cue_default", value);
-        }
+        off: 0x01
     });
 
     this.cueButtonShift = new components.Button({
