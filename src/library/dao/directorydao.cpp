@@ -78,40 +78,40 @@ int DirectoryDAO::removeDirectory(const QString& dir) const {
 }
 
 QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
-        const QString& oldFolder,
-        const QString& newFolder) const {
-    DEBUG_ASSERT(oldFolder == QDir(oldFolder).absolutePath());
-    DEBUG_ASSERT(newFolder == QDir(newFolder).absolutePath());
+        const QString& oldDirectory,
+        const QString& newDirectory) const {
+    DEBUG_ASSERT(oldDirectory == QDir(oldDirectory).absolutePath());
+    DEBUG_ASSERT(newDirectory == QDir(newDirectory).absolutePath());
     // TODO(rryan): This method could use error reporting. It can fail in
-    // mysterious ways for example if a track in the oldFolder also has a zombie
-    // track location in newFolder then the replace query will fail because the
+    // mysterious ways for example if a track in the oldDirectory also has a zombie
+    // track location in newDirectory then the replace query will fail because the
     // location column becomes non-unique.
     QSqlQuery query(m_database);
     query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR %
-            "=:newFolder WHERE " % DIRECTORYDAO_DIR % "=:oldFolder");
-    query.bindValue(":newFolder", newFolder);
-    query.bindValue(":oldFolder", oldFolder);
+            "=:newDirectory WHERE " % DIRECTORYDAO_DIR % "=:oldDirectory");
+    query.bindValue(":newDirectory", newDirectory);
+    query.bindValue(":oldDirectory", oldDirectory);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate directory"
-                                << oldFolder << "to" << newFolder;
+                                << oldDirectory << "to" << newDirectory;
         return {};
     }
 
     // Appending '/' is required to disambiguate files from parent
     // directories, e.g. "a/b.mp3" and "a/b/c.mp3" where "a/b" would
     // match both instead of only files in the parent directory "a/b/".
-    DEBUG_ASSERT(!oldFolder.endsWith('/'));
-    const QString oldFolderPrefix = oldFolder + '/';
-    const QString startsWithOldFolder = SqlLikeWildcardEscaper::apply(
-                                                oldFolderPrefix, kSqlLikeMatchAll) +
+    DEBUG_ASSERT(!oldDirectory.endsWith('/'));
+    const QString oldDirectoryPrefix = oldDirectory + '/';
+    const QString startsWithOldDirectory = SqlLikeWildcardEscaper::apply(
+                                                   oldDirectoryPrefix, kSqlLikeMatchAll) +
             kSqlLikeMatchAll;
 
     query.prepare(QStringLiteral(
             "SELECT library.id,track_locations.id,track_locations.location "
             "FROM library INNER JOIN track_locations ON "
             "track_locations.id=library.location WHERE "
-            "track_locations.location LIKE :startsWithOldFolder ESCAPE :escape"));
-    query.bindValue(":startsWithOldFolder", startsWithOldFolder);
+            "track_locations.location LIKE :startsWithOldDirectory ESCAPE :escape"));
+    query.bindValue(":startsWithOldDirectory", startsWithOldDirectory);
     query.bindValue(":escape", kSqlLikeMatchAll);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
@@ -122,13 +122,13 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
     QList<RelocatedTrack> relocatedTracks;
     while (query.next()) {
         const auto oldLocation = query.value(2).toString();
-        const int oldSuffixLen = oldLocation.size() - oldFolder.size();
-        QString newLocation = newFolder + oldLocation.right(oldSuffixLen);
+        const int oldSuffixLen = oldLocation.size() - oldDirectory.size();
+        QString newLocation = newDirectory + oldLocation.right(oldSuffixLen);
         // LIKE is case-insensitive! We cannot decide if the file system
         // at the old location was case-sensitive or case-insensitive
         // and must assume that the stored path is at least case-correct.
-        DEBUG_ASSERT(oldLocation.startsWith(oldFolderPrefix, Qt::CaseInsensitive));
-        if (!oldLocation.startsWith(oldFolderPrefix, Qt::CaseSensitive)) {
+        DEBUG_ASSERT(oldLocation.startsWith(oldDirectoryPrefix, Qt::CaseInsensitive));
+        if (!oldLocation.startsWith(oldDirectoryPrefix, Qt::CaseSensitive)) {
             qDebug() << "Skipping relocation of" << oldLocation
                      << "to" << newLocation;
             continue;

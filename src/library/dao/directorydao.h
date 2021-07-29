@@ -24,6 +24,6 @@ class DirectoryDAO : public DAO {
     int removeDirectory(const QString& dir) const;
 
     QList<RelocatedTrack> relocateDirectory(
-            const QString& oldFolder,
-            const QString& newFolder) const;
+            const QString& oldDirectory,
+            const QString& newDirectory) const;
 };
