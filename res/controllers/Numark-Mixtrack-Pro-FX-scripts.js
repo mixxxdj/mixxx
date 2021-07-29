@@ -11,6 +11,10 @@ var MixtrackProFX = {};
 // setting is stored per deck in pitchRange.currentRangeIdx
 MixtrackProFX.pitchRanges = [0.08, 0.16, 1];
 
+// whether the corresponding Mixxx option is enabled
+// (Settings -> Preferences -> Waveforms -> Synchronize zoom level across all waveforms)
+MixtrackProFX.waveformsSynced = true;
+
 // jogwheel
 MixtrackProFX.jogScratchSensitivity = 1024;
 MixtrackProFX.jogScratchAlpha = 1; // do NOT set to 2 or higher
@@ -653,12 +657,23 @@ MixtrackProFX.Browse = function() {
     });
 
     this.knobShift = new components.Encoder({
-        group: "[Channel1]", // if it's stupid and works, then it's not stupid
         input: function(channel, control, value) {
             if (value === 0x01) {
-                engine.setParameter(this.group, "waveform_zoom_down", 1);
+                engine.setParameter("[Channel1]", "waveform_zoom_down", 1);
+
+                // need to zoom both channels if waveform sync is disabled in Mixxx settings.
+                // and when it's enabled then no need to zoom 2nd channel, as it will cause
+                // the zoom to jump 2 levels at once
+                if (!MixtrackProFX.waveformsSynced) {
+                    engine.setParameter("[Channel2]", "waveform_zoom_down", 1);
+                }
             } else if (value === 0x7F) {
-                engine.setParameter(this.group, "waveform_zoom_up", 1);
+                engine.setParameter("[Channel1]", "waveform_zoom_up", 1);
+
+                // see above comment
+                if (!MixtrackProFX.waveformsSynced) {
+                    engine.setParameter("[Channel2]", "waveform_zoom_up", 1);
+                }
             }
         }
     });
