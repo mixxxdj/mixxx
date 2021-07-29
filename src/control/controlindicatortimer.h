@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 
 namespace mixxx {
 
@@ -27,6 +28,19 @@ class ControlIndicatorTimer : public QObject {
     QTimer m_timer;
     std::unique_ptr<ControlObject> m_pCOIndicator250millis;
     std::unique_ptr<ControlObject> m_pCOIndicator500millis;
+
+    /// TODO: Everything below this comment only added for compatiblity with the
+    /// legacy waveform vsync thread. It should be removed when the legacy skin
+    /// system is dropped.
+  public:
+    void setLegacyVsyncEnabled(bool enabled);
+
+  private slots:
+    void slotGuiTick50ms(double cpuTime);
+
+  private:
+    double m_nextSwitchTime;
+    std::unique_ptr<ControlProxy> m_pCPGuiTick50ms;
 };
 
 } // namespace mixxx

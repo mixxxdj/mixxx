@@ -188,7 +188,7 @@ void CoreServices::initialize(QApplication* pApp) {
         exit(-1);
     }
 
-    m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>(this);
+    m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(this);
 
     auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
 

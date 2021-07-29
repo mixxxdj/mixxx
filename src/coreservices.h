@@ -55,6 +55,10 @@ class CoreServices : public QObject {
         return m_pKbdConfig;
     }
 
+    std::shared_ptr<mixxx::ControlIndicatorTimer> getControlIndicatorTimer() const {
+        return m_pControlIndicatorTimer;
+    }
+
     std::shared_ptr<SoundManager> getSoundManager() const {
         return m_pSoundManager;
     }
@@ -119,7 +123,7 @@ class CoreServices : public QObject {
     bool initializeDatabase();
 
     std::shared_ptr<SettingsManager> m_pSettingsManager;
-    std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
+    std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     // owned by EffectsManager
     LV2Backend* m_pLV2Backend;
