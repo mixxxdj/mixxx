@@ -254,8 +254,6 @@ void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) 
         activateMaster(newMaster, false);
         setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(), newMaster->getBpm());
     }
-
-    pSyncable->requestSync();
 }
 
 void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
