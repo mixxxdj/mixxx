@@ -5,6 +5,7 @@
     <author>bad1dea5, h67ma, photoenix</author>
     <description>Mapping for the Numark Mixtrack Pro FX</description>
     <forums>https://mixxx.discourse.group/t/numark-mixtrack-pro-fx/19561</forums>
+    <manual>numark_mixtrack_pro_fx</manual>
   </info>
   <controller id="MixTrack">
     <scriptfiles>
