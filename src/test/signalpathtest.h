@@ -32,6 +32,20 @@
 using ::testing::Return;
 using ::testing::_;
 
+#define EXPECT_FRAMEPOS_EQ(pos1, pos2)                    \
+    EXPECT_EQ((pos1).isValid(), (pos2).isValid());        \
+    if ((pos1).isValid()) {                               \
+        EXPECT_DOUBLE_EQ((pos1).value(), (pos2).value()); \
+    }
+
+#define EXPECT_FRAMEPOS_EQ_CONTROL(position, control)                    \
+    {                                                                    \
+        const auto controlPos =                                          \
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid( \
+                        control->get());                                 \
+        EXPECT_FRAMEPOS_EQ(position, controlPos);                        \
+    }
+
 // Subclass of EngineMaster that provides access to the master buffer object
 // for comparison.
 class TestEngineMaster : public EngineMaster {
