@@ -600,11 +600,24 @@ DJ505.Deck = function(deckNumbers, offset) {
         midi: [0x90 + offset, 0x02],
         group: "[Channel" + deckNumbers + "]",
         outKey: "sync_mode",
-        flickerState: false,
-        output: function(value, _group, _control) {
-            if (value === 3) {
-                value = this.flickerState;
+        output: function(value, group, control) {
+            if (this.connections[1] !== undefined) {
+                this.connections[1].disconnect();
+                delete this.connections[1];
             }
+
+            // If the new sync_mode is "Explicit Leader", use the blinking
+            // indicator for the LED instead.
+            if (value === 3) {
+                if (this.connections[1] === undefined) {
+                    this.connections[1] = engine.makeConnection("[Master]", "indicator_500millis", this.setLed.bind(this));
+                }
+                return;
+            }
+
+            this.setLed(value, group, control);
+        },
+        setLed: function(value, _group, _control) {
             midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, this.on);
         },
         input: function(channel, control, value, _status, _group) {
@@ -643,20 +656,6 @@ DJ505.Deck = function(deckNumbers, offset) {
             this.onLongPress = function() {
                 script.toggleControl(this.group, "quantize");
             };
-        },
-        connect: function() {
-            components.Button.prototype.connect.call(this); // call parent connect
-            this.flickerTimer = engine.beginTimer(500, function() {
-                this.flickerState = !this.flickerState;
-                this.trigger();
-            }.bind(this));
-        },
-        disconnect: function() {
-            components.Button.prototype.disconnect.call(this); // call parent disconnect
-            if (this.flickerTimer) {
-                engine.stopTimer(this.flickerTimer);
-                this.flickerTimer = 0;
-            }
         },
     });
 
