@@ -40,10 +40,6 @@ class CoreServices : public QObject {
     CoreServices(const CmdlineArgs& args);
     ~CoreServices();
 
-    void initializeSettings();
-    // FIXME: should be private, but WMainMenuBar needs it initialized early
-    void initializeKeyboard();
-    void initializeScreensaverManager();
     void initialize(QApplication* pApp);
     void shutdown();
 
@@ -121,6 +117,8 @@ class CoreServices : public QObject {
 
   private:
     bool initializeDatabase();
+    void initializeKeyboard();
+    void initializeSettings();
 
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;

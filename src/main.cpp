@@ -23,8 +23,18 @@ constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
-    auto coreServices = std::make_shared<mixxx::CoreServices>(args);
-    MixxxMainWindow mainWindow(app, coreServices);
+    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args);
+
+    MixxxMainWindow mainWindow(app, pCoreServices);
+    app->installEventFilter(&mainWindow);
+
+    QObject::connect(pCoreServices.get(),
+            &mixxx::CoreServices::initializationProgressUpdate,
+            &mainWindow,
+            &MixxxMainWindow::initializationProgressUpdate);
+    pCoreServices->initialize(app);
+    mainWindow.initialize();
+
     // If startup produced a fatal error, then don't even start the
     // Qt event loop.
     if (ErrorDialogHandler::instance()->checkError()) {
