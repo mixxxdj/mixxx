@@ -2139,7 +2139,25 @@ if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
 
 endif()
 
-if(UNIX AND NOT APPLE)
+
+if(APPLE)
+  find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE ${COREFOUNDATION_LIBRARY})
+
+  # The iOS/OS X security framework is used to implement sandboxing.
+  find_library(SECURITY_LIBRARY Security REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE ${SECURITY_LIBRARY})
+
+  find_library(CORESERVICES_LIBRARY CoreServices REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE ${CORESERVICES_LIBRARY})
+
+  find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE ${FOUNDATION_LIBRARY})
+
+  # Used for battery measurements and controlling the screensaver on OS X and iOS.
+  find_library(IOKIT_LIBRARY IOKit REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE ${IOKIT_LIBRARY})
+elseif(UNIX)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
   target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
@@ -2338,26 +2356,6 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE Threads::Threads)
-
-# iOS/OS X Frameworks
-if(APPLE)
-  find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${COREFOUNDATION_LIBRARY})
-
-  # The iOS/OS X security framework is used to implement sandboxing.
-  find_library(SECURITY_LIBRARY Security REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${SECURITY_LIBRARY})
-
-  find_library(CORESERVICES_LIBRARY CoreServices REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${CORESERVICES_LIBRARY})
-
-  find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${FOUNDATION_LIBRARY})
-
-  # Used for battery measurements and controlling the screensaver on OS X and iOS.
-  find_library(IOKIT_LIBRARY IOKit REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${IOKIT_LIBRARY})
-endif()
 
 #
 # Features
