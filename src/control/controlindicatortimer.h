@@ -27,7 +27,6 @@ class ControlIndicatorTimer : public QObject {
     QTimer m_timer;
     std::unique_ptr<ControlObject> m_pCOIndicator250millis;
     std::unique_ptr<ControlObject> m_pCOIndicator500millis;
-    bool m_toggleIndicator500millisOnNextTimeout;
 };
 
 } // namespace mixxx
