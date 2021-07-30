@@ -2169,24 +2169,12 @@ if(APPLE)
         "-weak_framework CoreVideo"
         "-weak_framework IOSurface"
         "-weak_framework VideoToolbox"
-   )
+    )
   else()
-    find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE ${COREFOUNDATION_LIBRARY})
-
-    # The iOS/OS X security framework is used to implement sandboxing.
-    find_library(SECURITY_LIBRARY Security REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE ${SECURITY_LIBRARY})
-
-    find_library(CORESERVICES_LIBRARY CoreServices REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE ${CORESERVICES_LIBRARY})
-
-    find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE ${FOUNDATION_LIBRARY})
-
     # Used for battery measurements and controlling the screensaver on OS X and iOS.
-    find_library(IOKIT_LIBRARY IOKit REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE ${IOKIT_LIBRARY})
+    target_link_libraries(mixxx-lib PRIVATE
+        "-weak_framework IOKit"
+    )
   endif()
 elseif(UNIX)
   find_package(X11 REQUIRED)
