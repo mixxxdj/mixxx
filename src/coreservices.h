@@ -34,17 +34,10 @@ class CoreServices : public QObject {
     Q_OBJECT
 
   public:
-    CoreServices(const CmdlineArgs& args);
+    CoreServices(const CmdlineArgs& args, QApplication* pApp);
     ~CoreServices() = default;
 
-    void initializeSettings();
-    void initializeKeyboard();
-    void initializeScreensaverManager();
-    void initializeLogging();
-
-    // The short first run that is done without start up screen
-    void preInitialize(QApplication* pApp);
-    // The secondary long run which should be called after displaying the start up screen
+    /// The secondary long run which should be called after displaying the start up screen
     void initialize(QApplication* pApp);
     void shutdown();
 
@@ -118,6 +111,13 @@ class CoreServices : public QObject {
 
   private:
     bool initializeDatabase();
+    void initializeSettings();
+    void initializeKeyboard();
+    void initializeScreensaverManager();
+    void initializeLogging();
+
+    /// The short first run that is done without start up screen
+    void preInitialize(QApplication* pApp);
 
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
