@@ -345,7 +345,7 @@ MixtrackProFX.Deck = function(number) {
             deck.blinkLedOff();
             midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
-            midi.sendShortMsg(0x90 + channel, 0x07, 0x09); // fader cuts (yes 0x09 works the best for some reason)
+            midi.sendShortMsg(0x90 + channel, 0x07, 0x09); // fader cuts (0x09 works better than 0x7F for some reason)
             midi.sendShortMsg(0x90 + channel, 0x0B, 0x01); // sample
             midi.sendShortMsg(0x90 + channel, 0x0F, 0x01); // sample shifted
             midi.sendShortMsg(0x90 + channel, 0x02, 0x01); // beatjump

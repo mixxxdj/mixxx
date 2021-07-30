@@ -24,7 +24,7 @@
           <normal/>
         </options>
       </control>
-      <!-- Crossfader -->
+      <!-- Crossfader and 1st deck fader cuts -->
       <control>
         <group>[Master]</group>
         <key>crossfader</key>
@@ -34,7 +34,7 @@
           <normal/>
         </options>
       </control>
-      <!-- Crossfader - 2nd deck fader cuts (don't ask) -->
+      <!-- 2nd deck fader cuts -->
       <control>
         <group>[Master]</group>
         <key>crossfader</key>
@@ -980,7 +980,7 @@
           <script-binding/>
         </options>
       </control>
-      <!-- Pads (shift release (seriously)) -->
+      <!-- Pads (shift release) -->
       <control>
         <group>[Channel1]</group>
         <key>MixtrackProFX.deck[0].padsShift[0].input</key>
