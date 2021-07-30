@@ -2141,22 +2141,53 @@ endif()
 
 
 if(APPLE)
-  find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${COREFOUNDATION_LIBRARY})
+  if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
+    find_package(FFTW REQUIRED)
+    find_package(SndFile REQUIRED)
+    find_package(sord CONFIG REQUIRED)
+    find_package(SQLite3 REQUIRED)
+    find_library(SAMPLERATE_LIBRARY samplerate REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE
+        FFTW::FFTW
+        SndFile::sndfile
+        sord::sord
+        ${SQLite3_LIBRARIES}
+        ${SAMPLERATE_LIBRARY}
+    )
+    target_link_libraries(mixxx-lib PRIVATE
+        "-weak_framework Accelerate"
+        "-weak_framework AppKit"
+        "-weak_framework AudioToolbox"
+        "-weak_framework AudioUnit"
+        "-weak_framework AVFoundation"
+        "-weak_framework CoreAudio"
+        "-weak_framework CoreFoundation"
+        "-weak_framework CoreImage"
+        "-weak_framework CoreMedia"
+        "-weak_framework CoreMidi"
+        "-weak_framework CoreServices"
+        "-weak_framework CoreVideo"
+        "-weak_framework IOSurface"
+        "-weak_framework VideoToolbox"
+   )
+  else()
+    find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE ${COREFOUNDATION_LIBRARY})
 
-  # The iOS/OS X security framework is used to implement sandboxing.
-  find_library(SECURITY_LIBRARY Security REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${SECURITY_LIBRARY})
+    # The iOS/OS X security framework is used to implement sandboxing.
+    find_library(SECURITY_LIBRARY Security REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE ${SECURITY_LIBRARY})
 
-  find_library(CORESERVICES_LIBRARY CoreServices REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${CORESERVICES_LIBRARY})
+    find_library(CORESERVICES_LIBRARY CoreServices REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE ${CORESERVICES_LIBRARY})
 
-  find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${FOUNDATION_LIBRARY})
+    find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE ${FOUNDATION_LIBRARY})
 
-  # Used for battery measurements and controlling the screensaver on OS X and iOS.
-  find_library(IOKIT_LIBRARY IOKit REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${IOKIT_LIBRARY})
+    # Used for battery measurements and controlling the screensaver on OS X and iOS.
+    find_library(IOKIT_LIBRARY IOKit REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE ${IOKIT_LIBRARY})
+  endif()
 elseif(UNIX)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
