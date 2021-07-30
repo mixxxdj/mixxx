@@ -1793,6 +1793,13 @@ TraktorS3.Controller.prototype.deckSwitchHandler = function(field) {
 
     var channel = this.Channels[field.group];
     var deck = channel.parentDeck;
+
+    var isScratching = engine.getValue(deck.activeChannel, "scratch2_enable");
+    if (isScratching) {
+        engine.setValue(deck.activeChannel, "scratch2", 0.0);
+        engine.setValue(deck.activeChannel, "scratch2_enable", false);
+    }
+
     deck.activateChannel(channel);
 };
 

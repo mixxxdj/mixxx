@@ -1959,14 +1959,19 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
-    QString likeClause = SqlLikeWildcardEscaper::apply(rootDir.absolutePath() + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
+    const QString rootDirPath = rootDir.absolutePath();
+    DEBUG_ASSERT(!rootDirPath.endsWith('/'));
+    const QString likeClause =
+            SqlLikeWildcardEscaper::apply(rootDirPath + '/', kSqlLikeMatchAll) +
+            kSqlLikeMatchAll;
 
     QSqlQuery query(m_database);
-    query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
-                          "ON library.location = track_locations.id "
-                          "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
-                  .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
-
+    query.prepare(QStringLiteral(
+            "SELECT library.id FROM library INNER JOIN track_locations "
+            "ON library.location=track_locations.id "
+            "WHERE track_locations.location LIKE :likeClause ESCAPE :escape"));
+    query.bindValue(":likeClause", likeClause);
+    query.bindValue(":escape", kSqlLikeMatchAll);
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << rootDir;
     }

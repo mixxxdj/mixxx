@@ -85,7 +85,6 @@ class BpmControl : public EngineControl {
     static double shortestPercentageChange(const double& current_percentage,
                                            const double& target_percentage);
     double getRateRatio() const;
-    void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 

@@ -57,19 +57,6 @@ class StubLoopControl : public LoopingControl {
         return m_triggerReturnValues.takeFirst();
     }
 
-    // hintReader has no effect in this stubbed class
-    void hintReader(HintVector* pHintList) override {
-        Q_UNUSED(pHintList);
-    }
-
-    void notifySeek(double dNewPlaypos) override {
-        Q_UNUSED(dNewPlaypos);
-    }
-
-    void trackLoaded(TrackPointer pTrack) override {
-        Q_UNUSED(pTrack);
-    }
-
   protected:
     QList<double> m_triggerReturnValues;
     QList<double> m_targetReturnValues;

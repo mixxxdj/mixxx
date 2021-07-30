@@ -28,6 +28,7 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#include "control/controlindicatortimer.h"
 #include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -131,6 +132,8 @@ MixxxMainWindow::MixxxMainWindow(
             &MixxxMainWindow::initializationProgressUpdate);
 
     m_pCoreServices->initialize(pApp);
+
+    m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
 
@@ -425,6 +428,8 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DlgPreferences";
     delete m_pPrefDlg;
+
+    m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(false);
 
     WaveformWidgetFactory::destroy();
 
