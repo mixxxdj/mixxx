@@ -1008,11 +1008,6 @@ void BpmControl::slotUpdateRateSlider(double value) {
     m_pRateRatio->set(dRateRatio);
 }
 
-void BpmControl::notifySeek(double dNewPlaypos) {
-    EngineControl::notifySeek(dNewPlaypos);
-    updateBeatDistance();
-}
-
 // called from an engine worker thread
 void BpmControl::trackLoaded(TrackPointer pNewTrack) {
     mixxx::BeatsPointer pBeats;

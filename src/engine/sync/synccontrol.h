@@ -63,7 +63,6 @@ class SyncControl : public EngineControl, public Syncable {
 
     void reportTrackPosition(double fractionalPlaypos);
     void reportPlayerSpeed(double speed, bool scratching);
-    void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
