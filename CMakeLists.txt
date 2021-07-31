@@ -1785,6 +1785,36 @@ endif()
 find_package(Chromaprint REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
+# Locale Aware Compare for SQLite
+find_package(SQLite3)
+# For LOCALECOMPAREwe call directly sqlite functions to the database opened by
+# Qt. It only works without crashing when Mixxx links to the same sqlite
+# library as Qt.
+# This is difficult on macOS where system SQLite, can be installed and linked
+# dynamically from various locations. There is no issue in case of static
+# linking which would result in a duplicate symbol error.
+if(NOT SQLite3_FOUND)
+  set(LOCALECOMPARE_DEFAULT OFF)
+else()
+  get_target_property(SQLITE3_TYPE SQLite3::SQLite3 TYPE)
+  if(SQLITE3_TYPE STREQUAL "STATIC_LIBRARY" OR NOT APPLE)
+    set(LOCALECOMPARE_DEFAULT ON)
+  else()
+    set(LOCALECOMPARE_DEFAULT OFF)
+  endif()
+endif()
+cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" ON "LOCALECOMPARE_DEFAULT" OFF)
+if(LOCALECOMPARE)
+  if(NOT SQLite3_FOUND)
+    message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
+  endif()
+  target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
+  target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
+elseif(CHROMAPRINT_TYPE STREQUAL "STATIC_LIBRARY")
+  # in the static case we need to link SQlite3 uncoditionally
+  target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
+endif()
+
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
@@ -1801,7 +1831,7 @@ if(ENGINEPRIME)
 
     # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
     # embedded SQLite in such a case.
-    if (APPLE AND NOT DEFINED ENV{VCPKG_ROOT})
+    if (APPLE AND NOT SQLITE3_TYPE STREQUAL "STATIC_LIBRARY")
       message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
       set(DJINTEROP_SYSTEM_SQLITE OFF)
     else()
@@ -2135,13 +2165,11 @@ if(APPLE)
     find_package(FFTW REQUIRED)
     find_package(SndFile REQUIRED)
     find_package(sord CONFIG REQUIRED)
-    find_package(SQLite3 REQUIRED)
     find_library(SAMPLERATE_LIBRARY samplerate REQUIRED)
     target_link_libraries(mixxx-lib PRIVATE
         FFTW::FFTW
         SndFile::sndfile
         sord::sord
-        ${SQLite3_LIBRARIES}
         ${SAMPLERATE_LIBRARY}
     )
     target_link_libraries(mixxx-lib PRIVATE
@@ -2615,22 +2643,6 @@ if(BROADCAST)
     src/encoder/encoderbroadcastsettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
-endif()
-
-# Locale Aware Compare for SQLite
-find_package(SQLite3)
-# FIXME: It is difficult to get qmake to link Qt to a custom built SQLite on
-# macOS instead of the system SQLite, which results in a crash on startup when
-# LOCALECOMPARE is enabled, therefore this option is forcibly set to OFF on
-# macOS.
-cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" "${SQLite3_FOUND}" "NOT APPLE" OFF)
-if(LOCALECOMPARE)
-  if(NOT SQLite3_FOUND)
-    message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
-  endif()
-  target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
-  target_include_directories(mixxx-lib SYSTEM PRIVATE ${SQLite3_INCLUDE_DIRS})
-  target_link_libraries(mixxx-lib PRIVATE ${SQLite3_LIBRARIES})
 endif()
 
 # Opus (RFC 6716)
