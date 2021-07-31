@@ -280,7 +280,7 @@ bool initDatabase(const QSqlDatabase& database, StringCollator* pCollator) {
             handle,
             "like",
             2,
-            SQLITE_UTF8,
+            SQLITE_UTF8 | SQLITE_DETERMINISTIC,
             nullptr,
             sqliteLikeUtf8,
             nullptr,
@@ -295,7 +295,7 @@ bool initDatabase(const QSqlDatabase& database, StringCollator* pCollator) {
             handle,
             "like",
             3, // 3rd arg = ESCAPE
-            SQLITE_UTF8,
+            SQLITE_UTF8 | SQLITE_DETERMINISTIC,
             nullptr,
             sqliteLikeUtf8,
             nullptr,
