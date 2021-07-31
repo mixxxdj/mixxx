@@ -130,7 +130,7 @@ class CoreServices : public QObject {
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     // owned by EffectsManager
-    LV2Backend* m_pLV2Backend{};
+    LV2Backend* m_pLV2Backend;
     std::shared_ptr<EngineMaster> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
