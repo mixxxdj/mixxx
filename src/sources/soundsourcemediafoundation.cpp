@@ -52,6 +52,7 @@ const QString SoundSourceProviderMediaFoundation::kDisplayName =
 const QStringList SoundSourceProviderMediaFoundation::kSupportedFileExtensions = {
         QStringLiteral("aac"),
         QStringLiteral("m4a"),
+        QStringLiteral("m4v"),
         QStringLiteral("mp4"),
 };
 

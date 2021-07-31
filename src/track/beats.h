@@ -31,28 +31,20 @@ class Beats {
     virtual ~Beats() = default;
 
     enum Capabilities {
-        BEATSCAP_NONE = 0x0000,
-        /// Add or remove a single beat
-        BEATSCAP_ADDREMOVE = 0x0001,
-        /// Move all beat markers earlier or later
-        BEATSCAP_TRANSLATE = 0x0002,
-        /// Scale beat distance by a fixed ratio
-        BEATSCAP_SCALE = 0x0004,
-        /// Move a single Beat
-        BEATSCAP_MOVEBEAT = 0x0008,
+        BEATSCAP_NONE = 0,
         /// Set new bpm, beat grid only
-        BEATSCAP_SETBPM = 0x0010
+        BEATSCAP_SETBPM = 1
     };
     /// Allows us to do ORing
     typedef int CapabilitiesFlags;
 
-    enum BPMScale {
-        DOUBLE,
-        HALVE,
-        TWOTHIRDS,
-        THREEFOURTHS,
-        FOURTHIRDS,
-        THREEHALVES,
+    enum class BpmScale {
+        Double,
+        Halve,
+        TwoThirds,
+        ThreeFourths,
+        FourThirds,
+        ThreeHalves,
     };
 
     /// Retrieve the capabilities supported by the beats implementation.
@@ -137,7 +129,7 @@ class Beats {
             audio::FramePos endPosition) const = 0;
 
     /// Return the average BPM over the entire track if the BPM is valid,
-    /// otherwise returns -1
+    /// otherwise returns an invalid bpm value.
     virtual mixxx::Bpm getBpm() const = 0;
 
     /// Return the average BPM over the range of n*2 beats centered around
@@ -153,13 +145,11 @@ class Beats {
 
     /// Translate all beats in the song by `offset` frames. Beats that lie
     /// before the start of the track or after the end of the track are *not*
-    /// removed. The `Beats` instance must have the capability
-    /// `BEATSCAP_TRANSLATE`.
+    /// removed.
     virtual BeatsPointer translate(audio::FrameDiff_t offset) const = 0;
 
-    /// Scale the position of every beat in the song by `scale`. The `Beats`
-    /// class must have the capability `BEATSCAP_SCALE`.
-    virtual BeatsPointer scale(enum BPMScale scale) const = 0;
+    /// Scale the position of every beat in the song by `scale`.
+    virtual BeatsPointer scale(BpmScale scale) const = 0;
 
     /// Adjust the beats so the global average BPM matches `bpm`. The `Beats`
     /// class must have the capability `BEATSCAP_SET`.

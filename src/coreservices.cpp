@@ -7,6 +7,7 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
@@ -26,6 +27,7 @@
 #include "util/font.h"
 #include "util/logger.h"
 #include "util/screensaver.h"
+#include "util/screensavermanager.h"
 #include "util/statsmanager.h"
 #include "util/time.h"
 #include "util/translations.h"
@@ -100,7 +102,11 @@ namespace mixxx {
 CoreServices::CoreServices(const CmdlineArgs& args)
         : m_runtime_timer(QLatin1String("CoreServices::runtime")),
           m_cmdlineArgs(args) {
+    initializeSettings();
+    initializeKeyboard();
 }
+
+CoreServices::~CoreServices() = default;
 
 void CoreServices::initializeSettings() {
 #ifdef __APPLE__
@@ -180,6 +186,8 @@ void CoreServices::initialize(QApplication* pApp) {
         exit(-1);
     }
 
+    m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(this);
+
     auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
 
     emit initializationProgressUpdate(20, tr("effects"));
@@ -242,6 +250,13 @@ void CoreServices::initialize(QApplication* pApp) {
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
 #endif
+
+    // Inhibit Screensaver
+    m_pScreensaverManager = std::make_shared<ScreensaverManager>(pConfig);
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::currentPlayingDeckChanged,
+            m_pScreensaverManager.get(),
+            &ScreensaverManager::slotCurrentPlayingDeckChanged);
 
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
@@ -518,6 +533,8 @@ void CoreServices::shutdown() {
     m_pSettingsManager->save();
 
     m_pTouchShift.reset();
+
+    m_pControlIndicatorTimer.reset();
 
     // Check for leaked ControlObjects and give warnings.
     {

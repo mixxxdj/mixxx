@@ -119,6 +119,16 @@ if(NOT BUILD_LOW_MEMORY)
   add_compile_options(-pipe)
 endif()
 
+# Coverage
+#
+# This is only available with GCC, therefore this option is forcibly set to OFF
+# for all other compilers.
+cmake_dependent_option(COVERAGE "Coverage (i.e. gcov) support" OFF "GNU_GCC" OFF)
+if(COVERAGE)
+  add_compile_options(--coverage -fprofile-arcs -ftest-coverage)
+  add_link_options(--coverage -fprofile-arcs -ftest-coverage)
+endif()
+
 # Profiling
 #
 # This is only available on Linux, therefore this option is forcibly set to OFF
@@ -369,7 +379,8 @@ if(MSVC)
   default_option(SCCACHE_SUPPORT "Enable sccache support" "SCCACHE_EXECUTABLE")
   message(STATUS "Support for sccache: ${SCCACHE_SUPPORT}")
   if(SCCACHE_SUPPORT)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "sccache")
+    set( CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}" )
+    set( CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}" )
   endif()
 else()
   # ccache support
@@ -385,8 +396,8 @@ else()
       # without this compiler messages in `make` backend would be uncolored
       set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=${BUILD_COLORS}")
     endif()
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "ccache")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
+    set( CMAKE_C_COMPILER_LAUNCHER "${CCACHE_EXECUTABLE}" )
+    set( CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXECUTABLE}" )
   endif()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
@@ -420,6 +431,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controleffectknob.cpp
   src/control/controlencoder.cpp
   src/control/controlindicator.cpp
+  src/control/controlindicatortimer.cpp
   src/control/controllinpotmeter.cpp
   src/control/controllogpotmeter.cpp
   src/control/controlmodel.cpp
@@ -783,6 +795,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/qml/qmleffectmanifestparametersmodel.cpp
   src/skin/qml/qmleffectsmanagerproxy.cpp
   src/skin/qml/qmleffectslotproxy.cpp
+  src/skin/qml/qmllibraryproxy.cpp
+  src/skin/qml/qmllibrarytracklistmodel.cpp
   src/skin/qml/qmlplayermanagerproxy.cpp
   src/skin/qml/qmlplayerproxy.cpp
   src/skin/qml/qmlskin.cpp
@@ -885,6 +899,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/sandbox.cpp
   src/util/semanticversion.cpp
   src/util/screensaver.cpp
+  src/util/screensavermanager.cpp
   src/util/sleepableqthread.cpp
   src/util/stat.cpp
   src/util/statmodel.cpp
@@ -1410,27 +1425,59 @@ if(UNIX AND NOT APPLE)
   )
 
   option(INSTALL_USER_UDEV_RULES "Install user udev rule file for USB HID and Bulk controllers" ON)
-  if (INSTALL_USER_UDEV_RULES)
-    install(
-      FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
-      DESTINATION
-        "${MIXXX_INSTALL_DATADIR}/udev/rules.d"
-    )
-    install(CODE "
-    message(STATUS \"Important Note: Installation of udev rules\n\"
-        \"The udev rule file for USB HID and Bulk controller permissions will be\n\"
-        \"installed to:\n\"
-        \"    ${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}/udev/rules.d.\n\"
-        \"If you are installing Mixxx from source for your own use, copy\n\"
-        \"mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n\"
-        \"    udevadm control --reload-rules && udevadm trigger\n\"
-        \"as root to load the rules.\n\"
-        \"If you are building a package for a distribution, the correct directory for\n\"
-        \"system rules is either /lib/udev/rules.d (e.g. Debian, Fedora) or\n\"
-        \"/usr/lib/udev/rules.d (e.g. Arch Linux) with an appropriate priority prefix.\n\"
-        \"Adjust your package script accordingly and set -DINSTALL_USER_UDEV_RULES=OFF\")
-    ")
+  if(INSTALL_USER_UDEV_RULES)
+    set(MIXXX_UDEVDIR "${MIXXX_INSTALL_DATADIR}/udev")
+    if (CMAKE_INSTALL_PREFIX STREQUAL "/usr" OR CMAKE_INSTALL_PREFIX STREQUAL "/" )
+      # /usr and / install prefixes at treated by cmake GNUInstallDirs as
+      # synonym for "system location". In this case we can look up the correct udevdir
+      # using pkg-config.
+      # See: https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#special-cases
+      find_package(PkgConfig)
+      if (PKG_CONFIG_FOUND)
+        pkg_check_modules( PKGCONFIG_UDEV udev)
+        if (PKGCONFIG_UDEV_FOUND)
+	  execute_process(
+	    COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=udevdir udev
+            OUTPUT_VARIABLE PKGCONFIG_UDEVDIR
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+          )
+          if(PKGCONFIG_UDEVDIR)
+	    file(TO_CMAKE_PATH "${PKGCONFIG_UDEVDIR}" MIXXX_UDEVDIR)
+          endif()
+        endif()
+      endif()
+    endif()
+    if (MIXXX_UDEVDIR STREQUAL "${MIXXX_INSTALL_DATADIR}/udev")
+      install(
+        FILES
+          "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
+        DESTINATION
+          "${MIXXX_UDEVDIR}/rules.d"
+      )
+      install(CODE "
+      message(STATUS \"Important Note: Installation of udev rules\n\"
+          \"The udev rule file for USB HID and Bulk controller permissions have been\n\"
+          \"installed to:\n\"
+          \"    ${MIXXX_UDEVDIR}/rules.d.\n\"
+          \"If you are installing Mixxx from source for your own use, copy\n\"
+          \"mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n\"
+          \"    udevadm control --reload-rules && udevadm trigger\n\"
+          \"as root to load the rules.\n\"
+          \"If you are building a package for a distribution, the correct directory for\n\"
+          \"system rules is either /lib/udev/rules.d (e.g. Debian, Fedora) or\n\"
+          \"/usr/lib/udev/rules.d (e.g. Arch Linux) with an appropriate priority prefix.\n\"
+          \"Adjust your package script accordingly and set -DINSTALL_USER_UDEV_RULES=OFF\")
+      ")
+    else()
+      install(
+        FILES
+          "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
+        DESTINATION
+          "${MIXXX_UDEVDIR}/rules.d"
+        RENAME
+          "69-mixxx-usb-uaccess.rules"
+      )
+    endif()
   endif()
 endif()
 
@@ -1508,6 +1555,7 @@ add_executable(mixxx-test
   src/test/controller_mapping_validation_test.cpp
   src/test/controllerscriptenginelegacy_test.cpp
   src/test/controlobjecttest.cpp
+  src/test/coreservicestest.cpp
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp
   src/test/cratestorage_test.cpp
@@ -1747,11 +1795,6 @@ if(WIN32)
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
     "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
   )
-  # sccache fails with RC files
-  # https://github.com/mozilla/sccache/issues/947
-  if(SCCACHE_SUPPORT)
-    set_target_properties(mixxx PROPERTIES RULE_LAUNCH_COMPILE "")
-  endif()
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
@@ -1807,8 +1850,8 @@ if(ENGINEPRIME)
     # External project sources must be downloaded as an archive into DOWNLOAD_DIR
     # from an URL to keep offline builds like for Fedora/RPM Fusion working!
     ExternalProject_Add(libdjinterop
-      URL "https://github.com/xsco/libdjinterop/archive/0.15.2.tar.gz"
-      URL_HASH SHA256=66f64c0b38a53936ba1b471524905e35afd605bc05d29e7aa6fa7ea0005c7d54
+      URL "https://github.com/xsco/libdjinterop/archive/0.16.0.tar.gz"
+      URL_HASH SHA256=c998831fe4d3cc80c5c031491204244c9ed0c61575dd529260304b95d79db588
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libdjinterop"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       LIST_SEPARATOR "|"
@@ -2075,6 +2118,47 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Widgets
   Qt5::Xml)
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
+get_target_property(QT5_TYPE Qt5::Core TYPE)
+if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
+
+  # NOTE(rryan): If you are adding a plugin here, you must also
+  # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
+  # for it. Not all imageformats plugins are built as .libs when
+  # building Qt statically on Windows. Check the build environment
+  # to see exactly what's available as a standalone .lib vs linked
+  # into Qt .libs by default.
+
+  target_link_libraries(mixxx-lib PRIVATE
+    # platform plugins
+    Qt5::QOffscreenIntegrationPlugin
+    Qt5::QMinimalIntegrationPlugin
+
+    # imageformats plugins
+    Qt5::QGifPlugin
+    Qt5::QICOPlugin
+    Qt5::QJpegPlugin
+    Qt5::QSvgPlugin
+
+    # sqldrivers
+    Qt5::QSQLiteDriverPlugin
+  )
+
+  if(WIN32)
+    target_link_libraries(mixxx-lib PRIVATE
+      Qt5::QWindowsIntegrationPlugin
+      Qt5::QWindowsVistaStylePlugin
+    )
+  endif()
+
+  if(APPLE)
+    target_link_libraries(mixxx-lib PRIVATE
+      Qt5::QCocoaIntegrationPlugin
+      Qt5::QMacStylePlugin
+    )
+  endif()
+
+endif()
+
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
@@ -2085,9 +2169,7 @@ if(UNIX AND NOT APPLE)
     Qt5::DBus
   )
 elseif(WIN32)
-  get_target_property(QT5_TYPE Qt5::Core TYPE)
   if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
-    target_compile_definitions(mixxx-lib PUBLIC QT_NODLL)
     target_link_libraries(mixxx-lib PRIVATE
       # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
       # QtCore
@@ -2121,32 +2203,6 @@ elseif(WIN32)
       uxtheme     # ?
       version     # ?
       wtsapi32    # ?
-
-      # NOTE(rryan): If you are adding a plugin here, you must also
-      # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
-      # for it. Not all imageformats plugins are built as .libs when
-      # building Qt statically on Windows. Check the build environment
-      # to see exactly what's available as a standalone .lib vs linked
-      # into Qt .libs by default.
-
-      # iconengines plugins
-      Qt5::QSvgIconPlugin
-
-      # imageformats plugins
-      Qt5::QGifPlugin
-      Qt5::QICOPlugin
-      Qt5::QJpegPlugin
-      Qt5::QSvgPlugin
-      Qt5::QTgaPlugin
-
-      # platform plugins (new in Qt5 for Windows)
-      Qt5::QWindowsIntegrationPlugin
-
-      # styles (new in Qt5 for Windows)
-      Qt5::QWindowsVistaStylePlugin
-
-      # sqldrivers (new in Qt5? or did we just start enabling them)
-      Qt5::QSQLiteDriverPlugin
     )
 
     find_library(QT5FONTDATABASESUPPORT_LIBRARY Qt5FontDatabaseSupport)
@@ -2303,15 +2359,6 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE Threads::Threads)
 
-# Upower
-if(UNIX AND NOT APPLE)
-  find_package(GLIB COMPONENTS gobject REQUIRED)
-  find_package(Upower REQUIRED)
-  target_include_directories(mixxx-lib SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
-  target_link_libraries(mixxx-lib PRIVATE ${GLIB_LIBRARIES} ${GLIB_GOBJECT_LIBRARIES})
-  target_link_libraries(mixxx-lib PRIVATE Upower::Upower)
-endif()
-
 # iOS/OS X Frameworks
 if(APPLE)
   find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
@@ -2347,6 +2394,10 @@ if(BATTERY)
   elseif(APPLE)
     target_sources(mixxx-lib PRIVATE src/util/battery/batterymac.cpp)
   elseif(UNIX)
+    find_package(Upower REQUIRED)
+    find_package(GLIB COMPONENTS gobject REQUIRED)
+    target_include_directories(mixxx-lib SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
+    target_link_libraries(mixxx-lib PRIVATE Upower::Upower ${GLIB_LIBRARIES} ${GLIB_GOBJECT_LIBRARIES})
     target_sources(mixxx-lib PRIVATE src/util/battery/batterylinux.cpp)
   else()
     message(FATAL_ERROR "Battery support is not implemented for the target platform.")
@@ -2886,30 +2937,33 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" 
 include(CPack)
 
 if(APPLE AND MACOS_BUNDLE)
-    macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
-        get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
-        if(EXISTS "${_qt_plugin_path}")
-            get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
-            get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
-            get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
-            set(_qt_plugin_dest "${_prefix}/Contents/PlugIns/${_qt_plugin_type}")
-            install(FILES "${_qt_plugin_path}"
-                DESTINATION "${_qt_plugin_dest}")
-            set(${_qt_plugins_var}
-                "${${_qt_plugins_var}};\$ENV{DEST_DIR}\${CMAKE_INSTALL_PREFIX}/${_qt_plugin_dest}/${_qt_plugin_file}")
-        else()
-            message(FATAL_ERROR "QT plugin ${_qt_plugin_name} not found")
-        endif()
-    endmacro()
+    if(NOT QT5_TYPE STREQUAL "STATIC_LIBRARY")
+        macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
+            get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
+            if(EXISTS "${_qt_plugin_path}")
+                get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
+                get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
+                get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
+                set(_qt_plugin_dest "${_prefix}/Contents/PlugIns/${_qt_plugin_type}")
+                install(FILES "${_qt_plugin_path}"
+                    DESTINATION "${_qt_plugin_dest}")
+                set(${_qt_plugins_var}
+                    "${${_qt_plugins_var}};\$ENV{DEST_DIR}\${CMAKE_INSTALL_PREFIX}/${_qt_plugin_dest}/${_qt_plugin_file}")
+            else()
+                message(FATAL_ERROR "QT plugin ${_qt_plugin_name} not found")
+            endif()
+        endmacro()
 
-
-    install_qt5_plugin(Qt5::QCocoaIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QSQLiteDriverPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QMacStylePlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QSvgPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QSvgIconPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QJpegPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(Qt5::QCocoaIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(Qt5::QMacStylePlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(Qt5::QOffscreenIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(Qt5::QMinimalIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(Qt5::QSvgPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(Qt5::QJpegPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(Qt5::QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(Qt5::QICOPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+        install_qt5_plugin(Qt5::QSQLiteDriverPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    endif()
 
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
     set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib;${Qt5Widgets_DIR}/../..")

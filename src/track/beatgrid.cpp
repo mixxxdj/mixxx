@@ -14,7 +14,6 @@ struct BeatGridData {
     double firstBeat;
 };
 
-constexpr int kFrameSize = 2;
 constexpr double kBpmScaleRounding = 0.001;
 
 } // namespace
@@ -184,27 +183,9 @@ audio::FramePos BeatGrid::findNthBeat(audio::FramePos position, int n) const {
         return audio::kInvalidFramePos;
     }
 
-    double beatFraction = (position - firstBeatPosition()) / m_beatLengthFrames;
-    double prevBeat = floor(beatFraction);
-    double nextBeat = ceil(beatFraction);
-
-    // If the position is within 1/100th of the next or previous beat, treat it
-    // as if it is that beat.
-    const double kEpsilon = .01;
-
-    if (fabs(nextBeat - beatFraction) < kEpsilon) {
-        // If we are going to pretend we were actually on nextBeat then prevBeat
-        // needs to be re-calculated. Since it is floor(beatFraction), that's
-        // the same as nextBeat.  We only use prevBeat so no need to increment
-        // nextBeat.
-        prevBeat = nextBeat;
-    } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
-        // If we are going to pretend we were actually on prevBeat then nextBeat
-        // needs to be re-calculated. Since it is ceil(beatFraction), that's
-        // the same as prevBeat.  We will only use nextBeat so no need to
-        // decrement prevBeat.
-        nextBeat = prevBeat;
-    }
+    const double beatFraction = (position - firstBeatPosition()) / m_beatLengthFrames;
+    const double prevBeat = floor(beatFraction);
+    const double nextBeat = ceil(beatFraction);
 
     audio::FramePos closestBeatPosition;
     if (n > 0) {
@@ -315,27 +296,27 @@ BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
     return BeatsPointer(new BeatGrid(*this, grid, m_beatLengthFrames));
 }
 
-BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
+BeatsPointer BeatGrid::scale(BpmScale scale) const {
     mixxx::track::io::BeatGrid grid = m_grid;
     auto bpm = mixxx::Bpm(grid.bpm().bpm());
 
     switch (scale) {
-    case DOUBLE:
+    case BpmScale::Double:
         bpm *= 2;
         break;
-    case HALVE:
+    case BpmScale::Halve:
         bpm *= 1.0 / 2;
         break;
-    case TWOTHIRDS:
+    case BpmScale::TwoThirds:
         bpm *= 2.0 / 3;
         break;
-    case THREEFOURTHS:
+    case BpmScale::ThreeFourths:
         bpm *= 3.0 / 4;
         break;
-    case FOURTHIRDS:
+    case BpmScale::FourThirds:
         bpm *= 4.0 / 3;
         break;
-    case THREEHALVES:
+    case BpmScale::ThreeHalves:
         bpm *= 3.0 / 2;
         break;
     default:
@@ -349,8 +330,8 @@ BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
     grid.mutable_bpm()->set_bpm(bpm.value());
-    double beatLength = (60.0 * m_sampleRate / bpm.value()) * kFrameSize;
-    return BeatsPointer(new BeatGrid(*this, grid, beatLength));
+    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());
+    return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
 }
 
 BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
@@ -359,8 +340,8 @@ BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
     }
     mixxx::track::io::BeatGrid grid = m_grid;
     grid.mutable_bpm()->set_bpm(bpm.value());
-    double beatLength = (60.0 * m_sampleRate / bpm.value()) * kFrameSize;
-    return BeatsPointer(new BeatGrid(*this, grid, beatLength));
+    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());
+    return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
 }
 
 } // namespace mixxx

@@ -3,65 +3,44 @@ import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
-AbstractButton {
+Item {
     id: root
 
     property string group // required
     property string key // required
-    property alias orientation: control.value
+    property alias orientation: orientationSlider.value
     property color color: "white"
 
     implicitWidth: 56
     implicitHeight: 26
-    onClicked: control.value = Math.trunc(3 * pressX / root.width)
-    states: [
-        State {
-            name: "left"
-            when: orientation == 0
 
-            PropertyChanges {
-                target: indicator
-                x: 0
-            }
+    Slider {
+        id: orientationSlider
 
-        },
-        State {
-            name: "right"
-            when: orientation == 2
-
-            PropertyChanges {
-                target: indicator
-                x: parent.width - width
-            }
-
-        },
-        State {
-            name: "mid"
-            when: orientation == 1
-
-            PropertyChanges {
-                target: indicator
-                x: parent.width / 2 - width / 2
-            }
-
-        }
-    ]
-
-    Mixxx.ControlProxy {
-        id: control
-
-        group: root.group
-        key: root.key
-    }
-
-    Item {
-        anchors.fill: root
+        anchors.fill: parent
         anchors.leftMargin: 10
         anchors.rightMargin: 10
         anchors.topMargin: 2
         anchors.bottomMargin: 2
+        wheelEnabled: false
+        live: false
+        from: 0
+        to: 2
+        stepSize: 1
+        value: control.value
+        orientation: Qt.Horizontal
+        snapMode: Slider.SnapOnRelease
+        onMoved: {
+            // The slider's `value` is not updated until after the move ended.
+            const val = valueAt(visualPosition);
+            if (val != control.value)
+                control.value = val;
 
-        Rectangle {
+        }
+
+        background: Rectangle {
+            id: sliderBackground
+
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
@@ -69,12 +48,13 @@ AbstractButton {
             color: root.color
         }
 
-        Rectangle {
+        handle: Rectangle {
             id: indicator
 
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.margins: 5
+            x: orientationSlider.visualPosition * (sliderBackground.width - width)
             width: 3
             color: root.color
 
@@ -87,6 +67,13 @@ AbstractButton {
 
         }
 
+    }
+
+    Mixxx.ControlProxy {
+        id: control
+
+        group: root.group
+        key: root.key
     }
 
 }

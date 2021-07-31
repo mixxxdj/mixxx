@@ -264,12 +264,11 @@ WLibrary QLineEdit,
 }
 
 /* checkbox in library "Played" column */
-WTrackTableView::indicator:checked {
-  image: url(skin:/../Deere/icon/ic_library_checkmark.svg);
-  border: 1px solid #ff6600;
-}
 WTrackTableView::indicator:unchecked {
-  border: 1px solid rgba(151,151,151,128);
+  image: url(skin:/../Deere/icon/ic_library_checkbox.svg);
+}
+WTrackTableView::indicator:checked {
+  image: url(skin:/../Deere/icon/ic_library_checkbox_checked.svg);
 }
 
 /* focused BPM cell in the library "BPM" column */
@@ -2122,7 +2121,6 @@ WTrackMenu QMenu QCheckBox::indicator:disabled {
   background-color: #333;
 }
 WLibrarySidebar QMenu::indicator:checked,
-WTrackTableView::indicator:checked,
 WTrackMenu QMenu QCheckBox::indicator:checked {
   image: url(skin:/../Deere/icon/ic_library_checkmark_orange.svg);
 }
@@ -2158,8 +2156,6 @@ WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
 WTrackTableViewHeader QMenu::indicator:unchecked,
 WTrackTableViewHeader QMenu::indicator:unchecked:selected,
-WTrackTableView::indicator:unchecked,
-WTrackTableView::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,

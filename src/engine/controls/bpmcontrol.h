@@ -30,7 +30,7 @@ class BpmControl : public EngineControl {
         return m_pLocalBpm ? mixxx::Bpm(m_pLocalBpm->get()) : mixxx::Bpm();
     }
 
-    // When in master sync mode, ratecontrol calls calcSyncedRate to figure out
+    // When in sync lock mode, ratecontrol calls calcSyncedRate to figure out
     // how fast the track should play back.  The returned rate is usually just
     // the correct pitch to match bpms.  The usertweak argument represents
     // how much the user is nudging the pitch to get two tracks into sync, and
@@ -85,7 +85,6 @@ class BpmControl : public EngineControl {
     static double shortestPercentageChange(const double& current_percentage,
                                            const double& target_percentage);
     double getRateRatio() const;
-    void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
@@ -176,5 +175,5 @@ class BpmControl : public EngineControl {
     mixxx::BeatsPointer m_pBeats;
 
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
-    FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInMasterChange);
+    FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange);
 };

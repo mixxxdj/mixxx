@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QList>
-#include <QMutex>
-#include <QMutexLocker>
 #include <QObject>
 #include <QUrl>
 
@@ -15,6 +13,7 @@
 #include "track/trackrecord.h"
 #include "util/fileaccess.h"
 #include "util/memory.h"
+#include "util/qtmutex.h"
 #include "waveform/waveform.h"
 
 class Track : public QObject {
@@ -129,7 +128,10 @@ class Track : public QObject {
     }
 
     // Sets the BPM if not locked.
-    bool trySetBpm(double bpm);
+    bool trySetBpm(double bpmValue) {
+        return trySetBpm(mixxx::Bpm(bpmValue));
+    }
+    bool trySetBpm(mixxx::Bpm bpm);
 
     // Returns BPM
     double getBpm() const;
@@ -145,6 +147,8 @@ class Track : public QObject {
 
     // Set ReplayGain
     void setReplayGain(const mixxx::ReplayGain&);
+    // Adjust ReplayGain by multiplying the given gain amount.
+    void adjustReplayGainFromPregain(double);
     // Returns ReplayGain
     mixxx::ReplayGain getReplayGain() const;
 
@@ -264,16 +268,8 @@ class Track : public QObject {
 
     /// Get the track's main cue point
     mixxx::audio::FramePos getMainCuePosition() const;
-    CuePosition getCuePoint() const {
-        return getMainCuePosition().toEngineSamplePosMaybeInvalid();
-    };
     // Set the track's main cue point
     void setMainCuePosition(mixxx::audio::FramePos position);
-    void setCuePoint(CuePosition position) {
-        setMainCuePosition(
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        position.getPosition()));
-    }
     /// Shift all cues by a constant offset
     void shiftCuePositionsMillis(mixxx::audio::FrameDiff_t milliseconds);
     // Call when analysis is done.
@@ -419,6 +415,9 @@ class Track : public QObject {
     void coverArtUpdated();
     void beatsUpdated();
     void replayGainUpdated(mixxx::ReplayGain replayGain);
+    // This signal indicates that ReplayGain is being adjusted, and pregains should be
+    // adjusted in the opposite direction to compensate (no audible change).
+    void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
     void analyzed();
@@ -443,14 +442,14 @@ class Track : public QObject {
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
     // while the TIO is locked.
-    void markDirtyAndUnlock(QMutexLocker* pLock) {
+    void markDirtyAndUnlock(QT_RECURSIVE_MUTEX_LOCKER* pLock) {
         setDirtyAndUnlock(pLock, true);
     }
-    void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
+    void setDirtyAndUnlock(QT_RECURSIVE_MUTEX_LOCKER* pLock, bool bDirty);
 
-    void afterKeysUpdated(QMutexLocker* pLock);
+    void afterKeysUpdated(QT_RECURSIVE_MUTEX_LOCKER* pLock);
 
-    void afterBeatsAndBpmUpdated(QMutexLocker* pLock);
+    void afterBeatsAndBpmUpdated(QT_RECURSIVE_MUTEX_LOCKER* pLock);
     void emitBeatsAndBpmUpdated();
 
     /// Emits a changed signal for each Q_PROPERTY
@@ -475,24 +474,24 @@ class Track : public QObject {
     bool importPendingCueInfosWhileLocked();
 
     mixxx::Bpm getBpmWhileLocked() const;
-    bool trySetBpmWhileLocked(double bpmValue);
+    bool trySetBpmWhileLocked(mixxx::Bpm bpm);
     bool trySetBeatsWhileLocked(
             mixxx::BeatsPointer pBeats,
             bool lockBpmAfterSet = false);
 
     bool trySetBeatsMarkDirtyAndUnlock(
-            QMutexLocker* pLock,
+            QT_RECURSIVE_MUTEX_LOCKER* pLock,
             mixxx::BeatsPointer pBeats,
             bool lockBpmAfterSet);
     bool tryImportPendingBeatsMarkDirtyAndUnlock(
-            QMutexLocker* pLock,
+            QT_RECURSIVE_MUTEX_LOCKER* pLock,
             bool lockBpmAfterSet);
 
     void setCuePointsMarkDirtyAndUnlock(
-            QMutexLocker* pLock,
+            QT_RECURSIVE_MUTEX_LOCKER* pLock,
             const QList<CuePointer>& cuePoints);
     void importPendingCueInfosMarkDirtyAndUnlock(
-            QMutexLocker* pLock);
+            QT_RECURSIVE_MUTEX_LOCKER* pLock);
 
     /// Merge additional metadata that is not (yet) stored in the database
     /// and only available from file tags.
@@ -511,18 +510,14 @@ class Track : public QObject {
     // stream info of the track need to be updated to reflect
     // these values.
     bool hasStreamInfoFromSource() const {
-        QMutexLocker lock(&m_qMutex);
+        const auto locked = lockMutex(&m_qMutex);
         return m_record.hasStreamInfoFromSource();
     }
     void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
 
     // Mutex protecting access to object
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    mutable QRecursiveMutex m_qMutex;
-#else
-    mutable QMutex m_qMutex;
-#endif
+    mutable QT_RECURSIVE_MUTEX m_qMutex;
 
     // The file
     mixxx::FileAccess m_fileAccess;

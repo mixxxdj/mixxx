@@ -634,7 +634,7 @@ WSearchLineEdit {
   }
 
 #SyncBox {
-  margin: 2px 1px 1px 0px;
+  margin: 2px 1px 1px 2px;
 }
 
 #RateControls {
@@ -1416,6 +1416,7 @@ WOverview #PassthroughLabel {
 #VinylModeButton,
 #VinylCueButton[displayValue="0"],
 #PassthroughButton[displayValue="0"],
+#SyncLeader[value="0"],
 #FxAssignButtons WPushButton[displayValue="0"] {
   outline: none;
   border-width: 2px 2px 2px 1px;
@@ -1425,6 +1426,8 @@ WOverview #PassthroughLabel {
   #VinylCueButton[displayValue="1"],
   #VinylCueButton[displayValue="2"],
   #PassthroughButton[displayValue="1"],
+  #SyncLeader[value="1"],
+  #SyncLeader[value="2"],
   #FxAssignButtons WPushButton[displayValue="1"] {
     outline: none;
     border-width: 2px 2px 2px 1px;
@@ -1437,6 +1440,7 @@ WOverview #PassthroughLabel {
 #SkinSettingsToggle[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 WPushButton#VinylButton[displayValue="0"],
+#SyncDeck[displayValue="0"],
 WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
 #fadeModeCombobox:!editable,
@@ -1449,6 +1453,7 @@ WEffectSelector:!editable,
   /*
   WPushButton#BpmTap[displayValue="1"], */
   WPushButton#VinylButton[displayValue="1"],
+  #SyncDeck[displayValue="1"],
   WPushButton#FxAssignButton1[displayValue="1"],
   #KeyMatchReset[pressed="true"],
   #GuiToggleButton[displayValue="1"],
@@ -1522,8 +1527,6 @@ WPushButton#CueDeck,
 #PlayCueMini WPushButton,
 WPushButton#LoopActivate,
 WPushButton#RateControls WPushButton,
-WPushButton#SyncDeck,
-WPushButton#SyncLeader,
 WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
@@ -1542,6 +1545,8 @@ WPushButton#SamplerExpand,
 #FxAssignButtons WPushButton,
 #VinylControls WPushButton,
 #KeyControls WPushButton,
+WPushButton#SyncDeck,
+WPushButton#SyncLeader,
 #SamplerSettings WPushButton,
 #SamplerSettingsMini WPushButton,
 WPushButton#CrossfaderButton,
@@ -1577,6 +1582,7 @@ WBeatSpinBox::down-button {
   #LoopControls WPushButton[displayValue="0"],
   #BeatjumpControls WPushButton[displayValue="0"],
   WPushButton#SyncDeck[value="0"],
+  WPushButton#SyncLeader[value="0"],
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
@@ -2110,8 +2116,14 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skin:/palemoon/buttons/btn__sync_deck_active.svg) no-repeat center center;
   }
 
-#SyncLeader {
-  image: url(skin:/palemoon/buttons/btn__leader_deck.svg) no-repeat center center;
+#SyncLeader[value="0"] {
+  image: url(skin:/palemoon/buttons/btn__sync_leader.svg) no-repeat center center;
+  }
+  #SyncLeader[value="1"] {
+    image: url(skin:/palemoon/buttons/btn__sync_leader_implicit.svg) no-repeat center center;
+  }
+  #SyncLeader[value="2"] {
+    image: url(skin:/palemoon/buttons/btn__sync_leader_explicit.svg) no-repeat center center;
   }
 
   #SyncSampler {
@@ -2444,7 +2456,7 @@ QPushButton#pushButtonShuffle:enabled {
   image: url(skin:/palemoon/buttons/btn__autodj_shuffle.svg) no-repeat center center;
 }
 
-QPushButton#pushButtonAddRandom:enabled {
+QPushButton#pushButtonAddRandomTrack:enabled {
   image: url(skin:/palemoon/buttons/btn__autodj_addrandom.svg) no-repeat center center;
 }
 
@@ -2567,18 +2579,6 @@ WTrackTableView QCheckBox:focus {
 WTrackTableView {
   qproperty-focusBorderColor: #fff;
 }
-
-/* This is the only way to select the 'Played' checkbox.
-  Note that this also selects the BPM lock. */
-WTrackTableView::indicator {
-  /* border is added to configured size */
-  border: 1px solid transparent;
-  margin: 0px;
-  padding: 0px;
-  }
-  WTrackTableView::indicator:unchecked {
-    border: 1px solid rgba(151,151,151,128);
-  }
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
@@ -2994,12 +2994,15 @@ QLineEdit QMenu::item:disabled {
       image: url(skin:/palemoon/buttons/btn__menu_checkbox.svg);
     }
 
+  /* This is the only way to select the 'Played' checkbox.
+    Note that this also selects the BPM lock, so style that afterwards. */
+  WTrackTableView::indicator:unchecked {
+    image: url(skin:/palemoon/buttons/btn__lib_checkbox.svg);
+  }
   WLibrarySidebar QMenu::indicator:checked,
   WTrackTableViewHeader QMenu::indicator:checked,
   WTrackTableView::indicator:checked,
-  WTrackMenu QMenu QCheckBox::indicator:checked,
-  WEffectSelector::indicator:checked,
-  #fadeModeCombobox::indicator:checked {
+  WTrackMenu QMenu QCheckBox::indicator:checked {
     image: url(skin:/palemoon/buttons/btn__lib_checkmark_blue.svg);
   }
   WEffectSelector::indicator:checked,
@@ -3035,8 +3038,6 @@ WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
 WTrackTableViewHeader QMenu::indicator:unchecked,
 WTrackTableViewHeader QMenu::indicator:unchecked:selected,
-WTrackTableView::indicator:unchecked,
-WTrackTableView::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,

@@ -134,7 +134,8 @@ WEffectSelector QAbstractScrollArea {
     margin: 2px;
   }
   WEffectSelector::down-arrow,
-  #fadeModeCombobox::down-arrow {
+  #fadeModeCombobox::down-arrow,
+  WTrackTableView::indicator {
     border: 0;
     padding: 0;
     margin: 0;
@@ -435,6 +436,9 @@ WSpinny { /*
 
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+}
+#RateSliderBoxCompactSync {
+  margin-left: 5px;
 }
 /************** Decks  ********************************************************/
 

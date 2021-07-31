@@ -12,7 +12,7 @@ class EncoderFdkAac : public Encoder {
     EncoderFdkAac(EncoderCallback* pCallback);
     virtual ~EncoderFdkAac();
 
-    int initEncoder(int samplerate, QString* pUserErrorMessage) override;
+    int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE* samples, const int sampleCount) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
@@ -201,7 +201,7 @@ class EncoderFdkAac : public Encoder {
     int m_aacAot;
     int m_bitrate;
     int m_channels;
-    int m_samplerate;
+    mixxx::audio::SampleRate m_sampleRate;
     EncoderCallback* m_pCallback;
     std::unique_ptr<QLibrary> m_pLibrary;
     FIFO<SAMPLE>* m_pInputFifo;

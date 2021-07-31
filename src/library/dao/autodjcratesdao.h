@@ -94,8 +94,8 @@ class AutoDJCratesDAO : public QObject {
             TrackPointer pOldTrack);
 
   private:
-    void playerInfoTrackLoaded(const QString& group, TrackPointer pTrack);
-    void playerInfoTrackUnloaded(const QString& group, TrackPointer pTrack);
+    void playerInfoTrackLoaded(const QString& group, TrackId trackId);
+    void playerInfoTrackUnloaded(const QString& group, TrackId trackId);
     void updateAutoDjCrate(CrateId crateId);
     void deleteAutoDjCrate(CrateId crateId);
 

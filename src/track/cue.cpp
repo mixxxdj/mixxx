@@ -86,7 +86,7 @@ Cue::Cue(
                   positionMillisToFrames(
                           cueInfo.getEndPositionMillis(),
                           sampleRate)),
-          m_iHotCue(cueInfo.getHotCueIndex() ? *cueInfo.getHotCueIndex() : kNoHotCue),
+          m_iHotCue(cueInfo.getHotCueIndex().value_or(kNoHotCue)),
           m_label(cueInfo.getLabel()),
           m_color(cueInfo.getColor().value_or(mixxx::PredefinedColorPalettes::kDefaultCueColor)) {
     DEBUG_ASSERT(!m_dbId.isValid());
@@ -104,6 +104,8 @@ Cue::Cue(
           m_endPosition(endPosition),
           m_iHotCue(hotCueIndex),
           m_color(mixxx::PredefinedColorPalettes::kDefaultCueColor) {
+    DEBUG_ASSERT(m_iHotCue == kNoHotCue || m_iHotCue >= mixxx::kFirstHotCueIndex);
+    DEBUG_ASSERT(m_startPosition.isValid() || m_endPosition.isValid());
     DEBUG_ASSERT(!m_dbId.isValid());
 }
 
@@ -272,8 +274,4 @@ void Cue::setDirty(bool dirty) {
 mixxx::audio::FramePos Cue::getEndPosition() const {
     QMutexLocker lock(&m_mutex);
     return m_endPosition;
-}
-
-bool operator==(const CuePosition& lhs, const CuePosition& rhs) {
-    return lhs.getPosition() == rhs.getPosition();
 }

@@ -32,7 +32,9 @@ AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
           m_iSignalEnd(-1) {
 }
 
-bool AnalyzerSilence::initialize(TrackPointer pTrack, int sampleRate, int totalSamples) {
+bool AnalyzerSilence::initialize(TrackPointer pTrack,
+        mixxx::audio::SampleRate sampleRate,
+        int totalSamples) {
     Q_UNUSED(sampleRate);
     Q_UNUSED(totalSamples);
 

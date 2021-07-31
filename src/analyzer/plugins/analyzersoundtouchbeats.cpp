@@ -14,9 +14,9 @@ AnalyzerSoundTouchBeats::AnalyzerSoundTouchBeats()
 AnalyzerSoundTouchBeats::~AnalyzerSoundTouchBeats() {
 }
 
-bool AnalyzerSoundTouchBeats::initialize(int samplerate) {
+bool AnalyzerSoundTouchBeats::initialize(mixxx::audio::SampleRate sampleRate) {
     m_resultBpm = mixxx::Bpm();
-    m_pSoundTouch = std::make_unique<soundtouch::BPMDetect>(2, samplerate);
+    m_pSoundTouch = std::make_unique<soundtouch::BPMDetect>(2, sampleRate);
     return true;
 }
 
