@@ -80,9 +80,9 @@ if(OpusFile_FOUND)
         INTERFACE_INCLUDE_DIRECTORIES "${OpusFile_INCLUDE_DIRS}"
     )
     get_target_property(OPUSFILE_TYPE OpusFile::OpusFile TYPE)
-    if(PUSFILE_TYPE STREQUAL "STATIC_LIBRARY")
+    if(OPUSFILE_TYPE STREQUAL "STATIC_LIBRARY")
       find_package(Opus REQUIRED)
-      set_property(TARGET Chromaprint::Chromaprint APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+      set_property(TARGET OpusFile::OpusFile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
         Opus::Opus
       )
     endif()

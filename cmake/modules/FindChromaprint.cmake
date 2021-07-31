@@ -86,7 +86,7 @@ if(Chromaprint_FOUND)
     get_target_property(CHROMAPRINT_TYPE Chromaprint::Chromaprint TYPE)
     if(CHROMAPRINT_TYPE STREQUAL "STATIC_LIBRARY")
       if(WIN32)
-        # used in chomaprint.h to set dllexport for windows
+        # used in chomaprint.h to set dllexport for Windows
         set_property(TARGET Chromaprint::Chromaprint APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
           CHROMAPRINT_NODLL
         )

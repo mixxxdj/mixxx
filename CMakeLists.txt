@@ -1810,7 +1810,7 @@ if(LOCALECOMPARE)
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
   target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
-elseif(CHROMAPRINT_TYPE STREQUAL "STATIC_LIBRARY")
+elseif(SQLITE3_TYPE STREQUAL "STATIC_LIBRARY")
   # in the static case we need to link SQlite3 uncoditionally
   target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
 endif()
