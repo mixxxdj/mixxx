@@ -2075,6 +2075,7 @@ find_package(Qt5
     Gui
     Network
     OpenGL
+    PrintSupport
     Qml
     QuickWidgets
     Sql
@@ -2084,12 +2085,14 @@ find_package(Qt5
     Xml
   REQUIRED
 )
+# PUBLIC is required below to find included headers
 target_link_libraries(mixxx-lib PUBLIC
   Qt5::Concurrent
   Qt5::Core
   Qt5::Gui
   Qt5::Network
   Qt5::OpenGL
+  Qt5::PrintSupport
   Qt5::Qml
   Qt5::QuickWidgets
   Qt5::Sql
