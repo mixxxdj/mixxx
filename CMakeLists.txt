@@ -1781,11 +1781,6 @@ if(WIN32)
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
-#
-# Dependencies
-#
-option(STATIC_DEPS "Link dependencies statically" OFF)
-
 # Chromaprint
 find_package(Chromaprint REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
@@ -1806,7 +1801,7 @@ if(ENGINEPRIME)
 
     # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
     # embedded SQLite in such a case.
-    if (APPLE)
+    if (APPLE AND NOT DEFINED ENV{VCPKG_ROOT})
       message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
       set(DJINTEROP_SYSTEM_SQLITE OFF)
     else()
@@ -2048,7 +2043,7 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortMidi_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PRIVATE ${PortMidi_LIBRARIES})
 
 # Protobuf
-if(STATIC_DEPS)
+if(NOT BUILD_SHARED_LIBS)
   set(Protobuf_USE_STATIC_LIBS ON)
   mark_as_advanced(Protobuf_USE_STATIC_LIBS)
 endif()
