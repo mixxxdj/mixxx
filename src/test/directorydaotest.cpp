@@ -180,16 +180,16 @@ TEST_F(DirectoryDAOTest, relocateDirectory) {
     const QTemporaryDir tempDir2;
     ASSERT_TRUE(tempDir2.isValid());
 
-    // Create temp dirs (with LIKE/GLOB wildcards and quotes in name)
+    // Create temp dirs (with LIKE/GLOB wildcards, Unicode characters, and quotes in name)
 #if defined(__WINDOWS__)
     // Exclude reserved characters from path names: ", *, ?
     // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
-    const QString oldDirPath = tempDir1.filePath("Test'_%Dir");
-    const QString newDirPath = tempDir2.filePath("TestDir'_%New");
+    const QString oldDirPath = tempDir1.filePath("Täst'_%Dir");
+    const QString newDirPath = tempDir2.filePath("TëstDir'_%New");
     const QString otherDirPath = tempDir2.filePath("TestDir'_%Other");
 #else
-    const QString oldDirPath = tempDir1.filePath("Test'\"_*%?Dir");
-    const QString newDirPath = tempDir2.filePath("TestDir'\"_*%?New");
+    const QString oldDirPath = tempDir1.filePath("Täst'\"_*%?Dir");
+    const QString newDirPath = tempDir2.filePath("TëstDir'\"_*%?New");
     const QString otherDirPath = tempDir2.filePath("TestDir'\"_*%?Other");
 #endif
     ASSERT_TRUE(QDir{}.mkpath(oldDirPath));
