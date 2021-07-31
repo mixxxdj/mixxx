@@ -795,44 +795,46 @@ void importTrackMetadataFromTag(
     if (!bpmFrames.isEmpty()) {
         parseBpm(pTrackMetadata,
                 firstNonEmptyFrameToQString(bpmFrames));
-        double bpmValue = pTrackMetadata->getTrackInfo().getBpm().value();
-        // Some software use (or used) to write decimated values without comma,
-        // so the number reads as 1352 or 14525 when it is 135.2 or 145.25
-        if (bpmValue < Bpm::kValueMin || bpmValue > 1000 * Bpm::kValueMax) {
-            // Considered out of range, don't try to adjust it
-            kLogger.warning()
-                    << "Ignoring invalid bpm value"
-                    << bpmValue;
-            bpmValue = Bpm::kValueUndefined;
-        } else {
-            double bpmValueOriginal = bpmValue;
-            DEBUG_ASSERT(Bpm::kValueUndefined <= Bpm::kValueMax);
-            bool adjusted = false;
-            while (bpmValue > Bpm::kValueMax) {
-                double bpmValueAdjusted = bpmValue / 10;
-                if (bpmValueAdjusted < bpmValue) {
-                    bpmValue = bpmValueAdjusted;
-                    adjusted = true;
-                    continue;
-                }
-                // Ensure that the loop always terminates even for invalid
-                // values like Inf and NaN!
+        if (pTrackMetadata->getTrackInfo().getBpm().isValid()) {
+            double bpmValue = pTrackMetadata->getTrackInfo().getBpm().value();
+            // Some software use (or used) to write decimated values without comma,
+            // so the number reads as 1352 or 14525 when it is 135.2 or 145.25
+            if (bpmValue < Bpm::kValueMin || bpmValue > 1000 * Bpm::kValueMax) {
+                // Considered out of range, don't try to adjust it
                 kLogger.warning()
                         << "Ignoring invalid bpm value"
-                        << bpmValueOriginal;
-                bpmValue = Bpm::kValueUndefined;
-                break;
-            }
-            if (adjusted) {
-                kLogger.info()
-                        << "Adjusted bpm value from"
-                        << bpmValueOriginal
-                        << "to"
                         << bpmValue;
+                bpmValue = Bpm::kValueUndefined;
+            } else {
+                double bpmValueOriginal = bpmValue;
+                DEBUG_ASSERT(Bpm::kValueUndefined <= Bpm::kValueMax);
+                bool adjusted = false;
+                while (bpmValue > Bpm::kValueMax) {
+                    double bpmValueAdjusted = bpmValue / 10;
+                    if (bpmValueAdjusted < bpmValue) {
+                        bpmValue = bpmValueAdjusted;
+                        adjusted = true;
+                        continue;
+                    }
+                    // Ensure that the loop always terminates even for invalid
+                    // values like Inf and NaN!
+                    kLogger.warning()
+                            << "Ignoring invalid bpm value"
+                            << bpmValueOriginal;
+                    bpmValue = Bpm::kValueUndefined;
+                    break;
+                }
+                if (adjusted) {
+                    kLogger.info()
+                            << "Adjusted bpm value from"
+                            << bpmValueOriginal
+                            << "to"
+                            << bpmValue;
+                }
             }
-        }
-        if (bpmValue != Bpm::kValueUndefined) {
-            pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+            if (bpmValue != Bpm::kValueUndefined) {
+                pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+            }
         }
     }
 

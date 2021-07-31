@@ -85,17 +85,17 @@
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey><Variable name="Group"/>,sync_master</ConfigKey>
+                  <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
               </PushButton>
               <PushButton>
-                <TooltipId>sync_master</TooltipId>
+                <TooltipId>sync_leader</TooltipId>
                 <ObjectName>SyncLeader</ObjectName>
                 <Size>22f,22f</Size>
                 <NumberStates>3</NumberStates>
                 <Connection>
-                  <ConfigKey><Variable name="Group"/>,sync_master</ConfigKey>
+                  <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>

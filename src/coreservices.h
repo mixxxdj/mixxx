@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "control/controlpushbutton.h"
 #include "preferences/configobject.h"
 #include "preferences/constants.h"
@@ -27,6 +29,7 @@ class LV2Backend;
 
 namespace mixxx {
 
+class ControlIndicatorTimer;
 class DbConnectionPool;
 class ScreensaverManager;
 
@@ -35,7 +38,7 @@ class CoreServices : public QObject {
 
   public:
     CoreServices(const CmdlineArgs& args, QApplication* pApp);
-    ~CoreServices() = default;
+    ~CoreServices();
 
     /// The secondary long run which should be called after displaying the start up screen
     void initialize(QApplication* pApp);
@@ -47,6 +50,10 @@ class CoreServices : public QObject {
 
     std::shared_ptr<ConfigObject<ConfigValueKbd>> getKeyboardConfig() const {
         return m_pKbdConfig;
+    }
+
+    std::shared_ptr<mixxx::ControlIndicatorTimer> getControlIndicatorTimer() const {
+        return m_pControlIndicatorTimer;
     }
 
     std::shared_ptr<SoundManager> getSoundManager() const {
@@ -111,8 +118,8 @@ class CoreServices : public QObject {
 
   private:
     bool initializeDatabase();
-    void initializeSettings();
     void initializeKeyboard();
+    void initializeSettings();
     void initializeScreensaverManager();
     void initializeLogging();
 
@@ -120,6 +127,7 @@ class CoreServices : public QObject {
     void preInitialize(QApplication* pApp);
 
     std::shared_ptr<SettingsManager> m_pSettingsManager;
+    std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     // owned by EffectsManager
     LV2Backend* m_pLV2Backend{};

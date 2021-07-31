@@ -28,6 +28,7 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#include "control/controlindicatortimer.h"
 #include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -104,7 +105,6 @@ MixxxMainWindow::MixxxMainWindow(
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON) {
     DEBUG_ASSERT(pApp);
     DEBUG_ASSERT(pCoreServices);
-
     // These depend on the settings
     createMenuBar();
     m_pMenuBar->hide();
@@ -122,14 +122,10 @@ MixxxMainWindow::MixxxMainWindow(
 
     m_pGuiTick = new GuiTick();
     m_pVisualsManager = new VisualsManager();
+}
 
-    connect(
-            m_pCoreServices.get(),
-            &mixxx::CoreServices::initializationProgressUpdate,
-            this,
-            &MixxxMainWindow::initializationProgressUpdate);
-
-    m_pCoreServices->initialize(pApp);
+void MixxxMainWindow::initialize() {
+    m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
 
@@ -164,6 +160,8 @@ MixxxMainWindow::MixxxMainWindow(
 
     initializationProgressUpdate(65, tr("skin"));
 
+    // Install an event filter to catch certain QT events, such as tooltips.
+    // This allows us to turn off tooltips.
     installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
 
     DEBUG_ASSERT(m_pCoreServices->getPlayerManager());
@@ -269,11 +267,6 @@ MixxxMainWindow::MixxxMainWindow(
     if (!CmdlineArgs::Instance().getSafeMode()) {
         checkDirectRendering();
     }
-
-    // Install an event filter to catch certain QT events, such as tooltips.
-    // This allows us to turn off tooltips.
-    pApp->installEventFilter(this); // The eventfilter is located in this
-                                    // Mixxx class as a callback.
 
     // Try open player device If that fails, the preference panel is opened.
     bool retryClicked;
@@ -424,6 +417,8 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DlgPreferences";
     delete m_pPrefDlg;
+
+    m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(false);
 
     WaveformWidgetFactory::destroy();
 

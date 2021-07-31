@@ -23,8 +23,18 @@ constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
-    auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
+    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
+
     MixxxMainWindow mainWindow(pApp, pCoreServices);
+    pApp->installEventFilter(&mainWindow);
+
+    QObject::connect(pCoreServices.get(),
+            &mixxx::CoreServices::initializationProgressUpdate,
+            &mainWindow,
+            &MixxxMainWindow::initializationProgressUpdate);
+    pCoreServices->initialize(pApp);
+    mainWindow.initialize();
+
     // If startup produced a fatal error, then don't even start the
     // Qt event loop.
     if (ErrorDialogHandler::instance()->checkError()) {
@@ -78,6 +88,10 @@ int main(int argc, char * argv[]) {
     // created in the thread of the first caller to instance(), which may not be
     // the main thread. Bug #1748636.
     ErrorDialogHandler::instance();
+
+#ifdef __APPLE__
+    Sandbox::checkSandboxed();
+#endif
 
     MixxxApplication app(argc, argv);
 

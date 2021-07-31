@@ -71,7 +71,6 @@ public:
   // Set Rate Ramp Sensitivity
   static void setRateRampSensitivity(int);
   static int getRateRampSensitivity();
-  void notifySeek(double dNewPlaypos) override;
   bool isReverseButtonPressed();
 
 public slots:

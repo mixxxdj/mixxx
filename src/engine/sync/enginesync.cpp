@@ -374,8 +374,6 @@ void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) 
             updateLeaderBeatDistance(pOnlyPlayer, pOnlyPlayer->getBeatDistance());
         }
     }
-
-    pSyncable->requestSync();
 }
 
 void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
