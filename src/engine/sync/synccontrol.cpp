@@ -511,6 +511,7 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
 double SyncControl::fileBpm() const {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
+        // FIXME: calling bpm.value() without checking bpm.isValid()
         return pBeats->getBpm().value();
     }
     return mixxx::Bpm::kValueUndefined;

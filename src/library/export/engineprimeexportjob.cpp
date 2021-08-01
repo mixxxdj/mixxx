@@ -110,6 +110,55 @@ std::optional<djinterop::track> getTrackByRelativePath(
     }
 }
 
+bool tryGetBeatgrid(BeatsPointer pBeats,
+        mixxx::audio::FramePos cuePlayPos,
+        int64_t frameCount,
+        std::vector<djinterop::beatgrid_marker>* pBeatgrid) {
+    if (!cuePlayPos.isValid()) {
+        return false;
+    }
+
+    // For now, assume a constant average BPM across the whole track.
+    // Note that Mixxx does not (currently) store any information about
+    // which beat of a bar a given beat represents.  As such, in order to
+    // make sure we have the right phrasing, assume that the main cue point
+    // starts at the beginning of a bar, then move backwards towards the
+    // beginning of the track in 4-beat decrements to find the first beat
+    // in the track that also aligns with the start of a bar.
+    const auto firstBeatPlayPos = pBeats->firstBeat();
+    const auto cueBeatPlayPos = pBeats->findClosestBeat(cuePlayPos);
+    if (!firstBeatPlayPos.isValid() || !cueBeatPlayPos.isValid()) {
+        return false;
+    }
+
+    int numBeatsToCue = pBeats->numBeatsInRange(firstBeatPlayPos, cueBeatPlayPos);
+    const auto firstBarAlignedBeatPlayPos = pBeats->findNBeatsFromPosition(
+            cueBeatPlayPos, numBeatsToCue & ~0x3);
+    if (!firstBarAlignedBeatPlayPos.isValid()) {
+        return false;
+    }
+
+    // We will treat the first bar-aligned beat as beat zero.  Find the
+    // number of pBeats from there until the end of the track in order to
+    // correctly assign an index for the last beat.
+    const auto lastBeatPlayPos = pBeats->findPrevBeat(mixxx::audio::kStartFramePos + frameCount);
+    if (!lastBeatPlayPos.isValid()) {
+        return false;
+    }
+
+    int numBeats = pBeats->numBeatsInRange(firstBarAlignedBeatPlayPos, lastBeatPlayPos);
+    if (numBeats <= 0) {
+        return false;
+    }
+
+    std::vector<djinterop::beatgrid_marker> beatgrid{
+            {0, firstBarAlignedBeatPlayPos.value()},
+            {numBeats, lastBeatPlayPos.value()}};
+    beatgrid = el::normalize_beatgrid(std::move(beatgrid), frameCount);
+    pBeatgrid->assign(std::begin(beatgrid), std::end(beatgrid));
+    return true;
+}
+
 void exportMetadata(djinterop::database* pDatabase,
         QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         TrackPointer pTrack,
@@ -174,38 +223,17 @@ void exportMetadata(djinterop::database* pDatabase,
     snapshot.default_main_cue = cuePlayPosValue;
     snapshot.adjusted_main_cue = cuePlayPosValue;
 
-    // Fill in beat grid.  For now, assume a constant average BPM across
-    // the whole track.  Note that points in the track are specified as
-    // "play positions", which are twice the sample offset.
+    // Fill in beat grid.
     BeatsPointer beats = pTrack->getBeats();
     if (beats != nullptr) {
-        // Note that Mixxx does not (currently) store any information about
-        // which beat of a bar a given beat represents.  As such, in order to
-        // make sure we have the right phrasing, assume that the main cue point
-        // starts at the beginning of a bar, then move backwards towards the
-        // beginning of the track in 4-beat decrements to find the first beat
-        // in the track that also aligns with the start of a bar.
-        const auto firstBeatPlayPos = beats->firstBeat();
-        const auto cueBeatPlayPos = beats->findClosestBeat(cuePlayPos);
-        int numBeatsToCue = beats->numBeatsInRange(firstBeatPlayPos, cueBeatPlayPos);
-        const auto firstBarAlignedBeatPlayPos = beats->findNBeatsFromPosition(
-                cueBeatPlayPos, numBeatsToCue & ~0x3);
-
-        // We will treat the first bar-aligned beat as beat zero.  Find the
-        // number of beats from there until the end of the track in order to
-        // correctly assign an index for the last beat.
-        const auto lastBeatPlayPos = beats->findPrevBeat(mixxx::audio::kStartFramePos + frameCount);
-        int numBeats = beats->numBeatsInRange(firstBarAlignedBeatPlayPos, lastBeatPlayPos);
-        if (numBeats > 0) {
-            std::vector<djinterop::beatgrid_marker> beatgrid{
-                    {0, firstBarAlignedBeatPlayPos.value()},
-                    {numBeats, lastBeatPlayPos.value()}};
-            beatgrid = el::normalize_beatgrid(std::move(beatgrid), frameCount);
+        std::vector<djinterop::beatgrid_marker> beatgrid;
+        if (tryGetBeatgrid(beats, cuePlayPos, frameCount, &beatgrid)) {
             snapshot.default_beatgrid = beatgrid;
             snapshot.adjusted_beatgrid = beatgrid;
         } else {
-            qWarning() << "Non-positive number of beats in beat data of track" << pTrack->getId()
-                       << "(" << pTrack->getFileInfo().fileName() << ")";
+            qWarning() << "Beats data exists but is invalid for track"
+                       << pTrack->getId() << "("
+                       << pTrack->getFileInfo().fileName() << ")";
         }
     } else {
         qInfo() << "No beats data found for track" << pTrack->getId()
@@ -227,6 +255,12 @@ void exportMetadata(djinterop::database* pDatabase,
             qInfo() << "Skipping hot cue" << hotCueIndex
                     << "as the Engine Prime format only supports at most"
                     << kMaxHotCues << "hot cues.";
+            continue;
+        }
+
+        if (!pCue->getPosition().isValid()) {
+            qWarning() << "Hot cue" << hotCueIndex << "exists but is invalid for track"
+                       << pTrack->getId() << "(" << pTrack->getFileInfo().fileName() << ")";
             continue;
         }
 
