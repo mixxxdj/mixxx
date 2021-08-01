@@ -1,8 +1,3 @@
-// controls annotated with "powerWindow workaround" would normally use
-// powerWindow as type. There's a problem - when pressing them and releasing
-// them *quickly* makes them act like toggles, which is quite confusing.
-// the workaround fixes this issue.
-
 var MixtrackProFX = {};
 
 // pitch ranges
@@ -544,34 +539,16 @@ MixtrackProFX.Deck = function(number) {
         inKey: "loop_out"
     });
 
-    // powerWindow workaround
     this.bleep = new components.Button({
-        input: function(channel, control, value, status, group) {
-            if (value === 0x7F) {
-                value = 1;
-            }
-            engine.setValue(group, "reverseroll", value);
-        }
+        inKey: "reverseroll"
     });
 
-    // powerWindow workaround
     this.pitchBendUp = new components.Button({
-        input: function(channel, control, value, status, group) {
-            if (value === 0x7F) {
-                value = 1;
-            }
-            engine.setValue(group, "rate_temp_up", value);
-        }
+        inKey: "rate_temp_up"
     });
 
-    // powerWindow workaround
     this.pitchBendDown = new components.Button({
-        input: function(channel, control, value, status, group) {
-            if (value === 0x7F) {
-                value = 1;
-            }
-            engine.setValue(group, "rate_temp_down", value);
-        }
+        inKey: "rate_temp_down"
     });
 
     this.keylock = new components.Button({
