@@ -20,8 +20,7 @@ If you are using K2s, they must have Latching Layers turned off, which is the de
     </info>
     <controller id="XONE:K2">
         <scriptfiles>
-            <file filename="lodash.mixxx.js"/>
-            <file filename="midi-components-0.0.js"/>
+            <file filename="midi-components-0.1.js"/>
             <file filename="Allen-and-Heath-Xone-K2-scripts.js" functionprefix="XoneK2"/>
         </scriptfiles>
         <controls>
