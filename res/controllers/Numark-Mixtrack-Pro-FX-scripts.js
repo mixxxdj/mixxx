@@ -638,13 +638,9 @@ MixtrackProFX.Deck.prototype = new components.Deck();
 MixtrackProFX.Browse = function() {
     this.knob = new components.Encoder({
         group: "[Library]",
-        inKey: "Move",
-        input: function(channel, control, value) {
-            if (value === 0x01) {
-                engine.setParameter(this.group, this.inKey + "Down", 1);
-            } else if (value === 0x7F) {
-                engine.setParameter(this.group, this.inKey + "Up", 1);
-            }
+        inKey: "MoveVertical",
+        inValueScale: function(value) {
+            return (value > 0x40) ? value - 0x80 : value;
         }
     });
 
