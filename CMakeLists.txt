@@ -82,6 +82,7 @@ include(CheckSymbolExists)
 include(ExternalProject)
 include(GNUInstallDirs)
 include(DefaultOption)
+include(IsStaticLibrary)
 
 #######################################################################
 # Compilers and toolchains
@@ -1796,8 +1797,8 @@ find_package(SQLite3)
 if(NOT SQLite3_FOUND)
   set(LOCALECOMPARE_DEFAULT OFF)
 else()
-  get_target_property(SQLITE3_TYPE SQLite3::SQLite3 TYPE)
-  if(SQLITE3_TYPE STREQUAL "STATIC_LIBRARY" OR NOT APPLE)
+  is_static_library(SQLite3_IS_STATIC SQLite3::SQLite3)
+  if(SQLite3_IS_STATIC OR NOT APPLE)
     set(LOCALECOMPARE_DEFAULT ON)
   else()
     set(LOCALECOMPARE_DEFAULT OFF)
@@ -1810,7 +1811,7 @@ if(LOCALECOMPARE)
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
   target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
-elseif(SQLITE3_TYPE STREQUAL "STATIC_LIBRARY")
+elseif(SQLite3_IS_STATIC)
   # in the static case we need to link SQlite3 uncoditionally
   target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
 endif()
@@ -1831,7 +1832,7 @@ if(ENGINEPRIME)
 
     # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
     # embedded SQLite in such a case.
-    if (APPLE AND NOT SQLITE3_TYPE STREQUAL "STATIC_LIBRARY")
+    if (APPLE AND NOT SQLite3_IS_STATIC)
       message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
       set(DJINTEROP_SYSTEM_SQLITE OFF)
     else()
@@ -2118,8 +2119,8 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Widgets
   Qt5::Xml)
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
-get_target_property(QT5_TYPE Qt5::Core TYPE)
-if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
+is_static_library(Qt5_IS_STATIC Qt5::Core)
+if(Qt5_IS_STATIC)
 
   # NOTE(rryan): If you are adding a plugin here, you must also
   # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
@@ -2161,17 +2162,7 @@ endif()
 
 
 if(APPLE)
-  if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
-    find_package(FFTW REQUIRED)
-    find_package(SndFile REQUIRED)
-    find_package(sord CONFIG REQUIRED)
-    find_library(SAMPLERATE_LIBRARY samplerate REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE
-        FFTW::FFTW
-        SndFile::sndfile
-        sord::sord
-        ${SAMPLERATE_LIBRARY}
-    )
+  if(Qt5_IS_STATIC)
     target_link_libraries(mixxx-lib PRIVATE
         "-weak_framework Accelerate"
         "-weak_framework AppKit"
@@ -2204,7 +2195,7 @@ elseif(UNIX)
     Qt5::DBus
   )
 elseif(WIN32)
-  if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
+  if(Qt5_IS_STATIC)
     target_link_libraries(mixxx-lib PRIVATE
       # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
       # QtCore
@@ -2918,7 +2909,7 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" 
 include(CPack)
 
 if(APPLE AND MACOS_BUNDLE)
-    if(NOT QT5_TYPE STREQUAL "STATIC_LIBRARY")
+    if(NOT Qt5_IS_STATIC)
         macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
             get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
             if(EXISTS "${_qt_plugin_path}")

@@ -39,6 +39,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_OpusFile QUIET opusfile)
@@ -79,12 +81,12 @@ if(OpusFile_FOUND)
         INTERFACE_COMPILE_OPTIONS "${OpusFile_DEFINITIONS}"
         INTERFACE_INCLUDE_DIRECTORIES "${OpusFile_INCLUDE_DIRS}"
     )
-    get_target_property(OPUSFILE_TYPE OpusFile::OpusFile TYPE)
-    if(OPUSFILE_TYPE STREQUAL "STATIC_LIBRARY")
-      find_package(Opus REQUIRED)
-      set_property(TARGET OpusFile::OpusFile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-        Opus::Opus
-      )
-    endif()
+    is_static_library(OpusFile_IS_STATIC OpusFile::OpusFile)
+    #if(OpusFile_IS_STATIC)
+    #  find_package(Opus REQUIRED)
+    #  set_property(TARGET OpusFile::OpusFile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+    #    Opus::Opus
+    #  )
+    #endif()
   endif()
 endif()

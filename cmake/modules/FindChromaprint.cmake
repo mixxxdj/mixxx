@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_Chromaprint QUIET libchromaprint)
@@ -83,8 +85,8 @@ if(Chromaprint_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_Chromaprint_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${Chromaprint_INCLUDE_DIR}"
     )
-    get_target_property(CHROMAPRINT_TYPE Chromaprint::Chromaprint TYPE)
-    if(CHROMAPRINT_TYPE STREQUAL "STATIC_LIBRARY")
+    is_static_library(Chromaprint_IS_STATIC Chromaprint::Chromaprint)
+    if(Chromaprint_IS_STATIC)
       if(WIN32)
         # used in chomaprint.h to set dllexport for Windows
         set_property(TARGET Chromaprint::Chromaprint APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS

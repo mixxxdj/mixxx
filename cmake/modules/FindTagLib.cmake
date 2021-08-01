@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_TagLib QUIET taglib)
@@ -83,8 +85,8 @@ if(TagLib_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_TagLib_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${TagLib_INCLUDE_DIR}"
     )
-    get_target_property(TAGLIB_TYPE TagLib::TagLib TYPE)
-    if(TAGLIB_TYPE STREQUAL "STATIC_LIBRARY")
+    is_static_library(Taglib_IS_STATIC TagLib::TagLib)
+    if(Taglib_IS_STATIC)
       if(WIN32)
         set_property(TARGET TagLib::TagLib APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
           TAGLIB_STATIC
