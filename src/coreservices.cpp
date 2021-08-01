@@ -106,6 +106,8 @@ namespace mixxx {
 CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
         : m_runtime_timer(QLatin1String("CoreServices::runtime")),
           m_cmdlineArgs(args) {
+    m_runtime_timer.start();
+    mixxx::Time::start();
     ScopedTimer t("CoreServices::CoreServices");
     // All this here is running without without start up screen
     // Defere long initialisations to CoreServices::initialize() which is
@@ -151,22 +153,7 @@ void CoreServices::initializeLogging() {
             logFlags);
 }
 
-void CoreServices::preInitialize(QApplication* pApp) {
-    ScopedTimer t("CoreServices::preInitialize");
-    initializeSettings();
-    initializeLogging();
-    // Only record stats in developer mode.
-    if (m_cmdlineArgs.getDeveloper()) {
-        StatsManager::createInstance();
-    }
-    mixxx::Translations::initializeTranslations(
-            m_pSettingsManager->settings(), pApp, m_cmdlineArgs.getLocale());
-    initializeKeyboard();
-}
-
 void CoreServices::initialize(QApplication* pApp) {
-    m_runtime_timer.start();
-    mixxx::Time::start();
     ScopedTimer t("CoreServices::initialize");
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
@@ -175,7 +162,6 @@ void CoreServices::initialize(QApplication* pApp) {
     }
 
     VersionStore::logBuildDetails();
-
 
 #if defined(Q_OS_LINUX)
     // XESetWireToError will segfault if running as a Wayland client
