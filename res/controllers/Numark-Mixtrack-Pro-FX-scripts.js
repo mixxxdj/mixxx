@@ -191,13 +191,7 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.loadButton = new components.Button({
-        inKey: "LoadSelectedTrack",
-        shift: function() {
-            this.group = "[PreviewDeck1]";
-        },
-        unshift: function() {
-            this.group = "[Channel" + (channel + 1) + "]";
-        }
+        inKey: "LoadSelectedTrack"
     });
 
     this.volume = new components.Pot({
