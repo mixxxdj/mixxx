@@ -113,11 +113,11 @@ MixtrackProFX.shutdown = function() {
     midi.sendSysexMsg(shutdownSysex, shutdownSysex.length);
 };
 
-MixtrackProFX.EffectUnit = function(unitNumber) {
-    this.unitNumber = unitNumber;
-    this.group = "[EffectRack1_EffectUnit" + unitNumber + "]";
+MixtrackProFX.EffectUnit = function(deckNumber) {
+    this.deckNumber = deckNumber;
+    this.group = "[EffectRack1_EffectUnit" + deckNumber + "]";
 
-    this.enableButton = new components.Button({
+    this.enableSwitch = new components.Button({
         input: function(channel, control, value, status, group) {
             // note: value is 2 when the switch is held down (1 when up)
             engine.setValue(group, "enabled", value);
@@ -130,13 +130,13 @@ MixtrackProFX.EffectUnit = function(unitNumber) {
     });
 
     this.tap = new components.Button({
-        group: "[Channel" + this.unitNumber + "]",
+        group: "[Channel" + this.deckNumber + "]",
         key: "bpm_tap",
         midi: [0x88, 0x09]
     });
 
     this.effectParam = new components.Encoder({
-        group: "[EffectRack1_EffectUnit" + unitNumber + "_Effect1]",
+        group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
         inKey: "parameter1",
         shift: function() {
             this.inKey = "parameter2";

@@ -1564,7 +1564,7 @@
       <!-- FX enable -->
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>MixtrackProFX.effect[0].enableButton.input</key>
+        <key>MixtrackProFX.effect[0].enableSwitch.input</key>
         <status>0xB8</status>
         <midino>0x03</midino>
         <options>
@@ -1573,7 +1573,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>MixtrackProFX.effect[1].enableButton.input</key>
+        <key>MixtrackProFX.effect[1].enableSwitch.input</key>
         <status>0xB9</status>
         <midino>0x03</midino>
         <options>
