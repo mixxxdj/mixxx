@@ -50,6 +50,8 @@ class MixxxMainWindow : public QMainWindow {
     MixxxMainWindow(QApplication* app, std::shared_ptr<mixxx::CoreServices> pCoreServices);
     ~MixxxMainWindow() override;
 
+    /// Initialize main window after creation. Should only be called once.
+    void initialize();
     /// creates the menu_bar and inserts the file Menu
     void createMenuBar();
     void connectMenuBar();
@@ -82,6 +84,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotNoDeckPassthroughInputConfigured();
     void slotNoVinylControlInputConfigured();
 
+    void initializationProgressUpdate(int progress, const QString& serviceName);
+
   private slots:
     void slotTooltipModeChanged(mixxx::TooltipsPreference tt);
 
@@ -96,9 +100,6 @@ class MixxxMainWindow : public QMainWindow {
     /// Event filter to block certain events (eg. tooltips if tooltips are disabled)
     bool eventFilter(QObject *obj, QEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
-
-  private slots:
-    void initializationProgressUpdate(int progress, const QString& serviceName);
 
   private:
     void initializeWindow();

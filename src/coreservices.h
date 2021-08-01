@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "control/controlpushbutton.h"
 #include "preferences/configobject.h"
 #include "preferences/constants.h"
@@ -27,6 +29,7 @@ class LV2Backend;
 
 namespace mixxx {
 
+class ControlIndicatorTimer;
 class DbConnectionPool;
 class ScreensaverManager;
 
@@ -34,13 +37,10 @@ class CoreServices : public QObject {
     Q_OBJECT
 
   public:
-    CoreServices(const CmdlineArgs& args);
-    ~CoreServices() = default;
+    CoreServices(const CmdlineArgs& args, QApplication* pApp);
+    ~CoreServices();
 
-    void initializeSettings();
-    // FIXME: should be private, but WMainMenuBar needs it initialized early
-    void initializeKeyboard();
-    void initializeScreensaverManager();
+    /// The secondary long run which should be called after displaying the start up screen
     void initialize(QApplication* pApp);
     void shutdown();
 
@@ -50,6 +50,10 @@ class CoreServices : public QObject {
 
     std::shared_ptr<ConfigObject<ConfigValueKbd>> getKeyboardConfig() const {
         return m_pKbdConfig;
+    }
+
+    std::shared_ptr<mixxx::ControlIndicatorTimer> getControlIndicatorTimer() const {
+        return m_pControlIndicatorTimer;
     }
 
     std::shared_ptr<SoundManager> getSoundManager() const {
@@ -114,8 +118,13 @@ class CoreServices : public QObject {
 
   private:
     bool initializeDatabase();
+    void initializeKeyboard();
+    void initializeSettings();
+    void initializeScreensaverManager();
+    void initializeLogging();
 
     std::shared_ptr<SettingsManager> m_pSettingsManager;
+    std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     // owned by EffectsManager
     LV2Backend* m_pLV2Backend;
