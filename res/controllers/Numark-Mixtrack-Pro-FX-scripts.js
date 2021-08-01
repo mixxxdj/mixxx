@@ -1,3 +1,6 @@
+// dim all lights when inactive instead of turning them off
+components.Button.prototype.off = 0x01;
+
 var MixtrackProFX = {};
 
 // pitch ranges
@@ -131,8 +134,7 @@ MixtrackProFX.EffectUnit = function(unitNumber) {
     this.tap = new components.Button({
         group: "[Channel" + this.unitNumber + "]",
         key: "bpm_tap",
-        midi: [0x88, 0x09],
-        off: 0x01
+        midi: [0x88, 0x09]
     });
 
     this.effectParam = new components.Encoder({
@@ -165,8 +167,7 @@ MixtrackProFX.Deck = function(number) {
     components.Deck.call(this, number);
 
     this.playButton = new components.PlayButton({
-        midi: [0x90 + channel, 0x00],
-        off: 0x01
+        midi: [0x90 + channel, 0x00]
     });
 
     this.playButtonStutter = new components.Button({
@@ -174,8 +175,7 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.cueButton = new components.CueButton({
-        midi: [0x90 + channel, 0x01],
-        off: 0x01
+        midi: [0x90 + channel, 0x01]
     });
 
     this.cueButtonShift = new components.Button({
@@ -183,14 +183,12 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.syncButton = new components.SyncButton({
-        midi: [0x90 + channel, 0x02],
-        off: 0x01
+        midi: [0x90 + channel, 0x02]
     });
 
     this.pflButton = new components.Button({
         type: components.Button.prototype.types.toggle,
         midi: [0x90 + channel, 0x1B],
-        off: 0x01,
         key: "pfl"
     });
 
@@ -247,7 +245,6 @@ MixtrackProFX.Deck = function(number) {
             midi: [0x94 + channel, 0x14 + i],
             inKey: "hotcue_" + (i + 1) + "_activate",
             outKey: "hotcue_" + (i + 1) + "_enabled",
-            off: 0x01,
             number: i,
             shift: function() {
                 this.midi = [0x94 + channel, 0x1C + this.number];
@@ -505,7 +502,6 @@ MixtrackProFX.Deck = function(number) {
     this.loop = new components.Button({
         key: "loop_enabled",
         midi: [0x94 + channel, 0x40],
-        off: 0x01,
         input: function(channel, control, value, status, group) {
             if (engine.getValue(group, "loop_enabled") === 0) {
                 script.triggerControl(group, "beatloop_activate");
@@ -522,13 +518,11 @@ MixtrackProFX.Deck = function(number) {
     this.loopHalf = new components.Button({
         key: "loop_halve",
         midi: [0x94 + channel, 0x34],
-        off: 0x01
     });
 
     this.loopDouble = new components.Button({
         key: "loop_double",
         midi: [0x94 + channel, 0x35],
-        off: 0x01
     });
 
     this.loopIn = new components.Button({
@@ -568,7 +562,6 @@ MixtrackProFX.Deck = function(number) {
         group: "[EffectRack1_EffectUnit" + number + "_Effect1]",
         key: "prev_effect",
         midi: [0x98, channel*2],
-        off: 0x01,
         shift: function() {
             this.group = "[Channel" + number + "]";
             this.inKey = "pitch_up";
@@ -585,7 +578,6 @@ MixtrackProFX.Deck = function(number) {
         group: "[EffectRack1_EffectUnit" + number + "_Effect1]",
         key: "next_effect",
         midi: [0x99, 0x03 + channel*2],
-        off: 0x01,
         shift: function() {
             this.group = "[Channel" + number + "]";
             this.inKey = "pitch_down";
@@ -599,8 +591,7 @@ MixtrackProFX.Deck = function(number) {
     this.beatsnap = new components.Button({
         type: components.Button.prototype.types.toggle,
         key: "quantize",
-        midi: [0x89, 0x04],
-        off: 0x01
+        midi: [0x89, 0x04]
     });
 
     this.reconnectComponents(function(component) {
@@ -657,7 +648,6 @@ MixtrackProFX.Browse = function() {
         group: "[Channel1]",
         key: "beats_translate_curpos",
         midi: [0x88, 0x01],
-        off: 0x01,
         shift: function() {
             this.group = "[Channel2]";
         },
