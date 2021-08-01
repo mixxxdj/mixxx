@@ -2180,7 +2180,7 @@ if(APPLE)
         "-weak_framework VideoToolbox"
     )
   else()
-    # Used for battery measurements and controlling the screensaver on OS X and iOS.
+    # Used for battery measurements and controlling the screensaver on macOS.
     target_link_libraries(mixxx-lib PRIVATE
         "-weak_framework IOKit"
     )
