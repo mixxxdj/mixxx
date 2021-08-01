@@ -81,12 +81,6 @@ if(OpusFile_FOUND)
         INTERFACE_COMPILE_OPTIONS "${OpusFile_DEFINITIONS}"
         INTERFACE_INCLUDE_DIRECTORIES "${OpusFile_INCLUDE_DIRS}"
     )
-    is_static_library(OpusFile_IS_STATIC OpusFile::OpusFile)
-    #if(OpusFile_IS_STATIC)
-    #  find_package(Opus REQUIRED)
-    #  set_property(TARGET OpusFile::OpusFile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-    #    Opus::Opus
-    #  )
     #endif()
   endif()
 endif()
