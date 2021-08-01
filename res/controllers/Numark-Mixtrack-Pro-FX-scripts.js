@@ -119,9 +119,7 @@ MixtrackProFX.EffectUnit = function(unitNumber) {
 
     this.enableButton = new components.Button({
         input: function(channel, control, value, status, group) {
-            if (value === 2) {
-                value = 1;
-            }
+            // note: value is 2 when the switch is held down (1 when up)
             engine.setValue(group, "enabled", value);
         }
     });
