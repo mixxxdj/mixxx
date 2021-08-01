@@ -651,10 +651,10 @@ void CueControl::loadCuesFromTrack() {
         // Note: This is mixxx::audio::kStartFramePos for new tracks
         // and always a valid position.
         mainCuePosition = m_pLoadedTrack->getMainCuePosition();
-        DEBUG_ASSERT(mainCuePosition.isValid());
         // A main cue point only needs to be added if the position
         // differs from the default position.
-        if (mainCuePosition != mixxx::audio::kStartFramePos) {
+        if (mainCuePosition.isValid() &&
+                mainCuePosition != mixxx::audio::kStartFramePos) {
             qInfo()
                     << "Adding missing main cue point at"
                     << mainCuePosition

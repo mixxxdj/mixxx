@@ -27,9 +27,19 @@ constexpr int kParseCmdlineArgsErrorExitCode = 2;
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
 const QString kScaleFactorConfigKey = QStringLiteral("ScaleFactor");
 
-int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
-    auto coreServices = std::make_shared<mixxx::CoreServices>(args);
-    MixxxMainWindow mainWindow(app, coreServices);
+int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
+    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
+
+    MixxxMainWindow mainWindow(pApp, pCoreServices);
+    pApp->installEventFilter(&mainWindow);
+
+    QObject::connect(pCoreServices.get(),
+            &mixxx::CoreServices::initializationProgressUpdate,
+            &mainWindow,
+            &MixxxMainWindow::initializationProgressUpdate);
+    pCoreServices->initialize(pApp);
+    mainWindow.initialize();
+
     // If startup produced a fatal error, then don't even start the
     // Qt event loop.
     if (ErrorDialogHandler::instance()->checkError()) {
@@ -39,7 +49,7 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
         mainWindow.show();
 
         qDebug() << "Running Mixxx";
-        return app->exec();
+        return pApp->exec();
     }
 }
 
@@ -94,6 +104,12 @@ int main(int argc, char * argv[]) {
     // workaround for https://bugreports.qt.io/browse/QTBUG-84363
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && QT_VERSION < QT_VERSION_CHECK(5, 15, 1)
     qputenv("QV4_FORCE_INTERPRETER", QByteArrayLiteral("1"));
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    // Follow whatever factor the user has selected in the system settings
+    // By default the value is always rounded to the nearest int.
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
+            Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
 
     // Setting the organization name results in a QDesktopStorage::DataLocation

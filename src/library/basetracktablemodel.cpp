@@ -782,6 +782,7 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
+            // FIXME: calling bpm.value() without checking bpm.isValid()
             return ok ? bpmValue : mixxx::Bpm().value();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
