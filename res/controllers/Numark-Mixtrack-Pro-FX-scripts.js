@@ -114,9 +114,12 @@ MixtrackProFX.shutdown = function() {
 };
 
 MixtrackProFX.EffectUnit = function(deckNumber) {
-    this.deckNumber = deckNumber;
     this.group = "[EffectRack1_EffectUnit" + deckNumber + "]";
 
+    // switch values are:
+    // 0 - switch in the middle
+    // 1 - switch up
+    // 2 - switch down
     this.enableSwitch = new components.Button({
         input: function(channel, control, value, status, group) {
             // note: value is 2 when the switch is held down (1 when up)
@@ -130,7 +133,7 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
     });
 
     this.tap = new components.Button({
-        group: "[Channel" + this.deckNumber + "]",
+        group: "[Channel" + deckNumber + "]",
         key: "bpm_tap",
         midi: [0x88, 0x09]
     });
@@ -150,6 +153,36 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
             } else if (value === 0x7F) {
                 this.inSetParameter(this.inGetParameter() - 0.05);
             }
+        }
+    });
+
+    this.prevEffect = new components.Button({
+        group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
+        key: "prev_effect",
+        midi: [0x98, (deckNumber - 1) * 2],
+        shift: function() {
+            this.group = "[Channel" + deckNumber + "]";
+            this.inKey = "pitch_up";
+            this.outKey = "pitch_up";
+        },
+        unshift: function() {
+            this.group = "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]";
+            this.inKey = "prev_effect";
+            this.outKey = "prev_effect";
+        }
+    });
+
+    this.nextEffect = new components.Button({
+        group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
+        key: "next_effect",
+        midi: [0x99, 0x03 + (deckNumber - 1) * 2],
+        shift: function() {
+            this.group = "[Channel" + deckNumber + "]";
+            this.inKey = "pitch_down";
+        },
+        unshift: function() {
+            this.group = "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]";
+            this.inKey = "next_effect";
         }
     });
 };
@@ -547,36 +580,6 @@ MixtrackProFX.Deck = function(number) {
         input: function(channel, control, value, status, group) {
             this.currentRangeIdx = (this.currentRangeIdx + 1) % MixtrackProFX.pitchRanges.length;
             engine.setValue(group, "rateRange", MixtrackProFX.pitchRanges[this.currentRangeIdx]);
-        }
-    });
-
-    this.prevEffect = new components.Button({
-        group: "[EffectRack1_EffectUnit" + number + "_Effect1]",
-        key: "prev_effect",
-        midi: [0x98, channel*2],
-        shift: function() {
-            this.group = "[Channel" + number + "]";
-            this.inKey = "pitch_up";
-            this.outKey = "pitch_up";
-        },
-        unshift: function() {
-            this.group = "[EffectRack1_EffectUnit" + number + "_Effect1]";
-            this.inKey = "prev_effect";
-            this.outKey = "prev_effect";
-        }
-    });
-
-    this.nextEffect = new components.Button({
-        group: "[EffectRack1_EffectUnit" + number + "_Effect1]",
-        key: "next_effect",
-        midi: [0x99, 0x03 + channel*2],
-        shift: function() {
-            this.group = "[Channel" + number + "]";
-            this.inKey = "pitch_down";
-        },
-        unshift: function() {
-            this.group = "[EffectRack1_EffectUnit" + number + "_Effect1]";
-            this.inKey = "next_effect";
         }
     });
 

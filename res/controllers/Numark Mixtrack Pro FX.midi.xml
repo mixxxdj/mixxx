@@ -1450,7 +1450,7 @@
       <!-- FX HPF button -->
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>MixtrackProFX.deck[0].prevEffect.input</key>
+        <key>MixtrackProFX.effect[0].prevEffect.input</key>
         <status>0x98</status>
         <midino>0x00</midino>
         <options>
@@ -1459,7 +1459,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>MixtrackProFX.deck[0].prevEffect.input</key>
+        <key>MixtrackProFX.effect[0].prevEffect.input</key>
         <status>0x88</status>
         <midino>0x00</midino>
         <options>
@@ -1488,7 +1488,7 @@
       <!-- FX flanger button -->
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>MixtrackProFX.deck[1].prevEffect.input</key>
+        <key>MixtrackProFX.effect[1].prevEffect.input</key>
         <status>0x98</status>
         <midino>0x02</midino>
         <options>
@@ -1497,7 +1497,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>MixtrackProFX.deck[1].prevEffect.input</key>
+        <key>MixtrackProFX.effect[1].prevEffect.input</key>
         <status>0x88</status>
         <midino>0x02</midino>
         <options>
@@ -1507,7 +1507,7 @@
       <!-- FX echo button -->
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>MixtrackProFX.deck[0].nextEffect.input</key>
+        <key>MixtrackProFX.effect[0].nextEffect.input</key>
         <status>0x99</status>
         <midino>0x03</midino>
         <options>
@@ -1516,7 +1516,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>MixtrackProFX.deck[0].nextEffect.input</key>
+        <key>MixtrackProFX.effect[0].nextEffect.input</key>
         <status>0x89</status>
         <midino>0x03</midino>
         <options>
@@ -1545,7 +1545,7 @@
       <!-- FX phaser button -->
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>MixtrackProFX.deck[1].nextEffect.input</key>
+        <key>MixtrackProFX.effect[1].nextEffect.input</key>
         <status>0x99</status>
         <midino>0x05</midino>
         <options>
@@ -1554,7 +1554,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>MixtrackProFX.deck[1].nextEffect.input</key>
+        <key>MixtrackProFX.effect[1].nextEffect.input</key>
         <status>0x89</status>
         <midino>0x05</midino>
         <options>
