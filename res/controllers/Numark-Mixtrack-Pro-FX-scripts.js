@@ -708,14 +708,6 @@ MixtrackProFX.wheelTurn = function(channel, control, value, status, group) {
         // seek
         var oldPos = engine.getValue(group, "playposition");
 
-        if (oldPos <= 0) {
-            oldPos = 0;
-        }
-
-        if (oldPos >= 1) {
-            oldPos = 1;
-        }
-
         engine.setValue(group, "playposition", oldPos + newValue / MixtrackProFX.jogSeekSensitivity);
     } else if (MixtrackProFX.scratchModeEnabled[channel] && engine.isScratching(deckNumber)) {
         // scratch
