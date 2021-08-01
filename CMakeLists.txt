@@ -1812,7 +1812,7 @@ if(LOCALECOMPARE)
   target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
   target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
 elseif(SQLite3_IS_STATIC)
-  # in the static case we need to link SQlite3 uncoditionally
+  # in the static case we need to link SQLite3 uncoditionally
   target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
 endif()
 
