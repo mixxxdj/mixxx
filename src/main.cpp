@@ -22,17 +22,17 @@ namespace {
 constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
-int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
-    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args);
+int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
+    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
 
-    MixxxMainWindow mainWindow(app, pCoreServices);
-    app->installEventFilter(&mainWindow);
+    MixxxMainWindow mainWindow(pApp, pCoreServices);
+    pApp->installEventFilter(&mainWindow);
 
     QObject::connect(pCoreServices.get(),
             &mixxx::CoreServices::initializationProgressUpdate,
             &mainWindow,
             &MixxxMainWindow::initializationProgressUpdate);
-    pCoreServices->initialize(app);
+    pCoreServices->initialize(pApp);
     mainWindow.initialize();
 
     // If startup produced a fatal error, then don't even start the
@@ -44,7 +44,7 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
         mainWindow.show();
 
         qDebug() << "Running Mixxx";
-        return app->exec();
+        return pApp->exec();
     }
 }
 
