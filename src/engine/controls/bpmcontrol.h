@@ -176,4 +176,5 @@ class BpmControl : public EngineControl {
 
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
     FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange);
+    FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInSyncDisable);
 };

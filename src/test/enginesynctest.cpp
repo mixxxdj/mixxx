@@ -2409,6 +2409,40 @@ TEST_F(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange) {
     }
 }
 
+TEST_F(EngineSyncTest, FollowerUserTweakPreservedInSyncDisable) {
+    // Ensure that when a follower disables sync, a phase seek is not performed.
+    // This is about 128 bpm, but results in nice round numbers of samples.
+    const double kDivisibleBpm = 44100.0 / 344.0;
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(
+            m_pTrack1->getSampleRate(), mixxx::Bpm(kDivisibleBpm), mixxx::audio::kStartFramePos);
+    m_pTrack1->trySetBeats(pBeats1);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(
+            m_pTrack2->getSampleRate(), mixxx::Bpm(130), mixxx::audio::kStartFramePos);
+    m_pTrack2->trySetBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_leader"))->set(1);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+    ProcessBuffer();
+
+    // Apply user tweak offset to follower
+    m_pChannel2->getEngineBuffer()
+            ->m_pBpmControl->m_dUserOffset.setValue(0.3);
+
+    EXPECT_TRUE(isExplicitLeader(m_sGroup1));
+    EXPECT_TRUE(isFollower(m_sGroup2));
+
+    ProcessBuffer();
+
+    // Disable sync, no seek should occur
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(0);
+    ProcessBuffer();
+    EXPECT_FALSE(m_pChannel2->getEngineBuffer()->previousBufferSeek());
+}
+
 TEST_F(EngineSyncTest, LeaderUserTweakPreservedInLeaderChange) {
     // Ensure that when the leader deck changes, the user offset is accounted for when
     // reinitializing the leader parameters..
