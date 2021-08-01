@@ -106,7 +106,19 @@ namespace mixxx {
 CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
         : m_runtime_timer(QLatin1String("CoreServices::runtime")),
           m_cmdlineArgs(args) {
-    preInitialize(pApp);
+    ScopedTimer t("CoreServices::CoreServices");
+    // All this here is running without without start up screen
+    // Defere long initialisations to CoreServices::initialize() which is
+    // called after the GUI is initalized
+    initializeSettings();
+    initializeLogging();
+    // Only record stats in developer mode.
+    if (m_cmdlineArgs.getDeveloper()) {
+        StatsManager::createInstance();
+    }
+    mixxx::Translations::initializeTranslations(
+            m_pSettingsManager->settings(), pApp, m_cmdlineArgs.getLocale());
+    initializeKeyboard();
 }
 
 CoreServices::~CoreServices() = default;

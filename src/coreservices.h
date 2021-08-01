@@ -123,9 +123,6 @@ class CoreServices : public QObject {
     void initializeScreensaverManager();
     void initializeLogging();
 
-    /// The short first run that is done without start up screen
-    void preInitialize(QApplication* pApp);
-
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
