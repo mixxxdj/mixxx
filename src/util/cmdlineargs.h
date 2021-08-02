@@ -51,7 +51,12 @@ class CmdlineArgs final {
     const QString& getTimelinePath() const { return m_timelinePath; }
 
   private:
-    bool parse(const QStringList& arguments, bool forUserFeedback);
+    enum class ParseMode {
+        Initial,
+        ForUserFeedback
+    };
+
+    bool parse(const QStringList& arguments, ParseMode mode);
 
     QList<QString> m_musicFiles;    // List of files to load into players at startup
     bool m_startInFullscreen;       // Start in fullscreen mode

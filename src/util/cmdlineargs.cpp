@@ -75,7 +75,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     for (int a = 0; a < argc; ++a) {
         arguments << QString::fromLocal8Bit(argv[a]);
     }
-    return parse(arguments, false);
+    return parse(arguments, ParseMode::Initial);
 }
 
 void CmdlineArgs::parseForUserFeedback() {
@@ -83,10 +83,12 @@ void CmdlineArgs::parseForUserFeedback() {
     if (!m_hasUserFeedback) {
         return;
     }
-    parse(QCoreApplication::arguments(), true);
+    parse(QCoreApplication::arguments(), ParseMode::ForUserFeedback);
 }
 
-bool CmdlineArgs::parse(const QStringList& arguments, bool forUserFeedback) {
+bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mode) {
+    bool forUserFeedback = (mode == ParseMode::ForUserFeedback);
+
     QCommandLineParser parser;
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 
