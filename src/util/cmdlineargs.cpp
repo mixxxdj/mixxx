@@ -66,6 +66,9 @@ bool parseLogLevel(
 } // namespace
 
 bool CmdlineArgs::parse(int argc, char** argv) {
+    // Some command line parameters needs to be evaluated before
+    // The QCoreApplication is initalized.
+    DEBUG_ASSERT(!QCoreApplication::instance());
     if (argc == 1) {
         // Mixxx was run with the binary name only, nothing to do
         return true;
@@ -79,7 +82,13 @@ bool CmdlineArgs::parse(int argc, char** argv) {
 }
 
 void CmdlineArgs::parseForUserFeedback() {
+    // For user feedback we need an initalized QCoreApplication because
+    // it add some QT specific command line parameters
     DEBUG_ASSERT(QCoreApplication::instance());
+    // We need only execute the second run when the first run has produced
+    // not yet displayed user feedback. Otherwise we can skip the second run.
+    // A parameter for the QCoreApplication will fail in the first run and
+    // m_hasUserFeedback will be set
     if (!m_hasUserFeedback) {
         return;
     }
