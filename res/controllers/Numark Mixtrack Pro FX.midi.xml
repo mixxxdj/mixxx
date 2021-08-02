@@ -24,7 +24,8 @@
           <normal/>
         </options>
       </control>
-      <!-- Crossfader and 1st deck fader cuts -->
+      <!-- Crossfader and 1st deck "fader cuts" -->
+      <!-- "fader cuts" moves the crossfader rapidly, sending the same midi codes as crossfader -->
       <control>
         <group>[Master]</group>
         <key>crossfader</key>
@@ -34,7 +35,8 @@
           <normal/>
         </options>
       </control>
-      <!-- 2nd deck fader cuts -->
+      <!-- 2nd deck "fader cuts" -->
+      <!-- "fader cuts" on 2nd deck send different midi codes than on 1st deck -->
       <control>
         <group>[Master]</group>
         <key>crossfader</key>

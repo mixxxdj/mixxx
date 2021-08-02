@@ -356,7 +356,11 @@ MixtrackProFX.Deck = function(number) {
         }
     });
 
-    // switch pad mode to fader cuts
+    // switch pad mode to "fader cuts"
+    // when pads are in "fader cuts" mode, they rapidly move the crossfader
+    // the feature is implemented in hardware or firmware
+    // holding a pad activates a "fader cut", releasing it causes the GUI crossfader
+    // to return to the position of physical crossfader
     this.modeFadercuts = new components.Button({
         input: function(channel) {
             deck.blinkLedOff();
@@ -366,8 +370,6 @@ MixtrackProFX.Deck = function(number) {
             midi.sendShortMsg(0x90 + channel, 0x0B, 0x01); // sample
             midi.sendShortMsg(0x90 + channel, 0x0F, 0x01); // sample shifted
             midi.sendShortMsg(0x90 + channel, 0x02, 0x01); // beatjump
-
-            // the "fader cuts" function is somehow burned into hardware
 
             // need to set the pads to *something* to not trigger controls
             // triggered previously by the pads and not display their status (e.g. hotcue set)
