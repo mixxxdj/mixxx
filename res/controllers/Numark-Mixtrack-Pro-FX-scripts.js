@@ -665,18 +665,8 @@ MixtrackProFX.HeadGain.prototype = new components.Pot({
 
 MixtrackProFX.vuCallback = function(value, group) {
     var level = value * 90;
-
-    if (engine.getValue("[Channel1]", "pfl") || engine.getValue("[Channel2]", "pfl")) {
-        if (group === "[Channel1]") {
-            midi.sendShortMsg(0xB0, 0x1F, level);
-        } else if (group === "[Channel2]") {
-            midi.sendShortMsg(0xB1, 0x1F, level);
-        }
-    } else if (group === "[Channel1]") {
-        midi.sendShortMsg(0xB0, 0x1F, level);
-    } else if (group === "[Channel2]") {
-        midi.sendShortMsg(0xB1, 0x1F, level);
-    }
+    var deckOffset = script.deckFromGroup(group) - 1;
+    midi.sendShortMsg(0xB0 + deckOffset, 0x1F, level);
 };
 
 MixtrackProFX.scratchToggle = function(channel) {
