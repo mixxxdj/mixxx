@@ -1,6 +1,5 @@
 #include <QApplication>
 #include <QDir>
-#include <QSettings>
 #include <QString>
 #include <QStringList>
 #include <QTextCodec>
