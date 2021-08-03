@@ -24,6 +24,7 @@ CmdlineArgs::CmdlineArgs()
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
           m_useColors(false),
+          m_midiThrough(false),
           m_logLevel(mixxx::kLogLevelDefault),
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
@@ -172,6 +173,12 @@ bool CmdlineArgs::parse(int argc, char** argv) {
             QStringLiteral("auto"));
     parser.addOption(color);
 
+    const QCommandLineOption midiThrough(QStringLiteral("midiThrough"),
+            QCoreApplication::translate("CmdlineArgs",
+                    "Enables MIDI Through mode.  Shows MIDI through ports in "
+                    "Preferences/Controllers."));
+    parser.addOption(midiThrough);
+
     const QCommandLineOption logLevel(QStringLiteral("log-level"),
             QCoreApplication::translate("CmdlineArgs",
                     "Sets the verbosity of command line logging.\n"
@@ -275,6 +282,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
     m_developer = parser.isSet(developer);
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
     m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);
+    m_midiThrough = parser.isSet(midiThrough);
 
     m_musicFiles = parser.positionalArguments();
 

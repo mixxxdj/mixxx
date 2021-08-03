@@ -16,6 +16,7 @@ bool recognizeDevice(const PmDeviceInfo& deviceInfo) {
     // In developer mode we show the MIDI Through Port, otherwise ignore it
     // since it routinely causes trouble.
     return CmdlineArgs::Instance().getDeveloper() ||
+           CmdlineArgs::Instance().getMidiThrough() ||
             !QLatin1String(deviceInfo.name)
                      .startsWith(kMidiThroughPortPrefix, Qt::CaseInsensitive);
 }
