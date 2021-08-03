@@ -287,7 +287,10 @@ MixtrackProFX.Deck = function(number) {
 
     // switch pad mode to hotcue
     this.modeHotcue = new components.Button({
-        input: function(channel) {
+        input: function(channel, control, value) {
+            if (value !== 0x7F) {
+                return;
+            }
             deck.blinkLedOff();
             midi.sendShortMsg(0x90 + channel, 0x00, 0x7F); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
@@ -311,7 +314,10 @@ MixtrackProFX.Deck = function(number) {
 
     // switch pad mode to auto loop
     this.modeAutoloop = new components.Button({
-        input: function(channel) {
+        input: function(channel, control, value) {
+            if (value !== 0x7F) {
+                return;
+            }
             deck.blinkLedOff();
             midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x7F); // auto loop
@@ -362,7 +368,10 @@ MixtrackProFX.Deck = function(number) {
     // holding a pad activates a "fader cut", releasing it causes the GUI crossfader
     // to return to the position of physical crossfader
     this.modeFadercuts = new components.Button({
-        input: function(channel) {
+        input: function(channel, control, value) {
+            if (value !== 0x7F) {
+                return;
+            }
             deck.blinkLedOff();
             midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
@@ -386,7 +395,10 @@ MixtrackProFX.Deck = function(number) {
 
     // switch pad mode to sampler
     this.modeSample = new components.Button({
-        input: function(channel) {
+        input: function(channel, control, value) {
+            if (value !== 0x7F) {
+                return;
+            }
             deck.blinkLedOff();
             midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
@@ -410,7 +422,10 @@ MixtrackProFX.Deck = function(number) {
 
     // switch pad mode to shifted sampler
     this.modeSampleShift = new components.Button({
-        input: function(channel) {
+        input: function(channel, control, value) {
+            if (value !== 0x7F) {
+                return;
+            }
             midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
             midi.sendShortMsg(0x90 + channel, 0x07, 0x01); // fader cuts
@@ -434,7 +449,10 @@ MixtrackProFX.Deck = function(number) {
 
     // switch pad mode to beatjump
     this.modeBeatjump = new components.Button({
-        input: function(channel) {
+        input: function(channel, control, value) {
+            if (value !== 0x7F) {
+                return;
+            }
             midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
             midi.sendShortMsg(0x90 + channel, 0x07, 0x01); // fader cuts
@@ -530,6 +548,9 @@ MixtrackProFX.Deck = function(number) {
         key: "loop_enabled",
         midi: [0x94 + channel, 0x40],
         input: function(channel, control, value, status, group) {
+            if (value !== 0x7F) {
+                return;
+            }
             if (engine.getValue(group, "loop_enabled") === 0) {
                 script.triggerControl(group, "beatloop_activate");
             } else {
@@ -544,12 +565,12 @@ MixtrackProFX.Deck = function(number) {
 
     this.loopHalf = new components.Button({
         key: "loop_halve",
-        midi: [0x94 + channel, 0x34],
+        midi: [0x94 + channel, 0x34]
     });
 
     this.loopDouble = new components.Button({
         key: "loop_double",
-        midi: [0x94 + channel, 0x35],
+        midi: [0x94 + channel, 0x35]
     });
 
     this.loopIn = new components.Button({
@@ -580,6 +601,9 @@ MixtrackProFX.Deck = function(number) {
     this.pitchRange = new components.Button({
         currentRangeIdx: 0,
         input: function(channel, control, value, status, group) {
+            if (value !== 0x7F) {
+                return;
+            }
             this.currentRangeIdx = (this.currentRangeIdx + 1) % MixtrackProFX.pitchRanges.length;
             engine.setValue(group, "rateRange", MixtrackProFX.pitchRanges[this.currentRangeIdx]);
         }
@@ -671,7 +695,10 @@ MixtrackProFX.vuCallback = function(value, group) {
     midi.sendShortMsg(0xB0 + deckOffset, 0x1F, level);
 };
 
-MixtrackProFX.scratchToggle = function(channel) {
+MixtrackProFX.scratchToggle = function(channel, control, value) {
+    if (value !== 0x7F) {
+        return;
+    }
     MixtrackProFX.scratchModeEnabled[channel] = !MixtrackProFX.scratchModeEnabled[channel];
     midi.sendShortMsg(0x90 | channel, 0x07, MixtrackProFX.scratchModeEnabled[channel] ? 0x7F : 0x01);
 };
