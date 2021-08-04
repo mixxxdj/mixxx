@@ -27,7 +27,8 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
 
     CmdlineArgs::Instance().parseForUserFeedback();
 
-    MixxxMainWindow mainWindow(pApp, pCoreServices);
+    MixxxMainWindow mainWindow(pCoreServices);
+    pApp->processEvents();
     pApp->installEventFilter(&mainWindow);
 
     QObject::connect(pCoreServices.get(),

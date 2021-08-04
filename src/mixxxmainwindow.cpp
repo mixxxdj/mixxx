@@ -90,8 +90,7 @@
 #undef min
 #endif
 
-MixxxMainWindow::MixxxMainWindow(
-        QApplication* pApp, std::shared_ptr<mixxx::CoreServices> pCoreServices)
+MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices)
         : m_pCoreServices(pCoreServices),
           m_pCentralWidget(nullptr),
           m_pLaunchImage(nullptr),
@@ -103,7 +102,6 @@ MixxxMainWindow::MixxxMainWindow(
           m_pLibraryExporter(nullptr),
 #endif
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON) {
-    DEBUG_ASSERT(pApp);
     DEBUG_ASSERT(pCoreServices);
     // These depend on the settings
     createMenuBar();
@@ -118,7 +116,6 @@ MixxxMainWindow::MixxxMainWindow(
     setCentralWidget(m_pCentralWidget);
 
     show();
-    pApp->processEvents();
 
     m_pGuiTick = new GuiTick();
     m_pVisualsManager = new VisualsManager();
