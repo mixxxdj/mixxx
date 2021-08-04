@@ -20,7 +20,13 @@ class TrackCollection : public ExternalTrackCollection {
     Q_OBJECT
 
   public:
+    enum class SyncMode {
+        ReadOnly,
+        ReadWrite,
+    };
+
     TrackCollection(
+            SyncMode syncMode,
             TrackCollectionManager* trackCollectionManager,
             UserSettingsPointer userSettings);
     ~TrackCollection() override = default;
@@ -60,6 +66,8 @@ class TrackCollection : public ExternalTrackCollection {
     void onSubsystemCollectionsChanged(int flags);
 
   private:
+    SyncMode m_syncMode;
+
     mixxx::TrackLoader* const m_trackLoader;
 
     Subsystem* const m_subsystem;

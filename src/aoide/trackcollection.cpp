@@ -24,9 +24,12 @@ constexpr int kDisconnectTimeoutMillis = 10000;
 
 namespace aoide {
 
-TrackCollection::TrackCollection(TrackCollectionManager* trackCollectionManager,
+TrackCollection::TrackCollection(
+        SyncMode syncMode,
+        TrackCollectionManager* trackCollectionManager,
         UserSettingsPointer userSettings)
         : ExternalTrackCollection(trackCollectionManager),
+          m_syncMode(syncMode),
           m_trackLoader(new mixxx::TrackLoader(trackCollectionManager, this)),
           m_subsystem(new Subsystem(userSettings, m_trackLoader, this)),
           m_activeCollectionAgent(new ActiveCollectionAgent(
@@ -125,6 +128,9 @@ QString TrackCollection::description() const {
 void TrackCollection::relocateDirectory(
         const QString& oldRootDir,
         const QString& newRootDir) {
+    if (m_syncMode != SyncMode::ReadWrite) {
+        return;
+    }
     kLogger.debug()
             << "Relocating directory:"
             << oldRootDir
@@ -136,6 +142,9 @@ void TrackCollection::relocateDirectory(
 
 void TrackCollection::purgeTracks(
         const QList<QString>& trackLocations) {
+    if (m_syncMode != SyncMode::ReadWrite) {
+        return;
+    }
     kLogger.debug()
             << "Purging tracks:"
             << trackLocations;
@@ -145,6 +154,9 @@ void TrackCollection::purgeTracks(
 
 void TrackCollection::purgeAllTracks(
         const QDir& rootDir) {
+    if (m_syncMode != SyncMode::ReadWrite) {
+        return;
+    }
     kLogger.debug()
             << "Purging all tracks:"
             << rootDir;
@@ -154,6 +166,9 @@ void TrackCollection::purgeAllTracks(
 
 void TrackCollection::updateTracks(
         const QList<TrackRef>& updatedTracks) {
+    if (m_syncMode != SyncMode::ReadWrite) {
+        return;
+    }
     kLogger.debug()
             << "Updating tracks:"
             << updatedTracks;
@@ -166,6 +181,9 @@ void TrackCollection::saveTrack(
     Q_UNUSED(changeHint)
     DEBUG_ASSERT(track.getId().isValid());
     DEBUG_ASSERT(track.getDateAdded().isValid());
+    if (m_syncMode != SyncMode::ReadWrite) {
+        return;
+    }
     kLogger.debug()
             << "Saving track:"
             << track.getId()
