@@ -25,6 +25,8 @@ bool ControllerScriptEngineBase::initialize() {
     // Create the Script Engine
     m_pJSEngine = std::make_shared<QJSEngine>(this);
 
+    m_pJSEngine->installExtensions(QJSEngine::ConsoleExtension);
+
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
 
     QJSValue mapper = m_pJSEngine->newQMetaObject(
