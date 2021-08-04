@@ -25,7 +25,7 @@ CmdlineArgs::CmdlineArgs()
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
           m_useColors(false),
-          m_hasUserFeedback(false),
+          m_parseForUserFeedbackRequired(false),
           m_logLevel(mixxx::kLogLevelDefault),
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
@@ -85,11 +85,12 @@ void CmdlineArgs::parseForUserFeedback() {
     // For user feedback we need an initalized QCoreApplication because
     // it add some QT specific command line parameters
     DEBUG_ASSERT(QCoreApplication::instance());
-    // We need only execute the second run when the first run has produced
-    // not yet displayed user feedback. Otherwise we can skip the second run.
+    // We need only execute the second parse for user feedback when the first run
+    // has produces an not yet displayed error or help text.
+    // Otherwise we can skip the second run.
     // A parameter for the QCoreApplication will fail in the first run and
-    // m_hasUserFeedback will be set
-    if (!m_hasUserFeedback) {
+    // m_parseForUserFeedbackRequired will be set as well.
+    if (!m_parseForUserFeedbackRequired) {
         return;
     }
     parse(QCoreApplication::arguments(), ParseMode::ForUserFeedback);
@@ -266,9 +267,14 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         return true;
     }
 
+    // From here, we are in in the initial parse mode
+    DEBUG_ASSERT(mode == ParseMode::Initial);
+
     // process all arguments
     if (!parser.parse(arguments)) {
-        m_hasUserFeedback = true;
+        // we have an misspelled argument or one that is processed
+        // in the not yet initialized QCoreApplication
+        m_parseForUserFeedbackRequired = true;
     }
 
     if (parser.isSet(versionOption) ||
@@ -277,7 +283,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
             || parser.isSet(QStringLiteral("help-all"))
 #endif
     ) {
-        m_hasUserFeedback = true;
+        m_parseForUserFeedbackRequired = true;
     }
 
     m_startInFullscreen = parser.isSet(fullScreen) || parser.isSet(fullScreenDeprecated);

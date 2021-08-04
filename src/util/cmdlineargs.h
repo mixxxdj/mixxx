@@ -66,7 +66,7 @@ class CmdlineArgs final {
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
     bool m_useColors;       // should colors be used
-    bool m_hasUserFeedback;
+    bool m_parseForUserFeedbackRequired;
     mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing
     QString m_locale;
