@@ -55,7 +55,10 @@ void ControllerScriptEngineBase::shutdown() {
 }
 
 void ControllerScriptEngineBase::reload() {
-    shutdown();
+    // JSEngine needs to exist for it to be shutdown
+    if (m_pJSEngine) {
+        shutdown();
+    }
     initialize();
 }
 
