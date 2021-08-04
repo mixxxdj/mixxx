@@ -47,7 +47,7 @@ class LibraryExporter;
 class MixxxMainWindow : public QMainWindow {
     Q_OBJECT
   public:
-    MixxxMainWindow(QApplication* app, std::shared_ptr<mixxx::CoreServices> pCoreServices);
+    MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices);
     ~MixxxMainWindow() override;
 
     /// Initialize main window after creation. Should only be called once.
