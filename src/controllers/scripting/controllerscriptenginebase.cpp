@@ -100,16 +100,10 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
     QString backtrace = evaluationResult.property("stack").toString();
     QString filename = evaluationResult.property("fileName").toString();
 
-    QString errorText;
     if (filename.isEmpty()) {
-        errorText = QString("Uncaught exception at line %1 in passed code.")
-                            .arg(line);
-    } else {
-        errorText = QString("Uncaught exception at line %1 in file %2.")
-                            .arg(line, filename);
+        filename = QStringLiteral("<passed code>");
     }
-
-    errorText += QStringLiteral("\n\nException:\n  ") + errorMessage;
+    QString errorText = QString("Uncaught exception: %1:%2: %3").arg(filename, line, errorMessage);
 
     // Do not include backtrace in dialog key because it might contain midi
     // slider values that will differ most of the time. This would break
