@@ -2493,12 +2493,13 @@ endif()
 # FDK-AAC is loaded dynamically at runtime by EncoderFdkAac using QLibrary,
 # so copy it into the Windows and macOS packages, but do not link to it.
 if(APPLE AND MACOS_BUNDLE)
-  find_library(FDK_AAC_LIBRARY fdk-aac.2)
+  find_library(FDK_AAC_LIBRARY fdk-aac)
   if(FDK_AAC_LIBRARY)
     message(STATUS "Found fdk-aac: ${FDK_AAC_LIBRARY}")
-    install(FILES ${FDK_AAC_LIBRARY} DESTINATION ${MIXXX_INSTALL_PREFIX}/Contents/Frameworks)
+    file(COPY ${FDK_AAC_LIBRARY} DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/lib/fdk-aac-install" FOLLOW_SYMLINK_CHAIN)
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib/fdk-aac-install/" DESTINATION "${MIXXX_INSTALL_PREFIX}/Contents/Frameworks")
   else()
-    message(STATUS "Could NOT find libfdk-aac.2.dylib")
+    message(STATUS "Could NOT find libfdk-aac.dylib")
   endif()
 elseif(WIN32)
   # On Windows find_library finds the .lib file, but the installer needs the .dll file.
