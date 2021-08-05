@@ -103,6 +103,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     }
 
     void updateTrackMetadataFields();
+    void updateSpinBpmFromBeats();
+
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
