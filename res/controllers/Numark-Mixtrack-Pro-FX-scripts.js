@@ -24,6 +24,44 @@ MixtrackProFX.jogSeekSensitivity = 10000;
 MixtrackProFX.enableBlink = true;
 MixtrackProFX.blinkDelay = 700;
 
+// autoloop sizes, for available values see:
+// https://manual.mixxx.org/2.3/en/chapters/appendix/mixxx_controls.html#control-[ChannelN]-beatloop_X_toggle
+MixtrackProFX.autoLoopSizes = [
+    "0.0625",
+    "0.125",
+    "0.25",
+    "0.5",
+    "1",
+    "2",
+    "4",
+    "8"
+];
+
+// beatjump values, for available values see:
+// https://manual.mixxx.org/2.3/en/chapters/appendix/mixxx_controls.html#control-[ChannelN]-beatjump_X_forward
+// underscores (_) at the end are needed because numeric values (e.g. 8) have two underscores (e.g. beatjump_8_forward),
+// but "beatjump_forward"/"beatjump_backward" have only one underscore
+MixtrackProFX.beatJumpValues = [
+    "0.0625_",
+    "0.125_",
+    "0.25_",
+    "0.5_",
+    "1_",
+    "2_",
+    "", // "beatjump_forward"/"beatjump_backward" - jump by the value selected in Mixxx GUI (4 by default)
+    "8_"
+];
+
+// pad modes, don't touch
+MixtrackProFX.PadModeControls = {
+    HOTCUE: 0x00,
+    AUTOLOOP: 0x0D,
+    FADERCUTS: 0x07,
+    SAMPLE1: 0x0B,
+    BEATJUMP: 0x02,
+    SAMPLE2: 0x0F
+};
+
 // state variables, don't touch
 MixtrackProFX.shifted = false;
 MixtrackProFX.scratchModeEnabled = [true, true];
@@ -106,6 +144,9 @@ MixtrackProFX.init = function() {
 
     engine.makeConnection("[Channel1]", "VuMeter", MixtrackProFX.vuCallback);
     engine.makeConnection("[Channel2]", "VuMeter", MixtrackProFX.vuCallback);
+
+    MixtrackProFX.deck.reconnectComponents();
+    MixtrackProFX.effect.reconnectComponents();
 };
 
 MixtrackProFX.shutdown = function() {
@@ -193,10 +234,7 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
 MixtrackProFX.EffectUnit.prototype = new components.ComponentContainer();
 
 MixtrackProFX.Deck = function(number) {
-    var deck = this;
     var channel = number - 1;
-    var blinkTimer = 0;
-    var blinkLedState = true;
 
     components.Deck.call(this, number);
 
@@ -264,264 +302,7 @@ MixtrackProFX.Deck = function(number) {
         invert: true
     });
 
-    this.pads = new components.ComponentContainer();
-    this.padsShift = new components.ComponentContainer();
-
-    for (var i = 0; i < 8; i++) {
-        this.pads[i] = new components.Button({
-            group: this.currentDeck,
-            midi: [0x94 + channel, 0x14 + i],
-            inKey: "hotcue_" + (i + 1) + "_activate",
-            outKey: "hotcue_" + (i + 1) + "_enabled",
-            number: i,
-            shift: function() {
-                this.midi = [0x94 + channel, 0x1C + this.number];
-            },
-            unshift: function() {
-                this.midi = [0x94 + channel, 0x14 + this.number];
-            }
-        });
-
-        this.padsShift[i] = new components.Button({
-            group: this.currentDeck,
-            inKey: "hotcue_" + (i + 1) + "_clear"
-        });
-    }
-
-    // switch pad mode to hotcue
-    this.modeHotcue = new components.Button({
-        input: function(channel, control, value) {
-            if (value !== 0x7F) {
-                return;
-            }
-            deck.blinkLedOff();
-            midi.sendShortMsg(0x90 + channel, 0x00, 0x7F); // hotcue
-            midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
-            midi.sendShortMsg(0x90 + channel, 0x07, 0x01); // fader cuts
-            midi.sendShortMsg(0x90 + channel, 0x0B, 0x01); // sample
-            midi.sendShortMsg(0x90 + channel, 0x0F, 0x01); // sample shifted
-            midi.sendShortMsg(0x90 + channel, 0x02, 0x01); // beatjump
-
-            for (var i = 0; i < 8; i++) {
-                deck.pads[i].group = deck.currentDeck;
-                deck.pads[i].inKey = "hotcue_" + (i + 1) + "_activate";
-                deck.pads[i].outKey = "hotcue_" + (i + 1) + "_enabled";
-
-                deck.padsShift[i].group = deck.currentDeck;
-                deck.padsShift[i].inKey = "hotcue_" + (i + 1) + "_clear";
-            }
-
-            deck.pads.reconnectComponents();
-        }
-    });
-
-    // switch pad mode to auto loop
-    this.modeAutoloop = new components.Button({
-        input: function(channel, control, value) {
-            if (value !== 0x7F) {
-                return;
-            }
-            deck.blinkLedOff();
-            midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
-            midi.sendShortMsg(0x90 + channel, 0x0D, 0x7F); // auto loop
-            midi.sendShortMsg(0x90 + channel, 0x07, 0x01); // fader cuts
-            midi.sendShortMsg(0x90 + channel, 0x0B, 0x01); // sample
-            midi.sendShortMsg(0x90 + channel, 0x0F, 0x01); // sample shifted
-            midi.sendShortMsg(0x90 + channel, 0x02, 0x01); // beatjump
-
-            // this is just sad
-            deck.pads[0].inKey = "beatloop_0.0625_toggle";
-            deck.pads[0].outKey = "beatloop_0.0625_enabled";
-            deck.pads[1].inKey = "beatloop_0.125_toggle";
-            deck.pads[1].outKey = "beatloop_0.125_enabled";
-            deck.pads[2].inKey = "beatloop_0.25_toggle";
-            deck.pads[2].outKey = "beatloop_0.25_enabled";
-            deck.pads[3].inKey = "beatloop_0.5_toggle";
-            deck.pads[3].outKey = "beatloop_0.5_enabled";
-            deck.pads[4].inKey = "beatloop_1_toggle";
-            deck.pads[4].outKey = "beatloop_1_enabled";
-            deck.pads[5].inKey = "beatloop_2_toggle";
-            deck.pads[5].outKey = "beatloop_2_enabled";
-            deck.pads[6].inKey = "beatloop_4_toggle";
-            deck.pads[6].outKey = "beatloop_4_enabled";
-            deck.pads[7].inKey = "beatloop_8_toggle";
-            deck.pads[7].outKey = "beatloop_8_enabled";
-
-            deck.padsShift[0].inKey = "beatlooproll_0.0625_activate";
-            deck.padsShift[1].inKey = "beatlooproll_0.125_activate";
-            deck.padsShift[2].inKey = "beatlooproll_0.25_activate";
-            deck.padsShift[3].inKey = "beatlooproll_0.5_activate";
-            deck.padsShift[4].inKey = "beatlooproll_1_activate";
-            deck.padsShift[5].inKey = "beatlooproll_2_activate";
-            deck.padsShift[6].inKey = "beatlooproll_4_activate";
-            deck.padsShift[7].inKey = "beatlooproll_8_activate";
-
-            for (var i = 0; i < 8; i++) {
-                deck.pads[i].group = deck.currentDeck;
-                deck.padsShift[i].group = deck.currentDeck;
-            }
-
-            deck.pads.reconnectComponents();
-        }
-    });
-
-    // switch pad mode to "fader cuts"
-    // when pads are in "fader cuts" mode, they rapidly move the crossfader
-    // the feature is implemented in hardware or firmware
-    // holding a pad activates a "fader cut", releasing it causes the GUI crossfader
-    // to return to the position of physical crossfader
-    this.modeFadercuts = new components.Button({
-        input: function(channel, control, value) {
-            if (value !== 0x7F) {
-                return;
-            }
-            deck.blinkLedOff();
-            midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
-            midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
-            midi.sendShortMsg(0x90 + channel, 0x07, 0x09); // fader cuts (0x09 works better than 0x7F for some reason)
-            midi.sendShortMsg(0x90 + channel, 0x0B, 0x01); // sample
-            midi.sendShortMsg(0x90 + channel, 0x0F, 0x01); // sample shifted
-            midi.sendShortMsg(0x90 + channel, 0x02, 0x01); // beatjump
-
-            // need to set the pads to *something* to not trigger controls
-            // triggered previously by the pads and not display their status (e.g. hotcue set)
-            // nop would be really useful in this situation
-            // we can assume channel 4 is unused and therefore won't mess anything up
-            for (var i = 0; i < 8; i++) {
-                deck.pads[i].group = "[Channel4]";
-                deck.padsShift[i].group = "[Channel4]";
-            }
-
-            deck.pads.reconnectComponents();
-        }
-    });
-
-    // switch pad mode to sampler
-    this.modeSample = new components.Button({
-        input: function(channel, control, value) {
-            if (value !== 0x7F) {
-                return;
-            }
-            deck.blinkLedOff();
-            midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
-            midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
-            midi.sendShortMsg(0x90 + channel, 0x07, 0x01); // fader cuts
-            midi.sendShortMsg(0x90 + channel, 0x0B, 0x7F); // sample
-            midi.sendShortMsg(0x90 + channel, 0x0F, 0x01); // sample shifted
-            midi.sendShortMsg(0x90 + channel, 0x02, 0x01); // beatjump
-
-            for (var i = 0; i < 8; i++) {
-                deck.pads[i].group = "[Sampler" + (i + 1) + "]";
-                deck.pads[i].inKey = "cue_gotoandplay";
-                deck.pads[i].outKey = "play";
-
-                deck.padsShift[i].group = "[Sampler" + (i + 1) + "]";
-                deck.padsShift[i].inKey = "start_stop";
-            }
-
-            deck.pads.reconnectComponents();
-        }
-    });
-
-    // switch pad mode to shifted sampler
-    this.modeSampleShift = new components.Button({
-        input: function(channel, control, value) {
-            if (value !== 0x7F) {
-                return;
-            }
-            midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
-            midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
-            midi.sendShortMsg(0x90 + channel, 0x07, 0x01); // fader cuts
-            midi.sendShortMsg(0x90 + channel, 0x0B, 0x01); // sample
-            midi.sendShortMsg(0x90 + channel, 0x0F, 0x7F); // sample shifted
-            midi.sendShortMsg(0x90 + channel, 0x02, 0x01); // beatjump
-            deck.blinkLedOn(0x90 + channel, 0x0B); // blink sample
-
-            for (var i = 0; i < 8; i++) {
-                deck.pads[i].group = "[Sampler" + (i + 9) + "]";
-                deck.pads[i].inKey = "cue_gotoandplay";
-                deck.pads[i].outKey = "play";
-
-                deck.padsShift[i].group = "[Sampler" + (i + 9) + "]";
-                deck.padsShift[i].inKey = "start_stop";
-            }
-
-            deck.pads.reconnectComponents();
-        }
-    });
-
-    // switch pad mode to beatjump
-    this.modeBeatjump = new components.Button({
-        input: function(channel, control, value) {
-            if (value !== 0x7F) {
-                return;
-            }
-            midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
-            midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
-            midi.sendShortMsg(0x90 + channel, 0x07, 0x01); // fader cuts
-            midi.sendShortMsg(0x90 + channel, 0x0B, 0x01); // sample
-            midi.sendShortMsg(0x90 + channel, 0x0F, 0x01); // sample shifted
-            midi.sendShortMsg(0x90 + channel, 0x02, 0x7F); // beatjump
-            deck.blinkLedOn(0x90 + channel, 0x00); // blink hotcue
-
-            deck.pads[0].inKey = "beatjump_0.0625_forward";
-            deck.pads[0].outKey = "beatjump_0.0625_forward";
-            deck.pads[1].inKey = "beatjump_0.125_forward";
-            deck.pads[1].outKey = "beatjump_0.125_forward";
-            deck.pads[2].inKey = "beatjump_0.25_forward";
-            deck.pads[2].outKey = "beatjump_0.25_forward";
-            deck.pads[3].inKey = "beatjump_0.5_forward";
-            deck.pads[3].outKey = "beatjump_0.5_forward";
-            deck.pads[4].inKey = "beatjump_1_forward";
-            deck.pads[4].outKey = "beatjump_1_forward";
-            deck.pads[5].inKey = "beatjump_2_forward";
-            deck.pads[5].outKey = "beatjump_2_forward";
-            deck.pads[6].inKey = "beatjump_forward"; // this button is adjustable, it uses the value set in the interface (4 by default)
-            deck.pads[6].outKey = "beatjump_forward";
-            deck.pads[7].inKey = "beatjump_8_forward";
-            deck.pads[7].outKey = "beatjump_8_forward";
-
-            deck.padsShift[0].inKey = "beatjump_0.0625_backward";
-            deck.padsShift[1].inKey = "beatjump_0.125_backward";
-            deck.padsShift[2].inKey = "beatjump_0.25_backward";
-            deck.padsShift[3].inKey = "beatjump_0.5_backward";
-            deck.padsShift[4].inKey = "beatjump_1_backward";
-            deck.padsShift[5].inKey = "beatjump_2_backward";
-            deck.padsShift[6].inKey = "beatjump_backward"; // this button is adjustable, it uses the value set in the interface (4 by default)
-            deck.padsShift[7].inKey = "beatjump_8_backward";
-
-            for (var i = 0; i < 8; i++) {
-                deck.pads[i].group = deck.currentDeck;
-                deck.padsShift[i].group = deck.currentDeck;
-            }
-
-            deck.pads.reconnectComponents();
-        }
-    });
-
-    // start an infinite timer that toggles led state
-    this.blinkLedOn = function(midi1, midi2) {
-        if (!MixtrackProFX.enableBlink) {
-            return;
-        }
-
-        deck.blinkLedOff();
-        blinkLedState = true;
-        blinkTimer = engine.beginTimer(MixtrackProFX.blinkDelay, function() {
-            midi.sendShortMsg(midi1, midi2, blinkLedState ? 0x7F : 0x01);
-            blinkLedState = !blinkLedState;
-        });
-    };
-
-    // stop the blink timer
-    this.blinkLedOff = function() {
-        if (!MixtrackProFX.enableBlink || blinkTimer === 0) {
-            return;
-        }
-
-        engine.stopTimer(blinkTimer);
-        blinkTimer = 0;
-    };
+    this.padSection = new MixtrackProFX.PadSection(number);
 
     this.shiftButton = new components.Button({
         input: function(channel, control, value) {
@@ -540,10 +321,6 @@ MixtrackProFX.Deck = function(number) {
                 MixtrackProFX.browse.unshift();
                 MixtrackProFX.effect.unshift();
             }
-
-            // for displaying pads lights when shifted
-            MixtrackProFX.deck[0].pads.reconnectComponents();
-            MixtrackProFX.deck[1].pads.reconnectComponents();
         }
     });
 
@@ -626,6 +403,252 @@ MixtrackProFX.Deck = function(number) {
 };
 
 MixtrackProFX.Deck.prototype = new components.Deck();
+
+MixtrackProFX.PadSection = function(deckNumber) {
+    components.ComponentContainer.call(this);
+
+    this.blinkTimer = 0;
+    this.blinkLedState = true;
+
+    this.modes = {};
+    this.modes[MixtrackProFX.PadModeControls.HOTCUE] = new MixtrackProFX.ModeHotcue(deckNumber);
+    this.modes[MixtrackProFX.PadModeControls.AUTOLOOP] = new MixtrackProFX.ModeAutoLoop(deckNumber);
+    this.modes[MixtrackProFX.PadModeControls.FADERCUTS] = new MixtrackProFX.ModeFaderCuts();
+    this.modes[MixtrackProFX.PadModeControls.SAMPLE1] = new MixtrackProFX.ModeSample(deckNumber, false);
+    this.modes[MixtrackProFX.PadModeControls.BEATJUMP] = new MixtrackProFX.ModeBeatjump(deckNumber);
+    this.modes[MixtrackProFX.PadModeControls.SAMPLE2] = new MixtrackProFX.ModeSample(deckNumber, true);
+
+    this.modeButtonPress = function(channel, control, value) {
+        if (value !== 0x7F) {
+            return;
+        }
+        this.setMode(channel, control);
+    };
+
+    this.padPress = function(channel, control, value, status, group) {
+        if (this.currentMode.control === MixtrackProFX.PadModeControls.FADERCUTS) {
+            // don't activate pads when in "fader cuts" mode - handled by hardware of firmware
+            return;
+        }
+        var i = (control - 0x14) % 8;
+        this.currentMode.pads[i].input(channel, control, value, status, group);
+    };
+
+    this.setMode = function(channel, control) {
+        var newMode = this.modes[control];
+        if (this.currentMode.control === newMode.control) {
+            return; // selected mode already set, no need to change anything
+        }
+
+        this.currentMode.forEachComponent(function(component) {
+            component.disconnect();
+        });
+
+        // set the correct shift state for new mode
+        if (this.isShifted) {
+            newMode.shift();
+        } else {
+            newMode.unshift();
+        }
+
+        newMode.forEachComponent(function(component) {
+            component.connect();
+            component.trigger();
+        });
+
+        if (MixtrackProFX.enableBlink) {
+            // stop blinking if old mode was secondary mode
+            if (this.currentMode.secondaryMode) {
+                this.blinkLedOff();
+
+                // disable light on the old control in case it ended up in 0x7F state
+                midi.sendShortMsg(0x90 + channel, this.currentMode.unshiftedControl, 0x01);
+            }
+
+            // start blinking if new mode is a secondary mode
+            if (newMode.secondaryMode) {
+                this.blinkLedOn(0x90 + channel, newMode.unshiftedControl);
+            }
+        }
+
+        // light off on old mode select button
+        midi.sendShortMsg(0x90 + channel, this.currentMode.control, 0x01);
+
+        // light on on new mode select button
+        midi.sendShortMsg(0x90 + channel, newMode.control, newMode.lightOnValue);
+
+        if (newMode.control === MixtrackProFX.PadModeControls.FADERCUTS) {
+            // in "fader cuts" mode pad lights need to be disabled manually,
+            // as pads are controlled by hardware or firmware in this mode
+            // and don't have associated controls. without this, lights from
+            // previously selected mode would still be on after changing mode
+            // to "fader cuts"
+            this.disablePadLights();
+        }
+
+        this.currentMode = newMode;
+    };
+
+    // start an infinite timer that toggles led state
+    this.blinkLedOn = function(midi1, midi2) {
+        this.blinkLedOff();
+        this.blinkLedState = true;
+        this.blinkTimer = engine.beginTimer(MixtrackProFX.blinkDelay, function() {
+            midi.sendShortMsg(midi1, midi2, this.blinkLedState ? 0x7F : 0x01);
+            this.blinkLedState = !this.blinkLedState;
+        });
+    };
+
+    // stop the blink timer
+    this.blinkLedOff = function() {
+        if (this.blinkTimer === 0) {
+            return;
+        }
+
+        engine.stopTimer(this.blinkTimer);
+        this.blinkTimer = 0;
+    };
+
+    this.disablePadLights = function() {
+        for (var i = 0; i < 16; i++) { // 0-7 = unshifted; 8-15 = shifted
+            midi.sendShortMsg(0x93 + deckNumber, 0x14 + i, 0x01);
+        }
+    };
+
+    this.currentMode = this.modes[MixtrackProFX.PadModeControls.HOTCUE];
+};
+MixtrackProFX.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
+
+MixtrackProFX.ModeHotcue = function(deckNumber) {
+    components.ComponentContainer.call(this);
+
+    this.control = MixtrackProFX.PadModeControls.HOTCUE;
+    this.secondaryMode = false;
+    this.lightOnValue = 0x7F;
+
+    this.pads = new components.ComponentContainer();
+    for (var i = 0; i < 8; i++) {
+        this.pads[i] = new components.HotcueButton({
+            group: "[Channel" + deckNumber + "]",
+            midi: [0x93 + deckNumber, 0x14 + i],
+            number: i + 1,
+            shiftControl: true,
+            sendShifted: true,
+            shiftOffset: 0x08,
+            outConnect: false
+        });
+    }
+};
+MixtrackProFX.ModeHotcue.prototype = Object.create(components.ComponentContainer.prototype);
+
+MixtrackProFX.ModeAutoLoop = function(deckNumber) {
+    components.ComponentContainer.call(this);
+
+    this.control = MixtrackProFX.PadModeControls.AUTOLOOP;
+    this.secondaryMode = false;
+    this.lightOnValue = 0x7F;
+
+    this.pads = new components.ComponentContainer();
+    for (var i = 0; i < 8; i++) {
+        this.pads[i] = new components.Button({
+            group: "[Channel" + deckNumber + "]",
+            inKey: "beatloop_" + this.size + "_toggle",
+            outKey: "beatloop_" + this.size + "_enabled",
+            midi: [0x93 + deckNumber, 0x14 + i],
+            size: MixtrackProFX.autoLoopSizes[i],
+            shiftControl: true,
+            sendShifted: true,
+            shiftOffset: 0x08,
+            shift: function() {
+                this.inKey = "beatlooproll_" + this.size + "_activate";
+                this.outKey = "beatlooproll_" + this.size + "_activate";
+            },
+            unshift: function() {
+                this.inKey = "beatloop_" + this.size + "_toggle";
+                this.outKey = "beatloop_" + this.size + "_enabled";
+            },
+            outConnect: false
+        });
+    }
+};
+MixtrackProFX.ModeAutoLoop.prototype = Object.create(components.ComponentContainer.prototype);
+
+// when pads are in "fader cuts" mode, they rapidly move the crossfader.
+// holding a pad activates a "fader cut", releasing it causes the GUI crossfader
+// to return to the position of physical crossfader
+MixtrackProFX.ModeFaderCuts = function() {
+    components.ComponentContainer.call(this);
+
+    this.control = MixtrackProFX.PadModeControls.FADERCUTS;
+    this.secondaryMode = false;
+    this.lightOnValue = 0x09; // for "fader cuts" 0x09 works better than 0x7F for some reason
+
+    // pads are controlled by hardware of firmware in this mode
+    // pad input function is not called when pressing a pad in this mode
+};
+MixtrackProFX.ModeFaderCuts.prototype = Object.create(components.ComponentContainer.prototype);
+
+MixtrackProFX.ModeSample = function(deckNumber, secondaryMode) {
+    components.ComponentContainer.call(this);
+
+    if (!secondaryMode) {
+        // samples 1-8
+        this.control = MixtrackProFX.PadModeControls.SAMPLE1;
+        this.firstSampleNumber = 1;
+    } else {
+        // samples 9-16
+        this.control = MixtrackProFX.PadModeControls.SAMPLE2;
+        this.unshiftedControl = MixtrackProFX.PadModeControls.SAMPLE1;
+        this.firstSampleNumber = 9;
+    }
+    this.secondaryMode = secondaryMode;
+    this.lightOnValue = 0x7F;
+
+    this.pads = new components.ComponentContainer();
+    for (var i = 0; i < 8; i++) {
+        this.pads[i] = new components.SamplerButton({
+            midi: [0x93 + deckNumber, 0x14 + i],
+            number: this.firstSampleNumber + i,
+            shiftControl: true,
+            sendShifted: true,
+            shiftOffset: 0x08,
+            outConnect: false
+        });
+    }
+};
+MixtrackProFX.ModeSample.prototype = Object.create(components.ComponentContainer.prototype);
+
+MixtrackProFX.ModeBeatjump = function(deckNumber) {
+    components.ComponentContainer.call(this);
+
+    this.control = MixtrackProFX.PadModeControls.BEATJUMP;
+    this.secondaryMode = true;
+    this.unshiftedControl = MixtrackProFX.PadModeControls.HOTCUE;
+    this.lightOnValue = 0x7F;
+
+    this.pads = new components.ComponentContainer();
+    for (var i = 0; i < 8; i++) {
+        this.pads[i] = new components.Button({
+            group: "[Channel" + deckNumber + "]",
+            key: "beatjump_" + this.size + "forward",
+            midi: [0x93 + deckNumber, 0x14 + i],
+            size: MixtrackProFX.beatJumpValues[i],
+            shiftControl: true,
+            sendShifted: true,
+            shiftOffset: 0x08,
+            shift: function() {
+                this.inKey = "beatjump_" + this.size + "backward";
+                this.outKey = "beatjump_" + this.size + "backward";
+            },
+            unshift: function() {
+                this.inKey = "beatjump_" + this.size + "forward";
+                this.outKey = "beatjump_" + this.size + "forward";
+            },
+            outConnect: false
+        });
+    }
+};
+MixtrackProFX.ModeBeatjump.prototype = Object.create(components.ComponentContainer.prototype);
 
 MixtrackProFX.Browse = function() {
     this.knob = new components.Encoder({
