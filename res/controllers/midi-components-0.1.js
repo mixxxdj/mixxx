@@ -51,7 +51,7 @@
                 }
             }
         }
-        // default attributes
+        // default methods
         // You should probably overwrite at least some of these.
         inValueScale(value) {
             // Hack to get exact center of pots to return 0.5
@@ -112,9 +112,9 @@
             different color depending on the state of different Mixxx COs. Refer to
             SamplerButton.connect() and SamplerButton.output() for an example.
             **/
-            if (undefined !== this.group &&
-                undefined !== this.outKey &&
-                undefined !== this.output &&
+            if (this.group !== undefined &&
+                this.outKey !== undefined &&
+                this.output !== undefined &&
                 typeof this.output === "function") {
                 this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
@@ -125,6 +125,7 @@
             }
         }
         trigger() {
+
             for (const conn of this.connections) {
                 conn.trigger();
             }
@@ -338,7 +339,7 @@
         }
         connect() {
             super.connect();
-            if (undefined !== this.group && this.colorKey !== undefined) {
+            if (this.group !== undefined && this.colorKey !== undefined) {
                 // TODO (Swiftb0y): replace with arrow function once https://bugreports.qt.io/browse/QTBUG-95677 got fixed
                 this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
                     if (engine.getValue(this.group, this.outKey)) {
