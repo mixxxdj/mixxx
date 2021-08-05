@@ -111,7 +111,7 @@
 * Add controller mapping for Numark iDJ Live II [#2818](https://github.com/mixxxdj/mixxx/pull/2818)
 * Add controller mapping for Hercules DJControl Inpulse 200 [#2542](https://github.com/mixxxdj/mixxx/pull/2542)
 * Add controller mapping for Hercules DJControl Jogvision [#2370](https://github.com/mixxxdj/mixxx/pull/2370)
-* Add controller mapping for Pioneer DDJ-200 [#3185](https://github.com/mixxxdj/mixxx/pull/3185) [#3193](https://github.com/mixxxdj/mixxx/pull/3193) [#3479](https://github.com/mixxxdj/mixxx/pull/3742) [#3793](https://github.com/mixxxdj/mixxx/pull/3793) [#3949](https://github.com/mixxxdj/mixxx/pull/3949)
+* Add controller mapping for Pioneer DDJ-200 [#3185](https://github.com/mixxxdj/mixxx/pull/3185) [#3193](https://github.com/mixxxdj/mixxx/pull/3193) [#3742](https://github.com/mixxxdj/mixxx/pull/3742) [#3793](https://github.com/mixxxdj/mixxx/pull/3793) [#3949](https://github.com/mixxxdj/mixxx/pull/3949)
 * Add controller mapping for Pioneer DDJ-400 [#3479](https://github.com/mixxxdj/mixxx/pull/3479)
 * Add controller mapping for ION Discover DJ Pro [#2893](https://github.com/mixxxdj/mixxx/pull/2893)
 * Add controller mapping for Native Instrument Traktor Kontrol S3 [#3031](https://github.com/mixxxdj/mixxx/pull/3031)
@@ -211,30 +211,35 @@
 
 ## [2.2.0](https://launchpad.net/mixxx/+milestone/2.2.0) (2018-12-17)
 
-General
+### General
+
 * Update from Qt4 to Qt5.
 * Use Qt5's automatic high DPI scaling (and remove the old
   scaling option from the preferences).
 * Vectorize remaining raster graphics for better HiDPI support.
 
-Effects
+### Effects
+
 * Add mix mode switch (Dry/Wet vs Dry+Wet) for effect units.
 * Add support for LV2 effects plugins (currently no way to show plugin GUIs).
 * Add preference option for selecting which effects are shown in the
   list of available effects in the main window (all LV2 effects are
   hidden by default and must be explicitly enabled by users).
 
-Skins
+### Skins
+
 * Add 8 sampler and small sampler options to LateNight.
 * Add key / BPM expansion indicators to Deere decks.
 * Add skin settings menu to LateNight.
 
-Controllers
+### Controllers
+
 * Add controller mapping for Numark Mixtrack Platinum.
 * Update controller mapping for Numark N4.
 * Add spinback and break for Vestax VCI-400 mapping.
 
-Miscellaneous
+### Miscellaneous
+
 * Add preference option to adjust the play position marker of
   scrolling waveforms.
 * Add preference option to adjust opacity of beatgrid markers on
@@ -428,10 +433,10 @@ For users upgrading from older versions of Mixxx, we have a few important
 announcements. First, if you are using Windows, you will have to uninstall any
 old versions of Mixxx before you can install 2.1. How to uninstall Mixxx
 varies on different versions of Windows:
-  * Windows Vista, 7, and 8: Start > Control Panel > Programs > Uninstall a
-Program [Guide](https://support.microsoft.com/en-us/help/2601726)
-  * Windows 10: Start > Control Panel > Programs > Programs And Features > look
-for Mixxx > Uninstall [Guide](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
+  * Windows Vista, 7, and 8: [Start > Control Panel > Programs > Uninstall a
+    Program](https://support.microsoft.com/en-us/help/2601726)
+  * Windows 10: [Start > Control Panel > Programs > Programs And Features >
+    look for Mixxx > Uninstall](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
 
 If you are upgrading from an older version of Mixxx and have MP3 files in
 your library, we have another important announcement. The good news is that we
