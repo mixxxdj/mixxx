@@ -27,6 +27,8 @@ endif()
 
 # Check if any relevant env vars were set from the build env scripts
 if(DEFINED ENV{VCPKG_ROOT})
+  set(VCPKG_ROOT ENV{VCPKG_ROOT} CACHE STRING "")
+
   if(DEFINED ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL} AND NOT DEFINED X_VCPKG_APPLOCAL_DEPS_INSTALL)
     set(X_VCPKG_APPLOCAL_DEPS_INSTALL "$ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL}" CACHE BOOL "")
   endif()
@@ -377,7 +379,10 @@ endif()
 
 if(MSVC)
   # sccache support
-  find_program(SCCACHE_EXECUTABLE "sccache")
+  find_program(SCCACHE_EXECUTABLE "sccache"
+    # We build sccache with cargo and put it into the vcpkg archive
+    # but it is not a port in vcpkg so it is not in the PATH.
+    HINTS "${VCPKG_ROOT}/installed/${VCPKG_DEFAULT_TRIPLET}/sccache/bin")
   if(SCCACHE_EXECUTABLE)
     message(STATUS "Found sccache: ${SCCACHE_EXECUTABLE}")
   else()

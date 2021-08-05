@@ -123,25 +123,6 @@ jobs:
         # Add MSYS2's tools to %PATH%.
         Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
-    # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
-    # https://github.com/mozilla/sccache/issues/950
-    - name: "[Windows] Set up cargo cache"
-      if: runner.os == 'Windows'
-      uses: actions/cache@v2
-      id: sccache-build-cache
-      with:
-        path: C:\Users\runneradmin\.cargo
-        # hash of commit to build
-        key: sccache-${{ env.SCCACHE_COMMIT }}
-
-    # This needs to be done first because something later messes with $PATH in a way that breaks cargo
-    # by causing it to find link.exe from Git for Windows instead of MSVC.
-    - name: "[Windows] Build fixed sccache"
-      shell: bash
-      if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
-      # TODO: change this to simply `cargo install sccache` after 0.2.16 has been released
-      run: cargo install --git https://github.com/mozilla/sccache.git --rev "${SCCACHE_COMMIT}"
-
     - name: "Check out repository"
       uses: actions/checkout@v2
       with:
