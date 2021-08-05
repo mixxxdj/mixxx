@@ -1791,7 +1791,7 @@ find_package(SQLite3)
 # For LOCALECOMPARE we call directly sqlite functions to the database opened by
 # Qt. It only works without crashing when Mixxx links to the same sqlite
 # library as Qt.
-# This is difficult on macOS where system SQLite, can be installed and linked
+# This is difficult on macOS where system the SQLite can be installed and linked
 # dynamically from various locations. There is no issue in case of static
 # linking which would result in a duplicate symbol error.
 if(NOT SQLite3_FOUND)
