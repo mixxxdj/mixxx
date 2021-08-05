@@ -120,17 +120,13 @@
             }
         }
         disconnect() {
-            if (this.connections[0] !== undefined) {
-                this.connections.forEach(function(conn) {
-                    conn.disconnect();
-                });
+            for (const conn of this.connections) {
+                conn.disconnect();
             }
         }
         trigger() {
-            if (this.connections[0] !== undefined) {
-                this.connections.forEach(function(conn) {
-                    conn.trigger();
-                });
+            for (const conn of this.connections) {
+                conn.trigger();
             }
         }
         send(value) {
