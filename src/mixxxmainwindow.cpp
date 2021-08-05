@@ -3,11 +3,6 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGLFormat>
-#include <QGuiApplication>
-#include <QInputMethod>
-#include <QLocale>
-#include <QScreen>
-#include <QStandardPaths>
 #include <QUrl>
 #include <QtDebug>
 
@@ -15,12 +10,9 @@
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
-#include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginemaster.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
-#include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgpreferences.h"
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
@@ -29,11 +21,9 @@
 #include "broadcast/broadcastmanager.h"
 #endif
 #include "control/controlindicatortimer.h"
-#include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
-#include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #ifdef __ENGINEPRIME__
@@ -46,12 +36,10 @@
 #include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
-#include "skin/legacy/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/db/dbconnectionpooled.h"
 #include "util/debug.h"
 #include "util/experiment.h"
 #include "util/font.h"
@@ -59,7 +47,6 @@
 #include "util/math.h"
 #include "util/sandbox.h"
 #include "util/screensaver.h"
-#include "util/statsmanager.h"
 #include "util/time.h"
 #include "util/timer.h"
 #include "util/translations.h"
@@ -73,10 +60,6 @@
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
-#endif
-
-#ifdef __MODPLUG__
-#include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
 #if defined(Q_OS_LINUX)
