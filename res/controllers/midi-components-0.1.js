@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Components JS library for Mixxx
  * Documentation is on the Mixxx wiki at
