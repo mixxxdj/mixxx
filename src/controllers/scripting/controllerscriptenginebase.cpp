@@ -109,10 +109,10 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
     // slider values that will differ most of the time. This would break
     // the "Ignore" feature of the error dialog.
     QString key = errorText;
-    qWarning() << "ControllerScriptHandlerBase:" << errorText;
 
     // Add backtrace to the error details
-    errorText += QStringLiteral("\n\nBacktrace:\n") + backtrace;
+    errorText += QStringLiteral("\nBacktrace: ") + backtrace;
+    qWarning() << "ControllerScriptHandlerBase:" << errorText;
 
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, key, bFatalError);
