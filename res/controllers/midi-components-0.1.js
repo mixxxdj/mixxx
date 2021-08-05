@@ -156,7 +156,7 @@
     const Button = class extends Component {
         constructor(options) {
             if (options.type === undefined) {
-                options.type = Button.prototype.types.push;
+                options.type = Button.types.push;
             }
             super(options);
         }
@@ -164,13 +164,13 @@
             return value > 0;
         }
         input(channel, control, value, status, _group) {
-            if (this.type === undefined || this.type === Button.prototype.types.push) {
+            if (this.type === undefined || this.type === Button.types.push) {
                 this.inSetValue(this.isPress(channel, control, value, status));
-            } else if (this.type === Button.prototype.types.toggle) {
+            } else if (this.type === Button.types.toggle) {
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                 }
-            } else if (this.type === Button.prototype.types.powerWindow) {
+            } else if (this.type === Button.types.powerWindow) {
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                     this.isLongPressed = false;
@@ -197,12 +197,12 @@
             this.send(this.off);
         }
     };
-    Button.prototype.types = {
+    Button.types = Object.freeze({
         push: 0,
         toggle: 1,
         powerWindow: 2,
-    };
-    Button.prototype.type = Button.prototype.types.push;
+    });
+    Button.prototype.type = Button.types.push;
     // Time in milliseconds to distinguish a short press from a long press.
     // It is recommended to refer to it (as this.longPressTimeout)
     // in any Buttons that act differently with short and long presses
@@ -213,7 +213,7 @@
 
     const PlayButton = class extends Button {
         constructor(options) {
-            options.type = Button.prototype.types.toggle;
+            options.type = Button.types.toggle;
             options.outKey = "play_indicator";
             super(options);
         }
@@ -269,7 +269,7 @@
         }
         shift() {
             this.inKey = "quantize";
-            this.type = Button.prototype.types.toggle;
+            this.type = Button.types.toggle;
             this.input = Button.prototype.input;
         }
     };
@@ -429,7 +429,7 @@
         constructor(options) {
             options.key = "group_" + options.group + "_enable";
             options.group = "[EffectRack1_EffectUnit" + options.effectUnit + "]";
-            options.type = Button.prototype.types.toggle;
+            options.type = Button.types.toggle;
             super(options);
         }
     };
@@ -570,7 +570,7 @@
                 // button is pressed.
                 if (typeof component.shift === "function") {
                     if (component instanceof Button
-                        && (component.type === Button.prototype.types.push
+                        && (component.type === Button.types.push
                             || component.type === undefined)
                         && component.input === Button.prototype.input
                         && typeof component.inKey === "string"
@@ -597,7 +597,7 @@
                 // Refer to comment in ComponentContainer.shift() above for explanation
                 if (typeof component.unshift === "function") {
                     if (component instanceof Button
-                        && (component.type === Button.prototype.types.push
+                        && (component.type === Button.types.push
                             || component.type === undefined)
                         && component.input === Button.prototype.input
                         && typeof component.inKey === "string"
@@ -826,7 +826,7 @@
                 this[channel] = new Button({
                     group: eu.group,
                     key: "group_[" + channel + "]_enable",
-                    type: Button.prototype.types.toggle,
+                    type: Button.types.toggle,
                     outConnect: false,
                 });
             };
@@ -916,7 +916,7 @@
                         number: number,
                         group: "[EffectRack1_EffectUnit" + eu.currentUnitNumber +
                                 "_Effect" + number + "]",
-                        type: Button.prototype.types.powerWindow,
+                        type: Button.types.powerWindow,
                     };
                     super(options);
                 }
@@ -942,7 +942,7 @@
                     }
                 }
                 stopEffectFocusChooseMode() {
-                    this.type = Button.prototype.types.powerWindow;
+                    this.type = Button.types.powerWindow;
                     this.input = Button.prototype.input;
                     this.output = Button.prototype.output;
                     if (colors !== undefined) {
