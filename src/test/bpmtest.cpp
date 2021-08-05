@@ -35,17 +35,19 @@ TEST_F(BpmTest, value) {
             mixxx::Bpm{mixxx::Bpm::kValueMax + 0.001}.value());
 }
 
-TEST_F(BpmTest, valueOrUndefined) {
-    EXPECT_DOUBLE_EQ(123.45, mixxx::Bpm{123.45}.valueOrUndefined());
-    EXPECT_EQ(mixxx::Bpm::kValueUndefined, mixxx::Bpm{-123.45}.valueOrUndefined());
-    EXPECT_EQ(mixxx::Bpm::kValueUndefined, mixxx::Bpm{}.valueOrUndefined());
-    EXPECT_EQ(mixxx::Bpm::kValueUndefined, mixxx::Bpm{mixxx::Bpm::kValueMin}.valueOrUndefined());
+TEST_F(BpmTest, valueOr) {
+    EXPECT_DOUBLE_EQ(123.45, mixxx::Bpm{123.45}.valueOr(-1.0));
+    EXPECT_EQ(-1.0, mixxx::Bpm{-123.45}.valueOr(-1.0));
+    EXPECT_EQ(123.45, mixxx::Bpm{}.valueOr(123.45));
+    EXPECT_EQ(mixxx::Bpm::kValueUndefined,
+            mixxx::Bpm{mixxx::Bpm::kValueMin}.valueOr(
+                    mixxx::Bpm::kValueUndefined));
     EXPECT_DOUBLE_EQ(mixxx::Bpm::kValueMin + 0.001,
             mixxx::Bpm{mixxx::Bpm::kValueMin + 0.001}.value());
-    EXPECT_EQ(mixxx::Bpm::kValueMax, mixxx::Bpm{mixxx::Bpm::kValueMax}.valueOrUndefined());
+    EXPECT_EQ(mixxx::Bpm::kValueMax, mixxx::Bpm{mixxx::Bpm::kValueMax}.valueOr(100.0));
     // The upper bound is only a soft-limit!
     EXPECT_DOUBLE_EQ(mixxx::Bpm::kValueMax + 0.001,
-            mixxx::Bpm{mixxx::Bpm::kValueMax + 0.001}.valueOrUndefined());
+            mixxx::Bpm{mixxx::Bpm::kValueMax + 0.001}.valueOr(mixxx::Bpm::kValueMax));
 }
 
 TEST_F(BpmTest, TestBpmComparisonOperators) {

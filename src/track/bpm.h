@@ -56,9 +56,10 @@ public:
         return m_value;
     }
 
-    /// Return the valid value or kValueUndefined if invalid.
-    double valueOrUndefined() const {
-        return isValid() ? m_value : kValueUndefined;
+    /// Return either the valid BPM value or the given default value
+    /// if the BPM is invalid/undefined.
+    double valueOr(double defaultValue) const {
+        return isValid() ? m_value : defaultValue;
     }
 
     void setValue(double value) {

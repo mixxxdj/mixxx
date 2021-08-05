@@ -368,7 +368,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
 
 void DlgTrackInfo::updateSpinBpmFromBeats() {
     const auto bpmValue = m_pBeatsClone
-            ? m_pBeatsClone->getBpm().valueOrUndefined()
+            ? m_pBeatsClone->getBpm().valueOr(mixxx::Bpm::kValueUndefined)
             : mixxx::Bpm::kValueUndefined;
     spinBpm->setValue(bpmValue);
 }
@@ -598,7 +598,7 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
             averageBpm + kBpmTabRounding);
     if (averageBpm != m_lastTapedBpm) {
         m_lastTapedBpm = averageBpm;
-        spinBpm->setValue(averageBpm.valueOrUndefined());
+        spinBpm->setValue(averageBpm.valueOr(mixxx::Bpm::kValueUndefined));
     }
 }
 

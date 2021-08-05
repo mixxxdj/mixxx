@@ -785,7 +785,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (!ok) {
                 return mixxx::Bpm::kValueUndefined;
             }
-            return mixxx::Bpm{bpmValue}.valueOrUndefined();
+            return mixxx::Bpm{bpmValue}.valueOr(mixxx::Bpm::kValueUndefined);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return index.sibling(
