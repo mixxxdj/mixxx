@@ -81,6 +81,5 @@ if(OpusFile_FOUND)
         INTERFACE_COMPILE_OPTIONS "${OpusFile_DEFINITIONS}"
         INTERFACE_INCLUDE_DIRECTORIES "${OpusFile_INCLUDE_DIRS}"
     )
-    #endif()
   endif()
 endif()
