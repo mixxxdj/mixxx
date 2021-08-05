@@ -65,12 +65,12 @@
 #if defined(Q_OS_LINUX)
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
-
-#include <QtX11Extras/QX11Info>
 // Xlibint.h predates C++ and defines macros which conflict
 // with references to std::max and std::min
 #undef max
 #undef min
+
+#include <QtX11Extras/QX11Info>
 #endif
 
 MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices)
