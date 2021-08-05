@@ -80,10 +80,6 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
           m_pGuiTick(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
-          m_pKeywheel(nullptr),
-#ifdef __ENGINEPRIME__
-          m_pLibraryExporter(nullptr),
-#endif
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON) {
     DEBUG_ASSERT(pCoreServices);
     // These depend on the settings
