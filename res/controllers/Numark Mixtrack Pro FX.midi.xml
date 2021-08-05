@@ -14,14 +14,14 @@
       <file functionprefix="MixtrackProFX" filename="Numark-Mixtrack-Pro-FX-scripts.js"/>
     </scriptfiles>
     <controls>
-      <!-- Master gain -->
+      <!-- Main gain -->
       <control>
         <group>[Master]</group>
-        <key>gain</key>
+        <key>MixtrackProFX.gains.mainGain.input</key>
         <status>0xBE</status>
         <midino>0x23</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <!-- Crossfader and 1st deck "fader cuts" -->
@@ -1987,7 +1987,7 @@
       <!-- Cue gain knob -->
       <control>
         <group>[Master]</group>
-        <key>MixtrackProFX.headGain.input</key>
+        <key>MixtrackProFX.gains.cueGain.input</key>
         <status>0xBE</status>
         <midino>0x2F</midino>
         <options>
@@ -1997,11 +1997,11 @@
       <!-- Cue mix knob -->
       <control>
         <group>[Master]</group>
-        <key>headMix</key>
+        <key>MixtrackProFX.gains.cueMix.input</key>
         <status>0xBE</status>
         <midino>0x27</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <!-- Pitch bend down buttons (press) -->

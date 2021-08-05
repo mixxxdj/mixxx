@@ -78,7 +78,7 @@ MixtrackProFX.init = function() {
     MixtrackProFX.deck[1] = new MixtrackProFX.Deck(2);
 
     MixtrackProFX.browse = new MixtrackProFX.Browse();
-    MixtrackProFX.headGain = new MixtrackProFX.HeadGain();
+    MixtrackProFX.gains = new MixtrackProFX.Gains();
 
     var exitDemoSysex = [0xF0, 0x7E, 0x00, 0x06, 0x01, 0xF7];
     midi.sendSysexMsg(exitDemoSysex, exitDemoSysex.length);
@@ -703,17 +703,25 @@ MixtrackProFX.Browse = function() {
         }
     });
 };
-
 MixtrackProFX.Browse.prototype = new components.ComponentContainer();
 
-MixtrackProFX.HeadGain = function() {
-    components.Pot.call(this);
-};
+MixtrackProFX.Gains = function() {
+    this.mainGain = new components.Pot({
+        group: "[Master]",
+        inKey: "gain"
+    });
 
-MixtrackProFX.HeadGain.prototype = new components.Pot({
-    group: "[Master]",
-    inKey: "headGain"
-});
+    this.cueGain = new components.Pot({
+        group: "[Master]",
+        inKey: "headGain"
+    });
+
+    this.cueMix = new components.Pot({
+        group: "[Master]",
+        inKey: "headMix"
+    });
+};
+MixtrackProFX.Gains.prototype = new components.ComponentContainer();
 
 MixtrackProFX.vuCallback = function(value, group) {
     var level = value * 90;
