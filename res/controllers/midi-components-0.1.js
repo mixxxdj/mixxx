@@ -174,10 +174,10 @@
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                     this.isLongPressed = false;
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                         this.isLongPressed = true;
                         this.longPressTimer = 0;
-                    }.bind(this), true);
+                    }, true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
@@ -252,10 +252,10 @@
                 if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, "sync_enabled") === 0) {
                         engine.setValue(this.group, "beatsync", 1);
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                             engine.setValue(this.group, "sync_enabled", 1);
                             this.longPressTimer = 0;
-                        }.bind(this), true);
+                        }, true);
                     } else {
                         engine.setValue(this.group, "sync_enabled", 0);
                     }
@@ -343,6 +343,7 @@
         connect() {
             super.connect();
             if (undefined !== this.group && this.colorKey !== undefined) {
+                // TODO (Swiftb0y): replace with arrow function once https://bugreports.qt.io/browse/QTBUG-95677 got fixed
                 this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
                     if (engine.getValue(this.group, this.outKey)) {
                         this.outputColor(color);
