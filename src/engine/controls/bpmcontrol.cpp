@@ -174,6 +174,7 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         mixxx::Bpm bpm = pBeats->getBpm();
+        // FIXME: calling bpm.value() without checking bpm.isValid()
         const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm.value() + deltaBpm));
         mixxx::Bpm adjustedBpm = BeatUtils::roundBpmWithinRange(
                 centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);

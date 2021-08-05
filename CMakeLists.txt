@@ -26,16 +26,22 @@ if(POLICY CMP0071)
 endif()
 
 # Check if any relevant env vars were set from the build env scripts
-if(DEFINED ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL} AND NOT DEFINED X_VCPKG_APPLOCAL_DEPS_INSTALL)
-  set(X_VCPKG_APPLOCAL_DEPS_INSTALL "$ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL}" CACHE BOOL "")
-endif()
+if(DEFINED ENV{VCPKG_ROOT})
+  if(DEFINED ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL} AND NOT DEFINED X_VCPKG_APPLOCAL_DEPS_INSTALL)
+    set(X_VCPKG_APPLOCAL_DEPS_INSTALL "$ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL}" CACHE BOOL "")
+  endif()
 
-if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
-  set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}" CACHE STRING "")
-endif()
+  if(DEFINED ENV{VCPKG_OVERLAY_TRIPLETS} AND NOT DEFINED VCPKG_OVERLAY_TRIPLETS)
+    set(VCPKG_OVERLAY_TRIPLETS "$ENV{VCPKG_OVERLAY_TRIPLETS}" CACHE STRING "")
+  endif()
 
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-  set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+  if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
+    set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}" CACHE STRING "")
+  endif()
+
+  if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+  endif()
 endif()
 
 # Set a default build type if none was specified
@@ -76,6 +82,7 @@ include(CheckSymbolExists)
 include(ExternalProject)
 include(GNUInstallDirs)
 include(DefaultOption)
+include(IsStaticLibrary)
 
 #######################################################################
 # Compilers and toolchains
@@ -1180,9 +1187,6 @@ if(WIN32)
   target_link_libraries(mixxx-lib PRIVATE shell32)
 
   if(MSVC)
-    if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
-      target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
-    endif()
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
     # Force MSVS to generate a manifest (MSVC2010)
     target_link_options(mixxx-lib PUBLIC /manifest)
@@ -1779,21 +1783,38 @@ if(WIN32)
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
-#
-# Dependencies
-#
-option(STATIC_DEPS "Link dependencies statically" OFF)
-
 # Chromaprint
 find_package(Chromaprint REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
-if(WIN32)
-  if(STATIC_DEPS)
-    target_compile_definitions(mixxx-lib PUBLIC CHROMAPRINT_NODLL)
+
+# Locale Aware Compare for SQLite
+find_package(SQLite3)
+# For LOCALECOMPARE we call directly sqlite functions to the database opened by
+# Qt. It only works without crashing when Mixxx links to the same sqlite
+# library as Qt.
+# This is difficult on macOS where system the SQLite can be installed and linked
+# dynamically from various locations. There is no issue in case of static
+# linking which would result in a duplicate symbol error.
+if(NOT SQLite3_FOUND)
+  set(LOCALECOMPARE_DEFAULT OFF)
+else()
+  is_static_library(SQLite3_IS_STATIC SQLite3::SQLite3)
+  if(SQLite3_IS_STATIC OR NOT APPLE)
+    set(LOCALECOMPARE_DEFAULT ON)
+  else()
+    set(LOCALECOMPARE_DEFAULT OFF)
   endif()
-   # Chromaprint is always built statically and needs fftw.
-  find_package(FFTW REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE FFTW::FFTW)
+endif()
+cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" ON "LOCALECOMPARE_DEFAULT" OFF)
+if(LOCALECOMPARE)
+  if(NOT SQLite3_FOUND)
+    message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
+  endif()
+  target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
+  target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
+elseif(SQLite3_IS_STATIC)
+  # in the static case we need to link SQLite3 uncoditionally
+  target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
 endif()
 
 # Denon Engine Prime library export support (using libdjinterop)
@@ -1812,7 +1833,7 @@ if(ENGINEPRIME)
 
     # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
     # embedded SQLite in such a case.
-    if (APPLE)
+    if (APPLE AND NOT SQLite3_IS_STATIC)
       message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
       set(DJINTEROP_SYSTEM_SQLITE OFF)
     else()
@@ -1983,9 +2004,6 @@ endif()
 # FLAC
 find_package(FLAC REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
-if(WIN32 AND STATIC_DEPS)
-  target_compile_definitions(mixxx-lib PUBLIC FLAC__NO_DLL)
-endif()
 
 # FpClassify This is a wrapper around the fpclassify function that prevents
 # inlining It is compiled without optimization and allows to use these function
@@ -2041,8 +2059,7 @@ target_link_libraries(mixxx-lib PRIVATE Vorbis::vorbis Vorbis::vorbisenc Vorbis:
 
 # PortAudio
 find_package(PortAudio REQUIRED)
-target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortAudio_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PRIVATE ${PortAudio_LIBRARIES})
+target_link_libraries(mixxx-lib PRIVATE PortAudio::PortAudio)
 
 # PortAudio Ring Buffer
 add_library(PortAudioRingBuffer STATIC EXCLUDE_FROM_ALL
@@ -2057,7 +2074,7 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortMidi_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PRIVATE ${PortMidi_LIBRARIES})
 
 # Protobuf
-if(STATIC_DEPS)
+if(NOT BUILD_SHARED_LIBS)
   set(Protobuf_USE_STATIC_LIBS ON)
   mark_as_advanced(Protobuf_USE_STATIC_LIBS)
 endif()
@@ -2076,6 +2093,7 @@ find_package(Qt5
     Gui
     Network
     OpenGL
+    PrintSupport
     Qml
     QuickWidgets
     Sql
@@ -2085,12 +2103,14 @@ find_package(Qt5
     Xml
   REQUIRED
 )
+# PUBLIC is required below to find included headers
 target_link_libraries(mixxx-lib PUBLIC
   Qt5::Concurrent
   Qt5::Core
   Qt5::Gui
   Qt5::Network
   Qt5::OpenGL
+  Qt5::PrintSupport
   Qt5::Qml
   Qt5::QuickWidgets
   Qt5::Sql
@@ -2099,8 +2119,8 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Widgets
   Qt5::Xml)
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
-get_target_property(QT5_TYPE Qt5::Core TYPE)
-if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
+is_static_library(Qt5_IS_STATIC Qt5::Core)
+if(Qt5_IS_STATIC)
 
   # NOTE(rryan): If you are adding a plugin here, you must also
   # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
@@ -2140,7 +2160,32 @@ if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
 
 endif()
 
-if(UNIX AND NOT APPLE)
+
+if(APPLE)
+  if(Qt5_IS_STATIC)
+    target_link_libraries(mixxx-lib PRIVATE
+        "-weak_framework Accelerate"
+        "-weak_framework AppKit"
+        "-weak_framework AudioToolbox"
+        "-weak_framework AudioUnit"
+        "-weak_framework AVFoundation"
+        "-weak_framework CoreAudio"
+        "-weak_framework CoreFoundation"
+        "-weak_framework CoreImage"
+        "-weak_framework CoreMedia"
+        "-weak_framework CoreMidi"
+        "-weak_framework CoreServices"
+        "-weak_framework CoreVideo"
+        "-weak_framework IOSurface"
+        "-weak_framework VideoToolbox"
+    )
+  else()
+    # Used for battery measurements and controlling the screensaver on macOS.
+    target_link_libraries(mixxx-lib PRIVATE
+        "-weak_framework IOKit"
+    )
+  endif()
+elseif(UNIX)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
   target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
@@ -2150,7 +2195,7 @@ if(UNIX AND NOT APPLE)
     Qt5::DBus
   )
 elseif(WIN32)
-  if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
+  if(Qt5_IS_STATIC)
     target_link_libraries(mixxx-lib PRIVATE
       # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
       # QtCore
@@ -2295,10 +2340,6 @@ target_compile_definitions(mixxx-lib PUBLIC __SNDFILE__)
 if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
   target_compile_definitions(mixxx-lib PUBLIC SFC_SUPPORTS_SET_COMPRESSION_LEVEL)
 endif()
-if(WIN32 AND STATIC_DEPS)
-  find_package(G72X REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE G72X::G72X)
-endif()
 
 # SoundTouch
 find_package(SoundTouch)
@@ -2331,34 +2372,11 @@ endif()
 # TagLib
 find_package(TagLib REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE TagLib::TagLib)
-if(WIN32 AND STATIC_DEPS)
-  target_compile_definitions(mixxx-lib PUBLIC TAGLIB_STATIC)
-endif()
 
 # Threads
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE Threads::Threads)
-
-# iOS/OS X Frameworks
-if(APPLE)
-  find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${COREFOUNDATION_LIBRARY})
-
-  # The iOS/OS X security framework is used to implement sandboxing.
-  find_library(SECURITY_LIBRARY Security REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${SECURITY_LIBRARY})
-
-  find_library(CORESERVICES_LIBRARY CoreServices REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${CORESERVICES_LIBRARY})
-
-  find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${FOUNDATION_LIBRARY})
-
-  # Used for battery measurements and controlling the screensaver on OS X and iOS.
-  find_library(IOKIT_LIBRARY IOKit REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${IOKIT_LIBRARY})
-endif()
 
 #
 # Features
@@ -2475,12 +2493,13 @@ endif()
 # FDK-AAC is loaded dynamically at runtime by EncoderFdkAac using QLibrary,
 # so copy it into the Windows and macOS packages, but do not link to it.
 if(APPLE AND MACOS_BUNDLE)
-  find_library(FDK_AAC_LIBRARY fdk-aac.2)
+  find_library(FDK_AAC_LIBRARY fdk-aac)
   if(FDK_AAC_LIBRARY)
     message(STATUS "Found fdk-aac: ${FDK_AAC_LIBRARY}")
-    install(FILES ${FDK_AAC_LIBRARY} DESTINATION ${MIXXX_INSTALL_PREFIX}/Contents/Frameworks)
+    file(COPY ${FDK_AAC_LIBRARY} DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/lib/fdk-aac-install" FOLLOW_SYMLINK_CHAIN)
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib/fdk-aac-install/" DESTINATION "${MIXXX_INSTALL_PREFIX}/Contents/Frameworks")
   else()
-    message(STATUS "Could NOT find libfdk-aac.2.dylib")
+    message(STATUS "Could NOT find libfdk-aac.dylib")
   endif()
 elseif(WIN32)
   # On Windows find_library finds the .lib file, but the installer needs the .dll file.
@@ -2618,27 +2637,12 @@ if(BROADCAST)
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
 endif()
 
-# Locale Aware Compare for SQLite
-find_package(SQLite3)
-# FIXME: It is difficult to get qmake to link Qt to a custom built SQLite on
-# macOS instead of the system SQLite, which results in a crash on startup when
-# LOCALECOMPARE is enabled, therefore this option is forcibly set to OFF on
-# macOS.
-cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" "${SQLite3_FOUND}" "NOT APPLE" OFF)
-if(LOCALECOMPARE)
-  if(NOT SQLite3_FOUND)
-    message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
-  endif()
-  target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
-  target_include_directories(mixxx-lib SYSTEM PRIVATE ${SQLite3_INCLUDE_DIRS})
-  target_link_libraries(mixxx-lib PRIVATE ${SQLite3_LIBRARIES})
-endif()
-
 # Opus (RFC 6716)
+find_package(OpusFile)
 find_package(Opus)
-default_option(OPUS "Opus (RFC 6716) support" "Opus_FOUND")
+default_option(OPUS "Opus (RFC 6716) support" "OpusFile_FOUND")
 if(OPUS)
-  if(NOT Opus_FOUND)
+  if(NOT OpusFile_FOUND OR NOT Opus_FOUND)
     message(FATAL_ERROR "Opus support requires libopus and libopusfile with development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE
@@ -2647,21 +2651,8 @@ if(OPUS)
     src/encoder/encoderopussettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
-  target_include_directories(mixxx-lib SYSTEM PUBLIC ${Opus_INCLUDE_DIRS})
-  target_link_libraries(mixxx-lib PRIVATE ${Opus_LIBRARIES})
-  if(WIN32 AND STATIC_DEPS)
-    find_package(Celt)
-    if(NOT Celt_FOUND)
-      message(FATAL_ERROR "Opus support with static dependencies requires the celt library.")
-    endif()
-    target_link_libraries(mixxx-lib PRIVATE Celt::Celt)
-
-    find_package(Silk)
-    if(NOT Silk_FOUND)
-      message(FATAL_ERROR "Opus support with static dependencies requires the silk library.")
-    endif()
-    target_link_libraries(mixxx-lib PRIVATE Silk::Float)
-  endif()
+  target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile)
+  target_link_libraries(mixxx-lib PRIVATE Opus::Opus)
 endif()
 
 # MAD MP3 Decoder
@@ -2919,7 +2910,7 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" 
 include(CPack)
 
 if(APPLE AND MACOS_BUNDLE)
-    if(NOT QT5_TYPE STREQUAL "STATIC_LIBRARY")
+    if(NOT Qt5_IS_STATIC)
         macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
             get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
             if(EXISTS "${_qt_plugin_path}")

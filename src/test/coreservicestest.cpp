@@ -17,7 +17,7 @@ TEST_F(CoreServicesTest, DISABLED_TestInitialization) {
     char* argv[] = {progName, safeMode};
     cmdlineArgs.parse(argc, argv);
 
-    const auto pCoreServices = std::make_unique<mixxx::CoreServices>(cmdlineArgs);
+    const auto pCoreServices = std::make_unique<mixxx::CoreServices>(cmdlineArgs, application());
     pCoreServices->initialize(application());
 
     EXPECT_NE(pCoreServices->getControllerManager(), nullptr);

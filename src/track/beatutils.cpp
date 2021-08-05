@@ -325,6 +325,7 @@ mixxx::Bpm BeatUtils::makeConstBpm(
 mixxx::Bpm BeatUtils::roundBpmWithinRange(
         mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm) {
     // First try to snap to a full integer BPM
+    // FIXME: calling bpm.value() without checking bpm.isValid()
     auto snapBpm = mixxx::Bpm(round(centerBpm.value()));
     if (snapBpm > minBpm && snapBpm < maxBpm) {
         // Success
@@ -387,6 +388,7 @@ mixxx::audio::FramePos BeatUtils::adjustPhase(
         mixxx::Bpm bpm,
         mixxx::audio::SampleRate sampleRate,
         const QVector<mixxx::audio::FramePos>& beats) {
+    // FIXME: calling bpm.value() without checking bpm.isValid()
     const double beatLength = 60 * sampleRate / bpm.value();
     const mixxx::audio::FramePos startOffset =
             mixxx::audio::FramePos(fmod(firstBeat.value(), beatLength));

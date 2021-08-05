@@ -103,10 +103,23 @@ inline QLocale inputLocale() {
 
 namespace mixxx {
 
-CoreServices::CoreServices(const CmdlineArgs& args)
+CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
         : m_runtime_timer(QLatin1String("CoreServices::runtime")),
           m_cmdlineArgs(args) {
+    m_runtime_timer.start();
+    mixxx::Time::start();
+    ScopedTimer t("CoreServices::CoreServices");
+    // All this here is running without without start up screen
+    // Defer long initializations to CoreServices::initialize() which is
+    // called after the GUI is initialized
     initializeSettings();
+    initializeLogging();
+    // Only record stats in developer mode.
+    if (m_cmdlineArgs.getDeveloper()) {
+        StatsManager::createInstance();
+    }
+    mixxx::Translations::initializeTranslations(
+            m_pSettingsManager->settings(), pApp, m_cmdlineArgs.getLocale());
     initializeKeyboard();
 }
 
@@ -128,11 +141,7 @@ void CoreServices::initializeSettings() {
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }
 
-void CoreServices::initialize(QApplication* pApp) {
-    m_runtime_timer.start();
-    mixxx::Time::start();
-    ScopedTimer t("CoreServices::initialize");
-
+void CoreServices::initializeLogging() {
     mixxx::LogFlags logFlags = mixxx::LogFlag::LogToFile;
     if (m_cmdlineArgs.getDebugAssertBreak()) {
         logFlags.setFlag(mixxx::LogFlag::DebugAssertBreak);
@@ -142,6 +151,10 @@ void CoreServices::initialize(QApplication* pApp) {
             m_cmdlineArgs.getLogLevel(),
             m_cmdlineArgs.getLogFlushLevel(),
             logFlags);
+}
+
+void CoreServices::initialize(QApplication* pApp) {
+    ScopedTimer t("CoreServices::initialize");
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
         qCritical() << "Failed to register any SoundSource providers";
@@ -150,16 +163,6 @@ void CoreServices::initialize(QApplication* pApp) {
 
     VersionStore::logBuildDetails();
 
-    // Only record stats in developer mode.
-    if (m_cmdlineArgs.getDeveloper()) {
-        StatsManager::createInstance();
-    }
-
-    initializeKeyboard();
-
-    mixxx::Translations::initializeTranslations(
-            m_pSettingsManager->settings(), pApp, m_cmdlineArgs.getLocale());
-
 #if defined(Q_OS_LINUX)
     // XESetWireToError will segfault if running as a Wayland client
     if (pApp->platformName() == QLatin1String("xcb")) {
@@ -167,6 +170,8 @@ void CoreServices::initialize(QApplication* pApp) {
             XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
         }
     }
+#else
+    Q_UNUSED(pApp);
 #endif
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
