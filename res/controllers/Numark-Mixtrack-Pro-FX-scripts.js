@@ -113,6 +113,9 @@ MixtrackProFX.shutdown = function() {
     midi.sendSysexMsg(shutdownSysex, shutdownSysex.length);
 };
 
+// TODO in 2.3 it is not possible to "properly" map the FX selection buttons.
+// this should be done with load_preset and QuickEffects instead (when effect
+// chain preset saving/loading is available in Mixxx)
 MixtrackProFX.EffectUnit = function(deckNumber) {
     this.group = "[EffectRack1_EffectUnit" + deckNumber + "]";
 
