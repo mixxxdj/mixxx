@@ -242,7 +242,7 @@ jobs:
     - name: "Configure"
       run: >-
         cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        -DCMAKE_BUILD_TYPE=Debug
         -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=OFF
         -DBATTERY=ON
@@ -271,7 +271,7 @@ jobs:
       uses: ammaraskar/msvc-problem-matcher@master
 
     - name: "Build"
-      run: cmake --build . --config RelWithDebInfo
+      run: cmake --build . --config Debug
       working-directory: build
       env:
         CC: ${{ matrix.cc }}
@@ -296,7 +296,7 @@ jobs:
         CTEST_OUTPUT_ON_FAILURE: 1
 
     - name: Benchmark
-      run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
+      run: cmake --build . --target mixxx-benchmark --config Debug
       working-directory: build
       env:
         # Render analyzer waveform tests to an offscreen buffer
