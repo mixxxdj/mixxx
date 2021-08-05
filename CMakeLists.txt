@@ -1788,7 +1788,7 @@ target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
-# For LOCALECOMPAREwe call directly sqlite functions to the database opened by
+# For LOCALECOMPARE we call directly sqlite functions to the database opened by
 # Qt. It only works without crashing when Mixxx links to the same sqlite
 # library as Qt.
 # This is difficult on macOS where system SQLite, can be installed and linked
