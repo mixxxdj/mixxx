@@ -203,30 +203,35 @@
 
 ## [2.2.0](https://launchpad.net/mixxx/+milestone/2.2.0) (2018-12-17)
 
-General
+### General
+
 * Update from Qt4 to Qt5.
 * Use Qt5's automatic high DPI scaling (and remove the old
   scaling option from the preferences).
 * Vectorize remaining raster graphics for better HiDPI support.
 
-Effects
+### Effects
+
 * Add mix mode switch (Dry/Wet vs Dry+Wet) for effect units.
 * Add support for LV2 effects plugins (currently no way to show plugin GUIs).
 * Add preference option for selecting which effects are shown in the
   list of available effects in the main window (all LV2 effects are
   hidden by default and must be explicitly enabled by users).
 
-Skins
+### Skins
+
 * Add 8 sampler and small sampler options to LateNight.
 * Add key / BPM expansion indicators to Deere decks.
 * Add skin settings menu to LateNight.
 
-Controllers
+### Controllers
+
 * Add controller mapping for Numark Mixtrack Platinum.
 * Update controller mapping for Numark N4.
 * Add spinback and break for Vestax VCI-400 mapping.
 
-Miscellaneous
+### Miscellaneous
+
 * Add preference option to adjust the play position marker of
   scrolling waveforms.
 * Add preference option to adjust opacity of beatgrid markers on
