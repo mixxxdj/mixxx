@@ -456,3 +456,26 @@ programmers could always help. Read the Developer Documentation on the wiki for
 tips on getting started contributing code to Mixxx.
 
 We hope you have as much fun with Mixxx as we do!
+
+For a full list of new features and bugfixes, check out the
+[2.1.0 milestone on Launchpad](https://launchpad.net/mixxx/+milestone/2.1.0).
+
+## [2.0.0](https://launchpad.net/mixxx/+milestone/2.0.0) (2015-12-31)
+
+* 4 Decks with Master Sync
+* New Effects Framework with 4 Effect Units and 5 Built-in Effects:
+  * Flanger, Bit Crusher, Reverb, Echo, Filter
+  * More to come!
+* Configurable, Resizeable User Interface with 3 Brand New Skins
+* Cover Art Display
+* Music Key Detection and Shifting
+* Vinyl Audio Pass-Through
+* 4 Microphone inputs and 4 Auxiliary inputs
+* MIDI Mapping GUI and Improved Learning Wizard
+* MusicBrainz metadata fetching
+* RGB Musical Waveforms
+* Hundreds of Bug Fixes and Improvements
+* New Pitch-Independent Algorithm for Better-Sounding Key-lock
+
+For a full list of new features and bugfixes, check out the
+[2.0.0 milestone on Launchpad](https://launchpad.net/mixxx/+milestone/2.0.0).
