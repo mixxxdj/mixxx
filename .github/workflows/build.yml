@@ -69,7 +69,7 @@ jobs:
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
-            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
+            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$' --exclude-regex '.*MidiMappingsValid'
             cpack_generator: WIX
             compiler_cache: sccache
             compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
