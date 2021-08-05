@@ -420,10 +420,10 @@ For users upgrading from older versions of Mixxx, we have a few important
 announcements. First, if you are using Windows, you will have to uninstall any
 old versions of Mixxx before you can install 2.1. How to uninstall Mixxx
 varies on different versions of Windows:
-  * Windows Vista, 7, and 8: Start > Control Panel > Programs > Uninstall a
-Program [Guide](https://support.microsoft.com/en-us/help/2601726)
-  * Windows 10: Start > Control Panel > Programs > Programs And Features > look
-for Mixxx > Uninstall [Guide](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
+  * Windows Vista, 7, and 8: [Start > Control Panel > Programs > Uninstall a
+    Program](https://support.microsoft.com/en-us/help/2601726)
+  * Windows 10: [Start > Control Panel > Programs > Programs And Features >
+    look for Mixxx > Uninstall](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
 
 If you are upgrading from an older version of Mixxx and have MP3 files in
 your library, we have another important announcement. The good news is that we
