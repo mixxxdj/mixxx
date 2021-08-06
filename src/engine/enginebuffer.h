@@ -101,9 +101,11 @@ class EngineBuffer : public EngineObject {
     /// Returns the BPM of the loaded track around the current position (not thread-safe)
     mixxx::Bpm getLocalBpm() const;
     /// Sets a beatloop for the loaded track (not thread safe)
-    void setBeatLoop(double startPosition, bool enabled);
+    void setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled);
     /// Sets a loop for the loaded track (not thread safe)
-    void setLoop(double startPosition, double endPositon, bool enabled);
+    void setLoop(mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPositon,
+            bool enabled);
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 

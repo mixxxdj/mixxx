@@ -369,11 +369,13 @@ mixxx::Bpm EngineBuffer::getLocalBpm() const {
     return m_pBpmControl->getLocalBpm();
 }
 
-void EngineBuffer::setBeatLoop(double startPosition, bool enabled) {
+void EngineBuffer::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled) {
     return m_pLoopingControl->setBeatLoop(startPosition, enabled);
 }
 
-void EngineBuffer::setLoop(double startPosition, double endPositon, bool enabled) {
+void EngineBuffer::setLoop(mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPositon,
+        bool enabled) {
     return m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }
 

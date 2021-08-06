@@ -934,7 +934,7 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double value) {
         setCurrentSavedLoopControlAndActivate(pControl);
     } else if (pCue->getType() == mixxx::CueType::HotCue) {
         seekAbs(startPosition);
-        setBeatLoop(startPosition.toEngineSamplePos(), true);
+        setBeatLoop(startPosition, true);
     } else {
         return;
     }
@@ -976,9 +976,7 @@ void CueControl::hotcueCueLoop(HotcueControl* pControl, double value) {
         } else {
             bool loopActive = pControl->getStatus() == HotcueControl::Status::Active;
             Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
-            setLoop(pos.startPosition.toEngineSamplePosMaybeInvalid(),
-                    pos.endPosition.toEngineSamplePosMaybeInvalid(),
-                    !loopActive);
+            setLoop(pos.startPosition, pos.endPosition, !loopActive);
         }
     } break;
     case mixxx::CueType::HotCue: {
@@ -991,7 +989,7 @@ void CueControl::hotcueCueLoop(HotcueControl* pControl, double value) {
                 startPosition ==
                         mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                                 m_pLoopStartPosition->get());
-        setBeatLoop(startPosition.toEngineSamplePosMaybeInvalid(), !loopActive);
+        setBeatLoop(startPosition, !loopActive);
         break;
     }
     default:
@@ -1022,9 +1020,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                         bool loopActive = pControl->getStatus() ==
                                 HotcueControl::Status::Active;
                         Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
-                        setLoop(pos.startPosition.toEngineSamplePos(),
-                                pos.endPosition.toEngineSamplePos(),
-                                !loopActive);
+                        setLoop(pos.startPosition, pos.endPosition, !loopActive);
                     }
                     break;
                 default:
@@ -2252,7 +2248,7 @@ void CueControl::setCurrentSavedLoopControlAndActivate(HotcueControl* pControl) 
     }
 
     // Set new control as active
-    setLoop(pos.startPosition.toEngineSamplePos(), pos.endPosition.toEngineSamplePos(), true);
+    setLoop(pos.startPosition, pos.endPosition, true);
     pControl->setStatus(HotcueControl::Status::Active);
     m_pCurrentSavedLoopControl.storeRelease(pControl);
 }

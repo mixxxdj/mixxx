@@ -48,8 +48,10 @@ class LoopingControl : public EngineControl {
 
     void notifySeek(mixxx::audio::FramePos position) override;
 
-    void setBeatLoop(double startPosition, bool enabled);
-    void setLoop(double startPosition, double endPosition, bool enabled);
+    void setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled);
+    void setLoop(mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition,
+            bool enabled);
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
 

@@ -531,8 +531,8 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
     return dSyncedPlayPos;
 }
 
-void LoopingControl::setBeatLoop(double startPositionSamples, bool enabled) {
-    VERIFY_OR_DEBUG_ASSERT(startPositionSamples != Cue::kNoPosition) {
+void LoopingControl::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled) {
+    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid()) {
         return;
     }
 
@@ -545,25 +545,28 @@ void LoopingControl::setBeatLoop(double startPositionSamples, bool enabled) {
 
     // TODO(XXX): This is not realtime safe. See this Zulip discussion for details:
     // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/getting.20locks.20out.20of.20Beats
-    const auto startPosition = mixxx::audio::FramePos::fromEngineSamplePos(startPositionSamples);
     const auto endPosition = pBeats->findNBeatsFromPosition(startPosition, beatloopSize);
-
-    if (startPosition.isValid() && endPosition.isValid()) {
-        setLoop(startPositionSamples, endPosition.toEngineSamplePos(), enabled);
+    if (endPosition.isValid()) {
+        setLoop(startPosition, endPosition, enabled);
     }
 }
 
-void LoopingControl::setLoop(double startPosition, double endPosition, bool enabled) {
-    VERIFY_OR_DEBUG_ASSERT(startPosition != Cue::kNoPosition &&
-            endPosition != Cue::kNoPosition && startPosition < endPosition) {
+void LoopingControl::setLoop(mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition,
+        bool enabled) {
+    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid() && endPosition.isValid() &&
+            startPosition < endPosition) {
         return;
     }
 
+    const double startPositionSamples = startPosition.toEngineSamplePos();
+    const double endPositionSamples = endPosition.toEngineSamplePos();
+
     LoopSamples loopSamples = m_loopSamples.getValue();
-    if (loopSamples.start != startPosition || loopSamples.end != endPosition) {
+    if (loopSamples.start != startPositionSamples || loopSamples.end != endPositionSamples) {
         // Copy saved loop parameters to active loop
-        loopSamples.start = startPosition;
-        loopSamples.end = endPosition;
+        loopSamples.start = startPositionSamples;
+        loopSamples.end = endPositionSamples;
         loopSamples.seekMode = LoopSeekMode::None;
         clearActiveBeatLoop();
         m_loopSamples.setValue(loopSamples);
@@ -583,7 +586,8 @@ void LoopingControl::setLoop(double startPosition, double endPosition, bool enab
         slotLoopInGoto(1);
     }
 
-    m_pCOBeatLoopSize->setAndConfirm(findBeatloopSizeForLoop(startPosition, endPosition));
+    m_pCOBeatLoopSize->setAndConfirm(
+            findBeatloopSizeForLoop(startPositionSamples, endPositionSamples));
 }
 
 void LoopingControl::setLoopInToCurrentPosition() {

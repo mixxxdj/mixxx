@@ -263,10 +263,7 @@ TEST_F(HotcueControlTest, SetLoopAuto) {
 
     constexpr mixxx::audio::FramePos loopStartPosition(100);
     constexpr mixxx::audio::FramePos loopEndPosition(200);
-    m_pChannel1->getEngineBuffer()->setLoop(
-            loopStartPosition.toEngineSamplePosMaybeInvalid(),
-            loopEndPosition.toEngineSamplePosMaybeInvalid(),
-            true);
+    m_pChannel1->getEngineBuffer()->setLoop(loopStartPosition, loopEndPosition, true);
 
     m_pHotcue1Set->set(1);
     m_pHotcue1Set->set(0);
@@ -288,10 +285,7 @@ TEST_F(HotcueControlTest, SetLoopManualWithLoop) {
 
     constexpr mixxx::audio::FramePos loopStartPosition(100);
     constexpr mixxx::audio::FramePos loopEndPosition(200);
-    m_pChannel1->getEngineBuffer()->setLoop(
-            loopStartPosition.toEngineSamplePosMaybeInvalid(),
-            loopEndPosition.toEngineSamplePosMaybeInvalid(),
-            true);
+    m_pChannel1->getEngineBuffer()->setLoop(loopStartPosition, loopEndPosition, true);
 
     m_pHotcue1SetLoop->set(1);
     m_pHotcue1SetLoop->set(0);
@@ -674,10 +668,7 @@ TEST_F(HotcueControlTest, SavedLoopStatus) {
     constexpr auto loopStartPositon = mixxx::audio::FramePos(100);
     constexpr auto loopEndPosition = mixxx::audio::FramePos(200);
 
-    m_pChannel1->getEngineBuffer()->setLoop(
-            loopStartPositon.toEngineSamplePosMaybeInvalid(),
-            loopEndPosition.toEngineSamplePosMaybeInvalid(),
-            true);
+    m_pChannel1->getEngineBuffer()->setLoop(loopStartPositon, loopEndPosition, true);
 
     m_pHotcue1SetLoop->set(1);
     m_pHotcue1SetLoop->set(0);
@@ -1000,10 +991,7 @@ TEST_F(HotcueControlTest, SavedLoopCueLoopWithExistingLoop) {
     constexpr auto loopStartPosition = mixxx::audio::FramePos(100);
     constexpr auto loopEndPosition = mixxx::audio::FramePos(200);
 
-    m_pChannel1->getEngineBuffer()->setLoop(
-            loopStartPosition.toEngineSamplePos(),
-            loopEndPosition.toEngineSamplePos(),
-            true);
+    m_pChannel1->getEngineBuffer()->setLoop(loopStartPosition, loopEndPosition, true);
 
     m_pHotcue1SetLoop->set(1);
     m_pHotcue1SetLoop->set(0);

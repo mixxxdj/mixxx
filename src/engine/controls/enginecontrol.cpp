@@ -73,13 +73,15 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
-void EngineControl::setBeatLoop(double startPosition, bool enabled) {
+void EngineControl::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled) {
     if (m_pEngineBuffer) {
         return m_pEngineBuffer->setBeatLoop(startPosition, enabled);
     }
 }
 
-void EngineControl::setLoop(double startPosition, double endPosition, bool enabled) {
+void EngineControl::setLoop(mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition,
+        bool enabled) {
     if (m_pEngineBuffer) {
         return m_pEngineBuffer->setLoop(startPosition, endPosition, enabled);
     }
