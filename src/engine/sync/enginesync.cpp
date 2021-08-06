@@ -409,19 +409,19 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) {
         kLogger.trace() << "EngineSync::requestBpmUpdate" << pSyncable->getGroup() << bpm;
     }
 
-    mixxx::Bpm mbaseBpm;
-    mixxx::Bpm mbpm;
+    mixxx::Bpm leaderBaseBpm;
+    mixxx::Bpm leaderBpm;
     double beatDistance = 0.0;
     if (m_pLeaderSyncable) {
-        mbaseBpm = m_pLeaderSyncable->getBaseBpm();
-        mbpm = m_pLeaderSyncable->getBpm();
+        leaderBaseBpm = m_pLeaderSyncable->getBaseBpm();
+        leaderBpm = m_pLeaderSyncable->getBpm();
         beatDistance = m_pLeaderSyncable->getBeatDistance();
     }
 
-    if (mbaseBpm.isValid()) {
+    if (leaderBaseBpm.isValid()) {
         // update from current leader
         pSyncable->updateLeaderBeatDistance(beatDistance);
-        pSyncable->updateLeaderBpm(mbpm);
+        pSyncable->updateLeaderBpm(leaderBpm);
     } else {
         // There is no leader, adopt this bpm as leader value
         pSyncable->updateLeaderBeatDistance(0.0);
