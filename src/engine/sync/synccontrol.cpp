@@ -536,16 +536,10 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
     m_pEngineSync->notifyInstantaneousBpmChanged(this, instantaneous_bpm);
 }
 
-void SyncControl::notifySeek(double dNewPlaypos) {
-    // qDebug() << "SyncControl::notifySeek" << dNewPlaypos;
-    EngineControl::notifySeek(dNewPlaypos);
-    m_pBpmControl->notifySeek(dNewPlaypos);
-    updateTargetBeatDistance();
-}
-
 double SyncControl::fileBpm() const {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
+        // FIXME: calling bpm.value() without checking bpm.isValid()
         return pBeats->getBpm().value();
     }
     return mixxx::Bpm::kValueUndefined;

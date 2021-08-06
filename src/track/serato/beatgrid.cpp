@@ -509,6 +509,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
             currentBeatPositionFramesWithOffset.value());
     const mixxx::Bpm bpm = pBeats->getBpmAroundPosition(currentBeatPositionFramesWithOffset, 1);
 
+    // FIXME: calling bpm.value() without checking bpm.isValid()
     setTerminalMarker(std::make_shared<SeratoBeatGridTerminalMarker>(
             positionSecs - timingOffsetSecs, static_cast<float>(bpm.value())));
     setNonTerminalMarkers(nonTerminalMarkers);

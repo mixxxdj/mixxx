@@ -192,6 +192,11 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 
     m_pRateRatio = make_parented<ControlProxy>(getGroup(), "rate_ratio", this);
     m_pPitchAdjust = make_parented<ControlProxy>(getGroup(), "pitch_adjust", this);
+
+    m_pUpdateReplayGainFromPregain = std::make_unique<ControlPushButton>(
+            ConfigKey(getGroup(), "update_replaygain_from_pregain"));
+    m_pUpdateReplayGainFromPregain->connectValueChangeRequest(this,
+            &BaseTrackPlayerImpl::slotUpdateReplayGainFromPregain);
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -367,6 +372,10 @@ void BaseTrackPlayerImpl::connectLoadedTrack() {
             &Track::replayGainUpdated,
             this,
             &BaseTrackPlayerImpl::slotSetReplayGain);
+    connect(m_pLoadedTrack.get(),
+            &Track::replayGainAdjusted,
+            this,
+            &BaseTrackPlayerImpl::slotAdjustReplayGain);
 
     connect(m_pLoadedTrack.get(),
             &Track::colorUpdated,
@@ -599,11 +608,27 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
 
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     // Do not change replay gain when track is playing because
-    // this may lead to an unexpected volume change
+    // this may lead to an unexpected volume change.
     if (m_pPlay->get() == 0.0) {
         setReplayGain(replayGain.getRatio());
     } else {
         m_replaygainPending = true;
+    }
+}
+
+void BaseTrackPlayerImpl::slotAdjustReplayGain(mixxx::ReplayGain replayGain) {
+    const double factor = m_pReplayGain->get() / replayGain.getRatio();
+    const double newPregain = m_pPreGain->get() * factor;
+
+    // There is a very slight chance that there will be a buffer call in between these sets.
+    // Therefore, we first adjust the control that is being lowered before the control
+    // that is being raised.  Worst case, the volume goes down briefly before rectifying.
+    if (factor < 1.0) {
+        m_pPreGain->set(newPregain);
+        setReplayGain(replayGain.getRatio());
+    } else {
+        setReplayGain(replayGain.getRatio());
+        m_pPreGain->set(newPregain);
     }
 }
 
@@ -710,6 +735,21 @@ void BaseTrackPlayerImpl::slotShiftCuesMillisButton(double value, double millise
         return;
     }
     slotShiftCuesMillis(milliseconds);
+}
+
+void BaseTrackPlayerImpl::slotUpdateReplayGainFromPregain(double pressed) {
+    if (pressed <= 0) {
+        return;
+    }
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    const double gain = m_pPreGain->get();
+    // Gain is at unity already, ignore and return.
+    if (gain == 1.0) {
+        return;
+    }
+    m_pLoadedTrack->adjustReplayGainFromPregain(gain);
 }
 
 void BaseTrackPlayerImpl::setReplayGain(double value) {

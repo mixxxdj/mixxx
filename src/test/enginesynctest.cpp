@@ -2268,11 +2268,9 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     // Play a buffer, which is enough to see if the beat distances align.
     ProcessBuffer();
 
-    EXPECT_NEAR(ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
-                        ->get(),
-            ControlObject::getControl(
-                    ConfigKey(m_sInternalClockGroup, "beat_distance"))
-                    ->get(),
+    EXPECT_NEAR(
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
             .00001);
 
     EXPECT_DOUBLE_EQ(0.0,

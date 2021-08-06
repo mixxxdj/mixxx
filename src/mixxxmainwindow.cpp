@@ -3,11 +3,6 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGLFormat>
-#include <QGuiApplication>
-#include <QInputMethod>
-#include <QLocale>
-#include <QScreen>
-#include <QStandardPaths>
 #include <QUrl>
 #include <QtDebug>
 
@@ -15,12 +10,9 @@
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
-#include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginemaster.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
-#include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgpreferences.h"
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
@@ -28,11 +20,10 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
-#include "control/controlpushbutton.h"
+#include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
-#include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #ifdef __ENGINEPRIME__
@@ -45,12 +36,10 @@
 #include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
-#include "skin/legacy/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/db/dbconnectionpooled.h"
 #include "util/debug.h"
 #include "util/experiment.h"
 #include "util/font.h"
@@ -58,7 +47,6 @@
 #include "util/math.h"
 #include "util/sandbox.h"
 #include "util/screensaver.h"
-#include "util/statsmanager.h"
 #include "util/time.h"
 #include "util/timer.h"
 #include "util/translations.h"
@@ -74,38 +62,26 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #endif
 
-#ifdef __MODPLUG__
-#include "preferences/dialog/dlgprefmodplug.h"
-#endif
-
 #if defined(Q_OS_LINUX)
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
-
-#include <QtX11Extras/QX11Info>
 // Xlibint.h predates C++ and defines macros which conflict
 // with references to std::max and std::min
 #undef max
 #undef min
+
+#include <QtX11Extras/QX11Info>
 #endif
 
-MixxxMainWindow::MixxxMainWindow(
-        QApplication* pApp, std::shared_ptr<mixxx::CoreServices> pCoreServices)
+MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices)
         : m_pCoreServices(pCoreServices),
           m_pCentralWidget(nullptr),
           m_pLaunchImage(nullptr),
           m_pGuiTick(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
-          m_pKeywheel(nullptr),
-#ifdef __ENGINEPRIME__
-          m_pLibraryExporter(nullptr),
-#endif
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON) {
-    DEBUG_ASSERT(pApp);
     DEBUG_ASSERT(pCoreServices);
-    m_pCoreServices->initializeSettings();
-    m_pCoreServices->initializeKeyboard();
     // These depend on the settings
     createMenuBar();
     m_pMenuBar->hide();
@@ -119,18 +95,13 @@ MixxxMainWindow::MixxxMainWindow(
     setCentralWidget(m_pCentralWidget);
 
     show();
-    pApp->processEvents();
 
     m_pGuiTick = new GuiTick();
     m_pVisualsManager = new VisualsManager();
+}
 
-    connect(
-            m_pCoreServices.get(),
-            &mixxx::CoreServices::initializationProgressUpdate,
-            this,
-            &MixxxMainWindow::initializationProgressUpdate);
-
-    m_pCoreServices->initialize(pApp);
+void MixxxMainWindow::initialize() {
+    m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
 
@@ -165,6 +136,8 @@ MixxxMainWindow::MixxxMainWindow(
 
     initializationProgressUpdate(65, tr("skin"));
 
+    // Install an event filter to catch certain QT events, such as tooltips.
+    // This allows us to turn off tooltips.
     installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
 
     DEBUG_ASSERT(m_pCoreServices->getPlayerManager());
@@ -270,11 +243,6 @@ MixxxMainWindow::MixxxMainWindow(
     if (!CmdlineArgs::Instance().getSafeMode()) {
         checkDirectRendering();
     }
-
-    // Install an event filter to catch certain QT events, such as tooltips.
-    // This allows us to turn off tooltips.
-    pApp->installEventFilter(this); // The eventfilter is located in this
-                                    // Mixxx class as a callback.
 
     // Try open player device If that fails, the preference panel is opened.
     bool retryClicked;
@@ -425,6 +393,8 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DlgPreferences";
     delete m_pPrefDlg;
+
+    m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(false);
 
     WaveformWidgetFactory::destroy();
 
