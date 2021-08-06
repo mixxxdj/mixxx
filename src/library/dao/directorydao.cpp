@@ -169,9 +169,8 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
             "SELECT library.id,track_locations.id,track_locations.location "
             "FROM library INNER JOIN track_locations ON "
             "track_locations.id=library.location WHERE "
-            "SUBSTR(track_locations.location,1,:oldDirectoryPrefixLength)=:oldDirectoryPrefix"));
+            "INSTR(track_locations.location,:oldDirectoryPrefix)=1"));
     query.bindValue(":oldDirectoryPrefix", oldDirectoryPrefix);
-    query.bindValue(":oldDirectoryPrefixLength", oldDirectoryPrefix.length());
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
         return {};

@@ -947,10 +947,8 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
                            "FROM library INNER JOIN track_locations "
                            "ON library.location=track_locations.id "
                            "WHERE "
-                           "SUBSTR(track_locations.location,1,:"
-                           "locationPathPrefixLength)=:locationPathPrefix"));
+                           "INSTR(track_locations.location,:locationPathPrefix)=1"));
     query.bindValue(":locationPathPrefix", locationPathPrefix);
-    query.bindValue(":locationPathPrefixLength", locationPathPrefix.length());
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << locationPathPrefix;
     }
@@ -1962,10 +1960,9 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
             "SELECT library.id FROM library INNER JOIN track_locations "
             "ON library.location=track_locations.id "
             "WHERE "
-            "SUBSTR(track_locations.location,1,:locationPathPrefixLength)=:"
+            "INSTR(track_locations.location,:locationPathPrefix)=1"
             "locationPathPrefix"));
     query.bindValue(":locationPathPrefix", locationPathPrefix);
-    query.bindValue(":locationPathPrefixLength", locationPathPrefix.length());
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << rootDir;
     }
