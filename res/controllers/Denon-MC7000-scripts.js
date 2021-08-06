@@ -37,12 +37,17 @@ var MC7000 = {};
 // 1) Beat LED in Slicer mode (counts every 8 beats AFTER the CUE point)
 //    only works for CONSTANT TEMPO tracks
 //    needs beat grid and CUE point set
-MC7000.experimental = false;
+MC7000.experimental = false; // default: false
 
 // Wanna have Needle Search active while playing a track ?
 // In any case Needle Search is available holding "SHIFT" down.
 // can be true or false (recommended: false)
-MC7000.needleSearchPlay = false;
+MC7000.needleSearchPlay = false; // default: false
+
+// select if the previous sampler shall stop before a new sampler starts
+// true: a running sampler will stop before the new sampler starts
+// false: all triggered samplers will play simultaniously
+MC7000.prevSamplerStop = true; // default: true
 
 // Possible pitchfader rate ranges given in percent.
 // can be cycled through by the RANGE buttons.
@@ -167,10 +172,9 @@ MC7000.init = function() {
 
     var i;
 
-    // Softtakeover for Pitch Faders
-    for (i = 1; i <= 4; i++) {
-        engine.softTakeover("[Channel" + i + "]", "rate", true);
-    }
+    // obtain all knob and slider positions
+    var ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
+    midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 
     // VU meters
     engine.makeConnection("[Channel1]", "VuMeter", MC7000.VuMeter);
@@ -210,10 +214,12 @@ MC7000.init = function() {
         engine.makeConnection("[Sampler"+i+"]", "play", MC7000.SamplerLED);
     }
 
-    // send Controller Status SysEx message delayed to avoid conflicts with Softtakeover
+    // send Softtakeover delayed to avoid conflicts with ControllerStatusSysex
     engine.beginTimer(2000, function() {
-        var ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
-        midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+        // Softtakeover for Pitch Faders only
+        for (i = 1; i <= 4; i++) {
+            engine.softTakeover("[Channel" + i + "]", "rate", true);
+        }
     }, true);
 };
 
@@ -563,12 +569,16 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 if (engine.getValue("[Sampler" + i + "]", "track_loaded") === 0) {
                     engine.setValue("[Sampler" + i + "]", "LoadSelectedTrack", 1);
                 } else if (engine.getValue("[Sampler" + i + "]", "track_loaded") === 1) {
-                    // stop playing all other samplers ...
-                    for (j = 1; j <=8; j++) {
-                        engine.setValue("[Sampler" + j + "]", "cue_gotoandstop", 1);
+                    if (MC7000.prevSamplerStop) {
+                        // stop playing all other samplers ...
+                        for (j = 1; j <=8; j++) {
+                            engine.setValue("[Sampler" + j + "]", "cue_gotoandstop", 1);
+                        }
+                        // ... before the actual sampler to play gets started
+                        engine.setValue("[Sampler" + i + "]", "cue_gotoandplay", 1);
+                    } else {
+                        engine.setValue("[Sampler" + i + "]", "cue_gotoandplay", 1);
                     }
-                    // ... before the actual sampler to play gets started
-                    engine.setValue("[Sampler" + i + "]", "cue_gotoandplay", 1);
                 }
             } else if (control === 0x1C + i - 1 && value >= 0x01) {
                 if (engine.getValue("[Sampler" + i + "]", "play") === 1) {
