@@ -89,14 +89,8 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
         return;
     }
 
-    const auto trackEndPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    getSampleOfTrack().total);
-    if (!trackEndPosition.isValid()) {
-        return;
-    }
     const auto newPlayPos = mixxx::audio::kStartFramePos +
-            (trackEndPosition - mixxx::audio::kStartFramePos) * fractionalPos;
+            (frameInfo().trackEndPosition - mixxx::audio::kStartFramePos) * fractionalPos;
 
     if (m_pControlVinylEnabled->get() > 0.0 && m_pControlVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
         int cuemode = (int)m_pControlVinylCueing->get();

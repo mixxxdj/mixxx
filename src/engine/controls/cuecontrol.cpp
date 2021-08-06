@@ -674,8 +674,7 @@ void CueControl::loadCuesFromTrack() {
 }
 
 void CueControl::trackAnalyzed() {
-    SampleOfTrack sampleOfTrack = getSampleOfTrack();
-    if (sampleOfTrack.current != m_usedSeekOnLoadPosition.getValue()) {
+    if (frameInfo().currentPosition.toEngineSamplePos() != m_usedSeekOnLoadPosition.getValue()) {
         // the track is already manual cued, don't re-cue
         return;
     }
@@ -2072,46 +2071,43 @@ void CueControl::resetIndicators() {
 }
 
 CueControl::TrackAt CueControl::getTrackAt() const {
-    SampleOfTrack sot = getSampleOfTrack();
+    FrameInfo info = frameInfo();
     // Note: current can be in the padded silence after the track end > total.
-    if (sot.current >= sot.total) {
+    if (info.trackEndPosition.isValid() && info.currentPosition >= info.trackEndPosition) {
         return TrackAt::End;
     }
-    double cue = m_pCuePoint->get();
-    if (cue != Cue::kNoPosition && fabs(sot.current - cue) < 1.0f) {
+    const auto mainCuePosition =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_pCuePoint->get());
+    if (mainCuePosition.isValid() && fabs(info.currentPosition - mainCuePosition) < 0.5) {
         return TrackAt::Cue;
     }
     return TrackAt::ElseWhere;
 }
 
 mixxx::audio::FramePos CueControl::getQuantizedCurrentPosition() {
-    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+    FrameInfo info = frameInfo();
 
     // Note: currentPos can be past the end of the track, in the padded
     // silence of the last buffer. This position might be not reachable in
     // a future runs, depending on the buffering.
-    const auto currentPos =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    sampleOfTrack.current);
 
     // Don't quantize if quantization is disabled.
     if (!m_pQuantizeEnabled->toBool()) {
-        return currentPos;
+        return info.currentPosition;
     }
 
-    const auto trackEndPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    sampleOfTrack.total);
     const auto closestBeat =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pClosestBeat->get());
     // Note: closestBeat can be an interpolated beat past the end of the track,
     // which cannot be reached.
-    if (closestBeat.isValid() && trackEndPosition.isValid() && closestBeat <= trackEndPosition) {
+    if (closestBeat.isValid() && info.trackEndPosition.isValid() &&
+            closestBeat <= info.trackEndPosition) {
         return closestBeat;
     }
 
-    return currentPos;
+    return info.currentPosition;
 }
 
 mixxx::audio::FramePos CueControl::quantizeCuePoint(mixxx::audio::FramePos position) {
@@ -2120,8 +2116,8 @@ mixxx::audio::FramePos CueControl::quantizeCuePoint(mixxx::audio::FramePos posit
         return mixxx::audio::kInvalidFramePos;
     }
 
-    // we need to use m_pTrackSamples here because SampleOfTrack
-    // is set later by the engine and not during EngineBuffer::slotTrackLoaded
+    // We need to use m_pTrackSamples here because FrameInfo is set later by
+    // the engine and not during EngineBuffer::slotTrackLoaded.
     const auto trackEndPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pTrackSamples->get());
@@ -2157,8 +2153,11 @@ mixxx::audio::FramePos CueControl::quantizeCuePoint(mixxx::audio::FramePos posit
 }
 
 bool CueControl::isTrackAtIntroCue() {
-    return (fabs(getSampleOfTrack().current - m_pIntroStartPosition->get()) <
-            1.0f);
+    const auto introStartPosition =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_pIntroStartPosition->get());
+    return introStartPosition.isValid() &&
+            (fabs(frameInfo().currentPosition - introStartPosition) < 0.5);
 }
 
 SeekOnLoadMode CueControl::getSeekOnLoadPreference() {

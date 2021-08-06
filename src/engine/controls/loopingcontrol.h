@@ -184,6 +184,8 @@ class LoopingControl : public EngineControl {
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     mixxx::BeatsPointer m_pBeats;
+
+    friend class LoopingControlTest;
 };
 
 // Class for handling loop moves of a set size. This allows easy access from

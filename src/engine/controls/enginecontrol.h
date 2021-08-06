@@ -57,8 +57,9 @@ class EngineControl : public QObject {
 
     virtual void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
-    virtual void setCurrentSample(const double dCurrentSample,
-            const double dTotalSamples, const double dTrackSampleRate);
+    virtual void setFrameInfo(mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos trackEndPosition,
+            mixxx::audio::SampleRate sampleRate);
     QString getGroup() const;
 
     void setBeatLoop(double startPosition, bool enabled);
@@ -78,14 +79,19 @@ class EngineControl : public QObject {
     virtual void trackBeatsUpdated(mixxx::BeatsPointer pBeats);
 
   protected:
-    struct SampleOfTrack {
-        double current;
-        double total;
-        double rate;
+    struct FrameInfo {
+        /// The current playback position. Guaranteed to be valid. If no track
+        /// is loaded, this equals `mixxx::audio::kStartFramePos`.
+        mixxx::audio::FramePos currentPosition;
+        /// The track's end position (a.k.a. the length of the track in frames).
+        /// This may be invalid if no track is loaded.
+        mixxx::audio::FramePos trackEndPosition;
+        /// The track's sample rate.  This may be invalid if no track is loaded.
+        mixxx::audio::SampleRate sampleRate;
     };
 
-    SampleOfTrack getSampleOfTrack() const {
-        return m_sampleOfTrack.getValue();
+    FrameInfo frameInfo() const {
+        return m_frameInfo.getValue();
     }
     void seek(double fractionalPosition);
     void seekAbs(mixxx::audio::FramePos position);
@@ -102,7 +108,7 @@ class EngineControl : public QObject {
     UserSettingsPointer m_pConfig;
 
   private:
-    ControlValueAtomic<SampleOfTrack> m_sampleOfTrack;
+    ControlValueAtomic<FrameInfo> m_frameInfo;
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pEngineBuffer;
 

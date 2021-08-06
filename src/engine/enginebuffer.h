@@ -248,14 +248,10 @@ class EngineBuffer : public EngineObject {
 
     friend class CueControlTest;
     friend class HotcueControlTest;
+    friend class LoopingControlTest;
 
     LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
-    FRIEND_TEST(LoopingControlTest, LoopMoveTest);
-    FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
-    FRIEND_TEST(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead);
-    FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
-    FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);

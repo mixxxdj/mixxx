@@ -79,10 +79,7 @@ class HotcueControlTest : public BaseSignalPathTest {
     }
 
     mixxx::audio::FramePos currentFramePosition() {
-        return mixxx::audio::FramePos::fromEngineSamplePos(
-                m_pChannel1->getEngineBuffer()
-                        ->m_pCueControl->getSampleOfTrack()
-                        .current);
+        return m_pChannel1->getEngineBuffer()->m_pCueControl->frameInfo().currentPosition;
     }
 
     void setCurrentFramePosition(mixxx::audio::FramePos position) {

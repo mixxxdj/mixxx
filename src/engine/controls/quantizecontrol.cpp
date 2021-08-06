@@ -47,16 +47,16 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
 
 void QuantizeControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_pBeats = pBeats;
-    double current = getSampleOfTrack().current;
+    const double current = frameInfo().currentPosition.toEngineSamplePos();
     lookupBeatPositions(current);
     updateClosestBeat(current);
 }
 
-void QuantizeControl::setCurrentSample(const double dCurrentSample,
-                                       const double dTotalSamples,
-                                       const double dTrackSampleRate) {
-    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples, dTrackSampleRate);
-    playPosChanged(dCurrentSample);
+void QuantizeControl::setFrameInfo(mixxx::audio::FramePos currentPosition,
+        mixxx::audio::FramePos trackEndPosition,
+        mixxx::audio::SampleRate sampleRate) {
+    EngineControl::setFrameInfo(currentPosition, trackEndPosition, sampleRate);
+    playPosChanged(currentPosition.toEngineSamplePos());
 }
 
 void QuantizeControl::playPosChanged(double dNewPlaypos) {

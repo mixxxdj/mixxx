@@ -12,7 +12,9 @@ EngineControl::EngineControl(const QString& group,
           m_pConfig(pConfig),
           m_pEngineMaster(nullptr),
           m_pEngineBuffer(nullptr) {
-    setCurrentSample(EngineBuffer::kInitalSamplePosition, 0.0, 0.0);
+    setFrameInfo(mixxx::audio::kStartFramePos,
+            mixxx::audio::kInvalidFramePos,
+            mixxx::audio::SampleRate());
 }
 
 EngineControl::~EngineControl() {
@@ -45,13 +47,14 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
     m_pEngineBuffer = pEngineBuffer;
 }
 
-void EngineControl::setCurrentSample(
-        const double dCurrentSample, const double dTotalSamples, const double dTrackSampleRate) {
-    SampleOfTrack sot;
-    sot.current = dCurrentSample;
-    sot.total = dTotalSamples;
-    sot.rate = dTrackSampleRate;
-    m_sampleOfTrack.setValue(sot);
+void EngineControl::setFrameInfo(mixxx::audio::FramePos currentPosition,
+        mixxx::audio::FramePos trackEndPosition,
+        mixxx::audio::SampleRate sampleRate) {
+    FrameInfo info;
+    info.currentPosition = currentPosition;
+    info.trackEndPosition = trackEndPosition;
+    info.sampleRate = sampleRate;
+    m_frameInfo.setValue(info);
 }
 
 QString EngineControl::getGroup() const {

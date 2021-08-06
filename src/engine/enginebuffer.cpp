@@ -623,11 +623,14 @@ void EngineBuffer::notifyTrackLoaded(
 
     // First inform engineControls directly
     // Note: we are still in a worker thread.
+    const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
+    const auto trackEndPosition =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_pTrackSamples->get());
+    const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->trackLoaded(pNewTrack);
-        pControl->setCurrentSample(m_filepos_play,
-                m_pTrackSamples->get(),
-                m_pTrackSampleRate->get());
+        pControl->setFrameInfo(currentPosition, trackEndPosition, sampleRate);
     }
 
     if (pNewTrack) {
@@ -1077,8 +1080,10 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
+    const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
+    const auto trackEndPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_trackSamplesOld);
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld, m_trackSampleRateOld);
+        pControl->setFrameInfo(currentPosition, trackEndPosition, m_trackSampleRateOld);
         pControl->process(rate, m_filepos_play, iBufferSize);
     }
 
