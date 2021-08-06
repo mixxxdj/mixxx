@@ -66,6 +66,15 @@ MixtrackProFX.PadModeControls = {
 MixtrackProFX.shifted = false;
 MixtrackProFX.scratchModeEnabled = [true, true];
 
+// a helper function to convert value to binary scale (0 or 1)
+MixtrackProFX.scaleToBinaryInput = function(value) {
+    print("debug MixtrackProFX.scaleToBinaryInput");
+    if (value > 0) {
+        return 1;
+    }
+    return 0;
+};
+
 MixtrackProFX.init = function() {
     // initialize component containers
     MixtrackProFX.deck = new components.ComponentContainer();
@@ -126,10 +135,9 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
     // 1 - switch up
     // 2 - switch down
     this.enableSwitch = new components.Button({
-        input: function(channel, control, value, status, group) {
-            // note: value is 2 when the switch is held down (1 when up)
-            engine.setValue(group, "enabled", value);
-        }
+        group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
+        inKey: "enabled",
+        inValueScale: MixtrackProFX.scaleToBinaryInput
     });
 
     this.dryWetKnob = new components.Pot({
