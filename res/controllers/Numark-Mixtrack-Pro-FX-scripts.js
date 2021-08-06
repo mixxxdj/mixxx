@@ -67,80 +67,41 @@ MixtrackProFX.shifted = false;
 MixtrackProFX.scratchModeEnabled = [true, true];
 
 MixtrackProFX.init = function() {
-    // effects for both decks
-    MixtrackProFX.effect = new components.ComponentContainer();
-    MixtrackProFX.effect[0] = new MixtrackProFX.EffectUnit(1);
-    MixtrackProFX.effect[1] = new MixtrackProFX.EffectUnit(2);
-
-    // decks
+    // initialize component containers
     MixtrackProFX.deck = new components.ComponentContainer();
-    MixtrackProFX.deck[0] = new MixtrackProFX.Deck(1);
-    MixtrackProFX.deck[1] = new MixtrackProFX.Deck(2);
+    MixtrackProFX.effect = new components.ComponentContainer();
+    var i;
+    for (i = 0; i < 2; i++) {
+        MixtrackProFX.deck[i] = new MixtrackProFX.Deck(i + 1);
+        MixtrackProFX.effect[i] = new MixtrackProFX.EffectUnit(i + 1);
+    }
 
     MixtrackProFX.browse = new MixtrackProFX.Browse();
     MixtrackProFX.gains = new MixtrackProFX.Gains();
 
+    // send sysexes
     var exitDemoSysex = [0xF0, 0x7E, 0x00, 0x06, 0x01, 0xF7];
     midi.sendSysexMsg(exitDemoSysex, exitDemoSysex.length);
 
     var statusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
     midi.sendSysexMsg(statusSysex, statusSysex.length);
 
-    // enables 4 bottom pads fader cuts
+    // enables 4 bottom pads "fader cuts"
     var faderCutSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0xF7];
     midi.sendSysexMsg(faderCutSysex, faderCutSysex.length);
 
-    // initialize leds for both decks
-    for (var i = 0; i < 2; i++) {
-        midi.sendShortMsg(0x90 + i, 0x00, 0x01); // play
-        midi.sendShortMsg(0x90 + i, 0x01, 0x01); // cue
-        midi.sendShortMsg(0x90 + i, 0x02, 0x01); // sync
-        midi.sendShortMsg(0x90 + i, 0x07, 0x7f); // scratch
-        midi.sendShortMsg(0x90 + i, 0x1B, 0x01); // pfl
-
+    // initialize leds
+    for (i = 0; i < 2; i++) {
+        midi.sendShortMsg(0x90 + i, 0x07, 0x7F); // scratch
         midi.sendShortMsg(0x94 + i, 0x00, 0x7F); // hotcue
         midi.sendShortMsg(0x94 + i, 0x0D, 0x01); // auto loop
-        midi.sendShortMsg(0x94 + i, 0x07, 0x01); // fader cuts
-        midi.sendShortMsg(0x94 + i, 0x0B, 0x01); // sample
+        midi.sendShortMsg(0x94 + i, 0x07, 0x01); // "fader cuts"
+        midi.sendShortMsg(0x94 + i, 0x0B, 0x01); // sample1
 
-        midi.sendShortMsg(0x94 + i, 0x34, 0x01); // half
-        midi.sendShortMsg(0x94 + i, 0x35, 0x01); // double
-        midi.sendShortMsg(0x94 + i, 0x40, 0x01); // loop
-
-        // initialize leds for shifted buttons
-        midi.sendShortMsg(0x90 + i, 0x04, 0x01); // play
-        midi.sendShortMsg(0x90 + i, 0x05, 0x01); // cue
-        midi.sendShortMsg(0x90 + i, 0x03, 0x01); // sync
-        midi.sendShortMsg(0x94 + i, 0x0F, 0x01); // sample shifted
+        // shifted leds
+        midi.sendShortMsg(0x94 + i, 0x0F, 0x01); // sample2
         midi.sendShortMsg(0x94 + i, 0x02, 0x01); // beatjump
-        midi.sendShortMsg(0x90 + i, 0x08, 0x01); // bleep
-        midi.sendShortMsg(0x94 + i, 0x36, 0x01); // half
-        midi.sendShortMsg(0x94 + i, 0x37, 0x01); // double
-        midi.sendShortMsg(0x94 + i, 0x41, 0x01); // loop
-
-        // pads
-        for (var j = 0; j < 8; j++) {
-            midi.sendShortMsg(0x94 + i, 0x14 + j, 0x01);
-            midi.sendShortMsg(0x94 + i, 0x1C + j, 0x01); // shifted
-        }
     }
-
-    midi.sendShortMsg(0x88, 0x09, 0x01); // tap led
-
-    // check if quantize is enabled
-    var quantizeEnabled = engine.getValue("[Channel1]", "quantize");
-
-    // effect leds
-    midi.sendShortMsg(0x88, 0x00, 0x01); // hpf
-    midi.sendShortMsg(0x88, 0x01, 0x01); // lpf
-    midi.sendShortMsg(0x88, 0x02, 0x01); // flanger
-    midi.sendShortMsg(0x89, 0x03, 0x01); // echo
-    midi.sendShortMsg(0x89, 0x04, quantizeEnabled ? 0x7F : 0x01); // reverb
-    midi.sendShortMsg(0x89, 0x05, 0x01); // phaser
-
-    // vumeters leds (off)
-    midi.sendShortMsg(0xB0, 0x1F, 0x00);
-    midi.sendShortMsg(0xB1, 0x1F, 0x00);
 
     engine.makeConnection("[Channel1]", "VuMeter", MixtrackProFX.vuCallback);
     engine.makeConnection("[Channel2]", "VuMeter", MixtrackProFX.vuCallback);
@@ -234,28 +195,29 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
 MixtrackProFX.EffectUnit.prototype = new components.ComponentContainer();
 
 MixtrackProFX.Deck = function(number) {
-    var channel = number - 1;
-
     components.Deck.call(this, number);
 
-    this.playButton = new components.PlayButton({
-        midi: [0x90 + channel, 0x00]
-    });
+    var channel = number - 1;
 
-    this.playButtonStutter = new components.Button({
-        inKey: "play_stutter"
+    this.playButton = new components.PlayButton({
+        midi: [0x90 + channel, 0x00],
+        shiftControl: true,
+        sendShifted: true,
+        shiftOffset: 0x04
     });
 
     this.cueButton = new components.CueButton({
-        midi: [0x90 + channel, 0x01]
-    });
-
-    this.cueButtonShift = new components.Button({
-        inKey: "start_stop"
+        midi: [0x90 + channel, 0x01],
+        shiftControl: true,
+        sendShifted: true,
+        shiftOffset: 0x04
     });
 
     this.syncButton = new components.SyncButton({
-        midi: [0x90 + channel, 0x02]
+        midi: [0x90 + channel, 0x02],
+        shiftControl: true,
+        sendShifted: true,
+        shiftOffset: 0x01
     });
 
     this.pflButton = new components.Button({
@@ -310,14 +272,12 @@ MixtrackProFX.Deck = function(number) {
             // more consistent with the logic burned into hardware
             if (value === 0x7F) {
                 MixtrackProFX.shifted = true;
-                MixtrackProFX.deck[0].shift();
-                MixtrackProFX.deck[1].shift();
+                MixtrackProFX.deck.shift();
                 MixtrackProFX.browse.shift();
                 MixtrackProFX.effect.shift();
-            } else if (value === 0) {
+            } else if (value === 0x00) {
                 MixtrackProFX.shifted = false;
-                MixtrackProFX.deck[0].unshift();
-                MixtrackProFX.deck[1].unshift();
+                MixtrackProFX.deck.unshift();
                 MixtrackProFX.browse.unshift();
                 MixtrackProFX.effect.unshift();
             }
@@ -325,7 +285,7 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.loop = new components.Button({
-        key: "loop_enabled",
+        outKey: "loop_enabled",
         midi: [0x94 + channel, 0x40],
         input: function(channel, control, value, status, group) {
             if (value !== 0x7F) {
@@ -340,42 +300,63 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.reloop = new components.Button({
-        inKey: "reloop_toggle" // or loop_in_goto to not enable loop
+        key: "reloop_toggle", // or loop_in_goto to not enable loop
+        midi: [0x94 + channel, 0x41]
     });
 
     this.loopHalf = new components.Button({
         key: "loop_halve",
-        midi: [0x94 + channel, 0x34]
+        midi: [0x94 + channel, 0x34],
+        shiftControl: true,
+        sendShifted: true,
+        shiftOffset: 2,
+        shift: function() {
+            this.inKey = "loop_in";
+            this.outKey = "loop_in";
+        },
+        unshift: function() {
+            this.inKey = "loop_halve";
+            this.outKey = "loop_halve";
+        }
     });
 
     this.loopDouble = new components.Button({
         key: "loop_double",
-        midi: [0x94 + channel, 0x35]
-    });
-
-    this.loopIn = new components.Button({
-        inKey: "loop_in"
-    });
-
-    this.loopOut = new components.Button({
-        inKey: "loop_out"
+        midi: [0x94 + channel, 0x35],
+        shiftControl: true,
+        sendShifted: true,
+        shiftOffset: 2,
+        shift: function() {
+            this.inKey = "loop_out";
+            this.outKey = "loop_out";
+        },
+        unshift: function() {
+            this.inKey = "loop_double";
+            this.outKey = "loop_double";
+        }
     });
 
     this.bleep = new components.Button({
-        inKey: "reverseroll"
+        key: "reverseroll",
+        midi: [0x90 + channel, 0x08]
     });
 
     this.pitchBendUp = new components.Button({
-        inKey: "rate_temp_up"
+        inKey: "rate_temp_up",
+        shiftControl: true,
+        shiftOffset: 0x20,
+        shift: function() {
+            this.type = components.Button.prototype.types.toggle;
+            this.inKey = "keylock";
+        },
+        unshift: function() {
+            this.type = components.Button.prototype.types.push;
+            this.inKey = "rate_temp_up";
+        }
     });
 
     this.pitchBendDown = new components.Button({
         inKey: "rate_temp_down"
-    });
-
-    this.keylock = new components.Button({
-        type: components.Button.prototype.types.toggle,
-        inKey: "keylock"
     });
 
     this.pitchRange = new components.Button({
@@ -389,10 +370,9 @@ MixtrackProFX.Deck = function(number) {
         }
     });
 
-    this.beatsnap = new components.Button({
-        type: components.Button.prototype.types.toggle,
-        key: "quantize",
-        midi: [0x89, 0x04]
+    this.setBeatgrid = new components.Button({
+        key: "beats_translate_curpos",
+        midi: [0x98 + channel, 0x01 + (channel * 3)]
     });
 
     this.reconnectComponents(function(component) {
@@ -652,30 +632,22 @@ MixtrackProFX.ModeBeatjump.prototype = Object.create(components.ComponentContain
 
 MixtrackProFX.Browse = function() {
     this.knob = new components.Encoder({
-        group: "[Library]",
-        inKey: "MoveVertical",
-        inValueScale: function(value) {
-            return (value > 0x40) ? value - 0x80 : value;
-        }
-    });
-
-    this.knobShift = new components.Encoder({
+        shiftControl: true,
+        shiftOffset: 0x01,
         input: function(channel, control, value) {
-            if (value === 0x01) {
-                engine.setParameter("[Channel1]", "waveform_zoom_down", 1);
+            var direction;
+            if (!MixtrackProFX.shifted) {
+                direction = (value > 0x40) ? value - 0x80 : value;
+                engine.setParameter("[Library]", "MoveVertical", direction);
+            } else {
+                direction = (value > 0x40) ? "down" : "up";
+                engine.setParameter("[Channel1]", "waveform_zoom_" + direction, 1);
 
                 // need to zoom both channels if waveform sync is disabled in Mixxx settings.
                 // and when it's enabled then no need to zoom 2nd channel, as it will cause
                 // the zoom to jump 2 levels at once
                 if (!MixtrackProFX.waveformsSynced) {
-                    engine.setParameter("[Channel2]", "waveform_zoom_down", 1);
-                }
-            } else if (value === 0x7F) {
-                engine.setParameter("[Channel1]", "waveform_zoom_up", 1);
-
-                // see above comment
-                if (!MixtrackProFX.waveformsSynced) {
-                    engine.setParameter("[Channel2]", "waveform_zoom_up", 1);
+                    engine.setParameter("[Channel2]", "waveform_zoom_" + direction, 1);
                 }
             }
         }
@@ -683,23 +655,14 @@ MixtrackProFX.Browse = function() {
 
     this.knobButton = new components.Button({
         group: "[Library]",
-        inKey: "MoveFocusForward"
-    });
-
-    this.buttonShift = new components.Button({
-        group: "[Library]",
-        inKey: "GoToItem"
-    });
-
-    this.setBeatgrid = new components.Button({
-        group: "[Channel1]",
-        key: "beats_translate_curpos",
-        midi: [0x88, 0x01],
+        inKey: "MoveFocusForward",
+        shiftControl: true,
+        shiftOffset: 0x01,
         shift: function() {
-            this.group = "[Channel2]";
+            this.inKey = "GoToItem";
         },
         unshift: function() {
-            this.group = "[Channel1]";
+            this.inKey = "MoveFocusForward";
         }
     });
 };

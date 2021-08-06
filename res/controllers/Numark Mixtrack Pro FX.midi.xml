@@ -312,7 +312,7 @@
       <!-- CUE buttons (shift press) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].cueButtonShift.input</key>
+        <key>MixtrackProFX.deck[0].cueButton.input</key>
         <status>0x90</status>
         <midino>0x05</midino>
         <options>
@@ -321,7 +321,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].cueButtonShift.input</key>
+        <key>MixtrackProFX.deck[1].cueButton.input</key>
         <status>0x91</status>
         <midino>0x05</midino>
         <options>
@@ -331,7 +331,7 @@
       <!-- CUE buttons (shift release) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].cueButtonShift.input</key>
+        <key>MixtrackProFX.deck[0].cueButton.input</key>
         <status>0x80</status>
         <midino>0x05</midino>
         <options>
@@ -340,7 +340,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].cueButtonShift.input</key>
+        <key>MixtrackProFX.deck[1].cueButton.input</key>
         <status>0x81</status>
         <midino>0x05</midino>
         <options>
@@ -388,7 +388,7 @@
       <!-- Play buttons (shift) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].playButtonStutter.input</key>
+        <key>MixtrackProFX.deck[0].playButton.input</key>
         <status>0x90</status>
         <midino>0x04</midino>
         <options>
@@ -397,7 +397,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].playButtonStutter.input</key>
+        <key>MixtrackProFX.deck[1].playButton.input</key>
         <status>0x91</status>
         <midino>0x04</midino>
         <options>
@@ -407,7 +407,7 @@
       <!-- Play buttons (shift release) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].playButtonStutter.input</key>
+        <key>MixtrackProFX.deck[0].playButton.input</key>
         <status>0x80</status>
         <midino>0x04</midino>
         <options>
@@ -416,7 +416,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].playButtonStutter.input</key>
+        <key>MixtrackProFX.deck[1].playButton.input</key>
         <status>0x81</status>
         <midino>0x04</midino>
         <options>
@@ -1466,7 +1466,7 @@
       <!-- 1/2 loop buttons (shift) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].loopIn.input</key>
+        <key>MixtrackProFX.deck[0].loopHalf.input</key>
         <status>0x94</status>
         <midino>0x36</midino>
         <options>
@@ -1475,7 +1475,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].loopIn.input</key>
+        <key>MixtrackProFX.deck[1].loopHalf.input</key>
         <status>0x95</status>
         <midino>0x36</midino>
         <options>
@@ -1485,7 +1485,7 @@
       <!-- 1/2 loop buttons (shift release) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].loopIn.input</key>
+        <key>MixtrackProFX.deck[0].loopHalf.input</key>
         <status>0x84</status>
         <midino>0x36</midino>
         <options>
@@ -1494,7 +1494,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].loopIn.input</key>
+        <key>MixtrackProFX.deck[1].loopHalf.input</key>
         <status>0x85</status>
         <midino>0x36</midino>
         <options>
@@ -1542,7 +1542,7 @@
       <!-- x2 loop buttons (shift) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].loopOut.input</key>
+        <key>MixtrackProFX.deck[0].loopDouble.input</key>
         <status>0x94</status>
         <midino>0x37</midino>
         <options>
@@ -1551,7 +1551,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].loopOut.input</key>
+        <key>MixtrackProFX.deck[1].loopDouble.input</key>
         <status>0x95</status>
         <midino>0x37</midino>
         <options>
@@ -1561,7 +1561,7 @@
       <!-- x2 loop buttons (shift release) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].loopOut.input</key>
+        <key>MixtrackProFX.deck[0].loopDouble.input</key>
         <status>0x84</status>
         <midino>0x37</midino>
         <options>
@@ -1570,7 +1570,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].loopOut.input</key>
+        <key>MixtrackProFX.deck[1].loopDouble.input</key>
         <status>0x85</status>
         <midino>0x37</midino>
         <options>
@@ -1628,7 +1628,7 @@
       <!-- Library browse knob turn (shift) -->
       <control>
         <group>[Library]</group>
-        <key>MixtrackProFX.browse.knobShift.input</key>
+        <key>MixtrackProFX.browse.knob.input</key>
         <status>0xBF</status>
         <midino>0x01</midino>
         <options>
@@ -1658,7 +1658,7 @@
       <!-- Library browse knob button (shift) -->
       <control>
         <group>[Library]</group>
-        <key>MixtrackProFX.browse.buttonShift.input</key>
+        <key>MixtrackProFX.browse.knobButton.input</key>
         <status>0x9F</status>
         <midino>0x06</midino>
         <options>
@@ -1668,7 +1668,7 @@
       <!-- Library browse knob button (shift release) -->
       <control>
         <group>[Library]</group>
-        <key>MixtrackProFX.browse.buttonShift.input</key>
+        <key>MixtrackProFX.browse.knobButton.input</key>
         <status>0x8F</status>
         <midino>0x06</midino>
         <options>
@@ -1812,7 +1812,7 @@
       <!-- FX LPF button (press) -->
       <control>
         <group>[Library]</group>
-        <key>MixtrackProFX.browse.setBeatgrid.input</key>
+        <key>MixtrackProFX.deck[0].setBeatgrid.input</key>
         <status>0x98</status>
         <midino>0x01</midino>
         <options>
@@ -1822,7 +1822,7 @@
       <!-- FX LPF button (release) -->
       <control>
         <group>[Library]</group>
-        <key>MixtrackProFX.browse.setBeatgrid.input</key>
+        <key>MixtrackProFX.deck[0].setBeatgrid.input</key>
         <status>0x88</status>
         <midino>0x01</midino>
         <options>
@@ -1871,17 +1871,8 @@
       </control>
       <!-- FX reverb button (press) -->
       <control>
-        <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].beatsnap.input</key>
-        <status>0x99</status>
-        <midino>0x04</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].beatsnap.input</key>
+        <key>MixtrackProFX.deck[1].setBeatgrid.input</key>
         <status>0x99</status>
         <midino>0x04</midino>
         <options>
@@ -1890,17 +1881,8 @@
       </control>
       <!-- FX reverb button (release) -->
       <control>
-        <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].beatsnap.input</key>
-        <status>0x89</status>
-        <midino>0x04</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].beatsnap.input</key>
+        <key>MixtrackProFX.deck[1].setBeatgrid.input</key>
         <status>0x89</status>
         <midino>0x04</midino>
         <options>
@@ -2121,7 +2103,7 @@
       <!-- Pitch bend up buttons (shift) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].keylock.input</key>
+        <key>MixtrackProFX.deck[0].pitchBendUp.input</key>
         <status>0x90</status>
         <midino>0x2B</midino>
         <options>
@@ -2130,7 +2112,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].keylock.input</key>
+        <key>MixtrackProFX.deck[1].pitchBendUp.input</key>
         <status>0x91</status>
         <midino>0x2B</midino>
         <options>
@@ -2140,7 +2122,7 @@
       <!-- Pitch bend up buttons (shift release) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].keylock.input</key>
+        <key>MixtrackProFX.deck[0].pitchBendUp.input</key>
         <status>0x80</status>
         <midino>0x2B</midino>
         <options>
@@ -2149,7 +2131,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].keylock.input</key>
+        <key>MixtrackProFX.deck[1].pitchBendUp.input</key>
         <status>0x81</status>
         <midino>0x2B</midino>
         <options>
