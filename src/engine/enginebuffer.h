@@ -228,7 +228,11 @@ class EngineBuffer : public EngineObject {
 
     void processSyncRequests();
     void processSeek(bool paused);
-
+    // For debugging / testing -- returns true if the previous buffer call resulted in a seek.
+    FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInSyncDisable);
+    bool previousBufferSeek() const {
+        return m_previousBufferSeek;
+    }
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay);
     void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -389,6 +393,7 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<QueuedSeek> m_queuedSeek;
+    bool m_previousBufferSeek = false;
 
     /// Indicates that no seek is queued
     static constexpr QueuedSeek kNoQueuedSeek = {mixxx::audio::kInvalidFramePos, SEEK_NONE};
