@@ -103,7 +103,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
 
         //if in preroll, always seek
         if (newPlayPos < mixxx::audio::kStartFramePos) {
-            seekExact(newPlayPos.toEngineSamplePos());
+            seekExact(newPlayPos);
             return;
         }
 
@@ -114,7 +114,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             //if onecue, just seek to the regular cue
             const mixxx::audio::FramePos mainCuePosition = pTrack->getMainCuePosition();
             if (mainCuePosition.isValid()) {
-                seekExact(mainCuePosition.toEngineSamplePos());
+                seekExact(mainCuePosition);
             }
             return;
         }
@@ -156,7 +156,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             //if negative, allow a seek by falling down to the bottom
         } else {
             m_bSeekRequested = true;
-            seekExact(nearestPlayPos.toEngineSamplePos());
+            seekExact(nearestPlayPos);
             m_bSeekRequested = false;
             return;
         }
@@ -164,7 +164,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
 
     // Just seek where it wanted to originally.
     m_bSeekRequested = true;
-    seekExact(newPlayPos.toEngineSamplePos());
+    seekExact(newPlayPos);
     m_bSeekRequested = false;
 }
 

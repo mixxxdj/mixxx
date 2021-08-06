@@ -88,9 +88,9 @@ class EngineControl : public QObject {
         return m_sampleOfTrack.getValue();
     }
     void seek(double fractionalPosition);
-    void seekAbs(double sample);
+    void seekAbs(mixxx::audio::FramePos position);
     // Seek to an exact sample and don't allow quantizing adjustment.
-    void seekExact(double sample);
+    void seekExact(mixxx::audio::FramePos position);
     // Returns an EngineBuffer to target for syncing. Returns nullptr if none found
     EngineBuffer* pickSyncTarget();
 

@@ -82,21 +82,21 @@ void EngineControl::setLoop(double startPosition, double endPosition, bool enabl
     }
 }
 
-void EngineControl::seekAbs(double samplePosition) {
+void EngineControl::seekAbs(mixxx::audio::FramePos position) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekAbs(samplePosition);
+        m_pEngineBuffer->slotControlSeekAbs(position.toEngineSamplePos());
     }
 }
 
-void EngineControl::seekExact(double playPosition) {
+void EngineControl::seekExact(mixxx::audio::FramePos position) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekExact(playPosition);
+        m_pEngineBuffer->slotControlSeekExact(position.toEngineSamplePos());
     }
 }
 
-void EngineControl::seek(double sample) {
+void EngineControl::seek(double fractionalPosition) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeek(sample);
+        m_pEngineBuffer->slotControlSeek(fractionalPosition);
     }
 }
 
