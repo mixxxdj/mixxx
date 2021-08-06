@@ -648,7 +648,7 @@ MixtrackProFX.Browse = function() {
                 direction = (value > 0x40) ? value - 0x80 : value;
                 engine.setParameter("[Library]", "MoveVertical", direction);
             } else {
-                direction = (value > 0x40) ? "down" : "up";
+                direction = (value > 0x40) ? "up" : "down";
                 engine.setParameter("[Channel1]", "waveform_zoom_" + direction, 1);
 
                 // need to zoom both channels if waveform sync is disabled in Mixxx settings.
