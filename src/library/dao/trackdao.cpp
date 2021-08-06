@@ -9,6 +9,10 @@
 #include <QtDebug>
 #include <QtSql>
 
+#ifdef __SQLITE3__
+#include <sqlite3.h>
+#endif // __SQLITE3__
+
 #include "library/coverart.h"
 #include "library/coverartutils.h"
 #include "library/dao/analysisdao.h"
@@ -2229,33 +2233,134 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     // NOTE: The played flag for the current session is NOT updated!
     // The current session is unaffected, because the corresponding
     // playlist cannot be deleted.
-    FwdSqlQuery query(
-            m_database,
-            QStringLiteral(
-                    "UPDATE library SET "
-                    "timesplayed=q.timesplayed,"
-                    "last_played_at=q.last_played_at "
-                    "FROM("
-                    "SELECT "
-                    "PlaylistTracks.track_id as id,"
-                    "COUNT(PlaylistTracks.track_id) as timesplayed,"
-                    "MAX(PlaylistTracks.pl_datetime_added) as last_played_at "
-                    "FROM PlaylistTracks "
-                    "JOIN Playlists ON "
-                    "PlaylistTracks.playlist_id=Playlists.id "
-                    "WHERE Playlists.hidden=%2 "
-                    "GROUP BY PlaylistTracks.track_id"
-                    ") q "
-                    "WHERE library.id=q.id "
-                    "AND library.id IN (%1)")
-                    .arg(joinTrackIdList(trackIds),
-                            QString::number(PlaylistDAO::PLHT_SET_LOG)));
-    VERIFY_OR_DEBUG_ASSERT(!query.hasError()) {
-        return false;
+    //
+    // https://www.sqlite.org/lang_update.html#upfrom
+    // UPDATE-FROM is supported beginning in SQLite version 3.33.0 (2020-08-14)
+    // https://bugs.launchpad.net/mixxx/+bug/1937941
+#ifdef __SQLITE3__
+    if (sqlite3_libversion_number() >= 3033000) {
+#endif // __SQLITE3__
+        const QString trackIdList = joinTrackIdList(trackIds);
+        auto updatePlayed = FwdSqlQuery(
+                m_database,
+                QStringLiteral(
+                        "UPDATE library SET "
+                        "timesplayed=q.timesplayed,"
+                        "last_played_at=q.last_played_at "
+                        "FROM("
+                        "SELECT "
+                        "PlaylistTracks.track_id as id,"
+                        "COUNT(PlaylistTracks.track_id) as timesplayed,"
+                        "MAX(PlaylistTracks.pl_datetime_added) as last_played_at "
+                        "FROM PlaylistTracks "
+                        "JOIN Playlists ON "
+                        "PlaylistTracks.playlist_id=Playlists.id "
+                        "WHERE Playlists.hidden=:playlistHidden "
+                        "GROUP BY PlaylistTracks.track_id"
+                        ") q "
+                        "WHERE library.id=q.id "
+                        "AND library.id IN (%1)")
+                        .arg(trackIdList));
+        updatePlayed.bindValue(
+                QStringLiteral(":playlistHidden"),
+                PlaylistDAO::PLHT_SET_LOG);
+        VERIFY_OR_DEBUG_ASSERT(!updatePlayed.hasError()) {
+            return false;
+        }
+        VERIFY_OR_DEBUG_ASSERT(updatePlayed.execPrepared()) {
+            return false;
+        }
+        auto updateNotPlayed = FwdSqlQuery(
+                m_database,
+                QStringLiteral(
+                        "UPDATE library SET "
+                        "timesplayed=0,"
+                        "last_played_at=NULL "
+                        "WHERE library.id NOT IN("
+                        "SELECT PlaylistTracks.track_id "
+                        "FROM PlaylistTracks "
+                        "JOIN Playlists ON "
+                        "PlaylistTracks.playlist_id=Playlists.id "
+                        "WHERE Playlists.hidden=:playlistHidden "
+                        "AND PlaylistTracks.track_id IN (%1))")
+                        .arg(trackIdList));
+        updateNotPlayed.bindValue(
+                QStringLiteral(":playlistHidden"),
+                PlaylistDAO::PLHT_SET_LOG);
+        VERIFY_OR_DEBUG_ASSERT(!updateNotPlayed.hasError()) {
+            return false;
+        }
+        VERIFY_OR_DEBUG_ASSERT(updateNotPlayed.execPrepared()) {
+            return false;
+        }
+#ifdef __SQLITE3__
+    } else {
+        // TODO: Remove this workaround after dropping support for Ubuntu 20.04
+        auto playCounterQuery = FwdSqlQuery(
+                m_database,
+                QStringLiteral(
+                        "SELECT "
+                        "COUNT(PlaylistTracks.track_id),"
+                        "MAX(PlaylistTracks.pl_datetime_added) "
+                        "FROM PlaylistTracks "
+                        "JOIN Playlists ON "
+                        "PlaylistTracks.playlist_id=Playlists.id "
+                        "WHERE Playlists.hidden=:playlistHidden "
+                        "AND PlaylistTracks.track_id=:trackId"));
+        playCounterQuery.bindValue(
+                QStringLiteral(":playlistHidden"),
+                PlaylistDAO::PLHT_SET_LOG);
+        auto trackUpdateQuery = FwdSqlQuery(
+                m_database,
+                QStringLiteral(
+                        "UPDATE library SET "
+                        "timesplayed=:timesplayed,"
+                        "last_played_at=:last_played_at "
+                        "WHERE library.id=:trackId"));
+        for (const auto& trackId : trackIds) {
+            playCounterQuery.bindValue(
+                    QStringLiteral(":trackId"),
+                    trackId.toVariant());
+            VERIFY_OR_DEBUG_ASSERT(!playCounterQuery.hasError()) {
+                continue;
+            }
+            VERIFY_OR_DEBUG_ASSERT(playCounterQuery.execPrepared()) {
+                continue;
+            }
+            QVariant timesplayed;
+            QVariant last_played_at;
+            DEBUG_ASSERT(last_played_at.isNull());
+            if (playCounterQuery.next()) {
+                timesplayed = playCounterQuery.fieldValue(0);
+                last_played_at = playCounterQuery.fieldValue(1);
+                // Result is a single row
+                DEBUG_ASSERT(!playCounterQuery.next());
+            }
+            if (timesplayed.isNull()) {
+                // Never played and timesplayed should not be NULL
+                DEBUG_ASSERT(last_played_at.isNull());
+                timesplayed = 0;
+            }
+            trackUpdateQuery.bindValue(
+                    QStringLiteral(":trackId"),
+                    trackId.toVariant());
+            trackUpdateQuery.bindValue(
+                    QStringLiteral(":timesplayed"),
+                    timesplayed);
+            trackUpdateQuery.bindValue(
+                    QStringLiteral(":last_played_at"),
+                    last_played_at);
+            VERIFY_OR_DEBUG_ASSERT(!trackUpdateQuery.hasError()) {
+                continue;
+            }
+            VERIFY_OR_DEBUG_ASSERT(trackUpdateQuery.execPrepared()) {
+                continue;
+            }
+            // 0 for tracks that have just been deleted
+            DEBUG_ASSERT(trackUpdateQuery.numRowsAffected() <= 1);
+        }
     }
-    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
-        return false;
-    }
+#endif // __SQLITE3__
     // TODO: DAOs should be passive and simply execute queries. They
     // should neither make assumptions about transaction boundaries
     // nor receive or emit any signals.
