@@ -492,17 +492,24 @@ void SyncControl::updateAudible() {
 
 void SyncControl::slotRateChanged() {
     mixxx::Bpm bpm = getLocalBpm();
-    if (bpm.isValid()) {
-        bpm *= m_pRateRatio->get();
+    if (!bpm.isValid()) {
+        return;
     }
+
+    const double rateRatio = m_pRateRatio->get();
+    bpm *= rateRatio;
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::slotRateChanged" << m_pRateRatio->get() << bpm;
+        kLogger.trace() << getGroup() << "SyncControl::slotRateChanged" << rateRatio << bpm;
     }
-    if (bpm.isValid() && isSynchronized()) {
-        // When reporting our bpm, remove the multiplier so the leaders all
-        // think the followers have the same bpm.
-        m_pEngineSync->notifyRateChanged(this, bpm / m_leaderBpmAdjustFactor);
+
+    // BPM may be invalid if rateRatio is NaN or infinity.
+    if (!bpm.isValid() || !isSynchronized()) {
+        return;
     }
+
+    // When reporting our bpm, remove the multiplier so the leaders all
+    // think the followers have the same bpm.
+    m_pEngineSync->notifyRateChanged(this, bpm / m_leaderBpmAdjustFactor);
 }
 
 void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
