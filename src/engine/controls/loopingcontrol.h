@@ -46,7 +46,7 @@ class LoopingControl : public EngineControl {
     void hintReader(HintVector* pHintList) override;
     double getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos);
 
-    void notifySeek(double dNewPlaypos) override;
+    void notifySeek(mixxx::audio::FramePos position) override;
 
     void setBeatLoop(double startPosition, bool enabled);
     void setLoop(double startPosition, double endPosition, bool enabled);

@@ -70,8 +70,8 @@ class EngineControl : public QObject {
     }
 
     /// Called whenever a seek occurs to allow the EngineControl to respond.
-    virtual void notifySeek(double dNewPlaypos) {
-        Q_UNUSED(dNewPlaypos);
+    virtual void notifySeek(mixxx::audio::FramePos position) {
+        Q_UNUSED(position);
     };
 
     virtual void trackLoaded(TrackPointer pNewTrack);

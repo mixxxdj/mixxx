@@ -968,7 +968,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
 }
 
 // This is called from the engine thread
-void LoopingControl::notifySeek(double dNewPlaypos) {
+void LoopingControl::notifySeek(mixxx::audio::FramePos position) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double currentSample = m_currentSample.getValue();
     if (m_bLoopingEnabled) {
@@ -977,12 +977,12 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
         // Jumping to the exact end of a loop is considered jumping out.
         if (currentSample >= loopSamples.start &&
                 currentSample <= loopSamples.end &&
-                dNewPlaypos < loopSamples.start) {
+                position.toEngineSamplePos() < loopSamples.start) {
             // jumping out of loop in backwards
             setLoopingEnabled(false);
         }
         if (currentSample <= loopSamples.end &&
-                dNewPlaypos >= loopSamples.end) {
+                position.toEngineSamplePos() >= loopSamples.end) {
             // jumping out or to the exact end of a loop or over a catching loop forward
             setLoopingEnabled(false);
         }

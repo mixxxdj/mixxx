@@ -484,8 +484,9 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_iSamplesSinceLastIndicatorUpdate = 1000000;
 
     // Must hold the engineLock while using m_engineControls
+    const auto playPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->notifySeek(m_filepos_play);
+        pControl->notifySeek(playPosition);
     }
 
     verifyPlay(); // verify or update play button and indicator
