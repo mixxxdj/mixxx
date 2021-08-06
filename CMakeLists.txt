@@ -2074,10 +2074,6 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortMidi_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PRIVATE ${PortMidi_LIBRARIES})
 
 # Protobuf
-if(NOT BUILD_SHARED_LIBS)
-  set(Protobuf_USE_STATIC_LIBS ON)
-  mark_as_advanced(Protobuf_USE_STATIC_LIBS)
-endif()
 add_subdirectory(src/proto)
 target_link_libraries(mixxx-lib PRIVATE mixxx-proto)
 
