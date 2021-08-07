@@ -48,14 +48,6 @@ void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_pBeats = pBeats;
 }
 
-void ClockControl::process(const double dRate,
-        const double currentSample,
-        const int iBuffersize) {
-    Q_UNUSED(dRate);
-    Q_UNUSED(currentSample);
-    Q_UNUSED(iBuffersize);
-}
-
 void ClockControl::updateIndicators(const double dRate,
         mixxx::audio::FramePos currentPosition,
         mixxx::audio::SampleRate sampleRate) {
