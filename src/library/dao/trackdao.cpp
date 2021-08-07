@@ -36,8 +36,6 @@
 #include "util/datetime.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqlite.h"
-#include "util/db/sqllikewildcardescaper.h"
-#include "util/db/sqllikewildcards.h"
 #include "util/db/sqlstringformatter.h"
 #include "util/db/sqltransaction.h"
 #include "util/fileinfo.h"
@@ -72,6 +70,14 @@ QString joinTrackIdList(const QSet<TrackId>& trackIds) {
         trackIdList.append(trackId.toString());
     }
     return trackIdList.join(QChar(','));
+}
+
+QString locationPathPrefixFromRootDir(const QDir& rootDir) {
+    // Appending '/' is required to disambiguate files from parent
+    // directories, e.g. "a/b.mp3" and "a/b/c.mp3" where "a/b" would
+    // match both instead of only files in the parent directory "a/b/".
+    DEBUG_ASSERT(!mixxx::FileInfo(rootDir).location().endsWith('/'));
+    return mixxx::FileInfo(rootDir).location() + '/';
 }
 
 } // anonymous namespace
@@ -938,21 +944,17 @@ void TrackDAO::afterUnhidingTracks(
 }
 
 QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
-    // Capture entries that start with the directory prefix dir.
-    // dir needs to end in a slash otherwise we might match other
-    // directories.
-    const QString dirPath = rootDir.absolutePath();
-    QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
-
+    const QString locationPathPrefix = locationPathPrefixFromRootDir(rootDir);
     QSqlQuery query(m_database);
-    query.prepare(QString("SELECT library.id, track_locations.location "
-                          "FROM library INNER JOIN track_locations "
-                          "ON library.location = track_locations.id "
-                          "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
-                  .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
-
+    query.prepare(
+            QStringLiteral("SELECT library.id,track_locations.location "
+                           "FROM library INNER JOIN track_locations "
+                           "ON library.location=track_locations.id "
+                           "WHERE "
+                           "INSTR(track_locations.location,:locationPathPrefix)=1"));
+    query.bindValue(":locationPathPrefix", locationPathPrefix);
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dirPath;
+        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << locationPathPrefix;
     }
 
     QList<TrackRef> trackRefs;
@@ -1956,22 +1958,15 @@ bool TrackDAO::detectMovedTracks(
 }
 
 void TrackDAO::hideAllTracks(const QDir& rootDir) const {
-    // Capture entries that start with the directory prefix dir.
-    // dir needs to end in a slash otherwise we might match other
-    // directories.
-    const QString rootDirPath = rootDir.absolutePath();
-    DEBUG_ASSERT(!rootDirPath.endsWith('/'));
-    const QString likeClause =
-            SqlLikeWildcardEscaper::apply(rootDirPath + '/', kSqlLikeMatchAll) +
-            kSqlLikeMatchAll;
-
+    const QString locationPathPrefix = locationPathPrefixFromRootDir(rootDir);
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
             "SELECT library.id FROM library INNER JOIN track_locations "
             "ON library.location=track_locations.id "
-            "WHERE track_locations.location LIKE :likeClause ESCAPE :escape"));
-    query.bindValue(":likeClause", likeClause);
-    query.bindValue(":escape", kSqlLikeMatchAll);
+            "WHERE "
+            "INSTR(track_locations.location,:locationPathPrefix)=1"
+            "locationPathPrefix"));
+    query.bindValue(":locationPathPrefix", locationPathPrefix);
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << rootDir;
     }
