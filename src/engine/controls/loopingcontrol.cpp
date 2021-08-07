@@ -307,10 +307,12 @@ void LoopingControl::slotLoopDouble(double pressed) {
 }
 
 void LoopingControl::process(const double dRate,
-                             const double currentSample,
-                             const int iBufferSize) {
+        mixxx::audio::FramePos currentPosition,
+        const int iBufferSize) {
     Q_UNUSED(iBufferSize);
     Q_UNUSED(dRate);
+
+    const double currentSample = currentPosition.toEngineSamplePos();
 
     double oldCurrentSample = m_currentSample.getValue();
 

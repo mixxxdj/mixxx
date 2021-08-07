@@ -32,8 +32,8 @@ class LoopingControl : public EngineControl {
     // correct current sample. If a loop should be taken LoopingControl returns
     // the sample that should be seeked to. Otherwise it returns currentSample.
     void process(const double dRate,
-                   const double currentSample,
-                   const int iBufferSize) override;
+            mixxx::audio::FramePos currentPosition,
+            const int iBufferSize) override;
 
     // nextTrigger returns the sample at which the engine will be triggered to
     // take a loop, given the value of currentSample and dRate.

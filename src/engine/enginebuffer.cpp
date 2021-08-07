@@ -1086,7 +1086,7 @@ void EngineBuffer::processTrackLocked(
     const auto trackEndPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_trackSamplesOld);
     for (const auto& pControl: qAsConst(m_engineControls)) {
         pControl->setFrameInfo(currentPosition, trackEndPosition, m_trackSampleRateOld);
-        pControl->process(rate, m_filepos_play, iBufferSize);
+        pControl->process(rate, currentPosition, iBufferSize);
     }
 
     m_scratching_old = is_scratching;
