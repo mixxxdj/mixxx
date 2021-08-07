@@ -7,7 +7,24 @@
 * Add Random Track Control to AutoDJ [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
 * Add support for saving loops as hotcues [#2194](https://github.com/mixxxdj/mixxx/pull/2194) [lp:1367159](https://bugs.launchpad.net/mixxx/+bug/1367159)
 
-## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0)
+## 2.3.1
+* Added mapping for the Numark DJ2GO Touch controller [#4108](https://github.com/mixxxdj/mixxx/pull/4108)
+* Add support for HiDPI scale factors of 125% and 175% (only with Qt 5.14+) [lp1938102](https://bugs.launchpad.net/mixxx/+bug/1938102) [#4161](https://github.com/mixxxdj/mixxx/pull/4161)
+* Fix unhandled exception when parsing corrupt Rekordbox PDB files [lp1933853](https://bugs.launchpad.net/mixxx/+bug/1933853) [#4040](https://github.com/mixxxdj/mixxx/pull/4040)
+* Fix Echo effect adding left channel samples to right channel [#4141](https://github.com/mixxxdj/mixxx/pull/4141)
+* Fix bad phase seek when starting from preroll [lp1930143](https://bugs.launchpad.net/mixxx/+bug/1930143) [#4093](https://github.com/mixxxdj/mixxx/pull/4093)
+* Fix bad phase seek when a channel's audible status changes [#4156](https://github.com/mixxxdj/mixxx/pull/4156)
+* Fix wrong track being recorded in History [lp1933991](https://bugs.launchpad.net/mixxx/+bug/1933991) [#4041](https://github.com/mixxxdj/mixxx/pull/4041)
+* Fix support for relative paths in the skin system which caused missing images in third-party skins [#4151](https://github.com/mixxxdj/mixxx/pull/4151)
+* Fix relocation of directories with special/reserved characters in path name [#4146](https://github.com/mixxxdj/mixxx/pull/4146)
+* Fix performance issue on AArch64 by enabling flush-to-zero for floating-point arithmetic [#4144](https://github.com/mixxxdj/mixxx/pull/4144)
+* Fix custom key notation not restored correctly after restart [#4136](https://github.com/mixxxdj/mixxx/pull/4136)
+
+### Packaging
+* Install udev rule file to the correct location automatically in the CMake install step when CMAKE_INSTALL_PREFIX is `/` or `/usr`. It is no longer necessary to manually copy the udev rule file in packaging scripts. [#4126](https://github.com/mixxxdj/mixxx/pull/4126)
+* Fix various build issues on FreeBSD [#4122](https://github.com/mixxxdj/mixxx/pull/4122) [#4123](https://github.com/mixxxdj/mixxx/pull/4123) [#4124](https://github.com/mixxxdj/mixxx/pull/4124)
+
+## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (2021-06-28)
 ### Hotcues ###
 * Add hotcue colors and custom labels by right clicking hotcue buttons or right clicking hotcues on overview waveforms [#2016](https://github.com/mixxxdj/mixxx/pull/2016) [#2520](https://github.com/mixxxdj/mixxx/pull/2520) [#2238](https://github.com/mixxxdj/mixxx/pull/2238) [#2560](https://github.com/mixxxdj/mixxx/pull/2560) [#2557](https://github.com/mixxxdj/mixxx/pull/2557) [#2362](https://github.com/mixxxdj/mixxx/pull/2362)
 * Mouse hover cues on overview waveform to show time remaining until the cue [#2238](https://github.com/mixxxdj/mixxx/pull/2238)
@@ -102,7 +119,7 @@
 * Add controller mapping for Numark iDJ Live II [#2818](https://github.com/mixxxdj/mixxx/pull/2818)
 * Add controller mapping for Hercules DJControl Inpulse 200 [#2542](https://github.com/mixxxdj/mixxx/pull/2542)
 * Add controller mapping for Hercules DJControl Jogvision [#2370](https://github.com/mixxxdj/mixxx/pull/2370)
-* Add controller mapping for Pioneer DDJ-200 [#3185](https://github.com/mixxxdj/mixxx/pull/3185) [#3193](https://github.com/mixxxdj/mixxx/pull/3193) [#3479](https://github.com/mixxxdj/mixxx/pull/3742) [#3793](https://github.com/mixxxdj/mixxx/pull/3793) [#3949](https://github.com/mixxxdj/mixxx/pull/3949)
+* Add controller mapping for Pioneer DDJ-200 [#3185](https://github.com/mixxxdj/mixxx/pull/3185) [#3193](https://github.com/mixxxdj/mixxx/pull/3193) [#3742](https://github.com/mixxxdj/mixxx/pull/3742) [#3793](https://github.com/mixxxdj/mixxx/pull/3793) [#3949](https://github.com/mixxxdj/mixxx/pull/3949)
 * Add controller mapping for Pioneer DDJ-400 [#3479](https://github.com/mixxxdj/mixxx/pull/3479)
 * Add controller mapping for ION Discover DJ Pro [#2893](https://github.com/mixxxdj/mixxx/pull/2893)
 * Add controller mapping for Native Instrument Traktor Kontrol S3 [#3031](https://github.com/mixxxdj/mixxx/pull/3031)
@@ -202,30 +219,35 @@
 
 ## [2.2.0](https://launchpad.net/mixxx/+milestone/2.2.0) (2018-12-17)
 
-General
+### General
+
 * Update from Qt4 to Qt5.
 * Use Qt5's automatic high DPI scaling (and remove the old
   scaling option from the preferences).
 * Vectorize remaining raster graphics for better HiDPI support.
 
-Effects
+### Effects
+
 * Add mix mode switch (Dry/Wet vs Dry+Wet) for effect units.
 * Add support for LV2 effects plugins (currently no way to show plugin GUIs).
 * Add preference option for selecting which effects are shown in the
   list of available effects in the main window (all LV2 effects are
   hidden by default and must be explicitly enabled by users).
 
-Skins
+### Skins
+
 * Add 8 sampler and small sampler options to LateNight.
 * Add key / BPM expansion indicators to Deere decks.
 * Add skin settings menu to LateNight.
 
-Controllers
+### Controllers
+
 * Add controller mapping for Numark Mixtrack Platinum.
 * Update controller mapping for Numark N4.
 * Add spinback and break for Vestax VCI-400 mapping.
 
-Miscellaneous
+### Miscellaneous
+
 * Add preference option to adjust the play position marker of
   scrolling waveforms.
 * Add preference option to adjust opacity of beatgrid markers on
@@ -419,10 +441,10 @@ For users upgrading from older versions of Mixxx, we have a few important
 announcements. First, if you are using Windows, you will have to uninstall any
 old versions of Mixxx before you can install 2.1. How to uninstall Mixxx
 varies on different versions of Windows:
-  * Windows Vista, 7, and 8: Start > Control Panel > Programs > Uninstall a
-Program [Guide](https://support.microsoft.com/en-us/help/2601726)
-  * Windows 10: Start > Control Panel > Programs > Programs And Features > look
-for Mixxx > Uninstall [Guide](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
+  * Windows Vista, 7, and 8: [Start > Control Panel > Programs > Uninstall a
+    Program](https://support.microsoft.com/en-us/help/2601726)
+  * Windows 10: [Start > Control Panel > Programs > Programs And Features >
+    look for Mixxx > Uninstall](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
 
 If you are upgrading from an older version of Mixxx and have MP3 files in
 your library, we have another important announcement. The good news is that we
@@ -455,3 +477,26 @@ programmers could always help. Read the Developer Documentation on the wiki for
 tips on getting started contributing code to Mixxx.
 
 We hope you have as much fun with Mixxx as we do!
+
+For a full list of new features and bugfixes, check out the
+[2.1.0 milestone on Launchpad](https://launchpad.net/mixxx/+milestone/2.1.0).
+
+## [2.0.0](https://launchpad.net/mixxx/+milestone/2.0.0) (2015-12-31)
+
+* 4 Decks with Master Sync
+* New Effects Framework with 4 Effect Units and 5 Built-in Effects:
+  * Flanger, Bit Crusher, Reverb, Echo, Filter
+  * More to come!
+* Configurable, Resizeable User Interface with 3 Brand New Skins
+* Cover Art Display
+* Music Key Detection and Shifting
+* Vinyl Audio Pass-Through
+* 4 Microphone inputs and 4 Auxiliary inputs
+* MIDI Mapping GUI and Improved Learning Wizard
+* MusicBrainz metadata fetching
+* RGB Musical Waveforms
+* Hundreds of Bug Fixes and Improvements
+* New Pitch-Independent Algorithm for Better-Sounding Key-lock
+
+For a full list of new features and bugfixes, check out the
+[2.0.0 milestone on Launchpad](https://launchpad.net/mixxx/+milestone/2.0.0).

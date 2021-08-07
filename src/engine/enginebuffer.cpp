@@ -1229,6 +1229,7 @@ void EngineBuffer::processSyncRequests() {
 }
 
 void EngineBuffer::processSeek(bool paused) {
+    m_previousBufferSeek = false;
     // Check if we are cloning another channel before doing any seeking.
     EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(nullptr);
     if (pChannel) {
@@ -1298,6 +1299,7 @@ void EngineBuffer::processSeek(bool paused) {
             kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seek to" << position;
         }
         setNewPlaypos(position);
+        m_previousBufferSeek = true;
     }
     // Reset the m_queuedSeek value after it has been processed in
     // setNewPlaypos() so that the Engine Controls have always access to the

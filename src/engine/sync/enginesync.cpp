@@ -85,7 +85,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     // Second, figure out what Syncable should be used to initialize the leader
     // parameters, if any. Usually this is the new leader. (Note, that pointer might be null!)
     Syncable* pParamsSyncable = m_pLeaderSyncable;
-    // But If we are newly soft leader, we need to match to some other deck.
+    // But if we are newly soft leader, we need to match to some other deck.
     if (pSyncable == m_pLeaderSyncable && pSyncable != oldLeader &&
             mode != SyncMode::LeaderExplicit) {
         pParamsSyncable = findBpmMatchTarget(pSyncable);
@@ -104,7 +104,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         }
         reinitLeaderParams(pParamsSyncable);
         pSyncable->updateInstantaneousBpm(pParamsSyncable->getBpm());
-        if (pParamsSyncable != pSyncable) {
+        if (pParamsSyncable != pSyncable && mode != SyncMode::None) {
             pSyncable->requestSync();
         }
     }
