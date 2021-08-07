@@ -323,7 +323,7 @@ each build. [lp:1751482](https://bugs.launchpad.net/mixxx/+bug/1751482)
 ## [2.1.3](https://launchpad.net/mixxx/+milestone/2.1.3) (2018-08-20)
 
 Fix a severe performance regression on Windows:
-https://mixxx.org/forums/viewtopic.php?f=3&t=12082
+[Mixxx 2.1.2 running much slower than 2.1.1](https://mixxx.org/forums/viewtopic.php?f=3&t=12082)
 
 ## [2.1.2](https://launchpad.net/mixxx/+milestone/2.1.2) (2018-08-10)
 
