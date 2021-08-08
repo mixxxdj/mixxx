@@ -1450,7 +1450,7 @@ void LoopingControl::slotLoopMove(double beats) {
     }
 
     if (BpmControl::getBeatContext(pBeats,
-                m_currentPosition.getValue().toEngineSamplePos(),
+                m_currentPosition.getValue(),
                 nullptr,
                 nullptr,
                 nullptr,
