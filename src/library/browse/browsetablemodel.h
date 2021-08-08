@@ -52,7 +52,10 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     BrowseTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, RecordingManager* pRec);
     virtual ~BrowseTableModel();
 
+    // initiate table population, store path
     void setPath(mixxx::FileAccess path);
+    // clear stored path
+    void clearCurrentDir();
 
     TrackPointer getTrack(const QModelIndex& index) const override;
     TrackPointer getTrackByRef(const TrackRef& trackRef) const override;
@@ -104,6 +107,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     QList<int> m_searchColumns;
     RecordingManager* m_pRecordingManager;
     BrowseThreadPointer m_pBrowseThread;
+    QString m_currentDirectory;
     QString m_previewDeckGroup;
     int m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::IdMax)];
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
