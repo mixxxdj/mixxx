@@ -410,11 +410,12 @@ TEST_F(LoopingControlTest, LoopScale_HalvesLoop) {
     EXPECT_EQ(500, m_pLoopEndPoint->get());
     // Since the current sample was out of range of the new loop,
     // the current sample should reseek based on the new loop size.
-    double target;
-    double trigger = m_pChannel1->getEngineBuffer()->m_pLoopingControl->nextTrigger(
-            false, 1800, &target);
-    EXPECT_EQ(300, target);
-    EXPECT_EQ(1800, trigger);
+    mixxx::audio::FramePos targetPosition;
+    const mixxx::audio::FramePos triggerPosition =
+            m_pChannel1->getEngineBuffer()->m_pLoopingControl->nextTrigger(
+                    false, mixxx::audio::FramePos(900), &targetPosition);
+    EXPECT_EQ(mixxx::audio::FramePos(150), targetPosition);
+    EXPECT_EQ(mixxx::audio::FramePos(900), triggerPosition);
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {

@@ -364,12 +364,10 @@ void LoopingControl::process(const double dRate,
     }
 }
 
-double LoopingControl::nextTrigger(bool reverse,
-        const double currentSample,
-        double *pTarget) {
-    *pTarget = kNoTrigger;
-
-    const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(currentSample);
+mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
+        mixxx::audio::FramePos currentPosition,
+        mixxx::audio::FramePos* pTargetPosition) {
+    *pTargetPosition = mixxx::audio::kInvalidFramePos;
 
     LoopInfo loopInfo = m_loopInfo.getValue();
 
@@ -382,8 +380,8 @@ double LoopingControl::nextTrigger(bool reverse,
         // Jumping to the end is then handled when the loop's start is reached later in this function.
         if (reverse && !m_bAdjustingLoopIn && !m_pQuantizeEnabled->toBool()) {
             m_oldLoopInfo = loopInfo;
-            *pTarget = loopInfo.endPosition.toEngineSamplePosMaybeInvalid();
-            return currentSample;
+            *pTargetPosition = loopInfo.endPosition;
+            return currentPosition;
         }
     }
 
@@ -396,8 +394,8 @@ double LoopingControl::nextTrigger(bool reverse,
         // Jumping to the start is then handled when the loop's end is reached later in this function.
         if (!reverse && !m_bAdjustingLoopOut && !m_pQuantizeEnabled->toBool()) {
             m_oldLoopInfo = loopInfo;
-            *pTarget = loopInfo.startPosition.toEngineSamplePosMaybeInvalid();
-            return currentSample;
+            *pTargetPosition = loopInfo.startPosition;
+            return currentPosition;
         }
     }
 
@@ -412,11 +410,10 @@ double LoopingControl::nextTrigger(bool reverse,
             case LoopSeekMode::Changed:
                 // here the loop has changed and the play position
                 // should be moved with it
-                *pTarget = seekInsideAdjustedLoop(currentPosition,
+                *pTargetPosition = seekInsideAdjustedLoop(currentPosition,
                         m_oldLoopInfo.startPosition,
                         loopInfo.startPosition,
-                        loopInfo.endPosition)
-                                   .toEngineSamplePosMaybeInvalid();
+                        loopInfo.endPosition);
                 break;
             case LoopSeekMode::MovedOut: {
                 bool movedOut = false;
@@ -431,11 +428,10 @@ double LoopingControl::nextTrigger(bool reverse,
                     }
                 }
                 if (movedOut) {
-                    *pTarget = seekInsideAdjustedLoop(currentPosition,
+                    *pTargetPosition = seekInsideAdjustedLoop(currentPosition,
                             loopInfo.startPosition,
                             loopInfo.startPosition,
-                            loopInfo.endPosition)
-                                       .toEngineSamplePosMaybeInvalid();
+                            loopInfo.endPosition);
                 }
                 break;
             }
@@ -446,21 +442,21 @@ double LoopingControl::nextTrigger(bool reverse,
                 break;
             }
             m_oldLoopInfo = loopInfo;
-            if (*pTarget != kNoTrigger) {
+            if (pTargetPosition->isValid()) {
                 // jump immediately
-                return currentSample;
+                return currentPosition;
             }
         }
 
         if (reverse) {
-            *pTarget = loopInfo.endPosition.toEngineSamplePosMaybeInvalid();
-            return loopInfo.startPosition.toEngineSamplePosMaybeInvalid();
+            *pTargetPosition = loopInfo.endPosition;
+            return loopInfo.startPosition;
         } else {
-            *pTarget = loopInfo.startPosition.toEngineSamplePosMaybeInvalid();
-            return loopInfo.endPosition.toEngineSamplePosMaybeInvalid();
+            *pTargetPosition = loopInfo.startPosition;
+            return loopInfo.endPosition;
         }
     }
-    return kNoTrigger;
+    return mixxx::audio::kInvalidFramePos;
 }
 
 void LoopingControl::hintReader(HintVector* pHintList) {

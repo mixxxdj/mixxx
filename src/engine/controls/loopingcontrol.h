@@ -34,10 +34,10 @@ class LoopingControl : public EngineControl {
             const int iBufferSize) override;
 
     // nextTrigger returns the sample at which the engine will be triggered to
-    // take a loop, given the value of currentSample and dRate.
-    virtual double nextTrigger(bool reverse,
-                       const double currentSample,
-                       double *pTarget);
+    // take a loop, given the value of currentPosition and the playback direction.
+    virtual mixxx::audio::FramePos nextTrigger(bool reverse,
+            mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos* pTargetPosition);
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.

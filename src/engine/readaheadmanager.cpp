@@ -46,10 +46,15 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
 
     //qDebug() << "start" << start_sample << requested_samples;
 
-    double target;
+    mixxx::audio::FramePos targetPosition;
     // A loop will only limit the amount we can read in one shot.
-    const double loop_trigger = m_pLoopingControl->nextTrigger(
-            in_reverse, m_currentPosition, &target);
+    const mixxx::audio::FramePos loopTriggerPosition =
+            m_pLoopingControl->nextTrigger(in_reverse,
+                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                            m_currentPosition),
+                    &targetPosition);
+    const double loop_trigger = loopTriggerPosition.toEngineSamplePosMaybeInvalid();
+    const double target = targetPosition.toEngineSamplePosMaybeInvalid();
 
     SINT preloop_samples = 0;
     double samplesToLoopTrigger = 0.0;
