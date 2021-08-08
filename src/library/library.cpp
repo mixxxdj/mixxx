@@ -425,6 +425,14 @@ void Library::addFeature(LibraryFeature* feature) {
             &LibraryFeature::trackSelected,
             this,
             &Library::trackSelected);
+    connect(feature,
+            &LibraryFeature::saveModelState,
+            this,
+            &Library::saveModelState);
+    connect(feature,
+            &LibraryFeature::restoreModelState,
+            this,
+            &Library::restoreModelState);
 }
 
 void Library::onPlayerManagerTrackAnalyzerProgress(

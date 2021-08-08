@@ -87,6 +87,9 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
             const QString& mood) const override;
 #endif // __EXTRA_METADATA__
 
+  signals:
+    void restoreModelState();
+
   public slots:
     void slotClear(BrowseTableModel*);
     void slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*);

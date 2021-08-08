@@ -125,6 +125,10 @@ class LibraryFeature : public QObject {
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    /// saves the scroll, selection and current state of the library model
+    void saveModelState();
+    /// restores the scroll, selection and current state of the library model
+    void restoreModelState();
     void restoreSearch(const QString&);
     void disableSearch();
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.

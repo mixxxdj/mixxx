@@ -61,6 +61,10 @@ void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
             &DlgRecording::restoreSearch,
             this,
             &RecordingFeature::restoreSearch);
+    connect(pRecordingView,
+            &DlgRecording::restoreModelState,
+            this,
+            &RecordingFeature::restoreModelState);
 }
 
 

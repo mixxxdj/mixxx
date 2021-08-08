@@ -133,6 +133,8 @@ class Library: public QObject {
     void exportLibrary();
     void exportCrate(CrateId crateId);
 #endif
+    void saveModelState();
+    void restoreModelState();
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
