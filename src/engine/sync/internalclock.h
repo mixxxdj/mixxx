@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QObject>
-#include <QString>
 #include <QScopedPointer>
+#include <QString>
 
+#include "audio/types.h"
 #include "engine/sync/clock.h"
 #include "engine/sync/syncable.h"
 
@@ -50,15 +51,15 @@ class InternalClock : public QObject, public Clock, public Syncable {
     double getBeatDistance() const override;
     void updateLeaderBeatDistance(double beatDistance) override;
 
-    double getBaseBpm() const override;
-    void updateLeaderBpm(double bpm) override;
+    mixxx::Bpm getBaseBpm() const override;
+    void updateLeaderBpm(mixxx::Bpm bpm) override;
     void notifyLeaderParamSource() override;
-    double getBpm() const override;
-    void updateInstantaneousBpm(double bpm) override;
-    void reinitLeaderParams(double beatDistance, double baseBpm, double bpm) override;
+    mixxx::Bpm getBpm() const override;
+    void updateInstantaneousBpm(mixxx::Bpm bpm) override;
+    void reinitLeaderParams(double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) override;
 
-    void onCallbackStart(int sampleRate, int bufferSize);
-    void onCallbackEnd(int sampleRate, int bufferSize);
+    void onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize);
+    void onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize);
 
   private slots:
     void slotBpmChanged(double bpm);
@@ -66,7 +67,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
     void slotSyncLeaderEnabledChangeRequest(double state);
 
   private:
-    void updateBeatLength(int sampleRate, double bpm);
+    void updateBeatLength(mixxx::audio::SampleRate sampleRate, mixxx::Bpm bpm);
 
     const QString m_group;
     SyncableListener* m_pEngineSync;
@@ -75,13 +76,13 @@ class InternalClock : public QObject, public Clock, public Syncable {
     QScopedPointer<ControlPushButton> m_pSyncLeaderEnabled;
     SyncMode m_mode;
 
-    int m_iOldSampleRate;
-    double m_dOldBpm;
+    mixxx::audio::SampleRate m_oldSampleRate;
+    mixxx::Bpm m_oldBpm;
 
     // This is the BPM value at unity adopted when sync is enabled.
     // It is used to relate the followers and must not change when
     // the bpm is adjusted to avoid sudden double/half rate changes.
-    double m_dBaseBpm;
+    mixxx::Bpm m_baseBpm;
 
     // The internal clock rate is stored in terms of samples per beat.
     // Fractional values are allowed.

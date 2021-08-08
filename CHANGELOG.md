@@ -7,33 +7,58 @@
 * Add Random Track Control to AutoDJ [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
 * Add support for saving loops as hotcues [#2194](https://github.com/mixxxdj/mixxx/pull/2194) [lp:1367159](https://bugs.launchpad.net/mixxx/+bug/1367159)
 
-## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0)
-### Hotcues ###
+## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (Unreleased)
+* Added mapping for the Numark DJ2GO Touch controller [#4108](https://github.com/mixxxdj/mixxx/pull/4108)
+* Add support for HiDPI scale factors of 125% and 175% (only with Qt 5.14+) [lp1938102](https://bugs.launchpad.net/mixxx/+bug/1938102) [#4161](https://github.com/mixxxdj/mixxx/pull/4161)
+* Fix unhandled exception when parsing corrupt Rekordbox PDB files [lp1933853](https://bugs.launchpad.net/mixxx/+bug/1933853) [#4040](https://github.com/mixxxdj/mixxx/pull/4040)
+* Fix Echo effect adding left channel samples to right channel [#4141](https://github.com/mixxxdj/mixxx/pull/4141)
+* Fix bad phase seek when starting from preroll [lp1930143](https://bugs.launchpad.net/mixxx/+bug/1930143) [#4093](https://github.com/mixxxdj/mixxx/pull/4093)
+* Fix bad phase seek when a channel's audible status changes [#4156](https://github.com/mixxxdj/mixxx/pull/4156)
+* Fix wrong track being recorded in History [lp1933991](https://bugs.launchpad.net/mixxx/+bug/1933991) [#4041](https://github.com/mixxxdj/mixxx/pull/4041)
+* Fix support for relative paths in the skin system which caused missing images in third-party skins [#4151](https://github.com/mixxxdj/mixxx/pull/4151)
+* Fix relocation of directories with special/reserved characters in path name [#4146](https://github.com/mixxxdj/mixxx/pull/4146)
+* Fix performance issue on AArch64 by enabling flush-to-zero for floating-point arithmetic [#4144](https://github.com/mixxxdj/mixxx/pull/4144)
+* Fix custom key notation not restored correctly after restart [#4136](https://github.com/mixxxdj/mixxx/pull/4136)
+
+### Packaging
+
+* Install udev rule file to the correct location automatically in the CMake install step when CMAKE_INSTALL_PREFIX is `/` or `/usr`. It is no longer necessary to manually copy the udev rule file in packaging scripts. [#4126](https://github.com/mixxxdj/mixxx/pull/4126)
+* Fix various build issues on FreeBSD [#4122](https://github.com/mixxxdj/mixxx/pull/4122) [#4123](https://github.com/mixxxdj/mixxx/pull/4123) [#4124](https://github.com/mixxxdj/mixxx/pull/4124)
+
+## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (2021-06-28)
+
+### Hotcues
+
 * Add hotcue colors and custom labels by right clicking hotcue buttons or right clicking hotcues on overview waveforms [#2016](https://github.com/mixxxdj/mixxx/pull/2016) [#2520](https://github.com/mixxxdj/mixxx/pull/2520) [#2238](https://github.com/mixxxdj/mixxx/pull/2238) [#2560](https://github.com/mixxxdj/mixxx/pull/2560) [#2557](https://github.com/mixxxdj/mixxx/pull/2557) [#2362](https://github.com/mixxxdj/mixxx/pull/2362)
 * Mouse hover cues on overview waveform to show time remaining until the cue [#2238](https://github.com/mixxxdj/mixxx/pull/2238)
 
-### Hotcue & Track Colors ###
+### Hotcue & Track Colors
+
 * Add configurable color per track [#2470](https://github.com/mixxxdj/mixxx/pull/2470) [#2539](https://github.com/mixxxdj/mixxx/pull/2539) [#2545](https://github.com/mixxxdj/mixxx/pull/2545) [#2630](https://github.com/mixxxdj/mixxx/pull/2630) [lp:1100882](https://bugs.launchpad.net/mixxx/+bug/1100882)
 * Add customizable color palettes for hotcue and track colors [#2530](https://github.com/mixxxdj/mixxx/pull/2530) [#2589](https://github.com/mixxxdj/mixxx/pull/2589) [#3749](https://github.com/mixxxdj/mixxx/pull/3749) [#2902](https://github.com/mixxxdj/mixxx/pull/2902)
 * Add hotcue color find-and-replace tool [#2547](https://github.com/mixxxdj/mixxx/pull/2547)
 
-### Importing From Other DJ Software ###
+### Importing From Other DJ Software
+
 * Import cue points, track colors, and playlists from Serato file tags & database [#2480](https://github.com/mixxxdj/mixxx/pull/2480) [#2526](https://github.com/mixxxdj/mixxx/pull/2526) [#2499](https://github.com/mixxxdj/mixxx/pull/2499) [#2495](https://github.com/mixxxdj/mixxx/pull/2495) [#2673](https://github.com/mixxxdj/mixxx/pull/2673) [#3885](https://github.com/mixxxdj/mixxx/pull/3885)
   * Note: Mixxx does not yet support multiple loops per track. We are [working on this for Mixxx 2.4](https://github.com/mixxxdj/mixxx/pull/2194). In Mixxx 2.3, if you import a track with multiple loops from Serato, Mixxx will use the first loop cue as the single loop Mixxx currently supports. The imported loops are still stored in Mixxx's database and are treated as hotcues in Mixxx 2.3. If you do not delete these hotcues, they will be usable as loops in Mixxx 2.4. Serato keeps loops and hotcues in separate lists, but Mixxx does not, so loops from Serato are imported starting as hotcue 9.
 * Import cue points, track colors, and playlists from Rekordbox USB drives [#2119](https://github.com/mixxxdj/mixxx/pull/2119) [#2555](https://github.com/mixxxdj/mixxx/pull/2555) [#2543](https://github.com/mixxxdj/mixxx/pull/2543) [#2779](https://github.com/mixxxdj/mixxx/pull/2779)
   * Note: The first Rekordbox memory cue is imported for the main cue button in Mixxx and the remaining Rekordbox memory cues are imported as Mixxx hotcues, starting with the next hotcue number after the last hotcue from Rekordbox.
   * Note: Mixxx does not yet support multiple loops per track. Imported loops from Rekordbox are treated like imported loops from Serato, so refer to the note above for details.
 
-### Intro & Outro Cues ###
+### Intro & Outro Cues
+
 * Add intro & outro range cues with automatic silence detection [#1242](https://github.com/mixxxdj/mixxx/pull/1242)
 * Show duration of intro & outro ranges on overview waveform [#2089](https://github.com/mixxxdj/mixxx/pull/2089)
 * Use intro & outro cues in AutoDJ transitions [#2103](https://github.com/mixxxdj/mixxx/pull/2103)
 
-### Deck cloning ###
+### Deck cloning
+
 * Add deck cloning (also known as "instant doubles" in other DJ software) by dragging and dropping between decks [#1892](https://github.com/mixxxdj/mixxx/pull/1892) and samplers [#3200](https://github.com/mixxxdj/mixxx/pull/3200)
 * Clone decks by double pressing the load button on a controller (with option to disable this) [#2024](https://github.com/mixxxdj/mixxx/pull/2024) [#2042](https://github.com/mixxxdj/mixxx/pull/2042)
 
-### Skins & GUI ###
+### Skins & GUI
+
 * Aesthetically revamped LateNight skin [#2298](https://github.com/mixxxdj/mixxx/pull/2298) [#2342](https://github.com/mixxxdj/mixxx/pull/2342)
 * Right click overview waveform to show time remaining until that point [#2238](https://github.com/mixxxdj/mixxx/pull/2238)
 * Show track info dialog when double clicking track labels in decks [#2990](https://github.com/mixxxdj/mixxx/pull/2990)
@@ -51,7 +76,8 @@
 * Add Scrollable Skin Widget [#3890](https://github.com/mixxxdj/mixxx/pull/3890)
 * Fix minor visual issues in Skins [#3958](https://github.com/mixxxdj/mixxx/pull/3958/) [#3954](https://github.com/mixxxdj/mixxx/pull/3954/) [#3941](https://github.com/mixxxdj/mixxx/pull/3941/) [#3938](https://github.com/mixxxdj/mixxx/pull/3938/) [#3936](https://github.com/mixxxdj/mixxx/pull/3936/) [#3886](https://github.com/mixxxdj/mixxx/pull/3886/) [#3927](https://github.com/mixxxdj/mixxx/pull/3927/) [#3844](https://github.com/mixxxdj/mixxx/pull/3844/) [#3933](https://github.com/mixxxdj/mixxx/pull/3933/) [#3835](https://github.com/mixxxdj/mixxx/pull/3835/) [#3902](https://github.com/mixxxdj/mixxx/pull/3902) [#3931](https://github.com/mixxxdj/mixxx/pull/3931)
 
-### Music Feature Analysis ###
+### Music Feature Analysis
+
 * Multithreaded analysis for much faster batch analysis on multicore CPUs [#1624](https://github.com/mixxxdj/mixxx/pull/1624) [#2142](https://github.com/mixxxdj/mixxx/pull/2142) [lp:1641153](https://bugs.launchpad.net/mixxx/+bug/1641153)
 * Fix bugs affecting key detection accuracy [#2137](https://github.com/mixxxdj/mixxx/pull/2137) [#2152](https://github.com/mixxxdj/mixxx/pull/2152) [#2112](https://github.com/mixxxdj/mixxx/pull/2112) [#2136](https://github.com/mixxxdj/mixxx/pull/2136)
   * Note: Users who have not manually corrected keys are advised to clear all keys in their library by pressing Ctrl + A in the library, right clicking, going to Reset -> Key, then reanalyzing their library. This will freeze the GUI while Mixxx clears the keys; this is a known problem that we will not be able to fix for 2.3. Wait until it is finished and you will be able to reanalyze tracks for better key detection results.
@@ -59,7 +85,8 @@
 * Improvements BPM detection on non-const beatgrids [#3626](https://github.com/mixxxdj/mixxx/pull/3626)
 * Fix const beatgrid placement [#3965](https://github.com/mixxxdj/mixxx/pull/3965) [#3973](https://github.com/mixxxdj/mixxx/pull/3973)
 
-### Music Library ###
+### Music Library
+
 * Add support for searching for empty fields (for example `crate:""`) [lp:1788086](https://bugs.launchpad.net/mixxx/+bug/1788086)
 * Improve synchronization of track metadata and file tags [#2406](https://github.com/mixxxdj/mixxx/pull/2406)
 * Library Scanner: Improve hashing of directory contents [#2497](https://github.com/mixxxdj/mixxx/pull/2497)
@@ -75,14 +102,16 @@
 * Enable sorting in "Hidden Tracks" and "Missing Tracks" views [#3828](https://github.com/mixxxdj/mixxx/pull/3828) [lp:1828555](https://bugs.launchpad.net/mixxx/+bug/1828555/) [lp:1924616](https://bugs.launchpad.net/mixxx/+bug/1924616/)
 * Fix track table being empty after start [#3935](https://github.com/mixxxdj/mixxx/pull/3935/) [lp:1930546](https://bugs.launchpad.net/mixxx/+bug/1930546/) [lp:1924843](https://bugs.launchpad.net/mixxx/+bug/1924843/)
 
-### Audio Codecs ###
+### Audio Codecs
+
 * Add FFmpeg audio decoder, bringing support for ALAC files [#1356](https://github.com/mixxxdj/mixxx/pull/1356)
 * Include LAME MP3 encoder with Mixxx now that the MP3 patent has expired [lp:1294128](https://bugs.launchpad.net/mixxx/+bug/1294128) [buildserver:#37](https://github.com/mixxxdj/buildserver/pull/37) [buildserver:9e8bcee](https://github.com/mixxxdj/buildserver/commit/9e8bcee771731920ae82f3e076d43f0fb51e5027)
 * Add Opus streaming and recording support. [lp:1338413](https://bugs.launchpad.net/mixxx/+bug/1338413)
 * Remove support for SoundSource plugins because the code was not well-maintained and could lead to crashes [lp:1792747](https://bugs.launchpad.net/mixxx/+bug/1792747)
 * Add HE-AAC encoding capabilities for recording and broadcasting [#3615](https://github.com/mixxxdj/mixxx/pull/3615)
 
-### Audio Engine ###
+### Audio Engine
+
 * Fix loss of precision when dealing with floating-point sample positions while setting loop out position and seeking using vinyl control [#3126](https://github.com/mixxxdj/mixxx/pull/3126) [#3127](https://github.com/mixxxdj/mixxx/pull/3127)
 * Prevent moving a loop beyond track end [#3117](https://github.com/mixxxdj/mixxx/pull/3117) [lp:1799574](https://bugs.launchpad.net/mixxx/+bug/1799574)
 * Fix possible memory corruption using JACK on Linux [#3160](https://github.com/mixxxdj/mixxx/pull/3160)
@@ -91,7 +120,8 @@
 * Fix crash when changing effect unit routing [#3882](https://github.com/mixxxdj/mixxx/pull/3882) [lp:1775497](https://bugs.launchpad.net/mixxx/+bug/1775497)
 * Make microphone ducking use strength knob the same way in automatic & manual mode [#2750](https://github.com/mixxxdj/mixxx/pull/2750)
 
-### Controllers ###
+### Controllers
+
 * Improve workflow for configuring controller mappings and editing mappings [#2569](https://github.com/mixxxdj/mixxx/pull/2569) [#3278](https://github.com/mixxxdj/mixxx/pull/3278) [#3667](https://github.com/mixxxdj/mixxx/pull/3667)
 * Improve error reporting from controller scripts [#2588](https://github.com/mixxxdj/mixxx/pull/2588)
 * Make hotcue and track colors mappable on controllers [#2030](https://github.com/mixxxdj/mixxx/pull/2030) [#2541](https://github.com/mixxxdj/mixxx/pull/2541) [#2665](https://github.com/mixxxdj/mixxx/pull/2665) [#2520](https://github.com/mixxxdj/mixxx/pull/2520)
@@ -102,7 +132,7 @@
 * Add controller mapping for Numark iDJ Live II [#2818](https://github.com/mixxxdj/mixxx/pull/2818)
 * Add controller mapping for Hercules DJControl Inpulse 200 [#2542](https://github.com/mixxxdj/mixxx/pull/2542)
 * Add controller mapping for Hercules DJControl Jogvision [#2370](https://github.com/mixxxdj/mixxx/pull/2370)
-* Add controller mapping for Pioneer DDJ-200 [#3185](https://github.com/mixxxdj/mixxx/pull/3185) [#3193](https://github.com/mixxxdj/mixxx/pull/3193) [#3479](https://github.com/mixxxdj/mixxx/pull/3742) [#3793](https://github.com/mixxxdj/mixxx/pull/3793) [#3949](https://github.com/mixxxdj/mixxx/pull/3949)
+* Add controller mapping for Pioneer DDJ-200 [#3185](https://github.com/mixxxdj/mixxx/pull/3185) [#3193](https://github.com/mixxxdj/mixxx/pull/3193) [#3742](https://github.com/mixxxdj/mixxx/pull/3742) [#3793](https://github.com/mixxxdj/mixxx/pull/3793) [#3949](https://github.com/mixxxdj/mixxx/pull/3949)
 * Add controller mapping for Pioneer DDJ-400 [#3479](https://github.com/mixxxdj/mixxx/pull/3479)
 * Add controller mapping for ION Discover DJ Pro [#2893](https://github.com/mixxxdj/mixxx/pull/2893)
 * Add controller mapping for Native Instrument Traktor Kontrol S3 [#3031](https://github.com/mixxxdj/mixxx/pull/3031)
@@ -115,7 +145,8 @@
 * Fix Numark Mixtrack Pro 3 controller mapping inverted FX on/off control [#3758](https://github.com/mixxxdj/mixxx/pull/3758)
 * Gracefully handle MIDI overflow [#825](https://github.com/mixxxdj/mixxx/pull/825)
 
-### Other ###
+### Other
+
 * Add CMake build system with `ccache` and `sccache` support for faster compilation times and remove SCons [#2280](https://github.com/mixxxdj/mixxx/pull/2280) [#3618](https://github.com/mixxxdj/mixxx/pull/3618)
 * Make Mixxx compile even though `QT_NO_OPENGL` or `QT_OPENGL_ES_2` is defined (fixes build on Raspberry Pi) [lp:1863440](https://bugs.launchpad.net/mixxx/+bug/1863440) [#2504](https://github.com/mixxxdj/mixxx/pull/2504)
 * Fix ARM build issues [#3602](https://github.com/mixxxdj/mixxx/pull/3602)
@@ -202,30 +233,35 @@
 
 ## [2.2.0](https://launchpad.net/mixxx/+milestone/2.2.0) (2018-12-17)
 
-General
+### General
+
 * Update from Qt4 to Qt5.
 * Use Qt5's automatic high DPI scaling (and remove the old
   scaling option from the preferences).
 * Vectorize remaining raster graphics for better HiDPI support.
 
-Effects
+### Effects
+
 * Add mix mode switch (Dry/Wet vs Dry+Wet) for effect units.
 * Add support for LV2 effects plugins (currently no way to show plugin GUIs).
 * Add preference option for selecting which effects are shown in the
   list of available effects in the main window (all LV2 effects are
   hidden by default and must be explicitly enabled by users).
 
-Skins
+### Skins
+
 * Add 8 sampler and small sampler options to LateNight.
 * Add key / BPM expansion indicators to Deere decks.
 * Add skin settings menu to LateNight.
 
-Controllers
+### Controllers
+
 * Add controller mapping for Numark Mixtrack Platinum.
 * Update controller mapping for Numark N4.
 * Add spinback and break for Vestax VCI-400 mapping.
 
-Miscellaneous
+### Miscellaneous
+
 * Add preference option to adjust the play position marker of
   scrolling waveforms.
 * Add preference option to adjust opacity of beatgrid markers on
@@ -293,7 +329,7 @@ each build. [lp:1751482](https://bugs.launchpad.net/mixxx/+bug/1751482)
 ## [2.1.3](https://launchpad.net/mixxx/+milestone/2.1.3) (2018-08-20)
 
 Fix a severe performance regression on Windows:
-https://mixxx.org/forums/viewtopic.php?f=3&t=12082
+[Mixxx 2.1.2 running much slower than 2.1.1](https://mixxx.org/forums/viewtopic.php?f=3&t=12082)
 
 ## [2.1.2](https://launchpad.net/mixxx/+milestone/2.1.2) (2018-08-10)
 
@@ -419,10 +455,10 @@ For users upgrading from older versions of Mixxx, we have a few important
 announcements. First, if you are using Windows, you will have to uninstall any
 old versions of Mixxx before you can install 2.1. How to uninstall Mixxx
 varies on different versions of Windows:
-  * Windows Vista, 7, and 8: Start > Control Panel > Programs > Uninstall a
-Program [Guide](https://support.microsoft.com/en-us/help/2601726)
-  * Windows 10: Start > Control Panel > Programs > Programs And Features > look
-for Mixxx > Uninstall [Guide](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
+  * Windows Vista, 7, and 8: [Start > Control Panel > Programs > Uninstall a
+    Program](https://support.microsoft.com/en-us/help/2601726)
+  * Windows 10: [Start > Control Panel > Programs > Programs And Features >
+    look for Mixxx > Uninstall](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
 
 If you are upgrading from an older version of Mixxx and have MP3 files in
 your library, we have another important announcement. The good news is that we
@@ -455,3 +491,26 @@ programmers could always help. Read the Developer Documentation on the wiki for
 tips on getting started contributing code to Mixxx.
 
 We hope you have as much fun with Mixxx as we do!
+
+For a full list of new features and bugfixes, check out the
+[2.1.0 milestone on Launchpad](https://launchpad.net/mixxx/+milestone/2.1.0).
+
+## [2.0.0](https://launchpad.net/mixxx/+milestone/2.0.0) (2015-12-31)
+
+* 4 Decks with Master Sync
+* New Effects Framework with 4 Effect Units and 5 Built-in Effects:
+  * Flanger, Bit Crusher, Reverb, Echo, Filter
+  * More to come!
+* Configurable, Resizeable User Interface with 3 Brand New Skins
+* Cover Art Display
+* Music Key Detection and Shifting
+* Vinyl Audio Pass-Through
+* 4 Microphone inputs and 4 Auxiliary inputs
+* MIDI Mapping GUI and Improved Learning Wizard
+* MusicBrainz metadata fetching
+* RGB Musical Waveforms
+* Hundreds of Bug Fixes and Improvements
+* New Pitch-Independent Algorithm for Better-Sounding Key-lock
+
+For a full list of new features and bugfixes, check out the
+[2.0.0 milestone on Launchpad](https://launchpad.net/mixxx/+milestone/2.0.0).

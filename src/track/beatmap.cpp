@@ -12,6 +12,7 @@
 #include <QtGlobal>
 #include <algorithm>
 
+#include "track/beatfactory.h"
 #include "track/beatutils.h"
 #include "track/track.h"
 #include "util/math.h"
@@ -627,33 +628,14 @@ BeatsPointer BeatMap::scale(BpmScale scale) const {
 }
 
 BeatsPointer BeatMap::setBpm(mixxx::Bpm bpm) {
-    Q_UNUSED(bpm);
-    DEBUG_ASSERT(!"BeatMap::setBpm() not implemented");
-    return BeatsPointer(new BeatMap(*this));
+    if (!isValid()) {
+        return {};
+    }
 
-    /*
-     * One of the problems of beattracking algorithms is the so called "octave error"
-     * that is, calculated bpm is a power-of-two fraction of the bpm of the track.
-     * But there is more. In an experiment, it had been proved that roughly 30% of the humans
-     * fail to guess the correct bpm of a track by usually reporting it as the double or one
-     * half of the correct one.
-     * We can interpret it in two ways:
-     * On one hand, a beattracking algorithm which totally avoid the octave error does not yet exists.
-     * On the other hand, even if the algorithm guesses the correct bpm,
-     * 30% of the users will perceive a different bpm and likely change it.
-     * In this case, we assume that calculated beat markers are correctly placed. All
-     * that we have to do is to delete or add some beat markers, while leaving others
-     * so that the number of the beat markers per minute matches the new bpm.
-     * We are jealous of our well-guessed beats since they belong to a time-expensive analysis.
-     * When requested we simply turn them off instead of deleting them, so that they can be recollected.
-     * If the new provided bpm is not a power-of-two fraction, we assume that the algorithm failed
-     * at all to guess the bpm. I have no idea on how to deal with this.
-     * If we assume that bpm does not change along the track, i.e. if we use
-     * fixed tempo approximation (see analyzerbeat.*), this should coincide with the
-     * method in beatgrid.cpp.
-     *
-     * - vittorio.
-     */
+    const auto firstBeatPosition = mixxx::audio::FramePos(m_beats.first().frame_position());
+    DEBUG_ASSERT(firstBeatPosition.isValid());
+
+    return BeatFactory::makeBeatGrid(m_sampleRate, bpm, firstBeatPosition);
 }
 
 } // namespace mixxx

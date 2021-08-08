@@ -31,8 +31,8 @@ class BeatGrid final : public Beats {
     // The following are all methods from the Beats interface, see method
     // comments in beats.h
 
-    Beats::CapabilitiesFlags getCapabilities() const override {
-        return BEATSCAP_SETBPM;
+    bool hasConstantTempo() const override {
+        return true;
     }
 
     QByteArray toByteArray() const override;
