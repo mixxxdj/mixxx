@@ -504,7 +504,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 engine.setValue(group, "hotcue_" + i + "_activate", false);
                 if (engine.getValue(group, "slip_enabled")) {
                     engine.setValue(group, "slip_enabled", false);
-                    engine.beginTimer(250, function() {
+                    engine.beginTimer(20, function() {
                         engine.setValue(group, "slip_enabled", true);
                     }, true);
                 }
@@ -666,7 +666,7 @@ MC7000.wheelTouch = function(channel, control, value, status, group) {
             engine.scratchDisable(deckNumber);
             if (engine.getValue(group, "slip_enabled")) {
                 engine.setValue(group, "slip_enabled", false);
-                engine.beginTimer(250, function() {
+                engine.beginTimer(20, function() {
                     engine.setValue(group, "slip_enabled", true);
                 }, true);
             }
@@ -841,15 +841,18 @@ MC7000.reverse = function(channel, control, value, status, group) {
     if (value > 0) {
         if (engine.getValue(group, "slip_enabled"))  {
         // backspin while button is pressed at a rate of -15 and decrease by "factor"
-            engine.brake(deckNumber, value > 0, MC7000.factor[deckNumber], - 15);
+            engine.brake(deckNumber, value > 0, MC7000.factor[deckNumber], - 10);
         } else {
-            engine.brake(deckNumber, true, MC7000.factor[deckNumber], - 15);
+            engine.brake(deckNumber, true, MC7000.factor[deckNumber], - 10);
         }
     } else {
         if (engine.getValue(group, "slip_enabled")) {
             engine.brake(deckNumber, false); // disable brake effect
             engine.setValue(group, "play", 1);
-            engine.setValue(group, "slip_enabled", 0);
+            engine.setValue(group, "slip_enabled", false);
+            engine.beginTimer(20, function() {
+                engine.setValue(group, "slip_enabled", true);
+            }, true);
         } else {
             engine.softStart(deckNumber, true, MC7000.factor[deckNumber]);
         }
@@ -865,7 +868,7 @@ MC7000.censor = function(channel, control, value, status, group) {
         } else {
             engine.setValue(group, "reverseroll", 0);
         }
-        engine.beginTimer(250, function() {
+        engine.beginTimer(20, function() {
             engine.setValue(group, "slip_enabled", true);
         }, true);
     } else {
