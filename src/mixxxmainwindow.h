@@ -1,44 +1,35 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QSharedPointer>
 #include <QString>
 #include <memory>
 
 #include "coreservices.h"
 #include "preferences/configobject.h"
 #include "preferences/constants.h"
-#include "preferences/usersettings.h"
 #include "soundio/sounddeviceerror.h"
 #include "track/track_decl.h"
-#include "util/cmdlineargs.h"
-#include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
-#include "util/timer.h"
 
-class ChannelHandleFactory;
-class ControlPushButton;
 class DlgDeveloperTools;
 class DlgPreferences;
 class DlgKeywheel;
-class EngineMaster;
 class GuiTick;
 class LaunchImage;
-class Library;
 class VisualsManager;
 class WMainMenuBar;
 
 namespace mixxx {
+
 namespace skin {
 class SkinLoader;
 }
-} // namespace mixxx
 
 #ifdef __ENGINEPRIME__
-namespace mixxx {
 class LibraryExporter;
-} // namespace mixxx
 #endif
+
+} // namespace mixxx
 
 /// This Class is the base class for Mixxx.
 /// It sets up the main window providing a menubar.
@@ -47,7 +38,7 @@ class LibraryExporter;
 class MixxxMainWindow : public QMainWindow {
     Q_OBJECT
   public:
-    MixxxMainWindow(QApplication* app, std::shared_ptr<mixxx::CoreServices> pCoreServices);
+    MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices);
     ~MixxxMainWindow() override;
 
     /// Initialize main window after creation. Should only be called once.

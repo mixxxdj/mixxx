@@ -106,8 +106,8 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     mixxx::Time::start();
     ScopedTimer t("CoreServices::CoreServices");
     // All this here is running without without start up screen
-    // Defere long initialisations to CoreServices::initialize() which is
-    // called after the GUI is initalized
+    // Defer long initializations to CoreServices::initialize() which is
+    // called after the GUI is initialized
     initializeSettings();
     initializeLogging();
     // Only record stats in developer mode.

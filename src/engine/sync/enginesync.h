@@ -2,6 +2,7 @@
 
 #include <gtest/gtest_prod.h>
 
+#include "audio/types.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 
@@ -25,13 +26,13 @@ class EngineSync : public SyncableListener {
     /// Syncables notify EngineSync directly about various events. EngineSync
     /// does not have a say in whether these succeed or not, they are simply
     /// notifications.
-    void notifyBaseBpmChanged(Syncable* pSyncable, double bpm) override;
-    void notifyRateChanged(Syncable* pSyncable, double bpm) override;
-    void requestBpmUpdate(Syncable* pSyncable, double bpm) override;
+    void notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) override;
+    void notifyRateChanged(Syncable* pSyncable, mixxx::Bpm bpm) override;
+    void requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) override;
 
     /// Instantaneous BPM refers to the actual, honest-to-god speed of playback
     /// at any moment, including any scratching that may be happening.
-    void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) override;
+    void notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) override;
 
     /// the beat distance is updated on every callback.
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) override;
@@ -57,8 +58,8 @@ class EngineSync : public SyncableListener {
 
     void addSyncableDeck(Syncable* pSyncable);
     EngineChannel* getLeader() const;
-    void onCallbackStart(int sampleRate, int bufferSize);
-    void onCallbackEnd(int sampleRate, int bufferSize);
+    void onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize);
+    void onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize);
 
   private:
     /// Iterate over decks, and based on sync and play status, pick a new Leader.
@@ -91,7 +92,7 @@ class EngineSync : public SyncableListener {
 
     /// Return the current BPM of the Leader Syncable. If no Leader syncable is
     /// set then returns the BPM of the internal clock.
-    double leaderBpm() const;
+    mixxx::Bpm leaderBpm() const;
 
     /// Returns the current beat distance of the Leader Syncable. If no Leader
     /// Syncable is set, then returns the beat distance of the internal clock.
@@ -100,14 +101,14 @@ class EngineSync : public SyncableListener {
     /// Returns the overall average BPM of the Leader Syncable if it were playing
     /// at 1.0 rate. This is used to calculate half/double multipliers and whether
     /// the Leader has a bpm at all.
-    double leaderBaseBpm() const;
+    mixxx::Bpm leaderBaseBpm() const;
 
     /// Set the BPM on every sync-enabled Syncable except pSource.
-    void updateLeaderBpm(Syncable* pSource, double bpm);
+    void updateLeaderBpm(Syncable* pSource, mixxx::Bpm bpm);
 
     /// Set the Leader instantaneous BPM on every sync-enabled Syncable except
     /// pSource.
-    void updateLeaderInstantaneousBpm(Syncable* pSource, double bpm);
+    void updateLeaderInstantaneousBpm(Syncable* pSource, mixxx::Bpm bpm);
 
     /// Set the Leader beat distance on every sync-enabled Syncable except
     /// pSource.

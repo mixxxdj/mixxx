@@ -25,7 +25,10 @@ constexpr int kParseCmdlineArgsErrorExitCode = 2;
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
 
-    MixxxMainWindow mainWindow(pApp, pCoreServices);
+    CmdlineArgs::Instance().parseForUserFeedback();
+
+    MixxxMainWindow mainWindow(pCoreServices);
+    pApp->processEvents();
     pApp->installEventFilter(&mainWindow);
 
     QObject::connect(pCoreServices.get(),

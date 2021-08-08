@@ -600,11 +600,24 @@ DJ505.Deck = function(deckNumbers, offset) {
         midi: [0x90 + offset, 0x02],
         group: "[Channel" + deckNumbers + "]",
         outKey: "sync_mode",
-        flickerState: false,
-        output: function(value, _group, _control) {
-            if (value === 3) {
-                value = this.flickerState;
+        output: function(value, group, control) {
+            if (this.connections[1] !== undefined) {
+                this.connections[1].disconnect();
+                delete this.connections[1];
             }
+
+            // If the new sync_mode is "Explicit Leader", use the blinking
+            // indicator for the LED instead.
+            if (value === 3) {
+                if (this.connections[1] === undefined) {
+                    this.connections[1] = engine.makeConnection("[Master]", "indicator_500millis", this.setLed.bind(this));
+                }
+                return;
+            }
+
+            this.setLed(value, group, control);
+        },
+        setLed: function(value, _group, _control) {
             midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, this.on);
         },
         input: function(channel, control, value, _status, _group) {
@@ -643,20 +656,6 @@ DJ505.Deck = function(deckNumbers, offset) {
             this.onLongPress = function() {
                 script.toggleControl(this.group, "quantize");
             };
-        },
-        connect: function() {
-            components.Button.prototype.connect.call(this); // call parent connect
-            this.flickerTimer = engine.beginTimer(500, function() {
-                this.flickerState = !this.flickerState;
-                this.trigger();
-            }.bind(this));
-        },
-        disconnect: function() {
-            components.Button.prototype.disconnect.call(this); // call parent disconnect
-            if (this.flickerTimer) {
-                engine.stopTimer(this.flickerTimer);
-                this.flickerTimer = 0;
-            }
         },
     });
 
@@ -1611,9 +1610,6 @@ DJ505.SavedLoopMode = function(deck, offset) {
         on: this.color,
         longPressTimeout: 500,
         colorMapper: DJ505.PadColorMap,
-        blinkTimer: 0,
-        blinkTimeout: 250,
-        blinkStateOn: false,
         unshift: function() {
             this.inKey = "hotcue_" + this.number + "_activateloop";
             this.input = components.Button.prototype.input;
@@ -1638,26 +1634,23 @@ DJ505.SavedLoopMode = function(deck, offset) {
             }.bind(this);
         },
         stopBlinking: function() {
-            if (this.blinkTimer !== 0) {
-                engine.stopTimer(this.blinkTimer);
-                this.blinkTimer = 0;
+            if (this.connections[2] !== undefined) {
+                this.connections[2].disconnect();
+                delete this.connections[2];
             }
         },
         output: function(value, _group, _control) {
             this.stopBlinking();
             if (value === 2) {
-                this.blinkTimer = engine.beginTimer(
-                    this.blinkTimeout, function() {
-                        var colorValue = this.colorMapper.getValueForNearestColor(
-                            engine.getValue(this.group, this.colorKey));
-                        if (this.blinkStateOn) {
-                            this.send(colorValue + DJ505.PadColor.DIM_MODIFIER);
-                            this.blinkStateOn = false;
-                        } else {
-                            this.send(colorValue);
-                            this.blinkStateOn = true;
-                        }
-                    }.bind(this));
+                this.connections[2] = engine.makeConnection("[Master]", "indicator_250millis", function(value, _group, _control) {
+                    var colorValue = this.colorMapper.getValueForNearestColor(
+                        engine.getValue(this.group, this.colorKey));
+                    if (value) {
+                        this.send(colorValue);
+                    } else {
+                        this.send(colorValue + DJ505.PadColor.DIM_MODIFIER);
+                    }
+                }.bind(this));
             } else if (value === 1) {
                 var colorValue = this.colorMapper.getValueForNearestColor(
                     engine.getValue(this.group, this.colorKey));

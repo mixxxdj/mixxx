@@ -26,7 +26,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     const QString& getGroup() const override { return m_sGroup; }
     EngineChannel* getChannel() const override { return m_pChannel; }
-    double getBpm() const override;
+    mixxx::Bpm getBpm() const override;
 
     SyncMode getSyncMode() const override;
     void setSyncMode(SyncMode mode) override;
@@ -38,11 +38,11 @@ class SyncControl : public EngineControl, public Syncable {
     double adjustSyncBeatDistance(double beatDistance) const;
     double getBeatDistance() const override;
     void updateTargetBeatDistance();
-    double getBaseBpm() const override;
+    mixxx::Bpm getBaseBpm() const override;
 
     // The local bpm is the base bpm of the track around the current position.
     // For beatmap tracks, this can change with every beat.
-    void setLocalBpm(double local_bpm);
+    void setLocalBpm(mixxx::Bpm localBpm);
     void updateAudible();
 
     // Must never result in a call to
@@ -50,14 +50,14 @@ class SyncControl : public EngineControl, public Syncable {
     void updateLeaderBeatDistance(double beatDistance) override;
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.
-    void updateLeaderBpm(double bpm) override;
+    void updateLeaderBpm(mixxx::Bpm bpm) override;
     void notifyLeaderParamSource() override;
-    void reinitLeaderParams(double beatDistance, double baseBpm, double bpm) override;
+    void reinitLeaderParams(double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) override;
 
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
     // occur.
-    void updateInstantaneousBpm(double bpm) override;
+    void updateInstantaneousBpm(mixxx::Bpm bpm) override;
 
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
 
@@ -90,8 +90,9 @@ class SyncControl : public EngineControl, public Syncable {
     // bpm.  e.g. 70 matches better with 140/2.  This function returns the
     // best factor for multiplying the leader bpm to get a bpm this syncable
     // should match against.
-    double determineBpmMultiplier(double myBpm, double targetBpm) const;
-    double fileBpm() const;
+    double determineBpmMultiplier(mixxx::Bpm myBpm, mixxx::Bpm targetBpm) const;
+    mixxx::Bpm fileBpm() const;
+    mixxx::Bpm getLocalBpm() const;
 
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
@@ -113,7 +114,7 @@ class SyncControl : public EngineControl, public Syncable {
     // It is handy to store the raw reported target beat distance in case the
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
-    ControlValueAtomic<double> m_prevLocalBpm;
+    ControlValueAtomic<mixxx::Bpm> m_prevLocalBpm;
     QAtomicInt m_audible;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
