@@ -19,10 +19,10 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
         : m_group(group),
           m_pEngineSync(pEngineSync),
           m_mode(SyncMode::None),
-          m_iOldSampleRate(44100),
+          m_oldSampleRate(mixxx::audio::SampleRate{44100}),
           m_oldBpm(kDefaultBpm),
           m_baseBpm(kDefaultBpm),
-          m_dBeatLength(m_iOldSampleRate * 60.0 / m_oldBpm.value()),
+          m_dBeatLength(m_oldSampleRate * 60.0 / m_oldBpm.value()),
           m_dClockPosition(0) {
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the leader BPM. This also creates bpm_up
@@ -132,7 +132,7 @@ void InternalClock::updateLeaderBpm(mixxx::Bpm bpm) {
         return;
     }
     m_pClockBpm->set(bpm.value());
-    updateBeatLength(m_iOldSampleRate, bpm);
+    updateBeatLength(m_oldSampleRate, bpm);
 }
 
 void InternalClock::updateInstantaneousBpm(mixxx::Bpm bpm) {
@@ -160,7 +160,7 @@ void InternalClock::reinitLeaderParams(double beatDistance, mixxx::Bpm baseBpm, 
 
 void InternalClock::slotBpmChanged(double bpm) {
     m_baseBpm = mixxx::Bpm(bpm);
-    updateBeatLength(m_iOldSampleRate, m_baseBpm);
+    updateBeatLength(m_oldSampleRate, m_baseBpm);
     if (!isSynchronized()) {
         return;
     }
@@ -177,8 +177,8 @@ void InternalClock::slotBeatDistanceChanged(double beatDistance) {
     updateLeaderBeatDistance(beatDistance);
 }
 
-void InternalClock::updateBeatLength(int sampleRate, mixxx::Bpm bpm) {
-    if (m_iOldSampleRate == sampleRate && bpm == m_oldBpm) {
+void InternalClock::updateBeatLength(mixxx::audio::SampleRate sampleRate, mixxx::Bpm bpm) {
+    if (m_oldSampleRate == sampleRate && bpm == m_oldBpm) {
         return;
     }
 
@@ -207,19 +207,19 @@ void InternalClock::updateBeatLength(int sampleRate, mixxx::Bpm bpm) {
         }
     }
 
-    m_iOldSampleRate = sampleRate;
+    m_oldSampleRate = sampleRate;
 
     // Restore the old beat distance.
     updateLeaderBeatDistance(oldBeatDistance);
 }
 
-void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
+void InternalClock::onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize) {
     Q_UNUSED(sampleRate)
     Q_UNUSED(bufferSize)
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }
 
-void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
+void InternalClock::onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize) {
     updateBeatLength(sampleRate, getBpm());
 
     // stereo samples, so divide by 2

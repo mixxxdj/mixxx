@@ -271,7 +271,7 @@ const CSAMPLE* EngineMaster::getSidechainBuffer() const {
 
 void EngineMaster::processChannels(int iBufferSize) {
     // Update internal sync lock rate.
-    m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
+    m_pMasterSync->onCallbackStart(m_sampleRate, m_iBufferSize);
 
     m_activeBusChannels[EngineChannel::LEFT].clear();
     m_activeBusChannels[EngineChannel::CENTER].clear();
@@ -372,7 +372,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     // Note, because we call this on the internal clock first,
     // it will have an up-to-date beatDistance, whereas the other
     // Syncables will not.
-    m_pMasterSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
+    m_pMasterSync->onCallbackEnd(m_sampleRate, m_iBufferSize);
 
     // After all the engines have been processed, trigger post-processing
     // which ensures that all channels are updating certain values at the
@@ -396,7 +396,7 @@ void EngineMaster::process(const int iBufferSize) {
     bool boothEnabled = m_pBoothEnabled->toBool();
     bool headphoneEnabled = m_pHeadphoneEnabled->toBool();
 
-    m_iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pMasterSampleRate->get());
     m_iBufferSize = iBufferSize;
     // TODO: remove assumption of stereo buffer
     const unsigned int kChannels = 2;
@@ -428,12 +428,14 @@ void EngineMaster::process(const int iBufferSize) {
         // Process effects and mix PFL channels together for the headphones.
         // Effects will be reprocessed post-fader for the crossfader buses
         // and master mix, so the channel input buffers cannot be modified here.
-        ChannelMixer::applyEffectsAndMixChannels(
-            m_headphoneGain, &m_activeHeadphoneChannels,
-            &m_channelHeadphoneGainCache,
-            m_pHead, m_headphoneHandle.handle(),
-            m_iBufferSize, m_iSampleRate,
-            m_pEngineEffectsManager);
+        ChannelMixer::applyEffectsAndMixChannels(m_headphoneGain,
+                &m_activeHeadphoneChannels,
+                &m_channelHeadphoneGainCache,
+                m_pHead,
+                m_headphoneHandle.handle(),
+                m_iBufferSize,
+                static_cast<int>(m_sampleRate.value()),
+                m_pEngineEffectsManager);
 
         // Process headphone channel effects
         if (m_pEngineEffectsManager) {
@@ -448,21 +450,25 @@ void EngineMaster::process(const int iBufferSize) {
                 headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
             }
             m_pEngineEffectsManager->processPostFaderInPlace(
-                m_headphoneHandle.handle(),
-                m_headphoneHandle.handle(),
-                m_pHead,
-                m_iBufferSize, m_iSampleRate,
-                headphoneFeatures);
+                    m_headphoneHandle.handle(),
+                    m_headphoneHandle.handle(),
+                    m_pHead,
+                    m_iBufferSize,
+                    static_cast<int>(m_sampleRate.value()),
+                    headphoneFeatures);
         }
     }
 
     // Mix all the talkover enabled channels together.
     // Effects processing is done in place to avoid unnecessary buffer copying.
-    ChannelMixer::applyEffectsInPlaceAndMixChannels(
-            m_talkoverGain, &m_activeTalkoverChannels,
+    ChannelMixer::applyEffectsInPlaceAndMixChannels(m_talkoverGain,
+            &m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
-            m_pTalkover, m_masterHandle.handle(),
-            m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
+            m_pTalkover,
+            m_masterHandle.handle(),
+            m_iBufferSize,
+            static_cast<int>(m_sampleRate.value()),
+            m_pEngineEffectsManager);
 
     // Process effects on all microphones mixed together
     // We have no metadata for mixed effect buses, so use an empty GroupFeatureState.
@@ -473,7 +479,7 @@ void EngineMaster::process(const int iBufferSize) {
                 m_masterHandle.handle(),
                 m_pTalkover,
                 m_iBufferSize,
-                m_iSampleRate,
+                static_cast<int>(m_sampleRate.value()),
                 busFeatures);
     }
 
@@ -511,31 +517,39 @@ void EngineMaster::process(const int iBufferSize) {
             m_pTalkoverDucking->getGain(m_iBufferSize / 2));
 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        ChannelMixer::applyEffectsInPlaceAndMixChannels(
-            m_masterGain,
-            &m_activeBusChannels[o],
-            &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
-            m_pOutputBusBuffers[o], m_masterHandle.handle(),
-            m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
+        ChannelMixer::applyEffectsInPlaceAndMixChannels(m_masterGain,
+                &m_activeBusChannels[o],
+                &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
+                m_pOutputBusBuffers[o],
+                m_masterHandle.handle(),
+                m_iBufferSize,
+                static_cast<int>(m_sampleRate.value()),
+                m_pEngineEffectsManager);
     }
 
     // Process crossfader orientation bus channel effects
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->processPostFaderInPlace(
-            m_busCrossfaderLeftHandle.handle(),
-            m_masterHandle.handle(),
-            m_pOutputBusBuffers[EngineChannel::LEFT],
-            m_iBufferSize, m_iSampleRate, busFeatures);
+                m_busCrossfaderLeftHandle.handle(),
+                m_masterHandle.handle(),
+                m_pOutputBusBuffers[EngineChannel::LEFT],
+                m_iBufferSize,
+                static_cast<int>(m_sampleRate.value()),
+                busFeatures);
         m_pEngineEffectsManager->processPostFaderInPlace(
-            m_busCrossfaderCenterHandle.handle(),
-            m_masterHandle.handle(),
-            m_pOutputBusBuffers[EngineChannel::CENTER],
-            m_iBufferSize, m_iSampleRate, busFeatures);
+                m_busCrossfaderCenterHandle.handle(),
+                m_masterHandle.handle(),
+                m_pOutputBusBuffers[EngineChannel::CENTER],
+                m_iBufferSize,
+                static_cast<int>(m_sampleRate.value()),
+                busFeatures);
         m_pEngineEffectsManager->processPostFaderInPlace(
-            m_busCrossfaderRightHandle.handle(),
-            m_masterHandle.handle(),
-            m_pOutputBusBuffers[EngineChannel::RIGHT],
-            m_iBufferSize, m_iSampleRate, busFeatures);
+                m_busCrossfaderRightHandle.handle(),
+                m_masterHandle.handle(),
+                m_pOutputBusBuffers[EngineChannel::RIGHT],
+                m_iBufferSize,
+                static_cast<int>(m_sampleRate.value()),
+                busFeatures);
     }
 
     if (masterEnabled) {
@@ -705,7 +719,8 @@ void EngineMaster::process(const int iBufferSize) {
                     m_masterOutputHandle.handle(),
                     m_masterHandle.handle(),
                     m_pMaster,
-                    m_iBufferSize, m_iSampleRate,
+                    m_iBufferSize,
+                    static_cast<int>(m_sampleRate.value()),
                     masterFeatures);
         }
 
@@ -761,10 +776,11 @@ void EngineMaster::applyMasterEffects() {
         masterFeatures.has_gain = true;
         masterFeatures.gain = m_pMasterGain->get();
         m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),
-                                                         m_masterHandle.handle(),
-                                                         m_pMaster,
-                                                         m_iBufferSize, m_iSampleRate,
-                                                         masterFeatures);
+                m_masterHandle.handle(),
+                m_pMaster,
+                m_iBufferSize,
+                static_cast<int>(m_sampleRate.value()),
+                masterFeatures);
     }
 }
 

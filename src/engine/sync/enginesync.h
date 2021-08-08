@@ -2,6 +2,7 @@
 
 #include <gtest/gtest_prod.h>
 
+#include "audio/types.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 
@@ -57,8 +58,8 @@ class EngineSync : public SyncableListener {
 
     void addSyncableDeck(Syncable* pSyncable);
     EngineChannel* getLeader() const;
-    void onCallbackStart(int sampleRate, int bufferSize);
-    void onCallbackEnd(int sampleRate, int bufferSize);
+    void onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize);
+    void onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize);
 
   private:
     /// Iterate over decks, and based on sync and play status, pick a new Leader.
