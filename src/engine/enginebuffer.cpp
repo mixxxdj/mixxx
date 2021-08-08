@@ -1229,6 +1229,7 @@ void EngineBuffer::processSyncRequests() {
 }
 
 void EngineBuffer::processSeek(bool paused) {
+    m_previousBufferSeek = false;
     // Check if we are cloning another channel before doing any seeking.
     EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(nullptr);
     if (pChannel) {
@@ -1298,6 +1299,7 @@ void EngineBuffer::processSeek(bool paused) {
             kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seek to" << position;
         }
         setNewPlaypos(position);
+        m_previousBufferSeek = true;
     }
     // Reset the m_queuedSeek value after it has been processed in
     // setNewPlaypos() so that the Engine Controls have always access to the
@@ -1315,11 +1317,11 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     const mixxx::Bpm localBpm = m_pBpmControl->updateLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
     // FIXME: Double check if calling setLocalBpm with an invalid value is correct and intended.
-    double localBpmValue = mixxx::Bpm::kValueUndefined;
+    mixxx::Bpm newLocalBpm;
     if (localBpm.isValid()) {
-        localBpmValue = localBpm.value();
+        newLocalBpm = localBpm;
     }
-    m_pSyncControl->setLocalBpm(localBpmValue);
+    m_pSyncControl->setLocalBpm(newLocalBpm);
     m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (isLeader(mode)) {

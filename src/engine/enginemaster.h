@@ -3,15 +3,16 @@
 #include <QObject>
 #include <QVarLengthArray>
 
-#include "preferences/usersettings.h"
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/engineobject.h"
-#include "engine/channels/enginechannel.h"
 #include "engine/channelhandle.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/engineobject.h"
+#include "preferences/usersettings.h"
+#include "recording/recordingmanager.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
-#include "recording/recordingmanager.h"
 
 class EngineWorkerScheduler;
 class EngineBuffer;
@@ -283,7 +284,7 @@ class EngineMaster : public QObject, public AudioSource {
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeHeadphoneChannels;
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
 
-    unsigned int m_iSampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
     unsigned int m_iBufferSize;
 
     // Mixing buffers for each output.
