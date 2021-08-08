@@ -2280,7 +2280,8 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
     }
 }
 
-void CueControl::slotLoopUpdated(double startPositionSamples, double endPositionSamples) {
+void CueControl::slotLoopUpdated(mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition) {
     HotcueControl* pSavedLoopControl = m_pCurrentSavedLoopControl;
     if (!pSavedLoopControl) {
         return;
@@ -2302,16 +2303,10 @@ void CueControl::slotLoopUpdated(double startPositionSamples, double endPosition
         return;
     }
 
-    const auto startPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    startPositionSamples);
-    const auto endPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    endPositionSamples);
-
-    DEBUG_ASSERT(startPosition.isValid());
-    DEBUG_ASSERT(endPosition.isValid());
-    DEBUG_ASSERT(startPosition < endPosition);
+    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid() && endPosition.isValid() &&
+            startPosition < endPosition) {
+        return;
+    }
 
     DEBUG_ASSERT(pSavedLoopControl->getStatus() == HotcueControl::Status::Active);
     pCue->setStartPosition(startPosition);

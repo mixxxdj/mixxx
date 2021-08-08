@@ -1293,9 +1293,12 @@ void EngineBuffer::processSeek(bool paused) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seeking phase";
         }
-        double requestedPosition = position;
         double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
-        position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
+        framePosition =
+                m_pLoopingControl->getSyncPositionInsideLoop(framePosition,
+                        mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                                syncPosition));
+        position = framePosition.toEngineSamplePosMaybeInvalid();
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "EngineBuffer::processSeek" << getGroup() << "seek info:" << m_filepos_play
