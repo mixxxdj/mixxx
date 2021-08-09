@@ -91,3 +91,12 @@ Qt::ItemFlags HiddenTableModel::flags(const QModelIndex& index) const {
 TrackModel::Capabilities HiddenTableModel::getCapabilities() const {
     return Capability::Purge | Capability::Unhide;
 }
+
+QString HiddenTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return QStringLiteral("hidden:") + m_tableName;
+    }
+    return QStringLiteral("hidden:") + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
+}

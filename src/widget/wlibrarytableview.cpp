@@ -176,6 +176,24 @@ void WLibraryTableView::setSelectedClick(bool enable) {
     }
 }
 
+void WLibraryTableView::saveCurrentViewState() {
+    const QAbstractItemModel* currentModel = model();
+    QString key = getModelStateKey();
+    if (!currentModel || key.isEmpty()) {
+        return;
+    }
+    saveTrackModelState(currentModel, key);
+}
+
+void WLibraryTableView::restoreCurrentViewState() {
+    const QAbstractItemModel* currentModel = model();
+    QString key = getModelStateKey();
+    if (!currentModel || key.isEmpty()) {
+        return;
+    }
+    restoreTrackModelState(currentModel, key);
+}
+
 void WLibraryTableView::focusInEvent(QFocusEvent* event) {
     QTableView::focusInEvent(event);
 

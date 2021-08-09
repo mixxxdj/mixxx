@@ -345,6 +345,15 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
     return caps;
 }
 
+QString PlaylistTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return QStringLiteral("playlist:") + m_tableName;
+    }
+    return QStringLiteral("playlist:") + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
+}
+
 void PlaylistTableModel::playlistsChanged(const QSet<int>& playlistIds) {
     if (playlistIds.contains(m_iPlaylistId)) {
         select(); // Repopulate the data model.

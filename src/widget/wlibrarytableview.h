@@ -50,6 +50,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
     void saveNoSearchVScrollBarPos();
     void restoreNoSearchVScrollBarPos();
+    virtual QString getModelStateKey() const = 0;
 
   private:
     void loadVScrollBarPosState();

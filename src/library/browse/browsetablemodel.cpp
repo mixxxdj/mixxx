@@ -362,6 +362,22 @@ TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
             Capability::LoadToSampler;
 }
 
+QString BrowseTableModel::modelKey(bool noSearch) const {
+    // TODO re-introduce m_current_directory / m_currentPath
+    // see https://github.com/mixxxdj/mixxx/commit/dcc6f9e71aac3ee56627bb93c4e37e93cf675bfd#diff-12546d29721e9b62bfba012a790de93c1e5c045a9ac4cc47f48d9c7d93b99d70L166
+    // or make m_pBrowseThread->m_path public
+    //m_current_directory.dir().path() +
+    if (noSearch) {
+        return QStringLiteral("browse:");
+        // + m_current_directory.dir().path();
+    } else {
+        return QStringLiteral("browse:") +
+                //m_current_directory.dir().path() +
+                QStringLiteral("#") +
+                currentSearch();
+    }
+}
+
 Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 

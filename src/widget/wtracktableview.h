@@ -74,6 +74,9 @@ class WTrackTableView : public WLibraryTableView {
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
     void keyNotationChanged();
 
+  protected:
+    QString getModelStateKey() const override;
+
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void dragMoveEvent(QDragMoveEvent * event) override;

@@ -1022,12 +1022,13 @@ bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
 }
 
-void WTrackTableView::saveCurrentVScrollBarPos() {
-    saveVScrollBarPos(getTrackModel());
-}
-
-void WTrackTableView::restoreCurrentVScrollBarPos() {
-    restoreVScrollBarPos(getTrackModel());
+QString WTrackTableView::getModelStateKey() const {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel) {
+        bool noSearch = trackModel->currentSearch().trimmed().isEmpty();
+        return trackModel->modelKey(noSearch);
+    }
+    return QString();
 }
 
 void WTrackTableView::keyNotationChanged() {

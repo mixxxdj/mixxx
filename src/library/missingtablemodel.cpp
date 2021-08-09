@@ -89,3 +89,12 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
 TrackModel::Capabilities MissingTableModel::getCapabilities() const {
     return Capability::Purge;
 }
+
+QString MissingTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return QStringLiteral("missing:") + m_tableName;
+    }
+    return QStringLiteral("missing:") + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
+}

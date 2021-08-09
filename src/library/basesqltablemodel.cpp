@@ -613,6 +613,15 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
     return tableIndex;
 }
 
+QString BaseSqlTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return QStringLiteral("table:") + m_tableName;
+    }
+    return QStringLiteral("table:") + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
+}
+
 QVariant BaseSqlTableModel::rawValue(
         const QModelIndex& index) const {
     DEBUG_ASSERT(index.isValid());
