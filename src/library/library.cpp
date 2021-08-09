@@ -355,7 +355,14 @@ void Library::bindLibraryWidget(
             &Library::switchToView,
             pLibraryWidget,
             &WLibrary::switchToView);
-
+    connect(this,
+            &Library::saveModelState,
+            pTrackTableView,
+            &WTrackTableView::slotSaveCurrentViewState);
+    connect(this,
+            &Library::restoreModelState,
+            pTrackTableView,
+            &WTrackTableView::slotRestoreCurrentViewState);
     connect(pTrackTableView,
             &WTrackTableView::trackSelected,
             this,

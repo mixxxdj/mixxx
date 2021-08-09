@@ -370,3 +370,11 @@ void DlgAutoDJ::updateSelectionInfo() {
 bool DlgAutoDJ::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
+
+void DlgAutoDJ::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+}
+
+void DlgAutoDJ::restoreCurrentViewState() {
+    m_pTrackTableView->restoreCurrentViewState();
+}

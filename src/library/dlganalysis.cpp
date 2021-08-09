@@ -225,3 +225,11 @@ void DlgAnalysis::installEventFilter(QObject* pFilter) {
     QWidget::installEventFilter(pFilter);
     m_pAnalysisLibraryTableView->installEventFilter(pFilter);
 }
+
+void DlgAnalysis::saveCurrentViewState() {
+    m_pAnalysisLibraryTableView->saveCurrentViewState();
+}
+
+void DlgAnalysis::restoreCurrentViewState() {
+    m_pAnalysisLibraryTableView->restoreCurrentViewState();
+}

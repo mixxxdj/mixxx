@@ -69,6 +69,10 @@ DlgRecording::DlgRecording(
             &RecordingManager::durationRecorded,
             this,
             &DlgRecording::slotDurationRecorded);
+    connect(&m_browseModel,
+            &BrowseTableModel::restoreModelState,
+            m_pTrackTableView,
+            &WTrackTableView::restoreCurrentViewState);
 
     QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -192,4 +196,12 @@ void DlgRecording::refreshLabels() {
                               .arg(m_bytesRecordedStr, m_durationRecordedStr);
     labelRecFilename->setText(recFile);
     labelRecStatistics->setText(recData);
+}
+
+void DlgRecording::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+}
+
+void DlgRecording::restoreCurrentViewState() {
+    m_pTrackTableView->restoreCurrentViewState();
 }

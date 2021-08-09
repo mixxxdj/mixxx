@@ -2,11 +2,11 @@
 
 #include <QItemSelection>
 
-#include "library/ui_dlgmissing.h"
-#include "preferences/usersettings.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/libraryview.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/ui_dlgmissing.h"
+#include "preferences/usersettings.h"
 
 class WLibrary;
 class WTrackTableView;
@@ -25,6 +25,8 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     bool hasFocus() const override;
     void onSearch(const QString& text) override;
     QString currentSearch();
+    void saveCurrentViewState() override;
+    void restoreCurrentViewState() override;
 
   public slots:
     void clicked();
