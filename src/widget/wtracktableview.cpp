@@ -151,11 +151,11 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreState) {
     qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-
     VERIFY_OR_DEBUG_ASSERT(model) {
         return;
     }
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
+
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
