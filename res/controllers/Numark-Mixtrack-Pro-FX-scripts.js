@@ -143,7 +143,6 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
 
     this.effectParam = new components.Encoder({
         group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
-        inKey: "parameter1",
         shift: function() {
             this.inKey = "parameter2";
         },
@@ -161,7 +160,6 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
 
     this.prevEffect = new components.Button({
         group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
-        key: "prev_effect",
         midi: [0x98, (deckNumber - 1) * 2],
         shift: function() {
             this.group = "[Channel" + deckNumber + "]";
@@ -177,15 +175,16 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
 
     this.nextEffect = new components.Button({
         group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
-        key: "next_effect",
         midi: [0x99, 0x03 + (deckNumber - 1) * 2],
         shift: function() {
             this.group = "[Channel" + deckNumber + "]";
             this.inKey = "pitch_down";
+            this.outKey = "pitch_down";
         },
         unshift: function() {
             this.group = "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]";
             this.inKey = "next_effect";
+            this.outKey = "next_effect";
         }
     });
 };
@@ -303,7 +302,6 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.loopHalf = new components.Button({
-        key: "loop_halve",
         midi: [0x94 + channel, 0x34],
         shiftControl: true,
         sendShifted: true,
@@ -319,7 +317,6 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.loopDouble = new components.Button({
-        key: "loop_double",
         midi: [0x94 + channel, 0x35],
         shiftControl: true,
         sendShifted: true,
@@ -340,7 +337,6 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.pitchBendUp = new components.Button({
-        inKey: "rate_temp_up",
         shiftControl: true,
         shiftOffset: 0x20,
         shift: function() {
@@ -530,8 +526,6 @@ MixtrackProFX.ModeAutoLoop = function(deckNumber) {
     for (var i = 0; i < 8; i++) {
         this.pads[i] = new components.Button({
             group: "[Channel" + deckNumber + "]",
-            inKey: "beatloop_" + this.size + "_toggle",
-            outKey: "beatloop_" + this.size + "_enabled",
             midi: [0x93 + deckNumber, 0x14 + i],
             size: MixtrackProFX.autoLoopSizes[i],
             shiftControl: true,
@@ -608,7 +602,6 @@ MixtrackProFX.ModeBeatjump = function(deckNumber) {
     for (var i = 0; i < 8; i++) {
         this.pads[i] = new components.Button({
             group: "[Channel" + deckNumber + "]",
-            key: "beatjump_" + this.size + "forward",
             midi: [0x93 + deckNumber, 0x14 + i],
             size: MixtrackProFX.beatJumpValues[i],
             shiftControl: true,
@@ -653,7 +646,6 @@ MixtrackProFX.Browse = function() {
 
     this.knobButton = new components.Button({
         group: "[Library]",
-        inKey: "MoveFocusForward",
         shiftControl: true,
         shiftOffset: 0x01,
         shift: function() {
