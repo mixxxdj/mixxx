@@ -50,11 +50,7 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
 void EngineControl::setFrameInfo(mixxx::audio::FramePos currentPosition,
         mixxx::audio::FramePos trackEndPosition,
         mixxx::audio::SampleRate sampleRate) {
-    FrameInfo info;
-    info.currentPosition = currentPosition;
-    info.trackEndPosition = trackEndPosition;
-    info.sampleRate = sampleRate;
-    m_frameInfo.setValue(info);
+    m_frameInfo.setValue(FrameInfo{currentPosition, trackEndPosition, sampleRate});
 }
 
 QString EngineControl::getGroup() const {
