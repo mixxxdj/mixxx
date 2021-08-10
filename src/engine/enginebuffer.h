@@ -165,6 +165,9 @@ class EngineBuffer : public EngineObject {
         m_channelIndex = channelIndex;
     }
 
+    void seekAbs(mixxx::audio::FramePos);
+    void seekExact(mixxx::audio::FramePos);
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -173,8 +176,6 @@ class EngineBuffer : public EngineObject {
     void slotControlStart(double);
     void slotControlEnd(double);
     void slotControlSeek(double);
-    void slotControlSeekAbs(double);
-    void slotControlSeekExact(double);
     void slotKeylockEngineChanged(double);
 
     void slotEjectTrack(double);

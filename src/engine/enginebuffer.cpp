@@ -659,17 +659,15 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
     doSeekFractional(fractionalPos, SEEK_STANDARD);
 }
 
-// WARNING: This method runs from SyncWorker and Engine Worker
-void EngineBuffer::slotControlSeekAbs(double playPosition) {
-    // TODO: Check if we can assert a valid play position here
-    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(playPosition);
+// WARNING: This method is called by EngineControl and runs in the engine thread
+void EngineBuffer::seekAbs(mixxx::audio::FramePos position) {
+    DEBUG_ASSERT(position.isValid());
     doSeekPlayPos(position, SEEK_STANDARD);
 }
 
-// WARNING: This method runs from SyncWorker and Engine Worker
-void EngineBuffer::slotControlSeekExact(double playPosition) {
-    // TODO: Check if we can assert a valid play position here
-    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(playPosition);
+// WARNING: This method is called by EngineControl and runs in the engine thread
+void EngineBuffer::seekExact(mixxx::audio::FramePos position) {
+    DEBUG_ASSERT(position.isValid());
     doSeekPlayPos(position, SEEK_EXACT);
 }
 
@@ -1195,9 +1193,10 @@ void EngineBuffer::processSlip(int iBufferSize) {
             m_dSlipRate = m_rate_old;
         } else {
             // TODO(owen) assuming that looping will get canceled properly
-            double newPlayFrame = m_dSlipPosition / kSamplesPerFrame;
-            double roundedSlip = round(newPlayFrame) * kSamplesPerFrame;
-            slotControlSeekExact(roundedSlip);
+            const auto newPlayPosition =
+                    mixxx::audio::FramePos::fromEngineSamplePos(
+                            m_dSlipPosition);
+            seekExact(newPlayPosition.toNearestFrameBoundary());
             m_dSlipPosition = 0;
         }
     }
