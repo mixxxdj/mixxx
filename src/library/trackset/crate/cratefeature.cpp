@@ -279,6 +279,7 @@ TreeItemModel* CrateFeature::sidebarModel() const {
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
+    //qDebug() << "CrateFeature::activateChild()" << index;
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
