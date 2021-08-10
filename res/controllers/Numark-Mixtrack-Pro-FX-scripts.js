@@ -150,11 +150,10 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
             this.inKey = "parameter1";
         },
         input: function(channel, control, value) {
-            if (value === 0x01) {
-                this.inSetParameter(this.inGetParameter() + 0.05);
-            } else if (value === 0x7F) {
-                this.inSetParameter(this.inGetParameter() - 0.05);
-            }
+            this.inSetParameter(this.inGetParameter() + this.inValueScale(value));
+        },
+        inValueScale: function(value) {
+            return (value < 0x40) ? 0.05 : -0.05;
         }
     });
 
