@@ -115,6 +115,20 @@ MixtrackProFX.shutdown = function() {
     midi.sendSysexMsg(shutdownSysex, shutdownSysex.length);
 };
 
+MixtrackProFX.shift = function() {
+    MixtrackProFX.shifted = true;
+    MixtrackProFX.deck.shift();
+    MixtrackProFX.browse.shift();
+    MixtrackProFX.effect.shift();
+};
+
+MixtrackProFX.unshift = function() {
+    MixtrackProFX.shifted = false;
+    MixtrackProFX.deck.unshift();
+    MixtrackProFX.browse.unshift();
+    MixtrackProFX.effect.unshift();
+};
+
 // TODO in 2.3 it is not possible to "properly" map the FX selection buttons.
 // this should be done with load_preset and QuickEffects instead (when effect
 // chain preset saving/loading is available in Mixxx)
@@ -266,17 +280,17 @@ MixtrackProFX.Deck = function(number) {
         input: function(channel, control, value) {
             // each shift button shifts both decks
             // more consistent with the logic burned into hardware
-            if (value === 0x7F) {
-                MixtrackProFX.shifted = true;
-                MixtrackProFX.deck.shift();
-                MixtrackProFX.browse.shift();
-                MixtrackProFX.effect.shift();
-            } else if (value === 0x00) {
-                MixtrackProFX.shifted = false;
-                MixtrackProFX.deck.unshift();
-                MixtrackProFX.browse.unshift();
-                MixtrackProFX.effect.unshift();
+            if (this.isPress(channel, control, value)) {
+                MixtrackProFX.shift();
+            } else {
+                MixtrackProFX.unshift();
             }
+        },
+        isPress: function(channel, control, value) {
+            if (value === 0x7F) {
+                return true;
+            }
+            return false;
         }
     });
 
