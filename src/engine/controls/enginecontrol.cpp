@@ -12,7 +12,9 @@ EngineControl::EngineControl(const QString& group,
           m_pConfig(pConfig),
           m_pEngineMaster(nullptr),
           m_pEngineBuffer(nullptr) {
-    setCurrentSample(EngineBuffer::kInitalSamplePosition, 0.0, 0.0);
+    setFrameInfo(mixxx::audio::kStartFramePos,
+            mixxx::audio::kInvalidFramePos,
+            mixxx::audio::SampleRate());
 }
 
 EngineControl::~EngineControl() {
@@ -45,13 +47,10 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
     m_pEngineBuffer = pEngineBuffer;
 }
 
-void EngineControl::setCurrentSample(
-        const double dCurrentSample, const double dTotalSamples, const double dTrackSampleRate) {
-    SampleOfTrack sot;
-    sot.current = dCurrentSample;
-    sot.total = dTotalSamples;
-    sot.rate = dTrackSampleRate;
-    m_sampleOfTrack.setValue(sot);
+void EngineControl::setFrameInfo(mixxx::audio::FramePos currentPosition,
+        mixxx::audio::FramePos trackEndPosition,
+        mixxx::audio::SampleRate sampleRate) {
+    m_frameInfo.setValue(FrameInfo{currentPosition, trackEndPosition, sampleRate});
 }
 
 QString EngineControl::getGroup() const {
@@ -70,33 +69,35 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
-void EngineControl::setBeatLoop(double startPosition, bool enabled) {
+void EngineControl::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled) {
     if (m_pEngineBuffer) {
         return m_pEngineBuffer->setBeatLoop(startPosition, enabled);
     }
 }
 
-void EngineControl::setLoop(double startPosition, double endPosition, bool enabled) {
+void EngineControl::setLoop(mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition,
+        bool enabled) {
     if (m_pEngineBuffer) {
         return m_pEngineBuffer->setLoop(startPosition, endPosition, enabled);
     }
 }
 
-void EngineControl::seekAbs(double samplePosition) {
+void EngineControl::seekAbs(mixxx::audio::FramePos position) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekAbs(samplePosition);
+        m_pEngineBuffer->slotControlSeekAbs(position.toEngineSamplePos());
     }
 }
 
-void EngineControl::seekExact(double playPosition) {
+void EngineControl::seekExact(mixxx::audio::FramePos position) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekExact(playPosition);
+        m_pEngineBuffer->slotControlSeekExact(position.toEngineSamplePos());
     }
 }
 
-void EngineControl::seek(double sample) {
+void EngineControl::seek(double fractionalPosition) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeek(sample);
+        m_pEngineBuffer->slotControlSeek(fractionalPosition);
     }
 }
 
