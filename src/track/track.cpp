@@ -359,8 +359,7 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
                 bpm,
                 cuePosition);
         return trySetBeatsWhileLocked(std::move(pBeats));
-    } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
-            m_pBeats->getBpm() != bpm) {
+    } else if (m_pBeats->getBpm() != bpm) {
         // Continue with the regular cases
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();

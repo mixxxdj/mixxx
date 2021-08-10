@@ -369,11 +369,13 @@ mixxx::Bpm EngineBuffer::getLocalBpm() const {
     return m_pBpmControl->getLocalBpm();
 }
 
-void EngineBuffer::setBeatLoop(double startPosition, bool enabled) {
+void EngineBuffer::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled) {
     return m_pLoopingControl->setBeatLoop(startPosition, enabled);
 }
 
-void EngineBuffer::setLoop(double startPosition, double endPositon, bool enabled) {
+void EngineBuffer::setLoop(mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPositon,
+        bool enabled) {
     return m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }
 
@@ -484,8 +486,9 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_iSamplesSinceLastIndicatorUpdate = 1000000;
 
     // Must hold the engineLock while using m_engineControls
+    const auto playPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->notifySeek(m_filepos_play);
+        pControl->notifySeek(playPosition);
     }
 
     verifyPlay(); // verify or update play button and indicator
@@ -622,11 +625,14 @@ void EngineBuffer::notifyTrackLoaded(
 
     // First inform engineControls directly
     // Note: we are still in a worker thread.
+    const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
+    const auto trackEndPosition =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_pTrackSamples->get());
+    const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->trackLoaded(pNewTrack);
-        pControl->setCurrentSample(m_filepos_play,
-                m_pTrackSamples->get(),
-                m_pTrackSampleRate->get());
+        pControl->setFrameInfo(currentPosition, trackEndPosition, sampleRate);
     }
 
     if (pNewTrack) {
@@ -1076,8 +1082,10 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
+    const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
+    const auto trackEndPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_trackSamplesOld);
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld, m_trackSampleRateOld);
+        pControl->setFrameInfo(currentPosition, trackEndPosition, m_trackSampleRateOld);
         pControl->process(rate, m_filepos_play, iBufferSize);
     }
 
@@ -1317,11 +1325,11 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     const mixxx::Bpm localBpm = m_pBpmControl->updateLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
     // FIXME: Double check if calling setLocalBpm with an invalid value is correct and intended.
-    double localBpmValue = mixxx::Bpm::kValueUndefined;
+    mixxx::Bpm newLocalBpm;
     if (localBpm.isValid()) {
-        localBpmValue = localBpm.value();
+        newLocalBpm = localBpm;
     }
-    m_pSyncControl->setLocalBpm(localBpmValue);
+    m_pSyncControl->setLocalBpm(newLocalBpm);
     m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (isLeader(mode)) {

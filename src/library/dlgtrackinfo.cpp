@@ -376,8 +376,7 @@ void DlgTrackInfo::updateSpinBpmFromBeats() {
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     m_pBeatsClone = track.getBeats();
     updateSpinBpmFromBeats();
-    m_trackHasBeatMap = m_pBeatsClone &&
-            !(m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM);
+    m_trackHasBeatMap = m_pBeatsClone && !m_pBeatsClone->hasConstantTempo();
     bpmConst->setChecked(!m_trackHasBeatMap);
     bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
     spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
@@ -622,9 +621,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
         return;
     }
 
-    if (m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) {
-        m_pBeatsClone = m_pBeatsClone->setBpm(bpm);
-    }
+    m_pBeatsClone = m_pBeatsClone->setBpm(bpm);
 
     updateSpinBpmFromBeats();
 }

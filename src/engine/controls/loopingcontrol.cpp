@@ -330,11 +330,15 @@ void LoopingControl::process(const double dRate,
                 if (loopSamples.seekMode == LoopSeekMode::Changed) {
                     // here the loop has changed and the play position
                     // should be moved with it
-                    double target = seekInsideAdjustedLoop(currentSample,
-                            m_oldLoopSamples.start, loopSamples.start, loopSamples.end);
-                    if (target != kNoTrigger) {
+                    const auto targetPosition = mixxx::audio::FramePos::
+                            fromEngineSamplePosMaybeInvalid(
+                                    seekInsideAdjustedLoop(currentSample,
+                                            m_oldLoopSamples.start,
+                                            loopSamples.start,
+                                            loopSamples.end));
+                    if (targetPosition.isValid()) {
                         // jump immediately
-                        seekAbs(target);
+                        seekAbs(targetPosition);
                     }
                 }
                 m_oldLoopSamples = loopSamples;
@@ -527,8 +531,8 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
     return dSyncedPlayPos;
 }
 
-void LoopingControl::setBeatLoop(double startPositionSamples, bool enabled) {
-    VERIFY_OR_DEBUG_ASSERT(startPositionSamples != Cue::kNoPosition) {
+void LoopingControl::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled) {
+    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid()) {
         return;
     }
 
@@ -541,25 +545,28 @@ void LoopingControl::setBeatLoop(double startPositionSamples, bool enabled) {
 
     // TODO(XXX): This is not realtime safe. See this Zulip discussion for details:
     // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/getting.20locks.20out.20of.20Beats
-    const auto startPosition = mixxx::audio::FramePos::fromEngineSamplePos(startPositionSamples);
     const auto endPosition = pBeats->findNBeatsFromPosition(startPosition, beatloopSize);
-
-    if (startPosition.isValid() && endPosition.isValid()) {
-        setLoop(startPositionSamples, endPosition.toEngineSamplePos(), enabled);
+    if (endPosition.isValid()) {
+        setLoop(startPosition, endPosition, enabled);
     }
 }
 
-void LoopingControl::setLoop(double startPosition, double endPosition, bool enabled) {
-    VERIFY_OR_DEBUG_ASSERT(startPosition != Cue::kNoPosition &&
-            endPosition != Cue::kNoPosition && startPosition < endPosition) {
+void LoopingControl::setLoop(mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition,
+        bool enabled) {
+    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid() && endPosition.isValid() &&
+            startPosition < endPosition) {
         return;
     }
 
+    const double startPositionSamples = startPosition.toEngineSamplePos();
+    const double endPositionSamples = endPosition.toEngineSamplePos();
+
     LoopSamples loopSamples = m_loopSamples.getValue();
-    if (loopSamples.start != startPosition || loopSamples.end != endPosition) {
+    if (loopSamples.start != startPositionSamples || loopSamples.end != endPositionSamples) {
         // Copy saved loop parameters to active loop
-        loopSamples.start = startPosition;
-        loopSamples.end = endPosition;
+        loopSamples.start = startPositionSamples;
+        loopSamples.end = endPositionSamples;
         loopSamples.seekMode = LoopSeekMode::None;
         clearActiveBeatLoop();
         m_loopSamples.setValue(loopSamples);
@@ -579,7 +586,8 @@ void LoopingControl::setLoop(double startPosition, double endPosition, bool enab
         slotLoopInGoto(1);
     }
 
-    m_pCOBeatLoopSize->setAndConfirm(findBeatloopSizeForLoop(startPosition, endPosition));
+    m_pCOBeatLoopSize->setAndConfirm(
+            findBeatloopSizeForLoop(startPositionSamples, endPositionSamples));
 }
 
 void LoopingControl::setLoopInToCurrentPosition() {
@@ -690,9 +698,15 @@ void LoopingControl::slotLoopIn(double pressed) {
 }
 
 void LoopingControl::slotLoopInGoto(double pressed) {
-    if (pressed > 0.0) {
-        seekAbs(static_cast<double>(
-            m_loopSamples.getValue().start));
+    if (pressed == 0.0) {
+        return;
+    }
+
+    const auto loopInPosition =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_loopSamples.getValue().start);
+    if (loopInPosition.isValid()) {
+        seekAbs(loopInPosition);
     }
 }
 
@@ -811,9 +825,15 @@ void LoopingControl::slotLoopOut(double pressed) {
 }
 
 void LoopingControl::slotLoopOutGoto(double pressed) {
-    if (pressed > 0.0) {
-        seekAbs(static_cast<double>(
-            m_loopSamples.getValue().end));
+    if (pressed == 0.0) {
+        return;
+    }
+
+    const auto loopOutPosition =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_loopSamples.getValue().end);
+    if (loopOutPosition.isValid()) {
+        seekAbs(loopOutPosition);
     }
 }
 
@@ -900,12 +920,19 @@ void LoopingControl::slotReloopToggle(double val) {
 }
 
 void LoopingControl::slotReloopAndStop(double pressed) {
-    if (pressed > 0) {
-        m_pPlayButton->set(0.0);
-        seekAbs(static_cast<double>(
-            m_loopSamples.getValue().start));
-        setLoopingEnabled(true);
+    if (pressed == 0.0) {
+        return;
     }
+
+    m_pPlayButton->set(0.0);
+
+    const auto loopInPosition =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_loopSamples.getValue().start);
+    if (loopInPosition.isValid()) {
+        seekAbs(loopInPosition);
+    }
+    setLoopingEnabled(true);
 }
 
 void LoopingControl::slotLoopStartPos(double pos) {
@@ -968,7 +995,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
 }
 
 // This is called from the engine thread
-void LoopingControl::notifySeek(double dNewPlaypos) {
+void LoopingControl::notifySeek(mixxx::audio::FramePos position) {
     LoopSamples loopSamples = m_loopSamples.getValue();
     double currentSample = m_currentSample.getValue();
     if (m_bLoopingEnabled) {
@@ -977,12 +1004,12 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
         // Jumping to the exact end of a loop is considered jumping out.
         if (currentSample >= loopSamples.start &&
                 currentSample <= loopSamples.end &&
-                dNewPlaypos < loopSamples.start) {
+                position.toEngineSamplePos() < loopSamples.start) {
             // jumping out of loop in backwards
             setLoopingEnabled(false);
         }
         if (currentSample <= loopSamples.end &&
-                dNewPlaypos >= loopSamples.end) {
+                position.toEngineSamplePos() >= loopSamples.end) {
             // jumping out or to the exact end of a loop or over a catching loop forward
             setLoopingEnabled(false);
         }
@@ -1392,7 +1419,7 @@ void LoopingControl::slotBeatJump(double beats) {
         const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(currentSample);
         const auto seekPosition = pBeats->findNBeatsFromPosition(currentPosition, beats);
         if (seekPosition.isValid()) {
-            seekExact(seekPosition.toEngineSamplePos());
+            seekExact(seekPosition);
         }
     }
 }

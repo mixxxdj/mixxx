@@ -46,10 +46,12 @@ class LoopingControl : public EngineControl {
     void hintReader(HintVector* pHintList) override;
     double getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos);
 
-    void notifySeek(double dNewPlaypos) override;
+    void notifySeek(mixxx::audio::FramePos position) override;
 
-    void setBeatLoop(double startPosition, bool enabled);
-    void setLoop(double startPosition, double endPosition, bool enabled);
+    void setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled);
+    void setLoop(mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition,
+            bool enabled);
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
 
@@ -184,6 +186,8 @@ class LoopingControl : public EngineControl {
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     mixxx::BeatsPointer m_pBeats;
+
+    friend class LoopingControlTest;
 };
 
 // Class for handling loop moves of a set size. This allows easy access from

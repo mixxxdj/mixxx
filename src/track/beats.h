@@ -30,14 +30,6 @@ class Beats {
   public:
     virtual ~Beats() = default;
 
-    enum Capabilities {
-        BEATSCAP_NONE = 0,
-        /// Set new bpm, beat grid only
-        BEATSCAP_SETBPM = 1
-    };
-    /// Allows us to do ORing
-    typedef int CapabilitiesFlags;
-
     enum class BpmScale {
         Double,
         Halve,
@@ -47,8 +39,12 @@ class Beats {
         ThreeHalves,
     };
 
-    /// Retrieve the capabilities supported by the beats implementation.
-    virtual Beats::CapabilitiesFlags getCapabilities() const = 0;
+    /// Returns false if the beats implementation supports non-const beats.
+    ///
+    /// TODO: This is only needed for the "Asumme Constant Tempo" checkbox in
+    /// `DlgTrackInfo`. This should probably be removed or reimplemented to
+    /// check if all neighboring beats in this object have the same distance.
+    virtual bool hasConstantTempo() const = 0;
 
     /// Serialize beats to QByteArray.
     virtual QByteArray toByteArray() const = 0;
@@ -151,8 +147,7 @@ class Beats {
     /// Scale the position of every beat in the song by `scale`.
     virtual BeatsPointer scale(BpmScale scale) const = 0;
 
-    /// Adjust the beats so the global average BPM matches `bpm`. The `Beats`
-    /// class must have the capability `BEATSCAP_SET`.
+    /// Adjust the beats so the global average BPM matches `bpm`.
     virtual BeatsPointer setBpm(mixxx::Bpm bpm) = 0;
 };
 
