@@ -176,7 +176,7 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId, bool select) {
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
-    if (playlistId == kInvalidPlaylistId) {
+    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return;
     }
     m_pPlaylistTableModel->setTableModel(playlistId);
@@ -186,11 +186,11 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
-    if (playlistId == kInvalidPlaylistId) {
+    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (!index.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }
     m_lastRightClickedIndex = index;
