@@ -85,12 +85,13 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
 
     // Do nothing if no track is loaded.
     TrackPointer pTrack = m_pTrack;
-    if (!pTrack) {
+    FrameInfo info = frameInfo();
+    if (!pTrack || !info.trackEndPosition.isValid()) {
         return;
     }
 
     const auto newPlayPos = mixxx::audio::kStartFramePos +
-            (frameInfo().trackEndPosition - mixxx::audio::kStartFramePos) * fractionalPos;
+            (info.trackEndPosition - mixxx::audio::kStartFramePos) * fractionalPos;
 
     if (m_pControlVinylEnabled->get() > 0.0 && m_pControlVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
         int cuemode = (int)m_pControlVinylCueing->get();
