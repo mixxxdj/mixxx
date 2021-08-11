@@ -139,7 +139,10 @@ void CrateFeature::connectLibrary(Library* pLibrary) {
     connect(pLibrary,
             &Library::trackSelected,
             this,
-            &CrateFeature::slotTrackSelected);
+            [this](const TrackPointer& pTrack) {
+                const auto trackId = pTrack ? pTrack->getId() : TrackId{};
+                slotTrackSelected(trackId);
+            });
     connect(pLibrary,
             &Library::switchToView,
             this,
@@ -511,7 +514,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     m_pSidebarModel->insertTreeItemRows(modelRows, 0);
 
     // Update rendering of crates depending on the currently selected track
-    slotTrackSelected(m_pSelectedTrack);
+    slotTrackSelected(m_selectedTrackId);
 
     if (selectedRow >= 0) {
         return m_pSidebarModel->index(selectedRow, 0);
@@ -536,10 +539,10 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
                 m_pSidebarModel->getItem(index), crateSummary);
         m_pSidebarModel->triggerRepaint(index);
     }
-    if (m_pSelectedTrack) {
+    if (m_selectedTrackId.isValid()) {
         // Crates containing the currently selected track might
         // have been modified.
-        slotTrackSelected(m_pSelectedTrack);
+        slotTrackSelected(m_selectedTrackId);
     }
 }
 
@@ -797,20 +800,18 @@ void CrateFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
-    m_pSelectedTrack = std::move(pTrack);
+void CrateFeature::slotTrackSelected(TrackId trackId) {
+    m_selectedTrackId = trackId;
 
     TreeItem* pRootItem = m_pSidebarModel->getRootItem();
     VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
         return;
     }
 
-    TrackId selectedTrackId;
     std::vector<CrateId> sortedTrackCrates;
-    if (m_pSelectedTrack) {
-        selectedTrackId = m_pSelectedTrack->getId();
+    if (m_selectedTrackId.isValid()) {
         CrateTrackSelectResult trackCratesIter(
-                m_pTrackCollection->crates().selectTrackCratesSorted(selectedTrackId));
+                m_pTrackCollection->crates().selectTrackCratesSorted(m_selectedTrackId));
         while (trackCratesIter.next()) {
             sortedTrackCrates.push_back(trackCratesIter.crateId());
         }
@@ -821,7 +822,7 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     for (TreeItem* pTreeItem : pRootItem->children()) {
         DEBUG_ASSERT(pTreeItem != nullptr);
         bool crateContainsSelectedTrack =
-                selectedTrackId.isValid() &&
+                m_selectedTrackId.isValid() &&
                 std::binary_search(
                         sortedTrackCrates.begin(),
                         sortedTrackCrates.end(),
@@ -833,5 +834,5 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
 }
 
 void CrateFeature::slotResetSelectedTrack() {
-    slotTrackSelected(TrackPointer());
+    slotTrackSelected(TrackId{});
 }
