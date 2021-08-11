@@ -64,7 +64,6 @@ MixtrackProFX.PadModeControls = {
 
 // state variables, don't touch
 MixtrackProFX.shifted = false;
-MixtrackProFX.scratchModeEnabled = [true, true];
 
 MixtrackProFX.init = function() {
     // initialize component containers
@@ -92,7 +91,6 @@ MixtrackProFX.init = function() {
 
     // initialize leds
     for (i = 0; i < 2; i++) {
-        midi.sendShortMsg(0x90 + i, 0x07, 0x7F); // scratch
         midi.sendShortMsg(0x94 + i, 0x00, 0x7F); // hotcue
         midi.sendShortMsg(0x94 + i, 0x0D, 0x01); // auto loop
         midi.sendShortMsg(0x94 + i, 0x07, 0x01); // "fader cuts"
@@ -178,11 +176,15 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
             this.group = "[Channel" + deckNumber + "]";
             this.inKey = "pitch_up";
             this.outKey = "pitch_up";
+            this.disconnect();
+            this.connect();
         },
         unshift: function() {
             this.group = "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]";
             this.inKey = "prev_effect";
             this.outKey = "prev_effect";
+            this.disconnect();
+            this.connect();
         }
     });
 
@@ -193,11 +195,15 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
             this.group = "[Channel" + deckNumber + "]";
             this.inKey = "pitch_down";
             this.outKey = "pitch_down";
+            this.disconnect();
+            this.connect();
         },
         unshift: function() {
             this.group = "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]";
             this.inKey = "next_effect";
             this.outKey = "next_effect";
+            this.disconnect();
+            this.connect();
         }
     });
 };
@@ -208,6 +214,8 @@ MixtrackProFX.Deck = function(number) {
     components.Deck.call(this, number);
 
     var channel = number - 1;
+    var deck = this;
+    this.scratchModeEnabled = true;
 
     this.playButton = new components.PlayButton({
         midi: [0x90 + channel, 0x00],
@@ -297,35 +305,43 @@ MixtrackProFX.Deck = function(number) {
     this.loop = new components.Button({
         outKey: "loop_enabled",
         midi: [0x94 + channel, 0x40],
-        input: function(channel, control, value, status, group) {
-            if (value !== 0x7F) {
-                return;
-            }
-            if (engine.getValue(group, "loop_enabled") === 0) {
-                script.triggerControl(group, "beatloop_activate");
-            } else {
-                script.triggerControl(group, "beatlooproll_activate");
-            }
-        }
-    });
-
-    this.reloop = new components.Button({
-        key: "reloop_toggle", // or loop_in_goto to not enable loop
-        midi: [0x94 + channel, 0x41]
+        shift: function() {
+            this.inKey = "loop_in_goto";
+            this.input = components.Button.prototype.input;
+        },
+        unshift: function() {
+            this.input = function(channel, control, value, status, group) {
+                if (value !== 0x7F) {
+                    return;
+                }
+                if (engine.getValue(group, "loop_enabled") === 0) {
+                    script.triggerControl(group, "beatloop_activate");
+                } else {
+                    script.triggerControl(group, "beatlooproll_activate");
+                }
+            };
+        },
+        shiftControl: true,
+        sendShifted: true,
+        shiftOffset: 0x01
     });
 
     this.loopHalf = new components.Button({
         midi: [0x94 + channel, 0x34],
         shiftControl: true,
         sendShifted: true,
-        shiftOffset: 2,
+        shiftOffset: 0x02,
         shift: function() {
             this.inKey = "loop_in";
             this.outKey = "loop_in";
+            this.disconnect();
+            this.connect();
         },
         unshift: function() {
             this.inKey = "loop_halve";
             this.outKey = "loop_halve";
+            this.disconnect();
+            this.connect();
         }
     });
 
@@ -333,20 +349,47 @@ MixtrackProFX.Deck = function(number) {
         midi: [0x94 + channel, 0x35],
         shiftControl: true,
         sendShifted: true,
-        shiftOffset: 2,
+        shiftOffset: 0x02,
         shift: function() {
             this.inKey = "loop_out";
             this.outKey = "loop_out";
+            this.disconnect();
+            this.connect();
         },
         unshift: function() {
             this.inKey = "loop_double";
             this.outKey = "loop_double";
+            this.disconnect();
+            this.connect();
         }
     });
 
-    this.bleep = new components.Button({
-        key: "reverseroll",
-        midi: [0x90 + channel, 0x08]
+    this.scratchToggle = new components.Button({
+        midi: [0x90 + channel, 0x07],
+        shift: function() {
+            this.inKey = "reverseroll";
+            this.outKey = "reverseroll";
+            this.connect();
+            this.input = components.Button.prototype.input;
+        },
+        unshift: function() {
+            this.disconnect();
+            this.input = function(channel, control, value) {
+                if (value !== 0x7F) {
+                    return;
+                }
+                deck.scratchModeEnabled = !deck.scratchModeEnabled;
+                midi.sendShortMsg(this.midi[0], this.midi[1], deck.scratchModeEnabled ? 0x7F : 0x01);
+            };
+
+            midi.sendShortMsg(this.midi[0], this.midi[1], deck.scratchModeEnabled ? 0x7F : 0x01);
+
+            var bleepEnabled = engine.getParameter(this.group, "reverseroll") === 1;
+            midi.sendShortMsg(this.midi[0], this.midi[1] + this.shiftOffset, bleepEnabled ? 0x7F : 0x01);
+        },
+        shiftControl: true,
+        sendShifted: true,
+        shiftOffset: 0x01
     });
 
     this.pitchBendUp = new components.Button({
@@ -363,17 +406,19 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.pitchBendDown = new components.Button({
-        inKey: "rate_temp_down"
-    });
-
-    this.pitchRange = new components.Button({
         currentRangeIdx: 0,
-        input: function(channel, control, value, status, group) {
-            if (value !== 0x7F) {
-                return;
-            }
-            this.currentRangeIdx = (this.currentRangeIdx + 1) % MixtrackProFX.pitchRanges.length;
-            engine.setValue(group, "rateRange", MixtrackProFX.pitchRanges[this.currentRangeIdx]);
+        shift: function() {
+            this.input = function(channel, control, value) {
+                if (value !== 0x7F) {
+                    return;
+                }
+                this.currentRangeIdx = (this.currentRangeIdx + 1) % MixtrackProFX.pitchRanges.length;
+                engine.setValue(this.group, "rateRange", MixtrackProFX.pitchRanges[this.currentRangeIdx]);
+            };
+        },
+        unshift: function() {
+            this.inKey = "rate_temp_down";
+            this.input = components.Button.prototype.input;
         }
     });
 
@@ -623,10 +668,14 @@ MixtrackProFX.ModeBeatjump = function(deckNumber) {
             shift: function() {
                 this.inKey = "beatjump_" + this.size + "backward";
                 this.outKey = "beatjump_" + this.size + "backward";
+                this.disconnect();
+                this.connect();
             },
             unshift: function() {
                 this.inKey = "beatjump_" + this.size + "forward";
                 this.outKey = "beatjump_" + this.size + "forward";
+                this.disconnect();
+                this.connect();
             },
             outConnect: false
         });
@@ -695,18 +744,10 @@ MixtrackProFX.vuCallback = function(value, group) {
     midi.sendShortMsg(0xB0 + deckOffset, 0x1F, level);
 };
 
-MixtrackProFX.scratchToggle = function(channel, control, value) {
-    if (value !== 0x7F) {
-        return;
-    }
-    MixtrackProFX.scratchModeEnabled[channel] = !MixtrackProFX.scratchModeEnabled[channel];
-    midi.sendShortMsg(0x90 | channel, 0x07, MixtrackProFX.scratchModeEnabled[channel] ? 0x7F : 0x01);
-};
-
 MixtrackProFX.wheelTouch = function(channel, control, value) {
     var deckNumber = channel + 1;
 
-    if (!MixtrackProFX.shifted && MixtrackProFX.scratchModeEnabled[channel] && value === 0x7F) {
+    if (!MixtrackProFX.shifted && MixtrackProFX.deck[channel].scratchModeEnabled && value === 0x7F) {
         // touch start
 
         engine.scratchEnable(deckNumber, MixtrackProFX.jogScratchSensitivity, 33+1/3, MixtrackProFX.jogScratchAlpha, MixtrackProFX.jogScratchBeta, true);
@@ -731,7 +772,7 @@ MixtrackProFX.wheelTurn = function(channel, control, value, status, group) {
         var oldPos = engine.getValue(group, "playposition");
 
         engine.setValue(group, "playposition", oldPos + newValue / MixtrackProFX.jogSeekSensitivity);
-    } else if (MixtrackProFX.scratchModeEnabled[channel] && engine.isScratching(deckNumber)) {
+    } else if (MixtrackProFX.deck[channel].scratchModeEnabled && engine.isScratching(deckNumber)) {
         // scratch
         engine.scratchTick(deckNumber, newValue);
     } else {

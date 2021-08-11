@@ -464,7 +464,7 @@
       <!-- Scratch toggle buttons (press) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.scratchToggle</key>
+        <key>MixtrackProFX.deck[0].scratchToggle.input</key>
         <status>0x90</status>
         <midino>0x07</midino>
         <options>
@@ -473,7 +473,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.scratchToggle</key>
+        <key>MixtrackProFX.deck[1].scratchToggle.input</key>
         <status>0x91</status>
         <midino>0x07</midino>
         <options>
@@ -483,7 +483,7 @@
       <!-- Scratch toggle buttons (release) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.scratchToggle</key>
+        <key>MixtrackProFX.deck[0].scratchToggle.input</key>
         <status>0x80</status>
         <midino>0x07</midino>
         <options>
@@ -492,7 +492,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.scratchToggle</key>
+        <key>MixtrackProFX.deck[1].scratchToggle.input</key>
         <status>0x81</status>
         <midino>0x07</midino>
         <options>
@@ -502,7 +502,7 @@
       <!-- Bleep buttons (shift) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].bleep.input</key>
+        <key>MixtrackProFX.deck[0].scratchToggle.input</key>
         <status>0x90</status>
         <midino>0x08</midino>
         <options>
@@ -511,7 +511,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].bleep.input</key>
+        <key>MixtrackProFX.deck[1].scratchToggle.input</key>
         <status>0x91</status>
         <midino>0x08</midino>
         <options>
@@ -521,7 +521,7 @@
       <!-- Bleep buttons (shift release) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].bleep.input</key>
+        <key>MixtrackProFX.deck[0].scratchToggle.input</key>
         <status>0x80</status>
         <midino>0x08</midino>
         <options>
@@ -530,7 +530,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].bleep.input</key>
+        <key>MixtrackProFX.deck[1].scratchToggle.input</key>
         <status>0x81</status>
         <midino>0x08</midino>
         <options>
@@ -1390,7 +1390,7 @@
       <!-- Loop buttons (shift) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].reloop.input</key>
+        <key>MixtrackProFX.deck[0].loop.input</key>
         <status>0x94</status>
         <midino>0x41</midino>
         <options>
@@ -1399,7 +1399,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].reloop.input</key>
+        <key>MixtrackProFX.deck[1].loop.input</key>
         <status>0x95</status>
         <midino>0x41</midino>
         <options>
@@ -1409,7 +1409,7 @@
       <!-- Loop buttons (shift release) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].reloop.input</key>
+        <key>MixtrackProFX.deck[0].loop.input</key>
         <status>0x84</status>
         <midino>0x41</midino>
         <options>
@@ -1418,7 +1418,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].reloop.input</key>
+        <key>MixtrackProFX.deck[1].loop.input</key>
         <status>0x85</status>
         <midino>0x41</midino>
         <options>
@@ -2027,7 +2027,7 @@
       <!-- Pitch bend down buttons (shift) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].pitchRange.input</key>
+        <key>MixtrackProFX.deck[0].pitchBendDown.input</key>
         <status>0x90</status>
         <midino>0x2C</midino>
         <options>
@@ -2036,7 +2036,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].pitchRange.input</key>
+        <key>MixtrackProFX.deck[1].pitchBendDown.input</key>
         <status>0x91</status>
         <midino>0x2C</midino>
         <options>
@@ -2046,7 +2046,7 @@
       <!-- Pitch bend down buttons (shift release) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.deck[0].pitchRange.input</key>
+        <key>MixtrackProFX.deck[0].pitchBendDown.input</key>
         <status>0x80</status>
         <midino>0x2C</midino>
         <options>
@@ -2055,7 +2055,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.deck[1].pitchRange.input</key>
+        <key>MixtrackProFX.deck[1].pitchBendDown.input</key>
         <status>0x81</status>
         <midino>0x2C</midino>
         <options>
