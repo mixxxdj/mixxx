@@ -38,16 +38,11 @@ endif()
 find_package(Regex)
 list(APPEND JACK_LINK_LIBRARIES Regex::regex)
 
-if(NOT CMAKE_USE_PTHREADS_INIT)
-    # This CMake find module is provided by the pthreads port in vcpkg.
-    find_package(pthreads)
+if(WIN32)
+    # vcpkg provides CMake targets for pthreads4w
+    # This won't work if pthreads4w was built without vcpkg.
+    find_package(pthreads REQUIRED)
     list(APPEND JACK_LINK_LIBRARIES PThreads4W::PThreads4W)
-endif()
-
-if(CMAKE_USE_PTHREADS_INIT OR TARGET PThreads4W::PThreads4W)
-  set(PTHREADS_AVAILABLE TRUE)
-else()
-  set(PTHREADS_AVAILABLE FALSE)
 endif()
 
 include(FindPackageHandleStandardArgs)
@@ -56,12 +51,11 @@ find_package_handle_standard_args(
   DEFAULT_MSG
   JACK_LINK_LIBRARIES
   JACK_INCLUDEDIR
-  PTHREADS_AVAILABLE
   Regex_FOUND
 )
 
 if(JACK_FOUND AND NOT TARGET JACK::jack)
   add_library(JACK::jack INTERFACE IMPORTED)
-  target_link_libraries(JACK::jack INTERFACE "${JACK_LINK_LIBRARIES}" Regex::regex)
+  target_link_libraries(JACK::jack INTERFACE "${JACK_LINK_LIBRARIES}")
   target_include_directories(JACK::jack INTERFACE "${JACK_INCLUDEDIR}")
 endif()
