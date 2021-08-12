@@ -78,5 +78,14 @@ if(PortAudio_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_PortAudio_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${PortAudio_INCLUDE_DIR}"
     )
+    is_static_library(PortAudio_IS_STATIC PortAudio::PortAudio)
+    if(PortAudio_IS_STATIC)
+      find_package(JACK)
+      if(JACK_FOUND)
+        set_property(TARGET PortAudio::PortAudio APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          JACK::jack
+        )
+      endif()
+    endif()
   endif()
 endif()
