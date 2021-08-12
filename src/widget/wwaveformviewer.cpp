@@ -175,12 +175,12 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
     setCursor(Qt::ArrowCursor);
 }
 
-void WWaveformViewer::wheelEvent(QWheelEvent *event) {
+void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     if (m_waveformWidget) {
         if (event->angleDelta().y() > 0) {
-            onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
-        } else {
             onZoomChange(m_waveformWidget->getZoomFactor() / 1.05);
+        } else {
+            onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
         }
     }
 }
