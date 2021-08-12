@@ -13,7 +13,7 @@
 #include "library/trackset/crate/cratetablemodel.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
-#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/parented_ptr.h"
 
 // forward declaration(s)
@@ -69,7 +69,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotCrateTableChanged(CrateId crateId);
     void slotCrateContentChanged(CrateId crateId);
     void htmlLinkClicked(const QUrl& link);
-    void slotTrackSelected(TrackPointer pTrack);
+    void slotTrackSelected(TrackId trackId);
     void slotResetSelectedTrack();
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
 
@@ -103,7 +103,7 @@ class CrateFeature : public BaseTrackSetFeature {
     CrateTableModel m_crateTableModel;
 
     QModelIndex m_lastRightClickedIndex;
-    TrackPointer m_pSelectedTrack;
+    TrackId m_selectedTrackId;
 
     parented_ptr<QAction> m_pCreateCrateAction;
     parented_ptr<QAction> m_pDeleteCrateAction;
