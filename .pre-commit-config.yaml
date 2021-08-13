@@ -70,9 +70,7 @@ repos:
   rev: v2.1.0
   hooks:
   - id: codespell
-    # ignore-regex is substituted by ' '
-    entry: tools/codespell.py --ignore-file .codespellignore --ignore-regex "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))" --files
-    exclude: ^(\.codespellignore|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
+    exclude: ^(src/dialog/dlgabout\.cpp|packaging/wix/LICENSE.rtf|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
   rev: v7.32.0
   hooks:
