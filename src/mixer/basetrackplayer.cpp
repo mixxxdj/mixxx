@@ -275,7 +275,7 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
                     loop.startPosition <= loop.endPosition) {
                 // TODO: For all loop cues, both end and start positions should
                 // be valid and the end position should be greater than the
-                // start positon. We should use a VERIFY_OR_DEBUG_ASSERT to
+                // start position. We should use a VERIFY_OR_DEBUG_ASSERT to
                 // check this. To make this possible, we need to ensure that
                 // all invalid cues are discarded when saving cues to the
                 // database first.

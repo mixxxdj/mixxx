@@ -67,7 +67,7 @@ bool parseLogLevel(
 
 bool CmdlineArgs::parse(int argc, char** argv) {
     // Some command line parameters needs to be evaluated before
-    // The QCoreApplication is initalized.
+    // The QCoreApplication is initialized.
     DEBUG_ASSERT(!QCoreApplication::instance());
     if (argc == 1) {
         // Mixxx was run with the binary name only, nothing to do
@@ -82,7 +82,7 @@ bool CmdlineArgs::parse(int argc, char** argv) {
 }
 
 void CmdlineArgs::parseForUserFeedback() {
-    // For user feedback we need an initalized QCoreApplication because
+    // For user feedback we need an initialized QCoreApplication because
     // it add some QT specific command line parameters
     DEBUG_ASSERT(QCoreApplication::instance());
     // We need only execute the second parse for user feedback when the first run
