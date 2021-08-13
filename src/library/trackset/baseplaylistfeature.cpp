@@ -185,11 +185,11 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 }
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
-    // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
     VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
+    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }

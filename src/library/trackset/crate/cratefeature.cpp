@@ -395,6 +395,8 @@ void CrateFeature::slotDeleteCrate() {
             qWarning() << "Refusing to delete locked crate" << crate;
             return;
         }
+        // TODO Store sibling index to restore selection after crate was deleted
+        // to avoid scroll position reset (to Crate root item)
         if (m_pTrackCollection->deleteCrate(crate.getId())) {
             qDebug() << "Deleted crate" << crate;
             return;
