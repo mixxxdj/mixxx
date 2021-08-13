@@ -74,7 +74,7 @@ repos:
     entry: tools/codespell.py --ignore-words .codespellignore --ignore-regex "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))" --files
     # Replace 'entry' with 'args' to run the checks on all files instead of only changed lines.
     #args: [--ignore-words, .codespellignore, --ignore-regex, "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))"]
-    exclude: ^(\.codespellignore|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
+    exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
   rev: v7.32.0
   hooks:
