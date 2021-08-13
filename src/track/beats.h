@@ -93,7 +93,7 @@ class Beats {
     }
 
     /// Starting from frame position `position`, return the frame position of
-    /// the closest beat in the track, or an invalid positon if none exists.
+    /// the closest beat in the track, or an invalid position if none exists.
     virtual audio::FramePos findClosestBeat(audio::FramePos position) const = 0;
 
     /// Find the Nth beat from frame position `position`. Works with both

@@ -228,7 +228,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
         if (xml.isStartElement() && xml.name() == "playlist") {
             QXmlStreamAttributes attr = xml.attributes();
 
-            //Only parse non build-in playlists
+            //Only parse non built-in playlists
             if (attr.value("type").toString() == "static") {
                 QString playlist_name = attr.value("name").toString();
 
