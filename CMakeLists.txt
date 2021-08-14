@@ -2376,32 +2376,8 @@ if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
 endif()
 
 # SoundTouch
-find_package(SoundTouch)
-default_option(SoundTouch_STATIC "Link libSoundTouch statically" "NOT SoundTouch_FOUND OR SoundTouch_VERSION VERSION_LESS 2.1.2")
-if(SoundTouch_STATIC)
-  message(STATUS "Preparing internal libSoundTouch")
-  add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
-    lib/soundtouch/AAFilter.cpp
-    lib/soundtouch/BPMDetect.cpp
-    lib/soundtouch/FIFOSampleBuffer.cpp
-    lib/soundtouch/FIRFilter.cpp
-    lib/soundtouch/InterpolateCubic.cpp
-    lib/soundtouch/InterpolateLinear.cpp
-    lib/soundtouch/InterpolateShannon.cpp
-    lib/soundtouch/PeakFinder.cpp
-    lib/soundtouch/RateTransposer.cpp
-    lib/soundtouch/SoundTouch.cpp
-    lib/soundtouch/TDStretch.cpp
-    lib/soundtouch/cpu_detect_x86.cpp
-    lib/soundtouch/mmx_optimized.cpp
-    lib/soundtouch/sse_optimized.cpp
-  )
-  target_include_directories(SoundTouch SYSTEM PUBLIC lib)
-  target_link_libraries(mixxx-lib PRIVATE SoundTouch)
-else()
-  message(STATUS "Linking libSoundTouch dynamically")
-  target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
-endif()
+find_package(SoundTouch 2.1.2 REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
