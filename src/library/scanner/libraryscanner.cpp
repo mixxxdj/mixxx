@@ -27,7 +27,7 @@ mixxx::Logger kLogger("LibraryScanner");
 QAtomicInt s_instanceCounter(0);
 
 // Returns the number of affected rows or -1 on error
-int execCleanupQuery(FwdSqlQuery& query) {
+int execRowCountQuery(FwdSqlQuery& query) {
     VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
         return -1;
     }
@@ -52,17 +52,39 @@ void cleanUpDatabase(const QSqlDatabase& database) {
     query.bindValue(
             QStringLiteral(":unequalHash"),
             static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
-    auto numRows = execCleanupQuery(query);
-    if (numRows < 0) {
+    const auto numRows = execRowCountQuery(query);
+    VERIFY_OR_DEBUG_ASSERT(numRows >= 0) {
         kLogger.warning()
                 << "Failed to delete orphaned directory hashes";
-    } else if (numRows > 0) {
+    }
+    else if (numRows > 0) {
         kLogger.info()
                 << "Deleted" << numRows << "orphaned directory hashes";
     }
     kLogger.info()
             << "Finished database cleanup:"
             << timer.elapsed().debugMillisWithUnit();
+}
+
+/// Update statistics for the query planner
+/// See also: https://www.sqlite.org/lang_analyze.html
+void analyzeAndOptimizeDatabase(const QSqlDatabase& database) {
+    kLogger.info()
+            << "Analyzing and optimizing database...";
+    PerformanceTimer timer;
+    timer.start();
+    const auto sqlStmt = QStringLiteral("ANALYZE");
+    FwdSqlQuery query(database, sqlStmt);
+    const auto numRows = execRowCountQuery(query);
+    VERIFY_OR_DEBUG_ASSERT(numRows >= 0) {
+        kLogger.warning()
+                << "Failed to analyze and optimize database";
+    }
+    else {
+        kLogger.info()
+                << "Finished database analysis and optimization:"
+                << timer.elapsed().debugMillisWithUnit();
+    }
 }
 
 } // anonymous namespace
@@ -382,6 +404,11 @@ void LibraryScanner::slotFinishUnhashedScan() {
 
     if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
         cleanUpScan();
+    }
+
+    if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
+        const auto dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+        analyzeAndOptimizeDatabase(dbConnection);
     }
 
     if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
