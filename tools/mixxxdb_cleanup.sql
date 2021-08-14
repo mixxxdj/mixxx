@@ -79,6 +79,10 @@ DELETE FROM track_analysis WHERE track_id NOT IN (SELECT id FROM track_locations
 -- Post-cleanup maintenance                                          --
 -----------------------------------------------------------------------
 
-VACUUM;
+-- Update statistics for the query planner
+-- https://www.sqlite.org/lang_analyze.html
+ANALYZE;
 
-PRAGMA optimize;
+-- Rebuild the entire database file
+-- https://www.sqlite.org/lang_vacuum.html
+VACUUM;
