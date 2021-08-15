@@ -372,87 +372,79 @@ lots of controller mappings, rewrote the audio file decoders twice, and of
 course fixed a bunch of bugs. Download it!
 
 Here is a quick summary of what is new in Mixxx 2.1.0:
-  * Graphical interface scales for high resolution screens
-  * Overhauled Deere and LateNight skins
-  * New Tango skin
-  * Effects are synchronized to the tempo
-  * Effects are processed post-fader and post-crossfader and can be previewed
-in headphones
-  * One metaknob per effect with customizable parameter control for intuitive
-use of effect chains
-  * Nine new effects: Autopan, Biquad Equalizer, Biquad Full Kill Equalizer,
-Loudness Contour, Metronome, Parametric Equalizer, Phaser, Stereo Balance,
-Tremolo
-  * Loaded effects and their parameters are saved and restored when Mixxx
-restarts
-  * More transparent sounding equalizers (Biquad Equalizer and Biquad Full Kill
-Equalizer)
-  * Improved scratching sounds with jog wheels, vinyl control, and dragging
-waveforms with the mouse
-  * Simplified looping and beatjump controls
-  * Configurable rows of 8 samplers with up to 8 rows available for a total of
-64 samplers
-  * Files loaded to samplers are reloaded when Mixxx restarts
-  * Improved volume normalization algorithm (EBU-R 128)
-  * Filter library table by crates
-  * Sort musical keys in library table by circle of fifths
-  * Write metadata tags back to audio files
-  * New JavaScript library for controller mapping
-  * Configure multiple Internet broadcasting stations and use multiple stations
-at the same time
-  * Broadcast and record microphones with direct monitoring and latency
-compensation
-  * Broadcast and record from an external mixer
-  * Booth output with independent gain knob for using sound cards with 6
-output channels without an external mixer
-  * Prevent screensaver from starting while Mixxx is running
-  * CUP (Cue And Play) cue button mode
-  * Time remaining and time elapsed now take into account the tempo fader
-  * Clicking cover art now shows it full size in a separate window
-  * and of course, lots and lots of bug fixes.
+
+* Graphical interface scales for high resolution screens
+* Overhauled Deere and LateNight skins
+* New Tango skin
+* Effects are synchronized to the tempo
+* Effects are processed post-fader and post-crossfader and can be previewed in headphones
+* One metaknob per effect with customizable parameter control for intuitive use of effect chains
+* Nine new effects: Autopan, Biquad Equalizer, Biquad Full Kill Equalizer, Loudness Contour, Metronome, Parametric Equalizer, Phaser, Stereo Balance, Tremolo
+* Loaded effects and their parameters are saved and restored when Mixxx restarts
+* More transparent sounding equalizers (Biquad Equalizer and Biquad Full Kill Equalizer)
+* Improved scratching sounds with jog wheels, vinyl control, and dragging waveforms with the mouse
+* Simplified looping and beatjump controls
+* Configurable rows of 8 samplers with up to 8 rows available for a total of 64 samplers
+* Files loaded to samplers are reloaded when Mixxx restarts
+* Improved volume normalization algorithm (EBU-R 128)
+* Filter library table by crates
+* Sort musical keys in library table by circle of fifths
+* Write metadata tags back to audio files
+* New JavaScript library for controller mapping
+* Configure multiple Internet broadcasting stations and use multiple stations at the same time
+* Broadcast and record microphones with direct monitoring and latency compensation
+* Broadcast and record from an external mixer
+* Booth output with independent gain knob for using sound cards with 6 output channels without an external mixer
+* Prevent screensaver from starting while Mixxx is running
+* CUP (Cue And Play) cue button mode
+* Time remaining and time elapsed now take into account the tempo fader
+* Clicking cover art now shows it full size in a separate window
+* and of course, lots and lots of bug fixes.
 
 Here are controllers with mappings that have been added or updated since the 2.0
 release. Mappings marked with an asterisk (*) have been updated for the new
 effects interface:
-  * American Audio VMS2
-  * American Audio VMS4
-  * Allen & Heath Xone K2/K1*
-  * Behringer CMD Micro
-  * Behringer CMD MM1*
-  * Behringer CMD Studio 4a
-  * Denon MC4000*
-  * Denon MC6000 Mk2*
-  * FaderFox DJ2
-  * Hercules DJ Console 4-Mx*
-  * Hercules DJ Control MP3 LE / Glow
-  * Hercules DJ Control Compact
-  * Hercules P32*
-  * Ion Discover DJ
-  * Korg Nanokontrol 2
-  * Korg KAOSS DJ
-  * M-Audio Xponent
-  * Native Instruments Traktor Kontrol S4 Mk2*
-  * Novation Launchpad Mk1 & Mk2
-  * Novation Twitch
-  * Numark Mixtrack Pro 3 & Numark Mixtrack 3*
-  * Pioneer DDJ-SB2*
-  * Pioneer DDJ-SX*
-  * Reloop Beatmix 2
-  * Reloop Beatmix 4
-  * Reloop Digital Jockey 3 ME
-  * Reloop Terminal Mix 2
-  * Reloop Terminal Mix 4
-  * Vestax VCI-100 Mk2
-  * Vestax Typhoon
+
+* American Audio VMS2
+* American Audio VMS4
+* Allen & Heath Xone K2/K1*
+* Behringer CMD Micro
+* Behringer CMD MM1*
+* Behringer CMD Studio 4a
+* Denon MC4000*
+* Denon MC6000 Mk2*
+* FaderFox DJ2
+* Hercules DJ Console 4-Mx*
+* Hercules DJ Control MP3 LE / Glow
+* Hercules DJ Control Compact
+* Hercules P32*
+* Ion Discover DJ
+* Korg Nanokontrol 2
+* Korg KAOSS DJ
+* M-Audio Xponent
+* Native Instruments Traktor Kontrol S4 Mk2*
+* Novation Launchpad Mk1 & Mk2
+* Novation Twitch
+* Numark Mixtrack Pro 3 & Numark Mixtrack 3*
+* Pioneer DDJ-SB2*
+* Pioneer DDJ-SX*
+* Reloop Beatmix 2
+* Reloop Beatmix 4
+* Reloop Digital Jockey 3 ME
+* Reloop Terminal Mix 2
+* Reloop Terminal Mix 4
+* Vestax VCI-100 Mk2
+* Vestax Typhoon
 
 For users upgrading from older versions of Mixxx, we have a few important
 announcements. First, if you are using Windows, you will have to uninstall any
 old versions of Mixxx before you can install 2.1. How to uninstall Mixxx
 varies on different versions of Windows:
-  * Windows Vista, 7, and 8: [Start > Control Panel > Programs > Uninstall a
-    Program](https://support.microsoft.com/en-us/help/2601726)
-  * Windows 10: [Start > Control Panel > Programs > Programs And Features >
-    look for Mixxx > Uninstall](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
+
+* Windows Vista, 7, and 8: [Start > Control Panel > Programs > Uninstall a
+  Program](https://support.microsoft.com/en-us/help/2601726)
+* Windows 10: [Start > Control Panel > Programs > Programs And Features >
+  look for Mixxx > Uninstall](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
 
 If you are upgrading from an older version of Mixxx and have MP3 files in
 your library, we have another important announcement. The good news is that we
