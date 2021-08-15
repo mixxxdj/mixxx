@@ -74,4 +74,3 @@ HIDKeyboardDevice = function() {
             HIDDebug("KEY RELEASE " + field.id)
     }
 }
-
