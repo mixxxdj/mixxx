@@ -68,9 +68,9 @@ void cleanUpDatabase(const QSqlDatabase& database) {
 
 /// Update statistics for the query planner
 /// See also: https://www.sqlite.org/lang_analyze.html
-void analyzeAndOptimizeDatabase(const QSqlDatabase& database) {
+void updateQueryPlannerStatisticsForDatabase(const QSqlDatabase& database) {
     kLogger.info()
-            << "Analyzing and optimizing database...";
+            << "Updating query planner statistics for database...";
     PerformanceTimer timer;
     timer.start();
     const auto sqlStmt = QStringLiteral("ANALYZE");
@@ -78,11 +78,11 @@ void analyzeAndOptimizeDatabase(const QSqlDatabase& database) {
     const auto numRows = execRowCountQuery(query);
     VERIFY_OR_DEBUG_ASSERT(numRows >= 0) {
         kLogger.warning()
-                << "Failed to analyze and optimize database";
+                << "Failed to update query planner statistics for database";
     }
     else {
         kLogger.info()
-                << "Finished database analysis and optimization:"
+                << "Finished updating query planner statistics for database:"
                 << timer.elapsed().debugMillisWithUnit();
     }
 }
@@ -408,7 +408,7 @@ void LibraryScanner::slotFinishUnhashedScan() {
 
     if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
         const auto dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
-        analyzeAndOptimizeDatabase(dbConnection);
+        updateQueryPlannerStatisticsForDatabase(dbConnection);
     }
 
     if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
