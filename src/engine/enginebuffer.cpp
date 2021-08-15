@@ -1399,7 +1399,9 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // ClockControl::updateIndicators into the waveform update loop which is synced with the display refresh rate.
     // Via the visual play position it's possible to access to the sample that is currently played,
     // and not the one that have been processed as in the current solution.
-    m_pClockControl->updateIndicators(speed * m_baserate_old, m_filepos_play, m_pSampleRate->get());
+    const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
+    const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
+    m_pClockControl->updateIndicators(speed * m_baserate_old, currentPosition, sampleRate);
 }
 
 void EngineBuffer::hintReader(const double dRate) {
