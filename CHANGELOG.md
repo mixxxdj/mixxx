@@ -2,10 +2,246 @@
 
 ## [2.4.0](https://launchpad.net/mixxx/+milestone/2.4.0) (Unreleased)
 
-* Cover art: Prevent wrong cover art display due to hash conflicts
-* Cover art: Add background color for quick cover art preview
+### Cover Art ###
+* Prevent wrong cover art display due to hash conflicts
+* Add background color for quick cover art preview [#2524](https://github.com/mixxxdj/mixxx/pull/2524)
+
+### Music Library ###
+* Ensure that tracks with an invalid bpm are re-analyzed [#2776](https://github.com/mixxxdj/mixxx/pull/2776)
+* Engine Prime export using djinterop
+  [#2753](https://github.com/mixxxdj/mixxx/pull/2753)
+  [#2932](https://github.com/mixxxdj/mixxx/pull/2932)
+  [#3102](https://github.com/mixxxdj/mixxx/pull/3102)
+  [#3155](https://github.com/mixxxdj/mixxx/pull/3155)
+  [#3621](https://github.com/mixxxdj/mixxx/pull/3621)
+  [#3776](https://github.com/mixxxdj/mixxx/pull/3776)
+  [#3787](https://github.com/mixxxdj/mixxx/pull/3787)
+  [#3797](https://github.com/mixxxdj/mixxx/pull/3797)
+  [#3798](https://github.com/mixxxdj/mixxx/pull/3798)
+  [#4025](https://github.com/mixxxdj/mixxx/pull/4025)
+* Rekordbox: Save all loops and correct AAC timing offset for CoreAudio [#2779](https://github.com/mixxxdj/mixxx/pull/2779)
+* Improve messages during schema migration [#2979](https://github.com/mixxxdj/mixxx/pull/2979)
+* Fix "[Library],GoToItem" in tracks table [#3196](https://github.com/mixxxdj/mixxx/pull/3196)
+* Search related tracks in collection
+  [#3181](https://github.com/mixxxdj/mixxx/pull/3181)
+  [#3213](https://github.com/mixxxdj/mixxx/pull/3213)
+* Add recent searches to a drop down menu of the search box
+  [#3171](https://github.com/mixxxdj/mixxx/pull/3171)
+  [#3262](https://github.com/mixxxdj/mixxx/pull/3262)
+* Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
+* Add new last_played_at column
+  [#3140](https://github.com/mixxxdj/mixxx/pull/3140)
+  [#3457](https://github.com/mixxxdj/mixxx/pull/3457)
+  [#3494](https://github.com/mixxxdj/mixxx/pull/3494)
+  [#3596](https://github.com/mixxxdj/mixxx/pull/3596)
+  [#3740](https://github.com/mixxxdj/mixxx/pull/3740)
+* Improve presentation of the history library tree [#2996](https://github.com/mixxxdj/mixxx/pull/2996)
+* Refactoring of library code
+  [#2756](https://github.com/mixxxdj/mixxx/pull/2756)
+  [#2717](https://github.com/mixxxdj/mixxx/pull/2717)
+  [#2715](https://github.com/mixxxdj/mixxx/pull/2715)
+  [#2810](https://github.com/mixxxdj/mixxx/pull/2756)
+  [#2900](https://github.com/mixxxdj/mixxx/pull/2900)
+  [#2906](https://github.com/mixxxdj/mixxx/pull/2906)
+  [#2925](https://github.com/mixxxdj/mixxx/pull/2925)
+  [#3017](https://github.com/mixxxdj/mixxx/pull/3017)
+  [#3475](https://github.com/mixxxdj/mixxx/pull/3475)
+* Dont't store or update medadata of missing tracks [#3811](https://github.com/mixxxdj/mixxx/pull/3811)
+* Code improvements and minor bug fixes when importing track metadata
+  [#3851](https://github.com/mixxxdj/mixxx/pull/3851)
+  [#3858](https://github.com/mixxxdj/mixxx/pull/3858)
+  [#3860](https://github.com/mixxxdj/mixxx/pull/3860)
+  [#3866](https://github.com/mixxxdj/mixxx/pull/3866)
+  [#3871](https://github.com/mixxxdj/mixxx/pull/3871)
+  [#3870](https://github.com/mixxxdj/mixxx/pull/3870)
+  [#3924](https://github.com/mixxxdj/mixxx/pull/3924)
+  [#3906](https://github.com/mixxxdj/mixxx/pull/3906)
+  [#3998](https://github.com/mixxxdj/mixxx/pull/3998)
+* Update library schema to 37 for synchronizing file modified time with track source on metadata import/export
+  [#3978](https://github.com/mixxxdj/mixxx/pull/3978)
+  [#4012](https://github.com/mixxxdj/mixxx/pull/4012)
+* Only show the date in Date Added / Last Played columns. Move the time of day to tooltips [#3945](https://github.com/mixxxdj/mixxx/pull/3945)
+
+### Beat Sync ###
+* beat sync with explicit leader feature
+  [#2768](https://github.com/mixxxdj/mixxx/pull/2768)
+  [#3099](https://github.com/mixxxdj/mixxx/pull/3099)
+  [#3695](https://github.com/mixxxdj/mixxx/pull/3695)
+  [#3734](https://github.com/mixxxdj/mixxx/pull/3734)
+  [#3698](https://github.com/mixxxdj/mixxx/pull/3698)
+  [#3864](https://github.com/mixxxdj/mixxx/pull/3864)
+  [#3867](https://github.com/mixxxdj/mixxx/pull/3867)
+* Fix issue with half/double sync clock
+  [#3899](https://github.com/mixxxdj/mixxx/pull/3899)
+  [#3706](https://github.com/mixxxdj/mixxx/pull/3706)
+
+### Audio Codecs ###
+* Fix recovering from FAAD2 decoding issues [#2850](https://github.com/mixxxdj/mixxx/pull/2850)
+
+### Audio Engine ###
+* Add support for Saved loops
+  [#2194](https://github.com/mixxxdj/mixxx/pull/2194)
+  [#3267](https://github.com/mixxxdj/mixxx/pull/3267)
+  [#3202](https://github.com/mixxxdj/mixxx/pull/3202)
+* Refactoring of audio engine code
+  [#2762](https://github.com/mixxxdj/mixxx/pull/2762)
+  [#2801](https://github.com/mixxxdj/mixxx/pull/2801)
+  [#2885](https://github.com/mixxxdj/mixxx/pull/2885)
+  [#2997](https://github.com/mixxxdj/mixxx/pull/2997)
+  [#3266](https://github.com/mixxxdj/mixxx/pull/3266)
+* Fix an issue when using multiple cue buttons at a time [#3382](https://github.com/mixxxdj/mixxx/pull/3382)
+
+### Controller ###
+* ES6 based controller mapping system with module support
+  [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
+  [#2875](https://github.com/mixxxdj/mixxx/pull/2875)
+  [#2874](https://github.com/mixxxdj/mixxx/pull/2874)
+  [#2936](https://github.com/mixxxdj/mixxx/pull/2936)
+  [#2937](https://github.com/mixxxdj/mixxx/pull/2937)
+  [#2946](https://github.com/mixxxdj/mixxx/pull/2946)
+* Allow empty Control Objects [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
+* Update Novation Launchpad controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600)
+* Add generic USB HID "Set Reports (Feature)" functionality [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
+* HID functions to read back the status of an HID controller (like MIDI SYSEX) [#3317](https://github.com/mixxxdj/mixxx/pull/3317)
+* Rename Preset to Mappings [#3472](https://github.com/mixxxdj/mixxx/pull/3472)
+* Refactoring of controller code
+  [#2904](https://github.com/mixxxdj/mixxx/pull/2904)
+  [#3308](https://github.com/mixxxdj/mixxx/pull/3308)
+  [#3463](https://github.com/mixxxdj/mixxx/pull/3463)
+  [#3634](https://github.com/mixxxdj/mixxx/pull/3634)
+  [#3635](https://github.com/mixxxdj/mixxx/pull/3635)
+  [#3636](https://github.com/mixxxdj/mixxx/pull/3636)
+  [#3676](https://github.com/mixxxdj/mixxx/pull/3676)
+  [#3880](https://github.com/mixxxdj/mixxx/pull/3880)
+
+
+### Skins ###
+* Add experimental QML skin
+  [#3345](https://github.com/mixxxdj/mixxx/pull/3345)
+  [#3446](https://github.com/mixxxdj/mixxx/pull/3446)
+  [#3854](https://github.com/mixxxdj/mixxx/pull/3854)
+  [#3891](https://github.com/mixxxdj/mixxx/pull/3891)
+  [#3915](https://github.com/mixxxdj/mixxx/pull/3915)
+  [#3894](https://github.com/mixxxdj/mixxx/pull/3894)
+  [#3920](https://github.com/mixxxdj/mixxx/pull/3920)
+  [#3907](https://github.com/mixxxdj/mixxx/pull/3907)
+  [#3925](https://github.com/mixxxdj/mixxx/pull/3925)
+  [#3928](https://github.com/mixxxdj/mixxx/pull/3928)
+  [#3932](https://github.com/mixxxdj/mixxx/pull/3932)
+  [#3911](https://github.com/mixxxdj/mixxx/pull/3911)
+  [#3937](https://github.com/mixxxdj/mixxx/pull/3937)
+  [#3940](https://github.com/mixxxdj/mixxx/pull/3940)
+  [#3913](https://github.com/mixxxdj/mixxx/pull/3913)
+  [#3950](https://github.com/mixxxdj/mixxx/pull/3950)
+  [#3919](https://github.com/mixxxdj/mixxx/pull/3919)
+  [#3955](https://github.com/mixxxdj/mixxx/pull/3955)
+  [#3957](https://github.com/mixxxdj/mixxx/pull/3957)
+  [#3961](https://github.com/mixxxdj/mixxx/pull/3961)
+  [#3952](https://github.com/mixxxdj/mixxx/pull/3952)
+  [#3963](https://github.com/mixxxdj/mixxx/pull/3963)
+  [#3971](https://github.com/mixxxdj/mixxx/pull/3971)
+  [#3959](https://github.com/mixxxdj/mixxx/pull/3959)
+  [#3972](https://github.com/mixxxdj/mixxx/pull/3972)
+  [#3992](https://github.com/mixxxdj/mixxx/pull/3992)
+  [#4003](https://github.com/mixxxdj/mixxx/pull/4003)
+  [#4004](https://github.com/mixxxdj/mixxx/pull/4004)
+  [#3999](https://github.com/mixxxdj/mixxx/pull/3999)
+  [#4000](https://github.com/mixxxdj/mixxx/pull/4000)
+* Add new "RGB Stacked" waveform [#3153](https://github.com/mixxxdj/mixxx/pull/3153)
+* Add harmonic keywheel window
+  [#1695](https://github.com/mixxxdj/mixxx/pull/1695)
+  [#3622](https://github.com/mixxxdj/mixxx/pull/3622)
+  [#3624](https://github.com/mixxxdj/mixxx/pull/3624)
+* Make beat indicator control behaviour more natural [#3608](https://github.com/mixxxdj/mixxx/pull/3608)
+* Fix crash if no skin is available
+  [#3918](https://github.com/mixxxdj/mixxx/pull/3918)
+  [#3939](https://github.com/mixxxdj/mixxx/pull/3939)
+
+### Other ###
+* Improve/fix the build system
+  [#2796](https://github.com/mixxxdj/mixxx/pull/2796)
+  [#2943](https://github.com/mixxxdj/mixxx/pull/2943)
+  [#3041](https://github.com/mixxxdj/mixxx/pull/3041)
+  [#3046](https://github.com/mixxxdj/mixxx/pull/3046)
+  [#3114](https://github.com/mixxxdj/mixxx/pull/3114)
+  [#3182](https://github.com/mixxxdj/mixxx/pull/3182)
+  [#3274](https://github.com/mixxxdj/mixxx/pull/3274)
+  [#3300](https://github.com/mixxxdj/mixxx/pull/3300)
+  [#3471](https://github.com/mixxxdj/mixxx/pull/3471)
+  [#3514](https://github.com/mixxxdj/mixxx/pull/3514)
+  [#3765](https://github.com/mixxxdj/mixxx/pull/3765)
+  [#3849](https://github.com/mixxxdj/mixxx/pull/3849)
+  [#3876](https://github.com/mixxxdj/mixxx/pull/3876)
+  [#3861](https://github.com/mixxxdj/mixxx/pull/3861)
+  [#3923](https://github.com/mixxxdj/mixxx/pull/3923)
+  [#3948](https://github.com/mixxxdj/mixxx/pull/3948)
+  [#3929](https://github.com/mixxxdj/mixxx/pull/3929)
+  [#4007](https://github.com/mixxxdj/mixxx/pull/4007)
+* Drop Ubuntu Bionic support, require Qt 5.12
+  [#3687](https://github.com/mixxxdj/mixxx/pull/3687)
+  [#3735](https://github.com/mixxxdj/mixxx/pull/3735)
+  [#3736](https://github.com/mixxxdj/mixxx/pull/3736)
+  [#3985](https://github.com/mixxxdj/mixxx/pull/3985)
+* Add NixOS support
+  [#2820](https://github.com/mixxxdj/mixxx/pull/2820)
+  [#2828](https://github.com/mixxxdj/mixxx/pull/2828)
+  [#2836](https://github.com/mixxxdj/mixxx/pull/2836)
+  [#2827](https://github.com/mixxxdj/mixxx/pull/2827)
+  [#2827](https://github.com/mixxxdj/mixxx/pull/2827)
+  [#2828](https://github.com/mixxxdj/mixxx/pull/2828)
+  [#3113](https://github.com/mixxxdj/mixxx/pull/3113)
+  [#3089](https://github.com/mixxxdj/mixxx/pull/3089)
+  [#3545](https://github.com/mixxxdj/mixxx/pull/3545)
 * Add Random Track Control to AutoDJ [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
 * Add support for saving loops as hotcues [#2194](https://github.com/mixxxdj/mixxx/pull/2194) [lp:1367159](https://bugs.launchpad.net/mixxx/+bug/1367159)
+* Make use of inclusive language [#2894](https://github.com/mixxxdj/mixxx/pull/2894)
+* Add Noise effect [#2921](https://github.com/mixxxdj/mixxx/pull/2921)
+* Improve Unittests
+  [#2938](https://github.com/mixxxdj/mixxx/pull/2938)
+  [#2980](https://github.com/mixxxdj/mixxx/pull/2980)
+  [#3006](https://github.com/mixxxdj/mixxx/pull/3006)
+* Logging: Add support for QT_MESSAGE_PATTERN env var [#3204](https://github.com/mixxxdj/mixxx/pull/3204)
+* Colored logging console output and other improvements
+  [#3197](https://github.com/mixxxdj/mixxx/pull/3197)
+  [#3518](https://github.com/mixxxdj/mixxx/pull/3518)
+* Improve command line argument parser
+  [#3640](https://github.com/mixxxdj/mixxx/pull/3640)
+  [#3962](https://github.com/mixxxdj/mixxx/pull/3962)
+  [#4022](https://github.com/mixxxdj/mixxx/pull/4022)
+* Added the Recordbox Hotcue Color Palette [#3746](https://github.com/mixxxdj/mixxx/pull/3746)
+* Rename Master EQ to Main EQ for an inclusive language [#3868](https://github.com/mixxxdj/mixxx/pull/3868)
+* Improve message when dealing with macOs sandbox [#4018](https://github.com/mixxxdj/mixxx/pull/4018) [lp:1921541](https://bugs.launchpad.net/mixxx/+bug/1921541)
+* Misc. refactorings
+  [#3154](https://github.com/mixxxdj/mixxx/pull/3154)
+  [#2870](https://github.com/mixxxdj/mixxx/pull/2870)
+  [#2872](https://github.com/mixxxdj/mixxx/pull/2872)
+  [#2978](https://github.com/mixxxdj/mixxx/pull/2978)
+  [#2969](https://github.com/mixxxdj/mixxx/pull/2969)
+  [#3016](https://github.com/mixxxdj/mixxx/pull/3016)
+  [#3320](https://github.com/mixxxdj/mixxx/pull/3320)
+  [#3356](https://github.com/mixxxdj/mixxx/pull/3356)
+  [#3453](https://github.com/mixxxdj/mixxx/pull/3453)
+  [#3487](https://github.com/mixxxdj/mixxx/pull/3487)
+  [#3558](https://github.com/mixxxdj/mixxx/pull/3558)
+  [#3685](https://github.com/mixxxdj/mixxx/pull/3685)
+  [#3741](https://github.com/mixxxdj/mixxx/pull/3741)
+  [#3744](https://github.com/mixxxdj/mixxx/pull/3744)
+  [#3753](https://github.com/mixxxdj/mixxx/pull/3753)
+  [#3761](https://github.com/mixxxdj/mixxx/pull/3761)
+  [#3834](https://github.com/mixxxdj/mixxx/pull/3834)
+  [#3842](https://github.com/mixxxdj/mixxx/pull/3842)
+  [#3853](https://github.com/mixxxdj/mixxx/pull/3853)
+  [#3874](https://github.com/mixxxdj/mixxx/pull/3874)
+  [#3883](https://github.com/mixxxdj/mixxx/pull/3883)
+  [#3922](https://github.com/mixxxdj/mixxx/pull/3922)
+  [#3947](https://github.com/mixxxdj/mixxx/pull/3947)
+  [#3974](https://github.com/mixxxdj/mixxx/pull/3974)
+  [#4024](https://github.com/mixxxdj/mixxx/pull/4024)
+  [#4026](https://github.com/mixxxdj/mixxx/pull/4026)
+  [#4034](https://github.com/mixxxdj/mixxx/pull/4034)
+  [#4038](https://github.com/mixxxdj/mixxx/pull/4038)
+  [#4039](https://github.com/mixxxdj/mixxx/pull/4039)
+
 
 ## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (Unreleased)
 * Added mapping for the Numark DJ2GO Touch controller [#4108](https://github.com/mixxxdj/mixxx/pull/4108)
@@ -227,7 +463,7 @@
 * Fix HID controller output on Windows with common-hid-packet-parser.js
 * Fix rendering slow down by not using QStylePainter in WSpinny lp:1530720
 * Fix broken Mic mute button lp:1782568
-* added quick effect enable button to the control picker menu
+* added quick effect enable button to the control er menu
 * Fix Cover Window close issue with empty cover arts
 * Fix Numark Mixtrack 3 mapping. #2057
 
