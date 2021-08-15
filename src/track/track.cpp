@@ -1691,7 +1691,7 @@ QString Track::getGenre() const {
     return m_record.getMetadata().getTrackInfo().getGenre();
 }
 
-void Track::setGenreInternal(
+void Track::setGenreFromTrackDAO(
         const QString& genre) {
     auto locked = lockMutex(&m_qMutex);
     if (compareAndSet(

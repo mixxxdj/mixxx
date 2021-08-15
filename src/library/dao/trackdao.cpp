@@ -1095,7 +1095,7 @@ bool setTrackYear(const QSqlRecord& record, const int column, Track* pTrack) {
 bool setTrackGenre(const QSqlRecord& record,
         const int column,
         Track* pTrack) {
-    pTrack->setGenreInternal(record.value(column).toString());
+    TrackDAO::setTrackGenreInternal(pTrack, record.value(column).toString());
     return false;
 }
 
@@ -2341,4 +2341,10 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     // nor receive or emit any signals.
     emit mixxx::thisAsNonConst(this)->tracksChanged(trackIds);
     return true;
+}
+
+//static
+void TrackDAO::setTrackGenreInternal(Track* pTrack, const QString& genre) {
+    DEBUG_ASSERT(pTrack);
+    pTrack->setGenreFromTrackDAO(genre);
 }

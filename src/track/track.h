@@ -218,21 +218,35 @@ class Track : public QObject {
 
     /// Return the genre as text
     QString getGenre() const;
-    /// !!!DO NOT USE!!!
-    /// Set the genre text WITHOUT updating the corresponding custom tags.
+
+    /// Update the genre text.
     ///
-    /// Only allowed to be used by TrackDAO!!! Unfortunately, the
-    /// design of TrackDAO does not allow to hide this method by
-    /// making it private.
-    void setGenreInternal(
-            const QString& genre);
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    ///
+    /// TODO: Update the corresponding custom tags by splitting
+    /// the text according to the given tag mapping configuration.
+    /// All existing custom genre tags with their associated score
+    /// will be replaced.
     bool updateGenre(
+            /*TODO: const mixxx::TaggingConfig& config,*/
             const QString& genre);
 
 #if defined(__EXTRA_METADATA__)
     /// Return the mood as text
     QString getMood() const;
+
+    /// Update the mood text.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    ///
+    /// TODO: Update the corresponding custom tags by splitting
+    /// the text according to the given tag mapping configuration.
+    /// All existing custom mood tags with their associated score
+    /// will be replaced.
     bool updateMood(
+            /*TODO: const mixxx::TaggingConfig& config,*/
             const QString& mood);
 #endif // __EXTRA_METADATA__
 
@@ -568,6 +582,12 @@ class Track : public QObject {
     mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
     friend class TrackDAO;
+    /// Set the genre text WITHOUT updating the corresponding custom tags.
+    ///
+    /// TODO: Remove and populate TrackRecord from the database instead.
+    void setGenreFromTrackDAO(
+            const QString& genre);
+
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
