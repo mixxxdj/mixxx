@@ -45,7 +45,7 @@ The following cache variables may also be set:
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_SoundTouch QUIET SoundTouch>=2.1.1)
+  pkg_check_modules(PC_SoundTouch QUIET soundtouch>=2.1.2)
 endif()
 
 find_path(SoundTouch_INCLUDE_DIR
