@@ -1193,7 +1193,7 @@ bool setTrackFiletype(const QSqlRecord& record, const int column, Track* pTrack)
 }
 
 bool setTrackHeaderParsed(const QSqlRecord& record, const int column, Track* pTrack) {
-    pTrack->setHeaderParsedFromTrackDAO(record.value(column).toBool());
+    TrackDAO::setTrackHeaderParsedInternal(pTrack, record.value(column).toBool());
     return false;
 }
 
@@ -2347,4 +2347,10 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
 void TrackDAO::setTrackGenreInternal(Track* pTrack, const QString& genre) {
     DEBUG_ASSERT(pTrack);
     pTrack->setGenreFromTrackDAO(genre);
+}
+
+//static
+void TrackDAO::setTrackHeaderParsedInternal(Track* pTrack, bool headerParsed) {
+    DEBUG_ASSERT(pTrack);
+    pTrack->setHeaderParsedFromTrackDAO(headerParsed);
 }

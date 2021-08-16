@@ -158,13 +158,6 @@ class Track : public QObject {
     // Indicates if the metadata has been parsed from file tags.
     bool isSourceSynchronized() const;
 
-    void setHeaderParsedFromTrackDAO(bool headerParsed) {
-        // Always operating on a newly created, exclusive instance! No need
-        // to lock the mutex.
-        DEBUG_ASSERT(!m_record.m_headerParsed);
-        m_record.m_headerParsed = headerParsed;
-    }
-
     // The date/time of the last import or export of metadata
     void setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt);
     QDateTime getSourceSynchronizedAt() const;
@@ -582,6 +575,12 @@ class Track : public QObject {
     mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
     friend class TrackDAO;
+    void setHeaderParsedFromTrackDAO(bool headerParsed) {
+        // Always operating on a newly created, exclusive instance! No need
+        // to lock the mutex.
+        DEBUG_ASSERT(!m_record.m_headerParsed);
+        m_record.m_headerParsed = headerParsed;
+    }
     /// Set the genre text WITHOUT updating the corresponding custom tags.
     ///
     /// TODO: Remove and populate TrackRecord from the database instead.

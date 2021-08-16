@@ -82,6 +82,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     /// Ugly workaround, don't use!!!
     static void setTrackGenreInternal(Track* pTrack, const QString& genre);
+    /// Ugly workaround, don't use!!!
+    static void setTrackHeaderParsedInternal(Track* pTrack, bool headerParsed);
 
   signals:
     // Forwarded from Track object
