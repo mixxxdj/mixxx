@@ -1086,7 +1086,7 @@ void EngineBuffer::processTrackLocked(
     const auto trackEndPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_trackSamplesOld);
     for (const auto& pControl: qAsConst(m_engineControls)) {
         pControl->setFrameInfo(currentPosition, trackEndPosition, m_trackSampleRateOld);
-        pControl->process(rate, m_filepos_play, iBufferSize);
+        pControl->process(rate, currentPosition, iBufferSize);
     }
 
     m_scratching_old = is_scratching;
@@ -1293,9 +1293,12 @@ void EngineBuffer::processSeek(bool paused) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seeking phase";
         }
-        double requestedPosition = position;
         double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
-        position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
+        framePosition =
+                m_pLoopingControl->getSyncPositionInsideLoop(framePosition,
+                        mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                                syncPosition));
+        position = framePosition.toEngineSamplePosMaybeInvalid();
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "EngineBuffer::processSeek" << getGroup() << "seek info:" << m_filepos_play

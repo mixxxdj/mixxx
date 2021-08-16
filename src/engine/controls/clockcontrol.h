@@ -19,9 +19,6 @@ class ClockControl: public EngineControl {
 
     ~ClockControl() override;
 
-    void process(const double dRate, const double currentSample,
-            const int iBufferSize) override;
-
     void updateIndicators(const double dRate,
             mixxx::audio::FramePos currentPosition,
             mixxx::audio::SampleRate sampleRate);

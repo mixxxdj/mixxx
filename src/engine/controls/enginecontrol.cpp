@@ -21,10 +21,10 @@ EngineControl::~EngineControl() {
 }
 
 void EngineControl::process(const double dRate,
-                           const double dCurrentSample,
-                           const int iBufferSize) {
+        mixxx::audio::FramePos currentPosition,
+        const int iBufferSize) {
     Q_UNUSED(dRate);
-    Q_UNUSED(dCurrentSample);
+    Q_UNUSED(currentPosition);
     Q_UNUSED(iBufferSize);
 }
 
