@@ -153,12 +153,6 @@
   [#4186](https://github.com/mixxxdj/mixxx/pull/4186)
 
 ### Controller ###
-* ES6 based controller mapping system with module support
-  [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
-  [#2868](https://github.com/mixxxdj/mixxx/pull/2868)
-  [#2875](https://github.com/mixxxdj/mixxx/pull/2875)
-  [#2936](https://github.com/mixxxdj/mixxx/pull/2936)
-  [#2946](https://github.com/mixxxdj/mixxx/pull/2946)
 * Allow empty Control Objects [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
 * Update Novation Launchpad controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600)
 * Add generic USB HID "Set Reports (Feature)" functionality [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
@@ -167,7 +161,13 @@
 * Rename Preset to Mappings [#3472](https://github.com/mixxxdj/mixxx/pull/3472)
 * Introduce new control objects [Master],indicator_250millis and [Master],indicator_500millis [#4157](https://github.com/mixxxdj/mixxx/pull/4157)
 * Roland DJ-505: Use new ControlIndicator COs for blinking lights [#4159](https://github.com/mixxxdj/mixxx/pull/4159)
-* Refactoring of controller code
+* Prepare code for upcoming ES6 based controller mapping system with module support
+  [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
+  [#2868](https://github.com/mixxxdj/mixxx/pull/2868)
+  [#2875](https://github.com/mixxxdj/mixxx/pull/2875)
+  [#2936](https://github.com/mixxxdj/mixxx/pull/2936)
+  [#2946](https://github.com/mixxxdj/mixxx/pull/2946)
+* Other refactorings of controller code
   [#2904](https://github.com/mixxxdj/mixxx/pull/2904)
   [#3308](https://github.com/mixxxdj/mixxx/pull/3308)
   [#3463](https://github.com/mixxxdj/mixxx/pull/3463)
