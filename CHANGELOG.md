@@ -294,7 +294,7 @@
   [#4036](https://github.com/mixxxdj/mixxx/pull/4036)
   [#4170](https://github.com/mixxxdj/mixxx/pull/4170)
   [#4057](https://github.com/mixxxdj/mixxx/pull/4057)
-* Added the Recordbox Hotcue Color Palette [#3746](https://github.com/mixxxdj/mixxx/pull/3746)
+* Added the Recordbox Hotcue Color Palette to the list of predefined color paletts [#3746](https://github.com/mixxxdj/mixxx/pull/3746)
 * Rename Master EQ to Main EQ for an inclusive language [#3868](https://github.com/mixxxdj/mixxx/pull/3868)
 * Improve message when dealing with macOs sandbox [#4018](https://github.com/mixxxdj/mixxx/pull/4018) [lp:1921541](https://bugs.launchpad.net/mixxx/+bug/1921541)
 * CONTRIBUTING.md: move content from DocuWiki [#2699](https://github.com/mixxxdj/mixxx/pull/2699)
