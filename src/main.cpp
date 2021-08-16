@@ -27,28 +27,36 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
 
     CmdlineArgs::Instance().parseForUserFeedback();
 
-    MixxxMainWindow mainWindow(pCoreServices);
-    pApp->processEvents();
-    pApp->installEventFilter(&mainWindow);
+    int exitCode;
 
-    QObject::connect(pCoreServices.get(),
-            &mixxx::CoreServices::initializationProgressUpdate,
-            &mainWindow,
-            &MixxxMainWindow::initializationProgressUpdate);
-    pCoreServices->initialize(pApp);
-    mainWindow.initialize();
+    // This scope ensures that `MixxxMainWindow` is destroyed *before*
+    // CoreServices is shut down. Otherwise a debug assertion complaining about
+    // leaked COs may be triggered.
+    {
+        MixxxMainWindow mainWindow(pCoreServices);
+        pApp->processEvents();
+        pApp->installEventFilter(&mainWindow);
 
-    // If startup produced a fatal error, then don't even start the
-    // Qt event loop.
-    if (ErrorDialogHandler::instance()->checkError()) {
-        return kFatalErrorOnStartupExitCode;
-    } else {
-        qDebug() << "Displaying main window";
-        mainWindow.show();
+        QObject::connect(pCoreServices.get(),
+                &mixxx::CoreServices::initializationProgressUpdate,
+                &mainWindow,
+                &MixxxMainWindow::initializationProgressUpdate);
+        pCoreServices->initialize(pApp);
+        mainWindow.initialize();
 
-        qDebug() << "Running Mixxx";
-        return pApp->exec();
+        // If startup produced a fatal error, then don't even start the
+        // Qt event loop.
+        if (ErrorDialogHandler::instance()->checkError()) {
+            exitCode = kFatalErrorOnStartupExitCode;
+        } else {
+            qDebug() << "Displaying main window";
+            mainWindow.show();
+
+            qDebug() << "Running Mixxx";
+            exitCode = pApp->exec();
+        }
     }
+    return exitCode;
 }
 
 } // anonymous namespace
