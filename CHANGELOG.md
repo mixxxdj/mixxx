@@ -3,7 +3,7 @@
 ## [2.4.0](https://launchpad.net/mixxx/+milestone/2.4.0) (Unreleased)
 
 ### Cover Art ###
-* Prevent wrong cover art display due to hash conflicts
+* Prevent wrong cover art display due to hash conflicts [#2524](https://github.com/mixxxdj/mixxx/pull/2524)
 * Add background color for quick cover art preview [#2524](https://github.com/mixxxdj/mixxx/pull/2524)
 
 ### Music Library ###
