@@ -10,6 +10,8 @@
 #include "track/trackmetadata.h"
 #include "util/color/rgbcolor.h"
 
+// Forward declaration for accessing m_headerParsed
+class TrackDAO;
 
 namespace mixxx {
 
@@ -173,6 +175,7 @@ class TrackRecord final {
     //    Stale metadata should be re-imported depending on the other flags.
     std::optional<audio::StreamInfo> m_streamInfoFromSource;
 
+    friend class ::TrackDAO;
     bool m_headerParsed; // deprecated, replaced by sourceSynchronizedAt
 
     /// Equality comparison

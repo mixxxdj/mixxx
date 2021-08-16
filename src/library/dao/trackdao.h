@@ -24,6 +24,7 @@ class LibraryHashDAO;
 namespace mixxx {
 
 class FileInfo;
+class TrackRecord;
 
 } // namespace mixxx
 
@@ -84,6 +85,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     static void setTrackGenreInternal(Track* pTrack, const QString& genre);
     /// Ugly workaround, don't use!!!
     static void setTrackHeaderParsedInternal(Track* pTrack, bool headerParsed);
+    /// Ugly workaround, don't use!!!
+    static bool getTrackHeaderParsedInternal(const mixxx::TrackRecord& trackRecord);
 
   signals:
     // Forwarded from Track object
