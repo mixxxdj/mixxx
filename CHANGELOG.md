@@ -22,8 +22,8 @@
 
 ### Packaging
 
-* Use pkg-config udevdir, to install the rules file the CMake install step when CMAKE_INSTALL_PREFIX is `/` or `/usr`. It is no longer necessary to manually copy the udev rule file in packaging scripts. [#4126](https://github.com/mixxxdj/mixxx/pull/4126)
-* Fix various build issues on FreeBSD [#4122](https://github.com/mixxxdj/mixxx/pull/4122) [#4123](https://github.com/mixxxdj/mixxx/pull/4123) [#4124](https://github.com/mixxxdj/mixxx/pull/4124)
+* It is no longer necessary to manually copy the udev rule file in packaging scripts. Now pkg-config is used to determine the udevdir used to install the rules file in the CMake install step when CMAKE_INSTALL_PREFIX is `/` or `/usr`.  [#4126](https://github.com/mixxxdj/mixxx/pull/4126)
+* Various build issues on FreeBSD are fixed [#4122](https://github.com/mixxxdj/mixxx/pull/4122) [#4123](https://github.com/mixxxdj/mixxx/pull/4123) [#4124](https://github.com/mixxxdj/mixxx/pull/4124)
 
 ## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (2021-06-28)
 
