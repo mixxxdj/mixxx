@@ -770,9 +770,10 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
 
         // Time stamps are stored with timezone UTC in the database
         const auto trackDateAdded = QDateTime::currentDateTimeUtc();
+        const auto trackRecord = pTrack->getRecord();
         if (!insertTrackLibrary(
                     m_pQueryLibraryInsert.get(),
-                    pTrack->getRecord(),
+                    trackRecord,
                     pTrack->getBeats(),
                     trackLocationId,
                     fileAccess.info(),
@@ -1063,133 +1064,116 @@ void TrackDAO::afterPurgingTracks(
 
 namespace {
 typedef bool (*TrackPopulatorFn)(const QSqlRecord& record,
-                                 const int column,
-                                 TrackPointer pTrack);
+        const int column,
+        Track* pTrack);
 
-bool setTrackArtist(const QSqlRecord& record, const int column,
-                    TrackPointer pTrack) {
+bool setTrackArtist(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setArtist(record.value(column).toString());
     return false;
 }
 
-bool setTrackTitle(const QSqlRecord& record, const int column,
-                   TrackPointer pTrack) {
+bool setTrackTitle(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setTitle(record.value(column).toString());
     return false;
 }
 
-bool setTrackAlbum(const QSqlRecord& record, const int column,
-                   TrackPointer pTrack) {
+bool setTrackAlbum(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setAlbum(record.value(column).toString());
     return false;
 }
 
-bool setTrackAlbumArtist(const QSqlRecord& record, const int column,
-                         TrackPointer pTrack) {
+bool setTrackAlbumArtist(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setAlbumArtist(record.value(column).toString());
     return false;
 }
 
-bool setTrackYear(const QSqlRecord& record, const int column,
-                  TrackPointer pTrack) {
+bool setTrackYear(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setYear(record.value(column).toString());
     return false;
 }
 
-bool setTrackGenre(const QSqlRecord& record, const int column,
-                   TrackPointer pTrack) {
-    pTrack->setGenre(record.value(column).toString());
+bool setTrackGenre(const QSqlRecord& record,
+        const int column,
+        Track* pTrack) {
+    TrackDAO::setTrackGenreInternal(pTrack, record.value(column).toString());
     return false;
 }
 
-bool setTrackComposer(const QSqlRecord& record, const int column,
-                      TrackPointer pTrack) {
+bool setTrackComposer(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setComposer(record.value(column).toString());
     return false;
 }
 
-bool setTrackGrouping(const QSqlRecord& record, const int column,
-                      TrackPointer pTrack) {
+bool setTrackGrouping(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setGrouping(record.value(column).toString());
     return false;
 }
 
-bool setTrackNumber(const QSqlRecord& record, const int column,
-                    TrackPointer pTrack) {
+bool setTrackNumber(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setTrackNumber(record.value(column).toString());
     return false;
 }
 
-bool setTrackTotal(const QSqlRecord& record, const int column,
-                    TrackPointer pTrack) {
+bool setTrackTotal(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setTrackTotal(record.value(column).toString());
     return false;
 }
 
-bool setTrackColor(const QSqlRecord& record, const int column,
-                   TrackPointer pTrack) {
+bool setTrackColor(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setColor(mixxx::RgbColor::fromQVariant(record.value(column)));
     return false;
 }
 
-bool setTrackComment(const QSqlRecord& record, const int column,
-                     TrackPointer pTrack) {
+bool setTrackComment(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setComment(record.value(column).toString());
     return false;
 }
 
-bool setTrackUrl(const QSqlRecord& record, const int column,
-                 TrackPointer pTrack) {
+bool setTrackUrl(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setURL(record.value(column).toString());
     return false;
 }
 
-bool setTrackRating(const QSqlRecord& record, const int column,
-                    TrackPointer pTrack) {
+bool setTrackRating(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setRating(record.value(column).toInt());
     return false;
 }
 
-bool setTrackCuePoint(const QSqlRecord& record, const int column,
-                      TrackPointer pTrack) {
+bool setTrackCuePoint(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setMainCuePosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
             record.value(column).toDouble()));
     return false;
 }
 
-bool setTrackReplayGainRatio(const QSqlRecord& record, const int column,
-                        TrackPointer pTrack) {
+bool setTrackReplayGainRatio(const QSqlRecord& record, const int column, Track* pTrack) {
     mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     replayGain.setRatio(record.value(column).toDouble());
     pTrack->setReplayGain(replayGain);
     return false;
 }
 
-bool setTrackReplayGainPeak(const QSqlRecord& record, const int column,
-                        TrackPointer pTrack) {
+bool setTrackReplayGainPeak(const QSqlRecord& record, const int column, Track* pTrack) {
     mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     replayGain.setPeak(record.value(column).toFloat());
     pTrack->setReplayGain(replayGain);
     return false;
 }
 
-bool setTrackTimesPlayed(const QSqlRecord& record, const int column,
-                         TrackPointer pTrack) {
+bool setTrackTimesPlayed(const QSqlRecord& record, const int column, Track* pTrack) {
     PlayCounter playCounter(pTrack->getPlayCounter());
     playCounter.setTimesPlayed(record.value(column).toInt());
     pTrack->setPlayCounter(playCounter);
     return false;
 }
 
-bool setTrackPlayed(const QSqlRecord& record, const int column,
-                    TrackPointer pTrack) {
+bool setTrackPlayed(const QSqlRecord& record, const int column, Track* pTrack) {
     PlayCounter playCounter(pTrack->getPlayCounter());
     playCounter.setPlayedFlag(record.value(column).toBool());
     pTrack->setPlayCounter(playCounter);
     return false;
 }
 
-bool setTrackLastPlayedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
+bool setTrackLastPlayedAt(const QSqlRecord& record, const int column, Track* pTrack) {
     auto playCounter = pTrack->getPlayCounter();
     playCounter.setLastPlayedAt(
             mixxx::sqlite::readGeneratedTimestamp(record.value(column)));
@@ -1197,25 +1181,23 @@ bool setTrackLastPlayedAt(const QSqlRecord& record, const int column, TrackPoint
     return false;
 }
 
-bool setTrackDateAdded(const QSqlRecord& record, const int column,
-                       TrackPointer pTrack) {
+bool setTrackDateAdded(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setDateAdded(
             mixxx::convertVariantToDateTime(record.value(column)));
     return false;
 }
 
-bool setTrackFiletype(const QSqlRecord& record, const int column,
-                      TrackPointer pTrack) {
+bool setTrackFiletype(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setType(record.value(column).toString());
     return false;
 }
 
-bool setTrackHeaderParsed(const QSqlRecord& record, const int column, TrackPointer pTrack) {
+bool setTrackHeaderParsed(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setHeaderParsedFromTrackDAO(record.value(column).toBool());
     return false;
 }
 
-bool setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
+bool setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, Track* pTrack) {
     QDateTime sourceSynchronizedAt;
     const QVariant value = record.value(column);
     // Observation (Qt 5.15): QVariant::isValid() may return true even
@@ -1234,7 +1216,7 @@ bool setTrackSourceSynchronizedAt(const QSqlRecord& record, const int column, Tr
 bool setTrackAudioProperties(
         const QSqlRecord& record,
         const int firstColumn,
-        TrackPointer pTrack) {
+        Track* pTrack) {
     const auto channels = record.value(firstColumn).toInt();
     const auto samplerate = record.value(firstColumn + 1).toInt();
     const auto bitrate = record.value(firstColumn + 2).toInt();
@@ -1247,8 +1229,7 @@ bool setTrackAudioProperties(
     return false;
 }
 
-bool setTrackBeats(const QSqlRecord& record, const int column,
-                   TrackPointer pTrack) {
+bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     const auto bpm = mixxx::Bpm(record.value(column).toDouble());
     QString beatsVersion = record.value(column + 1).toString();
     QString beatsSubVersion = record.value(column + 2).toString();
@@ -1271,8 +1252,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     return false;
 }
 
-bool setTrackKey(const QSqlRecord& record, const int column,
-                 TrackPointer pTrack) {
+bool setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
     QString keyText = record.value(column).toString();
     QString keysVersion = record.value(column + 1).toString();
     QString keysSubVersion = record.value(column + 2).toString();
@@ -1294,8 +1274,7 @@ bool setTrackKey(const QSqlRecord& record, const int column,
     return false;
 }
 
-bool setTrackCoverInfo(const QSqlRecord& record, const int column,
-                       TrackPointer pTrack) {
+bool setTrackCoverInfo(const QSqlRecord& record, const int column, Track* pTrack) {
     CoverInfoRelative coverInfo;
     bool ok = false;
     coverInfo.source = static_cast<CoverInfo::Source>(
@@ -1489,7 +1468,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         TrackPopulatorFn populator = columns[i].populator;
         if (populator != nullptr) {
             // If any populator says the track should be dirty then we dirty it.
-            if ((*populator)(queryRecord, i, pTrack)) {
+            if ((*populator)(queryRecord, i, pTrack.get())) {
                 shouldDirty = true;
             }
         }
@@ -1661,9 +1640,10 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
 
     query.bindValue(":track_id", trackId.toVariant());
 
+    const auto trackRecord = pTrack->getRecord();
     bindTrackLibraryValues(
             &query,
-            pTrack->getRecord(),
+            trackRecord,
             pTrack->getBeats());
 
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
@@ -2361,4 +2341,10 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     // nor receive or emit any signals.
     emit mixxx::thisAsNonConst(this)->tracksChanged(trackIds);
     return true;
+}
+
+//static
+void TrackDAO::setTrackGenreInternal(Track* pTrack, const QString& genre) {
+    DEBUG_ASSERT(pTrack);
+    pTrack->setGenreFromTrackDAO(genre);
 }
