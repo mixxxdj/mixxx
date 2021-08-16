@@ -155,10 +155,9 @@
 ### Controller ###
 * ES6 based controller mapping system with module support
   [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
+  [#2868](https://github.com/mixxxdj/mixxx/pull/2868)
   [#2875](https://github.com/mixxxdj/mixxx/pull/2875)
-  [#2874](https://github.com/mixxxdj/mixxx/pull/2874)
   [#2936](https://github.com/mixxxdj/mixxx/pull/2936)
-  [#2937](https://github.com/mixxxdj/mixxx/pull/2937)
   [#2946](https://github.com/mixxxdj/mixxx/pull/2946)
 * Allow empty Control Objects [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
 * Update Novation Launchpad controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600)
@@ -186,6 +185,7 @@
   [#3446](https://github.com/mixxxdj/mixxx/pull/3446)
   [#3854](https://github.com/mixxxdj/mixxx/pull/3854)
   [#3891](https://github.com/mixxxdj/mixxx/pull/3891)
+  [#2874](https://github.com/mixxxdj/mixxx/pull/2874)
   [#3915](https://github.com/mixxxdj/mixxx/pull/3915)
   [#3894](https://github.com/mixxxdj/mixxx/pull/3894)
   [#3920](https://github.com/mixxxdj/mixxx/pull/3920)
@@ -233,6 +233,7 @@
 ### Other ###
 * Improve/fix the build system
   [#2796](https://github.com/mixxxdj/mixxx/pull/2796)
+  [#2937](https://github.com/mixxxdj/mixxx/pull/2937)
   [#2943](https://github.com/mixxxdj/mixxx/pull/2943)
   [#3041](https://github.com/mixxxdj/mixxx/pull/3041)
   [#3046](https://github.com/mixxxdj/mixxx/pull/3046)
