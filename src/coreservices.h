@@ -42,7 +42,6 @@ class CoreServices : public QObject {
 
     /// The secondary long run which should be called after displaying the start up screen
     void initialize(QApplication* pApp);
-    void shutdown();
 
     std::shared_ptr<KeyboardEventFilter> getKeyboardEventFilter() const {
         return m_pKeyboardEventFilter;
@@ -122,6 +121,7 @@ class CoreServices : public QObject {
     void initializeSettings();
     void initializeScreensaverManager();
     void initializeLogging();
+    void shutdown();
 
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
@@ -153,6 +153,7 @@ class CoreServices : public QObject {
 
     Timer m_runtime_timer;
     const CmdlineArgs& m_cmdlineArgs;
+    bool m_isInitialized;
 };
 
 } // namespace mixxx

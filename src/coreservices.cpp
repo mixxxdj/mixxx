@@ -105,7 +105,8 @@ namespace mixxx {
 
 CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
         : m_runtime_timer(QLatin1String("CoreServices::runtime")),
-          m_cmdlineArgs(args) {
+          m_cmdlineArgs(args),
+          m_isInitialized(false) {
     m_runtime_timer.start();
     mixxx::Time::start();
     ScopedTimer t("CoreServices::CoreServices");
@@ -123,7 +124,14 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     initializeKeyboard();
 }
 
-CoreServices::~CoreServices() = default;
+CoreServices::~CoreServices() {
+    if (!m_isInitialized) {
+        qDebug() << "Skipping CoreServices shutdown because it was never initialized.";
+        return;
+    }
+
+    shutdown();
+}
 
 void CoreServices::initializeSettings() {
 #ifdef __APPLE__
@@ -154,6 +162,10 @@ void CoreServices::initializeLogging() {
 }
 
 void CoreServices::initialize(QApplication* pApp) {
+    VERIFY_OR_DEBUG_ASSERT(!m_isInitialized) {
+        return;
+    }
+
     ScopedTimer t("CoreServices::initialize");
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
@@ -392,6 +404,8 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
         }
     }
+
+    m_isInitialized = true;
 }
 
 void CoreServices::initializeKeyboard() {
