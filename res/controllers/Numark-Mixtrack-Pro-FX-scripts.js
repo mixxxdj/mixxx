@@ -286,7 +286,7 @@ MixtrackProFX.Deck = function(number) {
 
     this.shiftButton = new components.Button({
         input: function(channel, control, value) {
-            // each shift button shifts both decks
+            // each shift button shifts the entire controller.
             // more consistent with the logic burned into hardware
             if (this.isPress(channel, control, value)) {
                 MixtrackProFX.shift();
