@@ -104,8 +104,13 @@ MixtrackProFX.init = function() {
     engine.makeConnection("[Channel1]", "VuMeter", MixtrackProFX.vuCallback);
     engine.makeConnection("[Channel2]", "VuMeter", MixtrackProFX.vuCallback);
 
-    MixtrackProFX.deck.reconnectComponents();
-    MixtrackProFX.effect.reconnectComponents();
+    // trigger is needed to initialize lights to 0x01
+    MixtrackProFX.deck.forEachComponent(function(component) {
+        component.trigger();
+    });
+    MixtrackProFX.effect.forEachComponent(function(component) {
+        component.trigger();
+    });
 };
 
 MixtrackProFX.shutdown = function() {
