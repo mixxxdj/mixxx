@@ -183,6 +183,7 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
             this.inKey = "pitch_up";
             this.outKey = "pitch_up";
             this.connect();
+            this.trigger();
         },
         unshift: function() {
             this.disconnect();
@@ -190,6 +191,7 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
             this.inKey = "prev_effect";
             this.outKey = "prev_effect";
             this.connect();
+            this.trigger();
         }
     });
 
@@ -202,6 +204,7 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
             this.inKey = "pitch_down";
             this.outKey = "pitch_down";
             this.connect();
+            this.trigger();
         },
         unshift: function() {
             this.disconnect();
@@ -209,6 +212,7 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
             this.inKey = "next_effect";
             this.outKey = "next_effect";
             this.connect();
+            this.trigger();
         }
     });
 };
@@ -335,12 +339,14 @@ MixtrackProFX.Deck = function(number) {
             this.inKey = "loop_in";
             this.outKey = "loop_in";
             this.connect();
+            this.trigger();
         },
         unshift: function() {
             this.disconnect();
             this.inKey = "loop_halve";
             this.outKey = "loop_halve";
             this.connect();
+            this.trigger();
         }
     });
 
@@ -354,12 +360,14 @@ MixtrackProFX.Deck = function(number) {
             this.inKey = "loop_out";
             this.outKey = "loop_out";
             this.connect();
+            this.trigger();
         },
         unshift: function() {
             this.disconnect();
             this.inKey = "loop_double";
             this.outKey = "loop_double";
             this.connect();
+            this.trigger();
         }
     });
 
@@ -370,6 +378,7 @@ MixtrackProFX.Deck = function(number) {
             this.outKey = "reverseroll";
             this.input = components.Button.prototype.input;
             this.connect();
+            this.trigger();
         },
         unshift: function() {
             this.disconnect();
@@ -669,12 +678,14 @@ MixtrackProFX.ModeBeatjump = function(deckNumber) {
                 this.inKey = "beatjump_" + this.size + "backward";
                 this.outKey = "beatjump_" + this.size + "backward";
                 this.connect();
+                this.trigger();
             },
             unshift: function() {
                 this.disconnect();
                 this.inKey = "beatjump_" + this.size + "forward";
                 this.outKey = "beatjump_" + this.size + "forward";
                 this.connect();
+                this.trigger();
             },
             outConnect: false
         });
