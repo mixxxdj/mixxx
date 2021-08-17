@@ -282,6 +282,7 @@ TreeItemModel* CrateFeature::sidebarModel() const {
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
+    //qDebug() << "CrateFeature::activateChild()" << index;
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
@@ -397,7 +398,11 @@ void CrateFeature::slotDeleteCrate() {
             qWarning() << "Refusing to delete locked crate" << crate;
             return;
         }
-        if (m_pTrackCollection->deleteCrate(crate.getId())) {
+        CrateId crateId = crate.getId();
+        // Store sibling id to restore selection after crate was deleted
+        // to avoid the scroll position being reset to Crate root item.
+        storePrevSiblingCrateId(crateId);
+        if (m_pTrackCollection->deleteCrate(crateId)) {
             qDebug() << "Deleted crate" << crate;
             return;
         }
@@ -768,16 +773,34 @@ void CrateFeature::slotExportTrackFiles() {
     track_export.exportTracks();
 }
 
+void CrateFeature::storePrevSiblingCrateId(CrateId crateId) {
+    QModelIndex actIndex = indexFromCrateId(crateId);
+    for (int i = (actIndex.row() + 1); i >= (actIndex.row() - 1); i -= 2) {
+        QModelIndex newIndex = actIndex.sibling(i, actIndex.column());
+        if (newIndex.isValid()) {
+            TreeItem* pTreeItem = m_pSidebarModel->getItem(newIndex);
+            DEBUG_ASSERT(pTreeItem != nullptr);
+            if (!pTreeItem->hasChildren()) {
+                m_prevSiblingCrate = crateIdFromIndex(newIndex);
+            }
+        }
+    }
+}
+
 void CrateFeature::slotCrateTableChanged(CrateId crateId) {
     if (m_lastRightClickedIndex.isValid() &&
             (crateIdFromIndex(m_lastRightClickedIndex) == crateId)) {
-        // Preserve crate selection
+        // Try to restore previous selection
         m_lastRightClickedIndex = rebuildChildModel(crateId);
         if (m_lastRightClickedIndex.isValid()) {
+            // Select last active crate
             activateCrate(crateId);
+        } else if (m_prevSiblingCrate.isValid()) {
+            // Select neighbour of deleted crate
+            activateCrate(m_prevSiblingCrate);
         }
     } else {
-        // Discard crate selection
+        // No valid selection to restore
         rebuildChildModel();
     }
 }

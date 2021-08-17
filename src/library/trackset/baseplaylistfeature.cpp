@@ -179,32 +179,23 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId, bool select) {
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
-    if (playlistId == kInvalidPlaylistId) {
+    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return;
     }
-
     m_pPlaylistTableModel->setTableModel(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
-    // Update selection
-    emit featureSelect(this, m_lastRightClickedIndex);
-
-    if (!m_pSidebarWidget) {
-        return;
-    }
-    m_pSidebarWidget->selectChildIndex(index);
 }
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
-    // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
-    if (playlistId == kInvalidPlaylistId) {
+    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (!index.isValid()) {
+    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
+    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }
-
     m_lastRightClickedIndex = index;
     m_pPlaylistTableModel->setTableModel(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
