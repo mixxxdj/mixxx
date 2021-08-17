@@ -24,11 +24,11 @@ class QuantizeControl : public EngineControl {
 
   private:
     // Update positions of previous and next beats from beatgrid.
-    void lookupBeatPositions(double dCurrentSample);
+    void lookupBeatPositions(mixxx::audio::FramePos position);
     // Update position of the closest beat based on existing previous and
     // next beat values.  Usually callers will call lookupBeatPositions first.
-    void updateClosestBeat(double dCurrentSample);
-    void playPosChanged(double dNewPlaypos);
+    void updateClosestBeat(mixxx::audio::FramePos position);
+    void playPosChanged(mixxx::audio::FramePos position);
 
     ControlPushButton* m_pCOQuantizeEnabled;
     ControlObject* m_pCONextBeat;
