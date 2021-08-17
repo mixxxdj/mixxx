@@ -125,12 +125,55 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
 }
 
 CoreServices::~CoreServices() {
-    if (!m_isInitialized) {
-        qDebug() << "Skipping CoreServices shutdown because it was never initialized.";
-        return;
+    if (m_isInitialized) {
+        finalize();
     }
 
-    shutdown();
+    // Tear down remaining stuff that was initialized in the constructor.
+    CLEAR_AND_CHECK_DELETED(m_pKeyboardEventFilter);
+    CLEAR_AND_CHECK_DELETED(m_pKbdConfig);
+    CLEAR_AND_CHECK_DELETED(m_pKbdConfigEmpty);
+
+    if (m_cmdlineArgs.getDeveloper()) {
+        StatsManager::destroy();
+    }
+
+    // HACK: Save config again. We saved it once before doing some dangerous
+    // stuff. We only really want to save it here, but the first one was just
+    // a precaution. The earlier one can be removed when stuff is more stable
+    // at exit.
+    m_pSettingsManager->save();
+    m_pSettingsManager.reset();
+
+    Sandbox::shutdown();
+
+    // Check for leaked ControlObjects and give warnings.
+    {
+        const QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
+                ControlDoublePrivate::takeAllInstances();
+        if (!leakedControls.isEmpty()) {
+            qWarning()
+                    << "The following"
+                    << leakedControls.size()
+                    << "controls were leaked:";
+            for (auto pCDP : leakedControls) {
+                ConfigKey key = pCDP->getKey();
+                qWarning() << key.group << key.item << pCDP->getCreatorCO();
+                // Deleting leaked objects helps to satisfy valgrind.
+                // These delete calls could cause crashes if a destructor for a control
+                // we thought was leaked is triggered after this one exits.
+                // So, only delete so if developer mode is on.
+                if (CmdlineArgs::Instance().getDeveloper()) {
+                    pCDP->deleteCreatorCO();
+                }
+            }
+            DEBUG_ASSERT(!"Controls were leaked!");
+        }
+        // Finally drop all shared pointers by exiting this scope
+    }
+
+    // Report the total time we have been running.
+    m_runtime_timer.elapsed(true);
 }
 
 void CoreServices::initializeSettings() {
@@ -489,8 +532,13 @@ bool CoreServices::initializeDatabase() {
     return MixxxDb::initDatabaseSchema(dbConnection);
 }
 
-void CoreServices::shutdown() {
-    Timer t("CoreServices::shutdown");
+void CoreServices::finalize() {
+    VERIFY_OR_DEBUG_ASSERT(m_isInitialized) {
+        qDebug() << "Skipping CoreServices finalization because it was never initialized.";
+        return;
+    }
+
+    Timer t("CoreServices::~CoreServices");
     t.start();
 
     // Stop all pending library operations
@@ -563,57 +611,11 @@ void CoreServices::shutdown() {
     m_pDbConnectionPool->destroyThreadLocalConnection();
     m_pDbConnectionPool.reset(); // should drop the last reference
 
-    // HACK: Save config again. We saved it once before doing some dangerous
-    // stuff. We only really want to save it here, but the first one was just
-    // a precaution. The earlier one can be removed when stuff is more stable
-    // at exit.
-    m_pSettingsManager->save();
-
     m_pTouchShift.reset();
 
     m_pControlIndicatorTimer.reset();
 
-    // Check for leaked ControlObjects and give warnings.
-    {
-        const QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
-                ControlDoublePrivate::takeAllInstances();
-        if (!leakedControls.isEmpty()) {
-            qWarning()
-                    << "The following"
-                    << leakedControls.size()
-                    << "controls were leaked:";
-            for (auto pCDP : leakedControls) {
-                ConfigKey key = pCDP->getKey();
-                qWarning() << key.group << key.item << pCDP->getCreatorCO();
-                // Deleting leaked objects helps to satisfy valgrind.
-                // These delete calls could cause crashes if a destructor for a control
-                // we thought was leaked is triggered after this one exits.
-                // So, only delete so if developer mode is on.
-                if (CmdlineArgs::Instance().getDeveloper()) {
-                    pCDP->deleteCreatorCO();
-                }
-            }
-            DEBUG_ASSERT(!"Controls were leaked!");
-        }
-        // Finally drop all shared pointers by exiting this scope
-    }
-
-    Sandbox::shutdown();
-
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
-    m_pSettingsManager.reset();
-
-    CLEAR_AND_CHECK_DELETED(m_pKeyboardEventFilter);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfig);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfigEmpty);
-
     t.elapsed(true);
-    // Report the total time we have been running.
-    m_runtime_timer.elapsed(true);
-
-    if (m_cmdlineArgs.getDeveloper()) {
-        StatsManager::destroy();
-    }
 }
 
 } // namespace mixxx

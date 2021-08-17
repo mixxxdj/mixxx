@@ -121,7 +121,9 @@ class CoreServices : public QObject {
     void initializeSettings();
     void initializeScreensaverManager();
     void initializeLogging();
-    void shutdown();
+
+    /// Tear down CoreServices that were previously initialized by `initialize()`.
+    void finalize();
 
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
