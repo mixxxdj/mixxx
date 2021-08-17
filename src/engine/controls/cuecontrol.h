@@ -207,7 +207,7 @@ class CueControl : public EngineControl {
   public slots:
     void slotLoopReset();
     void slotLoopEnabledChanged(bool enabled);
-    void slotLoopUpdated(double startPosition, double endPosition);
+    void slotLoopUpdated(mixxx::audio::FramePos startPosition, mixxx::audio::FramePos endPosition);
 
   private slots:
     void quantizeChanged(double v);

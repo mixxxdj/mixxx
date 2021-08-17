@@ -138,7 +138,10 @@ void BasePlaylistFeature::initActions() {
     connect(m_pLibrary,
             &Library::trackSelected,
             this,
-            &BasePlaylistFeature::slotTrackSelected);
+            [this](const TrackPointer& pTrack) {
+                const auto trackId = pTrack ? pTrack->getId() : TrackId{};
+                slotTrackSelected(trackId);
+            });
     connect(m_pLibrary,
             &Library::switchToView,
             this,
@@ -176,32 +179,23 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId, bool select) {
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
-    if (playlistId == kInvalidPlaylistId) {
+    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return;
     }
-
     m_pPlaylistTableModel->setTableModel(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
-    // Update selection
-    emit featureSelect(this, m_lastRightClickedIndex);
-
-    if (!m_pSidebarWidget) {
-        return;
-    }
-    m_pSidebarWidget->selectChildIndex(index);
 }
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
-    // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
-    if (playlistId == kInvalidPlaylistId) {
+    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (!index.isValid()) {
+    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
+    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }
-
     m_lastRightClickedIndex = index;
     m_pPlaylistTableModel->setTableModel(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
@@ -726,13 +720,9 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     return QModelIndex();
 }
 
-void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
-    m_pSelectedTrack = pTrack;
-    TrackId trackId;
-    if (pTrack) {
-        trackId = pTrack->getId();
-    }
-    m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistIdsOfSelectedTrack);
+void BasePlaylistFeature::slotTrackSelected(TrackId trackId) {
+    m_selectedTrackId = trackId;
+    m_playlistDao.getPlaylistsTrackIsIn(m_selectedTrackId, &m_playlistIdsOfSelectedTrack);
 
     for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
         QModelIndex index = m_pSidebarModel->index(row, 0);
@@ -768,5 +758,5 @@ void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
 }
 
 void BasePlaylistFeature::slotResetSelectedTrack() {
-    slotTrackSelected(TrackPointer());
+    slotTrackSelected(TrackId{});
 }

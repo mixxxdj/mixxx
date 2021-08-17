@@ -208,7 +208,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats) {
-        const double sampleOffset = getSampleOfTrack().rate * -0.01;
+        const double sampleOffset = frameInfo().sampleRate * -0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         pTrack->trySetBeats(pBeats->translate(frameOffset));
     }
@@ -224,8 +224,8 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats) {
-        // TODO(rryan): Track::getSampleRate is possibly inaccurate!
-        const double sampleOffset = getSampleOfTrack().rate * 0.01;
+        // TODO(rryan): Track::frameInfo is possibly inaccurate!
+        const double sampleOffset = frameInfo().sampleRate * 0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         pTrack->trySetBeats(pBeats->translate(frameOffset));
     }
@@ -1040,10 +1040,7 @@ void BpmControl::slotBeatsTranslate(double v) {
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats) {
-        const auto currentPosition =
-                mixxx::audio::FramePos::fromEngineSamplePos(
-                        getSampleOfTrack().current)
-                        .toLowerFrameBoundary();
+        const auto currentPosition = frameInfo().currentPosition.toLowerFrameBoundary();
         const auto closestBeat = pBeats->findClosestBeat(currentPosition);
         const mixxx::audio::FrameDiff_t delta = currentPosition - closestBeat;
         pTrack->trySetBeats(pBeats->translate(delta));
@@ -1064,7 +1061,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         // otherwise it will always return 0 if sync lock is active.
         m_dUserOffset.setValue(0.0);
 
-        double sampleOffset = getPhaseOffset(getSampleOfTrack().current);
+        double sampleOffset = getPhaseOffset(frameInfo().currentPosition.toEngineSamplePos());
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         pTrack->trySetBeats(pBeats->translate(-frameOffset));
     }
@@ -1075,10 +1072,7 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
     mixxx::Bpm localBpm;
     const mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        const auto currentPosition =
-                mixxx::audio::FramePos::fromEngineSamplePos(
-                        getSampleOfTrack().current);
-        localBpm = pBeats->getBpmAroundPosition(currentPosition, kLocalBpmSpan);
+        localBpm = pBeats->getBpmAroundPosition(frameInfo().currentPosition, kLocalBpmSpan);
         if (!localBpm.isValid()) {
             localBpm = pBeats->getBpm();
         }
@@ -1099,7 +1093,7 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    double beatDistance = getBeatDistance(getSampleOfTrack().current);
+    double beatDistance = getBeatDistance(frameInfo().currentPosition.toEngineSamplePos());
     m_pThisBeatDistance->set(beatDistance);
     if (!isSynchronized() && m_dUserOffset.getValue() != 0.0) {
         m_dUserOffset.setValue(0.0);
@@ -1134,8 +1128,8 @@ void BpmControl::resetSyncAdjustment() {
 
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     // Without a beatgrid we don't know any beat details.
-    SampleOfTrack sot = getSampleOfTrack();
-    if (sot.rate == 0 || !m_pBeats) {
+    FrameInfo info = frameInfo();
+    if (!info.sampleRate.isValid() || !m_pBeats) {
         return;
     }
 
@@ -1144,16 +1138,17 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
     double dThisBeatFraction;
-    if (getBeatContextNoLookup(sot.current,
-            dThisPrevBeat, dThisNextBeat,
-            &dThisBeatLength, &dThisBeatFraction)) {
-
+    if (getBeatContextNoLookup(info.currentPosition.toEngineSamplePos(),
+                dThisPrevBeat,
+                dThisNextBeat,
+                &dThisBeatLength,
+                &dThisBeatFraction)) {
         // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
-	double sotPerSec = kSamplesPerFrame * sot.rate * m_pRateRatio->get();
-        if (sotPerSec != 0.0) {
-            pGroupFeatures->beat_length_sec = dThisBeatLength / sotPerSec;
+        double samplesPerSecond = kSamplesPerFrame * info.sampleRate * m_pRateRatio->get();
+        if (samplesPerSecond != 0.0) {
+            pGroupFeatures->beat_length_sec = dThisBeatLength / samplesPerSecond;
             pGroupFeatures->has_beat_length_sec = true;
-	} else {
+        } else {
             pGroupFeatures->has_beat_length_sec = false;
         }
 
