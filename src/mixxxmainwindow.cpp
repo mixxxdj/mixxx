@@ -400,8 +400,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pGuiTick;
     delete m_pVisualsManager;
-
-    m_pCoreServices->shutdown();
 }
 
 void MixxxMainWindow::initializeWindow() {
