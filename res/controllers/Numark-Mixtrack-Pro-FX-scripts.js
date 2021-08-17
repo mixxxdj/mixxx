@@ -136,8 +136,6 @@ MixtrackProFX.unshift = function() {
 // this should be done with load_preset and QuickEffects instead (when effect
 // chain preset saving/loading is available in Mixxx)
 MixtrackProFX.EffectUnit = function(deckNumber) {
-    this.group = "[EffectRack1_EffectUnit" + deckNumber + "]";
-
     // switch values are:
     // 0 - switch in the middle
     // 1 - switch up
@@ -148,7 +146,7 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
     });
 
     this.dryWetKnob = new components.Pot({
-        group: this.group,
+        group: "[EffectRack1_EffectUnit" + deckNumber + "]",
         inKey: "mix"
     });
 
@@ -175,7 +173,6 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
     });
 
     this.prevEffect = new components.Button({
-        group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
         midi: [0x98, (deckNumber - 1) * 2],
         shift: function() {
             this.disconnect();
@@ -196,7 +193,6 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
     });
 
     this.nextEffect = new components.Button({
-        group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
         midi: [0x99, 0x03 + (deckNumber - 1) * 2],
         shift: function() {
             this.disconnect();
