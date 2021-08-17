@@ -80,7 +80,10 @@ if (EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
     string(REGEX MATCH "#define HID_API_VERSION_PATCH ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
     set(hidapi_VERSION_PATCH "${CMAKE_MATCH_1}")
     # hidapi_VERSION is only available starting with 0.10.0
-    if (hidapi_VERSION_MAJOR AND hidapi_VERSION_MINOR AND hidapi_VERSION_PATCH)
+    # Simply using if(NOT) does not work because 0 is a valid value, so compare to empty string.
+    if (NOT hidapi_VERSION_MAJOR STREQUAL "" AND
+        NOT hidapi_VERSION_MINOR STREQUAL "" AND
+        NOT hidapi_VERSION_PATCH STREQUAL "")
       set(hidapi_VERSION "${hidapi_VERSION_MAJOR}.${hidapi_VERSION_MINOR}.${hidapi_VERSION_PATCH}")
     endif()
 endif ()
