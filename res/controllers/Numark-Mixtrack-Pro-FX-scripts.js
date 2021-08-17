@@ -298,7 +298,7 @@ MixtrackProFX.Deck = function(number) {
             } else {
                 MixtrackProFX.unshift();
             }
-        },
+        }
     });
 
     this.loop = new components.Button({
@@ -310,7 +310,7 @@ MixtrackProFX.Deck = function(number) {
         },
         unshift: function() {
             this.input = function(channel, control, value, status, group) {
-                if (value !== 0x7F) {
+                if (!this.isPress(channel, control, value)) {
                     return;
                 }
                 if (engine.getValue(group, "loop_enabled") === 0) {
@@ -379,7 +379,7 @@ MixtrackProFX.Deck = function(number) {
         unshift: function() {
             this.disconnect();
             this.input = function(channel, control, value) {
-                if (value !== 0x7F) {
+                if (!this.isPress(channel, control, value)) {
                     return;
                 }
                 deck.scratchModeEnabled = !deck.scratchModeEnabled;
@@ -413,7 +413,7 @@ MixtrackProFX.Deck = function(number) {
         currentRangeIdx: 0,
         shift: function() {
             this.input = function(channel, control, value) {
-                if (value !== 0x7F) {
+                if (!this.isPress(channel, control, value)) {
                     return;
                 }
                 this.currentRangeIdx = (this.currentRangeIdx + 1) % MixtrackProFX.pitchRanges.length;
