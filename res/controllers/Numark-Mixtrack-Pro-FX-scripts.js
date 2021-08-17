@@ -383,13 +383,13 @@ MixtrackProFX.Deck = function(number) {
                     return;
                 }
                 deck.scratchModeEnabled = !deck.scratchModeEnabled;
-                midi.sendShortMsg(this.midi[0], this.midi[1], deck.scratchModeEnabled ? 0x7F : 0x01);
+                midi.sendShortMsg(this.midi[0], this.midi[1], deck.scratchModeEnabled ? this.on : this.off);
             };
 
-            midi.sendShortMsg(this.midi[0], this.midi[1], deck.scratchModeEnabled ? 0x7F : 0x01);
+            midi.sendShortMsg(this.midi[0], this.midi[1], deck.scratchModeEnabled ? this.on : this.off);
 
             var bleepEnabled = engine.getParameter(this.group, "reverseroll") === 1;
-            midi.sendShortMsg(this.midi[0], this.midi[1] + this.shiftOffset, bleepEnabled ? 0x7F : 0x01);
+            midi.sendShortMsg(this.midi[0], this.midi[1] + this.shiftOffset, bleepEnabled ? this.on : this.off);
         },
         shiftControl: true,
         sendShifted: true,
