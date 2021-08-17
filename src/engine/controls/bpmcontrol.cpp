@@ -451,10 +451,14 @@ double BpmControl::calcSyncedRate(double userTweak) {
         const auto loopEndPosition =
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         m_pLoopEndPosition->get());
-        const auto loopSize = (loopEndPosition - loopStartPosition) / beatLengthFrames;
-        if (loopSize < 1.0 && loopSize > 0) {
-            m_resetSyncAdjustment = true;
-            return rate + userTweak;
+        // This should always be true when a loop is enabled, but we check it
+        // anyway to prevent race conditions.
+        if (loopStartPosition.isValid() && loopEndPosition.isValid()) {
+            const auto loopSize = (loopEndPosition - loopStartPosition) / beatLengthFrames;
+            if (loopSize < 1.0 && loopSize > 0) {
+                m_resetSyncAdjustment = true;
+                return rate + userTweak;
+            }
         }
     }
 
