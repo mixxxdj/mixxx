@@ -150,12 +150,6 @@ MixtrackProFX.EffectUnit = function(deckNumber) {
         inKey: "mix"
     });
 
-    this.tap = new components.Button({
-        group: "[Channel" + deckNumber + "]",
-        key: "bpm_tap",
-        midi: [0x88, 0x09]
-    });
-
     this.effectParam = new components.Encoder({
         group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
         shift: function() {
@@ -241,6 +235,12 @@ MixtrackProFX.Deck = function(number) {
         shiftControl: true,
         sendShifted: true,
         shiftOffset: 0x01
+    });
+
+    this.tap = new components.Button({
+        group: this.currentDeck,
+        key: "bpm_tap",
+        midi: [0x88, 0x09]
     });
 
     this.pflButton = new components.Button({

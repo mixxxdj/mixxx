@@ -1754,7 +1754,7 @@
       <!-- Tap button (press) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.effect[0].tap.input</key>
+        <key>MixtrackProFX.deck[0].tap.input</key>
         <status>0x98</status>
         <midino>0x09</midino>
         <options>
@@ -1763,7 +1763,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.effect[1].tap.input</key>
+        <key>MixtrackProFX.deck[1].tap.input</key>
         <status>0x99</status>
         <midino>0x09</midino>
         <options>
@@ -1773,7 +1773,7 @@
       <!-- Tap button (release) -->
       <control>
         <group>[Channel1]</group>
-        <key>MixtrackProFX.effect[0].tap.input</key>
+        <key>MixtrackProFX.deck[0].tap.input</key>
         <status>0x88</status>
         <midino>0x09</midino>
         <options>
@@ -1782,7 +1782,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MixtrackProFX.effect[1].tap.input</key>
+        <key>MixtrackProFX.deck[1].tap.input</key>
         <status>0x89</status>
         <midino>0x09</midino>
         <options>
