@@ -437,6 +437,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlbehavior.cpp
   src/control/controleffectknob.cpp
   src/control/controlencoder.cpp
+  src/control/controlframepos.cpp
   src/control/controlindicator.cpp
   src/control/controlindicatortimer.cpp
   src/control/controllinpotmeter.cpp
