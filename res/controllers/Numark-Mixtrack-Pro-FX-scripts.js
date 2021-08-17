@@ -294,12 +294,6 @@ MixtrackProFX.Deck = function(number) {
                 MixtrackProFX.unshift();
             }
         },
-        isPress: function(channel, control, value) {
-            if (value === 0x7F) {
-                return true;
-            }
-            return false;
-        }
     });
 
     this.loop = new components.Button({
