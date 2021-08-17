@@ -8,6 +8,7 @@
 #include "track/track_decl.h"
 
 class ControlObject;
+class ControlFramePos;
 class ControlPushButton;
 
 class QuantizeControl : public EngineControl {
@@ -31,9 +32,9 @@ class QuantizeControl : public EngineControl {
     void playPosChanged(mixxx::audio::FramePos position);
 
     ControlPushButton* m_pCOQuantizeEnabled;
-    ControlObject* m_pCONextBeat;
-    ControlObject* m_pCOPrevBeat;
-    ControlObject* m_pCOClosestBeat;
+    std::unique_ptr<ControlFramePos> m_pCONextBeat;
+    std::unique_ptr<ControlFramePos> m_pCOPrevBeat;
+    std::unique_ptr<ControlFramePos> m_pCOClosestBeat;
 
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
