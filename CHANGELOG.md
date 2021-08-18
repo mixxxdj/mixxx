@@ -294,7 +294,7 @@
   [#4036](https://github.com/mixxxdj/mixxx/pull/4036)
   [#4170](https://github.com/mixxxdj/mixxx/pull/4170)
   [#4057](https://github.com/mixxxdj/mixxx/pull/4057)
-* Improve message when dealing with macOs sandbox [#4018](https://github.com/mixxxdj/mixxx/pull/4018) [lp:1921541](https://bugs.launchpad.net/mixxx/+bug/1921541)
+* Improve message when dealing with macOS sandbox [#4018](https://github.com/mixxxdj/mixxx/pull/4018) [lp:1921541](https://bugs.launchpad.net/mixxx/+bug/1921541)
 * CONTRIBUTING.md: move content from DocuWiki [#2699](https://github.com/mixxxdj/mixxx/pull/2699)
 * Misc. refactorings
   [#3154](https://github.com/mixxxdj/mixxx/pull/3154)
