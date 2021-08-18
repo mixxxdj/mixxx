@@ -11,6 +11,7 @@
 #include "track/cue.h"
 #include "track/track_decl.h"
 
+class ControlFramePos;
 class ControlPushButton;
 class ControlObject;
 
@@ -71,8 +72,8 @@ class LoopingControl : public EngineControl {
     void slotLoopExit(double);
     void slotReloopToggle(double);
     void slotReloopAndStop(double);
-    void slotLoopStartPos(double);
-    void slotLoopEndPos(double);
+    void slotLoopStartPositionChanged(mixxx::audio::FramePos);
+    void slotLoopEndPositionChanged(mixxx::audio::FramePos);
 
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.
@@ -135,8 +136,8 @@ class LoopingControl : public EngineControl {
 
     ControlPushButton* m_pCOBeatLoopActivate;
     ControlPushButton* m_pCOBeatLoopRollActivate;
-    ControlObject* m_pCOLoopStartPosition;
-    ControlObject* m_pCOLoopEndPosition;
+    ControlFramePos* m_pCOLoopStartPosition;
+    ControlFramePos* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;
     ControlPushButton* m_pLoopInButton;
     ControlPushButton* m_pLoopInGotoButton;
