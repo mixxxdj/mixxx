@@ -2,21 +2,6 @@
 # to manage, install and run git hooks to catch common problems early on.
 # See https://pre-commit.com/ for details.
 #
-# This adds the following hooks:
-#
-# - check-case-conflict
-# - check-byte-order-marker
-# - check-yaml
-# - check-json
-# - check-xml
-# - mixed-line-ending
-# - end-of-file-fixer
-# - trailing-whitespace
-# - no-commit-to-branch
-# - eslint
-# - clang-format
-# - qsscheck
-#
 # If you have Python >= 3.7 and python-pip installed, just run:
 #
 #     $ pip install --user pre-commit
