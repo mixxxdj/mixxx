@@ -12,6 +12,7 @@
 #include "track/track_decl.h"
 
 class ControlFramePos;
+class ControlFramePosProxy;
 class ControlPushButton;
 class ControlObject;
 
@@ -165,10 +166,10 @@ class LoopingControl : public EngineControl {
     LoopInfo m_oldLoopInfo;
     ControlValueAtomic<mixxx::audio::FramePos> m_currentPosition;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pNextBeat;
-    ControlObject* m_pPreviousBeat;
-    ControlObject* m_pClosestBeat;
-    ControlObject* m_pTrackSamples;
+    std::unique_ptr<ControlFramePosProxy> m_pNextBeatPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pPreviousBeatPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pClosestBeatPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pTrackEndPosition;
     QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.
