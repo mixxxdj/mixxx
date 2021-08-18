@@ -82,5 +82,6 @@ Mixxx core team members are contributors who have write access to the [upstream 
 * If there is disagreement about changes in a pull request, do not merge it until a consensus has been reached.
 * Check CI to ensure builds work and tests pass before merging. If CI timed out, either manually restart it or build the branch and run the tests locally before merging.
 * When you merge a pull request to a stable branch, merge the stable branch to the beta branch afterwards. If you merge a pull request to a beta branch, merge the beta branch to master afterwards. When backporting, cherry-pick or rebase rather than merge.
+* Merge PRs using a merge commit, to keep the original commits valid. Keep the default commit message "Merge pull request ..." with the reference to the pull request.
 * Default to open; only post in the private Zulip stream for discussions that have a reason to be private. Most of the time, post to a public Zulip stream so anyone can participate in the discussion.
 * When Mixxx participates in Google Summer of Code, you may volunteer as a mentor if you like.
