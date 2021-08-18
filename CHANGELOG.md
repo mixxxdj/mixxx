@@ -90,7 +90,7 @@
   [#4119](https://github.com/mixxxdj/mixxx/pull/4119)
   [#4135](https://github.com/mixxxdj/mixxx/pull/4135)
   [#4149](https://github.com/mixxxdj/mixxx/pull/4149)
-* Fix issue with half/double sync clock
+* Fix issue with half/double BPM calculation when using sync
   [#3899](https://github.com/mixxxdj/mixxx/pull/3899)
   [#3706](https://github.com/mixxxdj/mixxx/pull/3706)
 * Sync Lock: Don't seek phase when disabling sync [#4169](https://github.com/mixxxdj/mixxx/pull/4169)
@@ -103,12 +103,12 @@
   [#2194](https://github.com/mixxxdj/mixxx/pull/2194)
   [#3267](https://github.com/mixxxdj/mixxx/pull/3267)
   [#3202](https://github.com/mixxxdj/mixxx/pull/3202)
-* Fix an issue when using multiple cue buttons at a time [#3382](https://github.com/mixxxdj/mixxx/pull/3382)
+* Fix an issue when pressing multiple cue buttons at the same time [#3382](https://github.com/mixxxdj/mixxx/pull/3382)
 * Fix synchronization of main cue point/position
   [#4137](https://github.com/mixxxdj/mixxx/pull/4137)
   [lp1937074](https://bugs.launchpad.net/mixxx/+bug/1937074)
   [#4153](https://github.com/mixxxdj/mixxx/pull/4153)
-* Refactoring of beats object
+* Refactoring of beatgrid/beatmap code
   [#4044](https://github.com/mixxxdj/mixxx/pull/4044)
   [#4048](https://github.com/mixxxdj/mixxx/pull/4048)
   [#4045](https://github.com/mixxxdj/mixxx/pull/4045)
@@ -152,13 +152,13 @@
   [#4186](https://github.com/mixxxdj/mixxx/pull/4186)
 
 ### Controller
-* Allow empty Control Objects [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
+* Never raise a fatal error if a controller mapping tries access a non-existant control object [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
 * Update Novation Launchpad controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600)
 * Add generic USB HID "Set Reports (Feature)" functionality [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
-* HID functions to read back the status of an HID controller (like MIDI SYSEX) [#3317](https://github.com/mixxxdj/mixxx/pull/3317)
-* Use hidraw backend of hidapi instead of libusb backend [#4054](https://github.com/mixxxdj/mixxx/pull/4054)
-* Rename Preset to Mappings [#3472](https://github.com/mixxxdj/mixxx/pull/3472)
-* Introduce new control objects [Master],indicator_250millis and [Master],indicator_500millis [#4157](https://github.com/mixxxdj/mixxx/pull/4157)
+* Add support for reading the status of an HID controller (like MIDI SYSEX) [#3317](https://github.com/mixxxdj/mixxx/pull/3317)
+* Use hidapi's hidraw backend instead of libusb on Linux [#4054](https://github.com/mixxxdj/mixxx/pull/4054)
+* Consistently use "mapping" instead of "preset" to refer to controller mappings [#3472](https://github.com/mixxxdj/mixxx/pull/3472)
+* Introduce new control objects `[Master],indicator_250millis` and `[Master],indicator_500millis` [#4157](https://github.com/mixxxdj/mixxx/pull/4157)
 * Roland DJ-505: Use new ControlIndicator COs for blinking lights [#4159](https://github.com/mixxxdj/mixxx/pull/4159)
 * Prepare code for upcoming ES6 based controller mapping system with module support
   [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
@@ -282,7 +282,7 @@
   [#2938](https://github.com/mixxxdj/mixxx/pull/2938)
   [#2980](https://github.com/mixxxdj/mixxx/pull/2980)
   [#3006](https://github.com/mixxxdj/mixxx/pull/3006)
-* Logging: Add support for QT_MESSAGE_PATTERN env var [#3204](https://github.com/mixxxdj/mixxx/pull/3204)
+* Logging: Add support for `QT_MESSAGE_PATTERN` environment variable [#3204](https://github.com/mixxxdj/mixxx/pull/3204)
 * Colored logging console output
   [#3197](https://github.com/mixxxdj/mixxx/pull/3197)
 * Fix an issue with the `%{function}` placeholder in the QT_MESSAGE_PATTERN for custom logging
@@ -295,7 +295,7 @@
   [#4170](https://github.com/mixxxdj/mixxx/pull/4170)
   [#4057](https://github.com/mixxxdj/mixxx/pull/4057)
 * Improve message when dealing with macOS sandbox [#4018](https://github.com/mixxxdj/mixxx/pull/4018) [lp:1921541](https://bugs.launchpad.net/mixxx/+bug/1921541)
-* CONTRIBUTING.md: move content from DocuWiki [#2699](https://github.com/mixxxdj/mixxx/pull/2699)
+* Move contribution guidelines into our git repository [#2699](https://github.com/mixxxdj/mixxx/pull/2699)
 * Misc. refactorings
   [#3154](https://github.com/mixxxdj/mixxx/pull/3154)
   [#2870](https://github.com/mixxxdj/mixxx/pull/2870)
