@@ -7,7 +7,7 @@
 * Add background color for quick cover art preview [#2524](https://github.com/mixxxdj/mixxx/pull/2524)
 
 ### Music Library
-* Ensure that tracks with an invalid bpm are re-analyzed [#2776](https://github.com/mixxxdj/mixxx/pull/2776)
+* Ensure that tracks with an invalid BPM are re-analyzed [#2776](https://github.com/mixxxdj/mixxx/pull/2776)
 * Add support for exporting crates, playlists and the library to Engine Prime and Denon standalone controllers
   [#2753](https://github.com/mixxxdj/mixxx/pull/2753)
   [#2932](https://github.com/mixxxdj/mixxx/pull/2932)
