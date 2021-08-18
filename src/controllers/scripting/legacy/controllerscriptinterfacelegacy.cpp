@@ -410,7 +410,7 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
 void ControllerScriptInterfaceLegacy::trigger(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
-        coScript->emitValueChanged();
+        coScript->trigger();
     }
 }
 

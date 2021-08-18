@@ -23,13 +23,13 @@ class ControlObjectScript : public ControlProxy {
     void disconnectAllConnectionsToFunction(const QJSValue& function);
 
     /// Called from `ControlEngineScriptLegacy::trigger`
-    void emitValueChanged() {
-        emit trigger(get(), this);
+    void trigger() {
+        emit triggered(get(), this);
     }
 
   signals:
     // It will connect to the slotValueChanged as well
-    void trigger(double, QObject*);
+    void triggered(double, QObject*);
 
   protected slots:
     // Receives the value from the master control by a unique queued connection

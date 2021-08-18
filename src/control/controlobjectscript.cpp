@@ -19,7 +19,7 @@ bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
                 &ControlObjectScript::slotValueChanged,
                 Qt::QueuedConnection);
         connect(this,
-                &ControlObjectScript::trigger,
+                &ControlObjectScript::triggered,
                 this,
                 &ControlObjectScript::slotValueChanged,
                 Qt::QueuedConnection);
@@ -60,7 +60,7 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
                 this,
                 &ControlObjectScript::slotValueChanged);
         disconnect(this,
-                &ControlObjectScript::trigger,
+                &ControlObjectScript::triggered,
                 this,
                 &ControlObjectScript::slotValueChanged);
     }
