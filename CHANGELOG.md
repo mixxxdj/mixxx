@@ -566,7 +566,7 @@
 * Fix HID controller output on Windows with common-hid-packet-parser.js
 * Fix rendering slow down by not using QStylePainter in WSpinny lp:1530720
 * Fix broken Mic mute button lp:1782568
-* added quick effect enable button to the control er menu
+* added quick effect enable button to the control picker menu
 * Fix Cover Window close issue with empty cover arts
 * Fix Numark Mixtrack 3 mapping. #2057
 
