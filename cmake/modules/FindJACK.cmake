@@ -35,9 +35,6 @@ else()
   )
 endif()
 
-find_package(Regex)
-list(APPEND JACK_LINK_LIBRARIES Regex::regex)
-
 if(WIN32)
     # vcpkg provides CMake targets for pthreads4w
     # This won't work if pthreads4w was built without vcpkg.
@@ -51,7 +48,6 @@ find_package_handle_standard_args(
   DEFAULT_MSG
   JACK_LINK_LIBRARIES
   JACK_INCLUDEDIR
-  Regex_FOUND
 )
 
 if(JACK_FOUND AND NOT TARGET JACK::jack)
