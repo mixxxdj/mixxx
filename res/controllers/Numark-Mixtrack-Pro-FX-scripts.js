@@ -1,6 +1,3 @@
-// dim all lights when inactive instead of turning them off
-components.Button.prototype.off = 0x01;
-
 var MixtrackProFX = {};
 
 // pitch ranges
@@ -52,7 +49,10 @@ MixtrackProFX.beatJumpValues = [
     "8_"
 ];
 
-// pad modes, don't touch
+// dim all lights when inactive instead of turning them off
+components.Button.prototype.off = 0x01;
+
+// pad modes control codes
 MixtrackProFX.PadModeControls = {
     HOTCUE: 0x00,
     AUTOLOOP: 0x0D,
@@ -62,7 +62,7 @@ MixtrackProFX.PadModeControls = {
     SAMPLE2: 0x0F
 };
 
-// state variables, don't touch
+// state variable, don't touch
 MixtrackProFX.shifted = false;
 
 MixtrackProFX.init = function() {
