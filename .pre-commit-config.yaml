@@ -99,6 +99,7 @@ repos:
   rev: v0.11.0
   hooks:
   - id: markdownlint
+    language_version: 2.6.6
 - repo: local
   hooks:
   - id: qsscheck
