@@ -55,7 +55,7 @@
   [#3978](https://github.com/mixxxdj/mixxx/pull/3978)
   [#4012](https://github.com/mixxxdj/mixxx/pull/4012)
 * Only show the date in Date Added / Last Played columns. Move the time of day to tooltips [#3945](https://github.com/mixxxdj/mixxx/pull/3945)
-* Fix handling of undefined bpm values
+* Fix handling of undefined BPM values
   [#4062](https://github.com/mixxxdj/mixxx/pull/4062)
   [#4063](https://github.com/mixxxdj/mixxx/pull/4063)
   [#4100](https://github.com/mixxxdj/mixxx/pull/4100)
@@ -495,7 +495,7 @@
 * Enable CUE sheet recording by default [#3374](https://github.com/mixxxdj/mixxx/pull/3374)
 * Fix crash when double clicking GLSL waveforms with right mouse button [#3904](https://github.com/mixxxdj/mixxx/pull/3904)
 * Derive Mixxx version from `git describe` [#3824](https://github.com/mixxxdj/mixxx/pull/3824) [#3841](https://github.com/mixxxdj/mixxx/pull/3841) [#3848](https://github.com/mixxxdj/mixxx/pull/3848)
-* Improve tapping the bpm of a deck [#3790](https://github.com/mixxxdj/mixxx/pull/3790) [lp:1882776](https://bugs.launchpad.net/mixxx/+bug/1882776)
+* Improve tapping the BPM of a deck [#3790](https://github.com/mixxxdj/mixxx/pull/3790) [lp:1882776](https://bugs.launchpad.net/mixxx/+bug/1882776)
 * And countless other small fixes and improvements (too many to list them all!)
 
 ## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (2020-06-27)
@@ -549,7 +549,7 @@
 * Fix playlist import. lp:16878282
 * Fix updating playlist labels. lp:1837315
 * Fix potential segfault on exit. lp:1828360
-* Fix parsing of invalid bpm values in MP3 files. lp:1832325
+* Fix parsing of invalid BPM values in MP3 files. lp:1832325
 * Fix crash when removing rows from empty model. #2128
 * Fix high DPI scaling of RGB overview waveforms. #2090
 * Fix for OpenGL SL detection on macOS. lp:1828019
