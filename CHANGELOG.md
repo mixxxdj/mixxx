@@ -2,11 +2,11 @@
 
 ## [2.4.0](https://launchpad.net/mixxx/+milestone/2.4.0) (Unreleased)
 
-### Cover Art ###
+### Cover Art
 * Prevent wrong cover art display due to hash conflicts [#2524](https://github.com/mixxxdj/mixxx/pull/2524)
 * Add background color for quick cover art preview [#2524](https://github.com/mixxxdj/mixxx/pull/2524)
 
-### Music Library ###
+### Music Library
 * Ensure that tracks with an invalid bpm are re-analyzed [#2776](https://github.com/mixxxdj/mixxx/pull/2776)
 * Engine Prime export using djinterop
   [#2753](https://github.com/mixxxdj/mixxx/pull/2753)
@@ -78,7 +78,7 @@
   [#4152](https://github.com/mixxxdj/mixxx/pull/4152)
   [#4162](https://github.com/mixxxdj/mixxx/pull/4162)
 
-### Beat Sync ###
+### Beat Sync
 * beat sync with explicit leader feature
   [#2768](https://github.com/mixxxdj/mixxx/pull/2768)
   [#3099](https://github.com/mixxxdj/mixxx/pull/3099)
@@ -96,10 +96,10 @@
   [#3706](https://github.com/mixxxdj/mixxx/pull/3706)
 * Sync Lock: Don't seek phase when disabling sync [#4169](https://github.com/mixxxdj/mixxx/pull/4169)
 
-### Audio Codecs ###
+### Audio Codecs
 * Fix recovering from FAAD2 decoding issues [#2850](https://github.com/mixxxdj/mixxx/pull/2850)
 
-### Audio Engine ###
+### Audio Engine
 * Add support for Saved loops
   [#2194](https://github.com/mixxxdj/mixxx/pull/2194)
   [#3267](https://github.com/mixxxdj/mixxx/pull/3267)
@@ -152,7 +152,7 @@
   [#4183](https://github.com/mixxxdj/mixxx/pull/4183)
   [#4186](https://github.com/mixxxdj/mixxx/pull/4186)
 
-### Controller ###
+### Controller
 * Allow empty Control Objects [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
 * Update Novation Launchpad controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600)
 * Add generic USB HID "Set Reports (Feature)" functionality [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
@@ -179,7 +179,7 @@
   [#4085](https://github.com/mixxxdj/mixxx/pull/4085)
 
 
-### Skins ###
+### Skins
 * Add experimental QML skin
   [#3345](https://github.com/mixxxdj/mixxx/pull/3345)
   [#3446](https://github.com/mixxxdj/mixxx/pull/3446)
@@ -229,7 +229,7 @@
   [#3939](https://github.com/mixxxdj/mixxx/pull/3939)
 * Inverted scroll wheel waveform zoom direction to mach other applications [#4195](https://github.com/mixxxdj/mixxx/pull/4195)
 
-### Other ###
+### Other
 * Improve/fix the build system
   [#2796](https://github.com/mixxxdj/mixxx/pull/2796)
   [#2937](https://github.com/mixxxdj/mixxx/pull/2937)
