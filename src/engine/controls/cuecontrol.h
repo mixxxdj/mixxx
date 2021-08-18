@@ -290,7 +290,7 @@ class CueControl : public EngineControl {
     parented_ptr<ControlProxy> m_pBeatLoopActivate;
     parented_ptr<ControlProxy> m_pBeatLoopSize;
     bool m_bypassCueSetByPlay;
-    ControlValueAtomic<double> m_usedSeekOnLoadPosition;
+    ControlValueAtomic<mixxx::audio::FramePos> m_usedSeekOnLoadPosition;
 
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControls;
