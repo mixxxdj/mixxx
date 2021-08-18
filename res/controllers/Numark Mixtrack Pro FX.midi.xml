@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.1.0+">
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3.0+">
   <info>
     <name>Numark Mixtrack Pro FX</name>
-    <author>bad1dea5, h67ma, photoenix</author>
+    <author>h67ma, bad1dea5, photoenix</author>
     <description>Mapping for the Numark Mixtrack Pro FX</description>
     <forums>https://mixxx.discourse.group/t/numark-mixtrack-pro-fx/19561</forums>
     <manual>numark_mixtrack_pro_fx</manual>
