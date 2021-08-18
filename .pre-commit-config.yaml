@@ -95,11 +95,10 @@ repos:
   rev: v0.7.2.1
   hooks:
   - id: shellcheck
-- repo: https://github.com/markdownlint/markdownlint
-  rev: v0.11.0
+- repo: https://github.com/DavidAnson/markdownlint-cli2
+  rev: v0.2.0
   hooks:
-  - id: markdownlint
-    language_version: 2.6.6
+  - id: markdownlint-cli2
 - repo: local
   hooks:
   - id: qsscheck
