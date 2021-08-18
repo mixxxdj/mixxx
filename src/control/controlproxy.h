@@ -86,25 +86,11 @@ class ControlProxy : public QObject {
         Qt::ConnectionType copConnection = static_cast<Qt::ConnectionType>(
                 requestedConnectionType | Qt::UniqueConnection);
 
-        // clazy requires us to to pass a member function to connect() directly
-        // (i.e. w/o and intermediate variable) when used with
-        // Qt::UniqueConnection. Otherwise it detects a false positive and
-        // throws a [-Wclazy-lambda-unique-connection] warning.
-        switch (requestedConnectionType) {
-        case Qt::AutoConnection:
-            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedAuto, copConnection);
-            break;
-        case Qt::DirectConnection:
-            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedDirect, copConnection);
-            break;
-        case Qt::QueuedConnection:
-            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedQueued, copConnection);
-            break;
-        default:
-            // Should be unreachable, but just to make sure ;-)
-            DEBUG_ASSERT(false);
-            return false;
-        }
+        connect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlProxy::slotValueChanged,
+                copConnection);
         return true;
     }
 
@@ -173,24 +159,9 @@ class ControlProxy : public QObject {
     void valueChanged(double);
 
   protected slots:
-    /// Receives the value from the master control by a unique direct connection
-    void slotValueChangedDirect(double v, QObject* pSetter) {
-        if (pSetter != this) {
-            // This is base implementation of this function without scaling
-            emit valueChanged(v);
-        }
-    }
-
-    /// Receives the value from the master control by a unique auto connection
-    void slotValueChangedAuto(double v, QObject* pSetter) {
-        if (pSetter != this) {
-            // This is base implementation of this function without scaling
-            emit valueChanged(v);
-        }
-    }
-
-    /// Receives the value from the master control by a unique Queued connection
-    void slotValueChangedQueued(double v, QObject* pSetter) {
+    /// Receives the value from the underlying control and emits the
+    /// `valueChanged` signal
+    void slotValueChanged(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
             emit valueChanged(v);
