@@ -281,11 +281,11 @@
   [#2938](https://github.com/mixxxdj/mixxx/pull/2938)
   [#2980](https://github.com/mixxxdj/mixxx/pull/2980)
   [#3006](https://github.com/mixxxdj/mixxx/pull/3006)
-* Logging: Add support for `QT_MESSAGE_PATTERN` environment variable [#3204](https://github.com/mixxxdj/mixxx/pull/3204)
+* Logging: Add support for `QT_MESSAGE_PATTERN` environment variable
+  [#3204](https://github.com/mixxxdj/mixxx/pull/3204)
+  [#3518](https://github.com/mixxxdj/mixxx/pull/3518)
 * Colored logging console output
   [#3197](https://github.com/mixxxdj/mixxx/pull/3197)
-* Fix an issue with the `%{function}` placeholder in the QT_MESSAGE_PATTERN for custom logging
-  [#3518](https://github.com/mixxxdj/mixxx/pull/3518)
 * Improve command line argument parser
   [#3640](https://github.com/mixxxdj/mixxx/pull/3640)
   [#3962](https://github.com/mixxxdj/mixxx/pull/3962)
