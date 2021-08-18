@@ -39,7 +39,7 @@
   [#3596](https://github.com/mixxxdj/mixxx/pull/3596)
   [#3740](https://github.com/mixxxdj/mixxx/pull/3740)
 * Improve presentation of the history library tree [#2996](https://github.com/mixxxdj/mixxx/pull/2996)
-* Don't store or update medadata of missing tracks [#3811](https://github.com/mixxxdj/mixxx/pull/3811)
+* Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags [#3811](https://github.com/mixxxdj/mixxx/pull/3811)
 * Code improvements and minor bug fixes when importing track metadata
   [#3851](https://github.com/mixxxdj/mixxx/pull/3851)
   [#3858](https://github.com/mixxxdj/mixxx/pull/3858)
