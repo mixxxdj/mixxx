@@ -23,7 +23,7 @@
   [#4102](https://github.com/mixxxdj/mixxx/pull/4102)
   [#4143](https://github.com/mixxxdj/mixxx/pull/4143)
 * Rekordbox: Save all loops and correct AAC timing offset for CoreAudio [#2779](https://github.com/mixxxdj/mixxx/pull/2779)
-* Improve messages during schema migration [#2979](https://github.com/mixxxdj/mixxx/pull/2979)
+* Improve log messages during schema migration [#2979](https://github.com/mixxxdj/mixxx/pull/2979)
 * Search related tracks in collection
   [#3181](https://github.com/mixxxdj/mixxx/pull/3181)
   [#3213](https://github.com/mixxxdj/mixxx/pull/3213)
