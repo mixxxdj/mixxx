@@ -274,7 +274,9 @@
   [#3545](https://github.com/mixxxdj/mixxx/pull/3545)
 * Add Random Track Control to AutoDJ [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
 * Add support for saving loops as hotcues [#2194](https://github.com/mixxxdj/mixxx/pull/2194) [lp:1367159](https://bugs.launchpad.net/mixxx/+bug/1367159)
-* Make use of inclusive language [#2894](https://github.com/mixxxdj/mixxx/pull/2894)
+* Make use of inclusive language
+  [#2894](https://github.com/mixxxdj/mixxx/pull/2894)
+  [#3868](https://github.com/mixxxdj/mixxx/pull/3868)
 * Add Noise effect [#2921](https://github.com/mixxxdj/mixxx/pull/2921)
 * Improve Unittests
   [#2938](https://github.com/mixxxdj/mixxx/pull/2938)
@@ -292,7 +294,6 @@
   [#4036](https://github.com/mixxxdj/mixxx/pull/4036)
   [#4170](https://github.com/mixxxdj/mixxx/pull/4170)
   [#4057](https://github.com/mixxxdj/mixxx/pull/4057)
-* Rename Master EQ to Main EQ for an inclusive language [#3868](https://github.com/mixxxdj/mixxx/pull/3868)
 * Improve message when dealing with macOs sandbox [#4018](https://github.com/mixxxdj/mixxx/pull/4018) [lp:1921541](https://bugs.launchpad.net/mixxx/+bug/1921541)
 * CONTRIBUTING.md: move content from DocuWiki [#2699](https://github.com/mixxxdj/mixxx/pull/2699)
 * Misc. refactorings
