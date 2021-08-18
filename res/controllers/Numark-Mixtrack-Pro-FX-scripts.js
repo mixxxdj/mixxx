@@ -368,28 +368,39 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.scratchToggle = new components.Button({
+        // disconnects/connects are needed for the following scenario:
+        // 1. scratch mode is enabled (light on)
+        // 2. shift down
+        // 3. scratch button down
+        // 4. shift up
+        // 5. scratch button up
+        // scratch mode light is now off, should be on
+        key: "reverseroll",
         midi: [0x90 + channel, 0x07],
         shift: function() {
-            this.inKey = "reverseroll";
-            this.outKey = "reverseroll";
             this.input = components.Button.prototype.input;
             this.connect();
             this.trigger();
         },
         unshift: function() {
-            this.disconnect();
+            this.disconnect(); // disconnect reverseroll light
             this.input = function(channel, control, value) {
                 if (!this.isPress(channel, control, value)) {
                     return;
                 }
                 deck.scratchModeEnabled = !deck.scratchModeEnabled;
+
+                // change the scratch mode status light
                 midi.sendShortMsg(this.midi[0], this.midi[1], deck.scratchModeEnabled ? this.on : this.off);
             };
 
+            // set current scratch mode status light
             midi.sendShortMsg(this.midi[0], this.midi[1], deck.scratchModeEnabled ? this.on : this.off);
 
-            var bleepEnabled = engine.getParameter(this.group, "reverseroll") === 1;
-            midi.sendShortMsg(this.midi[0], this.midi[1] + this.shiftOffset, bleepEnabled ? this.on : this.off);
+            // reverseroll is now disabled (because shift is not held down), disable shifted light.
+            // when shifting the light will be connected to reverseroll. sending this midi here
+            // prevents the light from blinking when shifting in some cases.
+            midi.sendShortMsg(this.midi[0], this.midi[1] + this.shiftOffset, this.off);
         },
         shiftControl: true,
         sendShifted: true,
