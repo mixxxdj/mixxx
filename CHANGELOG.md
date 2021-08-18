@@ -152,7 +152,7 @@
   [#4186](https://github.com/mixxxdj/mixxx/pull/4186)
 
 ### Controller
-* Never raise a fatal error if a controller mapping tries access a non-existant control object [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
+* Never raise a fatal error if a controller mapping tries access a non-existent control object [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
 * Update Novation Launchpad controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600)
 * Add generic USB HID "Set Reports (Feature)" functionality [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
 * Add support for reading the status of an HID controller (like MIDI SYSEX) [#3317](https://github.com/mixxxdj/mixxx/pull/3317)
