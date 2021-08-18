@@ -272,7 +272,6 @@
   [#3113](https://github.com/mixxxdj/mixxx/pull/3113)
   [#3089](https://github.com/mixxxdj/mixxx/pull/3089)
   [#3545](https://github.com/mixxxdj/mixxx/pull/3545)
-* Add Random Track Control to AutoDJ [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
 * Add support for saving loops as hotcues [#2194](https://github.com/mixxxdj/mixxx/pull/2194) [lp:1367159](https://bugs.launchpad.net/mixxx/+bug/1367159)
 * Make use of inclusive language
   [#2894](https://github.com/mixxxdj/mixxx/pull/2894)
