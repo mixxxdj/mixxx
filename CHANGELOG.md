@@ -8,7 +8,7 @@
 
 ### Music Library
 * Ensure that tracks with an invalid bpm are re-analyzed [#2776](https://github.com/mixxxdj/mixxx/pull/2776)
-* Engine Prime export using djinterop
+* Add support for exporting crates, playlists and the library to Engine Prime and Denon standalone controllers
   [#2753](https://github.com/mixxxdj/mixxx/pull/2753)
   [#2932](https://github.com/mixxxdj/mixxx/pull/2932)
   [#3102](https://github.com/mixxxdj/mixxx/pull/3102)
