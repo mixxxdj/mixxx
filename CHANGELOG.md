@@ -78,7 +78,7 @@
   [#4162](https://github.com/mixxxdj/mixxx/pull/4162)
 
 ### Beat Sync
-* beat sync with explicit leader feature
+* Add support for setting an explicit leader for sync lock
   [#2768](https://github.com/mixxxdj/mixxx/pull/2768)
   [#3099](https://github.com/mixxxdj/mixxx/pull/3099)
   [#3695](https://github.com/mixxxdj/mixxx/pull/3695)
