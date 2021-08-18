@@ -1,6 +1,7 @@
 #include "library/trackcollectionmanager.h"
 
 #include "library/externaltrackcollection.h"
+#include "library/library_prefs.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/trackcollection.h"
 #include "moc_trackcollectionmanager.cpp"
@@ -281,7 +282,11 @@ void TrackCollectionManager::exportTrackMetadata(
     // last synchronized. Exporting metadata will update this time
     // stamp on the track object!
     if (pTrack->isMarkedForMetadataExport() ||
-            (pTrack->isDirty() && m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
+            (pTrack->isDirty() &&
+                    m_pConfig &&
+                    m_pConfig->getValueString(
+                                     mixxx::library::prefs::kSyncTrackMetadataExportConfigKey)
+                                    .toInt() == 1)) {
         switch (mode) {
         case TrackMetadataExportMode::Immediate:
             // Export track metadata now by saving as file tags.
