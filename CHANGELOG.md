@@ -32,7 +32,7 @@
   [#3171](https://github.com/mixxxdj/mixxx/pull/3171)
   [#3262](https://github.com/mixxxdj/mixxx/pull/3262)
 * Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
-* Add new last_played_at column
+* Add new library column that shows the last time a track was played
   [#3140](https://github.com/mixxxdj/mixxx/pull/3140)
   [#3457](https://github.com/mixxxdj/mixxx/pull/3457)
   [#3494](https://github.com/mixxxdj/mixxx/pull/3494)
