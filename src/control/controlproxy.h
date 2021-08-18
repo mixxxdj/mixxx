@@ -94,11 +94,6 @@ class ControlProxy : public QObject {
         return true;
     }
 
-    /// Called from update();
-    virtual void emitValueChanged() {
-        emit valueChanged(get());
-    }
-
     inline bool valid() const {
         return m_pControl != nullptr;
     }

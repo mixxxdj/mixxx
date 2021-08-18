@@ -22,8 +22,8 @@ class ControlObjectScript : public ControlProxy {
             return m_scriptConnections.first(); };
     void disconnectAllConnectionsToFunction(const QJSValue& function);
 
-    // Called from update();
-    void emitValueChanged() override {
+    /// Called from `ControlEngineScriptLegacy::trigger`
+    void emitValueChanged() {
         emit trigger(get(), this);
     }
 
