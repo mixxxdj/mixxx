@@ -3,6 +3,7 @@
 #include <QMutexLocker>
 
 #include "control/controlframepos.h"
+#include "control/controlframeposproxy.h"
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -95,16 +96,19 @@ CueControl::CueControl(const QString& group,
     Q_UNUSED(CUE_MODE_PIONEER);
     createControls();
 
-    m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
+    m_pTrackEndPosition = std::make_unique<ControlFramePosProxy>(ConfigKey(group, "track_samples"));
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
     connect(m_pQuantizeEnabled, &ControlObject::valueChanged,
             this, &CueControl::quantizeChanged,
             Qt::DirectConnection);
 
-    m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
-    m_pLoopStartPosition = make_parented<ControlProxy>(group, "loop_start_position", this);
-    m_pLoopEndPosition = make_parented<ControlProxy>(group, "loop_end_position", this);
+    m_pClosestBeatPosition = std::make_unique<ControlFramePosProxy>(
+            ConfigKey(group, "beat_closest"));
+    m_pLoopStartPosition = make_parented<ControlFramePosProxy>(
+            ConfigKey(group, "loop_start_position"), this);
+    m_pLoopEndPosition = make_parented<ControlFramePosProxy>(
+            ConfigKey(group, "loop_end_position"), this);
     m_pLoopEnabled = make_parented<ControlProxy>(group, "loop_enabled", this);
     m_pBeatLoopActivate = make_parented<ControlProxy>(group, "beatloop_activate", this);
     m_pBeatLoopSize = make_parented<ControlProxy>(group, "beatloop_size", this);
@@ -766,12 +770,8 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
     case HotcueSetMode::Loop: {
         if (loopEnabled) {
             // If a loop is enabled, save the current loop
-            cueStartPosition =
-                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                            m_pLoopStartPosition->get());
-            cueEndPosition =
-                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                            m_pLoopEndPosition->get());
+            cueStartPosition = m_pLoopStartPosition->toFramePos();
+            cueEndPosition = m_pLoopEndPosition->toFramePos();
         } else {
             // If no loop is enabled, save a loop starting from the current
             // position and with the current beatloop size
@@ -969,9 +969,7 @@ void CueControl::hotcueCueLoop(HotcueControl* pControl, double value) {
         setCurrentSavedLoopControlAndActivate(nullptr);
         const mixxx::audio::FramePos startPosition = pCue->getPosition();
         const bool loopActive = m_pLoopEnabled->toBool() &&
-                startPosition ==
-                        mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                                m_pLoopStartPosition->get());
+                startPosition == m_pLoopStartPosition->toFramePos();
         setBeatLoop(startPosition, !loopActive);
         break;
     }
@@ -1111,10 +1109,8 @@ void CueControl::hotcuePositionChanged(
         return;
     }
 
+    const auto trackEndPosition = m_pTrackEndPosition->toFramePos();
     // TODO: Remove this check if we support positions < 0
-    const auto trackEndPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pTrackSamples->get());
     if (newPosition <= mixxx::audio::kStartFramePos ||
             (trackEndPosition.isValid() && newPosition >= trackEndPosition)) {
         return;
@@ -2017,14 +2013,12 @@ mixxx::audio::FramePos CueControl::getQuantizedCurrentPosition() {
         return info.currentPosition;
     }
 
-    const auto closestBeat =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pClosestBeat->get());
+    const auto closestBeatPosition = m_pClosestBeatPosition->toFramePos();
     // Note: closestBeat can be an interpolated beat past the end of the track,
     // which cannot be reached.
-    if (closestBeat.isValid() && info.trackEndPosition.isValid() &&
-            closestBeat <= info.trackEndPosition) {
-        return closestBeat;
+    if (closestBeatPosition.isValid() && info.trackEndPosition.isValid() &&
+            closestBeatPosition <= info.trackEndPosition) {
+        return closestBeatPosition;
     }
 
     return info.currentPosition;
@@ -2036,11 +2030,9 @@ mixxx::audio::FramePos CueControl::quantizeCuePoint(mixxx::audio::FramePos posit
         return mixxx::audio::kInvalidFramePos;
     }
 
-    // We need to use m_pTrackSamples here because FrameInfo is set later by
+    // We need to use m_pTrackEndPosition here because FrameInfo is set later by
     // the engine and not during EngineBuffer::slotTrackLoaded.
-    const auto trackEndPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pTrackSamples->get());
+    const auto trackEndPosition = m_pTrackEndPosition->toFramePos();
 
     VERIFY_OR_DEBUG_ASSERT(trackEndPosition.isValid()) {
         return mixxx::audio::kInvalidFramePos;
@@ -2187,13 +2179,9 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
 
     DEBUG_ASSERT(pSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
     DEBUG_ASSERT(pSavedLoopControl->getCue() &&
-            pSavedLoopControl->getCue()->getPosition() ==
-                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                            m_pLoopStartPosition->get()));
+            pSavedLoopControl->getCue()->getPosition() == m_pLoopStartPosition->toFramePos());
     DEBUG_ASSERT(pSavedLoopControl->getCue() &&
-            pSavedLoopControl->getCue()->getEndPosition() ==
-                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                            m_pLoopEndPosition->get()));
+            pSavedLoopControl->getCue()->getEndPosition() == m_pLoopEndPosition->toFramePos());
 
     if (enabled) {
         pSavedLoopControl->setStatus(HotcueControl::Status::Active);

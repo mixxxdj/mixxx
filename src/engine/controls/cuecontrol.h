@@ -5,6 +5,7 @@
 #include <QList>
 #include <QMutex>
 
+#include "control/controlframeposproxy.h"
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/colorpalettesettings.h"
@@ -17,6 +18,7 @@
 
 class ControlObject;
 class ControlFramePos;
+class ControlFramePosProxy;
 class ControlPushButton;
 class ControlIndicator;
 
@@ -284,9 +286,9 @@ class CueControl : public EngineControl {
     ControlObject* m_pPlay;
     ControlObject* m_pStopButton;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pClosestBeat;
-    parented_ptr<ControlProxy> m_pLoopStartPosition;
-    parented_ptr<ControlProxy> m_pLoopEndPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pClosestBeatPosition;
+    parented_ptr<ControlFramePosProxy> m_pLoopStartPosition;
+    parented_ptr<ControlFramePosProxy> m_pLoopEndPosition;
     parented_ptr<ControlProxy> m_pLoopEnabled;
     parented_ptr<ControlProxy> m_pBeatLoopActivate;
     parented_ptr<ControlProxy> m_pBeatLoopSize;
@@ -296,7 +298,7 @@ class CueControl : public EngineControl {
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControls;
 
-    ControlObject* m_pTrackSamples;
+    std::unique_ptr<ControlFramePosProxy> m_pTrackEndPosition;
     ControlFramePos* m_pCuePoint;
     ControlObject* m_pCueMode;
     ControlPushButton* m_pCueSet;
