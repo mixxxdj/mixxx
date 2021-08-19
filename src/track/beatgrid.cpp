@@ -95,7 +95,7 @@ BeatsPointer BeatGrid::makeBeatGrid(
 }
 
 // static
-BeatsPointer BeatGrid::makeBeatGrid(
+BeatsPointer BeatGrid::fromByteArray(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {

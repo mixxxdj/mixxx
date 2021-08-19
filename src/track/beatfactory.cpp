@@ -12,25 +12,6 @@ const QString kRoundingVersion = QStringLiteral("V4");
 
 } // namespace
 
-mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
-        mixxx::audio::SampleRate sampleRate,
-        const QString& beatsVersion,
-        const QString& beatsSubVersion,
-        const QByteArray& beatsSerialized) {
-    if (beatsVersion == BEAT_GRID_1_VERSION ||
-        beatsVersion == BEAT_GRID_2_VERSION) {
-        auto pGrid = mixxx::BeatGrid::makeBeatGrid(sampleRate, beatsSubVersion, beatsSerialized);
-        qDebug() << "Successfully deserialized BeatGrid";
-        return pGrid;
-    } else if (beatsVersion == BEAT_MAP_VERSION) {
-        auto pMap = mixxx::BeatMap::makeBeatMap(sampleRate, beatsSubVersion, beatsSerialized);
-        qDebug() << "Successfully deserialized BeatMap";
-        return pMap;
-    }
-    qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
-    return mixxx::BeatsPointer();
-}
-
 mixxx::BeatsPointer BeatFactory::makeBeatGrid(
         mixxx::audio::SampleRate sampleRate,
         mixxx::Bpm bpm,

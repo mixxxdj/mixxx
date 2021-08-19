@@ -30,6 +30,12 @@ class Beats {
   public:
     virtual ~Beats() = default;
 
+    static mixxx::BeatsPointer fromByteArray(
+            mixxx::audio::SampleRate sampleRate,
+            const QString& beatsVersion,
+            const QString& beatsSubVersion,
+            const QByteArray& beatsSerialized);
+
     enum class BpmScale {
         Double,
         Halve,

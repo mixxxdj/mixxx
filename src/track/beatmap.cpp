@@ -202,7 +202,7 @@ BeatMap::BeatMap(const BeatMap& other)
 }
 
 // static
-BeatsPointer BeatMap::makeBeatMap(
+BeatsPointer BeatMap::fromByteArray(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {

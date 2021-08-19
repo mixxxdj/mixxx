@@ -1,6 +1,36 @@
 #include "track/beats.h"
 
+#include "track/beatgrid.h"
+#include "track/beatmap.h"
+
 namespace mixxx {
+
+// static
+mixxx::BeatsPointer Beats::fromByteArray(
+        mixxx::audio::SampleRate sampleRate,
+        const QString& beatsVersion,
+        const QString& beatsSubVersion,
+        const QByteArray& beatsSerialized) {
+    mixxx::BeatsPointer pBeats = nullptr;
+    if (beatsVersion == BEAT_GRID_1_VERSION || beatsVersion == BEAT_GRID_2_VERSION) {
+        pBeats = mixxx::BeatGrid::fromByteArray(sampleRate, beatsSubVersion, beatsSerialized);
+    } else if (beatsVersion == BEAT_MAP_VERSION) {
+        pBeats = mixxx::BeatMap::fromByteArray(sampleRate, beatsSubVersion, beatsSerialized);
+    } else {
+        qWarning().nospace() << "Failed to deserialize Beats (" << beatsVersion
+                             << "): Invalid beats version";
+        return nullptr;
+    }
+
+    if (!pBeats) {
+        qWarning().nospace() << "Failed to deserialize Beats (" << beatsVersion
+                             << "): Parsing failed";
+        return nullptr;
+    }
+
+    qDebug().nospace() << "Successfully deserialized Beats (" << beatsVersion << ")";
+    return pBeats;
+}
 
 int Beats::numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const {
     audio::FramePos lastPosition = audio::kStartFramePos;
