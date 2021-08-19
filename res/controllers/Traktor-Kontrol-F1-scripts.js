@@ -824,4 +824,3 @@ KontrolF1.hotcue = function(button,field) {
         name = button.name + '_activate';
     engine.setValue(button.group,name,true);
 }
-

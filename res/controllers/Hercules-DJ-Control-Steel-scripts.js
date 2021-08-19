@@ -1022,4 +1022,3 @@ HerculesSteel.rateChange = function (value, group) {
         engine.beginTimer(30, "HerculesSteel.GetDeck('" + group + "').Buttons.PitchReset.setLed(HerculesSteel.LedState.off)", true);
     }
 };
-
