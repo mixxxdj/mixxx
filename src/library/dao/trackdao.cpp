@@ -1235,7 +1235,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
     bool bpmLocked = record.value(column + 4).toBool();
-    const mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
+    const mixxx::BeatsPointer pBeats = mixxx::Beats::fromByteArray(
             pTrack->getSampleRate(), beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
         if (bpmLocked) {
