@@ -300,7 +300,7 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     EXPECT_FRAMEPOS_EQ(kTrackEndPosition * m_pPlayPosition->get(),
             mixxx::audio::FramePos{(44100 * 4) + 250});
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{2}, m_pBeatLoopSize);
+    EXPECT_EQ(4, m_pBeatLoopSize->get());
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
 
     // Check that beatloop_4_enabled is reset to 0 when changing the loop size.
