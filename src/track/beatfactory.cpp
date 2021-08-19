@@ -19,11 +19,11 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
         const QByteArray& beatsSerialized) {
     if (beatsVersion == BEAT_GRID_1_VERSION ||
         beatsVersion == BEAT_GRID_2_VERSION) {
-        auto pGrid = mixxx::BeatGrid::makeBeatGrid(sampleRate, beatsSubVersion, beatsSerialized);
+        auto pGrid = mixxx::BeatGrid::fromByteArray(sampleRate, beatsSubVersion, beatsSerialized);
         qDebug() << "Successfully deserialized BeatGrid";
         return pGrid;
     } else if (beatsVersion == BEAT_MAP_VERSION) {
-        auto pMap = mixxx::BeatMap::makeBeatMap(sampleRate, beatsSubVersion, beatsSerialized);
+        auto pMap = mixxx::BeatMap::fromByteArray(sampleRate, beatsSubVersion, beatsSerialized);
         qDebug() << "Successfully deserialized BeatMap";
         return pMap;
     }

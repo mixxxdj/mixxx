@@ -23,7 +23,7 @@ class BeatMap final : public Beats {
 
     ~BeatMap() override = default;
 
-    static BeatsPointer makeBeatMap(
+    static BeatsPointer fromByteArray(
             audio::SampleRate sampleRate,
             const QString& subVersion,
             const QByteArray& byteArray);

@@ -23,7 +23,7 @@ class BeatGrid final : public Beats {
             mixxx::Bpm bpm,
             mixxx::audio::FramePos firstBeatPos);
 
-    static BeatsPointer makeBeatGrid(
+    static BeatsPointer fromByteArray(
             audio::SampleRate sampleRate,
             const QString& subVersion,
             const QByteArray& byteArray);
