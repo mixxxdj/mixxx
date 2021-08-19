@@ -33,9 +33,9 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
         updateClosestBeat(mixxx::audio::kStartFramePos);
     } else {
         m_pBeats.clear();
-        m_pCOPrevBeat->set(mixxx::audio::kInvalidFramePos);
-        m_pCONextBeat->set(mixxx::audio::kInvalidFramePos);
-        m_pCOClosestBeat->set(mixxx::audio::kInvalidFramePos);
+        m_pCOPrevBeat->reset();
+        m_pCONextBeat->reset();
+        m_pCOClosestBeat->reset();
     }
 }
 
