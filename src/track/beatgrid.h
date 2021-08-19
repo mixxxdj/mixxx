@@ -43,13 +43,10 @@ class BeatGrid final : public Beats {
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
-    audio::FramePos findNextBeat(audio::FramePos position) const override;
-    audio::FramePos findPrevBeat(audio::FramePos position) const override;
     bool findPrevNextBeats(audio::FramePos position,
             audio::FramePos* prevBeatPosition,
             audio::FramePos* nextBeatPosition,
             bool snapToNearBeats) const override;
-    audio::FramePos findClosestBeat(audio::FramePos position) const override;
     audio::FramePos findNthBeat(audio::FramePos position, int n) const override;
     std::unique_ptr<BeatIterator> findBeats(audio::FramePos startPosition,
             audio::FramePos endPosition) const override;
@@ -83,7 +80,7 @@ class BeatGrid final : public Beats {
     mixxx::Bpm bpm() const;
 
     // For internal use only.
-    bool isValid() const;
+    bool isValid() const override;
 
     // The sub-version of this beatgrid.
     const QString m_subVersion;

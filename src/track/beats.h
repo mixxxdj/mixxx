@@ -75,12 +75,12 @@ class Beats {
     /// Starting from frame position `position`, return the frame position of
     /// the next beat in the track, or an invalid position if none exists. If
     /// `position` refers to the location of a beat, `position` is returned.
-    virtual audio::FramePos findNextBeat(audio::FramePos position) const = 0;
+    audio::FramePos findNextBeat(audio::FramePos position) const;
 
     /// Starting from frame position `position`, return the frame position of
     /// the previous beat in the track, or an invalid position if none exists.
     /// If `position` refers to the location of beat, `position` is returned.
-    virtual audio::FramePos findPrevBeat(audio::FramePos position) const = 0;
+    audio::FramePos findPrevBeat(audio::FramePos position) const;
 
     /// Starting from frame position `position`, fill the frame position of the
     /// previous beat and next beat. Either can be invalid if none exists. If
@@ -100,7 +100,7 @@ class Beats {
 
     /// Starting from frame position `position`, return the frame position of
     /// the closest beat in the track, or an invalid position if none exists.
-    virtual audio::FramePos findClosestBeat(audio::FramePos position) const = 0;
+    audio::FramePos findClosestBeat(audio::FramePos position) const;
 
     /// Find the Nth beat from frame position `position`. Works with both
     /// positive and negative values of n. Calling findNthBeat with `n=0` is
@@ -155,6 +155,10 @@ class Beats {
 
     /// Adjust the beats so the global average BPM matches `bpm`.
     virtual BeatsPointer setBpm(mixxx::Bpm bpm) = 0;
+
+  protected:
+    /// For internal use only.
+    virtual bool isValid() const = 0;
 };
 
 } // namespace mixxx
