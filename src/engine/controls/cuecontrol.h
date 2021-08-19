@@ -105,15 +105,14 @@ class HotcueControl : public QObject {
     /// Used for caching the preview state of this hotcue control
     /// for the case the cue is deleted during preview.
     mixxx::audio::FramePos getPreviewingPosition() const {
-        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                m_previewingPosition.getValue());
+        return m_previewingPosition.getValue();
     }
 
     /// Used for caching the preview state of this hotcue control
     /// for the case the cue is deleted during preview.
     void cachePreviewingStartState() {
         if (m_pCue) {
-            m_previewingPosition.setValue(m_pCue->getPosition().toEngineSamplePosMaybeInvalid());
+            m_previewingPosition.setValue(m_pCue->getPosition());
             m_previewingType.setValue(m_pCue->getType());
         } else {
             m_previewingType.setValue(mixxx::CueType::Invalid);
@@ -183,7 +182,7 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlPushButton> m_hotcueClear;
 
     ControlValueAtomic<mixxx::CueType> m_previewingType;
-    ControlValueAtomic<double> m_previewingPosition;
+    ControlValueAtomic<mixxx::audio::FramePos> m_previewingPosition;
 };
 
 class CueControl : public EngineControl {
