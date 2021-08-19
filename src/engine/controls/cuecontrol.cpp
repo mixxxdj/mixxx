@@ -430,13 +430,13 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
         m_pCuePoint->reset();
-        m_pIntroStartPosition->set(mixxx::audio::kInvalidFramePos);
+        m_pIntroStartPosition->reset();
         m_pIntroStartEnabled->forceSet(0.0);
-        m_pIntroEndPosition->set(mixxx::audio::kInvalidFramePos);
+        m_pIntroEndPosition->reset();
         m_pIntroEndEnabled->forceSet(0.0);
-        m_pOutroStartPosition->set(mixxx::audio::kInvalidFramePos);
+        m_pOutroStartPosition->reset();
         m_pOutroStartEnabled->forceSet(0.0);
-        m_pOutroEndPosition->set(mixxx::audio::kInvalidFramePos);
+        m_pOutroEndPosition->reset();
         m_pOutroEndEnabled->forceSet(0.0);
         setHotcueFocusIndex(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
@@ -612,9 +612,9 @@ void CueControl::loadCuesFromTrack() {
         m_pIntroEndPosition->set(endPosition);
         m_pIntroEndEnabled->forceSet(endPosition.isValid());
     } else {
-        m_pIntroStartPosition->set(mixxx::audio::kInvalidFramePos);
+        m_pIntroStartPosition->reset();
         m_pIntroStartEnabled->forceSet(0.0);
-        m_pIntroEndPosition->set(mixxx::audio::kInvalidFramePos);
+        m_pIntroEndPosition->reset();
         m_pIntroEndEnabled->forceSet(0.0);
     }
 
@@ -627,9 +627,9 @@ void CueControl::loadCuesFromTrack() {
         m_pOutroEndPosition->set(endPosition);
         m_pOutroEndEnabled->forceSet(endPosition.isValid());
     } else {
-        m_pOutroStartPosition->set(mixxx::audio::kInvalidFramePos);
+        m_pOutroStartPosition->reset();
         m_pOutroStartEnabled->forceSet(0.0);
-        m_pOutroEndPosition->set(mixxx::audio::kInvalidFramePos);
+        m_pOutroEndPosition->reset();
         m_pOutroEndEnabled->forceSet(0.0);
     }
 
