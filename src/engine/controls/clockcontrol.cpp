@@ -1,5 +1,6 @@
 #include "engine/controls/clockcontrol.h"
 
+#include "control/controlframeposproxy.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
@@ -17,10 +18,14 @@ constexpr double kSignificiantRateThreshold =
 
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
-          m_pCOBeatActive(std::make_unique<ControlObject>(ConfigKey(group, "beat_active"))),
-          m_pLoopEnabled(std::make_unique<ControlProxy>(group, "loop_enabled", this)),
-          m_pLoopStartPosition(std::make_unique<ControlProxy>(group, "loop_start_position", this)),
-          m_pLoopEndPosition(std::make_unique<ControlProxy>(group, "loop_end_position", this)),
+          m_pCOBeatActive(std::make_unique<ControlObject>(
+                  ConfigKey(group, "beat_active"))),
+          m_pLoopEnabled(
+                  std::make_unique<ControlProxy>(group, "loop_enabled", this)),
+          m_pLoopStartPosition(std::make_unique<ControlFramePosProxy>(
+                  ConfigKey(group, "loop_start_position"))),
+          m_pLoopEndPosition(std::make_unique<ControlFramePosProxy>(
+                  ConfigKey(group, "loop_end_position"))),
           m_lastPlayDirectionWasForwards(true),
           m_lastEvaluatedPosition(mixxx::audio::kStartFramePos),
           m_prevBeatPosition(mixxx::audio::kStartFramePos),
@@ -92,12 +97,8 @@ void ClockControl::updateIndicators(const double dRate,
 
     // Loops need special handling
     if (m_pLoopEnabled->toBool()) {
-        const auto loopStartPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pLoopStartPosition->get());
-        const auto loopEndPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pLoopEndPosition->get());
+        const auto loopStartPosition = m_pLoopStartPosition->toFramePos();
+        const auto loopEndPosition = m_pLoopEndPosition->toFramePos();
 
         if (m_prevBeatPosition.isValid() && m_nextBeatPosition.isValid() &&
                 loopStartPosition.isValid() && loopEndPosition.isValid() &&

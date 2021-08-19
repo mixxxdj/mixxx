@@ -9,6 +9,7 @@
 #include "track/track_decl.h"
 
 class ControlProxy;
+class ControlFramePosProxy;
 class ControlObject;
 
 class ClockControl: public EngineControl {
@@ -31,8 +32,8 @@ class ClockControl: public EngineControl {
 
     // ControlObjects that come from LoopingControl
     std::unique_ptr<ControlProxy> m_pLoopEnabled;
-    std::unique_ptr<ControlProxy> m_pLoopStartPosition;
-    std::unique_ptr<ControlProxy> m_pLoopEndPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pLoopStartPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pLoopEndPosition;
 
     // True is forward direction, False is reverse
     bool m_lastPlayDirectionWasForwards;
