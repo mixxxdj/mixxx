@@ -10,27 +10,21 @@
 /// It is basically a PIMPL version of a ControlDoublePrivate Shared pointer
 class PollingControlProxy {
   public:
-    PollingControlProxy() {
-        initialize(ConfigKey());
+    PollingControlProxy(ControlFlags flags = ControlFlag::None)
+            : PollingControlProxy(ConfigKey(), flags) {
     }
 
-    PollingControlProxy(const QString& g, const QString& i) {
-        initialize(ConfigKey(g, i));
+    PollingControlProxy(const QString& g, const QString& i, ControlFlags flags = ControlFlag::None)
+            : PollingControlProxy(ConfigKey(g, i), flags) {
     }
 
-    PollingControlProxy(const ConfigKey& key) {
-        initialize(key);
-    }
-
-    void initialize(const ConfigKey& key) {
-        // Don't bother looking up the control if key is NULL. Prevents log spew.
-        if (key.isValid()) {
-            m_pControl = ControlDoublePrivate::getControl(key, ControlFlag::None);
-        }
-
+    PollingControlProxy(const ConfigKey& key, ControlFlags flags = ControlFlag::None) {
+        m_pControl = ControlDoublePrivate::getControl(key, flags);
         if (!m_pControl) {
+            DEBUG_ASSERT(flags & ControlFlag::AllowMissingOrInvalid);
             m_pControl = ControlDoublePrivate::getDefaultControl();
         }
+        DEBUG_ASSERT(m_pControl);
     }
 
     bool valid() const {
