@@ -97,6 +97,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 
 //static
 void ControlDoublePrivate::setUserConfig(const UserSettingsPointer& pConfig) {
+    DEBUG_ASSERT(pConfig != s_pUserConfig);
     s_pUserConfig = pConfig;
 }
 
