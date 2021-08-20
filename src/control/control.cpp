@@ -30,8 +30,7 @@ QWeakPointer<ControlDoublePrivate> s_pDefaultCO;
 } // namespace
 
 ControlDoublePrivate::ControlDoublePrivate()
-        : m_pCreatorCO(nullptr),
-          m_bPersistInConfiguration(false),
+        : m_bPersistInConfiguration(false),
           m_bIgnoreNops(true),
           m_bTrack(false),
           m_trackType(Stat::UNSPECIFIED),
