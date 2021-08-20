@@ -26,7 +26,7 @@ static QHash<ConfigKey, ConfigKey> s_qCOAliasHash
         GUARDED_BY(s_qCOHashMutex);
 
 /// is used instead of a nullptr, helps to omit null checks everywhere
-static QWeakPointer<ControlDoublePrivate> s_defaultCO;
+static QWeakPointer<ControlDoublePrivate> s_pDefaultCO;
 } // namespace
 
 ControlDoublePrivate::ControlDoublePrivate()
@@ -184,16 +184,16 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 
 //static
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getDefaultControl() {
-    auto defaultCO = QSharedPointer<ControlDoublePrivate>(s_defaultCO);
+    auto defaultCO = QSharedPointer<ControlDoublePrivate>(s_pDefaultCO);
     if (!defaultCO) {
         // Try again with the mutex locked to protect against creating two
         // ControlDoublePrivateConst objects. Access to s_defaultCO itself is
         // thread save.
         MMutexLocker locker(&s_qCOHashMutex);
-        defaultCO = QSharedPointer<ControlDoublePrivate>(s_defaultCO);
+        defaultCO = QSharedPointer<ControlDoublePrivate>(s_pDefaultCO);
         if (!defaultCO) {
             defaultCO = QSharedPointer<ControlDoublePrivate>(new ControlDoublePrivateConst());
-            s_defaultCO = defaultCO;
+            s_pDefaultCO = defaultCO;
         }
     }
     return defaultCO;
