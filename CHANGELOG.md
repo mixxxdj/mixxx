@@ -18,6 +18,7 @@
 
 * Install udev rule file to the correct location automatically in the CMake install step when CMAKE_INSTALL_PREFIX is `/` or `/usr`. It is no longer necessary to manually copy the udev rule file in packaging scripts. [#4126](https://github.com/mixxxdj/mixxx/pull/4126)
 * Fix various build issues on FreeBSD [#4122](https://github.com/mixxxdj/mixxx/pull/4122) [#4123](https://github.com/mixxxdj/mixxx/pull/4123) [#4124](https://github.com/mixxxdj/mixxx/pull/4124)
+* Fix detection of system hidapi library. The system hidapi library is linked if the version is >= 0.10.1; otherwise a vendored copy is used. [#4215](https://github.com/mixxxdj/mixxx/pull/4215)
 
 ## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (2021-06-28)
 
