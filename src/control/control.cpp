@@ -63,8 +63,10 @@ void ControlDoublePrivate::initialize(double defaultValue) {
     double value = defaultValue;
     if (m_bPersistInConfiguration) {
         UserSettingsPointer pConfig = s_pUserConfig;
-        if (pConfig != nullptr) {
+        if (pConfig) {
             value = pConfig->getValue(m_key, defaultValue);
+        } else {
+            DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null")
         }
     }
     m_defaultValue.setValue(defaultValue);
@@ -89,9 +91,10 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 
     if (m_bPersistInConfiguration) {
         UserSettingsPointer pConfig = s_pUserConfig;
-        if (pConfig != nullptr) {
-            pConfig->set(m_key, QString::number(get()));
+        VERIFY_OR_DEBUG_ASSERT(pConfig) {
+            return;
         }
+        pConfig->set(m_key, QString::number(get()));
     }
 }
 
