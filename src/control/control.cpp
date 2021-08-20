@@ -11,22 +11,22 @@ namespace {
 /// should be passed it explicitly. However, the Control system is so
 /// pervasive that updating every control creation to include the
 /// configuration object would be arduous.
-static UserSettingsPointer s_pUserConfig;
+UserSettingsPointer s_pUserConfig;
 
 /// Mutex guarding access to s_qCOHash and s_qCOAliasHash.
-static MMutex s_qCOHashMutex;
+MMutex s_qCOHashMutex;
 
 /// Hash of ControlDoublePrivate instantiations.
-static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>> s_qCOHash
+QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>> s_qCOHash
         GUARDED_BY(s_qCOHashMutex);
 
 /// Hash of aliases between ConfigKeys. Solely used for looking up the first
 /// alias associated with a key.
-static QHash<ConfigKey, ConfigKey> s_qCOAliasHash
+QHash<ConfigKey, ConfigKey> s_qCOAliasHash
         GUARDED_BY(s_qCOHashMutex);
 
 /// is used instead of a nullptr, helps to omit null checks everywhere
-static QWeakPointer<ControlDoublePrivate> s_pDefaultCO;
+QWeakPointer<ControlDoublePrivate> s_pDefaultCO;
 } // namespace
 
 ControlDoublePrivate::ControlDoublePrivate()
