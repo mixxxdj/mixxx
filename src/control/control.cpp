@@ -148,11 +148,12 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
             auto pControl = it.value().lock();
             if (pControl) {
                 // Control object already exists
-                VERIFY_OR_DEBUG_ASSERT(!pCreatorCO) {
+                if (pCreatorCO) {
                     qWarning()
                             << "ControlObject"
                             << key.group << key.item
                             << "already created";
+                    DEBUG_ASSERT(false);
                     return nullptr;
                 }
                 return pControl;
@@ -311,8 +312,9 @@ double ControlDoublePrivate::getParameterForValue(double value) const {
 
 double ControlDoublePrivate::getParameterForMidi(double midiParam) const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    VERIFY_OR_DEBUG_ASSERT(pBehavior) {
+    if (!pBehavior) {
         qWarning() << "Cannot set" << m_key << "by Midi";
+        DEBUG_ASSERT(false);
         return 0;
     }
     return pBehavior->midiToParameter(midiParam);
@@ -320,8 +322,9 @@ double ControlDoublePrivate::getParameterForMidi(double midiParam) const {
 
 void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    VERIFY_OR_DEBUG_ASSERT(pBehavior) {
+    if (!pBehavior) {
         qWarning() << "Cannot set" << m_key << "by Midi";
+        DEBUG_ASSERT(false);
         return;
     }
     pBehavior->setValueFromMidi(opcode, midiParam, this);
@@ -329,8 +332,9 @@ void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam)
 
 double ControlDoublePrivate::getMidiParameter() const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    VERIFY_OR_DEBUG_ASSERT(pBehavior) {
+    if (!pBehavior) {
         qWarning() << "Cannot get" << m_key << "by Midi";
+        DEBUG_ASSERT(false);
         return 0;
     }
     return pBehavior->valueToMidiParameter(get());
