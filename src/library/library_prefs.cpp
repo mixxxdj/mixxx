@@ -1,31 +1,29 @@
 #include "library/library_prefs.h"
 
-namespace mixxx {
+// Don't use nested namespaces here to ensure that both the
+// definition and declaration of the constants match! Typos
+// or missing definitions/declarations will then be detected
+// reliably at compile time.
 
-namespace library {
+const ConfigKey mixxx::library::prefs::kLegacyDirectoryConfigKey =
+        ConfigKey(
+                QStringLiteral("[Playlist]"),
+                QStringLiteral("Directory"));
 
-namespace prefs {
+const QString mixxx::library::prefs::kConfigGroup =
+        QStringLiteral("[Library]");
 
-const ConfigKey kLegacyDirectoryConfigKey = ConfigKey(
-        QStringLiteral("[Playlist]"),
-        QStringLiteral("Directory"));
+const ConfigKey mixxx::library::prefs::kEditMetadataSelectedClickConfigKey =
+        ConfigKey(
+                mixxx::library::prefs::kConfigGroup,
+                "EditMetadataSelectedClick");
 
-const QString kConfigGroup = QStringLiteral("[Library]");
+const ConfigKey mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey =
+        ConfigKey(
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("SearchDebouncingTimeoutMillis"));
 
-const ConfigKey kEditMetadataSelectedClickConfigKey = ConfigKey(
-        kConfigGroup,
-        "EditMetadataSelectedClick");
-
-const ConfigKey kSearchDebouncingTimeoutMillisConfigKey = ConfigKey(
-        kConfigGroup,
-        QStringLiteral("SearchDebouncingTimeoutMillis"));
-
-const ConfigKey kSyncTrackMetadataExportConfigKey = ConfigKey(
-        kConfigGroup,
-        QStringLiteral("SyncTrackMetadataExport"));
-
-} // namespace prefs
-
-} // namespace library
-
-} // namespace mixxx
+const ConfigKey mixxx::library::prefs::kSyncTrackMetadataExportConfigKey =
+        ConfigKey(
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("SyncTrackMetadataExport"));
