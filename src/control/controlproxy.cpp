@@ -13,11 +13,10 @@ ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent, ControlFlags 
         : QObject(pParent) {
     m_pControl = ControlDoublePrivate::getControl(key, flags);
     if (!m_pControl) {
-        DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing));
+        DEBUG_ASSERT(flags & ControlFlag::AllowMissingOrInvalid);
         m_pControl = ControlDoublePrivate::getDefaultControl();
     }
     DEBUG_ASSERT(m_pControl);
-    DEBUG_ASSERT(valid() || flags.testFlag(ControlFlag::NoAssertIfMissing));
 }
 
 ControlProxy::~ControlProxy() {
