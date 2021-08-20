@@ -4,22 +4,30 @@
 #include "moc_control.cpp"
 #include "util/stat.h"
 
-//static
-UserSettingsPointer ControlDoublePrivate::s_pUserConfig;
+namespace {
+/// Hack to implement persistent controls. This is a pointer to the current
+/// user configuration object (if one exists). In general, we do not want the
+/// user configuration to be a singleton -- objects that need access to it
+/// should be passed it explicitly. However, the Control system is so
+/// pervasive that updating every control creation to include the
+/// configuration object would be arduous.
+static UserSettingsPointer s_pUserConfig;
 
-//static
-QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>> ControlDoublePrivate::s_qCOHash
-        GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
+/// Mutex guarding access to s_qCOHash and s_qCOAliasHash.
+static MMutex s_qCOHashMutex;
 
-//static
-QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash
-        GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
+/// Hash of ControlDoublePrivate instantiations.
+static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>> s_qCOHash
+        GUARDED_BY(s_qCOHashMutex);
 
-//static
-MMutex ControlDoublePrivate::s_qCOHashMutex;
+/// Hash of aliases between ConfigKeys. Solely used for looking up the first
+/// alias associated with a key.
+static QHash<ConfigKey, ConfigKey> s_qCOAliasHash
+        GUARDED_BY(s_qCOHashMutex);
 
-//static
-QWeakPointer<ControlDoublePrivate> ControlDoublePrivate::s_defaultCO;
+/// is used instead of a nullptr, helps to omit null checks everywhere
+static QWeakPointer<ControlDoublePrivate> s_defaultCO;
+} // namespace
 
 ControlDoublePrivate::ControlDoublePrivate()
         : m_pCreatorCO(nullptr),
@@ -55,7 +63,7 @@ ControlDoublePrivate::ControlDoublePrivate(
 void ControlDoublePrivate::initialize(double defaultValue) {
     double value = defaultValue;
     if (m_bPersistInConfiguration) {
-        UserSettingsPointer pConfig = ControlDoublePrivate::s_pUserConfig;
+        UserSettingsPointer pConfig = s_pUserConfig;
         if (pConfig != nullptr) {
             value = pConfig->getValue(m_key, defaultValue);
         }
@@ -81,11 +89,16 @@ ControlDoublePrivate::~ControlDoublePrivate() {
     s_qCOHashMutex.unlock();
 
     if (m_bPersistInConfiguration) {
-        UserSettingsPointer pConfig = ControlDoublePrivate::s_pUserConfig;
+        UserSettingsPointer pConfig = s_pUserConfig;
         if (pConfig != nullptr) {
             pConfig->set(m_key, QString::number(get()));
         }
     }
+}
+
+//static
+void ControlDoublePrivate::setUserConfig(const UserSettingsPointer& pConfig) {
+    s_pUserConfig = pConfig;
 }
 
 // static
@@ -209,6 +222,12 @@ QList<QSharedPointer<ControlDoublePrivate>> ControlDoublePrivate::takeAllInstanc
     }
     s_qCOHash.clear();
     return result;
+}
+
+//static
+QHash<ConfigKey, ConfigKey> ControlDoublePrivate::getControlAliases() {
+    // Implicitly shared classes can safely be copied across threads
+    return s_qCOAliasHash;
 }
 
 void ControlDoublePrivate::deleteCreatorCO() {
