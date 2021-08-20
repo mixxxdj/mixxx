@@ -159,8 +159,10 @@ class ControlDoublePrivate : public QObject {
     void valueChanged(double value, QObject* pSender);
     void valueChangeRequest(double value);
 
-  private:
+  protected:
     ControlDoublePrivate();
+
+  private:
     ControlDoublePrivate(
             const ConfigKey& key,
             ControlObject* pCreatorCO,
@@ -174,7 +176,7 @@ class ControlDoublePrivate : public QObject {
     ControlDoublePrivate& operator=(const ControlDoublePrivate&) = delete;
 
     void initialize(double defaultValue);
-    void setInner(double value, QObject* pSender);
+    virtual void setInner(double value, QObject* pSender);
 
     const ConfigKey m_key;
 
@@ -227,4 +229,22 @@ class ControlDoublePrivate : public QObject {
 
     // Mutex guarding access to s_qCOHash and s_qCOAliasHash.
     static MMutex s_qCOHashMutex;
+};
+
+/// The constant ControlDoublePrivate version is used as dummy for default
+/// constructed control objects
+class ControlDoublePrivateConst : public ControlDoublePrivate {
+  public:
+    ~ControlDoublePrivateConst() override = default;
+
+    void setInner(double value, QObject* pSender) override {
+        Q_UNUSED(value)
+        Q_UNUSED(pSender)
+        DEBUG_ASSERT(!"Trying to modify a default constructed (const) control object");
+    };
+
+  protected:
+    ControlDoublePrivateConst() = default;
+
+    friend ControlDoublePrivate;
 };

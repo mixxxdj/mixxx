@@ -173,7 +173,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getDefaultControl() {
     auto defaultCO = QSharedPointer<ControlDoublePrivate>(s_defaultCO);
     if (!defaultCO) {
-        defaultCO = QSharedPointer<ControlDoublePrivate>(new ControlDoublePrivate());
+        defaultCO = QSharedPointer<ControlDoublePrivate>(new ControlDoublePrivateConst());
         s_defaultCO = defaultCO;
     }
     return defaultCO;
