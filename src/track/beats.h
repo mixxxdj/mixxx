@@ -157,7 +157,6 @@ class Beats {
     virtual BeatsPointer setBpm(mixxx::Bpm bpm) = 0;
 
   protected:
-    /// For internal use only.
     virtual bool isValid() const = 0;
 };
 

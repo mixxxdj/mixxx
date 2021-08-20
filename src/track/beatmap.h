@@ -78,7 +78,6 @@ class BeatMap final : public Beats {
     BeatMap(const BeatMap& other, BeatList beats, mixxx::Bpm nominalBpm);
     BeatMap(const BeatMap& other);
 
-    // For internal use only.
     bool isValid() const override;
 
     const QString m_subVersion;

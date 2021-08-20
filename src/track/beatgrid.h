@@ -79,7 +79,6 @@ class BeatGrid final : public Beats {
     audio::FramePos firstBeatPosition() const;
     mixxx::Bpm bpm() const;
 
-    // For internal use only.
     bool isValid() const override;
 
     // The sub-version of this beatgrid.
