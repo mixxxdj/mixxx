@@ -45,6 +45,36 @@ int Beats::numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPos
     return i - 2;
 };
 
+audio::FramePos Beats::findNextBeat(audio::FramePos position) const {
+    return findNthBeat(position, 1);
+}
+
+audio::FramePos Beats::findPrevBeat(audio::FramePos position) const {
+    return findNthBeat(position, -1);
+}
+
+audio::FramePos Beats::findClosestBeat(audio::FramePos position) const {
+    if (!isValid()) {
+        return audio::kInvalidFramePos;
+    }
+    audio::FramePos prevBeatPosition;
+    audio::FramePos nextBeatPosition;
+    findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true);
+    if (!prevBeatPosition.isValid()) {
+        // If both positions are invalid, we correctly return an invalid position.
+        return nextBeatPosition;
+    }
+
+    if (!nextBeatPosition.isValid()) {
+        return prevBeatPosition;
+    }
+
+    // Both position are valid, return the closest position.
+    return (nextBeatPosition - position > position - prevBeatPosition)
+            ? prevBeatPosition
+            : nextBeatPosition;
+}
+
 audio::FramePos Beats::findNBeatsFromPosition(audio::FramePos position, double beats) const {
     audio::FramePos prevBeatPosition;
     audio::FramePos nextBeatPosition;
