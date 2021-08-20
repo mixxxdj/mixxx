@@ -186,8 +186,15 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getDefaultControl() {
     auto defaultCO = QSharedPointer<ControlDoublePrivate>(s_defaultCO);
     if (!defaultCO) {
-        defaultCO = QSharedPointer<ControlDoublePrivate>(new ControlDoublePrivateConst());
-        s_defaultCO = defaultCO;
+        // Try again with the mutex locked to protect against creating two
+        // ControlDoublePrivateConst objects. Access to s_defaultCO itself is
+        // thread save.
+        MMutexLocker locker(&s_qCOHashMutex);
+        defaultCO = QSharedPointer<ControlDoublePrivate>(s_defaultCO);
+        if (!defaultCO) {
+            defaultCO = QSharedPointer<ControlDoublePrivate>(new ControlDoublePrivateConst());
+            s_defaultCO = defaultCO;
+        }
     }
     return defaultCO;
 }
