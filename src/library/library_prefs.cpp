@@ -6,24 +6,24 @@
 // reliably at compile time.
 
 const ConfigKey mixxx::library::prefs::kLegacyDirectoryConfigKey =
-        ConfigKey(
+        ConfigKey{
                 QStringLiteral("[Playlist]"),
-                QStringLiteral("Directory"));
+                QStringLiteral("Directory")};
 
 const QString mixxx::library::prefs::kConfigGroup =
         QStringLiteral("[Library]");
 
 const ConfigKey mixxx::library::prefs::kEditMetadataSelectedClickConfigKey =
-        ConfigKey(
+        ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
-                "EditMetadataSelectedClick");
+                QStringLiteral("EditMetadataSelectedClick")};
 
 const ConfigKey mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey =
-        ConfigKey(
+        ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
-                QStringLiteral("SearchDebouncingTimeoutMillis"));
+                QStringLiteral("SearchDebouncingTimeoutMillis")};
 
 const ConfigKey mixxx::library::prefs::kSyncTrackMetadataExportConfigKey =
-        ConfigKey(
+        ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
-                QStringLiteral("SyncTrackMetadataExport"));
+                QStringLiteral("SyncTrackMetadataExport")};
