@@ -17,11 +17,11 @@ constexpr int kMaxHidErrorMessageSize = 512;
 
 HidController::HidController(
         mixxx::hid::DeviceInfo&& deviceInfo)
-        : m_deviceInfo(std::move(deviceInfo)),
+        : Controller(deviceInfo.formatName()),
+          m_deviceInfo(std::move(deviceInfo)),
           m_pHidDevice(nullptr),
           m_pollingBufferIndex(0) {
     setDeviceCategory(mixxx::hid::DeviceCategory::guessFromDeviceInfo(m_deviceInfo));
-    setDeviceName(m_deviceInfo.formatName());
 
     // All HID devices are full-duplex
     setInputDevice(true);

@@ -13,7 +13,9 @@
 
 class MockMidiController : public MidiController {
   public:
-    explicit MockMidiController(): MidiController() {}
+    explicit MockMidiController()
+            : MidiController("test") {
+    }
     ~MockMidiController() override { }
 
     MOCK_METHOD0(open, int());

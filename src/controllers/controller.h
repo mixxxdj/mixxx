@@ -17,7 +17,7 @@ class ControllerJSProxy;
 class Controller : public QObject {
     Q_OBJECT
   public:
-    explicit Controller();
+    explicit Controller(const QString& deviceName);
     ~Controller() override;  // Subclass should call close() at minimum.
 
     /// The object that is exposed to the JS scripts as the "controller" object.
@@ -118,9 +118,6 @@ class Controller : public QObject {
     inline ControllerScriptEngineLegacy* getScriptEngine() const {
         return m_pScriptEngineLegacy;
     }
-    inline void setDeviceName(const QString& deviceName) {
-        m_sDeviceName = deviceName;
-    }
     inline void setDeviceCategory(const QString& deviceCategory) {
         m_sDeviceCategory = deviceCategory;
     }
@@ -153,7 +150,7 @@ class Controller : public QObject {
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
 
     // Verbose and unique device name suitable for display.
-    QString m_sDeviceName;
+    const QString m_sDeviceName;
     // Verbose and unique description of device type, defaults to empty
     QString m_sDeviceCategory;
     // Flag indicating if this device supports output (receiving data from

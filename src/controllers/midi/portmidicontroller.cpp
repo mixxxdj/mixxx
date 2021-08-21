@@ -8,7 +8,11 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
         const PmDeviceInfo* outputDeviceInfo,
         int inputDeviceIndex,
         int outputDeviceIndex)
-        : MidiController(), m_cReceiveMsg_index(0), m_bInSysex(false) {
+        : MidiController(inputDeviceInfo
+                          ? QString("%1").arg(inputDeviceInfo->name)
+                          : QString("%1").arg(outputDeviceInfo->name)),
+          m_cReceiveMsg_index(0),
+          m_bInSysex(false) {
     for (unsigned int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
         // Can be shortened to `m_midiBuffer[k] = {}` with C++11.
         m_midiBuffer[k].message = 0;
@@ -19,15 +23,11 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
     // duplicate devices from causing mayhem.
     //setDeviceName(QString("%1. %2").arg(QString::number(m_iInputDeviceIndex), inputDeviceInfo->name));
     if (inputDeviceInfo) {
-        setDeviceName(QString("%1").arg(inputDeviceInfo->name));
         setInputDevice(inputDeviceInfo->input);
         m_pInputDevice.reset(new PortMidiDevice(
             inputDeviceInfo, inputDeviceIndex));
     }
     if (outputDeviceInfo) {
-        if (inputDeviceInfo == nullptr) {
-            setDeviceName(QString("%1").arg(outputDeviceInfo->name));
-        }
         setOutputDevice(outputDeviceInfo->output);
         m_pOutputDevice.reset(new PortMidiDevice(
             outputDeviceInfo, outputDeviceIndex));
