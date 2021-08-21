@@ -17,7 +17,7 @@
 #endif
 #include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
-#include "library/library_preferences.h"
+#include "library/library_prefs.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
@@ -52,8 +52,7 @@ const mixxx::Logger kLogger("Library");
 
 } // anonymous namespace
 
-//static
-const QString Library::kConfigGroup("[Library]");
+using namespace mixxx::library::prefs;
 
 // This is the name which we use to register the WTrackTableView with the
 // WLibrary
@@ -79,7 +78,7 @@ Library::Library(
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
-    qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
+    qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
     m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
 
@@ -249,8 +248,8 @@ Library::Library(
     }
 
     m_editMetadataSelectedClick = m_pConfig->getValue(
-            ConfigKey(kConfigGroup, "EditMetadataSelectedClick"),
-            PREF_LIBRARY_EDIT_METADATA_DEFAULT);
+            kEditMetadataSelectedClickConfigKey,
+            kEditMetadataSelectedClickDefault);
 }
 
 Library::~Library() {
@@ -510,26 +509,26 @@ void Library::slotRequestAddDir(const QString& dir) {
     }
     // set at least one directory in the config file so that it will be possible
     // to downgrade from 1.12
-    if (m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR).length() < 1) {
-        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dir);
+    if (m_pConfig->getValueString(kLegacyDirectoryConfigKey).length() < 1) {
+        m_pConfig->set(kLegacyDirectoryConfigKey, dir);
     }
 }
 
-void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) {
+void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType removalType) {
     // Remove the directory from the directory list.
     if (!m_pTrackCollectionManager->removeDirectory(mixxx::FileInfo(dir))) {
         return;
     }
 
     switch (removalType) {
-    case RemovalType::KeepTracks:
+    case LibraryRemovalType::KeepTracks:
         break;
-    case RemovalType::HideTracks:
+    case LibraryRemovalType::HideTracks:
         // Mark all tracks in this directory as deleted but DON'T purge them
         // in case the user re-adds them manually.
         m_pTrackCollectionManager->hideAllTracks(dir);
         break;
-    case RemovalType::PurgeTracks:
+    case LibraryRemovalType::PurgeTracks:
         // The user requested that we purge all metadata.
         m_pTrackCollectionManager->purgeAllTracks(dir);
         break;
@@ -539,7 +538,7 @@ void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) 
 
     // Also update the config file if necessary so that downgrading is still
     // possible.
-    QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+    QString confDir = m_pConfig->getValueString(kLegacyDirectoryConfigKey);
 
     if (QDir(dir) == QDir(confDir)) {
         const QList<mixxx::FileInfo> dirList =
@@ -547,9 +546,9 @@ void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) 
         if (dirList.isEmpty()) {
             // Save empty string so that an old version of mixxx knows it has to
             // ask for a new directory.
-            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, QString());
+            m_pConfig->set(kLegacyDirectoryConfigKey, QString());
         } else {
-            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dirList.first().location());
+            m_pConfig->set(kLegacyDirectoryConfigKey, dirList.first().location());
         }
     }
 }
@@ -559,9 +558,9 @@ void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDi
 
     // also update the config file if necessary so that downgrading is still
     // possible
-    QString conDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+    QString conDir = m_pConfig->getValueString(kLegacyDirectoryConfigKey);
     if (oldDir == conDir) {
-        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, newDir);
+        m_pConfig->set(kLegacyDirectoryConfigKey, newDir);
     }
 }
 
