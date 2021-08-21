@@ -285,7 +285,7 @@ void TrackCollectionManager::exportTrackMetadata(
             (pTrack->isDirty() &&
                     m_pConfig &&
                     m_pConfig->getValueString(
-                                     mixxx::library::prefs::kSyncTrackMetadataExportConfigKey)
+                                     mixxx::library::prefs::kSyncTrackMetadataConfigKey)
                                     .toInt() == 1)) {
         switch (mode) {
         case TrackMetadataExportMode::Immediate:

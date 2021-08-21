@@ -110,7 +110,7 @@ DlgPrefLibrary::DlgPrefLibrary(
 #endif
     builtInFormats->setText(builtInFormatsStr);
 
-    connect(checkBox_SyncTrackMetadataExport,
+    connect(checkBox_SyncTrackMetadata,
             &QCheckBox::toggled,
             this,
             &DlgPrefLibrary::slotSyncTrackMetadataExportToggled);
@@ -177,7 +177,7 @@ void DlgPrefLibrary::initializeDirList() {
 
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
-    checkBox_SyncTrackMetadataExport->setChecked(false);
+    checkBox_SyncTrackMetadata->setChecked(false);
     checkBox_SeratoMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_show_rhythmbox->setChecked(true);
@@ -197,8 +197,8 @@ void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","RescanOnStartup"), false));
-    checkBox_SyncTrackMetadataExport->setChecked(
-            m_pConfig->getValue(kSyncTrackMetadataExportConfigKey, false));
+    checkBox_SyncTrackMetadata->setChecked(
+            m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
     checkBox_SeratoMetadataExport->setChecked(
             m_pConfig->getValue(kSeratoMetadataExportConfigKey, false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
@@ -365,8 +365,8 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pConfig->set(
-            kSyncTrackMetadataExportConfigKey,
-            ConfigValue{checkBox_SyncTrackMetadataExport->isChecked()});
+            kSyncTrackMetadataConfigKey,
+            ConfigValue{checkBox_SyncTrackMetadata->isChecked()});
     m_pConfig->set(
             kSeratoMetadataExportConfigKey,
             ConfigValue{checkBox_SeratoMetadataExport->isChecked()});
@@ -454,7 +454,7 @@ void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebounci
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {
-    if (isVisible() && checkBox_SyncTrackMetadataExport->isChecked()) {
+    if (isVisible() && checkBox_SyncTrackMetadata->isChecked()) {
         mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
     }
 }

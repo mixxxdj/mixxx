@@ -1493,7 +1493,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
                 SoundSourceProxy::UpdateTrackFromSourceMode::Once;
         if (m_pConfig &&
                 m_pConfig->getValueString(
-                                 mixxx::library::prefs::kSyncTrackMetadataExportConfigKey)
+                                 mixxx::library::prefs::kSyncTrackMetadataConfigKey)
                                 .toInt() == 1) {
             // An implicit re-import and update is performed if the
             // user has enabled export of file tags in the preferences.
