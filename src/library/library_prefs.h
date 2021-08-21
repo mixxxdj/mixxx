@@ -22,6 +22,8 @@ const bool kEditMetadataSelectedClickDefault = false;
 
 extern const ConfigKey kSyncTrackMetadataExportConfigKey;
 
+extern const ConfigKey kSeratoMetadataExportConfigKey;
+
 } // namespace prefs
 
 } // namespace library

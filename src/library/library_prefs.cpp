@@ -32,3 +32,8 @@ const ConfigKey mixxx::library::prefs::kSyncTrackMetadataExportConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SyncTrackMetadataExport")};
+
+const ConfigKey mixxx::library::prefs::kSeratoMetadataExportConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("SeratoMetadataExport")};
