@@ -379,16 +379,11 @@ MixtrackProFX.Deck = function(number) {
                 deck.scratchModeEnabled = !deck.scratchModeEnabled;
 
                 // change the scratch mode status light
-                midi.sendShortMsg(this.midi[0], this.midi[1], deck.scratchModeEnabled ? this.on : this.off);
+                this.send(deck.scratchModeEnabled ? this.on : this.off);
             };
 
             // set current scratch mode status light
-            midi.sendShortMsg(this.midi[0], this.midi[1], deck.scratchModeEnabled ? this.on : this.off);
-
-            // reverseroll is now disabled (because shift is not held down), disable shifted light.
-            // when shifting the light will be connected to reverseroll. sending this midi here
-            // prevents the light from blinking when shifting in some cases.
-            midi.sendShortMsg(this.midi[0], this.midi[1] + this.shiftOffset, this.off);
+            this.send(deck.scratchModeEnabled ? this.on : this.off);
         },
         shiftControl: true,
         sendShifted: true,
