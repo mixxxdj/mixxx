@@ -27,10 +27,21 @@
 
 namespace {
 
-const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck("[Controls]", "AllowTrackLoadToPlayingDeck");
+// ConfigValue key for QTable vertical scrollbar position
+const ConfigKey kVScrollBarPosConfigKey{
+        // mixxx::library::prefs::kConfigGroup is defined in another
+        // unit of compilation and cannot be reused here!
+        QStringLiteral("[Library]"),
+        QStringLiteral("VScrollBarPos")};
+
+const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck{
+        QStringLiteral("[Controls]"),
+        QStringLiteral("AllowTrackLoadToPlayingDeck")};
+
 // Default color for the focus border of TableItemDelegates
 const QColor kDefaultFocusBorderColor = Qt::white;
-} // namespace
+
+} // anonymous namespace
 
 WTrackTableView::WTrackTableView(QWidget* parent,
         UserSettingsPointer pConfig,
@@ -39,8 +50,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
         bool sorting)
         : WLibraryTableView(parent,
                   pConfig,
-                  ConfigKey(LIBRARY_CONFIGVALUE,
-                          WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
+                  kVScrollBarPosConfigKey),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
