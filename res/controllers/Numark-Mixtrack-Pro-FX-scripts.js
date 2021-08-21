@@ -66,18 +66,6 @@ MixtrackProFX.PadModeControls = {
 MixtrackProFX.shifted = false;
 
 MixtrackProFX.init = function() {
-    // initialize component containers
-    MixtrackProFX.deck = new components.ComponentContainer();
-    MixtrackProFX.effect = new components.ComponentContainer();
-    var i;
-    for (i = 0; i < 2; i++) {
-        MixtrackProFX.deck[i] = new MixtrackProFX.Deck(i + 1);
-        MixtrackProFX.effect[i] = new MixtrackProFX.EffectUnit(i + 1);
-    }
-
-    MixtrackProFX.browse = new MixtrackProFX.Browse();
-    MixtrackProFX.gains = new MixtrackProFX.Gains();
-
     // send sysexes
     var exitDemoSysex = [0xF0, 0x7E, 0x00, 0x06, 0x01, 0xF7];
     midi.sendSysexMsg(exitDemoSysex, exitDemoSysex.length);
@@ -89,17 +77,17 @@ MixtrackProFX.init = function() {
     var faderCutSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0xF7];
     midi.sendSysexMsg(faderCutSysex, faderCutSysex.length);
 
-    // initialize leds
+    // initialize component containers
+    MixtrackProFX.deck = new components.ComponentContainer();
+    MixtrackProFX.effect = new components.ComponentContainer();
+    var i;
     for (i = 0; i < 2; i++) {
-        midi.sendShortMsg(0x94 + i, 0x00, 0x7F); // hotcue
-        midi.sendShortMsg(0x94 + i, 0x0D, 0x01); // auto loop
-        midi.sendShortMsg(0x94 + i, 0x07, 0x01); // "fader cuts"
-        midi.sendShortMsg(0x94 + i, 0x0B, 0x01); // sample1
-
-        // shifted leds
-        midi.sendShortMsg(0x94 + i, 0x0F, 0x01); // sample2
-        midi.sendShortMsg(0x94 + i, 0x02, 0x01); // beatjump
+        MixtrackProFX.deck[i] = new MixtrackProFX.Deck(i + 1);
+        MixtrackProFX.effect[i] = new MixtrackProFX.EffectUnit(i + 1);
     }
+
+    MixtrackProFX.browse = new MixtrackProFX.Browse();
+    MixtrackProFX.gains = new MixtrackProFX.Gains();
 
     engine.makeConnection("[Channel1]", "VuMeter", MixtrackProFX.vuCallback);
     engine.makeConnection("[Channel2]", "VuMeter", MixtrackProFX.vuCallback);
@@ -456,6 +444,16 @@ MixtrackProFX.PadSection = function(deckNumber) {
 
     this.blinkTimer = 0;
     this.blinkLedState = true;
+
+    // initialize leds
+    midi.sendShortMsg(0x93 + deckNumber, 0x00, 0x7F); // hotcue
+    midi.sendShortMsg(0x93 + deckNumber, 0x0D, 0x01); // auto loop
+    midi.sendShortMsg(0x93 + deckNumber, 0x07, 0x01); // "fader cuts"
+    midi.sendShortMsg(0x93 + deckNumber, 0x0B, 0x01); // sample1
+
+    // shifted leds
+    midi.sendShortMsg(0x93 + deckNumber, 0x0F, 0x01); // sample2
+    midi.sendShortMsg(0x93 + deckNumber, 0x02, 0x01); // beatjump
 
     this.modes = {};
     this.modes[MixtrackProFX.PadModeControls.HOTCUE] = new MixtrackProFX.ModeHotcue(deckNumber);
