@@ -18,7 +18,7 @@ class DlgControllerLearning;
 class MidiController : public Controller {
     Q_OBJECT
   public:
-    explicit MidiController();
+    explicit MidiController(const QString& deviceName);
     ~MidiController() override;
 
     ControllerJSProxy* jsProxy() override;

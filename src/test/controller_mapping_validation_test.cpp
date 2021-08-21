@@ -27,7 +27,8 @@ void FakeControllerJSProxy::sendShortMsg(unsigned char status,
 }
 
 FakeController::FakeController()
-        : m_bMidiMapping(false),
+        : Controller("fake"),
+          m_bMidiMapping(false),
           m_bHidMapping(false) {
     startEngine();
     getScriptEngine()->setTesting(true);
@@ -59,7 +60,6 @@ bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& m
     }
 
     FakeController controller;
-    controller.setDeviceName("Test Controller");
     controller.setMapping(pMapping);
     bool result = controller.applyMapping();
     controller.stopEngine();

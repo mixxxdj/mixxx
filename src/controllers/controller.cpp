@@ -8,8 +8,9 @@
 #include "moc_controller.cpp"
 #include "util/screensaver.h"
 
-Controller::Controller()
+Controller::Controller(const QString& deviceName)
         : m_pScriptEngineLegacy(nullptr),
+          m_sDeviceName(deviceName),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),

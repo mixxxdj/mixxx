@@ -64,11 +64,13 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
     return QString::fromLatin1((char*)buf);
 }
 
-BulkController::BulkController(
-        libusb_context* context,
+BulkController::BulkController(libusb_context* context,
         libusb_device_handle* handle,
         struct libusb_device_descriptor* desc)
-        : m_context(context),
+        : Controller(QString("%1 %2").arg(
+                  get_string(handle, desc->iProduct),
+                  get_string(handle, desc->iSerialNumber))),
+          m_context(context),
           m_phandle(handle),
           in_epaddr(0),
           out_epaddr(0) {
@@ -80,8 +82,6 @@ BulkController::BulkController(
     m_sUID = get_string(handle, desc->iSerialNumber);
 
     setDeviceCategory(tr("USB Controller"));
-
-    setDeviceName(QString("%1 %2").arg(product, m_sUID));
 
     setInputDevice(true);
     setOutputDevice(true);
