@@ -132,16 +132,19 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_SyncTrackMetadataExport">
+       <widget class="QCheckBox" name="checkBox_SyncTrackMetadata">
         <property name="text">
-         <string>Automatically write modified track metadata from the library into file tags</string>
+         <string>Synchronize track metadata with file tags</string>
+        </property>
+        <property name="toolTip">
+         <string>Automatically write modified track metadata into file tags and re-import metadata from updated file tags</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QCheckBox" name="checkBox_SeratoMetadataExport">
         <property name="text">
-         <string>Write Serato Metadata to files (experimental)</string>
+         <string>Write Serato metadata to files (experimental)</string>
         </property>
        </widget>
       </item>
@@ -443,7 +446,7 @@
   <tabstop>PushButtonAddDir</tabstop>
   <tabstop>PushButtonRelocateDir</tabstop>
   <tabstop>PushButtonRemoveDir</tabstop>
-  <tabstop>checkBox_SyncTrackMetadataExport</tabstop>
+  <tabstop>checkBox_SyncTrackMetadata</tabstop>
   <tabstop>checkBox_library_scan</tabstop>
   <tabstop>checkBoxEditMetadataSelectedClicked</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>

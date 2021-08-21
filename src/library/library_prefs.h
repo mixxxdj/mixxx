@@ -20,7 +20,9 @@ extern const ConfigKey kEditMetadataSelectedClickConfigKey;
 
 const bool kEditMetadataSelectedClickDefault = false;
 
-extern const ConfigKey kSyncTrackMetadataExportConfigKey;
+extern const ConfigKey kSyncTrackMetadataConfigKey;
+
+extern const ConfigKey kSeratoMetadataExportConfigKey;
 
 extern const ConfigKey kSeratoMetadataExportConfigKey;
 
