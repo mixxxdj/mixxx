@@ -80,7 +80,8 @@ Library::Library(
           m_pAnalysisFeature(nullptr) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
-    m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
+    m_pKeyNotation.reset(
+            new ControlObject(mixxx::library::prefs::kKeyNotationConfigKey));
 
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,

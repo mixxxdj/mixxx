@@ -13,6 +13,11 @@ const ConfigKey mixxx::library::prefs::kLegacyDirectoryConfigKey =
 const QString mixxx::library::prefs::kConfigGroup =
         QStringLiteral("[Library]");
 
+const ConfigKey mixxx::library::prefs::kKeyNotationConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("key_notation")};
+
 const ConfigKey mixxx::library::prefs::kEditMetadataSelectedClickConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,

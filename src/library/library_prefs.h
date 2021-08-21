@@ -12,6 +12,8 @@ extern const ConfigKey kLegacyDirectoryConfigKey;
 
 extern const QString kConfigGroup;
 
+extern const ConfigKey kKeyNotationConfigKey;
+
 extern const ConfigKey kSearchDebouncingTimeoutMillisConfigKey;
 
 extern const ConfigKey kEditMetadataSelectedClickConfigKey;
