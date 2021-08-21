@@ -60,14 +60,9 @@ void DeviceChannelListener::Reconnected() {
 Hss1394Controller::Hss1394Controller(
         const hss1394::TNodeInfo& deviceInfo,
         int deviceIndex)
-        : MidiController(),
+        : MidiController(QString("%1").arg(QString(deviceInfo.sName.c_str()))),
           m_deviceInfo(deviceInfo),
           m_iDeviceIndex(deviceIndex) {
-    // Note: We prepend the input stream's index to the device's name to prevent
-    // duplicate devices from causing mayhem.
-    //setDeviceName(QString("H%1. %2").arg(QString::number(m_iDeviceIndex), QString(deviceInfo.sName.c_str())));
-    setDeviceName(QString("%1").arg(QString(deviceInfo.sName.c_str())));
-
     // All HSS1394 devices are full-duplex
     setInputDevice(true);
     setOutputDevice(true);
