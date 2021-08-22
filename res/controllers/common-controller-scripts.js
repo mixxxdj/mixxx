@@ -32,7 +32,7 @@ String.prototype.toInt = function() {
 
 // Causes script print() calls to appear in the log file as well
 var print = function(string) {
-    engine.log(string);
+    console.log(string);
 };
 
 // eslint-disable-next-line no-unused-vars
