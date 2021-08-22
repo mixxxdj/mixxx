@@ -60,7 +60,7 @@ constexpr int64_t kavStreamDecoderFrameDelayAAC = 2112;
 // Use 0-based sample frame indexing
 constexpr SINT kMinFrameIndex = 0;
 
-constexpr SINT kSamplesPerMP3Frame = 1152;
+constexpr SINT kMaxSamplesPerMP3Frame = 1152;
 
 const Logger kLogger("SoundSourceFFmpeg");
 
@@ -106,7 +106,7 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
             // using the default start time.
             // Not all M4A files encode the start_time correctly, e.g.
             // the test file cover-test-itunes-12.7.0-aac.m4a has a valid
-            // start_time of 0. Unfortunately, this special case is cannot
+            // start_time of 0. Unfortunately, this special case cannot be
             // detected and compensated.
             start_time = math_max(kavStreamDefaultStartTime, kavStreamDecoderFrameDelayAAC);
             break;
@@ -185,7 +185,7 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
         // slight deviations from the exact signal!
         DEBUG_ASSERT(avStream.codecpar->channels <= 2);
         const SINT mp3SeekPrerollFrameCount =
-                9 * (kSamplesPerMP3Frame / avStream.codecpar->channels);
+                9 * (kMaxSamplesPerMP3Frame / avStream.codecpar->channels);
         return math_max(mp3SeekPrerollFrameCount, defaultSeekPrerollFrameCount);
     }
     case AV_CODEC_ID_AAC:
