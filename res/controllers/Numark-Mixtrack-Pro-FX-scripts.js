@@ -226,7 +226,6 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.tap = new components.Button({
-        group: this.currentDeck,
         key: "bpm_tap",
         midi: [0x88, 0x09]
     });
@@ -242,7 +241,6 @@ MixtrackProFX.Deck = function(number) {
     });
 
     this.volume = new components.Pot({
-        group: this.currentDeck,
         inKey: "volume"
     });
 
