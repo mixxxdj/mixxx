@@ -17,6 +17,8 @@
 
 typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
+const RuntimeLoggingCategory logger(QString("test").toLocal8Bit());
+
 class ControllerScriptEngineLegacyTest : public MixxxTest {
   protected:
     static ScopedTemporaryFile makeTemporaryFile(const QString& contents) {
@@ -32,7 +34,7 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
         QThread::currentThread()->setObjectName("Main");
-        cEngine = new ControllerScriptEngineLegacy(nullptr);
+        cEngine = new ControllerScriptEngineLegacy(nullptr, logger);
         cEngine->initialize();
         ControllerDebug::setTesting(true);
     }
