@@ -138,7 +138,7 @@ bool BulkController::matchProductInfo(const ProductInfo& product) {
 
 int BulkController::open() {
     if (isOpen()) {
-        qDebug() << "USB Bulk device" << getName() << "already open";
+        qCWarning(m_logBase) << "USB Bulk device" << getName() << "already open";
         return -1;
     }
 
@@ -154,7 +154,7 @@ int BulkController::open() {
     }
 
     if (bulk_supported[i].vendor_id == 0) {
-        qWarning() << "USB Bulk device" << getName() << "unsupported";
+        qCWarning(m_logBase) << "USB Bulk device" << getName() << "unsupported";
         return -1;
     }
 
@@ -165,7 +165,7 @@ int BulkController::open() {
     }
 
     if (m_phandle == nullptr) {
-        qWarning()  << "Unable to open USB Bulk device" << getName();
+        qCWarning(m_logBase) << "Unable to open USB Bulk device" << getName();
         return -1;
     }
 
@@ -173,7 +173,7 @@ int BulkController::open() {
     startEngine();
 
     if (m_pReader != nullptr) {
-        qWarning() << "BulkReader already present for" << getName();
+        qCWarning(m_logBase) << "BulkReader already present for" << getName();
     } else {
         m_pReader = new BulkReader(m_phandle, in_epaddr);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
@@ -190,20 +190,20 @@ int BulkController::open() {
 
 int BulkController::close() {
     if (!isOpen()) {
-        qDebug() << " device" << getName() << "already closed";
+        qCWarning(m_logBase) << " device" << getName() << "already closed";
         return -1;
     }
 
-    qDebug() << "Shutting down USB Bulk device" << getName();
+    qCInfo(m_logBase) << "Shutting down USB Bulk device" << getName();
 
     // Stop the reading thread
     if (m_pReader == nullptr) {
-        qWarning() << "BulkReader not present for" << getName()
-                   << "yet the device is open!";
+        qCWarning(m_logBase) << "BulkReader not present for" << getName()
+                             << "yet the device is open!";
     } else {
         disconnect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
         m_pReader->stop();
-        controllerDebug("  Waiting on reader to finish");
+        qCInfo(m_logBase) << "  Waiting on reader to finish";
         m_pReader->wait();
         delete m_pReader;
         m_pReader = nullptr;
@@ -214,7 +214,7 @@ int BulkController::close() {
     stopEngine();
 
     // Close device
-    controllerDebug("  Closing device");
+    qCInfo(m_logBase) << "  Closing device";
     libusb_close(m_phandle);
     m_phandle = nullptr;
     setOpen(false);
@@ -240,10 +240,10 @@ void BulkController::sendBytes(const QByteArray& data) {
                                (unsigned char *)data.constData(), data.size(),
                                &transferred, 0);
     if (ret < 0) {
-        qWarning() << "Unable to send data to" << getName()
-                   << "serial #" << m_sUID;
+        qCWarning(m_logOutput) << "Unable to send data to" << getName()
+                               << "serial #" << m_sUID;
     } else {
-        controllerDebug(ret << "bytes sent to" << getName()
-                 << "serial #" << m_sUID);
+        qCDebug(m_logOutput) << ret << "bytes sent to" << getName()
+                             << "serial #" << m_sUID;
     }
 }

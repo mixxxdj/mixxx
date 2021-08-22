@@ -5,6 +5,7 @@
 
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"
+#include "util/runtimeloggingcategory.h"
 
 class ControllerScriptEngineLegacy;
 class ControlObjectScript;
@@ -16,7 +17,8 @@ class ConfigKey;
 class ControllerScriptInterfaceLegacy : public QObject {
     Q_OBJECT
   public:
-    ControllerScriptInterfaceLegacy(ControllerScriptEngineLegacy* m_pEngine);
+    ControllerScriptInterfaceLegacy(ControllerScriptEngineLegacy* m_pEngine,
+            const RuntimeLoggingCategory& logger);
 
     virtual ~ControllerScriptInterfaceLegacy();
 
@@ -87,4 +89,5 @@ class ControllerScriptInterfaceLegacy : public QObject {
     double getDeckRate(const QString& group);
 
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
+    const RuntimeLoggingCategory m_logger;
 };

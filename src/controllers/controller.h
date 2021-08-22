@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QElapsedTimer>
+#include <QLoggingCategory>
 #include <QTimerEvent>
 
 #include "controllers/controllermappinginfo.h"
@@ -8,6 +9,7 @@
 #include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/duration.h"
+#include "util/runtimeloggingcategory.h"
 
 class ControllerJSProxy;
 
@@ -132,6 +134,11 @@ class Controller : public QObject {
         emit openChanged(m_bIsOpen);
     }
 
+    const QString m_sDeviceName;
+    const RuntimeLoggingCategory m_logBase;
+    const RuntimeLoggingCategory m_logInput;
+    const RuntimeLoggingCategory m_logOutput;
+
   private: // but used by ControllerManager
 
     virtual int open() = 0;
@@ -149,8 +156,6 @@ class Controller : public QObject {
   private:
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
 
-    // Verbose and unique device name suitable for display.
-    const QString m_sDeviceName;
     // Verbose and unique description of device type, defaults to empty
     QString m_sDeviceCategory;
     // Flag indicating if this device supports output (receiving data from

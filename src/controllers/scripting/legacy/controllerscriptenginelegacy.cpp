@@ -9,8 +9,9 @@
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptenginelegacy.cpp"
 
-ControllerScriptEngineLegacy::ControllerScriptEngineLegacy(Controller* controller)
-        : ControllerScriptEngineBase(controller) {
+ControllerScriptEngineLegacy::ControllerScriptEngineLegacy(
+        Controller* controller, const RuntimeLoggingCategory& logger)
+        : ControllerScriptEngineBase(controller, logger) {
     connect(&m_fileWatcher,
             &QFileSystemWatcher::fileChanged,
             this,
@@ -36,18 +37,18 @@ bool ControllerScriptEngineLegacy::callFunctionOnObjects(
     for (const QString& prefixName : scriptFunctionPrefixes) {
         QJSValue prefix = global.property(prefixName);
         if (!prefix.isObject()) {
-            qWarning() << "No" << prefixName << "object in script";
+            qCWarning(m_logger) << "No" << prefixName << "object in script";
             continue;
         }
 
         QJSValue init = prefix.property(function);
         if (!init.isCallable()) {
-            qWarning() << prefixName << "has no"
-                       << function << " method";
+            qCWarning(m_logger) << prefixName << "has no"
+                                << function << " method";
             continue;
         }
-        controllerDebug("Executing"
-                << prefixName << "." << function);
+        qCDebug(m_logger) << "Executing"
+                          << prefixName << "." << function;
         QJSValue result = init.callWithInstance(prefix, args);
         if (result.isError()) {
             showScriptExceptionDialog(result, bFatalError);
@@ -113,7 +114,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     // Make this ControllerScriptHandler instance available to scripts as 'engine'.
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
     ControllerScriptInterfaceLegacy* legacyScriptInterface =
-            new ControllerScriptInterfaceLegacy(this);
+            new ControllerScriptInterfaceLegacy(this, m_logger);
     engineGlobalObject.setProperty(
             "engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
@@ -190,8 +191,8 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
     }
 
     if (!scriptFile.exists()) {
-        qWarning() << "File does not exist:"
-                   << scriptFile.absoluteFilePath();
+        qCWarning(m_logger) << "File does not exist:"
+                            << scriptFile.absoluteFilePath();
         return false;
     }
 
@@ -199,22 +200,22 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
     // without having to restart Mixxx. So, add it to the watcher before
     // evaluating it.
     if (!m_fileWatcher.addPath(scriptFile.absoluteFilePath())) {
-        qWarning() << "Failed to watch script file" << scriptFile.absoluteFilePath();
+        qCWarning(m_logger) << "Failed to watch script file" << scriptFile.absoluteFilePath();
     };
 
-    qDebug() << "Loading"
-             << scriptFile.absoluteFilePath();
+    qCDebug(m_logger) << "Loading"
+                      << scriptFile.absoluteFilePath();
 
     // Read in the script file
     QString filename = scriptFile.absoluteFilePath();
     QFile input(filename);
     if (!input.open(QIODevice::ReadOnly)) {
-        qWarning() << QString(
+        qCWarning(m_logger) << QString(
                 "Problem opening the script file: %1, "
                 "error # %2, %3")
-                              .arg(filename,
-                                      QString::number(input.error()),
-                                      input.errorString());
+                                       .arg(filename,
+                                               QString::number(input.error()),
+                                               input.errorString());
         // Set up error dialog
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
