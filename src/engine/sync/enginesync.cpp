@@ -429,7 +429,8 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) {
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
+        kLogger.trace() << "EngineSync::notifyInstantaneousBpmChanged"
+                        << pSyncable->getGroup() << bpm;
     }
     if (pSyncable != m_pInternalClock) {
         return;

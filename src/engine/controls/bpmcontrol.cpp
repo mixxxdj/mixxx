@@ -144,6 +144,7 @@ BpmControl::BpmControl(const QString& group,
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
+    m_pSyncEnabled = new ControlProxy(group, "sync_enabled", this);
 }
 
 BpmControl::~BpmControl() {
@@ -278,20 +279,13 @@ void BpmControl::slotControlBeatSyncPhase(double value) {
 }
 
 void BpmControl::slotControlBeatSyncTempo(double value) {
-    if (value == 0) {
-        return;
-    }
-
-    syncTempo();
+    m_pSyncEnabled->set(value != 0);
 }
 
 void BpmControl::slotControlBeatSync(double value) {
-    if (value == 0) {
-        return;
-    }
+    m_pSyncEnabled->set(value != 0);
 
-    if (!syncTempo()) {
-        // syncTempo failed, nothing else to do
+    if (value == 0) {
         return;
     }
 
@@ -301,75 +295,6 @@ void BpmControl::slotControlBeatSync(double value) {
     if (m_pPlayButton->toBool() && m_pQuantize->toBool()) {
         slotControlBeatSyncPhase(value);
     }
-}
-
-bool BpmControl::syncTempo() {
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-
-    if (!pOtherEngineBuffer) {
-        return false;
-    }
-
-    const auto thisBpm = getBpm();
-    const auto thisLocalBpm = getLocalBpm();
-
-    const auto otherBpm = pOtherEngineBuffer->getBpm();
-    const auto otherLocalBpm = pOtherEngineBuffer->getLocalBpm();
-
-    //qDebug() << "this" << "bpm" << thisBpm << "filebpm" << thisLocalBpm;
-    //qDebug() << "other" << "bpm" << otherBpm << "filebpm" << otherLocalBpm;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Rough proof of how syncing works -- rryan 3/2011
-    // ------------------------------------------------
-    //
-    // Let this and other denote this deck versus the sync-target deck.
-    //
-    // The goal is for this deck's effective BPM to equal the other decks.
-    //
-    // thisBpm = otherBpm
-    ///
-    // An effective BPM is the file-bpm times the rate:
-    //
-    // bpm = fileBpm * rate
-    //
-    // So our goal is to tweak thisRate such that this equation is true:
-    //
-    // thisFileBpm * (1.0 + thisRate) = otherFileBpm * (1.0 + otherRate)
-    //
-    // so rearrange this equation in terms of thisRate:
-    //
-    // thisRate = (otherFileBpm * (1.0 + otherRate)) / thisFileBpm - 1.0
-    //
-    // So the new rateScale to set is:
-    //
-    // thisRateScale = ((otherFileBpm * (1.0 + otherRate)) / thisFileBpm - 1.0) / (thisRateDir * thisRateRange)
-
-    if (otherBpm.isValid() && thisBpm.isValid() && thisLocalBpm.isValid()) {
-        // The desired rate is the other decks effective rate divided by this
-        // deck's file BPM. This gives us the playback rate that will produce an
-        // effective BPM equivalent to the other decks.
-        double desiredRate = otherBpm / thisLocalBpm;
-
-        // Test if this buffer's bpm is the double of the other one, and adjust
-        // the rate scale. I believe this is intended to account for our BPM
-        // algorithm sometimes finding double or half BPMs. This avoids drastic
-        // scales.
-
-        const double fileBpmDelta = fabs(thisLocalBpm - otherLocalBpm);
-        if (fabs(thisLocalBpm * 2.0 - otherLocalBpm) < fileBpmDelta) {
-            desiredRate /= 2.0;
-        } else if (fabs(thisLocalBpm - otherLocalBpm * 2.0) < fileBpmDelta) {
-            desiredRate *= 2.0;
-        }
-
-        if (desiredRate < 2.0 && desiredRate > 0.5) {
-            m_pEngineBpm->set(m_pLocalBpm->get() * desiredRate);
-            m_pRateRatio->set(desiredRate);
-            return true;
-        }
-    }
-    return false;
 }
 
 // static
@@ -1030,14 +955,21 @@ mixxx::audio::FrameDiff_t BpmControl::getPhaseOffset(mixxx::audio::FramePos this
 }
 
 void BpmControl::slotUpdateEngineBpm(double value) {
-    Q_UNUSED(value);
     // Adjust playback bpm in response to a rate_ration update
     double dRate = m_pRateRatio->get();
+
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::slotUpdateEngineBpm"
+                        << value << m_pLocalBpm->get() << dRate;
+    }
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
 void BpmControl::slotUpdateRateSlider(double value) {
-    Q_UNUSED(value);
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::slotUpdateRateSlider"
+                        << value;
+    }
     // Adjust rate slider position response to a change in rate range or m_pEngineBpm
 
     double localBpm = m_pLocalBpm->get();

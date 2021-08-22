@@ -115,7 +115,6 @@ class BpmControl : public EngineControl {
     inline bool isSynchronized() const {
         return toSynchronized(getSyncMode());
     }
-    bool syncTempo();
     double calcSyncAdjustment(bool userTweakingSync);
     void adjustBeatsBpm(double deltaBpm);
 
@@ -169,6 +168,7 @@ class BpmControl : public EngineControl {
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
     ControlProxy* m_pSyncMode;
+    ControlProxy* m_pSyncEnabled;
 
     TapFilter m_tapFilter; // threadsafe
 

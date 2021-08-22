@@ -1100,20 +1100,20 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
-    // Repeat with RESET_NONE
+    // Even when RESET_NONE is on, sync lock is more important -- do not change
+    // the speed of the playing deck.
     EXPECT_TRUE(isSoftLeader(m_sGroup1));
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
             ConfigValue(BaseTrackPlayer::RESET_NONE));
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
-    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
-    ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
     track1 = m_pMixerDeck1->loadFakeTrack(false, 124.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
     EXPECT_DOUBLE_EQ(
-            128.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
-    EXPECT_DOUBLE_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_DOUBLE_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+            124.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+    EXPECT_DOUBLE_EQ(124.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(124.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Load two tracks with sync off and RESET_SPEED
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),

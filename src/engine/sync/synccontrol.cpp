@@ -302,7 +302,10 @@ void SyncControl::updateTargetBeatDistance() {
         }
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::updateTargetBeatDistance, adjusted target is" << targetDistance;
+        kLogger.trace()
+                << getGroup()
+                << "SyncControl::updateTargetBeatDistance, adjusted target is"
+                << targetDistance;
     }
     m_pBpmControl->setTargetBeatDistance(targetDistance);
 }
@@ -343,7 +346,7 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     // This slot is fired by a new file is loaded or if the user
     // has adjusted the beatgrid.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
+        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
     }
 
     VERIFY_OR_DEBUG_ASSERT(m_pLocalBpm) {
@@ -367,7 +370,8 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
             return;
         }
 
-        m_pBpmControl->syncTempo();
+        // Re-requesting the existing sync mode will resync us.
+        m_pChannel->getEngineBuffer()->requestSyncMode(getSyncMode());
         if (!hadBeats) {
             // There is a chance we were beatless leader before, so we notify a basebpm change
             // to possibly reinit leader params.
@@ -379,8 +383,8 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
 
 void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // This slot is fired by if the user has adjusted the beatgrid.
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
+    if (true) {
+        qDebug() << getGroup() << "SyncControl::trackBeatsUpdated";
     }
 
     m_pBeats = pBeats;
