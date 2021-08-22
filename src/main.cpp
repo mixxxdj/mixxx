@@ -24,7 +24,8 @@ constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
-const QString kScaleFactorConfigKey = QStringLiteral("ScaleFactor");
+const QString kConfigGroup = QStringLiteral("[Config]");
+const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
@@ -63,27 +64,23 @@ void adjustScaleFactor(CmdlineArgs* pArgs) {
             return;
         }
     }
-    // We cannot use ConfigObject, because it depends on MixxxApplication
+    // We cannot use SettingsManager, because it depends on MixxxApplication
     // but the scale factor is read during it's constructor.
     // QHighDpiScaling can not be used afterwards because it is private.
-    auto cfgFile = QFile(QDir(pArgs->getSettingsPath()).filePath(MIXXX_SETTINGS_FILE));
-    if (cfgFile.open(QFile::ReadOnly | QFile::Text)) {
-        QTextStream in(&cfgFile);
-        QString strScaleFactor;
-        QString line = in.readLine();
-        while (!line.isNull()) {
-            if (line.startsWith(kScaleFactorConfigKey)) {
-                strScaleFactor = line.mid(kScaleFactorConfigKey.size() + 1);
-                break;
-            }
-            line = in.readLine();
-        }
-        double scaleFactor = strScaleFactor.toDouble();
-        if (scaleFactor > 0) {
-            qDebug() << "Using preferences ScaleFactor" << scaleFactor;
-            qputenv(kScaleFactorEnvVar, strScaleFactor.toLocal8Bit());
-            pArgs->storeScaleFactor(scaleFactor);
-        }
+    // This means the following code may fail after down/upgrade ... a one time issue.
+
+    // Read and parse the config file from the settings path
+    auto config = ConfigObject<ConfigValue>(
+            QDir(pArgs->getSettingsPath()).filePath(MIXXX_SETTINGS_FILE),
+            QString(),
+            QString());
+    QString strScaleFactor = config.getValue(
+            ConfigKey(kConfigGroup, kScaleFactorKey));
+    double scaleFactor = strScaleFactor.toDouble();
+    if (scaleFactor > 0) {
+        qDebug() << "Using preferences ScaleFactor" << scaleFactor;
+        qputenv(kScaleFactorEnvVar, strScaleFactor.toLocal8Bit());
+        pArgs->storeScaleFactor(scaleFactor);
     }
 }
 
