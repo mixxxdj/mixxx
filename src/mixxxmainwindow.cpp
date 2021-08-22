@@ -25,7 +25,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
 #include "library/library.h"
-#include "library/library_preferences.h"
+#include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
@@ -400,8 +400,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pGuiTick;
     delete m_pVisualsManager;
-
-    m_pCoreServices->shutdown();
 }
 
 void MixxxMainWindow::initializeWindow() {
@@ -802,13 +800,12 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
     QString trackPath =
-        QFileDialog::getOpenFileName(
-            this,
-            loadTrackText,
-            pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR),
-            QString("Audio (%1)")
-                .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
-
+            QFileDialog::getOpenFileName(
+                    this,
+                    loadTrackText,
+                    pConfig->getValueString(mixxx::library::prefs::kLegacyDirectoryConfigKey),
+                    QString("Audio (%1)")
+                            .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
 
     if (!trackPath.isNull()) {
         // The user has picked a file via a file dialog. This means the system

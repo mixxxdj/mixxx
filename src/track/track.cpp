@@ -640,20 +640,6 @@ void Track::setYear(const QString& s) {
     }
 }
 
-QString Track::getGenre() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getGenre();
-}
-
-void Track::setGenre(const QString& s) {
-    QMutexLocker lock(&m_qMutex);
-    const QString value = s.trimmed();
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGenre(), value)) {
-        markDirtyAndUnlock(&lock);
-        emit genreChanged(value);
-    }
-}
-
 QString Track::getComposer() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getMetadata().getTrackInfo().getComposer();
@@ -1699,3 +1685,55 @@ void Track::updateStreamInfoFromSource(
         emit cuesUpdated();
     }
 }
+
+QString Track::getGenre() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getMetadata().getTrackInfo().getGenre();
+}
+
+void Track::setGenreFromTrackDAO(
+        const QString& genre) {
+    auto locked = lockMutex(&m_qMutex);
+    if (compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrGenre(),
+                genre)) {
+        markDirtyAndUnlock(&locked);
+    }
+}
+
+bool Track::updateGenre(
+        const QString& genre) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrGenre(),
+                genre)) {
+        return false;
+    }
+    const auto newGenre =
+            m_record.getMetadata().getTrackInfo().getGenre();
+    markDirtyAndUnlock(&locked);
+    emit genreChanged(newGenre);
+    return true;
+}
+
+#if defined(__EXTRA_METADATA__)
+QString Track::getMood() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getMetadata().getTrackInfo().getMood();
+}
+
+bool Track::updateMood(
+        const QString& mood) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrMood(),
+                mood)) {
+        return false;
+    }
+    const auto newMood =
+            m_record.getMetadata().getTrackInfo().getMood();
+    markDirtyAndUnlock(&locked);
+    emit moodChanged(newMood);
+    return true;
+}
+#endif // __EXTRA_METADATA__

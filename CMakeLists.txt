@@ -658,6 +658,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/library_prefs.cpp
   src/library/library.cpp
   src/library/librarycontrol.cpp
   src/library/libraryfeature.cpp
@@ -1380,7 +1381,7 @@ if(UNIX AND NOT APPLE)
   # .desktop file for KDE/GNOME menu
   install(
     FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop"
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
     DESTINATION
       "${CMAKE_INSTALL_DATADIR}/applications"
   )
@@ -2716,9 +2717,8 @@ find_package(LibUSB)
 # USB HID controller support
 option(HID "USB HID controller support" ON)
 if(HID)
-  find_package(hidapi)
-  # hidapi_VERSION is only available starting with 0.10.0
-  if(NOT hidapi_FOUND OR NOT hidapi_VERSION OR hidapi_VERSION VERSION_LESS 0.10.1)
+  find_package(hidapi 0.10.1)
+  if(NOT hidapi_FOUND)
     message(STATUS "Linking internal libhidapi statically")
     add_library(mixxx-hidapi STATIC EXCLUDE_FROM_ALL)
     target_include_directories(mixxx-hidapi SYSTEM PUBLIC lib/hidapi/hidapi)
@@ -2747,10 +2747,6 @@ if(HID)
     endif()
     target_link_libraries(mixxx-lib PRIVATE mixxx-hidapi)
   else()
-    message(STATUS "Linking libhidapi dynamically")
-    if(NOT HIDAPI_FOUND)
-      message(FATAL_ERROR "USB HID controller support requires hidapi and its development headers.")
-    endif()
     # hidapi has two backends on Linux, one using the kernel's hidraw API and one using libusb.
     # libusb obviously does not support Bluetooth HID devices, so use the hidraw backend. The
     # libusb backend is the default, so hidraw needs to be selected explicitly at link time.

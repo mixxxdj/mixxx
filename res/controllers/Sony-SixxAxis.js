@@ -301,5 +301,3 @@ SonySixxAxis.jog_bend = function(group,direction,value) {
     if (direction=="down")
         engine.setValue(group,"jog",-6);
 }
-
-

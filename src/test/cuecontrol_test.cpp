@@ -52,10 +52,7 @@ class CueControlTest : public BaseSignalPathTest {
     }
 
     mixxx::audio::FramePos getCurrentFramePos() {
-        return mixxx::audio::FramePos::fromEngineSamplePos(
-                m_pChannel1->getEngineBuffer()
-                        ->m_pCueControl->getSampleOfTrack()
-                        .current);
+        return m_pChannel1->getEngineBuffer()->m_pCueControl->frameInfo().currentPosition;
     }
 
     void setCurrentFramePos(mixxx::audio::FramePos position) {

@@ -10,7 +10,3 @@ A vertical space filling widget. Grows to fit available space.
     <Children/>
   </WidgetGroup>
 </Template>
-
-
-
-

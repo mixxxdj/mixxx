@@ -31,7 +31,7 @@ void ControlIndicatorTimer::slotTimeout() {
     }
 }
 
-// TODO: Everything below this comment only added for compatiblity with the
+// TODO: Everything below this comment only added for compatibility with the
 // legacy waveform vsync thread. It should be removed when the legacy skin
 // system is dropped.
 
