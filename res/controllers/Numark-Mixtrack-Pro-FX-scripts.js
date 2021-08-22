@@ -439,14 +439,16 @@ MixtrackProFX.PadSection = function(deckNumber) {
     this.blinkLedState = true;
 
     // initialize leds
-    midi.sendShortMsg(0x93 + deckNumber, 0x00, 0x7F); // hotcue
-    midi.sendShortMsg(0x93 + deckNumber, 0x0D, 0x01); // auto loop
-    midi.sendShortMsg(0x93 + deckNumber, 0x07, 0x01); // "fader cuts"
-    midi.sendShortMsg(0x93 + deckNumber, 0x0B, 0x01); // sample1
+    var ledOff = components.Button.prototype.off;
+    var ledOn = components.Button.prototype.on;
+    midi.sendShortMsg(0x93 + deckNumber, 0x00, ledOn); // hotcue
+    midi.sendShortMsg(0x93 + deckNumber, 0x0D, ledOff); // auto loop
+    midi.sendShortMsg(0x93 + deckNumber, 0x07, ledOff); // "fader cuts"
+    midi.sendShortMsg(0x93 + deckNumber, 0x0B, ledOff); // sample1
 
     // shifted leds
-    midi.sendShortMsg(0x93 + deckNumber, 0x0F, 0x01); // sample2
-    midi.sendShortMsg(0x93 + deckNumber, 0x02, 0x01); // beatjump
+    midi.sendShortMsg(0x93 + deckNumber, 0x0F, ledOff); // sample2
+    midi.sendShortMsg(0x93 + deckNumber, 0x02, ledOff); // beatjump
 
     this.modes = {};
     this.modes[MixtrackProFX.PadModeControls.HOTCUE] = new MixtrackProFX.ModeHotcue(deckNumber);
