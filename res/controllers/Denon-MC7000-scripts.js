@@ -46,8 +46,13 @@ MC7000.needleSearchPlay = false; // default: false
 
 // select if the previous sampler shall stop before a new sampler starts
 // true: a running sampler will stop before the new sampler starts
-// false: all triggered samplers will play simultaniously
+// false: all triggered samplers will play simultaneously
 MC7000.prevSamplerStop = true; // default: true
+
+// Set Vinyl Mode on ("true") or off ("false") when MIXXX starts.
+// This sets the Jog Wheel touch detection / Vinyl Mode
+// and the Jog LEDs ("VINYL" on = spinny, "VINYL" off = track position).
+MC7000.VinylModeOn = true; // default: true
 
 // Possible pitchfader rate ranges given in percent.
 // can be cycled through by the RANGE buttons.
@@ -69,11 +74,6 @@ MC7000.rateRanges = [
 // use "SHIFT" + "DECK #" to toggle between both modes
 MC7000.modeSingleLED = 1; // default: 1
 
-// Set Vinyl Mode on ("true") or off ("false") when MIXXX starts.
-// This sets the Jog Wheel touch detection / Vinyl Mode
-// and the Jog LEDs ("VINYL" on = spinny, "VINYL" off = track position).
-MC7000.VinylModeOn = true; // default: true
-
 // Scratch algorithm parameters
 MC7000.scratchParams = {
     recordSpeed: 33 + 1/3, // default: 33 + 1/3
@@ -86,7 +86,6 @@ MC7000.scratchParams = {
 // set to 0.5 with audio buffer set to 50ms
 // set to 1 with audio buffer set to 25ms
 // set to 3 with audio buffer set to 5ms
-
 MC7000.jogSensitivity = 1;
 
 /*/////////////////////////////////
