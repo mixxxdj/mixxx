@@ -60,7 +60,7 @@ void DeviceChannelListener::Reconnected() {
 Hss1394Controller::Hss1394Controller(
         const hss1394::TNodeInfo& deviceInfo,
         int deviceIndex)
-        : MidiController(QString("%1").arg(QString(deviceInfo.sName.c_str()))),
+        : MidiController(QString::fromLocal8Bit(deviceInfo.sName.c_str())),
           m_deviceInfo(deviceInfo),
           m_iDeviceIndex(deviceIndex) {
     // All HSS1394 devices are full-duplex
