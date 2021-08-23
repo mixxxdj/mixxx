@@ -9,8 +9,8 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
         int inputDeviceIndex,
         int outputDeviceIndex)
         : MidiController(inputDeviceInfo
-                          ? QString("%1").arg(inputDeviceInfo->name)
-                          : QString("%1").arg(outputDeviceInfo->name)),
+                          ? QString::fromLocal8Bit(inputDeviceInfo->name)
+                          : QString::fromLocal8Bit(outputDeviceInfo->name)),
           m_cReceiveMsg_index(0),
           m_bInSysex(false) {
     for (unsigned int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
