@@ -19,7 +19,6 @@
 
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
-          m_midiDebug(false),
           m_developer(false),
           m_safeMode(false),
           m_debugAssertBreak(false),
@@ -169,18 +168,6 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(timelinePath);
     parser.addOption(timelinePathDeprecated);
 
-    const QCommandLineOption controllerDebug(QStringLiteral("controller-debug"),
-            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
-                                      "Causes Mixxx to display/log all of the controller data it "
-                                      "receives and script functions it loads")
-                            : QString());
-    QCommandLineOption controllerDebugDeprecated(
-            QStringList({QStringLiteral("controllerDebug"),
-                    QStringLiteral("midiDebug")}));
-    controllerDebugDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
-    parser.addOption(controllerDebug);
-    parser.addOption(controllerDebugDeprecated);
-
     const QCommandLineOption developer(QStringLiteral("developer"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Enables developer-mode. Includes extra log info, stats on "
@@ -318,7 +305,6 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_timelinePath = parser.value(timelinePathDeprecated);
     }
 
-    m_midiDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
     m_developer = parser.isSet(developer);
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
     m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);

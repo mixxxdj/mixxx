@@ -3,7 +3,6 @@
 #include <libusb.h>
 
 #include "controllers/bulk/bulksupported.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
 #include "util/compatibility.h"

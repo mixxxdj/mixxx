@@ -2,7 +2,6 @@
 
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
@@ -123,7 +122,7 @@ void ControllerScriptInterfaceLegacy::setValue(
 
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControllerDebug::controlFlags());
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl &&
                 !m_st.ignore(
                         pControl, coScript->getParameterForValue(newValue))) {
@@ -154,7 +153,7 @@ void ControllerScriptInterfaceLegacy::setParameter(
 
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControllerDebug::controlFlags());
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, newParameter)) {
             coScript->setParameter(newParameter);
         }
@@ -501,7 +500,7 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
 void ControllerScriptInterfaceLegacy::softTakeover(
         const QString& group, const QString& name, bool set) {
     ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControllerDebug::controlFlags());
+            ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         return;
     }
@@ -515,7 +514,7 @@ void ControllerScriptInterfaceLegacy::softTakeover(
 void ControllerScriptInterfaceLegacy::softTakeoverIgnoreNextValue(
         const QString& group, const QString& name) {
     ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControllerDebug::controlFlags());
+            ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         return;
     }

@@ -208,17 +208,6 @@ manpage.1: manpage.sgml
       </varlistentry>
       <varlistentry>
         <term>
-          <option>--controllerDebug/--midiDebug</option>
-        </term>
-        <listitem>
-          <para>
-            Causes Mixxx to display/log all of the MIDI/HID controller data
-            it receives and script functions it loads.
-          </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
           <option>--developer</option>
         </term>
         <listitem>
