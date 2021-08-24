@@ -9,6 +9,7 @@
 #include "library/treeitem.h"
 #include "moc_sidebarmodel.cpp"
 #include "util/assert.h"
+#include "util/cmdlineargs.h"
 
 namespace {
 
@@ -258,10 +259,14 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             if (pTreeItem->getData().toString() == QUICK_LINK_NODE) {
                 return pTreeItem->getLabel();
             } else {
-                if (pTreeItem->getToolTip().isEmpty()) {
+                if (!pTreeItem->getToolTip().isEmpty()) {
+                    return pTreeItem->getToolTip();
+                } else if (CmdlineArgs::Instance().getDeveloper()) {
+                    // Display the internal data only for debugging
                     return pTreeItem->getData();
                 } else {
-                    return pTreeItem->getToolTip();
+                    // No tool tip
+                    return {};
                 }
             }
         }
