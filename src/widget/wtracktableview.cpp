@@ -9,6 +9,7 @@
 #include "control/controlobject.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -27,10 +28,21 @@
 
 namespace {
 
-const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck("[Controls]", "AllowTrackLoadToPlayingDeck");
+// ConfigValue key for QTable vertical scrollbar position
+const ConfigKey kVScrollBarPosConfigKey{
+        // mixxx::library::prefs::kConfigGroup is defined in another
+        // unit of compilation and cannot be reused here!
+        QStringLiteral("[Library]"),
+        QStringLiteral("VScrollBarPos")};
+
+const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck{
+        QStringLiteral("[Controls]"),
+        QStringLiteral("AllowTrackLoadToPlayingDeck")};
+
 // Default color for the focus border of TableItemDelegates
 const QColor kDefaultFocusBorderColor = Qt::white;
-} // namespace
+
+} // anonymous namespace
 
 WTrackTableView::WTrackTableView(QWidget* parent,
         UserSettingsPointer pConfig,
@@ -39,8 +51,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
         bool sorting)
         : WLibraryTableView(parent,
                   pConfig,
-                  ConfigKey(LIBRARY_CONFIGVALUE,
-                          WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
+                  kVScrollBarPosConfigKey),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
@@ -54,7 +65,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
-    m_pKeyNotation = new ControlProxy("[Library]", "key_notation", this);
+    m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
     m_pKeyNotation->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
 
     m_pSortColumn = new ControlProxy("[Library]", "sort_column", this);

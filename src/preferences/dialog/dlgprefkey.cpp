@@ -5,6 +5,7 @@
 
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "library/library_prefs.h"
 #include "moc_dlgprefkey.cpp"
 #include "util/compatibility.h"
 #include "util/xml.h"
@@ -48,7 +49,7 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
         plugincombo->addItem(info.name(), info.id());
     }
 
-    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
+    m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
 
     loadSettings();
 
