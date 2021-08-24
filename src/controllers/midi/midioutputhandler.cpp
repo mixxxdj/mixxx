@@ -13,8 +13,8 @@ MidiOutputHandler::MidiOutputHandler(MidiController* controller,
         : m_pController(controller),
           m_mapping(mapping),
           m_cos(mapping.controlKey, this, ControlFlag::NoAssertIfMissing),
-          m_lastVal(-1),
-          m_logger(logger) { // -1 = virgin
+          m_lastVal(-1), // arbitrary invalid MIDI value
+          m_logger(logger) {
     m_cos.connectValueChanged(this, &MidiOutputHandler::controlChanged);
 }
 
