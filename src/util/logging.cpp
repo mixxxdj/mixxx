@@ -13,7 +13,6 @@
 #include <QTextStream>
 #include <QThread>
 
-#include "controllers/controllerdebug.h"
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
@@ -236,6 +235,12 @@ namespace mixxx {
 
 namespace {
 
+bool isControllerIoLoggingCategory(const QString& categoryName) {
+    return categoryName.startsWith("controller") &&
+            (categoryName.endsWith("input") ||
+                    categoryName.endsWith("output"));
+}
+
 // Debug message handler which outputs to stderr and a logfile,
 // prepending the thread name, log category, and log level.
 void handleMessage(
@@ -245,15 +250,11 @@ void handleMessage(
     const char* levelName = nullptr;
     WriteFlags writeFlags = WriteFlag::None;
     bool isDebugAssert = false;
-    bool isControllerDebug = false;
+    const QString categoryName(context.category);
     switch (type) {
     case QtDebugMsg:
         levelName = "Debug";
-        isControllerDebug =
-                input.startsWith(QLatin1String(
-                        ControllerDebug::kLogMessagePrefix));
-        if (isControllerDebug ||
-                Logging::enabled(LogLevel::Debug)) {
+        if (Logging::enabled(LogLevel::Debug)) {
             writeFlags |= WriteFlag::StdErr;
             writeFlags |= WriteFlag::File;
         }
@@ -263,8 +264,12 @@ void handleMessage(
         // TODO: Remove the following line.
         // Do not write debug log messages into log file if log level
         // Debug is not enabled starting with release 2.4.0! Until then
-        // write debug messages unconditionally into the log file
-        writeFlags |= WriteFlag::File;
+        // write debug messages into the log file, but skip controller I/O
+        // to avoid flooding the log file.
+        // Skip expensive string comparisons if WriteFLag::File is already set.
+        if (!writeFlags.testFlag(WriteFlag::File) && !isControllerIoLoggingCategory(categoryName)) {
+            writeFlags |= WriteFlag::File;
+        }
         break;
     case QtInfoMsg:
         levelName = "Info";

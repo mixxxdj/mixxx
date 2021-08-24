@@ -3,7 +3,6 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/midi/midicontroller.h"
 #include "moc_midioutputhandler.cpp"
 

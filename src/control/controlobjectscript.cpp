@@ -1,11 +1,10 @@
 #include "control/controlobjectscript.h"
 
-#include "controllers/controllerdebug.h"
 #include "moc_controlobjectscript.cpp"
 
 ControlObjectScript::ControlObjectScript(
         const ConfigKey& key, const RuntimeLoggingCategory& logger, QObject* pParent)
-        : ControlProxy(key, pParent, ControllerDebug::controlFlags()),
+        : ControlProxy(key, pParent, ControlFlag::AllowMissingOrInvalid),
           m_logger(logger) {
 }
 

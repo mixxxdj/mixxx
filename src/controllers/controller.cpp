@@ -4,7 +4,6 @@
 #include <QJSValue>
 #include <QRegularExpression>
 
-#include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "moc_controller.cpp"
 #include "util/screensaver.h"

@@ -2,7 +2,6 @@
 
 #include <hidapi.h>
 
-#include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "moc_hidcontroller.cpp"
@@ -159,7 +158,7 @@ void HidController::processInputReport(int bytesRead) {
             reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
 
     // Execute callback function in JavaScript mapping
-    // and print to stdout in case of --controllerDebug
+    // and log incoming data
     receive(incomingData, mixxx::Time::elapsed());
 }
 
