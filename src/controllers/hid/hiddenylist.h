@@ -15,3 +15,8 @@ hid_denylist_t hid_denylisted[] = {
         {0x1157, 0x300, 0x1, 0x2, -1},   // EKS Otus mouse pad (OS/X,windows)
         {0x1157, 0x300, 0x0, 0x0, 0x3},  // EKS Otus mouse pad (linux)
 };
+
+constexpr unsigned short kGenericDesktopUsagePage = 0x01;
+
+constexpr unsigned short kGenericDesktopMouseUsage = 0x02;
+constexpr unsigned short kGenericDesktopKeyboardUsage = 0x06;
