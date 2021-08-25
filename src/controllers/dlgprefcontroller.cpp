@@ -448,13 +448,13 @@ PresetInfo DlgPrefController::enumeratePresetsFromEnumerator(
 }
 
 void DlgPrefController::slotUpdate() {
-    // Check if the controller is open.
-    bool deviceOpen = m_pController->isOpen();
-    // Check/uncheck the "Enabled" box
-    m_ui.chkEnabledDevice->setChecked(deviceOpen);
-
     enumeratePresets(m_pControllerManager->getConfiguredPresetFileForDevice(
             m_pController->getName()));
+
+    // enumeratePresets will check the m_ui.chkEnabledDevice checkbox if
+    // there is a valid mapping saved in the mixxx.cfg file. However, the
+    // checkbox should only be checked if the device is currently enabled.
+    m_ui.chkEnabledDevice->setChecked(m_pController->isOpen());
 
     // If the controller is not mappable, disable the input and output mapping
     // sections and the learning wizard button.
