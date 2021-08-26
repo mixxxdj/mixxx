@@ -1606,8 +1606,13 @@ void MixxxMainWindow::rebootMixxxView() {
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
-        // return true for no tool tips
-        switch (m_toolTipsCfg) {
+        // always show tooltips in the preferences window
+        QWidget* activeWindow = QApplication::activeWindow();
+        if (activeWindow &&
+                QLatin1String(activeWindow->metaObject()->className()) !=
+                        "DlgPreferences") {
+            // return true for no tool tips
+            switch (m_toolTipsCfg) {
             case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
                 if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
                     return true;
@@ -1620,6 +1625,7 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             default:
                 DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
                 return true;
+            }
         }
     }
     // standard event processing
