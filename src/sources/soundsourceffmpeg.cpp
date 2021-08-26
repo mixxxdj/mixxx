@@ -135,6 +135,7 @@ inline int64_t getStreamEndTime(const AVStream& avStream) {
 }
 
 inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts) {
+    DEBUG_ASSERT(pts != AV_NOPTS_VALUE);
     // getStreamStartTime(avStream) -> 1st audible frame at kMinFrameIndex
     return kMinFrameIndex +
             av_rescale_q(
@@ -1051,12 +1052,26 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 #if VERBOSE_DEBUG_LOG
                 avTrace("Received decoded frame", *m_pavDecodedFrame);
 #endif
-                DEBUG_ASSERT(m_pavDecodedFrame->pts != AV_NOPTS_VALUE);
                 const auto decodedFrameCount = m_pavDecodedFrame->nb_samples;
                 DEBUG_ASSERT(decodedFrameCount > 0);
                 auto streamFrameIndex =
                         convertStreamTimeToFrameIndex(
                                 *m_pavStream, m_pavDecodedFrame->pts);
+                // Only audible samples are counted, i.e. any inaudible aka
+                // "priming" samples are not included in nb_samples!
+                // https://bugs.launchpad.net/mixxx/+bug/1934785
+                if (streamFrameIndex < kMinFrameIndex) {
+#if VERBOSE_DEBUG_LOG
+                    const auto inaudibleFrameCountUntilStartOfStream =
+                            kMinFrameIndex - streamFrameIndex;
+                    kLogger.debug()
+                            << "Skipping"
+                            << inaudibleFrameCountUntilStartOfStream
+                            << "inaudible sample frames before the start of the stream";
+#endif
+                    streamFrameIndex = kMinFrameIndex;
+                }
+                DEBUG_ASSERT(streamFrameIndex >= kMinFrameIndex);
                 decodedFrameRange = IndexRange::forward(
                         streamFrameIndex,
                         decodedFrameCount);
