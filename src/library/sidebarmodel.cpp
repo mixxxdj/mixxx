@@ -9,6 +9,7 @@
 #include "library/treeitem.h"
 #include "moc_sidebarmodel.cpp"
 #include "util/assert.h"
+#include "util/cmdlineargs.h"
 
 namespace {
 
@@ -234,13 +235,14 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
         if (tree_item) {
             if (role == Qt::DisplayRole) {
                 return tree_item->getLabel();
+
             } else if (role == Qt::ToolTipRole) {
-                // If it's the "Quick Links" node, display it's name
-                if (tree_item->getData().toString() == QUICK_LINK_NODE) {
-                    return tree_item->getLabel();
-                } else {
+                if (CmdlineArgs::Instance().getDeveloper()) {
+                    // Display the internal data for debugging
                     return tree_item->getData();
                 }
+                // Show the label. Helpful for long names with a narrow sidebar.
+                return tree_item->getLabel();
             } else if (role == TreeItemModel::kDataRole) {
                 // We use Qt::UserRole to ask for the datapath.
                 return tree_item->getData();
