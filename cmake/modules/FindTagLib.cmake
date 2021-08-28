@@ -65,7 +65,7 @@ find_library(TagLib_LIBRARY
 mark_as_advanced(TagLib_LIBRARY)
 
 # Version detection
-if(DEFINED PC_TagLib_VERSION)
+if(PC_TagLib_VERSION)
   set(TagLib_VERSION "${PC_TagLib_VERSION}")
 else()
   if (EXISTS "${TagLib_INCLUDE_DIR}/taglib.h")
