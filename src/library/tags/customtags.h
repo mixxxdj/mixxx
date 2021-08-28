@@ -152,9 +152,13 @@ class CustomTags final {
                 .getLabel();
     }
 
+    enum class FromJsonMode {
+        Lenient,
+        Strict,
+    };
     static std::optional<CustomTags> fromJsonObject(
             const QJsonObject& jsonObject,
-            bool strict = false);
+            FromJsonMode mode = FromJsonMode::Lenient);
     enum class ToJsonMode {
         Plain,
         Compact,
@@ -162,8 +166,18 @@ class CustomTags final {
     QJsonObject toJsonObject(
             ToJsonMode mode = ToJsonMode::Compact) const;
 
-    static std::optional<CustomTags> parseJsonData(
-            const QByteArray& jsonData);
+    enum class ParseJsonDataResult {
+        Ok,
+        DeserializationError,
+        TransformationError,
+    };
+    /// Create a new instance from JSON data
+    ///
+    /// Returns a new instance if no error occurred. The resulting
+    /// instance should be validated for consistency using `validate()`.
+    static std::pair<std::optional<CustomTags>, ParseJsonDataResult> parseJsonData(
+            const QByteArray& jsonData,
+            FromJsonMode mode = FromJsonMode::Lenient);
     QByteArray dumpJsonData() const;
 };
 
