@@ -98,7 +98,7 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
         TrackMetadata* pTrackMetadata,
         QImage* pCoverArt) const {
     auto const imported =
-            SoundSource::importTrackMetadataAndCoverImage(
+            MetadataSourceTagLib::importTrackMetadataAndCoverImage(
                     pTrackMetadata, pCoverArt);
     if (imported.first == ImportResult::Succeeded) {
         // Done if the default implementation in the base class
