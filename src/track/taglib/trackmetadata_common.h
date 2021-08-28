@@ -7,21 +7,18 @@
 #include <QFlags>
 #include <QImage>
 #include <QString>
+#include <type_traits>
 
 #if defined(__EXTRA_METADATA__)
 // UUID -> QString
 #include "util/compatibility.h"
 #endif // __EXTRA_METADATA__
 
-// TagLib has support for the Ogg Opus file format since version 1.9
-#define TAGLIB_HAS_OPUSFILE \
-    ((TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9)))
-
-// TagLib has support for hasID3v2Tag()/ID3v2Tag() for WAV files since version 1.9
-#define TAGLIB_HAS_WAV_ID3V2TAG \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
-
 #include "track/trackmetadata.h"
+
+static_assert(
+        TAGLIB_MAJOR_VERSION > 1 || (TAGLIB_MAJOR_VERSION == 1 && TAGLIB_MINOR_VERSION >= 11),
+        "TagLib 1.11 or newer is required");
 
 namespace mixxx {
 
