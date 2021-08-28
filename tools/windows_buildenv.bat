@@ -59,7 +59,8 @@ EXIT /B 0
         SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/2.3/Windows/!BUILDENV_NAME!.zip
         IF NOT EXIST !BUILDENV_PATH!.zip (
             ECHO ^Download prebuilt build environment from "!BUILDENV_URL!" to "!BUILDENV_PATH!.zip"...
-            BITSADMIN /transfer buildenvjob /download /priority normal !BUILDENV_URL! !BUILDENV_PATH!.zip
+            REM TODO: The /DYNAMIC parameter is required because our server does not yet support HTTP range headers
+            BITSADMIN /transfer buildenvjob /download /priority normal /DYNAMIC !BUILDENV_URL! !BUILDENV_PATH!.zip
             REM TODO: verify download using sha256sum?
             ECHO ^Download complete.
         ) else (
