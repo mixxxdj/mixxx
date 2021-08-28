@@ -2366,7 +2366,7 @@ else()
 endif()
 
 # TagLib
-find_package(TagLib REQUIRED)
+find_package(TagLib 1.11 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE TagLib::TagLib)
 
 # Threads
