@@ -297,14 +297,14 @@ bool CustomTags::addOrReplaceAllTags(
 //static
 std::optional<CustomTags> CustomTags::fromJsonObject(
         const QJsonObject& jsonObject,
-        bool strict) {
+        FromJsonMode mode) {
     CustomTags customTags;
     for (auto i = jsonObject.begin();
             i != jsonObject.end();
             ++i) {
         auto facetValue = TagFacet::filterEmptyValue(i.key());
         if (!TagFacet::isValidValue(facetValue)) {
-            VERIFY_OR_DEBUG_ASSERT(!strict) {
+            VERIFY_OR_DEBUG_ASSERT(mode == FromJsonMode::Lenient) {
                 qCWarning(kLogger)
                         << "Invalid facet"
                         << facetValue
@@ -335,7 +335,7 @@ std::optional<CustomTags> CustomTags::fromJsonObject(
             const auto tag = Tag::fromJsonValue(jsonValue);
             if (!tag ||
                     (*tag != Tag() && !tag->isValid())) {
-                VERIFY_OR_DEBUG_ASSERT(!strict) {
+                VERIFY_OR_DEBUG_ASSERT(mode == FromJsonMode::Lenient) {
                     qCWarning(kLogger)
                             << "Invalid tag"
                             << jsonValue
@@ -381,29 +381,24 @@ QJsonObject CustomTags::toJsonObject(
 }
 
 //static
-std::optional<CustomTags> CustomTags::parseJsonData(
-        const QByteArray& jsonData) {
+std::pair<std::optional<CustomTags>, CustomTags::ParseJsonDataResult> CustomTags::parseJsonData(
+        const QByteArray& jsonData,
+        FromJsonMode mode) {
     const auto [jsonObject, parseError] = json::parseObject(jsonData);
     if (parseError != QJsonParseError::NoError) {
         qCWarning(kLogger)
-                << "Failed to parse JSON data"
+                << "Failed to deserialize JSON data"
                 << parseError;
-        return std::nullopt;
+        return std::make_pair(std::nullopt, ParseJsonDataResult::DeserializationError);
     }
-    auto customTags = CustomTags::fromJsonObject(jsonObject);
+    auto customTags = CustomTags::fromJsonObject(jsonObject, mode);
     if (!customTags) {
         qCWarning(kLogger)
-                << "Invalid JSON object"
+                << "Failed to transform JSON object"
                 << jsonObject;
-        return std::nullopt;
+        return std::make_pair(std::nullopt, ParseJsonDataResult::TransformationError);
     }
-    if (!customTags->validate()) {
-        qCWarning(kLogger)
-                << "Validation failed"
-                << *customTags;
-        return std::nullopt;
-    }
-    return customTags;
+    return std::make_pair(customTags, ParseJsonDataResult::Ok);
 }
 
 QByteArray CustomTags::dumpJsonData() const {
