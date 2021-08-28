@@ -117,7 +117,7 @@
 				<options>
 					<normal />
 				</options>
-			</control>		
+			</control>
 			<control>
 				<group>[Channel1]</group>
 				<key>keylock</key>
@@ -265,7 +265,7 @@
 				<options>
 					<normal />
 				</options>
-			</control>		
+			</control>
 			<control>
 				<group>[Channel2]</group>
 				<key>keylock</key>
@@ -2820,7 +2820,7 @@
 				<status>0x96</status>
 				<midino>0x57</midino>
 				<on>0x7f</on>
-			</output>	
+			</output>
 			<output>
 				<group>[EffectRack1_EffectUnit1_Effect1]</group>
 				<key>enabled</key>
@@ -2900,7 +2900,7 @@
 				<status>0x96</status>
 				<midino>0x5F</midino>
 				<on>0x7f</on>
-			</output>	
+			</output>
 			<!--LED FX Channel2 -->
 			<output>
 				<group>[EffectRack1_EffectUnit2_Effect1]</group>
@@ -2981,7 +2981,7 @@
 				<status>0x97</status>
 				<midino>0x57</midino>
 				<on>0x7f</on>
-			</output>	
+			</output>
 			<output>
 				<group>[EffectRack1_EffectUnit2_Effect1]</group>
 				<key>enabled</key>
@@ -3061,7 +3061,7 @@
 				<status>0x97</status>
 				<midino>0x5F</midino>
 				<on>0x7f</on>
-			</output>		
+			</output>
 			<!--LED SAMPLE-->
 			<output>
 				<group>[Sampler1]</group>
