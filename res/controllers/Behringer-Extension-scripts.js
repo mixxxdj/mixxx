@@ -6,6 +6,9 @@
     /** @private */
     var components = global.components;
 
+    /** @private */
+    var engine = global.engine;
+
     /**
      * Contains functions to print a message to the log.
      * `debug` output is suppressed unless the caller owns a truthy property `debug`.
@@ -451,7 +454,7 @@
         inValueScale: function(value) {
             var direction = DirectionEncoder.prototype.inValueScale.call(this, value);
             var beats = this.sizeControl
-                ? global.engine.getValue(this.group, this.sizeControl)
+                ? engine.getValue(this.group, this.sizeControl)
                 : this.size;
             return direction * beats;
         },
@@ -472,7 +475,6 @@
     };
     BackLoopButton.prototype = deriveFrom(components.Button, {
         input: function(_channel, _control, value, _status, group) {
-            var engine = global.engine;
             var script = global.script;
             if (value) {
                 var loopSize = engine.getValue(group, "beatloop_size");
@@ -483,6 +485,103 @@
                 engine.setValue(group, "beatjump_size", beatjumpSize);
             } else {
                 script.triggerControl(group, "reloop_toggle");
+            }
+        }
+    });
+
+    /**
+     * A button that toggles an echo out roll effect.
+     *
+     * @constructor
+     * @extends {components.Button}
+     * @param {object} options Options object
+     * @param {string} options.echoEffect (optional) Group of the echo effect control;
+     *                                              default: `[EffectRack1_EffectUnit1_Effect1]`
+     * @param {Array<string>} additionalEffects (optional) Group of effects that are toggled
+     *                                          in addition to the echo effect
+     * @public
+     */
+     var EchoRollButton = function(options) {
+        options = options || {};
+        options.echoTimer = null;
+        options.volume = null; // required to reset volume until lp#1941040 is fixed
+        options.echoEffect = options.echoEffect || "[EffectRack1_EffectUnit1_Effect1]";
+        options.additionalEffects = options.additionalEffects || [];
+        if (!Array.isArray(options.additionalEffects)) {
+            options.additionalEffects = [options.additionalEffects];
+        }
+        options.groups = [options.echoEffect].concat(options.additionalEffects);
+        components.Button.call(this, options);
+    };
+    EchoRollButton.prototype = deriveFrom(components.Button, {
+        input: function(_channel, _control, value, _status, group) {
+            if (value) {
+                this.enableEffect(group);
+            } else {
+                this.disableEffect(group);
+            }
+        },
+        enableEffect: function(channelGroup) {
+            var beats = 60.0 / engine.getValue(channelGroup, "bpm");
+            var delay = 1000.0 * beats * this.getEchoDelay(this.echoEffect);
+            this.mute(channelGroup, delay);
+            this.enableControls(1);
+        },
+        disableEffect: function(channelGroup) {
+            this.enableControls(0);
+            this.unMute(channelGroup);
+        },
+        enableControls: function(value) {
+            this.groups.forEach(
+                function(group) { engine.setValue(group, "enabled", value); }, this);
+        },
+
+        /**
+         * Determine the delay time of an echo effect.
+         *
+         * @param {string} group Group of the echo effect
+         * @return {number} Echo delay time in beats
+         * @private
+         * @see https://github.com/mixxxdj/mixxx/blob/2.3/src/effects/builtin/echoeffect.cpp#L152
+         */
+         getEchoDelay: function(group) {
+            var quantize = engine.getValue(group, "button_parameter1");
+            var triplet = engine.getValue(group, "button_parameter2");
+            var delay = engine.getValue(group, "parameter1"); // range: [0, 2]
+            var minDelay = 1/8.0;
+            var precision = 4.0;
+            if (quantize) {
+                delay = Math.max(Math.round(delay * precision) / precision, minDelay);
+                if (triplet) {
+                    delay /= 3.0;
+                }
+            }
+            return delay;
+        },
+        mute: function(channel, delay) {
+            var muteAction = function() {
+                engine.setValue(channel, "volume_set_zero", 1);
+            }
+            this.volume = engine.getValue(channel, "volume");
+
+            this.stopTimer(); // timer may be pending
+            this.echoTimer = new Timer(
+                {timeout: delay, oneShot: true, action: muteAction, owner: this});
+            this.echoTimer.start();
+        },
+        unMute: function(channel) {
+            this.stopTimer();
+            if (this.volume !== null) {
+                engine.setValue(channel, "volume", this.volume);
+                this.volume = null;
+            } else { // fallback
+                engine.setValue(channel, "volume_set_default", 1);
+            }
+        },
+        stopTimer: function() {
+            if (this.echoTimer !== null) {
+                this.echoTimer.reset();
+                this.echoTimer = null;
             }
         }
     });
@@ -1391,6 +1490,7 @@
     exports.LoopEncoder = LoopEncoder;
     exports.LoopMoveEncoder = LoopMoveEncoder;
     exports.BackLoopButton = BackLoopButton;
+    exports.EchoRollButton = EchoRollButton;
     exports.CrossfaderCurvePot = CrossfaderCurvePot;
     exports.Publisher = Publisher;
     exports.LayerManager = LayerManager;
