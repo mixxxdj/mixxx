@@ -901,6 +901,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/fileinfo.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
+  src/util/json.cpp
   src/util/logger.cpp
   src/util/logging.cpp
   src/util/mac.cpp

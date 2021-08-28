@@ -8,6 +8,7 @@
 
 #include "moc_jsonwebtask.cpp"
 #include "util/counter.h"
+#include "util/json.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
 
@@ -55,21 +56,8 @@ std::optional<QJsonDocument> readJsonContent(
         kLogger.debug() << "Empty JSON network reply";
         return QJsonDocument{};
     }
-    QJsonParseError parseError;
-    auto jsonDocument = QJsonDocument::fromJson(
-            *optContentData,
-            &parseError);
-    // QJsonDocument::fromJson() returns a non-null document
-    // if parsing succeeds and otherwise null on error. The
-    // parse error must only be evaluated if the returned
-    // document is null!
-    if (jsonDocument.isNull() &&
-            parseError.error != QJsonParseError::NoError) {
-        kLogger.warning()
-                << "Failed to parse JSON data:"
-                << parseError.errorString()
-                << "at offset"
-                << parseError.offset;
+    const auto [jsonDoc, parseError] = json::parseDocument(*optContentData);
+    if (parseError != QJsonParseError::NoError) {
         if (pInvalidResponseContent) {
             *pInvalidResponseContent = std::make_pair(
                     std::move(contentType),
@@ -77,7 +65,7 @@ std::optional<QJsonDocument> readJsonContent(
         }
         return std::nullopt;
     }
-    return jsonDocument;
+    return jsonDoc;
 }
 
 // TODO: Allow to customize headers and attributes?

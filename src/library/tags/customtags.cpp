@@ -1,9 +1,9 @@
 #include "library/tags/customtags.h"
 
 #include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QLoggingCategory>
+
+#include "util/json.h"
 
 namespace {
 
@@ -383,33 +383,13 @@ QJsonObject CustomTags::toJsonObject(
 //static
 std::optional<CustomTags> CustomTags::parseJsonData(
         const QByteArray& jsonData) {
-    if (jsonData.isEmpty()) {
+    const auto [jsonObject, parseError] = json::parseObject(jsonData);
+    if (parseError != QJsonParseError::NoError) {
         qCWarning(kLogger)
-                << "Failed to parse empty JSON data";
+                << "Failed to parse JSON data"
+                << parseError;
         return std::nullopt;
     }
-    QJsonParseError parseError;
-    const auto jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
-    // QJsonDocument::fromJson() returns a non-null document
-    // if parsing succeeds and otherwise null on error. The
-    // parse error must only be evaluated if the returned
-    // document is null!
-    if (jsonDoc.isNull() &&
-            parseError.error != QJsonParseError::NoError) {
-        qCWarning(kLogger)
-                << "Failed to parse JSON data:"
-                << parseError.errorString()
-                << "at offset"
-                << parseError.offset;
-        return std::nullopt;
-    }
-    if (!jsonDoc.isObject()) {
-        qCWarning(kLogger)
-                << "Invalid JSON document"
-                << jsonDoc;
-        return std::nullopt;
-    }
-    const auto jsonObject = jsonDoc.object();
     auto customTags = CustomTags::fromJsonObject(jsonObject);
     if (!customTags) {
         qCWarning(kLogger)
