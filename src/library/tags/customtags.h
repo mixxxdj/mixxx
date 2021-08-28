@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QByteArray>
+#include <QJsonObject>
 #include <QMap>
 
 #include "library/tags/tag.h"
