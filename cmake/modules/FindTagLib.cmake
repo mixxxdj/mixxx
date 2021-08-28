@@ -64,12 +64,32 @@ find_library(TagLib_LIBRARY
 )
 mark_as_advanced(TagLib_LIBRARY)
 
+# Version detection
+if(DEFINED PC_TagLib_VERSION)
+  set(TagLib_VERSION "${PC_TagLib_VERSION}")
+else()
+  if (EXISTS "${TagLib_INCLUDE_DIR}/taglib.h")
+    file(READ "${TagLib_INCLUDE_DIR}/taglib.h" TagLib_H_CONTENTS)
+    string(REGEX MATCH "#define TAGLIB_MAJOR_VERSION ([0-9]+)" _dummy "${TagLib_H_CONTENTS}")
+    set(TagLib_VERSION_MAJOR "${CMAKE_MATCH_1}")
+    string(REGEX MATCH "#define TAGLIB_MINOR_VERSION ([0-9]+)" _dummy "${TagLib_H_CONTENTS}")
+    set(TagLib_VERSION_MINOR "${CMAKE_MATCH_1}")
+    string(REGEX MATCH "#define TAGLIB_PATCH_VERSION ([0-9]+)" _dummy "${TagLib_H_CONTENTS}")
+    set(TagLib_VERSION_PATCH "${CMAKE_MATCH_1}")
+    # Simply using if(NOT) does not work because 0 is a valid value, so compare to empty string.
+    if (NOT TagLib_VERSION_MAJOR STREQUAL "" AND
+      NOT TagLib_VERSION_MINOR STREQUAL "" AND
+      NOT TagLib_VERSION_PATCH STREQUAL "")
+      set(TagLib_VERSION "${TagLib_VERSION_MAJOR}.${TagLib_VERSION_MINOR}.${TagLib_VERSION_PATCH}")
+    endif()
+  endif()
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   TagLib
-  DEFAULT_MSG
-  TagLib_LIBRARY
-  TagLib_INCLUDE_DIR
+  REQUIRED_VARS TagLib_LIBRARY TagLib_INCLUDE_DIR
+  VERSION_VAR TagLib_VERSION
 )
 
 if(TagLib_FOUND)

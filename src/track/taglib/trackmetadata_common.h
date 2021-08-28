@@ -7,7 +7,6 @@
 #include <QFlags>
 #include <QImage>
 #include <QString>
-#include <type_traits>
 
 #if defined(__EXTRA_METADATA__)
 // UUID -> QString
@@ -15,10 +14,6 @@
 #endif // __EXTRA_METADATA__
 
 #include "track/trackmetadata.h"
-
-static_assert(
-        TAGLIB_MAJOR_VERSION > 1 || (TAGLIB_MAJOR_VERSION == 1 && TAGLIB_MINOR_VERSION >= 11),
-        "TagLib 1.11 or newer is required");
 
 namespace mixxx {
 

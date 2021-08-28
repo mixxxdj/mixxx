@@ -2366,10 +2366,7 @@ else()
 endif()
 
 # TagLib
-# TODO: Check for minimum required version?
-# See also: static_assert in src/track/taglib/trackmetadata_common.h
-# that verifies TAGLIB_MAJOR_VERSION/TAGLIB_MINOR_VERSION.
-find_package(TagLib REQUIRED)
+find_package(TagLib 1.11 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE TagLib::TagLib)
 
 # Threads
