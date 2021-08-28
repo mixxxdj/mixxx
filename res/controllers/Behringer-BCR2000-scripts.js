@@ -37,7 +37,7 @@ var BCR2000 = new behringer.extension.GenericMidiController({
                     },
                     {
                         type: e.Trigger, options: {
-                            midi: [cc, p.pushEncoderGroup1[0].button], inKey: "pitch_set_zero"
+                            midi: [cc, p.pushEncoderGroup1[0].button], inKey: "pitch_adjust_set_default"
                         }
                     },
                     {
@@ -132,7 +132,7 @@ var BCR2000 = new behringer.extension.GenericMidiController({
                     },
                     {
                         type: e.Trigger, options: {
-                            midi: [cc, p.pushEncoderGroup1[4].button], inKey: "pitch_set_zero"
+                            midi: [cc, p.pushEncoderGroup1[4].button], inKey: "pitch_adjust_set_default"
                         }
                     },
                     {
