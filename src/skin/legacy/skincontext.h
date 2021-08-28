@@ -55,7 +55,7 @@ class SkinContext {
     void setSkinBasePath(const QString& skinBasePath) {
         QStringList skinPaths(skinBasePath);
         QDir::setSearchPaths("skin", skinPaths);
-        m_skinBasePath = skinBasePath;
+        m_skinBasePath = skinBasePath + "/";
     }
 
     // Sets the base path used by getSkinPath.

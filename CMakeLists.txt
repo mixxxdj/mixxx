@@ -58,7 +58,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
   endif()
 endif()
 
-project(mixxx VERSION 2.3.0)
+project(mixxx VERSION 2.3.1)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "") # set to "alpha-pre" "beta" or ""
 
@@ -1117,7 +1117,7 @@ endif()
 
 
 if(WIN32)
-  target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
+  target_compile_definitions(mixxx-lib PUBLIC __WINDOWS__)
 
   # Helps prevent duplicate symbols
   target_compile_definitions(mixxx-lib PUBLIC _ATL_MIN_CRT)
@@ -1342,7 +1342,7 @@ if(UNIX AND NOT APPLE)
   # .desktop file for KDE/GNOME menu
   install(
     FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop"
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
     DESTINATION
       "${CMAKE_INSTALL_DATADIR}/applications"
   )
@@ -1370,27 +1370,59 @@ if(UNIX AND NOT APPLE)
   )
 
   option(INSTALL_USER_UDEV_RULES "Install user udev rule file for USB HID and Bulk controllers" ON)
-  if (INSTALL_USER_UDEV_RULES)
-    install(
-      FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
-      DESTINATION
-        "${MIXXX_INSTALL_DATADIR}/udev/rules.d"
-    )
-    install(CODE "
-    message(STATUS \"Important Note: Installation of udev rules\n\"
-        \"The udev rule file for USB HID and Bulk controller permissions will be\n\"
-        \"installed to:\n\"
-        \"    ${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}/udev/rules.d.\n\"
-        \"If you are installing Mixxx from source for your own use, copy\n\"
-        \"mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n\"
-        \"    udevadm control --reload-rules && udevadm trigger\n\"
-        \"as root to load the rules.\n\"
-        \"If you are building a package for a distribution, the correct directory for\n\"
-        \"system rules is either /lib/udev/rules.d (e.g. Debian, Fedora) or\n\"
-        \"/usr/lib/udev/rules.d (e.g. Arch Linux) with an appropriate priority prefix.\n\"
-        \"Adjust your package script accordingly and set -DINSTALL_USER_UDEV_RULES=OFF\")
-    ")
+  if(INSTALL_USER_UDEV_RULES)
+    set(MIXXX_UDEVDIR "${MIXXX_INSTALL_DATADIR}/udev")
+    if (CMAKE_INSTALL_PREFIX STREQUAL "/usr" OR CMAKE_INSTALL_PREFIX STREQUAL "/" )
+      # /usr and / install prefixes at treated by cmake GNUInstallDirs as
+      # synonym for "system location". In this case we can look up the correct udevdir
+      # using pkg-config.
+      # See: https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#special-cases
+      find_package(PkgConfig)
+      if (PKG_CONFIG_FOUND)
+        pkg_check_modules( PKGCONFIG_UDEV udev)
+        if (PKGCONFIG_UDEV_FOUND)
+	  execute_process(
+	    COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=udevdir udev
+            OUTPUT_VARIABLE PKGCONFIG_UDEVDIR
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+          )
+          if(PKGCONFIG_UDEVDIR)
+	    file(TO_CMAKE_PATH "${PKGCONFIG_UDEVDIR}" MIXXX_UDEVDIR)
+          endif()
+        endif()
+      endif()
+    endif()
+    if (MIXXX_UDEVDIR STREQUAL "${MIXXX_INSTALL_DATADIR}/udev")
+      install(
+        FILES
+          "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
+        DESTINATION
+          "${MIXXX_UDEVDIR}/rules.d"
+      )
+      install(CODE "
+      message(STATUS \"Important Note: Installation of udev rules\n\"
+          \"The udev rule file for USB HID and Bulk controller permissions have been\n\"
+          \"installed to:\n\"
+          \"    ${MIXXX_UDEVDIR}/rules.d.\n\"
+          \"If you are installing Mixxx from source for your own use, copy\n\"
+          \"mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n\"
+          \"    udevadm control --reload-rules && udevadm trigger\n\"
+          \"as root to load the rules.\n\"
+          \"If you are building a package for a distribution, the correct directory for\n\"
+          \"system rules is either /lib/udev/rules.d (e.g. Debian, Fedora) or\n\"
+          \"/usr/lib/udev/rules.d (e.g. Arch Linux) with an appropriate priority prefix.\n\"
+          \"Adjust your package script accordingly and set -DINSTALL_USER_UDEV_RULES=OFF\")
+      ")
+    else()
+      install(
+        FILES
+          "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
+        DESTINATION
+          "${MIXXX_UDEVDIR}/rules.d"
+        RENAME
+          "69-mixxx-usb-uaccess.rules"
+      )
+    endif()
   endif()
 endif()
 
@@ -2188,15 +2220,6 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE Threads::Threads)
 
-# Upower
-if(UNIX AND NOT APPLE)
-  find_package(GLIB COMPONENTS gobject REQUIRED)
-  find_package(Upower REQUIRED)
-  target_include_directories(mixxx-lib SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
-  target_link_libraries(mixxx-lib PRIVATE ${GLIB_LIBRARIES} ${GLIB_GOBJECT_LIBRARIES})
-  target_link_libraries(mixxx-lib PRIVATE Upower::Upower)
-endif()
-
 # iOS/OS X Frameworks
 if(APPLE)
   find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
@@ -2232,6 +2255,10 @@ if(BATTERY)
   elseif(APPLE)
     target_sources(mixxx-lib PRIVATE src/util/battery/batterymac.cpp)
   elseif(UNIX)
+    find_package(Upower REQUIRED)
+    find_package(GLIB COMPONENTS gobject REQUIRED)
+    target_include_directories(mixxx-lib SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
+    target_link_libraries(mixxx-lib PRIVATE Upower::Upower ${GLIB_LIBRARIES} ${GLIB_GOBJECT_LIBRARIES})
     target_sources(mixxx-lib PRIVATE src/util/battery/batterylinux.cpp)
   else()
     message(FATAL_ERROR "Battery support is not implemented for the target platform.")
@@ -2578,9 +2605,8 @@ find_package(LibUSB)
 # USB HID controller support
 option(HID "USB HID controller support" ON)
 if(HID)
-  find_package(hidapi)
-  # hidapi_VERSION is only available starting with 0.10.0
-  if(NOT hidapi_FOUND OR NOT hidapi_VERSION OR hidapi_VERSION VERSION_LESS 0.10.1)
+  find_package(hidapi 0.10.1)
+  if(NOT hidapi_FOUND)
     message(STATUS "Linking internal libhidapi statically")
     add_library(mixxx-hidapi STATIC EXCLUDE_FROM_ALL)
     target_include_directories(mixxx-hidapi SYSTEM PUBLIC lib/hidapi/hidapi)
@@ -2603,10 +2629,6 @@ if(HID)
     endif()
     target_link_libraries(mixxx-lib PRIVATE mixxx-hidapi)
   else()
-    message(STATUS "Linking libhidapi dynamically")
-    if(NOT HIDAPI_FOUND)
-      message(FATAL_ERROR "USB HID controller support requires libhidapi-libusb and its development headers.")
-    endif()
     target_link_libraries(mixxx-lib PRIVATE hidapi::hidapi)
   endif()
   target_sources(mixxx-lib PRIVATE

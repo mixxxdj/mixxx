@@ -224,6 +224,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
                     }
                 }
             }
+            ++retryCount;
         }
 
         // Decoding starts before the actual target position
