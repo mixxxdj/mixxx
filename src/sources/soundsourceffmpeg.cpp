@@ -1052,6 +1052,13 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 #if VERBOSE_DEBUG_LOG
                 avTrace("Received decoded frame", *m_pavDecodedFrame);
 #endif
+                VERIFY_OR_DEBUG_ASSERT(
+                        (m_pavDecodedFrame->flags &
+                                (AV_FRAME_FLAG_CORRUPT |
+                                        AV_FRAME_FLAG_DISCARD)) == 0) {
+                    av_frame_unref(m_pavDecodedFrame);
+                    continue;
+                }
                 const auto decodedFrameCount = m_pavDecodedFrame->nb_samples;
                 DEBUG_ASSERT(decodedFrameCount > 0);
                 auto streamFrameIndex =
