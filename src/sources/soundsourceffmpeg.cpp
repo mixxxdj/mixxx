@@ -1225,6 +1225,11 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             // Housekeeping before next decoding iteration
             av_frame_unref(m_pavDecodedFrame);
             av_frame_unref(m_pavResampledFrame);
+
+            // The first loop condition (see below) should always be true
+            // and has only been added to prevent infinite looping in case
+            // of unexpected result values.
+            DEBUG_ASSERT(avcodec_receive_frame_result == 0);
         } while (avcodec_receive_frame_result == 0 &&
                 m_frameBuffer.isValid());
     }
