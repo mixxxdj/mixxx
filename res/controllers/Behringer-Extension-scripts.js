@@ -501,7 +501,7 @@
      *                                          in addition to the echo effect
      * @public
      */
-     var EchoRollButton = function(options) {
+    var EchoRollButton = function(options) {
         options = options || {};
         options.echoTimer = null;
         options.volume = null; // required to reset volume until lp#1941040 is fixed
@@ -544,7 +544,7 @@
          * @private
          * @see https://github.com/mixxxdj/mixxx/blob/2.3/src/effects/builtin/echoeffect.cpp#L152
          */
-         getEchoDelay: function(group) {
+        getEchoDelay: function(group) {
             var quantize = engine.getValue(group, "button_parameter1");
             var triplet = engine.getValue(group, "button_parameter2");
             var delay = engine.getValue(group, "parameter1"); // range: [0, 2]
@@ -561,7 +561,7 @@
         mute: function(channel, delay) {
             var muteAction = function() {
                 engine.setValue(channel, "volume_set_zero", 1);
-            }
+            };
             this.volume = engine.getValue(channel, "volume");
 
             this.stopTimer(); // timer may be pending
