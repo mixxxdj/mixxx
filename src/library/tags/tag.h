@@ -31,6 +31,10 @@ class TagFacet final {
   public:
     typedef QString value_t;
 
+    static value_t defaultValue() {
+        return value_t{};
+    }
+
     static bool isValidValue(
             const value_t& value);
 
@@ -41,17 +45,15 @@ class TagFacet final {
 
     /// Ensure that empty values are always null
     static value_t filterEmptyValue(
-            const value_t& value) {
-        return value.isEmpty() ? value_t() : value;
+            value_t value) {
+        DEBUG_ASSERT(defaultValue().isEmpty());
+        return value.isEmpty() ? defaultValue() : value;
     }
 
     explicit TagFacet(
-            const value_t& value = value_t())
-            : m_value(value) {
-        // Full validation not possible due to static constants with
-        // regular expressions that are inaccessible when creating
-        // static constants of this type!
-        DEBUG_ASSERT(filterEmptyValue(m_value) == m_value);
+            value_t value = defaultValue())
+            : m_value(std::move(value)) {
+        DEBUG_ASSERT(isValid());
     }
     TagFacet(const TagFacet&) = default;
     TagFacet(TagFacet&&) = default;
@@ -133,6 +135,10 @@ class TagLabel final {
   public:
     typedef QString value_t;
 
+    static const value_t defaultValue() {
+        return value_t{};
+    }
+
     static bool isValidValue(
             const value_t& value);
 
@@ -142,13 +148,14 @@ class TagLabel final {
 
     /// Ensure that empty values are always null
     static value_t filterEmptyValue(
-            const value_t& value) {
-        return value.isEmpty() ? value_t() : value;
+            value_t value) {
+        DEBUG_ASSERT(defaultValue().isEmpty());
+        return value.isEmpty() ? defaultValue() : value;
     }
 
     explicit TagLabel(
-            const value_t& value = value_t())
-            : m_value(value) {
+            value_t value = defaultValue())
+            : m_value(std::move(value)) {
         DEBUG_ASSERT(isValid());
     }
     TagLabel(const TagLabel&) = default;
@@ -162,13 +169,15 @@ class TagLabel final {
     }
 
     bool isEmpty() const {
+        DEBUG_ASSERT(isValid());
         return m_value.isEmpty();
     }
 
-    constexpr const value_t& value() const {
+    const value_t& value() const {
+        DEBUG_ASSERT(isValid());
         return m_value;
     }
-    constexpr operator const value_t&() const {
+    operator const value_t&() const {
         return value();
     }
 
@@ -278,12 +287,12 @@ class Tag final {
   public:
     explicit Tag(
             const TagLabel& label,
-            TagScore score = TagScore())
+            TagScore score = TagScore{})
             : m_label(label),
               m_score(score) {
     }
     explicit Tag(
-            TagScore score = TagScore())
+            TagScore score = TagScore{})
             : m_score(score) {
     }
     Tag(const Tag&) = default;
