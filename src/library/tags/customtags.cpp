@@ -328,7 +328,7 @@ std::optional<CustomTags> CustomTags::fromJsonObject(
             // but no predefined tags/labels. The facet will be
             // displayed in the UI with the option to add custom
             // labels.
-            customTags.touchFacet(facet);
+            customTags.addOrIgnoreFacet(facet);
             continue;
         }
         for (const auto& jsonValue : jsonArray) {
