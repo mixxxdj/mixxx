@@ -65,10 +65,11 @@ class CustomTags final {
             const TagFacet& facet) const {
         return getFacetedTags().contains(facet);
     }
+
     /// Add an (empty) entry for the given facet if it does not exist yet.
     ///
     /// Existing entries are not affected.
-    void touchFacet(
+    void addOrIgnoreFacet(
             const TagFacet& facet) {
         refFacetedTags()[facet];
         DEBUG_ASSERT(containsFacet(facet));
