@@ -1,13 +1,14 @@
 #include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QScopedPointer>
+#include <QtDebug>
 
-#include "mixxxtest.h"
+#include "control/controlframeposproxy.h"
 #include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "engine/controls/loopingcontrol.h"
+#include "mixxxtest.h"
 #include "test/mockedenginebackendtest.h"
 #include "util/memory.h"
 
@@ -15,7 +16,7 @@ namespace {
 
 // Due to rounding errors loop positions should be compared with EXPECT_NEAR instead of EXPECT_EQ.
 // NOTE(uklotzde, 2017-12-10): The rounding errors currently only appeared with GCC 7.2.1.
-constexpr double kLoopPositionMaxAbsError = 0.000000001;
+constexpr double kLoopPositionMaxAbsError = 0.0000000005;
 
 constexpr auto kTrackEndPosition = mixxx::audio::FramePos{150000000};
 } // namespace
@@ -26,13 +27,12 @@ class LoopingControlTest : public MockedEngineBackendTest {
         MockedEngineBackendTest::SetUp();
         m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
         m_pQuantizeEnabled->set(1.0);
-        m_pNextBeat = std::make_unique<ControlProxy>(m_sGroup1, "beat_next");
-
-        m_pNextBeat->set(-1);
-        m_pClosestBeat = std::make_unique<ControlProxy>(m_sGroup1, "beat_closest");
-        m_pClosestBeat->set(-1);
-        m_pTrackSamples = std::make_unique<ControlProxy>(m_sGroup1, "track_samples");
-        m_pTrackSamples->set(kTrackEndPosition.toEngineSamplePos());
+        m_pNextBeat = std::make_unique<ControlFramePosProxy>(ConfigKey(m_sGroup1, "beat_next"));
+        m_pClosestBeat = std::make_unique<ControlFramePosProxy>(
+                ConfigKey(m_sGroup1, "beat_closest"));
+        m_pTrackEndPosition = std::make_unique<ControlFramePosProxy>(
+                ConfigKey(m_sGroup1, "track_samples"));
+        m_pTrackEndPosition->set(kTrackEndPosition);
         m_pButtonLoopIn = std::make_unique<ControlProxy>(m_sGroup1, "loop_in");
         m_pButtonLoopOut = std::make_unique<ControlProxy>(m_sGroup1, "loop_out");
         m_pButtonLoopExit = std::make_unique<ControlProxy>(m_sGroup1, "loop_exit");
@@ -41,8 +41,10 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pButtonLoopDouble = std::make_unique<ControlProxy>(m_sGroup1, "loop_double");
         m_pButtonLoopHalve = std::make_unique<ControlProxy>(m_sGroup1, "loop_halve");
         m_pLoopEnabled = std::make_unique<ControlProxy>(m_sGroup1, "loop_enabled");
-        m_pLoopStartPoint = std::make_unique<ControlProxy>(m_sGroup1, "loop_start_position");
-        m_pLoopEndPoint = std::make_unique<ControlProxy>(m_sGroup1, "loop_end_position");
+        m_pLoopStartPoint = std::make_unique<ControlFramePosProxy>(
+                ConfigKey(m_sGroup1, "loop_start_position"));
+        m_pLoopEndPoint = std::make_unique<ControlFramePosProxy>(
+                ConfigKey(m_sGroup1, "loop_end_position"));
         m_pLoopScale = std::make_unique<ControlProxy>(m_sGroup1, "loop_scale");
         m_pButtonPlay = std::make_unique<ControlProxy>(m_sGroup1, "play");
         m_pPlayPosition = std::make_unique<ControlProxy>(m_sGroup1, "playposition");
@@ -78,10 +80,10 @@ class LoopingControlTest : public MockedEngineBackendTest {
         ProcessBuffer();
     }
 
-    std::unique_ptr<ControlProxy> m_pNextBeat;
-    std::unique_ptr<ControlProxy> m_pClosestBeat;
+    std::unique_ptr<ControlFramePosProxy> m_pNextBeat;
+    std::unique_ptr<ControlFramePosProxy> m_pClosestBeat;
     std::unique_ptr<ControlProxy> m_pQuantizeEnabled;
-    std::unique_ptr<ControlProxy> m_pTrackSamples;
+    std::unique_ptr<ControlFramePosProxy> m_pTrackEndPosition;
     std::unique_ptr<ControlProxy> m_pButtonLoopIn;
     std::unique_ptr<ControlProxy> m_pButtonLoopOut;
     std::unique_ptr<ControlProxy> m_pButtonLoopExit;
@@ -90,8 +92,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pButtonLoopDouble;
     std::unique_ptr<ControlProxy> m_pButtonLoopHalve;
     std::unique_ptr<ControlProxy> m_pLoopEnabled;
-    std::unique_ptr<ControlProxy> m_pLoopStartPoint;
-    std::unique_ptr<ControlProxy> m_pLoopEndPoint;
+    std::unique_ptr<ControlFramePosProxy> m_pLoopStartPoint;
+    std::unique_ptr<ControlFramePosProxy> m_pLoopEndPoint;
     std::unique_ptr<ControlProxy> m_pLoopScale;
     std::unique_ptr<ControlProxy> m_pPlayPosition;
     std::unique_ptr<ControlProxy> m_pButtonPlay;
@@ -115,167 +117,167 @@ class LoopingControlTest : public MockedEngineBackendTest {
 };
 
 TEST_F(LoopingControlTest, LoopSet) {
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{100}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{100});
     setCurrentPosition(mixxx::audio::FramePos{50});
     EXPECT_FALSE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{100}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{100}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopSetFractionalFrames) {
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{0.5}.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{50.75}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{0.5});
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{50.75});
     setCurrentPosition(mixxx::audio::FramePos{25});
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{0.5}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{50.75}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{0.5}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{50.75}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopInSetInsideLoopContinues) {
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{100}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{100});
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     setCurrentPosition(mixxx::audio::FramePos{50});
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{100}, m_pLoopEndPoint);
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{10}.toEngineSamplePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{100}, m_pLoopEndPoint->toFramePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{10});
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{10}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{100}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{10}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{100}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopInSetAfterLoopOutStops) {
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{100}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{100});
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     setCurrentPosition(mixxx::audio::FramePos{50});
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{100}, m_pLoopEndPoint);
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{110}.toEngineSamplePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{100}, m_pLoopEndPoint->toFramePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{110});
     EXPECT_FALSE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{110}, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{110}, m_pLoopStartPoint->toFramePos());
     EXPECT_EQ(-1, m_pLoopEndPoint->get());
 }
 
 TEST_F(LoopingControlTest, LoopOutSetInsideLoopContinues) {
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{100}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{100});
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     setCurrentPosition(mixxx::audio::FramePos{50});
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{100}, m_pLoopEndPoint);
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{80}.toEngineSamplePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{100}, m_pLoopEndPoint->toFramePos());
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{80});
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{80}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{80}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopOutSetBeforeLoopInIgnored) {
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{10}.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{100}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{10});
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{100});
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     setCurrentPosition(mixxx::audio::FramePos{50});
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{10}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{100}, m_pLoopEndPoint);
-    m_pLoopEndPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{10}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{100}, m_pLoopEndPoint->toFramePos());
+    m_pLoopEndPoint->set(mixxx::audio::kStartFramePos);
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{10}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{100}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{10}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{100}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopInButton_QuantizeDisabled) {
     m_pQuantizeEnabled->set(0);
-    m_pClosestBeat->set(100);
-    m_pNextBeat->set(100);
+    m_pClosestBeat->set(mixxx::audio::FramePos{50});
+    m_pNextBeat->set(mixxx::audio::FramePos{50});
     setCurrentPosition(mixxx::audio::FramePos{50});
     m_pButtonLoopIn->set(1);
     m_pButtonLoopIn->set(0);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{50}, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{50}, m_pLoopStartPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopInButton_QuantizeEnabledNoBeats) {
     m_pQuantizeEnabled->set(1);
-    m_pClosestBeat->set(-1);
-    m_pNextBeat->set(-1);
+    m_pClosestBeat->reset();
+    m_pNextBeat->reset();
     setCurrentPosition(mixxx::audio::FramePos{50});
     m_pButtonLoopIn->set(1);
     m_pButtonLoopIn->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{50}, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{50}, m_pLoopStartPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointOutsideLoop) {
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{1000});
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000});
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     m_pButtonLoopIn->set(1);
     setCurrentPosition(mixxx::audio::FramePos{50});
     m_pButtonLoopIn->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{50}, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{50}, m_pLoopStartPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointInsideLoop) {
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{1000});
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000});
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     m_pButtonLoopIn->set(1);
     setCurrentPosition(mixxx::audio::FramePos{1500});
     m_pButtonLoopIn->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1500}, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{1500}, m_pLoopStartPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopOutButton_QuantizeDisabled) {
     m_pQuantizeEnabled->set(0);
-    m_pClosestBeat->set(1000);
-    m_pNextBeat->set(1000);
+    m_pClosestBeat->set(mixxx::audio::FramePos{500});
+    m_pNextBeat->set(mixxx::audio::FramePos{500});
     setCurrentPosition(mixxx::audio::FramePos{500});
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopOutButton_QuantizeEnabledNoBeats) {
     m_pQuantizeEnabled->set(1);
-    m_pClosestBeat->set(-1);
-    m_pNextBeat->set(-1);
+    m_pClosestBeat->reset();
+    m_pNextBeat->reset();
     setCurrentPosition(mixxx::audio::FramePos{500});
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointOutsideLoop) {
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{1000});
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000});
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     m_pButtonLoopOut->set(1);
     setCurrentPosition(mixxx::audio::FramePos{3000});
     m_pButtonLoopOut->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{3000}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{3000}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointInsideLoop) {
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{100}.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{100});
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000});
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     m_pButtonLoopOut->set(1);
     setCurrentPosition(mixxx::audio::FramePos{1500});
     m_pButtonLoopOut->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1500}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{1500}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
@@ -285,7 +287,7 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     setCurrentPosition(mixxx::audio::FramePos{250});
     m_pButtonLoopIn->set(1);
     m_pButtonLoopIn->set(0);
-    EXPECT_EQ(m_pClosestBeat->get(), m_pLoopStartPoint->get());
+    EXPECT_FRAMEPOS_EQ(m_pClosestBeat->toFramePos(), m_pLoopStartPoint->toFramePos());
 
     m_pBeatJumpSize->set(4);
     m_pButtonBeatJumpForward->set(1);
@@ -310,31 +312,31 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     m_pButtonBeatJumpForward->set(0);
     m_pButtonLoopOut->set(0);
     ProcessBuffer();
-    EXPECT_EQ(m_pClosestBeat->get(), m_pLoopEndPoint->get());
+    EXPECT_FRAMEPOS_EQ(m_pClosestBeat->toFramePos(), m_pLoopEndPoint->toFramePos());
     EXPECT_FALSE(m_pBeatLoop4Enabled->toBool());
 }
 
 TEST_F(LoopingControlTest, ReloopToggleButton_TogglesLoop) {
     m_pQuantizeEnabled->set(0);
-    m_pClosestBeat->set(-1);
-    m_pNextBeat->set(-1);
+    m_pClosestBeat->reset();
+    m_pNextBeat->reset();
     setCurrentPosition(mixxx::audio::FramePos{500});
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopEndPoint->toFramePos());
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     EXPECT_FALSE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopEndPoint->toFramePos());
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopEndPoint->toFramePos());
     // Ensure that the Loop Exit button works, and that it doesn't act as a
     // toggle.
     m_pButtonLoopExit->set(1);
@@ -346,26 +348,26 @@ TEST_F(LoopingControlTest, ReloopToggleButton_TogglesLoop) {
 }
 
 TEST_F(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead) {
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{1000});
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000});
     setCurrentPosition(mixxx::audio::kStartFramePos);
 
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     setCurrentPosition(mixxx::audio::FramePos{50});
-    EXPECT_LE(currentFramePos().toEngineSamplePos(), m_pLoopStartPoint->get());
+    EXPECT_LE(currentFramePos(), m_pLoopStartPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, ReloopAndStopButton) {
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{1000});
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000});
     setCurrentPosition(mixxx::audio::FramePos{1500});
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     m_pButtonReloopAndStop->set(1);
     m_pButtonReloopAndStop->set(0);
     ProcessBuffer();
-    EXPECT_EQ(currentFramePos().toEngineSamplePos(), m_pLoopStartPoint->get());
+    EXPECT_FRAMEPOS_EQ(currentFramePos(), m_pLoopStartPoint->toFramePos());
     EXPECT_TRUE(m_pLoopEnabled->toBool());
 }
 
@@ -376,28 +378,28 @@ TEST_F(LoopingControlTest, LoopScale_DoublesLoop) {
     setCurrentPosition(mixxx::audio::FramePos{500});
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopEndPoint->toFramePos());
     m_pLoopScale->set(2.0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1000}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{1000}, m_pLoopEndPoint->toFramePos());
     m_pLoopScale->set(2.0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{2000}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{2000}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopScale_HalvesLoop) {
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{2000});
     setCurrentPosition(mixxx::audio::FramePos{1800});
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{2000}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{2000}, m_pLoopEndPoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{1800}, currentFramePos());
     EXPECT_FALSE(isLoopEnabled());
     m_pLoopScale->set(0.5);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1000}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{1000}, m_pLoopEndPoint->toFramePos());
 
     // The loop was not enabled so halving the loop should not move the playhead
     // even though it is outside the loop.
@@ -407,8 +409,8 @@ TEST_F(LoopingControlTest, LoopScale_HalvesLoop) {
     EXPECT_TRUE(isLoopEnabled());
     m_pLoopScale->set(0.5);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopEndPoint->toFramePos());
     // Since the current sample was out of range of the new loop,
     // the current sample should reseek based on the new loop size.
     mixxx::audio::FramePos targetPosition;
@@ -421,14 +423,14 @@ TEST_F(LoopingControlTest, LoopScale_HalvesLoop) {
 
 TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
     setCurrentPosition(mixxx::audio::FramePos{50});
-    m_pLoopStartPoint->set(kTrackEndPosition.toEngineSamplePos() / 2.0);
-    m_pLoopEndPoint->set(kTrackEndPosition.toEngineSamplePos());
-    EXPECT_FRAMEPOS_EQ_CONTROL(kTrackEndPosition / 2.0, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kTrackEndPosition, m_pLoopEndPoint);
+    m_pLoopStartPoint->set(kTrackEndPosition / 2.0);
+    m_pLoopEndPoint->set(kTrackEndPosition);
+    EXPECT_FRAMEPOS_EQ(kTrackEndPosition / 2.0, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kTrackEndPosition, m_pLoopEndPoint->toFramePos());
     m_pButtonLoopDouble->set(1);
     m_pButtonLoopDouble->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kTrackEndPosition / 2.0, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kTrackEndPosition, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(kTrackEndPosition / 2.0, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kTrackEndPosition, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
@@ -448,12 +450,12 @@ TEST_F(LoopingControlTest, LoopDoubleButton_DoesNotResizeManualLoop) {
     setCurrentPosition(mixxx::audio::FramePos{1000});
     m_pButtonLoopOut->set(1.0);
     m_pButtonLoopOut->set(0.0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1000}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{1000}, m_pLoopEndPoint->toFramePos());
     m_pButtonLoopDouble->set(1);
     m_pButtonLoopDouble->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1000}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{1000}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_UpdatesNumberedBeatloopActivationControls) {
@@ -472,14 +474,14 @@ TEST_F(LoopingControlTest, LoopDoubleButton_UpdatesNumberedBeatloopActivationCon
 
 TEST_F(LoopingControlTest, LoopHalveButton_IgnoresTooSmall) {
     ProcessBuffer();
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{40}.toEngineSamplePos());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{40}, m_pLoopEndPoint);
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{40});
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{40}, m_pLoopEndPoint->toFramePos());
     m_pButtonLoopHalve->set(1);
     m_pButtonLoopHalve->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{40}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{40}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSize) {
@@ -499,12 +501,12 @@ TEST_F(LoopingControlTest, LoopHalveButton_DoesNotResizeManualLoop) {
     setCurrentPosition(mixxx::audio::FramePos{1000});
     m_pButtonLoopOut->set(1.0);
     m_pButtonLoopOut->set(0.0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1000}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{1000}, m_pLoopEndPoint->toFramePos());
     m_pButtonLoopHalve->set(1);
     m_pButtonLoopHalve->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1000}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{500}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{1000}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_UpdatesNumberedBeatloopActivationControls) {
@@ -525,21 +527,21 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     const auto bpm = mixxx::Bpm{120};
     m_pTrack1->trySetBpm(bpm);
 
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{150}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{150});
     setCurrentPosition(mixxx::audio::FramePos{5});
     m_pButtonReloopToggle->set(1);
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{150}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{150}, m_pLoopEndPoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{5}, currentFramePos());
 
     // Move the loop out from under the playposition.
     m_pButtonBeatMoveForward->set(1.0);
     m_pButtonBeatMoveForward->set(0.0);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{22050}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{22200}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{22050}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{22200}, m_pLoopEndPoint->toFramePos());
     ProcessBuffer();
     // Should seek to the corresponding offset within the moved loop
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{22055}, currentFramePos());
@@ -549,12 +551,10 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     m_pButtonBeatMoveBackward->set(1.0);
     m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_NEAR(300, m_pLoopEndPoint->get(), kLoopPositionMaxAbsError);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_NEAR(150, m_pLoopEndPoint->toFramePos().value(), kLoopPositionMaxAbsError);
     ProcessBuffer();
-    EXPECT_NEAR(200,
-            currentFramePos().toEngineSamplePos(),
-            kLoopPositionMaxAbsError);
+    EXPECT_NEAR(100, currentFramePos().value(), kLoopPositionMaxAbsError);
 
     // Now repeat the test with looping disabled (should not affect the
     // playhead).
@@ -565,23 +565,19 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     m_pButtonBeatMoveForward->set(1.0);
     m_pButtonBeatMoveForward->set(0.0);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{22050}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{22200}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{22050}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{22200}, m_pLoopEndPoint->toFramePos());
     // Should not seek inside the moved loop when the loop is disabled
-    EXPECT_NEAR(200,
-            currentFramePos().toEngineSamplePos(),
-            kLoopPositionMaxAbsError);
+    EXPECT_NEAR(100, currentFramePos().value(), kLoopPositionMaxAbsError);
 
     // Move backward so that the current position is outside the new location of the loop
     setCurrentPosition(mixxx::audio::FramePos{250});
     m_pButtonBeatMoveBackward->set(1.0);
     m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_NEAR(300, m_pLoopEndPoint->get(), kLoopPositionMaxAbsError);
-    EXPECT_NEAR(500,
-            currentFramePos().toEngineSamplePos(),
-            kLoopPositionMaxAbsError);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_NEAR(150, m_pLoopEndPoint->toFramePos().value(), kLoopPositionMaxAbsError);
+    EXPECT_NEAR(250, currentFramePos().value(), kLoopPositionMaxAbsError);
 }
 
 TEST_F(LoopingControlTest, LoopResizeSeek) {
@@ -593,13 +589,13 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     m_pQuantizeEnabled->set(0.0);
 
     m_pTrack1->trySetBpm(23520);
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{300}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{300});
     setCurrentPosition(mixxx::audio::FramePos{250});
     m_pButtonReloopToggle->set(1);
     EXPECT_TRUE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{300}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{300}, m_pLoopEndPoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{250}, currentFramePos());
 
     // Activate a shorter loop
@@ -609,26 +605,26 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
 
     // The loop is resized and we should have seeked to a mid-beat part of the
     // loop.
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{225}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{225}, m_pLoopEndPoint->toFramePos());
     ProcessBuffer();
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{25}, currentFramePos());
 
     // But if looping is not enabled, no warping occurs.
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{300}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos);
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{300});
     setCurrentPosition(mixxx::audio::FramePos{250});
     m_pButtonReloopToggle->set(1);
     EXPECT_FALSE(isLoopEnabled());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{300}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{300}, m_pLoopEndPoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{250}, currentFramePos());
 
     m_pButtonBeatLoop2Activate->set(1.0);
     ProcessBuffer();
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{250}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{475}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{250}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{475}, m_pLoopEndPoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{250}, currentFramePos());
 }
 
@@ -660,9 +656,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_IgnoresPastTrackEnd) {
     // TODO: actually calculate that the beatloop would go beyond
     // the end of the track
     m_pTrack1->trySetBpm(60.0);
-    setCurrentPosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                               m_pTrackSamples->get()) -
-            200);
+    setCurrentPosition(m_pTrackEndPosition->toFramePos() - 200);
     m_pBeatLoopSize->set(64.0);
     EXPECT_NE(64.0, m_pBeatLoopSize->get());
     EXPECT_FALSE(m_pBeatLoop64Enabled->toBool());
@@ -806,7 +800,7 @@ TEST_F(LoopingControlTest, Beatjump_JumpsByBeats) {
     ProcessBuffer();
 
     const mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * 44100.0 / bpm.value();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{beatLengthFrames}, m_pNextBeat);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{beatLengthFrames}, m_pNextBeat->toFramePos());
     EXPECT_NE(0, beatLengthFrames);
 
     m_pBeatJumpSize->set(4.0);
@@ -826,7 +820,7 @@ TEST_F(LoopingControlTest, Beatjump_MovesActiveLoop) {
     ProcessBuffer();
 
     const mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * 44100.0 / bpm.value();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{beatLengthFrames}, m_pNextBeat);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{beatLengthFrames}, m_pNextBeat->toFramePos());
     EXPECT_NE(0, beatLengthFrames);
 
     m_pBeatLoopSize->set(4.0);
@@ -834,26 +828,26 @@ TEST_F(LoopingControlTest, Beatjump_MovesActiveLoop) {
     m_pButtonBeatLoopActivate->set(0.0);
     const auto loopStartPosition = mixxx::audio::kStartFramePos;
     const auto loopEndPosition = mixxx::audio::FramePos{beatLengthFrames * 4};
-    EXPECT_FRAMEPOS_EQ_CONTROL(loopStartPosition, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(loopEndPosition, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(loopStartPosition, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(loopEndPosition, m_pLoopEndPoint->toFramePos());
 
     m_pBeatJumpSize->set(1.0);
     m_pButtonBeatJumpForward->set(1.0);
     m_pButtonBeatJumpForward->set(0.0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(loopStartPosition + beatLengthFrames, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(loopEndPosition + beatLengthFrames, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(loopStartPosition + beatLengthFrames, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(loopEndPosition + beatLengthFrames, m_pLoopEndPoint->toFramePos());
 
     // jump backward with playposition outside the loop should not move the loop
     m_pButtonBeatJumpBackward->set(1.0);
     m_pButtonBeatJumpBackward->set(0.0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(loopStartPosition + beatLengthFrames, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(loopEndPosition + beatLengthFrames, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(loopStartPosition + beatLengthFrames, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(loopEndPosition + beatLengthFrames, m_pLoopEndPoint->toFramePos());
 
     setCurrentPosition(mixxx::audio::FramePos{beatLengthFrames});
     m_pButtonBeatJumpBackward->set(1.0);
     m_pButtonBeatJumpBackward->set(0.0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(loopStartPosition, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(loopEndPosition, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(loopStartPosition, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(loopEndPosition, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, Beatjump_MovesLoopBoundaries) {
@@ -864,14 +858,14 @@ TEST_F(LoopingControlTest, Beatjump_MovesLoopBoundaries) {
     ProcessBuffer();
 
     const mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * 44100.0 / bpm.value();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{beatLengthFrames}, m_pNextBeat);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{beatLengthFrames}, m_pNextBeat->toFramePos());
     EXPECT_NE(0, beatLengthFrames);
 
     m_pBeatLoopSize->set(4.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{beatLengthFrames * 4}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{beatLengthFrames * 4}, m_pLoopEndPoint->toFramePos());
 
     m_pButtonLoopIn->set(1.0);
     m_pBeatJumpSize->set(1.0);
@@ -880,8 +874,8 @@ TEST_F(LoopingControlTest, Beatjump_MovesLoopBoundaries) {
     ProcessBuffer();
     m_pButtonLoopIn->set(0.0);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{beatLengthFrames}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{beatLengthFrames * 4}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{beatLengthFrames}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{beatLengthFrames * 4}, m_pLoopEndPoint->toFramePos());
 
     m_pButtonLoopOut->set(1.0);
     m_pButtonBeatJumpForward->set(1.0);
@@ -889,13 +883,13 @@ TEST_F(LoopingControlTest, Beatjump_MovesLoopBoundaries) {
     ProcessBuffer();
     m_pButtonLoopOut->set(0.0);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{beatLengthFrames}, m_pLoopStartPoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{beatLengthFrames * 2}, m_pLoopEndPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{beatLengthFrames}, m_pLoopStartPoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{beatLengthFrames * 2}, m_pLoopEndPoint->toFramePos());
 }
 
 TEST_F(LoopingControlTest, LoopEscape) {
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{100}.toEngineSamplePos());
-    m_pLoopEndPoint->set(mixxx::audio::FramePos{200}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{100});
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{200});
     m_pButtonReloopToggle->set(1.0);
     m_pButtonReloopToggle->set(0.0);
     ProcessBuffer();
@@ -988,23 +982,23 @@ TEST_F(LoopingControlTest, BeatLoopRoll_StartPoint) {
     m_pTrack1->trySetBpm(120.0);
 
     // start a 4 beat loop roll, start point should be overridden to play position
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{8}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{8});
     m_pButtonBeatLoopRoll4Activate->set(1.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
 
     // move the start point, activate a 1 beat loop roll, new start point be preserved
-    m_pLoopStartPoint->set(mixxx::audio::FramePos{8}.toEngineSamplePos());
+    m_pLoopStartPoint->set(mixxx::audio::FramePos{8});
     m_pButtonBeatLoopRoll1Activate->set(1.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_TRUE(m_pBeatLoop1Enabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{8}, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{8}, m_pLoopStartPoint->toFramePos());
 
     // end the 1 beat loop roll
     m_pButtonBeatLoopRoll1Activate->set(0.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{8}, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{8}, m_pLoopStartPoint->toFramePos());
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
 
     // end the 4 beat loop roll
@@ -1016,5 +1010,5 @@ TEST_F(LoopingControlTest, BeatLoopRoll_StartPoint) {
     m_pButtonBeatLoopRoll4Activate->set(1.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pLoopStartPoint->toFramePos());
 }

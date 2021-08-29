@@ -11,6 +11,8 @@
 #include "track/cue.h"
 #include "track/track_decl.h"
 
+class ControlFramePos;
+class ControlFramePosProxy;
 class ControlPushButton;
 class ControlObject;
 
@@ -71,8 +73,8 @@ class LoopingControl : public EngineControl {
     void slotLoopExit(double);
     void slotReloopToggle(double);
     void slotReloopAndStop(double);
-    void slotLoopStartPos(double);
-    void slotLoopEndPos(double);
+    void slotLoopStartPositionChanged(mixxx::audio::FramePos);
+    void slotLoopEndPositionChanged(mixxx::audio::FramePos);
 
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.
@@ -135,8 +137,8 @@ class LoopingControl : public EngineControl {
 
     ControlPushButton* m_pCOBeatLoopActivate;
     ControlPushButton* m_pCOBeatLoopRollActivate;
-    ControlObject* m_pCOLoopStartPosition;
-    ControlObject* m_pCOLoopEndPosition;
+    ControlFramePos* m_pCOLoopStartPosition;
+    ControlFramePos* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;
     ControlPushButton* m_pLoopInButton;
     ControlPushButton* m_pLoopInGotoButton;
@@ -164,10 +166,10 @@ class LoopingControl : public EngineControl {
     LoopInfo m_oldLoopInfo;
     ControlValueAtomic<mixxx::audio::FramePos> m_currentPosition;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pNextBeat;
-    ControlObject* m_pPreviousBeat;
-    ControlObject* m_pClosestBeat;
-    ControlObject* m_pTrackSamples;
+    std::unique_ptr<ControlFramePosProxy> m_pNextBeatPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pPreviousBeatPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pClosestBeatPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pTrackEndPosition;
     QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.

@@ -5,6 +5,7 @@
 #include <QList>
 #include <QMutex>
 
+#include "control/controlframeposproxy.h"
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/colorpalettesettings.h"
@@ -16,6 +17,8 @@
 #define NUM_HOT_CUES 37
 
 class ControlObject;
+class ControlFramePos;
+class ControlFramePosProxy;
 class ControlPushButton;
 class ControlIndicator;
 
@@ -133,8 +136,8 @@ class HotcueControl : public QObject {
     void slotHotcueActivateLoop(double v);
     void slotHotcueActivatePreview(double v);
     void slotHotcueClear(double v);
-    void slotHotcueEndPositionChanged(double newPosition);
-    void slotHotcuePositionChanged(double newPosition);
+    void slotHotcueEndPositionChanged(mixxx::audio::FramePos newPosition);
+    void slotHotcuePositionChanged(mixxx::audio::FramePos newPosition);
     void slotHotcueColorChangeRequest(double newColor);
     void slotHotcueColorChanged(double newColor);
 
@@ -148,8 +151,8 @@ class HotcueControl : public QObject {
     void hotcueActivate(HotcueControl* pHotcue, double v, HotcueSetMode mode);
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
-    void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
-    void hotcueEndPositionChanged(HotcueControl* pHotcue, double newEndPosition);
+    void hotcuePositionChanged(HotcueControl* pHotcue, mixxx::audio::FramePos newPosition);
+    void hotcueEndPositionChanged(HotcueControl* pHotcue, mixxx::audio::FramePos newEndPosition);
     void hotcueColorChanged(HotcueControl* pHotcue, double newColor);
     void hotcuePlay(double v);
 
@@ -161,8 +164,8 @@ class HotcueControl : public QObject {
     CuePointer m_pCue;
 
     // Hotcue state controls
-    std::unique_ptr<ControlObject> m_hotcuePosition;
-    std::unique_ptr<ControlObject> m_hotcueEndPosition;
+    std::unique_ptr<ControlFramePos> m_hotcuePosition;
+    std::unique_ptr<ControlFramePos> m_hotcueEndPosition;
     std::unique_ptr<ControlObject> m_pHotcueStatus;
     std::unique_ptr<ControlObject> m_hotcueType;
     std::unique_ptr<ControlObject> m_hotcueColor;
@@ -224,8 +227,8 @@ class CueControl : public EngineControl {
     void hotcueActivatePreview(HotcueControl* pControl, double v);
     void updateCurrentlyPreviewingIndex(int hotcueIndex);
     void hotcueClear(HotcueControl* pControl, double v);
-    void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
-    void hotcueEndPositionChanged(HotcueControl* pControl, double newEndPosition);
+    void hotcuePositionChanged(HotcueControl* pControl, mixxx::audio::FramePos newPosition);
+    void hotcueEndPositionChanged(HotcueControl* pControl, mixxx::audio::FramePos newEndPosition);
 
     void hotcueFocusColorNext(double v);
     void hotcueFocusColorPrev(double v);
@@ -282,9 +285,9 @@ class CueControl : public EngineControl {
     ControlObject* m_pPlay;
     ControlObject* m_pStopButton;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pClosestBeat;
-    parented_ptr<ControlProxy> m_pLoopStartPosition;
-    parented_ptr<ControlProxy> m_pLoopEndPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pClosestBeatPosition;
+    parented_ptr<ControlFramePosProxy> m_pLoopStartPosition;
+    parented_ptr<ControlFramePosProxy> m_pLoopEndPosition;
     parented_ptr<ControlProxy> m_pLoopEnabled;
     parented_ptr<ControlProxy> m_pBeatLoopActivate;
     parented_ptr<ControlProxy> m_pBeatLoopSize;
@@ -294,8 +297,8 @@ class CueControl : public EngineControl {
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControls;
 
-    ControlObject* m_pTrackSamples;
-    ControlObject* m_pCuePoint;
+    std::unique_ptr<ControlFramePosProxy> m_pTrackEndPosition;
+    ControlFramePos* m_pCuePoint;
     ControlObject* m_pCueMode;
     ControlPushButton* m_pCueSet;
     ControlPushButton* m_pCueClear;
@@ -311,25 +314,25 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
 
-    ControlObject* m_pIntroStartPosition;
+    ControlFramePos* m_pIntroStartPosition;
     ControlObject* m_pIntroStartEnabled;
     ControlPushButton* m_pIntroStartSet;
     ControlPushButton* m_pIntroStartClear;
     ControlPushButton* m_pIntroStartActivate;
 
-    ControlObject* m_pIntroEndPosition;
+    ControlFramePos* m_pIntroEndPosition;
     ControlObject* m_pIntroEndEnabled;
     ControlPushButton* m_pIntroEndSet;
     ControlPushButton* m_pIntroEndClear;
     ControlPushButton* m_pIntroEndActivate;
 
-    ControlObject* m_pOutroStartPosition;
+    ControlFramePos* m_pOutroStartPosition;
     ControlObject* m_pOutroStartEnabled;
     ControlPushButton* m_pOutroStartSet;
     ControlPushButton* m_pOutroStartClear;
     ControlPushButton* m_pOutroStartActivate;
 
-    ControlObject* m_pOutroEndPosition;
+    ControlFramePos* m_pOutroEndPosition;
     ControlObject* m_pOutroEndEnabled;
     ControlPushButton* m_pOutroEndSet;
     ControlPushButton* m_pOutroEndClear;

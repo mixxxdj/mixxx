@@ -6,24 +6,34 @@ class CueControlTest : public BaseSignalPathTest {
     void SetUp() override {
         BaseSignalPathTest::SetUp();
 
-        m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
-        m_pCuePoint = std::make_unique<ControlProxy>(m_sGroup1, "cue_point");
-        m_pIntroStartPosition = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_position");
-        m_pIntroStartEnabled = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_enabled");
-        m_pIntroStartSet = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_set");
-        m_pIntroStartClear = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_clear");
-        m_pIntroEndPosition = std::make_unique<ControlProxy>(m_sGroup1, "intro_end_position");
-        m_pIntroEndEnabled = std::make_unique<ControlProxy>(m_sGroup1, "intro_end_enabled");
-        m_pIntroEndSet = std::make_unique<ControlProxy>(m_sGroup1, "intro_end_set");
-        m_pIntroEndClear = std::make_unique<ControlProxy>(m_sGroup1, "intro_end_clear");
-        m_pOutroStartPosition = std::make_unique<ControlProxy>(m_sGroup1, "outro_start_position");
-        m_pOutroStartEnabled = std::make_unique<ControlProxy>(m_sGroup1, "outro_start_enabled");
-        m_pOutroStartSet = std::make_unique<ControlProxy>(m_sGroup1, "outro_start_set");
-        m_pOutroStartClear = std::make_unique<ControlProxy>(m_sGroup1, "outro_start_clear");
-        m_pOutroEndPosition = std::make_unique<ControlProxy>(m_sGroup1, "outro_end_position");
-        m_pOutroEndEnabled = std::make_unique<ControlProxy>(m_sGroup1, "outro_end_enabled");
-        m_pOutroEndSet = std::make_unique<ControlProxy>(m_sGroup1, "outro_end_set");
-        m_pOutroEndClear = std::make_unique<ControlProxy>(m_sGroup1, "outro_end_clear");
+        m_pQuantizeEnabled = std::make_unique<ControlProxy>(ConfigKey(m_sGroup1, "quantize"));
+        m_pCuePoint = std::make_unique<ControlFramePosProxy>(ConfigKey(m_sGroup1, "cue_point"));
+        m_pIntroStartPosition = std::make_unique<ControlFramePosProxy>(
+                ConfigKey(m_sGroup1, "intro_start_position"));
+        m_pIntroStartEnabled = std::make_unique<ControlProxy>(
+                ConfigKey(m_sGroup1, "intro_start_enabled"));
+        m_pIntroStartSet = std::make_unique<ControlProxy>(ConfigKey(m_sGroup1, "intro_start_set"));
+        m_pIntroStartClear = std::make_unique<ControlProxy>(
+                ConfigKey(m_sGroup1, "intro_start_clear"));
+        m_pIntroEndPosition = std::make_unique<ControlFramePosProxy>(
+                ConfigKey(m_sGroup1, "intro_end_position"));
+        m_pIntroEndEnabled = std::make_unique<ControlProxy>(
+                ConfigKey(m_sGroup1, "intro_end_enabled"));
+        m_pIntroEndSet = std::make_unique<ControlProxy>(ConfigKey(m_sGroup1, "intro_end_set"));
+        m_pIntroEndClear = std::make_unique<ControlProxy>(ConfigKey(m_sGroup1, "intro_end_clear"));
+        m_pOutroStartPosition = std::make_unique<ControlFramePosProxy>(
+                ConfigKey(m_sGroup1, "outro_start_position"));
+        m_pOutroStartEnabled = std::make_unique<ControlProxy>(
+                ConfigKey(m_sGroup1, "outro_start_enabled"));
+        m_pOutroStartSet = std::make_unique<ControlProxy>(ConfigKey(m_sGroup1, "outro_start_set"));
+        m_pOutroStartClear = std::make_unique<ControlProxy>(
+                ConfigKey(m_sGroup1, "outro_start_clear"));
+        m_pOutroEndPosition = std::make_unique<ControlFramePosProxy>(
+                ConfigKey(m_sGroup1, "outro_end_position"));
+        m_pOutroEndEnabled = std::make_unique<ControlProxy>(
+                ConfigKey(m_sGroup1, "outro_end_enabled"));
+        m_pOutroEndSet = std::make_unique<ControlProxy>(ConfigKey(m_sGroup1, "outro_end_set"));
+        m_pOutroEndClear = std::make_unique<ControlProxy>(ConfigKey(m_sGroup1, "outro_end_clear"));
     }
 
     TrackPointer createTestTrack() const {
@@ -61,20 +71,20 @@ class CueControlTest : public BaseSignalPathTest {
     }
 
     std::unique_ptr<ControlProxy> m_pQuantizeEnabled;
-    std::unique_ptr<ControlProxy> m_pCuePoint;
-    std::unique_ptr<ControlProxy> m_pIntroStartPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pCuePoint;
+    std::unique_ptr<ControlFramePosProxy> m_pIntroStartPosition;
     std::unique_ptr<ControlProxy> m_pIntroStartEnabled;
     std::unique_ptr<ControlProxy> m_pIntroStartSet;
     std::unique_ptr<ControlProxy> m_pIntroStartClear;
-    std::unique_ptr<ControlProxy> m_pIntroEndPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pIntroEndPosition;
     std::unique_ptr<ControlProxy> m_pIntroEndEnabled;
     std::unique_ptr<ControlProxy> m_pIntroEndSet;
     std::unique_ptr<ControlProxy> m_pIntroEndClear;
-    std::unique_ptr<ControlProxy> m_pOutroStartPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pOutroStartPosition;
     std::unique_ptr<ControlProxy> m_pOutroStartEnabled;
     std::unique_ptr<ControlProxy> m_pOutroStartSet;
     std::unique_ptr<ControlProxy> m_pOutroStartClear;
-    std::unique_ptr<ControlProxy> m_pOutroEndPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pOutroEndPosition;
     std::unique_ptr<ControlProxy> m_pOutroEndEnabled;
     std::unique_ptr<ControlProxy> m_pOutroEndSet;
     std::unique_ptr<ControlProxy> m_pOutroEndClear;
@@ -102,11 +112,11 @@ TEST_F(CueControlTest, LoadUnloadTrack) {
 
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(kCuePosition, m_pCuePoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kIntroStartPosition, m_pIntroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kIntroEndPosition, m_pIntroEndPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kOutroStartPosition, m_pOutroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kOutroEndPosition, m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(kCuePosition, m_pCuePoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kIntroStartPosition, m_pIntroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kIntroEndPosition, m_pIntroEndPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kOutroStartPosition, m_pOutroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kOutroEndPosition, m_pOutroEndPosition->toFramePos());
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
     EXPECT_TRUE(m_pIntroEndEnabled->toBool());
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
@@ -114,11 +124,11 @@ TEST_F(CueControlTest, LoadUnloadTrack) {
 
     unloadTrack();
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pCuePoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pCuePoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition->toFramePos());
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
@@ -144,11 +154,11 @@ TEST_F(CueControlTest, LoadTrackWithDetectedCues) {
 
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(kCuePosition, m_pCuePoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kCuePosition, m_pIntroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kOutroEndPosition, m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(kCuePosition, m_pCuePoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kCuePosition, m_pIntroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kOutroEndPosition, m_pOutroEndPosition->toFramePos());
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
@@ -173,11 +183,11 @@ TEST_F(CueControlTest, LoadTrackWithIntroEndAndOutroStart) {
 
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pCuePoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kIntroEndPosition, m_pIntroEndPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kOutroStartPosition, m_pOutroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pCuePoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kIntroEndPosition, m_pIntroEndPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kOutroStartPosition, m_pOutroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition->toFramePos());
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
     EXPECT_TRUE(m_pIntroEndEnabled->toBool());
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
@@ -219,11 +229,11 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
 
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedIntroStartPosition, m_pCuePoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedIntroStartPosition, m_pIntroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedIntroEndPosition, m_pIntroEndPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedOutroStartPosition, m_pOutroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedOutroEndPosition, m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(kQuantizedIntroStartPosition, m_pCuePoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kQuantizedIntroStartPosition, m_pIntroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kQuantizedIntroEndPosition, m_pIntroEndPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kQuantizedOutroStartPosition, m_pOutroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(kQuantizedOutroEndPosition, m_pOutroEndPosition->toFramePos());
 }
 
 TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabledNoBeats) {
@@ -249,11 +259,11 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabledNoBeats) {
 
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(kCuePosition, m_pCuePoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(250.0), m_pIntroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(400.0), m_pIntroEndPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(550.0), m_pOutroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(800.0), m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(kCuePosition, m_pCuePoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(250.0), m_pIntroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(400.0), m_pIntroEndPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(550.0), m_pOutroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(800.0), m_pOutroEndPosition->toFramePos());
 }
 
 TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
@@ -278,11 +288,11 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
 
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(240.0), m_pCuePoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(210.0), m_pIntroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(330.0), m_pIntroEndPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(770.0), m_pOutroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(990.0), m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(240.0), m_pCuePoint->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(210.0), m_pIntroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(330.0), m_pIntroEndPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(770.0), m_pOutroStartPosition->toFramePos());
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(990.0), m_pOutroEndPosition->toFramePos());
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault) {
@@ -296,7 +306,7 @@ TEST_F(CueControlTest, SeekOnLoadDefault) {
 
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(250.0), m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(250.0), m_pIntroStartPosition->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(250.0), getCurrentFramePos());
 }
 
@@ -307,7 +317,7 @@ TEST_F(CueControlTest, SeekOnLoadMainCue) {
     loadTrack(pTrack);
 
     // We expect a cue point at the very beginning
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, m_pCuePoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, getCurrentFramePos());
 
     // Move cue like silence analysis does and check if track is following it
@@ -315,7 +325,7 @@ TEST_F(CueControlTest, SeekOnLoadMainCue) {
     pTrack->analysisFinished();
     ProcessBuffer();
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(200.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(200.0), m_pCuePoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(200.0), getCurrentFramePos());
 }
 
@@ -329,7 +339,7 @@ TEST_F(CueControlTest, DontSeekOnLoadMainCue) {
     // track has been manual seeked before.
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(100.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(100.0), m_pCuePoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(100.0), getCurrentFramePos());
 
     // Manually seek  the track
@@ -340,7 +350,7 @@ TEST_F(CueControlTest, DontSeekOnLoadMainCue) {
     pTrack->analysisFinished();
     ProcessBuffer();
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(400.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(400.0), m_pCuePoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(200.0), getCurrentFramePos());
 }
 
@@ -352,7 +362,7 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
 
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(-100.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(-100.0), m_pCuePoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(-100.0), getCurrentFramePos());
 
     // Move cue like silence analysis does and check if track is following it
@@ -360,7 +370,7 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
     pTrack->analysisFinished();
     ProcessBuffer();
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(-200.0), m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(-200.0), m_pCuePoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(-200.0), getCurrentFramePos());
 }
 
@@ -379,13 +389,13 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
 
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(cuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(cuePos, m_pCuePoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(cuePos, getCurrentFramePos());
 
     // enable quantization and expect current position to follow
     m_pQuantizeEnabled->set(1);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(quantizedCuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(quantizedCuePos, m_pCuePoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(quantizedCuePos, getCurrentFramePos());
 
     // move current position to track start
@@ -398,7 +408,7 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
     // enable quantization again and expect play position to stay at track start
     m_pQuantizeEnabled->set(1);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(quantizedCuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(quantizedCuePos, m_pCuePoint->toFramePos());
     EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, getCurrentFramePos());
 }
 
@@ -409,9 +419,9 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     setCurrentFramePos(mixxx::audio::FramePos(100.0));
     m_pIntroStartSet->set(1);
     m_pIntroStartSet->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(100.0), m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(100.0), m_pIntroStartPosition->toFramePos());
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition->toFramePos());
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
 
     CuePointer pCue = pTrack->findCueByType(mixxx::CueType::Intro);
@@ -425,9 +435,9 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     setCurrentFramePos(mixxx::audio::FramePos(500.0));
     m_pIntroEndSet->set(1);
     m_pIntroEndSet->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(100.0), m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(100.0), m_pIntroStartPosition->toFramePos());
     EXPECT_TRUE(m_pIntroStartEnabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(500.0), m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(500.0), m_pIntroEndPosition->toFramePos());
     EXPECT_TRUE(m_pIntroEndEnabled->toBool());
 
     pCue = pTrack->findCueByType(mixxx::CueType::Intro);
@@ -440,9 +450,9 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     // Clear intro start cue
     m_pIntroStartClear->set(1);
     m_pIntroStartClear->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition->toFramePos());
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(500.0), m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(500.0), m_pIntroEndPosition->toFramePos());
     EXPECT_TRUE(m_pIntroEndEnabled->toBool());
 
     pCue = pTrack->findCueByType(mixxx::CueType::Intro);
@@ -455,9 +465,9 @@ TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     // Clear intro end cue
     m_pIntroEndClear->set(1);
     m_pIntroEndClear->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pIntroStartPosition->toFramePos());
     EXPECT_FALSE(m_pIntroStartEnabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pIntroEndPosition->toFramePos());
     EXPECT_FALSE(m_pIntroEndEnabled->toBool());
 
     EXPECT_EQ(nullptr, pTrack->findCueByType(mixxx::CueType::Intro));
@@ -470,9 +480,9 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     setCurrentFramePos(mixxx::audio::FramePos(750.0));
     m_pOutroStartSet->set(1);
     m_pOutroStartSet->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(750.0), m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(750.0), m_pOutroStartPosition->toFramePos());
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition->toFramePos());
     EXPECT_FALSE(m_pOutroEndEnabled->toBool());
 
     CuePointer pCue = pTrack->findCueByType(mixxx::CueType::Outro);
@@ -486,9 +496,9 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     setCurrentFramePos(mixxx::audio::FramePos(1000.0));
     m_pOutroEndSet->set(1);
     m_pOutroEndSet->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(750.0), m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(750.0), m_pOutroStartPosition->toFramePos());
     EXPECT_TRUE(m_pOutroStartEnabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(1000.0), m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(1000.0), m_pOutroEndPosition->toFramePos());
     EXPECT_TRUE(m_pOutroEndEnabled->toBool());
 
     pCue = pTrack->findCueByType(mixxx::CueType::Outro);
@@ -501,9 +511,9 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     // Clear outro start cue
     m_pOutroStartClear->set(1);
     m_pOutroStartClear->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition->toFramePos());
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(1000.0), m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(1000.0), m_pOutroEndPosition->toFramePos());
     EXPECT_TRUE(m_pOutroEndEnabled->toBool());
 
     pCue = pTrack->findCueByType(mixxx::CueType::Outro);
@@ -516,9 +526,9 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     // Clear outro end cue
     m_pOutroEndClear->set(1);
     m_pOutroEndClear->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pOutroStartPosition->toFramePos());
     EXPECT_FALSE(m_pOutroStartEnabled->toBool());
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kInvalidFramePos, m_pOutroEndPosition->toFramePos());
     EXPECT_FALSE(m_pOutroEndEnabled->toBool());
 
     EXPECT_EQ(nullptr, pTrack->findCueByType(mixxx::CueType::Outro));

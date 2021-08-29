@@ -2,7 +2,7 @@
 
 #include <QtDebug>
 
-#include "control/controlobject.h"
+#include "control/controlframepos.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
 #include "moc_quantizecontrol.cpp"
@@ -15,19 +15,13 @@ QuantizeControl::QuantizeControl(const QString& group,
     // Turn quantize OFF by default. See Bug #898213
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pCONextBeat = new ControlObject(ConfigKey(group, "beat_next"));
-    m_pCONextBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
-    m_pCOPrevBeat = new ControlObject(ConfigKey(group, "beat_prev"));
-    m_pCOPrevBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
-    m_pCOClosestBeat = new ControlObject(ConfigKey(group, "beat_closest"));
-    m_pCOClosestBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
+    m_pCONextBeat = std::make_unique<ControlFramePos>(ConfigKey(group, "beat_next"));
+    m_pCOPrevBeat = std::make_unique<ControlFramePos>(ConfigKey(group, "beat_prev"));
+    m_pCOClosestBeat = std::make_unique<ControlFramePos>(ConfigKey(group, "beat_closest"));
 }
 
 QuantizeControl::~QuantizeControl() {
     delete m_pCOQuantizeEnabled;
-    delete m_pCONextBeat;
-    delete m_pCOPrevBeat;
-    delete m_pCOClosestBeat;
 }
 
 void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
@@ -39,9 +33,9 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
         updateClosestBeat(mixxx::audio::kStartFramePos);
     } else {
         m_pBeats.clear();
-        m_pCOPrevBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
-        m_pCONextBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
-        m_pCOClosestBeat->set(mixxx::audio::kInvalidFramePos.toEngineSamplePosMaybeInvalid());
+        m_pCOPrevBeat->reset();
+        m_pCONextBeat->reset();
+        m_pCOClosestBeat->reset();
     }
 }
 
@@ -66,12 +60,8 @@ void QuantizeControl::playPosChanged(mixxx::audio::FramePos position) {
     // do so.
     // NOTE: This bypasses the epsilon calculation, but is there a way
     //       that could actually cause a problem?
-    const auto prevBeatPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pCOPrevBeat->get());
-    const auto nextBeatPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pCONextBeat->get());
+    const auto prevBeatPosition = m_pCOPrevBeat->toFramePos();
+    const auto nextBeatPosition = m_pCONextBeat->toFramePos();
     if (!prevBeatPosition.isValid() || position < prevBeatPosition ||
             !nextBeatPosition.isValid() || position > nextBeatPosition) {
         lookupBeatPositions(position);
@@ -86,9 +76,8 @@ void QuantizeControl::lookupBeatPositions(mixxx::audio::FramePos position) {
         mixxx::audio::FramePos prevBeatPosition;
         mixxx::audio::FramePos nextBeatPosition;
         pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true);
-        // FIXME: -1.0 is a valid frame position, should we set the COs to NaN?
-        m_pCOPrevBeat->set(prevBeatPosition.toEngineSamplePosMaybeInvalid());
-        m_pCONextBeat->set(nextBeatPosition.toEngineSamplePosMaybeInvalid());
+        m_pCOPrevBeat->set(prevBeatPosition);
+        m_pCONextBeat->set(nextBeatPosition);
     }
 }
 
@@ -97,34 +86,28 @@ void QuantizeControl::updateClosestBeat(mixxx::audio::FramePos position) {
     if (!m_pBeats) {
         return;
     }
-    const auto prevBeatPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pCOPrevBeat->get());
-    const auto nextBeatPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pCONextBeat->get());
+    const auto prevBeatPosition = m_pCOPrevBeat->toFramePos();
+    const auto nextBeatPosition = m_pCONextBeat->toFramePos();
 
     // Calculate closest beat by hand since we want the beat locations themselves
     // and duplicating the work by calling the standard API would double
     // the number of mutex locks.
     if (!prevBeatPosition.isValid()) {
         if (nextBeatPosition.isValid()) {
-            m_pCOClosestBeat->set(nextBeatPosition.toEngineSamplePos());
+            m_pCOClosestBeat->set(nextBeatPosition);
         } else {
             // Likely no beat information -- can't set closest beat value.
         }
     } else if (!nextBeatPosition.isValid()) {
-        m_pCOClosestBeat->set(prevBeatPosition.toEngineSamplePos());
+        m_pCOClosestBeat->set(prevBeatPosition);
     } else {
         const mixxx::audio::FramePos currentClosestBeatPosition =
                 (nextBeatPosition - position > position - prevBeatPosition)
                 ? prevBeatPosition
                 : nextBeatPosition;
-        const auto closestBeatPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pCOClosestBeat->get());
+        const auto closestBeatPosition = m_pCOClosestBeat->toFramePos();
         if (closestBeatPosition != currentClosestBeatPosition) {
-            m_pCOClosestBeat->set(currentClosestBeatPosition.toEngineSamplePos());
+            m_pCOClosestBeat->set(currentClosestBeatPosition);
         }
     }
 }

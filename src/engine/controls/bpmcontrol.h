@@ -10,6 +10,7 @@
 #include "util/tapfilter.h"
 
 class ControlObject;
+class ControlFramePosProxy;
 class ControlLinPotmeter;
 class ControlPushButton;
 class EngineBuffer;
@@ -129,13 +130,13 @@ class BpmControl : public EngineControl {
     ControlObject* m_pQuantize;
 
     // ControlObjects that come from QuantizeControl
-    QScopedPointer<ControlProxy> m_pNextBeat;
-    QScopedPointer<ControlProxy> m_pPrevBeat;
+    std::unique_ptr<ControlFramePosProxy> m_pNextBeatPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pPrevBeatPosition;
 
     // ControlObjects that come from LoopingControl
     ControlProxy* m_pLoopEnabled;
-    ControlProxy* m_pLoopStartPosition;
-    ControlProxy* m_pLoopEndPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pLoopStartPosition;
+    std::unique_ptr<ControlFramePosProxy> m_pLoopEndPosition;
 
     // The average bpm around the current playposition;
     ControlObject* m_pLocalBpm;

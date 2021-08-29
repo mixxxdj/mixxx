@@ -2,6 +2,8 @@
 
 #include <QtDebug>
 
+#include "control/controlframepos.h"
+#include "control/controlframeposproxy.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
@@ -105,24 +107,27 @@ LoopingControl::LoopingControl(const QString& group,
             Qt::DirectConnection);
 
     m_pCOLoopStartPosition =
-            new ControlObject(ConfigKey(group, "loop_start_position"));
-    m_pCOLoopStartPosition->set(kNoTrigger);
-    connect(m_pCOLoopStartPosition, &ControlObject::valueChanged,
-            this, &LoopingControl::slotLoopStartPos,
+            new ControlFramePos(ConfigKey(group, "loop_start_position"));
+    connect(m_pCOLoopStartPosition,
+            &ControlFramePos::positionChanged,
+            this,
+            &LoopingControl::slotLoopStartPositionChanged,
             Qt::DirectConnection);
 
     m_pCOLoopEndPosition =
-            new ControlObject(ConfigKey(group, "loop_end_position"));
-    m_pCOLoopEndPosition->set(kNoTrigger);
-    connect(m_pCOLoopEndPosition, &ControlObject::valueChanged,
-            this, &LoopingControl::slotLoopEndPos,
+            new ControlFramePos(ConfigKey(group, "loop_end_position"));
+    connect(m_pCOLoopEndPosition,
+            &ControlFramePos::positionChanged,
+            this,
+            &LoopingControl::slotLoopEndPositionChanged,
             Qt::DirectConnection);
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
-    m_pNextBeat = ControlObject::getControl(ConfigKey(group, "beat_next"));
-    m_pPreviousBeat = ControlObject::getControl(ConfigKey(group, "beat_prev"));
-    m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
-    m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
+    m_pNextBeatPosition = std::make_unique<ControlFramePosProxy>(ConfigKey(group, "beat_next"));
+    m_pPreviousBeatPosition = std::make_unique<ControlFramePosProxy>(ConfigKey(group, "beat_prev"));
+    m_pClosestBeatPosition = std::make_unique<ControlFramePosProxy>(
+            ConfigKey(group, "beat_closest"));
+    m_pTrackEndPosition = std::make_unique<ControlFramePosProxy>(ConfigKey(group, "track_samples"));
     m_pSlipEnabled = ControlObject::getControl(ConfigKey(group, "slip_enabled"));
 
     // DEPRECATED: Use beatloop_size and beatloop_set instead.
@@ -258,9 +263,7 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
 
     const mixxx::audio::FrameDiff_t loopLength =
             (loopInfo.endPosition - loopInfo.startPosition) * scaleFactor;
-    const auto trackEndPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pTrackSamples->get());
+    const auto trackEndPosition = m_pTrackEndPosition->toFramePos();
     if (!trackEndPosition.isValid()) {
         return;
     }
@@ -300,7 +303,7 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
     emit loopUpdated(loopInfo.startPosition, loopInfo.endPosition);
 
     // Update CO for loop end marker
-    m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePos());
+    m_pCOLoopEndPosition->set(loopInfo.endPosition);
 }
 
 void LoopingControl::slotLoopHalve(double pressed) {
@@ -583,8 +586,8 @@ void LoopingControl::setLoop(mixxx::audio::FramePos startPosition,
         loopInfo.seekMode = LoopSeekMode::None;
         clearActiveBeatLoop();
         m_loopInfo.setValue(loopInfo);
-        m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePos());
-        m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePos());
+        m_pCOLoopStartPosition->set(loopInfo.startPosition);
+        m_pCOLoopEndPosition->set(loopInfo.endPosition);
     }
     setLoopingEnabled(enabled);
 
@@ -609,16 +612,12 @@ void LoopingControl::setLoopInToCurrentPosition() {
     mixxx::audio::FramePos quantizedBeatPosition;
     mixxx::audio::FramePos position = m_currentPosition.getValue();
     if (m_pQuantizeEnabled->toBool() && pBeats) {
-        const auto closestBeatPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pClosestBeat->get());
+        const auto closestBeatPosition = m_pClosestBeatPosition->toFramePos();
         if (m_bAdjustingLoopIn) {
             if (closestBeatPosition == m_currentPosition.getValue()) {
                 quantizedBeatPosition = closestBeatPosition;
             } else {
-                quantizedBeatPosition =
-                        mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                                m_pPreviousBeat->get());
+                quantizedBeatPosition = m_pPreviousBeatPosition->toFramePos();
             }
         } else {
             quantizedBeatPosition = closestBeatPosition;
@@ -632,7 +631,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
     // cannot be inverted.
     if (loopInfo.endPosition.isValid() && loopInfo.endPosition < position) {
         loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
-        m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+        m_pCOLoopEndPosition->set(loopInfo.endPosition);
     }
 
     // If we're looping and the loop-in and out points are now so close
@@ -654,7 +653,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
 
     loopInfo.startPosition = position;
 
-    m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
+    m_pCOLoopStartPosition->set(loopInfo.startPosition);
 
     // start looping
     if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
@@ -726,16 +725,12 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     mixxx::audio::FramePos quantizedBeatPosition;
     mixxx::audio::FramePos position = m_currentPosition.getValue();
     if (m_pQuantizeEnabled->toBool() && pBeats) {
-        const auto closestBeatPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pClosestBeat->get());
+        const auto closestBeatPosition = m_pClosestBeatPosition->toFramePos();
         if (m_bAdjustingLoopOut) {
             if (closestBeatPosition == m_currentPosition.getValue()) {
                 quantizedBeatPosition = closestBeatPosition;
             } else {
-                quantizedBeatPosition =
-                        mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                                m_pNextBeat->get());
+                quantizedBeatPosition = m_pNextBeatPosition->toFramePos();
             }
         } else {
             quantizedBeatPosition = closestBeatPosition;
@@ -770,7 +765,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     // set loop out position
     loopInfo.endPosition = position;
 
-    m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+    m_pCOLoopEndPosition->set(loopInfo.endPosition);
 
     // start looping
     if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
@@ -944,10 +939,8 @@ void LoopingControl::slotReloopAndStop(double pressed) {
     setLoopingEnabled(true);
 }
 
-void LoopingControl::slotLoopStartPos(double positionSamples) {
+void LoopingControl::slotLoopStartPositionChanged(mixxx::audio::FramePos position) {
     // This slot is called before trackLoaded() for a new Track
-    const auto position = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(positionSamples);
-
     LoopInfo loopInfo = m_loopInfo.getValue();
     if (loopInfo.startPosition == position) {
         //nothing to do
@@ -963,21 +956,19 @@ void LoopingControl::slotLoopStartPos(double positionSamples) {
 
     loopInfo.seekMode = LoopSeekMode::MovedOut;
     loopInfo.startPosition = position;
-    m_pCOLoopStartPosition->set(position.toEngineSamplePosMaybeInvalid());
+    m_pCOLoopStartPosition->set(position);
 
     if (loopInfo.endPosition.isValid() && loopInfo.endPosition <= loopInfo.startPosition) {
         emit loopReset();
         loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
-        m_pCOLoopEndPosition->set(kNoTrigger);
+        m_pCOLoopEndPosition->set(loopInfo.endPosition);
         setLoopingEnabled(false);
     }
     m_loopInfo.setValue(loopInfo);
 }
 
-void LoopingControl::slotLoopEndPos(double positionSamples) {
+void LoopingControl::slotLoopEndPositionChanged(mixxx::audio::FramePos position) {
     // This slot is called before trackLoaded() for a new Track
-    const auto position = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(positionSamples);
-
     LoopInfo loopInfo = m_loopInfo.getValue();
     if (position.isValid() && loopInfo.endPosition == position) {
         //nothing to do
@@ -988,7 +979,7 @@ void LoopingControl::slotLoopEndPos(double positionSamples) {
     // start point (but not -1).
     if (!loopInfo.startPosition.isValid() ||
             (position.isValid() && position <= loopInfo.startPosition)) {
-        m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+        m_pCOLoopEndPosition->set(loopInfo.endPosition);
         return;
     }
 
@@ -1000,7 +991,7 @@ void LoopingControl::slotLoopEndPos(double positionSamples) {
     }
     loopInfo.endPosition = position;
     loopInfo.seekMode = LoopSeekMode::MovedOut;
-    m_pCOLoopEndPosition->set(position.toEngineSamplePosMaybeInvalid());
+    m_pCOLoopEndPosition->set(position);
     m_loopInfo.setValue(loopInfo);
 }
 
@@ -1221,9 +1212,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         beats = minBeatSize;
     }
 
-    const auto trackEndPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pTrackSamples->get());
+    const auto trackEndPosition = m_pTrackEndPosition->toFramePos();
     const mixxx::BeatsPointer pBeats = m_pBeats;
     if (!trackEndPosition.isValid() || !pBeats) {
         clearActiveBeatLoop();
@@ -1355,8 +1344,8 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 
     m_loopInfo.setValue(newloopInfo);
     emit loopUpdated(newloopInfo.startPosition, newloopInfo.endPosition);
-    m_pCOLoopStartPosition->set(newloopInfo.startPosition.toEngineSamplePos());
-    m_pCOLoopEndPosition->set(newloopInfo.endPosition.toEngineSamplePos());
+    m_pCOLoopStartPosition->set(newloopInfo.startPosition);
+    m_pCOLoopEndPosition->set(newloopInfo.endPosition);
 
     if (enable) {
         setLoopingEnabled(true);
@@ -1464,9 +1453,7 @@ void LoopingControl::slotLoopMove(double beats) {
         // The track would stop as soon as the playhead crosses track end,
         // so we don't allow moving a loop beyond end.
         // https://bugs.launchpad.net/mixxx/+bug/1799574
-        const auto trackEndPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        m_pTrackSamples->get());
+        const auto trackEndPosition = m_pTrackEndPosition->toFramePos();
         if (!trackEndPosition.isValid() || newLoopEndPosition > trackEndPosition) {
             return;
         }
@@ -1478,8 +1465,8 @@ void LoopingControl::slotLoopMove(double beats) {
         loopInfo.endPosition = newLoopEndPosition;
         m_loopInfo.setValue(loopInfo);
         emit loopUpdated(loopInfo.startPosition, loopInfo.endPosition);
-        m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
-        m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+        m_pCOLoopStartPosition->set(loopInfo.startPosition);
+        m_pCOLoopEndPosition->set(loopInfo.endPosition);
     }
 }
 
