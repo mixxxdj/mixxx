@@ -1,0 +1,123 @@
+#pragma once
+
+#include <QMetaType>
+#include <QString>
+
+#include "util/assert.h"
+
+namespace mixxx {
+
+namespace library {
+
+namespace tags {
+
+/// The displayable name or title of a tag.
+///
+/// The value contains arbitrary Unicode text that is supposed to
+/// be displayed to the user.
+///
+/// Value constraints:
+///   - no leading/trailing whitespace
+class TagLabel final {
+  public:
+    typedef QString value_t;
+
+    static const value_t defaultValue() {
+        return value_t{};
+    }
+
+    static bool isValidValue(
+            const value_t& value);
+
+    /// Remove leading/trailing whitespace.
+    static value_t convertIntoValidValue(
+            const value_t& value);
+
+    /// Ensure that empty values are always null
+    static value_t filterEmptyValue(
+            value_t value) {
+        DEBUG_ASSERT(defaultValue().isEmpty());
+        return value.isEmpty() ? defaultValue() : value;
+    }
+
+    explicit TagLabel(
+            value_t value = defaultValue())
+            : m_value(std::move(value)) {
+        DEBUG_ASSERT(isValid());
+    }
+    TagLabel(const TagLabel&) = default;
+    TagLabel(TagLabel&&) = default;
+
+    TagLabel& operator=(const TagLabel&) = default;
+    TagLabel& operator=(TagLabel&&) = default;
+
+    bool isValid() const {
+        return isValidValue(m_value);
+    }
+
+    bool isEmpty() const {
+        DEBUG_ASSERT(isValid());
+        return m_value.isEmpty();
+    }
+
+    const value_t& value() const {
+        DEBUG_ASSERT(isValid());
+        return m_value;
+    }
+    operator const value_t&() const {
+        return value();
+    }
+
+  private:
+    value_t m_value;
+};
+
+inline bool operator==(
+        const TagLabel& lhs,
+        const TagLabel& rhs) {
+    return lhs.value() == rhs.value();
+}
+
+inline bool operator!=(
+        const TagLabel& lhs,
+        const TagLabel& rhs) {
+    return !(lhs == rhs);
+}
+
+inline bool operator<(
+        const TagLabel& lhs,
+        const TagLabel& rhs) {
+    return lhs.value() < rhs.value();
+}
+
+inline bool operator>(
+        const TagLabel& lhs,
+        const TagLabel& rhs) {
+    return !(lhs < rhs);
+}
+
+inline bool operator<=(
+        const TagLabel& lhs,
+        const TagLabel& rhs) {
+    return !(lhs > rhs);
+}
+
+inline bool operator>=(
+        const TagLabel& lhs,
+        const TagLabel& rhs) {
+    return !(lhs < rhs);
+}
+
+inline uint qHash(
+        const TagLabel& label,
+        uint seed = 0) {
+    return qHash(label.value(), seed);
+}
+
+} // namespace tags
+
+} // namespace library
+
+} // namespace mixxx
+
+Q_DECLARE_METATYPE(mixxx::library::tags::TagLabel)

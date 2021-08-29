@@ -8,6 +8,7 @@
 #include "audio/types.h"
 #include "control/controlproxy.h"
 #include "library/tags/tag.h"
+#include "library/tags/tagfacet.h"
 #include "library/trackset/crate/crateid.h"
 #include "moc_mixxxapplication.cpp"
 #include "soundio/soundmanagerutil.h"

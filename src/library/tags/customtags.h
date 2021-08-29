@@ -5,6 +5,7 @@
 #include <QMap>
 
 #include "library/tags/tag.h"
+#include "library/tags/tagfacet.h"
 
 namespace mixxx {
 
