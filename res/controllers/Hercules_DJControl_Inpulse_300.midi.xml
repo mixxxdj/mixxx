@@ -1683,6 +1683,19 @@
 				</options>
 			</control>
 
+			<!-- CC's MIDI Channel 4 (0xB3 Browser encoder SHIFT mode either one)-->
+			<!--Browser encoder-->
+			<control>
+				<group>[Library]</group>
+				<key>MoveHorizontal</key>
+				<description>Move Horizontal (Browser Knob)</description>
+				<status>0xB3</status>
+				<midino>0x01</midino>
+				<options>
+					<selectknob />
+				</options>
+			</control>
+
 			<!-- CC's MIDI Channel 2 (0xB1 Deck A - Standard mode)-->
 
 			<!-- Volume-->
@@ -1961,7 +1974,7 @@
 				</options>
 			</control>
 
-			<!-- CC's MIDI Channel 5 (0xB4  Deck B - SHIFT mode)-->
+			<!-- CC's MIDI Channel 5 (0xB4  Deck A - SHIFT mode)-->
 			<!--Jog wheel-->
 			<control>
 				<group>[Channel1]</group>
