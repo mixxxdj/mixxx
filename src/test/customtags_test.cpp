@@ -26,14 +26,14 @@ TEST_F(CustomTagsTest, isValidFacetValue) {
 }
 
 TEST_F(CustomTagsTest, clampFacetValue) {
-    EXPECT_EQ(QString(), TagFacet::clampValue(QString()));
-    EXPECT_EQ(
-            QString("lower-case_with_digit_1_and_whitespaces"),
-            TagFacet::clampValue(QStringLiteral(" lower -\tcase_with _digit_1_and_whitespaces ")));
-    EXPECT_EQ(QString(), TagFacet::clampValue(QStringLiteral(" \n \t \r")));
-    EXPECT_EQ(QString("uppercase"), TagFacet::clampValue(QStringLiteral("Uppercase")));
+    EXPECT_EQ(QString(), TagFacet::convertIntoValidValue(QString()));
+    EXPECT_EQ(QString("lower-case_with_digit_1_and_whitespaces"),
+            TagFacet::convertIntoValidValue(QStringLiteral(
+                    " lower -\tcase_with _digit_1_and_whitespaces ")));
+    EXPECT_EQ(QString(), TagFacet::convertIntoValidValue(QStringLiteral(" \n \t \r")));
+    EXPECT_EQ(QString("uppercase"), TagFacet::convertIntoValidValue(QStringLiteral("Uppercase")));
     EXPECT_EQ(QString("with\\back/slash"),
-            TagFacet::clampValue(QStringLiteral("with \\ back/\tslash")));
+            TagFacet::convertIntoValidValue(QStringLiteral("with \\ back/\tslash")));
 }
 
 TEST_F(CustomTagsTest, isValidLabelValue) {

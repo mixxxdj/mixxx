@@ -268,7 +268,7 @@ Tag CustomTags::mergeFacetedTags(
         labels += tag.getLabel();
     }
     auto labelValue =
-            TagLabel::clampValue(labels.join(joinLabelSeparator));
+            TagLabel::convertIntoValidValue(labels.join(joinLabelSeparator));
     return Tag(
             TagLabel(std::move(labelValue)),
             TagScore(scoreValue));

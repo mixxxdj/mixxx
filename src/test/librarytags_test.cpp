@@ -40,29 +40,29 @@ TEST_F(TagFacetTest, filterEmptyValue) {
             TagFacet::filterEmptyValue("x"));
 }
 
-TEST_F(TagFacetTest, clampValue) {
+TEST_F(TagFacetTest, convertIntoValidValue) {
     // Clamp empty string
     EXPECT_EQ(
             TagFacet(),
-            TagFacet(TagFacet::clampValue("")));
+            TagFacet(TagFacet::convertIntoValidValue("")));
     // Clamped whitespace string
     EXPECT_EQ(
             TagFacet(),
-            TagFacet(TagFacet::clampValue("  \t\n   ")));
+            TagFacet(TagFacet::convertIntoValidValue("  \t\n   ")));
     // Lowercase
     EXPECT_EQ(
             TagFacet("x"),
-            TagFacet(TagFacet::clampValue("  \tX\n   ")));
+            TagFacet(TagFacet::convertIntoValidValue("  \tX\n   ")));
     // Whitespace replacement
     EXPECT_EQ(
             TagFacet("xy_{+}"),
-            TagFacet(TagFacet::clampValue("X y _\n{+} ")));
+            TagFacet(TagFacet::convertIntoValidValue("X y _\n{+} ")));
     // Lowercase ASCII alphabet without whitespace
     EXPECT_EQ(
             TagFacet("!\"#$%&'()*+,-./0123456789:;<=>?"
                      "@abcdefghijklmnopqrstuvwxyz[\\]^_"
                      "`abcdefghijklmnopqrstuvwxyz{|}~"),
-            TagFacet(TagFacet::clampValue(
+            TagFacet(TagFacet::convertIntoValidValue(
                     " !\"#$%&'()*+,-./0123456789:;<=>?"
                     "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
                     "`abcdefghijklmnopqrstuvwxyz{|}~")));
@@ -87,11 +87,11 @@ TEST_F(TagLabelTest, isEmpty) {
 
 TEST_F(TagLabelTest, clampEmptyValueIsValid) {
     EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::clampValue(TagLabel::value_t())));
+            TagLabel::isValidValue(TagLabel::convertIntoValidValue(TagLabel::value_t())));
     EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::clampValue("")));
+            TagLabel::isValidValue(TagLabel::convertIntoValidValue("")));
     EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::clampValue(" ")));
+            TagLabel::isValidValue(TagLabel::convertIntoValidValue(" ")));
 }
 
 TEST_F(TagLabelTest, filterEmptyValue) {
@@ -106,18 +106,18 @@ TEST_F(TagLabelTest, filterEmptyValue) {
             TagLabel::filterEmptyValue("X"));
 }
 
-TEST_F(TagLabelTest, clampValue) {
+TEST_F(TagLabelTest, convertIntoValidValue) {
     // Clamp empty string
     EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::clampValue("")));
+            TagLabel::isValidValue(TagLabel::convertIntoValidValue("")));
     // Clamped whitespace string
     EXPECT_EQ(
             TagLabel(),
-            TagLabel(TagLabel::clampValue("  \t\n   ")));
+            TagLabel(TagLabel::convertIntoValidValue("  \t\n   ")));
     // Trimmed
     EXPECT_EQ(
             TagLabel("X y"),
-            TagLabel(TagLabel::clampValue("  \tX y\n   ")));
+            TagLabel(TagLabel::convertIntoValidValue("  \tX y\n   ")));
 }
 
 class TagTest : public testing::Test {

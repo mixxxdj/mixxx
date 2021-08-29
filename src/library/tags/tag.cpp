@@ -36,11 +36,11 @@ bool TagFacet::isValidValue(
 }
 
 //static
-TagFacet::value_t TagFacet::clampValue(
+TagFacet::value_t TagFacet::convertIntoValidValue(
         const value_t& value) {
-    auto clampedValue = filterEmptyValue(value.toLower().remove(kInverseLowercaseAsciiNotEmpty));
-    DEBUG_ASSERT(isValidValue(clampedValue));
-    return clampedValue;
+    auto validValue = filterEmptyValue(value.toLower().remove(kInverseLowercaseAsciiNotEmpty));
+    DEBUG_ASSERT(isValidValue(validValue));
+    return validValue;
 }
 
 //static
@@ -57,11 +57,11 @@ bool TagLabel::isValidValue(
 }
 
 //static
-TagLabel::value_t TagLabel::clampValue(
+TagLabel::value_t TagLabel::convertIntoValidValue(
         const value_t& value) {
-    auto clampedValue = filterEmptyValue(value.trimmed());
-    DEBUG_ASSERT(isValidValue(clampedValue));
-    return clampedValue;
+    auto validValue = filterEmptyValue(value.trimmed());
+    DEBUG_ASSERT(isValidValue(validValue));
+    return validValue;
 }
 
 bool operator==(

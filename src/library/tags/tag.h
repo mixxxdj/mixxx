@@ -34,9 +34,9 @@ class TagFacet final {
     static bool isValidValue(
             const value_t& value);
 
-    /// Converts the given string into lowercase and then
+    /// Convert the given string into lowercase and then
     /// removes all whitespace and non-ASCII characters.
-    static value_t clampValue(
+    static value_t convertIntoValidValue(
             const value_t& value);
 
     /// Ensure that empty values are always null
@@ -136,7 +136,8 @@ class TagLabel final {
     static bool isValidValue(
             const value_t& value);
 
-    static value_t clampValue(
+    /// Remove leading/trailing whitespace.
+    static value_t convertIntoValidValue(
             const value_t& value);
 
     /// Ensure that empty values are always null
@@ -233,7 +234,8 @@ class TagScore final {
         return value >= kMinValue && value <= kMaxValue;
     }
 
-    static value_t clampValue(
+    /// Clamp the value to the valid range [kMinValue, kMaxValue].
+    static constexpr value_t convertIntoValidValue(
             value_t value) {
         return math_min(kMaxValue, math_max(kMinValue, value));
     }
