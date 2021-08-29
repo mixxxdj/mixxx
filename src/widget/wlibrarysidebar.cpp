@@ -205,6 +205,26 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     //    // encoder click via "GoToItem"
     //    qDebug() << "GoToItem";
     //    TODO(xxx) decide what todo here instead of in librarycontrol
+    } else if (event->key() == Qt::Key_Left) {
+        auto selModel = selectionModel();
+        QModelIndexList selectedRows = selModel->selectedRows();
+        if (selectedRows.isEmpty()) {
+            return;
+        }
+        // If an expanded item is selected let QTreeView collapse it
+        QModelIndex selIndex = selectedRows.first();
+        DEBUG_ASSERT(selIndex.isValid());
+        if (isExpanded(selIndex)) {
+            QTreeView::keyPressEvent(event);
+            return;
+        }
+        // Else jump to its parent and activate it
+        QModelIndex parentIndex = selIndex.parent();
+        if (parentIndex.isValid()) {
+            selectIndex(parentIndex);
+            emit pressed(parentIndex);
+        }
+        return;
     }
 
     // Fall through to default handler.
