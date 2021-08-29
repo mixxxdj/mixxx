@@ -17,7 +17,7 @@ typedef QMap<TagFacet, TagMap> FacetTagMap;
 
 /// Custom tags
 ///
-/// Each custom tag is represented by a triple: a facet, a label, and a score:
+/// Each custom tag is represented by a 3-tuple (triple): a facet, a label, and a score:
 ///
 ///   - The *facet* is a lowercase, non-empty ASCII string without whitespace
 ///   - The *label* is non-empty free text
@@ -105,27 +105,32 @@ class CustomTags final {
     bool addOrReplaceAllTags(
             const CustomTags& tags);
 
-    // Get all plain tags as a list (in no particular order)
+    /// Get all plain tags as a list (in no particular order)
     TagVector getTags() const;
 
-    // Replace all existing tags of this facet with a single
-    // faceted tag or insert a new faceted tag.
+    /// Replace all existing tags of this facet with a single
+    /// faceted tag or insert a new faceted tag.
     FacetTagMap::iterator replaceAllFacetedTags(
             const TagFacet& facet,
             const Tag& tag);
+
     int removeAllFacetedTags(
             const TagFacet& facet);
-    // Get all tags of a given facet sorted by score in descending order
+
+    /// Get all tags of a given facet sorted by score in descending order
     TagVector getFacetedTagsOrdered(
             const TagFacet& facet) const;
 
-    // Get the label of a single faceted tag, i.e. that
-    // occurs at most once and has no custom score. If the
-    // facet is unknown/absent an empty label is returned.
+    /// Get the label of a single faceted tag, i.e. that
+    /// occurs at most once and has no custom score. If the
+    /// facet is unknown/absent an empty label is returned.
     TagLabel getFacetedTagLabel(
             const TagFacet& facet) const;
 
-    // Get the score of a tag if present.
+    /// Get the score of a tag if present.
+    ///
+    /// Returns `std::nullopt` if the corresponding (facet, label)
+    /// combination that serves as the key does not exist.
     std::optional<TagScore> getTagScore(
             const TagFacet& facet,
             const TagLabel& label = TagLabel()) const;
