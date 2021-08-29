@@ -16,7 +16,17 @@ namespace tags {
 
 /// A category for tags.
 ///
-/// Constraints: Lowercase ASCII, no whitespace characters
+/// Facets are used for grouping/categorizing and providing context or meaning.
+/// Their value serves as a symbolic, internal identifier that is not intended
+/// to be displayed literally in the UI. This is also the reasons for the
+/// restrictions on naming them.
+///
+/// Value constraints:
+///   - lowercase ASCII
+///   - and no whitespace
+///
+/// References:
+///   - https://en.wikipedia.org/wiki/Faceted_classification
 class TagFacet final {
   public:
     typedef QString value_t;
@@ -112,9 +122,13 @@ inline uint qHash(
     return qHash(facet.value(), seed);
 }
 
-/// The name/title of a tag.
+/// The displayable name or title of a tag.
 ///
-/// Constraints: No leading/trailing whitespace
+/// The value contains arbitrary Unicode text that is supposed to
+/// be displayed to the user.
+///
+/// Value constraints:
+///   - no leading/trailing whitespace
 class TagLabel final {
   public:
     typedef QString value_t;
@@ -245,7 +259,15 @@ class TagScore final {
     value_t m_value;
 };
 
-// A plain tag with label and score.
+/// A plain tag with an optional label and a score.
+///
+/// Plain tags are not faceted. The facet is usually provided
+/// by the outer context, e.g. the key of a map that stores
+/// plain tags as values.
+///
+/// Mixxx uses these kind of tags as `CustomTags` to store extended
+/// metadata. They should not be confused with file tags (ID3, MP4,
+/// VorbisComment) for storing metadata in media files.
 class Tag final {
     // Properties
     MIXXX_DECL_PROPERTY(TagLabel, label, Label)
@@ -273,6 +295,9 @@ class Tag final {
                 getScore().isValid();
     }
 
+    /// Check if a label is present.
+    ///
+    /// Empty labels are considered as missing.
     bool hasLabel() const {
         return !m_label.isEmpty();
     }
