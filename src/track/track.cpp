@@ -240,10 +240,11 @@ bool Track::mergeExtraMetadataFromSource(
 }
 
 mixxx::TrackMetadata Track::getMetadata(
-        bool* pSourceSynchronized) const {
+        mixxx::TrackRecord::SourceSyncStatus* pSourceSyncStatus) const {
     const auto locked = lockMutex(&m_qMutex);
-    if (pSourceSynchronized) {
-        *pSourceSynchronized = m_record.isSourceSynchronized();
+    if (pSourceSyncStatus) {
+        *pSourceSyncStatus =
+                m_record.checkSourceSyncStatus(m_fileAccess.info());
     }
     return m_record.getMetadata();
 }
@@ -471,9 +472,10 @@ void Track::emitChangedSignalsForAllMetadata() {
     emit keyChanged();
 }
 
-bool Track::isSourceSynchronized() const {
+bool Track::checkSourceSynchronized() const {
     const auto locked = lockMutex(&m_qMutex);
-    return m_record.isSourceSynchronized();
+    return m_record.checkSourceSyncStatus(m_fileAccess.info()) ==
+            mixxx::TrackRecord::SourceSyncStatus::Synchronized;
 }
 
 void Track::setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt) {
@@ -1441,8 +1443,11 @@ ExportTrackMetadataResult Track::exportMetadata(
     // TODO(XXX): Use sourceSynchronizedAt to decide if metadata
     // should be (re-)imported before exporting it. The file might
     // have been updated by external applications. Overwriting
-    // this modified metadata might not be intended.
-    if (!m_bMarkedForMetadataExport && !m_record.isSourceSynchronized()) {
+    // this modified metadata is probably not be intended if not
+    // explicitly requested by m_bMarkedForMetadataExport.
+    if (!m_bMarkedForMetadataExport &&
+            m_record.checkSourceSyncStatus(m_fileAccess.info()) !=
+                    mixxx::TrackRecord::SourceSyncStatus::Synchronized) {
         // If the metadata has never been imported from file tags it
         // must be exported explicitly once. This ensures that we don't
         // overwrite existing file tags with completely different

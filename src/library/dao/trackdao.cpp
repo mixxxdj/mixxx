@@ -19,6 +19,7 @@
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
+#include "library/library_prefs.h"
 #include "library/queryutil.h"
 #include "library/trackset/crate/cratestorage.h"
 #include "moc_trackdao.cpp"
@@ -849,8 +850,9 @@ TrackPointer TrackDAO::addTracksAddFile(
 
     // Initially (re-)import the metadata for the newly created track
     // from the file.
-    SoundSourceProxy(pTrack).updateTrackFromSource();
-    if (!pTrack->isSourceSynchronized()) {
+    SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once);
+    if (!pTrack->checkSourceSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
@@ -1487,7 +1489,20 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         // file. This import might have never been completed successfully
         // before, so just check and try for every track that has been
         // freshly loaded from the database.
-        SoundSourceProxy(pTrack).updateTrackFromSource();
+        auto updateTrackFromSourceMode =
+                SoundSourceProxy::UpdateTrackFromSourceMode::Once;
+        if (m_pConfig &&
+                m_pConfig->getValueString(
+                                 mixxx::library::prefs::kSyncTrackMetadataExportConfigKey)
+                                .toInt() == 1) {
+            // An implicit re-import and update is performed if the
+            // user has enabled export of file tags in the preferences.
+            // Either they want to keep their file tags synchronized or
+            // not, no exceptions!
+            updateTrackFromSourceMode =
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
+        }
+        SoundSourceProxy(pTrack).updateTrackFromSource(updateTrackFromSourceMode);
         if (kLogger.debugEnabled() && pTrack->isDirty()) {
             kLogger.debug()
                     << "Updated track metadata from file tags:"

@@ -111,7 +111,22 @@ class TrackRecord final {
             const QString& keyText,
             track::io::key::Source keySource);
 
-    bool isSourceSynchronized() const;
+    enum class SourceSyncStatus {
+        /// The metadata has not been imported yet.
+        Void,
+
+        /// The status could not be determined for whatever reason,
+        /// e.g. insufficient data, inaccessible file, ...
+        Unknown,
+
+        /// The metadata in Mixxx is up-to-date.
+        Synchronized,
+
+        /// The metadata in Mixxx is older than the metadata stored in file tags.
+        Outdated,
+    };
+    SourceSyncStatus checkSourceSyncStatus(
+            const FileInfo& fileInfo) const;
     bool replaceMetadataFromSource(
             TrackMetadata&& importedMetadata,
             const QDateTime& sourceSynchronizedAt);
