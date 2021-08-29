@@ -1408,16 +1408,12 @@ if(UNIX AND NOT APPLE)
 
   # Icon files for menu entry
   install(
-    FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/mixxx.svg"
+    DIRECTORY
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons"
     DESTINATION
-      "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
-  )
-  install(
-    FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/mixxx.png"
-    DESTINATION
-      "${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps"
+      "${CMAKE_INSTALL_DATADIR}/icons/hicolor"
+    # This file is for Windows.
+    PATTERN ic_mixxx.ico EXCLUDE
   )
 
   # .metainfo.xml file for KDE/GNOME AppStream initiative

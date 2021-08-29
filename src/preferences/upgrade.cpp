@@ -452,7 +452,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
 bool Upgrade::askReScanLibrary() {
     QMessageBox msgBox;
-    msgBox.setIconPixmap(QPixmap(":/images/icons/mixxx.svg"));
+    msgBox.setIconPixmap(QPixmap(":/images/icons/scalable/apps/mixxx.svg"));
     msgBox.setWindowTitle(QMessageBox::tr("Upgrading Mixxx"));
     msgBox.setText(QMessageBox::tr("Mixxx now supports displaying cover art.\n"
                       "Do you want to scan your library for cover files now?"));
