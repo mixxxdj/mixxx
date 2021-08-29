@@ -28,10 +28,6 @@ class TagFacet final {
   public:
     typedef QString value_t;
 
-    static value_t defaultValue() {
-        return value_t{};
-    }
-
     static bool isValidValue(
             const value_t& value);
 
@@ -43,15 +39,39 @@ class TagFacet final {
     /// Ensure that empty values are always null
     static value_t filterEmptyValue(
             value_t value) {
-        DEBUG_ASSERT(defaultValue().isEmpty());
-        return value.isEmpty() ? defaultValue() : value;
+        return value.isEmpty() ? value_t{} : value;
     }
 
+    /// Default constructor.
+    TagFacet() = default;
+
+    /// Create a new instance.
+    ///
+    /// This constructor must not be used for static constants!
     explicit TagFacet(
-            value_t value = defaultValue())
+            value_t value)
             : m_value(std::move(value)) {
         DEBUG_ASSERT(isValid());
     }
+
+    /// Type-tag for creating non-validated, static constants.
+    ///
+    /// The regular expressions required for validation are also
+    /// static constant defined in this compilation unit. The
+    /// initialization order between compilation units is undefined!
+    enum struct StaticCtor {};
+
+    /// Constructor for creating non-validated, static constants.
+    TagFacet(
+            StaticCtor,
+            value_t value)
+            : m_value(std::move(value)) {
+    }
+
+    static TagFacet staticConst(value_t value) {
+        return TagFacet(StaticCtor{}, value);
+    }
+
     TagFacet(const TagFacet&) = default;
     TagFacet(TagFacet&&) = default;
 
