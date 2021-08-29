@@ -255,6 +255,9 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
         case Qt::DisplayRole:
             return pTreeItem->getLabel();
         case Qt::ToolTipRole: {
+            if (!pTreeItem->getToolTip().isEmpty()) {
+                return pTreeItem->getToolTip();
+            }
             if (CmdlineArgs::Instance().getDeveloper()) {
                 // Display the internal data for debugging
                 return pTreeItem->getData();

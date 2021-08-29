@@ -52,6 +52,8 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     switch (role) {
     case Qt::DisplayRole:
         return item->getLabel();
+    case Qt::ToolTipRole:
+        return item->getToolTip();
     case kDataRole:
         return item->getData();
     case kBoldRole:
@@ -73,6 +75,9 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
     switch (a_iRole) {
     case Qt::DisplayRole:
         pItem->setLabel(a_rValue.toString());
+        break;
+    case Qt::ToolTipRole:
+        pItem->setToolTip(a_rValue.toString());
         break;
     case kDataRole:
         pItem->setData(a_rValue);
