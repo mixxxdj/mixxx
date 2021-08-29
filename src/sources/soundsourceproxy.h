@@ -105,18 +105,25 @@ class SoundSourceProxy {
 
     /// Controls which (metadata/coverart) and how tags are (re-)imported from
     /// audio files when creating a SoundSourceProxy.
+    ///
+    /// Cover art is only re-imported and updated if it has been guessed from
+    /// metadata to prevent overwriting a custom choice.
     enum class UpdateTrackFromSourceMode {
         // Import both track metadata and cover image once for new track objects.
         // Otherwise the request is ignored and the track object is not modified.
         Once,
-        // (Re-)Import the track's metadata and cover art. Cover art is
-        // only updated if it has been guessed from metadata to prevent
-        // overwriting a custom choice.
-        Again,
-        // If omitted both metadata and cover image will be imported at most
-        // once for each track object to avoid overwriting modified data in
-        // the library.
-        Default = Once,
+        /// (Re-)Import the track's metadata and cover art if the file's modification
+        /// time stamp is newer than the last synchronization time stamp.
+        ///
+        /// Source synchronization time stamps have been introduced by v2.4.0.
+        /// For existing files in the library this time stamp is undefined until
+        /// metadata is manually re-imported! In this case we cannot determine
+        /// if the file tags contain updated data and need to skip the implicit
+        /// re-import to prevent overwriting precious user data.
+        Newer,
+        // Unconditionally (re-)import the track's metadata and cover art, independent
+        // of when the file has last been modified and the synchronization time stamp.
+        Always,
     };
 
     /// Updates file type, metadata, and cover image of the track object
@@ -142,7 +149,7 @@ class SoundSourceProxy {
     ///
     /// Returns true if the track has been modified and false otherwise.
     bool updateTrackFromSource(
-            UpdateTrackFromSourceMode mode = UpdateTrackFromSourceMode::Default);
+            UpdateTrackFromSourceMode mode);
 
     /// Opening the audio source through the proxy will update the
     /// audio properties of the corresponding track object. Returns

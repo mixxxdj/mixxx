@@ -909,7 +909,7 @@ class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPoint
         // to override the information within Mixxx! Custom cover art must be
         // reloaded separately.
         SoundSourceProxy(pTrack).updateTrackFromSource(
-                SoundSourceProxy::UpdateTrackFromSourceMode::Again);
+                SoundSourceProxy::UpdateTrackFromSourceMode::Always);
     }
 };
 

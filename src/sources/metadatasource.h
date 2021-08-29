@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QDateTime>
+#include <QFileInfo>
 #include <QImage>
-
 #include <utility>
 
 #include "track/trackmetadata.h"
@@ -19,6 +19,8 @@ namespace mixxx {
 class MetadataSource {
   public:
     virtual ~MetadataSource() = default;
+
+    static QDateTime getFileSynchronizedAt(const QFileInfo& fileInfo);
 
     enum class ImportResult {
         Succeeded,

@@ -812,6 +812,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/soundio/soundmanagerutil.cpp
   src/sources/audiosource.cpp
   src/sources/audiosourcestereoproxy.cpp
+  src/sources/metadatasource.cpp
   src/sources/metadatasourcetaglib.cpp
   src/sources/readaheadframebuffer.cpp
   src/sources/soundsource.cpp
