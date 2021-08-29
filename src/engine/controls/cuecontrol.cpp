@@ -26,7 +26,6 @@ constexpr double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 constexpr double CUE_MODE_CUP = 5.0;
 
 /// This is the position of a fresh loaded tack without any seek
-constexpr double kDefaultLoadPosition = 0.0;
 constexpr int kNoHotCueNumber = 0;
 /// Used for a common tracking of the previewing Hotcue in m_currentlyPreviewingIndex
 constexpr int kMainCueIndex = NUM_HOT_CUES;
@@ -441,7 +440,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroEndEnabled->forceSet(0.0);
         setHotcueFocusIndex(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
-        m_usedSeekOnLoadPosition.setValue(kDefaultLoadPosition);
+        m_usedSeekOnLoadPosition.setValue(mixxx::audio::kStartFramePos);
     }
 
     if (!pNewTrack) {
@@ -529,7 +528,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 void CueControl::seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition) {
     DEBUG_ASSERT(seekOnLoadPosition.isValid());
     seekExact(seekOnLoadPosition);
-    m_usedSeekOnLoadPosition.setValue(seekOnLoadPosition.toEngineSamplePos());
+    m_usedSeekOnLoadPosition.setValue(seekOnLoadPosition);
 }
 
 void CueControl::cueUpdated() {
@@ -674,7 +673,7 @@ void CueControl::loadCuesFromTrack() {
 }
 
 void CueControl::trackAnalyzed() {
-    if (frameInfo().currentPosition.toEngineSamplePos() != m_usedSeekOnLoadPosition.getValue()) {
+    if (frameInfo().currentPosition != m_usedSeekOnLoadPosition.getValue()) {
         // the track is already manual cued, don't re-cue
         return;
     }
@@ -2476,7 +2475,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             Qt::DirectConnection);
 
     m_previewingType.setValue(mixxx::CueType::Invalid);
-    m_previewingPosition.setValue(Cue::kNoPosition);
+    m_previewingPosition.setValue(mixxx::audio::kInvalidFramePos);
 }
 
 HotcueControl::~HotcueControl() = default;

@@ -6,6 +6,7 @@
 #include <QSvgRenderer>
 
 #include "control/controlobject.h"
+#include "library/library_prefs.h"
 
 using namespace mixxx::track::io::key;
 
@@ -46,7 +47,7 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig)
 
     // load the user configured setting as default
     const int notation = static_cast<int>(ControlObject::get(
-            ConfigKey("[Library]", "key_notation")));
+            mixxx::library::prefs::kKeyNotationConfigKey));
     m_notation = static_cast<KeyUtils::KeyNotation>(notation);
     // Display the current or next valid notation
     switchNotation(0);

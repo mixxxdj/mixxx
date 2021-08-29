@@ -202,7 +202,7 @@ BeatMap::BeatMap(const BeatMap& other)
 }
 
 // static
-BeatsPointer BeatMap::makeBeatMap(
+BeatsPointer BeatMap::fromByteArray(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
@@ -279,36 +279,6 @@ QString BeatMap::getSubVersion() const {
 
 bool BeatMap::isValid() const {
     return m_sampleRate.isValid() && m_beats.size() >= kMinNumberOfBeats;
-}
-
-audio::FramePos BeatMap::findNextBeat(audio::FramePos position) const {
-    return findNthBeat(position, 1);
-}
-
-audio::FramePos BeatMap::findPrevBeat(audio::FramePos position) const {
-    return findNthBeat(position, -1);
-}
-
-audio::FramePos BeatMap::findClosestBeat(audio::FramePos position) const {
-    if (!isValid()) {
-        return audio::kInvalidFramePos;
-    }
-    audio::FramePos prevBeatPosition;
-    audio::FramePos nextBeatPosition;
-    findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true);
-    if (!prevBeatPosition.isValid()) {
-        // If both positions are invalid, we correctly return an invalid position.
-        return nextBeatPosition;
-    }
-
-    if (!nextBeatPosition.isValid()) {
-        return prevBeatPosition;
-    }
-
-    // Both position are valid, return the closest position.
-    return (nextBeatPosition - position > position - prevBeatPosition)
-            ? prevBeatPosition
-            : nextBeatPosition;
 }
 
 audio::FramePos BeatMap::findNthBeat(audio::FramePos position, int n) const {

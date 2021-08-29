@@ -34,18 +34,24 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
             mixxx::Duration::fromSeconds(180));
 
     const auto bpm = mixxx::Bpm(60.0);
-    const int kFrameSize = 2;
-    const double expectedBeatLength = (60.0 * sampleRate / bpm.value()) * kFrameSize;
+    const mixxx::audio::FrameDiff_t expectedBeatLengthFrames = (60.0 * sampleRate / bpm.value());
 
     const mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(
             pTrack->getSampleRate(), bpm, mixxx::audio::kStartFramePos);
 
     // On a beat.
-    double prevBeat, nextBeat, beatLength, beatPercentage;
-    EXPECT_TRUE(BpmControl::getBeatContext(pBeats, 0.0, &prevBeat, &nextBeat,
-                                           &beatLength, &beatPercentage));
-    EXPECT_DOUBLE_EQ(0.0, prevBeat);
-    EXPECT_DOUBLE_EQ(beatLength, nextBeat);
-    EXPECT_DOUBLE_EQ(expectedBeatLength, beatLength);
+    mixxx::audio::FramePos prevBeatPosition;
+    mixxx::audio::FramePos nextBeatPosition;
+    mixxx::audio::FrameDiff_t beatLengthFrames;
+    double beatPercentage;
+    EXPECT_TRUE(BpmControl::getBeatContext(pBeats,
+            mixxx::audio::kStartFramePos,
+            &prevBeatPosition,
+            &nextBeatPosition,
+            &beatLengthFrames,
+            &beatPercentage));
+    EXPECT_EQ(mixxx::audio::kStartFramePos, prevBeatPosition);
+    EXPECT_EQ(mixxx::audio::FramePos{beatLengthFrames}, nextBeatPosition);
+    EXPECT_DOUBLE_EQ(expectedBeatLengthFrames, beatLengthFrames);
     EXPECT_DOUBLE_EQ(0.0, beatPercentage);
 }

@@ -4,6 +4,7 @@
 #include <atomic>
 
 #include "engine/engine.h"
+#include "library/library_prefs.h"
 #include "moc_track.cpp"
 #include "sources/metadatasource.h"
 #include "track/beatfactory.h"
@@ -18,7 +19,6 @@ namespace {
 const mixxx::Logger kLogger("Track");
 
 constexpr bool kLogStats = false;
-const ConfigKey kConfigKeySeratoMetadataExport("[Library]", "SeratoMetadataExport");
 
 // Count the number of currently existing instances for detecting
 // memory leaks.
@@ -1457,7 +1457,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Skipped;
     }
 
-    if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
+    if (pConfig->getValue<bool>(mixxx::library::prefs::kSeratoMetadataExportConfigKey)) {
         const auto streamInfo = m_record.getStreamInfoFromSource();
         VERIFY_OR_DEBUG_ASSERT(streamInfo &&
                 streamInfo->getSignalInfo().isValid() &&

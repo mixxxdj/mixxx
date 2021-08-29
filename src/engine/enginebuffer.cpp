@@ -1247,7 +1247,7 @@ void EngineBuffer::processSeek(bool paused) {
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
 
     SeekRequests seekType = queuedSeek.seekType;
-    mixxx::audio::FramePos framePosition = queuedSeek.position;
+    mixxx::audio::FramePos position = queuedSeek.position;
 
     // Add SEEK_PHASE bit, if any
     if (m_iSeekPhaseQueued.fetchAndStoreRelease(0)) {
@@ -1259,7 +1259,7 @@ void EngineBuffer::processSeek(bool paused) {
             return;
         case SEEK_PHASE:
             // only adjust phase
-            framePosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
+            position = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
             break;
         case SEEK_STANDARD:
             if (m_pQuantize->toBool()) {
@@ -1278,38 +1278,35 @@ void EngineBuffer::processSeek(bool paused) {
             return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(framePosition.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(position.isValid()) {
         return;
     }
 
-    auto position = framePosition.toEngineSamplePos();
+    const auto trackEndPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_trackSamplesOld);
 
     // Don't allow the playposition to go past the end.
-    if (position > m_trackSamplesOld) {
-        position = m_trackSamplesOld;
+    if (position > trackEndPosition) {
+        position = trackEndPosition;
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seeking phase";
         }
-        double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
-        framePosition =
-                m_pLoopingControl->getSyncPositionInsideLoop(framePosition,
-                        mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                                syncPosition));
-        position = framePosition.toEngineSamplePosMaybeInvalid();
+        const mixxx::audio::FramePos syncPosition =
+                m_pBpmControl->getBeatMatchPosition(position, true, true);
+        position = m_pLoopingControl->getSyncPositionInsideLoop(position, syncPosition);
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "EngineBuffer::processSeek" << getGroup() << "seek info:" << m_filepos_play
                     << "->" << position;
         }
     }
-    if (position != m_filepos_play) {
+    if (position.toEngineSamplePos() != m_filepos_play) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seek to" << position;
         }
-        setNewPlaypos(position);
+        setNewPlaypos(position.toEngineSamplePos());
         m_previousBufferSeek = true;
     }
     // Reset the m_queuedSeek value after it has been processed in

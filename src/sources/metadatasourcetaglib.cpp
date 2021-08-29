@@ -1,17 +1,14 @@
 #include "sources/metadatasourcetaglib.h"
 
-#include "track/taglib/trackmetadata.h"
-
-#include "util/logger.h"
-#include "util/memory.h"
+#include <taglib/opusfile.h>
+#include <taglib/vorbisfile.h>
 
 #include <QFile>
 #include <QFileInfo>
+#include <memory>
 
-#include <taglib/vorbisfile.h>
-#if (TAGLIB_HAS_OPUSFILE)
-#include <taglib/opusfile.h>
-#endif
+#include "track/taglib/trackmetadata.h"
+#include "util/logger.h"
 
 namespace mixxx {
 
@@ -220,7 +217,6 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-#if (TAGLIB_HAS_OPUSFILE)
     case taglib::FileType::OPUS: {
         TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
@@ -234,7 +230,6 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         break;
     }
-#endif // TAGLIB_HAS_OPUSFILE
     case taglib::FileType::WV: {
         TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
@@ -255,11 +250,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             break;
         }
         if (taglib::hasID3v2Tag(file)) {
-#if (TAGLIB_HAS_WAV_ID3V2TAG)
             const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
-#else
-            const TagLib::ID3v2::Tag* pTag = file.tag();
-#endif
             DEBUG_ASSERT(pTag);
             taglib::id3v2::importTrackMetadataFromTag(pTrackMetadata, *pTag);
             taglib::id3v2::importCoverImageFromTag(pCoverImage, *pTag);
@@ -475,7 +466,6 @@ class OggTagSaver : public TagSaver {
     bool m_modifiedTags;
 };
 
-#if (TAGLIB_HAS_OPUSFILE)
 class OpusTagSaver : public TagSaver {
   public:
     OpusTagSaver(const QString& fileName, const TrackMetadata& trackMetadata)
@@ -503,7 +493,6 @@ class OpusTagSaver : public TagSaver {
     TagLib::Ogg::Opus::File m_file;
     bool m_modifiedTags;
 };
-#endif // TAGLIB_HAS_OPUSFILE
 
 class WavPackTagSaver : public TagSaver {
   public:
@@ -562,7 +551,6 @@ class WavTagSaver : public TagSaver {
         if (pFile->isOpen()) {
             TagLib::RIFF::Info::Tag* pInfoTag = nullptr;
             // Write into all available tags
-#if (TAGLIB_HAS_WAV_ID3V2TAG)
             if (pFile->hasID3v2Tag()) {
                 modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(
                         pFile->ID3v2Tag(), trackMetadata);
@@ -576,11 +564,6 @@ class WavTagSaver : public TagSaver {
                 pInfoTag = pFile->InfoTag();
                 DEBUG_ASSERT(pInfoTag);
             }
-#else
-            modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(pFile->tag(), trackMetadata);
-            pInfoTag = pFile->InfoTag();
-            DEBUG_ASSERT(pInfoTag);
-#endif
             modifiedTags |= exportTrackMetadataIntoRIFFTag(pInfoTag, trackMetadata);
         }
         return modifiedTags;
@@ -828,12 +811,10 @@ MetadataSourceTagLib::exportTrackMetadata(
         pTagSaver = std::make_unique<OggTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-#if (TAGLIB_HAS_OPUSFILE)
     case taglib::FileType::OPUS: {
         pTagSaver = std::make_unique<OpusTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
     }
-#endif // TAGLIB_HAS_OPUSFILE
     case taglib::FileType::WV: {
         pTagSaver = std::make_unique<WavPackTagSaver>(safelyWritableFile.fileName(), trackMetadata);
         break;
