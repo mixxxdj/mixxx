@@ -32,7 +32,9 @@ class TagLabel final {
     /// Ensure that empty values are always null
     static value_t filterEmptyValue(
             value_t value) {
-        return value.isEmpty() ? value_t{} : value;
+        // std::move() is required despite Return Value Optimization (RVO)
+        // to avoid clazy warnings!
+        return value.isEmpty() ? value_t{} : std::move(value);
     }
 
     explicit TagLabel(
