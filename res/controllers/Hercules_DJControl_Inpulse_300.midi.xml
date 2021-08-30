@@ -884,7 +884,7 @@
 			<control>
 				<group>[Channel1]</group>
 				<key>beatlooproll_4_activate</key>
-				<description>Loop 2 Beat (Pad 6)</description>
+				<description>Loop 4 Beat (Pad 6)</description>
 				<status>0x96</status>
 				<midino>0x15</midino>
 				<options>
@@ -904,7 +904,7 @@
 			<control>
 				<group>[Channel1]</group>
 				<key>beatlooproll_16_activate</key>
-				<description>Loop 2 Beat (Pad 8)</description>
+				<description>Loop 16 Beat (Pad 8)</description>
 				<status>0x96</status>
 				<midino>0x17</midino>
 				<options>
@@ -1461,7 +1461,7 @@
 			<control>
 				<group>[Channel2]</group>
 				<key>beatlooproll_4_activate</key>
-				<description>Loop 2 Beat (Pad 6)</description>
+				<description>Loop 4 Beat (Pad 6)</description>
 				<status>0x97</status>
 				<midino>0x15</midino>
 				<options>
@@ -1481,7 +1481,7 @@
 			<control>
 				<group>[Channel2]</group>
 				<key>beatlooproll_16_activate</key>
-				<description>Loop 2 Beat (Pad 8)</description>
+				<description>Loop 16 Beat (Pad 8)</description>
 				<status>0x97</status>
 				<midino>0x17</midino>
 				<options>
@@ -1490,7 +1490,7 @@
 			</control>
 			<!--Sampler-->
 			<control>
-				<group>[Sampler1]</group>
+				<group>[Sampler9]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 1</description>
 				<status>0x97</status>
@@ -1500,7 +1500,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler2]</group>
+				<group>[Sampler10]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 2</description>
 				<status>0x97</status>
@@ -1510,7 +1510,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler3]</group>
+				<group>[Sampler11]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 3</description>
 				<status>0x97</status>
@@ -1520,7 +1520,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler4]</group>
+				<group>[Sampler12]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 1</description>
 				<status>0x97</status>
@@ -1530,7 +1530,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler5]</group>
+				<group>[Sampler13]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 5</description>
 				<status>0x97</status>
@@ -1540,7 +1540,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler6]</group>
+				<group>[Sampler14]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 6</description>
 				<status>0x97</status>
@@ -1550,7 +1550,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler7]</group>
+				<group>[Sampler15]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 7</description>
 				<status>0x97</status>
@@ -1560,7 +1560,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler8]</group>
+				<group>[Sampler16]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 8</description>
 				<status>0x97</status>
@@ -3064,7 +3064,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler1]</group>
+				<group>[Sampler9]</group>
 				<key>play_indicator</key>
 				<description>(Pad 1 DECK B)</description>
 				<status>0x97</status>
@@ -3082,7 +3082,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler2]</group>
+				<group>[Sampler10]</group>
 				<key>play_indicator</key>
 				<description>(Pad 2 DECK B)</description>
 				<status>0x97</status>
@@ -3100,7 +3100,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler3]</group>
+				<group>[Sampler11]</group>
 				<key>play_indicator</key>
 				<description>(Pad 3 DECK B)</description>
 				<status>0x97</status>
@@ -3118,7 +3118,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler4]</group>
+				<group>[Sampler12]</group>
 				<key>play_indicator</key>
 				<description>(Pad 4 DECK B)</description>
 				<status>0x97</status>
@@ -3136,7 +3136,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler5]</group>
+				<group>[Sampler13]</group>
 				<key>play_indicator</key>
 				<description>(Pad 5 DECK B)</description>
 				<status>0x97</status>
@@ -3154,7 +3154,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler6]</group>
+				<group>[Sampler14]</group>
 				<key>play_indicator</key>
 				<description>(Pad 6 DECK B)</description>
 				<status>0x97</status>
@@ -3172,7 +3172,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler7]</group>
+				<group>[Sampler15]</group>
 				<key>play_indicator</key>
 				<description>(Pad 7 DECK B)</description>
 				<status>0x97</status>
@@ -3190,7 +3190,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler8]</group>
+				<group>[Sampler16]</group>
 				<key>play_indicator</key>
 				<description>(Pad 4 DECK B)</description>
 				<status>0x97</status>
