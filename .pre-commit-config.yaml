@@ -115,3 +115,14 @@ repos:
     stages:
     - commit
     - manual
+  - id: xmlformat
+    name: xmlformat
+    description: Reformat XML files.
+    entry: xmlformat --preserve SetVariable,Style,Text,Transform --blanks --selfclose --overwrite
+    language: python
+    additional_dependencies:
+    - git+https://github.com/Holzhaus/xmlformatter.git
+    types: [text]
+    files: ^.*\.xml$
+    stages:
+    - manual
