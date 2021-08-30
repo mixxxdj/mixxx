@@ -14,9 +14,13 @@ namespace tags {
 /// A category for tags.
 ///
 /// Facets are used for grouping/categorizing and providing context or meaning.
+///
 /// Their value serves as a symbolic, internal identifier that is not intended
-/// to be displayed literally in the UI. This is also the reasons for the
-/// restrictions on naming them.
+/// to be displayed literally in the UI. The restrictive nameing constraints
+/// ensure that they are not used for storing arbitrary text. Instead facet
+/// identifiers should be mapped to translated display strings, e.g. the
+/// facet "genre" could be mapped to "Genre" in English and the facet "venue"
+/// could be mapped to "Veranstaltungsort" in German.
 ///
 /// Value constraints:
 ///   - lowercase ASCII
