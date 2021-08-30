@@ -1520,7 +1520,7 @@ void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
 }
 
 void MixxxMainWindow::slotHelpAbout() {
-    DlgAbout* about = new DlgAbout(this);
+    DlgAbout* about = new DlgAbout;
     about->show();
 }
 
