@@ -8,6 +8,9 @@
     TO_STR(major)                    \
     "." TO_STR(minor)
 
+// Icons used for the main window and dialogs
+#define MIXXX_ICON_PATH ":/images/icons/scalable/apps/mixxx.svg"
+
 #define MIXXX_WEBSITE_URL       "https://www.mixxx.org"
 #define MIXXX_WEBSITE_SHORT_URL "www.mixxx.org"
 #define MIXXX_SUPPORT_URL       "https://www.mixxx.org/support/"
