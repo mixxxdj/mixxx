@@ -1649,9 +1649,8 @@ void WTrackMenu::slotRemoveFromDisk() {
         locations.append(location);
     }
 
-    // TODO Should each item may have a checkbox to allow removing it from the delete list
-    // or is it okay for the user to Cancel and adjust the selection in the tracks table?
     {
+        // Set up and run the confirmation dalog
         QDialog* dlgDelConfirm = new QDialog(nullptr);
         dlgDelConfirm->setModal(true); // just to be sure
         dlgDelConfirm->setWindowTitle(tr("Delete Track Files"));
@@ -1665,7 +1664,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         delWarning->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::Minimum));
 
-        // TODO (ronso0) We could also make this a table to allow showing
+        // NOTE(ronso0) We could also make this a table to allow showing
         // artist and title if file names don't suffice to identify tracks.
         QListWidget* delListWidget = new QListWidget;
         delListWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
