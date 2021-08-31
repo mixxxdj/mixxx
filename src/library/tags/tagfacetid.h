@@ -156,6 +156,59 @@ inline uint qHash(
     return qHash(facetId.value(), seed);
 }
 
+/// Some predefined facets, mostly adopting the corresponding MusicBrainz
+/// Picard naming conventions ("Internal Name") if available and suitable.
+///
+/// https://picard-docs.musicbrainz.org/en/variables/variables.html
+/// https://picard-docs.musicbrainz.org/en/appendices/tag_mapping.html
+extern const TagFacetId kTagFacetAcoustidFingerprint;
+extern const TagFacetId kTagFacetAcoustidId;
+extern const TagFacetId kTagFacetComment; // multi-valued comment(s)
+extern const TagFacetId kTagFacetDecade; // e.g. "1980s"
+extern const TagFacetId kTagFacetGenre;  // multi-valued genre(s)
+extern const TagFacetId kTagFacetGrouping; // aka content group
+extern const TagFacetId kTagFacetIsrc;     // ISRC
+extern const TagFacetId kTagFacetLanguage; // ISO 639-3
+extern const TagFacetId kTagFacetMood;     // multi-valued mood(s)
+extern const TagFacetId kTagFacetMusicBrainzAlbumArtistId;
+extern const TagFacetId kTagFacetMusicBrainzAlbumId;
+extern const TagFacetId kTagFacetMusicBrainzArtistId;
+extern const TagFacetId kTagFacetMusicBrainzRecordingId;
+extern const TagFacetId kTagFacetMusicBrainzReleaseGroupId;
+extern const TagFacetId kTagFacetMusicBrainzReleaseTrackId;
+extern const TagFacetId kTagFacetMusicBrainzTrackId;
+extern const TagFacetId kTagFacetMusicBrainzWorkId;
+
+/// The score of this facet captures a user's subjective like (or dislike)
+/// level.
+///
+/// The label is optional and used for discrimination. It may either refer
+/// to an organization or contains the personal e-mail address of the
+/// owner if known.
+///
+/// The normalized score is usually mapped to a star rating, typically
+/// ranging from 0 to 5 stars.
+extern const TagFacetId kTagFacetRating;
+
+/// Predefined musical or audio feature scores as of Spotify/EchoNest.
+///
+/// A label is optional and could be used for identifying the source of
+/// the assigned score. If the source it unspecified or unknown it should
+/// be empty (= absent).
+///
+/// The combination of kTagFacetArousal and kTagFacetValence could
+/// be used for classifying emotion (= mood) according to Thayer's
+/// arousel-valence emotion plane.
+extern const TagFacetId kTagFacetArousal; // for emotion classification
+extern const TagFacetId kTagFacetValence; // for emotion classification
+extern const TagFacetId kTagFacetAcousticness;
+extern const TagFacetId kTagFacetDanceability;
+extern const TagFacetId kTagFacetEnergy;
+extern const TagFacetId kTagFacetInstrumentalness;
+extern const TagFacetId kTagFacetLiveness;
+extern const TagFacetId kTagFacetPopularity;
+extern const TagFacetId kTagFacetSpeechiness;
+
 } // namespace tags
 
 } // namespace library
