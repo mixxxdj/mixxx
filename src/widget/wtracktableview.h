@@ -57,6 +57,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
+    void slotDeleteTracksFromDisk();
 
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;

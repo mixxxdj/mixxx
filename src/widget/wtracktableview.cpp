@@ -447,6 +447,15 @@ void WTrackTableView::slotPurge() {
     }
 }
 
+void WTrackTableView::slotDeleteTracksFromDisk() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+
+    if (indices.size() > 0) {
+        m_pTrackMenu->loadTrackModelIndices(indices);
+        m_pTrackMenu->slotRemoveFromDisk();
+    }
+}
+
 void WTrackTableView::slotUnhide() {
     QModelIndexList indices = selectionModel()->selectedRows();
 
