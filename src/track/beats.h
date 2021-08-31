@@ -13,6 +13,10 @@
 #include "util/memory.h"
 #include "util/types.h"
 
+#define BEAT_GRID_1_VERSION "BeatGrid-1.0"
+#define BEAT_GRID_2_VERSION "BeatGrid-2.0"
+#define BEAT_MAP_VERSION "BeatMap-1.0"
+
 namespace mixxx {
 
 class Beats;
@@ -137,7 +141,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// negative and does not need to be an integer.
     audio::FramePos findNBeatsFromPosition(audio::FramePos position, double beats) const;
 
-    /// Reutns an iterator that yields frame position of every beat occurring
+    /// Returns an iterator that yields frame position of every beat occurring
     /// between `startPosition` and `endPosition`. `BeatIterator` must be iterated
     /// while holding a strong references to the `Beats` object to ensure that
     /// the `Beats` object is not deleted. Caller takes ownership of the returned
