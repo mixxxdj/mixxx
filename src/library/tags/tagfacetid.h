@@ -11,16 +11,15 @@ namespace library {
 
 namespace tags {
 
-/// A category for tags.
+/// An identifier for referencing tag categories.
 ///
 /// Facets are used for grouping/categorizing and providing context or meaning.
 ///
-/// Their value serves as a symbolic, internal identifier that is not intended
-/// to be displayed literally in the UI. The restrictive nameing constraints
-/// ensure that they are not used for storing arbitrary text. Instead facet
-/// identifiers should be mapped to translated display strings, e.g. the
-/// facet "genre" could be mapped to "Genre" in English and the facet "venue"
-/// could be mapped to "Veranstaltungsort" in German.
+/// Serves as a symbolic, internal identifier that is not intended to be displayed
+/// literally in the UI. The restrictive nameing constraints ensure that they are
+/// not used for storing arbitrary text. Instead facet identifiers should be mapped
+/// to translated display strings, e.g. the facet "genre" could be mapped to "Genre"
+/// in English and the facet "venue" could be mapped to "Veranstaltungsort" in German.
 ///
 /// Value constraints:
 ///   - charset/alphabet: +-./0123456789@[]_abcdefghijklmnopqrstuvwxyz
@@ -33,7 +32,7 @@ namespace tags {
 ///
 /// References:
 ///   - https://en.wikipedia.org/wiki/Faceted_classification
-class TagFacet final {
+class TagFacetId final {
   public:
     typedef QString value_t;
 
@@ -59,12 +58,12 @@ class TagFacet final {
     }
 
     /// Default constructor.
-    TagFacet() = default;
+    TagFacetId() = default;
 
     /// Create a new instance.
     ///
     /// This constructor must not be used for static constants!
-    explicit TagFacet(
+    explicit TagFacetId(
             value_t value)
             : m_value(std::move(value)) {
         DEBUG_ASSERT(isValid());
@@ -78,21 +77,21 @@ class TagFacet final {
     enum struct StaticCtor {};
 
     /// Constructor for creating non-validated, static constants.
-    TagFacet(
+    TagFacetId(
             StaticCtor,
             value_t value)
             : m_value(std::move(value)) {
     }
 
-    static TagFacet staticConst(value_t value) {
-        return TagFacet(StaticCtor{}, std::move(value));
+    static TagFacetId staticConst(value_t value) {
+        return TagFacetId(StaticCtor{}, std::move(value));
     }
 
-    TagFacet(const TagFacet&) = default;
-    TagFacet(TagFacet&&) = default;
+    TagFacetId(const TagFacetId&) = default;
+    TagFacetId(TagFacetId&&) = default;
 
-    TagFacet& operator=(const TagFacet&) = default;
-    TagFacet& operator=(TagFacet&&) = default;
+    TagFacetId& operator=(const TagFacetId&) = default;
+    TagFacetId& operator=(TagFacetId&&) = default;
 
     bool isValid() const {
         return isValidValue(m_value);
@@ -116,45 +115,45 @@ class TagFacet final {
 };
 
 inline bool operator==(
-        const TagFacet& lhs,
-        const TagFacet& rhs) {
+        const TagFacetId& lhs,
+        const TagFacetId& rhs) {
     return lhs.value() == rhs.value();
 }
 
 inline bool operator!=(
-        const TagFacet& lhs,
-        const TagFacet& rhs) {
+        const TagFacetId& lhs,
+        const TagFacetId& rhs) {
     return !(lhs == rhs);
 }
 
 inline bool operator<(
-        const TagFacet& lhs,
-        const TagFacet& rhs) {
+        const TagFacetId& lhs,
+        const TagFacetId& rhs) {
     return lhs.value() < rhs.value();
 }
 
 inline bool operator>(
-        const TagFacet& lhs,
-        const TagFacet& rhs) {
+        const TagFacetId& lhs,
+        const TagFacetId& rhs) {
     return !(lhs < rhs);
 }
 
 inline bool operator<=(
-        const TagFacet& lhs,
-        const TagFacet& rhs) {
+        const TagFacetId& lhs,
+        const TagFacetId& rhs) {
     return !(lhs > rhs);
 }
 
 inline bool operator>=(
-        const TagFacet& lhs,
-        const TagFacet& rhs) {
+        const TagFacetId& lhs,
+        const TagFacetId& rhs) {
     return !(lhs < rhs);
 }
 
 inline uint qHash(
-        const TagFacet& facet,
+        const TagFacetId& facetId,
         uint seed = 0) {
-    return qHash(facet.value(), seed);
+    return qHash(facetId.value(), seed);
 }
 
 } // namespace tags
@@ -163,4 +162,4 @@ inline uint qHash(
 
 } // namespace mixxx
 
-Q_DECLARE_METATYPE(mixxx::library::tags::TagFacet)
+Q_DECLARE_METATYPE(mixxx::library::tags::TagFacetId)

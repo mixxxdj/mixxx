@@ -8,7 +8,7 @@
 #include "audio/types.h"
 #include "control/controlproxy.h"
 #include "library/tags/tag.h"
-#include "library/tags/tagfacet.h"
+#include "library/tags/tagfacetid.h"
 #include "library/trackset/crate/crateid.h"
 #include "moc_mixxxapplication.cpp"
 #include "soundio/soundmanagerutil.h"
@@ -97,7 +97,7 @@ void MixxxApplication::registerMetaTypes() {
     QMetaType::registerComparators<SoundDeviceId>();
 
     // Library: Tags
-    qRegisterMetaType<mixxx::library::tags::TagFacet>("mixxx::library::tags::TagFacet");
+    qRegisterMetaType<mixxx::library::tags::TagFacetId>("mixxx::library::tags::TagFacetId");
     qRegisterMetaType<mixxx::library::tags::TagLabel>("mixxx::library::tags::TagLabel");
     qRegisterMetaType<mixxx::library::tags::TagScore>("mixxx::library::tags::TagScore");
     qRegisterMetaType<mixxx::library::tags::Tag>("mixxx::library::tags::Tag");

@@ -5,7 +5,7 @@
 #include <QMap>
 
 #include "library/tags/tag.h"
-#include "library/tags/tagfacet.h"
+#include "library/tags/tagfacetid.h"
 
 namespace mixxx {
 
@@ -14,19 +14,21 @@ namespace library {
 namespace tags {
 
 typedef QMap<TagLabel, TagScore> TagMap;
-typedef QMap<TagFacet, TagMap> FacetTagMap;
+typedef QMap<TagFacetId, TagMap> FacetTagMap;
 
 /// Custom tags
 ///
-/// Each custom tag is represented by a 3-tuple (triple): a facet, a label, and a score:
+/// Each custom tag is represented by a 3-tuple (triple) of a *facet (`TagFacetId`),
+/// a *label* (`TagLabel`), and a *score* (`TagScore`):
 ///
-///   - The *facet* is a lowercase, non-empty ASCII string without whitespace
-///   - The *label* is non-empty free text
+///   - The *facet* is represented by a *facet identifier* string
+///   - The *label* is non-empty, free text without leading/trailing whitespace
 ///   - The *score* is a floating-point value in the interval [0.0, 1.0]
 ///
-/// Both *facet* and *label* are optional (= nullable), but at least one of them must be present.
-/// The *score* is mandatory and is supposed to be interpreted as a *weight*, *degree of cohesion*,
-/// or *normalized level* with a default value of 1.0.
+/// Both *facet* and *label* are optional (= nullable), but at least one of them
+/// must be present. The *score* is mandatory and is supposed to be interpreted
+/// as a *weight*, *degree of cohesion*, or *normalized level* with a default value
+/// of 1.0.
 ///
 /// The following combinations are allowed, missing values are indicated by `-`:
 ///
@@ -63,46 +65,46 @@ class CustomTags final {
     bool isEmpty() const;
 
     bool containsFacet(
-            const TagFacet& facet) const {
-        return getFacetedTags().contains(facet);
+            const TagFacetId& facetId) const {
+        return getFacetedTags().contains(facetId);
     }
 
     /// Add an (empty) entry for the given facet if it does not exist yet.
     ///
     /// Existing entries are not affected.
     void addOrIgnoreFacet(
-            const TagFacet& facet) {
-        refFacetedTags()[facet];
-        DEBUG_ASSERT(containsFacet(facet));
+            const TagFacetId& facetId) {
+        refFacetedTags()[facetId];
+        DEBUG_ASSERT(containsFacet(facetId));
     }
 
     bool containsTag(
             const TagLabel& label,
-            const TagFacet& facet = TagFacet()) const;
+            const TagFacetId& facetId = TagFacetId()) const;
     int countTags(
             const TagLabel& label,
-            const TagFacet& facet = TagFacet()) const;
+            const TagFacetId& facetId = TagFacetId()) const;
 
     int countTags() const {
-        return countFacetedTags(TagFacet());
+        return countFacetedTags(TagFacetId());
     }
     TagMap& refTags() {
-        return refFacetedTags()[TagFacet()];
+        return refFacetedTags()[TagFacetId()];
     }
 
     int countFacetedTags(
-            const TagFacet& facet) const;
+            const TagFacetId& facetId) const;
     TagMap& refFacetedTags(
-            const TagFacet& facet) {
-        return refFacetedTags()[facet];
+            const TagFacetId& facetId) {
+        return refFacetedTags()[facetId];
     }
 
     bool addOrReplaceTag(
             const Tag& tag,
-            const TagFacet& facet = TagFacet());
+            const TagFacetId& facetId = TagFacetId());
     bool removeTag(
             const TagLabel& label,
-            const TagFacet& facet = TagFacet());
+            const TagFacetId& facetId = TagFacetId());
 
     bool addOrReplaceAllTags(
             const CustomTags& tags);
@@ -113,28 +115,28 @@ class CustomTags final {
     /// Replace all existing tags of this facet with a single
     /// faceted tag or insert a new faceted tag.
     FacetTagMap::iterator replaceAllFacetedTags(
-            const TagFacet& facet,
+            const TagFacetId& facetId,
             const Tag& tag);
 
     int removeAllFacetedTags(
-            const TagFacet& facet);
+            const TagFacetId& facetId);
 
     /// Get all tags of a given facet sorted by score in descending order
     TagVector getFacetedTagsOrdered(
-            const TagFacet& facet) const;
+            const TagFacetId& facetId) const;
 
     /// Get the label of a single faceted tag, i.e. that
     /// occurs at most once and has no custom score. If the
     /// facet is unknown/absent an empty label is returned.
     TagLabel getFacetedTagLabel(
-            const TagFacet& facet) const;
+            const TagFacetId& facetId) const;
 
     /// Get the score of a tag if present.
     ///
     /// Returns `std::nullopt` if the corresponding (facet, label)
     /// combination that serves as the key does not exist.
     std::optional<TagScore> getTagScore(
-            const TagFacet& facet,
+            const TagFacetId& facetId,
             const TagLabel& label = TagLabel()) const;
 
     enum class AggregateScoring {
@@ -146,14 +148,14 @@ class CustomTags final {
     // a single plain tag. The strings of the labels are joined
     // with a separator in between and the scores are aggregated.
     Tag mergeFacetedTags(
-            const TagFacet& facet,
+            const TagFacetId& facetId,
             AggregateScoring aggregateScoring,
             const TagLabel::value_t& joinLabelSeparator = TagLabel::value_t()) const;
     TagLabel joinFacetedTagsLabel(
-            const TagFacet& facet,
+            const TagFacetId& facetId,
             const TagLabel::value_t& joinLabelSeparator = TagLabel::value_t()) const {
         return mergeFacetedTags(
-                facet,
+                facetId,
                 AggregateScoring::Maximum,
                 joinLabelSeparator)
                 .getLabel();

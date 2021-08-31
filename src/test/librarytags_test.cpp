@@ -4,7 +4,7 @@
 #include <QJsonObject>
 
 #include "library/tags/tag.h"
-#include "library/tags/tagfacet.h"
+#include "library/tags/tagfacetid.h"
 
 namespace mixxx {
 
@@ -12,85 +12,86 @@ namespace library {
 
 namespace tags {
 
-class TagFacetTest : public testing::Test {
+class TagFacetIdTest : public testing::Test {
 };
 
-TEST_F(TagFacetTest, isEmpty) {
-    ASSERT_TRUE(TagFacet().isEmpty());
+TEST_F(TagFacetIdTest, isEmpty) {
+    ASSERT_TRUE(TagFacetId().isEmpty());
     // Null string
     EXPECT_EQ(
-            TagFacet(),
-            TagFacet(TagFacet::value_t()));
+            TagFacetId(),
+            TagFacetId(TagFacetId::value_t()));
     // Empty string
     EXPECT_EQ(
-            TagFacet(),
-            TagFacet(TagFacet::filterEmptyValue("")));
+            TagFacetId(),
+            TagFacetId(TagFacetId::filterEmptyValue("")));
     // Non-empty string
-    EXPECT_FALSE(TagFacet("x").isEmpty());
+    EXPECT_FALSE(TagFacetId("x").isEmpty());
 }
 
-TEST_F(TagFacetTest, filterEmptyValue) {
+TEST_F(TagFacetIdTest, filterEmptyValue) {
     EXPECT_EQ(
-            TagFacet::value_t(),
-            TagFacet::filterEmptyValue(TagFacet::value_t()));
+            TagFacetId::value_t(),
+            TagFacetId::filterEmptyValue(TagFacetId::value_t()));
     EXPECT_EQ(
-            TagFacet::value_t(),
-            TagFacet::filterEmptyValue(""));
+            TagFacetId::value_t(),
+            TagFacetId::filterEmptyValue(""));
     EXPECT_EQ(
-            TagFacet::value_t("x"),
-            TagFacet::filterEmptyValue("x"));
+            TagFacetId::value_t("x"),
+            TagFacetId::filterEmptyValue("x"));
 }
 
-TEST_F(TagFacetTest, convertIntoValidValue) {
+TEST_F(TagFacetIdTest, convertIntoValidValue) {
     // Clamp empty string
     EXPECT_EQ(
-            TagFacet::value_t{},
-            TagFacet::convertIntoValidValue(""));
+            TagFacetId::value_t{},
+            TagFacetId::convertIntoValidValue(""));
     // Clamped whitespace string
     EXPECT_EQ(
-            TagFacet::value_t{},
-            TagFacet::convertIntoValidValue("  \t\n   "));
+            TagFacetId::value_t{},
+            TagFacetId::convertIntoValidValue("  \t\n   "));
     // Lowercase
     EXPECT_EQ(
-            TagFacet::value_t{"x"},
-            TagFacet::convertIntoValidValue("  \tX\n   "));
+            TagFacetId::value_t{"x"},
+            TagFacetId::convertIntoValidValue("  \tX\n   "));
     // Whitespace replacement
     EXPECT_EQ(
-            TagFacet::value_t{"xy_[+]"},
-            TagFacet::convertIntoValidValue("X y _\n[+] "));
+            TagFacetId::value_t{"xy_[+]"},
+            TagFacetId::convertIntoValidValue("X y _\n[+] "));
     // Valid characters without whitespace
     EXPECT_EQ(
-            TagFacet::value_t{TagFacet::kAlphabet},
-            TagFacet::convertIntoValidValue(
-                    TagFacet::value_t{TagFacet::kAlphabet}));
+            TagFacetId::value_t{TagFacetId::kAlphabet},
+            TagFacetId::convertIntoValidValue(
+                    TagFacetId::value_t{TagFacetId::kAlphabet}));
     EXPECT_EQ(
-            TagFacet::value_t{"+-./0123456789"
-                              "@abcdefghijklmnopqrstuvwxyz[]_"
-                              "abcdefghijklmnopqrstuvwxyz"},
-            TagFacet::convertIntoValidValue(
+            TagFacetId::value_t{"+-./0123456789"
+                                "@abcdefghijklmnopqrstuvwxyz[]_"
+                                "abcdefghijklmnopqrstuvwxyz"},
+            TagFacetId::convertIntoValidValue(
                     "\t!\"#$%&'()*+,-./0123456789:;<=>?"
                     " @ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_"
                     " `abcdefghijklmnopqrstuvwxyz{|}~\n"));
 }
 
-TEST_F(TagFacetTest, isValidValue) {
-    EXPECT_TRUE(TagFacet::isValidValue(QString()));
-    EXPECT_TRUE(TagFacet::isValidValue(QStringLiteral("facet@mixxx.org/simple-test[1]")));
-    EXPECT_FALSE(TagFacet::isValidValue(QStringLiteral("Uppercase")));
-    EXPECT_FALSE(TagFacet::isValidValue(QStringLiteral("lower-case_with_digit_1_and_whitespace ")));
-    EXPECT_FALSE(TagFacet::isValidValue(QLatin1String("")));
-    EXPECT_FALSE(TagFacet::isValidValue(QStringLiteral(" ")));
+TEST_F(TagFacetIdTest, isValidValue) {
+    EXPECT_TRUE(TagFacetId::isValidValue(QString()));
+    EXPECT_TRUE(TagFacetId::isValidValue(QStringLiteral("facet@mixxx.org/simple-test[1]")));
+    EXPECT_FALSE(TagFacetId::isValidValue(QStringLiteral("Uppercase")));
+    EXPECT_FALSE(TagFacetId::isValidValue(
+            QStringLiteral("lower-case_with_digit_1_and_whitespace ")));
+    EXPECT_FALSE(TagFacetId::isValidValue(QLatin1String("")));
+    EXPECT_FALSE(TagFacetId::isValidValue(QStringLiteral(" ")));
 }
 
-TEST_F(TagFacetTest, convertedEmptyValueIsValid) {
+TEST_F(TagFacetIdTest, convertedEmptyValueIsValid) {
     EXPECT_TRUE(
-            TagFacet::isValidValue(TagFacet::convertIntoValidValue(TagFacet::value_t{})));
+            TagFacetId::isValidValue(TagFacetId::convertIntoValidValue(TagFacetId::value_t{})));
     EXPECT_TRUE(
-            TagFacet::isValidValue(TagFacet::convertIntoValidValue("")));
+            TagFacetId::isValidValue(TagFacetId::convertIntoValidValue("")));
     EXPECT_TRUE(
-            TagFacet::isValidValue(TagFacet::convertIntoValidValue(" ")));
+            TagFacetId::isValidValue(TagFacetId::convertIntoValidValue(" ")));
     EXPECT_TRUE(
-            TagFacet::isValidValue(TagFacet::convertIntoValidValue(" \t \n \r ")));
+            TagFacetId::isValidValue(TagFacetId::convertIntoValidValue(" \t \n \r ")));
 }
 
 class TagLabelTest : public testing::Test {
@@ -155,7 +156,7 @@ TEST_F(TagLabelTest, convertedEmptyValueIsValid) {
     EXPECT_TRUE(
             TagLabel::isValidValue(TagLabel::convertIntoValidValue(" ")));
     EXPECT_TRUE(
-            TagLabel::isValidValue(TagFacet::convertIntoValidValue(" \t \n \r ")));
+            TagLabel::isValidValue(TagFacetId::convertIntoValidValue(" \t \n \r ")));
 }
 
 class TagTest : public testing::Test {
