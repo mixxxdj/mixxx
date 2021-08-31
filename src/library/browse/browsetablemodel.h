@@ -78,10 +78,19 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) const override;
     int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
 
+    bool updateTrackGenre(
+            Track* pTrack,
+            const QString& genre) const override;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMood(
+            Track* pTrack,
+            const QString& mood) const override;
+#endif // __EXTRA_METADATA__
+
   public slots:
     void slotClear(BrowseTableModel*);
     void slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*);
-    void trackLoaded(const QString& group, TrackPointer pTrack);
+    void trackChanged(const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private:
     void addSearchColumn(int index);

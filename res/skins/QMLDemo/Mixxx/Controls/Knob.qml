@@ -6,6 +6,12 @@ import QtQuick.Shapes 1.12
 Item {
     id: root
 
+    enum ArcStart {
+        Minimum,
+        Center,
+        Maximum
+    }
+
     property real value: min
     property alias background: background.data
     property alias foreground: foreground.data
@@ -14,15 +20,31 @@ Item {
     property real wheelStepSize: (root.max - root.min) / 10
     property real angle: 130
     property bool arc: false
+    property int arcStart: Knob.Center
     property real arcRadius: width / 2
+    readonly property real arcStartValue: {
+        switch (arcStart) {
+        case Knob.ArcStart.Minimum:
+            return min;
+        case Knob.ArcStart.Maximum:
+            return max;
+        default:
+            return valueCenter;
+        }
+    }
     property real arcOffsetX: 0
     property real arcOffsetY: 0
     property alias arcColor: arcPath.strokeColor
     property alias arcWidth: arcPath.strokeWidth
     property alias arcStyle: arcPath.strokeStyle
     property alias arcStylePattern: arcPath.dashPattern
+    readonly property real valueCenter: (max - min) / 2
 
     signal turned(real value)
+
+    function angleFrom(targetValue) {
+        return targetValue * 2 * root.angle;
+    }
 
     Item {
         id: background
@@ -34,7 +56,7 @@ Item {
         id: foreground
 
         anchors.fill: parent
-        rotation: (root.value - (root.max - root.min) / 2) * 2 * root.angle
+        rotation: root.angleFrom(root.value - root.valueCenter)
     }
 
     Shape {
@@ -50,8 +72,8 @@ Item {
             fillColor: "transparent"
 
             PathAngleArc {
-                startAngle: -90
-                sweepAngle: (root.value - (root.max - root.min) / 2) * 2 * root.angle
+                startAngle: root.angleFrom(root.arcStartValue - root.valueCenter) - 90
+                sweepAngle: root.angleFrom(root.value - root.arcStartValue)
                 radiusX: root.arcRadius
                 radiusY: root.arcRadius
                 centerX: root.width / 2 + root.arcOffsetX

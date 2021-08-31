@@ -557,4 +557,21 @@ reapplying those migrations.
           GROUP BY PlaylistTracks.track_id);
     </sql>
   </revision>
+  <revision version="37" min_compatible="3">
+    <description>
+      Add source_synchronized_ms column to library table
+    </description>
+    <!-- source_synchronized_ms: in milliseconds since 1970-01-01T00:00:00.000 UTC -->
+    <sql>
+      ALTER TABLE library ADD COLUMN source_synchronized_ms INTEGER DEFAULT NULL;
+    </sql>
+  </revision>
+  <revision version="38" min_compatible="3">
+    <description>
+      Fix 0/NULL issue after upgrade to schema version 37.
+    </description>
+    <sql>
+      UPDATE library SET source_synchronized_ms=NULL WHERE source_synchronized_ms=0;
+    </sql>
+  </revision>
 </schema>

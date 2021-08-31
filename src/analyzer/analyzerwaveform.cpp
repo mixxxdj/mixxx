@@ -34,7 +34,9 @@ AnalyzerWaveform::~AnalyzerWaveform() {
     destroyFilters();
 }
 
-bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerWaveform::initialize(TrackPointer tio,
+        mixxx::audio::SampleRate sampleRate,
+        int totalSamples) {
     if (totalSamples == 0) {
         qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
         return false;
@@ -145,7 +147,7 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-void AnalyzerWaveform::createFilters(int sampleRate) {
+void AnalyzerWaveform::createFilters(mixxx::audio::SampleRate sampleRate) {
     // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
     // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
     // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);

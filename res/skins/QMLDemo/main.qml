@@ -8,6 +8,8 @@ Rectangle {
     id: root
 
     property alias show4decks: show4DecksButton.checked
+    property alias showEffects: showEffectsButton.checked
+    property alias showSamplers: showSamplersButton.checked
     property alias maximizeLibrary: maximizeLibraryButton.checked
 
     width: 1920
@@ -17,7 +19,6 @@ Rectangle {
 
     Column {
         anchors.fill: parent
-        spacing: 10
 
         Rectangle {
             id: toolbar
@@ -47,6 +48,22 @@ Rectangle {
                     checkable: true
                 }
 
+                Skin.Button {
+                    id: showEffectsButton
+
+                    text: "Effects"
+                    activeColor: Theme.white
+                    checkable: true
+                }
+
+                Skin.Button {
+                    id: showSamplersButton
+
+                    text: "Sampler"
+                    activeColor: Theme.white
+                    checkable: true
+                }
+
             }
 
         }
@@ -56,8 +73,7 @@ Rectangle {
 
             leftDeckGroup: "[Channel1]"
             rightDeckGroup: "[Channel2]"
-            width: parent.width - 10
-            x: 5
+            width: parent.width
             minimized: root.maximizeLibrary
         }
 
@@ -65,8 +81,7 @@ Rectangle {
             id: crossfader
 
             crossfaderWidth: decks12.mixer.width
-            width: parent.width - 10
-            x: 5
+            width: parent.width
             visible: !root.maximizeLibrary
 
             FadeBehavior on visible {
@@ -80,13 +95,36 @@ Rectangle {
 
             leftDeckGroup: "[Channel3]"
             rightDeckGroup: "[Channel4]"
-            width: parent.width - 10
-            x: 5
+            width: parent.width
             minimized: root.maximizeLibrary
             visible: root.show4decks
 
             FadeBehavior on visible {
                 fadeTarget: decks34
+            }
+
+        }
+
+        SamplerRow {
+            id: samplers
+
+            width: parent.width
+            visible: root.showSamplers
+
+            FadeBehavior on visible {
+                fadeTarget: samplers
+            }
+
+        }
+
+        EffectRow {
+            id: effects
+
+            width: parent.width
+            visible: root.showEffects
+
+            FadeBehavior on visible {
+                fadeTarget: effects
             }
 
         }

@@ -109,9 +109,9 @@ BaseTrackTableModel::BaseTrackTableModel(
             this,
             &BaseTrackTableModel::slotRefreshAllRows);
     connect(&PlayerInfo::instance(),
-            &PlayerInfo::trackLoaded,
+            &PlayerInfo::trackChanged,
             this,
-            &BaseTrackTableModel::slotTrackLoaded);
+            &BaseTrackTableModel::slotTrackChanged);
 }
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
@@ -664,11 +664,11 @@ QVariant BaseTrackTableModel::roleValue(
                     bpm = mixxx::Bpm(bpmValue);
                 }
             }
-            if (bpm.hasValue()) {
+            if (bpm.isValid()) {
                 if (role == Qt::ToolTipRole || role == kDataExportRole) {
-                    return QString::number(bpm.getValue(), 'f', 4);
+                    return QString::number(bpm.value(), 'f', 4);
                 } else {
-                    return QString::number(bpm.getValue(), 'f', 1);
+                    return QString::number(bpm.value(), 'f', 1);
                 }
             } else {
                 return QChar('-');
@@ -782,7 +782,10 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
-            return ok ? bpmValue : mixxx::Bpm().getValue();
+            if (!ok) {
+                return mixxx::Bpm::kValueUndefined;
+            }
+            return mixxx::Bpm{bpmValue}.valueOr(mixxx::Bpm::kValueUndefined);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return index.sibling(
@@ -941,9 +944,11 @@ QMimeData* BaseTrackTableModel::mimeData(
     }
 }
 
-void BaseTrackTableModel::slotTrackLoaded(
+void BaseTrackTableModel::slotTrackChanged(
         const QString& group,
-        TrackPointer pTrack) {
+        TrackPointer pNewTrack,
+        TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
@@ -957,7 +962,7 @@ void BaseTrackTableModel::slotTrackLoaded(
                 emit dataChanged(topLeft, bottomRight);
             }
         }
-        m_previewDeckTrackId = doGetTrackId(pTrack);
+        m_previewDeckTrackId = doGetTrackId(pNewTrack);
     }
 }
 
@@ -1039,3 +1044,17 @@ TrackId BaseTrackTableModel::doGetTrackId(
         const TrackPointer& pTrack) const {
     return pTrack ? pTrack->getId() : TrackId();
 }
+
+bool BaseTrackTableModel::updateTrackGenre(
+        Track* pTrack,
+        const QString& genre) const {
+    return m_pTrackCollectionManager->updateTrackGenre(pTrack, genre);
+}
+
+#if defined(__EXTRA_METADATA__)
+bool BaseTrackTableModel::updateTrackMood(
+        Track* pTrack,
+        const QString& mood) const {
+    return m_pTrackCollectionManager->updateTrackMood(pTrack, mood);
+}
+#endif // __EXTRA_METADATA__

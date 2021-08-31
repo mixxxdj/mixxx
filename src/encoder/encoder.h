@@ -1,11 +1,12 @@
 #pragma once
 
+#include "audio/types.h"
+#include "encoder/encodercallback.h"
+#include "encoder/encoderrecordingsettings.h"
+#include "encoder/encodersettings.h"
+#include "preferences/usersettings.h"
 #include "util/memory.h"
 #include "util/types.h"
-#include "preferences/usersettings.h"
-#include "encoder/encodersettings.h"
-#include "encoder/encoderrecordingsettings.h"
-#include "encoder/encodercallback.h"
 
 class Encoder {
   public:
@@ -29,7 +30,7 @@ class Encoder {
     Encoder() {}
     virtual ~Encoder() = default;
 
-    virtual int initEncoder(int samplerate, QString* pUserErrorMessage) = 0;
+    virtual int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) = 0;
     // encodes the provided buffer of audio.
     virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
     // Adds metadata to the encoded audio, i.e., the ID3 tag. Currently only used

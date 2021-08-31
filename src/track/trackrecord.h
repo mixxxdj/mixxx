@@ -1,17 +1,17 @@
 #pragma once
 
+#include "library/coverart.h"
 #include "proto/keys.pb.h"
-
-#include "track/trackid.h"
 #include "track/cue.h"
 #include "track/keys.h"
 #include "track/keyutils.h"
-#include "track/trackmetadata.h"
 #include "track/playcounter.h"
-
-#include "library/coverart.h"
+#include "track/trackid.h"
+#include "track/trackmetadata.h"
 #include "util/color/rgbcolor.h"
 
+// Forward declaration for accessing m_headerParsed
+class TrackDAO;
 
 namespace mixxx {
 
@@ -39,19 +39,13 @@ class TrackRecord final {
     // has been inserted or is loaded from the library DB.
     MIXXX_DECL_PROPERTY(TrackId, id, Id)
 
-    // TODO(uklotz): Change data type from bool to QDateTime
-    //
     // Both import and export of metadata can be tracked by a single time
     // stamp, the direction doesn't matter. The value should be set to the
     // modification time stamp provided by the metadata source. This would
     // enable us to update the metadata of all tracks in the database after
     // the external metadata has been modified, i.e. if the corresponding
     // files have been modified.
-    //
-    // Requires a database update! We could reuse the 'header_parsed' column.
-    // During migration the boolean value will be substituted with either a
-    // default time stamp 1970-01-01 00:00:00.000 or NULL respectively.
-    MIXXX_DECL_PROPERTY(bool /*QDateTime*/, metadataSynchronized, MetadataSynchronized)
+    MIXXX_DECL_PROPERTY(QDateTime, sourceSynchronizedAt, SourceSynchronizedAt)
 
     MIXXX_DECL_PROPERTY(CoverInfoRelative, coverInfo, CoverInfo)
 
@@ -60,7 +54,7 @@ class TrackRecord final {
     MIXXX_DECL_PROPERTY(QString, url, Url)
     MIXXX_DECL_PROPERTY(PlayCounter, playCounter, PlayCounter)
     MIXXX_DECL_PROPERTY(RgbColor::optional_t, color, Color)
-    MIXXX_DECL_PROPERTY(CuePosition, cuePoint, CuePoint)
+    MIXXX_DECL_PROPERTY(mixxx::audio::FramePos, mainCuePosition, MainCuePosition)
     MIXXX_DECL_PROPERTY(int, rating, Rating)
     MIXXX_DECL_PROPERTY(bool, bpmLocked, BpmLocked)
 
@@ -117,9 +111,11 @@ class TrackRecord final {
             const QString& keyText,
             track::io::key::Source keySource);
 
+    bool isSourceSynchronized() const;
     bool replaceMetadataFromSource(
             TrackMetadata&& importedMetadata,
-            const QDateTime& metadataSynchronized);
+            const QDateTime& sourceSynchronizedAt);
+
     // Merge the current metadata with new and additional properties
     // imported from the file. Since these properties are not (yet)
     // stored in the library or have been added later all existing
@@ -148,13 +144,19 @@ class TrackRecord final {
         return m_streamInfoFromSource;
     }
 
-private:
+  private:
+    // TODO: Remove this dependency
+    friend class ::Track;
+
+    bool updateSourceSynchronizedAt(
+            const QDateTime& sourceSynchronizedAt);
+
     Keys m_keys;
 
     // TODO: Use TrackMetadata as single source of truth and do not
     // store this information redundantly.
     //
-    // PROPOSAL (as implememted by https://gitlab.com/uklotzde/aoide-rs):
+    // PROPOSAL (as implemented by https://gitlab.com/uklotzde/aoide-rs):
     // This redesign requires to track the status of some or all track
     // metadata (which includes the stream info properties) by a set of
     // bitflags:
@@ -172,6 +174,9 @@ private:
     //  - STALE =      1 << 2
     //    Stale metadata should be re-imported depending on the other flags.
     std::optional<audio::StreamInfo> m_streamInfoFromSource;
+
+    friend class ::TrackDAO;
+    bool m_headerParsed; // deprecated, replaced by sourceSynchronizedAt
 
     /// Equality comparison
     ///

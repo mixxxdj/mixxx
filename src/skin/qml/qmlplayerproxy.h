@@ -18,7 +18,7 @@ class QmlPlayerProxy : public QObject {
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
     Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist
                     NOTIFY albumArtistChanged)
-    Q_PROPERTY(QString genre READ getGenre WRITE setGenre NOTIFY genreChanged)
+    Q_PROPERTY(QString genre READ getGenre STORED false NOTIFY genreChanged)
     Q_PROPERTY(QString composer READ getComposer WRITE setComposer NOTIFY composerChanged)
     Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping NOTIFY groupingChanged)
     Q_PROPERTY(QString year READ getYear WRITE setYear NOTIFY yearChanged)
@@ -29,6 +29,7 @@ class QmlPlayerProxy : public QObject {
     Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyTextChanged)
     Q_PROPERTY(QColor color READ getColor WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(QUrl coverArtUrl READ getCoverArtUrl NOTIFY coverArtUrlChanged)
+    Q_PROPERTY(QUrl trackLocationUrl READ getTrackLocationUrl NOTIFY trackLocationUrlChanged)
 
   public:
     explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
@@ -48,6 +49,7 @@ class QmlPlayerProxy : public QObject {
     QString getKeyText() const;
     QColor getColor() const;
     QUrl getCoverArtUrl() const;
+    QUrl getTrackLocationUrl() const;
 
     /// Needed for interacting with the raw track player object.
     BaseTrackPlayer* internalTrackPlayer() const {
@@ -66,7 +68,6 @@ class QmlPlayerProxy : public QObject {
     void setTitle(const QString& title);
     void setAlbum(const QString& album);
     void setAlbumArtist(const QString& albumArtist);
-    void setGenre(const QString& genre);
     void setComposer(const QString& composer);
     void setGrouping(const QString& grouping);
     void setYear(const QString& year);
@@ -81,6 +82,7 @@ class QmlPlayerProxy : public QObject {
     void trackLoaded();
     void trackUnloaded();
     void trackChanged();
+    void cloneFromGroup(const QString& group);
 
     void albumChanged();
     void titleChanged();
@@ -96,6 +98,7 @@ class QmlPlayerProxy : public QObject {
     void keyTextChanged();
     void colorChanged();
     void coverArtUrlChanged();
+    void trackLocationUrlChanged();
 
     void loadTrackFromLocationRequested(const QString& trackLocation);
 

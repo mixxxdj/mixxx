@@ -13,42 +13,46 @@
 # Install and execute before 70-uaccess.rules, e.g. .../udev/rules.d/69-mixxx-usb-uaccess.rules
 
 # Allen + Heath Ltd.
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="22f0", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="22f0", TAG+="uaccess"
 # Allen + Heath Xone 23C hardware mixer with USB audio interface
 # This is required so all 4 input and all 4 output channels of the audio interface are available.
 ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="22f0", ATTR{idProduct}=="0008", ATTR{bConfigurationValue}="2"
 # Arturia
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1c75", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="1c75", TAG+="uaccess"
 # BEHRINGER International GmbH
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1397", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="1397", TAG+="uaccess"
 # D&M Holdings, Inc. (Denon/Marantz)
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="154e", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="154e", TAG+="uaccess"
 # EKS (Otus)
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1157", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="1157", TAG+="uaccess"
 # Gemini
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="23c7", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="23c7", TAG+="uaccess"
 # Guillemot Corp. (Hercules)
+KERNEL=="hidraw*", ATTRS{idVendor}=="06f8", TAG+="uaccess"
+# Some older Hercules controllers are accessed through USB Bulk endpoints through libusb
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="06f8", TAG+="uaccess"
 # inMusic (Numark, Denon)
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="15e4", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="15e4", TAG+="uaccess"
 # KORG, Inc.
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0944", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="0944", TAG+="uaccess"
 # Native Instruments
+KERNEL=="hidraw*", ATTRS{idVendor}=="17cc", TAG+="uaccess"
+# First generation Native Instruments controllers can be accessed through USB Bulk endpoints through libusb
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="17cc", TAG+="uaccess"
 # Nintendo Co., Ltd
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="057e", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="057e", TAG+="uaccess"
 # Pioneer Corp.
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="08e4", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="08e4", TAG+="uaccess"
 # AlphaTheta Corp.
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="2b73", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="2b73", TAG+="uaccess"
 # Rane
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="13e5", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="13e5", TAG+="uaccess"
 # Reloop
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="200c", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="200c", TAG+="uaccess"
 # Roland Corp.
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0582", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="0582", TAG+="uaccess"
 # Sony Corp.
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="054c", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="054c", TAG+="uaccess"
 
 # Missing:
 # - American Musical Supply (AMS/Mixars)

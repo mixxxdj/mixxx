@@ -20,10 +20,10 @@ class BeatGrid final : public Beats {
     static BeatsPointer makeBeatGrid(
             audio::SampleRate sampleRate,
             const QString& subVersion,
-            double dBpm,
-            double dFirstBeatSample);
+            mixxx::Bpm bpm,
+            mixxx::audio::FramePos firstBeatPos);
 
-    static BeatsPointer makeBeatGrid(
+    static BeatsPointer fromByteArray(
             audio::SampleRate sampleRate,
             const QString& subVersion,
             const QByteArray& byteArray);
@@ -31,8 +31,8 @@ class BeatGrid final : public Beats {
     // The following are all methods from the Beats interface, see method
     // comments in beats.h
 
-    Beats::CapabilitiesFlags getCapabilities() const override {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SETBPM;
+    bool hasConstantTempo() const override {
+        return true;
     }
 
     QByteArray toByteArray() const override;
@@ -43,18 +43,16 @@ class BeatGrid final : public Beats {
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
-    double findNextBeat(double dSamples) const override;
-    double findPrevBeat(double dSamples) const override;
-    bool findPrevNextBeats(double dSamples,
-            double* dpPrevBeatSamples,
-            double* dpNextBeatSamples,
+    bool findPrevNextBeats(audio::FramePos position,
+            audio::FramePos* prevBeatPosition,
+            audio::FramePos* nextBeatPosition,
             bool snapToNearBeats) const override;
-    double findClosestBeat(double dSamples) const override;
-    double findNthBeat(double dSamples, int n) const override;
-    std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
-    bool hasBeatInRange(double startSample, double stopSample) const override;
-    double getBpm() const override;
-    double getBpmAroundPosition(double curSample, int n) const override;
+    audio::FramePos findNthBeat(audio::FramePos position, int n) const override;
+    std::unique_ptr<BeatIterator> findBeats(audio::FramePos startPosition,
+            audio::FramePos endPosition) const override;
+    bool hasBeatInRange(audio::FramePos startPosition, audio::FramePos endPosition) const override;
+    mixxx::Bpm getBpm() const override;
+    mixxx::Bpm getBpmAroundPosition(audio::FramePos position, int n) const override;
 
     audio::SampleRate getSampleRate() const override {
         return m_sampleRate;
@@ -64,9 +62,9 @@ class BeatGrid final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    BeatsPointer translate(double dNumSamples) const override;
-    BeatsPointer scale(enum BPMScale scale) const override;
-    BeatsPointer setBpm(double dBpm) override;
+    BeatsPointer translate(audio::FrameDiff_t offset) const override;
+    BeatsPointer scale(BpmScale scale) const override;
+    BeatsPointer setBpm(mixxx::Bpm bpm) override;
 
   private:
     BeatGrid(
@@ -78,11 +76,10 @@ class BeatGrid final : public Beats {
     BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength);
     BeatGrid(const BeatGrid& other);
 
-    double firstBeatSample() const;
-    double bpm() const;
+    audio::FramePos firstBeatPosition() const;
+    mixxx::Bpm bpm() const;
 
-    // For internal use only.
-    bool isValid() const;
+    bool isValid() const override;
 
     // The sub-version of this beatgrid.
     const QString m_subVersion;
@@ -91,7 +88,7 @@ class BeatGrid final : public Beats {
     // Data storage for BeatGrid
     const mixxx::track::io::BeatGrid m_grid;
     // The length of a beat in samples
-    const double m_dBeatLength;
+    const audio::FrameDiff_t m_beatLengthFrames;
 };
 
 } // namespace mixxx

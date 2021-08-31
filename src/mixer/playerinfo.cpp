@@ -56,21 +56,23 @@ TrackPointer PlayerInfo::getTrackInfo(const QString& group) {
     return m_loadedTrackMap.value(group);
 }
 
-void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& track) {
+void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& pTrack) {
     TrackPointer pOld;
     { // Scope
         QMutexLocker locker(&m_mutex);
         pOld = m_loadedTrackMap.value(group);
-        m_loadedTrackMap.insert(group, track);
+        m_loadedTrackMap.insert(group, pTrack);
     }
-    if (pOld) {
-        emit trackUnloaded(group, pOld);
-    }
-    emit trackLoaded(group, track);
+    emit trackChanged(group, pTrack, pOld);
 
-    if (m_currentlyPlayingDeck >= 0 &&
-            group == PlayerManager::groupForDeck(m_currentlyPlayingDeck)) {
-        emit currentPlayingTrackChanged(track);
+    if (pTrack) {
+        updateCurrentPlayingDeck();
+
+        int playingDeck = m_currentlyPlayingDeck;
+        if (playingDeck >= 0 &&
+                group == PlayerManager::groupForDeck(playingDeck)) {
+            emit currentPlayingTrackChanged(pTrack);
+        }
     }
 }
 
@@ -166,7 +168,13 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     int oldDeck = m_currentlyPlayingDeck.fetchAndStoreRelease(maxDeck);
     if (maxDeck != oldDeck) {
         emit currentPlayingDeckChanged(maxDeck);
-        emit currentPlayingTrackChanged(getCurrentPlayingTrack());
+        // Note: When starting Auto-DJ "play" might be processed before a new
+        // is track is fully loaded. currentPlayingTrackChanged() is then emitted
+        // after setTrackInfo().
+        TrackPointer pTrack = getCurrentPlayingTrack();
+        if (pTrack) {
+            emit currentPlayingTrackChanged(pTrack);
+        }
     }
 }
 

@@ -68,7 +68,7 @@
       <attribute persist="true" config_key="[Tango],always_visible_eject">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_slipMode">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_repeat">0</attribute>
-      <attribute persist="true" config_key="[Tango],always_visible_orientation">0</attribute>
+      <attribute persist="true" config_key="[Tango],always_visible_orientation">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->

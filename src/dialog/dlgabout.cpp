@@ -12,7 +12,7 @@
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
 
-    mixxx_icon->load(QString(":/images/icons/mixxx.svg"));
+    mixxx_icon->load(QString(":/images/icons/scalable/apps/mixxx.svg"));
     mixxx_logo->load(QString(":/images/mixxx_logo.svg"));
 
     version_label->setText(VersionStore::applicationName() +
@@ -107,7 +107,9 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Al Hadebe"
             << "Javier Vilarroig"
             << "Ball&oacute; Gy&ouml;rgy"
-            << "Pino Toscano";
+            << "Pino Toscano"
+            << "Alexander Horner"
+            << "Michael Ehlen";
 
     QStringList specialThanks;
     specialThanks

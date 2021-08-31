@@ -9,7 +9,7 @@
 #include "config.h"
 #include "controllers/defs_controllers.h"
 #include "database/mixxxdb.h"
-#include "library/library_preferences.h"
+#include "library/library_prefs.h"
 #include "library/trackcollection.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
@@ -388,7 +388,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                     tc.connectDatabase(dbConnection);
 
                     // upgrade to the multi library folder settings
-                    QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
+                    QString currentFolder =
+                            config->getValueString(mixxx::library::prefs::
+                                            kLegacyDirectoryConfigKey);
                     // to migrate the DB just add the current directory to the new
                     // directories table
                     // NOTE(rryan): We don't have to ask for sandbox permission to this
@@ -450,7 +452,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
 bool Upgrade::askReScanLibrary() {
     QMessageBox msgBox;
-    msgBox.setIconPixmap(QPixmap(":/images/icons/mixxx.svg"));
+    msgBox.setIconPixmap(QPixmap(":/images/icons/scalable/apps/mixxx.svg"));
     msgBox.setWindowTitle(QMessageBox::tr("Upgrading Mixxx"));
     msgBox.setText(QMessageBox::tr("Mixxx now supports displaying cover art.\n"
                       "Do you want to scan your library for cover files now?"));

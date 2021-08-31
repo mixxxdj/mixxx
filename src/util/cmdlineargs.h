@@ -21,7 +21,13 @@ class CmdlineArgs final {
         return cla;
     }
 
-    bool parse(int& argc, char** argv);
+    //! The original parser that provides the parsed values to Mixxx
+    //! This can be called before anything else is initialized
+    bool parse(int argc, char** argv);
+
+    //! The optional second run, that provides translated user feedback
+    //! This requires an initialized QCoreApplication
+    void parseForUserFeedback();
 
     const QList<QString>& getMusicFiles() const { return m_musicFiles; }
     bool getStartInFullscreen() const { return m_startInFullscreen; }
@@ -45,6 +51,13 @@ class CmdlineArgs final {
     const QString& getTimelinePath() const { return m_timelinePath; }
 
   private:
+    enum class ParseMode {
+        Initial,
+        ForUserFeedback
+    };
+
+    bool parse(const QStringList& arguments, ParseMode mode);
+
     QList<QString> m_musicFiles;    // List of files to load into players at startup
     bool m_startInFullscreen;       // Start in fullscreen mode
     bool m_midiDebug;
@@ -53,6 +66,7 @@ class CmdlineArgs final {
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
     bool m_useColors;       // should colors be used
+    bool m_parseForUserFeedbackRequired;
     mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing
     QString m_locale;

@@ -28,7 +28,6 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
           m_aacAot(AOT_AAC_LC),
           m_bitrate(0),
           m_channels(0),
-          m_samplerate(0),
           m_pCallback(pCallback),
           m_pLibrary(nullptr),
           m_pInputFifo(nullptr),
@@ -252,8 +251,8 @@ void EncoderFdkAac::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderFdkAac::initEncoder(int samplerate, QString* pUserErrorMessage) {
-    m_samplerate = samplerate;
+int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
+    m_sampleRate = sampleRate;
 
     if (!m_pLibrary) {
         kLogger.warning() << "initEncoder failed: fdk-aac library not loaded";
@@ -293,7 +292,7 @@ int EncoderFdkAac::initEncoder(int samplerate, QString* pUserErrorMessage) {
     }
 
     // Input audio samplerate
-    if (aacEncoder_SetParam(m_aacEnc, AACENC_SAMPLERATE, m_samplerate) != AACENC_OK) {
+    if (aacEncoder_SetParam(m_aacEnc, AACENC_SAMPLERATE, m_sampleRate) != AACENC_OK) {
         kLogger.warning() << "aac encoder setting samplerate failed!";
         return -1;
     }
@@ -359,7 +358,7 @@ void EncoderFdkAac::encodeBuffer(const CSAMPLE* samples, const int sampleCount) 
     int writeCount = sampleCount;
     int writeAvailable = m_pInputFifo->writeAvailable();
     if (writeCount > writeAvailable) {
-        kLogger.warning() << "FIFO buffer too small, loosing samples!"
+        kLogger.warning() << "FIFO buffer too small, losing samples!"
                           << "required:" << writeCount
                           << "; available: " << writeAvailable;
         writeCount = writeAvailable;

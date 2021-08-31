@@ -60,6 +60,9 @@ class VisualPlayPosition : public QObject {
     static void setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time);
 
     void setInvalid() { m_valid = false; };
+    bool isValid() const {
+        return m_valid;
+    }
 
   private slots:
     void slotAudioBufferSizeChanged(double sizeMs);

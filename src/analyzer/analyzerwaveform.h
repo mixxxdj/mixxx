@@ -140,7 +140,9 @@ class AnalyzerWaveform : public Analyzer {
             const QSqlDatabase& dbConnection);
     ~AnalyzerWaveform() override;
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
+    bool initialize(TrackPointer tio,
+            mixxx::audio::SampleRate sampleRate,
+            int totalSamples) override;
     bool processSamples(const CSAMPLE* buffer, const int bufferLength) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
@@ -151,7 +153,7 @@ class AnalyzerWaveform : public Analyzer {
     void storeCurrentStridePower();
     void resetCurrentStride();
 
-    void createFilters(int sampleRate);
+    void createFilters(mixxx::audio::SampleRate sampleRate);
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
 

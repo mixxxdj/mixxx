@@ -79,7 +79,6 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_baserate_old(0),
           m_rate_old(0.),
           m_trackSamplesOld(0),
-          m_trackSampleRateOld(0),
           m_dSlipPosition(0.),
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
@@ -89,10 +88,9 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_bScalerOverride(false),
           m_iSeekPhaseQueued(0),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
-          m_iSyncModeQueued(SYNC_INVALID),
+          m_iSyncModeQueued(static_cast<int>(SyncMode::Invalid)),
           m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
-          m_iSampleRate(0),
           m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_bCrossfadeReady(false),
           m_iLastBufferSize(0) {
@@ -363,19 +361,21 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     }
 }
 
-double EngineBuffer::getBpm() const {
+mixxx::Bpm EngineBuffer::getBpm() const {
     return m_pBpmControl->getBpm();
 }
 
-double EngineBuffer::getLocalBpm() const {
+mixxx::Bpm EngineBuffer::getLocalBpm() const {
     return m_pBpmControl->getLocalBpm();
 }
 
-void EngineBuffer::setBeatLoop(double startPosition, bool enabled) {
+void EngineBuffer::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled) {
     return m_pLoopingControl->setBeatLoop(startPosition, enabled);
 }
 
-void EngineBuffer::setLoop(double startPosition, double endPositon, bool enabled) {
+void EngineBuffer::setLoop(mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPositon,
+        bool enabled) {
     return m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }
 
@@ -385,7 +385,7 @@ void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
     }
 }
 
-void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
+void EngineBuffer::queueNewPlaypos(mixxx::audio::FramePos position, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
     // Write the position before the seek type, to reduce a possible race
     // condition effect
@@ -394,7 +394,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
         // use SEEK_STANDARD for that
         seekType = SEEK_STANDARD;
     }
-    m_queuedSeek.setValue({newpos, seekType});
+    m_queuedSeek.setValue({position, seekType});
 }
 
 void EngineBuffer::requestSyncPhase() {
@@ -406,9 +406,9 @@ void EngineBuffer::requestEnableSync(bool enabled) {
     // If we're not playing, the queued event won't get processed so do it now.
     if (m_playButton->get() == 0.0) {
         if (enabled) {
-            m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
+            m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::Follower);
         } else {
-            m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
+            m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::None);
         }
         return;
     }
@@ -439,7 +439,7 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     if (m_playButton->get() == 0.0) {
         m_pEngineSync->requestSyncMode(m_pSyncControl, mode);
     } else {
-        m_iSyncModeQueued = mode;
+        m_iSyncModeQueued = static_cast<int>(mode);
     }
 }
 
@@ -459,7 +459,9 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 }
 
 void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
-    doSeekPlayPos(pOtherBuffer->getExactPlayPos(), SEEK_EXACT);
+    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(
+            pOtherBuffer->getExactPlayPos());
+    doSeekPlayPos(position, SEEK_EXACT);
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -484,8 +486,9 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_iSamplesSinceLastIndicatorUpdate = 1000000;
 
     // Must hold the engineLock while using m_engineControls
+    const auto playPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->notifySeek(m_filepos_play);
+        pControl->notifySeek(playPosition);
     }
 
     verifyPlay(); // verify or update play button and indicator
@@ -586,7 +589,7 @@ void EngineBuffer::ejectTrack() {
     m_pause.lock();
 
     m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0);
-    doSeekPlayPos(0.0, SEEK_EXACT);
+    doSeekPlayPos(mixxx::audio::kStartFramePos, SEEK_EXACT);
 
     m_pCurrentTrack.reset();
     m_pTrackSamples->set(0);
@@ -622,11 +625,14 @@ void EngineBuffer::notifyTrackLoaded(
 
     // First inform engineControls directly
     // Note: we are still in a worker thread.
+    const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
+    const auto trackEndPosition =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_pTrackSamples->get());
+    const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->trackLoaded(pNewTrack);
-        pControl->setCurrentSample(m_filepos_play,
-                m_pTrackSamples->get(),
-                m_pTrackSampleRate->get());
+        pControl->setFrameInfo(currentPosition, trackEndPosition, sampleRate);
     }
 
     if (pNewTrack) {
@@ -656,12 +662,16 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double playPosition) {
-    doSeekPlayPos(playPosition, SEEK_STANDARD);
+    // TODO: Check if we can assert a valid play position here
+    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(playPosition);
+    doSeekPlayPos(position, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekExact(double playPosition) {
-    doSeekPlayPos(playPosition, SEEK_EXACT);
+    // TODO: Check if we can assert a valid play position here
+    const auto position = mixxx::audio::FramePos::fromEngineSamplePos(playPosition);
+    doSeekPlayPos(position, SEEK_EXACT);
 }
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
@@ -678,11 +688,18 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     VERIFY_OR_DEBUG_ASSERT(!util_isnan(fractionalPos)) {
         return;
     }
-    double newSamplePosition = fractionalPos * m_pTrackSamples->get();
-    doSeekPlayPos(newSamplePosition, seekType);
+
+    // FIXME: Use maybe invalid here
+    const auto trackEndPosition =
+            mixxx::audio::FramePos::fromEngineSamplePos(m_pTrackSamples->get());
+    VERIFY_OR_DEBUG_ASSERT(trackEndPosition.isValid()) {
+        return;
+    }
+    const auto seekPosition = trackEndPosition * fractionalPos;
+    doSeekPlayPos(seekPosition, seekType);
 }
 
-void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
+void EngineBuffer::doSeekPlayPos(mixxx::audio::FramePos position, enum SeekRequest seekType) {
 #ifdef __VINYLCONTROL__
     // Notify the vinyl control that a seek has taken place in case it is in
     // absolute mode and needs be switched to relative.
@@ -691,7 +708,7 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     }
 #endif
 
-    queueNewPlaypos(new_playpos, seekType);
+    queueNewPlaypos(position, seekType);
 }
 
 bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
@@ -790,15 +807,15 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
 }
 
 void EngineBuffer::processTrackLocked(
-        CSAMPLE* pOutput, const int iBufferSize, int sample_rate) {
+        CSAMPLE* pOutput, const int iBufferSize, mixxx::audio::SampleRate sampleRate) {
     ScopedTimer t("EngineBuffer::process_pauselock");
 
-    m_trackSampleRateOld = m_pTrackSampleRate->get();
+    m_trackSampleRateOld = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     m_trackSamplesOld = m_pTrackSamples->get();
 
     double baserate = 0.0;
-    if (sample_rate > 0) {
-        baserate = m_trackSampleRateOld / sample_rate;
+    if (sampleRate.isValid()) {
+        baserate = m_trackSampleRateOld / sampleRate;
     }
 
     // Sync requests can affect rate, so process those first.
@@ -1065,9 +1082,11 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
+    const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
+    const auto trackEndPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_trackSamplesOld);
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld, m_trackSampleRateOld);
-        pControl->process(rate, m_filepos_play, iBufferSize);
+        pControl->setFrameInfo(currentPosition, trackEndPosition, m_trackSampleRateOld);
+        pControl->process(rate, currentPosition, iBufferSize);
     }
 
     m_scratching_old = is_scratching;
@@ -1113,19 +1132,18 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
 
-    m_iSampleRate = static_cast<int>(m_pSampleRate->get());
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
 
     // If the sample rate has changed, force Rubberband to reset so that
     // it doesn't reallocate when the user engages keylock during playback.
     // We do this even if rubberband is not active.
-    const auto sampleRate = mixxx::audio::SampleRate(m_iSampleRate);
-    m_pScaleLinear->setSampleRate(sampleRate);
-    m_pScaleST->setSampleRate(sampleRate);
-    m_pScaleRB->setSampleRate(sampleRate);
+    m_pScaleLinear->setSampleRate(m_sampleRate);
+    m_pScaleST->setSampleRate(m_sampleRate);
+    m_pScaleRB->setSampleRate(m_sampleRate);
 
     bool bTrackLoading = atomicLoadRelaxed(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
-        processTrackLocked(pOutput, iBufferSize, m_iSampleRate);
+        processTrackLocked(pOutput, iBufferSize, m_sampleRate);
         // release the pauselock
         m_pause.unlock();
     } else {
@@ -1158,7 +1176,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     }
 #endif
 
-    if (isMaster(m_pSyncControl->getSyncMode())) {
+    if (isLeader(m_pSyncControl->getSyncMode())) {
         // Report our speed to SyncControl immediately instead of waiting
         // for postProcess so we can broadcast this update to followers.
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
@@ -1196,28 +1214,30 @@ void EngineBuffer::processSyncRequests() {
             static_cast<SyncRequestQueued>(
                     m_iEnableSyncQueued.fetchAndStoreRelease(SYNC_REQUEST_NONE));
     SyncMode mode_request =
-            static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(SYNC_INVALID));
+            static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(
+                    static_cast<int>(SyncMode::Invalid)));
     switch (enable_request) {
     case SYNC_REQUEST_ENABLE:
-        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::Follower);
         break;
     case SYNC_REQUEST_DISABLE:
-        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::None);
         break;
     case SYNC_REQUEST_ENABLEDISABLE:
-        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
-        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::Follower);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SyncMode::None);
         break;
     case SYNC_REQUEST_NONE:
         break;
     }
-    if (mode_request != SYNC_INVALID) {
+    if (mode_request != SyncMode::Invalid) {
         m_pEngineSync->requestSyncMode(m_pSyncControl,
                 static_cast<SyncMode>(mode_request));
     }
 }
 
 void EngineBuffer::processSeek(bool paused) {
+    m_previousBufferSeek = false;
     // Check if we are cloning another channel before doing any seeking.
     EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(nullptr);
     if (pChannel) {
@@ -1227,12 +1247,7 @@ void EngineBuffer::processSeek(bool paused) {
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
 
     SeekRequests seekType = queuedSeek.seekType;
-    double position = queuedSeek.position;
-
-    // Don't allow the playposition to go past the end.
-    if (position > m_trackSamplesOld) {
-        position = m_trackSamplesOld;
-    }
+    mixxx::audio::FramePos position = queuedSeek.position;
 
     // Add SEEK_PHASE bit, if any
     if (m_iSeekPhaseQueued.fetchAndStoreRelease(0)) {
@@ -1244,7 +1259,7 @@ void EngineBuffer::processSeek(bool paused) {
             return;
         case SEEK_PHASE:
             // only adjust phase
-            position = m_filepos_play;
+            position = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
             break;
         case SEEK_STANDARD:
             if (m_pQuantize->toBool()) {
@@ -1263,24 +1278,36 @@ void EngineBuffer::processSeek(bool paused) {
             return;
     }
 
+    VERIFY_OR_DEBUG_ASSERT(position.isValid()) {
+        return;
+    }
+
+    const auto trackEndPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_trackSamplesOld);
+
+    // Don't allow the playposition to go past the end.
+    if (position > trackEndPosition) {
+        position = trackEndPosition;
+    }
+
     if (!paused && (seekType & SEEK_PHASE)) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seeking phase";
         }
-        double requestedPosition = position;
-        double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
-        position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
+        const mixxx::audio::FramePos syncPosition =
+                m_pBpmControl->getBeatMatchPosition(position, true, true);
+        position = m_pLoopingControl->getSyncPositionInsideLoop(position, syncPosition);
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "EngineBuffer::processSeek" << getGroup() << "seek info:" << m_filepos_play
                     << "->" << position;
         }
     }
-    if (position != m_filepos_play) {
+    if (position.toEngineSamplePos() != m_filepos_play) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seek to" << position;
         }
-        setNewPlaypos(position);
+        setNewPlaypos(position.toEngineSamplePos());
+        m_previousBufferSeek = true;
     }
     // Reset the m_queuedSeek value after it has been processed in
     // setNewPlaypos() so that the Engine Controls have always access to the
@@ -1295,15 +1322,20 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "EngineBuffer::postProcess";
     }
-    double localBpm = m_pBpmControl->updateLocalBpm();
+    const mixxx::Bpm localBpm = m_pBpmControl->updateLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
-    m_pSyncControl->setLocalBpm(localBpm);
+    // FIXME: Double check if calling setLocalBpm with an invalid value is correct and intended.
+    mixxx::Bpm newLocalBpm;
+    if (localBpm.isValid()) {
+        newLocalBpm = localBpm;
+    }
+    m_pSyncControl->setLocalBpm(newLocalBpm);
     m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
-    if (isMaster(mode)) {
+    if (isLeader(mode)) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beatDistance);
     } else if (isFollower(mode)) {
-        // Report our speed to SyncControl.  If we are master, we already did this.
+        // Report our speed to SyncControl.  If we are leader, we already did this.
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
         m_pSyncControl->updateTargetBeatDistance();
     }
@@ -1313,14 +1345,17 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     updateIndicators(m_speed_old, iBufferSize);
 }
 
-bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) const {
+mixxx::audio::FramePos EngineBuffer::queuedSeekPosition() const {
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
-    *pSeekPosition = queuedSeek.position;
-    return (queuedSeek.seekType != SEEK_NONE);
+    if (queuedSeek.seekType == SEEK_NONE) {
+        return {};
+    }
+
+    return queuedSeek.position;
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    if (m_trackSampleRateOld == 0) {
+    if (!m_trackSampleRateOld.isValid()) {
         // This happens if Deck Passthrough is active but no track is loaded.
         // We skip indicator updates.
         return;
@@ -1364,7 +1399,9 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // ClockControl::updateIndicators into the waveform update loop which is synced with the display refresh rate.
     // Via the visual play position it's possible to access to the sample that is currently played,
     // and not the one that have been processed as in the current solution.
-    m_pClockControl->updateIndicators(speed * m_baserate_old, m_filepos_play, m_pSampleRate->get());
+    const auto currentPosition = mixxx::audio::FramePos::fromEngineSamplePos(m_filepos_play);
+    const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
+    m_pClockControl->updateIndicators(speed * m_baserate_old, currentPosition, sampleRate);
 }
 
 void EngineBuffer::hintReader(const double dRate) {
@@ -1432,14 +1469,10 @@ void EngineBuffer::slotEjectTrack(double v) {
 }
 
 double EngineBuffer::getExactPlayPos() const {
-    double visualPlayPos = getVisualPlayPos();
-    if (visualPlayPos > 0) {
-        return getVisualPlayPos() * getTrackSamples();
-    } else {
-        // Track was just loaded and the first buffer was not processed yet.
-        // assume it is at 0:00
+    if (!m_visualPlayPos->isValid()) {
         return 0.0;
     }
+    return m_visualPlayPos->getEnginePlayPos() * getTrackSamples();
 }
 
 double EngineBuffer::getVisualPlayPos() const {

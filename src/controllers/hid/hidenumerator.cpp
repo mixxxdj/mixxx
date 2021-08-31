@@ -65,23 +65,33 @@ HidEnumerator::~HidEnumerator() {
 QList<Controller*> HidEnumerator::queryDevices() {
     qInfo() << "Scanning USB HID devices";
 
+    QStringList enumeratedDevices;
     hid_device_info* device_info_list = hid_enumerate(0x0, 0x0);
     for (const auto* device_info = device_info_list;
             device_info;
             device_info = device_info->next) {
         auto deviceInfo = mixxx::hid::DeviceInfo(*device_info);
+        // The hidraw backend of hidapi on Linux returns many duplicate hid_device_info's from hid_enumerate,
+        // so filter them out.
+        // https://github.com/libusb/hidapi/issues/298
+        if (enumeratedDevices.contains(deviceInfo.pathRaw())) {
+            qInfo() << "Duplicate HID device, excluding" << deviceInfo;
+            continue;
+        }
+        enumeratedDevices.append(QString(deviceInfo.pathRaw()));
+
         if (!recognizeDevice(*device_info)) {
             qInfo()
-                    << "Excluding USB HID device"
+                    << "Excluding HID device"
                     << deviceInfo;
             continue;
         }
-        qInfo() << "Found USB HID device:"
+        qInfo() << "Found HID device:"
                 << deviceInfo;
 
         if (!deviceInfo.isValid()) {
-            qWarning() << "USB permissions problem or device error."
-                       << "Your account needs write access to USB HID controllers.";
+            qWarning() << "HID device permissions problem or device error."
+                       << "Your account needs write access to HID controllers.";
             continue;
         }
 

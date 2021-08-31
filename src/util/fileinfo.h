@@ -26,7 +26,7 @@ namespace mixxx {
 /// All single-argument are declared as explicit to prevent implicit conversions.
 ///
 /// Implementation note: Inheriting from QFileInfo would violate the
-/// Liskov Substition Principle. It is also invalid, because QFileInfo
+/// Liskov Substution Principle. It is also invalid, because QFileInfo
 /// has a non-virtual destructor and we cannot override non-virtual
 /// member functions.
 class FileInfo final {
@@ -99,7 +99,7 @@ class FileInfo final {
     }
 
     /// Check that the given QFileInfo is context-insensitive to avoid
-    /// implicitly acccessing any transient working directory when
+    /// implicitly accessing any transient working directory when
     /// resolving relative paths. We need to exclude these unintended
     /// side-effects!
     static bool hasLocation(const QFileInfo& fileInfo) {

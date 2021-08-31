@@ -107,8 +107,11 @@ class ChannelCount {
         return kValueMin <= m_value;
     }
 
-    /*implicit*/ constexpr operator value_t() const {
+    constexpr value_t value() const {
         return m_value;
+    }
+    /*implicit*/ constexpr operator value_t() const {
+        return value();
     }
 
   private:
@@ -151,12 +154,23 @@ class SampleRate {
         m_value = value;
     }
 
-    /*implicit*/ constexpr operator value_t() const {
+    constexpr value_t value() const {
         return m_value;
     }
+    /*implicit*/ constexpr operator value_t() const {
+        return value();
+    }
 
-    static constexpr SampleRate fromDouble(double value) {
-        return SampleRate(static_cast<value_t>(value));
+    static SampleRate fromDouble(double value) {
+        const auto sampleRate = SampleRate(static_cast<value_t>(value));
+        // The sample rate should always be an integer value
+        // and this conversion is supposed to be lossless.
+        DEBUG_ASSERT(sampleRate.toDouble() == value);
+        return sampleRate;
+    }
+
+    constexpr double toDouble() const {
+        return static_cast<double>(value());
     }
 
   private:
@@ -164,6 +178,11 @@ class SampleRate {
 };
 
 QDebug operator<<(QDebug dbg, SampleRate arg);
+
+/// Division of a SampleRate by another SampleRate returns a ratio as double.
+inline double operator/(SampleRate sampleRate1, SampleRate sampleRate2) {
+    return sampleRate1.toDouble() / sampleRate2.toDouble();
+}
 
 // The bitrate is measured in kbit/s (kbps) and provides information
 // about the level of compression for lossily encoded audio streams.
@@ -194,10 +213,10 @@ class Bitrate {
         return m_value > kValueDefault;
     }
 
-    value_t value() const {
+    constexpr value_t value() const {
         return m_value;
     }
-    /*implicit*/ operator value_t() const {
+    /*implicit*/ constexpr operator value_t() const {
         return value();
     }
 

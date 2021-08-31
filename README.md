@@ -1,6 +1,9 @@
 # Mixxx
+
 [![GitHub latest tag](https://img.shields.io/github/tag/mixxxdj/mixxx.svg)](https://mixxx.org/download)
 [![Packaging status](https://repology.org/badge/tiny-repos/mixxx.svg)](https://repology.org/metapackage/mixxx/versions)
+[![Build status](https://github.com/mixxxdj/mixxx/actions/workflows/build.yml/badge.svg)](https://github.com/mixxxdj/mixxx/actions/workflows/build.yml)
+[![Coverage status](https://coveralls.io/repos/github/mixxxdj/mixxx/badge.svg)](https://coveralls.io/github/mixxxdj/mixxx)
 [![Zulip chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://mixxx.zulipchat.com)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://mixxx.org/donate)
 
@@ -26,20 +29,20 @@ bug list][easybugs] and get started!
 
 ## Building Mixxx
 
-First, open a terminal (on Windows, use "x64 Native Tools command prompt for
-VS2019"), download the mixxx source code and navigate to it:
+First, open a terminal (on Windows, use "x64 Native Tools Command Prompt for
+VS 2019"), download the mixxx source code and navigate to it:
 
     $ git clone https://github.com/mixxxdj/mixxx.git
     $ cd mixxx
 
-Fetch the required dependencies (on Windows, macOS and Debian/Ubuntu, you can
-do that by running `tools\windows_buildenv.bat`, `source
-tools/macos_buildenv.sh setup` or `source tools/debian_buildenv.sh setup`
-respectively), then run:
+Fetch the required dependencies and set up the build environment (on Windows,
+macOS and Debian/Ubuntu, you can do that by running
+`tools\windows_buildenv.bat`, `source tools/macos_buildenv.sh setup` or `source
+tools/debian_buildenv.sh setup` respectively), then run:
 
     $ mkdir build
     $ cd build
-    $ cmake ..   # Use `cmake -G Ninja ..` on Windows
+    $ cmake ..
     $ cmake --build .
 
 There should now be a `mixxx` executable in the current directory that you can

@@ -3,15 +3,17 @@
 #include "mixer/basetrackplayer.h"
 #include "skin/qml/asyncimageprovider.h"
 
-#define PROPERTY_IMPL(TYPE, NAME, GETTER, SETTER)    \
+#define PROPERTY_IMPL_GETTER(TYPE, NAME, GETTER)     \
     TYPE QmlPlayerProxy::GETTER() const {            \
         const TrackPointer pTrack = m_pCurrentTrack; \
         if (pTrack == nullptr) {                     \
             return TYPE();                           \
         }                                            \
         return pTrack->GETTER();                     \
-    }                                                \
-                                                     \
+    }
+
+#define PROPERTY_IMPL(TYPE, NAME, GETTER, SETTER)    \
+    PROPERTY_IMPL_GETTER(TYPE, NAME, GETTER)         \
     void QmlPlayerProxy::SETTER(const TYPE& value) { \
         const TrackPointer pTrack = m_pCurrentTrack; \
         if (pTrack != nullptr) {                     \
@@ -139,13 +141,14 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit keyTextChanged();
     emit colorChanged();
     emit coverArtUrlChanged();
+    emit trackLocationUrlChanged();
 }
 
 PROPERTY_IMPL(QString, artist, getArtist, setArtist)
 PROPERTY_IMPL(QString, title, getTitle, setTitle)
 PROPERTY_IMPL(QString, album, getAlbum, setAlbum)
 PROPERTY_IMPL(QString, albumArtist, getAlbumArtist, setAlbumArtist)
-PROPERTY_IMPL(QString, genre, getGenre, setGenre)
+PROPERTY_IMPL_GETTER(QString, genre, getGenre)
 PROPERTY_IMPL(QString, composer, getComposer, setComposer)
 PROPERTY_IMPL(QString, grouping, getGrouping, setGrouping)
 PROPERTY_IMPL(QString, year, getYear, setYear)
@@ -178,6 +181,15 @@ QUrl QmlPlayerProxy::getCoverArtUrl() const {
 
     const CoverInfo coverInfo = pTrack->getCoverInfoWithLocation();
     return AsyncImageProvider::trackLocationToCoverArtUrl(coverInfo.trackLocation);
+}
+
+QUrl QmlPlayerProxy::getTrackLocationUrl() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack == nullptr) {
+        return QUrl();
+    }
+
+    return QUrl::fromLocalFile(pTrack->getLocation());
 }
 
 } // namespace qml
