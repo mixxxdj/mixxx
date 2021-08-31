@@ -17,6 +17,7 @@ namespace tags {
 /// be displayed to the user.
 ///
 /// Value constraints:
+///   - charset: Unicode
 ///   - no leading/trailing whitespace
 class TagLabel final {
   public:
