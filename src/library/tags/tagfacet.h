@@ -23,14 +23,19 @@ namespace tags {
 /// could be mapped to "Veranstaltungsort" in German.
 ///
 /// Value constraints:
-///   - lowercase ASCII
-///   - and no whitespace
+///   - charset: +-._/0123456789abcdefghijklmnopqrstuvwxyz
+///   - no leading/trailing/inner whitespace
 ///
 /// References:
 ///   - https://en.wikipedia.org/wiki/Faceted_classification
 class TagFacet final {
   public:
     typedef QString value_t;
+
+    /// The alphabet of facets
+    ///
+    /// All valid characters, ordered by their ASCII codes.
+    static constexpr const char* kAlphabet = "+-./0123456789@[]_abcdefghijklmnopqrstuvwxyz";
 
     static bool isValidValue(
             const value_t& value);

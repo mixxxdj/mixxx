@@ -4,10 +4,10 @@
 
 namespace {
 
-const QRegularExpression kLowercaseAsciiNotEmpty(
-        QStringLiteral("^[\\x{0021}-\\x{0040}\\x{005B}-\\x{007E}]+"));
-const QRegularExpression kInverseLowercaseAsciiNotEmpty(
-        QStringLiteral("[^\\x{0021}-\\x{0040}\\x{005B}-\\x{007E}]+"));
+const QRegularExpression kValidFacetStringNotEmpty(
+        QStringLiteral("^[\\+\\-\\./0-9@a-z\\[\\]_]+"));
+const QRegularExpression kInversekValidFacetStringNotEmpty(
+        QStringLiteral("[^\\+\\-\\./0-9@a-z\\[\\]_]+"));
 
 } // anonymous namespace
 
@@ -27,7 +27,7 @@ bool TagFacet::isValidValue(
         // for disambiguation with null
         return false;
     }
-    const auto match = kLowercaseAsciiNotEmpty.match(value);
+    const auto match = kValidFacetStringNotEmpty.match(value);
     DEBUG_ASSERT(match.isValid());
     DEBUG_ASSERT(value.length() > 0);
     // match = exact match
@@ -37,7 +37,7 @@ bool TagFacet::isValidValue(
 //static
 TagFacet::value_t TagFacet::convertIntoValidValue(
         const value_t& value) {
-    auto validValue = filterEmptyValue(value.toLower().remove(kInverseLowercaseAsciiNotEmpty));
+    auto validValue = filterEmptyValue(value.toLower().remove(kInversekValidFacetStringNotEmpty));
     DEBUG_ASSERT(isValidValue(validValue));
     return validValue;
 }

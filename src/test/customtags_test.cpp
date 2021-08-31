@@ -15,38 +15,6 @@ namespace tags {
 class CustomTagsTest : public testing::Test {
 };
 
-TEST_F(CustomTagsTest, isValidFacetValue) {
-    EXPECT_TRUE(TagFacet::isValidValue(QString()));
-    EXPECT_TRUE(TagFacet::isValidValue(QStringLiteral("lower-case_with_digit_1")));
-    EXPECT_TRUE(TagFacet::isValidValue(QStringLiteral("with\\backslash")));
-    EXPECT_FALSE(TagFacet::isValidValue(QStringLiteral("Uppercase")));
-    EXPECT_FALSE(TagFacet::isValidValue(QStringLiteral("lower-case_with_digit_1_and_whitespace ")));
-    EXPECT_FALSE(TagFacet::isValidValue(QLatin1String("")));
-    EXPECT_FALSE(TagFacet::isValidValue(QStringLiteral(" ")));
-}
-
-TEST_F(CustomTagsTest, clampFacetValue) {
-    EXPECT_EQ(QString(), TagFacet::convertIntoValidValue(QString()));
-    EXPECT_EQ(QString("lower-case_with_digit_1_and_whitespaces"),
-            TagFacet::convertIntoValidValue(QStringLiteral(
-                    " lower -\tcase_with _digit_1_and_whitespaces ")));
-    EXPECT_EQ(QString(), TagFacet::convertIntoValidValue(QStringLiteral(" \n \t \r")));
-    EXPECT_EQ(QString("uppercase"), TagFacet::convertIntoValidValue(QStringLiteral("Uppercase")));
-    EXPECT_EQ(QString("with\\back/slash"),
-            TagFacet::convertIntoValidValue(QStringLiteral("with \\ back/\tslash")));
-}
-
-TEST_F(CustomTagsTest, isValidLabelValue) {
-    EXPECT_TRUE(TagLabel::isValidValue(QString()));
-    EXPECT_TRUE(TagLabel::isValidValue(QStringLiteral("lower-case_with_digit_1")));
-    EXPECT_TRUE(TagLabel::isValidValue(QStringLiteral("With\\backslash")));
-    EXPECT_TRUE(TagLabel::isValidValue(QStringLiteral("Uppercase with\twhitespace")));
-    EXPECT_FALSE(TagLabel::isValidValue(QStringLiteral(" With leading space")));
-    EXPECT_FALSE(TagLabel::isValidValue(QStringLiteral("With trailing space\n")));
-    EXPECT_FALSE(TagLabel::isValidValue(QLatin1String("")));
-    EXPECT_FALSE(TagLabel::isValidValue(QStringLiteral(" ")));
-}
-
 TEST_F(CustomTagsTest, isEmptyAndCount) {
     const auto facet = TagFacet(QStringLiteral("facet"));
     const auto label = TagLabel(QStringLiteral("Label"));

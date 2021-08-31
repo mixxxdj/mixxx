@@ -44,29 +44,53 @@ TEST_F(TagFacetTest, filterEmptyValue) {
 TEST_F(TagFacetTest, convertIntoValidValue) {
     // Clamp empty string
     EXPECT_EQ(
-            TagFacet(),
-            TagFacet(TagFacet::convertIntoValidValue("")));
+            TagFacet::value_t{},
+            TagFacet::convertIntoValidValue(""));
     // Clamped whitespace string
     EXPECT_EQ(
-            TagFacet(),
-            TagFacet(TagFacet::convertIntoValidValue("  \t\n   ")));
+            TagFacet::value_t{},
+            TagFacet::convertIntoValidValue("  \t\n   "));
     // Lowercase
     EXPECT_EQ(
-            TagFacet("x"),
-            TagFacet(TagFacet::convertIntoValidValue("  \tX\n   ")));
+            TagFacet::value_t{"x"},
+            TagFacet::convertIntoValidValue("  \tX\n   "));
     // Whitespace replacement
     EXPECT_EQ(
-            TagFacet("xy_{+}"),
-            TagFacet(TagFacet::convertIntoValidValue("X y _\n{+} ")));
-    // Lowercase ASCII alphabet without whitespace
+            TagFacet::value_t{"xy_[+]"},
+            TagFacet::convertIntoValidValue("X y _\n[+] "));
+    // Valid characters without whitespace
     EXPECT_EQ(
-            TagFacet("!\"#$%&'()*+,-./0123456789:;<=>?"
-                     "@abcdefghijklmnopqrstuvwxyz[\\]^_"
-                     "`abcdefghijklmnopqrstuvwxyz{|}~"),
-            TagFacet(TagFacet::convertIntoValidValue(
-                    " !\"#$%&'()*+,-./0123456789:;<=>?"
-                    "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
-                    "`abcdefghijklmnopqrstuvwxyz{|}~")));
+            TagFacet::value_t{TagFacet::kAlphabet},
+            TagFacet::convertIntoValidValue(
+                    TagFacet::value_t{TagFacet::kAlphabet}));
+    EXPECT_EQ(
+            TagFacet::value_t{"+-./0123456789"
+                              "@abcdefghijklmnopqrstuvwxyz[]_"
+                              "abcdefghijklmnopqrstuvwxyz"},
+            TagFacet::convertIntoValidValue(
+                    "\t!\"#$%&'()*+,-./0123456789:;<=>?"
+                    " @ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_"
+                    " `abcdefghijklmnopqrstuvwxyz{|}~\n"));
+}
+
+TEST_F(TagFacetTest, isValidValue) {
+    EXPECT_TRUE(TagFacet::isValidValue(QString()));
+    EXPECT_TRUE(TagFacet::isValidValue(QStringLiteral("facet@mixxx.org/simple-test[1]")));
+    EXPECT_FALSE(TagFacet::isValidValue(QStringLiteral("Uppercase")));
+    EXPECT_FALSE(TagFacet::isValidValue(QStringLiteral("lower-case_with_digit_1_and_whitespace ")));
+    EXPECT_FALSE(TagFacet::isValidValue(QLatin1String("")));
+    EXPECT_FALSE(TagFacet::isValidValue(QStringLiteral(" ")));
+}
+
+TEST_F(TagFacetTest, convertedEmptyValueIsValid) {
+    EXPECT_TRUE(
+            TagFacet::isValidValue(TagFacet::convertIntoValidValue(TagFacet::value_t{})));
+    EXPECT_TRUE(
+            TagFacet::isValidValue(TagFacet::convertIntoValidValue("")));
+    EXPECT_TRUE(
+            TagFacet::isValidValue(TagFacet::convertIntoValidValue(" ")));
+    EXPECT_TRUE(
+            TagFacet::isValidValue(TagFacet::convertIntoValidValue(" \t \n \r ")));
 }
 
 class TagLabelTest : public testing::Test {
@@ -84,15 +108,6 @@ TEST_F(TagLabelTest, isEmpty) {
             TagLabel(TagLabel::filterEmptyValue("")));
     // Non-empty string
     EXPECT_FALSE(TagLabel("X").isEmpty());
-}
-
-TEST_F(TagLabelTest, clampEmptyValueIsValid) {
-    EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::convertIntoValidValue(TagLabel::value_t())));
-    EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::convertIntoValidValue("")));
-    EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::convertIntoValidValue(" ")));
 }
 
 TEST_F(TagLabelTest, filterEmptyValue) {
@@ -113,12 +128,34 @@ TEST_F(TagLabelTest, convertIntoValidValue) {
             TagLabel::isValidValue(TagLabel::convertIntoValidValue("")));
     // Clamped whitespace string
     EXPECT_EQ(
-            TagLabel(),
-            TagLabel(TagLabel::convertIntoValidValue("  \t\n   ")));
+            TagLabel::value_t{},
+            TagLabel::convertIntoValidValue("  \t\n   "));
     // Trimmed
     EXPECT_EQ(
-            TagLabel("X y"),
-            TagLabel(TagLabel::convertIntoValidValue("  \tX y\n   ")));
+            TagLabel::value_t{"X y"},
+            TagLabel::convertIntoValidValue("  \tX y\n   "));
+}
+
+TEST_F(TagLabelTest, isValidValue) {
+    EXPECT_TRUE(TagLabel::isValidValue(QString()));
+    EXPECT_TRUE(TagLabel::isValidValue(QStringLiteral("lower-case_with_digit_1")));
+    EXPECT_TRUE(TagLabel::isValidValue(QStringLiteral("With\\backslash")));
+    EXPECT_TRUE(TagLabel::isValidValue(QStringLiteral("Uppercase with\twhitespace")));
+    EXPECT_FALSE(TagLabel::isValidValue(QStringLiteral(" With leading space")));
+    EXPECT_FALSE(TagLabel::isValidValue(QStringLiteral("With trailing space\n")));
+    EXPECT_FALSE(TagLabel::isValidValue(QLatin1String("")));
+    EXPECT_FALSE(TagLabel::isValidValue(QStringLiteral(" ")));
+}
+
+TEST_F(TagLabelTest, convertedEmptyValueIsValid) {
+    EXPECT_TRUE(
+            TagLabel::isValidValue(TagLabel::convertIntoValidValue(TagLabel::value_t{})));
+    EXPECT_TRUE(
+            TagLabel::isValidValue(TagLabel::convertIntoValidValue("")));
+    EXPECT_TRUE(
+            TagLabel::isValidValue(TagLabel::convertIntoValidValue(" ")));
+    EXPECT_TRUE(
+            TagLabel::isValidValue(TagFacet::convertIntoValidValue(" \t \n \r ")));
 }
 
 class TagTest : public testing::Test {
