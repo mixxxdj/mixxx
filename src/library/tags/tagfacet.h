@@ -23,8 +23,13 @@ namespace tags {
 /// could be mapped to "Veranstaltungsort" in German.
 ///
 /// Value constraints:
-///   - charset: +-._/0123456789abcdefghijklmnopqrstuvwxyz
+///   - charset/alphabet: +-./0123456789@[]_abcdefghijklmnopqrstuvwxyz
 ///   - no leading/trailing/inner whitespace
+///
+/// Rationale for the value constraints:
+///   - Facet identifiers are intended to be created, shared, and parsed worldwide
+///   - The Lingua franca of IT is English
+///   - ASCII characters can be encoded by a single byte in UTF-8
 ///
 /// References:
 ///   - https://en.wikipedia.org/wiki/Faceted_classification
