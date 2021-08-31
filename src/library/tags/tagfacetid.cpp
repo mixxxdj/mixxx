@@ -1,4 +1,4 @@
-#include "library/tags/tagfacet.h"
+#include "library/tags/tagfacetid.h"
 
 #include <QRegularExpression>
 
@@ -18,7 +18,7 @@ namespace library {
 namespace tags {
 
 //static
-bool TagFacet::isValidValue(
+bool TagFacetId::isValidValue(
         const value_t& value) {
     if (value.isNull()) {
         return true;
@@ -35,7 +35,7 @@ bool TagFacet::isValidValue(
 }
 
 //static
-TagFacet::value_t TagFacet::convertIntoValidValue(
+TagFacetId::value_t TagFacetId::convertIntoValidValue(
         const value_t& value) {
     auto validValue = filterEmptyValue(value.toLower().remove(kInversekValidFacetStringNotEmpty));
     DEBUG_ASSERT(isValidValue(validValue));

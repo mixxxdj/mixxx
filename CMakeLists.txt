@@ -837,7 +837,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/keyutils.cpp
   src/library/tags/customtags.cpp
   src/library/tags/tag.cpp
-  src/library/tags/tagfacet.cpp
+  src/library/tags/tagfacetid.cpp
   src/library/tags/taglabel.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
