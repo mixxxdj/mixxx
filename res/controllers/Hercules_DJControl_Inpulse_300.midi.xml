@@ -710,11 +710,52 @@
 				</options>
 			</control>
 			<control>
+				<group>[EffectRack1_EffectUnit1_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX Unit 1 - Slot 1 next effect</description>
+				<status>0x96</status>
+				<midino>0x54</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX Unit 1 - Slot 2 next effect</description>
+				<status>0x96</status>
+				<midino>0x55</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX Unit 1 - Slot 3 next effect</description>
+				<status>0x96</status>
+				<midino>0x56</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX Unit 2 On/Off - Deck A</description>
+				<status>0x96</status>
+				<midino>0x57</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<!--FX Pads (SHIFT mode) 0x58-0x5F -->
+			<control>
 				<group>[EffectRack1_EffectUnit3_Effect1]</group>
 				<key>enabled</key>
 				<description>FX Unit 3 - Slot 1 On/Off</description>
 				<status>0x96</status>
-				<midino>0x54</midino>
+				<midino>0x58</midino>
 				<options>
 					<normal />
 				</options>
@@ -724,7 +765,7 @@
 				<key>enabled</key>
 				<description>FX Unit 3 - Slot 2 On/Off</description>
 				<status>0x96</status>
-				<midino>0x55</midino>
+				<midino>0x59</midino>
 				<options>
 					<normal />
 				</options>
@@ -734,7 +775,7 @@
 				<key>enabled</key>
 				<description>FX Unit 3 - Slot 3 On/Off</description>
 				<status>0x96</status>
-				<midino>0x56</midino>
+				<midino>0x5A</midino>
 				<options>
 					<normal />
 				</options>
@@ -744,47 +785,6 @@
 				<key>group_[Channel1]_enable</key>
 				<description>FX Unit 3 On/Off - Deck A</description>
 				<status>0x96</status>
-				<midino>0x57</midino>
-				<options>
-					<normal />
-				</options>
-			</control>
-			<!--FX Pads (SHIFT mode) 0x58-0x5F -->
-			<control>
-				<group>[EffectRack1_EffectUnit1_Effect1]</group>
-				<key>enabled</key>
-				<description>FX Unit 1 - Slot 1 On/Off</description>
-				<status>0x96</status>
-				<midino>0x58</midino>
-				<options>
-					<normal />
-				</options>
-			</control>
-			<control>
-				<group>[EffectRack1_EffectUnit1_Effect2]</group>
-				<key>enabled</key>
-				<description>FX Unit 1 - Slot 2 On/Off</description>
-				<status>0x96</status>
-				<midino>0x59</midino>
-				<options>
-					<normal />
-				</options>
-			</control>
-			<control>
-				<group>[EffectRack1_EffectUnit1_Effect3]</group>
-				<key>enabled</key>
-				<description>FX Unit 1 - Slot 3 On/Off</description>
-				<status>0x96</status>
-				<midino>0x5A</midino>
-				<options>
-					<normal />
-				</options>
-			</control>
-			<control>
-				<group>[EffectRack1_EffectUnit1]</group>
-				<key>group_[Channel2]_enable</key>
-				<description>FX Unit 1 On/Off - Deck B</description>
-				<status>0x96</status>
 				<midino>0x5B</midino>
 				<options>
 					<normal />
@@ -792,8 +792,8 @@
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit3_Effect1]</group>
-				<key>enabled</key>
-				<description>FX Unit 3 - Slot 1 On/Off</description>
+				<key>next_effect</key>
+				<description>FX Unit 3 - Slot 1 next effect</description>
 				<status>0x96</status>
 				<midino>0x5C</midino>
 				<options>
@@ -802,8 +802,8 @@
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit3_Effect2]</group>
-				<key>enabled</key>
-				<description>FX Unit 3 - Slot 2 On/Off</description>
+				<key>next_effect</key>
+				<description>FX Unit 3 - Slot 2 next effect</description>
 				<status>0x96</status>
 				<midino>0x5D</midino>
 				<options>
@@ -812,8 +812,8 @@
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit3_Effect3]</group>
-				<key>enabled</key>
-				<description>FX Unit 3 - Slot 3 On/Off</description>
+				<key>next_effect</key>
+				<description>FX Unit 3 - Slot 3 next effect</description>
 				<status>0x96</status>
 				<midino>0x5E</midino>
 				<options>
@@ -821,9 +821,9 @@
 				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit3]</group>
-				<key>group_[Channel2]_enable</key>
-				<description>FX Unit 3 On/Off - Deck B</description>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX Unit 4 On/Off - Deck A</description>
 				<status>0x96</status>
 				<midino>0x5F</midino>
 				<options>
@@ -1277,9 +1277,9 @@
 				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit2]</group>
+				<group>[EffectRack1_EffectUnit1]</group>
 				<key>group_[Channel2]_enable</key>
-				<description>FX Unit 2 On/Off - Deck B</description>
+				<description>FX Unit 1 On/Off - Deck B</description>
 				<status>0x97</status>
 				<midino>0x53</midino>
 				<options>
@@ -1287,9 +1287,9 @@
 				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4_Effect1]</group>
-				<key>enabled</key>
-				<description>FX Unit 4 - Slot 1 On/Off</description>
+				<group>[EffectRack1_EffectUnit2_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX Unit 2 - Slot 1 next effect</description>
 				<status>0x97</status>
 				<midino>0x54</midino>
 				<options>
@@ -1297,9 +1297,9 @@
 				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4_Effect2]</group>
-				<key>enabled</key>
-				<description>FX Unit 4 - Slot 2 On/Off</description>
+				<group>[EffectRack1_EffectUnit2_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX Unit 2 - Slot 2 next effect</description>
 				<status>0x97</status>
 				<midino>0x55</midino>
 				<options>
@@ -1307,9 +1307,9 @@
 				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4_Effect3]</group>
-				<key>enabled</key>
-				<description>FX Unit 4 - Slot 3 On/Off</description>
+				<group>[EffectRack1_EffectUnit2_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX Unit 2 - Slot 3 next effect</description>
 				<status>0x97</status>
 				<midino>0x56</midino>
 				<options>
@@ -1317,9 +1317,9 @@
 				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit4]</group>
+				<group>[EffectRack1_EffectUnit2]</group>
 				<key>group_[Channel2]_enable</key>
-				<description>FX Unit 4 On/Off - Deck A</description>
+				<description>FX Unit 2 On/Off - Deck B</description>
 				<status>0x97</status>
 				<midino>0x57</midino>
 				<options>
@@ -1328,51 +1328,11 @@
 			</control>
 			<!--FX Pads (SHIFT mode) 0x58-0x5F -->
 			<control>
-				<group>[EffectRack1_EffectUnit2_Effect1]</group>
-				<key>enabled</key>
-				<description>FX Unit 2 - Slot 1 On/Off</description>
-				<status>0x97</status>
-				<midino>0x58</midino>
-				<options>
-					<normal />
-				</options>
-			</control>
-			<control>
-				<group>[EffectRack1_EffectUnit2_Effect2]</group>
-				<key>enabled</key>
-				<description>FX Unit 2 - Slot 2 On/Off</description>
-				<status>0x97</status>
-				<midino>0x59</midino>
-				<options>
-					<normal />
-				</options>
-			</control>
-			<control>
-				<group>[EffectRack1_EffectUnit2_Effect3]</group>
-				<key>enabled</key>
-				<description>FX Unit 2 - Slot 3 On/Off</description>
-				<status>0x97</status>
-				<midino>0x5A</midino>
-				<options>
-					<normal />
-				</options>
-			</control>
-			<control>
-				<group>[EffectRack1_EffectUnit2]</group>
-				<key>group_[Channel1]_enable</key>
-				<description>FX Unit 2 On/Off - Deck A</description>
-				<status>0x97</status>
-				<midino>0x5B</midino>
-				<options>
-					<normal />
-				</options>
-			</control>
-			<control>
 				<group>[EffectRack1_EffectUnit4_Effect1]</group>
 				<key>enabled</key>
 				<description>FX Unit 4 - Slot 1 On/Off</description>
 				<status>0x97</status>
-				<midino>0x5C</midino>
+				<midino>0x58</midino>
 				<options>
 					<normal />
 				</options>
@@ -1382,7 +1342,7 @@
 				<key>enabled</key>
 				<description>FX Unit 4 - Slot 2 On/Off</description>
 				<status>0x97</status>
-				<midino>0x5D</midino>
+				<midino>0x59</midino>
 				<options>
 					<normal />
 				</options>
@@ -1392,6 +1352,46 @@
 				<key>enabled</key>
 				<description>FX Unit 4 - Slot 3 On/Off</description>
 				<status>0x97</status>
+				<midino>0x5A</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX Unit 3 On/Off - Deck B</description>
+				<status>0x97</status>
+				<midino>0x5B</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX Unit 4 - Slot 1 next effect</description>
+				<status>0x97</status>
+				<midino>0x5C</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX Unit 4 - Slot 2 next effect</description>
+				<status>0x97</status>
+				<midino>0x5D</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX Unit 4 - Slot 3 next effect</description>
+				<status>0x97</status>
 				<midino>0x5E</midino>
 				<options>
 					<normal />
@@ -1399,8 +1399,8 @@
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
-				<key>group_[Channel1]_enable</key>
-				<description>FX Unit 4 On/Off - Deck A</description>
+				<key>group_[Channel2]_enable</key>
+				<description>FX Unit 4 On/Off - Deck B</description>
 				<status>0x97</status>
 				<midino>0x5F</midino>
 				<options>
@@ -2773,13 +2773,53 @@
 				<on>0x7f</on>
 			</output>
 			<output>
+				<group>[EffectRack1_EffectUnit1_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX1 Effect 1 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x54</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX1 Effect 2 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x55</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX1 Effect 1 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x56</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX2 is active on Deck A</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x57</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
 				<group>[EffectRack1_EffectUnit3_Effect1]</group>
 				<key>enabled</key>
 				<description>FX3 Effect 1 activate</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x96</status>
-				<midino>0x54</midino>
+				<midino>0x58</midino>
 				<on>0x7f</on>
 			</output>
 			<output>
@@ -2789,7 +2829,7 @@
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x96</status>
-				<midino>0x55</midino>
+				<midino>0x59</midino>
 				<on>0x7f</on>
 			</output>
 			<output>
@@ -2799,7 +2839,7 @@
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x96</status>
-				<midino>0x56</midino>
+				<midino>0x5A</midino>
 				<on>0x7f</on>
 			</output>
 			<output>
@@ -2809,53 +2849,13 @@
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x96</status>
-				<midino>0x57</midino>
-				<on>0x7f</on>
-			</output>
-			<output>
-				<group>[EffectRack1_EffectUnit1_Effect1]</group>
-				<key>enabled</key>
-				<description>FX1 Effect 1 activate</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x96</status>
-				<midino>0x58</midino>
-				<on>0x7f</on>
-			</output>
-			<output>
-				<group>[EffectRack1_EffectUnit1_Effect2]</group>
-				<key>enabled</key>
-				<description>FX1 Effect 2 activate</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x96</status>
-				<midino>0x59</midino>
-				<on>0x7f</on>
-			</output>
-			<output>
-				<group>[EffectRack1_EffectUnit1_Effect3]</group>
-				<key>enabled</key>
-				<description>FX1 Effect 3 activate</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x96</status>
-				<midino>0x5A</midino>
-				<on>0x7f</on>
-			</output>
-			<output>
-				<group>[EffectRack1_EffectUnit1]</group>
-				<key>group_[Channel2]_enable</key>
-				<description>FX1 is active on Deck B</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x96</status>
 				<midino>0x5B</midino>
 				<on>0x7f</on>
 			</output>
 			<output>
 				<group>[EffectRack1_EffectUnit3_Effect1]</group>
-				<key>enabled</key>
-				<description>FX3 Effect 1 activate</description>
+				<key>next_effect</key>
+				<description>FX3 Effect 1 next effect</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x96</status>
@@ -2864,8 +2864,8 @@
 			</output>
 			<output>
 				<group>[EffectRack1_EffectUnit3_Effect2]</group>
-				<key>enabled</key>
-				<description>FX3 Effect 2 activate</description>
+				<key>next_effect</key>
+				<description>FX3 Effect 2 next effect</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x96</status>
@@ -2874,8 +2874,8 @@
 			</output>
 			<output>
 				<group>[EffectRack1_EffectUnit3_Effect3]</group>
-				<key>enabled</key>
-				<description>FX3 Effect 3 activate</description>
+				<key>next_effect</key>
+				<description>FX3 Effect 3 next_effect</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x96</status>
@@ -2883,9 +2883,9 @@
 				<on>0x7f</on>
 			</output>
 			<output>
-				<group>[EffectRack1_EffectUnit3]</group>
+				<group>[EffectRack1_EffectUnit4]</group>
 				<key>group_[Channel1]_enable</key>
-				<description>FX3 is active on Deck B</description>
+				<description>FX4 is active on Deck A</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x96</status>
@@ -2924,13 +2924,53 @@
 				<on>0x7f</on>
 			</output>
 			<output>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX1 is active on Deck B</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x53</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX2 Effect 1 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x54</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX2 Effect 2 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x55</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX2 Effect 3 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x56</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
 				<group>[EffectRack1_EffectUnit2]</group>
 				<key>group_[Channel2]_enable</key>
 				<description>FX2 is active on Deck B</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x97</status>
-				<midino>0x53</midino>
+				<midino>0x57</midino>
 				<on>0x7f</on>
 			</output>
 			<output>
@@ -2940,7 +2980,7 @@
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x97</status>
-				<midino>0x54</midino>
+				<midino>0x58</midino>
 				<on>0x7f</on>
 			</output>
 			<output>
@@ -2950,7 +2990,7 @@
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x97</status>
-				<midino>0x55</midino>
+				<midino>0x59</midino>
 				<on>0x7f</on>
 			</output>
 			<output>
@@ -2960,53 +3000,13 @@
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x97</status>
-				<midino>0x56</midino>
-				<on>0x7f</on>
-			</output>
-			<output>
-				<group>[EffectRack1_EffectUnit4]</group>
-				<key>group_[Channel2]_enable</key>
-				<description>FX4 is active on Deck B</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x97</status>
-				<midino>0x57</midino>
-				<on>0x7f</on>
-			</output>
-			<output>
-				<group>[EffectRack1_EffectUnit2_Effect1]</group>
-				<key>enabled</key>
-				<description>FX2 Effect 1 activate</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x97</status>
-				<midino>0x58</midino>
-				<on>0x7f</on>
-			</output>
-			<output>
-				<group>[EffectRack1_EffectUnit2_Effect2]</group>
-				<key>enabled</key>
-				<description>FX2 Effect 2 activate</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x97</status>
-				<midino>0x59</midino>
-				<on>0x7f</on>
-			</output>
-			<output>
-				<group>[EffectRack1_EffectUnit2_Effect3]</group>
-				<key>enabled</key>
-				<description>FX2 Effect 3 activate</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x97</status>
 				<midino>0x5A</midino>
 				<on>0x7f</on>
 			</output>
 			<output>
-				<group>[EffectRack1_EffectUnit2]</group>
-				<key>group_[Channel1]_enable</key>
-				<description>FX2 is active on Deck A</description>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX3 is active on Deck A</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x97</status>
@@ -3015,8 +3015,8 @@
 			</output>
 			<output>
 				<group>[EffectRack1_EffectUnit4_Effect1]</group>
-				<key>enabled</key>
-				<description>FX4 Effect 1 activate</description>
+				<key>next_effect</key>
+				<description>FX4 Effect 1 next effect</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x97</status>
@@ -3025,7 +3025,7 @@
 			</output>
 			<output>
 				<group>[EffectRack1_EffectUnit4_Effect2]</group>
-				<key>enabled</key>
+				<key>next_effect</key>
 				<description>FX4 Effect 2 activate</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
@@ -3035,8 +3035,8 @@
 			</output>
 			<output>
 				<group>[EffectRack1_EffectUnit4_Effect3]</group>
-				<key>enabled</key>
-				<description>FX4 Effect 3 activate</description>
+				<key>next_effect</key>
+				<description>FX4 Effect 3 next effect</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x97</status>
@@ -3045,8 +3045,8 @@
 			</output>
 			<output>
 				<group>[EffectRack1_EffectUnit4]</group>
-				<key>group_[Channel1]_enable</key>
-				<description>FX4 is active on Deck A</description>
+				<key>group_[Channel2]_enable</key>
+				<description>FX4 is active on Deck B</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x97</status>
