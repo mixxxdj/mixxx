@@ -170,6 +170,11 @@ void WTrackMenu::createMenus() {
                     m_pLibrary->searchTracksInCollection(searchQuery);
                 });
     }
+
+    if (featureIsEnabled(Feature::RemoveFromDisk)) {
+        m_pRemoveFromDiskMenu = new QMenu(this);
+        m_pRemoveFromDiskMenu->setTitle(tr("Delete Track Files"));
+    }
 }
 
 void WTrackMenu::createActions() {
@@ -214,7 +219,7 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
-        m_pRemoveFromDiskAct = new QAction(tr("Remove from disk"), this);
+        m_pRemoveFromDiskAct = new QAction(tr("Delete Files From disk"), m_pRemoveFromDiskMenu);
         connect(m_pRemoveFromDiskAct,
                 &QAction::triggered,
                 this,
@@ -513,7 +518,8 @@ void WTrackMenu::setupActions() {
 
     if (featureIsEnabled(Feature::RemoveFromDisk) &&
             m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk)) {
-        addAction(m_pRemoveFromDiskAct);
+        m_pRemoveFromDiskMenu->addAction(m_pRemoveFromDiskAct);
+        addMenu(m_pRemoveFromDiskMenu);
     }
 
     if (featureIsEnabled(Feature::FileBrowser)) {

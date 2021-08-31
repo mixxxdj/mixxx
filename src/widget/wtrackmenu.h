@@ -78,6 +78,8 @@ class WTrackMenu : public QMenu {
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
     void slotShowDlgTrackInfo();
+    // Library management
+    void slotRemoveFromDisk();
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
@@ -134,7 +136,6 @@ class WTrackMenu : public QMenu {
     void slotHide();
     void slotUnhide();
     void slotPurge();
-    void slotRemoveFromDisk();
 
   private:
     // This getter verifies that m_pTrackModel is set when
@@ -214,6 +215,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
+    QMenu* m_pRemoveFromDiskMenu{};
 
     // Update ReplayGain from Track
     QAction* m_pUpdateReplayGain{};
