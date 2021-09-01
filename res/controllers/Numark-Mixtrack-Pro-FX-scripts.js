@@ -66,12 +66,9 @@ MixtrackProFX.PadModeControls = {
 MixtrackProFX.shifted = false;
 
 MixtrackProFX.init = function() {
-    // send sysexes
+    // disable demo lightshow
     var exitDemoSysex = [0xF0, 0x7E, 0x00, 0x06, 0x01, 0xF7];
     midi.sendSysexMsg(exitDemoSysex, exitDemoSysex.length);
-
-    var statusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
-    midi.sendSysexMsg(statusSysex, statusSysex.length);
 
     // enables 4 bottom pads "fader cuts"
     var faderCutSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0xF7];
@@ -88,6 +85,9 @@ MixtrackProFX.init = function() {
 
     MixtrackProFX.browse = new MixtrackProFX.Browse();
     MixtrackProFX.gains = new MixtrackProFX.Gains();
+
+    var statusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
+    midi.sendSysexMsg(statusSysex, statusSysex.length);
 
     engine.makeConnection("[Channel1]", "VuMeter", MixtrackProFX.vuCallback);
     engine.makeConnection("[Channel2]", "VuMeter", MixtrackProFX.vuCallback);
