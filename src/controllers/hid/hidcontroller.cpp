@@ -151,10 +151,8 @@ void HidController::guessDeviceCategory() {
     if (hid_interface_number==-1) {
         if (hid_usage_page==0x1) {
             switch (hid_usage) {
-                case 0x2: info = tr("Generic HID Mouse"); break;
                 case 0x4: info = tr("Generic HID Joystick"); break;
                 case 0x5: info = tr("Generic HID Gamepad"); break;
-                case 0x6: info = tr("Generic HID Keyboard"); break;
                 case 0x8: info = tr("Generic HID Multiaxis Controller"); break;
                 default: info = tr("Unknown HID Desktop Device") +
                     QStringLiteral(" 0x") + QString::number(hid_usage_page, 16) +
