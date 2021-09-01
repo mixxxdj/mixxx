@@ -112,6 +112,12 @@ inline uint qHash(
     return qHash(label.value(), seed);
 }
 
+/// Predefined labels for identifying the source or owner of a score,
+/// e.g. for custom ratings.
+///
+/// Naming convention: Reverse domain name notation
+extern const TagLabel kTagLabelOrgMixxx;
+
 } // namespace tags
 
 } // namespace library

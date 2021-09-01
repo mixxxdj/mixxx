@@ -61,6 +61,9 @@ const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetComment =
 const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetDecade =
         mixxx::library::tags::TagFacetId::staticConst(QStringLiteral("decade"));
 
+const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetEthno =
+        mixxx::library::tags::TagFacetId::staticConst(QStringLiteral("ethno"));
+
 const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetGenre =
         mixxx::library::tags::TagFacetId::staticConst(QStringLiteral("genre"));
 
@@ -75,6 +78,12 @@ const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetLanguage =
 
 const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetMood =
         mixxx::library::tags::TagFacetId::staticConst(QStringLiteral("mood"));
+
+const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetVenue =
+        mixxx::library::tags::TagFacetId::staticConst(QStringLiteral("venue"));
+
+const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetVibe =
+        mixxx::library::tags::TagFacetId::staticConst(QStringLiteral("vibe"));
 
 const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetMusicBrainzAlbumArtistId =
         mixxx::library::tags::TagFacetId::staticConst(QStringLiteral("musicbrainz_albumartistid"));
@@ -130,3 +139,38 @@ const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetPopularity
 
 const mixxx::library::tags::TagFacetId mixxx::library::tags::kTagFacetSpeechiness =
         mixxx::library::tags::TagFacetId::staticConst(QStringLiteral("speechiness"));
+
+const QVector<mixxx::library::tags::TagFacetId>
+        mixxx::library::tags::kReservedTagFacetIds =
+                QVector<mixxx::library::tags::TagFacetId>{
+                        mixxx::library::tags::kTagFacetAcoustidFingerprint,
+                        mixxx::library::tags::kTagFacetAcoustidId,
+                        mixxx::library::tags::kTagFacetComment,
+                        mixxx::library::tags::kTagFacetDecade,
+                        mixxx::library::tags::kTagFacetEthno,
+                        mixxx::library::tags::kTagFacetGenre,
+                        mixxx::library::tags::kTagFacetGrouping,
+                        mixxx::library::tags::kTagFacetIsrc,
+                        mixxx::library::tags::kTagFacetLanguage,
+                        mixxx::library::tags::kTagFacetMood,
+                        mixxx::library::tags::kTagFacetVenue,
+                        mixxx::library::tags::kTagFacetVibe,
+                        mixxx::library::tags::kTagFacetMusicBrainzAlbumArtistId,
+                        mixxx::library::tags::kTagFacetMusicBrainzAlbumId,
+                        mixxx::library::tags::kTagFacetMusicBrainzArtistId,
+                        mixxx::library::tags::kTagFacetMusicBrainzRecordingId,
+                        mixxx::library::tags::kTagFacetMusicBrainzReleaseGroupId,
+                        mixxx::library::tags::kTagFacetMusicBrainzReleaseTrackId,
+                        mixxx::library::tags::kTagFacetMusicBrainzTrackId,
+                        mixxx::library::tags::kTagFacetMusicBrainzWorkId,
+                        mixxx::library::tags::kTagFacetRating,
+                        mixxx::library::tags::kTagFacetArousal,
+                        mixxx::library::tags::kTagFacetValence,
+                        mixxx::library::tags::kTagFacetAcousticness,
+                        mixxx::library::tags::kTagFacetDanceability,
+                        mixxx::library::tags::kTagFacetEnergy,
+                        mixxx::library::tags::kTagFacetInstrumentalness,
+                        mixxx::library::tags::kTagFacetLiveness,
+                        mixxx::library::tags::kTagFacetPopularity,
+                        mixxx::library::tags::kTagFacetSpeechiness,
+                };

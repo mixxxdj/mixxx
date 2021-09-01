@@ -32,3 +32,6 @@ TagLabel::value_t TagLabel::convertIntoValidValue(
 } // namespace library
 
 } // namespace mixxx
+
+const mixxx::library::tags::TagLabel mixxx::library::tags::kTagLabelOrgMixxx =
+        mixxx::library::tags::TagLabel{QStringLiteral("org.mixxx")};

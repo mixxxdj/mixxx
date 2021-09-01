@@ -2,6 +2,7 @@
 
 #include <QMetaType>
 #include <QString>
+#include <QVector>
 
 #include "util/assert.h"
 
@@ -161,15 +162,21 @@ inline uint qHash(
 ///
 /// https://picard-docs.musicbrainz.org/en/variables/variables.html
 /// https://picard-docs.musicbrainz.org/en/appendices/tag_mapping.html
+///
+/// TODO: These predefined facets are only intended as a starting point
+/// and for inspiration. They could be modified as needed.
 extern const TagFacetId kTagFacetAcoustidFingerprint;
 extern const TagFacetId kTagFacetAcoustidId;
 extern const TagFacetId kTagFacetComment; // multi-valued comment(s)
-extern const TagFacetId kTagFacetDecade; // e.g. "1980s"
-extern const TagFacetId kTagFacetGenre;  // multi-valued genre(s)
+extern const TagFacetId kTagFacetDecade;  // e.g. "1980s"
+extern const TagFacetId kTagFacetEthno;
+extern const TagFacetId kTagFacetGenre;    // multi-valued genre(s)
 extern const TagFacetId kTagFacetGrouping; // aka content group
 extern const TagFacetId kTagFacetIsrc;     // ISRC
 extern const TagFacetId kTagFacetLanguage; // ISO 639-3
 extern const TagFacetId kTagFacetMood;     // multi-valued mood(s)
+extern const TagFacetId kTagFacetVenue;
+extern const TagFacetId kTagFacetVibe;
 extern const TagFacetId kTagFacetMusicBrainzAlbumArtistId;
 extern const TagFacetId kTagFacetMusicBrainzAlbumId;
 extern const TagFacetId kTagFacetMusicBrainzArtistId;
@@ -208,6 +215,13 @@ extern const TagFacetId kTagFacetInstrumentalness;
 extern const TagFacetId kTagFacetLiveness;
 extern const TagFacetId kTagFacetPopularity;
 extern const TagFacetId kTagFacetSpeechiness;
+
+extern const QVector<TagFacetId> kReservedTagFacetIds;
+
+inline bool isReservedTagFacetId(
+        const TagFacetId& facetId) {
+    return kReservedTagFacetIds.contains(facetId);
+}
 
 } // namespace tags
 
