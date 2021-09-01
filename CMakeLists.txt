@@ -852,7 +852,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/keyfactory.cpp
   src/track/keys.cpp
   src/track/keyutils.cpp
-  src/library/tags/customtags.cpp
+  src/library/tags/facets.cpp
   src/library/tags/facetid.cpp
   src/library/tags/label.cpp
   src/library/tags/tag.cpp
@@ -1575,7 +1575,6 @@ add_executable(mixxx-test
   src/test/cratestorage_test.cpp
   src/test/cue_test.cpp
   src/test/cuecontrol_test.cpp
-  src/test/customtags_test.cpp
   src/test/dbconnectionpool_test.cpp
   src/test/dbidtest.cpp
   src/test/directorydaotest.cpp
@@ -1590,7 +1589,7 @@ add_executable(mixxx-test
   src/test/enginemastertest.cpp
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
-  src/test/librarytags_test.cpp
+  src/test/facets_test.cpp
   src/test/fileinfo_test.cpp
   src/test/frametest.cpp
   src/test/globaltrackcache_test.cpp
@@ -1601,6 +1600,7 @@ add_executable(mixxx-test
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
   src/test/libraryscannertest.cpp
+  src/test/librarytags_test.cpp
   src/test/librarytest.cpp
   src/test/looping_control_test.cpp
   src/test/main.cpp

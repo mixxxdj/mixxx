@@ -1,4 +1,4 @@
-#include "library/tags/customtags.h"
+#include "library/tags/facets.h"
 
 #include <QJsonArray>
 #include <QLoggingCategory>
@@ -7,8 +7,7 @@
 
 namespace {
 
-Q_LOGGING_CATEGORY(kLogger, "mixxx.library.tags.CustomTags")
-
+Q_LOGGING_CATEGORY(kLogger, "mixxx.library.tags.Facets")
 }
 
 namespace mixxx {
@@ -17,9 +16,9 @@ namespace library {
 
 namespace tags {
 
-bool CustomTags::isEmpty() const {
-    for (auto i = getFacetedTags().begin();
-            i != getFacetedTags().end();
+bool Facets::isEmpty() const {
+    for (auto i = m_impl.begin();
+            i != m_impl.end();
             ++i) {
         if (!i.value().isEmpty()) {
             return false;
@@ -28,20 +27,30 @@ bool CustomTags::isEmpty() const {
     return true;
 }
 
-void CustomTags::compact() {
-    auto i = refFacetedTags().begin();
-    while (i != refFacetedTags().end()) {
+int Facets::countAllTags() const {
+    int count = 0;
+    for (auto i = m_impl.begin();
+            i != m_impl.end();
+            ++i) {
+        count += i.value().size();
+    }
+    return count;
+}
+
+void Facets::compact() {
+    auto i = m_impl.begin();
+    while (i != m_impl.end()) {
         if (i.value().isEmpty()) {
-            i = refFacetedTags().erase(i);
+            i = m_impl.erase(i);
         } else {
             ++i;
         }
     }
 }
 
-bool CustomTags::validate() const {
-    for (auto i = getFacetedTags().begin();
-            i != getFacetedTags().end();
+bool Facets::validate() const {
+    for (auto i = m_impl.begin();
+            i != m_impl.end();
             ++i) {
         if (i.key().isEmpty()) {
             // plain tags
@@ -74,42 +83,42 @@ bool CustomTags::validate() const {
     return true;
 }
 
-bool CustomTags::containsTag(
+bool Facets::containsTagLabeled(
         const Label& label,
         const FacetId& facetId) const {
-    const auto i = getFacetedTags().find(facetId);
-    if (i == getFacetedTags().end()) {
+    const auto i = m_impl.find(facetId);
+    if (i == m_impl.end()) {
         return false;
     }
     return i.value().contains(label);
 }
 
-int CustomTags::countTags(
+int Facets::countTagsLabeled(
         const Label& label,
         const FacetId& facetId) const {
-    const auto i = getFacetedTags().find(facetId);
-    if (i == getFacetedTags().end()) {
+    const auto i = m_impl.find(facetId);
+    if (i == m_impl.end()) {
         return 0;
     }
     return i.value().count(label);
 }
 
-int CustomTags::countFacetedTags(
+int Facets::countTags(
         const FacetId& facetId) const {
-    const auto i = getFacetedTags().find(facetId);
-    if (i == getFacetedTags().end()) {
+    const auto i = m_impl.find(facetId);
+    if (i == m_impl.end()) {
         return 0;
     }
     return i.value().size();
 }
 
-bool CustomTags::addOrReplaceTag(
+bool Facets::addOrUpdateTag(
         const Tag& tag,
         const FacetId& facetId) {
-    DEBUG_ASSERT(countTags(tag.getLabel(), facetId) <= 1);
-    auto i = refFacetedTags().find(facetId);
-    if (i == refFacetedTags().end()) {
-        i = refFacetedTags().insert(facetId, TagMap{});
+    DEBUG_ASSERT(countTagsLabeled(tag.getLabel(), facetId) <= 1);
+    auto i = m_impl.find(facetId);
+    if (i == m_impl.end()) {
+        i = m_impl.insert(facetId, TagMap{});
     }
     DEBUG_ASSERT(!tag.getLabel().isEmpty() || i.value().size() <= 1);
     DEBUG_ASSERT(i.value().count(tag.getLabel()) <= 1);
@@ -125,12 +134,12 @@ bool CustomTags::addOrReplaceTag(
     return true;
 }
 
-bool CustomTags::removeTag(
+bool Facets::removeTagLabeled(
         const Label& label,
         const FacetId& facetId) {
-    DEBUG_ASSERT(countTags(label, facetId) <= 1);
-    const auto i = refFacetedTags().find(facetId);
-    if (i == refFacetedTags().end()) {
+    DEBUG_ASSERT(countTagsLabeled(label, facetId) <= 1);
+    const auto i = m_impl.find(facetId);
+    if (i == m_impl.end()) {
         return false;
     }
     DEBUG_ASSERT(!label.isEmpty() || i.value().size() <= 1);
@@ -138,7 +147,7 @@ bool CustomTags::removeTag(
     if (i.value().remove(label) > 0) {
         if (i.value().isEmpty()) {
             // Compact entry for this facetId, i.e. remove it entirely
-            refFacetedTags().erase(i);
+            m_impl.erase(i);
         }
         return true;
     } else {
@@ -146,10 +155,11 @@ bool CustomTags::removeTag(
     }
 }
 
-TagVector CustomTags::getTags() const {
+TagVector Facets::collectTags(
+        const FacetId& facetId) const {
     TagVector tags;
-    const auto i = getFacetedTags().find(FacetId());
-    if (i == getFacetedTags().end()) {
+    const auto i = m_impl.find(facetId);
+    if (i == m_impl.end()) {
         return tags;
     }
     tags.reserve(i.value().size());
@@ -161,69 +171,74 @@ TagVector CustomTags::getTags() const {
     return tags;
 }
 
-FacetTagMap::iterator CustomTags::replaceAllFacetedTags(
-        const FacetId& facetId,
-        const Tag& tag) {
-    DEBUG_ASSERT(!facetId.isEmpty());
-    DEBUG_ASSERT(countTags(tag.getLabel(), facetId) <= 1);
-    auto i = refFacetedTags().find(facetId);
-    if (i == refFacetedTags().end()) {
-        i = refFacetedTags().insert(facetId, TagMap{});
+TagVector Facets::collectTagsOrdered(
+        ScoreOrdering scoreOrdering,
+        const FacetId& facetId) const {
+    TagVector tags = collectTags(facetId);
+    switch (scoreOrdering) {
+    case ScoreOrdering::Ascending:
+        std::sort(
+                tags.begin(),
+                tags.end(),
+                [](const Tag& lhs, const Tag& rhs) {
+                    return lhs.getScore() < rhs.getScore();
+                });
+        break;
+    case ScoreOrdering::Descending:
+        std::sort(
+                tags.begin(),
+                tags.end(),
+                [](const Tag& lhs, const Tag& rhs) {
+                    return lhs.getScore() > rhs.getScore();
+                });
+        break;
+    }
+    return tags;
+}
+
+FacetTagMap::iterator Facets::addOrReplaceTagsWithSingleTag(
+        const Tag& tag,
+        const FacetId& facetId) {
+    DEBUG_ASSERT(countTagsLabeled(tag.getLabel(), facetId) <= 1);
+    auto i = m_impl.find(facetId);
+    if (i == m_impl.end()) {
+        i = m_impl.insert(facetId, TagMap{});
     } else {
         i.value().clear();
     }
     i.value().insert(tag.getLabel(), tag.getScore());
-    DEBUG_ASSERT(countFacetedTags(facetId) == 1);
+    DEBUG_ASSERT(countTags(facetId) == 1);
     return i;
 }
 
-int CustomTags::removeAllFacetedTags(
+int Facets::removeTags(
         const FacetId& facetId) {
     DEBUG_ASSERT(!facetId.isEmpty());
-    return refFacetedTags().remove(facetId);
+    return m_impl.remove(facetId);
 }
 
-TagVector CustomTags::getFacetedTagsOrdered(
+std::optional<Tag> Facets::getSingleTag(
         const FacetId& facetId) const {
-    DEBUG_ASSERT(!facetId.isEmpty());
-    TagVector tags;
-    auto i = getFacetedTags().find(facetId);
-    if (i == getFacetedTags().end()) {
-        return tags;
-    }
-    tags.reserve(i.value().size());
-    for (auto j = i.value().begin(); j != i.value().end(); ++j) {
-        tags += Tag(j.key(), j.value());
-    }
-    DEBUG_ASSERT(tags.size() == countFacetedTags(facetId));
-    std::sort(
-            tags.begin(),
-            tags.end(),
-            [](const Tag& lhs, const Tag& rhs) {
-                return lhs.getScore() > rhs.getScore();
-            });
-    return tags;
-}
-
-Label CustomTags::getFacetedLabel(
-        const FacetId& facetId) const {
-    DEBUG_ASSERT(countFacetedTags(facetId) <= 1);
-    const auto i = getFacetedTags().find(facetId);
-    if (i == getFacetedTags().end() ||
+    DEBUG_ASSERT(countTags(facetId) <= 1);
+    const auto i = m_impl.find(facetId);
+    if (i == m_impl.end() ||
             i.value().isEmpty()) {
-        return Label();
+        return std::nullopt;
     }
-    DEBUG_ASSERT(i.value().size() == 1);
-    DEBUG_ASSERT(i.value().first() == Score());
-    return i.value().firstKey();
+    DEBUG_ASSERT(i.value().size() <= 1);
+    const auto j = i.value().begin();
+    if (j == i.value().end()) {
+        return std::nullopt;
+    }
+    return Tag{j.key(), j.value()};
 }
 
-std::optional<Score> CustomTags::getScore(
-        const FacetId& facetId,
-        const Label& label) const {
-    DEBUG_ASSERT(countFacetedTags(facetId) <= 1);
-    const auto i = getFacetedTags().find(facetId);
-    if (i == getFacetedTags().end() ||
+std::optional<Score> Facets::getTagScore(
+        const Label& label,
+        const FacetId& facetId) const {
+    DEBUG_ASSERT(countTagsLabeled(label, facetId) <= 1);
+    const auto i = m_impl.find(facetId);
+    if (i == m_impl.end() ||
             i.value().isEmpty()) {
         return std::nullopt;
     }
@@ -236,14 +251,14 @@ std::optional<Score> CustomTags::getScore(
     return j.value();
 }
 
-Tag CustomTags::mergeFacetedTags(
-        const FacetId& facetId,
+Tag Facets::mergeTags(
+        const QString& joinLabelSeparator,
         AggregateScoring aggregateScoring,
-        const QString& joinLabelSeparator) const {
+        const FacetId& facetId) const {
     DEBUG_ASSERT(!facetId.isEmpty());
-    const auto tags = getFacetedTagsOrdered(facetId);
+    const auto tags = collectTagsOrdered(ScoreOrdering::Descending, facetId);
     if (tags.isEmpty()) {
-        return Tag();
+        return Tag{};
     }
     Score::value_t scoreValue;
     switch (aggregateScoring) {
@@ -274,31 +289,51 @@ Tag CustomTags::mergeFacetedTags(
             Score(scoreValue));
 }
 
-bool CustomTags::addOrReplaceAllTags(
-        const CustomTags& tags) {
-    bool modified = false;
-    VERIFY_OR_DEBUG_ASSERT(this != &tags) {
-        return false;
+int Facets::addOrUpdateAllTags(
+        const Facets& facets) {
+    VERIFY_OR_DEBUG_ASSERT(this != &facets) {
+        return 0;
     }
-    for (auto i = tags.getFacetedTags().begin();
-            i != tags.getFacetedTags().end();
+    int count = 0;
+    for (auto i = facets.m_impl.begin();
+            i != facets.m_impl.end();
             ++i) {
         for (auto j = i.value().begin();
                 j != i.value().end();
                 ++j) {
-            modified |= addOrReplaceTag(
-                    Tag(j.key(), j.value()),
-                    i.key());
+            if (addOrUpdateTag(
+                        Tag{j.key(), j.value()},
+                        i.key())) {
+                ++count;
+            }
         }
     }
-    return modified;
+    return count;
+}
+
+void Facets::addOrReplaceFacet(
+        const TagMap& tags,
+        const FacetId& facetId) {
+    m_impl.insert(facetId, tags);
+}
+
+void Facets::addOrReplaceAllFacets(
+        const Facets& facets) {
+    VERIFY_OR_DEBUG_ASSERT(this != &facets) {
+        return;
+    }
+    for (auto i = facets.m_impl.begin();
+            i != facets.m_impl.end();
+            ++i) {
+        addOrReplaceFacet(i.value(), i.key());
+    }
 }
 
 //static
-std::optional<CustomTags> CustomTags::fromJsonObject(
+std::optional<Facets> Facets::fromJsonObject(
         const QJsonObject& jsonObject,
         FromJsonMode mode) {
-    CustomTags customTags;
+    Facets facets;
     for (auto i = jsonObject.begin();
             i != jsonObject.end();
             ++i) {
@@ -328,7 +363,7 @@ std::optional<CustomTags> CustomTags::fromJsonObject(
             // but no predefined tags/labels. The facetId will be
             // displayed in the UI with the option to add custom
             // labels.
-            customTags.addOrIgnoreFacet(facetId);
+            facets.addOrIgnoreFacet(facetId);
             continue;
         }
         for (const auto& jsonValue : jsonArray) {
@@ -350,19 +385,19 @@ std::optional<CustomTags> CustomTags::fromJsonObject(
                         << facetId.value();
                 continue;
             }
-            customTags.addOrReplaceTag(
-                    std::move(*tag),
+            facets.addOrUpdateTag(
+                    *tag,
                     facetId);
         }
     }
-    return customTags;
+    return facets;
 }
 
-QJsonObject CustomTags::toJsonObject(
+QJsonObject Facets::toJsonObject(
         ToJsonMode mode) const {
     QJsonObject jsonObject;
-    for (auto i = getFacetedTags().begin();
-            i != getFacetedTags().end();
+    for (auto i = m_impl.begin();
+            i != m_impl.end();
             ++i) {
         QJsonArray jsonArray;
         for (auto j = i.value().begin();
@@ -381,7 +416,7 @@ QJsonObject CustomTags::toJsonObject(
 }
 
 //static
-std::pair<std::optional<CustomTags>, CustomTags::ParseJsonDataResult> CustomTags::parseJsonData(
+std::pair<std::optional<Facets>, Facets::ParseJsonDataResult> Facets::parseJsonData(
         const QByteArray& jsonData,
         FromJsonMode mode) {
     const auto [jsonObject, parseError] = json::parseObject(jsonData);
@@ -391,32 +426,32 @@ std::pair<std::optional<CustomTags>, CustomTags::ParseJsonDataResult> CustomTags
                 << parseError;
         return std::make_pair(std::nullopt, ParseJsonDataResult::DeserializationError);
     }
-    auto customTags = CustomTags::fromJsonObject(jsonObject, mode);
-    if (!customTags) {
+    auto facets = Facets::fromJsonObject(jsonObject, mode);
+    if (!facets) {
         qCWarning(kLogger)
                 << "Failed to transform JSON object"
                 << jsonObject;
         return std::make_pair(std::nullopt, ParseJsonDataResult::TransformationError);
     }
-    return std::make_pair(customTags, ParseJsonDataResult::Ok);
+    return std::make_pair(facets, ParseJsonDataResult::Ok);
 }
 
-QByteArray CustomTags::dumpJsonData() const {
+QByteArray Facets::dumpJsonData() const {
     return QJsonDocument(toJsonObject()).toJson(QJsonDocument::Compact);
 }
 
 bool operator==(
-        const CustomTags& lhs,
-        const CustomTags& rhs) {
-    return lhs.getFacetedTags() == rhs.getFacetedTags();
+        const Facets& lhs,
+        const Facets& rhs) {
+    return lhs.m_impl == rhs.m_impl;
 }
 
 QDebug operator<<(
         QDebug dbg,
-        const CustomTags& arg) {
-    dbg << "CustomTags{";
-    arg.dbgFacetedTags(dbg);
-    dbg << '}';
+        const Facets& arg) {
+    dbg << "Facets{"
+        << arg.m_impl
+        << '}';
     return dbg;
 }
 
