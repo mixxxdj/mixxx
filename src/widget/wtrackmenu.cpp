@@ -940,7 +940,7 @@ void WTrackMenu::slotImportMetadataFromFileTags() {
             progressLabelText,
             &trackOperator,
             // Update the database to reflect the recent changes. This is
-            // crucial for additional metadata like custom tags that are
+            // crucial for additional metadata like facets that are
             // directly fetched from the database for certain use cases!
             mixxx::ModalTrackBatchOperationProcessor::Mode::ApplyAndSave);
 }

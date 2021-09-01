@@ -48,12 +48,6 @@ FacetId::value_t FacetId::convertIntoValidValue(
 
 } // namespace mixxx
 
-const mixxx::library::tags::FacetId mixxx::library::tags::kFacetAcoustidFingerprint =
-        mixxx::library::tags::FacetId::staticConst(QStringLiteral("acoustid_fingerprint"));
-
-const mixxx::library::tags::FacetId mixxx::library::tags::kFacetAcoustidId =
-        mixxx::library::tags::FacetId::staticConst(QStringLiteral("acoustid_id"));
-
 // MusicBrainz: "comment:description"
 const mixxx::library::tags::FacetId mixxx::library::tags::kFacetComment =
         mixxx::library::tags::FacetId::staticConst(QStringLiteral("comment"));
@@ -84,6 +78,12 @@ const mixxx::library::tags::FacetId mixxx::library::tags::kFacetVenue =
 
 const mixxx::library::tags::FacetId mixxx::library::tags::kFacetVibe =
         mixxx::library::tags::FacetId::staticConst(QStringLiteral("vibe"));
+
+const mixxx::library::tags::FacetId mixxx::library::tags::kFacetAcoustidFingerprint =
+        mixxx::library::tags::FacetId::staticConst(QStringLiteral("acoustid_fingerprint"));
+
+const mixxx::library::tags::FacetId mixxx::library::tags::kFacetAcoustidId =
+        mixxx::library::tags::FacetId::staticConst(QStringLiteral("acoustid_id"));
 
 const mixxx::library::tags::FacetId mixxx::library::tags::kFacetMusicBrainzAlbumArtistId =
         mixxx::library::tags::FacetId::staticConst(QStringLiteral("musicbrainz_albumartistid"));
@@ -143,8 +143,6 @@ const mixxx::library::tags::FacetId mixxx::library::tags::kFacetSpeechiness =
 const QVector<mixxx::library::tags::FacetId>
         mixxx::library::tags::kReservedFacetIds =
                 QVector<mixxx::library::tags::FacetId>{
-                        mixxx::library::tags::kFacetAcoustidFingerprint,
-                        mixxx::library::tags::kFacetAcoustidId,
                         mixxx::library::tags::kFacetComment,
                         mixxx::library::tags::kFacetDecade,
                         mixxx::library::tags::kFacetEthno,
@@ -155,6 +153,8 @@ const QVector<mixxx::library::tags::FacetId>
                         mixxx::library::tags::kFacetMood,
                         mixxx::library::tags::kFacetVenue,
                         mixxx::library::tags::kFacetVibe,
+                        mixxx::library::tags::kFacetAcoustidFingerprint,
+                        mixxx::library::tags::kFacetAcoustidId,
                         mixxx::library::tags::kFacetMusicBrainzAlbumArtistId,
                         mixxx::library::tags::kFacetMusicBrainzAlbumId,
                         mixxx::library::tags::kFacetMusicBrainzArtistId,

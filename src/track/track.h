@@ -217,7 +217,7 @@ class Track : public QObject {
     /// Returns true if track metadata has been updated and false
     /// otherwise.
     ///
-    /// TODO: Update the corresponding custom tags by splitting
+    /// TODO: Update the corresponding facets by splitting
     /// the text according to the given tag mapping configuration.
     /// All existing custom genre tags with their associated score
     /// will be replaced.
@@ -234,9 +234,9 @@ class Track : public QObject {
     /// Returns true if track metadata has been updated and false
     /// otherwise.
     ///
-    /// TODO: Update the corresponding custom tags by splitting
+    /// TODO: Update the corresponding facets by splitting
     /// the text according to the given tag mapping configuration.
-    /// All existing custom mood tags with their associated score
+    /// All existing mood tags with their associated score
     /// will be replaced.
     bool updateMood(
             /*TODO: const mixxx::TaggingConfig& config,*/
@@ -581,7 +581,7 @@ class Track : public QObject {
         DEBUG_ASSERT(!m_record.m_headerParsed);
         m_record.m_headerParsed = headerParsed;
     }
-    /// Set the genre text WITHOUT updating the corresponding custom tags.
+    /// Set the genre text WITHOUT updating the corresponding facets.
     ///
     /// TODO: Remove and populate TrackRecord from the database instead.
     void setGenreFromTrackDAO(

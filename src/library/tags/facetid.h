@@ -165,8 +165,6 @@ inline uint qHash(
 ///
 /// TODO: These predefined facets are only intended as a starting point
 /// and for inspiration. They could be modified as needed.
-extern const FacetId kFacetAcoustidFingerprint;
-extern const FacetId kFacetAcoustidId;
 extern const FacetId kFacetComment; // multi-valued comment(s)
 extern const FacetId kFacetDecade;  // e.g. "1980s"
 extern const FacetId kFacetEthno;
@@ -177,6 +175,8 @@ extern const FacetId kFacetLanguage; // ISO 639-3
 extern const FacetId kFacetMood;     // multi-valued mood(s)
 extern const FacetId kFacetVenue;
 extern const FacetId kFacetVibe;
+extern const FacetId kFacetAcoustidFingerprint;
+extern const FacetId kFacetAcoustidId;
 extern const FacetId kFacetMusicBrainzAlbumArtistId;
 extern const FacetId kFacetMusicBrainzAlbumId;
 extern const FacetId kFacetMusicBrainzArtistId;

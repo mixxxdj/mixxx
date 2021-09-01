@@ -20,7 +20,7 @@ namespace tags {
 /// The optional facet is usually provided by the outer context,
 /// e.g. the key of a map that stores plain tags as values.
 ///
-/// Mixxx uses these kind of tags as `CustomTags` to store extended
+/// Mixxx uses these kind of tags as `Facets` to store extended
 /// metadata. They should not be confused with file tags (ID3, MP4,
 /// VorbisComment) for storing metadata in media files.
 class Tag final {
