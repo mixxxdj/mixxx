@@ -6,7 +6,7 @@ namespace {
 
 const QRegularExpression kValidFacetStringNotEmpty(
         QStringLiteral("^[\\+\\-\\./0-9@a-z\\[\\]_]+"));
-const QRegularExpression kInversekValidFacetStringNotEmpty(
+const QRegularExpression kInverseValidFacetStringNotEmpty(
         QStringLiteral("[^\\+\\-\\./0-9@a-z\\[\\]_]+"));
 
 } // anonymous namespace
@@ -37,7 +37,7 @@ bool TagFacetId::isValidValue(
 //static
 TagFacetId::value_t TagFacetId::convertIntoValidValue(
         const value_t& value) {
-    auto validValue = filterEmptyValue(value.toLower().remove(kInversekValidFacetStringNotEmpty));
+    auto validValue = filterEmptyValue(value.toLower().remove(kInverseValidFacetStringNotEmpty));
     DEBUG_ASSERT(isValidValue(validValue));
     return validValue;
 }
