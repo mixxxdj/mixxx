@@ -4,10 +4,21 @@
 
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hiddenylist.h"
+#include "controllers/hid/hiddevice.h"
 
 namespace {
 
 bool recognizeDevice(const hid_device_info& device_info) {
+    // Skip mice and keyboards. Users can accidentally disable their mouse
+    // and/or keyboard by enabling them as HID controllers in Mixxx.
+    // https://bugs.launchpad.net/mixxx/+bug/1940599
+    if (device_info.usage_page == mixxx::hid::kGenericDesktopUsagePage &&
+            (device_info.usage == mixxx::hid::kGenericDesktopMouseUsage ||
+                    device_info.usage == mixxx::hid::kGenericDesktopKeyboardUsage)) {
+        return false;
+    }
+
+    // Exclude specific devices from the denylist.
     bool interface_number_valid = device_info.interface_number != -1;
     const int denylist_len = sizeof(hid_denylisted) / sizeof(hid_denylisted[0]);
     for (int bl_index = 0; bl_index < denylist_len; bl_index++) {

@@ -11,6 +11,11 @@ namespace mixxx {
 
 namespace hid {
 
+constexpr unsigned short kGenericDesktopUsagePage = 0x01;
+
+constexpr unsigned short kGenericDesktopMouseUsage = 0x02;
+constexpr unsigned short kGenericDesktopKeyboardUsage = 0x06;
+
 constexpr unsigned short kAppleVendorId = 0x5ac;
 
 /// Detached copy of `struct hid_device_info`.
