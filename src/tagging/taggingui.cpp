@@ -356,6 +356,41 @@ void TrackFacetsMenu::rebuild(
                         }));
         pAction->setEnabled(!m_trackIds.isEmpty() && pMimeData);
     }
+    addSeparator();
+    {
+        const parented_ptr<QAction> pAction(
+                addAction(
+                        tr("Populate menu from selected tracks"),
+                        this,
+                        [this] {
+                            setCursor(Qt::WaitCursor);
+                            if (m_storage.mergeFacetsAndLabelsInto(
+                                        m_pTrackCollectionManager->refTaggingContext()
+                                                .refConfig()
+                                                .ptrFacets(),
+                                        m_trackIds) > 0) {
+                                m_pTrackCollectionManager->taggingContext().saveConfigFile();
+                            }
+                            unsetCursor();
+                        }));
+        pAction->setEnabled(!m_trackIds.isEmpty());
+    }
+    {
+        const parented_ptr<QAction> pAction(
+                addAction(
+                        tr("Populate menu from all tracks"),
+                        this,
+                        [this] {
+                            setCursor(Qt::WaitCursor);
+                            if (m_storage.mergeFacetsAndLabelsInto(
+                                        m_pTrackCollectionManager->refTaggingContext()
+                                                .refConfig()
+                                                .ptrFacets()) > 0) {
+                                m_pTrackCollectionManager->taggingContext().saveConfigFile();
+                            }
+                            unsetCursor();
+                        }));
+    }
 }
 
 //static

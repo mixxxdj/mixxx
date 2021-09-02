@@ -66,6 +66,18 @@ class TrackFacetsStorage : public QObject {
                 joinTrackIdList(trackIds));
     }
 
+    // Empty track ids/list = all tracks
+    // Returns the number of added tags or -1 on error
+    int mergeFacetsAndLabelsInto(
+            Facets* pFacets,
+            const QString& trackIdList = QString()) const;
+    int mergeFacetsAndLabelsInto(
+            Facets* pFacets,
+            const TrackIdList& trackIds) const {
+        return mergeFacetsAndLabelsInto(pFacets,
+                joinTrackIdList(trackIds));
+    }
+
     qulonglong countTags(
             const QString& trackIdList,
             const TagLabel& tagLabel,
