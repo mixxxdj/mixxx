@@ -78,8 +78,8 @@ BeatsPointer BeatGrid::makeBeatGrid(
         const QString& subVersion,
         mixxx::Bpm bpm,
         mixxx::audio::FramePos firstBeatPosition) {
-    // FIXME: Should this be a debug assertion?
-    if (!bpm.isValid() || !firstBeatPosition.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid() && firstBeatPosition.isValid() &&
+            !firstBeatPosition.isFractional()) {
         return nullptr;
     }
 
