@@ -2,8 +2,8 @@
 
 #include <QByteArray>
 #include <QList>
-#include <QSharedPointer>
 #include <QString>
+#include <memory>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -14,7 +14,7 @@
 namespace mixxx {
 
 class Beats;
-typedef QSharedPointer<Beats> BeatsPointer;
+typedef std::shared_ptr<Beats> BeatsPointer;
 
 class BeatIterator {
   public:

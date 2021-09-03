@@ -593,7 +593,7 @@ void bindTrackLibraryValues(
     QString beatsSubVersion;
     // Fall back on cached BPM
     mixxx::Bpm bpm = trackInfo.getBpm();
-    if (!pBeats.isNull()) {
+    if (pBeats) {
         beatsBlob = pBeats->toByteArray();
         beatsVersion = pBeats->getVersion();
         beatsSubVersion = pBeats->getSubVersion();
