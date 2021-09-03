@@ -459,10 +459,18 @@ bool exportTrackMetadataIntoTag(
 #endif // __EXTRA_METADATA__
 
     // Mixxx custom tags
+    // Delete existing metadata until a final decision about the
+    // naming of the metadata atom has been made.
+    writeAtom(
+            pTag,
+            kAtomKeyMixxxCustomTags,
+            TagLib::String{});
+    /* TODO: Re-enable
     writeAtom(
             pTag,
             kAtomKeyMixxxCustomTags,
             dumpCustomTagsString(trackMetadata));
+    */
 
     // Serato tags
     if (trackMetadata.getTrackInfo().getSeratoTags().status() != SeratoTags::ParserStatus::Failed) {

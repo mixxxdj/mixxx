@@ -1318,14 +1318,23 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     // it, since the impact is negligible.
     writeCommentsFrame(
             pTag,
-            TagLib::String(),
+            TagLib::String{},
             kFrameDescriptionMixxxCustomTags);
+    // Delete existing metadata until a final decision about the
+    // naming of the metadata frame has been made.
+    writeGeneralEncapsulatedObjectFrame(
+            pTag,
+            kFrameDescriptionMixxxCustomTags,
+            QByteArray{},
+            "application/json;charset=UTF-8");
     // Write the serialized JSON data into a GEOB frame
+    /* TODO: Re-enable
     writeGeneralEncapsulatedObjectFrame(
             pTag,
             kFrameDescriptionMixxxCustomTags,
             dumpCustomTagsUtf8(trackMetadata),
             "application/json;charset=UTF-8");
+    */
 
     // Export of Serato markers is disabled, because Mixxx
     // does not modify them.

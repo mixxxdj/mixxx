@@ -154,6 +154,10 @@ QString TrackMetadata::reformatYear(const QString& year) {
 void TrackMetadata::normalizeBeforeExport() {
     m_albumInfo.normalizeBeforeExport();
     m_trackInfo.normalizeBeforeExport();
+    // FIXME(uklotzde): Do not discard facets after import/export of
+    // file tags has been finalized. Until then we must ignore the
+    // facets to avoid detecting tracks as modified again and again!
+    m_facets = {};
 }
 
 bool TrackMetadata::anyFileTagsModified(

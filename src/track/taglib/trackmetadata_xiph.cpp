@@ -605,10 +605,18 @@ bool exportTrackMetadataIntoTag(
 #endif // __EXTRA_METADATA__
 
     // Mixxx custom tags
+    // Delete existing metadata until a final decision about the
+    // naming of the metadata field has been made.
+    writeCommentField(
+            pTag,
+            kCommentFieldKeyMixxxCustomTags,
+            TagLib::String{});
+    /* TODO: Re-enable
     writeCommentField(
             pTag,
             kCommentFieldKeyMixxxCustomTags,
             dumpCustomTagsString(trackMetadata));
+    */
 
     // Serato tags
     //
