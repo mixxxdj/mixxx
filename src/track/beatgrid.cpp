@@ -75,9 +75,9 @@ BeatGrid::BeatGrid(const BeatGrid& other)
 // static
 BeatsPointer BeatGrid::makeBeatGrid(
         audio::SampleRate sampleRate,
-        const QString& subVersion,
         mixxx::Bpm bpm,
-        mixxx::audio::FramePos firstBeatPosition) {
+        mixxx::audio::FramePos firstBeatPosition,
+        const QString& subVersion) {
     VERIFY_OR_DEBUG_ASSERT(bpm.isValid() && firstBeatPosition.isValid() &&
             !firstBeatPosition.isFractional()) {
         return nullptr;
@@ -113,7 +113,7 @@ BeatsPointer BeatGrid::fromByteArray(
     const auto firstBeat = mixxx::audio::FramePos(blob->firstBeat);
     const auto bpm = mixxx::Bpm(blob->bpm);
 
-    return makeBeatGrid(sampleRate, subVersion, bpm, firstBeat);
+    return makeBeatGrid(sampleRate, bpm, firstBeat, subVersion);
 }
 
 QByteArray BeatGrid::toByteArray() const {

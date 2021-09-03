@@ -1246,7 +1246,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     } else if (bpm.isValid()) {
         // Load a temporary beat grid without offset that will be replaced by the analyzer.
         const auto pBeats = mixxx::BeatGrid::makeBeatGrid(
-                pTrack->getSampleRate(), QString(), bpm, mixxx::audio::kStartFramePos);
+                pTrack->getSampleRate(), bpm, mixxx::audio::kStartFramePos);
         pTrack->trySetBeats(pBeats);
     } else {
         pTrack->trySetBeats(nullptr);

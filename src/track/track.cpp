@@ -7,7 +7,7 @@
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
 #include "sources/metadatasource.h"
-#include "track/beatfactory.h"
+#include "track/beatgrid.h"
 #include "track/beatmap.h"
 #include "track/trackref.h"
 #include "util/assert.h"
@@ -355,7 +355,7 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
         if (!cuePosition.isValid()) {
             cuePosition = mixxx::audio::kStartFramePos;
         }
-        auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(),
+        auto pBeats = mixxx::BeatGrid::makeBeatGrid(getSampleRate(),
                 bpm,
                 cuePosition);
         return trySetBeatsWhileLocked(std::move(pBeats));
