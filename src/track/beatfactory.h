@@ -11,11 +11,6 @@ class Track;
 
 class BeatFactory {
   public:
-    static mixxx::BeatsPointer makeBeatGrid(
-            mixxx::audio::SampleRate sampleRate,
-            mixxx::Bpm bpm,
-            mixxx::audio::FramePos firstBeatFramePos);
-
     static QString getPreferredVersion(bool fixedTempo);
 
     static QString getPreferredSubVersion(

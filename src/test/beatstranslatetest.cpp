@@ -10,13 +10,13 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     const auto bpm = mixxx::Bpm(60.0);
     constexpr auto firstBeat = mixxx::audio::kStartFramePos;
     auto grid1 = mixxx::BeatGrid::makeBeatGrid(
-            m_pTrack1->getSampleRate(), QString(), bpm, firstBeat);
+            m_pTrack1->getSampleRate(), bpm, firstBeat);
     m_pTrack1->trySetBeats(grid1);
     ASSERT_DOUBLE_EQ(firstBeat.value(),
             grid1->findClosestBeat(mixxx::audio::kStartFramePos).value());
 
     auto grid2 = mixxx::BeatGrid::makeBeatGrid(
-            m_pTrack2->getSampleRate(), QString(), bpm, firstBeat);
+            m_pTrack2->getSampleRate(), bpm, firstBeat);
     m_pTrack2->trySetBeats(grid2);
     ASSERT_DOUBLE_EQ(firstBeat.value(),
             grid2->findClosestBeat(mixxx::audio::kStartFramePos).value());
