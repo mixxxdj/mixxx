@@ -1334,11 +1334,11 @@
                 componentStorage,
                 ["onFocusChange", "shift", "unshift"]);
             var shiftType = effectUnitDefinition.sendShiftedFor;
-            if (typeof shiftType === 'function') {
+            if (typeof shiftType === "function") {
                 effectUnit.forEachComponent(function(component) {
                     if (component instanceof shiftType) {
                         component.sendShifted = true;
-                    };
+                    }
                 });
             }
             effectUnit.init();
