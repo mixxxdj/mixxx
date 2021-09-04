@@ -156,7 +156,7 @@ TEST(BeatGridTest, FromMetadata) {
     EXPECT_DOUBLE_EQ(pTrack->getBpm(), mixxx::Bpm::kValueUndefined);
 
     pBeats = pTrack->getBeats();
-    EXPECT_EQ(pBeats.isNull(), true);
+    EXPECT_EQ(nullptr, pBeats);
 }
 
 }  // namespace

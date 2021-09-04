@@ -515,7 +515,7 @@ void DlgTrackInfo::clear() {
 
     resetTrackRecord();
 
-    m_pBeatsClone.clear();
+    m_pBeatsClone.reset();
     updateSpinBpmFromBeats();
 
     txtLocation->setText("");
@@ -552,7 +552,7 @@ void DlgTrackInfo::slotBpmThreeHalves() {
 }
 
 void DlgTrackInfo::slotBpmClear() {
-    m_pBeatsClone.clear();
+    m_pBeatsClone.reset();
     updateSpinBpmFromBeats();
 
     bpmConst->setChecked(true);
@@ -578,7 +578,7 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
                     bpm,
                     cuePosition);
         } else {
-            m_pBeatsClone.clear();
+            m_pBeatsClone.reset();
         }
         spinBpm->setEnabled(true);
         bpmTap->setEnabled(true);
@@ -606,7 +606,7 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
 void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     const auto bpm = mixxx::Bpm(value);
     if (!bpm.isValid()) {
-        m_pBeatsClone.clear();
+        m_pBeatsClone.reset();
         return;
     }
 
