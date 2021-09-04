@@ -10,11 +10,11 @@ typedef struct hid_denylist {
 
 /// USB HID device that should not be recognized as controllers
 hid_denylist_t hid_denylisted[] = {
-        {0x5ac, 0x253, 0xff00, 0x1, -1}, // Apple laptop chassis
-        {0x5ac, 0x8242, 0xc, 0x1, -1},   // Apple IR Remote Controller
         {0x1157, 0x300, 0x1, 0x2, -1},   // EKS Otus mouse pad (OS/X,windows)
         {0x1157, 0x300, 0x0, 0x0, 0x3},  // EKS Otus mouse pad (linux)
 };
+
+constexpr unsigned short kAppleVendorId = 0x5ac;
 
 constexpr unsigned short kGenericDesktopUsagePage = 0x01;
 
