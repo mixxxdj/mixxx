@@ -1024,11 +1024,12 @@
      *     |     |     +- options: Additional options for the component (object, required)
      *     |     |                 Example: {midi: [0xB0, 0x43], key: "reverse"}
      *     |     +- equalizerUnit: Equalizer unit definition (optional)
-     *     |        +- components: An object of component definitions for the unit.
-     *     |        |              Each definition is a key-value pair for a component of
-     *     |        |              `EqualizerUnit` where `key` is the name of
-     *     |        |              the component and `value` is the MIDI address.
-     *     |        |              Example: `super1: [0xB0, 0x29]`
+     *     |        +- midi: An object of component definitions for the unit.
+     *     |        |        Each definition is a key-value pair for a component of `EqualizerUnit`
+     *     |        |        where `key` is the name of the component and `value` is the MIDI
+     *     |        |        address. Examples:
+     *     |        |          `super1: [0xB0, 0x29]`
+     *     |        |          `parameterKnobs: {1: [0xB0, 0x06], 2: [0xB0, 0x05], 3: [0xB0, 0x04]}`
      *     |        +- feedback: Enable controller feedback (boolean, optional)
      *     |        |            When set to `true`, values of the components in this unit are sent
      *     |        |            to the hardware controller on changes. The address of the MIDI
@@ -1044,11 +1045,17 @@
      *     +- effectUnits: An array of effect unit definitions (may be empty or omitted)
      *     |  +- effectUnit
      *     |     +- unitNumbers: As defined by `components.EffectUnit`.
-     *     |     +- components: As described for equalizer unit using `components.EffectUnit`
-     *     |     |              instead of `EqualizerUnit`.
-     *     |     |              Example: `effectFocusButton: [0xB0, 0x15]`
+     *     |     +- midi: As described for equalizer unit using `components.EffectUnit` instead of
+     *     |     |        `EqualizerUnit`. Examples:
+     *     |     |          `effectFocusButton: [0xB0, 0x15]`
+     *     |     |          `knobs: {1: [0xB0, 0x26], 2: [0xB0, 0x25], 3: [0xB0, 0x24]}`
      *     |     +- feedback: As described for equalizer unit
      *     |     +- output: As described for equalizer unit
+     *     |     +- sendShiftedFor: Type of components that send shifted MIDI messages (optional)
+     *     |                        When set, all components of this type within this effect unit
+     *     |                        are configured to send shifted MIDI messages
+     *     |                        (`sendShifted: true`).
+     *     |                        Example: `sendShiftedFor: c.Button`
      *     |
      *     +- containers: An array of component container definitions (may be empty or omitted)
      *        +- componentContainer
