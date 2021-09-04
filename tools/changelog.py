@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import pathlib
 import re
 
 
@@ -24,17 +25,17 @@ def add_missing_links(changelog):
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("file", type=argparse.FileType("r+"))
+    parser.add_argument("file", type=pathlib.Path)
     args = parser.parse_args(argv)
 
     # Fetch changelog and convert to RST
-    changelog = args.file.read()
+    with args.file.open("r") as fp:
+        changelog = fp.read()
+
     fixed_changelog = add_missing_links(changelog)
     if changelog != fixed_changelog:
-        args.file.seek(0)
-        args.file.write(fixed_changelog)
-        args.file.truncate()
-    args.file.close()
+        with args.file.open("w") as fp:
+            fp.write(fixed_changelog)
 
 
 if __name__ == "__main__":
