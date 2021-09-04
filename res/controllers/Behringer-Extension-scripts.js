@@ -1333,6 +1333,14 @@
                 new components.EffectUnit(effectUnitDefinition.unitNumbers, true),
                 componentStorage,
                 ["onFocusChange", "shift", "unshift"]);
+            var shiftType = effectUnitDefinition.sendShiftedFor;
+            if (typeof shiftType === 'function') {
+                effectUnit.forEachComponent(function(component) {
+                    if (component instanceof shiftType) {
+                        component.sendShifted = true;
+                    };
+                });
+            }
             effectUnit.init();
             return effectUnit;
         },
