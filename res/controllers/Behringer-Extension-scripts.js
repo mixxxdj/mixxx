@@ -6,6 +6,9 @@
     /** @private */
     var components = global.components;
 
+    /** @private */
+    var engine = global.engine;
+
     /**
      * Contains functions to print a message to the log.
      * `debug` output is suppressed unless the caller owns a truthy property `debug`.
@@ -451,7 +454,7 @@
         inValueScale: function(value) {
             var direction = DirectionEncoder.prototype.inValueScale.call(this, value);
             var beats = this.sizeControl
-                ? global.engine.getValue(this.group, this.sizeControl)
+                ? engine.getValue(this.group, this.sizeControl)
                 : this.size;
             return direction * beats;
         },
