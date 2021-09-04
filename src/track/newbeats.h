@@ -1,3 +1,4 @@
+#include <QVector>
 #include <iterator>
 #include <vector>
 
@@ -126,6 +127,17 @@ class Beats final : public ::mixxx::Beats {
         std::vector<BeatMarker>::const_iterator m_it;
         int m_beatOffset;
     };
+
+    static mixxx::BeatsPointer fromConstTempo(
+            mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::FramePos endMarkerPosition,
+            mixxx::Bpm endMarkerBpm,
+            const QString& subVersion = QString());
+
+    static mixxx::BeatsPointer fromBeatPositions(
+            mixxx::audio::SampleRate sampleRate,
+            const QVector<audio::FramePos>& beatPositions,
+            const QString& subVersion = QString());
 
     Beats(std::vector<BeatMarker> markers,
             mixxx::audio::FramePos endMarkerPosition,

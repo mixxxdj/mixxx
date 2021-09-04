@@ -177,6 +177,79 @@ void Beats::ConstIterator::updateValue() {
 }
 
 // static
+mixxx::BeatsPointer Beats::fromConstTempo(
+        mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::FramePos endMarkerPosition,
+        mixxx::Bpm endMarkerBpm,
+        const QString& subVersion) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid() &&
+            endMarkerPosition.isValid() && endMarkerBpm.isValid()) {
+        return nullptr;
+    }
+    return BeatsPointer(new Beats({}, endMarkerPosition, endMarkerBpm, sampleRate, subVersion));
+}
+
+// static
+mixxx::BeatsPointer Beats::fromBeatPositions(
+        mixxx::audio::SampleRate sampleRate,
+        const QVector<audio::FramePos>& beatPositions,
+        const QString& subVersion) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid() && beatPositions.size() >= 2) {
+        return nullptr;
+    }
+
+    std::vector<BeatMarker> markers;
+    auto markerPosition = beatPositions.front();
+    VERIFY_OR_DEBUG_ASSERT(markerPosition.isValid()) {
+        return nullptr;
+    }
+    int beatsTillNextMarker = 0;
+
+    auto previousPosition = markerPosition;
+    audio::FrameDiff_t previousBeatLengthFrames = beatPositions[1] - previousPosition;
+    for (int i = 1; i < beatPositions.size(); i++) {
+        VERIFY_OR_DEBUG_ASSERT(beatPositions[i].isValid() &&
+                beatPositions[i] > beatPositions[i - 1]) {
+            return nullptr;
+        }
+        auto position = beatPositions[i];
+        audio::FrameDiff_t beatLengthFrames = position - previousPosition;
+
+        if (std::fabs(previousBeatLengthFrames - beatLengthFrames) < 1.0) {
+            previousPosition = position;
+            beatsTillNextMarker++;
+            continue;
+        }
+
+        DEBUG_ASSERT(markerPosition.isValid());
+        DEBUG_ASSERT(beatsTillNextMarker > 0);
+        markers.push_back(BeatMarker(markerPosition.toLowerFrameBoundary(), beatsTillNextMarker));
+        markerPosition = previousPosition;
+        previousBeatLengthFrames = beatLengthFrames;
+        beatsTillNextMarker = 1;
+        previousPosition = position;
+    }
+
+    // Special case: Because we want to be able to serialize to the old beatmap
+    // format, we need to save the last beat position separately. Otherwise, we
+    // can not reconstruct the last beats in the beatmap because we don't know
+    // the length of the track.
+    //
+    // Hence, we insert an additional marker here.
+    markers.push_back(BeatMarker(markerPosition.toLowerFrameBoundary(), beatsTillNextMarker));
+    markerPosition = beatPositions.back();
+
+    const auto bpm = Bpm(60.0 * sampleRate / previousBeatLengthFrames);
+    DEBUG_ASSERT(markerPosition.isValid());
+    DEBUG_ASSERT(bpm.isValid());
+    return BeatsPointer(new Beats(std::move(markers),
+            markerPosition.toLowerFrameBoundary(),
+            bpm,
+            sampleRate,
+            subVersion));
+}
+
+// static
 mixxx::BeatsPointer Beats::fromByteArray(
         mixxx::audio::SampleRate sampleRate,
         const QString& beatsVersion,
@@ -208,19 +281,25 @@ mixxx::BeatsPointer Beats::fromBeatGridByteArray(
         mixxx::audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
-    track::io::BeatGrid grid;
-    if (grid.ParseFromArray(byteArray.constData(), byteArray.size())) {
-        const auto position = audio::FramePos(grid.first_beat().frame_position());
-        const auto bpm = Bpm(grid.bpm().bpm());
-        return BeatsPointer(new Beats({}, position, bpm, sampleRate, subVersion));
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
+        return nullptr;
     }
 
-    // Legacy fallback for BeatGrid-1.0
-    if (byteArray.size() == sizeof(BeatGridV1Data)) {
+    track::io::BeatGrid grid;
+    audio::FramePos position;
+    Bpm bpm;
+    if (grid.ParseFromArray(byteArray.constData(), byteArray.size())) {
+        position = audio::FramePos(grid.first_beat().frame_position());
+        bpm = Bpm(grid.bpm().bpm());
+    } else if (byteArray.size() == sizeof(BeatGridV1Data)) {
+        // Legacy fallback for BeatGrid-1.0
         const auto blob = reinterpret_cast<const BeatGridV1Data*>(byteArray.constData());
-        const auto position = mixxx::audio::FramePos(blob->firstBeat);
-        const auto bpm = mixxx::Bpm(blob->bpm);
-        return BeatsPointer(new Beats({}, position, bpm, sampleRate, subVersion));
+        position = mixxx::audio::FramePos(blob->firstBeat);
+        bpm = mixxx::Bpm(blob->bpm);
+    }
+
+    if (position.isValid() && bpm.isValid()) {
+        return fromConstTempo(sampleRate, position, bpm, subVersion);
     }
 
     // Failed to parse the beatgrid.
@@ -232,48 +311,28 @@ BeatsPointer Beats::fromBeatMapByteArray(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
+        return nullptr;
+    }
+
     track::io::BeatMap map;
     if (!map.ParseFromArray(byteArray.constData(), byteArray.size())) {
         return nullptr;
     }
 
-    if (map.beat_size() < 2) {
+    QVector<audio::FramePos> beatPositions;
+    beatPositions.reserve(map.beat_size());
+    for (int i = 0; i < map.beat_size(); i++) {
+        beatPositions.append(audio::FramePos(map.beat(i).frame_position()));
+    }
+
+    if (beatPositions.size() < 2) {
         qWarning() << "Failed to deserialize Beats: BeatMap contains only"
-                   << map.beat_size() << "beat(s), at least 2 are needed";
+                   << beatPositions.size() << "beat(s), at least 2 are needed";
         return nullptr;
     }
 
-    std::vector<BeatMarker> markers;
-    auto markerPosition = audio::FramePos(map.beat(0).frame_position());
-    int beatsTillNextMarker = 1;
-    audio::FrameDiff_t previousBeatLengthFrames =
-            audio::FramePos(map.beat(1).frame_position()) - markerPosition;
-
-    for (int i = 1; i < map.beat_size(); i++) {
-        auto position = audio::FramePos(map.beat(i).frame_position());
-        audio::FrameDiff_t beatLengthFrames = position - markerPosition;
-        if (std::fabs(previousBeatLengthFrames - beatLengthFrames) < 1.0) {
-            beatsTillNextMarker++;
-            continue;
-        }
-
-        markers.push_back(BeatMarker(markerPosition, beatsTillNextMarker));
-        markerPosition = position;
-        previousBeatLengthFrames = beatLengthFrames;
-        beatsTillNextMarker = 1;
-    }
-
-    // Special case: Because we want to be able to serialize to the old beatmap
-    // format, we need to save the last beat position separately. Otherwise, we
-    // can not reconstruct the last beats in the beatmap because we don't know
-    // the length of the track.
-    if (beatsTillNextMarker > 1) {
-        qWarning() << "BeatMarker" << markerPosition << beatsTillNextMarker;
-        markers.push_back(BeatMarker(markerPosition, beatsTillNextMarker - 1));
-        markerPosition = audio::FramePos(map.beat(map.beat_size() - 1).frame_position());
-    }
-    auto bpm = Bpm(60.0 * sampleRate / previousBeatLengthFrames);
-    return BeatsPointer(new Beats(std::move(markers), markerPosition, bpm, sampleRate, subVersion));
+    return fromBeatPositions(sampleRate, beatPositions, subVersion);
 }
 
 QByteArray Beats::toByteArray() const {
