@@ -494,13 +494,13 @@
      */
     var BackLoopButton = function(options) {
         options = options || {};
-        options.outKey = options.outKey || "loop_enabled";
+        options.key = options.key || "loop_enabled";
         components.Button.call(this, options);
     };
     BackLoopButton.prototype = deriveFrom(components.Button, {
-        input: function(_channel, _control, value, _status, group) {
-            var engine = global.engine;
+        inSetValue: function(value) {
             var script = global.script;
+            var group = this.group;
             if (value) {
                 var loopSize = engine.getValue(group, "beatloop_size");
                 var beatjumpSize = engine.getValue(group, "beatjump_size");
