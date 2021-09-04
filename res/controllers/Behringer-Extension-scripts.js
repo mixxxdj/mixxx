@@ -306,14 +306,21 @@
         min: 0,
         inValueScale: function(value) {
             var direction = 0;
-            if (value > this.previousValue || value === this.max) {
-                direction = 1;
-            } else if (value < this.previousValue || value === this.min) {
-                direction = -1;
+            if (!(this.relative && this.isShifted)) {
+                if (value > this.previousValue || value === this.max) {
+                    direction = 1;
+                } else if (value < this.previousValue || value === this.min) {
+                    direction = -1;
+                }
+                this.previousValue = value;
             }
-            this.previousValue = value;
-
             return direction;
+        },
+        shift: function() {
+            this.isShifted = true;
+        },
+        unshift: function() {
+            this.isShifted = false;
         },
     });
 
@@ -1055,14 +1062,6 @@
     GenericMidiController.prototype = deriveFrom(components.ComponentContainer, {
 
         /**
-         * Contains all decks and effect units so that a (un)shift operation
-         * is delegated to the decks, effect units and their children.
-         *
-         * @private
-         */
-        componentContainers: [],
-
-        /**
          * Initialize the controller mapping.
          * This function is called by Mixxx on startup.
          *
@@ -1077,6 +1076,13 @@
             if (typeof this.config.init === "function") {
                 this.config.init(controllerId, debug);
             }
+
+            /*
+            * Contains all decks and effect units so that a (un)shift operation
+            * is delegated to the decks, effect units and their children.
+            */
+            this.componentContainers = [];
+
             this.layerManager = this.createLayerManager(
                 this.componentContainers,
                 this.config.decks || [],
