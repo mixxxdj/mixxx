@@ -6,6 +6,7 @@
 #include <QTreeWidget>
 #include <QtDebug>
 
+#include "defs_urls.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
@@ -51,6 +52,7 @@ DlgTrackInfo::DlgTrackInfo(
 
 void DlgTrackInfo::init() {
     setupUi(this);
+    setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
     coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
     coverLayout->setSpacing(0);
