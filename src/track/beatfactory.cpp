@@ -80,7 +80,7 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
                 constantRegions, sampleRate, &firstBeat);
         firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
         auto pGrid = mixxx::BeatGrid::makeBeatGrid(
-                sampleRate, constBPM, firstBeat, subVersion);
+                sampleRate, constBPM, firstBeat.toNearestFrameBoundary(), subVersion);
         return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
         QVector<mixxx::audio::FramePos> ironedBeats = BeatUtils::getBeats(constantRegions);
