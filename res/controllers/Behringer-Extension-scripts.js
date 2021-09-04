@@ -108,12 +108,13 @@
         components.Button.call(this, options);
     };
     ShiftButton.prototype = deriveFrom(components.Button, {
-        input: function(_channel, _control, value, _status, _group) {
+        inSetValue: function(value) {
             if (value) {
                 this.target.shift();
             } else {
                 this.target.unshift();
             }
+            components.Button.prototype.inSetValue.call(this, value);
         },
     });
 
