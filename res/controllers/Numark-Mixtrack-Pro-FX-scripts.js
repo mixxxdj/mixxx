@@ -290,21 +290,24 @@ MixtrackProFX.Deck = function(number) {
     this.loop = new components.Button({
         outKey: "loop_enabled",
         midi: [0x94 + channel, 0x40],
-        shift: function() {
-            this.inKey = "loop_in_goto";
-            this.input = components.Button.prototype.input;
-        },
-        unshift: function() {
-            this.input = function(channel, control, value, status, group) {
-                if (!this.isPress(channel, control, value)) {
-                    return;
-                }
+        input: function(channel, control, value, status, group) {
+            if (!this.isPress(channel, control, value)) {
+                return;
+            }
+
+            if (!MixtrackProFX.shifted) {
                 if (engine.getValue(group, "loop_enabled") === 0) {
                     script.triggerControl(group, "beatloop_activate");
                 } else {
                     script.triggerControl(group, "beatlooproll_activate");
                 }
-            };
+            } else {
+                if (engine.getValue(group, "loop_enabled") === 0) {
+                    script.triggerControl(group, "reloop_toggle");
+                } else {
+                    script.triggerControl(group, "reloop_andstop");
+                }
+            }
         },
         shiftControl: true,
         sendShifted: true,
