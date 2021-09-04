@@ -78,8 +78,9 @@ BeatsPointer BeatGrid::makeBeatGrid(
         mixxx::Bpm bpm,
         mixxx::audio::FramePos firstBeatPosition,
         const QString& subVersion) {
-    VERIFY_OR_DEBUG_ASSERT(bpm.isValid() && firstBeatPosition.isValid() &&
-            !firstBeatPosition.isFractional()) {
+    // FIXME: What happens if firstBeatPosition is fractional and gets
+    // rounded to int32 in protobuf? This is actually the common case!
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid() && firstBeatPosition.isValid()) {
         return nullptr;
     }
 
