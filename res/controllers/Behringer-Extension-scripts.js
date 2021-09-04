@@ -346,6 +346,22 @@
     });
 
     /**
+     * A pot for a value range of [-bound..0..+bound].
+     *
+     * @constructor
+     * @extends {components.Pot}
+     * @param {object} options Options object
+     * @param {number} options.bound A positive integer defining the range bounds
+     * @public
+     */
+    var RangeAwarePot = function(options) {
+        components.Pot.call(this, options);
+    };
+    RangeAwarePot.prototype = deriveFrom(components.Pot, {
+        outValueScale: RangeAwareEncoder.prototype.outValueScale
+    });
+
+    /**
      * A button to cycle through the values of an enumeration.
      *
      * The enumeration values may be defined either explicitly by an array
@@ -1396,6 +1412,7 @@
     exports.BlinkingButton = BlinkingButton;
     exports.DirectionEncoder = DirectionEncoder;
     exports.RangeAwareEncoder = RangeAwareEncoder;
+    exports.RangeAwarePot = RangeAwarePot;
     exports.EnumToggleButton = EnumToggleButton;
     exports.EnumEncoder = EnumEncoder;
     exports.LoopEncoder = LoopEncoder;
