@@ -965,7 +965,8 @@ void LoopingControl::slotLoopStartPos(double positionSamples) {
     loopInfo.startPosition = position;
     m_pCOLoopStartPosition->set(position.toEngineSamplePosMaybeInvalid());
 
-    if (loopInfo.endPosition.isValid() && loopInfo.endPosition <= loopInfo.startPosition) {
+    if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid() &&
+            loopInfo.endPosition <= loopInfo.startPosition) {
         emit loopReset();
         loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
         m_pCOLoopEndPosition->set(kNoTrigger);
