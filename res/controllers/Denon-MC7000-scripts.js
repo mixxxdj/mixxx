@@ -86,7 +86,7 @@ MC7000.scratchParams = {
 // set to 0.5 with audio buffer set to 50ms
 // set to 1 with audio buffer set to 25ms
 // set to 3 with audio buffer set to 5ms
-MC7000.jogSensitivity = 3;
+MC7000.jogSensitivity = 2;
 
 /*/////////////////////////////////
 //      USER VARIABLES END       //
@@ -653,8 +653,9 @@ MC7000.loadButton = function(channel, control, value, status, group) {
 MC7000.wheelTouch = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     var deckOffset = deckNumber - 1;
+    var maxLibrary = engine.getValue("[Master]", "maximize_library");
     if (MC7000.isVinylMode[deckOffset]) {
-        if (value === 0x7F) {
+        if (value === 0x7F && maxLibrary === 0) {
             engine.scratchEnable(deckNumber, MC7000.jogWheelTicksPerRevolution,
                 MC7000.scratchParams.recordSpeed,
                 MC7000.scratchParams.alpha,
@@ -681,7 +682,12 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
     var adjustedSpeed = numTicks * MC7000.jogSensitivity / 10;
     var deckNumber = script.deckFromGroup(group);
     var deckOffset = deckNumber - 1;
-    if (engine.isScratching(deckNumber)) {
+    var maxLibrary = engine.getValue("[Master]", "maximize_library");
+    if (maxLibrary === 1 && numTicks > 0) {
+        engine.setValue("[Library]", "MoveUp", 1);
+    } else if (maxLibrary === 1 && numTicks < 0) {
+        engine.setValue("[Library]", "MoveDown", 1);
+    } else if (engine.isScratching(deckNumber)) {
     // Scratch!
         engine.scratchTick(deckNumber, numTicks * MC7000.jogSensitivity);
     } else {
