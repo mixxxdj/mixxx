@@ -37,7 +37,7 @@ var MC7000 = {};
 // 1) Beat LED in Slicer mode (counts every 8 beats AFTER the CUE point)
 //    only works for CONSTANT TEMPO tracks
 //    needs beat grid and CUE point set
-MC7000.experimental = true;
+MC7000.experimental = false;
 
 // Wanna have Needle Search active while playing a track ?
 // In any case Needle Search is available holding "SHIFT" down.
@@ -86,7 +86,7 @@ MC7000.scratchParams = {
 // set to 0.5 with audio buffer set to 50ms
 // set to 1 with audio buffer set to 25ms
 // set to 3 with audio buffer set to 5ms
-MC7000.jogSensitivity = 2;
+MC7000.jogSensitivity = 1;
 
 /*/////////////////////////////////
 //      USER VARIABLES END       //
