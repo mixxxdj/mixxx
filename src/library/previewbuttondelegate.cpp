@@ -173,22 +173,22 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(parentTableView()) {
         return;
     }
-    // this slot is called if the mouse pointer enters ANY cell on
-    // the QTableView but the code should only be executed in the
-    // preview button column
-    if (index.column() != m_column) {
+    // Ignore signal if the edited cell index didn't change.
+    // Receiving this signal for the same cell again could happen
+    // if no other cell has been entered between those events.
+    // https://bugs.launchpad.net/mixxx/+bug/1929141
+    if (index == m_currentEditedCellIndex) {
         return;
     }
+    // Close the editor when leaving the currently edited cell
     if (m_currentEditedCellIndex.isValid()) {
-        // Ignore signal if the edited cell row didn't change.
-        // Receiving this signal for the same cell again happens, because
-        // the editor is not closed when leaving the currently edited cell!
-        // https://bugs.launchpad.net/mixxx/+bug/1929141
-        if (index.row() == m_currentEditedCellIndex.row()) {
-            return;
-        }
-        // Close the editor in the other cell
         parentTableView()->closePersistentEditor(m_currentEditedCellIndex);
+        m_currentEditedCellIndex = QModelIndex();
+    }
+    // Only open a new editor for preview column cells, but not any
+    // other cells
+    if (index.column() != m_column) {
+        return;
     }
     parentTableView()->openPersistentEditor(index);
     m_currentEditedCellIndex = index;
