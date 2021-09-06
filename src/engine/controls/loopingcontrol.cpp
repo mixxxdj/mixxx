@@ -959,19 +959,17 @@ void LoopingControl::slotLoopStartPos(double positionSamples) {
     if (!position.isValid()) {
         emit loopReset();
         setLoopingEnabled(false);
+    } else if (loopInfo.endPosition.isValid() && loopInfo.endPosition <= position) {
+        emit loopReset();
+        loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
+        m_pCOLoopEndPosition->set(kNoTrigger);
+        setLoopingEnabled(false);
     }
 
     loopInfo.seekMode = LoopSeekMode::MovedOut;
     loopInfo.startPosition = position;
     m_pCOLoopStartPosition->set(position.toEngineSamplePosMaybeInvalid());
 
-    if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid() &&
-            loopInfo.endPosition <= loopInfo.startPosition) {
-        emit loopReset();
-        loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
-        m_pCOLoopEndPosition->set(kNoTrigger);
-        setLoopingEnabled(false);
-    }
     m_loopInfo.setValue(loopInfo);
 }
 
