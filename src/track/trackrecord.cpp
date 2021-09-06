@@ -163,14 +163,16 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
                             << "is ahead of"
                             << fileSourceSynchronizedAt
                             << "for file"
-                            << mixxx::FileInfo(fileInfo);
+                            << mixxx::FileInfo(fileInfo)
+                            << ": Has this file been replaced with an older version?";
                 }
                 return SourceSyncStatus::Synchronized;
             }
         } else {
             kLogger.warning()
                     << "Failed to obtain synchronization time stamp for file"
-                    << mixxx::FileInfo(fileInfo);
+                    << mixxx::FileInfo(fileInfo)
+                    << ": Is this file missing or inaccessible?";
         }
     }
     return SourceSyncStatus::Unknown;
