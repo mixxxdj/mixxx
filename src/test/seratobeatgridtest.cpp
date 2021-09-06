@@ -6,7 +6,7 @@
 #include <QtDebug>
 
 #include "track/beatgrid.h"
-#include "track/beatmap.h"
+#include "track/beats.h"
 #include "track/serato/beatgrid.h"
 #include "track/serato/beatsimporter.h"
 #include "util/memory.h"
@@ -153,8 +153,7 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
 
     // Check the const beatmap
     {
-        const auto pBeats = mixxx::BeatMap::makeBeatMap(
-                sampleRate, QString("Test"), beatPositionsFrames);
+        const auto pBeats = mixxx::Beats::fromBeatPositions(sampleRate, beatPositionsFrames);
         // Check that the first section's BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
                           mixxx::audio::FramePos(initialFrameOffset +
@@ -191,8 +190,7 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
     ASSERT_EQ(beatPositionsFrames.size(), kNumBeats120BPM + kNumBeats60BPM);
 
     {
-        const auto pBeats = mixxx::BeatMap::makeBeatMap(
-                sampleRate, QString("Test"), beatPositionsFrames);
+        const auto pBeats = mixxx::Beats::fromBeatPositions(sampleRate, beatPositionsFrames);
         // Check that the first section'd BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
                           mixxx::audio::FramePos(initialFrameOffset +
@@ -242,8 +240,7 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
     beatPositionsFrames.append(beatPositionFrames);
 
     {
-        const auto pBeats = mixxx::BeatMap::makeBeatMap(
-                sampleRate, QString("Test"), beatPositionsFrames);
+        const auto pBeats = mixxx::Beats::fromBeatPositions(sampleRate, beatPositionsFrames);
         // Check that the first section's BPM is 100
         EXPECT_EQ(pBeats->getBpmAroundPosition(
                           mixxx::audio::FramePos(initialFrameOffset +

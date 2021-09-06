@@ -19,7 +19,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_rekordboxfeature.cpp"
-#include "track/beatmap.h"
+#include "track/beats.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/track.h"
@@ -938,10 +938,10 @@ void readAnalyze(TrackPointer track,
                 beats << mixxx::audio::FramePos(sampleRateKhz * static_cast<double>(time));
             }
 
-            const auto pBeats = mixxx::BeatMap::makeBeatMap(
+            const auto pBeats = mixxx::Beats::fromBeatPositions(
                     sampleRate,
-                    mixxx::rekordboxconstants::beatsSubversion,
-                    beats);
+                    beats,
+                    mixxx::rekordboxconstants::beatsSubversion);
             track->trySetBeats(pBeats);
         } break;
         case rekordbox_anlz_t::SECTION_TAGS_CUES: {

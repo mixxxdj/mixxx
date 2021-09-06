@@ -11,7 +11,6 @@
 #include "test/mixxxtest.h"
 #include "test/mockedenginebackendtest.h"
 #include "track/beatgrid.h"
-#include "track/beatmap.h"
 #include "util/memory.h"
 
 namespace {
@@ -1989,13 +1988,13 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
     const int numBeats = 100;
     QVector<mixxx::audio::FramePos> beats1 =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    auto pBeats1 = mixxx::BeatMap::makeBeatMap(m_pTrack1->getSampleRate(), QString(), beats1);
+    auto pBeats1 = mixxx::Beats::fromBeatPositions(m_pTrack1->getSampleRate(), beats1);
     m_pTrack1->trySetBeats(pBeats1);
 
     beatLengthFrames = 60.0 * 44100 / 145.0;
     QVector<mixxx::audio::FramePos> beats2 =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    auto pBeats2 = mixxx::BeatMap::makeBeatMap(m_pTrack2->getSampleRate(), QString(), beats2);
+    auto pBeats2 = mixxx::Beats::fromBeatPositions(m_pTrack2->getSampleRate(), beats2);
     m_pTrack2->trySetBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
@@ -2841,8 +2840,7 @@ TEST_F(EngineSyncTest, BeatMapQuantizePlay) {
 
     constexpr auto kSampleRate = mixxx::audio::SampleRate(44100);
 
-    auto pBeats2 = mixxx::BeatMap::makeBeatMap(kSampleRate,
-            QString(),
+    auto pBeats2 = mixxx::Beats::fromBeatPositions(kSampleRate,
             // Add two beats at 120 Bpm
             QVector<mixxx::audio::FramePos>(
                     {mixxx::audio::FramePos(

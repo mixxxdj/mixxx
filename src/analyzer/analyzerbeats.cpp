@@ -11,7 +11,6 @@
 #include "library/rekordbox/rekordboxconstants.h"
 #include "track/beatfactory.h"
 #include "track/beatgrid.h"
-#include "track/beatmap.h"
 #include "track/beatutils.h"
 #include "track/track.h"
 
