@@ -134,10 +134,10 @@
       <item row="0" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_SyncTrackMetadata">
         <property name="text">
-         <string>Synchronize track metadata with file tags</string>
+         <string>Synchronize library track metadata from/to file tags</string>
         </property>
         <property name="toolTip">
-         <string>Automatically write modified track metadata into file tags and re-import metadata from updated file tags</string>
+         <string>Automatically write modified track metadata from the library into file tags and re-import metadata from updated file tags into the library</string>
         </property>
        </widget>
       </item>
