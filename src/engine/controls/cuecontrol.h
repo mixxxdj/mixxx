@@ -209,7 +209,7 @@ class CueControl : public EngineControl {
     void slotLoopUpdated(mixxx::audio::FramePos startPosition, mixxx::audio::FramePos endPosition);
 
   private slots:
-    void quantizeChanged(double v);
+    void snapChanged(double v);
 
     void cueUpdated();
     void trackAnalyzed();
@@ -269,8 +269,8 @@ class CueControl : public EngineControl {
     void detachCue(HotcueControl* pControl);
     void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
     void loadCuesFromTrack();
-    mixxx::audio::FramePos quantizeCuePoint(mixxx::audio::FramePos position);
-    mixxx::audio::FramePos getQuantizedCurrentPosition();
+    mixxx::audio::FramePos snapCuePoint(mixxx::audio::FramePos position);
+    mixxx::audio::FramePos getSnappedCurrentPosition();
     TrackAt getTrackAt() const;
     void seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition);
     void setHotcueFocusIndex(int hotcueIndex);
@@ -281,7 +281,7 @@ class CueControl : public EngineControl {
     QAtomicInt m_currentlyPreviewingIndex;
     ControlObject* m_pPlay;
     ControlObject* m_pStopButton;
-    ControlObject* m_pQuantizeEnabled;
+    ControlObject* m_pSnapEnabled;
     ControlObject* m_pClosestBeat;
     parented_ptr<ControlProxy> m_pLoopStartPosition;
     parented_ptr<ControlProxy> m_pLoopEndPosition;

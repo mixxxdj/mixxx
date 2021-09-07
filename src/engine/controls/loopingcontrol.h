@@ -163,6 +163,7 @@ class LoopingControl : public EngineControl {
     ControlValueAtomic<LoopInfo> m_loopInfo;
     LoopInfo m_oldLoopInfo;
     ControlValueAtomic<mixxx::audio::FramePos> m_currentPosition;
+    ControlObject* m_pSnapEnabled;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
     ControlObject* m_pPreviousBeat;

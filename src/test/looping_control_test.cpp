@@ -24,6 +24,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
   protected:
     void SetUp() override {
         MockedEngineBackendTest::SetUp();
+        m_pSnapEnabled = std::make_unique<ControlProxy>(m_sGroup1, "snap");
+        m_pSnapEnabled->set(1.0);
         m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
         m_pQuantizeEnabled->set(1.0);
         m_pNextBeat = std::make_unique<ControlProxy>(m_sGroup1, "beat_next");
@@ -80,6 +82,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
 
     std::unique_ptr<ControlProxy> m_pNextBeat;
     std::unique_ptr<ControlProxy> m_pClosestBeat;
+    std::unique_ptr<ControlProxy> m_pSnapEnabled;
     std::unique_ptr<ControlProxy> m_pQuantizeEnabled;
     std::unique_ptr<ControlProxy> m_pTrackSamples;
     std::unique_ptr<ControlProxy> m_pButtonLoopIn;
@@ -589,8 +592,8 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     // the same as it does when we scale the loop larger and smaller so we
     // keep in sync with the beat.
 
-    // Disable quantize for this test
-    m_pQuantizeEnabled->set(0.0);
+    // Disable snapping for this test
+    m_pSnapEnabled->set(0.0);
 
     m_pTrack1->trySetBpm(23520);
     m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
@@ -763,7 +766,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeResizesBeatLoop) {
 TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotResizeManualLoop) {
     setCurrentPosition(mixxx::audio::FramePos{50});
     m_pTrack1->trySetBpm(160.0);
-    m_pQuantizeEnabled->set(0);
+    m_pSnapEnabled->set(0);
     m_pBeatLoopSize->set(4.0);
     m_pButtonLoopIn->set(1);
     m_pButtonLoopIn->set(0);

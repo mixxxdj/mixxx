@@ -12,6 +12,8 @@
 QuantizeControl::QuantizeControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
+    m_pCOSnapEnabled = new ControlPushButton(ConfigKey(group, "snap"), true);
+    m_pCOSnapEnabled->setButtonMode(ControlPushButton::TOGGLE);
     // Turn quantize OFF by default. See Bug #898213
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
@@ -24,6 +26,7 @@ QuantizeControl::QuantizeControl(const QString& group,
 }
 
 QuantizeControl::~QuantizeControl() {
+    delete m_pCOSnapEnabled;
     delete m_pCOQuantizeEnabled;
     delete m_pCONextBeat;
     delete m_pCOPrevBeat;

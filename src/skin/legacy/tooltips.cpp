@@ -451,11 +451,15 @@ void Tooltips::addStandardTooltips() {
         <<tr("Toggle visibility of Rate Control");
 
     // Used in cue/hotcue/loop tooltips below.
-    QString quantizeSnap = tr("If quantize is enabled, snaps to the nearest beat.");
+    QString quantizeSnap = tr("If snap is enabled, snaps to the nearest beat.");
     add("quantize")
             << tr("Quantize")
-            << tr("Toggles quantization.")
-            << tr("Loops and cues snap to the nearest beat when quantization is enabled.");
+            << tr("Toggles quantization.");
+
+    add("snap")
+            << tr("Snap")
+            << tr("Toggles snapping.")
+            << tr("Loops and cues snap to the nearest beat when snapping is enabled.");
 
     // Reverse and reverseroll (censor)
     add("reverse")
