@@ -18,6 +18,16 @@ bool recognizeDevice(const hid_device_info& device_info) {
         return false;
     }
 
+    // Apple includes a variety of HID devices in their computers, not all of which
+    // match the filter above for keyboards and mice, for example "Magic Trackpad",
+    // "Internal Keyboard", and "T1 Controller". Apple is likely to keep changing
+    // these devices in future computers and none of these devices are DJ controllers,
+    // so skip all Apple HID devices rather than maintaining a list of specific devices
+    // to skip.
+    if (device_info.vendor_id == mixxx::hid::kAppleVendorId) {
+        return false;
+    }
+
     // Exclude specific devices from the denylist.
     bool interface_number_valid = device_info.interface_number != -1;
     const int denylist_len = sizeof(hid_denylisted) / sizeof(hid_denylisted[0]);
