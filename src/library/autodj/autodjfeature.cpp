@@ -63,7 +63,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::loadTrackToPlayer,
             this,
-            &AutoDJFeature::loadTrackToPlayer);
+            &LibraryFeature::loadTrackToPlayer);
     m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
     // Create the "Crates" tree-item under the root item.
@@ -129,7 +129,7 @@ void AutoDJFeature::bindLibraryWidget(
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrackToPlayer,
             this,
-            &AutoDJFeature::loadTrackToPlayer);
+            &LibraryFeature::loadTrackToPlayer);
 
     connect(m_pAutoDJView,
             &DlgAutoDJ::trackSelected,
