@@ -5,7 +5,6 @@
 #include <QDir>
 #include <QtDebug>
 
-#include "track/beatgrid.h"
 #include "track/beats.h"
 #include "track/serato/beatgrid.h"
 #include "track/serato/beatsimporter.h"
@@ -116,8 +115,8 @@ TEST_F(SeratoBeatGridTest, SerializeBeatgrid) {
     constexpr mixxx::Bpm bpm(120.0);
     const auto sampleRate = mixxx::audio::SampleRate(44100);
     EXPECT_EQ(sampleRate.isValid(), true);
-    const auto pBeats = mixxx::BeatGrid::makeBeatGrid(
-            sampleRate, bpm, mixxx::audio::kStartFramePos);
+    const auto pBeats = mixxx::Beats::fromConstTempo(
+            sampleRate, mixxx::audio::kStartFramePos, bpm);
     const auto signalInfo = mixxx::audio::SignalInfo(mixxx::audio::ChannelCount(2), sampleRate);
     const auto duration = mixxx::Duration::fromSeconds<int>(300);
 

@@ -14,7 +14,6 @@
 #include "moc_dlgtrackinfo.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
-#include "track/beatgrid.h"
 #include "track/beatutils.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
@@ -573,10 +572,10 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // The cue point should be set on a beat, so this seems
             // to be a good alternative
             const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
-            m_pBeatsClone = mixxx::BeatGrid::makeBeatGrid(
+            m_pBeatsClone = mixxx::Beats::fromConstTempo(
                     m_pLoadedTrack->getSampleRate(),
-                    bpm,
-                    cuePosition);
+                    cuePosition,
+                    bpm);
         } else {
             m_pBeatsClone.reset();
         }
@@ -612,10 +611,10 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
 
     if (!m_pBeatsClone) {
         const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
-        m_pBeatsClone = mixxx::BeatGrid::makeBeatGrid(
+        m_pBeatsClone = mixxx::Beats::fromConstTempo(
                 m_pLoadedTrack->getSampleRate(),
-                bpm,
-                cuePosition);
+                cuePosition,
+                bpm);
     }
 
     const mixxx::Bpm oldValue = m_pBeatsClone->getBpm();
