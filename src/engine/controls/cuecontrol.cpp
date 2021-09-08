@@ -26,7 +26,6 @@ constexpr double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 constexpr double CUE_MODE_CUP = 5.0;
 
 /// This is the position of a fresh loaded tack without any seek
-constexpr double kDefaultLoadPosition = 0.0;
 constexpr int kNoHotCueNumber = 0;
 /// Used for a common tracking of the previewing Hotcue in m_currentlyPreviewingIndex
 constexpr int kMainCueIndex = NUM_HOT_CUES;
@@ -441,7 +440,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroEndEnabled->forceSet(0.0);
         setHotcueFocusIndex(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
-        m_usedSeekOnLoadPosition.setValue(kDefaultLoadPosition);
+        m_usedSeekOnLoadPosition.setValue(mixxx::audio::kStartFramePos);
     }
 
     if (!pNewTrack) {
@@ -529,7 +528,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 void CueControl::seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition) {
     DEBUG_ASSERT(seekOnLoadPosition.isValid());
     seekExact(seekOnLoadPosition);
-    m_usedSeekOnLoadPosition.setValue(seekOnLoadPosition.toEngineSamplePos());
+    m_usedSeekOnLoadPosition.setValue(seekOnLoadPosition);
 }
 
 void CueControl::cueUpdated() {
@@ -674,7 +673,7 @@ void CueControl::loadCuesFromTrack() {
 }
 
 void CueControl::trackAnalyzed() {
-    if (frameInfo().currentPosition.toEngineSamplePos() != m_usedSeekOnLoadPosition.getValue()) {
+    if (frameInfo().currentPosition != m_usedSeekOnLoadPosition.getValue()) {
         // the track is already manual cued, don't re-cue
         return;
     }
@@ -1085,9 +1084,9 @@ void CueControl::updateCurrentlyPreviewingIndex(int hotcueIndex) {
             m_pLoopEnabled->set(0);
         }
         CuePointer pLastCue(pLastControl->getCue());
-        pLastControl->setStatus((pLastCue->getType() == mixxx::CueType::Invalid)
-                        ? HotcueControl::Status::Empty
-                        : HotcueControl::Status::Set);
+        if (pLastCue && pLastCue->getType() != mixxx::CueType::Invalid) {
+            pLastControl->setStatus(HotcueControl::Status::Set);
+        }
     }
 }
 
@@ -1922,7 +1921,19 @@ bool CueControl::updateIndicatorsAndModifyPlay(
     if (m_currentlyPreviewingIndex != Cue::kNoHotCue) {
         if (!newPlay && oldPlay) {
             // play latch request: stop previewing and go into normal play mode.
-            updateCurrentlyPreviewingIndex(Cue::kNoHotCue);
+            int oldPreviewingIndex =
+                    m_currentlyPreviewingIndex.fetchAndStoreRelease(
+                            Cue::kNoHotCue);
+            if (oldPreviewingIndex >= 0 && oldPreviewingIndex < m_iNumHotCues) {
+                HotcueControl* pLastControl = m_hotcueControls.at(oldPreviewingIndex);
+                mixxx::CueType lastType = pLastControl->getPreviewingType();
+                if (lastType != mixxx::CueType::Loop) {
+                    CuePointer pLastCue(pLastControl->getCue());
+                    if (pLastCue && pLastCue->getType() != mixxx::CueType::Invalid) {
+                        pLastControl->setStatus(HotcueControl::Status::Set);
+                    }
+                }
+            }
             newPlay = true;
             m_pPlayLatched->forceSet(1.0);
         } else {
@@ -2280,7 +2291,8 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
     }
 }
 
-void CueControl::slotLoopUpdated(double startPositionSamples, double endPositionSamples) {
+void CueControl::slotLoopUpdated(mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition) {
     HotcueControl* pSavedLoopControl = m_pCurrentSavedLoopControl;
     if (!pSavedLoopControl) {
         return;
@@ -2302,16 +2314,10 @@ void CueControl::slotLoopUpdated(double startPositionSamples, double endPosition
         return;
     }
 
-    const auto startPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    startPositionSamples);
-    const auto endPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    endPositionSamples);
-
-    DEBUG_ASSERT(startPosition.isValid());
-    DEBUG_ASSERT(endPosition.isValid());
-    DEBUG_ASSERT(startPosition < endPosition);
+    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid() && endPosition.isValid() &&
+            startPosition < endPosition) {
+        return;
+    }
 
     DEBUG_ASSERT(pSavedLoopControl->getStatus() == HotcueControl::Status::Active);
     pCue->setStartPosition(startPosition);
@@ -2481,7 +2487,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             Qt::DirectConnection);
 
     m_previewingType.setValue(mixxx::CueType::Invalid);
-    m_previewingPosition.setValue(Cue::kNoPosition);
+    m_previewingPosition.setValue(mixxx::audio::kInvalidFramePos);
 }
 
 HotcueControl::~HotcueControl() = default;

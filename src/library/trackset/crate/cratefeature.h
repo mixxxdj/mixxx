@@ -102,6 +102,11 @@ class CrateFeature : public BaseTrackSetFeature {
 
     CrateTableModel m_crateTableModel;
 
+    // Stores the id of a crate in the sidebar that is adjacent to the crate(crateId).
+    void storePrevSiblingCrateId(CrateId crateId);
+    // Can be used to restore a similar selection after the sidebar model was rebuilt.
+    CrateId m_prevSiblingCrate;
+
     QModelIndex m_lastRightClickedIndex;
     TrackId m_selectedTrackId;
 

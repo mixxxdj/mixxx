@@ -68,4 +68,3 @@ PioneerCDJ850.hotcue_last_delete = function(channel, control, value, status, gro
     engine.setValue(group,key,value);
     PioneerCDJ850.last_hotcue = 0;
 }
-

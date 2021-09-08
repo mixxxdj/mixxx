@@ -25,7 +25,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
 #include "library/library.h"
-#include "library/library_preferences.h"
+#include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
@@ -202,7 +202,7 @@ void MixxxMainWindow::initialize() {
             m_pCoreServices->getEffectsManager(),
             m_pCoreServices->getSettingsManager(),
             m_pCoreServices->getLibrary());
-    m_pPrefDlg->setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
+    m_pPrefDlg->setWindowIcon(QIcon(MIXXX_ICON_PATH));
     m_pPrefDlg->setHidden(true);
     connect(m_pPrefDlg,
             &DlgPreferences::tooltipModeChanged,
@@ -400,8 +400,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pGuiTick;
     delete m_pVisualsManager;
-
-    m_pCoreServices->shutdown();
 }
 
 void MixxxMainWindow::initializeWindow() {
@@ -428,7 +426,7 @@ void MixxxMainWindow::initializeWindow() {
                     ->getValueString(ConfigKey("[MainWindow]", "state"))
                     .toUtf8()));
 
-    setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
+    setWindowIcon(QIcon(MIXXX_ICON_PATH));
     slotUpdateWindowTitle(TrackPointer());
 }
 
@@ -802,13 +800,12 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
     QString trackPath =
-        QFileDialog::getOpenFileName(
-            this,
-            loadTrackText,
-            pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR),
-            QString("Audio (%1)")
-                .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
-
+            QFileDialog::getOpenFileName(
+                    this,
+                    loadTrackText,
+                    pConfig->getValueString(mixxx::library::prefs::kLegacyDirectoryConfigKey),
+                    QString("Audio (%1)")
+                            .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
 
     if (!trackPath.isNull()) {
         // The user has picked a file via a file dialog. This means the system
@@ -943,7 +940,7 @@ void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
 }
 
 void MixxxMainWindow::slotHelpAbout() {
-    DlgAbout* about = new DlgAbout(this);
+    DlgAbout* about = new DlgAbout;
     about->show();
 }
 
@@ -1043,8 +1040,13 @@ bool MixxxMainWindow::loadConfiguredSkin() {
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
-        // return true for no tool tips
-        switch (m_toolTipsCfg) {
+        // always show tooltips in the preferences window
+        QWidget* activeWindow = QApplication::activeWindow();
+        if (activeWindow &&
+                QLatin1String(activeWindow->metaObject()->className()) !=
+                        "DlgPreferences") {
+            // return true for no tool tips
+            switch (m_toolTipsCfg) {
             case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
                 if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
                     return true;
@@ -1057,6 +1059,7 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             default:
                 DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
                 return true;
+            }
         }
     }
     // standard event processing

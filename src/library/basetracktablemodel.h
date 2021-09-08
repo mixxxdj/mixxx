@@ -88,6 +88,15 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const override;
 
+    bool updateTrackGenre(
+            Track* pTrack,
+            const QString& genre) const override;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMood(
+            Track* pTrack,
+            const QString& mood) const override;
+#endif // __EXTRA_METADATA__
+
   protected:
     static constexpr int defaultColumnWidth() {
         return 50;

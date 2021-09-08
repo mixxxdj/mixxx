@@ -1044,3 +1044,17 @@ TrackId BaseTrackTableModel::doGetTrackId(
         const TrackPointer& pTrack) const {
     return pTrack ? pTrack->getId() : TrackId();
 }
+
+bool BaseTrackTableModel::updateTrackGenre(
+        Track* pTrack,
+        const QString& genre) const {
+    return m_pTrackCollectionManager->updateTrackGenre(pTrack, genre);
+}
+
+#if defined(__EXTRA_METADATA__)
+bool BaseTrackTableModel::updateTrackMood(
+        Track* pTrack,
+        const QString& mood) const {
+    return m_pTrackCollectionManager->updateTrackMood(pTrack, mood);
+}
+#endif // __EXTRA_METADATA__

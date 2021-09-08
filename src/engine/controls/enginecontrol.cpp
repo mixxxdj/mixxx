@@ -21,10 +21,10 @@ EngineControl::~EngineControl() {
 }
 
 void EngineControl::process(const double dRate,
-                           const double dCurrentSample,
-                           const int iBufferSize) {
+        mixxx::audio::FramePos currentPosition,
+        const int iBufferSize) {
     Q_UNUSED(dRate);
-    Q_UNUSED(dCurrentSample);
+    Q_UNUSED(currentPosition);
     Q_UNUSED(iBufferSize);
 }
 
@@ -85,13 +85,13 @@ void EngineControl::setLoop(mixxx::audio::FramePos startPosition,
 
 void EngineControl::seekAbs(mixxx::audio::FramePos position) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekAbs(position.toEngineSamplePos());
+        m_pEngineBuffer->seekAbs(position);
     }
 }
 
 void EngineControl::seekExact(mixxx::audio::FramePos position) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekExact(position.toEngineSamplePos());
+        m_pEngineBuffer->seekExact(position);
     }
 }
 

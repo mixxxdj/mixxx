@@ -121,4 +121,3 @@ BehringerBCD3000.loop = function (channel, control, value, status, group) {
 
      engine.setValue(group, action, 1);
 };
-

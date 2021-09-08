@@ -17,6 +17,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "effects/effectsmanager.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_legacyskinparser.cpp"
@@ -1295,7 +1296,7 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     // to changes in the configuration.
     const auto searchDebouncingTimeoutMillis =
             m_pConfig->getValue(
-                    ConfigKey("[Library]","SearchDebouncingTimeoutMillis"),
+                    mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey,
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 

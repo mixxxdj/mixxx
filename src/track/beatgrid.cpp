@@ -75,11 +75,11 @@ BeatGrid::BeatGrid(const BeatGrid& other)
 // static
 BeatsPointer BeatGrid::makeBeatGrid(
         audio::SampleRate sampleRate,
-        const QString& subVersion,
         mixxx::Bpm bpm,
-        mixxx::audio::FramePos firstBeatPosition) {
-    // FIXME: Should this be a debug assertion?
-    if (!bpm.isValid() || !firstBeatPosition.isValid()) {
+        mixxx::audio::FramePos firstBeatPosition,
+        const QString& subVersion) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid() && firstBeatPosition.isValid() &&
+            !firstBeatPosition.isFractional()) {
         return nullptr;
     }
 
@@ -95,7 +95,7 @@ BeatsPointer BeatGrid::makeBeatGrid(
 }
 
 // static
-BeatsPointer BeatGrid::makeBeatGrid(
+BeatsPointer BeatGrid::fromByteArray(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
@@ -113,7 +113,7 @@ BeatsPointer BeatGrid::makeBeatGrid(
     const auto firstBeat = mixxx::audio::FramePos(blob->firstBeat);
     const auto bpm = mixxx::Bpm(blob->bpm);
 
-    return makeBeatGrid(sampleRate, subVersion, bpm, firstBeat);
+    return makeBeatGrid(sampleRate, bpm, firstBeat, subVersion);
 }
 
 QByteArray BeatGrid::toByteArray() const {
@@ -141,41 +141,6 @@ QString BeatGrid::getSubVersion() const {
 // internal use only
 bool BeatGrid::isValid() const {
     return m_sampleRate.isValid() && bpm().isValid() && firstBeatPosition().isValid();
-}
-
-// This could be implemented in the Beats Class itself.
-// If necessary, the child class can redefine it.
-audio::FramePos BeatGrid::findNextBeat(audio::FramePos position) const {
-    return findNthBeat(position, 1);
-}
-
-// This could be implemented in the Beats Class itself.
-// If necessary, the child class can redefine it.
-audio::FramePos BeatGrid::findPrevBeat(audio::FramePos position) const {
-    return findNthBeat(position, -1);
-}
-
-// This is an internal call. This could be implemented in the Beats Class itself.
-audio::FramePos BeatGrid::findClosestBeat(audio::FramePos position) const {
-    if (!isValid()) {
-        return audio::kInvalidFramePos;
-    }
-    audio::FramePos prevBeatPosition;
-    audio::FramePos nextBeatPosition;
-    findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true);
-    if (!prevBeatPosition.isValid()) {
-        // If both positions are invalid, we correctly return an invalid position.
-        return nextBeatPosition;
-    }
-
-    if (!nextBeatPosition.isValid()) {
-        return prevBeatPosition;
-    }
-
-    // Both position are valid, return the closest position.
-    return (nextBeatPosition - position > position - prevBeatPosition)
-            ? prevBeatPosition
-            : nextBeatPosition;
 }
 
 audio::FramePos BeatGrid::findNthBeat(audio::FramePos position, int n) const {

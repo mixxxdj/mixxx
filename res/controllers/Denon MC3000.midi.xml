@@ -6,7 +6,7 @@
         <description>Optimized for Denon MC3000 - Default Midi Channel</description>
         <manual>denon_mc3000</manual>
     </info>
-    <controller id="MC3000 MIDI 1">    
+    <controller id="MC3000 MIDI 1">
     <scriptfiles>
         <file filename="Denon-MC3000-scripts.js" functionprefix="mc3000"/>
     </scriptfiles>
@@ -289,7 +289,7 @@
                 </options>
     </control>
 
-<!--PITCH SLIDER -->       
+<!--PITCH SLIDER -->
     <control>
                 <status>0xe0</status>
                 <midino>0x50</midino>
@@ -309,7 +309,7 @@
                 </options>
     </control>
 
-<!-- PFL -->       
+<!-- PFL -->
     <control>
         <status>0x90</status>
         <midino>1</midino>
@@ -320,7 +320,7 @@
     <control>
         <status>0x92</status>
         <midino>5</midino>
-        <description>Cue PFL deck2 (B)</description>        
+        <description>Cue PFL deck2 (B)</description>
         <group>[Channel2]</group>
         <key>pfl</key>
     </control>
@@ -334,12 +334,12 @@
     <control>
         <status>0x93</status>
         <midino>7</midino>
-        <description>Cue PFL deck4 (D)</description>        
+        <description>Cue PFL deck4 (D)</description>
         <group>[Channel4]</group>
         <key>pfl</key>
     </control>
 
-<!-- EFX 1-4 FOR BEATLOOP_X -->       
+<!-- EFX 1-4 FOR BEATLOOP_X -->
     <control>
                 <status>0x90</status>
                 <midino>21</midino>
@@ -412,7 +412,7 @@
                 </options>
     </control>
 
-<!-- HOT CUE 1-4 -->       
+<!-- HOT CUE 1-4 -->
     <control>
                 <status>0x90</status>
                 <midino>23</midino>
@@ -486,7 +486,7 @@
                 </options>
             </control>
 
-<!-- HOT CUE 5-8 -->       
+<!-- HOT CUE 5-8 -->
     <control>
                 <status>0x90</status>
                 <midino>72</midino>
@@ -560,7 +560,7 @@
         </options>
     </control>
 
-<!-- HOT CUE 1-4 RELEASED-->       
+<!-- HOT CUE 1-4 RELEASED-->
     <control>
                 <status>0x80</status>
                 <midino>23</midino>
@@ -634,7 +634,7 @@
                 </options>
             </control>
 
-<!-- HOT CUE 5-8 RELEASED -->       
+<!-- HOT CUE 5-8 RELEASED -->
     <control>
                 <status>0x80</status>
                 <midino>72</midino>
@@ -844,7 +844,7 @@
         <description></description>
     </control>
 
-<!-- CUE DEFAULT --> 
+<!-- CUE DEFAULT -->
     <control>
         <status>0x90</status>
         <midino>0x42</midino>
@@ -1077,7 +1077,7 @@
                 <key>mc3000.killMid</key>
          <options>
                     <script-binding/>
-                </options>                
+                </options>
         <description>BT Sample</description>
     </control>
     <control>
@@ -1098,7 +1098,7 @@
                 <key>mc3000.killBass</key>
          <options>
                     <script-binding/>
-                </options>                
+                </options>
         <description> BT Browse</description>
     </control>
     <control>
@@ -1349,7 +1349,7 @@
                    <script-binding/>
                 </options>
     </control>
-            
+
 <!-- SHIFT -->
     <control>
                 <status>0x90</status>
