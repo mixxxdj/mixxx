@@ -179,8 +179,8 @@ mixxx::Bpm BeatUtils::makeConstBpm(
     }
 
     if (longestRegionLength == 0) {
-        // no betas, we default to
-        return mixxx::Bpm(128);
+        // Could not infer a tempo
+        return {};
     }
 
     int longestRegionNumberOfBeats = static_cast<int>(
