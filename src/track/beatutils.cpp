@@ -134,7 +134,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
     }
 
     // Add a final region with zero length to mark the end.
-    constantRegions.append({coarseBeats[coarseBeats.size() - 1], 0});
+    constantRegions.append({coarseBeats.last(), 0});
     return constantRegions;
 }
 
