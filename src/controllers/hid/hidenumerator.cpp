@@ -23,7 +23,7 @@ bool recognizeDevice(const hid_device_info& device_info) {
     // these devices in future computers and none of these devices are DJ controllers,
     // so skip all Apple HID devices rather than maintaining a list of specific devices
     // to skip.
-    if (device_info.vendor_id == kAppleVendorId) {
+    if (device_info.vendor_id == kAppleVendorId || device_info.vendor_id == kAppleIncVendorId) {
         return false;
     }
 
