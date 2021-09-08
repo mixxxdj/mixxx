@@ -55,6 +55,11 @@ mixxx::Bpm BeatUtils::calculateBpm(
 QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
         const QVector<mixxx::audio::FramePos>& coarseBeats,
         mixxx::audio::SampleRate sampleRate) {
+    DEBUG_ASSERT(sampleRate.isValid());
+    if (coarseBeats.size() < 2) {
+        // Cannot infer a tempo for less than 2 beats
+        return {};
+    }
     // The QM Beat detector has a step size of 512 frames @ 44100 Hz. This means that
     // Single beats have has a jitter of +- 12 ms around the actual position.
     // Expressed in BPM it means we have for instance steps of these BPM value around 120 BPM
@@ -71,17 +76,12 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
     // current average to adjust them by up to +-12 ms.
     // Than we start with the region from the found beat to the end.
 
-    QVector<ConstRegion> constantRegions;
-    if (!coarseBeats.size()) {
-        // no beats
-        return constantRegions;
-    }
-
     const mixxx::audio::FrameDiff_t maxPhaseError = kMaxSecsPhaseError * sampleRate;
     const mixxx::audio::FrameDiff_t maxPhaseErrorSum = kMaxSecsPhaseErrorSum * sampleRate;
     int leftIndex = 0;
     int rightIndex = coarseBeats.size() - 1;
 
+    QVector<ConstRegion> constantRegions;
     while (leftIndex < coarseBeats.size() - 1) {
         DEBUG_ASSERT(rightIndex > leftIndex);
         mixxx::audio::FrameDiff_t meanBeatLength =
@@ -144,6 +144,9 @@ mixxx::Bpm BeatUtils::makeConstBpm(
         const QVector<BeatUtils::ConstRegion>& constantRegions,
         mixxx::audio::SampleRate sampleRate,
         mixxx::audio::FramePos* pFirstBeat) {
+    DEBUG_ASSERT(!constantRegions.isEmpty());
+    DEBUG_ASSERT(sampleRate.isValid());
+    DEBUG_ASSERT(!pFirstBeat || pFirstBeat->isValid());
     // We assume here the track was recorded with an unhear-able static metronome.
     // This metronome is likely at a full BPM.
     // The track may has intros, outros and bridges without detectable beats.

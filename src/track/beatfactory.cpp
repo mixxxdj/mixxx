@@ -55,9 +55,7 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
         const QHash<QString, QString>& extraVersionInfo,
         bool fixedTempo,
         mixxx::audio::SampleRate sampleRate) {
-    const QString version = getPreferredVersion(fixedTempo);
-    const QString subVersion = getPreferredSubVersion(extraVersionInfo);
-
+    DEBUG_ASSERT(sampleRate.isValid());
 #ifdef DEBUG_PRINT_BEATS
     for (mixxx::audio::FramePos beat : beats) {
         qDebug().noquote() << QString::number(beat.value(), 'g', 8);
@@ -66,13 +64,18 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
 
     QVector<BeatUtils::ConstRegion> constantRegions =
             BeatUtils::retrieveConstRegions(beats, sampleRate);
-
 #ifdef DEBUG_PRINT_BEATS
     for (auto& region : constantRegions) {
         qDebug().noquote() << QString::number(region.firstBeat.value(), 'g', 8)
                            << QString::number(region.beatLength, 'g', 8);
     }
 #endif
+    if (constantRegions.isEmpty()) {
+        return nullptr;
+    }
+
+    const QString version = getPreferredVersion(fixedTempo);
+    const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
     if (version == BEAT_GRID_2_VERSION) {
         mixxx::audio::FramePos firstBeat = mixxx::audio::kStartFramePos;
