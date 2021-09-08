@@ -78,8 +78,8 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
         mixxx::audio::FramePos firstBeat = mixxx::audio::kStartFramePos;
         const mixxx::Bpm constBPM = BeatUtils::makeConstBpm(
                 constantRegions, sampleRate, &firstBeat);
-        firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
         if (firstBeat.isValid()) {
+            firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
             auto pGrid = mixxx::BeatGrid::makeBeatGrid(
                     sampleRate, constBPM, firstBeat.toNearestFrameBoundary(), subVersion);
             return pGrid;
