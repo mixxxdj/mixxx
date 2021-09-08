@@ -196,7 +196,7 @@ void MixxxMainWindow::initialize() {
             m_pCoreServices->getEffectsManager(),
             m_pCoreServices->getSettingsManager(),
             m_pCoreServices->getLibrary());
-    m_pPrefDlg->setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
+    m_pPrefDlg->setWindowIcon(QIcon(MIXXX_ICON_PATH));
     m_pPrefDlg->setHidden(true);
     connect(m_pPrefDlg,
             &DlgPreferences::tooltipModeChanged,
@@ -420,7 +420,7 @@ void MixxxMainWindow::initializeWindow() {
                     ->getValueString(ConfigKey("[MainWindow]", "state"))
                     .toUtf8()));
 
-    setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
+    setWindowIcon(QIcon(MIXXX_ICON_PATH));
     slotUpdateWindowTitle(TrackPointer());
 }
 
@@ -934,7 +934,7 @@ void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
 }
 
 void MixxxMainWindow::slotHelpAbout() {
-    DlgAbout* about = new DlgAbout(this);
+    DlgAbout* about = new DlgAbout;
     about->show();
 }
 

@@ -12,15 +12,6 @@ const QString kRoundingVersion = QStringLiteral("V4");
 
 } // namespace
 
-mixxx::BeatsPointer BeatFactory::makeBeatGrid(
-        mixxx::audio::SampleRate sampleRate,
-        mixxx::Bpm bpm,
-        mixxx::audio::FramePos firstBeatFramePos) {
-    DEBUG_ASSERT(firstBeatFramePos.isValid());
-    DEBUG_ASSERT(!firstBeatFramePos.isFractional());
-    return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), bpm, firstBeatFramePos);
-}
-
 // static
 QString BeatFactory::getPreferredVersion(bool fixedTempo) {
     if (fixedTempo) {
@@ -89,7 +80,7 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
                 constantRegions, sampleRate, &firstBeat);
         firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
         auto pGrid = mixxx::BeatGrid::makeBeatGrid(
-                sampleRate, subVersion, constBPM, firstBeat);
+                sampleRate, constBPM, firstBeat.toNearestFrameBoundary(), subVersion);
         return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
         QVector<mixxx::audio::FramePos> ironedBeats = BeatUtils::getBeats(constantRegions);
