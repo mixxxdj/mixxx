@@ -1199,8 +1199,16 @@ void EngineBuffer::processSlip(int iBufferSize) {
 
     // Increment slip position even if it was just toggled -- this ensures the position is correct.
     if (enabled) {
-        m_slipPosition += static_cast<double>(iBufferSize) * m_dSlipRate /
-                mixxx::kEngineChannelCount;
+        // `iBufferSize` originates from `SoundManager::onDeviceOutputCallback`
+        // and is always a multiple of 2, so we can safely use integer division
+        // to find the number of frames per buffer here.
+        //
+        // TODO: Check if we can replace `iBufferSize` with the number of
+        // frames per buffer in most engine method signatures to avoid this
+        // back and forth calculations.
+        const int bufferFrameCount = iBufferSize / mixxx::kEngineChannelCount;
+        DEBUG_ASSERT(bufferFrameCount * mixxx::kEngineChannelCount == iBufferSize);
+        m_slipPosition += static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
     }
 }
 
