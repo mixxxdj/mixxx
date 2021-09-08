@@ -17,7 +17,7 @@ constexpr double kMaxSecsPhaseError = 0.025;
 // This is set to avoid to use a constant region during an offset shift.
 // That happens for instance when the beat instrument changes.
 constexpr double kMaxSecsPhaseErrorSum = 0.1;
-constexpr int kMaxOutlierCount = 1;
+constexpr int kMaxOutliersCount = 1;
 constexpr int kMinRegionBeatCount = 16;
 
 } // namespace
@@ -60,6 +60,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
         // Cannot infer a tempo for less than 2 beats
         return {};
     }
+
     // The QM Beat detector has a step size of 512 frames @ 44100 Hz. This means that
     // Single beats have has a jitter of +- 12 ms around the actual position.
     // Expressed in BPM it means we have for instance steps of these BPM value around 120 BPM
@@ -97,7 +98,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
             phaseErrorSum += phaseError;
             if (fabs(phaseError) > maxPhaseError) {
                 outliersCount++;
-                if (outliersCount > kMaxOutlierCount ||
+                if (outliersCount > kMaxOutliersCount ||
                         i == leftIndex + 1) { // the first beat must not be an outlier.
                     // region is not const.
                     break;
@@ -135,7 +136,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
     }
 
     // Add a final region with zero length to mark the end.
-    constantRegions.append({coarseBeats[coarseBeats.size() - 1], 0});
+    constantRegions.append({coarseBeats.last(), 0});
     return constantRegions;
 }
 
