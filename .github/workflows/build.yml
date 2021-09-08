@@ -358,7 +358,9 @@ jobs:
     # Warning: do not move this step before restoring caches or it will break caching due to
     # https://github.com/actions/cache/issues/531
     - name: "[Windows] Install rsync and openssh"
-      if: runner.os == 'Windows'
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+      if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
       run: |
         $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
         pacman -S --noconfirm coreutils bash rsync openssh
