@@ -77,7 +77,7 @@
   [#4152](https://github.com/mixxxdj/mixxx/pull/4152)
   [#4162](https://github.com/mixxxdj/mixxx/pull/4162)
 
-### Beat Sync
+### Sync
 * Add support for setting an explicit leader for sync lock
   [#2768](https://github.com/mixxxdj/mixxx/pull/2768)
   [#3099](https://github.com/mixxxdj/mixxx/pull/3099)
@@ -151,7 +151,7 @@
   [#4183](https://github.com/mixxxdj/mixxx/pull/4183)
   [#4186](https://github.com/mixxxdj/mixxx/pull/4186)
 
-### Controller
+### Controllers
 * Never raise a fatal error if a controller mapping tries access a non-existent control object [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
 * Update Novation Launchpad controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600)
 * Add generic USB HID "Set Reports (Feature)" functionality [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
