@@ -17,7 +17,7 @@ constexpr double kMaxSecsPhaseError = 0.025;
 // This is set to avoid to use a constant region during an offset shift.
 // That happens for instance when the beat instrument changes.
 constexpr double kMaxSecsPhaseErrorSum = 0.1;
-constexpr int kMaxOutlierCount = 1;
+constexpr int kMaxOutliersCount = 1;
 constexpr int kMinRegionBeatCount = 16;
 
 } // namespace
@@ -96,7 +96,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
             phaseErrorSum += phaseError;
             if (fabs(phaseError) > maxPhaseError) {
                 outliersCount++;
-                if (outliersCount > kMaxOutlierCount ||
+                if (outliersCount > kMaxOutliersCount ||
                         i == leftIndex + 1) { // the first beat must not be an outlier.
                     // region is not const.
                     break;
