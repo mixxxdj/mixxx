@@ -72,8 +72,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
     // Than we start with the region from the found beat to the end.
 
     QVector<ConstRegion> constantRegions;
-    if (!coarseBeats.size()) {
-        // no beats
+    if (coarseBeats.isEmpty()) {
         return constantRegions;
     }
 
