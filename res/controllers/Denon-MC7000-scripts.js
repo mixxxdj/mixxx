@@ -653,8 +653,8 @@ MC7000.loadButton = function(channel, control, value, status, group) {
 MC7000.wheelTouch = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     var deckOffset = deckNumber - 1;
-    var maxLibrary = engine.getValue("[Master]", "maximize_library");
-    if (MC7000.isVinylMode[deckOffset] && maxLibrary === 0) {
+    var libraryMaximized = engine.getValue("[Master]", "maximize_library") > 0;
+    if (MC7000.isVinylMode[deckOffset] && !libraryMaximized) {
         if (value === 0x7F) {
             engine.scratchEnable(deckNumber, MC7000.jogWheelTicksPerRevolution,
                 MC7000.scratchParams.recordSpeed,
@@ -684,10 +684,10 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
     var adjustedSpeed = numTicks * MC7000.jogSensitivity / 10;
     var deckNumber = script.deckFromGroup(group);
     var deckOffset = deckNumber - 1;
-    var maxLibrary = engine.getValue("[Master]", "maximize_library");
-    if (maxLibrary === 1 && numTicks > 0) {
+    var libraryMaximized = engine.getValue("[Master]", "maximize_library");
+    if (libraryMaximized === 1 && numTicks > 0) {
         engine.setValue("[Library]", "MoveDown", 1);
-    } else if (maxLibrary === 1 && numTicks < 0) {
+    } else if (libraryMaximized === 1 && numTicks < 0) {
         engine.setValue("[Library]", "MoveUp", 1);
     } else if (engine.isScratching(deckNumber)) {
     // Scratch!
