@@ -96,6 +96,608 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.4.0" type="development">
+      <description>
+ <p>
+  Cover Art
+ </p>
+ <ul>
+  <li>
+   Prevent wrong cover art display due to hash conflicts
+   #2524
+  </li>
+  <li>
+   Add background color for quick cover art preview
+   #2524
+  </li>
+ </ul>
+ <p>
+  Music Library
+ </p>
+ <ul>
+  <li>
+   Ensure that tracks with an invalid BPM are re-analyzed
+   #2776
+  </li>
+  <li>
+   Add support for exporting crates, playlists and the library to Engine Prime and Denon standalone controllers
+   #2753
+   #2932
+   #3102
+   #3155
+   #3621
+   #3776
+   #3787
+   #3797
+   #3798
+   #4025
+   #4087
+   #4102
+   #4143
+  </li>
+  <li>
+   Rekordbox: Save all loops and correct AAC timing offset for CoreAudio
+   #2779
+  </li>
+  <li>
+   Improve log messages during schema migration
+   #2979
+  </li>
+  <li>
+   Search related tracks in collection
+   #3181
+   #3213
+   #2796
+   #4207
+  </li>
+  <li>
+   Add recent searches to a drop down menu of the search box
+   #3171
+   #3262
+  </li>
+  <li>
+   Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers
+   #3076
+  </li>
+  <li>
+   Add new library column that shows the last time a track was played
+   #3140
+   #3457
+   #3494
+   #3596
+   #3740
+  </li>
+  <li>
+   Improve presentation of the history library tree
+   #2996
+  </li>
+  <li>
+   Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags
+   #3811
+  </li>
+  <li>
+   Code improvements and minor bug fixes when importing track metadata
+   #3851
+   #3858
+   #3860
+   #3866
+   #3871
+   #3870
+   #3924
+   #3906
+   #3998
+  </li>
+  <li>
+   Update library schema to 37 for synchronizing file modified time with track source on metadata import/export
+   #3978
+   #4012
+  </li>
+  <li>
+   Logging: Suppress expected and harmless schema migration errors
+   #4248
+  </li>
+  <li>
+   Only show the date in Date Added / Last Played columns. Move the time of day to tooltips
+   #3945
+  </li>
+  <li>
+   Fix handling of undefined BPM values
+   #4062
+   #4063
+   #4100
+   #4154
+   #4165
+   #4168
+  </li>
+  <li>
+   Add support for m4v files
+   #4088
+  </li>
+  <li>
+   Adjust ReplayGain: Allow user to update the replaygain value based on a deck pregain value
+   #4031
+  </li>
+  <li>
+   Automatic analyze and optimize database
+   #4199
+  </li>
+  <li>
+   Fix playlists sidebar navigation/activation
+   #4193
+   lp:1939082
+  </li>
+  <li>
+   Refactoring of library code
+   #2756
+   #2717
+   #2715
+   #2810
+   #2900
+   #2906
+   #2925
+   #3017
+   #3475
+   #4164
+   #4152
+   #4162
+   #4101
+   #4214
+  </li>
+ </ul>
+ <p>
+  Sync
+ </p>
+ <ul>
+  <li>
+   Add support for setting an explicit leader for sync lock
+   #2768
+   #3099
+   #3695
+   #3734
+   #3698
+   #3864
+   #3867
+   #3921
+   #4119
+   #4135
+   #4149
+  </li>
+  <li>
+   Fix issue with half/double BPM calculation when using sync
+   #3899
+   #3706
+  </li>
+  <li>
+   Sync Lock: Don't seek phase when disabling sync
+   #4169
+  </li>
+ </ul>
+ <p>
+  Audio Codecs
+ </p>
+ <ul>
+  <li>
+   Fix recovering from FAAD2 decoding issues
+   #2850
+  </li>
+ </ul>
+ <p>
+  Audio Engine
+ </p>
+ <ul>
+  <li>
+   Add support for Saved loops
+   #2194
+   #3267
+   #3202
+  </li>
+  <li>
+   Fix an issue when pressing multiple cue buttons at the same time
+   #3382
+  </li>
+  <li>
+   Fix synchronization of main cue point/position
+   #4137
+   lp1937074
+   #4153
+  </li>
+  <li>
+   Refactoring of beatgrid/beatmap code
+   #4044
+   #4048
+   #4045
+   #4049
+   #4092
+   #4094
+   #4104
+   #4103
+   #4127
+   #4099
+   #4071
+   #4184
+   #4234
+   #4233
+   #4258
+   #4259
+   #4263
+   #4272
+  </li>
+  <li>
+   Refactoring of audio engine code
+   #2762
+   #2801
+   #2885
+   #2997
+   #3266
+   #4064
+   #4065
+   #4066
+   #4069
+   #4074
+   #4075
+   #4076
+   #4078
+   #4082
+   #4077
+   #4080
+   #4086
+   #4089
+   #4090
+   #4079
+   #4091
+   #4083
+   #4095
+   #4081
+   #4061
+   #4105
+   #4183
+   #4186
+   #4189
+   #4216
+   #4221
+   #4219
+   #4191
+   #4232
+   #4231
+   #4229
+   #4257
+   #4266
+   #4217
+  </li>
+ </ul>
+ <p>
+  Controllers
+ </p>
+ <ul>
+  <li>
+   Never raise a fatal error if a controller mapping tries access a non-existent control object
+   #2947
+  </li>
+  <li>
+   Update Novation Launchpad controller scripts
+   #2600
+  </li>
+  <li>
+   Add generic USB HID "Set Reports (Feature)" functionality
+   #3051
+  </li>
+  <li>
+   Add support for reading the status of an HID controller (like MIDI SYSEX)
+   #3317
+  </li>
+  <li>
+   Use hidapi's hidraw backend instead of libusb on Linux
+   #4054
+  </li>
+  <li>
+   Consistently use "mapping" instead of "preset" to refer to controller mappings
+   #3472
+  </li>
+  <li>
+   Introduce new control objects
+   <code>
+    [Master],indicator_250millis
+   </code>
+   and
+   <code>
+    [Master],indicator_500millis
+   </code>
+   #4157
+  </li>
+  <li>
+   Don't automatically enable controller if it was disabled before
+   #4244
+   lp:1941042
+  </li>
+  <li>
+   Roland DJ-505: Use new ControlIndicator COs for blinking lights
+   #4159
+  </li>
+  <li>
+   Prepare code for upcoming ES6 based controller mapping system with module support
+   #2682
+   #2868
+   #2875
+   #2936
+   #2946
+  </li>
+  <li>
+   Other refactorings of controller code
+   #2904
+   #3308
+   #3463
+   #3634
+   #3635
+   #3636
+   #3676
+   #3880
+   #4085
+  </li>
+ </ul>
+ <p>
+  Skins
+ </p>
+ <ul>
+  <li>
+   Add experimental QML skin
+   #3345
+   #3446
+   #3854
+   #3891
+   #2874
+   #3915
+   #3894
+   #3920
+   #3907
+   #3925
+   #3928
+   #3932
+   #3911
+   #3937
+   #3940
+   #3913
+   #3950
+   #3919
+   #3955
+   #3957
+   #3961
+   #3952
+   #3963
+   #3971
+   #3959
+   #3972
+   #3992
+   #4003
+   #4004
+   #3999
+   #4000
+   #4067
+   #4068
+   #4060
+   #4037
+   #3934
+   #4117
+  </li>
+  <li>
+   Add new "RGB Stacked" waveform
+   #3153
+  </li>
+  <li>
+   Add harmonic keywheel window
+   #1695
+   #3622
+   #3624
+  </li>
+  <li>
+   Make beat indicator control behaviour more natural
+   #3608
+  </li>
+  <li>
+   Fix crash if no skin is available
+   #3918
+   #3939
+  </li>
+  <li>
+   Inverted scroll wheel waveform zoom direction to mach other applications
+   #4195
+  </li>
+  <li>
+   Fix leaked controls
+   #4213
+   lp:1912129
+  </li>
+ </ul>
+ <p>
+  Other
+ </p>
+ <ul>
+  <li>
+   Improve/fix the build system
+   #2796
+   #2937
+   #2943
+   #3041
+   #3046
+   #3114
+   #3182
+   #3274
+   #3300
+   #3471
+   #3514
+   #3765
+   #3849
+   #3876
+   #3861
+   #3923
+   #3948
+   #3929
+   #4007
+   #4070
+   #4084
+   #4098
+   #4113
+   #4163
+   #4166
+   #4185
+   #4187
+   #4192
+   #4226
+   #4203
+   #4250
+   #4274
+  </li>
+  <li>
+   Drop Ubuntu Bionic support, require Qt 5.12
+   #3687
+   #3735
+   #3736
+   #3985
+  </li>
+  <li>
+   Add NixOS support
+   #2820
+   #2828
+   #2836
+   #2827
+   #2827
+   #2828
+   #3113
+   #3089
+   #3545
+  </li>
+  <li>
+   Add support for saving loops as hotcues
+   #2194
+   #4265
+   lp:1367159
+  </li>
+  <li>
+   Make use of inclusive language
+   #2894
+   #3868
+  </li>
+  <li>
+   Add Noise effect
+   #2921
+  </li>
+  <li>
+   Improve Unittests
+   #2938
+   #2980
+   #3006
+  </li>
+  <li>
+   Logging: Add support for
+   <code>
+    QT_MESSAGE_PATTERN
+   </code>
+   environment variable
+   #3204
+   #3518
+  </li>
+  <li>
+   Colored logging console output
+   #3197
+  </li>
+  <li>
+   Improve command line argument parser
+   #3640
+   #3962
+   #4022
+   #4036
+   #4170
+   #4057
+  </li>
+  <li>
+   Improve message when dealing with macOS sandbox
+   #4018
+   lp:1921541
+  </li>
+  <li>
+   Move contribution guidelines into our git repository
+   #2699
+  </li>
+  <li>
+   Automize deployment of CHANGELOG to the manual
+   #4180
+   #4256
+   #4208
+   #4228
+   #4222
+  </li>
+  <li>
+   Always show tooltips in preferences
+   #4198
+   lp:1840493
+  </li>
+  <li>
+   Allow to build Mixxx on Linux without ALSA, working around a Pipewire bug
+   #4242
+  </li>
+  <li>
+   Fix possible crash with opus files with embedded cover arts and require TagLib 1.11 or newer
+   #4251
+   #4252
+   lp:1940777
+  </li>
+  <li>
+   Misc. refactorings
+   #3154
+   #2870
+   #2872
+   #2978
+   #2969
+   #3016
+   #3320
+   #3356
+   #3453
+   #3487
+   #3558
+   #3685
+   #3741
+   #3744
+   #3753
+   #3761
+   #3834
+   #3842
+   #3853
+   #3874
+   #3883
+   #3922
+   #3947
+   #3974
+   #4024
+   #4026
+   #4034
+   #4038
+   #4039
+   #4043
+   #4053
+   #4072
+   #4097
+   #4096
+   #4118
+   #4130
+   #4129
+   #4109
+   #4106
+   #4131
+   #4140
+   #3032
+   #4110
+   #4173
+   #4178
+   #4194
+   #4197
+   #4190
+   #4212
+   #4223
+   #4238
+   #4236
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.3.1" type="development">
       <description>
  <ul>
@@ -771,7 +1373,7 @@
    #3848
   </li>
   <li>
-   Improve tapping the bpm of a deck
+   Improve tapping the BPM of a deck
    #3790
    lp:1882776
   </li>
@@ -992,7 +1594,7 @@
    lp:1828360
   </li>
   <li>
-   Fix parsing of invalid bpm values in MP3 files.
+   Fix parsing of invalid BPM values in MP3 files.
    lp:1832325
   </li>
   <li>
