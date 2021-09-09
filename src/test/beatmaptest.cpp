@@ -56,12 +56,12 @@ TEST_F(BeatMapTest, Scale) {
     m_pTrack->trySetBpm(bpm.value());
     mixxx::audio::FrameDiff_t beatLengthFrames = getBeatLengthFrames(bpm);
     const auto startOffsetFrames = mixxx::audio::FramePos(7);
-    constexpr int numBeats = 100;
+    constexpr int numBeats = 120;
     // Note beats must be in frames, not samples.
     QVector<mixxx::audio::FramePos> beats =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
     auto pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
-    const auto trackEndPosition = audio::FramePos{m_pTrack->getDuration() * pMap->getSampleRate()};
+    const auto trackEndPosition = audio::FramePos{60.0 * pMap->getSampleRate()};
 
     EXPECT_DOUBLE_EQ(bpm.value(),
             pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)

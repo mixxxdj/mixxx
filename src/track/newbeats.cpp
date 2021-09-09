@@ -545,48 +545,50 @@ std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames)
 }
 
 std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
-    std::vector<BeatMarker> markers;
-    audio::FramePos endMarkerPosition = m_endMarkerPosition;
-    Bpm endMarkerBpm = m_endMarkerBpm;
-
+    double scaleFactor = 1.0;
     switch (scale) {
     case BpmScale::Double:
-        std::transform(m_markers.cbegin(),
-                m_markers.cend(),
-                std::back_inserter(markers),
-                [](const BeatMarker& marker) -> BeatMarker {
-                    return BeatMarker(marker.position(),
-                            marker.beatsTillNextMarker() * 2);
-                });
-        endMarkerBpm *= 2.0;
+        scaleFactor = 2.0;
         break;
     case BpmScale::Halve:
-        // TODO: Implement this
-        endMarkerBpm *= 1.0 / 2;
+        scaleFactor = 0.5;
         break;
     case BpmScale::TwoThirds:
-        // TODO: Implement this
-        endMarkerBpm *= 2.0 / 3;
+        scaleFactor *= 2.0 / 3;
         break;
     case BpmScale::ThreeFourths:
-        // TODO: Implement this
-        endMarkerBpm *= 3.0 / 4;
+        scaleFactor *= 3.0 / 4;
         break;
     case BpmScale::FourThirds:
-        // TODO: Implement this
-        endMarkerBpm *= 4.0 / 3;
+        scaleFactor *= 4.0 / 3;
         break;
     case BpmScale::ThreeHalves:
-        // TODO: Implement this
-        endMarkerBpm *= 3.0 / 2;
+        scaleFactor *= 3.0 / 2;
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
         return std::nullopt;
     }
 
+    std::vector<BeatMarker> markers;
+    markers.reserve(m_markers.size());
+    for (const auto& marker : std::as_const(m_markers)) {
+        const double beatsTillNextMarkerFractional = marker.beatsTillNextMarker() * scaleFactor;
+        const int beatsTillNextMarker = static_cast<int>(std::trunc(beatsTillNextMarkerFractional));
+        if (beatsTillNextMarkerFractional != beatsTillNextMarker) {
+            qWarning() << "Marker with" << marker.beatsTillNextMarker()
+                       << "beats till next marker cannot be scaled by"
+                       << scaleFactor;
+            return std::nullopt;
+        }
+
+        markers.push_back({marker.position(), beatsTillNextMarker});
+    }
+
+    Bpm endMarkerBpm = m_endMarkerBpm * scaleFactor;
+
     return BeatsPointer(new Beats(markers,
-            endMarkerPosition,
+            m_endMarkerPosition,
             endMarkerBpm,
             m_sampleRate,
             m_subVersion));
