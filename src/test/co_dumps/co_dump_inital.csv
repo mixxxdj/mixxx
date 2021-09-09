@@ -97,7 +97,7 @@
 [EqualizerRack1_[Channel3]_Effect1],parameter1_type,2
 [Sampler1],hotcue_17_gotoandplay,0
 [PreviewDeck1],beatloop_32_activate,0
-[Channel1],sync_master,0
+[Channel1],sync_leader,0
 [EffectRack1_EffectUnit4_Effect3],parameter1_link_type,0
 [QuickEffectRack1_[Channel3]_Effect1],parameter6_toggle,0
 [EffectRack1_EffectUnit3_Effect4],parameter3_minus_toggle,0
@@ -109,7 +109,7 @@
 [QuickEffectRack1_[Channel1]_Effect1],parameter13_down,0
 [Sampler2],hotcue_17_gotoandplay,0
 [EffectRack1_EffectUnit3_Effect3],parameter14_set_minus_one,0
-[Channel2],sync_master,0
+[Channel2],sync_leader,0
 [EffectRack1_EffectUnit4_Effect4],parameter1_link_type,0
 [EffectRack1_EffectUnit3_Effect1],parameter5_minus_toggle,0
 [EqualizerRack1_[Master]_Effect1],button_parameter10_loaded,0
@@ -170,7 +170,7 @@
 [Sampler3],VuMeterL_up,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter3_set_zero,0
 [Sampler3],hotcue_27_gotoandplay,0
-[Channel3],sync_master,0
+[Channel3],sync_leader,0
 [QuickEffectRack1_[Channel3]_Effect1],parameter3_toggle,0
 [EffectRack1_EffectUnit3_Effect2],parameter6_minus_toggle,0
 [EqualizerRack1_[Channel3]_Effect1],parameter14_down,0
@@ -187,7 +187,7 @@
 [Master],headGain_set_one,0
 [Sampler4],hotcue_27_gotoandplay,0
 [EffectRack1_EffectUnit4_Effect2],num_parameters,0
-[Channel4],sync_master,0
+[Channel4],sync_leader,0
 [EffectRack1_EffectUnit3_Effect3],parameter9_minus_toggle,0
 [EffectRack1_EffectUnit2_Effect2],parameter3_type,0
 [Sampler4],hotcue_16_gotoandstop,0
@@ -343,7 +343,7 @@
 [EffectRack1_EffectUnit3_Effect3],parameter6_minus_toggle,0
 [EqualizerRack1_[Channel2]],mix_down,0
 [EffectRack1_EffectUnit2_Effect2],button_parameter9_type,0
-[PreviewDeck1],sync_master,0
+[PreviewDeck1],sync_leader,0
 [EffectRack1_EffectUnit4_Effect4],button_parameter11_type,0
 [EqualizerRack1_[Channel4]_Effect1],button_parameter4_type,0
 [PreviewDeck1],bpm_minus_toggle,0
@@ -9711,7 +9711,7 @@
 [Microphone2],PeakIndicator_toggle,0
 [EffectRack1_EffectUnit1_Effect2],parameter14_link_inverse,0
 [EffectRack1_EffectUnit3_Effect3],button_parameter8_type,0
-[Sampler3],sync_master,0
+[Sampler3],sync_leader,0
 [EqualizerRack1_[Master]_Effect1],button_parameter1,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter12_set_default,0
 [Sampler1],rate_temp_down,0
@@ -9722,7 +9722,7 @@
 [EffectRack1_EffectUnit3_Effect4],button_parameter8_type,0
 [QuickEffectRack1_[Channel2]_Effect1],button_parameter9_type,0
 [EqualizerRack1_[Channel3]],super1_set_minus_one,0
-[Sampler4],sync_master,0
+[Sampler4],sync_leader,0
 [EffectRack1_EffectUnit4_Effect1],button_parameter5_type,0
 [EqualizerRack1_[Channel4]_Effect1],button_parameter15,0
 [PreviewDeck1],hotcue_23_gotoandplay,0
@@ -9737,7 +9737,7 @@
 [Microphone4],PeakIndicator_toggle,0
 [EffectRack1_EffectUnit3_Effect4],parameter14_link_inverse,0
 [Sampler4],talkover,0
-[Sampler1],sync_master,0
+[Sampler1],sync_leader,0
 [Channel4],beatloop_4_enabled,0
 [EffectRack1_EffectUnit4_Effect2],button_parameter5_type,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter9,0
@@ -9759,7 +9759,7 @@
 [PreviewDeck1],hotcue_20_activate_preview,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter2,0.707107
 [EffectRack1_EffectUnit4_Effect4],parameter1_link_inverse,0
-[Sampler2],sync_master,0
+[Sampler2],sync_leader,0
 [Channel3],beatloop_4_enabled,0
 [EffectRack1_EffectUnit2_Effect3],parameter8_set_minus_one,0
 [QuickEffectRack1_[Channel3]_Effect1],parameter1_down_small,0
@@ -9909,7 +9909,7 @@
 [Channel3],hotcue_31_goto,0
 [Playlist],LoadSelectedIntoFirstStopped,0
 [Channel2],hotcue_1_activate_preview,0
-[InternalClock],sync_master,0
+[InternalClock],sync_leader,0
 [EffectRack1_EffectUnit4_Effect1],parameter11_down_small,0
 [Sampler3],rateSearch_set_minus_one,0
 [EqualizerRack1_[Channel1]_Effect1],parameter11_up,0

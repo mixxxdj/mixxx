@@ -85,25 +85,20 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
 
     // Do nothing if no track is loaded.
     TrackPointer pTrack = m_pTrack;
-    if (!pTrack) {
+    FrameInfo info = frameInfo();
+    if (!pTrack || !info.trackEndPosition.isValid()) {
         return;
     }
 
-    const auto trackEndPosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    getSampleOfTrack().total);
-    if (!trackEndPosition.isValid()) {
-        return;
-    }
     const auto newPlayPos = mixxx::audio::kStartFramePos +
-            (trackEndPosition - mixxx::audio::kStartFramePos) * fractionalPos;
+            (info.trackEndPosition - mixxx::audio::kStartFramePos) * fractionalPos;
 
     if (m_pControlVinylEnabled->get() > 0.0 && m_pControlVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
         int cuemode = (int)m_pControlVinylCueing->get();
 
         //if in preroll, always seek
         if (newPlayPos < mixxx::audio::kStartFramePos) {
-            seekExact(newPlayPos.toEngineSamplePos());
+            seekExact(newPlayPos);
             return;
         }
 
@@ -114,7 +109,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             //if onecue, just seek to the regular cue
             const mixxx::audio::FramePos mainCuePosition = pTrack->getMainCuePosition();
             if (mainCuePosition.isValid()) {
-                seekExact(mainCuePosition.toEngineSamplePos());
+                seekExact(mainCuePosition);
             }
             return;
         }
@@ -156,7 +151,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             //if negative, allow a seek by falling down to the bottom
         } else {
             m_bSeekRequested = true;
-            seekExact(nearestPlayPos.toEngineSamplePos());
+            seekExact(nearestPlayPos);
             m_bSeekRequested = false;
             return;
         }
@@ -164,7 +159,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
 
     // Just seek where it wanted to originally.
     m_bSeekRequested = true;
-    seekExact(newPlayPos.toEngineSamplePos());
+    seekExact(newPlayPos);
     m_bSeekRequested = false;
 }
 

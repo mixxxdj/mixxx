@@ -62,7 +62,7 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     parser.add_argument("--from-ref", help="use changes changes since commit")
     parser.add_argument("--to-ref", help="use changes until commit")
     parser.add_argument(
-        "--ignore-file",
+        "--ignore-words",
         type=argparse.FileType("r"),
         help="ignore matches (one per line)",
     )
@@ -98,8 +98,8 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     )
 
     ignore_matches = set()
-    if args.ignore_file:
-        ignore_matches = set(get_ignore_matches(args.ignore_file))
+    if args.ignore_words:
+        ignore_matches = set(get_ignore_matches(args.ignore_words))
 
     result = 0
     for filename, file_lines in itertools.groupby(

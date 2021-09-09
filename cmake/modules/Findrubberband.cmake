@@ -82,5 +82,14 @@ if(rubberband_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_rubberband_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${rubberband_INCLUDE_DIR}"
     )
+    is_static_library(rubberband_IS_STATIC Chromaprint::Chromaprint)
+    if(rubberband_IS_STATIC)
+      find_package(FFTW REQUIRED)
+      find_library(SAMPLERATE_LIBRARY samplerate REQUIRED)
+      set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        FFTW::FFTW
+        ${SAMPLERATE_LIBRARY}
+      )
+    endif()
   endif()
 endif()

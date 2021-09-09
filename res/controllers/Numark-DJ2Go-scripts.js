@@ -683,9 +683,3 @@ NumarkDJ2Go.loopOut = function(channel, control, value, status, group) {
 		}
 	}
 }; //loopOut
-
-
-
-
-
-

@@ -262,4 +262,3 @@ firstmix.playbutton2 = function (channel, control, value, status, group) {
         midi.sendShortMsg(0x90,0x4C,0x7F);    // Turn on the Play LED
     }
 }
-

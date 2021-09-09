@@ -52,7 +52,7 @@ class FramePos final {
     /// invalid and result in an invalid `FramePos` instead.
     ///
     /// In general, using this method should be avoided and is only necessary
-    /// for compatiblity with our control objects and legacy parts of the code
+    /// for compatibility with our control objects and legacy parts of the code
     /// base. Using a different code path based on the output of `isValid()` is
     /// preferable.
     static constexpr FramePos fromEngineSamplePosMaybeInvalid(double engineSamplePos) {
@@ -63,10 +63,10 @@ class FramePos final {
     }
 
     /// Return an engine sample position. If the `FramePos` is invalid,
-    /// `kLegacyInvalidEnginePosition` is returned instad.
+    /// `kLegacyInvalidEnginePosition` is returned instead.
     ///
     /// In general, using this method should be avoided and is only necessary
-    /// for compatiblity with our control objects and legacy parts of the code
+    /// for compatibility with our control objects and legacy parts of the code
     /// base. Using a different code path based on the output of `isValid()` is
     /// preferable.
     double toEngineSamplePosMaybeInvalid() const {

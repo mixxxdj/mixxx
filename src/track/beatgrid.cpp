@@ -14,7 +14,6 @@ struct BeatGridData {
     double firstBeat;
 };
 
-constexpr int kFrameSize = 2;
 constexpr double kBpmScaleRounding = 0.001;
 
 } // namespace
@@ -76,11 +75,11 @@ BeatGrid::BeatGrid(const BeatGrid& other)
 // static
 BeatsPointer BeatGrid::makeBeatGrid(
         audio::SampleRate sampleRate,
-        const QString& subVersion,
         mixxx::Bpm bpm,
-        mixxx::audio::FramePos firstBeatPosition) {
-    // FIXME: Should this be a debug assertion?
-    if (!bpm.isValid() || !firstBeatPosition.isValid()) {
+        mixxx::audio::FramePos firstBeatPosition,
+        const QString& subVersion) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid() && firstBeatPosition.isValid() &&
+            !firstBeatPosition.isFractional()) {
         return nullptr;
     }
 
@@ -96,7 +95,7 @@ BeatsPointer BeatGrid::makeBeatGrid(
 }
 
 // static
-BeatsPointer BeatGrid::makeBeatGrid(
+BeatsPointer BeatGrid::fromByteArray(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
@@ -114,7 +113,7 @@ BeatsPointer BeatGrid::makeBeatGrid(
     const auto firstBeat = mixxx::audio::FramePos(blob->firstBeat);
     const auto bpm = mixxx::Bpm(blob->bpm);
 
-    return makeBeatGrid(sampleRate, subVersion, bpm, firstBeat);
+    return makeBeatGrid(sampleRate, bpm, firstBeat, subVersion);
 }
 
 QByteArray BeatGrid::toByteArray() const {
@@ -144,67 +143,14 @@ bool BeatGrid::isValid() const {
     return m_sampleRate.isValid() && bpm().isValid() && firstBeatPosition().isValid();
 }
 
-// This could be implemented in the Beats Class itself.
-// If necessary, the child class can redefine it.
-audio::FramePos BeatGrid::findNextBeat(audio::FramePos position) const {
-    return findNthBeat(position, 1);
-}
-
-// This could be implemented in the Beats Class itself.
-// If necessary, the child class can redefine it.
-audio::FramePos BeatGrid::findPrevBeat(audio::FramePos position) const {
-    return findNthBeat(position, -1);
-}
-
-// This is an internal call. This could be implemented in the Beats Class itself.
-audio::FramePos BeatGrid::findClosestBeat(audio::FramePos position) const {
-    if (!isValid()) {
-        return audio::kInvalidFramePos;
-    }
-    audio::FramePos prevBeatPosition;
-    audio::FramePos nextBeatPosition;
-    findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true);
-    if (!prevBeatPosition.isValid()) {
-        // If both positions are invalid, we correctly return an invalid position.
-        return nextBeatPosition;
-    }
-
-    if (!nextBeatPosition.isValid()) {
-        return prevBeatPosition;
-    }
-
-    // Both position are valid, return the closest position.
-    return (nextBeatPosition - position > position - prevBeatPosition)
-            ? prevBeatPosition
-            : nextBeatPosition;
-}
-
 audio::FramePos BeatGrid::findNthBeat(audio::FramePos position, int n) const {
     if (!isValid() || n == 0) {
         return audio::kInvalidFramePos;
     }
 
-    double beatFraction = (position - firstBeatPosition()) / m_beatLengthFrames;
-    double prevBeat = floor(beatFraction);
-    double nextBeat = ceil(beatFraction);
-
-    // If the position is within 1/100th of the next or previous beat, treat it
-    // as if it is that beat.
-    const double kEpsilon = .01;
-
-    if (fabs(nextBeat - beatFraction) < kEpsilon) {
-        // If we are going to pretend we were actually on nextBeat then prevBeat
-        // needs to be re-calculated. Since it is floor(beatFraction), that's
-        // the same as nextBeat.  We only use prevBeat so no need to increment
-        // nextBeat.
-        prevBeat = nextBeat;
-    } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
-        // If we are going to pretend we were actually on prevBeat then nextBeat
-        // needs to be re-calculated. Since it is ceil(beatFraction), that's
-        // the same as prevBeat.  We will only use nextBeat so no need to
-        // decrement prevBeat.
-        nextBeat = prevBeat;
-    }
+    const double beatFraction = (position - firstBeatPosition()) / m_beatLengthFrames;
+    const double prevBeat = floor(beatFraction);
+    const double nextBeat = ceil(beatFraction);
 
     audio::FramePos closestBeatPosition;
     if (n > 0) {
@@ -349,8 +295,8 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
     grid.mutable_bpm()->set_bpm(bpm.value());
-    double beatLength = (60.0 * m_sampleRate / bpm.value()) * kFrameSize;
-    return BeatsPointer(new BeatGrid(*this, grid, beatLength));
+    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());
+    return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
 }
 
 BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
@@ -359,8 +305,8 @@ BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
     }
     mixxx::track::io::BeatGrid grid = m_grid;
     grid.mutable_bpm()->set_bpm(bpm.value());
-    double beatLength = (60.0 * m_sampleRate / bpm.value()) * kFrameSize;
-    return BeatsPointer(new BeatGrid(*this, grid, beatLength));
+    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());
+    return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
 }
 
 } // namespace mixxx

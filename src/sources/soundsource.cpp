@@ -6,7 +6,7 @@ namespace mixxx {
 
 namespace {
 
-const Logger kLogger("AudioSource");
+const Logger kLogger("SoundSource");
 
 inline QUrl validateUrl(QUrl url) {
     DEBUG_ASSERT(url.isValid());

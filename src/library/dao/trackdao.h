@@ -24,6 +24,7 @@ class LibraryHashDAO;
 namespace mixxx {
 
 class FileInfo;
+class TrackRecord;
 
 } // namespace mixxx
 
@@ -79,6 +80,22 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     /// aggregated properties obtained from the played history.
     bool updatePlayCounterFromPlayedHistory(
             const QSet<TrackId>& trackIds) const;
+
+    /// Don't use even if public!!! Ugly workaround for C++ visibility restrictions.
+    /// This method is invoked by a free function that needs to access
+    /// a private Track member that only TrackDAO is allowed to access
+    /// as a friend.
+    static void setTrackGenreInternal(Track* pTrack, const QString& genre);
+    /// Don't use even if public!!! Ugly workaround for C++ visibility restrictions.
+    /// This method is invoked by a free function that needs to access
+    /// a private TrackRecord member that only TrackDAO is allowed to
+    /// access as a friend.
+    static void setTrackHeaderParsedInternal(Track* pTrack, bool headerParsed);
+    /// Don't use even if public!!! Ugly workaround for C++ visibility restrictions.
+    /// This method is invoked by a free function that needs to access
+    /// private TrackRecord member that only TrackDAO is allowed to
+    /// access as a friend.
+    static bool getTrackHeaderParsedInternal(const mixxx::TrackRecord& trackRecord);
 
   signals:
     // Forwarded from Track object

@@ -583,7 +583,7 @@ WLibrary {
   }
 
   #SyncBox {
-    margin: 2px 1px 1px 0px;
+    margin: 2px 1px 1px 2px;
   }
 
   #RateControls {
@@ -1241,6 +1241,7 @@ WOverview #PassthroughLabel {
 #VinylModeButton,
 #VinylCueButton[displayValue="0"],
 #PassthroughButton[displayValue="0"],
+#SyncLeader[value="0"],
 #FxAssignButtons WPushButton[displayValue="0"] {
   outline: none;
   border-width: 2px 2px 2px 1px;
@@ -1250,6 +1251,8 @@ WOverview #PassthroughLabel {
   #VinylCueButton[displayValue="1"],
   #VinylCueButton[displayValue="2"],
   #PassthroughButton[displayValue="1"],
+  #SyncLeader[value="1"],
+  #SyncLeader[value="2"],
   #FxAssignButtons WPushButton[displayValue="1"] {
     outline: none;
     border-width: 2px 2px 2px 1px;
@@ -1259,6 +1262,7 @@ WPushButton#FxAssignButton1[displayValue="0"],
 #VinylButton[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
+#SyncDeck[displayValue="0"],
 #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
@@ -1272,6 +1276,7 @@ WPushButton#VinylButton[displayValue="1"],
 WPushButton#FxAssignButton1[displayValue="1"],
 #KeyMatchReset[pressed="true"],
 #GuiToggleButton[displayValue="1"],
+#SyncDeck[displayValue="1"],
 #RecFeedback[displayValue="1"],
 #RecFeedback[displayValue="2"],
 #BroadcastButton[displayValue="1"],
@@ -1319,8 +1324,6 @@ WPushButton#CueDeck,
 #PlayCueMini WPushButton,
 WPushButton#LoopActivate,
 WPushButton#RateControls WPushButton,
-WPushButton#SyncDeck,
-WPushButton#SyncLeader,
 WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
@@ -1339,6 +1342,8 @@ WPushButton#SamplerExpand,
 #FxAssignButtons WPushButton,
 #VinylControls WPushButton,
 #KeyControls WPushButton,
+WPushButton#SyncDeck,
+WPushButton#SyncLeader,
 #SamplerSettings WPushButton,
 #SamplerSettingsMini WPushButton,
 WPushButton#CrossfaderButton,
@@ -1368,6 +1373,7 @@ WPushButton#VinylModeButton[displayValue="2"],
 WPushButton#MixModeButton[displayValue="1"],
 #RateControls WPushButton[displayValue="0"],
 WPushButton#SyncDeck[value="0"],
+WPushButton#SyncLeader[value="0"],
 #MixerContainer WPushButton[displayValue="0"],
 #FxUnitContainer WPushButton[displayValue="0"],
 #Sampler WPushButton[displayValue="0"],
@@ -1384,7 +1390,7 @@ WPushButton#SkinSettingsToggle[displayValue="0"] {
 
 /* Orange for 'partially active' status */
 #SyncLeader[value="1"] {
-background-color: #db7700;
+  background-color: #db7700;
 }
 
 /* Red for 'active' status */
@@ -1673,8 +1679,12 @@ WPushButton#SamplerExpand[displayValue="0"],
   image: url(skin:/classic/buttons/btn__sync_deck.svg) no-repeat center center;
   }
 
-#SyncLeader {
-  image: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
+#SyncLeader[value="0"] {
+  image: url(skin:/classic/buttons/btn__sync_leader.svg) no-repeat center center;
+  }
+  #SyncLeader[value="1"],
+  #SyncLeader[value="2"] {
+    image: url(skin:/classic/buttons/btn__sync_leader_active.svg) no-repeat center center;
   }
 
   #SyncSampler {
@@ -2451,6 +2461,7 @@ QLineEdit QMenu::item:disabled {
 
   WLibrarySidebar QMenu::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
+  WTrackTableViewHeader QMenu::indicator:checked,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);

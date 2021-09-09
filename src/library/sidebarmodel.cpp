@@ -9,6 +9,7 @@
 #include "library/treeitem.h"
 #include "moc_sidebarmodel.cpp"
 #include "util/assert.h"
+#include "util/cmdlineargs.h"
 
 namespace {
 
@@ -254,11 +255,12 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
         case Qt::DisplayRole:
             return pTreeItem->getLabel();
         case Qt::ToolTipRole: {
-            // If it's the "Quick Links" node, display it's name
-            if (pTreeItem->getData().toString() == QUICK_LINK_NODE) {
-                return pTreeItem->getLabel();
+            if (CmdlineArgs::Instance().getDeveloper()) {
+                // Display the internal data for debugging
+                return pTreeItem->getData();
             }
-            return pTreeItem->getData();
+            // Show the label. Helpful for long names with a narrow sidebar.
+            return pTreeItem->getLabel();
         }
         case Qt::FontRole: {
             QFont font;

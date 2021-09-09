@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_lilv QUIET lilv-0)
@@ -84,5 +86,12 @@ if(lilv_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_lilv_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${lilv_INCLUDE_DIR}"
     )
+    is_static_library(lilv_IS_STATIC lilv::lilv)
+    if(lilv_IS_STATIC)
+      find_package(sord CONFIG REQUIRED)
+      set_property(TARGET lilv::lilv APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          sord::sord
+      )
+    endif()
   endif()
 endif()

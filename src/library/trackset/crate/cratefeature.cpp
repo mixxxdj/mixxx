@@ -139,7 +139,10 @@ void CrateFeature::connectLibrary(Library* pLibrary) {
     connect(pLibrary,
             &Library::trackSelected,
             this,
-            &CrateFeature::slotTrackSelected);
+            [this](const TrackPointer& pTrack) {
+                const auto trackId = pTrack ? pTrack->getId() : TrackId{};
+                slotTrackSelected(trackId);
+            });
     connect(pLibrary,
             &Library::switchToView,
             this,
@@ -279,6 +282,7 @@ TreeItemModel* CrateFeature::sidebarModel() const {
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
+    //qDebug() << "CrateFeature::activateChild()" << index;
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
@@ -394,7 +398,11 @@ void CrateFeature::slotDeleteCrate() {
             qWarning() << "Refusing to delete locked crate" << crate;
             return;
         }
-        if (m_pTrackCollection->deleteCrate(crate.getId())) {
+        CrateId crateId = crate.getId();
+        // Store sibling id to restore selection after crate was deleted
+        // to avoid the scroll position being reset to Crate root item.
+        storePrevSiblingCrateId(crateId);
+        if (m_pTrackCollection->deleteCrate(crateId)) {
             qDebug() << "Deleted crate" << crate;
             return;
         }
@@ -511,7 +519,7 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     m_pSidebarModel->insertTreeItemRows(modelRows, 0);
 
     // Update rendering of crates depending on the currently selected track
-    slotTrackSelected(m_pSelectedTrack);
+    slotTrackSelected(m_selectedTrackId);
 
     if (selectedRow >= 0) {
         return m_pSidebarModel->index(selectedRow, 0);
@@ -536,10 +544,10 @@ void CrateFeature::updateChildModel(const QSet<CrateId>& updatedCrateIds) {
                 m_pSidebarModel->getItem(index), crateSummary);
         m_pSidebarModel->triggerRepaint(index);
     }
-    if (m_pSelectedTrack) {
+    if (m_selectedTrackId.isValid()) {
         // Crates containing the currently selected track might
         // have been modified.
-        slotTrackSelected(m_pSelectedTrack);
+        slotTrackSelected(m_selectedTrackId);
     }
 }
 
@@ -765,16 +773,34 @@ void CrateFeature::slotExportTrackFiles() {
     track_export.exportTracks();
 }
 
+void CrateFeature::storePrevSiblingCrateId(CrateId crateId) {
+    QModelIndex actIndex = indexFromCrateId(crateId);
+    for (int i = (actIndex.row() + 1); i >= (actIndex.row() - 1); i -= 2) {
+        QModelIndex newIndex = actIndex.sibling(i, actIndex.column());
+        if (newIndex.isValid()) {
+            TreeItem* pTreeItem = m_pSidebarModel->getItem(newIndex);
+            DEBUG_ASSERT(pTreeItem != nullptr);
+            if (!pTreeItem->hasChildren()) {
+                m_prevSiblingCrate = crateIdFromIndex(newIndex);
+            }
+        }
+    }
+}
+
 void CrateFeature::slotCrateTableChanged(CrateId crateId) {
     if (m_lastRightClickedIndex.isValid() &&
             (crateIdFromIndex(m_lastRightClickedIndex) == crateId)) {
-        // Preserve crate selection
+        // Try to restore previous selection
         m_lastRightClickedIndex = rebuildChildModel(crateId);
         if (m_lastRightClickedIndex.isValid()) {
+            // Select last active crate
             activateCrate(crateId);
+        } else if (m_prevSiblingCrate.isValid()) {
+            // Select neighbour of deleted crate
+            activateCrate(m_prevSiblingCrate);
         }
     } else {
-        // Discard crate selection
+        // No valid selection to restore
         rebuildChildModel();
     }
 }
@@ -797,20 +823,18 @@ void CrateFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
-    m_pSelectedTrack = std::move(pTrack);
+void CrateFeature::slotTrackSelected(TrackId trackId) {
+    m_selectedTrackId = trackId;
 
     TreeItem* pRootItem = m_pSidebarModel->getRootItem();
     VERIFY_OR_DEBUG_ASSERT(pRootItem != nullptr) {
         return;
     }
 
-    TrackId selectedTrackId;
     std::vector<CrateId> sortedTrackCrates;
-    if (m_pSelectedTrack) {
-        selectedTrackId = m_pSelectedTrack->getId();
+    if (m_selectedTrackId.isValid()) {
         CrateTrackSelectResult trackCratesIter(
-                m_pTrackCollection->crates().selectTrackCratesSorted(selectedTrackId));
+                m_pTrackCollection->crates().selectTrackCratesSorted(m_selectedTrackId));
         while (trackCratesIter.next()) {
             sortedTrackCrates.push_back(trackCratesIter.crateId());
         }
@@ -821,7 +845,7 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     for (TreeItem* pTreeItem : pRootItem->children()) {
         DEBUG_ASSERT(pTreeItem != nullptr);
         bool crateContainsSelectedTrack =
-                selectedTrackId.isValid() &&
+                m_selectedTrackId.isValid() &&
                 std::binary_search(
                         sortedTrackCrates.begin(),
                         sortedTrackCrates.end(),
@@ -833,5 +857,5 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
 }
 
 void CrateFeature::slotResetSelectedTrack() {
-    slotTrackSelected(TrackPointer());
+    slotTrackSelected(TrackId{});
 }

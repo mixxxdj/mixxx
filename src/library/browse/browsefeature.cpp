@@ -382,7 +382,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     QString path = item->getData().toString();
 
-    // If the item is a build-in node, e.g., 'QuickLink' return
+    // If the item is a built-in node, e.g., 'QuickLink' return
     if (path.isEmpty() || path == QUICK_LINK_NODE) {
         return;
     }

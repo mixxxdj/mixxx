@@ -180,46 +180,113 @@ TEST_F(DirectoryDAOTest, relocateDirectory) {
     const QTemporaryDir tempDir2;
     ASSERT_TRUE(tempDir2.isValid());
 
-    //create temp dirs
-    QString testdir(tempDir1.filePath("TestDir"));
-    ASSERT_TRUE(QDir(tempDir1.path()).mkpath(testdir));
-    QString test2(tempDir2.filePath("TestDir2"));
-    ASSERT_TRUE(QDir(tempDir2.path()).mkpath(test2));
-    QString testnew(tempDir2.filePath("TestDirNew"));
-    ASSERT_TRUE(QDir(tempDir2.path()).mkpath(testnew));
+    // Create temp dirs (with LIKE/GLOB wildcards, Unicode characters, and quotes in name).
+    // The different directories only differ by the character 'e' with decorations, namely
+    // 'é' and 'ë'.
+#if defined(__WINDOWS__)
+    // Exclude reserved characters from path names: ", *, ?
+    // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
+    const QString oldDirPath = tempDir1.filePath("Test'_%Dir");
+    const QString newDirPath = tempDir2.filePath("Tést'_%Dir");
+    const QString otherDirPath = tempDir2.filePath("Tëst'_%Dir");
+#else
+    const QString oldDirPath = tempDir1.filePath("Test'\"_*%?Dir");
+    const QString newDirPath = tempDir2.filePath("Tést'\"_*%?Dir");
+    const QString otherDirPath = tempDir2.filePath("Tëst'\"_*%?Dir");
+#endif
+    ASSERT_TRUE(QDir{}.mkpath(oldDirPath));
+    ASSERT_TRUE(QDir{}.mkpath(newDirPath));
+    ASSERT_TRUE(QDir{}.mkpath(otherDirPath));
+
+    const auto oldDirInfo = mixxx::FileInfo(oldDirPath);
+    const auto newDirInfo = mixxx::FileInfo(newDirPath);
+    const auto otherDirInfo = mixxx::FileInfo(otherDirPath);
 
     const DirectoryDAO& dao = internalCollection()->getDirectoryDAO();
 
-    ASSERT_EQ(DirectoryDAO::AddResult::Ok, dao.addDirectory(mixxx::FileInfo(testdir)));
-    ASSERT_EQ(DirectoryDAO::AddResult::Ok, dao.addDirectory(mixxx::FileInfo(test2)));
+    ASSERT_EQ(DirectoryDAO::AddResult::Ok, dao.addDirectory(oldDirInfo));
+    ASSERT_EQ(DirectoryDAO::AddResult::Ok, dao.addDirectory(otherDirInfo));
 
-    // ok now lets create some tracks here
+    const QList<mixxx::FileInfo> oldDirs = dao.loadAllDirectories();
+    ASSERT_EQ(2, oldDirs.size());
+    ASSERT_THAT(oldDirs, UnorderedElementsAre(oldDirInfo, otherDirInfo));
+
+    // Add tracks that should be relocated
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
-                                Track::newTemporary(testdir, "a." + getSupportedFileExt()),
+                                Track::newTemporary(
+                                        oldDirPath, "a." + getSupportedFileExt()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
-                                Track::newTemporary(testdir, "b." + getSupportedFileExt()),
+                                Track::newTemporary(
+                                        oldDirPath, "b." + getSupportedFileExt()),
+                                false)
+                        .isValid());
+
+    // Add tracks that should be unaffected by the relocation
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        newDirPath, "c." + getSupportedFileExt()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
-                                Track::newTemporary(test2, "c." + getSupportedFileExt()),
+                                Track::newTemporary(
+                                        otherDirPath, "d." + getSupportedFileExt()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
-                                Track::newTemporary(test2, "d." + getSupportedFileExt()),
+                                Track::newTemporary(
+                                        oldDirPath + "." + getSupportedFileExt()),
                                 false)
                         .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        newDirPath + "." + getSupportedFileExt()),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        otherDirPath + "." + getSupportedFileExt()),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        oldDirPath.toLower(), "a." + getSupportedFileExt()),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        oldDirPath.toUpper(), "b." + getSupportedFileExt()),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(internalCollection()
+                        ->addTrack(
+                                Track::newTemporary(
+                                        newDirPath.toLower(), "c." + getSupportedFileExt()),
+                                false)
+                        .isValid());
+    ASSERT_TRUE(
+            internalCollection()
+                    ->addTrack(
+                            Track::newTemporary(
+                                    otherDirPath.toUpper(), "d." + getSupportedFileExt()),
+                            false)
+                    .isValid());
 
     QList<RelocatedTrack> relocatedTracks =
-            dao.relocateDirectory(testdir, testnew);
+            dao.relocateDirectory(oldDirPath, newDirPath);
     EXPECT_EQ(2, relocatedTracks.size());
 
-    const QList<mixxx::FileInfo> allDirs = dao.loadAllDirectories();
-    EXPECT_EQ(2, allDirs.size());
-    EXPECT_THAT(allDirs, UnorderedElementsAre(mixxx::FileInfo(test2), mixxx::FileInfo(testnew)));
+    const QList<mixxx::FileInfo> newDirs = dao.loadAllDirectories();
+    EXPECT_EQ(2, newDirs.size());
+    EXPECT_THAT(newDirs, UnorderedElementsAre(newDirInfo, otherDirInfo));
 }

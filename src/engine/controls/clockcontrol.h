@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+
+#include "audio/frame.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
@@ -16,25 +19,28 @@ class ClockControl: public EngineControl {
 
     ~ClockControl() override;
 
-    void process(const double dRate, const double currentSample,
-            const int iBufferSize) override;
-
     void updateIndicators(const double dRate,
-            const double currentSample,
-            const double sampleRate);
+            mixxx::audio::FramePos currentPosition,
+            mixxx::audio::SampleRate sampleRate);
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private:
-    ControlObject* m_pCOBeatActive;
+    std::unique_ptr<ControlObject> m_pCOBeatActive;
 
     // ControlObjects that come from LoopingControl
-    ControlProxy* m_pLoopEnabled;
-    ControlProxy* m_pLoopStartPosition;
-    ControlProxy* m_pLoopEndPosition;
+    std::unique_ptr<ControlProxy> m_pLoopEnabled;
+    std::unique_ptr<ControlProxy> m_pLoopStartPosition;
+    std::unique_ptr<ControlProxy> m_pLoopEndPosition;
 
-    double m_lastEvaluatedSample;
+    // True is forward direction, False is reverse
+    bool m_lastPlayDirectionWasForwards;
+
+    mixxx::audio::FramePos m_lastEvaluatedPosition;
+    mixxx::audio::FramePos m_prevBeatPosition;
+    mixxx::audio::FramePos m_nextBeatPosition;
+    mixxx::audio::FrameDiff_t m_blinkIntervalFrames;
 
     enum class StateMachine : int {
         afterBeatDirectionChanged =
@@ -49,14 +55,7 @@ class ClockControl: public EngineControl {
                 -2 /// Direction changed to forward playing while reverse playing indication was on
     };
 
-    StateMachine m_InternalState;
-
-    double m_PrevBeatSamples;
-    double m_NextBeatSamples;
-    double m_blinkIntervalSamples;
-
-    // True is forward direction, False is reverse
-    bool m_lastPlayDirection;
+    StateMachine m_internalState;
 
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;

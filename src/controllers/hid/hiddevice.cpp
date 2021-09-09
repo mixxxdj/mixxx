@@ -9,13 +9,9 @@
 
 namespace {
 
-constexpr unsigned short kGenericDesktopUsagePage = 0x01;
-
 constexpr unsigned short kGenericDesktopPointerUsage = 0x01;
-constexpr unsigned short kGenericDesktopMouseUsage = 0x02;
 constexpr unsigned short kGenericDesktopJoystickUsage = 0x04;
 constexpr unsigned short kGenericDesktopGamePadUsage = 0x05;
-constexpr unsigned short kGenericDesktopKeyboardUsage = 0x06;
 constexpr unsigned short kGenericDesktopKeypadUsage = 0x07;
 constexpr unsigned short kGenericDesktopMultiaxisControllerUsage = 0x08;
 

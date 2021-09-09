@@ -11,7 +11,14 @@ namespace mixxx {
 
 namespace hid {
 
+constexpr unsigned short kGenericDesktopUsagePage = 0x01;
+
+constexpr unsigned short kGenericDesktopMouseUsage = 0x02;
+constexpr unsigned short kGenericDesktopKeyboardUsage = 0x06;
+
+// Apple has two two different vendor IDs which are used for different devices.
 constexpr unsigned short kAppleVendorId = 0x5ac;
+constexpr unsigned short kAppleIncVendorId = 0x004c;
 
 /// Detached copy of `struct hid_device_info`.
 ///

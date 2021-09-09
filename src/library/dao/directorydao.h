@@ -30,6 +30,6 @@ class DirectoryDAO : public DAO {
 
     // TODO: Move this function out of the DAO
     QList<RelocatedTrack> relocateDirectory(
-            const QString& oldFolder,
-            const QString& newFolder) const;
+            const QString& oldDirectory,
+            const QString& newDirectory) const;
 };

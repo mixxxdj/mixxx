@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "control/controlpushbutton.h"
 #include "preferences/configobject.h"
 #include "preferences/constants.h"
@@ -27,20 +29,19 @@ class LV2Backend;
 
 namespace mixxx {
 
+class ControlIndicatorTimer;
 class DbConnectionPool;
+class ScreensaverManager;
 
 class CoreServices : public QObject {
     Q_OBJECT
 
   public:
-    CoreServices(const CmdlineArgs& args);
-    ~CoreServices() = default;
+    CoreServices(const CmdlineArgs& args, QApplication* pApp);
+    ~CoreServices();
 
-    void initializeSettings();
-    // FIXME: should be private, but WMainMenuBar needs it initialized early
-    void initializeKeyboard();
+    /// The secondary long run which should be called after displaying the start up screen
     void initialize(QApplication* pApp);
-    void shutdown();
 
     std::shared_ptr<KeyboardEventFilter> getKeyboardEventFilter() const {
         return m_pKeyboardEventFilter;
@@ -48,6 +49,10 @@ class CoreServices : public QObject {
 
     std::shared_ptr<ConfigObject<ConfigValueKbd>> getKeyboardConfig() const {
         return m_pKbdConfig;
+    }
+
+    std::shared_ptr<mixxx::ControlIndicatorTimer> getControlIndicatorTimer() const {
+        return m_pControlIndicatorTimer;
     }
 
     std::shared_ptr<SoundManager> getSoundManager() const {
@@ -100,6 +105,10 @@ class CoreServices : public QObject {
         return m_pSettingsManager->settings();
     }
 
+    std::shared_ptr<ScreensaverManager> getScreensaverManager() const {
+        return m_pScreensaverManager;
+    }
+
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);
 
@@ -108,8 +117,16 @@ class CoreServices : public QObject {
 
   private:
     bool initializeDatabase();
+    void initializeKeyboard();
+    void initializeSettings();
+    void initializeScreensaverManager();
+    void initializeLogging();
+
+    /// Tear down CoreServices that were previously initialized by `initialize()`.
+    void finalize();
 
     std::shared_ptr<SettingsManager> m_pSettingsManager;
+    std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     // owned by EffectsManager
     LV2Backend* m_pLV2Backend;
@@ -132,10 +149,13 @@ class CoreServices : public QObject {
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfigEmpty;
 
+    std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
+
     std::unique_ptr<ControlPushButton> m_pTouchShift;
 
     Timer m_runtime_timer;
     const CmdlineArgs& m_cmdlineArgs;
+    bool m_isInitialized;
 };
 
 } // namespace mixxx

@@ -503,6 +503,10 @@ CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(
 
 CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(
         const QString& crateNameLike) const {
+    // TODO: Do SQL LIKE wildcards in crateNameLike need to be escaped?
+    // Previously we used SqlLikeWildcardEscaper in the past for this
+    // purpose. This utility class has become obsolete but could be
+    // restored from the 2.3 branch if ever needed again.
     FwdSqlQuery query(m_database,
             QStringLiteral("SELECT %1,%2 FROM %3 "
                            "JOIN %4 ON %5 = %6 "

@@ -433,7 +433,7 @@ Hercules4Mx.allLedsOff = function() {
 
 // The jog wheel sensitivity setting has changed. This is reported in two scenarios:
 // when the setting is changed in the tray icon, and when the crossfader curve is changed to beatmix.
-Hercules4Mx.sensitivityChanged = function(value, group, control, status, group) {
+Hercules4Mx.sensitivityChanged = function(value, group, control, status) {
     Hercules4Mx.userSettings.sensitivity = 1 / value;
 };
 

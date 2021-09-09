@@ -96,12 +96,27 @@ TEST_F(BeatMapTest, TestNthBeat) {
     // Check edge cases
     const mixxx::audio::FramePos firstBeat = startOffsetFrames + beatLengthFrames * 0;
     const mixxx::audio::FramePos lastBeat = startOffsetFrames + beatLengthFrames * (numBeats - 1);
+    EXPECT_EQ(lastBeat, pMap->findNthBeat(lastBeat, -1));
+    EXPECT_EQ(lastBeat, pMap->findNthBeat(lastBeat + beatLengthFrames, -1));
+    EXPECT_EQ(lastBeat - beatLengthFrames, pMap->findNthBeat(lastBeat, -2));
+    EXPECT_EQ(lastBeat - beatLengthFrames, pMap->findNthBeat(lastBeat + beatLengthFrames, -2));
+    EXPECT_EQ(lastBeat - 2 * beatLengthFrames, pMap->findNthBeat(lastBeat, -3));
+    EXPECT_EQ(lastBeat, pMap->findPrevBeat(lastBeat));
     EXPECT_EQ(lastBeat, pMap->findNthBeat(lastBeat, 1));
     EXPECT_EQ(lastBeat, pMap->findNextBeat(lastBeat));
     EXPECT_FALSE(pMap->findNthBeat(lastBeat, 2).isValid());
+    EXPECT_FALSE(pMap->findNthBeat(lastBeat + beatLengthFrames, 2).isValid());
+
+    EXPECT_EQ(firstBeat, pMap->findNthBeat(firstBeat, 1));
+    EXPECT_EQ(firstBeat, pMap->findNthBeat(firstBeat - beatLengthFrames, 1));
+    EXPECT_EQ(firstBeat + beatLengthFrames, pMap->findNthBeat(firstBeat, 2));
+    EXPECT_EQ(firstBeat + beatLengthFrames, pMap->findNthBeat(firstBeat - beatLengthFrames, 2));
+    EXPECT_EQ(firstBeat + 2 * beatLengthFrames, pMap->findNthBeat(firstBeat, 3));
+    EXPECT_EQ(firstBeat, pMap->findNextBeat(firstBeat));
     EXPECT_EQ(firstBeat, pMap->findNthBeat(firstBeat, -1));
     EXPECT_EQ(firstBeat, pMap->findPrevBeat(firstBeat));
     EXPECT_FALSE(pMap->findNthBeat(firstBeat, -2).isValid());
+    EXPECT_FALSE(pMap->findNthBeat(firstBeat - beatLengthFrames, -1).isValid());
 
     mixxx::audio::FramePos prevBeat, nextBeat;
     pMap->findPrevNextBeats(lastBeat, &prevBeat, &nextBeat, true);
@@ -154,97 +169,6 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     // Both previous and next beat should return the current position.
     EXPECT_EQ(position, pMap->findNextBeat(position));
     EXPECT_EQ(position, pMap->findPrevBeat(position));
-}
-
-TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
-    constexpr mixxx::Bpm bpm(60.0);
-    m_pTrack->trySetBpm(bpm.value());
-    mixxx::audio::FrameDiff_t beatLengthFrames = getBeatLengthFrames(bpm);
-    const auto startOffsetFrames = mixxx::audio::FramePos(7);
-    const int numBeats = 100;
-    // Note beats must be in frames, not samples.
-    QVector<mixxx::audio::FramePos> beats =
-            createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    auto pMap = BeatMap::makeBeatMap(m_pTrack->getSampleRate(), QString(), beats);
-
-    // Pretend we're just before the 20th beat;
-    const int curBeat = 20;
-    const mixxx::audio::FramePos kClosestBeat = startOffsetFrames + curBeat * beatLengthFrames;
-    const mixxx::audio::FramePos position = kClosestBeat - beatLengthFrames * 0.005;
-
-    // The spec dictates that a value of 0 is always invalid and returns -1
-    EXPECT_FALSE(pMap->findNthBeat(position, 0).isValid());
-
-    // findNthBeat should return exactly the current beat if we ask for 1 or
-    // -1. For all other values, it should return n times the beat length.
-    for (int i = 1; i < curBeat; ++i) {
-        EXPECT_DOUBLE_EQ((kClosestBeat + beatLengthFrames * (i - 1)).value(),
-                pMap->findNthBeat(position, i).value());
-        EXPECT_DOUBLE_EQ((kClosestBeat + beatLengthFrames * (-i + 1)).value(),
-                pMap->findNthBeat(position, -i).value());
-    }
-
-    // Also test prev/next beat calculation
-    mixxx::audio::FramePos prevBeat, nextBeat;
-    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
-    EXPECT_EQ(kClosestBeat, prevBeat);
-    EXPECT_EQ(kClosestBeat + beatLengthFrames, nextBeat);
-
-    // Also test prev/next beat calculation without snapping tolerance
-    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
-    EXPECT_EQ(kClosestBeat - beatLengthFrames, prevBeat);
-    EXPECT_EQ(kClosestBeat, nextBeat);
-
-    // Both previous and next beat should return the closest beat.
-    EXPECT_EQ(kClosestBeat, pMap->findNextBeat(position));
-    EXPECT_EQ(kClosestBeat, pMap->findPrevBeat(position));
-
-}
-
-TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
-    constexpr mixxx::Bpm bpm(60.0);
-    m_pTrack->trySetBpm(bpm.value());
-    mixxx::audio::FrameDiff_t beatLengthFrames = getBeatLengthFrames(bpm);
-    const auto startOffsetFrames = mixxx::audio::FramePos(7);
-    const int numBeats = 100;
-    // Note beats must be in frames, not samples.
-    QVector<mixxx::audio::FramePos> beats =
-            createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    auto pMap = BeatMap::makeBeatMap(m_pTrack->getSampleRate(), QString(), beats);
-
-    // Pretend we're just after the 20th beat;
-    const int curBeat = 20;
-    const mixxx::audio::FramePos kClosestBeat = startOffsetFrames + curBeat * beatLengthFrames;
-    const mixxx::audio::FramePos position = kClosestBeat + beatLengthFrames * 0.005;
-
-    // The spec dictates that a value of 0 is always invalid and returns -1
-    EXPECT_FALSE(pMap->findNthBeat(position, 0).isValid());
-
-    EXPECT_EQ(kClosestBeat, pMap->findClosestBeat(position));
-
-    // findNthBeat should return exactly the current beat if we ask for 1 or
-    // -1. For all other values, it should return n times the beat length.
-    for (int i = 1; i < curBeat; ++i) {
-        EXPECT_DOUBLE_EQ((kClosestBeat + beatLengthFrames * (i - 1)).value(),
-                pMap->findNthBeat(position, i).value());
-        EXPECT_DOUBLE_EQ((kClosestBeat + beatLengthFrames * (-i + 1)).value(),
-                pMap->findNthBeat(position, -i).value());
-    }
-
-    // Also test prev/next beat calculation.
-    mixxx::audio::FramePos prevBeat, nextBeat;
-    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
-    EXPECT_EQ(kClosestBeat, prevBeat);
-    EXPECT_EQ(kClosestBeat + beatLengthFrames, nextBeat);
-
-    // Also test prev/next beat calculation without snapping tolerance
-    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
-    EXPECT_EQ(kClosestBeat, prevBeat);
-    EXPECT_EQ(kClosestBeat + beatLengthFrames, nextBeat);
-
-    // Both previous and next beat should return the closest beat.
-    EXPECT_EQ(kClosestBeat, pMap->findNextBeat(position));
-    EXPECT_EQ(kClosestBeat, pMap->findPrevBeat(position));
 }
 
 TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {

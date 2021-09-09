@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QString>
 
+#include "audio/frame.h"
 #include "control/controlobject.h"
 
 class VelocityController;
@@ -17,7 +18,7 @@ class PositionScratchController : public QObject {
                  int iBufferSize, double baserate);
     bool isEnabled();
     double getRate();
-    void notifySeek(double currentSample);
+    void notifySeek(mixxx::audio::FramePos position);
 
   private:
     const QString m_group;

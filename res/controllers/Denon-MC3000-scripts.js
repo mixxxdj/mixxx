@@ -584,5 +584,3 @@ mc3000.playPositionSetLed = function (playposition, group) {
         mc3000.nearEnd[mc3000.groupToDeck(group)-1] = nearEnd;
     }
 }
-
-

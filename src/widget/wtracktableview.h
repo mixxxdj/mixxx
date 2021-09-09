@@ -18,9 +18,6 @@ class ExternalTrackCollection;
 class Library;
 class WTrackMenu;
 
-const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
-const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
-
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:

@@ -3,6 +3,7 @@
 #include <QTreeWidget>
 #include <QtDebug>
 
+#include "defs_urls.h"
 #include "moc_dlgtagfetcher.cpp"
 #include "track/track.h"
 #include "track/tracknumbers.h"
@@ -68,6 +69,7 @@ DlgTagFetcher::DlgTagFetcher(
 
 void DlgTagFetcher::init() {
     setupUi(this);
+    setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
     if (m_pTrackModel) {
         connect(btnPrev, &QPushButton::clicked, this, &DlgTagFetcher::slotPrev);

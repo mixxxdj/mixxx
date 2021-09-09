@@ -28,4 +28,3 @@ PioneerCDJ2000.select_track_knob = function(channel, control, value, status, gro
     }
     engine.setValue(group,'SelectTrackKnob',value);
 };
-

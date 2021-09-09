@@ -437,6 +437,9 @@ WSpinny { /*
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
+#RateSliderBoxCompactSync {
+  margin-left: 5px;
+}
 /************** Decks  ********************************************************/
 
 

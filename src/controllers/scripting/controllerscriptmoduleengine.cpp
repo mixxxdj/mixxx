@@ -16,7 +16,6 @@ ControllerScriptModuleEngine::~ControllerScriptModuleEngine() {
 
 bool ControllerScriptModuleEngine::initialize() {
     ControllerScriptEngineBase::initialize();
-    m_pJSEngine->installExtensions(QJSEngine::ConsoleExtension);
     // TODO: Add new ControlObject JS API to scripting environment.
 
     QJSValue mod =

@@ -2,6 +2,7 @@
 
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
+#include "library/library_prefs.h"
 #include "moc_columncache.cpp"
 #include "util/db/dbconnection.h"
 
@@ -15,7 +16,7 @@ const QString kSortNoCaseLex = mixxx::DbConnection::collateLexicographically(
 } // namespace
 
 ColumnCache::ColumnCache(const QStringList& columns) {
-    m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
+    m_pKeyNotationCP = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
     m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 
     // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called

@@ -105,6 +105,3 @@ DJTechDJM101.pfl = function(value, group)
     // has to be a noteon msg in both case and seems more reliable issuing 0x7f for 'on' amd 0x0 for 'off'
     midi.sendShortMsg(0x90, group == "[Channel1]" ? 0x21 : 0x22, value > 0 ? 0x7f : 0);
 }
-
-
-

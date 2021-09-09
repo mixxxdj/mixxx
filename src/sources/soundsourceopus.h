@@ -13,10 +13,6 @@ class SoundSourceOpus final : public SoundSource {
     explicit SoundSourceOpus(const QUrl& url);
     ~SoundSourceOpus() override;
 
-    std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
-
     void close() override;
 
   protected:

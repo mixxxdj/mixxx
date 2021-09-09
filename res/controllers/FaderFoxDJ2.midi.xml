@@ -85,7 +85,7 @@
     <midino>0x0F</midino>
       </control>
 
-  <!-- Transport Buttons -->    
+  <!-- Transport Buttons -->
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_up</key>
@@ -642,7 +642,7 @@
         <status>0x80</status>
         <midino>0x22</midino>
       </control>
-     
+
   <!-- Effects Buttons -->
       <control>
         <group>[EffectRack1_EffectUnit1]</group>

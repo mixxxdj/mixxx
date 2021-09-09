@@ -29,4 +29,3 @@ HIDTrackpad.incomingData = function(data,length) {
     }
     controller.parsePacket(data,length);
 }
-

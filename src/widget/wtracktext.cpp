@@ -19,7 +19,8 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::BPM |
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
-        WTrackMenu::Feature::Properties;
+        WTrackMenu::Feature::Properties |
+        WTrackMenu::Feature::UpdateReplayGain;
 } // namespace
 
 WTrackText::WTrackText(QWidget* pParent,
@@ -82,7 +83,7 @@ void WTrackText::mouseMoveEvent(QMouseEvent *event) {
 void WTrackText::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
     if (m_pCurrentTrack) {
-        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         m_pTrackMenu->slotShowDlgTrackInfo();
     }
 }
@@ -98,7 +99,7 @@ void WTrackText::dropEvent(QDropEvent *event) {
 void WTrackText::contextMenuEvent(QContextMenuEvent* event) {
     event->accept();
     if (m_pCurrentTrack) {
-        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Create the right-click menu
         m_pTrackMenu->popup(event->globalPos());
     }

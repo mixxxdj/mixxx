@@ -117,7 +117,7 @@ TEST_F(SeratoBeatGridTest, SerializeBeatgrid) {
     const auto sampleRate = mixxx::audio::SampleRate(44100);
     EXPECT_EQ(sampleRate.isValid(), true);
     const auto pBeats = mixxx::BeatGrid::makeBeatGrid(
-            sampleRate, QString("Test"), bpm, mixxx::audio::kStartFramePos);
+            sampleRate, bpm, mixxx::audio::kStartFramePos);
     const auto signalInfo = mixxx::audio::SignalInfo(mixxx::audio::ChannelCount(2), sampleRate);
     const auto duration = mixxx::Duration::fromSeconds<int>(300);
 

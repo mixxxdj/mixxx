@@ -9,7 +9,6 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "moc_bansheeplaylistmodel.cpp"
-#include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/track.h"
 
@@ -266,7 +265,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         pTrack->setAlbum(getFieldString(index, CLM_ALBUM));
         pTrack->setAlbumArtist(getFieldString(index, CLM_ALBUM_ARTIST));
         pTrack->setYear(getFieldString(index, CLM_YEAR));
-        pTrack->setGenre(getFieldString(index, CLM_GENRE));
+        updateTrackGenre(pTrack.get(), getFieldString(index, CLM_GENRE));
         pTrack->setGrouping(getFieldString(index, CLM_GROUPING));
         pTrack->setRating(getFieldString(index, CLM_RATING).toInt());
         pTrack->setTrackNumber(getFieldString(index, CLM_TRACKNUMBER));

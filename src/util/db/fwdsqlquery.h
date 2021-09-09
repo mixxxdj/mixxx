@@ -3,6 +3,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QString>
+#include <QVariant>
 
 #include "util/assert.h"
 #include "util/db/dbfieldindex.h"
@@ -47,6 +49,7 @@ class FwdSqlQuery : protected QSqlQuery {
         return lastError().isValid() &&
                 (lastError().type() != QSqlError::NoError);
     }
+    bool hasDuplicateColumnNameError() const;
     QSqlError lastError() const {
         return QSqlQuery::lastError();
     }

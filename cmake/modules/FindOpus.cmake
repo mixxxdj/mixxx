@@ -32,17 +32,12 @@ The following cache variables may also be set:
   The directory containing ``opus.h``.
 ``Opus_LIBRARY``
   The path to the Opus library.
-``OpusFile_INCLUDE_DIR``
-  The directory containing ``opusfile.h``.
-``OpusFile_LIBRARY``
-  The path to the Opus library.
 
 #]=======================================================================]
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_Opus QUIET opus)
-  pkg_check_modules(PC_OpusFile QUIET opusfile)
 endif()
 
 find_path(Opus_INCLUDE_DIR
@@ -58,32 +53,26 @@ find_library(Opus_LIBRARY
 )
 mark_as_advanced(Opus_LIBRARY)
 
-find_path(OpusFile_INCLUDE_DIR
-  NAMES opusfile.h
-  PATH_SUFFIXES opus
-  PATHS ${PC_OpusFile_INCLUDE_DIRS}
-  DOC "Opusfile include directory")
-mark_as_advanced(OpusFile_INCLUDE_DIR)
-
-find_library(OpusFile_LIBRARY
-  NAMES opusfile
-  PATHS ${PC_OpusFile_LIBRARY_DIRS}
-  DOC "Opusfile library"
-)
-mark_as_advanced(OpusFile_LIBRARY)
-
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Opus
   DEFAULT_MSG
   Opus_LIBRARY
   Opus_INCLUDE_DIR
-  OpusFile_LIBRARY
-  OpusFile_INCLUDE_DIR
 )
 
 if(Opus_FOUND)
-  set(Opus_LIBRARIES ${Opus_LIBRARY} ${OpusFile_LIBRARY})
-  set(Opus_INCLUDE_DIRS ${Opus_INCLUDE_DIR} ${OpusFile_INCLUDE_DIR})
-  set(Opus_DEFINITIONS ${PC_Opus_CFLAGS_OTHER} ${PC_OpusFile_CFLAGS_OTHER})
+  set(Opus_LIBRARIES ${Opus_LIBRARY})
+  set(Opus_INCLUDE_DIRS ${Opus_INCLUDE_DIR})
+  set(Opus_DEFINITIONS ${PC_Opus_CFLAGS_OTHER})
+
+  if(NOT TARGET Opus::Opus)
+    add_library(Opus::Opus UNKNOWN IMPORTED)
+    set_target_properties(Opus::Opus
+      PROPERTIES
+        IMPORTED_LOCATION "${Opus_LIBRARIES}"
+        INTERFACE_COMPILE_OPTIONS "${Opus_DEFINITIONS}"
+        INTERFACE_INCLUDE_DIRECTORIES "${Opus_INCLUDE_DIRS}"
+    )
+  endif()
 endif()

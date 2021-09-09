@@ -3,8 +3,15 @@
 #include "util/logger.h"
 #include "util/sample.h"
 
+// Override or set to `true` to enable verbose debug logging.
 #if !defined(VERBOSE_DEBUG_LOG)
 #define VERBOSE_DEBUG_LOG false
+#endif
+
+// Override or set to `true` to break with a debug assertion
+// if an overlap or gap in the audio stream has been detected.
+#if !defined(DEBUG_ASSERT_ON_DISCONTINUITIES)
+#define DEBUG_ASSERT_ON_DISCONTINUITIES false
 #endif
 
 namespace mixxx {
@@ -135,6 +142,9 @@ ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
                 << bufferedRange()
                 << "and input buffer"
                 << inputRange;
+#if DEBUG_ASSERT_ON_DISCONTINUITIES
+        DEBUG_ASSERT(!"Unexpected gap");
+#endif
         switch (discontinuityGapMode) {
         case DiscontinuityGapMode::Skip:
             reset(inputRange.start());
@@ -314,6 +324,9 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
                     << outputRange
                     << "with input buffer"
                     << inputRange;
+#if DEBUG_ASSERT_ON_DISCONTINUITIES
+            DEBUG_ASSERT(!"Unexpected overlap");
+#endif
             switch (discontinuityOverlapMode) {
             case DiscontinuityOverlapMode::Ignore:
                 break;
@@ -345,6 +358,9 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
                     << bufferedRange()
                     << "with input buffer"
                     << inputRange;
+#if DEBUG_ASSERT_ON_DISCONTINUITIES
+            DEBUG_ASSERT(!"Unexpected overlap");
+#endif
             switch (discontinuityOverlapMode) {
             case DiscontinuityOverlapMode::Ignore:
                 break;
@@ -397,6 +413,9 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
                         << outputRange
                         << "and input buffer"
                         << inputRange;
+#if DEBUG_ASSERT_ON_DISCONTINUITIES
+                DEBUG_ASSERT(!"Unexpected gap");
+#endif
                 switch (discontinuityGapMode) {
                 case DiscontinuityGapMode::Skip:
                     break;
