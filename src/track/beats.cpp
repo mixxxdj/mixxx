@@ -32,6 +32,23 @@ mixxx::BeatsPointer Beats::fromByteArray(
     return pBeats;
 }
 
+// static
+BeatsPointer Beats::fromConstTempo(
+        audio::SampleRate sampleRate,
+        audio::FramePos position,
+        Bpm bpm,
+        const QString& subVersion) {
+    return BeatGrid::makeBeatGrid(sampleRate, bpm, position, subVersion);
+}
+
+// static
+BeatsPointer Beats::fromBeatPositions(
+        audio::SampleRate sampleRate,
+        const QVector<mixxx::audio::FramePos>& beatPositions,
+        const QString& subVersion) {
+    return BeatMap::makeBeatMap(sampleRate, subVersion, beatPositions);
+}
+
 int Beats::numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const {
     audio::FramePos lastPosition = audio::kStartFramePos;
     int i = 1;
