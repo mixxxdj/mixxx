@@ -69,13 +69,12 @@ void TreeItem::insertChild(int row, TreeItem* pChild) {
 }
 
 void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
-    DEBUG_ASSERT(!m_pFeature ||
-            m_pFeature == pFeature);
-    X_DEBUG_ASSERT(!m_pParent ||
+    DEBUG_ASSERT(!m_pParent ||
             m_pParent->m_pFeature == pFeature);
     if (m_pFeature == pFeature) {
         return;
     }
+    DEBUG_ASSERT(!m_pFeature)
     m_pFeature = pFeature;
     for (auto* pChild : qAsConst(m_children)) {
         pChild->initFeatureRecursively(pFeature);
