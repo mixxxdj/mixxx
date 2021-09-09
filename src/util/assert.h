@@ -106,6 +106,9 @@ extern void link_assert_failed(void);
     } while (0)
 #endif
 
+/// Same as DEBUG_ASSERT, but without the linker assertion
+/// This can be used where the compiler duplicates the DEBUG_ASSERT statement
+/// leading to an unconditional link_assert_failed() call
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #define X_DEBUG_ASSERT(cond)                                                \
     do                                                                      \
