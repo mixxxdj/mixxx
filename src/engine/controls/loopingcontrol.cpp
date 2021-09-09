@@ -946,31 +946,35 @@ void LoopingControl::slotReloopAndStop(double pressed) {
 
 void LoopingControl::slotLoopStartPos(double positionSamples) {
     // This slot is called before trackLoaded() for a new Track
-    const auto position = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(positionSamples);
 
     LoopInfo loopInfo = m_loopInfo.getValue();
-    if (loopInfo.startPosition == position) {
-        //nothing to do
-        return;
-    }
 
-    clearActiveBeatLoop();
-
-    if (!position.isValid()) {
-        emit loopReset();
-        setLoopingEnabled(false);
+    {
+        const auto position =
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        positionSamples);
+        if (loopInfo.startPosition == position) {
+            // Nothing to do
+            return;
+        }
+        loopInfo.startPosition = position;
     }
 
     loopInfo.seekMode = LoopSeekMode::MovedOut;
-    loopInfo.startPosition = position;
-    m_pCOLoopStartPosition->set(position.toEngineSamplePosMaybeInvalid());
 
-    if (loopInfo.endPosition.isValid() && loopInfo.endPosition <= loopInfo.startPosition) {
+    clearActiveBeatLoop();
+
+    if (!loopInfo.startPosition.isValid()) {
+        emit loopReset();
+        setLoopingEnabled(false);
+    } else if (loopInfo.endPosition.isValid() && loopInfo.endPosition <= loopInfo.startPosition) {
         emit loopReset();
         loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
         m_pCOLoopEndPosition->set(kNoTrigger);
         setLoopingEnabled(false);
     }
+
+    m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
     m_loopInfo.setValue(loopInfo);
 }
 
@@ -1450,7 +1454,7 @@ void LoopingControl::slotLoopMove(double beats) {
     }
 
     if (BpmControl::getBeatContext(pBeats,
-                m_currentPosition.getValue().toEngineSamplePos(),
+                m_currentPosition.getValue(),
                 nullptr,
                 nullptr,
                 nullptr,

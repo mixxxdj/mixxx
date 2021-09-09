@@ -20,7 +20,7 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
 
-#ifdef __LINUX__
+#ifdef PA_USE_ALSA
 // for PaAlsa_EnableRealtimeScheduling
 #include <pa_linux_alsa.h>
 #endif
@@ -333,8 +333,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         qDebug() << "Opened PortAudio stream successfully... starting";
     }
 
-
-#ifdef __LINUX__
+#ifdef PA_USE_ALSA
     if (m_deviceTypeId == paALSA) {
         qInfo() << "Enabling ALSA real-time scheduling";
         PaAlsa_EnableRealtimeScheduling(pStream, 1);

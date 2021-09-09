@@ -429,7 +429,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <!-- ### Hot cue pads ### -->
             <!-- Hot cue Pad 1 -->
             <control>
@@ -579,7 +579,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <!-- FX Enable switches -->
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
@@ -690,7 +690,7 @@
                     <normal/>
                 </options>
             </control>
-            <!-- Map the TAP button to the main bpm setting 
+            <!-- Map the TAP button to the main bpm setting
             (differs from Serato which maps it to the FX timing -->
             <control>
                 <group>[Channel1]</group>
@@ -710,10 +710,10 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <!-- NOTE: Shift button isn't mapped to anything as number shifted automatically -->
             <!-- TODO: "PAD MODE" currently isn't mapped to anything -->
-            
+
             <!-- Headphone split cue switch-->
             <control>
                 <group>[Master]</group>
@@ -737,7 +737,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <!-- Load deck 2 -->
             <control>
                 <group>[Channel2]</group>
@@ -787,7 +787,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <!-- Sampler pads -->
             <control>
                 <group>[Sampler1]</group>
@@ -861,7 +861,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <!-- Jog whel -->
             <control>
                 <group>[Channel1]</group>
@@ -921,7 +921,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <!-- Library encoder maps to Up/Down buttons -->
             <control>
                 <group>[Library]</group>
@@ -952,7 +952,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <!-- FX meta knobs -->
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
@@ -1008,7 +1008,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <!-- ### Start of mixer channel strips (not in order)  ###
             Level Knob, Hi Knob, Mid Knob, Low knob, Filter knob, Channel Fader -->
             <control>

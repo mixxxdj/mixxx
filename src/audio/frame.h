@@ -63,7 +63,7 @@ class FramePos final {
     }
 
     /// Return an engine sample position. If the `FramePos` is invalid,
-    /// `kLegacyInvalidEnginePosition` is returned instad.
+    /// `kLegacyInvalidEnginePosition` is returned instead.
     ///
     /// In general, using this method should be avoided and is only necessary
     /// for compatibility with our control objects and legacy parts of the code

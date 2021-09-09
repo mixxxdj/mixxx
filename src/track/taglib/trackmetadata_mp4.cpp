@@ -3,10 +3,6 @@
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
-// TagLib has support for MP4::File::hasMP4Tag() and MP4::Tag::isEmpty() version 1.10
-#define TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
-
 namespace mixxx {
 
 namespace {

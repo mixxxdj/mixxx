@@ -30,7 +30,6 @@ TEST(BeatGridTest, Scale) {
     pTrack->trySetBpm(bpm.value());
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
-            QString(),
             mixxx::Bpm(bpm),
             mixxx::audio::kStartFramePos);
 
@@ -63,7 +62,6 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     constexpr mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
-            QString(),
             mixxx::Bpm(bpm),
             mixxx::audio::kStartFramePos);
     // Pretend we're on the 20th beat;
@@ -108,7 +106,6 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     const mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm.value();
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(),
-            QString(),
             bpm,
             mixxx::audio::kStartFramePos);
 
@@ -159,7 +156,7 @@ TEST(BeatGridTest, FromMetadata) {
     EXPECT_DOUBLE_EQ(pTrack->getBpm(), mixxx::Bpm::kValueUndefined);
 
     pBeats = pTrack->getBeats();
-    EXPECT_EQ(pBeats.isNull(), true);
+    EXPECT_EQ(nullptr, pBeats);
 }
 
 }  // namespace

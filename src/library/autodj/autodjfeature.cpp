@@ -62,10 +62,15 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             pPlayerManager,
             pLibrary->trackCollectionManager(),
             m_iAutoDJPlaylistId);
+
+    // Connect loadTrackToPlayer signal as a queued connection to make sure all callbacks of a
+    // previous load attempt have been called (lp1941743)
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::loadTrackToPlayer,
             this,
-            &AutoDJFeature::loadTrackToPlayer);
+            &LibraryFeature::loadTrackToPlayer,
+            Qt::QueuedConnection);
+
     m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
     // Create the "Crates" tree-item under the root item.
@@ -127,7 +132,7 @@ void AutoDJFeature::bindLibraryWidget(
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrackToPlayer,
             this,
-            &AutoDJFeature::loadTrackToPlayer);
+            &LibraryFeature::loadTrackToPlayer);
 
     connect(m_pAutoDJView,
             &DlgAutoDJ::trackSelected,

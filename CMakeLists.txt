@@ -662,6 +662,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/library_prefs.cpp
   src/library/library.cpp
   src/library/librarycontrol.cpp
   src/library/libraryfeature.cpp
@@ -1391,22 +1392,18 @@ if(UNIX AND NOT APPLE)
 
   # Icon files for menu entry
   install(
-    FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/mixxx.svg"
+    DIRECTORY
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons"
     DESTINATION
-      "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
-  )
-  install(
-    FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/mixxx.png"
-    DESTINATION
-      "${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps"
+      "${CMAKE_INSTALL_DATADIR}/icons/hicolor"
+    # This file is for Windows.
+    PATTERN ic_mixxx.ico EXCLUDE
   )
 
   # .metainfo.xml file for KDE/GNOME AppStream initiative
   install(
     FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.metainfo.xml"
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
     DESTINATION
       "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
   )
@@ -2342,7 +2339,7 @@ endif()
 
 # SoundTouch
 find_package(SoundTouch)
-default_option(SoundTouch_STATIC "Link libSoundTouch statically" "NOT SoundTouch_FOUND")
+default_option(SoundTouch_STATIC "Link libSoundTouch statically" "NOT SoundTouch_FOUND OR SoundTouch_VERSION VERSION_LESS 2.1.2")
 if(SoundTouch_STATIC)
   message(STATUS "Preparing internal libSoundTouch")
   add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
@@ -2369,7 +2366,7 @@ else()
 endif()
 
 # TagLib
-find_package(TagLib REQUIRED)
+find_package(TagLib 1.11 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE TagLib::TagLib)
 
 # Threads

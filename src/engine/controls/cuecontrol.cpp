@@ -1084,9 +1084,9 @@ void CueControl::updateCurrentlyPreviewingIndex(int hotcueIndex) {
             m_pLoopEnabled->set(0);
         }
         CuePointer pLastCue(pLastControl->getCue());
-        pLastControl->setStatus((pLastCue->getType() == mixxx::CueType::Invalid)
-                        ? HotcueControl::Status::Empty
-                        : HotcueControl::Status::Set);
+        if (pLastCue && pLastCue->getType() != mixxx::CueType::Invalid) {
+            pLastControl->setStatus(HotcueControl::Status::Set);
+        }
     }
 }
 
@@ -1921,7 +1921,19 @@ bool CueControl::updateIndicatorsAndModifyPlay(
     if (m_currentlyPreviewingIndex != Cue::kNoHotCue) {
         if (!newPlay && oldPlay) {
             // play latch request: stop previewing and go into normal play mode.
-            updateCurrentlyPreviewingIndex(Cue::kNoHotCue);
+            int oldPreviewingIndex =
+                    m_currentlyPreviewingIndex.fetchAndStoreRelease(
+                            Cue::kNoHotCue);
+            if (oldPreviewingIndex >= 0 && oldPreviewingIndex < m_iNumHotCues) {
+                HotcueControl* pLastControl = m_hotcueControls.at(oldPreviewingIndex);
+                mixxx::CueType lastType = pLastControl->getPreviewingType();
+                if (lastType != mixxx::CueType::Loop) {
+                    CuePointer pLastCue(pLastControl->getCue());
+                    if (pLastCue && pLastCue->getType() != mixxx::CueType::Invalid) {
+                        pLastControl->setStatus(HotcueControl::Status::Set);
+                    }
+                }
+            }
             newPlay = true;
             m_pPlayLatched->forceSet(1.0);
         } else {
@@ -2475,7 +2487,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             Qt::DirectConnection);
 
     m_previewingType.setValue(mixxx::CueType::Invalid);
-    m_previewingPosition.setValue(Cue::kNoPosition);
+    m_previewingPosition.setValue(mixxx::audio::kInvalidFramePos);
 }
 
 HotcueControl::~HotcueControl() = default;
