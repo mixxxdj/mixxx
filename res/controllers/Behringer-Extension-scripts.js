@@ -293,7 +293,7 @@
      * Turning the encoder to the right means "forwards" and returns 1;
      * turning it to the left means "backwards" and returns -1.
      *
-     * This component support an optional relative mode as an alternative to
+     * This component supports an optional relative mode as an alternative to
      * dealing with soft takeover. To use it, set the `relative` property to
      * `true` in the options object for the constructor. In this mode, moving
      * the Pot will adjust the Mixxx Control relative to its current value.
