@@ -93,7 +93,18 @@ case "$1" in
         export X_VCPKG_APPLOCAL_DEPS_INSTALL=ON
         export CMAKE_GENERATOR=Ninja
 
+        # We have reports that cmake fails to find a suitable compiler on the path
+        # of some installations. As a workaround we set always CC and CCX.
+        if which clang++ >/dev/null 2>&1; then
+          clang++ --version
+          echo "clang++ found TODO: Setting CC CXX should be not required. Remove?"
+        fi
+        export CC="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
+        export CXX="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
+
         echo_exported_variables() {
+            echo "CC=${CC}"
+            echo "CXX=${CXX}"
             echo "VCPKG_ROOT=${VCPKG_ROOT}"
             echo "VCPKG_OVERLAY_TRIPLETS=${VCPKG_OVERLAY_TRIPLETS}"
             echo "VCPKG_DEFAULT_TRIPLET=${VCPKG_DEFAULT_TRIPLET}"
