@@ -137,3 +137,15 @@ repos:
     language: system
     types: [text]
     files: ^.*\.qml$
+  - id: metainfo
+    name: metainfo
+    description: Update AppStream metainfo releases from CHANGELOG.md.
+    entry: ./tools/update_metainfo.py
+    pass_filenames: false
+    language: python
+    additional_dependencies:
+    - beautifulsoup4==4.9.3
+    - lxml==4.6.3
+    - Markdown==3.3.4
+    types: [text]
+    files: ^(CHANGELOG\.md|res/linux/org\.mixxx\.Mixxx\.metainfo.xml)$

@@ -1399,7 +1399,7 @@ if(UNIX AND NOT APPLE)
   # .metainfo.xml file for KDE/GNOME AppStream initiative
   install(
     FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.metainfo.xml"
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
     DESTINATION
       "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
   )
