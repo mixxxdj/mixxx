@@ -25,7 +25,6 @@
 #include "library/trackset/crate/cratestorage.h"
 #include "moc_trackdao.cpp"
 #include "sources/soundsourceproxy.h"
-#include "track/beatgrid.h"
 #include "track/beats.h"
 #include "track/globaltrackcache.h"
 #include "track/keyfactory.h"
@@ -1247,8 +1246,8 @@ bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
         }
     } else if (bpm.isValid()) {
         // Load a temporary beat grid without offset that will be replaced by the analyzer.
-        const auto pBeats = mixxx::BeatGrid::makeBeatGrid(
-                pTrack->getSampleRate(), bpm, mixxx::audio::kStartFramePos);
+        const auto pBeats = mixxx::Beats::fromConstTempo(
+                pTrack->getSampleRate(), mixxx::audio::kStartFramePos, bpm);
         pTrack->trySetBeats(pBeats);
     } else {
         pTrack->trySetBeats(nullptr);

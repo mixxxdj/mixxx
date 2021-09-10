@@ -17,7 +17,7 @@ constexpr double kMaxSecsPhaseError = 0.025;
 // This is set to avoid to use a constant region during an offset shift.
 // That happens for instance when the beat instrument changes.
 constexpr double kMaxSecsPhaseErrorSum = 0.1;
-constexpr int kMaxOutlierCount = 1;
+constexpr int kMaxOutliersCount = 1;
 constexpr int kMinRegionBeatCount = 16;
 
 } // namespace
@@ -72,8 +72,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
     // Than we start with the region from the found beat to the end.
 
     QVector<ConstRegion> constantRegions;
-    if (!coarseBeats.size()) {
-        // no beats
+    if (coarseBeats.isEmpty()) {
         return constantRegions;
     }
 
@@ -97,7 +96,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
             phaseErrorSum += phaseError;
             if (fabs(phaseError) > maxPhaseError) {
                 outliersCount++;
-                if (outliersCount > kMaxOutlierCount ||
+                if (outliersCount > kMaxOutliersCount ||
                         i == leftIndex + 1) { // the first beat must not be an outlier.
                     // region is not const.
                     break;
@@ -135,7 +134,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
     }
 
     // Add a final region with zero length to mark the end.
-    constantRegions.append({coarseBeats[coarseBeats.size() - 1], 0});
+    constantRegions.append({coarseBeats.last(), 0});
     return constantRegions;
 }
 

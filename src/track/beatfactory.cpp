@@ -79,12 +79,12 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
         const mixxx::Bpm constBPM = BeatUtils::makeConstBpm(
                 constantRegions, sampleRate, &firstBeat);
         firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
-        auto pGrid = mixxx::BeatGrid::makeBeatGrid(
-                sampleRate, constBPM, firstBeat.toNearestFrameBoundary(), subVersion);
+        auto pGrid = mixxx::Beats::fromConstTempo(
+                sampleRate, firstBeat.toNearestFrameBoundary(), constBPM, subVersion);
         return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
         QVector<mixxx::audio::FramePos> ironedBeats = BeatUtils::getBeats(constantRegions);
-        auto pBeatMap = mixxx::BeatMap::makeBeatMap(sampleRate, subVersion, ironedBeats);
+        auto pBeatMap = mixxx::Beats::fromBeatPositions(sampleRate, ironedBeats, subVersion);
         return pBeatMap;
     } else {
         qDebug() << "ERROR: Could not determine what type of beatgrid to create.";
