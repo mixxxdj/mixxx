@@ -69,7 +69,7 @@ inline QString convertWCStringToQString(
         const wchar_t* wcs,
         std::size_t len) {
     if (!wcs) {
-        X_DEBUG_ASSERT(len == 0);
+        RUNTIME_DEBUG_ASSERT(len == 0);
         return QString();
     }
     DEBUG_ASSERT(wcsnlen(wcs, len) == len);

@@ -58,14 +58,14 @@ class SampleBuffer final {
     }
 
     CSAMPLE* data(SINT offset = 0) {
-        X_DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
+        RUNTIME_DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
         DEBUG_ASSERT(0 <= offset);
         // >=: allow access to one element behind allocated memory
         DEBUG_ASSERT(m_size >= offset);
         return m_data + offset;
     }
     const CSAMPLE* data(SINT offset = 0) const {
-        X_DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
+        RUNTIME_DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
         DEBUG_ASSERT(0 <= offset);
         // >=: allow access to one element behind allocated memory
         DEBUG_ASSERT(m_size >= offset);

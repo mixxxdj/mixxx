@@ -101,12 +101,12 @@ extern void link_assert_failed(void);
 /// This can be used where the compiler duplicates the DEBUG_ASSERT statement
 /// leading to an unconditional link_assert_failed() call
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-#define X_DEBUG_ASSERT(cond)                                            \
+#define RUNTIME_DEBUG_ASSERT(cond)                                      \
     if (Q_UNLIKELY(!static_cast<bool>(cond))) {                         \
         mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
     }
 #else
-#define X_DEBUG_ASSERT(cond)
+#define RUNTIME_DEBUG_ASSERT(cond)
 #endif
 
 /// Same as DEBUG_ASSERT, but if MIXXX_DEBUG_ASSERTIONS_FATAL is disabled run the specified fallback function.

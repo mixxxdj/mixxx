@@ -21,7 +21,7 @@ template <typename T>
 inline T math_clamp(T value, T min, T max) {
     // DEBUG_ASSERT compiles out in release builds so it does not affect
     // vectorization or pipelining of clamping in tight loops.
-    X_DEBUG_ASSERT(min <= max);
+    RUNTIME_DEBUG_ASSERT(min <= max);
     return math_max(min, math_min(max, value));
 }
 
