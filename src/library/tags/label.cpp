@@ -1,4 +1,4 @@
-#include "library/tags/taglabel.h"
+#include "library/tags/label.h"
 
 namespace mixxx {
 
@@ -7,7 +7,7 @@ namespace library {
 namespace tags {
 
 //static
-bool TagLabel::isValidValue(
+bool Label::isValidValue(
         const value_t& value) {
     if (value.isNull()) {
         return true;
@@ -20,7 +20,7 @@ bool TagLabel::isValidValue(
 }
 
 //static
-TagLabel::value_t TagLabel::convertIntoValidValue(
+Label::value_t Label::convertIntoValidValue(
         const value_t& value) {
     auto validValue = filterEmptyValue(value.trimmed());
     DEBUG_ASSERT(isValidValue(validValue));
@@ -33,5 +33,5 @@ TagLabel::value_t TagLabel::convertIntoValidValue(
 
 } // namespace mixxx
 
-const mixxx::library::tags::TagLabel mixxx::library::tags::kTagLabelOrgMixxx =
-        mixxx::library::tags::TagLabel{QStringLiteral("org.mixxx")};
+const mixxx::library::tags::Label mixxx::library::tags::kLabelOrgMixxx =
+        mixxx::library::tags::Label{QStringLiteral("org.mixxx")};

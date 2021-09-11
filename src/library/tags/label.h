@@ -19,7 +19,7 @@ namespace tags {
 /// Value constraints:
 ///   - charset: Unicode
 ///   - no leading/trailing whitespace
-class TagLabel final {
+class Label final {
   public:
     typedef QString value_t;
 
@@ -38,16 +38,16 @@ class TagLabel final {
         return value.isEmpty() ? value_t{} : std::move(value);
     }
 
-    explicit TagLabel(
+    explicit Label(
             value_t value = value_t{})
             : m_value(std::move(value)) {
         DEBUG_ASSERT(isValid());
     }
-    TagLabel(const TagLabel&) = default;
-    TagLabel(TagLabel&&) = default;
+    Label(const Label&) = default;
+    Label(Label&&) = default;
 
-    TagLabel& operator=(const TagLabel&) = default;
-    TagLabel& operator=(TagLabel&&) = default;
+    Label& operator=(const Label&) = default;
+    Label& operator=(Label&&) = default;
 
     bool isValid() const {
         return isValidValue(m_value);
@@ -71,43 +71,43 @@ class TagLabel final {
 };
 
 inline bool operator==(
-        const TagLabel& lhs,
-        const TagLabel& rhs) {
+        const Label& lhs,
+        const Label& rhs) {
     return lhs.value() == rhs.value();
 }
 
 inline bool operator!=(
-        const TagLabel& lhs,
-        const TagLabel& rhs) {
+        const Label& lhs,
+        const Label& rhs) {
     return !(lhs == rhs);
 }
 
 inline bool operator<(
-        const TagLabel& lhs,
-        const TagLabel& rhs) {
+        const Label& lhs,
+        const Label& rhs) {
     return lhs.value() < rhs.value();
 }
 
 inline bool operator>(
-        const TagLabel& lhs,
-        const TagLabel& rhs) {
+        const Label& lhs,
+        const Label& rhs) {
     return !(lhs < rhs);
 }
 
 inline bool operator<=(
-        const TagLabel& lhs,
-        const TagLabel& rhs) {
+        const Label& lhs,
+        const Label& rhs) {
     return !(lhs > rhs);
 }
 
 inline bool operator>=(
-        const TagLabel& lhs,
-        const TagLabel& rhs) {
+        const Label& lhs,
+        const Label& rhs) {
     return !(lhs < rhs);
 }
 
 inline uint qHash(
-        const TagLabel& label,
+        const Label& label,
         uint seed = 0) {
     return qHash(label.value(), seed);
 }
@@ -116,7 +116,7 @@ inline uint qHash(
 /// e.g. for custom ratings.
 ///
 /// Naming convention: Reverse domain name notation
-extern const TagLabel kTagLabelOrgMixxx;
+extern const Label kLabelOrgMixxx;
 
 } // namespace tags
 
@@ -124,4 +124,4 @@ extern const TagLabel kTagLabelOrgMixxx;
 
 } // namespace mixxx
 
-Q_DECLARE_METATYPE(mixxx::library::tags::TagLabel)
+Q_DECLARE_METATYPE(mixxx::library::tags::Label)

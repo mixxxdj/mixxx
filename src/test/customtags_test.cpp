@@ -16,47 +16,47 @@ class CustomTagsTest : public testing::Test {
 };
 
 TEST_F(CustomTagsTest, isEmptyAndCount) {
-    const auto facetId = TagFacetId(QStringLiteral("facet-id"));
-    const auto label = TagLabel(QStringLiteral("Label"));
+    const auto facetId = FacetId(QStringLiteral("facet-id"));
+    const auto label = Label(QStringLiteral("Label"));
 
     CustomTags customTags;
     EXPECT_TRUE(customTags.isEmpty());
     EXPECT_EQ(0, customTags.countTags(label));
-    EXPECT_EQ(0, customTags.countTags(label, TagFacetId()));
+    EXPECT_EQ(0, customTags.countTags(label, FacetId()));
     EXPECT_EQ(0, customTags.countTags(label, facetId));
     EXPECT_EQ(0, customTags.countFacetedTags(facetId));
 
     customTags.addOrReplaceTag(Tag(label));
     EXPECT_FALSE(customTags.isEmpty());
     EXPECT_EQ(1, customTags.countTags(label));
-    EXPECT_EQ(1, customTags.countTags(label, TagFacetId()));
+    EXPECT_EQ(1, customTags.countTags(label, FacetId()));
     EXPECT_EQ(0, customTags.countTags(label, facetId));
     EXPECT_EQ(0, customTags.countFacetedTags(facetId));
 
     customTags.removeTag(label);
     EXPECT_TRUE(customTags.isEmpty());
     EXPECT_EQ(0, customTags.countTags(label));
-    EXPECT_EQ(0, customTags.countTags(label, TagFacetId()));
+    EXPECT_EQ(0, customTags.countTags(label, FacetId()));
     EXPECT_EQ(0, customTags.countTags(label, facetId));
     EXPECT_EQ(0, customTags.countFacetedTags(facetId));
 
     customTags.addOrReplaceTag(Tag(label), facetId);
     EXPECT_FALSE(customTags.isEmpty());
     EXPECT_EQ(0, customTags.countTags(label));
-    EXPECT_EQ(0, customTags.countTags(label, TagFacetId()));
+    EXPECT_EQ(0, customTags.countTags(label, FacetId()));
     EXPECT_EQ(1, customTags.countTags(label, facetId));
     EXPECT_EQ(1, customTags.countFacetedTags(facetId));
 
     customTags.removeTag(label, facetId);
     EXPECT_TRUE(customTags.isEmpty());
     EXPECT_EQ(0, customTags.countTags(label));
-    EXPECT_EQ(0, customTags.countTags(label, TagFacetId()));
+    EXPECT_EQ(0, customTags.countTags(label, FacetId()));
     EXPECT_EQ(0, customTags.countTags(label, facetId));
     EXPECT_EQ(0, customTags.countFacetedTags(facetId));
 }
 
 TEST_F(CustomTagsTest, isEmptyWithEmptyFacetedSlot) {
-    const auto facetId = TagFacetId(QStringLiteral("facet"));
+    const auto facetId = FacetId(QStringLiteral("facet"));
 
     CustomTags customTags;
     ASSERT_EQ(0, customTags.getFacetedTags().size());
@@ -71,7 +71,7 @@ TEST_F(CustomTagsTest, isEmptyWithEmptyFacetedSlot) {
     EXPECT_TRUE(customTags.isEmpty());
 
     // Add an empty placeholder slot with an empty facetId
-    customTags.refFacetedTags(TagFacetId());
+    customTags.refFacetedTags(FacetId());
 
     // Verify that an empty slot for an empty facetId does
     // not affect the emptiness check.
@@ -155,12 +155,12 @@ TEST_F(CustomTagsTest, encodeDecodeJsonRoundtrip) {
             },
     };
 
-    const auto facetId1 = TagFacetId(QStringLiteral("facet1"));
-    const auto facetId2 = TagFacetId(QStringLiteral("facet2"));
-    const auto facetId3 = TagFacetId(QStringLiteral("facet3"));
+    const auto facetId1 = FacetId(QStringLiteral("facet1"));
+    const auto facetId2 = FacetId(QStringLiteral("facet2"));
+    const auto facetId3 = FacetId(QStringLiteral("facet3"));
 
-    const auto label1 = TagLabel(QStringLiteral("Label 1"));
-    const auto label2 = TagLabel(QStringLiteral("Label 2"));
+    const auto label1 = Label(QStringLiteral("Label 1"));
+    const auto label2 = Label(QStringLiteral("Label 2"));
 
     // Decode JSON
     const QByteArray jsonData =
@@ -180,11 +180,11 @@ TEST_F(CustomTagsTest, encodeDecodeJsonRoundtrip) {
     EXPECT_EQ(1, decoded->countTags(label1));
     EXPECT_EQ(1, decoded->countTags(label2));
     EXPECT_EQ(
-            TagScore(),
-            decoded->getFacetedTags().value(TagFacetId()).value(label1));
+            Score(),
+            decoded->getFacetedTags().value(FacetId()).value(label1));
     EXPECT_EQ(
-            TagScore(0.5),
-            decoded->getFacetedTags().value(TagFacetId()).value(label2));
+            Score(0.5),
+            decoded->getFacetedTags().value(FacetId()).value(label2));
 
     // Faceted tags
     EXPECT_EQ(2, decoded->countFacetedTags(facetId1));
@@ -192,13 +192,13 @@ TEST_F(CustomTagsTest, encodeDecodeJsonRoundtrip) {
     EXPECT_EQ(0, decoded->countFacetedTags(facetId3));
     const auto facetId1TagsOrdered = TagVector{
             Tag(label1),
-            Tag(TagScore(0.2))};
+            Tag(Score(0.2))};
     EXPECT_EQ(
             facetId1TagsOrdered,
             decoded->getFacetedTagsOrdered(facetId1));
     const auto facetId2TagsOrdered = TagVector{
             Tag(),
-            Tag(label2, TagScore(0.4))};
+            Tag(label2, Score(0.4))};
     EXPECT_EQ(
             facetId2TagsOrdered,
             decoded->getFacetedTagsOrdered(facetId2));

@@ -33,7 +33,7 @@ namespace tags {
 ///
 /// References:
 ///   - https://en.wikipedia.org/wiki/Faceted_classification
-class TagFacetId final {
+class FacetId final {
   public:
     typedef QString value_t;
 
@@ -59,12 +59,12 @@ class TagFacetId final {
     }
 
     /// Default constructor.
-    TagFacetId() = default;
+    FacetId() = default;
 
     /// Create a new instance.
     ///
     /// This constructor must not be used for static constants!
-    explicit TagFacetId(
+    explicit FacetId(
             value_t value)
             : m_value(std::move(value)) {
         DEBUG_ASSERT(isValid());
@@ -78,21 +78,21 @@ class TagFacetId final {
     enum struct StaticCtor {};
 
     /// Constructor for creating non-validated, static constants.
-    TagFacetId(
+    FacetId(
             StaticCtor,
             value_t value)
             : m_value(std::move(value)) {
     }
 
-    static TagFacetId staticConst(value_t value) {
-        return TagFacetId(StaticCtor{}, std::move(value));
+    static FacetId staticConst(value_t value) {
+        return FacetId(StaticCtor{}, std::move(value));
     }
 
-    TagFacetId(const TagFacetId&) = default;
-    TagFacetId(TagFacetId&&) = default;
+    FacetId(const FacetId&) = default;
+    FacetId(FacetId&&) = default;
 
-    TagFacetId& operator=(const TagFacetId&) = default;
-    TagFacetId& operator=(TagFacetId&&) = default;
+    FacetId& operator=(const FacetId&) = default;
+    FacetId& operator=(FacetId&&) = default;
 
     bool isValid() const {
         return isValidValue(m_value);
@@ -116,43 +116,43 @@ class TagFacetId final {
 };
 
 inline bool operator==(
-        const TagFacetId& lhs,
-        const TagFacetId& rhs) {
+        const FacetId& lhs,
+        const FacetId& rhs) {
     return lhs.value() == rhs.value();
 }
 
 inline bool operator!=(
-        const TagFacetId& lhs,
-        const TagFacetId& rhs) {
+        const FacetId& lhs,
+        const FacetId& rhs) {
     return !(lhs == rhs);
 }
 
 inline bool operator<(
-        const TagFacetId& lhs,
-        const TagFacetId& rhs) {
+        const FacetId& lhs,
+        const FacetId& rhs) {
     return lhs.value() < rhs.value();
 }
 
 inline bool operator>(
-        const TagFacetId& lhs,
-        const TagFacetId& rhs) {
+        const FacetId& lhs,
+        const FacetId& rhs) {
     return !(lhs < rhs);
 }
 
 inline bool operator<=(
-        const TagFacetId& lhs,
-        const TagFacetId& rhs) {
+        const FacetId& lhs,
+        const FacetId& rhs) {
     return !(lhs > rhs);
 }
 
 inline bool operator>=(
-        const TagFacetId& lhs,
-        const TagFacetId& rhs) {
+        const FacetId& lhs,
+        const FacetId& rhs) {
     return !(lhs < rhs);
 }
 
 inline uint qHash(
-        const TagFacetId& facetId,
+        const FacetId& facetId,
         uint seed = 0) {
     return qHash(facetId.value(), seed);
 }
@@ -165,26 +165,26 @@ inline uint qHash(
 ///
 /// TODO: These predefined facets are only intended as a starting point
 /// and for inspiration. They could be modified as needed.
-extern const TagFacetId kTagFacetAcoustidFingerprint;
-extern const TagFacetId kTagFacetAcoustidId;
-extern const TagFacetId kTagFacetComment; // multi-valued comment(s)
-extern const TagFacetId kTagFacetDecade;  // e.g. "1980s"
-extern const TagFacetId kTagFacetEthno;
-extern const TagFacetId kTagFacetGenre;    // multi-valued genre(s)
-extern const TagFacetId kTagFacetGrouping; // aka content group
-extern const TagFacetId kTagFacetIsrc;     // ISRC
-extern const TagFacetId kTagFacetLanguage; // ISO 639-3
-extern const TagFacetId kTagFacetMood;     // multi-valued mood(s)
-extern const TagFacetId kTagFacetVenue;
-extern const TagFacetId kTagFacetVibe;
-extern const TagFacetId kTagFacetMusicBrainzAlbumArtistId;
-extern const TagFacetId kTagFacetMusicBrainzAlbumId;
-extern const TagFacetId kTagFacetMusicBrainzArtistId;
-extern const TagFacetId kTagFacetMusicBrainzRecordingId;
-extern const TagFacetId kTagFacetMusicBrainzReleaseGroupId;
-extern const TagFacetId kTagFacetMusicBrainzReleaseTrackId;
-extern const TagFacetId kTagFacetMusicBrainzTrackId;
-extern const TagFacetId kTagFacetMusicBrainzWorkId;
+extern const FacetId kFacetAcoustidFingerprint;
+extern const FacetId kFacetAcoustidId;
+extern const FacetId kFacetComment; // multi-valued comment(s)
+extern const FacetId kFacetDecade;  // e.g. "1980s"
+extern const FacetId kFacetEthno;
+extern const FacetId kFacetGenre;    // multi-valued genre(s)
+extern const FacetId kFacetGrouping; // aka content group
+extern const FacetId kFacetIsrc;     // ISRC
+extern const FacetId kFacetLanguage; // ISO 639-3
+extern const FacetId kFacetMood;     // multi-valued mood(s)
+extern const FacetId kFacetVenue;
+extern const FacetId kFacetVibe;
+extern const FacetId kFacetMusicBrainzAlbumArtistId;
+extern const FacetId kFacetMusicBrainzAlbumId;
+extern const FacetId kFacetMusicBrainzArtistId;
+extern const FacetId kFacetMusicBrainzRecordingId;
+extern const FacetId kFacetMusicBrainzReleaseGroupId;
+extern const FacetId kFacetMusicBrainzReleaseTrackId;
+extern const FacetId kFacetMusicBrainzTrackId;
+extern const FacetId kFacetMusicBrainzWorkId;
 
 /// The score of this facet captures a user's subjective like (or dislike)
 /// level.
@@ -195,7 +195,7 @@ extern const TagFacetId kTagFacetMusicBrainzWorkId;
 ///
 /// The normalized score is usually mapped to a star rating, typically
 /// ranging from 0 to 5 stars.
-extern const TagFacetId kTagFacetRating;
+extern const FacetId kFacetRating;
 
 /// Predefined musical or audio feature scores as of Spotify/EchoNest.
 ///
@@ -203,24 +203,24 @@ extern const TagFacetId kTagFacetRating;
 /// the assigned score. If the source it unspecified or unknown it should
 /// be empty (= absent).
 ///
-/// The combination of kTagFacetArousal and kTagFacetValence could
+/// The combination of kFacetArousal and kFacetValence could
 /// be used for classifying emotion (= mood) according to Thayer's
 /// arousel-valence emotion plane.
-extern const TagFacetId kTagFacetArousal; // for emotion classification
-extern const TagFacetId kTagFacetValence; // for emotion classification
-extern const TagFacetId kTagFacetAcousticness;
-extern const TagFacetId kTagFacetDanceability;
-extern const TagFacetId kTagFacetEnergy;
-extern const TagFacetId kTagFacetInstrumentalness;
-extern const TagFacetId kTagFacetLiveness;
-extern const TagFacetId kTagFacetPopularity;
-extern const TagFacetId kTagFacetSpeechiness;
+extern const FacetId kFacetArousal; // for emotion classification
+extern const FacetId kFacetValence; // for emotion classification
+extern const FacetId kFacetAcousticness;
+extern const FacetId kFacetDanceability;
+extern const FacetId kFacetEnergy;
+extern const FacetId kFacetInstrumentalness;
+extern const FacetId kFacetLiveness;
+extern const FacetId kFacetPopularity;
+extern const FacetId kFacetSpeechiness;
 
-extern const QVector<TagFacetId> kReservedTagFacetIds;
+extern const QVector<FacetId> kReservedFacetIds;
 
-inline bool isReservedTagFacetId(
-        const TagFacetId& facetId) {
-    return kReservedTagFacetIds.contains(facetId);
+inline bool isReservedFacetId(
+        const FacetId& facetId) {
+    return kReservedFacetIds.contains(facetId);
 }
 
 } // namespace tags
@@ -229,4 +229,4 @@ inline bool isReservedTagFacetId(
 
 } // namespace mixxx
 
-Q_DECLARE_METATYPE(mixxx::library::tags::TagFacetId)
+Q_DECLARE_METATYPE(mixxx::library::tags::FacetId)

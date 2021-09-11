@@ -75,8 +75,8 @@ bool CustomTags::validate() const {
 }
 
 bool CustomTags::containsTag(
-        const TagLabel& label,
-        const TagFacetId& facetId) const {
+        const Label& label,
+        const FacetId& facetId) const {
     const auto i = getFacetedTags().find(facetId);
     if (i == getFacetedTags().end()) {
         return false;
@@ -85,8 +85,8 @@ bool CustomTags::containsTag(
 }
 
 int CustomTags::countTags(
-        const TagLabel& label,
-        const TagFacetId& facetId) const {
+        const Label& label,
+        const FacetId& facetId) const {
     const auto i = getFacetedTags().find(facetId);
     if (i == getFacetedTags().end()) {
         return 0;
@@ -95,7 +95,7 @@ int CustomTags::countTags(
 }
 
 int CustomTags::countFacetedTags(
-        const TagFacetId& facetId) const {
+        const FacetId& facetId) const {
     const auto i = getFacetedTags().find(facetId);
     if (i == getFacetedTags().end()) {
         return 0;
@@ -105,7 +105,7 @@ int CustomTags::countFacetedTags(
 
 bool CustomTags::addOrReplaceTag(
         const Tag& tag,
-        const TagFacetId& facetId) {
+        const FacetId& facetId) {
     DEBUG_ASSERT(countTags(tag.getLabel(), facetId) <= 1);
     auto i = refFacetedTags().find(facetId);
     if (i == refFacetedTags().end()) {
@@ -126,8 +126,8 @@ bool CustomTags::addOrReplaceTag(
 }
 
 bool CustomTags::removeTag(
-        const TagLabel& label,
-        const TagFacetId& facetId) {
+        const Label& label,
+        const FacetId& facetId) {
     DEBUG_ASSERT(countTags(label, facetId) <= 1);
     const auto i = refFacetedTags().find(facetId);
     if (i == refFacetedTags().end()) {
@@ -148,7 +148,7 @@ bool CustomTags::removeTag(
 
 TagVector CustomTags::getTags() const {
     TagVector tags;
-    const auto i = getFacetedTags().find(TagFacetId());
+    const auto i = getFacetedTags().find(FacetId());
     if (i == getFacetedTags().end()) {
         return tags;
     }
@@ -162,7 +162,7 @@ TagVector CustomTags::getTags() const {
 }
 
 FacetTagMap::iterator CustomTags::replaceAllFacetedTags(
-        const TagFacetId& facetId,
+        const FacetId& facetId,
         const Tag& tag) {
     DEBUG_ASSERT(!facetId.isEmpty());
     DEBUG_ASSERT(countTags(tag.getLabel(), facetId) <= 1);
@@ -178,13 +178,13 @@ FacetTagMap::iterator CustomTags::replaceAllFacetedTags(
 }
 
 int CustomTags::removeAllFacetedTags(
-        const TagFacetId& facetId) {
+        const FacetId& facetId) {
     DEBUG_ASSERT(!facetId.isEmpty());
     return refFacetedTags().remove(facetId);
 }
 
 TagVector CustomTags::getFacetedTagsOrdered(
-        const TagFacetId& facetId) const {
+        const FacetId& facetId) const {
     DEBUG_ASSERT(!facetId.isEmpty());
     TagVector tags;
     auto i = getFacetedTags().find(facetId);
@@ -205,22 +205,22 @@ TagVector CustomTags::getFacetedTagsOrdered(
     return tags;
 }
 
-TagLabel CustomTags::getFacetedTagLabel(
-        const TagFacetId& facetId) const {
+Label CustomTags::getFacetedLabel(
+        const FacetId& facetId) const {
     DEBUG_ASSERT(countFacetedTags(facetId) <= 1);
     const auto i = getFacetedTags().find(facetId);
     if (i == getFacetedTags().end() ||
             i.value().isEmpty()) {
-        return TagLabel();
+        return Label();
     }
     DEBUG_ASSERT(i.value().size() == 1);
-    DEBUG_ASSERT(i.value().first() == TagScore());
+    DEBUG_ASSERT(i.value().first() == Score());
     return i.value().firstKey();
 }
 
-std::optional<TagScore> CustomTags::getTagScore(
-        const TagFacetId& facetId,
-        const TagLabel& label) const {
+std::optional<Score> CustomTags::getScore(
+        const FacetId& facetId,
+        const Label& label) const {
     DEBUG_ASSERT(countFacetedTags(facetId) <= 1);
     const auto i = getFacetedTags().find(facetId);
     if (i == getFacetedTags().end() ||
@@ -237,7 +237,7 @@ std::optional<TagScore> CustomTags::getTagScore(
 }
 
 Tag CustomTags::mergeFacetedTags(
-        const TagFacetId& facetId,
+        const FacetId& facetId,
         AggregateScoring aggregateScoring,
         const QString& joinLabelSeparator) const {
     DEBUG_ASSERT(!facetId.isEmpty());
@@ -245,7 +245,7 @@ Tag CustomTags::mergeFacetedTags(
     if (tags.isEmpty()) {
         return Tag();
     }
-    TagScore::value_t scoreValue;
+    Score::value_t scoreValue;
     switch (aggregateScoring) {
     case AggregateScoring::Maximum:
         scoreValue = tags.first().getScore();
@@ -253,14 +253,14 @@ Tag CustomTags::mergeFacetedTags(
     case AggregateScoring::Average:
         scoreValue = 0.0;
         for (const auto& tag : tags) {
-            scoreValue += tag.getScore() - TagScore::kMinValue;
+            scoreValue += tag.getScore() - Score::kMinValue;
         }
-        scoreValue = TagScore::kMinValue + scoreValue / tags.size();
-        DEBUG_ASSERT(TagScore::isValidValue(scoreValue));
+        scoreValue = Score::kMinValue + scoreValue / tags.size();
+        DEBUG_ASSERT(Score::isValidValue(scoreValue));
         break;
     default:
         DEBUG_ASSERT(!"unreachable");
-        scoreValue = TagScore();
+        scoreValue = Score();
     }
     QStringList labels;
     labels.reserve(tags.size());
@@ -268,10 +268,10 @@ Tag CustomTags::mergeFacetedTags(
         labels += tag.getLabel();
     }
     auto labelValue =
-            TagLabel::convertIntoValidValue(labels.join(joinLabelSeparator));
+            Label::convertIntoValidValue(labels.join(joinLabelSeparator));
     return Tag(
-            TagLabel(std::move(labelValue)),
-            TagScore(scoreValue));
+            Label(std::move(labelValue)),
+            Score(scoreValue));
 }
 
 bool CustomTags::addOrReplaceAllTags(
@@ -302,8 +302,8 @@ std::optional<CustomTags> CustomTags::fromJsonObject(
     for (auto i = jsonObject.begin();
             i != jsonObject.end();
             ++i) {
-        auto facetIdValue = TagFacetId::filterEmptyValue(i.key());
-        if (!TagFacetId::isValidValue(facetIdValue)) {
+        auto facetIdValue = FacetId::filterEmptyValue(i.key());
+        if (!FacetId::isValidValue(facetIdValue)) {
             VERIFY_OR_DEBUG_ASSERT(mode == FromJsonMode::Lenient) {
                 qCWarning(kLogger)
                         << "Invalid facetId"
@@ -317,7 +317,7 @@ std::optional<CustomTags> CustomTags::fromJsonObject(
                     << "from JSON";
             continue;
         }
-        const auto facetId = TagFacetId(std::move(facetIdValue));
+        const auto facetId = FacetId(std::move(facetIdValue));
         DEBUG_ASSERT(i.value().isArray());
         const auto jsonArray = i.value().toArray();
         if (jsonArray.isEmpty()) {

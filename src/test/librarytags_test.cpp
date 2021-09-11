@@ -3,8 +3,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
+#include "library/tags/facetid.h"
 #include "library/tags/tag.h"
-#include "library/tags/tagfacetid.h"
 
 namespace mixxx {
 
@@ -12,151 +12,151 @@ namespace library {
 
 namespace tags {
 
-class TagFacetIdTest : public testing::Test {
+class FacetIdTest : public testing::Test {
 };
 
-TEST_F(TagFacetIdTest, isEmpty) {
-    ASSERT_TRUE(TagFacetId().isEmpty());
+TEST_F(FacetIdTest, isEmpty) {
+    ASSERT_TRUE(FacetId().isEmpty());
     // Null string
     EXPECT_EQ(
-            TagFacetId(),
-            TagFacetId(TagFacetId::value_t()));
+            FacetId(),
+            FacetId(FacetId::value_t()));
     // Empty string
     EXPECT_EQ(
-            TagFacetId(),
-            TagFacetId(TagFacetId::filterEmptyValue("")));
+            FacetId(),
+            FacetId(FacetId::filterEmptyValue("")));
     // Non-empty string
-    EXPECT_FALSE(TagFacetId("x").isEmpty());
+    EXPECT_FALSE(FacetId("x").isEmpty());
 }
 
-TEST_F(TagFacetIdTest, filterEmptyValue) {
+TEST_F(FacetIdTest, filterEmptyValue) {
     EXPECT_EQ(
-            TagFacetId::value_t(),
-            TagFacetId::filterEmptyValue(TagFacetId::value_t()));
+            FacetId::value_t(),
+            FacetId::filterEmptyValue(FacetId::value_t()));
     EXPECT_EQ(
-            TagFacetId::value_t(),
-            TagFacetId::filterEmptyValue(""));
+            FacetId::value_t(),
+            FacetId::filterEmptyValue(""));
     EXPECT_EQ(
-            TagFacetId::value_t("x"),
-            TagFacetId::filterEmptyValue("x"));
+            FacetId::value_t("x"),
+            FacetId::filterEmptyValue("x"));
 }
 
-TEST_F(TagFacetIdTest, convertIntoValidValue) {
+TEST_F(FacetIdTest, convertIntoValidValue) {
     // Clamp empty string
     EXPECT_EQ(
-            TagFacetId::value_t{},
-            TagFacetId::convertIntoValidValue(""));
+            FacetId::value_t{},
+            FacetId::convertIntoValidValue(""));
     // Clamped whitespace string
     EXPECT_EQ(
-            TagFacetId::value_t{},
-            TagFacetId::convertIntoValidValue("  \t\n   "));
+            FacetId::value_t{},
+            FacetId::convertIntoValidValue("  \t\n   "));
     // Lowercase
     EXPECT_EQ(
-            TagFacetId::value_t{"x"},
-            TagFacetId::convertIntoValidValue("  \tX\n   "));
+            FacetId::value_t{"x"},
+            FacetId::convertIntoValidValue("  \tX\n   "));
     // Whitespace replacement
     EXPECT_EQ(
-            TagFacetId::value_t{"xy_[+]"},
-            TagFacetId::convertIntoValidValue("X y _\n[+] "));
+            FacetId::value_t{"xy_[+]"},
+            FacetId::convertIntoValidValue("X y _\n[+] "));
     // Valid characters without whitespace
     EXPECT_EQ(
-            TagFacetId::value_t{TagFacetId::kAlphabet},
-            TagFacetId::convertIntoValidValue(
-                    TagFacetId::value_t{TagFacetId::kAlphabet}));
+            FacetId::value_t{FacetId::kAlphabet},
+            FacetId::convertIntoValidValue(
+                    FacetId::value_t{FacetId::kAlphabet}));
     EXPECT_EQ(
-            TagFacetId::value_t{"+-./0123456789"
-                                "@abcdefghijklmnopqrstuvwxyz[]_"
-                                "abcdefghijklmnopqrstuvwxyz"},
-            TagFacetId::convertIntoValidValue(
+            FacetId::value_t{"+-./0123456789"
+                             "@abcdefghijklmnopqrstuvwxyz[]_"
+                             "abcdefghijklmnopqrstuvwxyz"},
+            FacetId::convertIntoValidValue(
                     "\t!\"#$%&'()*+,-./0123456789:;<=>?"
                     " @ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_"
                     " `abcdefghijklmnopqrstuvwxyz{|}~\n"));
 }
 
-TEST_F(TagFacetIdTest, isValidValue) {
-    EXPECT_TRUE(TagFacetId::isValidValue(QString()));
-    EXPECT_TRUE(TagFacetId::isValidValue(QStringLiteral("facet@mixxx.org/simple-test[1]")));
-    EXPECT_FALSE(TagFacetId::isValidValue(QStringLiteral("Uppercase")));
-    EXPECT_FALSE(TagFacetId::isValidValue(
+TEST_F(FacetIdTest, isValidValue) {
+    EXPECT_TRUE(FacetId::isValidValue(QString()));
+    EXPECT_TRUE(FacetId::isValidValue(QStringLiteral("facet@mixxx.org/simple-test[1]")));
+    EXPECT_FALSE(FacetId::isValidValue(QStringLiteral("Uppercase")));
+    EXPECT_FALSE(FacetId::isValidValue(
             QStringLiteral("lower-case_with_digit_1_and_whitespace ")));
-    EXPECT_FALSE(TagFacetId::isValidValue(QLatin1String("")));
-    EXPECT_FALSE(TagFacetId::isValidValue(QStringLiteral(" ")));
+    EXPECT_FALSE(FacetId::isValidValue(QLatin1String("")));
+    EXPECT_FALSE(FacetId::isValidValue(QStringLiteral(" ")));
 }
 
-TEST_F(TagFacetIdTest, convertedEmptyValueIsValid) {
+TEST_F(FacetIdTest, convertedEmptyValueIsValid) {
     EXPECT_TRUE(
-            TagFacetId::isValidValue(TagFacetId::convertIntoValidValue(TagFacetId::value_t{})));
+            FacetId::isValidValue(FacetId::convertIntoValidValue(FacetId::value_t{})));
     EXPECT_TRUE(
-            TagFacetId::isValidValue(TagFacetId::convertIntoValidValue("")));
+            FacetId::isValidValue(FacetId::convertIntoValidValue("")));
     EXPECT_TRUE(
-            TagFacetId::isValidValue(TagFacetId::convertIntoValidValue(" ")));
+            FacetId::isValidValue(FacetId::convertIntoValidValue(" ")));
     EXPECT_TRUE(
-            TagFacetId::isValidValue(TagFacetId::convertIntoValidValue(" \t \n \r ")));
+            FacetId::isValidValue(FacetId::convertIntoValidValue(" \t \n \r ")));
 }
 
-class TagLabelTest : public testing::Test {
+class LabelTest : public testing::Test {
 };
 
-TEST_F(TagLabelTest, isEmpty) {
-    ASSERT_TRUE(TagLabel().isEmpty());
+TEST_F(LabelTest, isEmpty) {
+    ASSERT_TRUE(Label().isEmpty());
     // Null string
     EXPECT_EQ(
-            TagLabel(),
-            TagLabel(TagLabel::value_t()));
+            Label(),
+            Label(Label::value_t()));
     // Empty string
     EXPECT_EQ(
-            TagLabel(),
-            TagLabel(TagLabel::filterEmptyValue("")));
+            Label(),
+            Label(Label::filterEmptyValue("")));
     // Non-empty string
-    EXPECT_FALSE(TagLabel("X").isEmpty());
+    EXPECT_FALSE(Label("X").isEmpty());
 }
 
-TEST_F(TagLabelTest, filterEmptyValue) {
+TEST_F(LabelTest, filterEmptyValue) {
     EXPECT_EQ(
-            TagLabel::value_t(),
-            TagLabel::filterEmptyValue(TagLabel::value_t()));
+            Label::value_t(),
+            Label::filterEmptyValue(Label::value_t()));
     EXPECT_EQ(
-            TagLabel::value_t(),
-            TagLabel::filterEmptyValue(""));
+            Label::value_t(),
+            Label::filterEmptyValue(""));
     EXPECT_EQ(
-            TagLabel::value_t("X"),
-            TagLabel::filterEmptyValue("X"));
+            Label::value_t("X"),
+            Label::filterEmptyValue("X"));
 }
 
-TEST_F(TagLabelTest, convertIntoValidValue) {
+TEST_F(LabelTest, convertIntoValidValue) {
     // Clamp empty string
     EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::convertIntoValidValue("")));
+            Label::isValidValue(Label::convertIntoValidValue("")));
     // Clamped whitespace string
     EXPECT_EQ(
-            TagLabel::value_t{},
-            TagLabel::convertIntoValidValue("  \t\n   "));
+            Label::value_t{},
+            Label::convertIntoValidValue("  \t\n   "));
     // Trimmed
     EXPECT_EQ(
-            TagLabel::value_t{"X y"},
-            TagLabel::convertIntoValidValue("  \tX y\n   "));
+            Label::value_t{"X y"},
+            Label::convertIntoValidValue("  \tX y\n   "));
 }
 
-TEST_F(TagLabelTest, isValidValue) {
-    EXPECT_TRUE(TagLabel::isValidValue(QString()));
-    EXPECT_TRUE(TagLabel::isValidValue(QStringLiteral("lower-case_with_digit_1")));
-    EXPECT_TRUE(TagLabel::isValidValue(QStringLiteral("With\\backslash")));
-    EXPECT_TRUE(TagLabel::isValidValue(QStringLiteral("Uppercase with\twhitespace")));
-    EXPECT_FALSE(TagLabel::isValidValue(QStringLiteral(" With leading space")));
-    EXPECT_FALSE(TagLabel::isValidValue(QStringLiteral("With trailing space\n")));
-    EXPECT_FALSE(TagLabel::isValidValue(QLatin1String("")));
-    EXPECT_FALSE(TagLabel::isValidValue(QStringLiteral(" ")));
+TEST_F(LabelTest, isValidValue) {
+    EXPECT_TRUE(Label::isValidValue(QString()));
+    EXPECT_TRUE(Label::isValidValue(QStringLiteral("lower-case_with_digit_1")));
+    EXPECT_TRUE(Label::isValidValue(QStringLiteral("With\\backslash")));
+    EXPECT_TRUE(Label::isValidValue(QStringLiteral("Uppercase with\twhitespace")));
+    EXPECT_FALSE(Label::isValidValue(QStringLiteral(" With leading space")));
+    EXPECT_FALSE(Label::isValidValue(QStringLiteral("With trailing space\n")));
+    EXPECT_FALSE(Label::isValidValue(QLatin1String("")));
+    EXPECT_FALSE(Label::isValidValue(QStringLiteral(" ")));
 }
 
-TEST_F(TagLabelTest, convertedEmptyValueIsValid) {
+TEST_F(LabelTest, convertedEmptyValueIsValid) {
     EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::convertIntoValidValue(TagLabel::value_t{})));
+            Label::isValidValue(Label::convertIntoValidValue(Label::value_t{})));
     EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::convertIntoValidValue("")));
+            Label::isValidValue(Label::convertIntoValidValue("")));
     EXPECT_TRUE(
-            TagLabel::isValidValue(TagLabel::convertIntoValidValue(" ")));
+            Label::isValidValue(Label::convertIntoValidValue(" ")));
     EXPECT_TRUE(
-            TagLabel::isValidValue(TagFacetId::convertIntoValidValue(" \t \n \r ")));
+            Label::isValidValue(FacetId::convertIntoValidValue(" \t \n \r ")));
 }
 
 class TagTest : public testing::Test {
@@ -164,9 +164,9 @@ class TagTest : public testing::Test {
 
 TEST_F(TagTest, fromJsonValue) {
     const char* labelText = "Label";
-    const auto label = TagLabel(labelText);
-    const TagScore::value_t scoreValue = 0.1357;
-    const auto score = TagScore(scoreValue);
+    const auto label = Label(labelText);
+    const Score::value_t scoreValue = 0.1357;
+    const auto score = Score(scoreValue);
     // Empty array
     EXPECT_EQ(
             std::nullopt,
@@ -181,7 +181,7 @@ TEST_F(TagTest, fromJsonValue) {
     EXPECT_EQ(
             std::make_optional(Tag()),
             Tag::fromJsonValue(
-                    TagScore::kDefaultValue));
+                    Score::kDefaultValue));
     // Label
     EXPECT_EQ(
             std::make_optional(Tag(label)),
@@ -216,16 +216,16 @@ TEST_F(TagTest, fromJsonValue) {
 
 TEST_F(TagTest, toJsonValue) {
     const char* labelText = "Label";
-    const auto label = TagLabel(labelText);
-    const TagScore::value_t scoreValue = 0.1357;
-    const auto score = TagScore(scoreValue);
+    const auto label = Label(labelText);
+    const Score::value_t scoreValue = 0.1357;
+    const auto score = Score(scoreValue);
     // Only label, no score
     EXPECT_EQ(
             QJsonValue{labelText},
             Tag(label).toJsonValue());
     // Only score, no label
     EXPECT_EQ(
-            QJsonValue{TagScore::kDefaultValue},
+            QJsonValue{Score::kDefaultValue},
             Tag().toJsonValue());
     EXPECT_EQ(
             QJsonValue{scoreValue},
