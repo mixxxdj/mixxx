@@ -36,6 +36,8 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 #ifdef MIXXX_LINK_ASSERTIONS_ENABLED
 /// This function is intentionally not defined to produce a linker error
 /// when the invocation is not dead code and optimized out
+/// NOTE: It might happen in rare cases that the compiler splits up the DEBUG_ASSERT
+/// leading to false positives. Than use RUNTIME_DEBUG_ASSERT instead.
 extern void link_assert_failed(void);
 // Note void link_assert_failed(void) = delete; does not work, because
 // it is evaluated before optimizing
