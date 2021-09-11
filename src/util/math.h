@@ -24,7 +24,7 @@ template<typename T>
 constexpr T math_clamp(T value, T min, T max) {
     // DEBUG_ASSERT compiles out in release builds so it does not affect
     // vectorization or pipelining of clamping in tight loops.
-    DEBUG_ASSERT(min <= max);
+    RUNTIME_DEBUG_ASSERT(min <= max);
     return std::clamp(value, min, max);
 }
 
