@@ -1349,6 +1349,11 @@
                 componentStorage,
                 ["onFocusChange", "shift", "unshift"]);
             var shiftType = effectUnitDefinition.sendShiftedFor;
+            /*
+             * `shiftType` is expected to be a JS component (e.g. `c.Button` or `c.Component`)
+             * which in terms of JS means that it is of type `function`. If something else is given
+             * (e.g. a string), `instanceof` will cause a runtime error, so check to avoid this.
+             */
             if (typeof shiftType === "function") {
                 effectUnit.forEachComponent(function(component) {
                     if (component instanceof shiftType) {
