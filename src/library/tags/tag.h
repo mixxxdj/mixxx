@@ -3,8 +3,8 @@
 #include <QJsonValue>
 #include <QVector>
 
-#include "library/tags/taglabel.h"
-#include "library/tags/tagscore.h"
+#include "library/tags/label.h"
+#include "library/tags/score.h"
 #include "util/assert.h"
 #include "util/macros.h"
 #include "util/optional.h"
@@ -25,18 +25,18 @@ namespace tags {
 /// VorbisComment) for storing metadata in media files.
 class Tag final {
     // Properties
-    MIXXX_DECL_PROPERTY(TagLabel, label, Label)
-    MIXXX_DECL_PROPERTY(TagScore, score, Score)
+    MIXXX_DECL_PROPERTY(Label, label, Label)
+    MIXXX_DECL_PROPERTY(Score, score, Score)
 
   public:
     explicit Tag(
-            const TagLabel& label,
-            TagScore score = TagScore{})
+            const Label& label,
+            Score score = Score{})
             : m_label(label),
               m_score(score) {
     }
     explicit Tag(
-            TagScore score = TagScore{})
+            Score score = Score{})
             : m_score(score) {
     }
     Tag(const Tag&) = default;

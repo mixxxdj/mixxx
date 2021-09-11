@@ -22,15 +22,15 @@ std::optional<Tag> Tag::fromJsonValue(
         const QJsonValue& jsonValue) {
     if (jsonValue.isString()) {
         // label: string
-        auto labelValue = TagLabel::filterEmptyValue(jsonValue.toString());
-        if (TagLabel::isValidValue(labelValue)) {
-            return Tag(TagLabel(std::move(labelValue)));
+        auto labelValue = Label::filterEmptyValue(jsonValue.toString());
+        if (Label::isValidValue(labelValue)) {
+            return Tag(Label(std::move(labelValue)));
         }
     } else if (jsonValue.isDouble()) {
         // score: number
         auto scoreValue = jsonValue.toDouble();
-        if (TagScore::isValidValue(scoreValue)) {
-            return Tag(TagScore(scoreValue));
+        if (Score::isValidValue(scoreValue)) {
+            return Tag(Score(scoreValue));
         }
     } else if (jsonValue.isArray()) {
         // [label: string, score: number]
@@ -38,13 +38,13 @@ std::optional<Tag> Tag::fromJsonValue(
         if (jsonArray.size() == 2 &&
                 jsonArray.at(0).isString() &&
                 jsonArray.at(1).isDouble()) {
-            auto labelValue = TagLabel::filterEmptyValue(jsonArray.at(0).toString());
+            auto labelValue = Label::filterEmptyValue(jsonArray.at(0).toString());
             auto scoreValue = jsonArray.at(1).toDouble();
-            if (TagLabel::isValidValue(labelValue) &&
-                    TagScore::isValidValue(scoreValue)) {
+            if (Label::isValidValue(labelValue) &&
+                    Score::isValidValue(scoreValue)) {
                 return Tag(
-                        TagLabel(std::move(labelValue)),
-                        TagScore(scoreValue));
+                        Label(std::move(labelValue)),
+                        Score(scoreValue));
             }
         }
     }
@@ -55,7 +55,7 @@ QJsonValue Tag::toJsonValue() const {
     if (hasLabel()) {
         // Regular plain tag
         DEBUG_ASSERT(isValid());
-        if (getScore() != TagScore()) {
+        if (getScore() != Score()) {
             return QJsonArray{
                     QJsonValue{getLabel()},
                     QJsonValue{getScore()}};

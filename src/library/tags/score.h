@@ -14,7 +14,7 @@ namespace tags {
 /// The score or weight of a tag relationship, defaulting to 1.0.
 ///
 /// Constraints: Normalized to the unit interval [0.0, 1.0]
-class TagScore final {
+class Score final {
   public:
     typedef double value_t;
 
@@ -33,7 +33,7 @@ class TagScore final {
         return math_min(kMaxValue, math_max(kMinValue, value));
     }
 
-    explicit TagScore(
+    explicit Score(
             value_t value = kDefaultValue)
             : m_value(value) {
         DEBUG_ASSERT(isValid());
@@ -60,4 +60,4 @@ class TagScore final {
 
 } // namespace mixxx
 
-Q_DECLARE_METATYPE(mixxx::library::tags::TagScore)
+Q_DECLARE_METATYPE(mixxx::library::tags::Score)
