@@ -242,13 +242,13 @@
                     <RightClickIsPushButton>false</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
-                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey>[Master],headSplit</ConfigKey>
