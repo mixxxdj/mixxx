@@ -279,3 +279,12 @@ double ReadAheadManager::getFilePlaypositionFromLog(
 
     return filePlayposition;
 }
+
+mixxx::audio::FramePos ReadAheadManager::getFilePlaypositionFromLog(
+        mixxx::audio::FramePos currentPosition,
+        mixxx::audio::FrameDiff_t numConsumedFrames) {
+    const double positionSamples =
+            getFilePlaypositionFromLog(currentPosition.toEngineSamplePos(),
+                    numConsumedFrames * mixxx::kEngineChannelCount);
+    return mixxx::audio::FramePos::fromEngineSamplePos(positionSamples);
+}

@@ -10,7 +10,6 @@
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "track/beatfactory.h"
-#include "track/beatmap.h"
 #include "track/beatutils.h"
 #include "track/track.h"
 
@@ -234,7 +233,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     } else {
         mixxx::Bpm bpm = m_pPlugin->getBpm();
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
-        pBeats = BeatFactory::makeBeatGrid(m_sampleRate, bpm, mixxx::audio::kStartFramePos);
+        pBeats = mixxx::Beats::fromConstTempo(m_sampleRate, mixxx::audio::kStartFramePos, bpm);
     }
 
     pTrack->trySetBeats(pBeats);

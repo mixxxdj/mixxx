@@ -12,7 +12,6 @@
 #include <QtGlobal>
 #include <algorithm>
 
-#include "track/beatfactory.h"
 #include "track/beatutils.h"
 #include "track/track.h"
 #include "util/math.h"
@@ -605,7 +604,7 @@ BeatsPointer BeatMap::setBpm(mixxx::Bpm bpm) {
     const auto firstBeatPosition = mixxx::audio::FramePos(m_beats.first().frame_position());
     DEBUG_ASSERT(firstBeatPosition.isValid());
 
-    return BeatFactory::makeBeatGrid(m_sampleRate, bpm, firstBeatPosition);
+    return fromConstTempo(m_sampleRate, firstBeatPosition, bpm);
 }
 
 } // namespace mixxx
