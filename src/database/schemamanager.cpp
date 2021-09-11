@@ -42,7 +42,7 @@ std::optional<int> readSchemaVersion(
         return std::nullopt;
     }
 
-    VERIFY_OR_DEBUG_ASSERT((schemaVersion >= INITIAL_VERSION)) {
+    VERIFY_OR_DEBUG_ASSERT(schemaVersion >= INITIAL_VERSION) {
         kLogger.critical()
                 << "Invalid database schema version"
                 << settingsValue;
