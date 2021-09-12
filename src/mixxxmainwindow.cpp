@@ -202,7 +202,7 @@ void MixxxMainWindow::initialize() {
             m_pCoreServices->getEffectsManager(),
             m_pCoreServices->getSettingsManager(),
             m_pCoreServices->getLibrary());
-    m_pPrefDlg->setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
+    m_pPrefDlg->setWindowIcon(QIcon(MIXXX_ICON_PATH));
     m_pPrefDlg->setHidden(true);
     connect(m_pPrefDlg,
             &DlgPreferences::tooltipModeChanged,
@@ -426,7 +426,7 @@ void MixxxMainWindow::initializeWindow() {
                     ->getValueString(ConfigKey("[MainWindow]", "state"))
                     .toUtf8()));
 
-    setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
+    setWindowIcon(QIcon(MIXXX_ICON_PATH));
     slotUpdateWindowTitle(TrackPointer());
 }
 
@@ -940,7 +940,7 @@ void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
 }
 
 void MixxxMainWindow::slotHelpAbout() {
-    DlgAbout* about = new DlgAbout(this);
+    DlgAbout* about = new DlgAbout;
     about->show();
 }
 
@@ -1040,8 +1040,13 @@ bool MixxxMainWindow::loadConfiguredSkin() {
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
-        // return true for no tool tips
-        switch (m_toolTipsCfg) {
+        // always show tooltips in the preferences window
+        QWidget* activeWindow = QApplication::activeWindow();
+        if (activeWindow &&
+                QLatin1String(activeWindow->metaObject()->className()) !=
+                        "DlgPreferences") {
+            // return true for no tool tips
+            switch (m_toolTipsCfg) {
             case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
                 if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
                     return true;
@@ -1054,6 +1059,7 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             default:
                 DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
                 return true;
+            }
         }
     }
     // standard event processing

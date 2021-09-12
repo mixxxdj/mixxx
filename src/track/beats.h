@@ -2,8 +2,9 @@
 
 #include <QByteArray>
 #include <QList>
-#include <QSharedPointer>
 #include <QString>
+#include <QVector>
+#include <memory>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -14,7 +15,7 @@
 namespace mixxx {
 
 class Beats;
-typedef QSharedPointer<Beats> BeatsPointer;
+typedef std::shared_ptr<Beats> BeatsPointer;
 
 class BeatIterator {
   public:
@@ -35,6 +36,17 @@ class Beats {
             const QString& beatsVersion,
             const QString& beatsSubVersion,
             const QByteArray& beatsSerialized);
+
+    static mixxx::BeatsPointer fromConstTempo(
+            audio::SampleRate sampleRate,
+            audio::FramePos position,
+            Bpm bpm,
+            const QString& subVersion = QString());
+
+    static mixxx::BeatsPointer fromBeatPositions(
+            audio::SampleRate sampleRate,
+            const QVector<audio::FramePos>& beatPositions,
+            const QString& subVersion = QString());
 
     enum class BpmScale {
         Double,
