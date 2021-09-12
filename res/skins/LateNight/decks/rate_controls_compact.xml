@@ -23,7 +23,7 @@
           <WidgetGroup><!-- BPM + rate + Tap overlay-->
             <ObjectName>BpmTapContainer</ObjectName>
             <Layout>stacked</Layout>
-            <Size>60f,42f</Size>
+            <Size>60f,40f</Size>
             <Children>
               <!-- In order to make the bpm display tappable, we use an old-style
               widget group and put the bpm pushbutton on top of the display. -->
@@ -71,6 +71,7 @@
             <Children>
               <!-- Rate controls with Sync button -->
               <WidgetGroup>
+                <ObjectName>AlignCenter</ObjectName>
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
@@ -79,15 +80,31 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/button_2state_right.xml">
-                        <SetVariable name="TooltipId">sync_enabled</SetVariable>
-                        <SetVariable name="ObjectName">SyncDeck</SetVariable>
-                        <SetVariable name="Size">48f,22f</SetVariable>
-                        <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
-                        <SetVariable name="BtnSize">sync</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="Group"/>,sync_enabled</SetVariable>
-                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatsync_tempo</SetVariable>
-                      </Template>
+                      <PushButton>
+                        <TooltipId>sync_enabled</TooltipId>
+                        <ObjectName>SyncDeck</ObjectName>
+                        <Size>40f,22f</Size>
+                        <NumberStates>2</NumberStates>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,sync_enabled</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+                      <PushButton>
+                        <TooltipId>sync_leader</TooltipId>
+                        <ObjectName>SyncLeader</ObjectName>
+                        <Size>22f,22f</Size>
+                        <NumberStates>3</NumberStates>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                      </PushButton>
                     </Children>
                   </WidgetGroup>
 

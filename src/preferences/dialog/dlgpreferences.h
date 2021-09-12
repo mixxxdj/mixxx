@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "control/controlpushbutton.h"
+#include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
 
-class MixxxMainWindow;
 class SoundManager;
 class DlgPrefSound;
 class DlgPrefLibrary;
@@ -51,6 +51,7 @@ class DlgPrefModplug;
 #endif // __MODPLUG__
 
 namespace mixxx {
+class ScreensaverManager;
 namespace skin {
 class SkinLoader;
 }
@@ -70,7 +71,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
         QTreeWidgetItem* pTreeItem;
     };
 
-    DlgPreferences(MixxxMainWindow* mixxx,
+    DlgPreferences(
+            std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
             std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
             std::shared_ptr<SoundManager> pSoundManager,
             std::shared_ptr<PlayerManager> pPlayerManager,
@@ -103,6 +105,10 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void cancelPreferences();
     // Emitted if the user clicks Reset to Defaults.
     void resetToDefaults();
+
+  signals:
+    void reloadUserInterface();
+    void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
 
   protected:
     bool eventFilter(QObject*, QEvent*);

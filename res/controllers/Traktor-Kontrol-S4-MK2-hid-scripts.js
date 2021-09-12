@@ -380,7 +380,7 @@ TraktorS4MK2.registerOutputPackets = function() {
 
     Output1.addOutput("[Master]", "!usblight", 0x2A, "B");
     Output1.addOutput("[Master]", "!quantize", 0x31, "B");
-    Output1.addOutput("[InternalClock]", "sync_master", 0x30, "B");
+    Output1.addOutput("[InternalClock]", "sync_leader", 0x30, "B");
     Output1.addOutput("[Recording]", "status", 0x34, "B");
 
     this.controller.registerOutputPacket(Output1);
@@ -550,7 +550,7 @@ TraktorS4MK2.registerOutputPackets = function() {
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2_Effect3]", "enabled", TraktorS4MK2.outputChannelCallback);
 
     TraktorS4MK2.linkChannelOutput("[PreviewDeck1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
-    TraktorS4MK2.linkChannelOutput("[InternalClock]", "sync_master", TraktorS4MK2.outputChannelCallback);
+    TraktorS4MK2.linkChannelOutput("[InternalClock]", "sync_leader", TraktorS4MK2.outputChannelCallback);
 
     if (TraktorS4MK2.RemixSlotButtonAction === "SAMPLES") {
         TraktorS4MK2.linkChannelOutput("[Sampler1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
@@ -723,7 +723,7 @@ TraktorS4MK2.init = function(id) {
 
     TraktorS4MK2.controller.setOutput("[Master]", "!usblight", 0x7F, true);
 
-    TraktorS4MK2.outputChannelCallback(engine.getValue("[InternalClock]", "sync_master"), "[InternalClock]", "sync_master");
+    TraktorS4MK2.outputChannelCallback(engine.getValue("[InternalClock]", "sync_leader"), "[InternalClock]", "sync_leader");
     TraktorS4MK2.outputChannelCallback(engine.getValue("[Recording]", "status"), "[Recording]", "status");
     TraktorS4MK2.controller.setOutput("deck1", "!on_air", engine.getValue("[Recording]", "status")*0x7F);
     TraktorS4MK2.controller.setOutput("deck2", "!on_air", engine.getValue("[Recording]", "status")*0x7F);

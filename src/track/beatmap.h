@@ -23,7 +23,7 @@ class BeatMap final : public Beats {
 
     ~BeatMap() override = default;
 
-    static BeatsPointer makeBeatMap(
+    static BeatsPointer fromByteArray(
             audio::SampleRate sampleRate,
             const QString& subVersion,
             const QByteArray& byteArray);
@@ -33,9 +33,8 @@ class BeatMap final : public Beats {
             const QString& subVersion,
             const QVector<mixxx::audio::FramePos>& beats);
 
-    Beats::CapabilitiesFlags getCapabilities() const override {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
-                BEATSCAP_MOVEBEAT;
+    bool hasConstantTempo() const override {
+        return false;
     }
 
     QByteArray toByteArray() const override;
@@ -46,13 +45,10 @@ class BeatMap final : public Beats {
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
-    audio::FramePos findNextBeat(audio::FramePos position) const override;
-    audio::FramePos findPrevBeat(audio::FramePos position) const override;
     bool findPrevNextBeats(audio::FramePos position,
             audio::FramePos* prevBeatPosition,
             audio::FramePos* nextBeatPosition,
             bool snapToNearBeats) const override;
-    audio::FramePos findClosestBeat(audio::FramePos position) const override;
     audio::FramePos findNthBeat(audio::FramePos position, int n) const override;
     std::unique_ptr<BeatIterator> findBeats(audio::FramePos startPosition,
             audio::FramePos endPosition) const override;
@@ -82,8 +78,7 @@ class BeatMap final : public Beats {
     BeatMap(const BeatMap& other, BeatList beats, mixxx::Bpm nominalBpm);
     BeatMap(const BeatMap& other);
 
-    // For internal use only.
-    bool isValid() const;
+    bool isValid() const override;
 
     const QString m_subVersion;
     const audio::SampleRate m_sampleRate;

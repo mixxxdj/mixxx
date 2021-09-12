@@ -68,27 +68,10 @@ class Cue : public QObject {
 
     mixxx::audio::FramePos getPosition() const;
     void setStartPosition(mixxx::audio::FramePos position);
-    void setStartPosition(double samplePosition) {
-        setStartPosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(samplePosition));
-    }
     void setEndPosition(mixxx::audio::FramePos position);
-    void setEndPosition(double samplePosition) {
-        setEndPosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(samplePosition));
-    }
     void setStartAndEndPosition(
             mixxx::audio::FramePos startPosition,
             mixxx::audio::FramePos endPosition);
-    void setStartAndEndPosition(
-            double sampleStartPosition,
-            double sampleEndPosition) {
-        const auto startPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        sampleStartPosition);
-        const auto endPosition =
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        sampleEndPosition);
-        setStartAndEndPosition(startPosition, endPosition);
-    }
     void shiftPositionFrames(mixxx::audio::FrameDiff_t frameOffset);
 
     mixxx::audio::FrameDiff_t getLengthFrames() const;
@@ -145,42 +128,3 @@ class CuePointer : public std::shared_ptr<Cue> {
   private:
     static void deleteLater(Cue* pCue);
 };
-
-class CuePosition {
-  public:
-    CuePosition()
-            : m_position(0.0) {
-    }
-    CuePosition(double position)
-            : m_position(position) {
-    }
-
-    double getPosition() const {
-        return m_position;
-    }
-
-    void setPosition(double position) {
-        m_position = position;
-    }
-
-    void set(double position) {
-        m_position = position;
-    }
-
-    void reset() {
-        m_position = 0.0;
-    }
-
-  private:
-    double m_position;
-};
-
-bool operator==(const CuePosition& lhs, const CuePosition& rhs);
-
-inline bool operator!=(const CuePosition& lhs, const CuePosition& rhs) {
-    return !(lhs == rhs);
-}
-
-inline QDebug operator<<(QDebug dbg, const CuePosition& arg) {
-    return dbg << "position =" << arg.getPosition();
-}

@@ -3,11 +3,6 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGLFormat>
-#include <QGuiApplication>
-#include <QInputMethod>
-#include <QLocale>
-#include <QScreen>
-#include <QStandardPaths>
 #include <QUrl>
 #include <QtDebug>
 
@@ -15,12 +10,9 @@
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
-#include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginemaster.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
-#include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgpreferences.h"
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
@@ -28,13 +20,12 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
-#include "control/controlpushbutton.h"
+#include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
-#include "library/coverartcache.h"
 #include "library/library.h"
-#include "library/library_preferences.h"
+#include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
@@ -45,12 +36,10 @@
 #include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
-#include "skin/legacy/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/db/dbconnectionpooled.h"
 #include "util/debug.h"
 #include "util/experiment.h"
 #include "util/font.h"
@@ -58,7 +47,6 @@
 #include "util/math.h"
 #include "util/sandbox.h"
 #include "util/screensaver.h"
-#include "util/statsmanager.h"
 #include "util/time.h"
 #include "util/timer.h"
 #include "util/translations.h"
@@ -74,38 +62,26 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #endif
 
-#ifdef __MODPLUG__
-#include "preferences/dialog/dlgprefmodplug.h"
-#endif
-
 #if defined(Q_OS_LINUX)
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
-
-#include <QtX11Extras/QX11Info>
 // Xlibint.h predates C++ and defines macros which conflict
 // with references to std::max and std::min
 #undef max
 #undef min
+
+#include <QtX11Extras/QX11Info>
 #endif
 
-MixxxMainWindow::MixxxMainWindow(
-        QApplication* pApp, std::shared_ptr<mixxx::CoreServices> pCoreServices)
+MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices)
         : m_pCoreServices(pCoreServices),
           m_pCentralWidget(nullptr),
           m_pLaunchImage(nullptr),
           m_pGuiTick(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
-          m_pKeywheel(nullptr),
-#ifdef __ENGINEPRIME__
-          m_pLibraryExporter(nullptr),
-#endif
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON) {
-    DEBUG_ASSERT(pApp);
     DEBUG_ASSERT(pCoreServices);
-    m_pCoreServices->initializeSettings();
-    m_pCoreServices->initializeKeyboard();
     // These depend on the settings
     createMenuBar();
     m_pMenuBar->hide();
@@ -119,30 +95,15 @@ MixxxMainWindow::MixxxMainWindow(
     setCentralWidget(m_pCentralWidget);
 
     show();
-    pApp->processEvents();
 
     m_pGuiTick = new GuiTick();
     m_pVisualsManager = new VisualsManager();
+}
 
-    connect(
-            m_pCoreServices.get(),
-            &mixxx::CoreServices::initializationProgressUpdate,
-            this,
-            &MixxxMainWindow::initializationProgressUpdate);
+void MixxxMainWindow::initialize() {
+    m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
-    // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
-    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), -1);
-    if (inhibit == -1) {
-        inhibit = static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON);
-        pConfig->setValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), inhibit);
-    }
-    m_inhibitScreensaver = static_cast<mixxx::ScreenSaverPreference>(inhibit);
-    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON) {
-        mixxx::ScreenSaverHelper::inhibit();
-    }
-
-    m_pCoreServices->initialize(pApp);
 
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
@@ -175,6 +136,8 @@ MixxxMainWindow::MixxxMainWindow(
 
     initializationProgressUpdate(65, tr("skin"));
 
+    // Install an event filter to catch certain QT events, such as tooltips.
+    // This allows us to turn off tooltips.
     installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
 
     DEBUG_ASSERT(m_pCoreServices->getPlayerManager());
@@ -229,7 +192,7 @@ MixxxMainWindow::MixxxMainWindow(
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(
-            this,
+            m_pCoreServices->getScreensaverManager(),
             m_pSkinLoader,
             m_pCoreServices->getSoundManager(),
             m_pCoreServices->getPlayerManager(),
@@ -239,8 +202,17 @@ MixxxMainWindow::MixxxMainWindow(
             m_pCoreServices->getEffectsManager(),
             m_pCoreServices->getSettingsManager(),
             m_pCoreServices->getLibrary());
-    m_pPrefDlg->setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
+    m_pPrefDlg->setWindowIcon(QIcon(MIXXX_ICON_PATH));
     m_pPrefDlg->setHidden(true);
+    connect(m_pPrefDlg,
+            &DlgPreferences::tooltipModeChanged,
+            this,
+            &MixxxMainWindow::slotTooltipModeChanged);
+    connect(m_pPrefDlg,
+            &DlgPreferences::reloadUserInterface,
+            this,
+            &MixxxMainWindow::rebootMixxxView,
+            Qt::DirectConnection);
 
     // Connect signals to the menubar. Should be done before emit newSkinLoaded.
     connectMenuBar();
@@ -271,11 +243,6 @@ MixxxMainWindow::MixxxMainWindow(
     if (!CmdlineArgs::Instance().getSafeMode()) {
         checkDirectRendering();
     }
-
-    // Install an event filter to catch certain QT events, such as tooltips.
-    // This allows us to turn off tooltips.
-    pApp->installEventFilter(this); // The eventfilter is located in this
-                                    // Mixxx class as a callback.
 
     // Try open player device If that fails, the preference panel is opened.
     bool retryClicked;
@@ -346,19 +313,11 @@ MixxxMainWindow::MixxxMainWindow(
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &MixxxMainWindow::slotUpdateWindowTitle);
-    connect(&PlayerInfo::instance(),
-            &PlayerInfo::currentPlayingDeckChanged,
-            this,
-            &MixxxMainWindow::slotChangedPlayingDeck);
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
     Timer t("~MixxxMainWindow");
     t.start();
-
-    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
-        mixxx::ScreenSaverHelper::uninhibit();
-    }
 
     // Save the current window state (position, maximized, etc)
     // Note(ronso0): Unfortunately saveGeometry() also stores the fullscreen state.
@@ -435,16 +394,12 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DlgPreferences";
     delete m_pPrefDlg;
 
+    m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(false);
+
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
     delete m_pVisualsManager;
-
-    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
-        mixxx::ScreenSaverHelper::uninhibit();
-    }
-
-    m_pCoreServices->shutdown();
 }
 
 void MixxxMainWindow::initializeWindow() {
@@ -471,7 +426,7 @@ void MixxxMainWindow::initializeWindow() {
                     ->getValueString(ConfigKey("[MainWindow]", "state"))
                     .toUtf8()));
 
-    setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
+    setWindowIcon(QIcon(MIXXX_ICON_PATH));
     slotUpdateWindowTitle(TrackPointer());
 }
 
@@ -845,13 +800,12 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
     QString trackPath =
-        QFileDialog::getOpenFileName(
-            this,
-            loadTrackText,
-            pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR),
-            QString("Audio (%1)")
-                .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
-
+            QFileDialog::getOpenFileName(
+                    this,
+                    loadTrackText,
+                    pConfig->getValueString(mixxx::library::prefs::kLegacyDirectoryConfigKey),
+                    QString("Audio (%1)")
+                            .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
 
     if (!trackPath.isNull()) {
         // The user has picked a file via a file dialog. This means the system
@@ -985,19 +939,8 @@ void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
     }
 }
 
-void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
-    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY) {
-        if (deck==-1) {
-            // If no deck is playing, allow the screensaver to run.
-            mixxx::ScreenSaverHelper::uninhibit();
-        } else {
-            mixxx::ScreenSaverHelper::inhibit();
-        }
-    }
-}
-
 void MixxxMainWindow::slotHelpAbout() {
-    DlgAbout* about = new DlgAbout(this);
+    DlgAbout* about = new DlgAbout;
     about->show();
 }
 
@@ -1018,10 +961,7 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
     }
 }
 
-void MixxxMainWindow::setToolTipsCfg(mixxx::TooltipsPreference tt) {
-    UserSettingsPointer pConfig = m_pCoreServices->getSettings();
-    pConfig->set(ConfigKey("[Controls]","Tooltips"),
-                 ConfigValue(static_cast<int>(tt)));
+void MixxxMainWindow::slotTooltipModeChanged(mixxx::TooltipsPreference tt) {
     m_toolTipsCfg = tt;
 }
 
@@ -1100,8 +1040,13 @@ bool MixxxMainWindow::loadConfiguredSkin() {
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
-        // return true for no tool tips
-        switch (m_toolTipsCfg) {
+        // always show tooltips in the preferences window
+        QWidget* activeWindow = QApplication::activeWindow();
+        if (activeWindow &&
+                QLatin1String(activeWindow->metaObject()->className()) !=
+                        "DlgPreferences") {
+            // return true for no tool tips
+            switch (m_toolTipsCfg) {
             case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
                 if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
                     return true;
@@ -1114,6 +1059,7 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             default:
                 DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
                 return true;
+            }
         }
     }
     // standard event processing
@@ -1217,30 +1163,6 @@ bool MixxxMainWindow::confirmExit() {
     }
 
     return true;
-}
-
-void MixxxMainWindow::setInhibitScreensaver(mixxx::ScreenSaverPreference newInhibit)
-{
-    UserSettingsPointer pConfig = m_pCoreServices->getSettings();
-
-    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
-        mixxx::ScreenSaverHelper::uninhibit();
-    }
-
-    if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON) {
-        mixxx::ScreenSaverHelper::inhibit();
-    } else if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY
-            && PlayerInfo::instance().getCurrentPlayingDeck()!=-1) {
-        mixxx::ScreenSaverHelper::inhibit();
-    }
-    int inhibit_int = static_cast<int>(newInhibit);
-    pConfig->setValue<int>(ConfigKey("[Config]","InhibitScreensaver"), inhibit_int);
-    m_inhibitScreensaver = newInhibit;
-}
-
-mixxx::ScreenSaverPreference MixxxMainWindow::getInhibitScreensaver()
-{
-    return m_inhibitScreensaver;
 }
 
 void MixxxMainWindow::initializationProgressUpdate(int progress, const QString& serviceName) {

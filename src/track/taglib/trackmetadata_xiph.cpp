@@ -7,10 +7,6 @@
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
-// TagLib has support for XiphComment::pictureList() since version 1.11
-#define TAGLIB_HAS_VORBIS_COMMENT_PICTURES \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 11))
-
 namespace mixxx {
 
 namespace {
@@ -173,14 +169,12 @@ bool importCoverImageFromTag(
         return false; // nothing to do
     }
 
-#if (TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
     const QImage image =
             importCoverImageFromPictureList(tag.pictureList());
     if (!image.isNull()) {
         *pCoverArt = image;
         return false; // done
     }
-#endif
 
     // NOTE(uklotzde, 2016-07-13): Legacy code for parsing cover art (part 1)
     //
@@ -195,12 +189,10 @@ bool importCoverImageFromTag(
         // https://wiki.xiph.org/VorbisComment#METADATA_BLOCK_PICTURE
         const TagLib::StringList& base64EncodedList =
                 tag.fieldListMap()["METADATA_BLOCK_PICTURE"];
-#if (TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
         if (!base64EncodedList.isEmpty()) {
             kLogger.warning()
                     << "Taking legacy code path for reading cover art from VorbisComment field METADATA_BLOCK_PICTURE";
         }
-#endif
         for (const auto& base64Encoded : base64EncodedList) {
             TagLib::FLAC::Picture picture;
             if (parseBase64EncodedPicture(&picture, base64Encoded)) {

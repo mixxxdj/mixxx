@@ -22,20 +22,41 @@ namespace {
 constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
-int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
-    auto coreServices = std::make_shared<mixxx::CoreServices>(args);
-    MixxxMainWindow mainWindow(app, coreServices);
-    // If startup produced a fatal error, then don't even start the
-    // Qt event loop.
-    if (ErrorDialogHandler::instance()->checkError()) {
-        return kFatalErrorOnStartupExitCode;
-    } else {
-        qDebug() << "Displaying main window";
-        mainWindow.show();
+int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
+    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
 
-        qDebug() << "Running Mixxx";
-        return app->exec();
+    CmdlineArgs::Instance().parseForUserFeedback();
+
+    int exitCode;
+
+    // This scope ensures that `MixxxMainWindow` is destroyed *before*
+    // CoreServices is shut down. Otherwise a debug assertion complaining about
+    // leaked COs may be triggered.
+    {
+        MixxxMainWindow mainWindow(pCoreServices);
+        pApp->processEvents();
+        pApp->installEventFilter(&mainWindow);
+
+        QObject::connect(pCoreServices.get(),
+                &mixxx::CoreServices::initializationProgressUpdate,
+                &mainWindow,
+                &MixxxMainWindow::initializationProgressUpdate);
+        pCoreServices->initialize(pApp);
+        mainWindow.initialize();
+
+        // If startup produced a fatal error, then don't even start the
+        // Qt event loop.
+        if (ErrorDialogHandler::instance()->checkError()) {
+            exitCode = kFatalErrorOnStartupExitCode;
+        } else {
+            qDebug() << "Displaying main window";
+            mainWindow.show();
+
+            qDebug() << "Running Mixxx";
+            exitCode = pApp->exec();
+        }
     }
+    return exitCode;
 }
 
 } // anonymous namespace
@@ -54,6 +75,12 @@ int main(int argc, char * argv[]) {
     // workaround for https://bugreports.qt.io/browse/QTBUG-84363
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && QT_VERSION < QT_VERSION_CHECK(5, 15, 1)
     qputenv("QV4_FORCE_INTERPRETER", QByteArrayLiteral("1"));
+#endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    // Follow whatever factor the user has selected in the system settings
+    // By default the value is always rounded to the nearest int.
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
+            Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
 
     // Setting the organization name results in a QDesktopStorage::DataLocation
@@ -78,6 +105,10 @@ int main(int argc, char * argv[]) {
     // created in the thread of the first caller to instance(), which may not be
     // the main thread. Bug #1748636.
     ErrorDialogHandler::instance();
+
+#ifdef __APPLE__
+    Sandbox::checkSandboxed();
+#endif
 
     MixxxApplication app(argc, argv);
 

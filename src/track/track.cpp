@@ -4,10 +4,9 @@
 #include <atomic>
 
 #include "engine/engine.h"
+#include "library/library_prefs.h"
 #include "moc_track.cpp"
 #include "sources/metadatasource.h"
-#include "track/beatfactory.h"
-#include "track/beatmap.h"
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
@@ -18,7 +17,6 @@ namespace {
 const mixxx::Logger kLogger("Track");
 
 constexpr bool kLogStats = false;
-const ConfigKey kConfigKeySeratoMetadataExport("[Library]", "SeratoMetadataExport");
 
 // Count the number of currently existing instances for detecting
 // memory leaks.
@@ -173,7 +171,7 @@ void Track::replaceMetadataFromSource(
             // missing or not valid! The BPM value in the metadata might be
             // imprecise (normalized or rounded), e.g. ID3v2 only supports
             // integer values.
-            beatsAndBpmModified = trySetBpmWhileLocked(importedBpm.value());
+            beatsAndBpmModified = trySetBpmWhileLocked(importedBpm);
         }
         modified |= beatsAndBpmModified;
 
@@ -285,7 +283,7 @@ bool Track::replaceRecord(
     } else {
         // Setting the bpm manually may in turn update the beat grid
         bpmUpdatedFlag = trySetBpmWhileLocked(
-                newRecord.getMetadata().getTrackInfo().getBpm().value());
+                newRecord.getMetadata().getTrackInfo().getBpm());
     }
     // The bpm in m_record has already been updated. Read it and copy it into
     // the new record to ensure it will be consistent with the new beat grid.
@@ -328,14 +326,23 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     }
 }
 
+void Track::adjustReplayGainFromPregain(double gain) {
+    QMutexLocker lock(&m_qMutex);
+    mixxx::ReplayGain replayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
+    replayGain.setRatio(gain * replayGain.getRatio());
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
+        markDirtyAndUnlock(&lock);
+        emit replayGainAdjusted(replayGain);
+    }
+}
+
 mixxx::Bpm Track::getBpmWhileLocked() const {
     // BPM values must be synchronized at all times!
     DEBUG_ASSERT(m_record.getMetadata().getTrackInfo().getBpm() == getBeatsPointerBpm(m_pBeats));
     return m_record.getMetadata().getTrackInfo().getBpm();
 }
 
-bool Track::trySetBpmWhileLocked(double bpmValue) {
-    const auto bpm = mixxx::Bpm(bpmValue);
+bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
     if (!bpm.isValid()) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
@@ -346,12 +353,11 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
         if (!cuePosition.isValid()) {
             cuePosition = mixxx::audio::kStartFramePos;
         }
-        auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(),
-                bpm,
-                cuePosition);
+        auto pBeats = mixxx::Beats::fromConstTempo(getSampleRate(),
+                cuePosition,
+                bpm);
         return trySetBeatsWhileLocked(std::move(pBeats));
-    } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
-            m_pBeats->getBpm() != bpm) {
+    } else if (m_pBeats->getBpm() != bpm) {
         // Continue with the regular cases
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
@@ -367,9 +373,9 @@ double Track::getBpm() const {
     return bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined;
 }
 
-bool Track::trySetBpm(double bpmValue) {
+bool Track::trySetBpm(mixxx::Bpm bpm) {
     auto locked = lockMutex(&m_qMutex);
-    if (!trySetBpmWhileLocked(bpmValue)) {
+    if (!trySetBpmWhileLocked(bpm)) {
         return false;
     }
     afterBeatsAndBpmUpdated(&locked);
@@ -629,20 +635,6 @@ void Track::setYear(const QString& s) {
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrYear(), value)) {
         markDirtyAndUnlock(&locked);
         emit yearChanged(value);
-    }
-}
-
-QString Track::getGenre() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getGenre();
-}
-
-void Track::setGenre(const QString& s) {
-    QMutexLocker lock(&m_qMutex);
-    const QString value = s.trimmed();
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGenre(), value)) {
-        markDirtyAndUnlock(&lock);
-        emit genreChanged(value);
     }
 }
 
@@ -933,6 +925,13 @@ CuePointer Track::createAndAddCue(
         int hotCueIndex,
         mixxx::audio::FramePos startPosition,
         mixxx::audio::FramePos endPosition) {
+    VERIFY_OR_DEBUG_ASSERT(hotCueIndex == Cue::kNoHotCue ||
+            hotCueIndex >= mixxx::kFirstHotCueIndex) {
+        return CuePointer{};
+    }
+    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid() || endPosition.isValid()) {
+        return CuePointer{};
+    }
     CuePointer pCue(new Cue(
             type,
             hotCueIndex,
@@ -1082,9 +1081,8 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
-    const auto pBeats = mixxx::BeatMap::makeBeatMap(
+    const auto pBeats = mixxx::Beats::fromBeatPositions(
             m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate(),
-            QString(),
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
                     getLocation(), *m_record.getStreamInfoFromSource()));
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
@@ -1456,7 +1454,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Skipped;
     }
 
-    if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
+    if (pConfig->getValue<bool>(mixxx::library::prefs::kSeratoMetadataExportConfigKey)) {
         const auto streamInfo = m_record.getStreamInfoFromSource();
         VERIFY_OR_DEBUG_ASSERT(streamInfo &&
                 streamInfo->getSignalInfo().isValid() &&
@@ -1684,3 +1682,55 @@ void Track::updateStreamInfoFromSource(
         emit cuesUpdated();
     }
 }
+
+QString Track::getGenre() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getMetadata().getTrackInfo().getGenre();
+}
+
+void Track::setGenreFromTrackDAO(
+        const QString& genre) {
+    auto locked = lockMutex(&m_qMutex);
+    if (compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrGenre(),
+                genre)) {
+        markDirtyAndUnlock(&locked);
+    }
+}
+
+bool Track::updateGenre(
+        const QString& genre) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrGenre(),
+                genre)) {
+        return false;
+    }
+    const auto newGenre =
+            m_record.getMetadata().getTrackInfo().getGenre();
+    markDirtyAndUnlock(&locked);
+    emit genreChanged(newGenre);
+    return true;
+}
+
+#if defined(__EXTRA_METADATA__)
+QString Track::getMood() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getMetadata().getTrackInfo().getMood();
+}
+
+bool Track::updateMood(
+        const QString& mood) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!compareAndSet(
+                m_record.refMetadata().refTrackInfo().ptrMood(),
+                mood)) {
+        return false;
+    }
+    const auto newMood =
+            m_record.getMetadata().getTrackInfo().getMood();
+    markDirtyAndUnlock(&locked);
+    emit moodChanged(newMood);
+    return true;
+}
+#endif // __EXTRA_METADATA__

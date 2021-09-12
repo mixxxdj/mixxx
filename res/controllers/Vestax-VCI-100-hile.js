@@ -536,4 +536,3 @@ HileVci100.jog_wheel = function(button,value) {
         engine.setValue(button.group,"jog",value);
     }
 }
-

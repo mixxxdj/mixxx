@@ -51,7 +51,10 @@ class Track : public QObject {
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
     Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist
                     NOTIFY albumArtistChanged)
-    Q_PROPERTY(QString genre READ getGenre WRITE setGenre NOTIFY genreChanged)
+    Q_PROPERTY(QString genre READ getGenre STORED false NOTIFY genreChanged)
+#if defined(__EXTRA_METADATA__)
+    Q_PROPERTY(QString mood READ getMood STORED false NOTIFY moodChanged)
+#endif // __EXTRA_METADATA__
     Q_PROPERTY(QString composer READ getComposer WRITE setComposer NOTIFY composerChanged)
     Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping NOTIFY groupingChanged)
     Q_PROPERTY(QString year READ getYear WRITE setYear NOTIFY yearChanged)
@@ -128,7 +131,10 @@ class Track : public QObject {
     }
 
     // Sets the BPM if not locked.
-    bool trySetBpm(double bpm);
+    bool trySetBpm(double bpmValue) {
+        return trySetBpm(mixxx::Bpm(bpmValue));
+    }
+    bool trySetBpm(mixxx::Bpm bpm);
 
     // Returns BPM
     double getBpm() const;
@@ -144,18 +150,13 @@ class Track : public QObject {
 
     // Set ReplayGain
     void setReplayGain(const mixxx::ReplayGain&);
+    // Adjust ReplayGain by multiplying the given gain amount.
+    void adjustReplayGainFromPregain(double);
     // Returns ReplayGain
     mixxx::ReplayGain getReplayGain() const;
 
     // Indicates if the metadata has been parsed from file tags.
     bool isSourceSynchronized() const;
-
-    void setHeaderParsedFromTrackDAO(bool headerParsed) {
-        // Always operating on a newly created, exclusive instance! No need
-        // to lock the mutex.
-        DEBUG_ASSERT(!m_record.m_headerParsed);
-        m_record.m_headerParsed = headerParsed;
-    }
 
     // The date/time of the last import or export of metadata
     void setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt);
@@ -185,10 +186,6 @@ class Track : public QObject {
     QString getYear() const;
     // Set year
     void setYear(const QString&);
-    // Return genre
-    QString getGenre() const;
-    // Set genre
-    void setGenre(const QString&);
     // Returns the track color
     mixxx::RgbColor::optional_t getColor() const;
     // Sets the track color
@@ -211,6 +208,40 @@ class Track : public QObject {
     // Set track number/total
     void setTrackNumber(const QString&);
     void setTrackTotal(const QString&);
+
+    /// Return the genre as text
+    QString getGenre() const;
+
+    /// Update the genre text.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    ///
+    /// TODO: Update the corresponding custom tags by splitting
+    /// the text according to the given tag mapping configuration.
+    /// All existing custom genre tags with their associated score
+    /// will be replaced.
+    bool updateGenre(
+            /*TODO: const mixxx::TaggingConfig& config,*/
+            const QString& genre);
+
+#if defined(__EXTRA_METADATA__)
+    /// Return the mood as text
+    QString getMood() const;
+
+    /// Update the mood text.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    ///
+    /// TODO: Update the corresponding custom tags by splitting
+    /// the text according to the given tag mapping configuration.
+    /// All existing custom mood tags with their associated score
+    /// will be replaced.
+    bool updateMood(
+            /*TODO: const mixxx::TaggingConfig& config,*/
+            const QString& mood);
+#endif // __EXTRA_METADATA__
 
     PlayCounter getPlayCounter() const;
     void setPlayCounter(const PlayCounter& playCounter);
@@ -263,16 +294,8 @@ class Track : public QObject {
 
     /// Get the track's main cue point
     mixxx::audio::FramePos getMainCuePosition() const;
-    CuePosition getCuePoint() const {
-        return getMainCuePosition().toEngineSamplePosMaybeInvalid();
-    };
     // Set the track's main cue point
     void setMainCuePosition(mixxx::audio::FramePos position);
-    void setCuePoint(CuePosition position) {
-        setMainCuePosition(
-                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        position.getPosition()));
-    }
     /// Shift all cues by a constant offset
     void shiftCuePositionsMillis(mixxx::audio::FrameDiff_t milliseconds);
     // Call when analysis is done.
@@ -401,6 +424,9 @@ class Track : public QObject {
     void albumChanged(const QString&);
     void albumArtistChanged(const QString&);
     void genreChanged(const QString&);
+#if defined(__EXTRA_METADATA__)
+    void moodChanged(const QString&);
+#endif // __EXTRA_METADATA__
     void composerChanged(const QString&);
     void groupingChanged(const QString&);
     void yearChanged(const QString&);
@@ -418,6 +444,9 @@ class Track : public QObject {
     void coverArtUpdated();
     void beatsUpdated();
     void replayGainUpdated(mixxx::ReplayGain replayGain);
+    // This signal indicates that ReplayGain is being adjusted, and pregains should be
+    // adjusted in the opposite direction to compensate (no audible change).
+    void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
     void analyzed();
@@ -474,7 +503,7 @@ class Track : public QObject {
     bool importPendingCueInfosWhileLocked();
 
     mixxx::Bpm getBpmWhileLocked() const;
-    bool trySetBpmWhileLocked(double bpmValue);
+    bool trySetBpmWhileLocked(mixxx::Bpm bpm);
     bool trySetBeatsWhileLocked(
             mixxx::BeatsPointer pBeats,
             bool lockBpmAfterSet = false);
@@ -546,6 +575,18 @@ class Track : public QObject {
     mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
     friend class TrackDAO;
+    void setHeaderParsedFromTrackDAO(bool headerParsed) {
+        // Always operating on a newly created, exclusive instance! No need
+        // to lock the mutex.
+        DEBUG_ASSERT(!m_record.m_headerParsed);
+        m_record.m_headerParsed = headerParsed;
+    }
+    /// Set the genre text WITHOUT updating the corresponding custom tags.
+    ///
+    /// TODO: Remove and populate TrackRecord from the database instead.
+    void setGenreFromTrackDAO(
+            const QString& genre);
+
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;

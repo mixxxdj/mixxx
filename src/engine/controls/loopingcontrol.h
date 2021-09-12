@@ -11,8 +11,6 @@
 #include "track/cue.h"
 #include "track/track_decl.h"
 
-#define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples
-
 class ControlPushButton;
 class ControlObject;
 
@@ -30,26 +28,30 @@ class LoopingControl : public EngineControl {
 
     // process() updates the internal state of the LoopingControl to reflect the
     // correct current sample. If a loop should be taken LoopingControl returns
-    // the sample that should be seeked to. Otherwise it returns currentSample.
+    // the sample that should be seeked to. Otherwise it returns currentPosition.
     void process(const double dRate,
-                   const double currentSample,
-                   const int iBufferSize) override;
+            mixxx::audio::FramePos currentPosition,
+            const int iBufferSize) override;
 
     // nextTrigger returns the sample at which the engine will be triggered to
-    // take a loop, given the value of currentSample and dRate.
-    virtual double nextTrigger(bool reverse,
-                       const double currentSample,
-                       double *pTarget);
+    // take a loop, given the value of currentPosition and the playback direction.
+    virtual mixxx::audio::FramePos nextTrigger(bool reverse,
+            mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos* pTargetPosition);
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
     void hintReader(HintVector* pHintList) override;
-    double getSyncPositionInsideLoop(double dRequestedPlaypos, double dSyncedPlayPos);
+    mixxx::audio::FramePos getSyncPositionInsideLoop(
+            mixxx::audio::FramePos requestedPlayPosition,
+            mixxx::audio::FramePos syncedPlayPosition);
 
-    void notifySeek(double dNewPlaypos) override;
+    void notifySeek(mixxx::audio::FramePos position) override;
 
-    void setBeatLoop(double startPosition, bool enabled);
-    void setLoop(double startPosition, double endPosition, bool enabled);
+    void setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled);
+    void setLoop(mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition,
+            bool enabled);
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
 
@@ -59,7 +61,7 @@ class LoopingControl : public EngineControl {
   signals:
     void loopReset();
     void loopEnabledChanged(bool enabled);
-    void loopUpdated(double startPosition, double endPosition);
+    void loopUpdated(mixxx::audio::FramePos startPosition, mixxx::audio::FramePos endPosition);
 
   public slots:
     void slotLoopIn(double pressed);
@@ -105,9 +107,9 @@ class LoopingControl : public EngineControl {
         None,
     };
 
-    struct LoopSamples {
-        double start;
-        double end;
+    struct LoopInfo {
+        mixxx::audio::FramePos startPosition;
+        mixxx::audio::FramePos endPosition;
         LoopSeekMode seekMode;
     };
 
@@ -120,12 +122,16 @@ class LoopingControl : public EngineControl {
 
     // Given loop in and out points, determine if this is a beatloop of a particular
     // size.
-    double findBeatloopSizeForLoop(double start, double end) const;
+    double findBeatloopSizeForLoop(mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition) const;
     // When a loop changes size such that the playposition is outside of the loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
-    double seekInsideAdjustedLoop(double currentSample,
-            double old_loop_in, double new_loop_in, double new_loop_out);
+    mixxx::audio::FramePos seekInsideAdjustedLoop(
+            mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos oldLoopInPosition,
+            mixxx::audio::FramePos newLoopInPosition,
+            mixxx::audio::FramePos newLoopOutPosition);
 
     ControlPushButton* m_pCOBeatLoopActivate;
     ControlPushButton* m_pCOBeatLoopRollActivate;
@@ -154,9 +160,9 @@ class LoopingControl : public EngineControl {
     bool m_bAdjustingLoopOutOld;
     bool m_bLoopOutPressedWhileLoopDisabled;
     QStack<double> m_activeLoopRolls;
-    ControlValueAtomic<LoopSamples> m_loopSamples;
-    LoopSamples m_oldLoopSamples;
-    ControlValueAtomic<double> m_currentSample;
+    ControlValueAtomic<LoopInfo> m_loopInfo;
+    LoopInfo m_oldLoopInfo;
+    ControlValueAtomic<mixxx::audio::FramePos> m_currentPosition;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
     ControlObject* m_pPreviousBeat;
@@ -184,6 +190,8 @@ class LoopingControl : public EngineControl {
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     mixxx::BeatsPointer m_pBeats;
+
+    friend class LoopingControlTest;
 };
 
 // Class for handling loop moves of a set size. This allows easy access from
