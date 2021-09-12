@@ -27,7 +27,7 @@ class SoundDevicePortAudio : public SoundDevice {
     void writeProcess() override;
     QString getError() const override;
 
-    // This callback function gets called everytime the sound device runs out of
+    // This callback function gets called every time the sound device runs out of
     // samples (ie. when it needs more sound to play)
     int callbackProcess(const SINT framesPerBuffer,
                         CSAMPLE *output, const CSAMPLE* in,

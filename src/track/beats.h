@@ -2,8 +2,9 @@
 
 #include <QByteArray>
 #include <QList>
-#include <QSharedPointer>
 #include <QString>
+#include <QVector>
+#include <memory>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -14,7 +15,7 @@
 namespace mixxx {
 
 class Beats;
-typedef QSharedPointer<Beats> BeatsPointer;
+typedef std::shared_ptr<Beats> BeatsPointer;
 
 class BeatIterator {
   public:
@@ -29,6 +30,23 @@ class BeatIterator {
 class Beats {
   public:
     virtual ~Beats() = default;
+
+    static mixxx::BeatsPointer fromByteArray(
+            mixxx::audio::SampleRate sampleRate,
+            const QString& beatsVersion,
+            const QString& beatsSubVersion,
+            const QByteArray& beatsSerialized);
+
+    static mixxx::BeatsPointer fromConstTempo(
+            audio::SampleRate sampleRate,
+            audio::FramePos position,
+            Bpm bpm,
+            const QString& subVersion = QString());
+
+    static mixxx::BeatsPointer fromBeatPositions(
+            audio::SampleRate sampleRate,
+            const QVector<audio::FramePos>& beatPositions,
+            const QString& subVersion = QString());
 
     enum class BpmScale {
         Double,
@@ -69,12 +87,12 @@ class Beats {
     /// Starting from frame position `position`, return the frame position of
     /// the next beat in the track, or an invalid position if none exists. If
     /// `position` refers to the location of a beat, `position` is returned.
-    virtual audio::FramePos findNextBeat(audio::FramePos position) const = 0;
+    audio::FramePos findNextBeat(audio::FramePos position) const;
 
     /// Starting from frame position `position`, return the frame position of
     /// the previous beat in the track, or an invalid position if none exists.
     /// If `position` refers to the location of beat, `position` is returned.
-    virtual audio::FramePos findPrevBeat(audio::FramePos position) const = 0;
+    audio::FramePos findPrevBeat(audio::FramePos position) const;
 
     /// Starting from frame position `position`, fill the frame position of the
     /// previous beat and next beat. Either can be invalid if none exists. If
@@ -93,8 +111,8 @@ class Beats {
     }
 
     /// Starting from frame position `position`, return the frame position of
-    /// the closest beat in the track, or an invalid positon if none exists.
-    virtual audio::FramePos findClosestBeat(audio::FramePos position) const = 0;
+    /// the closest beat in the track, or an invalid position if none exists.
+    audio::FramePos findClosestBeat(audio::FramePos position) const;
 
     /// Find the Nth beat from frame position `position`. Works with both
     /// positive and negative values of n. Calling findNthBeat with `n=0` is
@@ -149,6 +167,9 @@ class Beats {
 
     /// Adjust the beats so the global average BPM matches `bpm`.
     virtual BeatsPointer setBpm(mixxx::Bpm bpm) = 0;
+
+  protected:
+    virtual bool isValid() const = 0;
 };
 
 } // namespace mixxx

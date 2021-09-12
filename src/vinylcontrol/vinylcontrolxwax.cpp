@@ -229,8 +229,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     //TODO: Move all these config object get*() calls to an "updatePrefs()" function,
     //        and make that get called when any options get changed in the preferences dialog, rather than
-    //        polling everytime we get a buffer.
-
+    //        polling every time we get a buffer.
 
     // Check if vinyl control is enabled...
     m_bIsEnabled = enabled && checkEnabled(m_bIsEnabled, enabled->toBool());

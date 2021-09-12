@@ -19,11 +19,11 @@ class BeatGrid final : public Beats {
 
     static BeatsPointer makeBeatGrid(
             audio::SampleRate sampleRate,
-            const QString& subVersion,
             mixxx::Bpm bpm,
-            mixxx::audio::FramePos firstBeatPos);
+            mixxx::audio::FramePos firstBeatPos,
+            const QString& subVersion = QString());
 
-    static BeatsPointer makeBeatGrid(
+    static BeatsPointer fromByteArray(
             audio::SampleRate sampleRate,
             const QString& subVersion,
             const QByteArray& byteArray);
@@ -43,13 +43,10 @@ class BeatGrid final : public Beats {
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
-    audio::FramePos findNextBeat(audio::FramePos position) const override;
-    audio::FramePos findPrevBeat(audio::FramePos position) const override;
     bool findPrevNextBeats(audio::FramePos position,
             audio::FramePos* prevBeatPosition,
             audio::FramePos* nextBeatPosition,
             bool snapToNearBeats) const override;
-    audio::FramePos findClosestBeat(audio::FramePos position) const override;
     audio::FramePos findNthBeat(audio::FramePos position, int n) const override;
     std::unique_ptr<BeatIterator> findBeats(audio::FramePos startPosition,
             audio::FramePos endPosition) const override;
@@ -82,8 +79,7 @@ class BeatGrid final : public Beats {
     audio::FramePos firstBeatPosition() const;
     mixxx::Bpm bpm() const;
 
-    // For internal use only.
-    bool isValid() const;
+    bool isValid() const override;
 
     // The sub-version of this beatgrid.
     const QString m_subVersion;

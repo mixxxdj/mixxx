@@ -296,7 +296,8 @@ void SyncControl::updateTargetBeatDistance() {
     } else if (m_leaderBpmAdjustFactor == kBpmHalve) {
         targetDistance *= kBpmHalve;
         // Our beat distance CO is still a buffer behind, so take the current value.
-        if (m_pBpmControl->getBeatDistance(getSampleOfTrack().current) >= 0.5) {
+        if (m_pBpmControl->getBeatDistance(
+                    frameInfo().currentPosition) >= 0.5) {
             targetDistance += 0.5;
         }
     }

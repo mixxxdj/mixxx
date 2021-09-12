@@ -275,7 +275,7 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
                     loop.startPosition <= loop.endPosition) {
                 // TODO: For all loop cues, both end and start positions should
                 // be valid and the end position should be greater than the
-                // start positon. We should use a VERIFY_OR_DEBUG_ASSERT to
+                // start position. We should use a VERIFY_OR_DEBUG_ASSERT to
                 // check this. To make this possible, we need to ensure that
                 // all invalid cues are discarded when saving cues to the
                 // database first.
@@ -393,7 +393,7 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
-    //qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup();
+    //qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup() << pNewTrack.get();
     // Before loading the track, ensure we have access. This uses lazy
     // evaluation to make sure track isn't NULL before we dereference it.
     if (pNewTrack) {
@@ -408,12 +408,14 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
 
     loadTrack(pNewTrack);
 
+    // await slotTrackLoaded()/slotLoadFailed()
+    // emit this before pEngineBuffer->loadTrack() to avoid receiving
+    // unexpected slotTrackLoaded() before, in case the track is still cached (lp1941743)
+    emit loadingTrack(pNewTrack, pOldTrack);
+
     // Request a new track from EngineBuffer
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pEngineBuffer->loadTrack(pNewTrack, bPlay);
-
-    // await slotTrackLoaded()/slotLoadFailed()
-    emit loadingTrack(pNewTrack, pOldTrack);
 }
 
 void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& reason) {
@@ -437,7 +439,7 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& rea
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                                           TrackPointer pOldTrack) {
-    //qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded";
+    //qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded" << pNewTrack.get() << pOldTrack.get();
     if (!pNewTrack &&
             pOldTrack &&
             pOldTrack == m_pLoadedTrack) {

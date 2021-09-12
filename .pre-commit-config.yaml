@@ -2,21 +2,6 @@
 # to manage, install and run git hooks to catch common problems early on.
 # See https://pre-commit.com/ for details.
 #
-# This adds the following hooks:
-#
-# - check-case-conflict
-# - check-byte-order-marker
-# - check-yaml
-# - check-json
-# - check-xml
-# - mixed-line-ending
-# - end-of-file-fixer
-# - trailing-whitespace
-# - no-commit-to-branch
-# - eslint
-# - clang-format
-# - qsscheck
-#
 # If you have Python >= 3.7 and python-pip installed, just run:
 #
 #     $ pip install --user pre-commit
@@ -45,7 +30,7 @@ default_language_version:
   python: python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.3.0
+  rev: v4.0.1
   hooks:
   - id: fix-byte-order-marker
     exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
@@ -67,14 +52,16 @@ repos:
     - manual
   - id: no-commit-to-branch
 - repo: https://github.com/codespell-project/codespell
-  rev: v1.17.1
+  rev: v2.1.0
   hooks:
   - id: codespell
-    # ignore-regex is substituted by ' '
-    entry: tools/codespell.py --ignore-file .codespellignore --ignore-regex "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))" --files
-    exclude: ^(\.codespellignore|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
+    # The wrapper script tools/codespell.py only checks changed lines instead of all files.
+    entry: tools/codespell.py --ignore-words .codespellignore --ignore-regex "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))" --files
+    # Replace 'entry' with 'args' to run the checks on all files instead of only changed lines.
+    #args: [--ignore-words, .codespellignore, --ignore-regex, "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))"]
+    exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v7.12.1
+  rev: v7.32.0
   hooks:
   - id: eslint
     args: [--fix, --report-unused-disable-directives]
@@ -94,20 +81,24 @@ repos:
     language: python
     files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
 - repo: https://github.com/psf/black
-  rev: 20.8b1
+  rev: 21.7b0
   hooks:
   - id: black
     files: ^tools/.*$
 - repo: https://gitlab.com/pycqa/flake8
-  rev: '3.8.4'
+  rev: '3.9.2'
   hooks:
   - id: flake8
     files: ^tools/.*$
     types: [text, python]
 - repo: https://github.com/shellcheck-py/shellcheck-py
-  rev: v0.7.1.1
+  rev: v0.7.2.1
   hooks:
   - id: shellcheck
+- repo: https://github.com/DavidAnson/markdownlint-cli2
+  rev: v0.2.0
+  hooks:
+  - id: markdownlint-cli2
 - repo: local
   hooks:
   - id: qsscheck
@@ -124,6 +115,13 @@ repos:
     stages:
     - commit
     - manual
+  - id: changelog
+    name: changelog
+    description: Add missing links to changelog.
+    entry: ./tools/changelog.py
+    language: python
+    types: [text]
+    files: ^CHANGELOG.md$
   - id: qmlformat
     name: qmlformat
     entry: tools/qmlformat.py
@@ -139,3 +137,15 @@ repos:
     language: system
     types: [text]
     files: ^.*\.qml$
+  - id: metainfo
+    name: metainfo
+    description: Update AppStream metainfo releases from CHANGELOG.md.
+    entry: ./tools/update_metainfo.py
+    pass_filenames: false
+    language: python
+    additional_dependencies:
+    - beautifulsoup4==4.9.3
+    - lxml==4.6.3
+    - Markdown==3.3.4
+    types: [text]
+    files: ^(CHANGELOG\.md|res/linux/org\.mixxx\.Mixxx\.metainfo.xml)$

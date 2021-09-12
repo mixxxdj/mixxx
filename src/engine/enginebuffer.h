@@ -80,11 +80,6 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    // This value is used to make sure the initial seek after loading a track is
-    // not omitted. Therefore this value must be different for 0.0 or any likely
-    // value for the main cue
-    static constexpr double kInitalSamplePosition = -DBL_MAX;
-
     EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
@@ -101,9 +96,11 @@ class EngineBuffer : public EngineObject {
     /// Returns the BPM of the loaded track around the current position (not thread-safe)
     mixxx::Bpm getLocalBpm() const;
     /// Sets a beatloop for the loaded track (not thread safe)
-    void setBeatLoop(double startPosition, bool enabled);
+    void setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled);
     /// Sets a loop for the loaded track (not thread safe)
-    void setLoop(double startPosition, double endPositon, bool enabled);
+    void setLoop(mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPositon,
+            bool enabled);
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
@@ -126,9 +123,10 @@ class EngineBuffer : public EngineObject {
     bool isTrackLoaded() const;
     TrackPointer getLoadedTrack() const;
 
-    double getExactPlayPos() const;
+    mixxx::audio::FramePos getExactPlayPos() const;
     double getVisualPlayPos() const;
-    double getTrackSamples() const;
+    mixxx::audio::FramePos getTrackEndPosition() const;
+    void setTrackEndPosition(mixxx::audio::FramePos position);
     double getUserOffset() const;
 
     double getRateRatio() const;
@@ -163,6 +161,9 @@ class EngineBuffer : public EngineObject {
         m_channelIndex = channelIndex;
     }
 
+    void seekAbs(mixxx::audio::FramePos);
+    void seekExact(mixxx::audio::FramePos);
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -171,8 +172,6 @@ class EngineBuffer : public EngineObject {
     void slotControlStart(double);
     void slotControlEnd(double);
     void slotControlSeek(double);
-    void slotControlSeekAbs(double);
-    void slotControlSeekExact(double);
     void slotKeylockEngineChanged(double);
 
     void slotEjectTrack(double);
@@ -210,7 +209,7 @@ class EngineBuffer : public EngineObject {
 
     void ejectTrack();
 
-    double fractionalPlayposFromAbsolute(double absolutePlaypos);
+    double fractionalPlayposFromAbsolute(mixxx::audio::FramePos position);
 
     void doSeekFractional(double fractionalPos, enum SeekRequest seekType);
     void doSeekPlayPos(mixxx::audio::FramePos position, enum SeekRequest seekType);
@@ -224,7 +223,7 @@ class EngineBuffer : public EngineObject {
     void seekCloneBuffer(EngineBuffer* pOtherBuffer);
 
     // Reset buffer playpos and set file playpos.
-    void setNewPlaypos(double playpos);
+    void setNewPlaypos(mixxx::audio::FramePos playpos);
 
     void processSyncRequests();
     void processSeek(bool paused);
@@ -248,14 +247,10 @@ class EngineBuffer : public EngineObject {
 
     friend class CueControlTest;
     friend class HotcueControlTest;
+    friend class LoopingControlTest;
 
     LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
-    FRIEND_TEST(LoopingControlTest, LoopMoveTest);
-    FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
-    FRIEND_TEST(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead);
-    FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
-    FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
@@ -285,7 +280,7 @@ class EngineBuffer : public EngineObject {
     HintVector m_hintList;
 
     // The current sample to play in the file.
-    double m_filepos_play;
+    mixxx::audio::FramePos m_playPosition;
 
     // The previous callback's speed. Used to check if the scaler parameters
     // need updating.
@@ -312,7 +307,7 @@ class EngineBuffer : public EngineObject {
     double m_rate_old;
 
     // Copy of length of file
-    double m_trackSamplesOld;
+    mixxx::audio::FramePos m_trackEndPositionOld;
 
     // Copy of file sample rate
     mixxx::audio::SampleRate m_trackSampleRateOld;
@@ -324,7 +319,7 @@ class EngineBuffer : public EngineObject {
     int m_iSamplesSinceLastIndicatorUpdate;
 
     // The location where the track would have been had slip not been engaged
-    double m_dSlipPosition;
+    mixxx::audio::FramePos m_slipPosition;
     // Saved value of rate for slip mode
     double m_dSlipRate;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
