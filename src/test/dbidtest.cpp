@@ -4,48 +4,64 @@
 
 #include "util/db/dbid.h"
 
-namespace {
+class DbIdTest : public testing::Test {};
 
-class DbIdTest : public testing::Test {
-  protected:
-    static DbId fromValidVariant(const QVariant& variant) {
-        DbId actual(variant);
-        EXPECT_TRUE(actual.isValid());
-        EXPECT_NE(DbId(), actual);
-        EXPECT_EQ(variant.toInt(), static_cast<int>(actual.value()));
-        return actual;
-    }
+// An arbitrary valid value
+constexpr DbId::value_type kSomeValidValue = 123;
+static_assert(DbId::kMinValue != kSomeValidValue);
 
-    static DbId fromInvalidVariant(const QVariant& variant) {
-        DbId actual(variant);
-        EXPECT_FALSE(actual.isValid());
-        EXPECT_EQ(DbId(), actual);
-        return actual;
-    }
-};
+// An arbitrary invalid value
+constexpr DbId::value_type kSomeInvalidValue = -123;
+static_assert(DbId::kInvalidValue != kSomeInvalidValue);
 
-TEST_F(DbIdTest, DefaultConstructor) {
-    DbId actual;
+constexpr DbId kSomeInvalidId = DbId{DbId::NoAssert{}, kSomeInvalidValue};
 
-    EXPECT_FALSE(actual.isValid());
+TEST_F(DbIdTest, fromInvalidValue) {
+    EXPECT_FALSE(DbId{}.isValid());
+    EXPECT_EQ(DbId{}, DbId{DbId::kInvalidValue});
 }
 
-TEST_F(DbIdTest, Invalid) {
-    fromInvalidVariant(-1);
-    fromInvalidVariant(-12);
-    fromInvalidVariant(-123);
-    fromInvalidVariant(-1234);
-    fromInvalidVariant("-1234");
-    fromInvalidVariant("invalid id");
+TEST_F(DbIdTest, fromValidValue) {
+    EXPECT_TRUE(DbId{DbId::kMinValue}.isValid());
+    EXPECT_TRUE(DbId{kSomeValidValue}.isValid());
 }
 
-TEST_F(DbIdTest, Valid) {
-    fromValidVariant(0);
-    fromValidVariant(1);
-    fromValidVariant(12);
-    fromValidVariant(123);
-    fromValidVariant(1234);
-    EXPECT_EQ(fromValidVariant(1234), fromValidVariant(" 1234  "));
+TEST_F(DbIdTest, toValue) {
+    EXPECT_EQ(DbId::kInvalidValue, DbId{}.valueNoAssert());
+    EXPECT_EQ(DbId::kMinValue, DbId{DbId::kMinValue}.value());
+    EXPECT_EQ(kSomeValidValue, DbId{kSomeValidValue}.value());
+    EXPECT_EQ(kSomeInvalidValue, kSomeInvalidId.valueNoAssert());
 }
 
-}  // namespace
+TEST_F(DbIdTest, fromInvalidVariant) {
+    EXPECT_EQ(DbId{}, DbId{QVariant{}});
+}
+
+TEST_F(DbIdTest, fromVariantWithValue) {
+    EXPECT_EQ(DbId{}, DbId{QVariant{DbId::kInvalidValue}});
+    EXPECT_EQ(DbId{DbId::kMinValue}, DbId{QVariant{DbId::kMinValue}});
+    EXPECT_EQ(DbId{kSomeValidValue}, DbId{QVariant{kSomeValidValue}});
+    EXPECT_EQ(DbId{}, DbId{QVariant{kSomeInvalidValue}});
+}
+
+TEST_F(DbIdTest, fromVariantWithString) {
+    EXPECT_EQ(DbId{}, DbId{QVariant{QString::number(DbId::kInvalidValue)}});
+    EXPECT_EQ(DbId{DbId::kMinValue}, DbId{QVariant{QString::number(DbId::kMinValue)}});
+    EXPECT_EQ(DbId{kSomeValidValue}, DbId{QVariant{QString::number(kSomeValidValue)}});
+    EXPECT_EQ(DbId{}, DbId{QVariant{QString::number(kSomeInvalidValue)}});
+    EXPECT_EQ(DbId{}, DbId{QVariant{QStringLiteral("one")}});
+}
+
+TEST_F(DbIdTest, toVariant) {
+    EXPECT_EQ(QVariant{}, DbId{}.toVariant());
+    EXPECT_EQ(QVariant{DbId::kMinValue}, DbId{DbId::kMinValue}.toVariant());
+    EXPECT_EQ(QVariant{kSomeValidValue}, DbId{kSomeValidValue}.toVariant());
+    EXPECT_EQ(QVariant{}, kSomeInvalidId.toVariant());
+}
+
+TEST_F(DbIdTest, toString) {
+    EXPECT_EQ(QString{}, DbId{}.toString());
+    EXPECT_EQ(QString::number(DbId::kMinValue), DbId{DbId::kMinValue}.toString());
+    EXPECT_EQ(QString::number(kSomeValidValue), DbId{kSomeValidValue}.toString());
+    EXPECT_EQ(QString{}, kSomeInvalidId.toString());
+}
