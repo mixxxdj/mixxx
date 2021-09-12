@@ -44,7 +44,7 @@ class CmdlineArgs final {
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
 
-    void storeScaleFactor(double scaleFactor) {
+    void setScaleFactor(double scaleFactor) {
         m_scaleFactor = scaleFactor;
     }
     double getScaleFactor() const {

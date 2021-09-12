@@ -60,7 +60,7 @@ void adjustScaleFactor(CmdlineArgs* pArgs) {
         if (ok && f > 0) {
             // The environment variable overrides the preferences option
             qDebug() << "Using" << kScaleFactorEnvVar << f;
-            pArgs->storeScaleFactor(f);
+            pArgs->setScaleFactor(f);
             return;
         }
     }
@@ -80,7 +80,7 @@ void adjustScaleFactor(CmdlineArgs* pArgs) {
     if (scaleFactor > 0) {
         qDebug() << "Using preferences ScaleFactor" << scaleFactor;
         qputenv(kScaleFactorEnvVar, strScaleFactor.toLocal8Bit());
-        pArgs->storeScaleFactor(scaleFactor);
+        pArgs->setScaleFactor(scaleFactor);
     }
 }
 
