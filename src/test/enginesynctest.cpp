@@ -2860,12 +2860,7 @@ TEST_F(EngineSyncTest, BeatMapQuantizePlay) {
             ->set(static_cast<double>(SyncMode::Follower));
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-
-    ProcessBuffer();
-
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
-
-    ProcessBuffer();
 
     // Beat Distance shall be still 0, because we are before the first beat.
     // This was fixed in https://bugs.launchpad.net/mixxx/+bug/1920084
