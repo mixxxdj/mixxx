@@ -35,14 +35,16 @@ class DbId {
         return value >= kMinValue;
     }
 
-
+    /// Create an invalid instance
     constexpr DbId()
             : m_value(kInvalidValue) {
     }
+    /// Try to convert from a QVariant
+    ///
+    /// If the conversion fails an invalid instance as fallback.
     explicit DbId(QVariant variant)
             : DbId(NoAssert{}, valueOf(std::move(variant))) {
     }
-
     /// Explicit checked conversion from inner value
     ///
     /// Creates an instance from the provided inner value. The value
@@ -57,6 +59,8 @@ class DbId {
     ///
     /// Creates an instance with the provided inner value without
     /// any consistency checks that could trigger an assertion.
+    ///
+    /// Use consciously, e.g. for testing.
     static constexpr DbId fromValueUnchecked(value_type value) {
         return DbId(NoAssert{}, value);
     }
