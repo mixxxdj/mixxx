@@ -112,12 +112,14 @@ else()
   set(LLVM_CLANG false)
 endif()
 
-if(NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12)
-endif()
+if(APPLE)
+  if(NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12)
+  endif()
 
-if(APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 10.14)
-  add_compile_options(-fno-aligned-allocation)
+  if(CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 10.14)
+    add_compile_options(-fno-aligned-allocation)
+  endif()
 endif()
 
 # CMake implicitly sets the variable MSVC to true for Microsoft
