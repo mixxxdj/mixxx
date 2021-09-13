@@ -62,7 +62,6 @@
   "globals": {
     "console": "writable",
     "svg": "writable",
-    "print": "readonly",
     "HIDController": "writable",
     "HIDDebug": "writable",
     "HIDPacket": "writable",
