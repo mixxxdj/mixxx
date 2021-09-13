@@ -14,7 +14,7 @@ static_assert(DbId::kMinValue != kSomeValidValue);
 constexpr DbId::value_type kSomeInvalidValue = -123;
 static_assert(DbId::kInvalidValue != kSomeInvalidValue);
 
-constexpr DbId kSomeInvalidId = DbId{DbId::NoAssert{}, kSomeInvalidValue};
+constexpr DbId kSomeInvalidId = DbId::fromValueUnchecked(kSomeInvalidValue);
 
 TEST_F(DbIdTest, fromInvalidValue) {
     EXPECT_FALSE(DbId{}.isValid());

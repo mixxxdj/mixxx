@@ -35,34 +35,56 @@ class DbId {
         return value >= kMinValue;
     }
 
-    /// Type tag for overloaded constructor that doesn't assert
-    struct NoAssert {};
 
     constexpr DbId()
             : m_value(kInvalidValue) {
     }
-    constexpr DbId(NoAssert, value_type value)
-            : m_value(value) {
+    explicit DbId(QVariant variant)
+            : DbId(NoAssert{}, valueOf(std::move(variant))) {
     }
+
+    /// Explicit checked conversion from inner value
+    ///
+    /// Creates an instance from the provided inner value. The value
+    /// might be either valid or invalid. Triggers a debug assertion
+    /// if an invalid value doesn't equal the predefined constant.
     explicit DbId(value_type value)
             : DbId(NoAssert{}, value) {
         DEBUG_ASSERT(isValid() || m_value == kInvalidValue);
     }
-    explicit DbId(QVariant variant)
-            : DbId(NoAssert{}, valueOf(std::move(variant))) {
+
+    /// Explicit unchecked conversion from inner value
+    ///
+    /// Creates an instance with the provided inner value without
+    /// any consistency checks that could trigger an assertion.
+    static constexpr DbId fromValueUnchecked(value_type value) {
+        return DbId(NoAssert{}, value);
     }
 
     constexpr bool isValid() const {
         return isValidValue(m_value);
     }
 
+    /// Explicit unchecked conversion into the inner value
+    ///
+    /// Returns the inner value, either valid or invalid.
     constexpr value_type valueMaybeInvalid() const {
         return m_value;
     }
+
+    /// Explicit checked conversion into the inner value
+    ///
+    /// Returns the inner value. Triggers a debug assertion when
+    /// invoked on invalid instances.
     value_type value() const {
         DEBUG_ASSERT(isValid());
         return m_value;
     }
+
+    /// Implicit checked conversion of the inner value
+    ///
+    /// Returns the inner value. Triggers a debug assertion when
+    /// invoked on invalid instances.
     operator value_type() const {
         return value();
     }
@@ -91,6 +113,12 @@ class DbId {
     }
 
   private:
+    /// Type tag for overloaded constructor that doesn't assert
+    struct NoAssert {};
+    constexpr DbId(NoAssert, value_type value)
+            : m_value(value) {
+    }
+
     static value_type valueOf(QVariant variant);
 
     value_type m_value;
