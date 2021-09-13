@@ -1,0 +1,88 @@
+{
+  "name": "mixxx",
+  "version": "2.4.0",
+  "description": "Mixxx is free cross platform DJ software",
+  "homepage": "https://mixxx.org/",
+  "license": "GPL-2.0-or-later",
+  "supports": "!uwp",
+  "features": {
+    "qt5": {
+      "description": "Build with Qt5",
+      "dependencies": [
+        "qt5-base",
+        "qt5-declarative",
+        "qt5-svg",
+        "qt5-translations",
+        {
+            "name": "qt5-winextras",
+            "platform": "windows"
+        },
+        {
+            "name": "angle",
+            "platform": "windows"
+        },
+        {
+            "name": "qt5-macextras",
+            "platform": "osx"
+        },
+        "qtkeychain-qt5"
+      ]
+    },
+    "qt6": {
+      "description": "Build with Qt6",
+      "dependencies": [
+        "qtbase",
+        "qtdeclarative",
+        "qtsvg",
+        "qttranslations",
+        "qtkeychain",
+        "qt5compat"
+      ]
+    }
+  },
+  "dependencies": [
+    "chromaprint",
+    "fdk-aac",
+    "ffmpeg",
+    "fftw3",
+    "hidapi",
+    {
+        "name": "hss1394",
+        "platform": "windows | osx"
+    },
+    "libdjinterop",
+    "libebur128",
+    "libflac",
+    "libkeyfinder",
+    {
+        "name": "libmad",
+        "platform": "windows"
+    },
+    {
+        "name": "libid3tag",
+        "platform": "windows"
+    },
+    "libmodplug",
+    "libogg",
+    "libopusenc",
+    "libshout",
+    "libsndfile",
+    "libusb",
+    "libvorbis",
+    "lilv",
+    "mp3lame",
+    "opus",
+    "opusfile",
+    {
+      "name": "portaudio",
+      "features": [ "asio", "jack" ]
+    },
+    "portmidi",
+    "protobuf",
+    "pthreads",
+    "rubberband",
+    "soundtouch",
+    "taglib",
+    "wavpack"
+  ]
+}
