@@ -42,11 +42,13 @@
     "no-unused-vars": ["error", {
         "argsIgnorePattern": "^_"
     }],
+    "no-var": "warn",
     "object-curly-newline" : ["warn", {
         "consistent": true,
         "multiline": true
     }],
     "object-curly-spacing" : "warn",
+    "prefer-const": "warn",
     "prefer-regex-literals": "warn",
     "quotes": ["warn", "double"],
     "require-atomic-updates": "error",
@@ -60,7 +62,6 @@
   "globals": {
     "console": "writable",
     "svg": "writable",
-    "print": "readonly",
     "HIDController": "writable",
     "HIDDebug": "writable",
     "HIDPacket": "writable",
