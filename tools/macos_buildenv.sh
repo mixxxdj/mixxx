@@ -51,9 +51,10 @@ case "$1" in
                     exit 1
                 fi
                 echo ""
-                echo "Extracting ${BUILDENV_NAME}.tar.gz..."
+                echo "Extracting ${BUILDENV_NAME}.zip..."
                 unzip "${BUILDENV_PATH}.zip" -d "${BUILDENV_BASEPATH}" && \
-                echo "Successfully extracted ${BUILDENV_NAME}.tar.gz"
+                echo "Successfully extracted ${BUILDENV_NAME}.zip" && \
+                rm "${BUILDENV_PATH}.zip"
             else
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, run the command below to download it."
                 echo "source ${THIS_SCRIPT_NAME} setup"
