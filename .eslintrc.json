@@ -10,13 +10,16 @@
     "brace-style": ["warn", "1tbs", {
         "allowSingleLine": true
     }],
+    "curly": "warn",
     "camelcase": "warn",
     "comma-spacing": "warn",
     "computed-property-spacing" : ["warn", "never", {
         "enforceForClassMembers": true
     }],
     "dot-location": "warn",
+    "dot-notation": "warn",
     "eqeqeq": ["error", "always"],
+    "func-call-spacing": "warn",
     "func-style": ["error", "expression", {
         "allowArrowFunctions": true
     }],
@@ -24,6 +27,11 @@
     "key-spacing": "warn",
     "keyword-spacing": "warn",
     "linebreak-style": ["warn", "unix"],
+    "no-constructor-return": "warn",
+    "no-extra-bind": "warn",
+    "no-sequences": "warn",
+    "no-useless-call": "warn",
+    "no-useless-return": "warn",
     "no-trailing-spaces": "warn",
     "no-unneeded-ternary": ["warn", {
         "defaultAssignment": false
@@ -36,13 +44,15 @@
         "multiline": true
     }],
     "object-curly-spacing" : "warn",
+    "prefer-regex-literals": "warn",
     "quotes": ["warn", "double"],
     "require-atomic-updates": "error",
     "semi": "warn",
     "semi-spacing": "warn",
     "space-before-blocks": ["warn", "always"],
     "space-before-function-paren": ["warn", "never"],
-    "space-in-parens": "warn"
+    "space-in-parens": "warn",
+    "yoda": "warn"
   },
   "globals": {
     "console": "writable",
