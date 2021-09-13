@@ -6,6 +6,9 @@
     /** @private */
     var components = global.components;
 
+    /** @private */
+    var engine = global.engine;
+
     /**
      * Contains functions to print a message to the log.
      * `debug` output is suppressed unless the caller owns a truthy property `debug`.
@@ -105,12 +108,13 @@
         components.Button.call(this, options);
     };
     ShiftButton.prototype = deriveFrom(components.Button, {
-        input: function(_channel, _control, value, _status, _group) {
+        inSetValue: function(value) {
             if (value) {
                 this.target.shift();
             } else {
                 this.target.unshift();
             }
+            components.Button.prototype.inSetValue.call(this, value);
         },
     });
 
@@ -289,6 +293,14 @@
      * Turning the encoder to the right means "forwards" and returns 1;
      * turning it to the left means "backwards" and returns -1.
      *
+     * This component supports an optional relative mode as an alternative to
+     * dealing with soft takeover. To use it, set the `relative` property to
+     * `true` in the options object for the constructor. In this mode, moving
+     * the Pot will adjust the Mixxx Control relative to its current value.
+     * Holding shift and moving the encoder will not affect the Mixxx Control.
+     * This allows the user to continue adjusting the Mixxx Control after
+     * the encoder has reached the end of its physical range.
+     *
      * @constructor
      * @extends {components.Encoder}
      * @param {object} options Options object
@@ -302,14 +314,21 @@
         min: 0,
         inValueScale: function(value) {
             var direction = 0;
-            if (value > this.previousValue || value === this.max) {
-                direction = 1;
-            } else if (value < this.previousValue || value === this.min) {
-                direction = -1;
+            if (!(this.relative && this.isShifted)) {
+                if (value > this.previousValue || value === this.max) {
+                    direction = 1;
+                } else if (value < this.previousValue || value === this.min) {
+                    direction = -1;
+                }
+                this.previousValue = value;
             }
-            this.previousValue = value;
-
             return direction;
+        },
+        shift: function() {
+            this.isShifted = true;
+        },
+        unshift: function() {
+            this.isShifted = false;
         },
     });
 
@@ -332,6 +351,22 @@
             /* 0..1 => 0..127 */
             return convertToMidiValue.call(this, normalizedValue);
         },
+    });
+
+    /**
+     * A pot for a value range of [-bound..0..+bound].
+     *
+     * @constructor
+     * @extends {components.Pot}
+     * @param {object} options Options object
+     * @param {number} options.bound A positive integer defining the range bounds
+     * @public
+     */
+    var RangeAwarePot = function(options) {
+        components.Pot.call(this, options);
+    };
+    RangeAwarePot.prototype = deriveFrom(components.Pot, {
+        outValueScale: RangeAwareEncoder.prototype.outValueScale
     });
 
     /**
@@ -451,7 +486,7 @@
         inValueScale: function(value) {
             var direction = DirectionEncoder.prototype.inValueScale.call(this, value);
             var beats = this.sizeControl
-                ? global.engine.getValue(this.group, this.sizeControl)
+                ? engine.getValue(this.group, this.sizeControl)
                 : this.size;
             return direction * beats;
         },
@@ -467,13 +502,13 @@
      */
     var BackLoopButton = function(options) {
         options = options || {};
-        options.outKey = options.outKey || "loop_enabled";
+        options.key = options.key || "loop_enabled";
         components.Button.call(this, options);
     };
     BackLoopButton.prototype = deriveFrom(components.Button, {
-        input: function(_channel, _control, value, _status, group) {
-            var engine = global.engine;
+        inSetValue: function(value) {
             var script = global.script;
+            var group = this.group;
             if (value) {
                 var loopSize = engine.getValue(group, "beatloop_size");
                 var beatjumpSize = engine.getValue(group, "beatjump_size");
@@ -997,11 +1032,12 @@
      *     |     |     +- options: Additional options for the component (object, required)
      *     |     |                 Example: {midi: [0xB0, 0x43], key: "reverse"}
      *     |     +- equalizerUnit: Equalizer unit definition (optional)
-     *     |        +- components: An object of component definitions for the unit.
-     *     |        |              Each definition is a key-value pair for a component of
-     *     |        |              `EqualizerUnit` where `key` is the name of
-     *     |        |              the component and `value` is the MIDI address.
-     *     |        |              Example: `super1: [0xB0, 0x29]`
+     *     |        +- midi: An object of component definitions for the unit.
+     *     |        |        Each definition is a key-value pair for a component of `EqualizerUnit`
+     *     |        |        where `key` is the name of the component and `value` is the MIDI
+     *     |        |        address. Examples:
+     *     |        |          `super1: [0xB0, 0x29]`
+     *     |        |          `parameterKnobs: {1: [0xB0, 0x06], 2: [0xB0, 0x05], 3: [0xB0, 0x04]}`
      *     |        +- feedback: Enable controller feedback (boolean, optional)
      *     |        |            When set to `true`, values of the components in this unit are sent
      *     |        |            to the hardware controller on changes. The address of the MIDI
@@ -1017,11 +1053,17 @@
      *     +- effectUnits: An array of effect unit definitions (may be empty or omitted)
      *     |  +- effectUnit
      *     |     +- unitNumbers: As defined by `components.EffectUnit`.
-     *     |     +- components: As described for equalizer unit using `components.EffectUnit`
-     *     |     |              instead of `EqualizerUnit`.
-     *     |     |              Example: `effectFocusButton: [0xB0, 0x15]`
+     *     |     +- midi: As described for equalizer unit using `components.EffectUnit` instead of
+     *     |     |        `EqualizerUnit`. Examples:
+     *     |     |          `effectFocusButton: [0xB0, 0x15]`
+     *     |     |          `knobs: {1: [0xB0, 0x26], 2: [0xB0, 0x25], 3: [0xB0, 0x24]}`
      *     |     +- feedback: As described for equalizer unit
      *     |     +- output: As described for equalizer unit
+     *     |     +- sendShiftedFor: Type of components that send shifted MIDI messages (optional)
+     *     |                        When set, all components of this type within this effect unit
+     *     |                        are configured to send shifted MIDI messages
+     *     |                        (`sendShifted: true`).
+     *     |                        Example: `sendShiftedFor: c.Button`
      *     |
      *     +- containers: An array of component container definitions (may be empty or omitted)
      *        +- componentContainer
@@ -1051,14 +1093,6 @@
     GenericMidiController.prototype = deriveFrom(components.ComponentContainer, {
 
         /**
-         * Contains all decks and effect units so that a (un)shift operation
-         * is delegated to the decks, effect units and their children.
-         *
-         * @private
-         */
-        componentContainers: [],
-
-        /**
          * Initialize the controller mapping.
          * This function is called by Mixxx on startup.
          *
@@ -1073,6 +1107,13 @@
             if (typeof this.config.init === "function") {
                 this.config.init(controllerId, debug);
             }
+
+            /*
+            * Contains all decks and effect units so that a (un)shift operation
+            * is delegated to the decks, effect units and their children.
+            */
+            this.componentContainers = [];
+
             this.layerManager = this.createLayerManager(
                 this.componentContainers,
                 this.config.decks || [],
@@ -1307,6 +1348,19 @@
                 new components.EffectUnit(effectUnitDefinition.unitNumbers, true),
                 componentStorage,
                 ["onFocusChange", "shift", "unshift"]);
+            var shiftType = effectUnitDefinition.sendShiftedFor;
+            /*
+             * `shiftType` is expected to be a JS component (e.g. `c.Button` or `c.Component`)
+             * which in terms of JS means that it is of type `function`. If something else is given
+             * (e.g. a string), `instanceof` will cause a runtime error, so check to avoid this.
+             */
+            if (typeof shiftType === "function") {
+                effectUnit.forEachComponent(function(component) {
+                    if (component instanceof shiftType) {
+                        component.sendShifted = true;
+                    }
+                });
+            }
             effectUnit.init();
             return effectUnit;
         },
@@ -1386,6 +1440,7 @@
     exports.BlinkingButton = BlinkingButton;
     exports.DirectionEncoder = DirectionEncoder;
     exports.RangeAwareEncoder = RangeAwareEncoder;
+    exports.RangeAwarePot = RangeAwarePot;
     exports.EnumToggleButton = EnumToggleButton;
     exports.EnumEncoder = EnumEncoder;
     exports.LoopEncoder = LoopEncoder;
