@@ -50,7 +50,7 @@ class DbId {
     /// Creates an instance from the provided inner value. The value
     /// might be either valid or invalid. Triggers a debug assertion
     /// if an invalid value doesn't equal the predefined constant.
-    explicit DbId(value_type value)
+    explicit constexpr DbId(value_type value)
             : DbId(NoAssert{}, value) {
         DEBUG_ASSERT(isValid() || m_value == kInvalidValue);
     }
@@ -80,7 +80,7 @@ class DbId {
     ///
     /// Returns the inner value. Triggers a debug assertion when
     /// invoked on invalid instances.
-    value_type value() const {
+    constexpr value_type value() const {
         DEBUG_ASSERT(isValid());
         return m_value;
     }
@@ -89,7 +89,7 @@ class DbId {
     ///
     /// Returns the inner value. Triggers a debug assertion when
     /// invoked on invalid instances.
-    operator value_type() const {
+    constexpr operator value_type() const {
         return value();
     }
 
