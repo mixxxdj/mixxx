@@ -64,19 +64,10 @@ case "$1" in
         fi
 
         export VCPKG_ROOT="${BUILDENV_PATH}"
-        export MACOSX_DEPLOYMENT_TARGET=10.12 # Minimum required by Qt 5.12
-        export VCPKG_OVERLAY_TRIPLETS="${BUILDENV_PATH}/overlay/triplets"
-        export VCPKG_DEFAULT_TRIPLET=x64-osx
-        export X_VCPKG_APPLOCAL_DEPS_INSTALL=ON
         export CMAKE_GENERATOR=Ninja
 
-
         echo_exported_variables() {
-            echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
             echo "VCPKG_ROOT=${VCPKG_ROOT}"
-            echo "VCPKG_OVERLAY_TRIPLETS=${VCPKG_OVERLAY_TRIPLETS}"
-            echo "VCPKG_DEFAULT_TRIPLET=${VCPKG_DEFAULT_TRIPLET}"
-            echo "X_VCPKG_APPLOCAL_DEPS_INSTALL=${X_VCPKG_APPLOCAL_DEPS_INSTALL}"
             echo "CMAKE_GENERATOR=${CMAKE_GENERATOR}"
         }
 

@@ -87,20 +87,14 @@ EXIT /B 0
     ECHO ^Build environment path: !BUILDENV_PATH!
 
     SET "VCPKG_ROOT=!BUILDENV_PATH!"
-    SET "VCPKG_DEFAULT_TRIPLET=x64-windows"
-    SET "X_VCPKG_APPLOCAL_DEPS_INSTALL=ON"
     SET "CMAKE_GENERATOR=Ninja"
 
     ECHO ^Environment Variables:
     ECHO ^- VCPKG_ROOT='!VCPKG_ROOT!'
-    ECHO ^- VCPKG_DEFAULT_TRIPLET='!VCPKG_DEFAULT_TRIPLET!'
-    ECHO ^- X_VCPKG_APPLOCAL_DEPS_INSTALL='!X_VCPKG_APPLOCAL_DEPS_INSTALL!'
     ECHO ^- CMAKE_GENERATOR='!CMAKE_GENERATOR!'
 
     IF DEFINED GITHUB_ENV (
         ECHO VCPKG_ROOT=!VCPKG_ROOT!>>!GITHUB_ENV!
-        ECHO VCPKG_DEFAULT_TRIPLET=!VCPKG_DEFAULT_TRIPLET!>>!GITHUB_ENV!
-        ECHO X_VCPKG_APPLOCAL_DEPS_INSTALL=!X_VCPKG_APPLOCAL_DEPS_INSTALL!>>!GITHUB_ENV!
         ECHO CMAKE_GENERATOR=!CMAKE_GENERATOR!>>!GITHUB_ENV!
     ) ELSE (
         ECHO ^Generating "CMakeSettings.json"...
@@ -202,12 +196,10 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>%CMakeSettings% echo       "generator": "Ninja",
     >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
     >>%CMakeSettings% echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
-    >>%CMakeSettings% echo       "cmakeToolchain": "!BUILDENV_PATH:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
     >>%CMakeSettings% echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>%CMakeSettings% echo       "variables": [
     SET variableElementTermination=,
-    CALL :AddCMakeVar2CMakeSettings_JSON "X_VCPKG_APPLOCAL_DEPS_INSTALL"      "BOOL"   "True"
-    CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_TARGET_TRIPLET"               "STRING" "x64-windows"
+    CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_ROOT"                         "STRING"   "!VCPKG_ROOT:\=\\!"
     CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "False"
