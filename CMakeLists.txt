@@ -37,6 +37,8 @@ if(DEFINED VCPKG_ROOT)
     set(VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/ports")
     if(APPLE)
         list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/osx")
+    elseif(WIN32)
+        list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/windows")
     endif()
   endif()
 
