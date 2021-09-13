@@ -75,6 +75,13 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
   endif()
 endif()
 
+if(APPLE)
+  # Minimum macOS version supported by Qt 5.12
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+  # Needed for deployment target < 10.14
+  add_compile_options(-fno-aligned-allocation)
+endif()
+
 project(mixxx VERSION 2.4.0)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha-pre") # set to "alpha-pre" "beta" or ""
@@ -110,16 +117,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(LLVM_CLANG true)
 else()
   set(LLVM_CLANG false)
-endif()
-
-if(APPLE)
-  if(NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12)
-  endif()
-
-  if(CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 10.14)
-    add_compile_options(-fno-aligned-allocation)
-  endif()
 endif()
 
 # CMake implicitly sets the variable MSVC to true for Microsoft
