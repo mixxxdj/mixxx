@@ -56,7 +56,7 @@ class DbId {
         return isValidValue(m_value);
     }
 
-    constexpr value_type valueNoAssert() const {
+    constexpr value_type valueMaybeInvalid() const {
         return m_value;
     }
     value_type value() const {
@@ -97,11 +97,11 @@ class DbId {
 };
 
 inline constexpr bool operator==(const DbId& lhs, const DbId& rhs) {
-    return lhs.valueNoAssert() == rhs.valueNoAssert();
+    return lhs.valueMaybeInvalid() == rhs.valueMaybeInvalid();
 }
 
 inline constexpr bool operator!=(const DbId& lhs, const DbId& rhs) {
-    return lhs.valueNoAssert() != rhs.valueNoAssert();
+    return lhs.valueMaybeInvalid() != rhs.valueMaybeInvalid();
 }
 
 inline bool operator<(const DbId& lhs, const DbId& rhs) {
@@ -121,17 +121,17 @@ inline bool operator>=(const DbId& lhs, const DbId& rhs) {
 }
 
 inline std::ostream& operator<<(std::ostream& os, const DbId& dbId) {
-    return os << dbId.valueNoAssert();
+    return os << dbId.valueMaybeInvalid();
 }
 
 inline QDebug operator<<(QDebug debug, const DbId& dbId) {
-    return debug << dbId.valueNoAssert();
+    return debug << dbId.valueMaybeInvalid();
 }
 
 inline uint qHash(
         const DbId& dbId,
         uint seed = 0) {
-    return qHash(dbId.valueNoAssert(), seed);
+    return qHash(dbId.valueMaybeInvalid(), seed);
 }
 
 Q_DECLARE_TYPEINFO(DbId, Q_MOVABLE_TYPE);

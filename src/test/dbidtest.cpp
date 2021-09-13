@@ -27,10 +27,10 @@ TEST_F(DbIdTest, fromValidValue) {
 }
 
 TEST_F(DbIdTest, toValue) {
-    EXPECT_EQ(DbId::kInvalidValue, DbId{}.valueNoAssert());
+    EXPECT_EQ(DbId::kInvalidValue, DbId{}.valueMaybeInvalid());
     EXPECT_EQ(DbId::kMinValue, DbId{DbId::kMinValue}.value());
     EXPECT_EQ(kSomeValidValue, DbId{kSomeValidValue}.value());
-    EXPECT_EQ(kSomeInvalidValue, kSomeInvalidId.valueNoAssert());
+    EXPECT_EQ(kSomeInvalidValue, kSomeInvalidId.valueMaybeInvalid());
 }
 
 TEST_F(DbIdTest, fromInvalidVariant) {
