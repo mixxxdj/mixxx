@@ -71,7 +71,7 @@ class ReadAheadManagerTest : public MixxxTest {
               m_beatNextCO(ConfigKey(kGroup, "beat_next")),
               m_beatPrevCO(ConfigKey(kGroup, "beat_prev")),
               m_playCO(ConfigKey(kGroup, "play")),
-              m_snapCO(ConfigKey(kGroup, "snap")),
+              m_snapCO(ConfigKey("[Master]", "snap")),
               m_quantizeCO(ConfigKey(kGroup, "quantize")),
               m_slipEnabledCO(ConfigKey(kGroup, "slip_enabled")),
               m_trackSamplesCO(ConfigKey(kGroup, "track_samples")),

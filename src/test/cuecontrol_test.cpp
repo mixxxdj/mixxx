@@ -6,7 +6,7 @@ class CueControlTest : public BaseSignalPathTest {
     void SetUp() override {
         BaseSignalPathTest::SetUp();
 
-        m_pSnapEnabled = std::make_unique<ControlProxy>(m_sGroup1, "snap");
+        m_pSnapEnabled = std::make_unique<ControlProxy>(m_sMasterGroup, "snap");
         m_pCuePoint = std::make_unique<ControlProxy>(m_sGroup1, "cue_point");
         m_pIntroStartPosition = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_position");
         m_pIntroStartEnabled = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_enabled");

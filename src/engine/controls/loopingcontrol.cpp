@@ -118,7 +118,7 @@ LoopingControl::LoopingControl(const QString& group,
             this, &LoopingControl::slotLoopEndPos,
             Qt::DirectConnection);
 
-    m_pSnapEnabled = ControlObject::getControl(ConfigKey(group, "snap"));
+    m_pSnapEnabled = ControlObject::getControl(ConfigKey("[Master]", "snap"));
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
     m_pNextBeat = ControlObject::getControl(ConfigKey(group, "beat_next"));
     m_pPreviousBeat = ControlObject::getControl(ConfigKey(group, "beat_prev"));

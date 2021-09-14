@@ -63,7 +63,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey("[Master]", "num_microphones"), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
                   ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
+          m_pCOSnapEnabled(new ControlPushButton(ConfigKey("[Master]", "snap"), true)) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
     m_pCONumSamplers->connectValueChangeRequest(this,
@@ -74,6 +75,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
             &PlayerManager::slotChangeNumMicrophones, Qt::DirectConnection);
     m_pCONumAuxiliaries->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumAuxiliaries, Qt::DirectConnection);
+
+    m_pCOSnapEnabled->setButtonMode(ControlPushButton::TOGGLE);
 
     // This is parented to the PlayerManager so does not need to be deleted
     m_pSamplerBank = new SamplerBank(this);
@@ -95,6 +98,8 @@ PlayerManager::~PlayerManager() {
     m_samplers.clear();
     m_microphones.clear();
     m_auxiliaries.clear();
+
+    delete m_pCOSnapEnabled;
 
     delete m_pCOPNumDecks.fetchAndStoreAcquire(nullptr);
     delete m_pCOPNumSamplers.fetchAndStoreAcquire(nullptr);

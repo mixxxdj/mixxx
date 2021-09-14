@@ -24,7 +24,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
   protected:
     void SetUp() override {
         MockedEngineBackendTest::SetUp();
-        m_pSnapEnabled = std::make_unique<ControlProxy>(m_sGroup1, "snap");
+        m_pSnapEnabled = std::make_unique<ControlProxy>(m_sMasterGroup, "snap");
         m_pSnapEnabled->set(1.0);
         m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
         m_pQuantizeEnabled->set(1.0);

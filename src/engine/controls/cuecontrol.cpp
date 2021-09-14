@@ -96,7 +96,7 @@ CueControl::CueControl(const QString& group,
 
     m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
 
-    m_pSnapEnabled = ControlObject::getControl(ConfigKey(group, "snap"));
+    m_pSnapEnabled = ControlObject::getControl(ConfigKey("[Master]", "snap"));
     connect(m_pSnapEnabled,
             &ControlObject::valueChanged,
             this,
