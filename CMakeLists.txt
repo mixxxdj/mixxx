@@ -2946,7 +2946,7 @@ if(APPLE AND MACOS_BUNDLE)
     endif()
 
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
-    set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib;${Qt5Widgets_DIR}/../..")
+    set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
     set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/entitlements.plist")
 
     configure_file(cmake/modules/BundleInstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake" @ONLY)
