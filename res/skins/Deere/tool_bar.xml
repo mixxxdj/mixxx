@@ -217,6 +217,18 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
+
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">snap</SetVariable>
+            <SetVariable name="ObjectName">ToolbarButton</SetVariable>
+            <SetVariable name="MinimumSize">45,22</SetVariable>
+            <SetVariable name="MaximumSize">45,22</SetVariable>
+            <SetVariable name="SizePolicy">f,f</SetVariable>
+            <SetVariable name="state_0_text">SNAP</SetVariable>
+            <SetVariable name="state_1_text">SNAP</SetVariable>
+            <SetVariable name="left_connection_control">[Master],snap</SetVariable>
+          </Template>
+
           <WidgetGroup>
             <ObjectName>NotificationsContainer</ObjectName>
             <Layout>horizontal</Layout>
