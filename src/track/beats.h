@@ -3,6 +3,7 @@
 #include <QByteArray>
 #include <QList>
 #include <QString>
+#include <QVector>
 #include <memory>
 
 #include "audio/frame.h"
@@ -35,6 +36,17 @@ class Beats {
             const QString& beatsVersion,
             const QString& beatsSubVersion,
             const QByteArray& beatsSerialized);
+
+    static mixxx::BeatsPointer fromConstTempo(
+            audio::SampleRate sampleRate,
+            audio::FramePos position,
+            Bpm bpm,
+            const QString& subVersion = QString());
+
+    static mixxx::BeatsPointer fromBeatPositions(
+            audio::SampleRate sampleRate,
+            const QVector<audio::FramePos>& beatPositions,
+            const QString& subVersion = QString());
 
     enum class BpmScale {
         Double,
