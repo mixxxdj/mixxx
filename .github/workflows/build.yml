@@ -139,6 +139,11 @@ jobs:
       if: runner.os == 'Windows'
       uses: seanmiddleditch/gha-setup-vsdevenv@v3
 
+    - name: "[macOS] install ccache and make"
+      if: runner.os == 'macOS'
+      run: |
+        brew install ccache ninja
+
     - name: "[macOS/Windows] Get build environment name"
       if: runner.os != 'Linux'
       id: buildenv_name
