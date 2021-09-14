@@ -247,6 +247,18 @@ Description:
 
           <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
+          <!-- Snap button -->
+          <Template src="skin:../Tango/controls/button_2state.xml">
+            <SetVariable name="TooltipId">snap</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">40f,20f</SetVariable>
+            <SetVariable name="state_0_text">SNAP</SetVariable>
+            <SetVariable name="state_1_text">SNAP</SetVariable>
+            <SetVariable name="ConfigKey">[Master],snap</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+
           <WidgetGroup><!-- Recording button & recording duration label -->
             <ObjectName>RecBox</ObjectName>
             <Layout>stacked</Layout>
