@@ -56,6 +56,7 @@ Build-Depends: debhelper (>= 11),
                libmp3lame-dev,
                libebur128-dev,
                libwavpack-dev,
+               libudev-dev,
 # Note: libdjinterop is available within the Mixxx PPA
                libdjinterop-dev,
 # for running mixxx-test
