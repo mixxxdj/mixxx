@@ -853,6 +853,7 @@ TrackPointer TrackDAO::addTracksAddFile(
     // Initially (re-)import the metadata for the newly created track
     // from the file.
     SoundSourceProxy(pTrack).updateTrackFromSource(
+            m_pConfig,
             SoundSourceProxy::UpdateTrackFromSourceMode::Once);
     if (!pTrack->checkSourceSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
@@ -1504,7 +1505,9 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             updateTrackFromSourceMode =
                     SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
         }
-        SoundSourceProxy(pTrack).updateTrackFromSource(updateTrackFromSourceMode);
+        SoundSourceProxy(pTrack).updateTrackFromSource(
+                m_pConfig,
+                updateTrackFromSourceMode);
         if (kLogger.debugEnabled() && pTrack->isDirty()) {
             kLogger.debug()
                     << "Updated track metadata from file tags:"
