@@ -129,6 +129,7 @@ inline bool operator!=(const ConfigValueKbd& lhs, const ConfigValueKbd& rhs) {
 template <class ValueType> class ConfigObject {
   public:
     ConfigObject(const QString& file);
+    ConfigObject(const QString& file, const QString& resourcePath, const QString& settingsPath);
     ConfigObject(const QDomNode& node);
     ~ConfigObject();
 

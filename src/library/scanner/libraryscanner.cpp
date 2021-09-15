@@ -44,6 +44,11 @@ void cleanUpDatabase(const QSqlDatabase& database) {
             << "Cleaning up database...";
     PerformanceTimer timer;
     timer.start();
+    // FIXME: The DELETE statement deletes more directory entries than necessary.
+    // The subselect only covers directories that contain track files. Hashes
+    // of parent directories that do not contain any track files will be deleted
+    // and then re-created during the next rescan. This should not really matter
+    // since the re-calculation of the hash is always required.
     const auto sqlStmt = QStringLiteral(
             "DELETE FROM LibraryHashes WHERE hash<>:unequalHash "
             "AND directory_path NOT IN "
