@@ -27,9 +27,10 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
         return Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
     }
 
-    static TrackPointer newTestTrackParsed() {
+    TrackPointer newTestTrackParsed() {
         auto pTrack = newTestTrack();
         EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+                config(),
                 SoundSourceProxy::UpdateTrackFromSourceMode::Once));
         EXPECT_TRUE(pTrack->checkSourceSynchronized());
         EXPECT_TRUE(hasTrackMetadata(pTrack));
@@ -39,7 +40,7 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
         return pTrack;
     }
 
-    static TrackPointer newTestTrackParsedModified() {
+    TrackPointer newTestTrackParsedModified() {
         auto pTrack = newTestTrackParsed();
         pTrack->setArtist(pTrack->getArtist() + pTrack->getArtist());
         auto coverInfo = pTrack->getCoverInfo();
@@ -61,6 +62,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanOnce) {
 
     // Re-update from source should have no effect
     ASSERT_FALSE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Once));
 
     const auto trackMetadataAfter = pTrack->getMetadata();
@@ -81,6 +83,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainSkipCover) {
     const auto coverInfoBefore = pTrack->getCoverInfo();
 
     EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Always));
 
     const auto trackMetadataAfter = pTrack->getMetadata();
@@ -105,6 +108,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainUpdateCover) {
     const auto coverInfoBefore = pTrack->getCoverInfo();
 
     EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Always));
 
     const auto trackMetadataAfter = pTrack->getMetadata();
@@ -124,6 +128,7 @@ TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     const auto coverInfoBefore = pTrack->getCoverInfo();
 
     EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Always));
 
     const auto trackMetadataAfter = pTrack->getMetadata();

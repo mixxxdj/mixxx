@@ -149,6 +149,7 @@ class SoundSourceProxy {
     ///
     /// Returns true if the track has been modified and false otherwise.
     bool updateTrackFromSource(
+            const UserSettingsPointer& pConfig,
             UpdateTrackFromSourceMode mode);
 
     /// Opening the audio source through the proxy will update the

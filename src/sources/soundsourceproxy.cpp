@@ -4,6 +4,7 @@
 #include <QRegularExpression>
 #include <QStandardPaths>
 
+#include "library/library_prefs.h"
 #include "sources/audiosourcetrackproxy.h"
 
 #ifdef __MAD__
@@ -519,7 +520,7 @@ SoundSourceProxy::importTrackMetadataAndCoverImage(
 
 namespace {
 
-inline bool shouldUpdateTrackMetadatafromSource(
+inline bool shouldUpdateTrackMetadataFromSource(
         SoundSourceProxy::UpdateTrackFromSourceMode mode,
         mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus) {
     return mode == SoundSourceProxy::UpdateTrackFromSourceMode::Always ||
@@ -529,9 +530,23 @@ inline bool shouldUpdateTrackMetadatafromSource(
                     sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Void);
 }
 
+inline bool shouldImportSeratoTagsFromSource(
+        const UserSettingsPointer& pConfig,
+        mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus) {
+    // Only reimport track metadata from Serato markers if export of
+    // Serato markers is enabled. This should ensure that track color,
+    // cue points, and loops do not get lost after they have been
+    // modified in Mixxx.
+    // A reimport of metadata happens if
+    // sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Outdated
+    return sourceSyncStatus != mixxx::TrackRecord::SourceSyncStatus::Outdated ||
+            pConfig->getValue<bool>(mixxx::library::prefs::kSeratoMetadataExportConfigKey);
+}
+
 } // namespace
 
 bool SoundSourceProxy::updateTrackFromSource(
+        const UserSettingsPointer& pConfig,
         UpdateTrackFromSourceMode mode) {
     DEBUG_ASSERT(m_pTrack);
 
@@ -570,7 +585,7 @@ bool SoundSourceProxy::updateTrackFromSource(
     QImage* pCoverImg = nullptr; // pointer also serves as a flag
 
     const bool updateMetadataFromSource =
-            shouldUpdateTrackMetadatafromSource(mode, sourceSyncStatus);
+            shouldUpdateTrackMetadataFromSource(mode, sourceSyncStatus);
 
     // Decide if cover art needs to be re-imported
     if (updateMetadataFromSource) {
@@ -632,6 +647,12 @@ bool SoundSourceProxy::updateTrackFromSource(
 
     // Full import
     DEBUG_ASSERT(updateMetadataFromSource);
+    if (!shouldImportSeratoTagsFromSource(
+                pConfig,
+                sourceSyncStatus)) {
+        // Reset Serato tags to disable the (re-)import
+        trackMetadata.refTrackInfo().refSeratoTags() = {};
+    }
     if (sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Void) {
         DEBUG_ASSERT(pCoverImg);
         if (kLogger.debugEnabled()) {
