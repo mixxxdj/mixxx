@@ -137,14 +137,17 @@
          <string>Synchronize library track metadata from/to file tags</string>
         </property>
         <property name="toolTip">
-         <string>Automatically write modified track metadata from the library into file tags and re-import metadata from updated file tags into the library</string>
+         <string>Automatically write modified track metadata from the library into file tags and reimport metadata from updated file tags into the library</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QCheckBox" name="checkBox_SeratoMetadataExport">
         <property name="text">
-         <string>Write Serato metadata to files (experimental)</string>
+         <string>Synchronize Serato track metadata from/to file tags (experimental)</string>
+        </property>
+        <property name="toolTip">
+         <string>Keeps track color, beat grid, bpm lock, cue points, and loops synchronized with SERATO_MARKERS/MARKERS2 file tags.&lt;br/&gt;&lt;br/&gt;WARNING: Enabling this option also enables the reimport of Serato metadata after files have been modified outside of Mixxx. On reimport existing metadata in Mixxx is replaced with the metadata found in file tags. Custom metadata not included in file tags like loop colors is lost.</string>
         </property>
        </widget>
       </item>

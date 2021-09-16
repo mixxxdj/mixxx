@@ -539,7 +539,7 @@ inline bool shouldImportSeratoTagsFromSource(
     // A reimport of metadata happens if
     // sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Outdated
     return sourceSyncStatus != mixxx::TrackRecord::SourceSyncStatus::Outdated ||
-            pConfig->getValue<bool>(mixxx::library::prefs::kSeratoMetadataExportConfigKey);
+            pConfig->getValue<bool>(mixxx::library::prefs::kSyncSeratoMetadataConfigKey);
 }
 
 } // namespace

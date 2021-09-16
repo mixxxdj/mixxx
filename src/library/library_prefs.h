@@ -22,9 +22,9 @@ const bool kEditMetadataSelectedClickDefault = false;
 
 extern const ConfigKey kSyncTrackMetadataConfigKey;
 
-extern const ConfigKey kSeratoMetadataExportConfigKey;
+extern const ConfigKey kSyncSeratoMetadataConfigKey;
 
-extern const ConfigKey kSeratoMetadataExportConfigKey;
+extern const ConfigKey kSyncSeratoMetadataConfigKey;
 
 } // namespace prefs
 
