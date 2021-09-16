@@ -2914,37 +2914,6 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" 
 include(CPack)
 
 if(APPLE AND MACOS_BUNDLE)
-    if(NOT Qt_IS_STATIC)
-        macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
-            # Somehow trying to use Qt${QT_VERSION_MAJOR} breaks the get_target_property call below,
-            # so hack around that by creating a temporary variable.
-            set(QT_PLUGIN_TARGET "Qt${QT_VERSION_MAJOR}::${_qt_plugin_name}")
-            get_target_property(_qt_plugin_path "${QT_PLUGIN_TARGET}" LOCATION)
-            if(EXISTS "${_qt_plugin_path}")
-                get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
-                get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
-                get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
-                set(_qt_plugin_dest "${_prefix}/Contents/PlugIns/${_qt_plugin_type}")
-                install(FILES "${_qt_plugin_path}"
-                    DESTINATION "${_qt_plugin_dest}")
-                set(${_qt_plugins_var}
-                    "${${_qt_plugins_var}};\$ENV{DEST_DIR}\${CMAKE_INSTALL_PREFIX}/${_qt_plugin_dest}/${_qt_plugin_file}")
-            else()
-                message(FATAL_ERROR "QT plugin ${_qt_plugin_name} not found")
-            endif()
-        endmacro()
-
-        install_qt5_plugin(QCocoaIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(QMacStylePlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(QOffscreenIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(QMinimalIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(QSvgPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(QJpegPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(QICOPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(QSQLiteDriverPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    endif()
-
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
     set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
     set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/entitlements.plist")
