@@ -81,6 +81,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSam
              << "\nPlugin:" << m_pluginId
              << "\nFixed tempo assumption:" << m_bPreferencesFixedTempo
              << "\nRe-analyze when settings change:" << m_bPreferencesReanalyzeOldBpm
+             << "\nRe-analyze imported from other software:" << m_bPreferencesReanalyzeImported
              << "\nFast analysis:" << m_bPreferencesFastAnalysis;
 
     m_sampleRate = sampleRate;
