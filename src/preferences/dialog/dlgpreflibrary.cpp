@@ -200,7 +200,7 @@ void DlgPrefLibrary::slotUpdate() {
     checkBox_SyncTrackMetadata->setChecked(
             m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
     checkBox_SeratoMetadataExport->setChecked(
-            m_pConfig->getValue(kSeratoMetadataExportConfigKey, false));
+            m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
@@ -368,7 +368,7 @@ void DlgPrefLibrary::slotApply() {
             kSyncTrackMetadataConfigKey,
             ConfigValue{checkBox_SyncTrackMetadata->isChecked()});
     m_pConfig->set(
-            kSeratoMetadataExportConfigKey,
+            kSyncSeratoMetadataConfigKey,
             ConfigValue{checkBox_SeratoMetadataExport->isChecked()});
     m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));

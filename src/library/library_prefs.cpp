@@ -34,7 +34,8 @@ const ConfigKey mixxx::library::prefs::kSyncTrackMetadataConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SyncTrackMetadataExport")};
 
-const ConfigKey mixxx::library::prefs::kSeratoMetadataExportConfigKey =
+// The naming is unchanged for backward compatibility
+const ConfigKey mixxx::library::prefs::kSyncSeratoMetadataConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SeratoMetadataExport")};
