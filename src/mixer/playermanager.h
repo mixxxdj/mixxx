@@ -11,6 +11,7 @@
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
+#include "util/qtmutex.h"
 
 class Auxiliary;
 class BaseTrackPlayer;
@@ -251,11 +252,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void addAuxiliaryInner();
 
     // Used to protect access to PlayerManager state across threads.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    mutable QRecursiveMutex m_mutex;
-#else
-    mutable QMutex m_mutex;
-#endif
+    mutable QT_RECURSIVE_MUTEX m_mutex;
 
     PerformanceTimer m_cloneTimer;
     QString m_lastLoadedPlayer;

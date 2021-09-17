@@ -12,9 +12,7 @@
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-          m_mutex(QMutex::Recursive),
-#endif
+          m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_trackTableBackgroundColorOpacity(kDefaultTrackTableBackgroundColorOpacity),
           m_bShowButtonText(true) {
 }
@@ -35,7 +33,7 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 bool WLibrary::registerView(const QString& name, QWidget* view) {
-    QMutexLocker lock(&m_mutex);
+    const auto lock = lockMutex(&m_mutex);
     if (m_viewMap.contains(name)) {
         return false;
     }
@@ -51,7 +49,7 @@ bool WLibrary::registerView(const QString& name, QWidget* view) {
 }
 
 void WLibrary::switchToView(const QString& name) {
-    QMutexLocker lock(&m_mutex);
+    const auto lock = lockMutex(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
 
     WTrackTableView* ttView = qobject_cast<WTrackTableView*>(
@@ -88,7 +86,7 @@ void WLibrary::switchToView(const QString& name) {
 }
 
 void WLibrary::search(const QString& name) {
-    QMutexLocker lock(&m_mutex);
+    auto lock = lockMutex(&m_mutex);
     QWidget* current = currentWidget();
     LibraryView* view = dynamic_cast<LibraryView*>(current);
     if (view == nullptr) {

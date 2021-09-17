@@ -8,6 +8,7 @@
 #include "controllers/midi/portmidienumerator.h"
 #include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
+#include "util/qtmutex.h"
 #include "util/time.h"
 #include "util/trace.h"
 #ifdef __HSS1394__
@@ -162,7 +163,7 @@ void ControllerManager::slotShutdown() {
 
     // Clear m_enumerators before deleting the enumerators to prevent other code
     // paths from accessing them.
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     QList<ControllerEnumerator*> enumerators = m_enumerators;
     m_enumerators.clear();
     locker.unlock();
@@ -177,7 +178,7 @@ void ControllerManager::slotShutdown() {
 }
 
 void ControllerManager::updateControllerList() {
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     if (m_enumerators.isEmpty()) {
         qWarning() << "updateControllerList called but no enumerators have been added!";
         return;
@@ -199,14 +200,14 @@ void ControllerManager::updateControllerList() {
 }
 
 QList<Controller*> ControllerManager::getControllers() const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     return m_controllers;
 }
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
     qDebug() << "ControllerManager::getControllerList";
 
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
 
@@ -294,7 +295,7 @@ void ControllerManager::slotSetUpDevices() {
 }
 
 void ControllerManager::maybeStartOrStopPolling() {
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
 

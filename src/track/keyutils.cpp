@@ -1,11 +1,13 @@
-#include <QtDebug>
+#include "track/keyutils.h"
+
 #include <QMap>
 #include <QMutexLocker>
 #include <QPair>
 #include <QRegExp>
+#include <QtDebug>
 
-#include "track/keyutils.h"
 #include "util/math.h"
+#include "util/qtmutex.h"
 
 #define MUSIC_FLAT_UTF8  "\xe299ad"
 #define MUSIC_SHARP_UTF8 "\xe299af"
@@ -182,7 +184,7 @@ QString KeyUtils::keyDebugName(ChromaticKey key) {
 
 // static
 void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
-    QMutexLocker locker(&s_notationMutex);
+    const auto locker = lockMutex(&s_notationMutex);
     s_notation = notation;
     s_reverseNotation.clear();
 
@@ -206,7 +208,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
     if (notation == KeyNotation::Custom) {
         // The default value for notation is KeyUtils::KeyNotation::Custom, so this executes when the function is
         // called without a notation specified after KeyUtils::setNotation has set up s_notation.
-        QMutexLocker locker(&s_notationMutex);
+        const auto locker = lockMutex(&s_notationMutex);
         auto it = s_notation.constFind(key);
         if (it != s_notation.constEnd()) {
             return it.value();
@@ -255,7 +257,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
     // Try using the user's custom notation.
     {
-        QMutexLocker locker(&s_notationMutex);
+        const auto locker = lockMutex(&s_notationMutex);
         auto it = s_reverseNotation.constFind(text);
         if (it != s_reverseNotation.constEnd()) {
             return it.value();
