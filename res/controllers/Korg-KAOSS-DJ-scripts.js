@@ -202,6 +202,22 @@ KAOSSDJ.controllerFxTouchUp = function(channel, control, value, status, group) {
     engine.setValue('[EffectRack1_EffectUnit'+deck.deckNumber +']', 'super1', 0);
 };
 
+// use loop-button to deactivate an active loop or initialize a beatloop at the current playback position
+KAOSSDJ.toggle_loop = function(channel, control, value, status, group) {
+	var deck = KAOSSDJ.getDeckByChannel(channel);
+	var loop_enabled = engine.getValue(deck.group, "loop_enabled");
+
+	if(value === ON) {
+		if(loop_enabled) {
+			engine.setValue(deck.group, "reloop_exit", true)
+			engine.setValue(deck.group, "beatloop_activate", false)
+		} else {
+			engine.setValue(deck.group, "beatloop_activate", true)
+		}
+	}
+};
+
+
 // <LOAD A/B>           : load track
 // <SHIFT> + <LOAD A/B> : open/close folder in file-browser
 KAOSSDJ.load_callback = function(channel, control, value, status, group) {
