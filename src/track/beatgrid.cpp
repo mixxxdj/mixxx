@@ -1,6 +1,5 @@
 #include "track/beatgrid.h"
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "track/beatutils.h"

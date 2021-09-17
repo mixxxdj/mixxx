@@ -7,7 +7,6 @@
 
 #include "track/beatmap.h"
 
-#include <QMutexLocker>
 #include <QtDebug>
 #include <QtGlobal>
 #include <algorithm>
