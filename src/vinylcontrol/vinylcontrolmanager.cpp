@@ -1,5 +1,7 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 
+#include <QRegularExpression>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
@@ -11,6 +13,10 @@
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolprocessor.h"
 #include "vinylcontrol/vinylcontrolxwax.h"
+
+namespace {
+const QRegularExpression kChannelRegex(QStringLiteral("\\[Channel([1-9]\\d*)\\]"));
+}
 
 VinylControlManager::VinylControlManager(QObject* pParent,
                                          UserSettingsPointer pConfig,
@@ -123,10 +129,10 @@ bool VinylControlManager::vinylInputConnected(int deck) {
 }
 
 int VinylControlManager::vinylInputFromGroup(const QString& group) {
-    QRegExp channelMatcher("\\[Channel([1-9]\\d*)\\]");
-    if (channelMatcher.exactMatch(group)) {
+    QRegularExpressionMatch channelMatch = kChannelRegex.match(group);
+    if (channelMatch.hasMatch()) {
         bool ok = false;
-        int input = channelMatcher.cap(1).toInt(&ok);
+        int input = channelMatch.captured(1).toInt(&ok);
         return ok ? input - 1 : -1;
     }
     return -1;
