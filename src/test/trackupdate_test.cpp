@@ -27,7 +27,7 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
         return Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
     }
 
-    TrackPointer newTestTrackParsed() {
+    TrackPointer newTestTrackParsed() const {
         auto pTrack = newTestTrack();
         EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
                 config(),
@@ -40,7 +40,7 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
         return pTrack;
     }
 
-    TrackPointer newTestTrackParsedModified() {
+    TrackPointer newTestTrackParsedModified() const {
         auto pTrack = newTestTrackParsed();
         pTrack->setArtist(pTrack->getArtist() + pTrack->getArtist());
         auto coverInfo = pTrack->getCoverInfo();

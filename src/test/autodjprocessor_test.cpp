@@ -168,7 +168,7 @@ class AutoDJProcessorTest : public LibraryTest {
         return TrackId(trackId.value() + 1);
     }
 
-    TrackPointer newTestTrack(TrackId trackId) {
+    TrackPointer newTestTrack(TrackId trackId) const {
         TrackPointer pTrack(
                 Track::newDummy(kTrackLocationTest, trackId));
         EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
