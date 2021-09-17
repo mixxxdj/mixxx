@@ -1,5 +1,5 @@
 // Korg KAOSS DJ controller mapping for Mixxx
-// Seb Dooris, Fayaaz Ahmed, Lee Arromba
+// Seb Dooris, Fayaaz Ahmed, Lee Arromba, Raphael Quast
 
 var KAOSSDJ = {};
 var ON = 0x7F,
@@ -26,6 +26,10 @@ var led = {
     'loopStripM': 0x10,
     'loopStripR': 0x11,
 };
+
+// shift button state variables
+var shift_left_pressed = false
+var shift_right_pressed = false
 
 // initialise decks
 KAOSSDJ.deck = function(deckNumber) {
@@ -155,11 +159,6 @@ KAOSSDJ.scratchMode = function(channel, control, value, status, group) {
     }
 };
 
-KAOSSDJ.browseKnob = function(channel, control, value, status, group) {
-    var nval = (value > 0x40 ? value - 0x80 : value);
-    engine.setValue(group, "SelectTrackKnob", nval);
-};
-
 KAOSSDJ.leftFxSwitch = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
     if(value === ON) {
@@ -202,3 +201,101 @@ KAOSSDJ.controllerFxTouchUp = function(channel, control, value, status, group) {
     engine.setValue('[EffectRack1_EffectUnit'+deck.deckNumber +']', 'mix', 0);
     engine.setValue('[EffectRack1_EffectUnit'+deck.deckNumber +']', 'super1', 0);
 };
+
+// <LOAD A/B>           : load track
+// <SHIFT> + <LOAD A/B> : open/close folder in file-browser
+KAOSSDJ.load_callback = function(channel, control, value, status, group) {
+	var deck = KAOSSDJ.getDeckByChannel(channel);
+	if(value === ON) {
+        if ((shift_left_pressed) || (shift_right_pressed)) {
+			if (deck.deckNumber == 1) {
+				engine.setValue("[Library]", "MoveLeft", true)
+			} else {
+				engine.setValue("[Library]", "MoveRight", true)
+			}
+		} else {
+			engine.setValue(deck.group, "LoadSelectedTrack", true)
+		}
+	}
+};
+
+KAOSSDJ.shift_left_callback = function(channel, control, value, status, group) {
+	if(value === ON) {
+		// if (shift_right_pressed == true) {
+		// 	TODO add functionality if <RIGHT SHIFT> is active while <LEFT SHIFT> is pressed?
+		// }
+		shift_left_pressed = true
+	} else
+		shift_left_pressed = false
+};
+
+KAOSSDJ.shift_right_callback = function(channel, control, value, status, group) {
+	if(value === ON) {
+		// if (shift_left_pressed == true) {
+		// 	TODO add functionality if <LEFT SHIFT> is active while <RIGHT SHIFT> is pressed?
+		// }
+        shift_right_pressed = true
+	} else
+		shift_right_pressed = false
+};
+
+KAOSSDJ.change_focus = function(channel, control, value, status, group) {
+	if(value === ON) {
+        // toggle focus between Playlist and File-Browser
+        engine.setValue("[Library]", "MoveFocusForward", true);
+	}
+};
+
+// <browseKnob>           : browse library up & down
+// <SHIFT> + <browseKnob> : toggle focus between Playlist and File-Browser
+KAOSSDJ.browseKnob = function(channel, control, value, status, group) {
+    var nval = (value > 0x40 ? value - 0x80 : value);
+	if (value > 0x40) {
+		if ((shift_left_pressed) || (shift_right_pressed)) {
+			engine.setValue("[Library]", "MoveFocusForward", true);
+		} else {
+			engine.setValue("[Library]", "MoveUp", true);
+		}
+	} else {
+		if ((shift_left_pressed) || (shift_right_pressed)) {
+			engine.setValue("[Library]", "MoveFocusBackward", true);
+		} else {
+			engine.setValue("[Library]", "MoveDown", true);
+		}
+	};
+};
+
+// <TAP>                : open folder
+// <TAP> + <TAP>        : double-tap to close folder
+// <SHIFT LEFT> + <TAP> : tap bpm of LEFT track
+// <SHIFT RIGHT> + <TAP> : tap bpm of RIGHT track
+var double_tap_time;
+KAOSSDJ.tap_button_callback = function(channel, control, value, status, group) {
+    var now = new Date().getTime();
+    var timesince = now - double_tap_time;
+
+	/* shift tab to move focus view */
+	if ((value === ON) && ((shift_left_pressed))) {
+		// engine.setValue("[Library]", "MoveFocusForward", true);
+		engine.setValue("[Channel1]", "bpm_tap", true);
+		return
+	}
+	if ((value === ON) && ((shift_right_pressed))) {
+		// engine.setValue("[Library]", "MoveFocusForward", true);
+		engine.setValue("[Channel2]", "bpm_tap", true);
+		return
+	}
+
+	/* tap to open folder, double-tap to close folder (twice to undo first tap)*/
+	if (value === ON) {
+		if((timesince < 600) && (timesince > 0)){
+			engine.setValue("[Library]", "MoveLeft", true);
+			engine.setValue("[Library]", "MoveLeft", true);
+		} else {
+			engine.setValue("[Library]", "MoveRight", true);
+		};
+
+	   double_tap_time = new Date().getTime();
+	};
+};
+
