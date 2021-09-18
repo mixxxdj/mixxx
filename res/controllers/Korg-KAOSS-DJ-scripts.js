@@ -224,7 +224,7 @@ KAOSSDJ.loadCallback = function(channel, control, value, status, group) {
     var deck = KAOSSDJ.getDeckByChannel(channel);
     if (value === ON) {
         if ((shiftLeftPressed) || (shiftRightPressed)) {
-            if (deck.deckNumber == 1) {
+            if (deck.deckNumber === 1) {
                 engine.setValue("[Library]", "MoveLeft", true);
             } else {
                 engine.setValue("[Library]", "MoveRight", true);
@@ -309,7 +309,7 @@ KAOSSDJ.tapButtonCallback = function(channel, control, value, status, group) {
             engine.setValue("[Library]", "MoveRight", true);
         }
 
-	   doubleTapTime = new Date().getTime();
+        doubleTapTime = new Date().getTime();
     }
 };
 
