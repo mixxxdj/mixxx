@@ -172,10 +172,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
         // Note: When starting Auto-DJ "play" might be processed before a new
         // is track is fully loaded. currentPlayingTrackChanged() is then emitted
         // after setTrackInfo().
-        TrackPointer pTrack = getCurrentPlayingTrack();
-        if (pTrack) {
-            emit currentPlayingTrackChanged(pTrack);
-        }
+        emit currentPlayingTrackChanged(getCurrentPlayingTrack());
     }
 }
 
