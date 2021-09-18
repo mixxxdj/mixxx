@@ -11,6 +11,7 @@
 #include "util/compatibility.h"
 #include "util/event.h"
 #include "util/logger.h"
+#include "util/qtmutex.h"
 
 namespace {
 
@@ -78,7 +79,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 // WARNING: Always called from a different thread (GUI)
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
     {
-        QMutexLocker locker(&m_newTrackMutex);
+        const auto locker = lockMutex(&m_newTrackMutex);
         m_pNewTrack = pTrack;
         m_newTrackAvailable = true;
     }
@@ -96,7 +97,7 @@ void CachingReaderWorker::run() {
         if (m_newTrackAvailable) {
             TrackPointer pLoadTrack;
             { // locking scope
-                QMutexLocker locker(&m_newTrackMutex);
+                const auto locker = lockMutex(&m_newTrackMutex);
                 pLoadTrack = m_pNewTrack;
                 m_pNewTrack.reset();
                 m_newTrackAvailable = false;

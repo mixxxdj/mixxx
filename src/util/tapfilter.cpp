@@ -1,6 +1,7 @@
 #include "util/tapfilter.h"
 
 #include "moc_tapfilter.cpp"
+#include "util/qtmutex.h"
 
 TapFilter::TapFilter(QObject* pParent, int filterLength, mixxx::Duration maxInterval)
         : QObject(pParent),
@@ -13,7 +14,7 @@ TapFilter::~TapFilter() {
 }
 
 void TapFilter::tap() {
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     mixxx::Duration elapsed = m_timer.restart();
     if (elapsed <= m_maxInterval) {
         double averageLength = m_mean.insert(elapsed.toDoubleMillis());
