@@ -13,7 +13,15 @@
 
 namespace {
 const QRegularExpression kDurationRegex(QStringLiteral("^(\\d*)(m|:)?([0-6]?\\d)?s?$"));
-const QRegularExpression kNumericOperatorRegex(QStringLiteral("^(>|>=|=|<|<=)(.*)$"));
+
+// The ordering of operator alternatives separated by '|' is crucial to avoid incomplete
+// partial matches, e.g. by capturing "<" + "=" + <arg>  instead of "<=" + <arg>!
+//
+// See also: https://perldoc.perl.org/perlre
+// > Alternatives are tried from left to right, so the first alternative found for which
+// > the entire expression matches, is the one that is chosen. This means that alternatives
+// > are not necessarily greedy.
+const QRegularExpression kNumericOperatorRegex(QStringLiteral("^(<=|>=|=|<|>)(.*)$"));
 } // namespace
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
