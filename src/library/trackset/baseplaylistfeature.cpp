@@ -361,14 +361,16 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 /// Returns a playlist that is a sibling inside the same parent
 /// as the start index
 int BasePlaylistFeature::getSiblingPlaylistIdOf(QModelIndex& start) {
-    for (int i = start.row() + 1; i >= (start.row() - 1); i -= 2) {
-        QModelIndex nextIndex = start.sibling(i, start.column());
-        if (nextIndex.isValid()) {
-            TreeItem* pTreeItem = m_pSidebarModel->getItem(nextIndex);
-            DEBUG_ASSERT(pTreeItem != nullptr);
-            if (!pTreeItem->hasChildren()) {
-                return playlistIdFromIndex(nextIndex);
-            }
+    QModelIndex nextIndex = start.sibling(start.row() + 1, start.column());
+    if (!nextIndex.isValid() && start.row() > 0) {
+        // No playlist below, looking above.
+        nextIndex = start.sibling(start.row() - 1, start.column());
+    }
+    if (nextIndex.isValid()) {
+        TreeItem* pTreeItem = m_pSidebarModel->getItem(nextIndex);
+        DEBUG_ASSERT(pTreeItem != nullptr);
+        if (!pTreeItem->hasChildren()) {
+            return playlistIdFromIndex(nextIndex);
         }
     }
     return kInvalidPlaylistId;
