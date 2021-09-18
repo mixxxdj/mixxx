@@ -111,7 +111,11 @@ public:
 private:
     static const value_type kInvalidValue = -1;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    static const QMetaType::Type kVariantType;
+#else
     static const QVariant::Type kVariantType;
+#endif
 
     static bool isValidValue(value_type value) {
         return 0 <= value;
