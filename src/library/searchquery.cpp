@@ -12,7 +12,7 @@
 #include "util/db/sqllikewildcards.h"
 
 namespace {
-const QRegularExpression kDurationRegex(QStringLiteral("^(\\d*)(m|:)?([0-6]?\\d)?s?$"));
+const QRegularExpression kDurationRegex(QStringLiteral("^(\\d+)(m|:)?([0-5]?\\d)?s?$"));
 
 // The ordering of operator alternatives separated by '|' is crucial to avoid incomplete
 // partial matches, e.g. by capturing "<" + "=" + <arg>  instead of "<=" + <arg>!
