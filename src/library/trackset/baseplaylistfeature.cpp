@@ -179,7 +179,9 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId, bool select) {
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
-    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
+    if (playlistId == kInvalidPlaylistId) {
+        // This happens if user clicks on group nodes
+        // like the year folder in the history feature
         return;
     }
     m_pPlaylistTableModel->setTableModel(playlistId);
