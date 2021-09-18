@@ -315,3 +315,21 @@ KAOSSDJ.tap_button_callback = function(channel, control, value, status, group) {
 	};
 };
 
+// <SHIFT> + <TOUCHPAD X> : control super knob of QuickEffectRack for deck 1
+KAOSSDJ.controllerFxTouchMoveVertical_shift = function(channel, control, value, status, group) {
+    var deck = KAOSSDJ.decks[0];
+    if (deck.fx) {
+        var val = script.absoluteLin(value, 0, 1, 0, 127)
+        engine.setValue('[QuickEffectRack1_' + deck.group + ']', 'super1', val);
+    }
+};
+
+// <SHIFT> + <TOUCHPAD Y> : control super knob of QuickEffectRack for deck 2
+KAOSSDJ.controllerFxTouchMoveHorizontal_shift = function(channel, control, value, status, group) {
+    var deck = KAOSSDJ.decks[1];
+    if (deck.fx) {
+        var val = script.absoluteLin(value, 0, 1, 0, 127)
+        engine.setValue('[QuickEffectRack1_' + deck.group + ']', 'super1', val);
+    }
+};
+
