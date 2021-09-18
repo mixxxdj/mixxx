@@ -68,7 +68,7 @@ KAOSSDJ.init = function(id, debugging) {
 KAOSSDJ.shutdown = function(id, debugging) {
     // turn off all LEDs
     for (var led = 0x00; led <= 0xFF; led++) {
-        for (key in ledChannel) {
+        for (var key in ledChannel) {
             midi.sendShortMsg(ledChannel[key], led, OFF);
         }
     }
@@ -178,7 +178,7 @@ KAOSSDJ.rightFxSwitch = function(channel, control, value, status, group) {
 
 KAOSSDJ.controllerFxTouchMoveVertical = function(channel, control, value, status, group) {
     var decks = KAOSSDJ.decks;
-    for (key in decks) {
+    for (var key in decks) {
         var deck = decks[key];
         if (deck.fx) {
             engine.setValue("[EffectRack1_EffectUnit"+deck.deckNumber +"]", "mix", value / 127);
@@ -188,7 +188,7 @@ KAOSSDJ.controllerFxTouchMoveVertical = function(channel, control, value, status
 
 KAOSSDJ.controllerFxTouchMoveHorizontal = function(channel, control, value, status, group) {
     var decks = KAOSSDJ.decks;
-    for (key in decks) {
+    for (var key in decks) {
         var deck = decks[key];
         if (deck.fx) {
             engine.setValue("[EffectRack1_EffectUnit"+deck.deckNumber +"]", "super1", value / 127);
