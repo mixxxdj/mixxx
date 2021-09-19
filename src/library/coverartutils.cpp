@@ -2,6 +2,7 @@
 
 #include <QDir>
 #include <QDirIterator>
+#include <QRegularExpression>
 #include <QtConcurrentRun>
 
 #include "sources/soundsourceproxy.h"
@@ -56,8 +57,8 @@ QImage CoverArtUtils::extractEmbeddedCover(
 //static
 QList<QFileInfo> CoverArtUtils::findPossibleCoversInFolder(const QString& folder) {
     // Search for image files in the track directory.
-    QRegExp coverArtFilenames(supportedCoverArtExtensionsRegex(),
-            Qt::CaseInsensitive);
+    QRegularExpression coverArtFilenames(supportedCoverArtExtensionsRegex(),
+            QRegularExpression::CaseInsensitiveOption);
     QDirIterator it(folder,
             QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
     QFile currentFile;
@@ -66,8 +67,8 @@ QList<QFileInfo> CoverArtUtils::findPossibleCoversInFolder(const QString& folder
     while (it.hasNext()) {
         it.next();
         currentFileInfo = it.fileInfo();
-        if (currentFileInfo.isFile() &&
-                coverArtFilenames.indexIn(currentFileInfo.fileName()) != -1) {
+        const QRegularExpressionMatch match = coverArtFilenames.match(currentFileInfo.fileName());
+        if (currentFileInfo.isFile() && match.hasMatch()) {
             possibleCovers.append(currentFileInfo);
         }
     }

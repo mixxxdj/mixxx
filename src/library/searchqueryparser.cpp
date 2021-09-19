@@ -58,10 +58,12 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     m_allFilters.append(m_numericFilters);
     m_allFilters.append(m_specialFilters);
 
-    m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
-    m_textFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
-    m_numericFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
-    m_specialFilterMatcher = QRegExp(QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
+    m_fuzzyMatcher = QRegularExpression(QString("^~(%1)$").arg(m_allFilters.join("|")));
+    m_textFilterMatcher = QRegularExpression(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
+    m_numericFilterMatcher = QRegularExpression(
+            QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
+    m_specialFilterMatcher = QRegularExpression(
+            QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
 }
 
 SearchQueryParser::~SearchQueryParser() {
@@ -140,12 +142,16 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         bool negate = token.startsWith(kNegatePrefix);
         std::unique_ptr<QueryNode> pNode;
 
-        if (m_fuzzyMatcher.indexIn(token) != -1) {
+        const QRegularExpressionMatch fuzzyMatch = m_fuzzyMatcher.match(token);
+        const QRegularExpressionMatch textFilterMatch = m_textFilterMatcher.match(token);
+        const QRegularExpressionMatch numericFilterMatch = m_numericFilterMatcher.match(token);
+        const QRegularExpressionMatch specialFilterMatch = m_specialFilterMatcher.match(token);
+        if (fuzzyMatch.hasMatch()) {
             // TODO(XXX): implement this feature.
-        } else if (m_textFilterMatcher.indexIn(token) != -1) {
-            QString field = m_textFilterMatcher.cap(1);
+        } else if (textFilterMatch.hasMatch()) {
+            QString field = textFilterMatch.captured(1);
             QString argument = getTextArgument(
-                    m_textFilterMatcher.cap(2), &tokens);
+                    textFilterMatch.captured(2), &tokens);
 
             if (argument == kMissingFieldSearchTerm) {
                 qDebug() << "argument explicit empty";
@@ -168,10 +174,11 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                             m_fieldToSqlColumns[field], argument);
                 }
             }
-        } else if (m_numericFilterMatcher.indexIn(token) != -1) {
-            QString field = m_numericFilterMatcher.cap(1);
+        } else if (numericFilterMatch.hasMatch()) {
+            QString field = numericFilterMatch.captured(1);
             QString argument = getTextArgument(
-                m_numericFilterMatcher.cap(2), &tokens).trimmed();
+                    numericFilterMatch.captured(2), &tokens)
+                                       .trimmed();
 
             if (!argument.isEmpty()) {
                 if (argument == kMissingFieldSearchTerm) {
@@ -182,11 +189,12 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                          m_fieldToSqlColumns[field], argument);
                 }
             }
-        } else if (m_specialFilterMatcher.indexIn(token) != -1) {
+        } else if (specialFilterMatch.hasMatch()) {
             bool fuzzy = token.startsWith(kFuzzyPrefix);
-            QString field = m_specialFilterMatcher.cap(1);
+            QString field = specialFilterMatch.captured(1);
             QString argument = getTextArgument(
-                m_specialFilterMatcher.cap(2), &tokens).trimmed();
+                    specialFilterMatch.captured(2), &tokens)
+                                       .trimmed();
             if (!argument.isEmpty()) {
                 if (field == "key") {
                     mixxx::track::io::key::ChromaticKey key =

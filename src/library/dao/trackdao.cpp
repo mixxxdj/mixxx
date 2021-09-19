@@ -5,7 +5,6 @@
 #include <QDirIterator>
 #include <QFileInfo>
 #include <QImage>
-#include <QRegExp>
 #include <QtDebug>
 #include <QtSql>
 

@@ -38,6 +38,9 @@ const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 const int kMaxShoutFailures = 3;
 
+const QRegularExpression kArtistOrTitleRegex(QStringLiteral("\\$artist|\\$title"));
+const QRegularExpression kArtistRegex(QStringLiteral("\\$artist"));
+
 const mixxx::Logger kLogger("ShoutConnection");
 
 } // namespace
@@ -842,13 +845,12 @@ void ShoutConnection::updateMetaData() {
                 do {
                     // find the next occurrence
                     replaceIndex = metadataFinal.indexOf(
-                                      QRegExp("\\$artist|\\$title"),
-                                      replaceIndex);
+                            kArtistOrTitleRegex,
+                            replaceIndex);
 
                     if (replaceIndex != -1) {
                         if (metadataFinal.indexOf(
-                                          QRegExp("\\$artist"), replaceIndex)
-                                          == replaceIndex) {
+                                    kArtistRegex, replaceIndex) == replaceIndex) {
                             metadataFinal.replace(replaceIndex, 7, artist);
                             // skip to the end of the replacement
                             replaceIndex += artist.length();
