@@ -2,7 +2,6 @@
 
 #include <QCoreApplication>
 #include <QGuiApplication>
-#include <QList>
 #include <QScreen>
 #include <QUuid>
 #include <QWidget>
@@ -120,23 +119,4 @@ inline void atomicStoreRelaxed(QAtomicPointer<T>& atomicPtr, T* newValue) {
 #else
     atomicPtr.store(newValue);
 #endif
-}
-
-/// Helper to insert values into a QList with specific indices.
-///
-/// *For legacy code only - Do not use for new code!*
-template<typename T>
-inline void listAppendOrReplaceAt(QList<T>* pList, int index, const T& value) {
-    VERIFY_OR_DEBUG_ASSERT(index <= pList->size()) {
-        qWarning() << "listAppendOrReplaceAt: Padding list with"
-                   << (index - pList->size()) << "default elements";
-        while (index > pList->size()) {
-            pList->append(T());
-        }
-    }
-    VERIFY_OR_DEBUG_ASSERT(index == pList->size()) {
-        pList->replace(index, value);
-        return;
-    }
-    pList->append(value);
 }
