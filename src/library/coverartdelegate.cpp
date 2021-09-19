@@ -8,6 +8,7 @@
 #include "library/trackmodel.h"
 #include "moc_coverartdelegate.cpp"
 #include "track/track.h"
+#include "util/compatibility.h"
 #include "util/logger.h"
 
 namespace {

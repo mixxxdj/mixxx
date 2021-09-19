@@ -16,7 +16,7 @@ using namespace QKeychain;
 #include "defs_urls.h"
 #include "moc_broadcastprofile.cpp"
 #include "recording/defs_recording.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 #include "util/memory.h"
 #include "util/xml.h"

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "util/class.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/compatibility/qmutex.h"
 
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};

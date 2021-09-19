@@ -6,7 +6,7 @@
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/time.h"
 #include "util/trace.h"
 

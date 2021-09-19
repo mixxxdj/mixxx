@@ -8,7 +8,7 @@
 
 #include "moc_statsmanager.cpp"
 #include "util/cmdlineargs.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/compatibility/qmutex.h"
 
 // In practice we process stats pipes about once a minute @1ms latency.

@@ -10,7 +10,7 @@
 #include "moc_loopingcontrol.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/math.h"
 #include "util/sample.h"
 
