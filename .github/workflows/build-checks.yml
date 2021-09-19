@@ -132,6 +132,7 @@ jobs:
       working-directory: build
     - name: "Upload Coverage Report to coveralls.io"
       if: matrix.name == 'coverage'
+      continue-on-error: true
       uses: coverallsapp/github-action@master
       with:
         flag-name: ubuntu-20.04
