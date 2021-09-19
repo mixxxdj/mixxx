@@ -20,6 +20,7 @@
 #include "util/datetime.h"
 #include "util/db/sqlite.h"
 #include "util/logger.h"
+#include "util/quuid.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 

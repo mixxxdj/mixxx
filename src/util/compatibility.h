@@ -5,7 +5,6 @@
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QScreen>
-#include <QUuid>
 #include <QWidget>
 #include <QtDebug>
 
@@ -23,18 +22,4 @@ inline QScreen* getPrimaryScreen() {
         return nullptr;
     }
     return app->primaryScreen();
-}
-
-inline
-QString uuidToStringWithoutBraces(const QUuid& uuid) {
-    return uuid.toString(QUuid::WithoutBraces);
-}
-
-inline
-QString uuidToNullableStringWithoutBraces(const QUuid& uuid) {
-    if (uuid.isNull()) {
-        return QString();
-    } else {
-        return uuidToStringWithoutBraces(uuid);
-    }
 }

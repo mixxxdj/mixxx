@@ -9,8 +9,8 @@
 #include "musicbrainz/musicbrainzxml.h"
 #include "network/httpstatuscode.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 #include "util/logger.h"
+#include "util/quuid.h"
 #include "util/thread_affinity.h"
 #include "util/versionstore.h"
 
