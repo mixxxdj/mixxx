@@ -4,8 +4,8 @@
 
 #include "engine/engineworker.h"
 #include "moc_engineworkerscheduler.cpp"
+#include "util/compatibility/qmutex.h"
 #include "util/event.h"
-#include "util/qtmutex.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
         : m_bWakeScheduler(false),

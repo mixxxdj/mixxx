@@ -9,7 +9,7 @@
 #include "util/assert.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
-#include "util/qtmutex.h"
+#include "util/compatibility/qmutex.h"
 
 namespace {
 

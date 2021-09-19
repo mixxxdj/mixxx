@@ -10,9 +10,9 @@
 #include <QStringList>
 
 #include "util/cache.h"
+#include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/performancetimer.h"
-#include "util/qtmutex.h"
 #include "util/task.h"
 
 class ScannerGlobal {

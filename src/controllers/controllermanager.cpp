@@ -8,7 +8,7 @@
 #include "controllers/midi/portmidienumerator.h"
 #include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
-#include "util/qtmutex.h"
+#include "util/compatibility/qmutex.h"
 #include "util/time.h"
 #include "util/trace.h"
 #ifdef __HSS1394__

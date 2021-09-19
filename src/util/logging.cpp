@@ -17,7 +17,7 @@
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
-#include "util/qtmutex.h"
+#include "util/compatibility/qmutex.h"
 
 namespace {
 

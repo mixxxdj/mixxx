@@ -8,8 +8,8 @@
 #include <QSharedPointer>
 
 #include "preferences/configobject.h"
+#include "util/compatibility/qmutex.h"
 #include "util/fileinfo.h"
-#include "util/qtmutex.h"
 
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CFURL.h>

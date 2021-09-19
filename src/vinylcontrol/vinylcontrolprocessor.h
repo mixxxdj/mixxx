@@ -8,8 +8,8 @@
 
 #include "preferences/usersettings.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/compatibility/qmutex.h"
 #include "util/fifo.h"
-#include "util/qtmutex.h"
 #include "vinylcontrol/vinylsignalquality.h"
 
 class VinylControl;

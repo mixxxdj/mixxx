@@ -8,7 +8,7 @@
 
 #include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
-#include "util/qtmutex.h"
+#include "util/compatibility/qmutex.h"
 #include "util/versionstore.h"
 
 ErrorDialogProperties::ErrorDialogProperties()
