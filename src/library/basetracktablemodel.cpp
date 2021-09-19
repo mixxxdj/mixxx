@@ -64,7 +64,7 @@ const QStringList kDefaultTableColumns = {
 inline QSqlDatabase cloneDatabase(
         const QSqlDatabase& prototype) {
     const auto connectionName =
-            uuidToStringWithoutBraces(QUuid::createUuid());
+            QUuid::createUuid().toString(QUuid::WithoutBraces);
     auto cloned = QSqlDatabase::cloneDatabase(
             prototype,
             connectionName);
