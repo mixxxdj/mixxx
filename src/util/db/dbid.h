@@ -1,16 +1,14 @@
 #pragma once
 
-
+#include <QString>
+#include <QVariant>
+#include <QtDebug>
 #include <functional>
 #include <ostream>
 #include <utility>
 
-#include <QString>
-#include <QVariant>
-#include <QtDebug>
-
 #include "util/assert.h"
-
+#include "util/compatibility/qhash.h"
 
 // Base class for ID values of objects that are stored in the database.
 //
@@ -102,9 +100,9 @@ public:
         return debug << dbId.m_value;
     }
 
-    friend uint qHash(
+    friend qhash_seed_t qHash(
             const DbId& dbId,
-            uint seed = 0) {
+            qhash_seed_t seed = 0) {
         return qHash(dbId.m_value, seed);
     }
 
