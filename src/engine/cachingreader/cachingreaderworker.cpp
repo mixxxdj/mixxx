@@ -9,9 +9,9 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"
+#include "util/compatibility/qmutex.h"
 #include "util/event.h"
 #include "util/logger.h"
-#include "util/qtmutex.h"
 
 namespace {
 

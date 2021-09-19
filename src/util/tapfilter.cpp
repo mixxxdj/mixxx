@@ -1,7 +1,7 @@
 #include "util/tapfilter.h"
 
 #include "moc_tapfilter.cpp"
-#include "util/qtmutex.h"
+#include "util/compatibility/qmutex.h"
 
 TapFilter::TapFilter(QObject* pParent, int filterLength, mixxx::Duration maxInterval)
         : QObject(pParent),

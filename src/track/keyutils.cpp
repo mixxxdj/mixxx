@@ -6,8 +6,8 @@
 #include <QRegularExpression>
 #include <QtDebug>
 
+#include "util/compatibility/qmutex.h"
 #include "util/math.h"
-#include "util/qtmutex.h"
 
 #define MUSIC_FLAT_UTF8  "\xe299ad"
 #define MUSIC_SHARP_UTF8 "\xe299af"

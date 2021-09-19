@@ -9,9 +9,9 @@
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
-#include "util/qtmutex.h"
 
 class Auxiliary;
 class BaseTrackPlayer;

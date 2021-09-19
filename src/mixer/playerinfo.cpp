@@ -9,7 +9,7 @@
 #include "mixer/playermanager.h"
 #include "moc_playerinfo.cpp"
 #include "track/track.h"
-#include "util/qtmutex.h"
+#include "util/compatibility/qmutex.h"
 
 namespace {
 
