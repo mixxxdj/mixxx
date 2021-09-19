@@ -837,6 +837,15 @@ MC7000.censor = function(channel, control, value, status, group) {
     }
 };
 
+// Auto-Loop Button
+MC7000.autoLoop = function(channel, control, value, status, group) {
+    if (engine.getValue(group, "loop_enabled")) {
+        script.toggleControl(group, "reloop_toggle");
+    } else {
+        script.toggleControl(group, "beatloop_activate");
+    }
+};
+
 // Set Crossfader Curve
 MC7000.crossFaderCurve = function(control, value) {
     script.crossfaderCurve(value);

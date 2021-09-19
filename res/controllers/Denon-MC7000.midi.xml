@@ -1645,42 +1645,42 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_activate</key>
+                <key>MC7000.autoLoop</key>
                 <description>AutoLoop Ch1</description>
                 <status>0x94</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_activate</key>
+                <key>MC7000.autoLoop</key>
                 <description>AutoLoop Ch2</description>
                 <status>0x95</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatloop_activate</key>
+                <key>MC7000.autoLoop</key>
                 <description>AutoLoop Ch3</description>
                 <status>0x96</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatloop_activate</key>
+                <key>MC7000.autoLoop</key>
                 <description>AutoLoop Ch4</description>
                 <status>0x97</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
