@@ -9,6 +9,7 @@
 #include "library/coverartutils.h"
 #include "moc_dlgcoverartfullsize.cpp"
 #include "track/track.h"
+#include "util/compatibility.h"
 #include "util/widgethelper.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlayer)
