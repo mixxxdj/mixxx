@@ -7,7 +7,6 @@
 #include "mixer/playermanager.h"
 #include "moc_vinylcontrolmanager.cpp"
 #include "soundio/soundmanager.h"
-#include "util/compatibility.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrol.h"

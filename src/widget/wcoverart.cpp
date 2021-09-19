@@ -14,7 +14,6 @@
 #include "library/dlgcoverartfullsize.h"
 #include "moc_wcoverart.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/math.h"
 #include "widget/wskincolor.h"
@@ -199,9 +198,10 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
         return QPixmap();
     }
     QPixmap scaled;
-    scaled = normal.scaled(size() * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    scaled.setDevicePixelRatio(getDevicePixelRatioF(this));
+    scaled = normal.scaled(size() * devicePixelRatioF(),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(devicePixelRatioF());
     return scaled;
 }
 

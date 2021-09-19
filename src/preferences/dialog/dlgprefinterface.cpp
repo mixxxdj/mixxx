@@ -17,7 +17,6 @@
 #include "skin/legacy/legacyskinparser.h"
 #include "skin/skin.h"
 #include "skin/skinloader.h"
-#include "util/compatibility.h"
 #include "util/screensaver.h"
 #include "util/screensavermanager.h"
 #include "util/widgethelper.h"
@@ -56,7 +55,7 @@ DlgPrefInterface::DlgPrefInterface(
     setupUi(this);
 
     // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
-    m_dDevicePixelRatio = getDevicePixelRatioF(this);
+    m_dDevicePixelRatio = devicePixelRatioF();
 
     // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
     // m_dDevicePixelRatio must not drop below 1.0 because this creates an

@@ -19,7 +19,6 @@
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/color/colorpalette.h"
-#include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"

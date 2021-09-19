@@ -6,7 +6,6 @@
 #include "library/dlgcoverartfullsize.h"
 #include "moc_wcoverartlabel.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "widget/wcoverartmenu.h"
 
 namespace {
@@ -16,7 +15,7 @@ constexpr QSize kDeviceIndependentCoverLabelSize = QSize(100, 100);
 inline QPixmap scaleCoverLabel(
         QWidget* parent,
         QPixmap pixmap) {
-    const auto devicePixelRatioF = getDevicePixelRatioF(parent);
+    const auto devicePixelRatioF = parent->devicePixelRatioF();
     pixmap.setDevicePixelRatio(devicePixelRatioF);
     return pixmap.scaled(
             kDeviceIndependentCoverLabelSize * devicePixelRatioF,
@@ -62,9 +61,9 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
     }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-    QSize frameSize = pixmap(Qt::ReturnByValue).size() / getDevicePixelRatioF(this);
+    QSize frameSize = pixmap(Qt::ReturnByValue).size() / devicePixelRatioF();
 #else
-    QSize frameSize = pixmap()->size() / getDevicePixelRatioF(this);
+    QSize frameSize = pixmap()->size() / devicePixelRatioF();
 #endif
     frameSize += QSize(2,2); // margin
     setMinimumSize(frameSize);

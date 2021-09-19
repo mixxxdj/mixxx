@@ -7,7 +7,6 @@
 #include "moc_dlgautodj.cpp"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 #include "util/duration.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
