@@ -12,8 +12,9 @@ TEST_F(UuidTest, uuidToNullableStringWithoutBracesNullTest) {
 }
 
 TEST_F(UuidTest, uuidToNullableStringWithoutBracesValidTest) {
-    const QString validUuidString = QStringLiteral("93a20486-90fd-4ea5-a869-ef669cacb0b2");
+    const auto validUuid = QUuid::createUuid();
+    ASSERT_FALSE(validUuid.isNull());
     EXPECT_STREQ(
-            qPrintable(validUuidString),
-            qPrintable(uuidToNullableStringWithoutBraces(QUuid(validUuidString))));
+            qPrintable(validUuid.toString(QUuid::WithoutBraces)),
+            qPrintable(uuidToNullableStringWithoutBraces(validUuid)));
 }
