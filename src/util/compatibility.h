@@ -10,10 +10,6 @@
 
 #include "util/assert.h"
 
-inline qreal getDevicePixelRatioF(const QWidget* widget) {
-    return widget->devicePixelRatioF();
-}
-
 inline QScreen* getPrimaryScreen() {
     QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
     VERIFY_OR_DEBUG_ASSERT(app) {

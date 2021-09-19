@@ -29,7 +29,6 @@
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
 #include "util/color/color.h"
-#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 #include "util/math.h"
@@ -939,7 +938,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatio());
         }
 
         // Show cue position when hovered
@@ -987,7 +986,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatio());
 
             QPointF timeDistancePoint(positionTextPoint.x(),
                     (fontMetrics.height() + height()) / 2);
@@ -999,7 +998,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatio());
             markHovered = true;
         }
     }
@@ -1094,7 +1093,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
                 m_labelTextColor,
                 m_labelBackgroundColor,
                 width(),
-                getDevicePixelRatioF(this));
+                devicePixelRatio());
         m_timeRulerPositionLabel.draw(pPainter);
 
         QString timeDistanceText = mixxx::Duration::formatTime(fabs(timeDistance));
@@ -1110,7 +1109,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
                 m_labelTextColor,
                 m_labelBackgroundColor,
                 width(),
-                getDevicePixelRatioF(this));
+                devicePixelRatio());
         m_timeRulerDistanceLabel.draw(pPainter);
     } else {
         m_timeRulerPositionLabel.clear();
@@ -1182,7 +1181,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatio());
 
             if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel) || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel) || markRange.m_durationLabel.intersects(m_timeRulerPositionLabel) || markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
                 markRange.m_durationLabel.draw(pPainter);
@@ -1247,7 +1246,7 @@ void WOverview::resizeEvent(QResizeEvent* pEvent) {
     m_a = (length() - 1) / (one - zero);
     m_b = zero * m_a;
 
-    m_devicePixelRatio = getDevicePixelRatioF(this);
+    m_devicePixelRatio = devicePixelRatio();
 
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
