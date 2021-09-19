@@ -1,7 +1,5 @@
 #include "library/searchqueryparser.h"
 
-#include "util/compatibility.h"
-
 #include "track/keyutils.h"
 
 constexpr char kNegatePrefix[] = "-";

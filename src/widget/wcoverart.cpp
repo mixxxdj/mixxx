@@ -198,10 +198,10 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
         return QPixmap();
     }
     QPixmap scaled;
-    scaled = normal.scaled(size() * devicePixelRatio(),
+    scaled = normal.scaled(size() * devicePixelRatioF(),
             Qt::KeepAspectRatio,
             Qt::SmoothTransformation);
-    scaled.setDevicePixelRatio(devicePixelRatio());
+    scaled.setDevicePixelRatio(devicePixelRatioF());
     return scaled;
 }
 

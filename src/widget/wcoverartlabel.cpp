@@ -15,7 +15,7 @@ constexpr QSize kDeviceIndependentCoverLabelSize = QSize(100, 100);
 inline QPixmap scaleCoverLabel(
         QWidget* parent,
         QPixmap pixmap) {
-    const auto devicePixelRatioF = parent->devicePixelRatio();
+    const auto devicePixelRatioF = parent->devicePixelRatioF();
     pixmap.setDevicePixelRatio(devicePixelRatioF);
     return pixmap.scaled(
             kDeviceIndependentCoverLabelSize * devicePixelRatioF,
@@ -61,9 +61,9 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
     }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-    QSize frameSize = pixmap(Qt::ReturnByValue).size() / devicePixelRatio();
+    QSize frameSize = pixmap(Qt::ReturnByValue).size() / devicePixelRatioF();
 #else
-    QSize frameSize = pixmap()->size() / devicePixelRatio();
+    QSize frameSize = pixmap()->size() / devicePixelRatioF();
 #endif
     frameSize += QSize(2,2); // margin
     setMinimumSize(frameSize);

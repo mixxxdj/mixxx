@@ -3,7 +3,6 @@
 #include "encoder/encoderopussettings.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"
-#include "util/compatibility.h"
 
 namespace {
 const int kDefaultQualityIndex = 6;

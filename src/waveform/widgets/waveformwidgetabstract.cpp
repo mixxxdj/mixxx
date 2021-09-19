@@ -42,7 +42,7 @@ void WaveformWidgetAbstract::resize(int width, int height) {
     qreal devicePixelRatio = 1.0;
     if (m_widget) {
         m_widget->resize(width, height);
-        devicePixelRatio = m_widget->devicePixelRatio();
+        devicePixelRatio = m_widget->devicePixelRatioF();
     }
     WaveformWidgetRenderer::resize(width, height, static_cast<float>(devicePixelRatio));
 }

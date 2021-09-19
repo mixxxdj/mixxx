@@ -328,7 +328,7 @@ void WSpinny::render(VSyncThread* vSyncThread) {
                 &m_dGhostAngleCurrentPlaypos);
     }
 
-    double scaleFactor = devicePixelRatio();
+    double scaleFactor = devicePixelRatioF();
 
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
@@ -417,10 +417,10 @@ QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    QPixmap scaled = normal.scaled(size() * devicePixelRatio(),
+    QPixmap scaled = normal.scaled(size() * devicePixelRatioF(),
             Qt::KeepAspectRatio,
             Qt::SmoothTransformation);
-    scaled.setDevicePixelRatio(devicePixelRatio());
+    scaled.setDevicePixelRatio(devicePixelRatioF());
     return scaled;
 }
 
