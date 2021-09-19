@@ -25,7 +25,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
           m_columnCache(columns),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection)),
+          m_pQueryParser(new SearchQueryParser(pTrackCollection, idColumn)),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_database(pTrackCollection->database()) {

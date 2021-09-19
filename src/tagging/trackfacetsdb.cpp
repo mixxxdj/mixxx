@@ -2,9 +2,19 @@
 
 #include "library/dao/trackschema.h"
 #include "util/assert.h"
+#include "util/db/sqlstringformatter.h"
 #include "util/logger.h"
 
 namespace mixxx {
+
+//static
+const QString TrackFacetsStorage::kColumnFacet = QStringLiteral("facet");
+
+//static
+const QString TrackFacetsStorage::kColumnLabel = QStringLiteral("label");
+
+//static
+const QString TrackFacetsStorage::kColumnScore = QStringLiteral("score");
 
 namespace {
 
@@ -12,9 +22,6 @@ Logger kLogger("tagging.facets.db");
 
 const QString kTable = QStringLiteral("track_custom_tags");
 const QString kColumnTrackId = QStringLiteral("track_id");
-const QString kColumnFacet = QStringLiteral("facet");
-const QString kColumnLabel = QStringLiteral("label");
-const QString kColumnScore = QStringLiteral("score");
 
 bool purgeOrphanedRecords(
         const QSqlDatabase& database) {
@@ -43,7 +50,7 @@ bool fixEmptyTagFacets(
             QStringLiteral("UPDATE %1 SET %2=NULL WHERE %2=''")
                     .arg(
                             kTable,
-                            kColumnFacet));
+                            TrackFacetsStorage::kColumnFacet));
     VERIFY_OR_DEBUG_ASSERT(query.isPrepared() && !query.hasError()) {
         return false;
     }
@@ -61,7 +68,7 @@ bool fixEmptyTagLabels(
             QStringLiteral("UPDATE %1 SET %2=NULL WHERE %2=''")
                     .arg(
                             kTable,
-                            kColumnLabel));
+                            TrackFacetsStorage::kColumnLabel));
     VERIFY_OR_DEBUG_ASSERT(query.isPrepared() && !query.hasError()) {
         return false;
     }
@@ -85,6 +92,51 @@ QString TrackFacetsStorage::joinTrackIdList(
         result.append(trackId.toString());
     }
     return result;
+}
+
+//static
+QString TrackFacetsStorage::buildTagFilter(
+        const QSqlDatabase& database,
+        const QList<std::pair<TagFacetId, TagLabel>>& facetedLabelList) {
+    QString tagFilter;
+    for (const auto& facetLabelPair : facetedLabelList) {
+        const auto& [facetId, label] = facetLabelPair;
+        QString filterTerm;
+        if (!facetId.isEmpty()) {
+            filterTerm = QString("%1=%2").arg(
+                    kColumnFacet,
+                    SqlStringFormatter::format(
+                            database,
+                            facetId));
+        }
+        if (!label.isEmpty()) {
+            filterTerm = QString("%1=%2").arg(
+                    kColumnLabel,
+                    SqlStringFormatter::format(
+                            database,
+                            label));
+        }
+        VERIFY_OR_DEBUG_ASSERT(!filterTerm.isEmpty()) {
+            continue;
+        }
+        if (tagFilter.isEmpty()) {
+            tagFilter = filterTerm;
+        } else {
+            tagFilter += QStringLiteral(" AND ") + filterTerm;
+        }
+    }
+    return tagFilter;
+}
+
+//static
+QString TrackFacetsStorage::buildTrackIdSelect(
+        const QString& tagFilter) {
+    VERIFY_OR_DEBUG_ASSERT(!tagFilter.isEmpty()) {
+        return QString();
+    }
+    return QString(
+            QStringLiteral("SELECT %2 from %1 WHERE %3"))
+            .arg(kTable, kColumnTrackId, tagFilter);
 }
 
 TrackFacetsStorage::TrackFacetsStorage(
