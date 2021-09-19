@@ -846,6 +846,46 @@ MC7000.autoLoop = function(channel, control, value, status, group) {
     }
 };
 
+// Parameter Button '<'
+MC7000.parameterButtonDown = function(channel, control, value, status, group) {
+    if (value) {
+        script.triggerControl(group, "beatjump_backward");
+    }
+};
+
+// Parameter Button '>'
+MC7000.parameterButtonUp = function(channel, control, value, status, group) {
+    if (value) {
+        script.triggerControl(group, "beatjump_forward");
+    }
+};
+
+// Parameter Button '<' + 'SHIFT'
+MC7000.parameterButtonDownShifted = function(channel, control, value, status, group) {
+    if (value) {
+        const beatJumpSize = engine.getValue(group, "beatjump_size");
+        let decreasedIndex = MC7000.beatJump.indexOf(beatJumpSize) - 1;
+        if (decreasedIndex < 0) {
+            decreasedIndex = 0;
+        }
+        const newBeatJumpSize = MC7000.beatJump[decreasedIndex];
+        engine.setValue(group, "beatjump_size", newBeatJumpSize);
+    }
+};
+
+// Parameter Button '>' + 'SHIFT'
+MC7000.parameterButtonUpShifted = function(channel, control, value, status, group) {
+    if (value) {
+        const beatjumpSize = engine.getValue(group, "beatjump_size");
+        let increasedIndex = MC7000.beatJump.indexOf(beatjumpSize) + 1;
+        if (increasedIndex >= MC7000.beatJump.length) {
+            increasedIndex = MC7000.beatJump.length === 0 ? 0 : MC7000.beatJump.length - 1;
+        }
+        const newBeatJumpSize = MC7000.beatJump[increasedIndex];
+        engine.setValue(group, "beatjump_size", newBeatJumpSize);
+    }
+};
+
 // Set Crossfader Curve
 MC7000.crossFaderCurve = function(control, value) {
     script.crossfaderCurve(value);
