@@ -87,9 +87,8 @@ To select a single channel, simply press the button corresponding to the
 channel. This will remove all existing selections, and find the largest default
 preset that can be fit on the main grid.
 
-Presets come in 3 different sizes: *short* (4x4), *tall* (4x8) and *grande*
-(8x8)[1]. Multiple presets can have the same size, but only one preset
-can be default per size.
+Presets come in 3 different sizes: *short* (4x4), *tall* (4x8) and *grande* (8x8)(1).
+Multiple presets can have the same size, but only one preset can be default per size.
 
 To select multiple channels to be laid out, press the corresponding buttons
 in a *chord*. This way you can select to 4 channels.
