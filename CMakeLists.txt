@@ -1418,7 +1418,7 @@ if(UNIX AND NOT APPLE)
   # Icon files for menu entry
   install(
     DIRECTORY
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons"
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/"
     DESTINATION
       "${CMAKE_INSTALL_DATADIR}/icons/hicolor"
     # This file is for Windows.
