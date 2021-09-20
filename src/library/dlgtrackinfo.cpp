@@ -616,12 +616,13 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
                 bpm);
     }
 
-    const mixxx::Bpm oldValue = m_pBeatsClone->getBpm();
-    if (oldValue == bpm) {
-        return;
+    if (m_pBeatsClone) {
+        const mixxx::Bpm oldValue = m_pBeatsClone->getBpm();
+        if (oldValue == bpm) {
+            return;
+        }
+        m_pBeatsClone = m_pBeatsClone->setBpm(bpm);
     }
-
-    m_pBeatsClone = m_pBeatsClone->setBpm(bpm);
 
     updateSpinBpmFromBeats();
 }
