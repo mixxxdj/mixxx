@@ -53,3 +53,10 @@ jobs:
       with:
         name: ${{ env.UPLOAD_PATCH_FILE }}
         path: ${{ env.UPLOAD_PATCH_FILE }}
+
+    - name: "Install appstreamcli"
+      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends appstream
+
+    # AppStream metadata has been generated/updated by a pre-commit hook
+    - name: "Validate AppStream metadata"
+      run: appstreamcli validate res/linux/org.mixxx.Mixxx.metainfo.xml
