@@ -186,10 +186,10 @@ void DlgCoverArtFullSize::slotCoverFound(
     } else if (dialogSize.width() > screenGeometry.width()) {
         dialogSize.scale(screenGeometry.width(), dialogSize.height(), Qt::KeepAspectRatio);
     }
-    QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
+    QPixmap resizedPixmap = m_pixmap.scaled(size() * devicePixelRatioF(),
             Qt::KeepAspectRatio,
             Qt::SmoothTransformation);
-    resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
+    resizedPixmap.setDevicePixelRatio(devicePixelRatioF());
     coverArt->setPixmap(resizedPixmap);
 
     // center the window
@@ -264,9 +264,10 @@ void DlgCoverArtFullSize::resizeEvent(QResizeEvent* event) {
         return;
     }
     // qDebug() << "DlgCoverArtFullSize::resizeEvent" << size();
-    QPixmap resizedPixmap = m_pixmap.scaled(size() * getDevicePixelRatioF(this),
-        Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    resizedPixmap.setDevicePixelRatio(getDevicePixelRatioF(this));
+    QPixmap resizedPixmap = m_pixmap.scaled(size() * devicePixelRatioF(),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    resizedPixmap.setDevicePixelRatio(devicePixelRatioF());
     coverArt->setPixmap(resizedPixmap);
 }
 

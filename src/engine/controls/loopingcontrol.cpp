@@ -10,7 +10,7 @@
 #include "moc_loopingcontrol.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/math.h"
 #include "util/sample.h"
 
@@ -166,6 +166,18 @@ LoopingControl::LoopingControl(const QString& group,
             this, &LoopingControl::slotBeatJump, Qt::DirectConnection);
     m_pCOBeatJumpSize = new ControlObject(ConfigKey(group, "beatjump_size"),
                                           true, false, false, 4.0);
+
+    m_pCOBeatJumpSizeHalve = new ControlPushButton(ConfigKey(group, "beatjump_size_halve"));
+    connect(m_pCOBeatJumpSizeHalve,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotBeatJumpSizeHalve);
+    m_pCOBeatJumpSizeDouble = new ControlPushButton(ConfigKey(group, "beatjump_size_double"));
+    connect(m_pCOBeatJumpSizeDouble,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotBeatJumpSizeDouble);
+
     m_pCOBeatJumpForward = new ControlPushButton(ConfigKey(group, "beatjump_forward"));
     connect(m_pCOBeatJumpForward, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatJumpForward);
@@ -211,6 +223,7 @@ LoopingControl::LoopingControl(const QString& group,
 }
 
 LoopingControl::~LoopingControl() {
+    // TODO Use unique_ptr to manage lifetime
     delete m_pLoopOutButton;
     delete m_pLoopOutGotoButton;
     delete m_pLoopInButton;
@@ -236,6 +249,8 @@ LoopingControl::~LoopingControl() {
 
     delete m_pCOBeatJump;
     delete m_pCOBeatJumpSize;
+    delete m_pCOBeatJumpSizeHalve;
+    delete m_pCOBeatJumpSizeDouble;
     delete m_pCOBeatJumpForward;
     delete m_pCOBeatJumpBackward;
     while (!m_beatJumps.isEmpty()) {
@@ -946,31 +961,35 @@ void LoopingControl::slotReloopAndStop(double pressed) {
 
 void LoopingControl::slotLoopStartPos(double positionSamples) {
     // This slot is called before trackLoaded() for a new Track
-    const auto position = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(positionSamples);
 
     LoopInfo loopInfo = m_loopInfo.getValue();
-    if (loopInfo.startPosition == position) {
-        //nothing to do
-        return;
-    }
 
-    clearActiveBeatLoop();
-
-    if (!position.isValid()) {
-        emit loopReset();
-        setLoopingEnabled(false);
+    {
+        const auto position =
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        positionSamples);
+        if (loopInfo.startPosition == position) {
+            // Nothing to do
+            return;
+        }
+        loopInfo.startPosition = position;
     }
 
     loopInfo.seekMode = LoopSeekMode::MovedOut;
-    loopInfo.startPosition = position;
-    m_pCOLoopStartPosition->set(position.toEngineSamplePosMaybeInvalid());
 
-    if (loopInfo.endPosition.isValid() && loopInfo.endPosition <= loopInfo.startPosition) {
+    clearActiveBeatLoop();
+
+    if (!loopInfo.startPosition.isValid()) {
+        emit loopReset();
+        setLoopingEnabled(false);
+    } else if (loopInfo.endPosition.isValid() && loopInfo.endPosition <= loopInfo.startPosition) {
         emit loopReset();
         loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
         m_pCOLoopEndPosition->set(kNoTrigger);
         setLoopingEnabled(false);
     }
+
+    m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
     m_loopInfo.setValue(loopInfo);
 }
 
@@ -1427,14 +1446,26 @@ void LoopingControl::slotBeatJump(double beats) {
     }
 }
 
+void LoopingControl::slotBeatJumpSizeHalve(double pressed) {
+    if (pressed > 0) {
+        m_pCOBeatJumpSize->set(m_pCOBeatJumpSize->get() / 2);
+    }
+}
+
+void LoopingControl::slotBeatJumpSizeDouble(double pressed) {
+    if (pressed > 0) {
+        m_pCOBeatJumpSize->set(m_pCOBeatJumpSize->get() * 2);
+    }
+}
+
 void LoopingControl::slotBeatJumpForward(double pressed) {
-    if (pressed != 0) {
+    if (pressed > 0) {
         slotBeatJump(m_pCOBeatJumpSize->get());
     }
 }
 
 void LoopingControl::slotBeatJumpBackward(double pressed) {
-    if (pressed != 0) {
+    if (pressed > 0) {
         slotBeatJump(-1.0 * m_pCOBeatJumpSize->get());
     }
 }

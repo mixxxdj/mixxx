@@ -186,15 +186,18 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Return) {
         toggleSelectedItem();
         return;
-    } else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up) {
+    } else if (event->key() == Qt::Key_Down ||
+            event->key() == Qt::Key_Up ||
+            event->key() == Qt::Key_PageDown ||
+            event->key() == Qt::Key_PageUp ||
+            event->key() == Qt::Key_End ||
+            event->key() == Qt::Key_Home) {
         // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
-
         // But force the index to be activated/clicked after the selection
         // changes. (Saves you from having to push "enter" after changing the
         // selection.)
-        QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
-
+        QModelIndexList selectedIndices = selectionModel()->selectedRows();
         //Note: have to get the selected indices _after_ QTreeView::keyPressEvent()
         if (selectedIndices.size() > 0) {
             QModelIndex index = selectedIndices.at(0);
@@ -205,6 +208,26 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     //    // encoder click via "GoToItem"
     //    qDebug() << "GoToItem";
     //    TODO(xxx) decide what todo here instead of in librarycontrol
+    } else if (event->key() == Qt::Key_Left) {
+        auto selModel = selectionModel();
+        QModelIndexList selectedRows = selModel->selectedRows();
+        if (selectedRows.isEmpty()) {
+            return;
+        }
+        // If an expanded item is selected let QTreeView collapse it
+        QModelIndex selIndex = selectedRows.first();
+        DEBUG_ASSERT(selIndex.isValid());
+        if (isExpanded(selIndex)) {
+            QTreeView::keyPressEvent(event);
+            return;
+        }
+        // Else jump to its parent and activate it
+        QModelIndex parentIndex = selIndex.parent();
+        if (parentIndex.isValid()) {
+            selectIndex(parentIndex);
+            emit pressed(parentIndex);
+        }
+        return;
     }
 
     // Fall through to default handler.

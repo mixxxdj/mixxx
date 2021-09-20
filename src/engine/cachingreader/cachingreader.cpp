@@ -7,7 +7,7 @@
 #include "moc_cachingreader.cpp"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/counter.h"
 #include "util/logger.h"
 #include "util/math.h"

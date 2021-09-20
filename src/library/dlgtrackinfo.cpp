@@ -6,6 +6,7 @@
 #include <QTreeWidget>
 #include <QtDebug>
 
+#include "defs_urls.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
@@ -13,13 +14,11 @@
 #include "moc_dlgtrackinfo.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
-#include "track/beatfactory.h"
 #include "track/beatutils.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/color/colorpalette.h"
-#include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
@@ -51,6 +50,7 @@ DlgTrackInfo::DlgTrackInfo(
 
 void DlgTrackInfo::init() {
     setupUi(this);
+    setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
     coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
     coverLayout->setSpacing(0);
@@ -513,7 +513,7 @@ void DlgTrackInfo::clear() {
 
     resetTrackRecord();
 
-    m_pBeatsClone.clear();
+    m_pBeatsClone.reset();
     updateSpinBpmFromBeats();
 
     txtLocation->setText("");
@@ -550,7 +550,7 @@ void DlgTrackInfo::slotBpmThreeHalves() {
 }
 
 void DlgTrackInfo::slotBpmClear() {
-    m_pBeatsClone.clear();
+    m_pBeatsClone.reset();
     updateSpinBpmFromBeats();
 
     bpmConst->setChecked(true);
@@ -571,12 +571,12 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // The cue point should be set on a beat, so this seems
             // to be a good alternative
             const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
-            m_pBeatsClone =
-                    BeatFactory::makeBeatGrid(m_pLoadedTrack->getSampleRate(),
-                            bpm,
-                            cuePosition);
+            m_pBeatsClone = mixxx::Beats::fromConstTempo(
+                    m_pLoadedTrack->getSampleRate(),
+                    cuePosition,
+                    bpm);
         } else {
-            m_pBeatsClone.clear();
+            m_pBeatsClone.reset();
         }
         spinBpm->setEnabled(true);
         bpmTap->setEnabled(true);
@@ -604,16 +604,16 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
 void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     const auto bpm = mixxx::Bpm(value);
     if (!bpm.isValid()) {
-        m_pBeatsClone.clear();
+        m_pBeatsClone.reset();
         return;
     }
 
     if (!m_pBeatsClone) {
         const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
-        m_pBeatsClone = BeatFactory::makeBeatGrid(
+        m_pBeatsClone = mixxx::Beats::fromConstTempo(
                 m_pLoadedTrack->getSampleRate(),
-                bpm,
-                cuePosition);
+                cuePosition,
+                bpm);
     }
 
     const mixxx::Bpm oldValue = m_pBeatsClone->getBpm();

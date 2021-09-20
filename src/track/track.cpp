@@ -7,8 +7,6 @@
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
 #include "sources/metadatasource.h"
-#include "track/beatfactory.h"
-#include "track/beatmap.h"
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
@@ -329,11 +327,11 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
 }
 
 void Track::adjustReplayGainFromPregain(double gain) {
-    QMutexLocker lock(&m_qMutex);
+    auto locked = lockMutex(&m_qMutex);
     mixxx::ReplayGain replayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     replayGain.setRatio(gain * replayGain.getRatio());
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
-        markDirtyAndUnlock(&lock);
+        markDirtyAndUnlock(&locked);
         emit replayGainAdjusted(replayGain);
     }
 }
@@ -355,9 +353,9 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
         if (!cuePosition.isValid()) {
             cuePosition = mixxx::audio::kStartFramePos;
         }
-        auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(),
-                bpm,
-                cuePosition);
+        auto pBeats = mixxx::Beats::fromConstTempo(getSampleRate(),
+                cuePosition,
+                bpm);
         return trySetBeatsWhileLocked(std::move(pBeats));
     } else if (m_pBeats->getBpm() != bpm) {
         // Continue with the regular cases
@@ -1083,9 +1081,8 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
-    const auto pBeats = mixxx::BeatMap::makeBeatMap(
+    const auto pBeats = mixxx::Beats::fromBeatPositions(
             m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate(),
-            QString(),
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
                     getLocation(), *m_record.getStreamInfoFromSource()));
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());

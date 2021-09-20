@@ -6,6 +6,7 @@
 
 #include "moc_trackexportworker.cpp"
 #include "track/track.h"
+#include "util/compatibility/qatomic.h"
 
 namespace {
 

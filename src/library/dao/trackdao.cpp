@@ -5,7 +5,6 @@
 #include <QDirIterator>
 #include <QFileInfo>
 #include <QImage>
-#include <QRegExp>
 #include <QtDebug>
 #include <QtSql>
 
@@ -24,7 +23,6 @@
 #include "library/trackset/crate/cratestorage.h"
 #include "moc_trackdao.cpp"
 #include "sources/soundsourceproxy.h"
-#include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/globaltrackcache.h"
 #include "track/keyfactory.h"
@@ -32,7 +30,6 @@
 #include "track/track.h"
 #include "track/tracknumbers.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqlite.h"
@@ -593,7 +590,7 @@ void bindTrackLibraryValues(
     QString beatsSubVersion;
     // Fall back on cached BPM
     mixxx::Bpm bpm = trackInfo.getBpm();
-    if (!pBeats.isNull()) {
+    if (pBeats) {
         beatsBlob = pBeats->toByteArray();
         beatsVersion = pBeats->getVersion();
         beatsSubVersion = pBeats->getSubVersion();
@@ -1243,11 +1240,13 @@ bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
         } else {
             pTrack->trySetBeats(pBeats);
         }
-    } else {
+    } else if (bpm.isValid()) {
         // Load a temporary beat grid without offset that will be replaced by the analyzer.
-        const auto pBeats = BeatFactory::makeBeatGrid(
-                pTrack->getSampleRate(), bpm, mixxx::audio::kStartFramePos);
+        const auto pBeats = mixxx::Beats::fromConstTempo(
+                pTrack->getSampleRate(), mixxx::audio::kStartFramePos, bpm);
         pTrack->trySetBeats(pBeats);
+    } else {
+        pTrack->trySetBeats(nullptr);
     }
     return false;
 }
