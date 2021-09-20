@@ -609,7 +609,11 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     if (!m_pBeatsClone) {
-        const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
+        mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
+        // This should never happen, but we cannot be sure
+        VERIFY_OR_DEBUG_ASSERT(cuePosition.isValid()) {
+            cuePosition = mixxx::audio::kStartFramePos;
+        }
         m_pBeatsClone = mixxx::Beats::fromConstTempo(
                 m_pLoadedTrack->getSampleRate(),
                 cuePosition,
