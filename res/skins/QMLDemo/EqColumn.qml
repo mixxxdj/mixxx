@@ -16,6 +16,7 @@ Column {
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter3"
         knob.color: Theme.eqHighColor
+        label: "High"
     }
 
     EqKnob {
@@ -23,6 +24,7 @@ Column {
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter2"
         knob.color: Theme.eqMidColor
+        label: "Mid"
     }
 
     EqKnob {
@@ -30,6 +32,7 @@ Column {
         knob.key: "parameter1"
         statusKey: "button_parameter1"
         knob.color: Theme.eqLowColor
+        label: "Low"
     }
 
     EqKnob {
@@ -40,6 +43,7 @@ Column {
         knob.arcStyle: ShapePath.DashLine
         knob.arcStylePattern: [2, 2]
         knob.color: Theme.eqFxColor
+        label: "Filter"
     }
 
     Skin.OrientationToggleButton {
