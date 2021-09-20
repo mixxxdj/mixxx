@@ -96,7 +96,7 @@ repos:
   hooks:
   - id: shellcheck
 - repo: https://github.com/DavidAnson/markdownlint-cli2
-  rev: v0.2.0
+  rev: v0.3.1
   hooks:
   - id: markdownlint-cli2
 - repo: local
