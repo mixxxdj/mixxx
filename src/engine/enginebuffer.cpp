@@ -90,7 +90,6 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_iSeekPhaseQueued(0),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(SYNC_INVALID),
-          m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
           m_iSampleRate(0),
           m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
@@ -1050,7 +1049,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     m_pScaleST->setSampleRate(sampleRate);
     m_pScaleRB->setSampleRate(sampleRate);
 
-    bool bTrackLoading = atomicLoadRelaxed(m_iTrackLoading) != 0;
+    bool bTrackLoading = atomicLoadAcquire(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         processTrackLocked(pOutput, iBufferSize, m_iSampleRate);
         // release the pauselock
