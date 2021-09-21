@@ -1118,9 +1118,9 @@
             }
 
             /*
-            * Contains all decks and effect units so that a (un)shift operation
-            * is delegated to the decks, effect units and their children.
-            */
+             * Contains all decks and effect units so that a (un)shift operation
+             * is delegated to the decks, effect units and their children.
+             */
             this.componentContainers = [];
 
             this.layerManager = this.createLayerManager(
