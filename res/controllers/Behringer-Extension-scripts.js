@@ -55,14 +55,18 @@
      * @private
      */
     var stringifyComponent = function(component) {
-        if (component === undefined) {
+        if (!component) {
             return;
         }
-        var id = findComponentId(component.midi);
-        if (id !== undefined) {
-            var key = component.inKey || component.outKey;
-            return "(" + id + ": " + component.group + "," + key + ")";
+        var key = component.inKey || component.outKey;
+        var value = component.group + "," + key;
+        if (component.midi) {
+            var id = findComponentId(component.midi);
+            if (id !== undefined) {
+                value = id + ": " + value;
+            }
         }
+        return "(" + value + ")";
     };
 
     /**
@@ -759,6 +763,11 @@
                 log.error("Missing component");
                 return;
             }
+            if (!component.midi) {
+                log.debug(containerName + ": ignore "
+                    + stringifyComponent(component) + " without MIDI address");
+                return;
+            }
             var id = findComponentId(component.midi);
             if (!Object.prototype.hasOwnProperty.call(this.containers, containerName)) {
                 this.createContainer(containerName);
@@ -1254,7 +1263,7 @@
          * @private
          */
         processMidiAddresses: function(definition, implementation, action) {
-            if (Array.isArray(definition)) {
+            if (Array.isArray(definition) || !definition) {
                 action.call(this, definition, implementation);
             } else if (typeof definition === "object") {
                 Object.keys(definition).forEach(function(name) {
