@@ -131,7 +131,11 @@ class CachingReaderWorker : public EngineWorker {
     QAtomicInt m_newTrackAvailable;
     TrackPointer m_pNewTrack;
 
-    // Internal method to load a track. Emits trackLoaded when finished.
+    /// Internal method to unload a track.
+    /// does not emit signals
+    void ejectTrack();
+
+    /// Internal method to load a track. Emits trackLoaded when finished.
     void loadTrack(const TrackPointer& pTrack);
 
     ReaderStatusUpdate processReadRequest(
