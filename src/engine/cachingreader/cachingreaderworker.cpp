@@ -25,9 +25,7 @@ CachingReaderWorker::CachingReaderWorker(
         : m_group(group),
           m_tag(QString("CachingReaderWorker %1").arg(m_group)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
-          m_pReaderStatusFIFO(pReaderStatusFIFO),
-          m_newTrackAvailable(false),
-          m_stop(0) {
+          m_pReaderStatusFIFO(pReaderStatusFIFO) {
 }
 
 ReaderStatusUpdate CachingReaderWorker::processReadRequest(
@@ -80,7 +78,7 @@ void CachingReaderWorker::newTrack(TrackPointer pTrack) {
     {
         QMutexLocker locker(&m_newTrackMutex);
         m_pNewTrack = pTrack;
-        m_newTrackAvailable = true;
+        m_newTrackAvailable = 1;
     }
     workReady();
 }
@@ -93,13 +91,13 @@ void CachingReaderWorker::run() {
     while (!atomicLoadAcquire(m_stop)) {
         // Request is initialized by reading from FIFO
         CachingReaderChunkReadRequest request;
-        if (m_newTrackAvailable) {
+        if (atomicLoadAcquire(m_newTrackAvailable)) {
             TrackPointer pLoadTrack;
             { // locking scope
                 QMutexLocker locker(&m_newTrackMutex);
                 pLoadTrack = m_pNewTrack;
                 m_pNewTrack.reset();
-                m_newTrackAvailable = false;
+                m_newTrackAvailable = 0;
             } // implicitly unlocks the mutex
             loadTrack(pLoadTrack);
         } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {

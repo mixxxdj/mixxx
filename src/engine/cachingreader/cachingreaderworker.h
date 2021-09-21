@@ -128,7 +128,7 @@ class CachingReaderWorker : public EngineWorker {
     // Queue of Tracks to load, and the corresponding lock. Must acquire the
     // lock to touch.
     QMutex m_newTrackMutex;
-    bool m_newTrackAvailable;
+    QAtomicInt m_newTrackAvailable;
     TrackPointer m_pNewTrack;
 
     // Internal method to load a track. Emits trackLoaded when finished.
