@@ -99,6 +99,7 @@ void MixxxApplication::registerMetaTypes() {
     // Library: Tags
     qRegisterMetaType<mixxx::library::tags::FacetId>("mixxx::library::tags::FacetId");
     qRegisterMetaType<mixxx::library::tags::Label>("mixxx::library::tags::Label");
+    qRegisterMetaType<mixxx::library::tags::LabelVector>("mixxx::library::tags::LabelVector");
     qRegisterMetaType<mixxx::library::tags::Score>("mixxx::library::tags::Score");
     qRegisterMetaType<mixxx::library::tags::Tag>("mixxx::library::tags::Tag");
     qRegisterMetaType<mixxx::library::tags::TagVector>("mixxx::library::tags::TagVector");
