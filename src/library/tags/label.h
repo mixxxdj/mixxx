@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QMetaType>
+#include <QRegularExpression>
 #include <QString>
+#include <QVector>
 
 #include "util/assert.h"
 
@@ -112,6 +114,15 @@ inline uint qHash(
     return qHash(label.value(), seed);
 }
 
+typedef QVector<Label> LabelVector;
+
+LabelVector splitTextIntoLabels(const QString& text, QChar separator);
+LabelVector splitTextIntoLabels(const QString& text, const QString& separator);
+LabelVector splitTextIntoLabels(const QString& text, const QRegularExpression& pattern);
+LabelVector splitTextIntoLabelsAtWhitespace(const QString& text);
+
+QString joinLabelsAsText(const LabelVector& labels, QChar separator = QChar(' '));
+
 /// Predefined labels for identifying the source or owner of a score,
 /// e.g. for custom ratings.
 ///
@@ -125,3 +136,4 @@ extern const Label kLabelOrgMixxx;
 } // namespace mixxx
 
 Q_DECLARE_METATYPE(mixxx::library::tags::Label)
+Q_DECLARE_METATYPE(mixxx::library::tags::LabelVector)
