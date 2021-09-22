@@ -129,34 +129,6 @@ inline QScreen* getPrimaryScreen() {
 }
 
 template <typename T>
-inline T atomicLoadAcquire(const QAtomicInteger<T>& atomicInt) {
-    // TODO: QBasicAtomicInteger<T>::load() is deprecated and should be
-    // replaced with QBasicAtomicInteger<T>::loadRelaxed() However, the
-    // proposed alternative has just been introduced in Qt 5.14. Until the
-    // minimum required Qt version of Mixxx is increased, we need a version
-    // check here
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    return atomicInt.loadAcquire();
-#else
-    return atomicInt.load();
-#endif
-}
-
-template <typename T>
-inline T* atomicLoadAcquire(const QAtomicPointer<T>& atomicPtr) {
-    // TODO: QBasicAtomicPointer<T>::load() is deprecated and should be
-    // replaced with QBasicAtomicPointer<T>::loadRelaxed() However, the
-    // proposed alternative has just been introduced in Qt 5.14. Until the
-    // minimum required Qt version of Mixxx is increased, we need a version
-    // check here
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    return atomicPtr.loadAcquire();
-#else
-    return atomicPtr.load();
-#endif
-}
-
-template <typename T>
 inline T atomicLoadRelaxed(const QAtomicInteger<T>& atomicInt) {
     // TODO: QBasicAtomicInteger<T>::load() is deprecated and should be
     // replaced with QBasicAtomicInteger<T>::loadRelaxed() However, the

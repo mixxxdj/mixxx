@@ -81,7 +81,7 @@ void TrackExportWorker::run() {
         // on the bar, which looks really nice.
         emit progress(it->fileName(), i, copy_list.size());
         copyFile((*it).asFileInfo(), it.key());
-        if (atomicLoadAcquire(m_bStop)) {
+        if (m_bStop.loadAcquire()) {
             emit canceled();
             return;
         }
@@ -162,7 +162,7 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
 
     // We can be either canceled from the other thread, or as a return value
     // from this call.  First check for a call from the other thread.
-    if (atomicLoadAcquire(m_bStop)) {
+    if (m_bStop.loadAcquire()) {
         return OverwriteAnswer::CANCEL;
     }
 
