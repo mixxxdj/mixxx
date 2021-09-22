@@ -104,7 +104,7 @@ void CachingReaderWorker::run() {
                 loadTrack(pLoadTrack);
             } else {
                 // here, the engine is already stopped
-                ejectTrack();
+                unloadTrack();
             }
         } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
             // Read the requested chunk and send the result
@@ -118,10 +118,7 @@ void CachingReaderWorker::run() {
     }
 }
 
-void CachingReaderWorker::cleanUpOldTrack() {
-    m_pAudioSource.reset(); // Close open file handles of the old track.
-
-    // Discard all pending read requests
+void CachingReaderWorker::discardAllPendingRequests() {
     CachingReaderChunkReadRequest request;
     while (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
         const auto update = ReaderStatusUpdate::readDiscarded(request.chunk);
@@ -129,9 +126,15 @@ void CachingReaderWorker::cleanUpOldTrack() {
     }
 }
 
-void CachingReaderWorker::ejectTrack() {
+void CachingReaderWorker::closeAudioSource() {
+    // Closes open file handles of the old track.
+    discardAllPendingRequests();
+    m_pAudioSource.reset();
+}
+
+void CachingReaderWorker::unloadTrack() {
     // This is called with the engine stopped.
-    cleanUpOldTrack();
+    closeAudioSource();
 
     const auto update = ReaderStatusUpdate::trackUnloaded();
     m_pReaderStatusFIFO->writeBlocking(&update, 1);
@@ -141,7 +144,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // Emit that a new track is loading, stops the current track
     emit trackLoading();
 
-    cleanUpOldTrack();
+    closeAudioSource();
 
     const QString trackLocation = pTrack->getLocation();
     if (trackLocation.isEmpty() || !pTrack->checkFileExists()) {
