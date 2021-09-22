@@ -131,6 +131,10 @@ class CachingReaderWorker : public EngineWorker {
     QAtomicInt m_newTrackAvailable;
     TrackPointer m_pNewTrack;
 
+    /// call to be prepare for new tracks 
+    /// Make sure engine has been stopped before
+    void cleanUpOldTrack();
+
     /// Internal method to unload a track.
     /// does not emit signals
     void ejectTrack();

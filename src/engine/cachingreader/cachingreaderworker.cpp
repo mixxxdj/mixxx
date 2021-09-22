@@ -118,8 +118,8 @@ void CachingReaderWorker::run() {
     }
 }
 
-void CachingReaderWorker::ejectTrack() {
-    // This is called with the engine stopped.
+void CachingReaderWorker::cleanUpOldTrack() {
+    m_pAudioSource.reset(); // Close open file handles of the old track.
 
     // Discard all pending read requests
     CachingReaderChunkReadRequest request;
@@ -127,9 +127,11 @@ void CachingReaderWorker::ejectTrack() {
         const auto update = ReaderStatusUpdate::readDiscarded(request.chunk);
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
     }
+}
 
-    // Unload the track
-    m_pAudioSource.reset(); // Close open file handles
+void CachingReaderWorker::ejectTrack() {
+    // This is called with the engine stopped.
+    cleanUpOldTrack();
 
     const auto update = ReaderStatusUpdate::trackUnloaded();
     m_pReaderStatusFIFO->writeBlocking(&update, 1);
@@ -139,14 +141,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // Emit that a new track is loading, stops the current track
     emit trackLoading();
 
-    m_pAudioSource.reset(); // Close open file handles of the old track.
-
-    // Discard all pending read requests
-    CachingReaderChunkReadRequest request;
-    while (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
-        const auto update = ReaderStatusUpdate::readDiscarded(request.chunk);
-        m_pReaderStatusFIFO->writeBlocking(&update, 1);
-    }
+    cleanUpOldTrack();
 
     const QString trackLocation = pTrack->getLocation();
     if (trackLocation.isEmpty() || !pTrack->checkFileExists()) {
