@@ -8,7 +8,6 @@
 #include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility/qatomic.h"
 #include "util/compatibility/qmutex.h"
 #include "util/event.h"
 #include "util/logger.h"
@@ -91,7 +90,7 @@ void CachingReaderWorker::run() {
     QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
 
     Event::start(m_tag);
-    while (!atomicLoadAcquire(m_stop)) {
+    while (!m_stop.loadAcquire()) {
         // Request is initialized by reading from FIFO
         CachingReaderChunkReadRequest request;
         if (m_newTrackAvailable) {

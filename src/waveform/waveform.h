@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "util/class.h"
-#include "util/compatibility/qatomic.h"
 #include "util/compatibility/qmutex.h"
 
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
@@ -99,7 +98,7 @@ class Waveform {
     // Atomically lookup the completion of the waveform. Represents the number
     // of data elements that have been processed out of dataSize.
     int getCompletion() const {
-        return atomicLoadAcquire(m_completion);
+        return m_completion.loadAcquire();
     }
     void setCompletion(int completion) {
         m_completion = completion;
