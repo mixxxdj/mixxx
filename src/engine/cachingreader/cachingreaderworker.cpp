@@ -78,7 +78,7 @@ void CachingReaderWorker::newTrack(TrackPointer pTrack) {
     {
         QMutexLocker locker(&m_newTrackMutex);
         m_pNewTrack = pTrack;
-        m_newTrackAvailable = 1;
+        m_newTrackAvailable.storeRelease(1);
     }
     workReady();
 }
@@ -88,16 +88,16 @@ void CachingReaderWorker::run() {
     QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
 
     Event::start(m_tag);
-    while (!atomicLoadAcquire(m_stop)) {
+    while (!m_stop.loadAcquire()) {
         // Request is initialized by reading from FIFO
         CachingReaderChunkReadRequest request;
-        if (atomicLoadAcquire(m_newTrackAvailable)) {
+        if (m_newTrackAvailable.loadAcquire()) {
             TrackPointer pLoadTrack;
             { // locking scope
                 QMutexLocker locker(&m_newTrackMutex);
                 pLoadTrack = m_pNewTrack;
                 m_pNewTrack.reset();
-                m_newTrackAvailable = 0;
+                m_newTrackAvailable.storeRelease(0);
             } // implicitly unlocks the mutex
             if (pLoadTrack) {
                 // in this case the engine is still running with the old track
