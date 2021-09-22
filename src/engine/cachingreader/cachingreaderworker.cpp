@@ -127,13 +127,16 @@ void CachingReaderWorker::discardAllPendingRequests() {
 }
 
 void CachingReaderWorker::closeAudioSource() {
-    // Closes open file handles of the old track.
     discardAllPendingRequests();
+    // Closes open file handles of the old track.
     m_pAudioSource.reset();
+
+    // This function has to be called with the engine stopped only
+    // to avoid collecting new requests for the old track
+    DEBUG_ASSERT(!m_pChunkReadRequestFIFO->readAvailable());
 }
 
 void CachingReaderWorker::unloadTrack() {
-    // This is called with the engine stopped.
     closeAudioSource();
 
     const auto update = ReaderStatusUpdate::trackUnloaded();
@@ -141,7 +144,8 @@ void CachingReaderWorker::unloadTrack() {
 }
 
 void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
-    // Emit that a new track is loading, stops the current track
+    // This emit is directly connected and returns synchronized
+    // after the engine has been stopped.
     emit trackLoading();
 
     closeAudioSource();
