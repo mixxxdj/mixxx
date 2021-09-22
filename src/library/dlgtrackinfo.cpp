@@ -616,7 +616,8 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
         }
         m_pBeatsClone = mixxx::Beats::fromConstTempo(
                 m_pLoadedTrack->getSampleRate(),
-                cuePosition,
+                // Cue positions might be fractional, i.e. not on frame boundaries!
+                cuePosition.toNearestFrameBoundary(),
                 bpm);
     }
 
