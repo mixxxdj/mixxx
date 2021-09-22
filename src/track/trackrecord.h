@@ -10,6 +10,10 @@
 #include "track/trackmetadata.h"
 #include "util/color/rgbcolor.h"
 
+// TODO: Remove this forward declaration when the friendship
+// between TrackRecord and Track becomes obsolete.
+class Track;
+
 // Forward declaration for accessing m_headerParsed
 class TrackDAO;
 
@@ -55,7 +59,6 @@ class TrackRecord final {
     MIXXX_DECL_PROPERTY(PlayCounter, playCounter, PlayCounter)
     MIXXX_DECL_PROPERTY(RgbColor::optional_t, color, Color)
     MIXXX_DECL_PROPERTY(mixxx::audio::FramePos, mainCuePosition, MainCuePosition)
-    MIXXX_DECL_PROPERTY(int, rating, Rating)
     MIXXX_DECL_PROPERTY(bool, bpmLocked, BpmLocked)
 
   public:
@@ -81,8 +84,24 @@ class TrackRecord final {
     static bool isValidRating(int rating) {
         return rating >= kMinRating && rating <= kMaxRating;
     }
+
+    static int getRatingFromFacets(
+            const Facets& facets);
+    static bool updateRatingIntoFacets(
+            Facets* pFacets,
+            int rating);
+
     bool hasRating() const {
         return getRating() != kNoRating;
+    }
+    int getRating() const {
+        return getRatingFromFacets(
+                getMetadata().getFacets());
+    }
+    bool updateRating(int rating) {
+        return updateRatingIntoFacets(
+                refMetadata().ptrFacets(),
+                rating);
     }
 
     void setKeys(const Keys& keys);
@@ -128,6 +147,7 @@ class TrackRecord final {
     SourceSyncStatus checkSourceSyncStatus(
             const FileInfo& fileInfo) const;
     bool replaceMetadataFromSource(
+            const TaggingConfig& taggingConfig,
             TrackMetadata&& importedMetadata,
             const QDateTime& sourceSynchronizedAt);
 
@@ -140,6 +160,7 @@ class TrackRecord final {
     //
     // Returns true if any property has been modified or false otherwise.
     bool mergeExtraMetadataFromSource(
+            const TaggingConfig& taggingConfig,
             const TrackMetadata& importedMetadata);
 
     /// Update the stream info after opening the audio stream during
@@ -165,6 +186,11 @@ class TrackRecord final {
 
     bool updateSourceSynchronizedAt(
             const QDateTime& sourceSynchronizedAt);
+
+    bool synchronizeTextFieldsWithFacets(
+            const TaggingConfig& config) {
+        return refMetadata().synchronizeTextFieldsWithFacets(config);
+    }
 
     Keys m_keys;
 

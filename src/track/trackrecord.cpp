@@ -10,6 +10,34 @@ namespace {
 
 const Logger kLogger("TrackRecord");
 
+inline TagScore::value_t convertRatingToTagScore(int rating) {
+    VERIFY_OR_DEBUG_ASSERT(rating >= TrackRecord::kMinRating) {
+        return TagScore::kMinValue;
+    }
+    VERIFY_OR_DEBUG_ASSERT(rating <= TrackRecord::kMaxRating) {
+        return TagScore::kMaxValue;
+    }
+    const auto ratingScore =
+            static_cast<TagScore::value_t>(rating - TrackRecord::kMinRating) /
+            (TrackRecord::kMaxRating - TrackRecord::kMinRating);
+    DEBUG_ASSERT(TagScore::isValidValue(ratingScore));
+    return ratingScore;
+}
+
+inline int convertTagScoreToRating(TagScore::value_t ratingScore) {
+    VERIFY_OR_DEBUG_ASSERT(ratingScore >= TagScore::kMinValue) {
+        return TrackRecord::kMinRating;
+    }
+    VERIFY_OR_DEBUG_ASSERT(ratingScore <= TagScore::kMaxValue) {
+        return TrackRecord::kMaxRating;
+    }
+    const auto ratingValue = (ratingScore - TagScore::kMinValue) /
+            (TagScore::kMaxValue - TagScore::kMinValue);
+    const auto rating = static_cast<int>(std::round(ratingValue));
+    DEBUG_ASSERT(TrackRecord::isValidRating(rating));
+    return rating;
+}
+
 } // anonymous namespace
 
 /*static*/ const QString TrackRecord::kTrackTotalPlaceholder = QStringLiteral("//");
@@ -17,9 +45,39 @@ const Logger kLogger("TrackRecord");
 TrackRecord::TrackRecord(TrackId id)
         : m_id(std::move(id)),
           m_mainCuePosition(mixxx::audio::kStartFramePos),
-          m_rating(0),
           m_bpmLocked(false),
           m_headerParsed(false) {
+}
+
+int TrackRecord::getRatingFromFacets(
+        const Facets& facets) {
+    const auto optScore = facets.getTagScore(
+            library::tags::kLabelOrgMixxx,
+            library::tags::kFacetRating);
+    if (!optScore) {
+        return kNoRating;
+    }
+    return convertTagScoreToRating(*optScore);
+}
+
+bool TrackRecord::updateRatingIntoFacets(
+        Facets* pFacets,
+        int rating) {
+    VERIFY_OR_DEBUG_ASSERT(pFacets) {
+        return false;
+    }
+    const auto ratingScore = convertRatingToTagScore(rating);
+    if (ratingScore > TagScore::kMinValue) {
+        return pFacets->addOrUpdateTag(
+                Tag(library::tags::kLabelOrgMixxx, TagScore(ratingScore)),
+                library::tags::kFacetRating);
+    } else {
+        DEBUG_ASSERT(rating == kNoRating);
+        DEBUG_ASSERT(ratingScore == TagScore::kMinValue);
+        return pFacets->removeTagLabeled(
+                library::tags::kLabelOrgMixxx,
+                library::tags::kFacetRating);
+    }
 }
 
 void TrackRecord::setKeys(const Keys& keys) {
@@ -179,6 +237,7 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
 }
 
 bool TrackRecord::replaceMetadataFromSource(
+        const TaggingConfig& taggingConfig,
         TrackMetadata&& importedMetadata,
         const QDateTime& sourceSynchronizedAt) {
     VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt.isValid()) {
@@ -190,6 +249,7 @@ bool TrackRecord::replaceMetadataFromSource(
         // audio properties that are also stored as track metadata.
         importedMetadata.updateStreamInfoFromSource(*m_streamInfoFromSource);
     }
+    importedMetadata.synchronizeTextFieldsWithFacets(taggingConfig);
     bool modified = false;
     if (getMetadata() != importedMetadata) {
         setMetadata(std::move(importedMetadata));
@@ -202,6 +262,7 @@ bool TrackRecord::replaceMetadataFromSource(
 }
 
 bool TrackRecord::mergeExtraMetadataFromSource(
+        const TaggingConfig& taggingConfig,
         const TrackMetadata& importedMetadata) {
     bool modified = false;
     TrackInfo* pMergedTrackInfo = m_metadata.ptrTrackInfo();
@@ -296,6 +357,9 @@ bool TrackRecord::mergeExtraMetadataFromSource(
             pMergedAlbumInfo->ptrRecordLabel(),
             importedAlbumInfo.getRecordLabel());
 #endif // __EXTRA_METADATA__
+    // Custom tags have been added later and the existing file tags might have
+    // never been synchronized with the custom tags.
+    modified |= synchronizeTextFieldsWithFacets(taggingConfig);
     return modified;
 }
 

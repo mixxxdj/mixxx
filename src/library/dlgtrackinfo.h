@@ -6,6 +6,8 @@
 
 #include "library/coverart.h"
 #include "library/ui_dlgtrackinfo.h"
+#include "tagging/taggingui.h"
+#include "tagging/trackfacetsdb.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/track_decl.h"
@@ -13,8 +15,9 @@
 #include "util/parented_ptr.h"
 #include "util/tapfilter.h"
 
-class TrackModel;
 class DlgTagFetcher;
+class TrackCollectionManager;
+class TrackModel;
 class WCoverArtLabel;
 class WStarRating;
 
@@ -27,6 +30,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   public:
     // TODO: Remove dependency on TrackModel
     explicit DlgTrackInfo(
+            const TrackCollectionManager* pTrackCollectionManager,
             const TrackModel* trackModel = nullptr);
     ~DlgTrackInfo() override = default;
 
@@ -105,7 +109,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void updateTrackMetadataFields();
     void updateSpinBpmFromBeats();
 
+    const TrackCollectionManager* const m_pTrackCollectionManager;
     const TrackModel* const m_pTrackModel;
+
+    mixxx::TrackFacetsStorage m_facetsStorage;
 
     TrackPointer m_pLoadedTrack;
 
@@ -123,4 +130,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     parented_ptr<WStarRating> m_pWStarRating;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
+
+    parented_ptr<mixxx::FacetsTreeWidgetHelper> m_pFacetsTreeWidgetHelper;
 };

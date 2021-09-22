@@ -129,6 +129,7 @@ void Track::relocate(
 }
 
 void Track::replaceMetadataFromSource(
+        const mixxx::TaggingConfig& taggingConfig,
         mixxx::TrackMetadata importedMetadata,
         const QDateTime& sourceSynchronizedAt) {
     // Information stored in Serato tags is imported separately after
@@ -158,6 +159,7 @@ void Track::replaceMetadataFromSource(
         const auto oldReplayGain =
                 m_record.getMetadata().getTrackInfo().getReplayGain();
         bool modified = m_record.replaceMetadataFromSource(
+                taggingConfig,
                 std::move(importedMetadata),
                 sourceSynchronizedAt);
         const auto newReplayGain =
@@ -227,9 +229,12 @@ void Track::replaceMetadataFromSource(
 }
 
 bool Track::mergeExtraMetadataFromSource(
+        const mixxx::TaggingConfig& taggingConfig,
         const mixxx::TrackMetadata& importedMetadata) {
     auto locked = lockMutex(&m_qMutex);
-    if (!m_record.mergeExtraMetadataFromSource(importedMetadata)) {
+    if (!m_record.mergeExtraMetadataFromSource(
+                taggingConfig,
+                importedMetadata)) {
         // Not modified
         return false;
     }
@@ -1324,7 +1329,7 @@ int Track::getRating() const {
 
 void Track::setRating (int rating) {
     auto locked = lockMutex(&m_qMutex);
-    if (compareAndSet(m_record.ptrRating(), rating)) {
+    if (m_record.updateRating(rating)) {
         markDirtyAndUnlock(&locked);
     }
 }
@@ -1435,7 +1440,8 @@ CoverInfo Track::getCoverInfoWithLocation() const {
 
 ExportTrackMetadataResult Track::exportMetadata(
         const mixxx::MetadataSource& metadataSource,
-        const UserSettingsPointer& pConfig) {
+        const UserSettingsPointer& pConfig,
+        const mixxx::TaggingConfig& taggingConfig) {
     // Locking shouldn't be necessary here, because this function will
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
@@ -1520,7 +1526,9 @@ ExportTrackMetadataResult Track::exportMetadata(
         // library database! This will in turn update the current metadata
         // that is stored in the database. New columns that need to be populated
         // from file tags cannot be filled during a database migration.
-        m_record.mergeExtraMetadataFromSource(importedFromFile);
+        m_record.mergeExtraMetadataFromSource(
+                taggingConfig,
+                importedFromFile);
 
         // Prepare export by cloning and normalizing the metadata
         normalizedFromRecord = m_record.getMetadata();
@@ -1688,6 +1696,92 @@ void Track::updateStreamInfoFromSource(
     }
 }
 
+mixxx::Facets Track::getFacets() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getMetadata().getFacets();
+}
+
+void Track::setFacetsInternal(
+        mixxx::Facets&& facets) {
+    auto locked = lockMutex(&m_qMutex);
+    if (m_record.getMetadata().getFacets() == facets) {
+        return;
+    }
+    m_record.refMetadata().refFacets() = std::move(facets);
+    markDirtyAndUnlock(&locked);
+}
+
+bool Track::updateFacets(
+        const mixxx::TaggingConfig& config,
+        const mixxx::Facets& facets) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!m_record.refMetadata().updateFacets(
+                config,
+                facets)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}
+
+bool Track::mergeReplaceFacets(
+        const mixxx::TaggingConfig& config,
+        const mixxx::Facets& facets) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!m_record.refMetadata().mergeReplaceFacets(
+                config,
+                facets)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}
+
+bool Track::replaceCustomTag(
+        const mixxx::TaggingConfig& config,
+        const mixxx::Tag& tag,
+        const mixxx::TagFacetId& facetId) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!m_record.refMetadata().replaceCustomTag(
+                config,
+                tag,
+                facetId)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}
+
+bool Track::appendCustomTag(
+        const mixxx::TaggingConfig& config,
+        const mixxx::TagLabel& newLabel,
+        const mixxx::TagFacetId& facetId) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!m_record.refMetadata().appendCustomTag(
+                config,
+                newLabel,
+                facetId)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}
+
+bool Track::removeCustomTag(
+        const mixxx::TaggingConfig& config,
+        const mixxx::TagLabel& oldLabel,
+        const mixxx::TagFacetId& facetId) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!m_record.refMetadata().removeCustomTag(
+                config,
+                oldLabel,
+                facetId)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}
+
 QString Track::getGenre() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getMetadata().getTrackInfo().getGenre();
@@ -1704,10 +1798,11 @@ void Track::setGenreFromTrackDAO(
 }
 
 bool Track::updateGenre(
+        const mixxx::TaggingConfig& config,
         const QString& genre) {
     auto locked = lockMutex(&m_qMutex);
-    if (!compareAndSet(
-                m_record.refMetadata().refTrackInfo().ptrGenre(),
+    if (!m_record.refMetadata().updateGenre(
+                config,
                 genre)) {
         return false;
     }
@@ -1725,10 +1820,11 @@ QString Track::getMood() const {
 }
 
 bool Track::updateMood(
+        const mixxx::TaggingConfig& config,
         const QString& mood) {
     auto locked = lockMutex(&m_qMutex);
-    if (!compareAndSet(
-                m_record.refMetadata().refTrackInfo().ptrMood(),
+    if (!m_record.refMetadata().updateMood(
+                config,
                 mood)) {
         return false;
     }
@@ -1739,3 +1835,13 @@ bool Track::updateMood(
     return true;
 }
 #endif // __EXTRA_METADATA__
+
+bool Track::synchronizeTextFieldsWithFacets(
+        const mixxx::TaggingConfig& taggingConfig) {
+    auto locked = lockMutex(&m_qMutex);
+    if (!m_record.synchronizeTextFieldsWithFacets(taggingConfig)) {
+        return false;
+    }
+    markDirtyAndUnlock(&locked);
+    return true;
+}

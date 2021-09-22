@@ -839,6 +839,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/sources/soundsourceproviderregistry.cpp
   src/sources/soundsourceproxy.cpp
   src/sources/soundsourcesndfile.cpp
+  src/tagging/taggingconfig.cpp
+  src/tagging/taggingcontext.cpp
+  src/tagging/taggingui.cpp
+  src/tagging/tagmapping.cpp
+  src/tagging/trackfacetsdb.cpp
   src/track/albuminfo.cpp
   src/track/beatfactory.cpp
   src/track/beatgrid.cpp
@@ -1640,6 +1645,7 @@ add_executable(mixxx-test
   src/test/synccontroltest.cpp
   src/test/tableview_test.cpp
   src/test/taglibtest.cpp
+  src/test/tagmapping_test.cpp
   src/test/trackdao_test.cpp
   src/test/trackexport_test.cpp
   src/test/trackmetadata_test.cpp

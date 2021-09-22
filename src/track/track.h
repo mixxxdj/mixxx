@@ -215,15 +215,15 @@ class Track : public QObject {
 
     /// Update the genre text.
     ///
-    /// Returns true if track metadata has been updated and false
-    /// otherwise.
-    ///
-    /// TODO: Update the corresponding facets by splitting
+    /// Implicitly updates the corresponding custom tags by splitting
     /// the text according to the given tag mapping configuration.
     /// All existing custom genre tags with their associated score
     /// will be replaced.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
     bool updateGenre(
-            /*TODO: const mixxx::TaggingConfig& config,*/
+            const mixxx::TaggingConfig& config,
             const QString& genre);
 
 #if defined(__EXTRA_METADATA__)
@@ -232,17 +232,50 @@ class Track : public QObject {
 
     /// Update the mood text.
     ///
-    /// Returns true if track metadata has been updated and false
-    /// otherwise.
-    ///
-    /// TODO: Update the corresponding facets by splitting
+    /// Implicitly updates the corresponding custom tags by splitting
     /// the text according to the given tag mapping configuration.
     /// All existing mood tags with their associated score
     /// will be replaced.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
     bool updateMood(
-            /*TODO: const mixxx::TaggingConfig& config,*/
+            const mixxx::TaggingConfig& config,
             const QString& mood);
 #endif // __EXTRA_METADATA__
+
+    mixxx::Facets getFacets() const;
+
+    /// Set the custom tags and update all dependent text fields
+    /// accordingly.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    bool updateFacets(
+            const mixxx::TaggingConfig& config,
+            const mixxx::Facets& facets);
+
+    /// Merge and replace incoming over existing custom tags and
+    /// update all dependent text fields accordingly.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    bool mergeReplaceFacets(
+            const mixxx::TaggingConfig& config,
+            const mixxx::Facets& facets);
+
+    bool replaceCustomTag(
+            const mixxx::TaggingConfig& config,
+            const mixxx::Tag& tag,
+            const mixxx::TagFacetId& facetId = mixxx::TagFacetId{});
+    bool appendCustomTag(
+            const mixxx::TaggingConfig& config,
+            const mixxx::TagLabel& newLabel,
+            const mixxx::TagFacetId& facetId);
+    bool removeCustomTag(
+            const mixxx::TaggingConfig& config,
+            const mixxx::TagLabel& label,
+            const mixxx::TagFacetId& facetId = mixxx::TagFacetId{});
 
     PlayCounter getPlayCounter() const;
     void setPlayCounter(const PlayCounter& playCounter);
@@ -388,6 +421,7 @@ class Track : public QObject {
     /// The timestamp tracks when metadata has last been synchronized
     /// with file tags, either by importing or exporting the metadata.
     void replaceMetadataFromSource(
+            const mixxx::TaggingConfig& taggingConfig,
             mixxx::TrackMetadata importedMetadata,
             const QDateTime& sourceSynchronizedAt);
 
@@ -529,11 +563,18 @@ class Track : public QObject {
     ///
     /// Returns true if the track has been modified and false otherwise.
     bool mergeExtraMetadataFromSource(
+            const mixxx::TaggingConfig& taggingConfig,
             const mixxx::TrackMetadata& importedMetadata);
+
+    // TODO: Remove this dependency after populating TrackRecord
+    // instead of the Track object from the database
+    bool synchronizeTextFieldsWithFacets(
+            const mixxx::TaggingConfig& config);
 
     ExportTrackMetadataResult exportMetadata(
             const mixxx::MetadataSource& metadataSource,
-            const UserSettingsPointer& pConfig);
+            const UserSettingsPointer& pConfig,
+            const mixxx::TaggingConfig& taggingConfig);
 
     // Information about the actual properties of the
     // audio stream is only available after opening the
@@ -546,6 +587,9 @@ class Track : public QObject {
     }
     void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
+
+    void setFacetsInternal(
+            mixxx::Facets&& facets);
 
     // Mutex protecting access to object
     mutable QT_RECURSIVE_MUTEX m_qMutex;

@@ -8,6 +8,7 @@
 #include "library/browse/browsetablemodel.h"
 #include "moc_browsethread.cpp"
 #include "sources/soundsourceproxy.h"
+#include "tagging/taggingconfig.h"
 #include "track/track.h"
 #include "util/datetime.h"
 #include "util/trace.h"
@@ -137,6 +138,7 @@ void BrowseThread::populateModel() {
     QList< QList<QStandardItem*> > rows;
 
     int row = 0;
+
     // Iterate over the files
     while (fileIt.hasNext()) {
         // If a user quickly jumps through the folders

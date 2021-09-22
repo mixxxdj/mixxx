@@ -24,6 +24,8 @@ class LibraryHashDAO;
 namespace mixxx {
 
 class FileInfo;
+class TaggingConfig;
+class TrackFacetsStorage;
 class TrackRecord;
 
 } // namespace mixxx
@@ -49,9 +51,11 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             UserSettingsPointer pConfig);
     ~TrackDAO() override;
 
+    void initialize(const QSqlDatabase& database) override;
     void finish();
 
     QList<TrackId> resolveTrackIds(
+            const mixxx::TaggingConfig& taggingConfig,
             const QList<mixxx::FileInfo>& fileInfos,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
@@ -61,6 +65,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const QDir& rootDir) const;
 
     TrackPointer getTrackByRef(
+            const mixxx::TaggingConfig& taggingConfig,
             const TrackRef& trackRef) const;
 
     // Returns a set of all track locations in the library.
@@ -126,6 +131,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     TrackId getTrackIdByLocation(
             const QString& location) const;
     TrackPointer getTrackById(
+            const mixxx::TaggingConfig& taggingConfig,
             TrackId trackId) const;
 
     // Loads a track from the database (by id if available, otherwise by location)
@@ -134,6 +140,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Asynchronously imports cover art for newly added tracks. On failure a nullptr
     // is returned and pAlreadyInLibrary is left untouched.
     TrackPointer getOrAddTrack(
+            const mixxx::TaggingConfig& taggingConfig,
             const TrackRef& trackRef,
             bool* pAlreadyInLibrary = nullptr);
 
@@ -142,12 +149,15 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const TrackPointer& pTrack,
             bool unremove);
     TrackPointer addTracksAddFile(
+            const mixxx::TaggingConfig& taggingConfig,
             const mixxx::FileAccess& fileAccess,
             bool unremove);
     TrackPointer addTracksAddFile(
+            const mixxx::TaggingConfig& taggingConfig,
             const QString& filePath,
             bool unremove) {
         return addTracksAddFile(
+                taggingConfig,
                 mixxx::FileAccess(mixxx::FileInfo(filePath)),
                 unremove);
     }
@@ -208,6 +218,12 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     int m_queryLibraryMixxxDeletedColumn;
 
     QSet<TrackId> m_tracksAddedSet;
+
+    // TODO: This should be a parented_ptr. But since the parent/child
+    // relationships of DAOs are undefined and LibraryScanner fails to
+    // move them into its thread we can't fix this easily.
+    //parented_ptr<mixxx::TrackFacetsStorage> m_pFacets;
+    std::unique_ptr<mixxx::TrackFacetsStorage> m_pFacets;
 
     DISALLOW_COPY_AND_ASSIGN(TrackDAO);
 };

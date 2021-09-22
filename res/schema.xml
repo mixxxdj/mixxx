@@ -574,4 +574,23 @@ reapplying those migrations.
       UPDATE library SET source_synchronized_ms=NULL WHERE source_synchronized_ms=0;
     </sql>
   </revision>
+  <revision version="39" min_compatible="3">
+    <description>
+      Add custom tags for tracks
+    </description>
+    <sql>
+      CREATE TABLE IF NOT EXISTS track_custom_tags (
+          id                    INTEGER PRIMARY KEY,
+          track_id              INTEGER NOT NULL,
+          facet                 TEXT, -- NULL for plain tags / NOT NULL for faceted tags
+          label                 TEXT, -- NOT NULL for plain tags
+          score                 REAL NOT NULL, -- [0.0, 1.0]
+          FOREIGN KEY(track_id) REFERENCES library(id),
+          UNIQUE (facet, label, track_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_track_custom_tags_label ON track_custom_tags (
+          label
+      );
+    </sql>
+  </revision>
 </schema>

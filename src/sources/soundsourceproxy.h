@@ -8,6 +8,7 @@
 namespace mixxx {
 
 class FileAccess;
+class TaggingConfig;
 
 } // namespace mixxx
 
@@ -150,6 +151,7 @@ class SoundSourceProxy {
     /// Returns true if the track has been modified and false otherwise.
     bool updateTrackFromSource(
             const UserSettingsPointer& pConfig,
+            const mixxx::TaggingConfig& taggingConfig,
             UpdateTrackFromSourceMode mode);
 
     /// Opening the audio source through the proxy will update the
@@ -178,7 +180,8 @@ class SoundSourceProxy {
     friend class TrackCollectionManager;
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
-            const UserSettingsPointer& pConfig);
+            const UserSettingsPointer& pConfig,
+            const mixxx::TaggingConfig& taggingConfig);
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.

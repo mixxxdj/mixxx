@@ -166,7 +166,7 @@ TrackCollectionManager::~TrackCollectionManager() {
 
 void TrackCollectionManager::startLibraryScan() {
     DEBUG_ASSERT(m_pScanner);
-    m_pScanner->scan();
+    m_pScanner->scan(taggingConfig());
 }
 
 void TrackCollectionManager::stopLibraryScan() {
@@ -290,7 +290,10 @@ void TrackCollectionManager::exportTrackMetadata(
         switch (mode) {
         case TrackMetadataExportMode::Immediate:
             // Export track metadata now by saving as file tags.
-            SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack, m_pConfig);
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                    pTrack,
+                    m_pConfig,
+                    taggingConfig());
             break;
         case TrackMetadataExportMode::Deferred:
             // Export track metadata later when the track object goes out
@@ -440,7 +443,10 @@ TrackPointer TrackCollectionManager::getOrAddTrack(
         alreadyInLibrary = *pAlreadyInLibrary;
     }
     // Forward call to internal collection
-    auto pTrack = m_pInternalCollection->getOrAddTrack(trackRef, &alreadyInLibrary);
+    auto pTrack = m_pInternalCollection->getOrAddTrack(
+            taggingConfig(),
+            trackRef,
+            &alreadyInLibrary);
     if (pAlreadyInLibrary) {
         *pAlreadyInLibrary = alreadyInLibrary;
     }
@@ -533,12 +539,14 @@ void TrackCollectionManager::afterTracksRelocated(
 TrackPointer TrackCollectionManager::getTrackById(
         TrackId trackId) const {
     return internalCollection()->getTrackById(
+            taggingConfig(),
             trackId);
 }
 
 TrackPointer TrackCollectionManager::getTrackByRef(
         const TrackRef& trackRef) const {
     return internalCollection()->getTrackByRef(
+            taggingConfig(),
             trackRef);
 }
 
@@ -546,6 +554,7 @@ QList<TrackId> TrackCollectionManager::resolveTrackIdsFromUrls(
         const QList<QUrl>& urls,
         bool addMissing) const {
     return internalCollection()->resolveTrackIdsFromUrls(
+            taggingConfig(),
             urls,
             addMissing);
 }
@@ -553,6 +562,7 @@ QList<TrackId> TrackCollectionManager::resolveTrackIdsFromUrls(
 QList<TrackId> TrackCollectionManager::resolveTrackIdsFromLocations(
         const QList<QString>& locations) const {
     return internalCollection()->resolveTrackIdsFromLocations(
+            taggingConfig(),
             locations);
 }
 
@@ -560,7 +570,7 @@ bool TrackCollectionManager::updateTrackGenre(
         Track* pTrack,
         const QString& genre) const {
     return pTrack->updateGenre(
-            // TODO: Pass tagging config
+            taggingConfig(),
             genre);
 }
 
@@ -569,7 +579,7 @@ bool TrackCollectionManager::updateTrackMood(
         Track* pTrack,
         const QString& mood) const {
     return pTrack->updateMood(
-            // TODO: Pass tagging config
+            taggingConfig(),
             mood);
 }
 #endif // __EXTRA_METADATA__

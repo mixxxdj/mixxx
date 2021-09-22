@@ -24,6 +24,12 @@ class WColorPickerAction;
 class WCoverArtMenu;
 class WSearchRelatedTracksMenu;
 
+namespace mixxx {
+
+class TrackFacetsMenu;
+
+} // namespace mixxx
+
 /// A context menu for track(s).
 /// Can be used with individual track type widgets based on TrackPointer
 /// or list/table type track widgets based on QModelIndexList and TrackModel.
@@ -48,10 +54,11 @@ class WTrackMenu : public QMenu {
         Properties = 1 << 11,
         SearchRelated = 1 << 12,
         UpdateReplayGain = 1 << 13,
+        Facets = 1 << 14,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
                 BPM | Color | HideUnhidePurge | FileBrowser | Properties |
-                SearchRelated
+                SearchRelated | Facets
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -211,6 +218,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
+    parented_ptr<mixxx::TrackFacetsMenu> m_pFacetsMenu;
 
     // Update ReplayGain from Track
     QAction* m_pUpdateReplayGain{};

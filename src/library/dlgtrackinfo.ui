@@ -293,7 +293,7 @@
             </item>
 
             <item row="5" column="1">
-             <widget class="QLineEdit" name="txtGenre">
+             <widget class="QComboBox" name="txtGenreCombo">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -862,8 +862,20 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
        </item>
       </layout>
      </widget>
+
+     <widget class="QWidget" name="uiFacetsTab">
+      <attribute name="title">
+       <string>Custom Tags</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="uiFacetsLayout">
+       <item>
+        <widget class="QTreeWidget" name="uiFacetsTree"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
+
    <item>
     <layout class="QHBoxLayout" name="buttonLayout">
      <item>
@@ -986,7 +998,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtAlbum</tabstop>
   <tabstop>txtAlbumArtist</tabstop>
   <tabstop>txtComposer</tabstop>
-  <tabstop>txtGenre</tabstop>
+  <tabstop>txtGenreCombo</tabstop>
   <tabstop>txtGrouping</tabstop>
   <tabstop>txtComment</tabstop>
   <tabstop>txtYear</tabstop>

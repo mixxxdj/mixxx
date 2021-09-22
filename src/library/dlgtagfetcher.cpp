@@ -4,6 +4,7 @@
 #include <QtDebug>
 
 #include "defs_urls.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_dlgtagfetcher.cpp"
 #include "track/track.h"
 #include "track/tracknumbers.h"
@@ -57,10 +58,12 @@ void addTrack(
 } // anonymous namespace
 
 DlgTagFetcher::DlgTagFetcher(
+        const TrackCollectionManager* pTrackCollectionManager,
         const TrackModel* pTrackModel)
         // No parent because otherwise it inherits the style parent's
         // style which can make it unreadable. Bug #673411
         : QDialog(nullptr),
+          m_pTrackCollectionManager(pTrackCollectionManager),
           m_pTrackModel(pTrackModel),
           m_tagFetcher(this),
           m_networkResult(NetworkResult::Ok) {
@@ -215,6 +218,7 @@ void DlgTagFetcher::apply() {
     }
 #endif // __EXTRA_METADATA__
     m_track->replaceMetadataFromSource(
+            m_pTrackCollectionManager->taggingConfig(),
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
             // by explicitly setting the synchronization time stamp

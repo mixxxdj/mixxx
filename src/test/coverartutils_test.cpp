@@ -116,6 +116,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     pTrack = Track::newTemporary(kTrackLocationTest);
     EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
             config(),
+            trackCollectionManager()->taggingConfig(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Once));
     CoverInfo result = pTrack->getCoverInfoWithLocation();
     EXPECT_EQ(result.type, CoverInfo::METADATA);

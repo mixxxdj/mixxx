@@ -7,6 +7,7 @@
 
 #include "library/relocatedtrack.h"
 #include "preferences/usersettings.h"
+#include "tagging/taggingcontext.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/fileinfo.h"
@@ -56,6 +57,16 @@ class TrackCollectionManager: public QObject,
             bool addMissing) const;
     QList<TrackId> resolveTrackIdsFromLocations(
             const QList<QString>& locations) const;
+
+    mixxx::TaggingContext& refTaggingContext() {
+        return m_taggingContext;
+    }
+    const mixxx::TaggingContext& taggingContext() const {
+        return m_taggingContext;
+    }
+    const mixxx::TaggingConfig& taggingConfig() const {
+        return taggingContext().getConfig();
+    }
 
     bool updateTrackGenre(
             Track* pTrack,
@@ -124,6 +135,8 @@ class TrackCollectionManager: public QObject,
     const parented_ptr<TrackCollection> m_pInternalCollection;
 
     QList<ExternalTrackCollection*> m_externalCollections;
+
+    mixxx::TaggingContext m_taggingContext;
 
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     std::unique_ptr<LibraryScanner> m_pScanner;
