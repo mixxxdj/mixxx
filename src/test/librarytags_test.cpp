@@ -2,6 +2,7 @@
 
 #include <QJsonArray>
 #include <QJsonObject>
+#include <algorithm>
 
 #include "library/tags/facetid.h"
 #include "library/tags/tag.h"
@@ -46,6 +47,9 @@ TEST_F(FacetIdTest, convertIntoValidValue) {
     EXPECT_EQ(
             FacetId::value_t{},
             FacetId::convertIntoValidValue(""));
+    EXPECT_EQ(
+            FacetId::value_t{},
+            FacetId::convertIntoValidValue("<=>"));
     // Clamped whitespace string
     EXPECT_EQ(
             FacetId::value_t{},
@@ -59,17 +63,21 @@ TEST_F(FacetIdTest, convertIntoValidValue) {
             FacetId::value_t{"xy_[+]"},
             FacetId::convertIntoValidValue("X y _\n[+] "));
     // Valid characters without whitespace
+    // The alphabet does not start with a lowercase ASCII letter
+    // but does end with one.
+    auto reverseAlphabet = FacetId::value_t{FacetId::kAlphabet};
+    std::reverse(reverseAlphabet.begin(), reverseAlphabet.end());
     EXPECT_EQ(
-            FacetId::value_t{FacetId::kAlphabet},
+            reverseAlphabet,
             FacetId::convertIntoValidValue(
-                    FacetId::value_t{FacetId::kAlphabet}));
+                    reverseAlphabet));
     EXPECT_EQ(
-            FacetId::value_t{"+-./0123456789"
-                             "@abcdefghijklmnopqrstuvwxyz[]_"
+            FacetId::value_t{"abcdefghijklmnopqrstuvwxyz"
+                             "+-./0123456789@[]_"
                              "abcdefghijklmnopqrstuvwxyz"},
             FacetId::convertIntoValidValue(
-                    "\t!\"#$%&'()*+,-./0123456789:;<=>?"
-                    " @ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_"
+                    "\t!\"#$%&'()*ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    " +,-./0123456789:;<=>?@[]^_"
                     " `abcdefghijklmnopqrstuvwxyz{|}~\n"));
 }
 

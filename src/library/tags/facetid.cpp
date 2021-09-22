@@ -5,9 +5,9 @@
 namespace {
 
 const QRegularExpression kValidFacetStringNotEmpty(
-        QStringLiteral("^[\\+\\-\\./0-9@a-z\\[\\]_]+"));
-const QRegularExpression kInverseValidFacetStringNotEmpty(
-        QStringLiteral("[^\\+\\-\\./0-9@a-z\\[\\]_]+"));
+        QStringLiteral("^[a-z][\\+\\-\\./0-9@a-z\\[\\]_]*"));
+const QRegularExpression kInvalidFacetChars(
+        QStringLiteral("[^\\+\\-\\./0-9@a-z\\[\\]_]*"));
 
 } // anonymous namespace
 
@@ -37,7 +37,17 @@ bool FacetId::isValidValue(
 //static
 FacetId::value_t FacetId::convertIntoValidValue(
         const value_t& value) {
-    auto validValue = filterEmptyValue(value.toLower().remove(kInverseValidFacetStringNotEmpty));
+    const auto validChars = value.toLower().remove(kInvalidFacetChars);
+    int offset = 0;
+    while (offset < validChars.size() && !validChars[offset].isLetter()) {
+        ++offset;
+    }
+    DEBUG_ASSERT(offset <= validChars.size());
+    if (offset >= validChars.size()) {
+        return {};
+    }
+    const auto validValue = validChars.right(validChars.size() - offset);
+    DEBUG_ASSERT(!validValue.isEmpty());
     DEBUG_ASSERT(isValidValue(validValue));
     return validValue;
 }
