@@ -2,7 +2,6 @@
 
 #include <QFile>
 #include <QMetaType>
-#include <QMutexLocker>
 #include <QTextStream>
 #include <QtDebug>
 

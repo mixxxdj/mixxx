@@ -1,7 +1,6 @@
 #include "track/keyutils.h"
 
 #include <QMap>
-#include <QMutexLocker>
 #include <QPair>
 #include <QRegularExpression>
 #include <QtDebug>

@@ -3,7 +3,6 @@
 #include <QAtomicInt>
 #include <QAtomicPointer>
 #include <QList>
-#include <QMutex>
 
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"

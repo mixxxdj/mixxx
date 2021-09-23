@@ -3,7 +3,6 @@
 #include <QAtomicInt>
 #include <QByteArray>
 #include <QMutex>
-#include <QMutexLocker>
 #include <QSharedPointer>
 #include <QString>
 #include <vector>

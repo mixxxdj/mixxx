@@ -2,7 +2,6 @@
 
 #include <QEvent>
 #include <QMap>
-#include <QMutex>
 #include <QStackedWidget>
 #include <QString>
 

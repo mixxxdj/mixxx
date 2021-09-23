@@ -1,7 +1,5 @@
 #include "mixer/playermanager.h"
 
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
 #include "effects/effectrack.h"
 #include "effects/effectsmanager.h"

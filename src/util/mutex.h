@@ -5,7 +5,6 @@
 // See: http://clang.llvm.org/docs/ThreadSafetyAnalysis.html
 
 #include <QMutex>
-#include <QMutexLocker>
 #include <QReadWriteLock>
 
 #include "util/compatibility/qmutex.h"

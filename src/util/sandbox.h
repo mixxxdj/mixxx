@@ -4,7 +4,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QHash>
-#include <QMutex>
 #include <QSharedPointer>
 
 #include "preferences/configobject.h"

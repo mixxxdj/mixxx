@@ -2,7 +2,6 @@
 
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QMutexLocker>
 #include <QObject>
 #include <QtDebug>
 

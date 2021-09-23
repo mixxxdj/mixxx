@@ -2,7 +2,6 @@
 
 #include <QList>
 #include <QMap>
-#include <QMutex>
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
