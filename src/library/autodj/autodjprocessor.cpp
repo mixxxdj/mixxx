@@ -736,6 +736,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // loaded into the otherDeck
             thisDeck->fadeBeginPos = 1.0;
             thisDeck->fadeEndPos = 1.0;
+            otherDeck->isFromDeck = false;
             // Load the next track to otherDeck.
             loadNextTrackFromQueue(*otherDeck);
             emitAutoDJStateChanged(m_eState);
