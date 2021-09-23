@@ -222,6 +222,7 @@ void CachingReader::newTrack(TrackPointer pTrack) {
     m_worker.newTrack(std::move(pTrack));
 }
 
+// Called from the engine thread
 void CachingReader::process() {
     ReaderStatusUpdate update;
     while (m_readerStatusUpdateFIFO.read(&update, 1) == 1) {
