@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     # The Dockerfile for this container can be found at:
     # https://github.com/Holzhaus/mixxx-ci-docker
-    container: holzhaus/mixxx-ci:20210526
+    container: holzhaus/mixxx-ci:20210923
     steps:
     - name: "Check out repository"
       uses: actions/checkout@v2
@@ -50,9 +50,6 @@ jobs:
       with:
         name: ${{ env.UPLOAD_PATCH_FILE }}
         path: ${{ env.UPLOAD_PATCH_FILE }}
-
-    - name: "Install appstreamcli"
-      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends appstream
 
     # AppStream metadata has been generated/updated by a pre-commit hook
     - name: "Validate AppStream metadata"
