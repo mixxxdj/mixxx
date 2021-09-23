@@ -513,9 +513,9 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
             }
         }
     } else if (MC7000.PADModeCueLoop[deckNumber]) {
-        return;
+        // TODO
     } else if (MC7000.PADModeFlip[deckNumber]) {
-        return;
+        // TODO
     } else if (MC7000.PADModeRoll[deckNumber]) {
         // TODO(all): check for actual beatloop_size and apply back after a PAD Roll
         i = control - 0x14;
@@ -561,7 +561,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
             midi.sendShortMsg(0x94 + deckOffset, control, MC7000.padColor.sliceron);
         }
     } else if (MC7000.PADModeSlicerLoop[deckNumber]) {
-        return;
+        // TODO
     } else if (MC7000.PADModeSampler[deckNumber]) {
         for (i = 1; i <= 8; i++) {
             if (control === 0x14 + i - 1 && value >= 0x01) {
@@ -589,9 +589,9 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
             }
         }
     } else if (MC7000.PADModeVelSamp[deckNumber]) {
-        return;
+        // TODO
     } else if (MC7000.PADModePitch[deckNumber]) {
-        return;
+        // TODO
     }
 };
 
@@ -879,6 +879,22 @@ MC7000.censor = function(channel, control, value, status, group) {
             engine.setValue(group, "reverse", 1);
         } else {
             engine.setValue(group, "reverse", 0);
+        }
+    }
+};
+
+// Auto-Loop Button
+MC7000.autoLoop = function(channel, control, value, status, group) {
+    if (value) { // Button Down == 0x7F
+        if (engine.getValue(group, "loop_enabled")) {
+            engine.setValue(group, "loop_enabled", false);
+            engine.setValue(group, "reloop_toggle", true);
+        } else {
+            // NOTE:
+            // `script.toggleControl` does not work here,
+            // so we have to do it manually.
+            engine.setValue(group, "beatloop_activate", true);
+            engine.setValue(group, "beatloop_activate", false);
         }
     }
 };
