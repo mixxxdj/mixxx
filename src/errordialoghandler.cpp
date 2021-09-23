@@ -1,7 +1,6 @@
 #include "errordialoghandler.h"
 
 #include <QCoreApplication>
-#include <QMutexLocker>
 #include <QScopedPointer>
 #include <QThread>
 #include <QtDebug>

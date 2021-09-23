@@ -3,7 +3,6 @@
 #include <QDir>
 #include <QGridLayout>
 #include <QLabel>
-#include <QMutexLocker>
 #include <QSplitter>
 #include <QStackedWidget>
 #include <QVBoxLayout>

@@ -1,8 +1,6 @@
 // Helper class to have easy access
 #include "mixer/playerinfo.h"
 
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"

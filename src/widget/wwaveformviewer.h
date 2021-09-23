@@ -5,7 +5,6 @@
 #include <QDropEvent>
 #include <QEvent>
 #include <QList>
-#include <QMutex>
 
 #include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
