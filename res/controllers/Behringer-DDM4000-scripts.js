@@ -225,6 +225,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
         SamplerBank.prototype = e.deriveFrom(c.ComponentContainer);
 
         return {
+            throttleDelay: 40,
             init: function() {
 
                 /*

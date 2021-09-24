@@ -100,6 +100,22 @@
     };
 
     /**
+     * Perform an action, throttled if the owner supports throttling.
+     *
+     * @param {function} action The action to perform
+     * @param {object} owner Object used as `this` for the action
+     * @private
+     * @see `Throttler`
+     */
+    var throttle = function(action, owner) {
+        if (owner.throttler) {
+            owner.throttler.schedule(action, owner);
+        } else {
+            action.call(owner);
+        }
+    };
+
+    /**
      * A button to toggle un-/shift on a target component.
      *
      * @constructor
@@ -222,6 +238,53 @@
             } else {
                 this.reset();
             }
+        }
+    };
+
+    /**
+     * An object that enforces a constant delay between the execution of consecutive actions.
+     *
+     * Use `schedule(action, owner)` to perform an action on the owner as soon as the delay has
+     * elapsed after the preceding action has finished.
+     *
+     * @constructor
+     * @param {number} options.delay Minimal delay between two consecutive actions (in ms)
+     * @public
+     */
+    var Throttler = function(options) {
+        options = options || {};
+        options.delay = options.delay || 0;
+        _.assign(this, options);
+        this.locked = false;
+        this.jobs = [];
+        this.unlockTimer = new Timer(
+            {timeout: this.delay, oneShot: true, action: this.unlock, owner: this});
+    };
+    Throttler.prototype = {
+        schedule: function(action, owner) {
+            this.jobs.push({action: action, owner: owner});
+            this.notify();
+        },
+
+        notify: function() {
+            if (this.jobs.length > 0 && this.acquireLock()) {
+                var job = this.jobs.shift();
+                job.action.call(job.owner);
+                this.unlockTimer.start();
+            }
+        },
+
+        acquireLock: function() {
+            var unlocked = !this.locked;
+            if (unlocked) {
+                this.locked = true;
+            }
+            return unlocked;
+        },
+
+        unlock: function() {
+            this.locked = false;
+            this.notify();
         }
     };
 
@@ -1029,6 +1092,11 @@
      *     +- init: (optional) A function that is called when Mixxx is started
      *     +- shutdown: (optional) A function that is called when Mixxx is shutting down
      *     |
+     *     +- throttleDelay (optional): A positive number (in ms) that is used to slow down the
+     *     |                            initialization of the controller; this option is useful if
+     *     |                            the hardware is limited to process a certain number of MIDI
+     *     |                            messages per time.
+     *     |
      *     +- decks: An array of deck definitions (may be empty or omitted)
      *     |  +- deck:
      *     |     +- deckNumbers: As defined by {components.Deck}
@@ -1112,6 +1180,12 @@
         init: function(controllerId, debug) {
             this.controllerId = controllerId;
             this.debug = debug;
+
+            var delay = this.config.throttleDelay;
+            if (delay > 0) {
+                log.debug("Component registration is throttled using a delay of " + delay + "ms");
+                this.throttler = new Throttler({delay: delay});
+            }
 
             if (typeof this.config.init === "function") {
                 this.config.init(controllerId, debug);
@@ -1210,9 +1284,11 @@
             }].forEach(function(context) {
                 if (Array.isArray(context.definitions)) {
                     context.definitions.forEach(function(definition) {
-                        var implementation = context.factory.call(this, definition, target);
-                        target.push(implementation);
-                        context.register(definition, implementation);
+                        throttle(function() {
+                            var implementation = context.factory.call(this, definition, target);
+                            target.push(implementation);
+                            context.register(definition, implementation);
+                        }, this);
                     }, this);
                 } else {
                     log.error(this.controllerId + ": Skipping a part of the configuration because "
