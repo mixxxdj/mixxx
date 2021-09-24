@@ -116,6 +116,27 @@
     };
 
     /**
+     * A component that uses the parameter instead of the value as output.
+     *
+     * @constructor
+     * @extends {components.Component}
+     * @param {object} options Options object
+     * @public
+     */
+    var ParameterComponent = function(options) {
+        components.Component.call(this, options);
+    };
+    ParameterComponent.prototype = deriveFrom(components.Component, {
+        outValueScale: function(_value) {
+            /*
+             * We ignore the argument and use the parameter (0..1) instead because value scale is
+             * arbitrary and thus cannot be mapped to MIDI values (0..127) properly.
+             */
+            return convertToMidiValue.call(this, this.outGetParameter());
+        },
+    });
+
+    /**
      * A button to toggle un-/shift on a target component.
      *
      * @constructor
@@ -647,16 +668,9 @@
         }
         this.source = options.source;
         this.sync();
-        components.Component.call(this, options);
+        ParameterComponent.call(this, options);
     };
-    Publisher.prototype = deriveFrom(components.Component, {
-        outValueScale: function(_value) {
-            /*
-             * We ignore the argument and use the parameter (0..1) instead because value scale is
-             * arbitrary and thus cannot be mapped to MIDI values (0..127) properly.
-             */
-            return convertToMidiValue.call(this, this.outGetParameter());
-        },
+    Publisher.prototype = deriveFrom(ParameterComponent, {
         sync: function() {
             this.midi = this.source.midi;
             this.group = this.source.group;
@@ -1517,6 +1531,7 @@
 
     var exports = {};
     exports.deriveFrom = deriveFrom;
+    exports.ParameterComponent = ParameterComponent;
     exports.ShiftButton = ShiftButton;
     exports.Trigger = Trigger;
     exports.CustomButton = CustomButton;
