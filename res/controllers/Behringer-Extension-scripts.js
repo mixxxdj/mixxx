@@ -222,7 +222,7 @@
      * Use `start(action)` to start and `reset()` to reset.
      *
      * @constructor
-     * @param {number} options.timeout Duration between start and action
+     * @param {number} options.timeout Duration between start and action (in ms)
      * @param {boolean} options.oneShot If `true`, the action is run once;
      *                          otherwise, it is run periodically until the timer is reset.
      * @param {function} options.action Function that is executed whenever the timer expires
