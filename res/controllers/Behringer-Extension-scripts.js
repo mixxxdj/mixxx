@@ -1325,14 +1325,9 @@
         createDeck: function(deckDefinition, componentStorage) {
             var deck = new components.Deck(deckDefinition.deckNumbers);
             deckDefinition.components.forEach(function(componentDefinition, index) {
-                if (componentDefinition && componentDefinition.type) {
-                    var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
-                    deck[index] = new componentDefinition.type(options);
-                } else {
-                    log.error("Skipping component without type on Deck of " + deck.currentDeck
-                        + ": " + stringifyObject(componentDefinition));
-                    deck[index] = null;
-                }
+                var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
+                var definition = _.merge(componentDefinition, {options: options});
+                deck[index] = this.createComponent(definition);
             }, this);
             if (deckDefinition.equalizerUnit) {
                 deck.equalizerUnit = this.setupMidi(
