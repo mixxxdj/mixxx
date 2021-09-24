@@ -20,8 +20,7 @@ BaseSyncableListener::BaseSyncableListener(UserSettingsPointer pConfig)
 
 BaseSyncableListener::~BaseSyncableListener() {
     // We use the slider value because that is never set to 0.0.
-    m_pConfig->set(ConfigKey("[InternalClock]", "bpm"), ConfigValue(
-        m_pInternalClock->getBpm()));
+    m_pConfig->setValue(ConfigKey(kInternalClockGroup, "bpm"), m_pInternalClock->getBpm());
     delete m_pInternalClock;
 }
 
