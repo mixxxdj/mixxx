@@ -24,6 +24,7 @@ CmdlineArgs::CmdlineArgs()
           m_safeMode(false),
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
+          m_scaleFactor(1.0),
           m_useColors(false),
           m_parseForUserFeedbackRequired(false),
           m_logLevel(mixxx::kLogLevelDefault),

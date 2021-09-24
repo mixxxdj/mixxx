@@ -104,18 +104,18 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
     for (var i = 1; i <= 4; i++) {
         this.hotcueButtons[i] = new components.HotcueButton({
             group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
-            midi: [0x94 + midiChannel, 0x01 + i],
+            midi: [0x94 + midiChannel, 0x00 + i],
             number: i
         });
         var sampler = i + (midiChannel * DJ2GO2Touch.padsPerDeck);
         this.samplerButtons[i] = new components.SamplerButton({
             group: "[Sampler" + sampler + "]",
-            midi: [0x94 + midiChannel, 0x31 + i],
+            midi: [0x94 + midiChannel, 0x30 + i],
             number: sampler
         });
         this.beatloopButtons[i] = new components.Button({
             group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
-            midi: [0x94 + midiChannel, 0x11 + i],
+            midi: [0x94 + midiChannel, 0x10 + i],
             number: i,
             key: "beatloop_" + Math.pow(2, i-1) + "_toggle"
         });

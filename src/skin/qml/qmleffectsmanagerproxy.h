@@ -2,12 +2,12 @@
 #include <QObject>
 
 #include "effects/effectsmanager.h"
+#include "skin/qml/qmlvisibleeffectsmodel.h"
 
 namespace mixxx {
 namespace skin {
 namespace qml {
 
-class QmlVisibleEffectsModel;
 class QmlEffectSlotProxy;
 
 class QmlEffectsManagerProxy : public QObject {

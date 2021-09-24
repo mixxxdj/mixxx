@@ -87,6 +87,8 @@ class LoopingControl : public EngineControl {
 
     // Jump forward or backward by beats.
     void slotBeatJump(double beats);
+    void slotBeatJumpSizeHalve(double pressed);
+    void slotBeatJumpSizeDouble(double pressed);
     void slotBeatJumpForward(double pressed);
     void slotBeatJumpBackward(double pressed);
 
@@ -180,6 +182,8 @@ class LoopingControl : public EngineControl {
 
     ControlObject* m_pCOBeatJump;
     ControlObject* m_pCOBeatJumpSize;
+    ControlPushButton* m_pCOBeatJumpSizeHalve;
+    ControlPushButton* m_pCOBeatJumpSizeDouble;
     ControlPushButton* m_pCOBeatJumpForward;
     ControlPushButton* m_pCOBeatJumpBackward;
     QList<BeatJumpControl*> m_beatJumps;

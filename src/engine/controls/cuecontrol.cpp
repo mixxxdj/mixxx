@@ -1,7 +1,5 @@
 #include "engine/controls/cuecontrol.h"
 
-#include <QMutexLocker>
-
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -84,12 +82,8 @@ CueControl::CueControl(const QString& group,
           m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
           m_bypassCueSetByPlay(false),
           m_iNumHotCues(NUM_HOT_CUES),
-          m_pCurrentSavedLoopControl(nullptr)
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-          ,
-          m_trackMutex(QMutex::Recursive)
-#endif
-{
+          m_pCurrentSavedLoopControl(nullptr),
+          m_trackMutex(QT_RECURSIVE_MUTEX_INIT) {
     // To silence a compiler warning about CUE_MODE_PIONEER.
     Q_UNUSED(CUE_MODE_PIONEER);
     createControls();
@@ -418,7 +412,7 @@ void CueControl::detachCue(HotcueControl* pControl) {
 // via seekOnLoad(). There is the theoretical and pending issue of a delayed control
 // command intended for the old track that might be performed instead.
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(), nullptr, this, nullptr);
 
@@ -532,12 +526,12 @@ void CueControl::seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition) {
 }
 
 void CueControl::cueUpdated() {
-    //QMutexLocker lock(&m_mutex);
+    //auto lock = lockMutex(&m_mutex);
     // We should get a trackCuesUpdated call anyway, so do nothing.
 }
 
 void CueControl::loadCuesFromTrack() {
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     if (!m_pLoadedTrack) {
         return;
     }
@@ -752,7 +746,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     if (!m_pLoadedTrack) {
         return;
     }
@@ -1095,7 +1089,7 @@ void CueControl::hotcueClear(HotcueControl* pControl, double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     if (!m_pLoadedTrack) {
         return;
     }
@@ -1111,7 +1105,7 @@ void CueControl::hotcueClear(HotcueControl* pControl, double value) {
 
 void CueControl::hotcuePositionChanged(
         HotcueControl* pControl, double value) {
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     if (!m_pLoadedTrack) {
         return;
     }
@@ -1198,7 +1192,7 @@ void CueControl::cueSet(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     const mixxx::audio::FramePos position = getQuantizedCurrentPosition();
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
@@ -1229,7 +1223,7 @@ void CueControl::cueGoto(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     // Seek to cue point
     const auto mainCuePosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
@@ -1251,7 +1245,7 @@ void CueControl::cueGotoAndPlay(double value) {
     }
 
     cueGoto(value);
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     // Start playing if not already
 
     // End previewing to not jump back if a sticking finger on a cue
@@ -1466,7 +1460,7 @@ void CueControl::cueDefault(double v) {
 }
 
 void CueControl::pause(double v) {
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     //qDebug() << "CueControl::pause()" << v;
     if (v > 0.0) {
         m_pPlay->set(0.0);
@@ -1474,7 +1468,7 @@ void CueControl::pause(double v) {
 }
 
 void CueControl::playStutter(double v) {
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     //qDebug() << "playStutter" << v;
     if (v > 0.0) {
         if (m_pPlay->toBool()) {
@@ -1496,7 +1490,7 @@ void CueControl::introStartSet(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
 
     const mixxx::audio::FramePos position = getQuantizedCurrentPosition();
     if (!position.isValid()) {
@@ -1555,7 +1549,7 @@ void CueControl::introStartClear(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     const auto introEndPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pIntroEndPosition->get());
@@ -1596,7 +1590,7 @@ void CueControl::introEndSet(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
 
     const mixxx::audio::FramePos position = getQuantizedCurrentPosition();
     if (!position.isValid()) {
@@ -1655,7 +1649,7 @@ void CueControl::introEndClear(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     const auto introStart =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pIntroStartPosition->get());
@@ -1681,7 +1675,7 @@ void CueControl::introEndActivate(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     const auto introEnd =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pIntroEndPosition->get());
@@ -1699,7 +1693,7 @@ void CueControl::outroStartSet(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
 
     const mixxx::audio::FramePos position = getQuantizedCurrentPosition();
     if (!position.isValid()) {
@@ -1758,7 +1752,7 @@ void CueControl::outroStartClear(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     const auto outroEnd =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pOutroEndPosition->get());
@@ -1784,7 +1778,7 @@ void CueControl::outroStartActivate(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     const auto outroStart =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pOutroStartPosition->get());
@@ -1802,7 +1796,7 @@ void CueControl::outroEndSet(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
 
     const mixxx::audio::FramePos position = getQuantizedCurrentPosition();
     if (!position.isValid()) {
@@ -1861,7 +1855,7 @@ void CueControl::outroEndClear(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     const auto outroStart =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pOutroStartPosition->get());
@@ -1887,7 +1881,7 @@ void CueControl::outroEndActivate(double value) {
         return;
     }
 
-    QMutexLocker lock(&m_trackMutex);
+    auto lock = lockMutex(&m_trackMutex);
     const auto outroEnd =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pOutroEndPosition->get());

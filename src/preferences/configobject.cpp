@@ -105,9 +105,19 @@ ConfigValueKbd::ConfigValueKbd(const QKeySequence& keys)
     QTextStream(&value) << m_keys.toString();
 }
 
-template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QString& file)
-        : m_resourcePath(computeResourcePath()),
-          m_settingsPath(computeSettingsPath(file)) {
+template<class ValueType>
+ConfigObject<ValueType>::ConfigObject(const QString& file)
+        : ConfigObject(file, computeResourcePath(), computeSettingsPath(file)) {
+    reopen(file);
+}
+
+template<class ValueType>
+ConfigObject<ValueType>::ConfigObject(
+        const QString& file,
+        const QString& resourcePath,
+        const QString& settingsPath)
+        : m_resourcePath(resourcePath),
+          m_settingsPath(settingsPath) {
     reopen(file);
 }
 

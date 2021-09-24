@@ -18,8 +18,30 @@
 #include "mixer/playermanager.h"
 #include "moc_browsetablemodel.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "widget/wlibrarytableview.h"
+
+namespace {
+
+/// Helper to insert values into a QList with specific indices.
+///
+/// *For legacy code only - Do not use for new code!*
+template<typename T>
+void listAppendOrReplaceAt(QList<T>* pList, int index, const T& value) {
+    VERIFY_OR_DEBUG_ASSERT(index <= pList->size()) {
+        qWarning() << "listAppendOrReplaceAt: Padding list with"
+                   << (index - pList->size()) << "default elements";
+        while (index > pList->size()) {
+            pList->append(T());
+        }
+    }
+    VERIFY_OR_DEBUG_ASSERT(index == pList->size()) {
+        pList->replace(index, value);
+        return;
+    }
+    pList->append(value);
+}
+
+} // anonymous namespace
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,

@@ -7,7 +7,7 @@
 #include "moc_cachingreader.cpp"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/counter.h"
 #include "util/logger.h"
 #include "util/math.h"
@@ -222,6 +222,7 @@ void CachingReader::newTrack(TrackPointer pTrack) {
     m_worker.newTrack(std::move(pTrack));
 }
 
+// Called from the engine thread
 void CachingReader::process() {
     ReaderStatusUpdate update;
     while (m_readerStatusUpdateFIFO.read(&update, 1) == 1) {
@@ -234,7 +235,7 @@ void CachingReader::process() {
                     update.status == CHUNK_READ_EOF ||
                     update.status == CHUNK_READ_INVALID ||
                     update.status == CHUNK_READ_DISCARDED);
-            if (atomicLoadAcquire(m_state) == STATE_TRACK_LOADING) {
+            if (m_state.loadAcquire() == STATE_TRACK_LOADING) {
                 // Discard all results from pending read requests for the
                 // previous track before the next track has been loaded.
                 freeChunk(pChunk);

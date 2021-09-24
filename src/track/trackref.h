@@ -1,6 +1,7 @@
 #pragma once
 
 #include "track/trackid.h"
+#include "util/compatibility/qhash.h"
 #include "util/fileinfo.h"
 
 // A track in the library is identified by a location and an id.
@@ -128,9 +129,9 @@ std::ostream& operator<<(std::ostream& os, const TrackRef& trackRef);
 
 QDebug operator<<(QDebug debug, const TrackRef& trackRef);
 
-inline uint qHash(
+inline qhash_seed_t qHash(
         const TrackRef& key,
-        uint seed = 0) {
+        qhash_seed_t seed = 0) {
     return qHash(
             key.getLocation(), seed) ^
             qHash(key.getId(), seed);

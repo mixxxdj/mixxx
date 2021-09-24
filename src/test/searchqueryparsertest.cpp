@@ -682,6 +682,12 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchWithOperators) {
     EXPECT_STREQ(
         qPrintable(QString("duration >= 63")),
         qPrintable(pQuery->toSql()));
+
+    // Seconds out of range
+    pQuery = m_parser.parseQuery("duration:>=1:60", searchColumns, "");
+    pTrack->setDuration(60);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    EXPECT_TRUE(pQuery->toSql().isEmpty());
 }
 
 TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {

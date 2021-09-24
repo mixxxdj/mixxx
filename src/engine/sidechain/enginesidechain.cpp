@@ -8,7 +8,6 @@
 
 #include "engine/sidechain/enginesidechain.h"
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "engine/engine.h"
