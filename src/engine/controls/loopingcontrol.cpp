@@ -1279,7 +1279,7 @@ double LoopingControl::seekInsideAdjustedLoop(
     double adjusted_position = currentSample;
     if (adjusted_position > new_loop_out) {
         // In case play head has already passed the new out position, seek in whole
-        // loop size steps back, as if playback has been looped within the boudaries
+        // loop size steps back, as if playback has been looped within the boundaries
         double adjust_steps = ceil((adjusted_position - new_loop_out) / new_loop_size);
         adjusted_position -= adjust_steps * new_loop_size;
         DEBUG_ASSERT(adjusted_position <= new_loop_out);
