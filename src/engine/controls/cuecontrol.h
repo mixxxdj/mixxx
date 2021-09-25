@@ -3,7 +3,6 @@
 #include <QAtomicInt>
 #include <QAtomicPointer>
 #include <QList>
-#include <QMutex>
 
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
@@ -11,6 +10,7 @@
 #include "preferences/usersettings.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
+#include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
 
 #define NUM_HOT_CUES 37
@@ -348,11 +348,7 @@ class CueControl : public EngineControl {
     QMap<QObject*, int> m_controlMap;
 
     // Must be locked when using the m_pLoadedTrack and it's properties
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    QRecursiveMutex m_trackMutex;
-#else
-    QMutex m_trackMutex;
-#endif
+    QT_RECURSIVE_MUTEX m_trackMutex;
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
     friend class HotcueControlTest;

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "util/assert.h"
+#include "util/compatibility/qhash.h"
 
 // ChannelHandle defines a unique identifier for channels of audio in the engine
 // (e.g. headphone output, master output, deck 1, microphone 3). Previously we
@@ -75,9 +76,9 @@ inline QDebug operator<<(QDebug stream, const ChannelHandle& h) {
     return stream;
 }
 
-inline uint qHash(
+inline qhash_seed_t qHash(
         const ChannelHandle& handle,
-        uint seed = 0) {
+        qhash_seed_t seed = 0) {
     return qHash(handle.handle(), seed);
 }
 
@@ -115,9 +116,9 @@ inline QDebug operator<<(QDebug stream, const ChannelHandleAndGroup& g) {
     return stream;
 }
 
-inline uint qHash(
+inline qhash_seed_t qHash(
         const ChannelHandleAndGroup& handleGroup,
-        uint seed = 0) {
+        qhash_seed_t seed = 0) {
     return qHash(handleGroup.handle(), seed);
 }
 

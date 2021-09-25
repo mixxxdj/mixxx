@@ -11,9 +11,9 @@
 #include "track/cueinfoimporter.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
+#include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/memory.h"
-#include "util/qtmutex.h"
 #include "waveform/waveform.h"
 
 class Track : public QObject {

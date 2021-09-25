@@ -5,7 +5,6 @@
 #include "moc_dlgprefsounditem.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
-#include "util/compatibility.h"
 
 /**
  * Constructs a new preferences sound item, representing an AudioPath and SoundDevice

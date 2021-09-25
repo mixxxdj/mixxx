@@ -710,8 +710,17 @@
    #4160
   </li>
   <li>
+   Updated mapping for Behringer DDM4000 mixer
+   #4262
+  </li>
+  <li>
    Disabled detection of keyboards and mice as HID controllers
    #4243
+  </li>
+  <li>
+   Disabled detection of all HID controllers with Apple's vendor ID. Apple doesn't build actual controllers.
+   #4260
+   #4273
   </li>
   <li>
    Add support for HiDPI scale factors of 125% and 175% (only with Qt 5.14+)
@@ -787,6 +796,34 @@
    FFmpeg: Ignore inaudible samples before start of stream
    #4245
   </li>
+  <li>
+   Controller Preferences: Don't automatically enable checkbox if controller is disabled
+   #4244
+   lp:1941042
+  </li>
+  <li>
+   Tooltips: Always show tooltips in preferences
+   #4198
+   lp:1840493
+  </li>
+  <li>
+   Tooltips: Use item label for tooltips in library side bar and show ID when debugging.
+   #4247
+  </li>
+  <li>
+   Library sidebar: Also activate items on PageUp/Down events.
+   #4237
+  </li>
+  <li>
+   Fix handling of preview button cell events in developer mode.
+   #4264
+   lp:1929141
+  </li>
+  <li>
+   Auto DJ: Fix bug which could make an empty track stop Auto DJ.
+   #4267
+   lp:1941743
+  </li>
  </ul>
  <p>
   Packaging
@@ -822,6 +859,18 @@
    Please update PortAudio to
    19.7
    if you have not done so already. This is required for Mixxx to work with PipeWire via the JACK API for many devices.
+  </li>
+  <li>
+   Install multiple sizes of rasterized icons
+   #4204
+  </li>
+  <li>
+   CMake: Fixed detection of SoundTouch pkgconfig file and version
+   #4209
+  </li>
+  <li>
+   Fix AppStream metainfo
+   #4205
   </li>
  </ul>
 </description>

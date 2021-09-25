@@ -393,7 +393,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                         { // Crossfader: On
                             type: CrossfaderUnit,
                             options: {
-                                button: {midi: [note, 0x1F], sendShifted: true},
+                                button: {group: "[Skin]", midi: [note, 0x1F], sendShifted: true},
                                 crossfader: {midi: [cc, 0x15]}
                             },
                         },

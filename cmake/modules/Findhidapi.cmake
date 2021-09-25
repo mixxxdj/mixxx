@@ -45,7 +45,7 @@ The following cache variables may also be set:
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_hidapi QUIET hidapi-libusb)
+  pkg_search_module(PC_hidapi QUIET hidapi-libusb hidapi)
 endif()
 
 find_path(hidapi_INCLUDE_DIR
@@ -72,7 +72,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
 endif()
 
 # Version detection
-if(DEFINED PC_hidapi_VERSION)
+if(PC_hidapi_VERSION)
   set(hidapi_VERSION "${PC_hidapi_VERSION}")
 else()
   if (EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
@@ -96,7 +96,7 @@ endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   hidapi
-  REQUIRED_VARS hidapi_LIBRARY hidapi_INCLUDE_DIR
+  REQUIRED_VARS hidapi_LIBRARY hidapi_INCLUDE_DIR hidapi_VERSION
   VERSION_VAR hidapi_VERSION
 )
 
