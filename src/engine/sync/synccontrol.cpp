@@ -402,8 +402,8 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
 
 void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // This slot is fired by if the user has adjusted the beatgrid.
-    if (true) {
-        qDebug() << getGroup() << "SyncControl::trackBeatsUpdated";
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
     }
 
     m_pBeats = pBeats;
