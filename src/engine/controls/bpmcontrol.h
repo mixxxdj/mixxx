@@ -98,9 +98,6 @@ class BpmControl : public EngineControl {
     void slotAdjustBeatsSlower(double);
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
-    void slotControlBeatSync(double);
-    void slotControlBeatSyncPhase(double);
-    void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
     void slotUpdateRateSlider(double v = 0.0);
@@ -148,11 +145,6 @@ class BpmControl : public EngineControl {
 
     // Used for bpm tapping from GUI and MIDI
     ControlPushButton* m_pButtonTap;
-
-    // Button for sync'ing with the other EngineBuffer
-    ControlPushButton* m_pButtonSync;
-    ControlPushButton* m_pButtonSyncPhase;
-    ControlPushButton* m_pButtonSyncTempo;
 
     // Button that translates the beats so the nearest beat is on the current
     // playposition.

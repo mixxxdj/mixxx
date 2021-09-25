@@ -111,22 +111,6 @@ BpmControl::BpmControl(const QString& group,
             this, &BpmControl::slotBpmTap,
             Qt::DirectConnection);
 
-    // Beat sync (scale buffer tempo relative to tempo of other buffer)
-    m_pButtonSync = new ControlPushButton(ConfigKey(group, "beatsync"));
-    connect(m_pButtonSync, &ControlObject::valueChanged,
-            this, &BpmControl::slotControlBeatSync,
-            Qt::DirectConnection);
-
-    m_pButtonSyncPhase = new ControlPushButton(ConfigKey(group, "beatsync_phase"));
-    connect(m_pButtonSyncPhase, &ControlObject::valueChanged,
-            this, &BpmControl::slotControlBeatSyncPhase,
-            Qt::DirectConnection);
-
-    m_pButtonSyncTempo = new ControlPushButton(ConfigKey(group, "beatsync_tempo"));
-    connect(m_pButtonSyncTempo, &ControlObject::valueChanged,
-            this, &BpmControl::slotControlBeatSyncTempo,
-            Qt::DirectConnection);
-
     m_pTranslateBeats = new ControlPushButton(ConfigKey(group, "beats_translate_curpos"));
     connect(m_pTranslateBeats, &ControlObject::valueChanged,
             this, &BpmControl::slotBeatsTranslate,
@@ -151,9 +135,6 @@ BpmControl::~BpmControl() {
     delete m_pLocalBpm;
     delete m_pEngineBpm;
     delete m_pButtonTap;
-    delete m_pButtonSync;
-    delete m_pButtonSyncPhase;
-    delete m_pButtonSyncTempo;
     delete m_pTranslateBeats;
     delete m_pBeatsTranslateMatchAlignment;
     delete m_pTranslateBeatsEarlier;
@@ -265,36 +246,6 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
             averageBpm,
             averageBpm + kBpmTabRounding);
     pTrack->trySetBeats(pBeats->setBpm(averageBpm));
-}
-
-void BpmControl::slotControlBeatSyncPhase(double value) {
-    if (value == 0) {
-        return;
-    }
-
-    if (isSynchronized()) {
-        m_dUserOffset.setValue(0.0);
-    }
-    getEngineBuffer()->requestSyncPhase();
-}
-
-void BpmControl::slotControlBeatSyncTempo(double value) {
-    m_pSyncEnabled->set(value != 0);
-}
-
-void BpmControl::slotControlBeatSync(double value) {
-    m_pSyncEnabled->set(value != 0);
-
-    if (value == 0) {
-        return;
-    }
-
-    // Also sync phase if quantize is enabled.
-    // this is used from controller scripts, where the latching behaviour of
-    // the sync_enable CO cannot be used
-    if (m_pPlayButton->toBool() && m_pQuantize->toBool()) {
-        slotControlBeatSyncPhase(value);
-    }
 }
 
 // static
@@ -953,7 +904,7 @@ mixxx::audio::FrameDiff_t BpmControl::getPhaseOffset(mixxx::audio::FramePos this
 }
 
 void BpmControl::slotUpdateEngineBpm(double value) {
-    // Adjust playback bpm in response to a rate_ration update
+    // Adjust playback bpm in response to a rate_ratio update
     double dRate = m_pRateRatio->get();
 
     if (kLogger.traceEnabled()) {

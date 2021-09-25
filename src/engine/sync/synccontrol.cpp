@@ -25,7 +25,7 @@ const mixxx::Logger kLogger("SyncControl");
 SyncControl::SyncControl(const QString& group,
         UserSettingsPointer pConfig,
         EngineChannel* pChannel,
-        SyncableListener* pEngineSync)
+        EngineSync* pEngineSync)
         : EngineControl(group, pConfig),
           m_sGroup(group),
           m_pChannel(pChannel),
@@ -67,6 +67,22 @@ SyncControl::SyncControl(const QString& group,
     m_pSyncEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncEnabledChangeRequest, Qt::DirectConnection);
 
+    // Beat sync (scale buffer tempo relative to tempo of other buffer)
+    m_pButtonSync = new ControlPushButton(ConfigKey(group, "beatsync"));
+    connect(m_pButtonSync, &ControlObject::valueChanged,
+            this, &SyncControl::slotControlBeatSync,
+            Qt::DirectConnection);
+
+    m_pButtonSyncPhase = new ControlPushButton(ConfigKey(group, "beatsync_phase"));
+    connect(m_pButtonSyncPhase, &ControlObject::valueChanged,
+            this, &SyncControl::slotControlBeatSyncPhase,
+            Qt::DirectConnection);
+
+    m_pButtonSyncTempo = new ControlPushButton(ConfigKey(group, "beatsync_tempo"));
+    connect(m_pButtonSyncTempo, &ControlObject::valueChanged,
+            this, &SyncControl::slotControlBeatSyncTempo,
+            Qt::DirectConnection);
+
     // The relative position between two beats in the range 0.0 ... 1.0
     m_pBeatDistance.reset(
             new ControlObject(ConfigKey(group, "beat_distance")));
@@ -81,6 +97,9 @@ SyncControl::SyncControl(const QString& group,
 }
 
 SyncControl::~SyncControl() {
+    delete m_pButtonSync;
+    delete m_pButtonSyncPhase;
+    delete m_pButtonSyncTempo;
 }
 
 void SyncControl::setEngineControls(RateControl* pRateControl,
@@ -408,6 +427,37 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
         m_pChannel->getEngineBuffer()->requestSyncMode(syncMode);
         m_pBpmControl->updateLocalBpm();
     }
+}
+
+void SyncControl::slotControlBeatSyncPhase(double value) {
+    if (value == 0) {
+        return;
+    }
+
+    m_pChannel->getEngineBuffer()->requestSyncPhase();
+}
+
+void SyncControl::slotControlBeatSyncTempo(double value) {
+    if (value == 0) {
+        return;
+    }
+    // This request is a noop if we are already synced.
+    const auto localBpm = getLocalBpm();
+    if (isSynchronized() || !localBpm.isValid()) {
+        return;
+    }
+
+    Syncable* target = m_pEngineSync->pickNonSyncSyncTarget(getChannel());
+    if (target == nullptr) {
+        return;
+    }
+
+    double multiplier = determineBpmMultiplier(fileBpm(),  target->getBaseBpm());
+    m_pRateRatio->set(target->getBpm() * multiplier / localBpm);
+}
+
+void SyncControl::slotControlBeatSync(double value) {
+    m_pSyncEnabled->setAndConfirm(value > 0);
 }
 
 void SyncControl::slotControlPlay(double play) {
