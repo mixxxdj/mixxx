@@ -12,7 +12,7 @@
 
 class LibraryView {
   public:
-    virtual ~LibraryView() {};
+    virtual ~LibraryView() {}
 
     virtual void onShow() = 0;
     virtual bool hasFocus() const = 0;
@@ -21,13 +21,13 @@ class LibraryView {
 
     /// If applicable, requests that the LibraryView load the selected
     /// track. Does nothing otherwise.
-    virtual void loadSelectedTrack() {};
+    virtual void loadSelectedTrack() {}
 
-    virtual void slotAddToAutoDJBottom() {};
-    virtual void slotAddToAutoDJTop() {};
-    virtual void slotAddToAutoDJReplace() {};
-    virtual void saveCurrentViewState(){};
-    virtual void restoreCurrentViewState(){};
+    virtual void slotAddToAutoDJBottom() {}
+    virtual void slotAddToAutoDJTop() {}
+    virtual void slotAddToAutoDJReplace() {}
+    virtual void saveCurrentViewState(){}
+    virtual void restoreCurrentViewState(){}
 
     /// If applicable, requests that the LibraryView load the selected track to
     /// the specified group. Does nothing otherwise.
@@ -42,9 +42,9 @@ class LibraryView {
 
     virtual TrackModel::SortColumnId getColumnIdFromCurrentIndex() {
         return TrackModel::SortColumnId::Invalid;
-    };
+    }
     /// If applicable, requests that the LibraryView changes the track color of
     /// the selected track. Does nothing otherwise.
-    virtual void assignPreviousTrackColor(){};
-    virtual void assignNextTrackColor(){};
+    virtual void assignPreviousTrackColor(){}
+    virtual void assignNextTrackColor(){}
 };
