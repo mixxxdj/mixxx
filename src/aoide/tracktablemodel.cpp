@@ -428,9 +428,10 @@ void TrackTableModel::abortPendingSearch() {
         kLogger.debug()
                 << "Aborting pending search task"
                 << pendingSearchTask;
-        pendingSearchTask->disconnect(this);
         pendingSearchTask->invokeAbort();
-        pendingSearchTask->deleteLater();
+        // FIXME: Who will finally delete the task or do we have
+        // a memory leak? Invoking pendingSearchTask->deleteLater()
+        // at this point will cause spurious SIGSEGV crashes!!
         m_pendingSearchTask.clear();
     }
 }
