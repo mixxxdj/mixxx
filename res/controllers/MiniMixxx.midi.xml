@@ -272,7 +272,7 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>MiniMixxx.button2</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x05</midino>
         <options>
@@ -282,7 +282,7 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>MiniMixxx.button3</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x06</midino>
         <options>
@@ -292,7 +292,7 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>MiniMixxx.button4</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x07</midino>
         <options>
@@ -304,7 +304,7 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>MiniMixxx.button6</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x0D</midino>
         <options>
@@ -314,7 +314,7 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>MiniMixxx.button7</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x0E</midino>
         <options>
@@ -324,7 +324,7 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>MiniMixxx.button8</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x0F</midino>
         <options>
@@ -336,7 +336,7 @@
 
       <control>
         <group>[Channel2]</group>
-        <key>MiniMixxx.button2</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x09</midino>
         <options>
@@ -346,7 +346,7 @@
 
       <control>
         <group>[Channel2]</group>
-        <key>MiniMixxx.button3</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x0A</midino>
         <options>
@@ -356,7 +356,7 @@
 
       <control>
         <group>[Channel2]</group>
-        <key>MiniMixxx.button4</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x0B</midino>
         <options>
@@ -368,7 +368,7 @@
 
       <control>
         <group>[Channel2]</group>
-        <key>MiniMixxx.button6</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x11</midino>
         <options>
@@ -378,7 +378,7 @@
 
       <control>
         <group>[Channel2]</group>
-        <key>MiniMixxx.button7</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x12</midino>
         <options>
@@ -388,7 +388,7 @@
 
       <control>
         <group>[Channel2]</group>
-        <key>MiniMixxx.button8</key>
+        <key>MiniMixxx.buttonHandler</key>
         <status>0x90</status>
         <midino>0x13</midino>
         <options>
