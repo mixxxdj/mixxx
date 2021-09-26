@@ -20,7 +20,7 @@
 namespace {
 
 // TODO(rryan) make configurable
-const int kScannerThreadPoolSize = 1;
+constexpr int kScannerThreadPoolSize = 1;
 
 mixxx::Logger kLogger("LibraryScanner");
 

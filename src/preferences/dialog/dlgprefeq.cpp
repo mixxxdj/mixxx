@@ -24,8 +24,8 @@ const QString kDefaultEqId = BiquadFullKillEQEffect::getId();
 const QString kDefaultMainEqId = QString();
 const QString kDefaultQuickEffectId = FilterEffect::getId();
 
-const int kFrequencyUpperLimit = 20050;
-const int kFrequencyLowerLimit = 16;
+constexpr int kFrequencyUpperLimit = 20050;
+constexpr int kFrequencyLowerLimit = 16;
 
 DlgPrefEQ::DlgPrefEQ(
         QWidget* pParent,

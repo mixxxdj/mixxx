@@ -11,7 +11,7 @@
 
 namespace {
 
-const int kPlayingDeckUpdateIntervalMillis = 2000;
+constexpr int kPlayingDeckUpdateIntervalMillis = 2000;
 
 PlayerInfo* s_pPlayerInfo = nullptr;
 

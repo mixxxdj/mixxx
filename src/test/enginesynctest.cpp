@@ -1985,7 +1985,7 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
     // half-double matching should be consistent
     mixxx::audio::FrameDiff_t beatLengthFrames = 60.0 * 44100 / 90.0;
     constexpr auto startOffsetFrames = mixxx::audio::kStartFramePos;
-    const int numBeats = 100;
+    constexpr int numBeats = 100;
     QVector<mixxx::audio::FramePos> beats1 =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
     auto pBeats1 = mixxx::Beats::fromBeatPositions(m_pTrack1->getSampleRate(), beats1);
@@ -2277,7 +2277,7 @@ TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
     // Ensure that when we do a seek during sync lock, the user offset is maintained.
 
     // This is about 128 bpm, but results in nice round numbers of samples.
-    const double kDivisibleBpm = 44100.0 / 344.0;
+    constexpr double kDivisibleBpm = 44100.0 / 344.0;
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(kDivisibleBpm));
     m_pTrack1->trySetBeats(pBeats1);
@@ -2358,7 +2358,7 @@ TEST_F(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange) {
     // reinitializing the leader parameters..
 
     // This is about 128 bpm, but results in nice round numbers of samples.
-    const double kDivisibleBpm = 44100.0 / 344.0;
+    constexpr double kDivisibleBpm = 44100.0 / 344.0;
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(kDivisibleBpm));
     m_pTrack1->trySetBeats(pBeats1);
@@ -2409,7 +2409,7 @@ TEST_F(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange) {
 TEST_F(EngineSyncTest, FollowerUserTweakPreservedInSyncDisable) {
     // Ensure that when a follower disables sync, a phase seek is not performed.
     // This is about 128 bpm, but results in nice round numbers of samples.
-    const double kDivisibleBpm = 44100.0 / 344.0;
+    constexpr double kDivisibleBpm = 44100.0 / 344.0;
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(kDivisibleBpm));
     m_pTrack1->trySetBeats(pBeats1);
@@ -2445,7 +2445,7 @@ TEST_F(EngineSyncTest, LeaderUserTweakPreservedInLeaderChange) {
     // reinitializing the leader parameters..
 
     // This is about 128 bpm, but results in nice round numbers of samples.
-    const double kDivisibleBpm = 44100.0 / 344.0;
+    constexpr double kDivisibleBpm = 44100.0 / 344.0;
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
             m_pTrack1->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(kDivisibleBpm));
     m_pTrack1->trySetBeats(pBeats1);

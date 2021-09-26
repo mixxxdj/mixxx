@@ -28,8 +28,8 @@ const bool sDebug = false;
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
 // Column 0 is skipped when calculating the the columns of the view table
-const int kIdColumn = 0;
-const int kMaxSortColumns = 3;
+constexpr int kIdColumn = 0;
+constexpr int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
