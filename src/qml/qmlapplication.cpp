@@ -16,7 +16,7 @@
 #include "soundio/soundmanager.h"
 
 namespace {
-const QString kMainQmlFileName = QStringLiteral("skins/QMLDemo/main.qml");
+const QString kMainQmlFileName = QStringLiteral("qml/main.qml");
 
 // Converts a (capturing) lambda into a function pointer that can be passed to
 // qmlRegisterSingletonType.
