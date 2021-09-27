@@ -12,9 +12,9 @@
 namespace {
 
 // Rate at which the playpos slider is updated
-const int kUpdateRate = 15; // updates per second
+constexpr int kUpdateRate = 15; // updates per second
 // Number of kiUpdateRates that go by before we update BPM.
-const int kSlowUpdateDivider = 4; // kUpdateRate / kSlowUpdateDivider = 3.75 updates per sec
+constexpr int kSlowUpdateDivider = 4; // kUpdateRate / kSlowUpdateDivider = 3.75 updates per sec
 
 } // anonymous namespace
 

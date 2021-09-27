@@ -3,9 +3,9 @@
 #include "effects/backends/builtin/equalizer_util.h"
 #include "util/math.h"
 
-static const unsigned int kStartupSamplerate = 44100;
-static const unsigned int kStartupLoFreq = 246;
-static const unsigned int kStartupHiFreq = 2484;
+static constexpr unsigned int kStartupSamplerate = 44100;
+static constexpr unsigned int kStartupLoFreq = 246;
+static constexpr unsigned int kStartupHiFreq = 2484;
 
 // static
 QString LinkwitzRiley8EQEffect::getId() {

@@ -1234,8 +1234,8 @@ void WOverview::resizeEvent(QResizeEvent* pEvent) {
     Q_UNUSED(pEvent);
     // Play-position potmeters range from 0 to 1 but they allow out-of-range
     // sets. This is to give VC access to the pre-roll area.
-    const double kMaxPlayposRange = 1.0;
-    const double kMinPlayposRange = 0.0;
+    constexpr double kMaxPlayposRange = 1.0;
+    constexpr double kMinPlayposRange = 0.0;
 
     // Values of zero and one in normalized space.
     const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);

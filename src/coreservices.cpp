@@ -73,7 +73,7 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
 #if defined(Q_OS_LINUX)
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
-const int NUM_HANDLERS = 256;
+constexpr int NUM_HANDLERS = 256;
 WireToErrorType __oldHandlers[NUM_HANDLERS] = {nullptr};
 
 Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {

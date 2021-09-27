@@ -83,7 +83,7 @@ EngineMaster::EngineMaster(
     // The last-used bpm value is saved in the destructor of EngineSync.
     double default_bpm = pConfig->getValue(
             ConfigKey("[InternalClock]", "bpm"), 124.0);
-    ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
+    ControlObject::set(ConfigKey("[InternalClock]", "bpm"), default_bpm);
 
     // Crossfader
     m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), -1., 1.);
@@ -399,7 +399,7 @@ void EngineMaster::process(const int iBufferSize) {
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pMasterSampleRate->get());
     m_iBufferSize = iBufferSize;
     // TODO: remove assumption of stereo buffer
-    const unsigned int kChannels = 2;
+    constexpr unsigned int kChannels = 2;
     const unsigned int iFrames = iBufferSize / kChannels;
 
     if (m_pEngineEffectsManager) {
@@ -825,7 +825,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
     m_channels.append(pChannelInfo);
-    const GainCache gainCacheDefault = {0, false};
+    constexpr GainCache gainCacheDefault = {0, false};
     m_channelHeadphoneGainCache.append(gainCacheDefault);
     m_channelTalkoverGainCache.append(gainCacheDefault);
     m_channelMasterGainCache.append(gainCacheDefault);

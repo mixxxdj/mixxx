@@ -5,12 +5,12 @@
 namespace {
 
 // The defaults are tweaked to match the TEA6320 IC
-static const double kLoPeakFreq = 20.0;
-static const double kHiShelveFreq = 3000.0;
-static const double kMaxLoGain = 30.0;
-static const double kHiShelveGainDiv = 3.0;
-static const double kLoPleakQ = 0.2;
-static const double kHiShelveQ = 0.7;
+static constexpr double kLoPeakFreq = 20.0;
+static constexpr double kHiShelveFreq = 3000.0;
+static constexpr double kMaxLoGain = 30.0;
+static constexpr double kHiShelveGainDiv = 3.0;
+static constexpr double kLoPleakQ = 0.2;
+static constexpr double kHiShelveQ = 0.7;
 
 } // anonymous namespace
 

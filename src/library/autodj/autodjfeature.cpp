@@ -28,7 +28,7 @@ const QString kViewName = QStringLiteral("Auto DJ");
 } // namespace
 
 namespace {
-    const int kMaxRetrieveAttempts = 3;
+constexpr int kMaxRetrieveAttempts = 3;
 
     int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
         int playlistId = playlistDAO.getPlaylistIdFromName(AUTODJ_TABLE);

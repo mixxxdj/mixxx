@@ -23,8 +23,8 @@ const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
         EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
 const QString kDefaultMainEqId = QString();
 
-const int kFrequencyUpperLimit = 20050;
-const int kFrequencyLowerLimit = 16;
+constexpr int kFrequencyUpperLimit = 20050;
+constexpr int kFrequencyLowerLimit = 16;
 
 bool isMixingEQ(EffectManifest* pManifest) {
     return pManifest->isMixingEQ();
