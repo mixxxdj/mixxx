@@ -48,6 +48,7 @@ MiniMixxx.EncoderModeJog = function (parent, channel, idx) {
     this.trackDurationSec = 0;
     this.color = 13;
 
+    engine.connectControl(this.channel, "track_loaded", MiniMixxx.bind(MiniMixxx.EncoderModeJog.prototype.trackLoadedHandler, this));
     engine.connectControl(this.channel, "playposition", MiniMixxx.bind(MiniMixxx.EncoderModeJog.prototype.playpositionChanged, this));
 }
 MiniMixxx.EncoderModeJog.prototype.handleSpin = function (velo) {
@@ -57,7 +58,7 @@ MiniMixxx.EncoderModeJog.prototype.handleSpin = function (velo) {
         playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
         engine.setValue(this.channel, "playposition", playPosition);
     } else {
-        engine.setValue(this.channel, "jog", velo);
+        engine.setValue(this.channel, "jog", velo / 2.0);
     }
 }
 MiniMixxx.EncoderModeJog.prototype.handlePress = function (_value) {
