@@ -11,7 +11,7 @@
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
 #include "mixxxmainwindow.h"
-#include "qmlapplication.h"
+#include "qml/qmlapplication.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
