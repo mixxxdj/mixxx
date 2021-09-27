@@ -11,6 +11,7 @@
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
 #include "mixxxmainwindow.h"
+#include "qmlapplication.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -34,10 +35,13 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
 
     int exitCode;
 
-    // This scope ensures that `MixxxMainWindow` is destroyed *before*
-    // CoreServices is shut down. Otherwise a debug assertion complaining about
-    // leaked COs may be triggered.
-    {
+    if (args.getQml()) {
+        mixxx::skin::qml::QmlApplication qmlApplication(pApp, pCoreServices);
+        exitCode = pApp->exec();
+    } else {
+        // This scope ensures that `MixxxMainWindow` is destroyed *before*
+        // CoreServices is shut down. Otherwise a debug assertion complaining about
+        // leaked COs may be triggered.
         MixxxMainWindow mainWindow(pCoreServices);
         pApp->processEvents();
         pApp->installEventFilter(&mainWindow);

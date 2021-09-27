@@ -4,7 +4,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.11
 import "Theme"
 
-Rectangle {
+ApplicationWindow {
     id: root
 
     property alias show4decks: show4DecksButton.checked

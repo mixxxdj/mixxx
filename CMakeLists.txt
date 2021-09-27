@@ -804,6 +804,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
+  src/qmlapplication.cpp
   src/recording/recordingmanager.cpp
   src/skin/qml/asyncimageprovider.cpp
   src/skin/qml/qmlcontrolproxy.cpp
