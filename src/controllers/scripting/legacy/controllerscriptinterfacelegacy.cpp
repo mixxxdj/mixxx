@@ -11,11 +11,11 @@
 #include "util/time.h"
 
 namespace {
-const int kDecks = 16;
+constexpr int kDecks = 16;
 
 // Use 1ms for the Alpha-Beta dt. We're assuming the OS actually gives us a 1ms
 // timer.
-const int kScratchTimerMs = 1;
+constexpr int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 } // anonymous namespace
 

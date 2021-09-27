@@ -268,7 +268,7 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
 }
 
 TEST_F(SoundSourceProxyTest, seekForwardBackward) {
-    const SINT kReadFrameCount = 10000;
+    constexpr SINT kReadFrameCount = 10000;
 
     const QStringList filePaths = getFilePaths();
     for (const auto& filePath : filePaths) {
@@ -478,7 +478,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
 }
 
 TEST_F(SoundSourceProxyTest, seekBoundaries) {
-    const SINT kReadFrameCount = 1000;
+    constexpr SINT kReadFrameCount = 1000;
     const QStringList filePaths = getFilePaths();
     for (const auto& filePath : filePaths) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
@@ -591,7 +591,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
 }
 
 TEST_F(SoundSourceProxyTest, readBeyondEnd) {
-    const SINT kReadFrameCount = 1000;
+    constexpr SINT kReadFrameCount = 1000;
     const QStringList filePaths = getFilePaths();
     for (const auto& filePath : filePaths) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));

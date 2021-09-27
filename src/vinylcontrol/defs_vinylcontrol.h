@@ -3,10 +3,10 @@
 #define VINYL_PREF_KEY "[VinylControl]"
 
 const QString kVCGroup = QString("[Channel%1]");
-const int VINYL_STATUS_DISABLED = 0;
-const int VINYL_STATUS_OK = 1;
-const int VINYL_STATUS_WARNING = 2;
-const int VINYL_STATUS_ERROR = 3;
+constexpr int VINYL_STATUS_DISABLED = 0;
+constexpr int VINYL_STATUS_OK = 1;
+constexpr int VINYL_STATUS_WARNING = 2;
+constexpr int VINYL_STATUS_ERROR = 3;
 
 #define MIXXX_VINYL_FINALSCRATCH "Final Scratch (crappy)"  // Not currently used
 #define MIXXX_VINYL_MIXVIBESDVS "MixVibes DVS V2 Vinyl"
@@ -44,4 +44,4 @@ const int VINYL_STATUS_ERROR = 3;
 #define MIXXX_VINYL_SCOPE_UPDATE_LATENCY_MS 66
 #define MIXXX_VINYL_SCOPE_SIZE 100
 
-const int kMaximumVinylControlInputs = 4;
+constexpr int kMaximumVinylControlInputs = 4;

@@ -5,8 +5,8 @@
 // This is a new recording from a real metronome
 // it was converted from *.wav to plain text using Audacity
 
-const SINT kClickSize44100 = 1024;
-const CSAMPLE kClick44100[kClickSize44100] = {
+constexpr SINT kClickSize44100 = 1024;
+constexpr CSAMPLE kClick44100[kClickSize44100] = {
         0.03459f,
         0.09436f,
         0.13646f,
@@ -1032,8 +1032,8 @@ const CSAMPLE kClick44100[kClickSize44100] = {
         0.00039f,
         0.00139f};
 
-const unsigned int kClickSize48000 = 1116;
-const CSAMPLE kClick48000[kClickSize48000] = {
+constexpr unsigned int kClickSize48000 = 1116;
+constexpr CSAMPLE kClick48000[kClickSize48000] = {
         0.01534f,
         0.05623f,
         0.10618f,
@@ -2151,8 +2151,8 @@ const CSAMPLE kClick48000[kClickSize48000] = {
         0.00132f,
         0.00021f};
 
-const unsigned int kClickSize96000 = 2231;
-const CSAMPLE kClick96000[kClickSize96000] = {
+constexpr unsigned int kClickSize96000 = 2231;
+constexpr CSAMPLE kClick96000[kClickSize96000] = {
         0.01534f,
         0.03123f,
         0.05623f,

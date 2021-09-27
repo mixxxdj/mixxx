@@ -125,7 +125,7 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
         return;
     }
 
-    const int actualCompletion = 0;
+    constexpr int actualCompletion = 0;
     // Always multiple of 2
     const int waveformCompletion = pWaveform->getCompletion();
     // Test if there is some new to draw (at least of pixel width)

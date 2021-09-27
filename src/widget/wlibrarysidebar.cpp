@@ -10,7 +10,7 @@
 #include "moc_wlibrarysidebar.cpp"
 #include "util/dnd.h"
 
-const int expand_time = 250;
+constexpr int expand_time = 250;
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
