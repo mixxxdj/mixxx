@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 //
 // MiniMixxx controller script v1.00
-// Author: Owen Williams
+// Author: Owen Williams (owilliams@mixxx.org)
 //
 ///////////////////////////////////////////////////////////////////////////////////
 //
@@ -215,7 +215,6 @@ MiniMixxx.EncoderModeLoop.prototype.switchIndicator = function (value, _group, _
     midi.sendShortMsg(0x90, this.idx, color);
 }
 MiniMixxx.EncoderModeLoop.prototype.setLights = function () {
-    // this.pregainIndicator(engine.getValue(this.channel, "pregain"));
     midi.sendShortMsg(0xbf, this.idx, 0);
     this.switchIndicator(engine.getValue(this.channel, "loop_enabled"));
 }
@@ -226,13 +225,11 @@ MiniMixxx.EncoderModeLoop.prototype.setLights = function () {
 //   * Shift + Spin: Adjust beatjump size
 //   * Press: beatloop roll
 //   * Shift + Press: reloop and stop
-// Output: ??.
+// Output: on if mode is active (I guess?).
 MiniMixxx.BeatJump = function (parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "BEATJUMP", channel, idx);
 
     this.color = 46;
-    // engine.connectControl(this.channel, "pregain", MiniMixxx.bind(MiniMixxx.BeatJump.prototype.spinIndicator, this));
-    engine.connectControl(this.channel, "loop_enabled", MiniMixxx.bind(MiniMixxx.BeatJump.prototype.switchIndicator, this));
 }
 MiniMixxx.BeatJump.prototype.handleSpin = function (velo) {
     if (MiniMixxx.kontrol.shiftActive(this.channel)) {
@@ -265,7 +262,7 @@ MiniMixxx.BeatJump.prototype.switchIndicator = function (value, _group, _control
     midi.sendShortMsg(0x90, this.idx, color);
 }
 MiniMixxx.BeatJump.prototype.setLights = function () {
-    midi.sendShortMsg(0xbf, this.idx, 0);
+    midi.sendShortMsg(0xbf, this.idx, this.color);
     this.switchIndicator(engine.getValue(this.channel, "loop_enabled"));
 }
 
