@@ -760,6 +760,14 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         // causes a track to load since we allow in-line editing
         // of table items in general
         return;
+    } else if (event->key() == Qt::Key_Delete) {
+        QModelIndexList indices = selectionModel()->selectedRows();
+        if (indices.size() > 0) {
+            TrackModel* pTrackModel = getTrackModel();
+            if (pTrackModel) {
+                pTrackModel->removeTracks(indices);
+            }
+        }
     } else {
         QTableView::keyPressEvent(event);
     }
