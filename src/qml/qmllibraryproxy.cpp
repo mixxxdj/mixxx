@@ -1,4 +1,4 @@
-#include "skin/qml/qmllibraryproxy.h"
+#include "qml/qmllibraryproxy.h"
 
 #include <QAbstractItemModel>
 

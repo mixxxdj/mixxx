@@ -806,18 +806,18 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/upgrade.cpp
   src/qmlapplication.cpp
   src/recording/recordingmanager.cpp
-  src/skin/qml/asyncimageprovider.cpp
-  src/skin/qml/qmlcontrolproxy.cpp
-  src/skin/qml/qmlconfigproxy.cpp
-  src/skin/qml/qmleffectmanifestparametersmodel.cpp
-  src/skin/qml/qmleffectsmanagerproxy.cpp
-  src/skin/qml/qmleffectslotproxy.cpp
-  src/skin/qml/qmllibraryproxy.cpp
-  src/skin/qml/qmllibrarytracklistmodel.cpp
-  src/skin/qml/qmlplayermanagerproxy.cpp
-  src/skin/qml/qmlplayerproxy.cpp
-  src/skin/qml/qmlvisibleeffectsmodel.cpp
-  src/skin/qml/qmlwaveformoverview.cpp
+  src/qml/asyncimageprovider.cpp
+  src/qml/qmlcontrolproxy.cpp
+  src/qml/qmlconfigproxy.cpp
+  src/qml/qmleffectmanifestparametersmodel.cpp
+  src/qml/qmleffectsmanagerproxy.cpp
+  src/qml/qmleffectslotproxy.cpp
+  src/qml/qmllibraryproxy.cpp
+  src/qml/qmllibrarytracklistmodel.cpp
+  src/qml/qmlplayermanagerproxy.cpp
+  src/qml/qmlplayerproxy.cpp
+  src/qml/qmlvisibleeffectsmodel.cpp
+  src/qml/qmlwaveformoverview.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
   src/skin/skinloader.cpp

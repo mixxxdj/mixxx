@@ -1,4 +1,4 @@
-#include "skin/qml/asyncimageprovider.h"
+#include "qml/asyncimageprovider.h"
 
 #include "library/coverartcache.h"
 

@@ -1,9 +1,9 @@
-#include "skin/qml/qmlplayermanagerproxy.h"
+#include "qml/qmlplayermanagerproxy.h"
 
 #include <QQmlEngine>
 
 #include "mixer/playermanager.h"
-#include "skin/qml/qmlplayerproxy.h"
+#include "qml/qmlplayerproxy.h"
 
 namespace mixxx {
 namespace skin {

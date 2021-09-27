@@ -1,4 +1,4 @@
-#include "skin/qml/qmleffectmanifestparametersmodel.h"
+#include "qml/qmleffectmanifestparametersmodel.h"
 
 #include <QModelIndex>
 

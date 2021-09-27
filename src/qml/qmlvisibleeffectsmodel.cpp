@@ -1,4 +1,4 @@
-#include "skin/qml/qmlvisibleeffectsmodel.h"
+#include "qml/qmlvisibleeffectsmodel.h"
 
 #include <QModelIndex>
 

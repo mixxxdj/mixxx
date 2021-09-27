@@ -1,4 +1,4 @@
-#include "skin/qml/qmllibrarytracklistmodel.h"
+#include "qml/qmllibrarytracklistmodel.h"
 
 #include "library/librarytablemodel.h"
 

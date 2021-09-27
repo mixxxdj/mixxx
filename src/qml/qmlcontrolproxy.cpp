@@ -1,4 +1,4 @@
-#include "skin/qml/qmlcontrolproxy.h"
+#include "qml/qmlcontrolproxy.h"
 
 #include "moc_qmlcontrolproxy.cpp"
 

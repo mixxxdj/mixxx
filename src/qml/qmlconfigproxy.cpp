@@ -1,4 +1,4 @@
-#include "skin/qml/qmlconfigproxy.h"
+#include "qml/qmlconfigproxy.h"
 
 #include "preferences/colorpalettesettings.h"
 

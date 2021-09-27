@@ -2,7 +2,7 @@
 #include <QObject>
 
 #include "effects/effectsmanager.h"
-#include "skin/qml/qmlvisibleeffectsmodel.h"
+#include "qml/qmlvisibleeffectsmodel.h"
 
 namespace mixxx {
 namespace skin {

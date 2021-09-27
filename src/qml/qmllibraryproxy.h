@@ -2,7 +2,7 @@
 #include <QObject>
 #include <memory>
 
-#include "skin/qml/qmllibrarytracklistmodel.h"
+#include "qml/qmllibrarytracklistmodel.h"
 #include "util/parented_ptr.h"
 
 class Library;
