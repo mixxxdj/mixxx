@@ -7,7 +7,7 @@
 //
 // TODO:
 //
-// * FX mode
+// * Hotcues (where can they go?)
 //
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -134,6 +134,7 @@ MiniMixxx.EncoderModeJog.prototype.loopEnabledChanged = function () {
     this.setLights();
 };
 MiniMixxx.EncoderModeJog.prototype.setLights = function () {
+    this.positionUpdated = true;
     this.lightSpinny();
     var color = engine.getValue(this.channel, "loop_enabled") > 0 ? this.loopColor : 0x00;
     midi.sendShortMsg(0x90, this.idx, color);
@@ -282,8 +283,8 @@ MiniMixxx.EncoderModeLoop.prototype.setLights = function () {
 
 // Beat Jump Encoder:
 // Input:
-//   * Spin: Jump forward / backward
-//   * Shift + Spin: Adjust beatjump size
+//   * Spin: Adjust beatjump size
+//   * Shift + Spin: Jump forward / backward
 //   * Press: beatloop roll
 //   * Shift + Press: reloop and stop
 // Output: on if mode is active (I guess?).
@@ -291,21 +292,23 @@ MiniMixxx.EncoderModeBeatJump = function (parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "BEATJUMP", channel, idx);
 
     this.color = 46;
+    engine.connectControl(this.channel, "beatjump_size", MiniMixxx.bind(MiniMixxx.EncoderModeBeatJump.prototype.spinIndicator, this));
 }
 MiniMixxx.EncoderModeBeatJump.prototype.handleSpin = function (velo) {
     if (MiniMixxx.kontrol.shiftActive()) {
-        var beatjumpSize = engine.getValue(this.channel, "beatjump_size");
-        if (velo > 0) {
-            engine.setValue(this.channel, "beatjump_size", beatjumpSize * 2);
-        } else {
-            engine.setValue(this.channel, "beatjump_size", beatjumpSize / 2);
-        }
-    } else {
         if (velo > 0) {
             script.triggerControl(this.channel, "beatjump_forward");
         } else {
             script.triggerControl(this.channel, "beatjump_backward");
         }
+    } else {
+        var beatjumpSize = engine.getValue(this.channel, "beatjump_size");
+        if (velo > 0) {
+            beatjumpSize *= 2;
+        } else {
+            beatjumpSize /= 2;
+        }
+        engine.setValue(this.channel, "beatjump_size", Math.max(Math.min(beatjumpSize, 512), 1.0/32.0));
     }
 }
 MiniMixxx.EncoderModeBeatJump.prototype.handlePress = function (value) {
@@ -314,6 +317,18 @@ MiniMixxx.EncoderModeBeatJump.prototype.handlePress = function (value) {
     } else {
         engine.setValue(this.channel, "beatlooproll_activate", value);
     }
+}
+MiniMixxx.EncoderModeBeatJump.prototype.spinIndicator = function (value, _group, _control) {
+    if (this !== this.parent.activeMode) {
+        return;
+    }
+    print("incoming: " + value);
+    value = Math.log2(value);
+    print("incoming log2: " + value);
+    // log values go from -5 to 9 (14 steps)
+    // And we should map from 9 to 127 (118 steps)
+    value = Math.floor((value + 5) / 14.0 * 118 + 9);
+    midi.sendShortMsg(0xB0, this.idx, value);
 }
 MiniMixxx.EncoderModeBeatJump.prototype.switchIndicator = function (value, _group, _control) {
     if (this !== this.parent.activeMode) {
@@ -324,6 +339,8 @@ MiniMixxx.EncoderModeBeatJump.prototype.switchIndicator = function (value, _grou
 }
 MiniMixxx.EncoderModeBeatJump.prototype.setLights = function () {
     midi.sendShortMsg(0xBF, this.idx, this.color);
+    this.spinIndicator(engine.getValue(this.channel, "beatjump_size"));
+    midi.sendShortMsg(0x90, this.idx, this.color);
 }
 
 // Library Encoder:
@@ -391,7 +408,60 @@ MiniMixxx.EncoderModeLibraryFocus.prototype.handlePress = function (value) {
     }
 }
 MiniMixxx.EncoderModeLibraryFocus.prototype.setLights = function () {
+    midi.sendShortMsg(0xBF, this.idx, this.color);
+    midi.sendShortMsg(0xB0, this.idx, 0x00);
     midi.sendShortMsg(0x90, this.idx, this.color);
+}
+
+// FX Encoder:
+// Input:
+//   * Spin: Adjust meta knob
+//   * Shift + Spin: n/a
+//   * Press: activate
+//   * Shift + Press: n/a
+// Output:
+// * fx unit meta
+// * switch on if fx is active.
+MiniMixxx.EncoderModeFX = function (parent, channel, idx, effectNum) {
+    MiniMixxx.Mode.call(this, parent, "FX", channel, idx);
+
+    this.color = 61;
+    if (effectNum === "SUPER") {
+        this.effectGroup = "[EffectRack1_EffectUnit1]";
+        this.effectKey = "super1";
+    } else {
+        this.effectGroup = "[EffectRack1_EffectUnit1_Effect" + effectNum + "]";
+        this.effectKey = "meta";
+    }
+
+    engine.connectControl(this.effectGroup, this.effectKey, MiniMixxx.bind(MiniMixxx.EncoderModeFX.prototype.spinIndicator, this));
+    engine.connectControl(this.effectGroup, "enabled", MiniMixxx.bind(MiniMixxx.EncoderModeFX.prototype.switchIndicator, this));
+}
+MiniMixxx.EncoderModeFX.prototype.handleSpin = function (velo) {
+    engine.setValue(this.effectGroup, this.effectKey, engine.getValue(this.effectGroup, this.effectKey) + velo / 50.0);
+}
+MiniMixxx.EncoderModeFX.prototype.handlePress = function (value) {
+    if (value > 0) {
+        script.toggleControl(this.effectGroup, "enabled");
+    }
+}
+MiniMixxx.EncoderModeFX.prototype.spinIndicator = function (value, _group, _control) {
+    if (this !== this.parent.activeMode) {
+        return;
+    }
+    midi.sendShortMsg(0xB0, this.idx, Math.floor(value * 127.0));
+}
+MiniMixxx.EncoderModeFX.prototype.switchIndicator = function (value, _group, _control) {
+    if (this !== this.parent.activeMode) {
+        return;
+    }
+    var color = value > 0 ? this.color : 0;
+    midi.sendShortMsg(0x90, this.idx, color);
+}
+MiniMixxx.EncoderModeFX.prototype.setLights = function () {
+    midi.sendShortMsg(0xBF, this.idx, this.color);
+    this.spinIndicator(engine.getValue(this.effectGroup, this.effectKey));
+    this.switchIndicator(engine.getValue(this.effectGroup, "enabled"));
 }
 
 // An Encoder represents a single encoder knob and tracks the active mode.
@@ -416,6 +486,10 @@ MiniMixxx.Encoder = function (channel, idx, layerConfig) {
             this.encoders[mode] = new MiniMixxx.EncoderModeLibrary(this, channel, idx);
         } else if (mode === "LIBRARYFOCUS") {
             this.encoders[mode] = new MiniMixxx.EncoderModeLibraryFocus(this, channel, idx);
+        } else if (mode.startsWith("EFFECT-")) {
+            var splitted = mode.split("-");
+            var effectNum = splitted[1];
+            this.encoders[mode] = new MiniMixxx.EncoderModeFX(this, channel, idx, effectNum);
         } else {
             print("Ignoring unknown encoder mode: " + mode);
             continue;
@@ -459,6 +533,7 @@ MiniMixxx.lightButton = function (idx, value, colors) {
     midi.sendShortMsg(0x90, idx, color);
 }
 
+// ButtonModeEmpty is a placeholder that does nothing.
 MiniMixxx.ButtonModeEmpty = function (parent, channel, idx) {
     MiniMixxx.ButtonMode.call(this, parent, "EMPTY", channel, idx, [0, 0]);
 }
@@ -471,6 +546,8 @@ MiniMixxx.ButtonModeEmpty.prototype.setLights = function () {
     this.indicator(0);
 }
 
+// ButtonModeKeylock enables and disables keylock.
+// If held, this button causes the pitch slider to act as a musical key adjustment.
 MiniMixxx.ButtonModeKeylock = function (parent, channel, idx) {
     MiniMixxx.ButtonMode.call(this, parent, "KEYLOCK", channel, idx, [0, 108]);
     this.keylockPressed = false;
@@ -516,6 +593,8 @@ MiniMixxx.ButtonModeKeylock.prototype.setLights = function () {
     this.indicator(engine.getValue(this.channel, "keylock"));
 }
 
+// ButtonModeSync
+// Input: press to do a one-off beatsync.  Press and hold to enable Sync Lock.
 MiniMixxx.ButtonModeSync = function (parent, channel, idx) {
     MiniMixxx.ButtonMode.call(this, parent, "SYNC", channel, idx, [0, 84]);
     this.syncPressedTimer = 0;
@@ -557,6 +636,7 @@ MiniMixxx.ButtonModeSync.prototype.setLights = function () {
     this.indicator(engine.getValue(this.channel, "sync_enabled"));
 }
 
+// ButtonModeShift: the shift button
 MiniMixxx.ButtonModeShift = function (parent, channel, idx) {
     MiniMixxx.ButtonMode.call(this, parent, "SHIFT", channel, idx, [0, 127]);
     this.shiftActive = false;
@@ -607,6 +687,7 @@ MiniMixxx.ButtonModeLayer.prototype.setLights = function () {
 }
 
 // ButtonModeSampler is the button mode for playing individual sampler decks.
+// Shift+Press to eject the sample.
 MiniMixxx.ButtonModeSampler = function (parent, channel, idx, samplerNum) {
     MiniMixxx.ButtonMode.call(this, parent, "SAMPLER-" + samplerNum, channel, idx, [21, 22]);
     this.samplerGroup = "[Sampler" + samplerNum + "]";
@@ -634,6 +715,26 @@ MiniMixxx.ButtonModeSampler.prototype.setLights = function () {
     this.indicator(engine.getValue(this.samplerGroup, "track_loaded"));
 }
 
+// ButtonModeFX enables the FX unit for this deck.
+MiniMixxx.ButtonModeFX = function (parent, channel, idx) {
+    MiniMixxx.ButtonMode.call(this, parent, "FX", channel, idx, [0, 61]);
+    engine.connectControl("[EffectRack1_EffectUnit1]", "group_"+this.channel+"_enable", MiniMixxx.bind(MiniMixxx.ButtonModeFX.prototype.indicator, this));
+}
+MiniMixxx.ButtonModeFX.prototype.handlePress = function (value) {
+    if (value > 0) {
+        script.toggleControl("[EffectRack1_EffectUnit1]", "group_" + this.channel + "_enable");
+    }
+}
+MiniMixxx.ButtonModeFX.prototype.indicator = function (value, _group, _control) {
+    if (this !== this.parent.activeMode) {
+        return;
+    }
+    MiniMixxx.lightButton(this.idx, value, this.colors);
+}
+MiniMixxx.ButtonModeFX.prototype.setLights = function () {
+    this.indicator(engine.getValue("[EffectRack1_EffectUnit1]", "group_"+this.channel+"_enable"));
+}
+
 MiniMixxx.Button = function (channel, idx, layerConfig) {
     this.channel = channel;
     this.idx = idx;
@@ -651,16 +752,21 @@ MiniMixxx.Button = function (channel, idx, layerConfig) {
             this.buttons[mode] = new MiniMixxx.ButtonModeKeylock(this, channel, idx);
         } else if (mode === "SHIFT") {
             this.buttons[mode] = new MiniMixxx.ButtonModeShift(this, channel, idx);
-        } else if (mode === "LOOPLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0,46]);
-        } else if (mode === "SAMPLERLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0,21]);
         } else if (mode.startsWith("SAMPLER-")) {
             var splitted = mode.split("-");
             var samplerNum = splitted[1];
             this.buttons[mode] = new MiniMixxx.ButtonModeSampler(this, channel, idx, samplerNum);
+        } else if (mode.startsWith("FX-")) {
+            // We only use FX 1 for now.
+            this.buttons[mode] = new MiniMixxx.ButtonModeFX(this, channel, idx);
+        } else if (mode === "LOOPLAYER") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0,46]);
+        } else if (mode === "SAMPLERLAYER") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0,21]);
         } else if (mode === "LIBRARYLAYER") {
             this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0,104]);
+        } else if (mode === "FXLAYER") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "FXLAYER", "", idx, [0,61]);
         } else {
             print("Ignoring unknown button mode: " + mode);
             continue;
@@ -703,22 +809,26 @@ MiniMixxx.Controller = function () {
         0x00: new MiniMixxx.Encoder("[Channel1]", 0, {
             "NONE": "JOG",
             "LOOPLAYER": "LOOP",
-            "LIBRARYLAYER": "LIBRARYFOCUS"
+            "LIBRARYLAYER": "LIBRARYFOCUS",
+            "FXLAYER": "EFFECT-1",
         }),
         0x01: new MiniMixxx.Encoder("[Channel1]", 1, {
             "NONE": "GAIN",
             "LOOPLAYER": "BEATJUMP",
-            "LIBRARYLAYER": "LIBRARY"
+            "LIBRARYLAYER": "LIBRARY",
+            "FXLAYER": "EFFECT-2",
         }),
         0x02: new MiniMixxx.Encoder("[Channel2]", 2, {
             "NONE": "GAIN",
             "LOOPLAYER": "LOOP",
-            "LIBRARYLAYER": "LIBRARY"
+            "LIBRARYLAYER": "LIBRARY",
+            "FXLAYER": "EFFECT-3",
         }),
         0x03: new MiniMixxx.Encoder("[Channel2]", 3, {
             "NONE": "JOG",
             "LOOPLAYER": "BEATJUMP",
-            "LIBRARYLAYER": "LIBRARYFOCUS"
+            "LIBRARYLAYER": "LIBRARYFOCUS",
+            "FXLAYER": "EFFECT-SUPER",
         })
     };
 
@@ -734,7 +844,7 @@ MiniMixxx.Controller = function () {
             "NONE": "KEYLOCK",
         }),
         0x06: new MiniMixxx.Button("[Channel1]", 0x06, {
-            "NONE": "EMPTY",
+            "NONE": "FX-1",
         }),
         //0x0C: hard-coded PLAY1
         0x0D: new MiniMixxx.Button("[Channel1]", 0x0D, {
@@ -750,7 +860,7 @@ MiniMixxx.Controller = function () {
             "SAMPLERLAYER": "SAMPLER-1"
         }),
         0x09: new MiniMixxx.Button("[Channel2]", 0x09, {
-            "NONE": "EMPTY",
+            "NONE": "FX-1",
             "SAMPLERLAYER": "SAMPLER-2"
         }),
         //0x0F: hard coded PLAY2
@@ -765,7 +875,7 @@ MiniMixxx.Controller = function () {
 
         // Righthand mode buttons
         0x0A: new MiniMixxx.Button("[Channel2]", 0x0A, {
-            "NONE": "EMPTY",
+            "NONE": "FXLAYER",
         }),
         0x0B: new MiniMixxx.Button("[Channel2]", 0x0B, {
             "NONE": "SAMPLERLAYER"
