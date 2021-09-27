@@ -10,7 +10,6 @@
 // * Library mode
 // * Hotcue Layer
 // * Sampler Layer
-// * wheel spinnies
 //
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -38,19 +37,84 @@ MiniMixxx.Mode = function (parent, modeName, channel, idx) {
 }
 
 // Jog Mode Encoder:
-// Input:  spinning adjust jog, pressing has no effect.
-// Output: TODO: spinny angle display.
+// Input:
+// * Spin: adjust jog
+// * Shift + spin: quick seek
+// Output: spinny angle display.
 MiniMixxx.EncoderModeJog = function (parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "JOG", channel, idx);
+    this.positionUpdate = false;
+    this.curPosition = 0;
+    this.trackDurationSec = 0;
+    this.color = 13;
+
+    engine.connectControl(this.channel, "playposition", MiniMixxx.bind(MiniMixxx.EncoderModeJog.prototype.playpositionChanged, this));
 }
 MiniMixxx.EncoderModeJog.prototype.handleSpin = function (velo) {
-    engine.setValue(this.channel, "jog", velo);
+    if (MiniMixxx.kontrol.shiftActive(this.channel)) {
+        var playPosition = engine.getValue(this.channel, "playposition");
+        playPosition += velo / 256.0;
+        playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
+        engine.setValue(this.channel, "playposition", playPosition);
+    } else {
+        engine.setValue(this.channel, "jog", velo);
+    }
 }
 MiniMixxx.EncoderModeJog.prototype.handlePress = function (_value) {
 }
+MiniMixxx.EncoderModeJog.prototype.playpositionChanged = function(value) {
+    if (this.trackDurationSec === 0) {
+        var samples = engine.getValue(this.channel, "track_loaded");
+        if (samples > 0) {
+            this.trackLoadedHandler();
+        } else {
+            // No track loaded, abort
+            return;
+        }
+    }
+    this.curPosition = value * this.trackDurationSec;
+    this.positionUpdated = true;
+};
+MiniMixxx.EncoderModeJog.prototype.trackLoadedHandler = function() {
+    var trackSamples = engine.getValue(this.channel, "track_samples");
+    if (trackSamples === 0) {
+        this.trackDurationSec = 0;
+        return;
+    }
+    var trackSampleRate = engine.getValue(this.channel, "track_samplerate");
+    // Assume stereo.
+    this.trackDurationSec = trackSamples / 2.0 / trackSampleRate;
+};
+MiniMixxx.EncoderModeJog.prototype.lightSpinny = function () {
+    if (!this.positionUpdated) {
+        return;
+    }
+    this.positionUpdated = false;
+    var rotations = this.curPosition * (1 / 1.8);  // 1/1.8 is rotations per second (33 1/3 RPM)
+    // Calculate angle from 0-1.0
+    var angle = rotations - Math.floor(rotations);
+
+    // Angles between 0 and .4 and .6 and 1.0 can be mapped to the indicator.
+    // The others have to go on the pfl light.
+    if (angle >= 0.6) {
+        var midival = (angle - 0.6) * (64.0 / 0.4);
+        midi.sendShortMsg(0xB0, this.idx, midival);
+        // switch light off
+        midi.sendShortMsg(0x90, this.idx, 0x00);
+    } else if (angle < 0.4) {
+        var midival = angle * (64.0 / 0.4) + 64;
+        midi.sendShortMsg(0xB0, this.idx, midival);
+        // switch light off
+        midi.sendShortMsg(0x90, this.idx, 0x00);
+    } else {
+        midi.sendShortMsg(0x90, this.idx, this.color);
+        // rotary light off
+        midi.sendShortMsg(0xb0, this.idx, 0x00);
+    }
+}
 MiniMixxx.EncoderModeJog.prototype.setLights = function () {
-    midi.sendShortMsg(0xbf, this.idx, 0);
-    midi.sendShortMsg(0x90, this.idx, 0);
+    midi.sendShortMsg(0xbf, this.idx, this.color);
+    this.lightSpinny();
 }
 
 // Gain Mode Encoder:
@@ -450,6 +514,12 @@ MiniMixxx.debugLights = function () {
 };
 
 MiniMixxx.shutdown = function () {
+    for (var i = 0; i < 0x13; i++) {
+        if (i < 0x04) {
+            midi.sendShortMsg(0xbf, i, 0x00);
+        }
+        midi.sendShortMsg(0x90, i, 0x00);
+    }
 };
 
 MiniMixxx.Controller = function () {
@@ -470,6 +540,11 @@ MiniMixxx.Controller = function () {
             "NONE": "JOG",
             "LOOPLAYER": "BEATJUMP"
         })
+    };
+
+    this.jogEncoders = {
+        "[Channel1]": this.encoders[0x00],
+        "[Channel2]": this.encoders[0x03]
     };
 
     this.buttons = {
@@ -499,15 +574,14 @@ MiniMixxx.Controller = function () {
         }),
     }
 
-    this.buttonsByMode = {
-        "SHIFT": {
-            "[Channel1]": this.buttons[0x0F],
-            "[Channel2]": this.buttons[0x13]
-        },
-        "KEYLOCK": {
-            "[Channel1]": this.buttons[0x05],
-            "[Channel2]": this.buttons[0x09]
-        }
+    this.shiftButtons = {
+        "[Channel1]": this.buttons[0x0F],
+        "[Channel2]": this.buttons[0x13]
+    };
+
+    this.keylockButtons = {
+        "[Channel1]": this.buttons[0x05],
+        "[Channel2]": this.buttons[0x09]
     };
 
     this.pitchSliderLastValue = {
@@ -528,11 +602,11 @@ MiniMixxx.Controller = function () {
 };
 
 MiniMixxx.Controller.prototype.shiftActive = function (channel) {
-    return this.buttonsByMode["SHIFT"][channel].buttons["SHIFT"].shiftActive;
+    return this.shiftButtons[channel].buttons["SHIFT"].shiftActive;
 }
 
 MiniMixxx.Controller.prototype.keylockPressed = function (channel) {
-    return this.buttonsByMode["KEYLOCK"][channel].buttons["KEYLOCK"].keylockPressed;
+    return this.keylockButtons[channel].buttons["KEYLOCK"].keylockPressed;
 }
 
 MiniMixxx.Controller.prototype.activateLayer = function (channel, layerName) {
@@ -588,7 +662,8 @@ MiniMixxx.Controller.prototype.pitchSliderHandler = function (value, group) {
 }
 
 MiniMixxx.Controller.prototype.guiTickHandler = function () {
-    // Spinnies!
+    this.jogEncoders["[Channel1]"].encoders["JOG"].lightSpinny();
+    this.jogEncoders["[Channel2]"].encoders["JOG"].lightSpinny();
 };
 
 MiniMixxx.init = function (_id) {
