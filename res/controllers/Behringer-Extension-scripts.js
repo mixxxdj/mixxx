@@ -1136,7 +1136,7 @@
      *     |        |            component.
      *     |        +- output: Additional output definitions (optional).
      *     |                   The structure of this object is the same as the structure of
-     *     |                   `components`. Every value change of a component contained in `output`
+     *     |                   `midi`. Every value change of a component contained in `output`
      *     |                   causes a MIDI message to be sent to the hardware controller, using
      *     |                   the configured address instead of the component's `midi` property.
      *     |                   This option is independent of the `feedback` option.
