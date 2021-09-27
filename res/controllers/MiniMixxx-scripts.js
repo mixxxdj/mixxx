@@ -161,17 +161,22 @@ MiniMixxx.EncoderModeJog.prototype.lightSpinny = function () {
     var rotations = this.curPosition * (1 / 1.8);  // 1/1.8 is rotations per second (33 1/3 RPM)
     // Calculate angle from 0-1.0
     var angle = rotations - Math.floor(rotations);
-    var color = engine.getValue(this.channel, "loop_enabled") > 0 ? this.loopColor : this.baseColor;
+
+    if (engine.getValue(this.channel, "loop_enabled") > 0) {
+        var midiColor = this.loopColor;
+    } else {
+        midiColor = MiniMixxx.vuMeterColor(engine.getValue(this.channel, "VuMeter"));
+    }
 
     // Angles between 0 and .4 and .6 and 1.0 can be mapped to the indicator.
     // The others have to go on the pfl light.
     if (angle >= 0.6) {
         var midival = (angle - 0.6) * (64.0 / 0.4);
-        midi.sendShortMsg(0xBF, this.idx, color);
+        midi.sendShortMsg(0xBF, this.idx, midiColor);
         midi.sendShortMsg(0xB0, this.idx, midival);
     } else if (angle < 0.4) {
         var midival = angle * (64.0 / 0.4) + 64;
-        midi.sendShortMsg(0xBF, this.idx, color);
+        midi.sendShortMsg(0xBF, this.idx, midiColor);
         midi.sendShortMsg(0xB0, this.idx, midival);
     } else {
         // rotary light off
@@ -219,10 +224,8 @@ MiniMixxx.EncoderModeGain.prototype.vuIndicator = function (value, _group, _cont
         return;
     }
 
-    // Color: 85 to 13, multiples of 3. That's 24 levels.
-    value = Math.max(Math.min(value, 1.0), 0.0);
-    var color = Math.round((1.0-value) * 24.0) * 3 + 13;
-    var color = engine.getValue(this.channel, "PeakIndicator") > 0 ? 0x01 : color;
+    var color = MiniMixxx.vuMeterColor(value);
+    color = engine.getValue(this.channel, "PeakIndicator") > 0 ? 0x01 : color;
     var midiValue = value * 127.0;
     midi.sendShortMsg(0xBF, this.idx, color);
     midi.sendShortMsg(0xB0, this.idx, midiValue);
@@ -879,7 +882,7 @@ MiniMixxx.Controller = function () {
 
     this.keylockButtons = {
         "[Channel1]": this.buttons[0x05],
-        "[Channel2]": this.buttons[0x09]
+        "[Channel2]": this.buttons[0x08]
     };
 
     this.pitchSliderLastValue = {
@@ -987,6 +990,12 @@ MiniMixxx.encoderButtonHandler = function (_midino, control, value, _status, _gr
 
 MiniMixxx.pitchSliderHandler = function (_midino, _control, value, _status, group) {
     MiniMixxx.kontrol.pitchSliderHandler(value, group);
+}
+
+MiniMixxx.vuMeterColor = function (value) {
+    value = Math.max(Math.min(value, 1.0), 0.0);
+    // Color: 85 to 13, multiples of 3. That's 24 levels.
+    return Math.round((1.0 - value) * 24.0) * 3 + 13;
 }
 
 MiniMixxx.debugLights = function () {
