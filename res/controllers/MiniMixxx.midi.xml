@@ -70,18 +70,22 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>rate</key>
+        <key>MiniMixxx.pitchSliderHandler</key>
         <status>0xB0</status>
         <midino>0x08</midino>
-        <options />
+        <options>
+          <Script-Binding />
+        </options>
       </control>
 
       <control>
         <group>[Channel2]</group>
-        <key>rate</key>
+        <key>MiniMixxx.pitchSliderHandler</key>
         <status>0xB0</status>
         <midino>0x0B</midino>
-        <options />
+        <options>
+          <Script-Binding />
+        </options>
       </control>
 
       <control>

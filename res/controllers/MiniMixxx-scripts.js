@@ -8,7 +8,8 @@
 // TODO:
 //
 // * Library mode
-// * relative pitch slider / key slider
+// * Hotcue Layer
+// * Sampler Layer
 // * wheel spinnies
 //
 ///////////////////////////////////////////////////////////////////////////////////
@@ -269,12 +270,37 @@ MiniMixxx.lightButton = function (idx, value, colors) {
 
 MiniMixxx.ButtonModeKeylock = function (parent, channel, idx) {
     MiniMixxx.ButtonMode.call(this, parent, "KEYLOCK", channel, idx, [0, 108]);
-
+    this.keylockPressed = false;
     engine.connectControl(this.channel, "keylock", MiniMixxx.bind(MiniMixxx.ButtonModeKeylock.prototype.indicator, this));
 }
 MiniMixxx.ButtonModeKeylock.prototype.handlePress = function (value) {
-    if (value > 0) {
-        script.toggleControl(this.channel, "keylock");
+    // shift + keylock resets pitch (in either mode).
+    if (MiniMixxx.kontrol.shiftActive(this.channel)) {
+        if (value) {
+            engine.setValue(this.channel, "pitch_adjust_set_default", 1);
+        }
+    } else {
+        if (value) {
+            // In relative mode on down-press, reset the values and note that
+            // the button is pressed.
+            this.keylockPressed = true;
+            MiniMixxx.kontrol.keyAdjusted[this.channel] = false;
+        } else {
+            // On release, note that the button is released, and if the key *wasn't* adjusted,
+            // activate keylock.
+            this.keylockPressed = false;
+            if (!MiniMixxx.kontrol.keyAdjusted[this.channel]) {
+                script.toggleControl(this.channel, "keylock");
+            }
+        }
+    }
+
+    // Adjust the light on release depending on keylock status.  Down-press is always lit.
+    if (!value) {
+        var val = engine.getValue(this.channel, "keylock");
+        this.indicator(val);
+    } else {
+        this.indicator(1);
     }
 }
 MiniMixxx.ButtonModeKeylock.prototype.indicator = function (value, _group, _control) {
@@ -416,6 +442,10 @@ MiniMixxx.buttonHandler = function (_midino, control, value, _status, _group) {
     button.activeMode.handlePress(value);
 }
 
+MiniMixxx.pitchSliderHandler = function (_midino, _control, value, _status, group) {
+    MiniMixxx.kontrol.pitchSliderHandler(value, group);
+}
+
 MiniMixxx.debugLights = function () {
 };
 
@@ -469,18 +499,40 @@ MiniMixxx.Controller = function () {
         }),
     }
 
-    this.shiftButtons = {
-        "[Channel1]": this.buttons[0x0F],
-        "[Channel2]": this.buttons[0x13]
+    this.buttonsByMode = {
+        "SHIFT": {
+            "[Channel1]": this.buttons[0x0F],
+            "[Channel2]": this.buttons[0x13]
+        },
+        "KEYLOCK": {
+            "[Channel1]": this.buttons[0x05],
+            "[Channel2]": this.buttons[0x09]
+        }
+    };
+
+    this.pitchSliderLastValue = {
+        "[Channel1]": -1,
+        "[Channel2]": -1
+    };
+
+    this.keyAdjusted = {
+        "[Channel1]": false,
+        "[Channel2]": false
     };
 
     for (var name in this.buttons) {
         this.buttons[name].activeMode.setLights();
     }
+
+    this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", MiniMixxx.bind(MiniMixxx.Controller.prototype.guiTickHandler, this));
 };
 
 MiniMixxx.Controller.prototype.shiftActive = function (channel) {
-    return this.shiftButtons[channel].buttons["SHIFT"].shiftActive;
+    return this.buttonsByMode["SHIFT"][channel].buttons["SHIFT"].shiftActive;
+}
+
+MiniMixxx.Controller.prototype.keylockPressed = function (channel) {
+    return this.buttonsByMode["KEYLOCK"][channel].buttons["KEYLOCK"].keylockPressed;
 }
 
 MiniMixxx.Controller.prototype.activateLayer = function (channel, layerName) {
@@ -497,6 +549,47 @@ MiniMixxx.Controller.prototype.activateLayer = function (channel, layerName) {
         }
     }
 }
+
+MiniMixxx.Controller.prototype.pitchSliderHandler = function (value, group) {
+    // Adapt HID value to rate control range.
+    value = -1.0 + ((value / 127.0) * 2.0);
+    if (this.pitchSliderLastValue[group] === -1) {
+        this.pitchSliderLastValue[group] = value;
+    } else {
+        // If shift is pressed, don't update any values.
+        if (this.shiftActive(group)) {
+            this.pitchSliderLastValue[group] = value;
+            return;
+        }
+
+        // var relVal;
+        if (this.keylockPressed(group)) {
+            relVal = 1.0 - engine.getValue(group, "pitch_adjust");
+        } else {
+            relVal = engine.getValue(group, "rate");
+        }
+
+        // This can result in values outside -1 to 1, but that is valid for the
+        // rate control. This means the entire swing of the rate slider can be
+        // outside the range of the widget, but that's ok because the slider still
+        // works.
+        relVal += value - this.pitchSliderLastValue[group];
+        this.pitchSliderLastValue[group] = value;
+
+        if (this.keylockPressed(group)) {
+            // To match the pitch change from adjusting the rate, flip the pitch
+            // adjustment.
+            engine.setValue(group, "pitch_adjust", 1.0 - relVal);
+            this.keyAdjusted[group] = true;
+        } else {
+            engine.setValue(group, "rate", relVal);
+        }
+    }
+}
+
+MiniMixxx.Controller.prototype.guiTickHandler = function () {
+    // Spinnies!
+};
 
 MiniMixxx.init = function (_id) {
     this.kontrol = new MiniMixxx.Controller();
