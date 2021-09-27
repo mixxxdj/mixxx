@@ -112,6 +112,10 @@
    #4262
   </li>
   <li>
+   Updated mapping for Denon MC7000 controller
+   #4021
+  </li>
+  <li>
    Disabled detection of keyboards and mice as HID controllers
    #4243
   </li>
