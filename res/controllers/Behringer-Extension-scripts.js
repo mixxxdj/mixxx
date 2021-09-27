@@ -558,7 +558,7 @@
      * `sizeControl` being preferred.
      *
      * @constructor
-     * @extends {components.Encoder}
+     * @extends {DirectionEncoder}
      * @param {object} options Options object
      * @param {number} options.size (optional) Size given in number of beats; default: 0.5
      * @param {string} options.sizeControl (optional) Name of a control that contains `size`
