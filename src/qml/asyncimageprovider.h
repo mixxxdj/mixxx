@@ -8,7 +8,6 @@
 #include "library/coverart.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class AsyncImageResponse : public QQuickImageResponse, public QRunnable {
@@ -36,5 +35,4 @@ class AsyncImageProvider : public QQuickAsyncImageProvider {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

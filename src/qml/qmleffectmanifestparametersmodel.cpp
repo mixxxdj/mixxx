@@ -5,7 +5,6 @@
 #include "effects/effectmanifest.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 namespace {
 const QHash<int, QByteArray> kRoleNames = {
@@ -122,5 +121,4 @@ QVariant QmlEffectManifestParametersModel::get(int row) const {
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

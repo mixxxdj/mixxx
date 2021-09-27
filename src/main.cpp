@@ -36,7 +36,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     int exitCode;
 
     if (args.getQml()) {
-        mixxx::skin::qml::QmlApplication qmlApplication(pApp, pCoreServices);
+        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
         exitCode = pApp->exec();
     } else {
         // This scope ensures that `MixxxMainWindow` is destroyed *before*

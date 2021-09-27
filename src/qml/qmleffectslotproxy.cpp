@@ -8,7 +8,6 @@
 #include "qml/qmleffectmanifestparametersmodel.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlEffectSlotProxy::QmlEffectSlotProxy(EffectRackPointer pRack,
@@ -90,5 +89,4 @@ QmlEffectManifestParametersModel* QmlEffectSlotProxy::getParametersModel() const
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

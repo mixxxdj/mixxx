@@ -4,7 +4,6 @@
 #include "effects/effectsmanager.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class QmlEffectManifestParametersModel;
@@ -18,7 +17,7 @@ class QmlEffectSlotProxy : public QObject {
     Q_PROPERTY(int number READ getNumber CONSTANT)
     Q_PROPERTY(QString group READ getGroup CONSTANT)
     Q_PROPERTY(QString effectId READ getEffectId WRITE setEffectId NOTIFY effectIdChanged)
-    Q_PROPERTY(mixxx::skin::qml::QmlEffectManifestParametersModel* parametersModel
+    Q_PROPERTY(mixxx::qml::QmlEffectManifestParametersModel* parametersModel
                     READ getParametersModel NOTIFY parametersModelChanged)
 
   public:
@@ -50,5 +49,4 @@ class QmlEffectSlotProxy : public QObject {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

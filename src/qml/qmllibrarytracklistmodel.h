@@ -4,7 +4,6 @@
 class LibraryTableModel;
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class QmlLibraryTrackListModel : public QIdentityProxyModel {
@@ -27,7 +26,6 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx
 
-Q_DECLARE_METATYPE(mixxx::skin::qml::QmlLibraryTrackListModel*)
+Q_DECLARE_METATYPE(mixxx::qml::QmlLibraryTrackListModel*)

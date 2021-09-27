@@ -6,7 +6,6 @@
 #include "qml/qmlplayerproxy.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlPlayerManagerProxy::QmlPlayerManagerProxy(
@@ -45,5 +44,4 @@ QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

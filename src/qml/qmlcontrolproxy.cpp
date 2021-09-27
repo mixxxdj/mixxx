@@ -3,7 +3,6 @@
 #include "moc_qmlcontrolproxy.cpp"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 namespace {
@@ -180,5 +179,4 @@ void QmlControlProxy::slotControlProxyValueChanged(double newValue) {
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

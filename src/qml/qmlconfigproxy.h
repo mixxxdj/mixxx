@@ -6,7 +6,6 @@
 #include "preferences/usersettings.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class QmlConfigProxy : public QObject {
@@ -24,5 +23,4 @@ class QmlConfigProxy : public QObject {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

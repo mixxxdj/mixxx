@@ -7,7 +7,6 @@
 #include <QQmlApplicationEngine>
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class QmlApplication : public QObject {
@@ -31,5 +30,4 @@ class QmlApplication : public QObject {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

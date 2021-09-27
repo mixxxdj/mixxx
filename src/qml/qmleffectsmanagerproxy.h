@@ -5,14 +5,13 @@
 #include "qml/qmlvisibleeffectsmodel.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class QmlEffectSlotProxy;
 
 class QmlEffectsManagerProxy : public QObject {
     Q_OBJECT
-    Q_PROPERTY(mixxx::skin::qml::QmlVisibleEffectsModel* visibleEffectsModel
+    Q_PROPERTY(mixxx::qml::QmlVisibleEffectsModel* visibleEffectsModel
                     MEMBER m_pVisibleEffectsModel CONSTANT);
 
   public:
@@ -20,7 +19,7 @@ class QmlEffectsManagerProxy : public QObject {
             std::shared_ptr<EffectsManager> pEffectsManager,
             QObject* parent = nullptr);
 
-    Q_INVOKABLE mixxx::skin::qml::QmlEffectSlotProxy* getEffectSlot(
+    Q_INVOKABLE mixxx::qml::QmlEffectSlotProxy* getEffectSlot(
             int rackNumber, int unitNumber, int effectNumber) const;
 
   private:
@@ -29,5 +28,4 @@ class QmlEffectsManagerProxy : public QObject {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

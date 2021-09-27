@@ -8,7 +8,6 @@ constexpr double kDesiredChannelHeight = 255;
 } // namespace
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
@@ -263,5 +262,4 @@ QColor QmlWaveformOverview::getRgbPenColor(ConstWaveformPointer pWaveform, int c
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

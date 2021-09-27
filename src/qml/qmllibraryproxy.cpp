@@ -6,7 +6,6 @@
 #include "library/sidebarmodel.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlLibraryProxy::QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* parent)
@@ -20,5 +19,4 @@ QAbstractItemModel* QmlLibraryProxy::getSidebarModel() {
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

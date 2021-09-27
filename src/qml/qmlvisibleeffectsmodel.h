@@ -5,7 +5,6 @@
 #include "effects/effectsmanager.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class QmlVisibleEffectsModel : public QAbstractListModel {
@@ -34,5 +33,4 @@ class QmlVisibleEffectsModel : public QAbstractListModel {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

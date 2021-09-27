@@ -5,7 +5,6 @@
 #include "mixer/playermanager.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class QmlPlayerManagerProxy : public QObject {
@@ -25,5 +24,4 @@ class QmlPlayerManagerProxy : public QObject {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

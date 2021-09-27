@@ -22,7 +22,6 @@
     }
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
@@ -193,5 +192,4 @@ QUrl QmlPlayerProxy::getTrackLocationUrl() const {
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

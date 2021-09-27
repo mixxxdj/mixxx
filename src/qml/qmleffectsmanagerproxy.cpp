@@ -9,7 +9,6 @@
 #include "qml/qmlvisibleeffectsmodel.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlEffectsManagerProxy::QmlEffectsManagerProxy(
@@ -56,5 +55,4 @@ QmlEffectSlotProxy* QmlEffectsManagerProxy::getEffectSlot(
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

@@ -30,7 +30,6 @@ auto lambda_to_singleton_type_factory_ptr(F&& f) {
 } // namespace
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlApplication::QmlApplication(
@@ -180,5 +179,4 @@ void QmlApplication::loadQml(const QString& path) {
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx
