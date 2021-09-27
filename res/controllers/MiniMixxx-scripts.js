@@ -9,7 +9,6 @@
 //
 // * Library mode
 // * Hotcue Layer
-// * Sampler Layer
 // * Pretty colors for meters?
 //
 ///////////////////////////////////////////////////////////////////////////////////
@@ -41,16 +40,23 @@ MiniMixxx.Mode = function (parent, modeName, channel, idx) {
 // Input:
 // * Spin: adjust jog
 // * Shift + spin: quick seek
-// Output: spinny angle display.
+// * Press: activate loop or toggle loop if active
+// * Shift + Press: loop roll
+// Output:
+// * spinny angle
+// * switch indicates loop active
 MiniMixxx.EncoderModeJog = function (parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "JOG", channel, idx);
     this.positionUpdate = false;
     this.curPosition = 0;
     this.trackDurationSec = 0;
-    this.color = 13;
+    this.baseColor = 13;
+    this.loopColor = 46;
+    this.color = this.baseColor;
 
     engine.connectControl(this.channel, "track_loaded", MiniMixxx.bind(MiniMixxx.EncoderModeJog.prototype.trackLoadedHandler, this));
     engine.connectControl(this.channel, "playposition", MiniMixxx.bind(MiniMixxx.EncoderModeJog.prototype.playpositionChanged, this));
+    engine.connectControl(this.channel, "loop_enabled", MiniMixxx.bind(MiniMixxx.EncoderModeJog.prototype.loopEnabledChanged, this));
 }
 MiniMixxx.EncoderModeJog.prototype.handleSpin = function (velo) {
     if (MiniMixxx.kontrol.shiftActive()) {
@@ -62,7 +68,21 @@ MiniMixxx.EncoderModeJog.prototype.handleSpin = function (velo) {
         engine.setValue(this.channel, "jog", velo / 2.0);
     }
 }
-MiniMixxx.EncoderModeJog.prototype.handlePress = function (_value) {
+MiniMixxx.EncoderModeJog.prototype.handlePress = function (value) {
+    var isLoopActive = engine.getValue(this.channel, "loop_enabled");
+
+    if (MiniMixxx.kontrol.shiftActive()) {
+        engine.setValue(this.channel, "beatlooproll_activate", value);
+    } else {
+        if (value === 0) {
+            return;
+        }
+        if (isLoopActive) {
+            engine.setValue(this.channel, "reloop_toggle", value);
+        } else {
+            engine.setValue(this.channel, "beatloop_activate", value);
+        }
+    }
 }
 MiniMixxx.EncoderModeJog.prototype.playpositionChanged = function (value) {
     if (this.trackDurationSec === 0) {
@@ -95,28 +115,30 @@ MiniMixxx.EncoderModeJog.prototype.lightSpinny = function () {
     var rotations = this.curPosition * (1 / 1.8);  // 1/1.8 is rotations per second (33 1/3 RPM)
     // Calculate angle from 0-1.0
     var angle = rotations - Math.floor(rotations);
+    var color = engine.getValue(this.channel, "loop_enabled") > 0 ? this.loopColor : this.baseColor;
 
     // Angles between 0 and .4 and .6 and 1.0 can be mapped to the indicator.
     // The others have to go on the pfl light.
     if (angle >= 0.6) {
         var midival = (angle - 0.6) * (64.0 / 0.4);
+        midi.sendShortMsg(0xBF, this.idx, color);
         midi.sendShortMsg(0xB0, this.idx, midival);
-        // switch light off
-        midi.sendShortMsg(0x90, this.idx, 0x00);
     } else if (angle < 0.4) {
         var midival = angle * (64.0 / 0.4) + 64;
+        midi.sendShortMsg(0xBF, this.idx, color);
         midi.sendShortMsg(0xB0, this.idx, midival);
-        // switch light off
-        midi.sendShortMsg(0x90, this.idx, 0x00);
     } else {
-        midi.sendShortMsg(0x90, this.idx, this.color);
         // rotary light off
-        midi.sendShortMsg(0xb0, this.idx, 0x00);
+        midi.sendShortMsg(0xB0, this.idx, 0x00);
     }
 }
+MiniMixxx.EncoderModeJog.prototype.loopEnabledChanged = function () {
+    this.setLights();
+};
 MiniMixxx.EncoderModeJog.prototype.setLights = function () {
-    midi.sendShortMsg(0xBF, this.idx, this.color);
     this.lightSpinny();
+    var color = engine.getValue(this.channel, "loop_enabled") > 0 ? this.loopColor : 0x00;
+    midi.sendShortMsg(0x90, this.idx, color);
 }
 
 // Gain Mode Encoder:
@@ -295,7 +317,6 @@ MiniMixxx.BeatJump.prototype.switchIndicator = function (value, _group, _control
 }
 MiniMixxx.BeatJump.prototype.setLights = function () {
     midi.sendShortMsg(0xBF, this.idx, this.color);
-    this.switchIndicator(engine.getValue(this.channel, "loop_enabled"));
 }
 
 // An Encoder represents a single encoder knob and tracks the active mode.
@@ -478,59 +499,38 @@ MiniMixxx.ButtonModeShift.prototype.setLights = function () {
     this.indicator(this.shiftActive);
 }
 
-MiniMixxx.ButtonModeLoopLayer = function (parent, channel, idx) {
-    MiniMixxx.ButtonMode.call(this, parent, "LOOPLAYER", channel, idx, [0, 46]);
+MiniMixxx.ButtonModeLayer = function (parent, layerName, channel, idx, colors) {
+    MiniMixxx.ButtonMode.call(this, parent, layerName, channel, idx, [0, 46]);
     this.layerActive = false;
 }
-MiniMixxx.ButtonModeLoopLayer.prototype.handlePress = function (value) {
+MiniMixxx.ButtonModeLayer.prototype.handlePress = function (value) {
     if (value > 0) {
         this.layerActive = !this.layerActive;
     }
     if (this.layerActive) {
-        MiniMixxx.kontrol.activateLayer(this.channel, this.modeName);
+        MiniMixxx.kontrol.activateLayer(this.modeName, this.channel);
     } else {
-        MiniMixxx.kontrol.activateLayer(this.channel, "NONE");
+        MiniMixxx.kontrol.activateLayer("NONE", this.channel);
     }
     this.indicator(this.layerActive);
 }
-MiniMixxx.ButtonModeLoopLayer.prototype.indicator = function (value, _group, _control) {
+MiniMixxx.ButtonModeLayer.prototype.setActive = function (active) {
+    this.layerActive = active;
+    this.indicator(this.layerActive);
+}
+MiniMixxx.ButtonModeLayer.prototype.indicator = function (value, _group, _control) {
     if (this !== this.parent.activeMode) {
         return;
     }
     MiniMixxx.lightButton(this.idx, value, this.colors);
 }
-MiniMixxx.ButtonModeLoopLayer.prototype.setLights = function () {
-    this.indicator(this.layerActive);
-}
-
-MiniMixxx.ButtonModeSamplerLayer = function (parent, channel, idx) {
-    MiniMixxx.ButtonMode.call(this, parent, "SAMPLERLAYER", channel, idx, [0, 21]);
-    this.layerActive = false;
-}
-MiniMixxx.ButtonModeSamplerLayer.prototype.handlePress = function (value) {
-    if (value > 0) {
-        this.layerActive = !this.layerActive;
-    }
-    if (this.layerActive) {
-        MiniMixxx.kontrol.activateLayer(this.channel, this.modeName);
-    } else {
-        MiniMixxx.kontrol.activateLayer(this.channel, "NONE");
-    }
-    this.indicator(this.layerActive);
-}
-MiniMixxx.ButtonModeSamplerLayer.prototype.indicator = function (value, _group, _control) {
-    if (this !== this.parent.activeMode) {
-        return;
-    }
-    MiniMixxx.lightButton(this.idx, value, this.colors);
-}
-MiniMixxx.ButtonModeSamplerLayer.prototype.setLights = function () {
+MiniMixxx.ButtonModeLayer.prototype.setLights = function () {
     this.indicator(this.layerActive);
 }
 
 // ButtonModeSampler is the button mode for playing individual sampler decks.
 MiniMixxx.ButtonModeSampler = function (parent, channel, idx, samplerNum) {
-    MiniMixxx.ButtonMode.call(this, parent, "SAMPLER-" + samplerNum, channel, idx, [0, 22]);
+    MiniMixxx.ButtonMode.call(this, parent, "SAMPLER-" + samplerNum, channel, idx, [21, 22]);
     this.samplerGroup = "[Sampler" + samplerNum + "]";
     engine.connectControl(this.samplerGroup, "track_loaded", MiniMixxx.bind(MiniMixxx.ButtonModeSampler.prototype.indicator, this));
 }
@@ -574,13 +574,15 @@ MiniMixxx.Button = function (channel, idx, layerConfig) {
         } else if (mode === "SHIFT") {
             this.buttons[mode] = new MiniMixxx.ButtonModeShift(this, channel, idx);
         } else if (mode === "LOOPLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLoopLayer(this, channel, idx);
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0,46]);
         } else if (mode === "SAMPLERLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeSamplerLayer(this, channel, idx);
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", channel, idx, [0,21]);
         } else if (mode.startsWith("SAMPLER-")) {
             var splitted = mode.split("-");
             var samplerNum = splitted[1];
             this.buttons[mode] = new MiniMixxx.ButtonModeSampler(this, channel, idx, samplerNum);
+        } else if (mode === "LIBRARYLAYER") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", channel, idx, [0,76]);
         } else {
             print("Ignoring unknown button mode: " + mode);
             continue;
@@ -590,10 +592,15 @@ MiniMixxx.Button = function (channel, idx, layerConfig) {
     this.activateLayer("NONE");
 }
 MiniMixxx.Button.prototype.activateLayer = function (layerName) {
+    for (var name in this.buttons) {
+        var button = this.buttons[name];
+        if (button instanceof MiniMixxx.ButtonModeLayer) {
+            button.setActive(button.modeName === layerName);
+        }
+    }
     var mode = this.layers[layerName];
     if (!mode) {
-        print("button mode not found for layer: " + layerName);
-        return;
+        mode = this.layers["NONE"];
     }
     this.activeMode = mode;
     this.activeMode.setLights();
@@ -639,40 +646,50 @@ MiniMixxx.Controller = function () {
     };
 
     this.buttons = {
+        // Deck 1
+        // 0x04: hard-coded CUE1
         0x05: new MiniMixxx.Button("[Channel1]", 0x05, {
             "NONE": "KEYLOCK",
         }),
-        // 0x06: new MiniMixxx.Button("[Channel1]", 0x06, {
-        // }),
-        // 0x07: new MiniMixxx.Button("[Channel1]", 0x07, {
-        // }),
+        0x06: new MiniMixxx.Button("[Channel1]", 0x06, {
+            "NONE": "EMPTY",
+        }),
+        //0x0C: hard-coded PLAY1
         0x0D: new MiniMixxx.Button("[Channel1]", 0x0D, {
             "NONE": "SYNC"
         }),
         0x0E: new MiniMixxx.Button("[Channel1]", 0x0E, {
             "NONE": "LOOPLAYER",
         }),
-        // 0x0F: new MiniMixxx.Button("[Channel1]", 0x0F, {
-        // }),
 
-        0x09: new MiniMixxx.Button("[Channel2]", 0x09, {
+        // 0x07: hard-coded CUE2
+        0x08: new MiniMixxx.Button("[Channel2]", 0x08, {
             "NONE": "KEYLOCK",
             "SAMPLERLAYER": "SAMPLER-1"
         }),
-        0x0A: new MiniMixxx.Button("[Channel2]", 0x0A, {
+        0x09: new MiniMixxx.Button("[Channel2]", 0x09, {
             "NONE": "EMPTY",
             "SAMPLERLAYER": "SAMPLER-2"
+        }),
+        //0x0F: hard coded PLAY2
+        0x10: new MiniMixxx.Button("[Channel2]", 0x10, {
+            "NONE": "SYNC",
+            "SAMPLERLAYER": "SAMPLER-3"
+        }),
+        0x11: new MiniMixxx.Button("[Channel2]", 0x11, {
+            "NONE": "LOOPLAYER",
+            "SAMPLERLAYER": "SAMPLER-4"
+        }),
+
+        // Righthand mode buttons
+        0x0A: new MiniMixxx.Button("[Channel2]", 0x0A, {
+            "NONE": "EMPTY",
         }),
         0x0B: new MiniMixxx.Button("[Channel2]", 0x0B, {
             "NONE": "SAMPLERLAYER"
         }),
-        0x11: new MiniMixxx.Button("[Channel2]", 0x11, {
-            "NONE": "SYNC",
-            "SAMPLERLAYER": "SAMPLER-3"
-        }),
         0x12: new MiniMixxx.Button("[Channel2]", 0x12, {
-            "NONE": "LOOPLAYER",
-            "SAMPLERLAYER": "SAMPLER-4"
+            "NONE": "LIBRARYLAYER",
         }),
         0x13: new MiniMixxx.Button("[Channel2]", 0x13, {
             "NONE": "SHIFT"
@@ -697,7 +714,6 @@ MiniMixxx.Controller = function () {
     };
 
     for (var name in this.buttons) {
-        print("setting lights " + name);
         this.buttons[name].activeMode.setLights();
     }
 
@@ -712,16 +728,16 @@ MiniMixxx.Controller.prototype.keylockPressed = function (channel) {
     return this.keylockButtons[channel].buttons["KEYLOCK"].keylockPressed;
 }
 
-MiniMixxx.Controller.prototype.activateLayer = function (channel, layerName) {
+MiniMixxx.Controller.prototype.activateLayer = function (layerName, channel) {
     for (var name in this.encoders) {
         encoder = this.encoders[name];
-        if (encoder.channel === channel) {
+        if (!channel || encoder.channel === channel) {
             encoder.activateLayer(layerName);
         }
     }
     for (var name in this.buttons) {
         button = this.buttons[name];
-        if (button.channel === channel) {
+        if (!channel || button.channel === channel) {
             button.activateLayer(layerName);
         }
     }
