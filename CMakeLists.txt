@@ -816,7 +816,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/qml/qmllibrarytracklistmodel.cpp
   src/skin/qml/qmlplayermanagerproxy.cpp
   src/skin/qml/qmlplayerproxy.cpp
-  src/skin/qml/qmlskin.cpp
   src/skin/qml/qmlvisibleeffectsmodel.cpp
   src/skin/qml/qmlwaveformoverview.cpp
   src/skin/legacy/skincontext.cpp
