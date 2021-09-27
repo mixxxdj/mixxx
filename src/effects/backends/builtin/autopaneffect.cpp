@@ -6,7 +6,7 @@
 #include "util/math.h"
 #include "util/sample.h"
 
-const float kPositionRampingThreshold = 0.002f;
+constexpr float kPositionRampingThreshold = 0.002f;
 
 // static
 QString AutoPanEffect::getId() {
