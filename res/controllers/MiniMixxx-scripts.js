@@ -25,6 +25,54 @@ MiniMixxx.bind = function (fn, obj) {
     };
 };
 
+// An Encoder represents a single encoder knob and tracks the active mode.
+MiniMixxx.Encoder = function (channel, idx, layerConfig) {
+    this.channel = channel;
+    this.idx = idx;
+    this.encoders = {};
+    this.layers = {};
+    this.activeMode = {};
+
+    for (var layerName in layerConfig) {
+        mode = layerConfig[layerName];
+        if (mode === "JOG") {
+            this.encoders[mode] = new MiniMixxx.EncoderModeJog(this, channel, idx);
+        } else if (mode === "GAIN") {
+            this.encoders[mode] = new MiniMixxx.EncoderModeGain(this, channel, idx);
+        } else if (mode === "LOOP") {
+            this.encoders[mode] = new MiniMixxx.EncoderModeLoop(this, channel, idx);
+        } else if (mode === "BEATJUMP") {
+            this.encoders[mode] = new MiniMixxx.EncoderModeBeatJump(this, channel, idx);
+        } else if (mode === "LIBRARY") {
+            this.encoders[mode] = new MiniMixxx.EncoderModeLibrary(this, channel, idx);
+        } else if (mode === "LIBRARYFOCUS") {
+            this.encoders[mode] = new MiniMixxx.EncoderModeLibraryFocus(this, channel, idx);
+        } else if (mode.startsWith("EFFECT-")) {
+            var splitted = mode.split("-");
+            var effectNum = splitted[1];
+            this.encoders[mode] = new MiniMixxx.EncoderModeFX(this, channel, idx, effectNum);
+        } else {
+            print("Ignoring unknown encoder mode: " + mode);
+            continue;
+        }
+        this.layers[layerName] = this.encoders[mode];
+        // // In FX mode, press: toggles
+        // "FX": new MiniMixxx.EncoderMode("", channel, idx),
+    }
+    this.activateLayer("NONE");
+}
+
+MiniMixxx.Encoder.prototype.activateLayer = function (layerName) {
+    // Only the active mode object should drive lights.
+    var mode = this.layers[layerName];
+    if (!mode) {
+        print("encoder mode not found for layer: " + layerName);
+        return;
+    }
+    this.activeMode = mode;
+    this.activeMode.setLights();
+}
+
 // Mode is the parent class of all the Mode objects below (both for encoders and
 // buttons).
 MiniMixxx.Mode = function (parent, modeName, channel, idx) {
@@ -464,63 +512,71 @@ MiniMixxx.EncoderModeFX.prototype.setLights = function () {
     this.switchIndicator(engine.getValue(this.effectGroup, "enabled"));
 }
 
-// An Encoder represents a single encoder knob and tracks the active mode.
-MiniMixxx.Encoder = function (channel, idx, layerConfig) {
+// Button represents a single physical button and contains all of the mode objects that
+// drive its behavior.
+MiniMixxx.Button = function (channel, idx, layerConfig) {
     this.channel = channel;
     this.idx = idx;
-    this.encoders = {};
+    this.buttons = {};
     this.layers = {};
     this.activeMode = {};
 
     for (var layerName in layerConfig) {
         mode = layerConfig[layerName];
-        if (mode === "JOG") {
-            this.encoders[mode] = new MiniMixxx.EncoderModeJog(this, channel, idx);
-        } else if (mode === "GAIN") {
-            this.encoders[mode] = new MiniMixxx.EncoderModeGain(this, channel, idx);
-        } else if (mode === "LOOP") {
-            this.encoders[mode] = new MiniMixxx.EncoderModeLoop(this, channel, idx);
-        } else if (mode === "BEATJUMP") {
-            this.encoders[mode] = new MiniMixxx.EncoderModeBeatJump(this, channel, idx);
-        } else if (mode === "LIBRARY") {
-            this.encoders[mode] = new MiniMixxx.EncoderModeLibrary(this, channel, idx);
-        } else if (mode === "LIBRARYFOCUS") {
-            this.encoders[mode] = new MiniMixxx.EncoderModeLibraryFocus(this, channel, idx);
-        } else if (mode.startsWith("EFFECT-")) {
+        if (mode === "EMPTY") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeEmpty(this, channel, idx);
+        } else if (mode === "SYNC") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeSync(this, channel, idx);
+        } else if (mode === "KEYLOCK") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeKeylock(this, channel, idx);
+        } else if (mode === "SHIFT") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeShift(this, channel, idx);
+        } else if (mode.startsWith("SAMPLER-")) {
             var splitted = mode.split("-");
-            var effectNum = splitted[1];
-            this.encoders[mode] = new MiniMixxx.EncoderModeFX(this, channel, idx, effectNum);
+            var samplerNum = splitted[1];
+            this.buttons[mode] = new MiniMixxx.ButtonModeSampler(this, channel, idx, samplerNum);
+        } else if (mode.startsWith("FX-")) {
+            // We only use FX 1 for now.
+            this.buttons[mode] = new MiniMixxx.ButtonModeFX(this, channel, idx);
+        } else if (mode === "LOOPLAYER") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0,46]);
+        } else if (mode === "SAMPLERLAYER") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0,21]);
+        } else if (mode === "LIBRARYLAYER") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0,104]);
+        } else if (mode === "FXLAYER") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "FXLAYER", "", idx, [0,61]);
         } else {
-            print("Ignoring unknown encoder mode: " + mode);
+            print("Ignoring unknown button mode: " + mode);
             continue;
         }
-        this.layers[layerName] = this.encoders[mode];
-        // // In FX mode, press: toggles
-        // "FX": new MiniMixxx.EncoderMode("", channel, idx),
+        this.layers[layerName] = this.buttons[mode];
     }
     this.activateLayer("NONE");
 }
-
-MiniMixxx.Encoder.prototype.activateLayer = function (layerName) {
-    // Only the active mode object should drive lights.
+MiniMixxx.Button.prototype.activateLayer = function (layerName) {
+    for (var name in this.buttons) {
+        var button = this.buttons[name];
+        if (button instanceof MiniMixxx.ButtonModeLayer) {
+            button.setActive(button.modeName === layerName);
+        }
+    }
     var mode = this.layers[layerName];
     if (!mode) {
-        print("encoder mode not found for layer: " + layerName);
-        return;
+        mode = this.layers["NONE"];
     }
     this.activeMode = mode;
     this.activeMode.setLights();
 }
 
-MiniMixxx.encoderHandler = function (_midino, control, velo, _status, _group) {
-    if (velo >= 64) {
-        velo -= 128;
+MiniMixxx.buttonHandler = function (_midino, control, value, _status, _group) {
+    button = this.kontrol.buttons[control];
+    if (!button) {
+        print("unhandled button: " + control);
+        return;
     }
-    this.kontrol.encoders[control].activeMode.handleSpin(velo);
-}
 
-MiniMixxx.encoderButtonHandler = function (_midino, control, value, _status, _group) {
-    this.kontrol.encoders[control].activeMode.handlePress(value);
+    button.activeMode.handlePress(value);
 }
 
 // ButtonMode defines some extra state useful for buttons.
@@ -735,75 +791,6 @@ MiniMixxx.ButtonModeFX.prototype.setLights = function () {
     this.indicator(engine.getValue("[EffectRack1_EffectUnit1]", "group_"+this.channel+"_enable"));
 }
 
-MiniMixxx.Button = function (channel, idx, layerConfig) {
-    this.channel = channel;
-    this.idx = idx;
-    this.buttons = {};
-    this.layers = {};
-    this.activeMode = {};
-
-    for (var layerName in layerConfig) {
-        mode = layerConfig[layerName];
-        if (mode === "EMPTY") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeEmpty(this, channel, idx);
-        } else if (mode === "SYNC") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeSync(this, channel, idx);
-        } else if (mode === "KEYLOCK") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeKeylock(this, channel, idx);
-        } else if (mode === "SHIFT") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeShift(this, channel, idx);
-        } else if (mode.startsWith("SAMPLER-")) {
-            var splitted = mode.split("-");
-            var samplerNum = splitted[1];
-            this.buttons[mode] = new MiniMixxx.ButtonModeSampler(this, channel, idx, samplerNum);
-        } else if (mode.startsWith("FX-")) {
-            // We only use FX 1 for now.
-            this.buttons[mode] = new MiniMixxx.ButtonModeFX(this, channel, idx);
-        } else if (mode === "LOOPLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0,46]);
-        } else if (mode === "SAMPLERLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0,21]);
-        } else if (mode === "LIBRARYLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0,104]);
-        } else if (mode === "FXLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "FXLAYER", "", idx, [0,61]);
-        } else {
-            print("Ignoring unknown button mode: " + mode);
-            continue;
-        }
-        this.layers[layerName] = this.buttons[mode];
-    }
-    this.activateLayer("NONE");
-}
-MiniMixxx.Button.prototype.activateLayer = function (layerName) {
-    for (var name in this.buttons) {
-        var button = this.buttons[name];
-        if (button instanceof MiniMixxx.ButtonModeLayer) {
-            button.setActive(button.modeName === layerName);
-        }
-    }
-    var mode = this.layers[layerName];
-    if (!mode) {
-        mode = this.layers["NONE"];
-    }
-    this.activeMode = mode;
-    this.activeMode.setLights();
-}
-
-MiniMixxx.buttonHandler = function (_midino, control, value, _status, _group) {
-    button = this.kontrol.buttons[control];
-    if (!button) {
-        print("unhandled button: " + control);
-        return;
-    }
-
-    button.activeMode.handlePress(value);
-}
-
-MiniMixxx.pitchSliderHandler = function (_midino, _control, value, _status, group) {
-    MiniMixxx.kontrol.pitchSliderHandler(value, group);
-}
-
 MiniMixxx.Controller = function () {
     this.encoders = {
         0x00: new MiniMixxx.Encoder("[Channel1]", 0, {
@@ -986,6 +973,21 @@ MiniMixxx.init = function (_id) {
         MiniMixxx.debugLights();
     }
 };
+
+MiniMixxx.encoderHandler = function (_midino, control, velo, _status, _group) {
+    if (velo >= 64) {
+        velo -= 128;
+    }
+    this.kontrol.encoders[control].activeMode.handleSpin(velo);
+}
+
+MiniMixxx.encoderButtonHandler = function (_midino, control, value, _status, _group) {
+    this.kontrol.encoders[control].activeMode.handlePress(value);
+}
+
+MiniMixxx.pitchSliderHandler = function (_midino, _control, value, _status, group) {
+    MiniMixxx.kontrol.pitchSliderHandler(value, group);
+}
 
 MiniMixxx.debugLights = function () {
     midi.sendShortMsg(0xBF, 0x00, 20);
