@@ -57,21 +57,26 @@ QmlApplication::QmlApplication(
     // system, which would improve nothing, or we had to expose them as
     // singletons to that they can be accessed by components instantiated by
     // QML, which would also be suboptimal.
+    //
+    // WARNING: The lambdas passed to qmlRegisterSingletonType outlive this
+    // QmlApplication. Therefore they *must not* capture any pointers which
+    // they share ownership of. Otherwise, the values captured by the lambdas
+    // would be destroyed after CoreServices and after the Qt event loop stops
+    // processing. To work around this, pass weak_ptrs into the lambdas and
+    // convert them to shared_ptrs when the QQmlApplicationEngine instantiates
+    // the QML proxy objects.
 
     qmlRegisterSingletonType<QmlEffectsManagerProxy>("Mixxx",
             0,
             1,
             "EffectsManager",
             lambda_to_singleton_type_factory_ptr(
-                    [pCoreServices](QQmlEngine* pEngine,
+                    [pEffectsManager = std::weak_ptr<EffectsManager>(
+                             pCoreServices->getEffectsManager())](
+                            QQmlEngine* pEngine,
                             QJSEngine* pScriptEngine) -> QObject* {
                         Q_UNUSED(pScriptEngine);
-
-                        QmlEffectsManagerProxy* pEffectsManagerProxy =
-                                new QmlEffectsManagerProxy(
-                                        pCoreServices->getEffectsManager(),
-                                        pEngine);
-                        return pEffectsManagerProxy;
+                        return new QmlEffectsManagerProxy(pEffectsManager.lock(), pEngine);
                     }));
     qmlRegisterUncreatableType<QmlVisibleEffectsModel>("Mixxx",
             0,
@@ -97,15 +102,12 @@ QmlApplication::QmlApplication(
             1,
             "PlayerManager",
             lambda_to_singleton_type_factory_ptr(
-                    [pCoreServices](QQmlEngine* pEngine,
+                    [pPlayerManager = std::weak_ptr<PlayerManager>(
+                             pCoreServices->getPlayerManager())](
+                            QQmlEngine* pEngine,
                             QJSEngine* pScriptEngine) -> QObject* {
                         Q_UNUSED(pScriptEngine);
-
-                        QmlPlayerManagerProxy* pPlayerManagerProxy =
-                                new QmlPlayerManagerProxy(
-                                        pCoreServices->getPlayerManager(),
-                                        pEngine);
-                        return pPlayerManagerProxy;
+                        return new QmlPlayerManagerProxy(pPlayerManager.lock(), pEngine);
                     }));
     qmlRegisterUncreatableType<QmlPlayerProxy>("Mixxx",
             0,
@@ -114,21 +116,16 @@ QmlApplication::QmlApplication(
             "Player objects can't be created directly, please use "
             "Mixxx.PlayerManager.getPlayer(group)");
 
-    const auto pSettings = m_pCoreServices->getSettings();
     qmlRegisterSingletonType<QmlConfigProxy>("Mixxx",
             0,
             1,
             "Config",
             lambda_to_singleton_type_factory_ptr(
-                    [pSettings](QQmlEngine* pEngine,
+                    [pSettings = QWeakPointer(pCoreServices->getSettings())](
+                            QQmlEngine* pEngine,
                             QJSEngine* pScriptEngine) -> QObject* {
                         Q_UNUSED(pScriptEngine);
-
-                        QmlConfigProxy* pConfigProxy =
-                                new QmlConfigProxy(
-                                        pSettings,
-                                        pEngine);
-                        return pConfigProxy;
+                        return new QmlConfigProxy(pSettings, pEngine);
                     }));
 
     qmlRegisterUncreatableType<QmlLibraryTrackListModel>("Mixxx",
@@ -142,14 +139,11 @@ QmlApplication::QmlApplication(
             1,
             "Library",
             lambda_to_singleton_type_factory_ptr(
-                    [pCoreServices](QQmlEngine* pEngine,
+                    [pLibrary = std::weak_ptr<Library>(
+                             pCoreServices->getLibrary())](QQmlEngine* pEngine,
                             QJSEngine* pScriptEngine) -> QObject* {
                         Q_UNUSED(pScriptEngine);
-
-                        QmlLibraryProxy* pLibraryProxy = new QmlLibraryProxy(
-                                pCoreServices->getLibrary(),
-                                pEngine);
-                        return pLibraryProxy;
+                        return new QmlLibraryProxy(pLibrary.lock(), pEngine);
                     }));
 
     loadQml(m_mainFilePath);
