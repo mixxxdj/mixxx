@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (Unreleased)
+
+* Fix high CPU load due to extremely high internal sync clock values [#4312](https://github.com/mixxxdj/mixxx/pull/4312) [lp1943320](https://bugs.launchpad.net/mixxx/+bug/1943320)
+* Fix Auto DJ skipping tracks randomly [#4319](https://github.com/mixxxdj/mixxx/pull/4319) [lp1941989](https://bugs.launchpad.net/mixxx/+bug/1941989)
+* Fix resetting main window title when all decks are stopped (a regression 2.3.1). [#4296](https://github.com/mixxxdj/mixxx/pull/4296)
+* Fix preference option for re-analyzing beatgrids imported from other software [#4288](https://github.com/mixxxdj/mixxx/pull/4288)
+* Numark DJ2GO2 Touch: Fix sampler, hotcue and beatloop buttons [#4287](https://github.com/mixxxdj/mixxx/pull/4287)
+* Hercules Inpulse 300: Add better FX controls and other minor improvemrnts [#4246](https://github.com/mixxxdj/mixxx/pull/4246)
+* Denon MC7000: Improve slip mode and jog wheel handling [#4021](https://github.com/mixxxdj/mixxx/pull/4021) [#4324](https://github.com/mixxxdj/mixxx/pull/4324)
+
 ## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (Unreleased)
 
 * Added mapping for the Numark DJ2GO2 Touch controller [#4108](https://github.com/mixxxdj/mixxx/pull/4108)

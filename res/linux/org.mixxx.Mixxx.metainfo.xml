@@ -96,6 +96,43 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.3.2" type="development">
+      <description>
+ <ul>
+  <li>
+   Fix high CPU load due to extremely high internal sync clock values
+   #4312
+   lp1943320
+  </li>
+  <li>
+   Fix Auto DJ skipping tracks randomly
+   #4319
+   lp1941989
+  </li>
+  <li>
+   Fix resetting main window title when all decks are stopped (a regression 2.3.1).
+   #4296
+  </li>
+  <li>
+   Fix preference option for re-analyzing beatgrids imported from other software
+   #4288
+  </li>
+  <li>
+   Numark DJ2GO2 Touch: Fix sampler, hotcue and beatloop buttons
+   #4287
+  </li>
+  <li>
+   Hercules Inpulse 300: Add better FX controls and other minor improvemrnts
+   #4246
+  </li>
+  <li>
+   Denon MC7000: Improve slip mode and jog wheel handling
+   #4021
+   #4324
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.3.1" type="development">
       <description>
  <ul>
