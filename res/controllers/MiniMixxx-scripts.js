@@ -426,7 +426,7 @@ MiniMixxx.EncoderModeLibrary.prototype.setLights = function () {
 // Library Focus Encoder:
 // Input:
 //   * Spin: move focus forward / back
-//   * Shift + Spin: search history scroll
+//   * Shift + Spin: scroll through track
 //   * Press: ?
 //   * Shift + Press: search history select?
 // Output: ???
@@ -436,11 +436,10 @@ MiniMixxx.EncoderModeLibraryFocus = function (parent, channel, idx) {
 }
 MiniMixxx.EncoderModeLibraryFocus.prototype.handleSpin = function (velo) {
     if (MiniMixxx.kontrol.shiftActive()) {
-        if (velo > 0) {
-            engine.setValue("[Library]", "search_history_next", 1);
-        } else if (velo < 0) {
-            engine.setValue("[Library]", "search_history_prev", velo);
-        }
+        var playPosition = engine.getValue(this.channel, "playposition");
+        playPosition += velo / 256.0;
+        playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
+        engine.setValue(this.channel, "playposition", playPosition);
     } else {
         if (velo > 0) {
             engine.setValue("[Library]", "MoveFocusForward", 1);
