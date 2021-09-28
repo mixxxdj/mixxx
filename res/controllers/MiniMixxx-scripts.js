@@ -7,16 +7,12 @@
 //
 // TODO:
 //
-// * Hotcues (where can they go?)
-//
 ///////////////////////////////////////////////////////////////////////////////////
 
 var MiniMixxx = {};
 
-// ==== Friendly User Configuration ====
-
 // Set to true to output debug messages and debug light outputs.
-MiniMixxx.DebugMode = true;
+MiniMixxx.DebugMode = false;
 
 // Mixxx's javascript doesn't support .bind natively, so here's a simple version.
 MiniMixxx.bind = function (fn, obj) {
@@ -158,6 +154,10 @@ MiniMixxx.EncoderModeJog.prototype.lightSpinny = function () {
         return;
     }
     this.positionUpdated = false;
+    if (!engine.getValue(this.channel, "track_loaded")) {
+        midi.sendShortMsg(0xB0, this.idx, 0x00);
+        return;
+    }
     var rotations = this.curPosition * (1 / 1.8);  // 1/1.8 is rotations per second (33 1/3 RPM)
     // Calculate angle from 0-1.0
     var angle = rotations - Math.floor(rotations);
@@ -373,9 +373,7 @@ MiniMixxx.EncoderModeBeatJump.prototype.spinIndicator = function (value, _group,
     if (this !== this.parent.activeMode) {
         return;
     }
-    print("incoming: " + value);
     value = Math.log2(value);
-    print("incoming log2: " + value);
     // log values go from -5 to 9 (14 steps)
     // And we should map from 9 to 127 (118 steps)
     value = Math.floor((value + 5) / 14.0 * 118 + 9);
@@ -538,17 +536,23 @@ MiniMixxx.Button = function (channel, idx, layerConfig) {
             var splitted = mode.split("-");
             var samplerNum = splitted[1];
             this.buttons[mode] = new MiniMixxx.ButtonModeSampler(this, channel, idx, samplerNum);
+        } else if (mode.startsWith("HOTCUE-")) {
+            var splitted = mode.split("-");
+            var hotcueNum = splitted[1];
+            this.buttons[mode] = new MiniMixxx.ButtonModeHotcue(this, channel, idx, hotcueNum);
         } else if (mode.startsWith("FX-")) {
             // We only use FX 1 for now.
             this.buttons[mode] = new MiniMixxx.ButtonModeFX(this, channel, idx);
         } else if (mode === "LOOPLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0,46]);
-        } else if (mode === "SAMPLERLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0,21]);
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0, 46]);
+        } else if (mode === "SAMPLERLAYER-HOTCUE2LAYER") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0, 21]);
+            this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", "", idx, [0, 21]);
         } else if (mode === "LIBRARYLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0,104]);
-        } else if (mode === "FXLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "FXLAYER", "", idx, [0,61]);
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0, 104]);
+        } else if (mode === "FXLAYER-HOTCUE1LAYER") {
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "FXLAYER", "", idx, [0, 61]);
+            this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", "", idx, [0, 21]);
         } else {
             print("Ignoring unknown button mode: " + mode);
             continue;
@@ -718,9 +722,27 @@ MiniMixxx.ButtonModeShift.prototype.setLights = function () {
 // channel can be empty if it should apply to both channels.
 MiniMixxx.ButtonModeLayer = function (parent, layerName, channel, idx, colors) {
     MiniMixxx.ButtonMode.call(this, parent, layerName, channel, idx, colors);
+    // A ButtonModeLayer can contain a child of itself that is activated when Shift is held.
+    this.shiftedButton = null;
+    this.requireShift = false;
     this.layerActive = false;
 }
+// Add a second layer option to the shift-press for this button.
+MiniMixxx.ButtonModeLayer.prototype.addShiftedButton = function (parent, layerName, channel, idx, colors) {
+    // A shifted button could hypothetically have its own shifted button but let's not go there.
+    this.shiftedButton = new MiniMixxx.ButtonModeLayer(parent, layerName, channel, idx, colors);
+    this.shiftedButton.requireShift = true;
+}
 MiniMixxx.ButtonModeLayer.prototype.handlePress = function (value) {
+    // If we have a shiftedButton, pass off to it if shift is held OR if that shifted
+    // layer is active.  That way a simple press of the active shifted layer will turn it off
+    // instead of activating the unshifted layer.
+    if (this.shiftedButton) {
+        if (MiniMixxx.kontrol.shiftActive() || this.shiftedButton.layerActive) {
+            this.shiftedButton.handlePress(value);
+            return;
+        }
+    }
     if (value > 0) {
         this.layerActive = !this.layerActive;
     }
@@ -739,6 +761,10 @@ MiniMixxx.ButtonModeLayer.prototype.indicator = function (value, _group, _contro
     if (this !== this.parent.activeMode) {
         return;
     }
+    if (this.shiftedButton && this.shiftedButton.layerActive) {
+        MiniMixxx.lightButton(this.idx, true, this.colors);
+        return;
+    }
     MiniMixxx.lightButton(this.idx, value, this.colors);
 }
 MiniMixxx.ButtonModeLayer.prototype.setLights = function () {
@@ -753,14 +779,14 @@ MiniMixxx.ButtonModeSampler = function (parent, channel, idx, samplerNum) {
     engine.connectControl(this.samplerGroup, "track_loaded", MiniMixxx.bind(MiniMixxx.ButtonModeSampler.prototype.indicator, this));
 }
 MiniMixxx.ButtonModeSampler.prototype.handlePress = function (value) {
-    // shift + keylock resets pitch (in either mode).
+    // shift+press ejects the sample.
     if (MiniMixxx.kontrol.shiftActive()) {
         if (value) {
-            engine.setValue(this.samplerGroup, "eject", 1);
+            script.toggleControl(this.samplerGroup, "eject");
         }
     } else {
         if (value) {
-            engine.setValue(this.samplerGroup, "cue_gotoandplay", 1);
+            script.toggleControl(this.samplerGroup, "cue_gotoandplay");
         }
     }
 }
@@ -772,6 +798,41 @@ MiniMixxx.ButtonModeSampler.prototype.indicator = function (value, _group, _cont
 }
 MiniMixxx.ButtonModeSampler.prototype.setLights = function () {
     this.indicator(engine.getValue(this.samplerGroup, "track_loaded"));
+}
+
+// ButtonModeHotcue is the button mode for playing individual sampler decks.
+// Shift+Press to eject the sample.
+MiniMixxx.ButtonModeHotcue = function (parent, channel, idx, hotcueNum) {
+    MiniMixxx.ButtonMode.call(this, parent, "HOTCUE-" + hotcueNum, channel, idx, [0x7f, 22]);
+    this.hotcueNum = hotcueNum;
+    this.keyPrefix = "hotcue_" + hotcueNum + "_";
+    engine.connectControl(this.channel, this.keyPrefix + "enabled", MiniMixxx.bind(MiniMixxx.ButtonModeHotcue.prototype.indicator, this));
+    engine.connectControl(this.channel, this.keyPrefix + "color", MiniMixxx.bind(MiniMixxx.ButtonModeHotcue.prototype.indicator, this));
+}
+MiniMixxx.ButtonModeHotcue.prototype.handlePress = function (value) {
+    // shift + press unsets the hotcue
+    if (MiniMixxx.kontrol.shiftActive()) {
+        if (value) {
+            script.toggleControl(this.channel, this.keyPrefix + "clear");
+        }
+    } else {
+        engine.setValue(this.channel, this.keyPrefix + "activate", value);
+    }
+}
+MiniMixxx.ButtonModeHotcue.prototype.indicator = function (value, _group, _control) {
+    if (this !== this.parent.activeMode) {
+        return;
+    }
+    if (!engine.getValue(this.channel, this.keyPrefix + "enabled")) {
+        midi.sendShortMsg(0x90, this.idx, 0x7f);
+        return;
+    }
+    var colorCode = engine.getValue(this.channel, this.keyPrefix + "color");
+    var midiColor = MiniMixxx.kontrol.colorMapper.getValueForNearestColor(colorCode);
+    midi.sendShortMsg(0x90, this.idx, midiColor);
+}
+MiniMixxx.ButtonModeHotcue.prototype.setLights = function () {
+    this.indicator(engine.getValue(this.channel, this.keyPrefix+"enabled"));
 }
 
 // ButtonModeFX enables the FX unit for this deck.
@@ -832,48 +893,60 @@ MiniMixxx.Controller = function () {
         // 0x04: hard-coded CUE1
         0x05: new MiniMixxx.Button("[Channel1]", 0x05, {
             "NONE": "KEYLOCK",
+            "SAMPLERLAYER": "SAMPLER-1",
+            "HOTCUELAYER": "HOTCUE-1",
         }),
         0x06: new MiniMixxx.Button("[Channel1]", 0x06, {
             "NONE": "FX-1",
+            "SAMPLERLAYER": "SAMPLER-2",
+            "HOTCUELAYER": "HOTCUE-2",
         }),
         //0x0C: hard-coded PLAY1
         0x0D: new MiniMixxx.Button("[Channel1]", 0x0D, {
-            "NONE": "SYNC"
+            "NONE": "SYNC",
+            "SAMPLERLAYER": "SAMPLER-5",
+            "HOTCUELAYER": "HOTCUE-3",
         }),
         0x0E: new MiniMixxx.Button("[Channel1]", 0x0E, {
             "NONE": "LOOPLAYER",
+            "SAMPLERLAYER": "SAMPLER-6",
+            "HOTCUELAYER": "HOTCUE-4",
         }),
 
         // 0x07: hard-coded CUE2
         0x08: new MiniMixxx.Button("[Channel2]", 0x08, {
             "NONE": "KEYLOCK",
-            "SAMPLERLAYER": "SAMPLER-1"
+            "SAMPLERLAYER": "SAMPLER-3",
+            "HOTCUELAYER": "HOTCUE-1",
         }),
         0x09: new MiniMixxx.Button("[Channel2]", 0x09, {
             "NONE": "FX-1",
-            "SAMPLERLAYER": "SAMPLER-2"
+            "SAMPLERLAYER": "SAMPLER-4",
+            "HOTCUELAYER": "HOTCUE-2",
         }),
         //0x0F: hard coded PLAY2
         0x10: new MiniMixxx.Button("[Channel2]", 0x10, {
             "NONE": "SYNC",
-            "SAMPLERLAYER": "SAMPLER-3"
+            "SAMPLERLAYER": "SAMPLER-7",
+            "HOTCUELAYER": "HOTCUE-3",
         }),
         0x11: new MiniMixxx.Button("[Channel2]", 0x11, {
             "NONE": "LOOPLAYER",
-            "SAMPLERLAYER": "SAMPLER-4"
+            "SAMPLERLAYER": "SAMPLER-8",
+            "HOTCUELAYER": "HOTCUE-4",
         }),
 
         // Righthand mode buttons
-        0x0A: new MiniMixxx.Button("[Channel2]", 0x0A, {
-            "NONE": "FXLAYER",
+        0x0A: new MiniMixxx.Button("[Channel1]", 0x0A, {
+            "NONE": "FXLAYER-HOTCUE1LAYER",
         }),
         0x0B: new MiniMixxx.Button("[Channel2]", 0x0B, {
-            "NONE": "SAMPLERLAYER"
+            "NONE": "SAMPLERLAYER-HOTCUE2LAYER"
         }),
-        0x12: new MiniMixxx.Button("[Channel2]", 0x12, {
+        0x12: new MiniMixxx.Button("", 0x12, {
             "NONE": "LIBRARYLAYER",
         }),
-        0x13: new MiniMixxx.Button("[Channel2]", 0x13, {
+        0x13: new MiniMixxx.Button("", 0x13, {
             "NONE": "SHIFT"
         }),
     }
@@ -894,6 +967,144 @@ MiniMixxx.Controller = function () {
         "[Channel1]": false,
         "[Channel2]": false
     };
+
+    // Default palette from: https://gitlab.com/yaeltex/ytx-controller/-/blob/develop/ytx-controller/headers/types.h#L128
+    var palette = [
+        0x000000,         // 00
+        0xf2c0c0,
+        0xf25858,
+        0xf2a5a5,
+        0xf22cc0,
+        0xf26e58,
+        0xf2b0a5,
+        0xf24dc0,
+        0xf28458,
+        0xf2bba5,
+        0xf26ec0,          // 10
+        0xf29a58,
+        0xf2c6a5,
+        0xf28fc0,
+        0xf2b058,
+        0xf2d1a5,
+        0xf2b0c0,
+        0xf2c658,
+        0xf2dca5,
+        0xf2d1c0,
+        0xf2dc58,         // 20
+        0xf2e7a5,
+        0xf2f2c0,
+        0xf2f258,
+        0xf2f2a5,
+        0xd1f2c0,
+        0xdcf258,
+        0xd1f2a5,
+        0xb0f2c0,
+        0xc6f258,
+        0xb0f2a5,         // 30
+        0x8ff2c0,
+        0xb0f258,
+        0x8ff2a5,
+        0x6ef2c0,
+        0x9af258,
+        0x6ef2a5,
+        0x4df2c0,
+        0x84f258,
+        0x4df2a5,
+        0x2cf2c0,          // 40
+        0x6ef258,
+        0x2cf2a5,
+        0xc0f2c0,
+        0x58f258,
+        0xc0f2a5,
+        0xc0f22c,
+        0x58f26e,
+        0xc0f2b0,
+        0xc0f24d,
+        0x58f284,         // 50
+        0xc0f2bb,
+        0xc0f26e,
+        0x58f29a,
+        0xc0f2c6,
+        0xc0f28f,
+        0x58f2b0,
+        0xc0f2d1,
+        0xc0f2b0,
+        0x58f2c6,
+        0xc0f2dc,          // 60
+        0xc0f2d1,
+        0x58f2dc,
+        0xc0f2e7,
+        0xc0f2f2,
+        0x58f2f2,
+        0xc0f2f2,
+        0xc0d1f2,
+        0x58dcf2,
+        0xc0e7f2,
+        0xc0b0f2,          // 70
+        0x58c6f2,
+        0xc0dcf2,
+        0xc08ff2,
+        0x58b0f2,
+        0xc0d1f2,
+        0xc06ef2,
+        0x589af2,
+        0xc0c6f2,
+        0xc04df2,
+        0x5884f2,         // 80
+        0xc0bbf2,
+        0xc02cf2,
+        0x586ef2,
+        0xc0b0f2,
+        0xc0c0f2,
+        0x5858f2,
+        0xc0a5f2,
+        0x2cc0f2,
+        0x6e58f2,
+        0x2ca5f2,         // 90
+        0x4dc0f2,
+        0x8458f2,
+        0x4da5f2,
+        0x6ec0f2,
+        0x9a58f2,
+        0x6ea5f2,
+        0x8fc0f2,
+        0xb058f2,
+        0x8fa5f2,
+        0xb0c0f2,          // 100
+        0xc658f2,
+        0xb0a5f2,
+        0xd1c0f2,
+        0xdc58f2,
+        0xd1a5f2,
+        0xf2c0f2,
+        0xf258f2,
+        0xf2a5f2,
+        0xf2c0d1,
+        0xf258dc,         // 110
+        0xf2a5e7,
+        0xf2c0b0,
+        0xf258c6,
+        0xf2a5dc,
+        0xf2c08f,
+        0xf258b0,
+        0xf2a5d1,
+        0xf2c06e,
+        0xf2589a,
+        0xf2a5c6,         // 120
+        0xf2c04d,
+        0xf25884,
+        0xf2a5bb,
+        0xf2c02c,
+        0xf2586e,
+        0xf2a5b0,
+        0xf0f0f0
+    ];
+
+    var colorMap = {};
+    for (var i = 0; i < 128; i++) {
+        colorMap[palette[i]] = i;
+    }
+    this.colorMapper = new ColorMapper(colorMap);
 
     for (var name in this.buttons) {
         this.buttons[name].activeMode.setLights();
