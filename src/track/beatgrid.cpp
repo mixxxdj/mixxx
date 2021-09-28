@@ -75,18 +75,26 @@ BeatGrid::BeatGrid(const BeatGrid& other)
 BeatsPointer BeatGrid::makeBeatGrid(
         audio::SampleRate sampleRate,
         mixxx::Bpm bpm,
-        mixxx::audio::FramePos firstBeatPosition,
+        mixxx::audio::FramePos firstBeatPositionOnFrameBoundary,
         const QString& subVersion) {
-    VERIFY_OR_DEBUG_ASSERT(bpm.isValid() && firstBeatPosition.isValid() &&
-            !firstBeatPosition.isFractional()) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid() && firstBeatPositionOnFrameBoundary.isValid()) {
         return nullptr;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!firstBeatPositionOnFrameBoundary.isFractional()) {
+        // The beat grid only stores integer frame positions. The caller
+        // is responsible to ensure that the position of the first beat
+        // is on a frame boundary. Implicitly rounding the given position
+        // to the nearest frame boundary might not be appropriate for all
+        // use cases.
+        firstBeatPositionOnFrameBoundary =
+                firstBeatPositionOnFrameBoundary.toNearestFrameBoundary();
     }
 
     mixxx::track::io::BeatGrid grid;
 
     grid.mutable_bpm()->set_bpm(bpm.value());
     grid.mutable_first_beat()->set_frame_position(
-            static_cast<google::protobuf::int32>(firstBeatPosition.value()));
+            static_cast<google::protobuf::int32>(firstBeatPositionOnFrameBoundary.value()));
     // Calculate beat length as sample offsets
     const audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm.value();
 
