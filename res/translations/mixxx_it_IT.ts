@@ -362,7 +362,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="201"/>
         <source>Rating</source>
-        <translation>Classifica</translation>
+        <translation>Valutazione</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="205"/>
@@ -1007,7 +1007,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="244"/>
         <source>Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)</source>
-        <translation>Modo di sincronizzazione a 3 stati (OFF, FOLLOWER, MASTER)</translation>
+        <translation>Alterna il modo di sincronizzazione a 3 stati (OFF, FOLLOWER, MASTER)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="220"/>
@@ -1022,7 +1022,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="300"/>
         <source>Toggle keylock mode</source>
-        <translation>Attiva modo keylock</translation>
+        <translation>Attiva/disattiva modo keylock</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="103"/>
@@ -1037,12 +1037,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="309"/>
         <source>Toggle vinyl-control cueing mode (OFF/ONE/HOT)</source>
-        <translation>Abilita/Disabilita il modo cueing controllo-vinile (OFF/ONE/HOT)</translation>
+        <translation>Attiva/disattiva il modo cueing controllo-vinile (OFF/ONE/HOT)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="307"/>
         <source>Toggle vinyl-control mode (ABS/REL/CONST)</source>
-        <translation>Abilita/Disabilita modo controllo-vinile (ABS/REL/CONST)</translation>
+        <translation>Attiva/disattiva modo controllo-vinile (ABS/REL/CONST)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="311"/>
@@ -1590,7 +1590,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="294"/>
         <source>Adjust pitch from speed slider pitch</source>
-        <translation>Regola il pitch dal pitch dello speed slider</translation>
+        <translation>Regola il pitch dal pitch del cursore della velocità</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="298"/>
@@ -1630,12 +1630,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="304"/>
         <source>Toggle Vinyl Control</source>
-        <translation>Abilita/Disabilita il controllo vinile</translation>
+        <translation>Attiva/disattiva il controllo vinile</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="305"/>
         <source>Toggle Vinyl Control (ON/OFF)</source>
-        <translation>Attiva disattiva Controllo Vinile (ON/OFF)</translation>
+        <translation>Attiva/disattiva Controllo Vinile (ON/OFF)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="306"/>
@@ -1851,7 +1851,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="705"/>
         <source>Toggle mix recording</source>
-        <translation>Attiva/Disattiva registrazione mix</translation>
+        <translation>Attiva/disattiva registrazione mix</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="709"/>
@@ -1942,7 +1942,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="890"/>
         <source>Toggle</source>
-        <translation>Attiva/Disattiva</translation>
+        <translation>Attiva/disattiva</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="890"/>
@@ -2024,7 +2024,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1063"/>
         <source>Toggle Auto DJ On/Off</source>
-        <translation>Abilita/Disabilita Auto Dj</translation>
+        <translation>Attiva/disattiva Auto Dj</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1074"/>
@@ -2119,7 +2119,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="249"/>
         <source>Playback speed control (Vinyl &quot;Pitch&quot; slider)</source>
-        <translation type="unfinished"/>
+        <translation>Controllo della velocità di riproduzione (cursore &quot;Pitch&quot; del vinile)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="271"/>
@@ -2789,12 +2789,12 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="782"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="783"/>
         <source>Show Effect Parameters</source>
-        <translation>Mostra parametri effetto</translation>
+        <translation>Mostra Parametri Effetto</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="786"/>
         <source>Effect Unit Assignment</source>
-        <translation>Assegnazione Unità Effetto</translation>
+        <translation>Assegna Unità Effetto</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="887"/>
@@ -2809,7 +2809,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="931"/>
         <source>Meta Knob Mode</source>
-        <translation>Manopola Meta Modo</translation>
+        <translation>Modalità Meta Knob</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="932"/>
@@ -2819,7 +2819,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="936"/>
         <source>Meta Knob Mode Invert</source>
-        <translation>Manopola Meta Modo Inverso</translation>
+        <translation>Modalità Meta Knob Inverso</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="937"/>
@@ -2850,7 +2850,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="997"/>
         <source>Toggle microphone ducking mode (OFF, AUTO, MANUAL)</source>
-        <translation>Abilita/disabilita la modalità ducking del microfono (OFF, AUTO, MANUALE)</translation>
+        <translation>Attiva/disattiva la modalità ducking del microfono (OFF, AUTO, MANUALE)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1000"/>
@@ -2925,7 +2925,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1113"/>
         <source>Toggle 4 Decks</source>
-        <translation>Abilita/disabilita 4 Decks</translation>
+        <translation>Attiva/disattiva 4 Decks</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1114"/>
@@ -3005,7 +3005,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1160"/>
         <source>Increase the track rating by one star</source>
-        <translation>Incrementa il punteggio della traccia di una stella</translation>
+        <translation>Incrementa la valutazione della traccia di una stella</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1161"/>
@@ -3015,7 +3015,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1162"/>
         <source>Decrease the track rating by one star</source>
-        <translation>Decrementa il punteggio della traccia di una stella</translation>
+        <translation>Decrementa la valutazione  della traccia di una stella</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1167"/>
@@ -3773,7 +3773,8 @@ Spesso si avrà un buon risultato con tracce a ritmo costante, non funzionerà b
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="74"/>
         <source>e.g. from 3rd-party programs or Mixxx versions before 1.11.
 (Not checked: Analyze only, if no beats exist.)</source>
-        <translation type="unfinished"/>
+        <translation>es. da programmi di terze parti o da versioni di Mixxx precedenti alla 1.11.
+(Non spuntato: analizza solo, se non esistono battute).</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="78"/>
@@ -3806,7 +3807,7 @@ Spesso si avrà un buon risultato con tracce a ritmo costante, non funzionerà b
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="192"/>
         <source>Hints: If you&apos;re mapping a button or switch, only press or flip it once.  For knobs and sliders, move the control in both directions for best results. Make sure to touch one control at a time.</source>
-        <translation>Suggerimento: Se stai mappando un bottone o un interruttore, premilo o azionalo una volta. Per manopole e sliders, muovi il controllo in entrambe le direzioni per risultati migliori. Assicurati di premere solo un controllo alla volta.</translation>
+        <translation>Suggerimento: Se stai mappando un bottone o un interruttore, premilo o azionalo una volta. Per manopole e cursori, muovi il controllo in entrambe le direzioni per risultati migliori. Assicurati di premere solo un controllo alla volta.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="247"/>
@@ -3831,7 +3832,7 @@ Spesso si avrà un buon risultato con tracce a ritmo costante, non funzionerà b
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="336"/>
         <source>Ignores slider or knob movements until they are close to the internal value. This helps prevent unwanted extreme changes while mixing but can accidentally ignore intentional rapid movements.</source>
-        <translation>Ignora il movimento di manopole e slider fino a quando non sono vicini al valore interno. Questo permette di prevenire cambiamenti estremi durante i mix ma potrebbero venir ignorati movimenti intenzionalmente rapidi.</translation>
+        <translation>Ignora il movimento di manopole e cursori fino a quando non sono vicini al valore interno. Questo permette di prevenire cambiamenti estremi durante i mix ma potrebbero venir ignorati movimenti intenzionalmente rapidi.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="339"/>
@@ -3881,7 +3882,7 @@ Spesso si avrà un buon risultato con tracce a ritmo costante, non funzionerà b
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="31"/>
         <source>You can click on any button, slider, or knob in Mixxx to teach it that control.  You can also type in the box to search for a control by name, or click the Choose Control button to select from a list.</source>
-        <translation>Puoi cliccare su qualsiasi bottone, slider o manopola in Mixxx in quel controllo. Puoi anche scrivere nel riquadro per cercare un controllo tramite il nome, o cliccare il bottone Scegli Controllo per selezionare da una lista.</translation>
+        <translation>Puoi cliccare su qualsiasi bottone, cursore o manopola in Mixxx in quel controllo. Puoi anche scrivere nel riquadro per cercare un controllo tramite il nome, o cliccare il bottone Scegli Controllo per selezionare da una lista.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="42"/>
@@ -4666,7 +4667,7 @@ Applicare la configurazione e continuare?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="333"/>
         <source>built-in</source>
-        <translation type="unfinished"/>
+        <translation>incorporato</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="563"/>
@@ -4979,7 +4980,8 @@ Applicare la configurazione e continuare?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="38"/>
         <source>Slow fade/Fast cut (additive)</source>
-        <translation type="unfinished"/>
+        <translation>
+Dissolvenza lenta/Taglio veloce (additivo)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="45"/>
@@ -5389,7 +5391,7 @@ Puoi sempre trascinare tracce sullo schermo per clonare un deck.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="568"/>
         <source>Adjusts the range of the speed (Vinyl &quot;Pitch&quot;) slider.</source>
-        <translation>Regola l&apos;intervallo della velocità dello slider (Vinyl &quot;Pitch&quot;).</translation>
+        <translation>Regola l&apos;intervallo della velocità del cursore (Vinyl &quot;Pitch&quot;).</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="575"/>
@@ -5895,7 +5897,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="329"/>
         <source>Relink music directory to new location</source>
-        <translation>Collega la cartella musica alla nuova posizione</translation>
+        <translation>Ricollega la cartella musica alla nuova posizione</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="433"/>
@@ -7451,7 +7453,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="254"/>
         <source>Code: %1</source>
-        <translation type="unfinished"/>
+        <translation>Codice: %1</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="256"/>
@@ -9114,7 +9116,9 @@ Predefinito = flat top</translation>
         <source>Speed of the LFO (low frequency oscillator)
 32 - 1/4 beats rounded to 1/2 beat per LFO cycle if tempo is detected
 1/32 - 4 Hz if no tempo is detected</source>
-        <translation type="unfinished"/>
+        <translation>Velocità dell&apos;LFO (oscillatore a bassa frequenza)
+32 - 1/4 di battito arrotondato a 1/2 battito per ciclo LFO se viene rilevato il tempo
+1/32 - 4 Hz se non viene rilevato alcun tempo</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="53"/>
@@ -9131,7 +9135,7 @@ Con larghezza a zero, consente di scorrere manualmente l&apos;intero intervallo 
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="78"/>
         <source>Regeneration</source>
-        <translation type="unfinished"/>
+        <translation>Rigenerazione</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="79"/>
@@ -9169,7 +9173,7 @@ Con larghezza a zero, consente di scorrere manualmente l&apos;intero intervallo 
         <location filename="../../src/effects/builtin/tremoloeffect.cpp" line="57"/>
         <location filename="../../src/effects/builtin/tremoloeffect.cpp" line="58"/>
         <source>Width</source>
-        <translation type="unfinished"/>
+        <translation>Ampiezza</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="20"/>
@@ -9421,7 +9425,7 @@ Valori alti effettuano meno attenuazione delle alte frequenze.</translation>
     <message>
         <location filename="../../src/effects/builtin/moogladder4filtereffect.cpp" line="21"/>
         <source>A 4-pole Moog ladder filter, based on Antti Houvilainen&apos;s non linear digital implementation</source>
-        <translation type="unfinished"/>
+        <translation>Un filtro 4-pole Moog ladder, basato sull&apos;implementazione digitale non lineare di Antti Houvilainen </translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/moogladder4filtereffect.cpp" line="41"/>
@@ -9465,7 +9469,7 @@ Valori alti effettuano meno attenuazione delle alte frequenze.</translation>
         <location filename="../../src/effects/builtin/phasereffect.cpp" line="71"/>
         <location filename="../../src/effects/builtin/phasereffect.cpp" line="72"/>
         <source>Stages</source>
-        <translation type="unfinished"/>
+        <translation>Fasi</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/phasereffect.cpp" line="23"/>
@@ -9477,7 +9481,10 @@ Valori alti effettuano meno attenuazione delle alte frequenze.</translation>
         <source>Period of the LFO (low frequency oscillator)
 1/4 - 4 beats rounded to 1/2 beat if tempo is detected
 1/4 - 4 seconds if no tempo is detected</source>
-        <translation type="unfinished"/>
+        <translation>
+Periodo dell&apos;LFO (oscillatore a bassa frequenza)
+1/4 - 4 battiti arrotondati a 1/2 battito se viene rilevato il tempo
+1/4 - 4 secondi se non viene rilevato alcun tempo</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/phasereffect.cpp" line="47"/>
@@ -9583,7 +9590,7 @@ Valori alti effettuano meno attenuazione delle alte frequenze.</translation>
     <message>
         <location filename="../../src/effects/builtin/linkwitzriley8eqeffect.cpp" line="23"/>
         <source>A Linkwitz-Riley 8th-order filter isolator (optimized crossover, constant phase shift, roll-off -48 dB/octave).</source>
-        <translation type="unfinished"/>
+        <translation>Un filtro equalizzatore Linkwitz-Riley 8th order (optimized crossover, constant phase shift, roll-off -48 db/Oct).</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/threebandbiquadeqeffect.cpp" line="57"/>
@@ -10150,7 +10157,7 @@ Completamente a destra: fine del periodo</translation>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1375"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
-        <translation type="unfinished"/>
+        <translation>Loop (solo il primo loop è attualmente utilizzabile in Mixxx)</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1378"/>
@@ -10636,12 +10643,12 @@ Completamente a destra: fine del periodo</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="38"/>
         <source>Scroll-wheel</source>
-        <translation type="unfinished"/>
+        <translation>Rotella del mouse</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="39"/>
         <source>Shift-key</source>
-        <translation type="unfinished"/>
+        <translation>Tasto-shift</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="40"/>
@@ -10969,7 +10976,7 @@ Completamente a destra: fine del periodo</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="260"/>
         <source>Toggle 4 Decks</source>
-        <translation>Abilita/disabilita 4 Decks</translation>
+        <translation>Attiva/disattiva 4 Decks</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="261"/>
@@ -11014,7 +11021,7 @@ Completamente a destra: fine del periodo</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="282"/>
         <source>Toggle Mixer</source>
-        <translation>Abilita/disabilita Mixer</translation>
+        <translation>Attiva/disattiva Mixer</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="283"/>
@@ -11194,7 +11201,7 @@ Completamente a destra: fine del periodo</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="364"/>
         <source>Hold-to-kill or short click for latching.</source>
-        <translation type="unfinished"/>
+        <translation>Premi e tieni premuto per eliminare oppure click rapido per allacciarsi.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="366"/>
@@ -11316,7 +11323,7 @@ Completamente a destra: fine del periodo</translation>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="451"/>
         <source>Toggle visibility of Rate Control</source>
-        <translation type="unfinished"/>
+        <translation>Attiva/disattiva visibilità del Controllo Valutazione </translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="475"/>
@@ -11840,7 +11847,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1025"/>
         <source>Toggle</source>
-        <translation>Attiva/Disattiva</translation>
+        <translation>Attiva/disattiva</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1026"/>
@@ -12542,7 +12549,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="630"/>
         <source>Toggle mix recording.</source>
-        <translation>Abilita/disabilita registrazione del mix.</translation>
+        <translation>Attiva/disattiva registrazione del mix.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="640"/>
@@ -13209,7 +13216,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/widget/weffect.cpp" line="49"/>
         <source>%1: %2</source>
         <extracomment>%1 = effect name; %2 = effect description</extracomment>
-        <translation type="unfinished"/>
+        <translation>%1: %2</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffect.cpp" line="53"/>
@@ -13910,7 +13917,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="239"/>
         <source>Rating</source>
-        <translation>Classifica</translation>
+        <translation>Valutazione</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="242"/>
@@ -14098,7 +14105,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1298"/>
         <source>Clearing rating of %n track(s)</source>
-        <translation><numerusform>Cancellazione punteggio di %n traccia(e)</numerusform><numerusform>Cancellazione punteggio di %n traccia(e)</numerusform></translation>
+        <translation><numerusform>Cancellazione punteggio di %n traccia(e)</numerusform><numerusform>Cancellazione della valutazione di %n traccia(e)</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../../src/widget/wtrackmenu.cpp" line="1327"/>
