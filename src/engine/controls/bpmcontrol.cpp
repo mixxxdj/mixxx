@@ -723,8 +723,7 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
             return thisPosition;
         }
 
-        const auto otherPosition = mixxx::audio::FramePos::fromEngineSamplePos(
-                pOtherEngineBuffer->getExactPlayPos());
+        const auto otherPosition = pOtherEngineBuffer->getExactPlayPos();
         if (!BpmControl::getBeatContext(otherBeats,
                     otherPosition,
                     nullptr,
@@ -909,8 +908,7 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
         return thisPosition;
     }
 
-    const auto otherPosition = mixxx::audio::FramePos::fromEngineSamplePos(
-            pOtherEngineBuffer->getExactPlayPos());
+    const auto otherPosition = pOtherEngineBuffer->getExactPlayPos();
     const mixxx::audio::SampleRate thisSampleRate = m_pBeats->getSampleRate();
 
     // Seek our next beat to the other next beat near our beat.

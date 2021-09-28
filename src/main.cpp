@@ -6,6 +6,7 @@
 #include <QThread>
 #include <QtDebug>
 
+#include "config.h"
 #include "coreservices.h"
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
@@ -21,6 +22,10 @@ namespace {
 // Exit codes
 constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
+
+constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
+const QString kConfigGroup = QStringLiteral("[Config]");
+const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
@@ -57,6 +62,37 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         }
     }
     return exitCode;
+}
+
+void adjustScaleFactor(CmdlineArgs* pArgs) {
+    if (qEnvironmentVariableIsSet(kScaleFactorEnvVar)) {
+        bool ok;
+        const double f = qgetenv(kScaleFactorEnvVar).toDouble(&ok);
+        if (ok && f > 0) {
+            // The environment variable overrides the preferences option
+            qDebug() << "Using" << kScaleFactorEnvVar << f;
+            pArgs->setScaleFactor(f);
+            return;
+        }
+    }
+    // We cannot use SettingsManager, because it depends on MixxxApplication
+    // but the scale factor is read during it's constructor.
+    // QHighDpiScaling can not be used afterwards because it is private.
+    // This means the following code may fail after down/upgrade ... a one time issue.
+
+    // Read and parse the config file from the settings path
+    auto config = ConfigObject<ConfigValue>(
+            QDir(pArgs->getSettingsPath()).filePath(MIXXX_SETTINGS_FILE),
+            QString(),
+            QString());
+    QString strScaleFactor = config.getValue(
+            ConfigKey(kConfigGroup, kScaleFactorKey));
+    double scaleFactor = strScaleFactor.toDouble();
+    if (scaleFactor > 0) {
+        qDebug() << "Using preferences ScaleFactor" << scaleFactor;
+        qputenv(kScaleFactorEnvVar, strScaleFactor.toLocal8Bit());
+        pArgs->setScaleFactor(scaleFactor);
+    }
 }
 
 } // anonymous namespace
@@ -109,6 +145,8 @@ int main(int argc, char * argv[]) {
 #ifdef __APPLE__
     Sandbox::checkSandboxed();
 #endif
+
+    adjustScaleFactor(&args);
 
     MixxxApplication app(argc, argv);
 

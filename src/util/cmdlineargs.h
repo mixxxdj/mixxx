@@ -50,6 +50,13 @@ class CmdlineArgs final {
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
 
+    void setScaleFactor(double scaleFactor) {
+        m_scaleFactor = scaleFactor;
+    }
+    double getScaleFactor() const {
+        return m_scaleFactor;
+    }
+
   private:
     enum class ParseMode {
         Initial,
@@ -65,6 +72,7 @@ class CmdlineArgs final {
     bool m_safeMode;
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
+    double m_scaleFactor;
     bool m_useColors;       // should colors be used
     bool m_parseForUserFeedbackRequired;
     mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
