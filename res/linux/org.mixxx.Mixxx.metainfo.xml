@@ -261,6 +261,7 @@
   <li>
    Install multiple sizes of rasterized icons
    #4204
+   #4315
   </li>
   <li>
    CMake: Fixed detection of SoundTouch pkgconfig file and version
@@ -269,6 +270,7 @@
   <li>
    Fix AppStream metainfo
    #4205
+   #4317
   </li>
  </ul>
 </description>
