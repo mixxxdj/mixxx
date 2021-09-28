@@ -4,6 +4,7 @@
 #include "qml/asyncimageprovider.h"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmlcontrolproxy.h"
+#include "qml/qmldlgpreferencesproxy.h"
 #include "qml/qmleffectmanifestparametersmodel.h"
 #include "qml/qmleffectslotproxy.h"
 #include "qml/qmleffectsmanagerproxy.h"
@@ -46,8 +47,23 @@ QmlApplication::QmlApplication(
         exit(result);
     }
 
-    qmlRegisterType<QmlControlProxy>("Mixxx", 0, 1, "ControlProxy");
-    qmlRegisterType<QmlWaveformOverview>("Mixxx", 0, 1, "WaveformOverview");
+    // FIXME: DlgPreferences has some initialization logic that must be executed
+    // before the GUI is shown, at least for the effects system.
+    m_pDlgPreferences = std::make_shared<DlgPreferences>(
+            m_pCoreServices->getScreensaverManager(),
+            nullptr,
+            m_pCoreServices->getSoundManager(),
+            m_pCoreServices->getPlayerManager(),
+            m_pCoreServices->getControllerManager(),
+            m_pCoreServices->getVinylControlManager(),
+            m_pCoreServices->getLV2Backend(),
+            m_pCoreServices->getEffectsManager(),
+            m_pCoreServices->getSettingsManager(),
+            m_pCoreServices->getLibrary());
+    // Without this, QApplication will quit when the last QWidget QWindow is
+    // closed because it does not take into account the window created by
+    // the QQmlApplicationEngine.
+    m_pDlgPreferences->setAttribute(Qt::WA_QuitOnClose, false);
 
     // Any uncreateable non-singleton types registered here require arguments
     // that we don't want to expose to QML directly. Instead, they can be
@@ -65,6 +81,21 @@ QmlApplication::QmlApplication(
     // processing. To work around this, pass weak_ptrs into the lambdas and
     // convert them to shared_ptrs when the QQmlApplicationEngine instantiates
     // the QML proxy objects.
+
+    qmlRegisterSingletonType<QmlDlgPreferencesProxy>("Mixxx",
+            0,
+            1,
+            "PreferencesDialog",
+            lambda_to_singleton_type_factory_ptr(
+                    [pDlgPreferences = std::weak_ptr<DlgPreferences>(
+                             m_pDlgPreferences)](QQmlEngine* pEngine,
+                            QJSEngine* pScriptEngine) -> QObject* {
+                        Q_UNUSED(pScriptEngine);
+                        return new QmlDlgPreferencesProxy(pDlgPreferences.lock(), pEngine);
+                    }));
+
+    qmlRegisterType<QmlControlProxy>("Mixxx", 0, 1, "ControlProxy");
+    qmlRegisterType<QmlWaveformOverview>("Mixxx", 0, 1, "WaveformOverview");
 
     qmlRegisterSingletonType<QmlEffectsManagerProxy>("Mixxx",
             0,

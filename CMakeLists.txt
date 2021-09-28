@@ -809,6 +809,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/qml/qmlapplication.cpp
   src/qml/qmlcontrolproxy.cpp
   src/qml/qmlconfigproxy.cpp
+  src/qml/qmldlgpreferencesproxy.cpp
   src/qml/qmleffectmanifestparametersmodel.cpp
   src/qml/qmleffectsmanagerproxy.cpp
   src/qml/qmleffectslotproxy.cpp
@@ -1235,6 +1236,9 @@ endif()
 
 # The mixxx executable
 add_executable(mixxx WIN32 src/main.cpp)
+# ugly hack to get #include "preferences/dialog/ui_dlgpreferencesdlg.h" to work in
+# src/qmldlgpreferencesproxy.h, which is #included from src/qmlapplication.h.
+target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/mixxx-lib_autogen/include")
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_link_libraries(mixxx PRIVATE mixxx-lib mixxx-gitinfostore)
 

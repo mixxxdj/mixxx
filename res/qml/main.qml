@@ -1,4 +1,5 @@
 import "." as Skin
+import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.11
@@ -62,6 +63,16 @@ ApplicationWindow {
                     text: "Sampler"
                     activeColor: Theme.white
                     checkable: true
+                }
+
+                Skin.Button {
+                    id: showPreferencesButton
+
+                    text: "Prefs"
+                    activeColor: Theme.white
+                    onClicked: {
+                        Mixxx.PreferencesDialog.show();
+                    }
                 }
 
             }
