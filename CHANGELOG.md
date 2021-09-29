@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (Unreleased)
+## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (2021-09-29)
 
 * Added mapping for the Numark DJ2GO2 Touch controller [#4108](https://github.com/mixxxdj/mixxx/pull/4108) [#4287](https://github.com/mixxxdj/mixxx/pull/4287)
 * Added mapping for the Numark Mixtrack Pro FX controller [#4160](https://github.com/mixxxdj/mixxx/pull/4160)

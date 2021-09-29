@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.3.1" type="development">
+    <release version="2.3.1" date="2021-09-29" type="stable">
       <description>
  <ul>
   <li>
