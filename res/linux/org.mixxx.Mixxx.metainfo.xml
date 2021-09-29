@@ -702,7 +702,7 @@
       <description>
  <ul>
   <li>
-   Added mapping for the Numark DJ2GO Touch controller
+   Added mapping for the Numark DJ2GO2 Touch controller
    #4108
   </li>
   <li>
@@ -712,6 +712,10 @@
   <li>
    Updated mapping for Behringer DDM4000 mixer
    #4262
+  </li>
+  <li>
+   Updated mapping for Denon MC7000 controller
+   #4021
   </li>
   <li>
    Disabled detection of keyboards and mice as HID controllers
@@ -863,6 +867,7 @@
   <li>
    Install multiple sizes of rasterized icons
    #4204
+   #4315
   </li>
   <li>
    CMake: Fixed detection of SoundTouch pkgconfig file and version
@@ -871,6 +876,7 @@
   <li>
    Fix AppStream metainfo
    #4205
+   #4317
   </li>
  </ul>
 </description>
