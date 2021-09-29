@@ -178,6 +178,7 @@ class BeatMapIterator : public BeatIterator {
 };
 
 BeatMap::BeatMap(
+        MakeSharedTag,
         audio::SampleRate sampleRate,
         const QString& subVersion,
         BeatList beats,
@@ -188,15 +189,18 @@ BeatMap::BeatMap(
           m_beats(std::move(beats)) {
 }
 
-BeatMap::BeatMap(const BeatMap& other, BeatList beats, mixxx::Bpm nominalBpm)
-        : m_subVersion(other.m_subVersion),
-          m_sampleRate(other.m_sampleRate),
-          m_nominalBpm(nominalBpm),
-          m_beats(std::move(beats)) {
+BeatMap::BeatMap(
+        MakeSharedTag,
+        const BeatMap& other,
+        BeatList beats,
+        mixxx::Bpm nominalBpm)
+        : BeatMap({}, other.m_sampleRate, other.m_subVersion, std::move(beats), nominalBpm) {
 }
 
-BeatMap::BeatMap(const BeatMap& other)
-        : BeatMap(other, other.m_beats, other.m_nominalBpm) {
+BeatMap::BeatMap(
+        MakeSharedTag,
+        const BeatMap& other)
+        : BeatMap({}, other, other.m_beats, other.m_nominalBpm) {
 }
 
 // static
@@ -218,7 +222,7 @@ BeatsPointer BeatMap::fromByteArray(
         qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
                  << byteArray.size();
     }
-    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
+    return std::make_shared<BeatMap>(MakeSharedTag{}, sampleRate, subVersion, beatList, nominalBpm);
 }
 
 // static
@@ -250,7 +254,7 @@ BeatsPointer BeatMap::makeBeatMap(
         previousBeatPos = beatPos;
     }
     const auto nominalBpm = calculateNominalBpm(beatList, sampleRate);
-    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
+    return std::make_shared<BeatMap>(MakeSharedTag{}, sampleRate, subVersion, beatList, nominalBpm);
 }
 
 QByteArray BeatMap::toByteArray() const {
@@ -543,7 +547,7 @@ BeatsPointer BeatMap::translate(audio::FrameDiff_t offset) const {
         }
     }
 
-    return BeatsPointer(new BeatMap(*this, beats, m_nominalBpm));
+    return std::make_shared<BeatMap>(MakeSharedTag{}, *this, beats, m_nominalBpm);
 }
 
 BeatsPointer BeatMap::scale(BpmScale scale) const {
@@ -591,7 +595,7 @@ BeatsPointer BeatMap::scale(BpmScale scale) const {
     }
 
     mixxx::Bpm bpm = calculateNominalBpm(beats, m_sampleRate);
-    return BeatsPointer(new BeatMap(*this, beats, bpm));
+    return std::make_shared<BeatMap>(MakeSharedTag{}, *this, beats, bpm);
 }
 
 BeatsPointer BeatMap::setBpm(mixxx::Bpm bpm) const {

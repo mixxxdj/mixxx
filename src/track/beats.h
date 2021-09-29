@@ -176,7 +176,18 @@ class Beats : private std::enable_shared_from_this<Beats> {
     virtual BeatsPointer setBpm(mixxx::Bpm bpm) const = 0;
 
   protected:
+    /// Type tag for making public constructors of derived classes inaccessible.
+    ///
+    /// The constructors must be public for using std::make_shared().
+    struct MakeSharedTag {};
+
+    Beats() = default;
+
     virtual bool isValid() const = 0;
+
+  private:
+    Beats(const Beats&) = delete;
+    Beats(Beats&&) = delete;
 };
 
 } // namespace mixxx
