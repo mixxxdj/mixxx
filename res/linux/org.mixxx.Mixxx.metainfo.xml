@@ -102,6 +102,7 @@
   <li>
    Added mapping for the Numark DJ2GO2 Touch controller
    #4108
+   #4287
   </li>
   <li>
    Added mapping for the Numark Mixtrack Pro FX controller
@@ -114,6 +115,15 @@
   <li>
    Updated mapping for Denon MC7000 controller
    #4021
+  </li>
+  <li>
+   Hercules Inpulse 300: Add better FX controls and other minor improvements
+   #4246
+  </li>
+  <li>
+   Denon MC7000: Improve slip mode and jog wheel handling
+   #4021
+   #4324
   </li>
   <li>
    Disabled detection of keyboards and mice as HID controllers
@@ -161,6 +171,7 @@
    #4041
    #4059
    #4107
+   #4296
   </li>
   <li>
    Fix support for relative paths in the skin system which caused missing images in third-party skins
@@ -225,6 +236,20 @@
    Auto DJ: Fix bug which could make an empty track stop Auto DJ.
    #4267
    lp:1941743
+  </li>
+  <li>
+   Fix Auto DJ skipping tracks randomly
+   #4319
+   lp1941989
+  </li>
+  <li>
+   Fix high CPU load due to extremely high internal sync clock values
+   #4312
+   lp1943320
+  </li>
+  <li>
+   Fix preference option for re-analyzing beatgrids imported from other software
+   #4288
   </li>
  </ul>
  <p>
