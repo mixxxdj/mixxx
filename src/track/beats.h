@@ -27,9 +27,16 @@ class BeatIterator {
 /// Beats is the base class for BPM and beat management classes. It provides a
 /// specification of all methods a beat-manager class must provide, as well as
 /// a capability model for representing optional features.
-class Beats {
+///
+/// All instances of this class are supposed to be managed by std::shared_ptr!
+class Beats : private std::enable_shared_from_this<Beats> {
   public:
     virtual ~Beats() = default;
+
+    BeatsPointer clone() const {
+        // All instances are immutable and can be shared safely
+        return shared_from_this();
+    }
 
     static mixxx::BeatsPointer fromByteArray(
             mixxx::audio::SampleRate sampleRate,

@@ -251,7 +251,7 @@ mixxx::Bpm BeatGrid::getBpmAroundPosition(audio::FramePos position, int n) const
 
 BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
     if (!isValid()) {
-        return BeatsPointer(new BeatGrid(*this));
+        return clone();
     }
     mixxx::track::io::BeatGrid grid = m_grid;
     const audio::FramePos newFirstBeatPosition = firstBeatPosition() + offset;
@@ -287,11 +287,11 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return BeatsPointer(new BeatGrid(*this));
+        return clone();
     }
 
     if (!bpm.isValid()) {
-        return BeatsPointer(new BeatGrid(*this));
+        return clone();
     }
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
