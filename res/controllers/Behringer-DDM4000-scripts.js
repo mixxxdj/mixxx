@@ -10,6 +10,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
 
         var DEFAULT_LONGPRESS_DURATION = 500;
         var DEFAULT_BLINK_DURATION = 425;
+        var THROTTLE_DELAY = 40;
 
         /* Shortcut variables */
         var c    = components;
@@ -201,6 +202,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
             var ModeButton = function(options) {
                 options = options || {};
                 options.key = options.key || "mode";
+                options.longPressTimeout = options.longPressTimeout || DEFAULT_LONGPRESS_DURATION;
                 e.LongPressButton.call(this, options);
             };
             ModeButton.prototype = e.deriveFrom(e.LongPressButton, {
@@ -219,13 +221,12 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                     midi.sendShortMsg(cc, this.midi[1] + 1, this.outValueScale(value));
                 },
             });
-            this.modeButton = new ModeButton(
-                {midi: bankOptions.mode, group: bankOptions.group, longPressTimeout: DEFAULT_LONGPRESS_DURATION});
+            this.modeButton = new ModeButton({midi: bankOptions.mode, group: bankOptions.group});
         };
         SamplerBank.prototype = e.deriveFrom(c.ComponentContainer);
 
         return {
-            throttleDelay: 40,
+            throttleDelay: THROTTLE_DELAY,
             init: function() {
 
                 /*
@@ -391,6 +392,12 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                 { // Crossfader
                     defaultDefinition: {type: c.Button, options: {group: "[Master]"}},
                     components: [
+                        { // Crossfader: On
+                            type: CrossfaderUnit, options: {
+                                crossfader: {midi: [cc, 0x15]},
+                                button: {group: "[Skin]", midi: [note, 0x1F], sendShifted: true},
+                            },
+                        },
                         {options: {midi: [note, 0x17],    key: null, sendShifted: true}}, // Crossfader: A Full Freq
                         {options: {midi: [note, 0x18],    key: null, sendShifted: true}}, // Crossfader: A High
                         {options: {midi: [note, 0x19],    key: null, sendShifted: true}}, // Crossfader: A Mid
@@ -399,13 +406,6 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                         {options: {midi: [note, 0x1C],    key: null, sendShifted: true}}, // Crossfader: B High
                         {options: {midi: [note, 0x1D],    key: null, sendShifted: true}}, // Crossfader: B Mid
                         {options: {midi: [note, 0x1E],    key: null, sendShifted: true}}, // Crossfader: B Low
-                        { // Crossfader: On
-                            type: CrossfaderUnit,
-                            options: {
-                                button: {group: "[Skin]", midi: [note, 0x1F], sendShifted: true},
-                                crossfader: {midi: [cc, 0x15]}
-                            },
-                        },
                         {options: {midi: [note, 0x2A],    key: null, sendShifted: true}}, // Crossfader: Bounce to MIDI Clock
                         {options: {midi: [note, 0x2B],  inKey: null}}, // Crossfader: Beat (Left)
                         {options: {midi: [note, 0x2C],  inKey: null}}, // Crossfader: Beat (Right)
