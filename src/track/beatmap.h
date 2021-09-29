@@ -67,7 +67,7 @@ class BeatMap final : public Beats {
 
     BeatsPointer translate(audio::FrameDiff_t offset) const override;
     BeatsPointer scale(BpmScale scale) const override;
-    BeatsPointer setBpm(mixxx::Bpm bpm) override;
+    BeatsPointer setBpm(mixxx::Bpm bpm) const override;
 
   private:
     BeatMap(audio::SampleRate sampleRate,

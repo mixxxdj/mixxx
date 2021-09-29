@@ -248,11 +248,7 @@ mixxx::Bpm BeatGrid::getBpm() const {
 mixxx::Bpm BeatGrid::getBpmAroundPosition(audio::FramePos position, int n) const {
     Q_UNUSED(position);
     Q_UNUSED(n);
-
-    if (!isValid()) {
-        return {};
-    }
-    return bpm();
+    return getBpm();
 }
 
 BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
@@ -306,7 +302,7 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
     return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
 }
 
-BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
+BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) const {
     VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
         return nullptr;
     }

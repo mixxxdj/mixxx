@@ -595,7 +595,7 @@ BeatsPointer BeatMap::scale(BpmScale scale) const {
     return BeatsPointer(new BeatMap(*this, beats, bpm));
 }
 
-BeatsPointer BeatMap::setBpm(mixxx::Bpm bpm) {
+BeatsPointer BeatMap::setBpm(mixxx::Bpm bpm) const {
     if (!isValid()) {
         return {};
     }

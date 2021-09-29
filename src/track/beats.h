@@ -15,7 +15,7 @@
 namespace mixxx {
 
 class Beats;
-typedef std::shared_ptr<Beats> BeatsPointer;
+typedef std::shared_ptr<const Beats> BeatsPointer;
 
 class BeatIterator {
   public:
@@ -166,7 +166,7 @@ class Beats {
     virtual BeatsPointer scale(BpmScale scale) const = 0;
 
     /// Adjust the beats so the global average BPM matches `bpm`.
-    virtual BeatsPointer setBpm(mixxx::Bpm bpm) = 0;
+    virtual BeatsPointer setBpm(mixxx::Bpm bpm) const = 0;
 
   protected:
     virtual bool isValid() const = 0;
