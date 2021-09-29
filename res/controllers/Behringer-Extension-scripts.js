@@ -503,7 +503,9 @@
      * @extends {components.Encoder}
      * @param {object} options Options object
      * @param {Array} options.values An array containing the enumeration values
+     * @param {boolean} options.softTakeover (optional) Enable soft-takeover; default: `true`
      * @public
+     * @see https://github.com/mixxxdj/mixxx/wiki/Midi-Scripting#soft-takeover
      */
     var EnumEncoder = function(options) {
         options = options || {};
@@ -511,10 +513,22 @@
             log.error("EnumEncoder constructor was called without specifying enum values.");
             options.values = [];
         }
+        if (options.softTakeover === undefined) { // do not use '||' to allow false
+            options.softTakeover = true;
+        }
         options.maxIndex = options.values.length - 1;
         components.Encoder.call(this, options);
     };
     EnumEncoder.prototype = deriveFrom(components.Encoder, {
+        input: function(_channel, _control, value, _status, _group) {
+            var scaledValue = this.inValueScale(value);
+            if (!this.softTakeover
+                || this.previousValue === undefined
+                || this.previousValue === this.inGetValue()) {
+                this.inSetParameter(scaledValue);
+            }
+            this.previousValue = scaledValue;
+        },
         inValueScale: function(value) {
             var normalizedValue = value / this.max;
             var index = Math.round(normalizedValue * this.maxIndex);
