@@ -257,9 +257,10 @@ mixxx::Bpm BeatGrid::getBpmAroundPosition(audio::FramePos position, int n) const
 }
 
 BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
-    if (!isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return clone();
     }
+
     mixxx::track::io::BeatGrid grid = m_grid;
     const audio::FramePos newFirstBeatPosition = firstBeatPosition() + offset;
     grid.mutable_first_beat()->set_frame_position(
@@ -270,6 +271,10 @@ BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
 }
 
 BeatsPointer BeatGrid::scale(BpmScale scale) const {
+    VERIFY_OR_DEBUG_ASSERT(isValid()) {
+        return clone();
+    }
+
     mixxx::track::io::BeatGrid grid = m_grid;
     auto bpm = mixxx::Bpm(grid.bpm().bpm());
 
@@ -311,6 +316,7 @@ BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) const {
     VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
         return clone();
     }
+
     mixxx::track::io::BeatGrid grid = m_grid;
     grid.mutable_bpm()->set_bpm(bpm.value());
     const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());

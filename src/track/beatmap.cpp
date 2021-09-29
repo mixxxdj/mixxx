@@ -551,7 +551,7 @@ BeatsPointer BeatMap::translate(audio::FrameDiff_t offset) const {
 }
 
 BeatsPointer BeatMap::scale(BpmScale scale) const {
-    if (!isValid() || m_beats.isEmpty()) {
+    VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return clone();
     }
 
@@ -599,8 +599,8 @@ BeatsPointer BeatMap::scale(BpmScale scale) const {
 }
 
 BeatsPointer BeatMap::setBpm(mixxx::Bpm bpm) const {
-    if (!isValid()) {
-        return {};
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
+        return clone();
     }
 
     const auto firstBeatPosition = mixxx::audio::FramePos(m_beats.first().frame_position());
