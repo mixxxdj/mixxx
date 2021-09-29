@@ -524,7 +524,6 @@ mixxx::Bpm BeatMap::getBpmAroundPosition(audio::FramePos position, int n) const 
 }
 
 BeatsPointer BeatMap::translate(audio::FrameDiff_t offset) const {
-    // Converting to frame offset
     if (!isValid()) {
         return BeatsPointer(new BeatMap(*this));
     }

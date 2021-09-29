@@ -54,8 +54,6 @@ BeatGrid::BeatGrid(
           m_sampleRate(sampleRate),
           m_grid(grid),
           m_beatLengthFrames(beatLengthFrames) {
-    // BeatGrid should live in the same thread as the track it is associated
-    // with.
 }
 
 BeatGrid::BeatGrid(const BeatGrid& other,
