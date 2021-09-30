@@ -230,7 +230,7 @@
 * Disable track metadata export for .ogg files and TagLib 1.11.1. [lp:1833190](https://bugs.launchpad.net/mixxx/+bug/1833190)
 * Fix interaction of hot cue buttons and looping. [lp:1778246](https://bugs.launchpad.net/mixxx/+bug/1778246)
 * Fix detection of moved tracks. [#2197](https://github.com/mixxxdj/mixxx/pull/2197)
-* Fix playlist import. [lp:16878282](https://bugs.launchpad.net/mixxx/+bug/16878282)
+* Fix playlist import. [#2200](https://github.com/mixxxdj/mixxx/pull/2200) [lp:1687828](https://bugs.launchpad.net/mixxx/+bug/1687828)
 * Fix updating playlist labels. [lp:1837315](https://bugs.launchpad.net/mixxx/+bug/1837315)
 * Fix potential segfault on exit. [lp:1828360](https://bugs.launchpad.net/mixxx/+bug/1828360)
 * Fix parsing of invalid bpm values in MP3 files. [lp:1832325](https://bugs.launchpad.net/mixxx/+bug/1832325)
