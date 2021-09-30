@@ -194,13 +194,18 @@ BeatMap::BeatMap(
         const BeatMap& other,
         BeatList beats,
         mixxx::Bpm nominalBpm)
-        : BeatMap({}, other.m_sampleRate, other.m_subVersion, std::move(beats), nominalBpm) {
+        : BeatMap(
+                  MakeSharedTag{},
+                  other.m_sampleRate,
+                  other.m_subVersion,
+                  std::move(beats),
+                  nominalBpm) {
 }
 
 BeatMap::BeatMap(
         MakeSharedTag,
         const BeatMap& other)
-        : BeatMap({}, other, other.m_beats, other.m_nominalBpm) {
+        : BeatMap(MakeSharedTag{}, other, other.m_beats, other.m_nominalBpm) {
 }
 
 // static

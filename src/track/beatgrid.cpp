@@ -62,13 +62,18 @@ BeatGrid::BeatGrid(
         const BeatGrid& other,
         const mixxx::track::io::BeatGrid& grid,
         audio::FrameDiff_t beatLengthFrames)
-        : BeatGrid({}, other.m_sampleRate, other.m_subVersion, grid, beatLengthFrames) {
+        : BeatGrid(
+                  MakeSharedTag{},
+                  other.m_sampleRate,
+                  other.m_subVersion,
+                  grid,
+                  beatLengthFrames) {
 }
 
 BeatGrid::BeatGrid(
         MakeSharedTag,
         const BeatGrid& other)
-        : BeatGrid({}, other, other.m_grid, other.m_beatLengthFrames) {
+        : BeatGrid(MakeSharedTag{}, other, other.m_grid, other.m_beatLengthFrames) {
 }
 
 // static
