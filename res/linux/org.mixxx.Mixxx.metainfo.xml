@@ -1061,7 +1061,8 @@
   </li>
   <li>
    Fix playlist import.
-   lp:16878282
+   #2200
+   lp:1687828
   </li>
   <li>
    Fix updating playlist labels.
