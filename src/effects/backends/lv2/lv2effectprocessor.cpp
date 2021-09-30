@@ -51,11 +51,11 @@ void LV2EffectProcessor::processChannel(
         m_LV2parameters[i] = static_cast<float>(m_engineEffectParameters[i]->value());
     }
 
-    int j = 0;
-    for (SINT i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
-        m_inputL[j] = pInput[i];
-        m_inputR[j] = pInput[i + 1];
-        j++;
+    SINT framesPerBuffer = bufferParameters.framesPerBuffer();
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < framesPerBuffer; ++i) {
+        m_inputL[i] = pInput[i * 2];
+        m_inputR[i] = pInput[i * 2 + 1];
     }
 
     LilvInstance* instance = channelState->lilvInstance(m_pPlugin, bufferParameters);
@@ -64,13 +64,12 @@ void LV2EffectProcessor::processChannel(
         lilv_instance_activate(instance);
     }
 
-    lilv_instance_run(instance, bufferParameters.framesPerBuffer());
+    lilv_instance_run(instance, framesPerBuffer);
 
-    j = 0;
-    for (SINT i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
-        pOutput[i] = m_outputL[j];
-        pOutput[i + 1] = m_outputR[j];
-        j++;
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < framesPerBuffer; ++i) {
+        pOutput[i * 2] = m_outputL[i];
+        pOutput[i * 2 + 1] = m_outputR[i];
     }
 
     if (enableState == EffectEnableState::Disabling) {
