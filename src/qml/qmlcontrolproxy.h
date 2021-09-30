@@ -8,7 +8,6 @@
 #include "control/controlproxy.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class QmlControlProxy : public QObject, public QQmlParserStatus {
@@ -86,5 +85,4 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

@@ -1,14 +1,13 @@
-#include "skin/qml/qmleffectslotproxy.h"
+#include "qml/qmleffectslotproxy.h"
 
 #include <QObject>
 #include <QQmlEngine>
 
 #include "effects/effectrack.h"
 #include "effects/effectslot.h"
-#include "skin/qml/qmleffectmanifestparametersmodel.h"
+#include "qml/qmleffectmanifestparametersmodel.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlEffectSlotProxy::QmlEffectSlotProxy(EffectRackPointer pRack,
@@ -90,5 +89,4 @@ QmlEffectManifestParametersModel* QmlEffectSlotProxy::getParametersModel() const
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

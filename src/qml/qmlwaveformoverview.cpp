@@ -1,14 +1,13 @@
-#include "skin/qml/qmlwaveformoverview.h"
+#include "qml/qmlwaveformoverview.h"
 
 #include "mixer/basetrackplayer.h"
-#include "skin/qml/qmlplayerproxy.h"
+#include "qml/qmlplayerproxy.h"
 
 namespace {
 constexpr double kDesiredChannelHeight = 255;
 } // namespace
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
@@ -263,5 +262,4 @@ QColor QmlWaveformOverview::getRgbPenColor(ConstWaveformPointer pWaveform, int c
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

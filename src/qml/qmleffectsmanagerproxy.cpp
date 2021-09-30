@@ -1,15 +1,14 @@
-#include "skin/qml/qmleffectsmanagerproxy.h"
+#include "qml/qmleffectsmanagerproxy.h"
 
 #include <QQmlEngine>
 #include <memory>
 
 #include "effects/effectchainslot.h"
 #include "effects/effectrack.h"
-#include "skin/qml/qmleffectslotproxy.h"
-#include "skin/qml/qmlvisibleeffectsmodel.h"
+#include "qml/qmleffectslotproxy.h"
+#include "qml/qmlvisibleeffectsmodel.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlEffectsManagerProxy::QmlEffectsManagerProxy(
@@ -56,5 +55,4 @@ QmlEffectSlotProxy* QmlEffectsManagerProxy::getEffectSlot(
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

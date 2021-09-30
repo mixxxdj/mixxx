@@ -9,7 +9,6 @@
 #include "track/track.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class QmlPlayerProxy;
@@ -17,7 +16,7 @@ class QmlPlayerProxy;
 class QmlWaveformOverview : public QQuickPaintedItem {
     Q_OBJECT
     Q_FLAGS(Channels)
-    Q_PROPERTY(mixxx::skin::qml::QmlPlayerProxy* player READ getPlayer
+    Q_PROPERTY(mixxx::qml::QmlPlayerProxy* player READ getPlayer
                     WRITE setPlayer NOTIFY playerChanged)
     Q_PROPERTY(Channels channels READ getChannels WRITE setChannels NOTIFY channelsChanged)
     Q_PROPERTY(Renderer renderer MEMBER m_renderer NOTIFY rendererChanged)
@@ -55,8 +54,8 @@ class QmlWaveformOverview : public QQuickPaintedItem {
 
   signals:
     void playerChanged();
-    void channelsChanged(mixxx::skin::qml::QmlWaveformOverview::Channels channels);
-    void rendererChanged(mixxx::skin::qml::QmlWaveformOverview::Renderer renderer);
+    void channelsChanged(mixxx::qml::QmlWaveformOverview::Channels channels);
+    void rendererChanged(mixxx::qml::QmlWaveformOverview::Renderer renderer);
     void colorHighChanged(const QColor& color);
     void colorMidChanged(const QColor& color);
     void colorLowChanged(const QColor& color);
@@ -83,5 +82,4 @@ class QmlWaveformOverview : public QQuickPaintedItem {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

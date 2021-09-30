@@ -8,7 +8,6 @@
 #include "track/track.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 class QmlPlayerProxy : public QObject {
@@ -108,5 +107,4 @@ class QmlPlayerProxy : public QObject {
 };
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

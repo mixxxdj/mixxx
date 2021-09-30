@@ -1,4 +1,4 @@
-#include "skin/qml/asyncimageprovider.h"
+#include "qml/asyncimageprovider.h"
 
 #include "library/coverartcache.h"
 
@@ -7,7 +7,6 @@ const QString kCoverArtPrefix = QStringLiteral("coverart/");
 }
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 AsyncImageResponse::AsyncImageResponse(const QString& id, const QSize& requestedSize)
@@ -75,5 +74,4 @@ QString AsyncImageProvider::coverArtUrlIdToTrackLocation(const QString& coverArt
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

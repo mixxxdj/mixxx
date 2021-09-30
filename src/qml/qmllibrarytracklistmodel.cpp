@@ -1,9 +1,8 @@
-#include "skin/qml/qmllibrarytracklistmodel.h"
+#include "qml/qmllibrarytracklistmodel.h"
 
 #include "library/librarytablemodel.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 namespace {
 const QHash<int, QByteArray> kRoleNames = {
@@ -89,5 +88,4 @@ QHash<int, QByteArray> QmlLibraryTrackListModel::roleNames() const {
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

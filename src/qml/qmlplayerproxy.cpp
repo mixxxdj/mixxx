@@ -1,7 +1,7 @@
-#include "skin/qml/qmlplayerproxy.h"
+#include "qml/qmlplayerproxy.h"
 
 #include "mixer/basetrackplayer.h"
-#include "skin/qml/asyncimageprovider.h"
+#include "qml/asyncimageprovider.h"
 
 #define PROPERTY_IMPL_GETTER(TYPE, NAME, GETTER)     \
     TYPE QmlPlayerProxy::GETTER() const {            \
@@ -22,7 +22,6 @@
     }
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
@@ -193,5 +192,4 @@ QUrl QmlPlayerProxy::getTrackLocationUrl() const {
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

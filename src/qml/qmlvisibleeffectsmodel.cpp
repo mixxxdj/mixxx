@@ -1,4 +1,4 @@
-#include "skin/qml/qmlvisibleeffectsmodel.h"
+#include "qml/qmlvisibleeffectsmodel.h"
 
 #include <QModelIndex>
 
@@ -6,7 +6,6 @@
 #include "effects/effectsmanager.h"
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 namespace {
 const QHash<int, QByteArray> kRoleNames = {
@@ -85,5 +84,4 @@ QVariant QmlVisibleEffectsModel::get(int row) const {
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx

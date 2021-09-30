@@ -1,4 +1,4 @@
-#include "skin/qml/qmlconfigproxy.h"
+#include "qml/qmlconfigproxy.h"
 
 #include "preferences/colorpalettesettings.h"
 
@@ -13,7 +13,6 @@ QVariantList paletteToQColorList(const ColorPalette& palette) {
 } // namespace
 
 namespace mixxx {
-namespace skin {
 namespace qml {
 
 QmlConfigProxy::QmlConfigProxy(
@@ -32,5 +31,4 @@ QVariantList QmlConfigProxy::getTrackColorPalette() {
 }
 
 } // namespace qml
-} // namespace skin
 } // namespace mixxx
