@@ -742,6 +742,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             libraryMenu,
             false,
             m_libraryStr);
+    addControl("[Library]",
+            "clear_search",
+            tr("Clear search"),
+            tr("Clears the search query"),
+            libraryMenu,
+            false,
+            m_libraryStr);
 
     libraryMenu->addSeparator();
     addControl("[Recording]", "toggle_recording",
