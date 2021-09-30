@@ -534,7 +534,7 @@ mixxx::Bpm BeatMap::getBpmAroundPosition(audio::FramePos position, int n) const 
 
 BeatsPointer BeatMap::translate(audio::FrameDiff_t offset) const {
     if (!isValid()) {
-        return clone();
+        return clonePointer();
     }
 
     BeatList beats = m_beats;
@@ -557,7 +557,7 @@ BeatsPointer BeatMap::translate(audio::FrameDiff_t offset) const {
 
 BeatsPointer BeatMap::scale(BpmScale scale) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return clone();
+        return clonePointer();
     }
 
     BeatList beats = m_beats;
@@ -596,7 +596,7 @@ BeatsPointer BeatMap::scale(BpmScale scale) const {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return clone();
+        return clonePointer();
     }
 
     mixxx::Bpm bpm = calculateNominalBpm(beats, m_sampleRate);
@@ -605,7 +605,7 @@ BeatsPointer BeatMap::scale(BpmScale scale) const {
 
 BeatsPointer BeatMap::setBpm(mixxx::Bpm bpm) const {
     VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
-        return clone();
+        return clonePointer();
     }
 
     const auto firstBeatPosition = mixxx::audio::FramePos(m_beats.first().frame_position());

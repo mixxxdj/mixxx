@@ -263,7 +263,7 @@ mixxx::Bpm BeatGrid::getBpmAroundPosition(audio::FramePos position, int n) const
 
 BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return clone();
+        return clonePointer();
     }
 
     mixxx::track::io::BeatGrid grid = m_grid;
@@ -277,7 +277,7 @@ BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
 
 BeatsPointer BeatGrid::scale(BpmScale scale) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return clone();
+        return clonePointer();
     }
 
     mixxx::track::io::BeatGrid grid = m_grid;
@@ -304,11 +304,11 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return clone();
+        return clonePointer();
     }
 
     if (!bpm.isValid()) {
-        return clone();
+        return clonePointer();
     }
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
@@ -319,7 +319,7 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
 
 BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) const {
     VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
-        return clone();
+        return clonePointer();
     }
 
     mixxx::track::io::BeatGrid grid = m_grid;

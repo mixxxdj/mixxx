@@ -33,7 +33,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
   public:
     virtual ~Beats() = default;
 
-    BeatsPointer clone() const {
+    BeatsPointer clonePointer() const {
         // All instances are immutable and can be shared safely
         return shared_from_this();
     }
