@@ -97,6 +97,30 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     EXPECT_NEAR(position.value(), pGrid->findPrevBeat(position).value(), kMaxBeatError);
 }
 
+TEST(BeatGridTest, TestNthBeat_FloatImprecision) {
+    // Regression test for https://bugs.launchpad.net/mixxx/+bug/1945238 using values
+    // from a specific track test-case.
+    constexpr int sampleRate = 44100;
+    TrackPointer pTrack = newTrack(sampleRate);
+
+    constexpr double bpm = 129.0;
+    pTrack->trySetBpm(bpm);
+
+    auto pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::FramePos(18581),
+            mixxx::Bpm(bpm));
+
+    audio::FramePos prevBeatPosition;
+    audio::FramePos nextBeatPosition;
+
+    pGrid->findPrevNextBeats(mixxx::audio::FramePos(18581),
+            &prevBeatPosition,
+            &nextBeatPosition,
+            true);
+    // In the failure mode we will be much more than 1e-6 off.
+    EXPECT_NEAR(100627.511628, pGrid->findNthBeat(nextBeatPosition, 4).value(), 1e-6);
+}
+
 TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     constexpr int sampleRate = 44100;
     TrackPointer pTrack = newTrack(sampleRate);
