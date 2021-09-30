@@ -4,10 +4,15 @@
 #include "util/fpclassify.h"
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
-                         QHash<QString, LilvNode*>& properties)
+        QHash<QString, LilvNode*>& properties)
         : m_pEffectManifest(new EffectManifest()),
-          m_status(AVAILABLE) {
+          m_minimum(lilv_plugin_get_num_ports(plug)),
 
+          m_maximum(lilv_plugin_get_num_ports(plug)),
+
+          m_default(lilv_plugin_get_num_ports(plug)),
+
+          m_status(AVAILABLE) {
     m_pLV2plugin = plug;
 
     // Get and set the ID
@@ -25,11 +30,8 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
     lilv_node_free(info);
 
     int numPorts = lilv_plugin_get_num_ports(plug);
-    m_minimum = new float[numPorts];
-    m_maximum = new float[numPorts];
-    m_default = new float[numPorts];
-    lilv_plugin_get_port_ranges_float(m_pLV2plugin, m_minimum, m_maximum,
-                                      m_default);
+    lilv_plugin_get_port_ranges_float(
+            m_pLV2plugin, m_minimum.data(), m_maximum.data(), m_default.data());
 
     // Counters to determine the type of the plug in
     int inputPorts = 0;
@@ -150,12 +152,6 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
         m_status = HAS_REQUIRED_FEATURES;
     }
     lilv_nodes_free(features);
-}
-
-LV2Manifest::~LV2Manifest() {
-    delete[] m_minimum;
-    delete[] m_maximum;
-    delete[] m_default;
 }
 
 EffectManifestPointer LV2Manifest::getEffectManifest() const {
