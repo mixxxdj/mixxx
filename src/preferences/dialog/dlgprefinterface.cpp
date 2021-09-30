@@ -46,7 +46,7 @@ DlgPrefInterface::DlgPrefInterface(
           m_pConfig(pConfig),
           m_pScreensaverManager(pScreensaverManager),
           m_pSkinLoader(pSkinLoader),
-          m_pSkin(pSkinLoader->getConfiguredSkin()),
+          m_pSkin(pSkinLoader ? pSkinLoader->getConfiguredSkin() : nullptr),
           m_dScaleFactor(1.0),
           m_minScaleFactor(1.0),
           m_dDevicePixelRatio(1.0),
@@ -66,11 +66,6 @@ DlgPrefInterface::DlgPrefInterface(
     }
     double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScaleFactor;
     m_minScaleFactor = 1 / unscaledDevicePixelRatio;
-
-    VERIFY_OR_DEBUG_ASSERT(m_pSkin != nullptr) {
-        qWarning() << "Skipping creation of DlgPrefInterface because there is no skin available.";
-        return;
-    }
 
     // Locale setting
     // Iterate through the available locales and add them to the combobox
@@ -126,50 +121,59 @@ DlgPrefInterface::DlgPrefInterface(
     // ...and then insert entry for default system locale at the top
     ComboBoxLocale->insertItem(0, QStringLiteral("System"), "");
 
-    // Skin configurations
-    QString sizeWarningString =
-            "<img src=\":/images/preferences/ic_preferences_warning.svg\") "
-            "width=16 height=16 />   " +
-            tr("The minimum size of the selected skin is bigger than your "
-               "screen resolution.");
-    warningLabel->setText(sizeWarningString);
+    if (pSkinLoader) {
+        // Skin configurations
+        QString sizeWarningString =
+                "<img src=\":/images/preferences/ic_preferences_warning.svg\") "
+                "width=16 height=16 />   " +
+                tr("The minimum size of the selected skin is bigger than your "
+                   "screen resolution.");
+        warningLabel->setText(sizeWarningString);
 
-    ComboBoxSkinconf->clear();
-    // align left edge of preview image and skin description with comboboxes
-    skinPreviewLabel->setStyleSheet("QLabel { margin-left: 4px; }");
-    skinPreviewLabel->setText("");
-    skinDescriptionText->setStyleSheet("QLabel { margin-left: 2px; }");
-    skinDescriptionText->setText("");
-    skinDescriptionText->hide();
+        ComboBoxSkinconf->clear();
+        // align left edge of preview image and skin description with comboboxes
+        skinPreviewLabel->setStyleSheet("QLabel { margin-left: 4px; }");
+        skinPreviewLabel->setText("");
+        skinDescriptionText->setStyleSheet("QLabel { margin-left: 2px; }");
+        skinDescriptionText->setText("");
+        skinDescriptionText->hide();
 
-    const QList<SkinPointer> skins = m_pSkinLoader->getSkins();
-    int index = 0;
-    for (const SkinPointer& pSkin : skins) {
-        ComboBoxSkinconf->insertItem(index, pSkin->name());
-        m_skins.insert(pSkin->name(), pSkin);
-        index++;
-    }
+        const QList<SkinPointer> skins = m_pSkinLoader->getSkins();
+        int index = 0;
+        for (const SkinPointer& pSkin : skins) {
+            ComboBoxSkinconf->insertItem(index, pSkin->name());
+            m_skins.insert(pSkin->name(), pSkin);
+            index++;
+        }
 
-    ComboBoxSkinconf->setCurrentIndex(index);
-    // schemes must be updated here to populate the drop-down box and set m_colorScheme
-    slotUpdateSchemes();
-    slotSetSkinPreview();
-    const auto* const pScreen = getScreen();
-    if (m_pSkin->fitsScreenSize(*pScreen)) {
-        warningLabel->hide();
+        ComboBoxSkinconf->setCurrentIndex(index);
+        // schemes must be updated here to populate the drop-down box and set m_colorScheme
+        slotUpdateSchemes();
+        slotSetSkinPreview();
+        const auto* const pScreen = getScreen();
+        if (m_pSkin->fitsScreenSize(*pScreen)) {
+            warningLabel->hide();
+        } else {
+            warningLabel->show();
+        }
+        slotSetSkinDescription();
+
+        connect(ComboBoxSkinconf,
+                QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this,
+                &DlgPrefInterface::slotSetSkin);
+        connect(ComboBoxSchemeconf,
+                QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this,
+                &DlgPrefInterface::slotSetScheme);
     } else {
-        warningLabel->show();
+        lableSkin_2->hide();
+        labelColorScheme->hide();
+        ComboBoxSkinconf->hide();
+        ComboBoxSchemeconf->hide();
+        skinDescriptionText->hide();
+        skinPreviewLabel->hide();
     }
-    slotSetSkinDescription();
-
-    connect(ComboBoxSkinconf,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefInterface::slotSetSkin);
-    connect(ComboBoxSchemeconf,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefInterface::slotSetScheme);
 
     // Start in fullscreen mode
     checkBoxStartFullScreen->setChecked(
@@ -215,6 +219,10 @@ QScreen* DlgPrefInterface::getScreen() const {
 }
 
 void DlgPrefInterface::slotUpdateSchemes() {
+    if (!m_pSkinLoader) {
+        return;
+    }
+
     // Re-populates the scheme combobox and attempts to pick the color scheme from config file.
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     const QList<QString> schlist = m_pSkin->colorschemes();
@@ -339,6 +347,10 @@ void DlgPrefInterface::slotSetScheme(int) {
 }
 
 void DlgPrefInterface::slotSetSkinDescription() {
+    if (!m_pSkinLoader) {
+        return;
+    }
+
     const QString description = m_pSkin->description();
     if (!description.isEmpty()) {
         skinDescriptionText->show();
@@ -349,6 +361,10 @@ void DlgPrefInterface::slotSetSkinDescription() {
 }
 
 void DlgPrefInterface::slotSetSkinPreview() {
+    if (!m_pSkinLoader) {
+        return;
+    }
+
     QPixmap preview = m_pSkin->preview(m_colorScheme);
     preview.setDevicePixelRatio(m_dDevicePixelRatio);
     skinPreviewLabel->setPixmap(preview.scaled(
@@ -358,6 +374,10 @@ void DlgPrefInterface::slotSetSkinPreview() {
 }
 
 void DlgPrefInterface::slotSetSkin(int) {
+    if (!m_pSkinLoader) {
+        return;
+    }
+
     QString newSkinName = ComboBoxSkinconf->currentText();
     if (newSkinName == m_pSkin->name()) {
         return;
@@ -381,8 +401,10 @@ void DlgPrefInterface::slotSetSkin(int) {
 }
 
 void DlgPrefInterface::slotApply() {
-    m_pConfig->set(ConfigKey(kConfigGroup, kResizableSkinKey), m_pSkin->name());
-    m_pConfig->set(ConfigKey(kConfigGroup, kSchemeKey), m_colorScheme);
+    if (m_pSkinLoader) {
+        m_pConfig->set(ConfigKey(kConfigGroup, kResizableSkinKey), m_pSkin->name());
+        m_pConfig->set(ConfigKey(kConfigGroup, kSchemeKey), m_colorScheme);
+    }
 
     QString locale = ComboBoxLocale->itemData(
             ComboBoxLocale->currentIndex()).toString();
