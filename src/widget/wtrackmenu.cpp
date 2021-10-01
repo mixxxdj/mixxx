@@ -1659,7 +1659,11 @@ class RemoveTrackFilesFromDiskTrackPointerOperation : public mixxx::TrackPointer
                     << "could not be deleted. Track is not purged";
             mTracksToKeep.append(location);
         } else {
-            // File doesn't exist or was deleted. Queue for purging.
+            // File doesn't exist or was deleted.
+            // Note: we must not purge every single track since TrackDAO::afterPurgingTracks
+            // would enforce a track model update (select())
+            // So we add it to the purge queue and purge all tracks at once
+            // in slotRemoveFromDisk() afterwards.
             mTracksToPurge.append(trackRef);
         }
     }
