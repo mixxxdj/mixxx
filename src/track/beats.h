@@ -15,7 +15,7 @@
 namespace mixxx {
 
 class Beats;
-typedef std::shared_ptr<Beats> BeatsPointer;
+typedef std::shared_ptr<const Beats> BeatsPointer;
 
 class BeatIterator {
   public:
@@ -27,9 +27,16 @@ class BeatIterator {
 /// Beats is the base class for BPM and beat management classes. It provides a
 /// specification of all methods a beat-manager class must provide, as well as
 /// a capability model for representing optional features.
-class Beats {
+///
+/// All instances of this class are supposed to be managed by std::shared_ptr!
+class Beats : private std::enable_shared_from_this<Beats> {
   public:
     virtual ~Beats() = default;
+
+    BeatsPointer clonePointer() const {
+        // All instances are immutable and can be shared safely
+        return shared_from_this();
+    }
 
     static mixxx::BeatsPointer fromByteArray(
             mixxx::audio::SampleRate sampleRate,
@@ -166,10 +173,21 @@ class Beats {
     virtual BeatsPointer scale(BpmScale scale) const = 0;
 
     /// Adjust the beats so the global average BPM matches `bpm`.
-    virtual BeatsPointer setBpm(mixxx::Bpm bpm) = 0;
+    virtual BeatsPointer setBpm(mixxx::Bpm bpm) const = 0;
 
   protected:
+    /// Type tag for making public constructors of derived classes inaccessible.
+    ///
+    /// The constructors must be public for using std::make_shared().
+    struct MakeSharedTag {};
+
+    Beats() = default;
+
     virtual bool isValid() const = 0;
+
+  private:
+    Beats(const Beats&) = delete;
+    Beats(Beats&&) = delete;
 };
 
 } // namespace mixxx
