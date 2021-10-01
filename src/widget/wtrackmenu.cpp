@@ -1629,10 +1629,17 @@ namespace {
 
 class RemoveTrackFilesFromDiskTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
-    mutable QList<TrackRef> tr_tracksToPurge;
-    mutable QList<QString> tr_tracksToKeep;
+    QList<TrackRef> getTracksToPurge() const {
+        return mTracksToPurge;
+    }
+    QList<QString> getTracksToKeep() const {
+        return mTracksToKeep;
+    }
 
   private:
+    mutable QList<TrackRef> mTracksToPurge;
+    mutable QList<QString> mTracksToKeep;
+
     void doApply(
             const TrackPointer& pTrack) const override {
         auto trackRef = TrackRef::fromFileInfo(
@@ -1650,11 +1657,10 @@ class RemoveTrackFilesFromDiskTrackPointerOperation : public mixxx::TrackPointer
                     << "Queued file"
                     << location
                     << "could not be deleted. Track is not purged";
-            tr_tracksToKeep.append(location);
-            return;
+            mTracksToKeep.append(location);
         } else {
             // File doesn't exist or was deleted. Queue for purging.
-            tr_tracksToPurge.append(trackRef);
+            mTracksToPurge.append(trackRef);
         }
     }
 };
@@ -1729,9 +1735,10 @@ void WTrackMenu::slotRemoveFromDisk() {
             &trackOperator);
 
     // Purge deleted tracks and show deletion summary message.
-    if (trackOperator.tr_tracksToPurge.length() > 0) {
+    QList<TrackRef> tracksToPurge(trackOperator.getTracksToPurge());
+    if (tracksToPurge.length() > 0) {
         // Purge only those tracks whose files were actually deleted.
-        m_pLibrary->trackCollectionManager()->purgeTracks(trackOperator.tr_tracksToPurge);
+        m_pLibrary->trackCollectionManager()->purgeTracks(tracksToPurge);
         // Optional message box:
         QMessageBox msgBoxPurgeTracks(QMessageBox::Information,
                 QObject::tr("Track Files Deleted"),
@@ -1739,8 +1746,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         msgBoxPurgeTracks.setText(
                 tr("%1 track files were deleted from disk and purged "
                    "from the Mixxx database.")
-                        .arg(QString::number(
-                                trackOperator.tr_tracksToPurge.length())) +
+                        .arg(QString::number(tracksToPurge.length())) +
                 QString("<br><br>") +
                 tr("Note: if you are in Browse or Recording you need to "
                    "click the current view again to see changes."));
@@ -1748,7 +1754,8 @@ void WTrackMenu::slotRemoveFromDisk() {
         msgBoxPurgeTracks.exec();
     }
 
-    if (trackOperator.tr_tracksToKeep.length() >= 0) {
+    QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
+    if (tracksToKeep.length() == 0) {
         return;
     }
 
@@ -1761,11 +1768,11 @@ void WTrackMenu::slotRemoveFromDisk() {
         notDeletedLabel->setText(
                 tr("The following %1 files could not be deleted from disk")
                         .arg(QString::number(
-                                trackOperator.tr_tracksToKeep.length())));
+                                tracksToKeep.length())));
         notDeletedLabel->setTextFormat(Qt::RichText);
 
         QListWidget* notDeletedListWidget = new QListWidget;
-        notDeletedListWidget->addItems(trackOperator.tr_tracksToKeep);
+        notDeletedListWidget->addItems(tracksToKeep);
         mixxx::widgethelper::growListWidget(*notDeletedListWidget, *this);
 
         QDialogButtonBox* notDeletedButtons = new QDialogButtonBox(QDialogButtonBox::Ok);
