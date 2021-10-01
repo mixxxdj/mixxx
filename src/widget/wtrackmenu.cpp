@@ -219,7 +219,7 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
-        m_pRemoveFromDiskAct = new QAction(tr("Delete Files From disk"), m_pRemoveFromDiskMenu);
+        m_pRemoveFromDiskAct = new QAction(tr("Delete Files from Disk"), m_pRemoveFromDiskMenu);
         connect(m_pRemoveFromDiskAct,
                 &QAction::triggered,
                 this,
@@ -1735,7 +1735,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         m_pLibrary->trackCollectionManager()->purgeTracks(trackOperator.tr_tracksToPurge);
         // Optional message box:
         QMessageBox msgBoxPurgeTracks(QMessageBox::Information,
-                QObject::tr("Track files deleted"),
+                QObject::tr("Track Files Deleted"),
                 nullptr);
         msgBoxPurgeTracks.setText(
                 tr("%1 track files were deleted from disk and purged "
