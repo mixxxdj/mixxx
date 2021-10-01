@@ -48,7 +48,7 @@ QWindow* getWindow(
     return nullptr;
 }
 
-QSize adjustedListWidgetSize(const QListWidget& listWidget, const QWidget& parent) {
+void growListWidget(QListWidget& listWidget, const QWidget& parent) {
     // Try to display all files and the complete file locations to avoid
     // horizontal scrolling.
     // Get the screen dimensions
@@ -71,9 +71,8 @@ QSize adjustedListWidgetSize(const QListWidget& listWidget, const QWidget& paren
     int newH = std::min(minH, static_cast<int>(screenSpace.height() * 0.9));
     // Apply new size
     if (newW > 0 && newH > 0) {
-        return QSize(newW, newH);
+        listWidget.setMinimumSize(newW, newH);
     }
-    return QSize();
 }
 
 } // namespace widgethelper

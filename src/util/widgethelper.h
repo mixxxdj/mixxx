@@ -51,7 +51,7 @@ inline QScreen* getScreen(
 }
 
 /// QSize for stretching a list widget attempting to show entire column
-QSize adjustedListWidgetSize(const QListWidget& listWidget, const QWidget& parent);
+void growListWidget(QListWidget& listWidget, const QWidget& parent);
 
 } // namespace widgethelper
 

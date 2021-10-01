@@ -1692,8 +1692,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         delListWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::MinimumExpanding));
         delListWidget->addItems(locations);
-        delListWidget->setMinimumSize(
-                mixxx::widgethelper::adjustedListWidgetSize(*delListWidget, *this));
+        mixxx::widgethelper::growListWidget(*delListWidget, *this);
 
         QDialogButtonBox* delButtons = new QDialogButtonBox();
         QPushButton* cancelBtn = delButtons->addButton(
@@ -1767,8 +1766,7 @@ void WTrackMenu::slotRemoveFromDisk() {
 
         QListWidget* notDeletedListWidget = new QListWidget;
         notDeletedListWidget->addItems(trackOperator.tr_tracksToKeep);
-        notDeletedListWidget->setMinimumSize(
-                mixxx::widgethelper::adjustedListWidgetSize(*notDeletedListWidget, *this));
+        mixxx::widgethelper::growListWidget(*notDeletedListWidget, *this);
 
         QDialogButtonBox* notDeletedButtons = new QDialogButtonBox(QDialogButtonBox::Ok);
 
