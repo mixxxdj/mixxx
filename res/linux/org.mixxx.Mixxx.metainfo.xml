@@ -6,6 +6,8 @@
   <project_license>GPL-2.0</project_license>
   <name>Mixxx DJ Software</name>
   <summary>Everything you need to perform live DJ mixes</summary>
+  <!-- Must be explicitly specified as not requiring any content rating. -->
+  <content_rating type="oars-1.1"/>
   <description>
     <p>
       Mixxx is free DJ software that gives you everything you need to perform
