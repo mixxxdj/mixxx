@@ -301,33 +301,11 @@ PioneerDDJSB3.Deck = function(deckNumber) {
             }
         }
     };
-    var playButton = this.playButton = new components.PlayButton({
+    this.playButton = new components.PlayButton({
         midi: [0x90 + deckNumber - 1, 0x0B],
         shiftOffset: 60,
         shiftControl: true,
-        sendShifted: true,
-        connect: function() {
-            this.connections[0] = engine.makeConnection(this.group, "play_indicator", this.output);
-            this.connections[1] = engine.makeConnection(this.group, "track_loaded", this.output);
-        },
-        flashLed: function(active) {
-            playButton.send(playButton.outValueScale(active));
-        },
-        output: function(value, group, control) {
-            playButton[control] = value;
-
-            if (playButton.track_loaded) {
-                if (playButton.play_indicator) {
-                    PioneerDDJSB3.flasher.removeFunction(playButton.flashLed);
-                    playButton.send(playButton.outValueScale(true));
-                } else {
-                    PioneerDDJSB3.flasher.addFunction(playButton.flashLed);
-                }
-            } else {
-                PioneerDDJSB3.flasher.removeFunction(playButton.flashLed);
-                playButton.send(playButton.outValueScale(false));
-            }
-        }
+        sendShifted: true
     });
 
     this.cueButton = new components.CueButton({
