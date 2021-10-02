@@ -382,9 +382,9 @@ PioneerDDJSB3.Deck = function(deckNumber) {
 
     engine.setValue("[Channel" + deckNumber + "]", "rate_dir", -1);
 
-    PioneerDDJSB3.updateBPM(0, "[Channel" + deckNumber + "]");
     this.loadConnection = engine.makeConnection("[Channel" + deckNumber + "]", "track_loaded", PioneerDDJSB3.trackLoaded);
     this.bpmConnection = engine.makeConnection("[Channel" + deckNumber + "]", "bpm", PioneerDDJSB3.updateBPM);
+    this.bpmConnection.trigger();
 };
 PioneerDDJSB3.Deck.prototype = components.ComponentContainer.prototype;
 
