@@ -23,12 +23,15 @@ def parse_changelog(content):
             "version": matchobj.group("number"),
         }
         try:
-            attrib["date"] = datetime.datetime.strptime(
+            release_date = datetime.datetime.strptime(
                 matchobj.group("date"), " (%Y-%m-%d)"
-            ).strftime("%Y-%m-%d")
-            attrib["type"] = "stable"
+            ).replace(tzinfo=datetime.timezone.utc)
         except ValueError:
             attrib["type"] = "development"
+        else:
+            attrib["type"] = "stable"
+            attrib["date"] = release_date.strftime("%Y-%m-%d")
+            attrib["timestamp"] = "{:.0f}".format(release_date.timestamp())
 
         soup = bs4.BeautifulSoup(
             markdown.markdown(description_md), "html.parser"
