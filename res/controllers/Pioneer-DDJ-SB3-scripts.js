@@ -1,5 +1,15 @@
 var PioneerDDJSB3 = {};
-//var PioneerDDJSB3 = {};
+
+PioneerDDJSB3.PadMode = {
+    HotCue: 0x1B,
+    FxFadeMix: 0x1E,
+    PadScratch: 0x20,
+    Sampler: 0x22,
+    BeatJump: 0x69,
+    Roll: 0x6B,
+    Slicer: 0x6D,
+    Trans: 0x6E
+};
 
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
@@ -427,14 +437,14 @@ PioneerDDJSB3.Pad = function(padNumber) {
 };
 
 PioneerDDJSB3.Pad.prototype.setModeActive = function(activeMode) {
-    midi.sendShortMsg(0x90 + this.padNumber - 1, 0x1B, activeMode === 0x1B ? 0x7F : 0x0);
-    midi.sendShortMsg(0x90 + this.padNumber - 1, 0x1E, activeMode === 0x1E ? 0x7F : 0x0);
-    midi.sendShortMsg(0x90 + this.padNumber - 1, 0x20, activeMode === 0x20 ? 0x7F : 0x0);
-    midi.sendShortMsg(0x90 + this.padNumber - 1, 0x22, activeMode === 0x22 ? 0x7F : 0x0);
-    midi.sendShortMsg(0x90 + this.padNumber - 1, 0x69, activeMode === 0x69 ? 0x7F : 0x0);
-    midi.sendShortMsg(0x90 + this.padNumber - 1, 0x6B, activeMode === 0x6B ? 0x7F : 0x0);
-    midi.sendShortMsg(0x90 + this.padNumber - 1, 0x6D, activeMode === 0x6D ? 0x7F : 0x0);
-    midi.sendShortMsg(0x90 + this.padNumber - 1, 0x6E, activeMode === 0x6E ? 0x7F : 0x0);
+    midi.sendShortMsg(0x90 + this.padNumber - 1, PioneerDDJSB3.PadMode.HotCue, activeMode === PioneerDDJSB3.PadMode.HotCue ? 0x7F : 0x0);
+    midi.sendShortMsg(0x90 + this.padNumber - 1, PioneerDDJSB3.PadMode.FxFadeMix, activeMode === PioneerDDJSB3.PadMode.FxFadeMix ? 0x7F : 0x0);
+    midi.sendShortMsg(0x90 + this.padNumber - 1, PioneerDDJSB3.PadMode.PadScratch, activeMode === PioneerDDJSB3.PadMode.PadScratch ? 0x7F : 0x0);
+    midi.sendShortMsg(0x90 + this.padNumber - 1, PioneerDDJSB3.PadMode.Sampler, activeMode === PioneerDDJSB3.PadMode.Sampler ? 0x7F : 0x0);
+    midi.sendShortMsg(0x90 + this.padNumber - 1, PioneerDDJSB3.PadMode.BeatJump, activeMode === PioneerDDJSB3.PadMode.BeatJump ? 0x7F : 0x0);
+    midi.sendShortMsg(0x90 + this.padNumber - 1, PioneerDDJSB3.PadMode.Roll, activeMode === PioneerDDJSB3.PadMode.Roll ? 0x7F : 0x0);
+    midi.sendShortMsg(0x90 + this.padNumber - 1, PioneerDDJSB3.PadMode.Slicer, activeMode === PioneerDDJSB3.PadMode.Slicer ? 0x7F : 0x0);
+    midi.sendShortMsg(0x90 + this.padNumber - 1, PioneerDDJSB3.PadMode.Trans, activeMode === PioneerDDJSB3.PadMode.Trans ? 0x7F : 0x0);
 };
 
 PioneerDDJSB3.Pad.prototype.clearSlicer = function() {
@@ -446,14 +456,14 @@ PioneerDDJSB3.Pad.prototype.clearSlicer = function() {
 
 PioneerDDJSB3.Pad.prototype.hotcueMode = function(channel, control, value) {
     if (value) {
-        this.setModeActive(0x1B);
+        this.setModeActive(PioneerDDJSB3.PadMode.HotCue);
         this.clearSlicer();
     }
 };
 
 PioneerDDJSB3.Pad.prototype.beatJumpMode = function(channel, control, value) {
     if (value) {
-        this.setModeActive(0x69);
+        this.setModeActive(PioneerDDJSB3.PadMode.BeatJump);
         this.clearSlicer();
 
         // Let jump pad led on
@@ -464,28 +474,28 @@ PioneerDDJSB3.Pad.prototype.beatJumpMode = function(channel, control, value) {
 
 PioneerDDJSB3.Pad.prototype.fxFadeMode = function(channel, control, value) {
     if (value) {
-        this.setModeActive(0x1E);
+        this.setModeActive(PioneerDDJSB3.PadMode.FxFadeMix);
         this.clearSlicer();
     }
 };
 
 PioneerDDJSB3.Pad.prototype.rollMode = function(channel, control, value) {
     if (value) {
-        this.setModeActive(0x6B);
+        this.setModeActive(PioneerDDJSB3.PadMode.Roll);
         this.clearSlicer();
     }
 };
 
 PioneerDDJSB3.Pad.prototype.padScratchMode = function(channel, control, value) {
     if (value) {
-        this.setModeActive(0x20);
+        this.setModeActive(PioneerDDJSB3.PadMode.PadScratch);
         this.clearSlicer();
     }
 };
 
 PioneerDDJSB3.Pad.prototype.slicerMode = function(channel, control, value) {
     if (value) {
-        this.setModeActive(0x6D);
+        this.setModeActive(PioneerDDJSB3.PadMode.Slicer);
 
         if (!this.slicer) {
             var group = "[Channel" + this.padNumber + "]";
@@ -498,14 +508,14 @@ PioneerDDJSB3.Pad.prototype.slicerMode = function(channel, control, value) {
 
 PioneerDDJSB3.Pad.prototype.samplerMode = function(channel, control, value) {
     if (value) {
-        this.setModeActive(0x22);
+        this.setModeActive(PioneerDDJSB3.PadMode.Sampler);
         this.clearSlicer();
     }
 };
 
 PioneerDDJSB3.Pad.prototype.transMode = function(channel, control, value) {
     if (value) {
-        this.setModeActive(0x6E);
+        this.setModeActive(PioneerDDJSB3.PadMode.Trans);
         this.clearSlicer();
     }
 };
