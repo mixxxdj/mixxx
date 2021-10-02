@@ -756,6 +756,14 @@ TrackModel* WTrackTableView::getTrackModel() const {
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Return) {
+        // Ctrl+Enter opens track properties dialog
+        if (event->modifiers() & Qt::ControlModifier) {
+            QModelIndexList indices = selectionModel()->selectedRows();
+            if (indices.length() == 1) {
+                m_pTrackMenu->loadTrackModelIndices(indices);
+                m_pTrackMenu->slotShowDlgTrackInfo();
+            }
+        }
         // It is not a good idea if 'key_return'
         // causes a track to load since we allow in-line editing
         // of table items in general
