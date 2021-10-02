@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 //
 // TODO:
+//  * Issue when activating shifted layer and shifted layer is already active.
 //
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +22,7 @@ MiniMixxx.PeakColor = 1;          // Red
 MiniMixxx.HotcueColor = 20;       // Light Orange
 MiniMixxx.UnsetSamplerColor = 82; // Blue
 MiniMixxx.SamplerColor = 70;      // Light Blue
+MiniMixxx.MainGainColor = 50;     // Kind of a light green
 
 // Set to true to output debug messages and debug light outputs.
 MiniMixxx.DebugMode = false;
@@ -58,6 +60,14 @@ MiniMixxx.Encoder = function (channel, idx, layerConfig) {
             var splitted = mode.split("-");
             var effectNum = splitted[1];
             this.encoders[mode] = new MiniMixxx.EncoderModeFX(this, channel, idx, effectNum);
+        } else if (mode === "MAINGAIN") {
+            this.encoders[mode] = new MiniMixxx.EncoderModeMainGain(this, "[Master]", idx);
+        } else if (mode === "BALANCE") {
+            this.encoders[mode] = new MiniMixxx.EncoderModeBalance(this, "[Master]", idx);
+        } else if (mode === "HEADGAIN") {
+            this.encoders[mode] = new MiniMixxx.EncoderModeHeadGain(this, "[Master]", idx);
+        } else if (mode === "HEADMIX") {
+            this.encoders[mode] = new MiniMixxx.EncoderModeHeadMix(this, "[Master]", idx);
         } else {
             print("Ignoring unknown encoder mode: " + mode);
             continue;
@@ -523,6 +533,138 @@ MiniMixxx.EncoderModeFX.prototype.setLights = function () {
     this.switchIndicator(engine.getValue(this.effectGroup, "enabled"));
 }
 
+// Primary Gain:
+// Input:
+//   * Spin: Adjust primary output up/down
+//   * Press: reset primary output
+// Output: gain
+MiniMixxx.EncoderModeMainGain = function (parent, channel, idx) {
+    MiniMixxx.Mode.call(this, parent, "MAINGAIN", channel, idx);
+    this.color = MiniMixxx.MainGainColor;
+
+    engine.connectControl("[Master]", "gain", MiniMixxx.bind(MiniMixxx.EncoderModeMainGain.prototype.gainIndicator, this));
+}
+MiniMixxx.EncoderModeMainGain.prototype.handleSpin = function (velo) {
+    engine.setValue("[Master]", "gain", engine.getValue("[Master]", "gain") + .02 *velo);
+}
+MiniMixxx.EncoderModeMainGain.prototype.handlePress = function (value) {
+    if (value === 0) {
+        return;
+    }
+    engine.setValue("[Master]", "gain", 1.0);
+}
+MiniMixxx.EncoderModeMainGain.prototype.gainIndicator = function (value, _group, _control) {
+    if (this !== this.parent.activeMode) {
+        return;
+    }
+
+    midi.sendShortMsg(0xBF, this.idx, this.color);
+    midi.sendShortMsg(0xB0, this.idx, script.absoluteNonLinInverse(value, 0, 1.0, 4.0));
+}
+MiniMixxx.EncoderModeMainGain.prototype.setLights = function () {
+    midi.sendShortMsg(0x90, this.idx, 0x00);
+    this.gainIndicator(engine.getValue("[Master]", "gain"));
+}
+
+// Headphone Gain:
+// Input:
+//   * Spin: Adjust headphone output up/down
+//   * Press: reset headphone output
+// Output: gain
+MiniMixxx.EncoderModeHeadGain = function (parent, channel, idx) {
+    MiniMixxx.Mode.call(this, parent, "HEADGAIN", channel, idx);
+    this.color = MiniMixxx.MainGainColor;
+
+    engine.connectControl("[Master]", "headGain", MiniMixxx.bind(MiniMixxx.EncoderModeHeadGain.prototype.gainIndicator, this));
+}
+MiniMixxx.EncoderModeHeadGain.prototype.handleSpin = function (velo) {
+    engine.setValue("[Master]", "headGain", engine.getValue("[Master]", "headGain") + .02 *velo);
+}
+MiniMixxx.EncoderModeHeadGain.prototype.handlePress = function (value) {
+    if (value === 0) {
+        return;
+    }
+    engine.setValue("[Master]", "headGain", 1.0);
+}
+MiniMixxx.EncoderModeHeadGain.prototype.gainIndicator = function (value, _group, _control) {
+    if (this !== this.parent.activeMode) {
+        return;
+    }
+
+    midi.sendShortMsg(0xBF, this.idx, this.color);
+    midi.sendShortMsg(0xB0, this.idx, script.absoluteNonLinInverse(value, 0, 1.0, 4.0));
+}
+MiniMixxx.EncoderModeHeadGain.prototype.setLights = function () {
+    midi.sendShortMsg(0x90, this.idx, 0x00);
+    this.gainIndicator(engine.getValue("[Master]", "headGain"));
+}
+
+// Balance:
+// Input:
+//   * Spin: Adjust balance
+//   * Press: reset balance
+// Output: value
+MiniMixxx.EncoderModeBalance = function (parent, channel, idx) {
+    MiniMixxx.Mode.call(this, parent, "BALANCE", channel, idx);
+    this.color = MiniMixxx.MainGainColor;
+
+    engine.connectControl("[Master]", "balance", MiniMixxx.bind(MiniMixxx.EncoderModeBalance.prototype.balIndicator, this));
+}
+MiniMixxx.EncoderModeBalance.prototype.handleSpin = function (velo) {
+    engine.setValue("[Master]", "balance", engine.getValue("[Master]", "balance") + .01 * velo);
+}
+MiniMixxx.EncoderModeBalance.prototype.handlePress = function (value) {
+    if (value === 0) {
+        return;
+    }
+    engine.setValue("[Master]", "balance", 0.0);
+}
+MiniMixxx.EncoderModeBalance.prototype.balIndicator = function (value, _group, _control) {
+    if (this !== this.parent.activeMode) {
+        return;
+    }
+
+    midi.sendShortMsg(0xBF, this.idx, this.color);
+    midi.sendShortMsg(0xB0, this.idx, (value + 1.0) * 64.0 - 1.0);
+}
+MiniMixxx.EncoderModeBalance.prototype.setLights = function () {
+    this.balIndicator(engine.getValue("[Master]", "balance"));
+    midi.sendShortMsg(0x90, this.idx, this.color);
+}
+
+// Headphone Mix:
+// Input:
+//   * Spin: Adjust headphone mix
+//   * Press: reset headphone mix
+// Output: value
+MiniMixxx.EncoderModeHeadMix = function (parent, channel, idx) {
+    MiniMixxx.Mode.call(this, parent, "HEADMIX", channel, idx);
+    this.color = MiniMixxx.MainGainColor;
+
+    engine.connectControl("[Master]", "headMix", MiniMixxx.bind(MiniMixxx.EncoderModeHeadMix.prototype.mixIndicator, this));
+}
+MiniMixxx.EncoderModeHeadMix.prototype.handleSpin = function (velo) {
+    engine.setValue("[Master]", "headMix", engine.getValue("[Master]", "headMix") + .01 * velo);
+}
+MiniMixxx.EncoderModeHeadMix.prototype.handlePress = function (value) {
+    if (value === 0) {
+        return;
+    }
+    engine.setValue("[Master]", "headMix", 0.0);
+}
+MiniMixxx.EncoderModeHeadMix.prototype.mixIndicator = function (value, _group, _control) {
+    if (this !== this.parent.activeMode) {
+        return;
+    }
+
+    midi.sendShortMsg(0xBF, this.idx, this.color);
+    midi.sendShortMsg(0xB0, this.idx, (value + 1.0) * 64.0 - 1.0);
+}
+MiniMixxx.EncoderModeHeadMix.prototype.setLights = function () {
+    this.mixIndicator(engine.getValue("[Master]", "headMix"));
+    midi.sendShortMsg(0x90, this.idx, this.color);
+}
+
 // Button represents a single physical button and contains all of the mode objects that
 // drive its behavior.
 MiniMixxx.Button = function (channel, idx, layerConfig) {
@@ -558,8 +700,9 @@ MiniMixxx.Button = function (channel, idx, layerConfig) {
         } else if (mode === "SAMPLERLAYER-HOTCUE2LAYER") {
             this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0, MiniMixxx.SamplerColor]);
             this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
-        } else if (mode === "LIBRARYLAYER") {
+        } else if (mode === "LIBRARYLAYER-MAINGAINLAYER") {
             this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0, MiniMixxx.LibraryColor]);
+            this.buttons[mode].addShiftedButton(this, "MAINGAINLAYER", "", idx, [0, MiniMixxx.MainGainColor]);
         } else if (mode === "FXLAYER-HOTCUE1LAYER") {
             this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "FXLAYER", "", idx, [0, MiniMixxx.FXColor]);
             this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
@@ -576,6 +719,9 @@ MiniMixxx.Button.prototype.activateLayer = function (layerName) {
         var button = this.buttons[name];
         if (button instanceof MiniMixxx.ButtonModeLayer) {
             button.setActive(button.modeName === layerName);
+        }
+        if (button.shiftedButton instanceof MiniMixxx.ButtonModeLayer) {
+            button.shiftedButton.setActive(button.shiftedButton.modeName === layerName);
         }
     }
     var mode = this.layers[layerName];
@@ -872,24 +1018,28 @@ MiniMixxx.Controller = function () {
             "LOOPLAYER": "LOOP",
             "LIBRARYLAYER": "LIBRARYFOCUS",
             "FXLAYER": "EFFECT-1",
+            "MAINGAINLAYER": "BALANCE",
         }),
         0x01: new MiniMixxx.Encoder("[Channel1]", 1, {
             "NONE": "GAIN",
             "LOOPLAYER": "BEATJUMP",
             "LIBRARYLAYER": "LIBRARY",
             "FXLAYER": "EFFECT-2",
+            "MAINGAINLAYER": "MAINGAIN",
         }),
         0x02: new MiniMixxx.Encoder("[Channel2]", 2, {
             "NONE": "GAIN",
             "LOOPLAYER": "LOOP",
             "LIBRARYLAYER": "LIBRARY",
             "FXLAYER": "EFFECT-3",
+            "MAINGAINLAYER": "HEADGAIN",
         }),
         0x03: new MiniMixxx.Encoder("[Channel2]", 3, {
             "NONE": "JOG",
             "LOOPLAYER": "BEATJUMP",
             "LIBRARYLAYER": "LIBRARYFOCUS",
             "FXLAYER": "EFFECT-SUPER",
+            "MAINGAINLAYER": "HEADMIX",
         })
     };
 
@@ -954,7 +1104,7 @@ MiniMixxx.Controller = function () {
             "NONE": "SAMPLERLAYER-HOTCUE2LAYER"
         }),
         0x12: new MiniMixxx.Button("", 0x12, {
-            "NONE": "LIBRARYLAYER",
+            "NONE": "LIBRARYLAYER-MAINGAINLAYER",
         }),
         0x13: new MiniMixxx.Button("", 0x13, {
             "NONE": "SHIFT"
