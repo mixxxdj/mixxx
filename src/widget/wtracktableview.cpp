@@ -755,14 +755,19 @@ TrackModel* WTrackTableView::getTrackModel() const {
 }
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Return) {
-        // It is not a good idea if 'key_return'
-        // causes a track to load since we allow in-line editing
-        // of table items in general
-        return;
-    } else {
-        QTableView::keyPressEvent(event);
+    // Ctrl+Return opens track properties dialog.
+    // Ignore it if any cell editor is open.
+    // Note: the shortcut display string needs to be set in WTrackMenu accordingly.
+    if (event->key() == Qt::Key_Return &&
+            event->modifiers() & Qt::ControlModifier &&
+            state() != QTableView::EditingState) {
+        QModelIndexList indices = selectionModel()->selectedRows();
+        if (indices.length() == 1) {
+            m_pTrackMenu->loadTrackModelIndices(indices);
+            m_pTrackMenu->slotShowDlgTrackInfo();
+        }
     }
+    QTableView::keyPressEvent(event);
 }
 
 void WTrackTableView::loadSelectedTrack() {
