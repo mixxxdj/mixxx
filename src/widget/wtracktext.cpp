@@ -31,7 +31,7 @@ WTrackText::WTrackText(QWidget* pParent,
           m_group(group),
           m_pConfig(pConfig),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
+                  this, pConfig, nullptr, pLibrary, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 

@@ -337,6 +337,7 @@ void Library::bindLibraryWidget(
             pLibraryWidget->getTrackTableBackgroundColorOpacity(),
             true);
     pTrackTableView->installEventFilter(pKeyboard);
+    pTrackTableView->setKeyboardConfig(pKeyboard->getKeyboardConfig());
     connect(this,
             &Library::showTrackModel,
             pTrackTableView,

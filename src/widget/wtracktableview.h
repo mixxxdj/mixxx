@@ -54,6 +54,7 @@ class WTrackTableView : public WLibraryTableView {
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
+    void setKeyboardConfig(const ConfigObject<ConfigValueKbd>* kbdConfig);
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
@@ -94,6 +95,7 @@ class WTrackTableView : public WLibraryTableView {
     void initTrackMenu();
 
     const UserSettingsPointer m_pConfig;
+    const ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     Library* const m_pLibrary;
 
     // Context menu container

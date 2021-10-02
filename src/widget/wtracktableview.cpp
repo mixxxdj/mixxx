@@ -53,6 +53,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
                   pConfig,
                   kVScrollBarPosConfigKey),
           m_pConfig(pConfig),
+          m_pKbdConfig(nullptr),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
           m_pFocusBorderColor(kDefaultFocusBorderColor),
@@ -331,6 +332,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
     initTrackMenu();
 }
 
+void WTrackTableView::setKeyboardConfig(const ConfigObject<ConfigValueKbd>* kbdConfig) {
+    m_pKbdConfig = kbdConfig;
+}
+
 void WTrackTableView::initTrackMenu() {
     auto* trackModel = getTrackModel();
     DEBUG_ASSERT(trackModel);
@@ -341,6 +346,7 @@ void WTrackTableView::initTrackMenu() {
 
     m_pTrackMenu = make_parented<WTrackMenu>(this,
             m_pConfig,
+            m_pKbdConfig,
             m_pLibrary,
             WTrackMenu::Feature::All,
             trackModel);

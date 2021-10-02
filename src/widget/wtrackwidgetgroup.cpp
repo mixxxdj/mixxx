@@ -37,7 +37,7 @@ WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
           m_pConfig(pConfig),
           m_trackColorAlpha(kDefaultTrackColorAlpha),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
+                  this, pConfig, nullptr, pLibrary, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 
