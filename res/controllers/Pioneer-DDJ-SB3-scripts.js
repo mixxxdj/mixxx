@@ -335,14 +335,7 @@ PioneerDDJSB3.Deck = function(deckNumber) {
             this.inKey = "pregain";
             this.disconnect();
             this.connect();
-        },
-        shift: function() {
-            var focusedEffect = engine.getValue("[EffectRack1_EffectUnit" + effectUnitNumber + "]", "focused_effect");
-            this.group = "[EffectRack1_EffectUnit" + effectUnitNumber + "_Effect" + focusedEffect + "]";
-            this.inKey = "parameter1";
-            this.disconnect();
-            this.connect();
-        },
+        }
     });
 
     this.eqKnob = [];
@@ -354,14 +347,7 @@ PioneerDDJSB3.Deck = function(deckNumber) {
                 this.inKey = "parameter" + this.number;
                 this.disconnect();
                 this.connect();
-            },
-            shift: function() {
-                var focusedEffect = engine.getValue("[EffectRack1_EffectUnit" + effectUnitNumber + "]", "focused_effect");
-                this.group = "[EffectRack1_EffectUnit" + effectUnitNumber + "_Effect" + focusedEffect + "]";
-                this.inKey = "parameter" + (5 - this.number);
-                this.disconnect();
-                this.connect();
-            },
+            }
         });
     }
 
