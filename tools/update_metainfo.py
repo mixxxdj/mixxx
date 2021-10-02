@@ -46,6 +46,13 @@ def parse_changelog(content):
             new_tag = soup.new_tag("p")
             new_tag.string = tag.get_text()
             tag.replace_with(new_tag)
+
+        # Although the `<code>` tag is theoretically supported, it apparently
+        # leads to parser errors when using `appstream-util validate-relax` (as
+        # of version 0.7.18).
+        for tag in soup.find_all("code"):
+            tag.replace_with(tag.get_text())
+
         desc = soup.new_tag("description")
         desc.extend(soup.contents)
 

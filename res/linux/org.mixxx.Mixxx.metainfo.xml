@@ -260,13 +260,9 @@
  <ul>
   <li>
    It is no longer necessary to manually copy the udev rule file in packaging scripts. Now pkg-config is used to determine the udevdir used to install the rules file in the CMake install step when CMAKE_INSTALL_PREFIX is
-   <code>
-    /
-   </code>
+   /
    or
-   <code>
-    /usr
-   </code>
+   /usr
    .
    #4126
   </li>
@@ -553,9 +549,7 @@
  <ul>
   <li>
    Add support for searching for empty fields (for example
-   <code>
-    crate:""
-   </code>
+   crate:""
    )
    lp:1788086
   </li>
@@ -794,26 +788,18 @@
  <ul>
   <li>
    Add CMake build system with
-   <code>
-    ccache
-   </code>
+   ccache
    and
-   <code>
-    sccache
-   </code>
+   sccache
    support for faster compilation times and remove SCons
    #2280
    #3618
   </li>
   <li>
    Make Mixxx compile even though
-   <code>
-    QT_NO_OPENGL
-   </code>
+   QT_NO_OPENGL
    or
-   <code>
-    QT_OPENGL_ES_2
-   </code>
+   QT_OPENGL_ES_2
    is defined (fixes build on Raspberry Pi)
    lp:1863440
    #2504
@@ -845,9 +831,7 @@
   </li>
   <li>
    Derive Mixxx version from
-   <code>
-    git describe
-   </code>
+   git describe
    #3824
    #3841
    #3848
