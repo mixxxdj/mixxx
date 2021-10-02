@@ -349,7 +349,7 @@ PioneerDDJSB3.Deck = function(deckNumber) {
     if (deckNumber > 2) {
         effectUnitNumber -= 2;
     }
-    
+
     // The Mixxx UI call this Gain, but on the controller the knob is labeled TRIM
     this.gainKnob = new components.Pot({
         unshift: function() {
