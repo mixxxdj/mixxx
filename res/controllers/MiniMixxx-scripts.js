@@ -11,6 +11,17 @@
 
 var MiniMixxx = {};
 
+MiniMixxx.FXColor = 61;           // Cyan
+MiniMixxx.LoopColor = 46;         // Green
+MiniMixxx.LibraryColor = 104;     // Purple
+MiniMixxx.LibraryFocusColor = 97; // More Purple
+MiniMixxx.GainColor = 96;         // Pale Blue
+MiniMixxx.JogColor = 13;          // Orange
+MiniMixxx.PeakColor = 1;          // Red
+MiniMixxx.HotcueColor = 20;       // Light Orange
+MiniMixxx.UnsetSamplerColor = 82; // Blue
+MiniMixxx.SamplerColor = 70;      // Light Blue
+
 // Set to true to output debug messages and debug light outputs.
 MiniMixxx.DebugMode = false;
 
@@ -92,8 +103,8 @@ MiniMixxx.EncoderModeJog = function (parent, channel, idx) {
     this.positionUpdate = false;
     this.curPosition = 0;
     this.trackDurationSec = 0;
-    this.baseColor = 13;
-    this.loopColor = 46;
+    this.baseColor = MiniMixxx.JogColor;
+    this.loopColor = MiniMixxx.LoopColor;
     this.color = this.baseColor;
 
     engine.connectControl(this.channel, "track_loaded", MiniMixxx.bind(MiniMixxx.EncoderModeJog.prototype.trackLoadedHandler, this));
@@ -202,7 +213,7 @@ MiniMixxx.EncoderModeJog.prototype.setLights = function () {
 MiniMixxx.EncoderModeGain = function (parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "GAIN", channel, idx);
 
-    this.color = 0x60;
+    this.color = MiniMixxx.GainColor;
     this.idleTimer = 0;
     this.showGain = false;
     engine.connectControl(this.channel, "pregain", MiniMixxx.bind(MiniMixxx.EncoderModeGain.prototype.pregainIndicator, this));
@@ -225,7 +236,7 @@ MiniMixxx.EncoderModeGain.prototype.vuIndicator = function (value, _group, _cont
     }
 
     var color = MiniMixxx.vuMeterColor(value);
-    color = engine.getValue(this.channel, "PeakIndicator") > 0 ? 0x01 : color;
+    color = engine.getValue(this.channel, "PeakIndicator") > 0 ? MiniMixxx.PeakColor : color;
     var midiValue = value * 127.0;
     midi.sendShortMsg(0xBF, this.idx, color);
     midi.sendShortMsg(0xB0, this.idx, midiValue);
@@ -273,7 +284,7 @@ MiniMixxx.EncoderModeGain.prototype.setLights = function () {
 MiniMixxx.EncoderModeLoop = function (parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "LOOP", channel, idx);
 
-    this.color = 46;
+    this.color = MiniMixxx.LoopColor;
     engine.connectControl(this.channel, "beatloop_size", MiniMixxx.bind(MiniMixxx.EncoderModeLoop.prototype.spinIndicator, this));
     engine.connectControl(this.channel, "loop_enabled", MiniMixxx.bind(MiniMixxx.EncoderModeLoop.prototype.switchIndicator, this));
 }
@@ -342,7 +353,7 @@ MiniMixxx.EncoderModeLoop.prototype.setLights = function () {
 MiniMixxx.EncoderModeBeatJump = function (parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "BEATJUMP", channel, idx);
 
-    this.color = 46;
+    this.color = MiniMixxx.LoopColor;
     engine.connectControl(this.channel, "beatjump_size", MiniMixxx.bind(MiniMixxx.EncoderModeBeatJump.prototype.spinIndicator, this));
 }
 MiniMixxx.EncoderModeBeatJump.prototype.handleSpin = function (velo) {
@@ -359,7 +370,7 @@ MiniMixxx.EncoderModeBeatJump.prototype.handleSpin = function (velo) {
         } else {
             beatjumpSize /= 2;
         }
-        engine.setValue(this.channel, "beatjump_size", Math.max(Math.min(beatjumpSize, 512), 1.0/32.0));
+        engine.setValue(this.channel, "beatjump_size", Math.max(Math.min(beatjumpSize, 512), 1.0 / 32.0));
     }
 }
 MiniMixxx.EncoderModeBeatJump.prototype.handlePress = function (value) {
@@ -401,7 +412,7 @@ MiniMixxx.EncoderModeBeatJump.prototype.setLights = function () {
 // Output: ???
 MiniMixxx.EncoderModeLibrary = function (parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "LIBRARY", channel, idx);
-    this.color = 104;
+    this.color = MiniMixxx.LibraryColor;
 }
 MiniMixxx.EncoderModeLibrary.prototype.handleSpin = function (velo) {
     if (MiniMixxx.kontrol.shiftActive()) {
@@ -432,7 +443,7 @@ MiniMixxx.EncoderModeLibrary.prototype.setLights = function () {
 // Output: ???
 MiniMixxx.EncoderModeLibraryFocus = function (parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "LIBRARYFOCUS", channel, idx);
-    this.color = 97;
+    this.color = MiniMixxx.LibraryFocusColor;
 }
 MiniMixxx.EncoderModeLibraryFocus.prototype.handleSpin = function (velo) {
     if (MiniMixxx.kontrol.shiftActive()) {
@@ -473,7 +484,7 @@ MiniMixxx.EncoderModeLibraryFocus.prototype.setLights = function () {
 MiniMixxx.EncoderModeFX = function (parent, channel, idx, effectNum) {
     MiniMixxx.Mode.call(this, parent, "FX", channel, idx);
 
-    this.color = 61;
+    this.color = MiniMixxx.FXColor;
     if (effectNum === "SUPER") {
         this.effectGroup = "[EffectRack1_EffectUnit1]";
         this.effectKey = "super1";
@@ -543,15 +554,15 @@ MiniMixxx.Button = function (channel, idx, layerConfig) {
             // We only use FX 1 for now.
             this.buttons[mode] = new MiniMixxx.ButtonModeFX(this, channel, idx);
         } else if (mode === "LOOPLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0, 46]);
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0, MiniMixxx.LoopColor]);
         } else if (mode === "SAMPLERLAYER-HOTCUE2LAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0, 21]);
-            this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", "", idx, [0, 21]);
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0, MiniMixxx.SamplerColor]);
+            this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
         } else if (mode === "LIBRARYLAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0, 104]);
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0, MiniMixxx.LibraryColor]);
         } else if (mode === "FXLAYER-HOTCUE1LAYER") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "FXLAYER", "", idx, [0, 61]);
-            this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", "", idx, [0, 21]);
+            this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "FXLAYER", "", idx, [0, MiniMixxx.FXColor]);
+            this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
         } else {
             print("Ignoring unknown button mode: " + mode);
             continue;
@@ -761,7 +772,7 @@ MiniMixxx.ButtonModeLayer.prototype.indicator = function (value, _group, _contro
         return;
     }
     if (this.shiftedButton && this.shiftedButton.layerActive) {
-        MiniMixxx.lightButton(this.idx, true, this.colors);
+        MiniMixxx.lightButton(this.idx, true, this.shiftedButton.colors);
         return;
     }
     MiniMixxx.lightButton(this.idx, value, this.colors);
@@ -773,7 +784,7 @@ MiniMixxx.ButtonModeLayer.prototype.setLights = function () {
 // ButtonModeSampler is the button mode for playing individual sampler decks.
 // Shift+Press to eject the sample.
 MiniMixxx.ButtonModeSampler = function (parent, channel, idx, samplerNum) {
-    MiniMixxx.ButtonMode.call(this, parent, "SAMPLER-" + samplerNum, channel, idx, [21, 22]);
+    MiniMixxx.ButtonMode.call(this, parent, "SAMPLER-" + samplerNum, channel, idx, [MiniMixxx.UnsetSamplerColor, MiniMixxx.SamplerColor]);
     this.samplerGroup = "[Sampler" + samplerNum + "]";
     engine.connectControl(this.samplerGroup, "track_loaded", MiniMixxx.bind(MiniMixxx.ButtonModeSampler.prototype.indicator, this));
 }
@@ -802,7 +813,7 @@ MiniMixxx.ButtonModeSampler.prototype.setLights = function () {
 // ButtonModeHotcue is the button mode for playing individual sampler decks.
 // Shift+Press to eject the sample.
 MiniMixxx.ButtonModeHotcue = function (parent, channel, idx, hotcueNum) {
-    MiniMixxx.ButtonMode.call(this, parent, "HOTCUE-" + hotcueNum, channel, idx, [0x7f, 22]);
+    MiniMixxx.ButtonMode.call(this, parent, "HOTCUE-" + hotcueNum, channel, idx, [0x7f, MiniMixxx.HotcueColor]);
     this.hotcueNum = hotcueNum;
     this.keyPrefix = "hotcue_" + hotcueNum + "_";
     engine.connectControl(this.channel, this.keyPrefix + "enabled", MiniMixxx.bind(MiniMixxx.ButtonModeHotcue.prototype.indicator, this));
@@ -831,13 +842,13 @@ MiniMixxx.ButtonModeHotcue.prototype.indicator = function (value, _group, _contr
     midi.sendShortMsg(0x90, this.idx, midiColor);
 }
 MiniMixxx.ButtonModeHotcue.prototype.setLights = function () {
-    this.indicator(engine.getValue(this.channel, this.keyPrefix+"enabled"));
+    this.indicator(engine.getValue(this.channel, this.keyPrefix + "enabled"));
 }
 
 // ButtonModeFX enables the FX unit for this deck.
 MiniMixxx.ButtonModeFX = function (parent, channel, idx) {
-    MiniMixxx.ButtonMode.call(this, parent, "FX", channel, idx, [0, 61]);
-    engine.connectControl("[EffectRack1_EffectUnit1]", "group_"+this.channel+"_enable", MiniMixxx.bind(MiniMixxx.ButtonModeFX.prototype.indicator, this));
+    MiniMixxx.ButtonMode.call(this, parent, "FX", channel, idx, [0, MiniMixxx.FXColor]);
+    engine.connectControl("[EffectRack1_EffectUnit1]", "group_" + this.channel + "_enable", MiniMixxx.bind(MiniMixxx.ButtonModeFX.prototype.indicator, this));
 }
 MiniMixxx.ButtonModeFX.prototype.handlePress = function (value) {
     if (value > 0) {
@@ -851,7 +862,7 @@ MiniMixxx.ButtonModeFX.prototype.indicator = function (value, _group, _control) 
     MiniMixxx.lightButton(this.idx, value, this.colors);
 }
 MiniMixxx.ButtonModeFX.prototype.setLights = function () {
-    this.indicator(engine.getValue("[EffectRack1_EffectUnit1]", "group_"+this.channel+"_enable"));
+    this.indicator(engine.getValue("[EffectRack1_EffectUnit1]", "group_" + this.channel + "_enable"));
 }
 
 MiniMixxx.Controller = function () {
@@ -1204,8 +1215,8 @@ MiniMixxx.pitchSliderHandler = function (_midino, _control, value, _status, grou
 
 MiniMixxx.vuMeterColor = function (value) {
     value = Math.max(Math.min(value, 1.0), 0.0);
-    // Color: 85 to 13, multiples of 3. That's 24 levels.
-    return Math.round((1.0 - value) * 24.0) * 3 + 13;
+    // Color: 85 to 22, multiples of 3. That's 21 levels.
+    return Math.round((1.0 - value) * 21.0) * 3 + 22;
 }
 
 MiniMixxx.debugLights = function () {
