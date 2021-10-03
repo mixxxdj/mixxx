@@ -6,7 +6,6 @@
 #include <QThread>
 #include <QWindow>
 #include <QtDebug>
-
 #include <cstring>
 
 #include "errordialoghandler.h"
@@ -48,7 +47,7 @@ void handleInputMethodVisibleChanged() {
         if (std::strcmp(w->metaObject()->className(), "QtVirtualKeyboard::InputView") == 0) {
             if (QObject* keyboard = w->findChild<QObject*>("keyboard")) {
                 QRect r = w->geometry();
-                r.moveTop(keyboard->property("y").toDouble());
+                r.moveTop(keyboard->property("y").toInt());
                 w->setMask(r);
                 return;
             }
