@@ -21,7 +21,8 @@ MiniMixxx.PeakColor = 1;          // Red
 MiniMixxx.HotcueColor = 20;       // Light Orange
 MiniMixxx.UnsetSamplerColor = 82; // Blue
 MiniMixxx.SamplerColor = 70;      // Light Blue
-MiniMixxx.MainGainColor = 50;     // Kind of a light green
+MiniMixxx.MainOutColor = 50;      // Kind of a light green
+MiniMixxx.HeadOutColor = 26;      // Kind of a light yellow
 
 // Set to true to output debug messages and debug light outputs.
 MiniMixxx.DebugMode = false;
@@ -210,7 +211,10 @@ MiniMixxx.EncoderModeJog.prototype.setLights = function() {
 };
 
 // Gain Mode Encoder:
-// Input:  spinning adjusts gain, pressing toggles pfl.
+// Input:
+//  * Spin: adjust gain
+//  * Press: toggle pfl.
+//  * Shift + Press: reset gain adjust
 // Output:
 // * When idle, displays vu meters
 // * when adjusting gain, shows gain.
@@ -231,7 +235,12 @@ MiniMixxx.EncoderModeGain.prototype.handleSpin = function(velo) {
     this.pregainIndicator(engine.getValue(this.channel, "pregain"));
 };
 MiniMixxx.EncoderModeGain.prototype.handlePress = function(value) {
-    if (value > 0) {
+    if (value === 0) {
+        return;
+    }
+    if (MiniMixxx.kontrol.shiftActive()) {
+        engine.setValue(this.channel, "pregain", 1.0);
+    } else {
         script.toggleControl(this.channel, "pfl");
     }
 };
@@ -285,7 +294,9 @@ MiniMixxx.EncoderModeGain.prototype.setLights = function() {
 // * Shift + Spin: move loop
 // * Press: activate if no loop, reloop toggle if there is
 // * Shift + Press: always reloop toggle.
-// Output: TODO: display loop size, and loop status.
+// Output:
+// * Ring: display loop size
+// * switch: loop status.
 MiniMixxx.EncoderModeLoop = function(parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "LOOP", channel, idx);
 
@@ -354,7 +365,9 @@ MiniMixxx.EncoderModeLoop.prototype.setLights = function() {
 //   * Shift + Spin: Jump forward / backward
 //   * Press: beatloop roll
 //   * Shift + Press: reloop and stop
-// Output: on if mode is active (I guess?).
+// Output:
+//   * Ring: beatjump size
+//   * Switch: on if mode is active.
 MiniMixxx.EncoderModeBeatJump = function(parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "BEATJUMP", channel, idx);
 
@@ -414,7 +427,7 @@ MiniMixxx.EncoderModeBeatJump.prototype.setLights = function() {
 //   * Shift + Spin: scroll horizontal
 //   * Press: load track
 //   * Shift + Press: eject track
-// Output: ???
+// Output: All on.
 MiniMixxx.EncoderModeLibrary = function(parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "LIBRARY", channel, idx);
     this.color = MiniMixxx.LibraryColor;
@@ -443,9 +456,9 @@ MiniMixxx.EncoderModeLibrary.prototype.setLights = function() {
 // Input:
 //   * Spin: move focus forward / back
 //   * Shift + Spin: scroll through track
-//   * Press: ?
-//   * Shift + Press: search history select?
-// Output: ???
+//   * Press: Load selected track
+//   * Shift + Press: search history select
+// Output: Switch on.
 MiniMixxx.EncoderModeLibraryFocus = function(parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "LIBRARYFOCUS", channel, idx);
     this.color = MiniMixxx.LibraryFocusColor;
@@ -535,7 +548,7 @@ MiniMixxx.EncoderModeFX.prototype.setLights = function() {
 // Output: gain
 MiniMixxx.EncoderModeMainGain = function(parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "MAINGAIN", channel, idx);
-    this.color = MiniMixxx.MainGainColor;
+    this.color = MiniMixxx.MainOutColor;
 
     engine.connectControl("[Master]", "gain", MiniMixxx.bind(MiniMixxx.EncoderModeMainGain.prototype.gainIndicator, this));
 };
@@ -557,7 +570,7 @@ MiniMixxx.EncoderModeMainGain.prototype.gainIndicator = function(value, _group, 
     midi.sendShortMsg(0xB0, this.idx, script.absoluteNonLinInverse(value, 0, 1.0, 4.0));
 };
 MiniMixxx.EncoderModeMainGain.prototype.setLights = function() {
-    midi.sendShortMsg(0x90, this.idx, 0x00);
+    midi.sendShortMsg(0x90, this.idx, this.color);
     this.gainIndicator(engine.getValue("[Master]", "gain"));
 };
 
@@ -568,7 +581,7 @@ MiniMixxx.EncoderModeMainGain.prototype.setLights = function() {
 // Output: gain
 MiniMixxx.EncoderModeHeadGain = function(parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "HEADGAIN", channel, idx);
-    this.color = MiniMixxx.MainGainColor;
+    this.color = MiniMixxx.HeadOutColor;
 
     engine.connectControl("[Master]", "headGain", MiniMixxx.bind(MiniMixxx.EncoderModeHeadGain.prototype.gainIndicator, this));
 };
@@ -590,7 +603,7 @@ MiniMixxx.EncoderModeHeadGain.prototype.gainIndicator = function(value, _group, 
     midi.sendShortMsg(0xB0, this.idx, script.absoluteNonLinInverse(value, 0, 1.0, 4.0));
 };
 MiniMixxx.EncoderModeHeadGain.prototype.setLights = function() {
-    midi.sendShortMsg(0x90, this.idx, 0x00);
+    midi.sendShortMsg(0x90, this.idx, this.color);
     this.gainIndicator(engine.getValue("[Master]", "headGain"));
 };
 
@@ -601,7 +614,7 @@ MiniMixxx.EncoderModeHeadGain.prototype.setLights = function() {
 // Output: value
 MiniMixxx.EncoderModeBalance = function(parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "BALANCE", channel, idx);
-    this.color = MiniMixxx.MainGainColor;
+    this.color = MiniMixxx.MainOutColor;
 
     engine.connectControl("[Master]", "balance", MiniMixxx.bind(MiniMixxx.EncoderModeBalance.prototype.balIndicator, this));
 };
@@ -634,7 +647,7 @@ MiniMixxx.EncoderModeBalance.prototype.setLights = function() {
 // Output: value
 MiniMixxx.EncoderModeHeadMix = function(parent, channel, idx) {
     MiniMixxx.Mode.call(this, parent, "HEADMIX", channel, idx);
-    this.color = MiniMixxx.MainGainColor;
+    this.color = MiniMixxx.HeadOutColor;
 
     engine.connectControl("[Master]", "headMix", MiniMixxx.bind(MiniMixxx.EncoderModeHeadMix.prototype.mixIndicator, this));
 };
@@ -699,7 +712,7 @@ MiniMixxx.Button = function(channel, idx, layerConfig) {
             this.layers[shiftedButton.layerName] = shiftedButton;
         } else if (mode === "LIBRARYLAYER-MAINGAINLAYER") {
             this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0, MiniMixxx.LibraryColor]);
-            this.buttons[mode].addShiftedButton(this, "MAINGAINLAYER", "", idx, [0, MiniMixxx.MainGainColor]);
+            this.buttons[mode].addShiftedButton(this, "MAINGAINLAYER", "", idx, [0, MiniMixxx.MainOutColor]);
             const shiftedButton = this.buttons[mode].shiftedButton;
             this.layers[shiftedButton.layerName] = shiftedButton;
         } else if (mode === "FXLAYER-HOTCUE1LAYER") {
@@ -885,6 +898,7 @@ MiniMixxx.ButtonModeShift.prototype.setLights = function() {
 
 // ButtonModeLayer activates the layer with the given name.
 // channel can be empty if it should apply to both channels.
+// These buttons can also have a shift function to select a different layer.
 MiniMixxx.ButtonModeLayer = function(parent, layerName, channel, idx, colors) {
     MiniMixxx.ButtonMode.call(this, parent, layerName, channel, idx, colors);
     // A ButtonModeLayer can contain a child of itself that is activated when Shift is held.
