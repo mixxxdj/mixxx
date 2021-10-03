@@ -21,6 +21,7 @@
 #include "track/track.h"
 #include "track/trackref.h"
 #include "util/assert.h"
+#include "util/defs.h"
 #include "util/dnd.h"
 #include "util/time.h"
 #include "widget/wtrackmenu.h"
@@ -757,9 +758,9 @@ TrackModel* WTrackTableView::getTrackModel() const {
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     // Ctrl+Return opens track properties dialog.
     // Ignore it if any cell editor is open.
-    // Note: the shortcut display string needs to be set in WTrackMenu accordingly.
-    if (event->key() == Qt::Key_Return &&
-            event->modifiers() & Qt::ControlModifier &&
+    // Note: the shortcut is displayed in the track context menu
+    if (event->key() == kPropertiesShortcutKey &&
+            (event->modifiers() & kPropertiesShortcutModifier) &&
             state() != QTableView::EditingState) {
         QModelIndexList indices = selectionModel()->selectedRows();
         if (indices.length() == 1) {
