@@ -76,15 +76,15 @@ MiniMixxx.Encoder = function (channel, idx, layerConfig) {
         // // In FX mode, press: toggles
         // "FX": new MiniMixxx.EncoderMode("", channel, idx),
     }
-    this.activateLayer("NONE");
+    this.activateLayer("NONE", "");
 }
 
-MiniMixxx.Encoder.prototype.activateLayer = function (layerName) {
+MiniMixxx.Encoder.prototype.activateLayer = function (layerName, channel) {
     // Only the active mode object should drive lights.
     var mode = this.layers[layerName];
-    if (!mode) {
-        print("encoder mode not found for layer: " + layerName);
-        return;
+    if (!mode || (channel && this.channel !== channel)) {
+
+        mode = this.layers["NONE"];
     }
     this.activeMode = mode;
     this.activeMode.setLights();
@@ -676,6 +676,7 @@ MiniMixxx.Button = function (channel, idx, layerConfig) {
 
     for (var layerName in layerConfig) {
         mode = layerConfig[layerName];
+        print("configging " + layerName);
         if (mode === "EMPTY") {
             this.buttons[mode] = new MiniMixxx.ButtonModeEmpty(this, channel, idx);
         } else if (mode === "SYNC") {
@@ -683,11 +684,11 @@ MiniMixxx.Button = function (channel, idx, layerConfig) {
         } else if (mode === "KEYLOCK") {
             this.buttons[mode] = new MiniMixxx.ButtonModeKeylock(this, channel, idx);
         } else if (mode === "SHIFT") {
-            this.buttons[mode] = new MiniMixxx.ButtonModeShift(this, channel, idx);
+            this.buttons[mode] = new MiniMixxx.ButtonModeShift(this, "", idx);
         } else if (mode.startsWith("SAMPLER-")) {
             var splitted = mode.split("-");
             var samplerNum = splitted[1];
-            this.buttons[mode] = new MiniMixxx.ButtonModeSampler(this, channel, idx, samplerNum);
+            this.buttons[mode] = new MiniMixxx.ButtonModeSampler(this, "", idx, samplerNum);
         } else if (mode.startsWith("HOTCUE-")) {
             var splitted = mode.split("-");
             var hotcueNum = splitted[1];
@@ -700,36 +701,59 @@ MiniMixxx.Button = function (channel, idx, layerConfig) {
         } else if (mode === "SAMPLERLAYER-HOTCUE2LAYER") {
             this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0, MiniMixxx.SamplerColor]);
             this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
+            var shiftedButton = this.buttons[mode].shiftedButton;
+            this.layers[shiftedButton.layerName] = shiftedButton;
         } else if (mode === "LIBRARYLAYER-MAINGAINLAYER") {
             this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0, MiniMixxx.LibraryColor]);
             this.buttons[mode].addShiftedButton(this, "MAINGAINLAYER", "", idx, [0, MiniMixxx.MainGainColor]);
+            shiftedButton = this.buttons[mode].shiftedButton;
+            this.layers[shiftedButton.layerName] = shiftedButton;
         } else if (mode === "FXLAYER-HOTCUE1LAYER") {
             this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "FXLAYER", "", idx, [0, MiniMixxx.FXColor]);
             this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
+            shiftedButton = this.buttons[mode].shiftedButton;
+            this.layers[shiftedButton.layerName] = shiftedButton;
         } else {
             print("Ignoring unknown button mode: " + mode);
             continue;
         }
         this.layers[layerName] = this.buttons[mode];
     }
-    this.activateLayer("NONE");
+    this.activateLayer("NONE", "");
 }
-MiniMixxx.Button.prototype.activateLayer = function (layerName) {
+MiniMixxx.Button.prototype.activateLayer = function (layerName, channel) {
+    print(this.idx + " activate layer: " + layerName + " " + channel);
+    // We need to go through and update all the layer buttons that we might own.
     for (var name in this.buttons) {
         var button = this.buttons[name];
         if (button instanceof MiniMixxx.ButtonModeLayer) {
-            button.setActive(button.modeName === layerName);
+            print("found reg button");
+            // button.setActive(button.modeName === layerName && (channel === "" || button.channel === channel));
+            button.setActive(layerName, channel);
         }
         if (button.shiftedButton instanceof MiniMixxx.ButtonModeLayer) {
-            button.shiftedButton.setActive(button.shiftedButton.modeName === layerName);
+            print("found shifted button");
+            button.shiftedButton.setActive(layerName, channel);
+            // button.shiftedButton.setActive(button.shiftedButton.modeName === layerName && (channel === "" || button.shiftedButton.channel === channel));
         }
     }
+
     var mode = this.layers[layerName];
-    if (!mode) {
-        mode = this.layers["NONE"];
+    print("mode: " + mode + " askedchan " + channel);
+    if (mode) {
+        var active = (channel === "" || mode.channel === channel);
+        // if (mode instanceof MiniMixxx.ButtonModeLayer && mode.layerName === layerName) {
+        //     mode.setActive(active);
+        // }
+        if (active) {
+            this.activeMode = mode;
+        }
+        this.activeMode.setLights();
+    } else if (channel === "") {
+        this.activeMode = this.layers["NONE"];
+        this.activeMode.setLights();
     }
-    this.activeMode = mode;
-    this.activeMode.setLights();
+
 }
 
 MiniMixxx.buttonHandler = function (_midino, control, value, _status, _group) {
@@ -887,6 +911,7 @@ MiniMixxx.ButtonModeLayer = function (parent, layerName, channel, idx, colors) {
 MiniMixxx.ButtonModeLayer.prototype.addShiftedButton = function (parent, layerName, channel, idx, colors) {
     // A shifted button could hypothetically have its own shifted button but let's not go there.
     this.shiftedButton = new MiniMixxx.ButtonModeLayer(parent, layerName, channel, idx, colors);
+    print("adding shifted button... " + this.shiftedButton.modeName + " " + (this.shiftedButton instanceof MiniMixxx.ButtonModeLayer));
     this.shiftedButton.requireShift = true;
 }
 MiniMixxx.ButtonModeLayer.prototype.handlePress = function (value) {
@@ -895,36 +920,62 @@ MiniMixxx.ButtonModeLayer.prototype.handlePress = function (value) {
     // instead of activating the unshifted layer.
     if (this.shiftedButton) {
         if (MiniMixxx.kontrol.shiftActive() || this.shiftedButton.layerActive) {
+            print("handlepress for shifted button " + this.shiftedButton.modeName);
             this.shiftedButton.handlePress(value);
             return;
         }
     }
-    if (value > 0) {
-        this.layerActive = !this.layerActive;
+    if (value === 0) {
+        return;
     }
+    this.layerActive = !this.layerActive;
+    this.setLights();
     if (this.layerActive) {
+        print("ASKING FOR MODE: " + this.modeName + " " + this.channel + " (chan?)");
         MiniMixxx.kontrol.activateLayer(this.modeName, this.channel);
     } else {
+        print("ASKING FOR NONEMODE: " + this.channel + " (chan?)");
         MiniMixxx.kontrol.activateLayer("NONE", this.channel);
     }
-    this.indicator(this.layerActive);
 }
-MiniMixxx.ButtonModeLayer.prototype.setActive = function (active) {
+MiniMixxx.ButtonModeLayer.prototype.setActive = function (layerName, channel) {
+    // if it's got a channel, and so do we, no need to change if channel mismatch
+    print("setActive " + layerName + " " + channel + " mine: " + this.modeName + " " +this.channel);
+    if (channel && this.channel && this.channel !== channel) {
+        print("channel mismatch, no change: " + this.channel + " " + channel);
+        return;
+    }
+
+    // Set based on layer name match.
+
+    var active = (this.modeName === layerName);
+    print("############# " + this.modeName + " setting active: " + active);
     this.layerActive = active;
-    this.indicator(this.layerActive);
+    // this.indicator(this.layerActive);
+    this.setLights();
 }
 MiniMixxx.ButtonModeLayer.prototype.indicator = function (value, _group, _control) {
-    if (this !== this.parent.activeMode) {
-        return;
-    }
-    if (this.shiftedButton && this.shiftedButton.layerActive) {
-        MiniMixxx.lightButton(this.idx, true, this.shiftedButton.colors);
-        return;
-    }
-    MiniMixxx.lightButton(this.idx, value, this.colors);
+    // if (this !== this.parent.activeMode) {
+    //     return;
+    // }
+    // if (this.shiftedButton && this.shiftedButton.layerActive) {
+    //     MiniMixxx.lightButton(this.idx, true, this.shiftedButton.colors);
+    //     return;
+    // }
+    MiniMixxx.lightButton(this.idx, this.layerActive, this.colors);
 }
 MiniMixxx.ButtonModeLayer.prototype.setLights = function () {
-    this.indicator(this.layerActive);
+    // this.indicator(this.layerActive);
+    print(this.idx + " layer button lighting: " + this.modeName + " active? " + this.layerActive);
+
+    if (this.shiftedButton && this.shiftedButton.layerActive) {
+        print("shifted is active!!!!!!!!!!!!!!");
+        this.shiftedButton.indicator();
+        return;
+    }
+
+    // MiniMixxx.lightButton(this.idx, this.layerActive, this.colors);
+    this.indicator();
 }
 
 // ButtonModeSampler is the button mode for playing individual sampler decks.
@@ -1267,6 +1318,7 @@ MiniMixxx.Controller = function () {
     this.colorMapper = new ColorMapper(colorMap);
 
     for (var name in this.buttons) {
+        print("set lights for " + name);
         this.buttons[name].activeMode.setLights();
     }
 
@@ -1284,15 +1336,11 @@ MiniMixxx.Controller.prototype.keylockPressed = function (channel) {
 MiniMixxx.Controller.prototype.activateLayer = function (layerName, channel) {
     for (var name in this.encoders) {
         encoder = this.encoders[name];
-        if (!channel || encoder.channel === channel) {
-            encoder.activateLayer(layerName);
-        }
+        encoder.activateLayer(layerName, channel);
     }
     for (var name in this.buttons) {
         button = this.buttons[name];
-        if (!channel || button.channel === channel) {
-            button.activateLayer(layerName);
-        }
+        button.activateLayer(layerName, channel);
     }
 }
 
