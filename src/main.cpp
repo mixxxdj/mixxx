@@ -40,7 +40,7 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
     }
 }
 
-void handleIMVisibleChanged() {
+void handleInputMethodVisibleChanged() {
     if (!QGuiApplication::inputMethod()->isVisible()) {
         return;
     }
@@ -128,7 +128,7 @@ int main(int argc, char * argv[]) {
     QObject::connect(&app, &MixxxApplication::lastWindowClosed, &app, &MixxxApplication::quit);
     QObject::connect(QGuiApplication::inputMethod(),
             &QInputMethod::visibleChanged,
-            &handleIMVisibleChanged);
+            &handleInputMethodVisibleChanged);
 
     int exitCode = runMixxx(&app, args);
 
