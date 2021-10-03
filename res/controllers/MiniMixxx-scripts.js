@@ -6,7 +6,6 @@
 ///////////////////////////////////////////////////////////////////////////////////
 //
 // TODO:
-//  * Issue when activating shifted layer and shifted layer is already active.
 //
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -73,8 +72,6 @@ MiniMixxx.Encoder = function (channel, idx, layerConfig) {
             continue;
         }
         this.layers[layerName] = this.encoders[mode];
-        // // In FX mode, press: toggles
-        // "FX": new MiniMixxx.EncoderMode("", channel, idx),
     }
     this.activateLayer("NONE", "");
 }
@@ -188,7 +185,7 @@ MiniMixxx.EncoderModeJog.prototype.lightSpinny = function () {
         midiColor = MiniMixxx.vuMeterColor(engine.getValue(this.channel, "VuMeter"));
     }
 
-    // Angles between 0 and .4 and .6 and 1.0 can be mapped to the indicator.
+    // Angles between 0 and .4 and .6 and 1.0 are in the indicator so no output.
     // The others have to go on the pfl light.
     if (angle >= 0.6) {
         var midival = (angle - 0.6) * (64.0 / 0.4);
@@ -733,10 +730,13 @@ MiniMixxx.Button.prototype.activateLayer = function (layerName, channel) {
 
     var mode = this.layers[layerName];
     if (mode) {
+        // Only activate the mode if it's universal (no channel set) or the channel matches.
         if (channel === "" || mode.channel === channel) {
             this.activeMode = mode;
         }
     } else if (channel === "") {
+        // If we didn't have the desired mode, and it's universal, forcibly change to the NONE
+        // layer.
         this.activeMode = this.layers["NONE"];
     }
     this.activeMode.setLights();
@@ -1318,7 +1318,6 @@ MiniMixxx.Controller.prototype.pitchSliderHandler = function (value, group) {
             return;
         }
 
-        // var relVal;
         if (this.keylockPressed(group)) {
             relVal = 1.0 - engine.getValue(group, "pitch_adjust");
         } else {
