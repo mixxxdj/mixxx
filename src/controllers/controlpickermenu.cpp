@@ -1155,7 +1155,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Cover Art Show/Hide (Library)"),
             tr("Show/hide cover art in the library"),
             guiMenu);
-    addControl("[Master]",
+    addControl("[Library]",
             "maximize_library",
             tr("Library Maximize/Restore"),
             tr("Maximize the track library to take up all the available screen "

@@ -89,7 +89,7 @@
     <!-- Mic / Aux -->
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
     <!-- Library -->
-      <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute config_key="[Library],maximize_library">0</attribute>
       <attribute persist="true" config_key="[LateNight],max_lib_show_decks">1</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
@@ -393,7 +393,7 @@
     <!-- Some helpers to show widgets and switch layouts
         depending on the skin configuration.
         Apparently putting those here keeps i.e. the spinny
-        config when [Master],maximize_library is toggled. -->
+        config when [Library],maximize_library is toggled. -->
         <Template src="skin:/helpers/skin_helper_mic_ducking.xml"/>
         <Template src="skin:/helpers/skin_helper_spinny-cover.xml"/>
 
@@ -406,7 +406,7 @@
           <Children>
 
             <!-- regular or maximized library -->
-            <WidgetStack currentpage="[Master],maximize_library">
+            <WidgetStack currentpage="[Library],maximize_library">
               <Children>
 
                 <!-- Waveforms, Decks, Effects... /  Library
@@ -472,7 +472,7 @@
                 <!-- Decks, Effects, Samplers, Mic/Aux, Library -->
 
                 <!-- Maximized Library & mini decks only -->
-                <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+                <WidgetGroup trigger="[Library],maximize_library" on_hide_select="0">
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>

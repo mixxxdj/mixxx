@@ -403,7 +403,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <ConfigKey>[Library],maximize_library</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>

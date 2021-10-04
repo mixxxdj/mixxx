@@ -28,6 +28,7 @@
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/defs.h"
 #include "util/font.h"
 #include "util/logger.h"
 #include "util/screensaver.h"
@@ -438,6 +439,11 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pPlayerManager->loadSamplers();
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
+    m_pMaximizeLibrary = std::make_unique<ControlPushButton>(kMaximizeLibraryConfigKey);
+    m_pMaximizeLibrary->setButtonMode(ControlPushButton::TOGGLE);
+    ControlDoublePrivate::insertAlias(
+            ConfigKey("[Master]", "maximize_library"),
+            kMaximizeLibraryConfigKey);
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -612,6 +618,7 @@ void CoreServices::finalize() {
     m_pDbConnectionPool.reset(); // should drop the last reference
 
     m_pTouchShift.reset();
+    m_pMaximizeLibrary.reset();
 
     m_pControlIndicatorTimer.reset();
 

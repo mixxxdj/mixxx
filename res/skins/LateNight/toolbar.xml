@@ -11,7 +11,7 @@
         <SetVariable name="Size">80f,20f</SetVariable>
         <SetVariable name="state_0_text">BIG LIBRARY</SetVariable>
         <SetVariable name="state_1_text">BIG LIBRARY</SetVariable>
-        <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+        <SetVariable name="ConfigKey">[Library],maximize_library</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -81,7 +81,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <ConfigKey>[Library],maximize_library</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -113,7 +113,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <ConfigKey>[Library],maximize_library</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- GUI toggles with maximized library -->

@@ -128,7 +128,7 @@ Description:
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <ConfigKey>[Library],maximize_library</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -239,7 +239,7 @@ Description:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <ConfigKey>[Library],maximize_library</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>

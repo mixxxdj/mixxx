@@ -82,7 +82,7 @@ Description:
                     <Children>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],maximize_library</ConfigKey>
+                      <ConfigKey>[Library],maximize_library</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                     <Connection>
@@ -156,7 +156,7 @@ Description:
               when switching deck size -->
             <Layout>horizontal</Layout>
             <Children>
-              <WidgetStack currentpage="[Master],maximize_library">
+              <WidgetStack currentpage="[Library],maximize_library">
                 <Children>
               <!-- regular library -->
                   <WidgetStack currentpage="[Master],show_mixer" persist="true" on_hide_select="0">
@@ -198,7 +198,7 @@ Description:
                     </Children>
                   </WidgetStack>
               <!-- maximized library -->
-                  <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+                  <WidgetGroup trigger="[Library],maximize_library" on_hide_select="0">
                     <Layout>stacked</Layout>
                     <Children>
                       <!-- translucent cover when there are no decks above BIG Library-->
@@ -229,7 +229,7 @@ Description:
             <Children>
               <!-- translucent cover when Library is not maximized -->
               <Template src="skin:/helpers/skin_settings_cover.xml">
-                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+                <SetVariable name="Setting">[Library],maximize_library</SetVariable>
               </Template>
 
               <WidgetGroup>
@@ -285,7 +285,7 @@ Description:
             <Children>
               <!-- translucent cover when Library is maximized -->
               <Template src="skin:/helpers/skin_settings_cover.xml">
-                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+                <SetVariable name="Setting">[Library],maximize_library</SetVariable>
               </Template>
 
               <WidgetGroup>
@@ -367,7 +367,7 @@ Description:
             <Children>
               <!-- translucent cover when Library is maximized -->
               <Template src="skin:/helpers/skin_settings_cover.xml">
-                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+                <SetVariable name="Setting">[Library],maximize_library</SetVariable>
               </Template>
 
               <WidgetGroup>
@@ -453,7 +453,7 @@ Description:
             <Children>
               <!-- translucent cover when Library is maximized -->
               <Template src="skin:/helpers/skin_settings_cover.xml">
-                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+                <SetVariable name="Setting">[Library],maximize_library</SetVariable>
               </Template>
 
               <WidgetGroup>

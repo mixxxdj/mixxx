@@ -9,6 +9,7 @@
 #include "mixer/playermanager.h"
 #include "moc_wmainmenubar.cpp"
 #include "util/cmdlineargs.h"
+#include "util/defs.h"
 #include "util/experiment.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -282,7 +283,7 @@ void WMainMenuBar::initialize() {
                 tr("Space", "Menubar|View|Maximize Library"))));
     pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
     pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
-    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
+    createVisibilityControl(pViewMaximizeLibrary, kMaximizeLibraryConfigKey);
     pViewMenu->addAction(pViewMaximizeLibrary);
 
     pViewMenu->addSeparator();

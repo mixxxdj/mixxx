@@ -152,6 +152,7 @@ class CoreServices : public QObject {
     std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
 
     std::unique_ptr<ControlPushButton> m_pTouchShift;
+    std::unique_ptr<ControlPushButton> m_pMaximizeLibrary;
 
     Timer m_runtime_timer;
     const CmdlineArgs& m_cmdlineArgs;
