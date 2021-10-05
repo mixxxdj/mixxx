@@ -39,6 +39,8 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
     }
 }
 
+// This method for fixing transparency of the on-screen keyboard copied from:
+// https://stackoverflow.com/a/63963718
 void handleInputMethodVisibleChanged() {
     if (!QGuiApplication::inputMethod()->isVisible()) {
         return;
