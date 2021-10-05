@@ -24,6 +24,8 @@ inline QUrl validateLocalFileUrl(QUrl url) {
 inline QString fileTypeFromSuffix(const QString& suffix) {
     const QString fileType = suffix.toLower().trimmed();
     if (fileType.isEmpty()) {
+        // Always return a default-constructed, null string instead
+        // of an empty string which might either be null or "".
         return QString{};
     }
     return fileType;
