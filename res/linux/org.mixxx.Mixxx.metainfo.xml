@@ -98,6 +98,18 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.3.2" type="development">
+      <description>
+ <ul>
+  <li>
+   Improve robustness of file type detection by considering the actual MIME type of the content.
+   lp:1445885
+   #4356
+   #4357
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.3.1" type="stable" date="2021-09-29" timestamp="1632873600">
       <description>
  <ul>
