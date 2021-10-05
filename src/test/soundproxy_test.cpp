@@ -708,3 +708,30 @@ TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
         }
     }
 }
+
+TEST_F(SoundSourceProxyTest, getTypeFromFile) {
+    // Generate file names for the temporary file
+    const QString filePathWithoutSuffix =
+            mixxxtest::generateTemporaryFileName("file_with_no_file_suffix");
+    const QString filePathWithUnknownSuffix =
+            mixxxtest::generateTemporaryFileName("file_with.unknown_suffix");
+    const QString filePathWithWrongSuffix =
+            mixxxtest::generateTemporaryFileName("file_with_wrong_suffix.wav");
+
+    // Create the temporary files by copying an existing file
+    const QString validFilePath = kTestDir.absoluteFilePath(QStringLiteral("empty.mp3"));
+    mixxxtest::copyFile(validFilePath, filePathWithoutSuffix);
+    mixxxtest::copyFile(validFilePath, filePathWithUnknownSuffix);
+    mixxxtest::copyFile(validFilePath, filePathWithWrongSuffix);
+
+    ASSERT_STREQ(qPrintable("mp3"), qPrintable(mixxx::SoundSource::getTypeFromFile(validFilePath)));
+    EXPECT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    filePathWithoutSuffix)));
+    EXPECT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    filePathWithUnknownSuffix)));
+    EXPECT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    filePathWithWrongSuffix)));
+}
