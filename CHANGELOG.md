@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (Unreleased)
+
+* Improve robustness of file type detection by considering the actual MIME type of the content. [lp:1445885](https://bugs.launchpad.net/mixxx/+bug/1445885) [#4356](https://github.com/mixxxdj/mixxx/pull/4356) [#4357](https://github.com/mixxxdj/mixxx/pull/4357)
+
 ## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (2021-09-29)
 
 * Added mapping for the Numark DJ2GO2 Touch controller [#4108](https://github.com/mixxxdj/mixxx/pull/4108) [#4287](https://github.com/mixxxdj/mixxx/pull/4287)
