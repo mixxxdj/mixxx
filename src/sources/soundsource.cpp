@@ -21,6 +21,14 @@ inline QUrl validateLocalFileUrl(QUrl url) {
     return url;
 }
 
+inline QString fileTypeFromSuffix(const QString& suffix) {
+    const QString fileType = suffix.toLower().trimmed();
+    if (fileType.isEmpty()) {
+        return QString{};
+    }
+    return fileType;
+}
+
 } // anonymous namespace
 
 //static
@@ -32,12 +40,13 @@ QString SoundSource::getTypeFromUrl(const QUrl& url) {
 //static
 QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     const QString fileSuffix = fileInfo.suffix();
-    DEBUG_ASSERT(!fileSuffix.isEmpty() || fileSuffix == QString{});
+    const QString fileType = fileTypeFromSuffix(fileSuffix);
+    DEBUG_ASSERT(!fileType.isEmpty() || fileType == QString{});
     const QMimeType mimeType = QMimeDatabase().mimeTypeForFile(fileInfo);
     if (!mimeType.isValid()) {
         qWarning()
                 << "Unknown MIME type for file" << fileInfo.filePath();
-        return fileSuffix;
+        return fileType;
     }
     const QString preferredSuffix = mimeType.preferredSuffix();
     if (preferredSuffix.isEmpty()) {
@@ -45,24 +54,25 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
         qInfo()
                 << "MIME type" << mimeType
                 << "has no preferred suffix";
-        return fileSuffix;
+        return fileType;
     }
-    if (fileSuffix == preferredSuffix || mimeType.suffixes().contains(fileSuffix)) {
-        return fileSuffix;
+    const QString preferredFileType = fileTypeFromSuffix(preferredSuffix);
+    if (fileType == preferredFileType || mimeType.suffixes().contains(fileSuffix)) {
+        return fileType;
     }
-    if (fileSuffix.isEmpty()) {
+    if (fileType.isEmpty()) {
         qWarning()
-                << "Using type" << preferredSuffix
+                << "Using type" << preferredFileType
                 << "according to the detected MIME type" << mimeType
                 << "of file" << fileInfo.filePath();
     } else {
         qWarning()
-                << "Using type" << preferredSuffix
-                << "instead of" << fileSuffix
+                << "Using type" << preferredFileType
+                << "instead of" << fileType
                 << "according to the detected MIME type" << mimeType
                 << "of file" << fileInfo.filePath();
     }
-    return preferredSuffix;
+    return preferredFileType;
 }
 
 SoundSource::SoundSource(const QUrl& url, const QString& type)
