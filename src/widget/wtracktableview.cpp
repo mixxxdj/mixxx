@@ -772,7 +772,16 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         if (indices.size() > 0) {
             TrackModel* pTrackModel = getTrackModel();
             if (pTrackModel) {
-                pTrackModel->removeTracks(indices);
+                const auto plibraryTableModel = static_cast<LibraryTableModel*>(pTrackModel);
+                if (plibraryTableModel) {
+                    // Hide tracks if this is the main library table
+                    // confirmation dialog
+                    pTrackModel->hideTracks(indices);
+                } else {
+                    // Else remove the tracks from playlist/crate
+                    // confirmation dialog
+                    pTrackModel->removeTracks(indices);
+                }
             }
         }
     }
