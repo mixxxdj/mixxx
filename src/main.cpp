@@ -43,7 +43,8 @@ void handleInputMethodVisibleChanged() {
     if (!QGuiApplication::inputMethod()->isVisible()) {
         return;
     }
-    for (QWindow* w : QGuiApplication::allWindows()) {
+    const auto windowList = QGuiApplication::allWindows();
+    for (QWindow* w : windowList) {
         if (std::strcmp(w->metaObject()->className(), "QtVirtualKeyboard::InputView") == 0) {
             if (QObject* keyboard = w->findChild<QObject*>("keyboard")) {
                 QRect r = w->geometry();
