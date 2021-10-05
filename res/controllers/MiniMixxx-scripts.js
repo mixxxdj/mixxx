@@ -272,7 +272,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         this.idleTimer = engine.beginTimer(1000, function() {
             this.showGain = false;
             this.vuIndicator(engine.getValue(this.channel, "VuMeter"));
-        }, true);
+        }.bind(this), true);
         midi.sendShortMsg(0xBF, this.idx, this.color);
         midi.sendShortMsg(0xB0, this.idx, script.absoluteNonLinInverse(value, 0, 1.0, 4.0));
     }
@@ -785,16 +785,16 @@ MiniMixxx.buttonHandler = function(_midino, control, value, _status, _group) {
     button.activeMode.handlePress(value);
 };
 
-MiniMixxx.lightButton = function(idx, value, colors) {
-    const color = value > 0 ? colors[1] : colors[0];
-    midi.sendShortMsg(0x90, idx, color);
-};
 
 // ButtonMode defines some extra state useful for buttons.
 MiniMixxx.ButtonMode = class extends MiniMixxx.Mode {
     constructor(parent, modeName, channel, idx, colors) {
         super(parent, modeName, channel, idx);
         this.colors = colors;
+    }
+    lightButton(idx, value, colors) {
+        const color = value > 0 ? colors[1] : colors[0];
+        midi.sendShortMsg(0x90, idx, color);
     }
 };
 
@@ -806,7 +806,7 @@ MiniMixxx.ButtonModeEmpty = class extends MiniMixxx.ButtonMode {
     handlePress(_value) {
     }
     indicator(value, _group, _control) {
-        MiniMixxx.lightButton(this.idx, value, this.colors);
+        super.lightButton(this.idx, value, this.colors);
     }
     setLights() {
         this.indicator(0);
@@ -855,7 +855,7 @@ MiniMixxx.ButtonModeKeylock = class extends MiniMixxx.ButtonMode {
         if (this !== this.parent.activeMode) {
             return;
         }
-        MiniMixxx.lightButton(this.idx, value, this.colors);
+        super.lightButton(this.idx, value, this.colors);
     }
     setLights() {
         this.indicator(engine.getValue(this.channel, "keylock"));
@@ -884,7 +884,7 @@ MiniMixxx.ButtonModeSync = class extends MiniMixxx.ButtonMode {
                     if (this.syncPressedTimer !== 0) {
                         this.syncPressedTimer = 0;
                     }
-                }, true);
+                }.bind(this), true);
             } else {
                 // Deactivate sync lock
                 // LED is turned off by the callback handler for sync_enabled
@@ -900,7 +900,7 @@ MiniMixxx.ButtonModeSync = class extends MiniMixxx.ButtonMode {
         if (this !== this.parent.activeMode) {
             return;
         }
-        MiniMixxx.lightButton(this.idx, value, this.colors);
+        super.lightButton(this.idx, value, this.colors);
     }
     setLights() {
         this.indicator(engine.getValue(this.channel, "sync_enabled"));
@@ -921,7 +921,7 @@ MiniMixxx.ButtonModeShift = class extends MiniMixxx.ButtonMode {
         if (this !== this.parent.activeMode) {
             return;
         }
-        MiniMixxx.lightButton(this.idx, value, this.colors);
+        super.lightButton(this.idx, value, this.colors);
     }
     setLights() {
         this.indicator(this.shiftActive);
@@ -977,7 +977,7 @@ MiniMixxx.ButtonModeLayer = class extends MiniMixxx.ButtonMode {
         this.setLights();
     }
     indicator(_value, _group, _control) {
-        MiniMixxx.lightButton(this.idx, this.layerActive, this.colors);
+        super.lightButton(this.idx, this.layerActive, this.colors);
     }
     setLights() {
         if (this.shiftedButton && this.shiftedButton.layerActive) {
@@ -1012,7 +1012,7 @@ MiniMixxx.ButtonModeSampler = class extends MiniMixxx.ButtonMode {
         if (this !== this.parent.activeMode) {
             return;
         }
-        MiniMixxx.lightButton(this.idx, value, this.colors);
+        super.lightButton(this.idx, value, this.colors);
     }
     setLights() {
         this.indicator(engine.getValue(this.samplerGroup, "track_loaded"));
@@ -1071,7 +1071,7 @@ MiniMixxx.ButtonModeFX = class extends MiniMixxx.ButtonMode {
         if (this !== this.parent.activeMode) {
             return;
         }
-        MiniMixxx.lightButton(this.idx, value, this.colors);
+        super.lightButton(this.idx, value, this.colors);
     }
     setLights() {
         this.indicator(engine.getValue("[EffectRack1_EffectUnit1]", "group_" + this.channel + "_enable"));
