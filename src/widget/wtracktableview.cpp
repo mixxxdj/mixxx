@@ -757,16 +757,20 @@ TrackModel* WTrackTableView::getTrackModel() const {
 }
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
+    // Return invokes the double-click action.
     // Ctrl+Return opens track properties dialog.
-    // Ignore it if any cell editor is open.
-    // Note: the shortcut is displayed in the track context menu
+    // Ignore if any cell editor is open.
     if (event->key() == kPropertiesShortcutKey &&
-            (event->modifiers() & kPropertiesShortcutModifier) &&
             state() != QTableView::EditingState) {
-        QModelIndexList indices = selectionModel()->selectedRows();
-        if (indices.length() == 1) {
-            m_pTrackMenu->loadTrackModelIndices(indices);
-            m_pTrackMenu->slotShowDlgTrackInfo();
+        if (!event->modifiers()) {
+            slotMouseDoubleClicked(currentIndex());
+        } else if (event->modifiers() & kPropertiesShortcutModifier) {
+            // Note: the shortcut is displayed in the track context menu
+            QModelIndexList indices = selectionModel()->selectedRows();
+            if (indices.length() == 1) {
+                m_pTrackMenu->loadTrackModelIndices(indices);
+                m_pTrackMenu->slotShowDlgTrackInfo();
+            }
         }
     } else if (event->key() == kHideRemoveShortcutKey &&
             event->modifiers() == kHideRemoveShortcutModifier) {
