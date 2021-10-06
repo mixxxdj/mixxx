@@ -112,9 +112,9 @@ MiniMixxx.EncoderModeJog = class extends MiniMixxx.Mode {
         this.loopColor = MiniMixxx.LoopColor;
         this.color = this.baseColor;
 
-        engine.connectControl(this.channel, "track_loaded", this.trackLoadedHandler.bind(this));
-        engine.connectControl(this.channel, "playposition", this.playpositionChanged.bind(this));
-        engine.connectControl(this.channel, "loop_enabled", this.loopEnabledChanged.bind(this));
+        engine.makeConnection(this.channel, "track_loaded", this.trackLoadedHandler.bind(this));
+        engine.makeConnection(this.channel, "playposition", this.playpositionChanged.bind(this));
+        engine.makeConnection(this.channel, "loop_enabled", this.loopEnabledChanged.bind(this));
     }
     handleSpin(velo) {
         if (MiniMixxx.kontrol.shiftActive()) {
@@ -225,10 +225,10 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         this.color = MiniMixxx.GainColor;
         this.idleTimer = 0;
         this.showGain = false;
-        engine.connectControl(this.channel, "pregain", this.pregainIndicator.bind(this));
-        engine.connectControl(this.channel, "pfl", this.pflIndicator.bind(this));
-        engine.connectControl(this.channel, "VuMeter", this.vuIndicator.bind(this));
-        engine.connectControl(this.channel, "PeakIndicator", this.peakIndicator.bind(this));
+        engine.makeConnection(this.channel, "pregain", this.pregainIndicator.bind(this));
+        engine.makeConnection(this.channel, "pfl", this.pflIndicator.bind(this));
+        engine.makeConnection(this.channel, "VuMeter", this.vuIndicator.bind(this));
+        engine.makeConnection(this.channel, "PeakIndicator", this.peakIndicator.bind(this));
     }
     handleSpin(velo) {
         engine.setValue(this.channel, "pregain", engine.getValue(this.channel, "pregain") + velo / 50.0);
@@ -303,8 +303,8 @@ MiniMixxx.EncoderModeLoop = class extends MiniMixxx.Mode {
         super(parent, "LOOP", channel, idx);
 
         this.color = MiniMixxx.LoopColor;
-        engine.connectControl(this.channel, "beatloop_size", this.spinIndicator.bind(this));
-        engine.connectControl(this.channel, "loop_enabled", this.switchIndicator.bind(this));
+        engine.makeConnection(this.channel, "beatloop_size", this.spinIndicator.bind(this));
+        engine.makeConnection(this.channel, "loop_enabled", this.switchIndicator.bind(this));
     }
     handleSpin(velo) {
         if (MiniMixxx.kontrol.shiftActive()) {
@@ -376,7 +376,7 @@ MiniMixxx.EncoderModeBeatJump = class extends MiniMixxx.Mode {
         super(parent, "BEATJUMP", channel, idx);
 
         this.color = MiniMixxx.LoopColor;
-        engine.connectControl(this.channel, "beatjump_size", this.spinIndicator.bind(this));
+        engine.makeConnection(this.channel, "beatjump_size", this.spinIndicator.bind(this));
     }
     handleSpin(velo) {
         if (MiniMixxx.kontrol.shiftActive()) {
@@ -521,8 +521,8 @@ MiniMixxx.EncoderModeFX = class extends MiniMixxx.Mode {
             this.effectKey = "meta";
         }
 
-        engine.connectControl(this.effectGroup, this.effectKey, this.spinIndicator.bind(this));
-        engine.connectControl(this.effectGroup, "enabled", this.switchIndicator.bind(this));
+        engine.makeConnection(this.effectGroup, this.effectKey, this.spinIndicator.bind(this));
+        engine.makeConnection(this.effectGroup, "enabled", this.switchIndicator.bind(this));
     }
     handleSpin(velo) {
         engine.setValue(this.effectGroup, this.effectKey, engine.getValue(this.effectGroup, this.effectKey) + velo / 50.0);
@@ -562,7 +562,7 @@ MiniMixxx.EncoderModeMainGain = class extends MiniMixxx.Mode {
         super(parent, "MAINGAIN", channel, idx);
         this.color = MiniMixxx.MainOutColor;
 
-        engine.connectControl("[Master]", "gain", this.gainIndicator.bind(this));
+        engine.makeConnection("[Master]", "gain", this.gainIndicator.bind(this));
     }
     handleSpin(velo) {
         engine.setValue("[Master]", "gain", engine.getValue("[Master]", "gain") + .02 * velo);
@@ -597,7 +597,7 @@ MiniMixxx.EncoderModeHeadGain = class extends MiniMixxx.Mode {
         super(parent, "HEADGAIN", channel, idx);
         this.color = MiniMixxx.HeadOutColor;
 
-        engine.connectControl("[Master]", "headGain", this.gainIndicator.bind(this));
+        engine.makeConnection("[Master]", "headGain", this.gainIndicator.bind(this));
     }
     handleSpin(velo) {
         engine.setValue("[Master]", "headGain", engine.getValue("[Master]", "headGain") + .02 * velo);
@@ -632,7 +632,7 @@ MiniMixxx.EncoderModeBalance = class extends MiniMixxx.Mode {
         super(parent, "BALANCE", channel, idx);
         this.color = MiniMixxx.MainOutColor;
 
-        engine.connectControl("[Master]", "balance", this.balIndicator.bind(this));
+        engine.makeConnection("[Master]", "balance", this.balIndicator.bind(this));
     }
     handleSpin(velo) {
         engine.setValue("[Master]", "balance", engine.getValue("[Master]", "balance") + .01 * velo);
@@ -667,7 +667,7 @@ MiniMixxx.EncoderModeHeadMix = class extends MiniMixxx.Mode {
         super(parent, "HEADMIX", channel, idx);
         this.color = MiniMixxx.HeadOutColor;
 
-        engine.connectControl("[Master]", "headMix", this.mixIndicator.bind(this));
+        engine.makeConnection("[Master]", "headMix", this.mixIndicator.bind(this));
     }
     handleSpin(velo) {
         engine.setValue("[Master]", "headMix", engine.getValue("[Master]", "headMix") + .01 * velo);
@@ -819,7 +819,7 @@ MiniMixxx.ButtonModeKeylock = class extends MiniMixxx.ButtonMode {
     constructor(parent, channel, idx) {
         super(parent, "KEYLOCK", channel, idx, [0, 108]);
         this.keylockPressed = false;
-        engine.connectControl(this.channel, "keylock", this.indicator.bind(this));
+        engine.makeConnection(this.channel, "keylock", this.indicator.bind(this));
     }
     handlePress(value) {
         // shift + keylock resets pitch (in either mode).
@@ -869,7 +869,7 @@ MiniMixxx.ButtonModeSync = class extends MiniMixxx.ButtonMode {
         super(parent, "SYNC", channel, idx, [0, 84]);
         this.syncPressedTimer = 0;
 
-        engine.connectControl(this.channel, "sync_enabled", this.indicator.bind(this));
+        engine.makeConnection(this.channel, "sync_enabled", this.indicator.bind(this));
     }
     handlePress(value) {
         if (value) {
@@ -994,7 +994,7 @@ MiniMixxx.ButtonModeSampler = class extends MiniMixxx.ButtonMode {
     constructor(parent, channel, idx, samplerNum) {
         super(parent, "SAMPLER-" + samplerNum, channel, idx, [MiniMixxx.UnsetSamplerColor, MiniMixxx.SamplerColor]);
         this.samplerGroup = "[Sampler" + samplerNum + "]";
-        engine.connectControl(this.samplerGroup, "track_loaded", this.indicator.bind(this));
+        engine.makeConnection(this.samplerGroup, "track_loaded", this.indicator.bind(this));
     }
     handlePress(value) {
         // shift+press ejects the sample.
@@ -1026,8 +1026,8 @@ MiniMixxx.ButtonModeHotcue = class extends MiniMixxx.ButtonMode {
         super(parent, "HOTCUE-" + hotcueNum, channel, idx, [0x7f, MiniMixxx.HotcueColor]);
         this.hotcueNum = hotcueNum;
         this.keyPrefix = "hotcue_" + hotcueNum + "_";
-        engine.connectControl(this.channel, this.keyPrefix + "enabled", this.indicator.bind(this));
-        engine.connectControl(this.channel, this.keyPrefix + "color", this.indicator.bind(this));
+        engine.makeConnection(this.channel, this.keyPrefix + "enabled", this.indicator.bind(this));
+        engine.makeConnection(this.channel, this.keyPrefix + "color", this.indicator.bind(this));
     }
     handlePress(value) {
         // shift + press unsets the hotcue
@@ -1060,7 +1060,7 @@ MiniMixxx.ButtonModeHotcue = class extends MiniMixxx.ButtonMode {
 MiniMixxx.ButtonModeFX = class extends MiniMixxx.ButtonMode {
     constructor(parent, channel, idx) {
         super(parent, "FX", channel, idx, [0, MiniMixxx.FXColor]);
-        engine.connectControl("[EffectRack1_EffectUnit1]", "group_" + this.channel + "_enable", this.indicator.bind(this));
+        engine.makeConnection("[EffectRack1_EffectUnit1]", "group_" + this.channel + "_enable", this.indicator.bind(this));
     }
     handlePress(value) {
         if (value > 0) {
