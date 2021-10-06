@@ -160,13 +160,18 @@ TEST_F(ReplayGainTest, NormalizePeak) {
 class AdjustReplayGainTest : public MockedEngineBackendTest {};
 
 TEST_F(AdjustReplayGainTest, AdjustReplayGainUpdatesPregain) {
+    const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+    TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
+
+    // Load the same track in decks 1 and 2 so we can see that the pregain is adjusted on both
+    // decks.
+    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck2, pTrack);
+
     // Initialize fake track replaygain so it's not zero.
     mixxx::ReplayGain replayGain;
     replayGain.setRatio(1.0);
-    m_pTrack1->setReplayGain(replayGain);
-    // Load the same track in decks 1 and 2 so we can see that the pregain is adjusted on both
-    // decks.
-    m_pMixerDeck2->slotLoadTrack(m_pTrack1, false);
+    pTrack->setReplayGain(replayGain);
     // Because of this artificial process we have to manually set the replaygain CO for the second
     // deck.
     m_pMixerDeck2->slotSetReplayGain(replayGain);
@@ -183,7 +188,7 @@ TEST_F(AdjustReplayGainTest, AdjustReplayGainUpdatesPregain) {
             .005);
     EXPECT_DOUBLE_EQ(1.2, ControlObject::getControl(ConfigKey(m_sGroup1, "replaygain"))->get());
     EXPECT_DOUBLE_EQ(1.2, ControlObject::getControl(ConfigKey(m_sGroup2, "replaygain"))->get());
-    EXPECT_DOUBLE_EQ(1.2, m_pTrack1->getReplayGain().getRatio());
+    EXPECT_DOUBLE_EQ(1.2, pTrack->getReplayGain().getRatio());
 }
 
 } // anonymous namespace

@@ -3,8 +3,8 @@
 #include "util/defs.h"
 
 namespace {
-    const double kMaxCornerHz = 500;
-    const double kMinCornerHz = 16;
+constexpr double kMaxCornerHz = 500;
+constexpr double kMinCornerHz = 16;
 } // anonymous namespace
 
 // static

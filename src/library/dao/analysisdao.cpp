@@ -15,7 +15,7 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 // compression level (-1) takes the size down to about 600KB. The difference
 // between the default and 9 (the max) was only about 1-2KB for a lot of extra
 // CPU time so I think we should stick with the default. rryan 4/3/2012
-const int kCompressionLevel = -1;
+constexpr int kCompressionLevel = -1;
 
 AnalysisDao::AnalysisDao(UserSettingsPointer pConfig)
         : m_pConfig(pConfig) {

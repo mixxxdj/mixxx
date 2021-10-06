@@ -7,17 +7,17 @@ namespace {
 
 // The defaults are tweaked to match the Xone:23 EQ
 // but allow 12 dB boost instead of just 6 dB
-static const int kStartupSamplerate = 44100;
-static const double kMinimumFrequency = 10.0;
-static const double kMaximumFrequency = kStartupSamplerate / 2;
-static const double kStartupLoFreq = 50.0;
-static const double kStartupMidFreq = 1100.0;
-static const double kStartupHiFreq = 12000.0;
-static const double kQBoost = 0.3;
-static const double kQKill = 0.9;
-static const double kQKillShelve = 0.4;
-static const double kBoostGain = 12;
-static const double kKillGain = -26;
+static constexpr int kStartupSamplerate = 44100;
+static constexpr double kMinimumFrequency = 10.0;
+static constexpr double kMaximumFrequency = kStartupSamplerate / 2;
+static constexpr double kStartupLoFreq = 50.0;
+static constexpr double kStartupMidFreq = 1100.0;
+static constexpr double kStartupHiFreq = 12000.0;
+static constexpr double kQBoost = 0.3;
+static constexpr double kQKill = 0.9;
+static constexpr double kQKillShelve = 0.4;
+static constexpr double kBoostGain = 12;
+static constexpr double kKillGain = -26;
 
 
 double getCenterFrequency(double low, double high) {

@@ -20,7 +20,7 @@ class BeatGrid final : public Beats {
     static BeatsPointer makeBeatGrid(
             audio::SampleRate sampleRate,
             mixxx::Bpm bpm,
-            mixxx::audio::FramePos firstBeatPos,
+            mixxx::audio::FramePos firstBeatPositionOnFrameBoundary,
             const QString& subVersion = QString());
 
     static BeatsPointer fromByteArray(
@@ -64,18 +64,29 @@ class BeatGrid final : public Beats {
 
     BeatsPointer translate(audio::FrameDiff_t offset) const override;
     BeatsPointer scale(BpmScale scale) const override;
-    BeatsPointer setBpm(mixxx::Bpm bpm) override;
+    BeatsPointer setBpm(mixxx::Bpm bpm) const override;
 
-  private:
+    ////////////////////////////////////////////////////////////////////////////
+    // Hidden constructors
+    ////////////////////////////////////////////////////////////////////////////
+
     BeatGrid(
+            MakeSharedTag,
             audio::SampleRate sampleRate,
             const QString& subVersion,
             const mixxx::track::io::BeatGrid& grid,
             double beatLength);
     // Constructor to update the beat grid
-    BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength);
-    BeatGrid(const BeatGrid& other);
+    BeatGrid(
+            MakeSharedTag,
+            const BeatGrid& other,
+            const mixxx::track::io::BeatGrid& grid,
+            double beatLength);
+    BeatGrid(
+            MakeSharedTag,
+            const BeatGrid& other);
 
+  private:
     audio::FramePos firstBeatPosition() const;
     mixxx::Bpm bpm() const;
 

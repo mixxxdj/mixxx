@@ -15,7 +15,7 @@
 
 namespace {
 // recommended in encoder documentation, section 2.4.1
-const int kOutBufferBits = 6144;
+constexpr int kOutBufferBits = 6144;
 const mixxx::Logger kLogger("EncoderFdkAac");
 } // namespace
 

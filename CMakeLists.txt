@@ -805,19 +805,20 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
   src/recording/recordingmanager.cpp
-  src/skin/qml/asyncimageprovider.cpp
-  src/skin/qml/qmlcontrolproxy.cpp
-  src/skin/qml/qmlconfigproxy.cpp
-  src/skin/qml/qmleffectmanifestparametersmodel.cpp
-  src/skin/qml/qmleffectsmanagerproxy.cpp
-  src/skin/qml/qmleffectslotproxy.cpp
-  src/skin/qml/qmllibraryproxy.cpp
-  src/skin/qml/qmllibrarytracklistmodel.cpp
-  src/skin/qml/qmlplayermanagerproxy.cpp
-  src/skin/qml/qmlplayerproxy.cpp
-  src/skin/qml/qmlskin.cpp
-  src/skin/qml/qmlvisibleeffectsmodel.cpp
-  src/skin/qml/qmlwaveformoverview.cpp
+  src/qml/asyncimageprovider.cpp
+  src/qml/qmlapplication.cpp
+  src/qml/qmlcontrolproxy.cpp
+  src/qml/qmlconfigproxy.cpp
+  src/qml/qmldlgpreferencesproxy.cpp
+  src/qml/qmleffectmanifestparametersmodel.cpp
+  src/qml/qmleffectsmanagerproxy.cpp
+  src/qml/qmleffectslotproxy.cpp
+  src/qml/qmllibraryproxy.cpp
+  src/qml/qmllibrarytracklistmodel.cpp
+  src/qml/qmlplayermanagerproxy.cpp
+  src/qml/qmlplayerproxy.cpp
+  src/qml/qmlvisibleeffectsmodel.cpp
+  src/qml/qmlwaveformoverview.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
   src/skin/skinloader.cpp
@@ -1118,7 +1119,8 @@ if(MSVC)
     target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
 else()
-  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion -Werror=return-type -Wformat=2 -Wundef)
+  # TODO: Add -Wtrampolines, not yet supported by clazy
+  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion -Werror=return-type -Wformat=2 -Wformat-security -Wvla -Wundef)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()
@@ -1235,6 +1237,9 @@ endif()
 
 # The mixxx executable
 add_executable(mixxx WIN32 src/main.cpp)
+# ugly hack to get #include "preferences/dialog/ui_dlgpreferencesdlg.h" to work in
+# src/qmldlgpreferencesproxy.h, which is #included from src/qmlapplication.h.
+target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/mixxx-lib_autogen/include")
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_link_libraries(mixxx PRIVATE mixxx-lib mixxx-gitinfostore)
 
@@ -1922,42 +1927,8 @@ if(ENGINEPRIME)
 endif()
 
 # Ebur128
-find_package(Ebur128)
-default_option(EBUR128_STATIC "Link libebur128 statically" "NOT Ebur128_FOUND")
-if(EBUR128_STATIC)
-  message(STATUS "Preparing internal Ebur128")
-  set(EBUR128_CMAKE_ARGS "-DBUILD_STATIC_LIBS=ON")
-  check_symbol_exists(STAILQ_HEAD sys/queue.h HAVE_STAILQ)
-  if(NOT HAVE_STAILQ)
-    list(APPEND EBUR128_CMAKE_ARGS "-DENABLE_INTERNAL_QUEUE_H=ON")
-  endif()
-  if(MSVC)
-    set(EBUR128_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
-  else()
-    set(EBUR128_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}")
-  endif()
-  ExternalProject_Add(libebur128
-    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128"
-    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
-    INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128-install"
-    CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> ${EBUR128_CMAKE_ARGS}
-    BUILD_BYPRODUCTS <INSTALL_DIR>/${EBUR128_LIBRARY}
-  )
-  set_target_properties(libebur128 PROPERTIES EXCLUDE_FROM_ALL TRUE)
-
-  add_library(mixxx-libebur128 STATIC IMPORTED)
-  add_dependencies(mixxx-libebur128 libebur128)
-  set(EBUR128_LIBRARY_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128-install/${EBUR128_LIBRARY}")
-  message(STATUS "Linking internal libebur128 statically: ${EBUR128_LIBRARY_LOCATION}")
-  set_target_properties(mixxx-libebur128 PROPERTIES
-    IMPORTED_LOCATION "${EBUR128_LIBRARY_LOCATION}"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128/ebur128"
-  )
-  target_link_libraries(mixxx-lib PRIVATE mixxx-libebur128)
-else()
-  message(STATUS "Linking libebur128 dynamically")
-  target_link_libraries(mixxx-lib PRIVATE Ebur128::Ebur128)
-endif()
+find_package(Ebur128 REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE Ebur128::Ebur128)
 
 # FidLib
 add_library(fidlib STATIC EXCLUDE_FROM_ALL lib/fidlib/fidlib.c)
@@ -2376,32 +2347,8 @@ if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
 endif()
 
 # SoundTouch
-find_package(SoundTouch)
-default_option(SoundTouch_STATIC "Link libSoundTouch statically" "NOT SoundTouch_FOUND OR SoundTouch_VERSION VERSION_LESS 2.1.2")
-if(SoundTouch_STATIC)
-  message(STATUS "Preparing internal libSoundTouch")
-  add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
-    lib/soundtouch/AAFilter.cpp
-    lib/soundtouch/BPMDetect.cpp
-    lib/soundtouch/FIFOSampleBuffer.cpp
-    lib/soundtouch/FIRFilter.cpp
-    lib/soundtouch/InterpolateCubic.cpp
-    lib/soundtouch/InterpolateLinear.cpp
-    lib/soundtouch/InterpolateShannon.cpp
-    lib/soundtouch/PeakFinder.cpp
-    lib/soundtouch/RateTransposer.cpp
-    lib/soundtouch/SoundTouch.cpp
-    lib/soundtouch/TDStretch.cpp
-    lib/soundtouch/cpu_detect_x86.cpp
-    lib/soundtouch/mmx_optimized.cpp
-    lib/soundtouch/sse_optimized.cpp
-  )
-  target_include_directories(SoundTouch SYSTEM PUBLIC lib)
-  target_link_libraries(mixxx-lib PRIVATE SoundTouch)
-else()
-  message(STATUS "Linking libSoundTouch dynamically")
-  target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
-endif()
+find_package(SoundTouch 2.1.2 REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 
 # TagLib
 find_package(TagLib 1.11 REQUIRED)

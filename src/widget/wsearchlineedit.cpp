@@ -430,7 +430,8 @@ void WSearchLineEdit::slotSaveSearch() {
 
 void WSearchLineEdit::slotMoveSelectedHistory(int steps) {
     int nIndex = currentIndex() + steps;
-    // we wrap around to the last entry on backwards direction
+    // at the top we manually wrap around to the last entry.
+    // at the bottom wrap-around happens automatically due to invalid nIndex.
     if (nIndex < -1) {
         nIndex = count() - 1;
     }

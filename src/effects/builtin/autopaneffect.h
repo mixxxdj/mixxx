@@ -57,7 +57,7 @@ class RampedSample {
     bool initialized;
 };
 
-static const int panMaxDelay = 3300; // allows a 30 Hz filter at 97346;
+static constexpr int panMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 // static const int panMaxDelay = 50000; // high for debug;
 
 class AutoPanGroupState : public EffectState {

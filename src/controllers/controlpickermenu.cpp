@@ -107,7 +107,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         // TODO: Although there is a mode with 4-band EQs, it's not feasible
         // right now to add support for learning both it and regular 3-band eqs.
         // Since 3-band is by far the most common, stick with that.
-        const int kMaxEqs = 3;
+        constexpr int kMaxEqs = 3;
         QList<QString> eqNames;
         eqNames.append(tr("Low EQ"));
         eqNames.append(tr("Mid EQ"));
@@ -742,6 +742,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             libraryMenu,
             false,
             m_libraryStr);
+    addControl("[Library]",
+            "clear_search",
+            tr("Clear search"),
+            tr("Clears the search query"),
+            libraryMenu,
+            false,
+            m_libraryStr);
 
     libraryMenu->addSeparator();
     addControl("[Recording]", "toggle_recording",
@@ -769,7 +776,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // When kNumEffectRacks is changed to >1 put effect unit actions into
     // separate "Effect Rack N" submenus.
-    const int kNumEffectRacks = 1;
+    constexpr int kNumEffectRacks = 1;
     for (int iRackNumber = 1; iRackNumber <= kNumEffectRacks; ++iRackNumber) {
         const QString rackGroup = StandardEffectRack::formatGroupString(
                 iRackNumber - 1);

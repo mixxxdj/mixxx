@@ -433,9 +433,9 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushCC) {
 TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_7BitCC) {
     ConfigKey key("[Channel1]", "playposition");
 
-    const double kMinValue = -1234.5;
-    const double kMaxValue = 678.9;
-    const double kMiddleValue = (kMinValue + kMaxValue) * 0.5;
+    constexpr double kMinValue = -1234.5;
+    constexpr double kMaxValue = 678.9;
+    constexpr double kMiddleValue = (kMinValue + kMaxValue) * 0.5;
     ControlPotmeter potmeter(key, kMinValue, kMaxValue);
 
     unsigned char channel = 0x01;
@@ -465,9 +465,9 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_7BitCC) {
 TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
     ConfigKey key("[Channel1]", "playposition");
 
-    const double kMinValue = -1234.5;
-    const double kMaxValue = 678.9;
-    const double kMiddleValue = (kMinValue + kMaxValue) * 0.5;
+    constexpr double kMinValue = -1234.5;
+    constexpr double kMaxValue = 678.9;
+    constexpr double kMiddleValue = (kMinValue + kMaxValue) * 0.5;
     ControlPotmeter potmeter(key, kMinValue, kMaxValue);
     potmeter.set(0);
 
@@ -559,9 +559,9 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
 TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitPitchBend) {
     ConfigKey key("[Channel1]", "rate");
 
-    const double kMinValue = -1234.5;
-    const double kMaxValue = 678.9;
-    const double kMiddleValue = (kMinValue + kMaxValue) * 0.5;
+    constexpr double kMinValue = -1234.5;
+    constexpr double kMaxValue = 678.9;
+    constexpr double kMiddleValue = (kMinValue + kMaxValue) * 0.5;
     ControlPotmeter potmeter(key, kMinValue, kMaxValue);
     unsigned char channel = 0x01;
 
