@@ -210,6 +210,7 @@ inline bool operator!=(FramePos frame1, FramePos frame2) {
 
 inline QDebug operator<<(QDebug dbg, FramePos arg) {
     if (arg.isValid()) {
+        QDebugStateSaver saver(dbg);
         dbg.nospace() << "FramePos(" << arg.value() << ")";
     } else {
         dbg << "FramePos()";
