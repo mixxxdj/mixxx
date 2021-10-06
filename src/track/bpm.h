@@ -198,6 +198,7 @@ inline bool operator>=(Bpm bpm1, Bpm bpm2) {
 
 inline QDebug operator<<(QDebug dbg, Bpm arg) {
     if (arg.isValid()) {
+        QDebugStateSaver saver(dbg);
         dbg.nospace() << "Bpm(" << arg.value() << ")";
     } else {
         dbg << "Bpm(Invalid)";
