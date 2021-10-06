@@ -133,8 +133,10 @@ class Beats : private std::enable_shared_from_this<Beats> {
     int numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const;
 
     /// Find the frame position N beats away from `position`. The number of beats may be
-    /// negative and does not need to be an integer.
-    audio::FramePos findNBeatsFromPosition(audio::FramePos position, double beats) const;
+    /// negative and does not need to be an integer. In this case the returned position will
+    /// be between two beats as well at the same fraction.
+    virtual audio::FramePos findNBeatsFromPosition(
+            audio::FramePos position, double beats) const = 0;
 
     /// Reutns an iterator that yields frame position of every beat occurring
     /// between `startPosition` and `endPosition`. `BeatIterator` must be iterated

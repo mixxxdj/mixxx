@@ -186,6 +186,13 @@ audio::FramePos BeatGrid::findNthBeat(audio::FramePos position, int n) const {
     return result;
 }
 
+audio::FramePos BeatGrid::findNBeatsFromPosition(audio::FramePos position, double beats) const {
+    if (!isValid() && position.isValid()) {
+        return audio::kInvalidFramePos;
+    }
+    return position + beats * m_beatLengthFrames;
+};
+
 bool BeatGrid::findPrevNextBeats(audio::FramePos position,
         audio::FramePos* prevBeatPosition,
         audio::FramePos* nextBeatPosition,
