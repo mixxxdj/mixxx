@@ -772,7 +772,7 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         if (indices.size() > 0) {
             TrackModel* pTrackModel = getTrackModel();
             if (pTrackModel) {
-                const auto plibraryTableModel = static_cast<LibraryTableModel*>(pTrackModel);
+                const auto plibraryTableModel = dynamic_cast<LibraryTableModel*>(pTrackModel);
                 if (plibraryTableModel) {
                     // Hide tracks if this is the main library table
                     // confirmation dialog
