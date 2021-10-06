@@ -1266,20 +1266,21 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         } else {
             newloopInfo.startPosition = currentPosition;
         }
-    } else {
+    } else if (m_pQuantizeEnabled->toBool()) {
         // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
         // The closest beat might be ahead of play position and will cause a catching loop.
         mixxx::audio::FramePos prevBeatPosition;
         mixxx::audio::FramePos nextBeatPosition;
-        pBeats->findPrevNextBeats(currentPosition, &prevBeatPosition, &nextBeatPosition, true);
+        pBeats->findPrevNextBeats(currentPosition, &prevBeatPosition, &nextBeatPosition, false);
 
-        if (m_pQuantizeEnabled->toBool() && prevBeatPosition.isValid() &&
-                nextBeatPosition.isValid()) {
+        if (prevBeatPosition.isValid() && nextBeatPosition.isValid()) {
             const mixxx::audio::FrameDiff_t beatLength = nextBeatPosition - prevBeatPosition;
             double loopLength = beatLength * beats;
 
             const mixxx::audio::FramePos closestBeatPosition =
-                    pBeats->findClosestBeat(currentPosition);
+                    (nextBeatPosition - currentPosition > currentPosition - prevBeatPosition)
+                    ? prevBeatPosition
+                    : nextBeatPosition;
             if (beats >= 1.0) {
                 newloopInfo.startPosition = closestBeatPosition;
             } else {
@@ -1320,6 +1321,8 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         } else {
             newloopInfo.startPosition = currentPosition;
         }
+    } else {
+        newloopInfo.startPosition = currentPosition;
     }
 
     newloopInfo.endPosition = pBeats->findNBeatsFromPosition(newloopInfo.startPosition, beats);
