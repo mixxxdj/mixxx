@@ -63,7 +63,7 @@ MiniMixxx.Encoder = class {
             } else if (mode === "HEADMIX") {
                 this.encoders[mode] = new MiniMixxx.EncoderModeHeadMix(this, "[Master]", idx);
             } else {
-                print("Ignoring unknown encoder mode: " + mode);
+                console.log("Ignoring unknown encoder mode: " + mode);
                 continue;
             }
             this.layers[layerName] = this.encoders[mode];
@@ -741,7 +741,7 @@ MiniMixxx.Button = class {
                 const shiftedButton = this.buttons[mode].shiftedButton;
                 this.layers[shiftedButton.layerName] = shiftedButton;
             } else {
-                print("Ignoring unknown button mode: " + mode);
+                console.log("Ignoring unknown button mode: " + mode);
                 continue;
             }
             this.layers[layerName] = this.buttons[mode];
@@ -778,7 +778,7 @@ MiniMixxx.Button = class {
 MiniMixxx.buttonHandler = function(_midino, control, value, _status, _group) {
     const button = this.kontrol.buttons[control];
     if (!button) {
-        print("unhandled button: " + control);
+        console.log("unhandled button: " + control);
         return;
     }
 
@@ -1408,7 +1408,7 @@ MiniMixxx.Controller = class {
 MiniMixxx.init = function(_id) {
     this.kontrol = new MiniMixxx.Controller();
 
-    print("MiniMixxx: Init done!");
+    console.log("MiniMixxx: Init done!");
 
     if (MiniMixxx.DebugMode) {
         MiniMixxx.debugLights();

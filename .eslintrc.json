@@ -65,7 +65,6 @@
     "HIDController": "writable",
     "HIDDebug": "writable",
     "HIDPacket": "writable",
-    "controller": "writable",
-    "print": "writable"
+    "controller": "writable"
   }
 }
