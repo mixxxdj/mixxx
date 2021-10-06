@@ -395,13 +395,9 @@
   </li>
   <li>
    Introduce new control objects
-   <code>
-    [Master],indicator_250millis
-   </code>
+   [Master],indicator_250millis
    and
-   <code>
-    [Master],indicator_500millis
-   </code>
+   [Master],indicator_500millis
    #4157
   </li>
   <li>
@@ -588,9 +584,7 @@
   </li>
   <li>
    Logging: Add support for
-   <code>
-    QT_MESSAGE_PATTERN
-   </code>
+   QT_MESSAGE_PATTERN
    environment variable
    #3204
    #3518
@@ -698,7 +692,19 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.1" date="2021-09-29" type="stable">
+    <release version="2.3.2" type="development">
+      <description>
+ <ul>
+  <li>
+   Improve robustness of file type detection by considering the actual MIME type of the content.
+   lp:1445885
+   #4356
+   #4357
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.3.1" type="stable" date="2021-09-29" timestamp="1632873600">
       <description>
  <ul>
   <li>
@@ -860,13 +866,9 @@
  <ul>
   <li>
    It is no longer necessary to manually copy the udev rule file in packaging scripts. Now pkg-config is used to determine the udevdir used to install the rules file in the CMake install step when CMAKE_INSTALL_PREFIX is
-   <code>
-    /
-   </code>
+   /
    or
-   <code>
-    /usr
-   </code>
+   /usr
    .
    #4126
   </li>
@@ -906,7 +908,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.0" date="2021-06-28" type="stable">
+    <release version="2.3.0" type="stable" date="2021-06-28" timestamp="1624838400">
       <description>
  <p>
   Hotcues
@@ -1153,9 +1155,7 @@
  <ul>
   <li>
    Add support for searching for empty fields (for example
-   <code>
-    crate:""
-   </code>
+   crate:""
    )
    lp:1788086
   </li>
@@ -1394,26 +1394,18 @@
  <ul>
   <li>
    Add CMake build system with
-   <code>
-    ccache
-   </code>
+   ccache
    and
-   <code>
-    sccache
-   </code>
+   sccache
    support for faster compilation times and remove SCons
    #2280
    #3618
   </li>
   <li>
    Make Mixxx compile even though
-   <code>
-    QT_NO_OPENGL
-   </code>
+   QT_NO_OPENGL
    or
-   <code>
-    QT_OPENGL_ES_2
-   </code>
+   QT_OPENGL_ES_2
    is defined (fixes build on Raspberry Pi)
    lp:1863440
    #2504
@@ -1445,9 +1437,7 @@
   </li>
   <li>
    Derive Mixxx version from
-   <code>
-    git describe
-   </code>
+   git describe
    #3824
    #3841
    #3848
@@ -1463,7 +1453,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.2.4" date="2020-06-27" type="stable">
+    <release version="2.2.4" type="stable" date="2020-06-27" timestamp="1593216000">
       <description>
  <ul>
   <li>
@@ -1554,7 +1544,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.2.3" date="2019-11-24" type="stable">
+    <release version="2.2.3" type="stable" date="2019-11-24" timestamp="1574553600">
       <description>
  <ul>
   <li>
@@ -1638,7 +1628,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.2.2" date="2019-08-10" type="stable">
+    <release version="2.2.2" type="stable" date="2019-08-10" timestamp="1565395200">
       <description>
  <ul>
   <li>
@@ -1713,7 +1703,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.2.1" date="2019-04-22" type="stable">
+    <release version="2.2.1" type="stable" date="2019-04-22" timestamp="1555891200">
       <description>
  <ul>
   <li>
@@ -1747,7 +1737,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.2.0" date="2018-12-17" type="stable">
+    <release version="2.2.0" type="stable" date="2018-12-17" timestamp="1545004800">
       <description>
  <p>
   General
@@ -1826,7 +1816,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.1.8" date="2019-04-07" type="stable">
+    <release version="2.1.8" type="stable" date="2019-04-07" timestamp="1554595200">
       <description>
  <ul>
   <li>
@@ -1852,7 +1842,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.1.7" date="2019-01-15" type="stable">
+    <release version="2.1.7" type="stable" date="2019-01-15" timestamp="1547510400">
       <description>
  <ul>
   <li>
@@ -1878,7 +1868,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.1.6" date="2018-12-23" type="stable">
+    <release version="2.1.6" type="stable" date="2018-12-23" timestamp="1545523200">
       <description>
  <ul>
   <li>
@@ -1956,7 +1946,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.1.5" date="2018-10-28" type="stable">
+    <release version="2.1.5" type="stable" date="2018-10-28" timestamp="1540684800">
       <description>
  <ul>
   <li>
@@ -1998,7 +1988,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.1.4" date="2018-08-29" type="stable">
+    <release version="2.1.4" type="stable" date="2018-08-29" timestamp="1535500800">
       <description>
  <p>
   Fix track selection not getting shown in the track
@@ -2010,7 +2000,7 @@ each build.
  </p>
 </description>
     </release>
-    <release version="2.1.3" date="2018-08-20" type="stable">
+    <release version="2.1.3" type="stable" date="2018-08-20" timestamp="1534723200">
       <description>
  <p>
   Fix a severe performance regression on Windows:
@@ -2018,7 +2008,7 @@ each build.
  </p>
 </description>
     </release>
-    <release version="2.1.2" date="2018-08-10" type="stable">
+    <release version="2.1.2" type="stable" date="2018-08-10" timestamp="1533859200">
       <description>
  <p>
   Yet another bugfix release of Mixxx 2.1.
@@ -2073,7 +2063,7 @@ Here is a quick summary of what is new in Mixxx 2.1.2:
  </ul>
 </description>
     </release>
-    <release version="2.1.1" date="2018-06-13" type="stable">
+    <release version="2.1.1" type="stable" date="2018-06-13" timestamp="1528848000">
       <description>
  <p>
   After two months it is time to do a bugfix release of Mixxx 2.1.
@@ -2144,7 +2134,7 @@ Here is a quick summary of what is new in Mixxx 2.1.1:
  </ul>
 </description>
     </release>
-    <release version="2.1.0" date="2018-04-15" type="stable">
+    <release version="2.1.0" type="stable" date="2018-04-15" timestamp="1523750400">
       <description>
  <p>
   After two years of hard work, we are pleased to announce Mixxx 2.1. We
@@ -2396,7 +2386,7 @@ tips on getting started contributing code to Mixxx.
  </p>
 </description>
     </release>
-    <release version="2.0.0" date="2015-12-31" type="stable">
+    <release version="2.0.0" type="stable" date="2015-12-31" timestamp="1451520000">
       <description>
  <ul>
   <li>
