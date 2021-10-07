@@ -353,7 +353,7 @@ audio::FramePos BeatMap::findNBeatsFromPosition(audio::FramePos position, double
     audio::FramePos prevBeatPosition;
     audio::FramePos nextBeatPosition;
 
-    if (!findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true)) {
+    if (!findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false)) {
         return position;
     }
     const audio::FrameDiff_t fromFractionBeats = (position - prevBeatPosition) /
