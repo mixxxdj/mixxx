@@ -49,7 +49,22 @@ BeatsPointer Beats::fromBeatPositions(
     return BeatMap::makeBeatMap(sampleRate, subVersion, beatPositions);
 }
 
+audio::FramePos Beats::snapPosToNearBeat(audio::FramePos position) const {
+    audio::FramePos prevBeatPosition;
+    audio::FramePos nextBeatPosition;
+    findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, true);
+    if (prevBeatPosition.isValid() && position < prevBeatPosition) {
+        // Snap to beat
+        return prevBeatPosition;
+    } else if (nextBeatPosition.isValid() && position > nextBeatPosition) {
+        // Snap to beat
+        return nextBeatPosition;
+    }
+    return position;
+}
+
 int Beats::numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const {
+    startPosition = snapPosToNearBeat(startPosition);
     audio::FramePos lastPosition = audio::kStartFramePos;
     int i = 1;
     while (lastPosition < endPosition) {

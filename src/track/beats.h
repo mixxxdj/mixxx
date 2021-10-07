@@ -130,6 +130,12 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// be found, returns an invalid frame position.
     virtual audio::FramePos findNthBeat(audio::FramePos position, int n) const = 0;
 
+    /// This function snaps the position to a beat if near.
+    /// This is used for beat loops, where start and end positions might be slightly off
+    /// due to rounding or quantizations by the engine buffer.
+    /// It makes use of virtual findPrevNextBeats() as a single instance for snapping.
+    audio::FramePos snapPosToNearBeat(audio::FramePos position) const;
+
     int numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const;
 
     /// Find the frame position N beats away from `position`. The number of beats may be
