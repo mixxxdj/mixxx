@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QScopedPointer>
 #include <gtest/gtest_prod.h>
+
+#include <QScopedPointer>
 
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/enginesync.h"
@@ -20,12 +21,18 @@ class SyncControl : public EngineControl, public Syncable {
     static const double kBpmUnity;
     static const double kBpmHalve;
     static const double kBpmDouble;
-    SyncControl(const QString& group, UserSettingsPointer pConfig,
-                EngineChannel* pChannel, EngineSync* pEngineSync);
+    SyncControl(const QString& group,
+            UserSettingsPointer pConfig,
+            EngineChannel* pChannel,
+            EngineSync* pEngineSync);
     ~SyncControl() override;
 
-    const QString& getGroup() const override { return m_sGroup; }
-    EngineChannel* getChannel() const override { return m_pChannel; }
+    const QString& getGroup() const override {
+        return m_sGroup;
+    }
+    EngineChannel* getChannel() const override {
+        return m_pChannel;
+    }
     mixxx::Bpm getBpm() const override;
 
     SyncMode getSyncMode() const override;

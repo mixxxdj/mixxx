@@ -43,8 +43,7 @@ SyncControl::SyncControl(const QString& group,
     // Play button.  We only listen to this to disable leader if the deck is
     // stopped.
     m_pPlayButton = new ControlProxy(group, "play", this);
-    m_pPlayButton->connectValueChanged(this, &SyncControl::slotControlPlay,
-                                       Qt::DirectConnection);
+    m_pPlayButton->connectValueChanged(this, &SyncControl::slotControlPlay, Qt::DirectConnection);
 
     m_pSyncMode.reset(new ControlPushButton(ConfigKey(group, "sync_mode")));
     m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
@@ -69,18 +68,24 @@ SyncControl::SyncControl(const QString& group,
 
     // Beat sync (scale buffer tempo relative to tempo of other buffer)
     m_pButtonSync = new ControlPushButton(ConfigKey(group, "beatsync"));
-    connect(m_pButtonSync, &ControlObject::valueChanged,
-            this, &SyncControl::slotControlBeatSync,
+    connect(m_pButtonSync,
+            &ControlObject::valueChanged,
+            this,
+            &SyncControl::slotControlBeatSync,
             Qt::DirectConnection);
 
     m_pButtonSyncPhase = new ControlPushButton(ConfigKey(group, "beatsync_phase"));
-    connect(m_pButtonSyncPhase, &ControlObject::valueChanged,
-            this, &SyncControl::slotControlBeatSyncPhase,
+    connect(m_pButtonSyncPhase,
+            &ControlObject::valueChanged,
+            this,
+            &SyncControl::slotControlBeatSyncPhase,
             Qt::DirectConnection);
 
     m_pButtonSyncTempo = new ControlPushButton(ConfigKey(group, "beatsync_tempo"));
-    connect(m_pButtonSyncTempo, &ControlObject::valueChanged,
-            this, &SyncControl::slotControlBeatSyncTempo,
+    connect(m_pButtonSyncTempo,
+            &ControlObject::valueChanged,
+            this,
+            &SyncControl::slotControlBeatSyncTempo,
             Qt::DirectConnection);
 
     // The relative position between two beats in the range 0.0 ... 1.0
@@ -89,7 +94,8 @@ SyncControl::SyncControl(const QString& group,
 
     m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(this,
-            &SyncControl::slotPassthroughChanged, Qt::DirectConnection);
+            &SyncControl::slotPassthroughChanged,
+            Qt::DirectConnection);
 
     m_pQuantize = new ControlProxy(group, "quantize", this);
 
@@ -103,7 +109,7 @@ SyncControl::~SyncControl() {
 }
 
 void SyncControl::setEngineControls(RateControl* pRateControl,
-                                    BpmControl* pBpmControl) {
+        BpmControl* pBpmControl) {
     m_pRateControl = pRateControl;
     m_pBpmControl = pBpmControl;
 
@@ -115,8 +121,7 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pLocalBpm = new ControlProxy(getGroup(), "local_bpm", this);
 
     m_pRateRatio = new ControlProxy(getGroup(), "rate_ratio", this);
-    m_pRateRatio->connectValueChanged(this, &SyncControl::slotRateChanged,
-                                       Qt::DirectConnection);
+    m_pRateRatio->connectValueChanged(this, &SyncControl::slotRateChanged, Qt::DirectConnection);
 
     m_pSyncPhaseButton = new ControlProxy(getGroup(), "beatsync_phase", this);
 
@@ -128,8 +133,8 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
     DEBUG_ASSERT(m_pVCEnabled->valid());
 
-    m_pVCEnabled->connectValueChanged(this, &SyncControl::slotVinylControlChanged,
-                                      Qt::DirectConnection);
+    m_pVCEnabled->connectValueChanged(
+            this, &SyncControl::slotVinylControlChanged, Qt::DirectConnection);
 #endif
 }
 
@@ -452,7 +457,7 @@ void SyncControl::slotControlBeatSyncTempo(double value) {
         return;
     }
 
-    double multiplier = determineBpmMultiplier(fileBpm(),  target->getBaseBpm());
+    double multiplier = determineBpmMultiplier(fileBpm(), target->getBaseBpm());
     m_pRateRatio->set(target->getBpm() * multiplier / localBpm);
 }
 
