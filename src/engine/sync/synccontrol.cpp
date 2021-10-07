@@ -457,7 +457,10 @@ void SyncControl::slotControlBeatSyncTempo(double value) {
 }
 
 void SyncControl::slotControlBeatSync(double value) {
-    m_pSyncEnabled->setAndConfirm(value > 0);
+    if (value > 0) {
+        m_pChannel->getEngineBuffer()->requestEnableSync(true);
+        m_pChannel->getEngineBuffer()->requestEnableSync(false);
+    }
 }
 
 void SyncControl::slotControlPlay(double play) {
