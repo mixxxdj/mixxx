@@ -19,7 +19,7 @@ const QString EffectsManager::kNoEffectString = QStringLiteral("---");
 namespace {
 constexpr QChar kEffectGroupSeparator = '_';
 constexpr QChar kGroupClose = ']';
-const unsigned int kEffectMessagPipeFifoSize = 2048;
+constexpr unsigned int kEffectMessagPipeFifoSize = 2048;
 const QRegularExpression kIntRegex(QStringLiteral(".*(\\d+).*"));
 } // anonymous namespace
 

@@ -33,7 +33,7 @@ class EngineDelay;
 
 // The number of channels to pre-allocate in various structures in the
 // engine. Prevents memory allocation in EngineMaster::addChannel.
-static const int kPreallocatedChannels = 64;
+static constexpr int kPreallocatedChannels = 64;
 
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT

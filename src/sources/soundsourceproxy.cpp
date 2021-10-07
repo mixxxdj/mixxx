@@ -284,9 +284,9 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
         // silently ignore empty URLs
         return {};
     }
-    const QString fileExtension =
-            mixxx::SoundSource::getFileExtensionFromUrl(url);
-    if (fileExtension.isEmpty()) {
+    const QString fileType =
+            mixxx::SoundSource::getTypeFromUrl(url);
+    if (fileType.isEmpty()) {
         kLogger.warning()
                 << "Unknown file type:"
                 << url.toString();
@@ -294,7 +294,7 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
     }
     const auto providerRegistrations =
             allProviderRegistrationsForFileExtension(
-                    fileExtension);
+                    fileType);
     if (providerRegistrations.isEmpty()) {
         kLogger.warning()
                 << "Unsupported file type:"

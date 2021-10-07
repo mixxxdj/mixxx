@@ -54,9 +54,9 @@ bool AnalyzerWaveform::initialize(TrackPointer tio,
     createFilters(sampleRate);
 
     //TODO (vrince) Do we want to expose this as settings or whatever ?
-    const int mainWaveformSampleRate = 441;
+    constexpr int mainWaveformSampleRate = 441;
     // two visual sample per pixel in full width overview in full hd
-    const int summaryWaveformSamples = 2 * 1920;
+    constexpr int summaryWaveformSamples = 2 * 1920;
 
     m_waveform = WaveformPointer(new Waveform(
             sampleRate, totalSamples, mainWaveformSampleRate, -1));

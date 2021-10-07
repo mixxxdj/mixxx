@@ -26,9 +26,8 @@ EngineSync::EngineSync(UserSettingsPointer pConfig)
 EngineSync::~EngineSync() {
     // We use the slider value because that is never set to 0.0.
     const mixxx::Bpm bpm = m_pInternalClock->getBpm();
-    m_pConfig->set(ConfigKey(kInternalClockGroup, "bpm"),
-            ConfigValue(
-                    bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined));
+    m_pConfig->setValue(ConfigKey(kInternalClockGroup, "bpm"),
+            bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined);
     delete m_pInternalClock;
 }
 

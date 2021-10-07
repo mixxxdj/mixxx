@@ -10,8 +10,8 @@
 #include "util/compatibility/qmutex.h"
 
 // In practice we process stats pipes about once a minute @1ms latency.
-const int kStatsPipeSize = 1 << 10;
-const int kProcessLength = kStatsPipeSize * 4 / 5;
+constexpr int kStatsPipeSize = 1 << 10;
+constexpr int kProcessLength = kStatsPipeSize * 4 / 5;
 
 // static
 bool StatsManager::s_bStatsManagerEnabled = false;

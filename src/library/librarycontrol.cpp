@@ -213,13 +213,9 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotTrackColorNext);
 
-    // Control to navigate between widgets (tab/shit+tab button)
+    // Controls to select saved searchbox queries and to clear the searchbox
     m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "search_history_next"));
-    m_pSelectHistoryPrev = std::make_unique<ControlPushButton>(
-            ConfigKey("[Library]", "search_history_prev"));
-    m_pSelectHistorySelect = std::make_unique<ControlEncoder>(
-            ConfigKey("[Library]", "search_history_selector"), false);
     connect(m_pSelectHistoryNext.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -227,10 +223,12 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     return;
                 }
-                if (value >= 1.0) {
+                if (value > 0.0) {
                     m_pSearchbox->slotMoveSelectedHistory(1);
                 }
             });
+    m_pSelectHistoryPrev = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "search_history_prev"));
     connect(m_pSelectHistoryPrev.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -238,10 +236,12 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     return;
                 }
-                if (value >= 1.0) {
+                if (value > 0.0) {
                     m_pSearchbox->slotMoveSelectedHistory(-1);
                 }
             });
+    m_pSelectHistorySelect = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "search_history_selector"), false);
     connect(m_pSelectHistorySelect.get(),
             &ControlEncoder::valueChanged,
             this,
@@ -249,8 +249,22 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     return;
                 }
-                if (steps >= 1.0 || steps <= -1.0) {
+                int iSteps = static_cast<int>(steps);
+                if (iSteps) {
                     m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(steps));
+                }
+            });
+    m_pClearSearch = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "clear_search"));
+    connect(m_pClearSearch.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value > 0.0) {
+                    m_pSearchbox->slotClearSearch();
                 }
             });
 

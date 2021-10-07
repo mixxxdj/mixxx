@@ -11,7 +11,7 @@
 #include "util/xml.h"
 
 // The maximum number of effect parameters we're going to support.
-const unsigned int kDefaultMaxParameters = 16;
+constexpr unsigned int kDefaultMaxParameters = 16;
 
 EffectSlot::EffectSlot(const QString& group,
                        const unsigned int iChainNumber,

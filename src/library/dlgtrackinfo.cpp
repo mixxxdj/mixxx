@@ -560,30 +560,14 @@ void DlgTrackInfo::slotBpmClear() {
 }
 
 void DlgTrackInfo::slotBpmConstChanged(int state) {
-    if (state != Qt::Unchecked) {
-        // const beatgrid requested
-        const auto bpm = mixxx::Bpm(spinBpm->value());
-        if (bpm.isValid()) {
-            // Since the user is not satisfied with the beat map,
-            // it is hard to predict a fitting beat. We know that we
-            // cannot use the first beat, since it is out of sync in
-            // almost all cases.
-            // The cue point should be set on a beat, so this seems
-            // to be a good alternative
-            const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
-            m_pBeatsClone = mixxx::Beats::fromConstTempo(
-                    m_pLoadedTrack->getSampleRate(),
-                    cuePosition,
-                    bpm);
-        } else {
-            m_pBeatsClone.reset();
-        }
-        spinBpm->setEnabled(true);
-        bpmTap->setEnabled(true);
-    } else {
+    if (state == Qt::Unchecked) {
         // try to reload BeatMap from the Track
         reloadTrackBeats(*m_pLoadedTrack);
+        return;
     }
+    spinBpm->setEnabled(true);
+    bpmTap->setEnabled(true);
+    slotSpinBpmValueChanged(spinBpm->value());
 }
 
 void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
@@ -609,19 +593,25 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     if (!m_pBeatsClone) {
-        const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
+        mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
+        // This should never happen, but we cannot be sure
+        VERIFY_OR_DEBUG_ASSERT(cuePosition.isValid()) {
+            cuePosition = mixxx::audio::kStartFramePos;
+        }
         m_pBeatsClone = mixxx::Beats::fromConstTempo(
                 m_pLoadedTrack->getSampleRate(),
-                cuePosition,
+                // Cue positions might be fractional, i.e. not on frame boundaries!
+                cuePosition.toNearestFrameBoundary(),
                 bpm);
     }
 
-    const mixxx::Bpm oldValue = m_pBeatsClone->getBpm();
-    if (oldValue == bpm) {
-        return;
+    if (m_pBeatsClone) {
+        const mixxx::Bpm oldValue = m_pBeatsClone->getBpm();
+        if (oldValue == bpm) {
+            return;
+        }
+        m_pBeatsClone = m_pBeatsClone->setBpm(bpm);
     }
-
-    m_pBeatsClone = m_pBeatsClone->setBpm(bpm);
 
     updateSpinBpmFromBeats();
 }

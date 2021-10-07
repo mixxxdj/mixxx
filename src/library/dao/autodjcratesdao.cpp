@@ -42,12 +42,12 @@
 
 namespace {
 // Percentage of most and least played tracks to ignore [0,50)
-const int kLeastPreferredPercent = 15;
+constexpr int kLeastPreferredPercent = 15;
 
 // These consts are only used for DEBUG_ASSERTs
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-const int kLeastPreferredPercentMin = 0;
-const int kLeastPreferredPercentMax = 50;
+constexpr int kLeastPreferredPercentMin = 0;
+constexpr int kLeastPreferredPercentMax = 50;
 #endif
 
 int bounded_rand(int highest) {

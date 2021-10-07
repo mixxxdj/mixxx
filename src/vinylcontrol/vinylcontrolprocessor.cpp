@@ -225,7 +225,7 @@ void VinylControlProcessor::receiveBuffer(const AudioInput& input,
         return;
     }
 
-    const int kChannels = 2;
+    constexpr int kChannels = 2;
     const int nSamples = nFrames * kChannels;
     int samplesWritten = pSamplePipe->write(pBuffer, nSamples);
 
