@@ -780,7 +780,14 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
                 } else {
                     // Else remove the tracks from playlist/crate
                     // confirmation dialog
-                    pTrackModel->removeTracks(indices);
+                    QMessageBox::StandardButton response;
+                    response = QMessageBox::question(this,
+                            tr("Confirm removal of track(s)"),
+                            tr("Are you sure you want to remove this/these "
+                               "track(s) from this crate/playlist?"));
+                    if (response == QMessageBox::Yes) {
+                        pTrackModel->removeTracks(indices);
+                    }
                 }
             }
         }
