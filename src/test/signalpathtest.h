@@ -155,11 +155,14 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     }
 
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
+        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+        if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+            pEngineDeck->getEngineBuffer()->slotEjectTrack(1);
+        }
         pDeck->slotLoadTrack(pTrack, false);
 
         // Wait for the track to load.
         ProcessBuffer();
-        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
         while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
             QTest::qSleep(1); // millis
         }

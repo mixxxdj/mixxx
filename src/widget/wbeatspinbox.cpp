@@ -1,5 +1,6 @@
 #include "widget/wbeatspinbox.h"
 
+#include <QApplication>
 #include <QLineEdit>
 #include <QRegularExpression>
 
@@ -293,6 +294,18 @@ bool WBeatSpinBox::event(QEvent* pEvent) {
         }
     }
     return QDoubleSpinBox::event(pEvent);
+}
+
+void WBeatSpinBox::keyPressEvent(QKeyEvent* pEvent) {
+    // Return key applies current value and sends a Shift+Tab event in order
+    // to focus a library widget. In official skins this would be the tracks table.
+    if (pEvent->key() == Qt::Key_Return) {
+        QDoubleSpinBox::keyPressEvent(pEvent);
+        QKeyEvent returnKeyEvent = QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
+        QApplication::sendEvent(this, &returnKeyEvent);
+        return;
+    }
+    return QDoubleSpinBox::keyPressEvent(pEvent);
 }
 
 bool WBeatLineEdit::event(QEvent* pEvent) {

@@ -1,5 +1,6 @@
 #include "widget/weffectselector.h"
 
+#include <QApplication>
 #include <QtDebug>
 
 #include "effects/effectsmanager.h"
@@ -13,9 +14,11 @@ WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManag
           m_iEffectSlotIndex(-1),
           m_pEffectsManager(pEffectsManager),
           m_pVisibleEffectsList(pEffectsManager->getVisibleEffectsList()) {
-    // Prevent this widget from getting focused to avoid
-    // interfering with using the library via keyboard.
-    setFocusPolicy(Qt::NoFocus);
+    // Prevent this widget from getting focused by Tab/Shift+Tab
+    // to avoid interfering with using the library via keyboard.
+    // Allow click focus though so the list can always be opened by mouse,
+    // see https://bugs.launchpad.net/mixxx/+bug/1902125
+    setFocusPolicy(Qt::ClickFocus);
 }
 
 void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
@@ -88,6 +91,12 @@ void WEffectSelector::slotEffectSelected(int newIndex) {
     m_pEffectSlot->loadEffectWithDefaults(pManifest);
 
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
+    // After selecting an effect send Shift+Tab to move focus to the next
+    // keyboard-focusable widget (tracks table in official skins) in order
+    // to immediately allow keyboard shortcuts again.
+    QKeyEvent backwardFocusKeyEvent =
+            QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
+    QApplication::sendEvent(this, &backwardFocusKeyEvent);
 }
 
 void WEffectSelector::slotEffectUpdated() {

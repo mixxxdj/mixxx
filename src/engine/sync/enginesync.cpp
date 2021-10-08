@@ -88,9 +88,8 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     // Second, figure out what Syncable should be used to initialize the leader
     // parameters, if any. Usually this is the new leader. (Note, that pointer might be null!)
     Syncable* pParamsSyncable = m_pLeaderSyncable;
-    // But if we are newly soft leader, we need to match to some other deck.
-    if (pSyncable == m_pLeaderSyncable && pSyncable != oldLeader &&
-            mode != SyncMode::LeaderExplicit) {
+    // But if we are newly leader, we need to match to some other deck.
+    if (pSyncable == m_pLeaderSyncable && pSyncable != oldLeader) {
         pParamsSyncable = findBpmMatchTarget(pSyncable);
         if (!pParamsSyncable) {
             // We weren't able to find anything to match to, so set ourselves as the
@@ -111,7 +110,6 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             pSyncable->requestSync();
         }
     }
-
 }
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
@@ -213,7 +211,7 @@ Syncable* EngineSync::pickLeader(Syncable* enabling_syncable) {
         return m_pLeaderSyncable;
     }
 
-    // First preference: some other sync deck that is not playing.
+    // First preference: some other sync deck that is playing.
     // Note, if we are using PREFER_LOCK_BPM we don't use this option.
     Syncable* first_other_playing_deck = nullptr;
     // Second preference: whatever the first playing sync deck is, even if it's us.
@@ -430,7 +428,8 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) {
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
+        kLogger.trace() << "EngineSync::notifyInstantaneousBpmChanged"
+                        << pSyncable->getGroup() << bpm;
     }
     if (pSyncable != m_pInternalClock) {
         return;
@@ -534,7 +533,7 @@ void EngineSync::onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSi
     m_pInternalClock->onCallbackEnd(sampleRate, bufferSize);
 }
 
-EngineChannel* EngineSync::getLeader() const {
+EngineChannel* EngineSync::getLeaderChannel() const {
     return m_pLeaderSyncable ? m_pLeaderSyncable->getChannel() : nullptr;
 }
 
