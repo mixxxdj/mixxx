@@ -44,15 +44,12 @@ bool EffectChainPresetListModel::dropMimeData(
             row = stringList().size();
         }
     }
-    QStringList presetNames;
-    for (const auto& pPreset : m_pPresetManager->getPresetsSorted()) {
-        presetNames.append(pPreset->name());
-    }
 
     const QStringList mimeTextLines = data->text().split(kMimeTextDelimiter);
     QStringList chainList = stringList();
     for (const auto& line : mimeTextLines) {
-        if (!presetNames.contains(line)) {
+        // check that the dropped text is the name of a preset
+        if (!m_pPresetManager->getPreset(line)) {
             continue;
         }
 
