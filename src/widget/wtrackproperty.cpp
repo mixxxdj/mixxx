@@ -44,6 +44,11 @@ void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 
     m_property = context.selectString(node, "Property");
+
+    // Check if property with that name exists in Track class
+    if (Track::staticMetaObject.indexOfProperty(m_property.toUtf8().constData()) == -1) {
+        qWarning() << "WTrackProperty: Unknown track property:" << m_property;
+    }
 }
 
 void WTrackProperty::slotTrackLoaded(TrackPointer pTrack) {
