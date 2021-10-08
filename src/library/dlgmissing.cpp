@@ -92,3 +92,7 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
 bool DlgMissing::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
+
+void DlgMissing::setFocus() {
+    m_pTrackTableView->setFocus();
+}

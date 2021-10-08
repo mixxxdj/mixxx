@@ -629,23 +629,10 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
 }
 
 void LibraryControl::setLibraryFocus() {
-    // TODO: Set the focus of the library panel directly instead of sending tab from sidebar
-    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+    VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
         return;
     }
-    // Try to focus the sidebar.
-    m_pSidebarWidget->setFocus();
-
-    // This may have failed, for example when a Cover window still has focus,
-    // so make sure the sidebar is focused or we'll crash.
-    if (!m_pSidebarWidget->hasFocus()) {
-        return;
-    }
-    // Send Tab to move focus to the Tracks table.
-    // Obviously only works as desired if the skin widgets are arranged
-    // accordingly.
-    QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
-    QApplication::sendEvent(m_pSidebarWidget, &event);
+    m_pLibraryWidget->getActiveView()->setFocus();
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {

@@ -1028,6 +1028,10 @@ bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
 }
 
+void WTrackTableView::setFocus() {
+    QWidget::setFocus();
+}
+
 void WTrackTableView::saveCurrentVScrollBarPos() {
     saveVScrollBarPos(getTrackModel());
 }

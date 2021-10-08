@@ -32,6 +32,7 @@ class WTrackTableView : public WLibraryTableView {
     void onSearch(const QString& text) override;
     void onShow() override;
     bool hasFocus() const override;
+    void setFocus() override;
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
