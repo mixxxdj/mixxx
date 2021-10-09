@@ -185,7 +185,7 @@ Item {
 
                     let minutes = Math.floor(positionSeconds / 60);
                     let seconds = positionSeconds - (minutes * 60);
-                    let centiseconds = Math.trunc((seconds - Math.trunc(seconds)) * 100);
+                    const deciseconds = Math.trunc((seconds - Math.trunc(seconds)) * 10);
                     seconds = Math.trunc(seconds);
                     if (minutes < 10)
                         minutes = "0" + minutes;
@@ -193,10 +193,7 @@ Item {
                     if (seconds < 10)
                         seconds = "0" + seconds;
 
-                    if (centiseconds < 10)
-                        centiseconds = "0" + centiseconds;
-
-                    return minutes + ':' + seconds + "." + centiseconds;
+                    return minutes + ':' + seconds + "." + deciseconds;
                 }
 
                 Mixxx.ControlProxy {
