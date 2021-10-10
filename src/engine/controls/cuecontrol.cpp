@@ -1439,8 +1439,12 @@ void CueControl::cuePlay(double value) {
             // If quantize is enabled, jump to the cue point since it's not
             // necessarily where we currently are
             if (m_pQuantizeEnabled->toBool()) {
-                // Enginebuffer will quantize more exactly than we can.
-                seekAbs(mainCuePosition);
+                const auto newCuePosition = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        m_pCuePoint->get());
+                if (newCuePosition.isValid()) {
+                    // Enginebuffer will quantize more exactly than we can.
+                    seekAbs(newCuePosition);
+                }
             }
         }
     } else if (trackAt == TrackAt::Cue) {
