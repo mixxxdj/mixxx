@@ -48,8 +48,8 @@ class BeatMap final : public Beats {
             audio::FramePos position,
             double beats) const override;
     bool findPrevNextBeats(audio::FramePos position,
-            audio::FramePos* prevBeatPosition,
-            audio::FramePos* nextBeatPosition,
+            audio::FramePos* pPrevBeatPosition,
+            audio::FramePos* pNextBeatPosition,
             bool snapToNearBeats) const override;
     audio::FramePos findNthBeat(audio::FramePos position, int n) const override;
     std::unique_ptr<BeatIterator> findBeats(audio::FramePos startPosition,

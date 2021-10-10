@@ -186,12 +186,12 @@ audio::FramePos BeatGrid::findNBeatsFromPosition(audio::FramePos position, doubl
 };
 
 bool BeatGrid::findPrevNextBeats(audio::FramePos position,
-        audio::FramePos* prevBeatPosition,
-        audio::FramePos* nextBeatPosition,
+        audio::FramePos* pPrevBeatPosition,
+        audio::FramePos* pNextBeatPosition,
         bool snapToNearBeats) const {
     if (!isValid()) {
-        *prevBeatPosition = audio::kInvalidFramePos;
-        *nextBeatPosition = audio::kInvalidFramePos;
+        *pPrevBeatPosition = audio::kInvalidFramePos;
+        *pNextBeatPosition = audio::kInvalidFramePos;
         return false;
     }
 
@@ -214,8 +214,8 @@ bool BeatGrid::findPrevNextBeats(audio::FramePos position,
         // And nextBeat needs to be incremented.
         ++nextBeat;
     }
-    *prevBeatPosition = firstBeatPosition() + prevBeat * m_beatLengthFrames;
-    *nextBeatPosition = firstBeatPosition() + nextBeat * m_beatLengthFrames;
+    *pPrevBeatPosition = firstBeatPosition() + prevBeat * m_beatLengthFrames;
+    *pNextBeatPosition = firstBeatPosition() + nextBeat * m_beatLengthFrames;
     return true;
 }
 

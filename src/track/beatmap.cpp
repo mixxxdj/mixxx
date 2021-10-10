@@ -389,11 +389,11 @@ audio::FramePos BeatMap::findNBeatsFromPosition(audio::FramePos position, double
 };
 
 bool BeatMap::findPrevNextBeats(audio::FramePos position,
-        audio::FramePos* prevBeatPosition,
-        audio::FramePos* nextBeatPosition,
+        audio::FramePos* pPrevBeatPosition,
+        audio::FramePos* pNextBeatPosition,
         bool snapToNearBeats) const {
-    *prevBeatPosition = audio::kInvalidFramePos;
-    *nextBeatPosition = audio::kInvalidFramePos;
+    *pPrevBeatPosition = audio::kInvalidFramePos;
+    *pNextBeatPosition = audio::kInvalidFramePos;
     if (!isValid() || !position.isValid()) {
         return false;
     }
@@ -409,26 +409,26 @@ bool BeatMap::findPrevNextBeats(audio::FramePos position,
     for (; it != m_beats.end(); ++it) {
         audio::FramePos beatPos(it->frame_position());
         if (beatPos.value() > position.value() + kFrameEpsilon) {
-            *nextBeatPosition = beatPos;
+            *pNextBeatPosition = beatPos;
             break;
         }
-        *prevBeatPosition = beatPos;
+        *pPrevBeatPosition = beatPos;
     }
 
-    if (!prevBeatPosition->isValid() && it != m_beats.end()) {
+    if (!pPrevBeatPosition->isValid() && it != m_beats.end()) {
         // we have no previous beat, assume a beat with the same length as the fist
         ++it;
         if (it != m_beats.end()) {
             audio::FramePos afterNextBeatPos(it->frame_position());
-            audio::FramePos prevBeat = *nextBeatPosition - (afterNextBeatPos - *nextBeatPosition);
+            audio::FramePos prevBeat = *pNextBeatPosition - (afterNextBeatPos - *pNextBeatPosition);
             if (prevBeat.value() <= position.value() - kFrameEpsilon) {
-                *prevBeatPosition = prevBeat;
+                *pPrevBeatPosition = prevBeat;
             }
         }
     }
 
-    //qDebug() << "findPrevNextBeats()" << *prevBeatPosition << *nextBeatPosition;
-    return prevBeatPosition->isValid() && nextBeatPosition->isValid();
+    //qDebug() << "findPrevNextBeats()" << *pPrevBeatPosition << *pNextBeatPosition;
+    return pPrevBeatPosition->isValid() && pNextBeatPosition->isValid();
 }
 
 std::unique_ptr<BeatIterator> BeatMap::findBeats(

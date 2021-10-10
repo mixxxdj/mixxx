@@ -107,8 +107,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// `position`, and the second value is the next beat position. Returns
     /// `false` if *at least one* position is invalid.
     virtual bool findPrevNextBeats(audio::FramePos position,
-            audio::FramePos* prevBeatPosition,
-            audio::FramePos* nextBeatPosition,
+            audio::FramePos* pPrevBeatPosition,
+            audio::FramePos* pNextBeatPosition,
             bool snapToNearBeats) const = 0;
 
     /// Return the frame position of the first beat in the track, or an invalid
