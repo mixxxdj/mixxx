@@ -1,5 +1,6 @@
 #include "controllers/scripting/colormapper.h"
 
+#include <QVariant>
 #include <cmath>
 #include <cstdint>
 

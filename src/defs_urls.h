@@ -8,6 +8,10 @@
     TO_STR(major)                    \
     "." TO_STR(minor)
 
+// Icons used for the main window and dialogs
+#define MIXXX_ICON_PATH ":/images/icons/scalable/apps/mixxx.svg"
+#define MIXXX_LOGO_PATH ":/images/mixxx_logo.svg"
+
 #define MIXXX_WEBSITE_URL       "https://www.mixxx.org"
 #define MIXXX_WEBSITE_SHORT_URL "www.mixxx.org"
 #define MIXXX_SUPPORT_URL       "https://www.mixxx.org/support/"
@@ -35,7 +39,7 @@
 #define MIXXX_MANUAL_SHORTCUTS_URL \
     MIXXX_MANUAL_URL "/chapters/controlling_mixxx.html#using-a-keyboard"
 #define MIXXX_MANUAL_COMMANDLINEOPTIONS_URL \
-    MIXXX_MANUAL_URL "/chapters/appendix.html#command-line-options"
+    MIXXX_MANUAL_URL "/chapters/appendix/commandline_dev_tools.html"
 #define MIXXX_MANUAL_CONTROLLERS_URL \
     MIXXX_MANUAL_URL "/chapters/controlling_mixxx.html#using-midi-hid-controllers"
 #define MIXXX_MANUAL_CONTROLLERMANUAL_PREFIX \

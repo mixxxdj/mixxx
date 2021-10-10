@@ -15,7 +15,6 @@
 #include "mixer/playermanager.h"
 #include "moc_setlogfeature.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
@@ -35,9 +34,9 @@ SetlogFeature::SetlogFeature(
                           pLibrary->trackCollectionManager(),
                           "mixxx.db.model.setlog",
                           /*keep deleted tracks*/ true),
-                  QStringLiteral("SETLOGHOME")),
-          m_playlistId(kInvalidPlaylistId),
-          m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
+                  QStringLiteral("SETLOGHOME"),
+                  QStringLiteral("history")),
+          m_playlistId(kInvalidPlaylistId) {
     // clear old empty entries
     ScopedTransaction transaction(pLibrary->trackCollectionManager()
                                           ->internalCollection()
@@ -46,7 +45,7 @@ SetlogFeature::SetlogFeature(
     transaction.commit();
 
     //construct child model
-    m_childModel.setRootItem(TreeItem::newRoot(this));
+    m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
     constructChildModel(kInvalidPlaylistId);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous (below)"), this);
@@ -77,10 +76,6 @@ SetlogFeature::~SetlogFeature() {
 
 QVariant SetlogFeature::title() {
     return tr("History");
-}
-
-QIcon SetlogFeature::getIcon() {
-    return m_icon;
 }
 
 void SetlogFeature::bindLibraryWidget(
@@ -220,7 +215,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertTreeItemRows(itemList, 0);
+    m_pSidebarModel->insertTreeItemRows(itemList, 0);
 
     if (selectedId) {
         return indexFromPlaylistId(selectedId);
@@ -371,7 +366,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         m_recentTracks.push_front(currentPlayingTrackId);
 
         // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
-        const int kRecentTrackWindow = 6;
+        constexpr int kRecentTrackWindow = 6;
         while (m_recentTracks.size() > kRecentTrackWindow) {
             m_recentTracks.pop_back();
         }
@@ -403,7 +398,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
             if (view != nullptr) {
                 // We have a active view on the history. The user may have some
                 // important active selection. For example putting track into crates
-                // while the song changes trough autodj. The selection is then lost
+                // while the song changes through autodj. The selection is then lost
                 // and dataloss occurs
                 hasActiveView = true;
                 const QList<TrackId> trackIds = view->getSelectedTrackIds();

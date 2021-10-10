@@ -9,11 +9,14 @@
 #include "util/color/color.h"
 #include "util/versionstore.h"
 
-DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
+DlgAbout::DlgAbout()
+        : QDialog(nullptr),
+          Ui::DlgAboutDlg() {
     setupUi(this);
+    setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
-    mixxx_icon->load(QString(":/images/icons/mixxx.svg"));
-    mixxx_logo->load(QString(":/images/mixxx_logo.svg"));
+    mixxx_icon->load(QString(MIXXX_ICON_PATH));
+    mixxx_logo->load(QString(MIXXX_LOGO_PATH));
 
     version_label->setText(VersionStore::applicationName() +
             QStringLiteral(" ") + VersionStore::version());
@@ -108,7 +111,8 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Javier Vilarroig"
             << "Ball&oacute; Gy&ouml;rgy"
             << "Pino Toscano"
-            << "Alexander Horner";
+            << "Alexander Horner"
+            << "Michael Ehlen";
 
     QStringList specialThanks;
     specialThanks

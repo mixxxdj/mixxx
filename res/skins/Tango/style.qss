@@ -2902,21 +2902,11 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
     }*/
 
   /* checkbox in library "Played" column */
-  WTrackTableView::indicator {
-    margin: 0px;
-    padding: 0px;
-    color: #cfcfcf;
-    /* border is added to size defined above */
-    border: 1px solid rgba(151,151,151,128);
-    }
-  WTrackTableView::indicator:hover {
-      border: 1px solid #888;
-    }
   WTrackTableView::indicator:checked {
-    image: url(skin:/../Tango/buttons/btn_lib_checkmark.svg);
+    image: url(skin:/../Tango/buttons/btn_lib_checkbox_checked.svg);
     }
   WTrackTableView::indicator:unchecked {
-    background: none;
+    image: url(skin:/../Tango/buttons/btn_lib_checkbox.svg);
     }
 
 WLibrary QSpinBox {
@@ -2977,8 +2967,6 @@ WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
 WTrackTableViewHeader QMenu::indicator:unchecked,
 WTrackTableViewHeader QMenu::indicator:unchecked:selected,
-WTrackTableView::indicator:unchecked,
-WTrackTableView::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,

@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     # The Dockerfile for this container can be found at:
     # https://github.com/Holzhaus/mixxx-ci-docker
-    container: holzhaus/mixxx-ci:20210526
+    container: holzhaus/mixxx-ci:20210923
     steps:
     - name: "Check out repository"
       uses: actions/checkout@v2
@@ -18,16 +18,16 @@ jobs:
         fetch-depth: 2
 
     - name: "Detect code style issues (push)"
-      uses: pre-commit/action@v2.0.0
+      uses: pre-commit/action@v2.0.3
       if: github.event_name == 'push'
       # There are too many files in the repo that have formatting issues. We'll
       # disable these checks for now when pushing directly (but still run these
       # on Pull Requests!).
       env:
-        SKIP: end-of-file-fixer,trailing-whitespace,clang-format,eslint,no-commit-to-branch
+        SKIP: clang-format,eslint,no-commit-to-branch
 
     - name: "Detect code style issues (pull_request)"
-      uses: pre-commit/action@v2.0.0
+      uses: pre-commit/action@v2.0.3
       if: github.event_name == 'pull_request'
       env:
         SKIP: no-commit-to-branch
@@ -50,3 +50,7 @@ jobs:
       with:
         name: ${{ env.UPLOAD_PATCH_FILE }}
         path: ${{ env.UPLOAD_PATCH_FILE }}
+
+    # AppStream metadata has been generated/updated by a pre-commit hook
+    - name: "Validate AppStream metadata"
+      run: appstreamcli validate res/linux/org.mixxx.Mixxx.metainfo.xml

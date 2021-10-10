@@ -3,10 +3,6 @@
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
-// TagLib has support for MP4::File::hasMP4Tag() and MP4::Tag::isEmpty() version 1.10
-#define TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
-
 namespace mixxx {
 
 namespace {
@@ -381,10 +377,10 @@ bool exportTrackMetadataIntoTag(
     writeAtom(pTag, "\251grp", toTString(trackMetadata.getTrackInfo().getGrouping()));
 
     // Write both BPM fields (just in case)
-    if (trackMetadata.getTrackInfo().getBpm().hasValue()) {
+    if (trackMetadata.getTrackInfo().getBpm().isValid()) {
         // 16-bit integer value
         const int tmpoValue =
-                Bpm::valueToInteger(trackMetadata.getTrackInfo().getBpm().getValue());
+                Bpm::valueToInteger(trackMetadata.getTrackInfo().getBpm().value());
         pTag->setItem("tmpo", tmpoValue);
     } else {
         pTag->removeItem("tmpo");

@@ -22,7 +22,7 @@ namespace {
 // 0.918 (upscaling 44.1 kHz to 48 kHz) will produce an additional offset of 3 Frames
 // 0.459 (upscaling 44.1 kHz to 96 kHz) will produce an additional offset of 18 Frames
 // (Rubberband does not suffer this issue)
-const SINT kSeekOffsetFrames = 519;
+constexpr SINT kSeekOffsetFrames = 519;
 
 }  // namespace
 

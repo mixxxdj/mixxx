@@ -28,8 +28,8 @@ const bool sDebug = false;
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
 // Column 0 is skipped when calculating the the columns of the view table
-const int kIdColumn = 0;
-const int kMaxSortColumns = 3;
+constexpr int kIdColumn = 0;
+constexpr int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
@@ -695,7 +695,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) == column) {
         pTrack->setYear(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
-        pTrack->setGenre(value.toString());
+        updateTrackGenre(pTrack.get(), value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
         pTrack->setComposer(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) == column) {

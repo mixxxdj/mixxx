@@ -24,7 +24,7 @@ NumarkN4.cueReverseRoll=true; // enables the ability to do a reverse roll while 
 NumarkN4.hotcuePageIndexBehavior=true;
 
 // possible ranges (0.0..3.0 where 0.06=6%)
-NumarkN4.rateRanges = [0,   // default (gets set via script later; don't modifify)
+NumarkN4.rateRanges = [0,   // default (gets set via script later; don't modify)
     0.06, // one semitone
     0.24, // for maximum freedom
 ];

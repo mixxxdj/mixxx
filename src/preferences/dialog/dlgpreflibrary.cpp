@@ -12,16 +12,15 @@
 #include <QUrl>
 
 #include "library/dlgtrackmetadataexport.h"
+#include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgpreflibrary.cpp"
 #include "sources/soundsourceproxy.h"
 #include "widget/wsearchlineedit.h"
 
-namespace {
-const ConfigKey kSearchDebouncingTimeoutMillisKey =
-        ConfigKey("[Library]", "SearchDebouncingTimeoutMillis");
-} // namespace
+using namespace mixxx::library::prefs;
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
@@ -82,7 +81,7 @@ DlgPrefLibrary::DlgPrefLibrary(
     searchDebouncingTimeoutSpinBox->setMaximum(WSearchLineEdit::kMaxDebouncingTimeoutMillis);
     const auto searchDebouncingTimeoutMillis =
             m_pConfig->getValue(
-                    ConfigKey("[Library]", "SearchDebouncingTimeoutMillis"),
+                    kSearchDebouncingTimeoutMillisConfigKey,
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
     connect(searchDebouncingTimeoutSpinBox,
@@ -119,6 +118,8 @@ DlgPrefLibrary::DlgPrefLibrary(
     // Initialize the controls after all slots have been connected
     slotUpdate();
 }
+
+DlgPrefLibrary::~DlgPrefLibrary() = default;
 
 void DlgPrefLibrary::slotShow() {
     m_bAddedDirectory = false;
@@ -183,10 +184,9 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_banshee->setChecked(true);
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
-    checkBox_show_clementine->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
     radioButton_dbclick_bottom->setChecked(false);
-    checkBoxEditMetadataSelectedClicked->setChecked(PREF_LIBRARY_EDIT_METADATA_DEFAULT);
+    checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
@@ -197,10 +197,10 @@ void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","RescanOnStartup"), false));
-    checkBox_SyncTrackMetadataExport->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","SyncTrackMetadataExport"), false));
-    checkBox_SeratoMetadataExport->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]", "SeratoMetadataExport"), false));
+    checkBox_SyncTrackMetadataExport->setChecked(
+            m_pConfig->getValue(kSyncTrackMetadataExportConfigKey, false));
+    checkBox_SeratoMetadataExport->setChecked(
+            m_pConfig->getValue(kSeratoMetadataExportConfigKey, false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
@@ -211,8 +211,6 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowITunesLibrary"), true));
     checkBox_show_traktor->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
-    checkBox_show_clementine->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]", "ShowClementineLibrary"), true));
     checkBox_show_rekordbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowRekordboxLibrary"), true));
     checkBox_show_serato->setChecked(m_pConfig->getValue(
@@ -236,8 +234,8 @@ void DlgPrefLibrary::slotUpdate() {
     }
 
     bool editMetadataSelectedClick = m_pConfig->getValue(
-            ConfigKey("[Library]","EditMetadataSelectedClick"),
-            PREF_LIBRARY_EDIT_METADATA_DEFAULT);
+            kEditMetadataSelectedClickConfigKey,
+            kEditMetadataSelectedClickDefault);
     checkBoxEditMetadataSelectedClicked->setChecked(editMetadataSelectedClick);
     m_pLibrary->setEditMedatataSelectedClick(editMetadataSelectedClick);
 
@@ -304,16 +302,16 @@ void DlgPrefLibrary::slotRemoveDir() {
         return;
     }
 
-    Library::RemovalType removalType;
+    LibraryRemovalType removalType;
     if (removeMsgBox.clickedButton() == hideAllButton) {
-        removalType = Library::RemovalType::HideTracks;
+        removalType = LibraryRemovalType::HideTracks;
     } else if (removeMsgBox.clickedButton() == deleteAllButton) {
-        removalType = Library::RemovalType::PurgeTracks;
+        removalType = LibraryRemovalType::PurgeTracks;
     } else {
         // Only used in DEBUG_ASSERT
         Q_UNUSED(leaveUnchangedButton);
         DEBUG_ASSERT(removeMsgBox.clickedButton() == leaveUnchangedButton);
-        removalType = Library::RemovalType::KeepTracks;
+        removalType = LibraryRemovalType::KeepTracks;
     }
 
     emit requestRemoveDir(fd, removalType);
@@ -366,10 +364,12 @@ void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
 void DlgPrefLibrary::slotApply() {
     m_pConfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]","SyncTrackMetadataExport"),
-                ConfigValue((int)checkBox_SyncTrackMetadataExport->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]", "SeratoMetadataExport"),
-            ConfigValue(static_cast<int>(checkBox_SeratoMetadataExport->isChecked())));
+    m_pConfig->set(
+            kSyncTrackMetadataExportConfigKey,
+            ConfigValue{checkBox_SyncTrackMetadataExport->isChecked()});
+    m_pConfig->set(
+            kSeratoMetadataExportConfigKey,
+            ConfigValue{checkBox_SeratoMetadataExport->isChecked()});
     m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
@@ -380,8 +380,6 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]", "ShowClementineLibrary"),
-            ConfigValue((int)checkBox_show_clementine->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowRekordboxLibrary"),
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
@@ -399,7 +397,7 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(ConfigKey("[Library]","TrackLoadAction"),
                 ConfigValue(dbclick_status));
 
-    m_pConfig->set(ConfigKey("[Library]", "EditMetadataSelectedClick"),
+    m_pConfig->set(kEditMetadataSelectedClickConfigKey,
             ConfigValue(checkBoxEditMetadataSelectedClicked->checkState()));
     m_pLibrary->setEditMedatataSelectedClick(
             checkBoxEditMetadataSelectedClicked->checkState());
@@ -450,7 +448,7 @@ void DlgPrefLibrary::slotSelectFont() {
 
 void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebouncingTimeoutMillis) {
     m_pConfig->setValue(
-            kSearchDebouncingTimeoutMillisKey,
+            kSearchDebouncingTimeoutMillisConfigKey,
             searchDebouncingTimeoutMillis);
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 }

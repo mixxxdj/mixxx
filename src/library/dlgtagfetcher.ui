@@ -17,7 +17,7 @@
    <item>
     <widget class="QStackedWidget" name="stack">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="results_page">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -45,9 +45,17 @@
          <attribute name="headerMinimumSectionSize">
           <number>50</number>
          </attribute>
+         <attribute name="headerStretchLastSection">
+          <bool>true</bool>
+         </attribute>
          <column>
           <property name="text">
-           <string>Year</string>
+           <string>Title</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Artist</string>
           </property>
          </column>
          <column>
@@ -57,7 +65,7 @@
          </column>
          <column>
           <property name="text">
-           <string>Album Artist</string>
+           <string>Year</string>
           </property>
          </column>
          <column>
@@ -67,12 +75,7 @@
          </column>
          <column>
           <property name="text">
-           <string>Title</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Artist</string>
+           <string>Album Artist</string>
           </property>
          </column>
         </widget>

@@ -8,7 +8,6 @@
 
 #include "engine/sidechain/enginesidechain.h"
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "engine/engine.h"
@@ -79,7 +78,7 @@ void EngineSideChain::receiveBuffer(const AudioInput& input,
 void EngineSideChain::writeSamples(const CSAMPLE* pBuffer, int iFrames) {
     Trace sidechain("EngineSideChain::writeSamples");
     // TODO: remove assumption of stereo buffer
-    const int kChannels = 2;
+    constexpr int kChannels = 2;
     const int iSamples = iFrames * kChannels;
     int samples_written = m_sampleFifo.write(pBuffer, iSamples);
 

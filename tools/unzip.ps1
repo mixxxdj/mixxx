@@ -24,7 +24,7 @@ function unzipTo {
         $archiveFile = [System.IO.File]::Open($archiveFilePath, [System.IO.FileMode]::Open)
         $archive = [System.IO.Compression.ZipArchive]::new($archiveFile)
 
-        # If the directory exists, unzip item by itep to force the extration. Else it would fail if file already exists.
+        # If the directory exists, unzip item by itep to force the extraction. Else it would fail if file already exists.
         if (Test-Path $destinationPath) {
             foreach ($item in $archive.Entries) {
                 $destinationItemPath = [System.IO.Path]::Combine($destinationPath, $item.FullName)

@@ -79,6 +79,13 @@ DELETE FROM track_analysis WHERE track_id NOT IN (SELECT id FROM track_locations
 -- Post-cleanup maintenance                                          --
 -----------------------------------------------------------------------
 
+-- Rebuild the entire database file
+-- https://www.sqlite.org/lang_vacuum.html
 VACUUM;
 
-PRAGMA optimize;
+-- According to Richard Hipp himself executing VACUUM before ANALYZE is the
+-- recommended order: https://sqlite.org/forum/forumpost/62fb63a29c5f7810?t=h
+
+-- Update statistics for the query planner
+-- https://www.sqlite.org/lang_analyze.html
+ANALYZE;

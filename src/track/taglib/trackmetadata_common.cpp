@@ -7,10 +7,6 @@
 #include "util/duration.h"
 #include "util/logger.h"
 
-// TagLib has support for length in milliseconds since version 1.10
-#define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
-
 namespace mixxx {
 
 namespace {

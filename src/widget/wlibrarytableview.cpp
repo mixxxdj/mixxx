@@ -134,6 +134,17 @@ void WLibraryTableView::setTrackTableFont(const QFont& font) {
     setFont(font);
     QFontMetrics metrics(font);
     verticalHeader()->setMinimumSectionSize(metrics.height());
+    // Resize the 'Played' checkbox and the BPM lock icon.
+    // Note: this works well for library font sizes up to ~200% of the original
+    // system font's size (that set with Qt5 Settings respectively). Above that,
+    // the indicators start to overlap the item text because the painter rectangle
+    // is not resized (also depending on the system font size).
+    setStyleSheet(QStringLiteral(
+            "WTrackTableView::indicator,"
+            "#LibraryBPMButton::indicator {"
+            "height: %1px;"
+            "width: %1px;}")
+                          .arg(metrics.height() * 0.7));
 }
 
 void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {

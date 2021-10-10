@@ -105,7 +105,7 @@ class CoverInfoRelative {
     Source source;
     Type type;
 
-    /// An otional color that is calculated from the cover art
+    /// An optional color that is calculated from the cover art
     /// image if available. Supposed to be used as a background
     /// color when displaying a placeholder for the actual
     /// image.

@@ -52,7 +52,7 @@
 #include "util/widgethelper.h"
 
 DlgPreferences::DlgPreferences(
-        MixxxMainWindow* mixxx,
+        std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
         std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
         std::shared_ptr<SoundManager> pSoundManager,
         std::shared_ptr<PlayerManager> pPlayerManager,
@@ -133,17 +133,39 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
-    addPageWidget(PreferencesPage(
-                          new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+    DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
+            pScreensaverManager,
+            pSkinLoader,
+            m_pConfig);
+    connect(pInterfacePage,
+            &DlgPrefInterface::tooltipModeChanged,
+            this,
+            &DlgPreferences::tooltipModeChanged);
+    connect(pInterfacePage,
+            &DlgPrefInterface::reloadUserInterface,
+            this,
+            &DlgPreferences::reloadUserInterface,
+            Qt::DirectConnection);
+    addPageWidget(PreferencesPage(pInterfacePage,
+                          new QTreeWidgetItem(
+                                  contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Interface"),
             "ic_preferences_interface.svg");
 
-    addPageWidget(PreferencesPage(
-                          new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Waveforms"),
-            "ic_preferences_waveforms.svg");
+    // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
+    if (pSkinLoader) {
+        DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, m_pConfig, pLibrary);
+        addPageWidget(PreferencesPage(
+                              pWaveformPage,
+                              new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+                tr("Waveforms"),
+                "ic_preferences_waveforms.svg");
+        connect(pWaveformPage,
+                &DlgPrefWaveform::reloadUserInterface,
+                this,
+                &DlgPreferences::reloadUserInterface,
+                Qt::DirectConnection);
+    }
 
     addPageWidget(PreferencesPage(
                           new DlgPrefColors(this, m_pConfig, pLibrary),

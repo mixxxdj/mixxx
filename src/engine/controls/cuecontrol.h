@@ -3,7 +3,6 @@
 #include <QAtomicInt>
 #include <QAtomicPointer>
 #include <QList>
-#include <QMutex>
 
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
@@ -11,6 +10,7 @@
 #include "preferences/usersettings.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
+#include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
 
 #define NUM_HOT_CUES 37
@@ -82,11 +82,11 @@ class HotcueControl : public QObject {
     void setCue(const CuePointer& pCue);
     void resetCue();
 
-    double getPosition() const;
-    void setPosition(double position);
+    mixxx::audio::FramePos getPosition() const;
+    void setPosition(mixxx::audio::FramePos position);
 
-    double getEndPosition() const;
-    void setEndPosition(double endPosition);
+    mixxx::audio::FramePos getEndPosition() const;
+    void setEndPosition(mixxx::audio::FramePos endPosition);
 
     void setType(mixxx::CueType type);
 
@@ -104,7 +104,7 @@ class HotcueControl : public QObject {
 
     /// Used for caching the preview state of this hotcue control
     /// for the case the cue is deleted during preview.
-    double getPreviewingPosition() const {
+    mixxx::audio::FramePos getPreviewingPosition() const {
         return m_previewingPosition.getValue();
     }
 
@@ -182,7 +182,7 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlPushButton> m_hotcueClear;
 
     ControlValueAtomic<mixxx::CueType> m_previewingType;
-    ControlValueAtomic<double> m_previewingPosition;
+    ControlValueAtomic<mixxx::audio::FramePos> m_previewingPosition;
 };
 
 class CueControl : public EngineControl {
@@ -206,7 +206,7 @@ class CueControl : public EngineControl {
   public slots:
     void slotLoopReset();
     void slotLoopEnabledChanged(bool enabled);
-    void slotLoopUpdated(double startPosition, double endPosition);
+    void slotLoopUpdated(mixxx::audio::FramePos startPosition, mixxx::audio::FramePos endPosition);
 
   private slots:
     void quantizeChanged(double v);
@@ -269,10 +269,10 @@ class CueControl : public EngineControl {
     void detachCue(HotcueControl* pControl);
     void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
     void loadCuesFromTrack();
-    double quantizeCuePoint(double position);
-    double getQuantizedCurrentPosition();
+    mixxx::audio::FramePos quantizeCuePoint(mixxx::audio::FramePos position);
+    mixxx::audio::FramePos getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
-    void seekOnLoad(double seekOnLoadPosition);
+    void seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition);
     void setHotcueFocusIndex(int hotcueIndex);
     int getHotcueFocusIndex() const;
 
@@ -289,7 +289,7 @@ class CueControl : public EngineControl {
     parented_ptr<ControlProxy> m_pBeatLoopActivate;
     parented_ptr<ControlProxy> m_pBeatLoopSize;
     bool m_bypassCueSetByPlay;
-    ControlValueAtomic<double> m_usedSeekOnLoadPosition;
+    ControlValueAtomic<mixxx::audio::FramePos> m_usedSeekOnLoadPosition;
 
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControls;
@@ -348,11 +348,7 @@ class CueControl : public EngineControl {
     QMap<QObject*, int> m_controlMap;
 
     // Must be locked when using the m_pLoadedTrack and it's properties
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    QRecursiveMutex m_trackMutex;
-#else
-    QMutex m_trackMutex;
-#endif
+    QT_RECURSIVE_MUTEX m_trackMutex;
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
     friend class HotcueControlTest;

@@ -4,6 +4,7 @@
 #include <QtDebug>
 #include <QtSql>
 
+#include "engine/engine.h"
 #include "library/queryutil.h"
 #include "track/track.h"
 #include "util/assert.h"
@@ -40,8 +41,10 @@ CuePointer cueFromRow(const QSqlRecord& row) {
     const auto id = DbId(row.value(row.indexOf("id")));
     TrackId trackId(row.value(row.indexOf("track_id")));
     int type = row.value(row.indexOf("type")).toInt();
-    int position = row.value(row.indexOf("position")).toInt();
-    int length = row.value(row.indexOf("length")).toInt();
+    const auto position =
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    row.value(row.indexOf("position")).toInt());
+    int lengthFrames = row.value(row.indexOf("length")).toInt() / mixxx::kEngineChannelCount;
     int hotcue = row.value(row.indexOf("hotcue")).toInt();
     QString label = labelFromQVariant(row.value(row.indexOf("label")));
     mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(row.value(row.indexOf("color")));
@@ -51,7 +54,7 @@ CuePointer cueFromRow(const QSqlRecord& row) {
     CuePointer pCue(new Cue(id,
             static_cast<mixxx::CueType>(type),
             position,
-            length,
+            lengthFrames,
             hotcue,
             label,
             *color));
@@ -165,8 +168,8 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
     // Bind values and execute query
     query.bindValue(":track_id", trackId.toVariant());
     query.bindValue(":type", static_cast<int>(cue->getType()));
-    query.bindValue(":position", cue->getPosition());
-    query.bindValue(":length", cue->getLength());
+    query.bindValue(":position", cue->getPosition().toEngineSamplePosMaybeInvalid());
+    query.bindValue(":length", cue->getLengthFrames() * mixxx::kEngineChannelCount);
     query.bindValue(":hotcue", cue->getHotCue());
     query.bindValue(":label", labelToQVariant(cue->getLabel()));
     query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));

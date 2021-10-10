@@ -273,6 +273,7 @@ void DlgLibraryExport::checkExistingDatabase() {
         }
 
     } catch (std::exception& e) {
+        Q_UNUSED(e);
         m_pExistingDatabaseLabel->setText(
                 tr("A database already exists in the chosen directory, "
                    "but there was a problem loading it. Export is not "

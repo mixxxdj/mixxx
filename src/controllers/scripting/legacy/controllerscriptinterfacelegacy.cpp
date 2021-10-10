@@ -11,11 +11,11 @@
 #include "util/time.h"
 
 namespace {
-const int kDecks = 16;
+constexpr int kDecks = 16;
 
 // Use 1ms for the Alpha-Beta dt. We're assuming the OS actually gives us a 1ms
 // timer.
-const int kScratchTimerMs = 1;
+constexpr int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 } // anonymous namespace
 
@@ -126,7 +126,7 @@ void ControllerScriptInterfaceLegacy::setValue(
         if (pControl &&
                 !m_st.ignore(
                         pControl, coScript->getParameterForValue(newValue))) {
-            coScript->slotSet(newValue);
+            coScript->set(newValue);
         }
     }
 }
@@ -621,7 +621,7 @@ void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
 
     // Set scratch2_enable
     if (pScratch2Enable != nullptr) {
-        pScratch2Enable->slotSet(1);
+        pScratch2Enable->set(1);
     }
 }
 
@@ -688,10 +688,10 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
 
         if (m_brakeActive[deck]) {
             // If in brake mode, set scratch2 rate to 0 and turn off the play button.
-            pScratch2->slotSet(0.0);
+            pScratch2->set(0.0);
             ControlObjectScript* pPlay = getControlObjectScript(group, "play");
             if (pPlay != nullptr) {
-                pPlay->slotSet(0.0);
+                pPlay->set(0.0);
             }
         }
 
@@ -701,7 +701,7 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
         if (pScratch2Enable == nullptr) {
             return; // abort and maybe it'll work on the next pass
         }
-        pScratch2Enable->slotSet(0);
+        pScratch2Enable->set(0);
 
         // Remove timer
         killTimer(timerId);
@@ -724,7 +724,7 @@ void ControllerScriptInterfaceLegacy::scratchDisable(int deck, bool ramp) {
         // Clear scratch2_enable
         ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
         if (pScratch2Enable != nullptr) {
-            pScratch2Enable->slotSet(0);
+            pScratch2Enable->set(0);
         }
         // Can't return here because we need scratchProcess to stop the timer.
         // So it's still actually ramping, we just won't hear or see it.
@@ -761,7 +761,7 @@ void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double fact
     // enable/disable scratch2 mode
     ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
     if (pScratch2Enable != nullptr) {
-        pScratch2Enable->slotSet(activate ? 1 : 0);
+        pScratch2Enable->set(activate ? 1 : 0);
     }
 
     // used in scratchProcess for the different timer behavior we need
@@ -792,7 +792,7 @@ void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double fact
 
         ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
         if (pScratch2 != nullptr) {
-            pScratch2->slotSet(initRate);
+            pScratch2->set(initRate);
         }
 
         // setup the filter with default alpha and beta*factor
@@ -824,7 +824,7 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
     // enable/disable scratch2 mode
     ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
     if (pScratch2Enable != nullptr) {
-        pScratch2Enable->slotSet(activate ? 1 : 0);
+        pScratch2Enable->set(activate ? 1 : 0);
     }
 
     // used in scratchProcess for the different timer behavior we need
@@ -851,12 +851,12 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
 
         ControlObjectScript* pPlay = getControlObjectScript(group, "play");
         if (pPlay != nullptr) {
-            pPlay->slotSet(1.0);
+            pPlay->set(1.0);
         }
 
         ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
         if (pScratch2 != nullptr) {
-            pScratch2->slotSet(initRate);
+            pScratch2->set(initRate);
         }
 
         // setup the filter like in brake(), with default alpha and beta*factor

@@ -16,9 +16,7 @@
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
-#ifdef __ENGINEPRIME__
 #include "util/parented_ptr.h"
-#endif
 
 class DlgHidden;
 class DlgMissing;
@@ -34,10 +32,9 @@ class MixxxLibraryFeature final : public LibraryFeature {
     ~MixxxLibraryFeature() override = default;
 
     QVariant title() override;
-    QIcon getIcon() override;
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
     void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard) override;
 #ifdef __ENGINEPRIME__
@@ -46,6 +43,10 @@ class MixxxLibraryFeature final : public LibraryFeature {
 
     bool hasTrackTable() override {
         return true;
+    }
+
+    LibraryTableModel* trackTableModel() const {
+        return m_pLibraryTableModel;
     }
 
     void searchAndActivate(const QString& query);
@@ -67,13 +68,12 @@ class MixxxLibraryFeature final : public LibraryFeature {
   private:
     const QString kMissingTitle;
     const QString kHiddenTitle;
-    const QIcon m_icon;
     TrackCollection* const m_pTrackCollection;
 
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
 
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
 
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;

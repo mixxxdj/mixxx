@@ -107,7 +107,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         // TODO: Although there is a mode with 4-band EQs, it's not feasible
         // right now to add support for learning both it and regular 3-band eqs.
         // Since 3-band is by far the most common, stick with that.
-        const int kMaxEqs = 3;
+        constexpr int kMaxEqs = 3;
         QList<QString> eqNames;
         eqNames.append(tr("Low EQ"));
         eqNames.append(tr("Mid EQ"));
@@ -224,24 +224,44 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("One-time beat sync (phase only)"),
             syncMenu);
     syncMenu->addSeparator();
-    addControl("[InternalClock]", "sync_master", tr("Internal Sync Master"),
-               tr("Toggle Internal Sync Master"), syncMenu);
-    addControl("[InternalClock]", "bpm", tr("Internal Master BPM"),
-               tr("Internal Master BPM"), syncMenu);
-    addControl("[InternalClock]", "bpm_up", tr("Internal Master BPM +1"),
-               tr("Increase internal master BPM by 1"), syncMenu);
+    addControl("[InternalClock]",
+            "sync_leader",
+            tr("Internal Sync Leader"),
+            tr("Toggle Internal Sync Leader"),
+            syncMenu);
+    addControl("[InternalClock]",
+            "bpm",
+            tr("Internal Leader BPM"),
+            tr("Internal Leader BPM"),
+            syncMenu);
+    addControl("[InternalClock]",
+            "bpm_up",
+            tr("Internal Leader BPM +1"),
+            tr("Increase internal Leader BPM by 1"),
+            syncMenu);
 
-    addControl("[InternalClock]", "bpm_down", tr("Internal Master BPM -1"),
-               tr("Decrease internal master BPM by 1"), syncMenu);
+    addControl("[InternalClock]",
+            "bpm_down",
+            tr("Internal Leader BPM -1"),
+            tr("Decrease internal Leader BPM by 1"),
+            syncMenu);
 
-    addControl("[InternalClock]", "bpm_up_small", tr("Internal Master BPM +0.1"),
-               tr("Increase internal master BPM by 0.1"), syncMenu);
-    addControl("[InternalClock]", "bpm_down_small", tr("Internal Master BPM -0.1"),
-               tr("Decrease internal master BPM by 0.1"), syncMenu);
+    addControl("[InternalClock]",
+            "bpm_up_small",
+            tr("Internal Leader BPM +0.1"),
+            tr("Increase internal Leader BPM by 0.1"),
+            syncMenu);
+    addControl("[InternalClock]",
+            "bpm_down_small",
+            tr("Internal Leader BPM -0.1"),
+            tr("Decrease internal Leader BPM by 0.1"),
+            syncMenu);
     syncMenu->addSeparator();
-    addDeckAndSamplerControl("sync_master", tr("Sync Master"), tr("Toggle sync master"), syncMenu);
-    addDeckAndSamplerControl("sync_mode", tr("Sync Mode"),
-                             tr("Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)"), syncMenu);
+    addDeckAndSamplerControl("sync_leader",
+            tr("Sync Leader"),
+            tr("Sync mode 3-state toggle / indicator (Off, Soft Leader, "
+               "Explicit Leader)"),
+            syncMenu);
 
     // Speed
     QMenu* speedMenu = addSubmenu(tr("Speed"));
@@ -722,6 +742,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             libraryMenu,
             false,
             m_libraryStr);
+    addControl("[Library]",
+            "clear_search",
+            tr("Clear search"),
+            tr("Clears the search query"),
+            libraryMenu,
+            false,
+            m_libraryStr);
 
     libraryMenu->addSeparator();
     addControl("[Recording]", "toggle_recording",
@@ -749,7 +776,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // When kNumEffectRacks is changed to >1 put effect unit actions into
     // separate "Effect Rack N" submenus.
-    const int kNumEffectRacks = 1;
+    constexpr int kNumEffectRacks = 1;
     for (int iRackNumber = 1; iRackNumber <= kNumEffectRacks; ++iRackNumber) {
         const QString rackGroup = StandardEffectRack::formatGroupString(
                 iRackNumber - 1);

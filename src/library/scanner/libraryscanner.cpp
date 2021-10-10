@@ -20,14 +20,14 @@
 namespace {
 
 // TODO(rryan) make configurable
-const int kScannerThreadPoolSize = 1;
+constexpr int kScannerThreadPoolSize = 1;
 
 mixxx::Logger kLogger("LibraryScanner");
 
 QAtomicInt s_instanceCounter(0);
 
 // Returns the number of affected rows or -1 on error
-int execCleanupQuery(FwdSqlQuery& query) {
+int execRowCountQuery(FwdSqlQuery& query) {
     VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
         return -1;
     }
@@ -44,6 +44,11 @@ void cleanUpDatabase(const QSqlDatabase& database) {
             << "Cleaning up database...";
     PerformanceTimer timer;
     timer.start();
+    // FIXME: The DELETE statement deletes more directory entries than necessary.
+    // The subselect only covers directories that contain track files. Hashes
+    // of parent directories that do not contain any track files will be deleted
+    // and then re-created during the next rescan. This should not really matter
+    // since the re-calculation of the hash is always required.
     const auto sqlStmt = QStringLiteral(
             "DELETE FROM LibraryHashes WHERE hash<>:unequalHash "
             "AND directory_path NOT IN "
@@ -52,17 +57,39 @@ void cleanUpDatabase(const QSqlDatabase& database) {
     query.bindValue(
             QStringLiteral(":unequalHash"),
             static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
-    auto numRows = execCleanupQuery(query);
-    if (numRows < 0) {
+    const auto numRows = execRowCountQuery(query);
+    VERIFY_OR_DEBUG_ASSERT(numRows >= 0) {
         kLogger.warning()
                 << "Failed to delete orphaned directory hashes";
-    } else if (numRows > 0) {
+    }
+    else if (numRows > 0) {
         kLogger.info()
                 << "Deleted" << numRows << "orphaned directory hashes";
     }
     kLogger.info()
             << "Finished database cleanup:"
             << timer.elapsed().debugMillisWithUnit();
+}
+
+/// Update statistics for the query planner
+/// See also: https://www.sqlite.org/lang_analyze.html
+void updateQueryPlannerStatisticsForDatabase(const QSqlDatabase& database) {
+    kLogger.info()
+            << "Updating query planner statistics for database...";
+    PerformanceTimer timer;
+    timer.start();
+    const auto sqlStmt = QStringLiteral("ANALYZE");
+    FwdSqlQuery query(database, sqlStmt);
+    const auto numRows = execRowCountQuery(query);
+    VERIFY_OR_DEBUG_ASSERT(numRows >= 0) {
+        kLogger.warning()
+                << "Failed to update query planner statistics for database";
+    }
+    else {
+        kLogger.info()
+                << "Finished updating query planner statistics for database:"
+                << timer.elapsed().debugMillisWithUnit();
+    }
 }
 
 } // anonymous namespace
@@ -173,10 +200,10 @@ void LibraryScanner::slotStartScan() {
 
     QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
     QHash<QString, mixxx::cache_key_t> directoryHashes = m_libraryHashDao.getDirectoryHashes();
-    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
-    QRegExp coverExtensionFilter =
-            QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
-                    Qt::CaseInsensitive);
+    QRegularExpression extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
+    QRegularExpression coverExtensionFilter =
+            QRegularExpression(CoverArtUtils::supportedCoverArtExtensionsRegex(),
+                    QRegularExpression::CaseInsensitiveOption);
     QStringList directoryBlacklist = ScannerUtil::getDirectoryBlacklist();
 
     m_scannerGlobal = ScannerGlobalPointer(
@@ -382,6 +409,11 @@ void LibraryScanner::slotFinishUnhashedScan() {
 
     if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
         cleanUpScan();
+    }
+
+    if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
+        const auto dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+        updateQueryPlannerStatisticsForDatabase(dbConnection);
     }
 
     if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {

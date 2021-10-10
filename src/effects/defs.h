@@ -1,8 +1,10 @@
 #pragma once
-#include "util/memory.h"
-#include "engine/channelhandle.h"
-#include <array>
 #include <QSharedPointer>
+#include <array>
+
+#include "engine/channelhandle.h"
+#include "util/compatibility/qhash.h"
+#include "util/memory.h"
 
 enum class EffectEnableState {
     Disabled,
@@ -22,9 +24,9 @@ enum class SignalProcessingStage {
     Postfader
 };
 
-inline uint qHash(
+inline qhash_seed_t qHash(
         SignalProcessingStage stage,
-        uint seed = 0) {
+        qhash_seed_t seed = 0) {
     return qHash(static_cast<uint>(stage), seed);
 };
 

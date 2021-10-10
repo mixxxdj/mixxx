@@ -3,7 +3,6 @@
 #include <QDir>
 #include <QGridLayout>
 #include <QLabel>
-#include <QMutexLocker>
 #include <QSplitter>
 #include <QStackedWidget>
 #include <QVBoxLayout>
@@ -17,6 +16,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "effects/effectsmanager.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_legacyskinparser.cpp"
@@ -410,7 +410,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 
 LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget* pParent) {
     m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");
-    m_pContext->setSkinBasePath(skinPath + "/");
+    m_pContext->setSkinBasePath(skinPath);
 
     QDomElement skinDocument = openSkin(skinPath);
     if (skinDocument.isNull()) {
@@ -1295,7 +1295,7 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     // to changes in the configuration.
     const auto searchDebouncingTimeoutMillis =
             m_pConfig->getValue(
-                    ConfigKey("[Library]","SearchDebouncingTimeoutMillis"),
+                    mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey,
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 
@@ -2308,7 +2308,5 @@ QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
     // <Style> nodes) with absolute file paths.
     // TODO Can be removed/disabled as soon as all target distros have the fixed
     // package in their repo.
-    // Note: It's safe to use the base path after parseSkin() has updated it
-    // (parseLaunchImage() appends "/" earlier)
     return style.replace("url(skin:", "url(" + m_pContext->getSkinBasePath());
 }

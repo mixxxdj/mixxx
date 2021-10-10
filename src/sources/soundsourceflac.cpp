@@ -67,7 +67,7 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
 
 // end callbacks
 
-const SINT kBitsPerSampleDefault = 0;
+constexpr SINT kBitsPerSampleDefault = 0;
 
 } // namespace
 
@@ -224,6 +224,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
                     }
                 }
             }
+            ++retryCount;
         }
 
         // Decoding starts before the actual target position

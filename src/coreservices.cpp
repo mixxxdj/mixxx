@@ -7,6 +7,7 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
@@ -30,6 +31,7 @@
 #include "util/font.h"
 #include "util/logger.h"
 #include "util/screensaver.h"
+#include "util/screensavermanager.h"
 #include "util/statsmanager.h"
 #include "util/time.h"
 #include "util/translations.h"
@@ -75,7 +77,7 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
 #if defined(Q_OS_LINUX)
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
-const int NUM_HANDLERS = 256;
+constexpr int NUM_HANDLERS = 256;
 WireToErrorType __oldHandlers[NUM_HANDLERS] = {nullptr};
 
 Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
@@ -101,9 +103,77 @@ inline QLocale inputLocale() {
 
 namespace mixxx {
 
-CoreServices::CoreServices(const CmdlineArgs& args)
+CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
         : m_runtime_timer(QLatin1String("CoreServices::runtime")),
-          m_cmdlineArgs(args) {
+          m_cmdlineArgs(args),
+          m_isInitialized(false) {
+    m_runtime_timer.start();
+    mixxx::Time::start();
+    ScopedTimer t("CoreServices::CoreServices");
+    // All this here is running without without start up screen
+    // Defer long initializations to CoreServices::initialize() which is
+    // called after the GUI is initialized
+    initializeSettings();
+    initializeLogging();
+    // Only record stats in developer mode.
+    if (m_cmdlineArgs.getDeveloper()) {
+        StatsManager::createInstance();
+    }
+    mixxx::Translations::initializeTranslations(
+            m_pSettingsManager->settings(), pApp, m_cmdlineArgs.getLocale());
+    initializeKeyboard();
+}
+
+CoreServices::~CoreServices() {
+    if (m_isInitialized) {
+        finalize();
+    }
+
+    // Tear down remaining stuff that was initialized in the constructor.
+    CLEAR_AND_CHECK_DELETED(m_pKeyboardEventFilter);
+    CLEAR_AND_CHECK_DELETED(m_pKbdConfig);
+    CLEAR_AND_CHECK_DELETED(m_pKbdConfigEmpty);
+
+    if (m_cmdlineArgs.getDeveloper()) {
+        StatsManager::destroy();
+    }
+
+    // HACK: Save config again. We saved it once before doing some dangerous
+    // stuff. We only really want to save it here, but the first one was just
+    // a precaution. The earlier one can be removed when stuff is more stable
+    // at exit.
+    m_pSettingsManager->save();
+    m_pSettingsManager.reset();
+
+    Sandbox::shutdown();
+
+    // Check for leaked ControlObjects and give warnings.
+    {
+        const QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
+                ControlDoublePrivate::takeAllInstances();
+        if (!leakedControls.isEmpty()) {
+            qWarning()
+                    << "The following"
+                    << leakedControls.size()
+                    << "controls were leaked:";
+            for (auto pCDP : leakedControls) {
+                ConfigKey key = pCDP->getKey();
+                qWarning() << key.group << key.item << pCDP->getCreatorCO();
+                // Deleting leaked objects helps to satisfy valgrind.
+                // These delete calls could cause crashes if a destructor for a control
+                // we thought was leaked is triggered after this one exits.
+                // So, only delete so if developer mode is on.
+                if (CmdlineArgs::Instance().getDeveloper()) {
+                    pCDP->deleteCreatorCO();
+                }
+            }
+            DEBUG_ASSERT(!"Controls were leaked!");
+        }
+        // Finally drop all shared pointers by exiting this scope
+    }
+
+    // Report the total time we have been running.
+    m_runtime_timer.elapsed(true);
 }
 
 void CoreServices::initializeSettings() {
@@ -122,11 +192,7 @@ void CoreServices::initializeSettings() {
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }
 
-void CoreServices::initialize(QApplication* pApp) {
-    m_runtime_timer.start();
-    mixxx::Time::start();
-    ScopedTimer t("CoreServices::initialize");
-
+void CoreServices::initializeLogging() {
     mixxx::LogFlags logFlags = mixxx::LogFlag::LogToFile;
     if (m_cmdlineArgs.getDebugAssertBreak()) {
         logFlags.setFlag(mixxx::LogFlag::DebugAssertBreak);
@@ -136,6 +202,14 @@ void CoreServices::initialize(QApplication* pApp) {
             m_cmdlineArgs.getLogLevel(),
             m_cmdlineArgs.getLogFlushLevel(),
             logFlags);
+}
+
+void CoreServices::initialize(QApplication* pApp) {
+    VERIFY_OR_DEBUG_ASSERT(!m_isInitialized) {
+        return;
+    }
+
+    ScopedTimer t("CoreServices::initialize");
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
         qCritical() << "Failed to register any SoundSource providers";
@@ -144,16 +218,6 @@ void CoreServices::initialize(QApplication* pApp) {
 
     VersionStore::logBuildDetails();
 
-    // Only record stats in developer mode.
-    if (m_cmdlineArgs.getDeveloper()) {
-        StatsManager::createInstance();
-    }
-
-    initializeKeyboard();
-
-    mixxx::Translations::initializeTranslations(
-            m_pSettingsManager->settings(), pApp, m_cmdlineArgs.getLocale());
-
 #if defined(Q_OS_LINUX)
     // XESetWireToError will segfault if running as a Wayland client
     if (pApp->platformName() == QLatin1String("xcb")) {
@@ -161,6 +225,8 @@ void CoreServices::initialize(QApplication* pApp) {
             XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
         }
     }
+#else
+    Q_UNUSED(pApp);
 #endif
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
@@ -183,6 +249,8 @@ void CoreServices::initialize(QApplication* pApp) {
     if (!initializeDatabase()) {
         exit(-1);
     }
+
+    m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(this);
 
     auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
 
@@ -260,6 +328,13 @@ void CoreServices::initialize(QApplication* pApp) {
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
 #endif
+
+    // Inhibit Screensaver
+    m_pScreensaverManager = std::make_shared<ScreensaverManager>(pConfig);
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::currentPlayingDeckChanged,
+            m_pScreensaverManager.get(),
+            &ScreensaverManager::slotCurrentPlayingDeckChanged);
 
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
@@ -372,6 +447,8 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
         }
     }
+
+    m_isInitialized = true;
 }
 
 void CoreServices::initializeKeyboard() {
@@ -455,8 +532,13 @@ bool CoreServices::initializeDatabase() {
     return MixxxDb::initDatabaseSchema(dbConnection);
 }
 
-void CoreServices::shutdown() {
-    Timer t("CoreServices::shutdown");
+void CoreServices::finalize() {
+    VERIFY_OR_DEBUG_ASSERT(m_isInitialized) {
+        qDebug() << "Skipping CoreServices finalization because it was never initialized.";
+        return;
+    }
+
+    Timer t("CoreServices::~CoreServices");
     t.start();
 
     // Stop all pending library operations
@@ -529,55 +611,11 @@ void CoreServices::shutdown() {
     m_pDbConnectionPool->destroyThreadLocalConnection();
     m_pDbConnectionPool.reset(); // should drop the last reference
 
-    // HACK: Save config again. We saved it once before doing some dangerous
-    // stuff. We only really want to save it here, but the first one was just
-    // a precaution. The earlier one can be removed when stuff is more stable
-    // at exit.
-    m_pSettingsManager->save();
-
     m_pTouchShift.reset();
 
-    // Check for leaked ControlObjects and give warnings.
-    {
-        const QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
-                ControlDoublePrivate::takeAllInstances();
-        if (!leakedControls.isEmpty()) {
-            qWarning()
-                    << "The following"
-                    << leakedControls.size()
-                    << "controls were leaked:";
-            for (auto pCDP : leakedControls) {
-                ConfigKey key = pCDP->getKey();
-                qWarning() << key.group << key.item << pCDP->getCreatorCO();
-                // Deleting leaked objects helps to satisfy valgrind.
-                // These delete calls could cause crashes if a destructor for a control
-                // we thought was leaked is triggered after this one exits.
-                // So, only delete so if developer mode is on.
-                if (CmdlineArgs::Instance().getDeveloper()) {
-                    pCDP->deleteCreatorCO();
-                }
-            }
-            DEBUG_ASSERT(!"Controls were leaked!");
-        }
-        // Finally drop all shared pointers by exiting this scope
-    }
-
-    Sandbox::shutdown();
-
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
-    m_pSettingsManager.reset();
-
-    CLEAR_AND_CHECK_DELETED(m_pKeyboardEventFilter);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfig);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfigEmpty);
+    m_pControlIndicatorTimer.reset();
 
     t.elapsed(true);
-    // Report the total time we have been running.
-    m_runtime_timer.elapsed(true);
-
-    if (m_cmdlineArgs.getDeveloper()) {
-        StatsManager::destroy();
-    }
 }
 
 } // namespace mixxx

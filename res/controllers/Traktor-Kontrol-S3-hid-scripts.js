@@ -1793,6 +1793,13 @@ TraktorS3.Controller.prototype.deckSwitchHandler = function(field) {
 
     var channel = this.Channels[field.group];
     var deck = channel.parentDeck;
+
+    var isScratching = engine.getValue(deck.activeChannel, "scratch2_enable");
+    if (isScratching) {
+        engine.setValue(deck.activeChannel, "scratch2", 0.0);
+        engine.setValue(deck.activeChannel, "scratch2_enable", false);
+    }
+
     deck.activateChannel(channel);
 };
 
@@ -2073,7 +2080,7 @@ TraktorS3.Controller.prototype.lightDeck = function(group, sendPackets) {
         deck.colorOutput(0, "!PreviewTrack");
         deck.colorOutput(0, "!LibraryFocus");
         deck.colorOutput(0, "!MaximizeLibrary");
-        deck.colorOutput(TraktorS3.JogDefaultOn, "!jogButton");
+        deck.colorOutput(deck.jogToggled, "!jogButton");
         if (group === "[Channel4]") {
             this.basicOutput(0, "[Master]", "!extButton");
         }

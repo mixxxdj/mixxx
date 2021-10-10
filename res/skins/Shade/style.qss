@@ -549,15 +549,13 @@ WTrackTableView {
   WTrackTableView::indicator {
     margin: 0px;
     padding: 0px;
-    color: #cfcfcf;
-    border: 1px solid transparent;
+    border: 0px;
     }
-    WTrackTableView::indicator:checked {
-      image: url(skin:/btn/btn_lib_checkmark.svg) no-repeat center center;
-      border: 1px solid #ff6600;
+  WTrackTableView::indicator:unchecked {
+    image: url(skin:/btn/btn_lib_checkbox.svg);
     }
-    WTrackTableView::indicator:unchecked {
-      border: 1px solid rgba(151,151,151,128);
+  WTrackTableView::indicator:checked {
+    image: url(skin:/btn/btn_lib_checkbox_checked.svg);
     }
 
 /* explicitly remove icons from unchecked items otherwise
@@ -566,8 +564,6 @@ WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
 WTrackTableViewHeader QMenu::indicator:unchecked,
 WTrackTableViewHeader QMenu::indicator:unchecked:selected,
-WTrackTableView::indicator:unchecked,
-WTrackTableView::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,

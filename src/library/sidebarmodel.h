@@ -15,6 +15,12 @@ class SidebarModel : public QAbstractItemModel {
     // for parented_ptr
     using QObject::parent;
 
+    enum Roles {
+        IconNameRole = Qt::UserRole + 1,
+        DataRole,
+    };
+    Q_ENUM(Roles);
+
     explicit SidebarModel(
             QObject* parent = nullptr);
     ~SidebarModel() override = default;
@@ -32,6 +38,7 @@ class SidebarModel : public QAbstractItemModel {
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index,
                   int role = Qt::DisplayRole) const override;
+    QHash<int, QByteArray> roleNames() const override;
     bool dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource);
     bool dragMoveAccept(const QModelIndex& index, const QUrl& url);
     bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
