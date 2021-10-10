@@ -3,8 +3,8 @@
 #include <QtDebug>
 
 #include "audio/types.h"
+#include "track/beats.h"
 #include "track/bpm.h"
-#include "track/newbeats.h"
 #include "util/memory.h"
 
 using namespace mixxx;
@@ -16,24 +16,24 @@ constexpr auto kSampleRate = audio::SampleRate(48000);
 constexpr auto kStartPosition = audio::FramePos(400);
 constexpr double kMaxBeatError = 1e-9;
 
-const auto kConstTempoBeats = beats::Beats(
+const auto kConstTempoBeats = Beats(
         kStartPosition,
         kBpm,
         kSampleRate,
         QString());
 
 // Create beats with 8 beats at 120 BPM, then 16 beats at 60 Bpm, followed by 120 BPM.
-const auto kNonConstTempoBeats = beats::Beats(
-        std::vector<beats::BeatMarker>{
-                beats::BeatMarker{kStartPosition, 8},
-                beats::BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2, 16},
+const auto kNonConstTempoBeats = Beats(
+        std::vector<BeatMarker>{
+                BeatMarker{kStartPosition, 8},
+                BeatMarker{kStartPosition + 8 * kSampleRate.value() / 2, 16},
         },
         kStartPosition + 8 * kSampleRate.value() / 2 + 16 * kSampleRate.value(),
         kBpm,
         kSampleRate,
         QString());
 
-TEST(NewBeatsTest, ConstTempoGetBpm) {
+TEST(BeatsTest, ConstTempoGetBpm) {
     EXPECT_DOUBLE_EQ(kBpm.value(),
             kConstTempoBeats
                     .getBpmInRange(
@@ -41,13 +41,13 @@ TEST(NewBeatsTest, ConstTempoGetBpm) {
                     .value());
 }
 
-TEST(NewBeatsTest, ConstTempoIteratorSubtract) {
+TEST(BeatsTest, ConstTempoIteratorSubtract) {
     EXPECT_EQ(kConstTempoBeats.cbegin(), kConstTempoBeats.cend() - 1);
     EXPECT_EQ(kConstTempoBeats.cbegin() - 5, kConstTempoBeats.cend() - 6);
     EXPECT_EQ(kConstTempoBeats.cbegin() - 10, kConstTempoBeats.cend() - 11);
 }
 
-TEST(NewBeatsTest, ConstTempoIteratorAddSubtractNegativeIsEquivalent) {
+TEST(BeatsTest, ConstTempoIteratorAddSubtractNegativeIsEquivalent) {
     EXPECT_EQ(kConstTempoBeats.cbegin() + 1, kConstTempoBeats.cbegin() - (-1));
     EXPECT_EQ(kConstTempoBeats.cbegin() + 5, kConstTempoBeats.cbegin() - (-5));
     EXPECT_EQ(kConstTempoBeats.cbegin() - 1, kConstTempoBeats.cbegin() + (-1));
@@ -58,7 +58,7 @@ TEST(NewBeatsTest, ConstTempoIteratorAddSubtractNegativeIsEquivalent) {
     EXPECT_EQ(kConstTempoBeats.cend() - 5, kConstTempoBeats.cend() + (-5));
 }
 
-TEST(NewBeatsTest, ConstTempoIteratorSubtractPosition) {
+TEST(BeatsTest, ConstTempoIteratorSubtractPosition) {
     const audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
     EXPECT_NEAR((*(kConstTempoBeats.cbegin() - 100)).value(),
             ((*kConstTempoBeats.cbegin()) - 100 * beatLengthFrames).value(),
@@ -68,13 +68,13 @@ TEST(NewBeatsTest, ConstTempoIteratorSubtractPosition) {
             kMaxBeatError);
 }
 
-TEST(NewBeatsTest, ConstTempoIteratorAdd) {
+TEST(BeatsTest, ConstTempoIteratorAdd) {
     EXPECT_EQ(kConstTempoBeats.cend(), kConstTempoBeats.cbegin() + 1);
     EXPECT_EQ(kConstTempoBeats.cend() + 5, kConstTempoBeats.cbegin() + 6);
     EXPECT_EQ(kConstTempoBeats.cend() + 10, kConstTempoBeats.cbegin() + 11);
 }
 
-TEST(NewBeatsTest, ConstTempoIteratorAddPosition) {
+TEST(BeatsTest, ConstTempoIteratorAddPosition) {
     const audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
     EXPECT_NEAR((*(kConstTempoBeats.cbegin() + 100)).value(),
             ((*kConstTempoBeats.cbegin()) + 100 * beatLengthFrames).value(),
@@ -84,7 +84,7 @@ TEST(NewBeatsTest, ConstTempoIteratorAddPosition) {
             kMaxBeatError);
 }
 
-TEST(NewBeatsTest, ConstTempoIteratorDifference) {
+TEST(BeatsTest, ConstTempoIteratorDifference) {
     EXPECT_EQ(-1, kConstTempoBeats.cbegin() - kConstTempoBeats.cend());
     EXPECT_EQ(1, kConstTempoBeats.cend() - kConstTempoBeats.cbegin());
 
@@ -92,33 +92,33 @@ TEST(NewBeatsTest, ConstTempoIteratorDifference) {
     EXPECT_EQ(0, kConstTempoBeats.cbegin() - kConstTempoBeats.cbegin());
 }
 
-TEST(NewBeatsTest, ConstTempoIteratorPrefixIncrement) {
+TEST(BeatsTest, ConstTempoIteratorPrefixIncrement) {
     auto it = kConstTempoBeats.cbegin();
     EXPECT_EQ(kConstTempoBeats.cbegin() + 1, ++it);
     EXPECT_EQ(kConstTempoBeats.cbegin() + 2, ++it);
 }
 
-TEST(NewBeatsTest, ConstTempoIteratorPostfixIncrement) {
+TEST(BeatsTest, ConstTempoIteratorPostfixIncrement) {
     auto it = kConstTempoBeats.cbegin();
     EXPECT_EQ(kConstTempoBeats.cbegin(), it++);
     EXPECT_EQ(kConstTempoBeats.cbegin() + 1, it++);
     EXPECT_EQ(kConstTempoBeats.cbegin() + 2, it);
 }
 
-TEST(NewBeatsTest, ConstTempoIteratorPrefixDecrement) {
+TEST(BeatsTest, ConstTempoIteratorPrefixDecrement) {
     auto it = kConstTempoBeats.cend();
     EXPECT_EQ(kConstTempoBeats.cend() - 1, --it);
     EXPECT_EQ(kConstTempoBeats.cend() - 2, --it);
 }
 
-TEST(NewBeatsTest, ConstTempoIteratorPostfixDecrement) {
+TEST(BeatsTest, ConstTempoIteratorPostfixDecrement) {
     auto it = kConstTempoBeats.cend();
     EXPECT_EQ(kConstTempoBeats.cend(), it--);
     EXPECT_EQ(kConstTempoBeats.cend() - 1, it--);
     EXPECT_EQ(kConstTempoBeats.cend() - 2, it);
 }
 
-TEST(NewBeatsTest, NonConstTempoIteratorAdd) {
+TEST(BeatsTest, NonConstTempoIteratorAdd) {
     EXPECT_EQ(kNonConstTempoBeats.cend(), kNonConstTempoBeats.cbegin() + 25);
 
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 30, kNonConstTempoBeats.cend() + 5);
@@ -127,7 +127,7 @@ TEST(NewBeatsTest, NonConstTempoIteratorAdd) {
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 45, kNonConstTempoBeats.cend() + 20);
 }
 
-TEST(NewBeatsTest, NonConstTempoIteratorSubtract) {
+TEST(BeatsTest, NonConstTempoIteratorSubtract) {
     EXPECT_EQ(kNonConstTempoBeats.cbegin(), kNonConstTempoBeats.cend() - 25);
 
     EXPECT_EQ(kNonConstTempoBeats.cbegin() - 5, kNonConstTempoBeats.cend() - 30);
@@ -136,14 +136,14 @@ TEST(NewBeatsTest, NonConstTempoIteratorSubtract) {
     EXPECT_EQ(kNonConstTempoBeats.cbegin() - 20, kNonConstTempoBeats.cend() - 45);
 }
 
-TEST(NewBeatsTest, NonConstTempoIteratorAddSubtract) {
+TEST(BeatsTest, NonConstTempoIteratorAddSubtract) {
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 5, kNonConstTempoBeats.cend() - 20);
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 10, kNonConstTempoBeats.cend() - 15);
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 15, kNonConstTempoBeats.cend() - 10);
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 20, kNonConstTempoBeats.cend() - 5);
 }
 
-TEST(NewBeatsTest, NonConstTempoIteratorDifference) {
+TEST(BeatsTest, NonConstTempoIteratorDifference) {
     EXPECT_EQ(-25, kNonConstTempoBeats.cbegin() - kNonConstTempoBeats.cend());
     EXPECT_EQ(25, kNonConstTempoBeats.cend() - kNonConstTempoBeats.cbegin());
 
@@ -151,7 +151,7 @@ TEST(NewBeatsTest, NonConstTempoIteratorDifference) {
     EXPECT_EQ(0, kNonConstTempoBeats.cbegin() - kNonConstTempoBeats.cbegin());
 }
 
-TEST(NewBeatsTest, NonConstTempoIteratorPrefixIncrement) {
+TEST(BeatsTest, NonConstTempoIteratorPrefixIncrement) {
     auto it = kNonConstTempoBeats.cbegin();
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 1, ++it);
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 2, ++it);
@@ -165,7 +165,7 @@ TEST(NewBeatsTest, NonConstTempoIteratorPrefixIncrement) {
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 9, it);
 }
 
-TEST(NewBeatsTest, NonConstTempoIteratorPostfixIncrement) {
+TEST(BeatsTest, NonConstTempoIteratorPostfixIncrement) {
     auto it = kNonConstTempoBeats.cbegin();
     EXPECT_EQ(kNonConstTempoBeats.cbegin(), it++);
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 1, it++);
@@ -179,7 +179,7 @@ TEST(NewBeatsTest, NonConstTempoIteratorPostfixIncrement) {
     EXPECT_EQ(kNonConstTempoBeats.cbegin() + 9, it);
 }
 
-TEST(NewBeatsTest, NonConstTempoIteratorPrefixDecrement) {
+TEST(BeatsTest, NonConstTempoIteratorPrefixDecrement) {
     auto it = kNonConstTempoBeats.cend();
     EXPECT_EQ(kNonConstTempoBeats.cend() - 1, --it);
     EXPECT_EQ(kNonConstTempoBeats.cend() - 2, --it);
@@ -193,7 +193,7 @@ TEST(NewBeatsTest, NonConstTempoIteratorPrefixDecrement) {
     EXPECT_EQ(kNonConstTempoBeats.cend() - 9, it);
 }
 
-TEST(NewBeatsTest, NonConstTempoIteratorPostfixDecrement) {
+TEST(BeatsTest, NonConstTempoIteratorPostfixDecrement) {
     auto it = kNonConstTempoBeats.cend();
     EXPECT_EQ(kNonConstTempoBeats.cend(), it--);
     EXPECT_EQ(kNonConstTempoBeats.cend() - 1, it--);
@@ -207,28 +207,28 @@ TEST(NewBeatsTest, NonConstTempoIteratorPostfixDecrement) {
     EXPECT_EQ(kNonConstTempoBeats.cend() - 9, it);
 }
 
-TEST(NewBeatsTest, ConstTempoSerialization) {
+TEST(BeatsTest, ConstTempoSerialization) {
     const QByteArray byteArray = kConstTempoBeats.toByteArray();
     ASSERT_EQ(BEAT_GRID_2_VERSION, kConstTempoBeats.getVersion());
 
-    auto pBeats = beats::Beats::fromByteArray(
+    auto pBeats = Beats::fromByteArray(
             kSampleRate, BEAT_GRID_2_VERSION, QString(), byteArray);
     ASSERT_NE(nullptr, pBeats);
 
     EXPECT_EQ(byteArray, pBeats->toByteArray());
 }
 
-TEST(NewBeatsTest, NonConstTempoSerialization) {
+TEST(BeatsTest, NonConstTempoSerialization) {
     const QByteArray byteArray = kNonConstTempoBeats.toByteArray();
     ASSERT_EQ(BEAT_MAP_VERSION, kNonConstTempoBeats.getVersion());
 
-    auto pBeats = beats::Beats::fromByteArray(kSampleRate, BEAT_MAP_VERSION, QString(), byteArray);
+    auto pBeats = Beats::fromByteArray(kSampleRate, BEAT_MAP_VERSION, QString(), byteArray);
     ASSERT_NE(nullptr, pBeats);
 
     EXPECT_EQ(byteArray, pBeats->toByteArray());
 }
 
-TEST(NewBeatsTest, ConstTempoFindNthBeatWhenOnBeat) {
+TEST(BeatsTest, ConstTempoFindNthBeatWhenOnBeat) {
     const auto it = kConstTempoBeats.cbegin() + 10;
     const audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
     const audio::FramePos position = *it;
@@ -249,7 +249,7 @@ TEST(NewBeatsTest, ConstTempoFindNthBeatWhenOnBeat) {
     }
 }
 
-TEST(NewBeatsTest, ConstTempoFindNthBeatWhenNotOnBeat) {
+TEST(BeatsTest, ConstTempoFindNthBeatWhenNotOnBeat) {
     auto it = kConstTempoBeats.cbegin() + 10;
     const mixxx::audio::FramePos previousBeat = *it;
     it++;
@@ -275,7 +275,7 @@ TEST(NewBeatsTest, ConstTempoFindNthBeatWhenNotOnBeat) {
     }
 }
 
-TEST(NewBeatsTest, ConstTempoFindPrevNextBeatWhenOnBeat) {
+TEST(BeatsTest, ConstTempoFindPrevNextBeatWhenOnBeat) {
     const auto it = kConstTempoBeats.cbegin() + 10;
     const audio::FramePos position = *it;
     const audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
@@ -296,7 +296,7 @@ TEST(NewBeatsTest, ConstTempoFindPrevNextBeatWhenOnBeat) {
     EXPECT_NEAR(position.value(), kConstTempoBeats.findPrevBeat(position).value(), kMaxBeatError);
 }
 
-TEST(NewBeatsTest, ConstTempoFindPrevNextBeatWhenNotOnBeat) {
+TEST(BeatsTest, ConstTempoFindPrevNextBeatWhenNotOnBeat) {
     auto it = kConstTempoBeats.cbegin() + 10;
     const mixxx::audio::FramePos previousBeat = *it;
     it++;

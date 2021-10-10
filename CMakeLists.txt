@@ -815,7 +815,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/beatfactory.cpp
   src/track/beats.cpp
   src/track/beatutils.cpp
-  src/track/newbeats.cpp
   src/track/bpm.cpp
   src/track/cue.cpp
   src/track/cueinfo.cpp
@@ -1556,6 +1555,7 @@ add_executable(mixxx-test
   src/test/baseeffecttest.cpp
   src/test/beatgridtest.cpp
   src/test/beatmaptest.cpp
+  src/test/beatstest.cpp
   src/test/beatstranslatetest.cpp
   src/test/bpmtest.cpp
   src/test/bpmcontrol_test.cpp
@@ -1610,7 +1610,6 @@ add_executable(mixxx-test
   src/test/mixxxtest.cpp
   src/test/movinginterquartilemean_test.cpp
   src/test/nativeeffects_test.cpp
-  src/test/newbeatstest.cpp
   src/test/performancetimer_test.cpp
   src/test/playcountertest.cpp
   src/test/playlisttest.cpp
