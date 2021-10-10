@@ -67,7 +67,7 @@ g4v.Deck = function(deckNumbers, midiChannel) {
     });
     this.playBtn = new components.PlayButton([0x8F + midiChannel, 0x01]);
     this.syncBtn = new components.SyncButton([0x8F + midiChannel, 0x04]);
-    this.tempoPot = new components.Pot ({
+    this.tempoPot = new components.Pot({
         midi: [0x8F + midiChannel, 0x01],
         inKey: "rate",
         shift: function() { this.inKey = "pitch"; },
@@ -119,7 +119,7 @@ g4v.Deck = function(deckNumbers, midiChannel) {
     this.sampleVolPot = new components.Component({
         key: "loop_move",
         input: function(_channel, _control, value, _status, _group) {
-            for (var i = 1; i < 65; i++) {
+            for (let i = 1; i < 65; i++) {
                 engine.setValue("[Sampler"+i+"]", "volume", value/0x7f);
             }
         },
@@ -225,11 +225,10 @@ g4v.Deck = function(deckNumbers, midiChannel) {
     });
 
     // Pad selection buttons (not connected a CO)
-    this.padModeBtn = new components.Component ({
+    this.padModeBtn = new components.Component({
         deck: this,
         input: function(_channel, control, value, _status, _group) {
-            if (!value)
-                return;
+            if (!value) { return; }
             switch (control) {
             case 0x1B:
                 this.deck.padMode(g4v.Deck.prototype.modes.cue);
@@ -245,7 +244,7 @@ g4v.Deck = function(deckNumbers, midiChannel) {
                 break;
             case 0x1F:
                 // Not mapped, for future use
-                // TODO - Four buttons to enable efect racks
+                // TODO - Four buttons to enable effect racks
                 break;
             case 0x20:
                 // Not mapped, for future use
@@ -260,18 +259,14 @@ g4v.Deck = function(deckNumbers, midiChannel) {
         },
     });
     // Deck togle button (not connected to CO)
-    this.deckToggleBtn = new components.Component ({
+    this.deckToggleBtn = new components.Component({
         deck: this,
         input: function(_channel, _control, value, _status, _group) {
-            if (!value)
-                return;
+            if (!value) { return; }
             this.deck.toggle();
-            var index = this.deck.deckNumbers.indexOf(parseInt(
+            const index = this.deck.deckNumbers.indexOf(parseInt(
                 script.channelRegEx.exec(this.deck.currentDeck)[1]));
-            if (index === 1)
-                midi.sendShortMsg(0x8F + midiChannel, 0x26, 0x7F);
-            else
-                midi.sendShortMsg(0x8F + midiChannel, 0x26, 0x00);
+            if (index === 1) { midi.sendShortMsg(0x8F + midiChannel, 0x26, 0x7F); } else { midi.sendShortMsg(0x8F + midiChannel, 0x26, 0x00); }
         },
     });
 
@@ -423,27 +418,25 @@ g4v.MixerStrip = function(deckNumber) {
         group: "[Channel" + deckNumber +"]",
         inKey: "volume",
     });
-    this.orientationLeftBtn = new components.Component ({
+    this.orientationLeftBtn = new components.Component({
         midi: [0x93, 0x04 + deckNumber],
         group: "[Channel" + deckNumber +"]",
         inKey: "orientation",
         input: function(_channel, _control, value, _status, _group) {
-            if (!value)
-                return;
+            if (!value) { return; }
             this.inSetValue(this.inGetValue() !== 0 ? 0 : 1);
         },
     });
-    this.orientationRightBtn = new components.Component ({
+    this.orientationRightBtn = new components.Component({
         midi: [0x93, 0x08 + deckNumber],
         group: "[Channel" + deckNumber +"]",
         inKey: "orientation",
         input: function(_channel, _control, value, _status, _group) {
-            if (!value)
-                return;
+            if (!value) { return; }
             this.inSetValue(this.inGetValue() !== 2 ? 2 : 1);
         },
     });
-    this.orientationLed = new components.Component ({
+    this.orientationLed = new components.Component({
         midi: [0x93, 0x04 + deckNumber],
         group: "[Channel" + deckNumber +"]",
         outKey: "orientation",
@@ -482,18 +475,14 @@ g4v.OtherControls = function() {
             if (engine.getValue("[PreviewDeck1]", "play")) {
                 engine.setValue("[PreviewDeck1]", (value === 0x41 ? "beatjump_4_forward" : "beatjump_4_backward"), 1);
             } else {
-                if (this.shift)
-                    engine.setValue("[Library]", (value === 0x41 ? "MoveRight" : "MoveLeft"), 1);
-                else
-                    engine.setValue(this.group, "MoveVertical", (value === 0x41 ? -1 : 1));
+                if (this.shift) { engine.setValue("[Library]", (value === 0x41 ? "MoveRight" : "MoveLeft"), 1); } else { engine.setValue(this.group, "MoveVertical", (value === 0x41 ? -1 : 1)); }
             }
         },
     });
-    this.libraryBtn = new components.Component ({
+    this.libraryBtn = new components.Component({
         group: "[Library]",
         input: function(_channel, _control, value, _status, _group) {
-            if (value === 0x00)
-                return;
+            if (value === 0x00) { return; }
             if (engine.getValue("[PreviewDeck1]", "play", 1)) {
                 engine.setValue("[PreviewDeck1]", "play", 0);
                 engine.setValue("[PreviewDeck]", "show_previewdeck", 0);
@@ -505,22 +494,22 @@ g4v.OtherControls = function() {
             }
         },
     }),
-    this.libraryBackBtn = new components.Button ({
+    this.libraryBackBtn = new components.Button({
         midi: [0x93, 0x12],
         group: "[Library]",
         inKey: "MoveFocusForward",
     });
-    this.masterVolumePot = new components.Pot ({
+    this.masterVolumePot = new components.Pot({
         midi: [0xB3, 0x1B],
         group: "[Master]",
         inKey: "volume",
     });
-    this.boothVolumePot = new components.Pot ({
+    this.boothVolumePot = new components.Pot({
         midi: [0xB3, 0x1C],
         group: "[Master]",
         inKey: "booth_gain",
     });
-    this.headMixPot = new components.Pot ({
+    this.headMixPot = new components.Pot({
         midi: [0xB3, 0x1A],
         group: "[Master]",
         inKey: "headMix",
@@ -544,7 +533,7 @@ g4v.OtherControls = function() {
         invert: 1,
     });
     // Extra controls
-    this.shiftBtn = new components.Component ({
+    this.shiftBtn = new components.Component({
         input: function(_channel, _control, value, _status, _group) {
             if (value === 0x7F) {
                 g4v.otherControls.shift();
