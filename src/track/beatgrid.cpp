@@ -164,17 +164,17 @@ audio::FramePos BeatGrid::findNthBeat(audio::FramePos position, int n) const {
     if (!isValid() || n == 0) {
         return audio::kInvalidFramePos;
     }
-    double startBeat = (position - firstBeatPosition()) / m_beatLengthFrames;
+    double fromBeatIndex = (position - firstBeatPosition()) / m_beatLengthFrames;
     if (n > 0) {
         // We're going forward, so use ceil to round up to the next beat.
-        startBeat = ceil(startBeat);
+        fromBeatIndex = ceil(fromBeatIndex);
         n = n - 1;
     } else {
         // We're going backward, so use floor to round down to the previous beat.
-        startBeat = floor(startBeat);
+        fromBeatIndex = floor(fromBeatIndex);
         n = n + 1;
     }
-    const audio::FramePos result = firstBeatPosition() + (startBeat + n) * m_beatLengthFrames;
+    const audio::FramePos result = firstBeatPosition() + (fromBeatIndex + n) * m_beatLengthFrames;
     return result;
 }
 
