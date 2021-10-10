@@ -27,6 +27,8 @@ MiniMixxx.HeadOutColor = 26;      // Kind of a light yellow
 // Set to true to output debug messages and debug light outputs.
 MiniMixxx.DebugMode = false;
 
+MiniMixxx.ShiftPitch = false;
+
 // An Encoder represents a single encoder knob and tracks the active mode.
 MiniMixxx.Encoder = class {
     constructor(channel, idx, layerConfig) {
@@ -555,7 +557,9 @@ MiniMixxx.EncoderModeFX = class extends MiniMixxx.Mode {
 // Primary Gain:
 // Input:
 //   * Spin: Adjust primary output up/down
+//   * Shift + Spin: Adjust booth
 //   * Press: reset primary output
+//   * Shift + Press: reset booth
 // Output: gain
 MiniMixxx.EncoderModeMainGain = class extends MiniMixxx.Mode {
     constructor(parent, channel, idx) {
@@ -563,15 +567,24 @@ MiniMixxx.EncoderModeMainGain = class extends MiniMixxx.Mode {
         this.color = MiniMixxx.MainOutColor;
 
         engine.makeConnection("[Master]", "gain", this.gainIndicator.bind(this));
+        engine.makeConnection("[Master]", "booth_gain", this.gainIndicator.bind(this));
     }
     handleSpin(velo) {
-        engine.setValue("[Master]", "gain", engine.getValue("[Master]", "gain") + .02 * velo);
+        if (MiniMixxx.kontrol.shiftActive()) {
+            engine.setValue("[Master]", "booth_gain", engine.getValue("[Master]", "booth_gain") + .02 * velo);
+        } else {
+            engine.setValue("[Master]", "gain", engine.getValue("[Master]", "gain") + .02 * velo);
+        }
     }
     handlePress(value) {
         if (value === 0) {
             return;
         }
-        engine.setValue("[Master]", "gain", 1.0);
+        if (MiniMixxx.kontrol.shiftActive()) {
+            engine.setValue("[Master]", "booth_gain", 1.0);
+        } else {
+            engine.setValue("[Master]", "gain", 1.0);
+        }
     }
     gainIndicator(value, _group, _control) {
         if (this !== this.parent.activeMode) {
@@ -1370,7 +1383,7 @@ MiniMixxx.Controller = class {
         }
 
         // If shift is pressed, don't update any values.
-        if (this.shiftActive()) {
+        if (!this.shiftActive() && !this.keylockPressed(group)) {
             this.pitchSliderLastValue[group] = value;
             return;
         }
