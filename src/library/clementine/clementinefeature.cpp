@@ -13,16 +13,15 @@
 
 ClementineFeature::ClementineFeature(
         Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig),
+        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("clementine")),
           m_connection(std::make_shared<ClementineDbConnection>()),
           m_isActivated(false),
           m_pClementinePlaylistModel(make_parented<ClementinePlaylistModel>(
                   this, m_pLibrary->trackCollectionManager(), m_connection)),
-          m_childModel(),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_playlists(),
           m_future(),
-          m_title(tr("Clementine")),
-          m_icon(":/images/library/ic_library_clementine.svg") {
+          m_title(tr("Clementine")){
 }
 
 ClementineFeature::~ClementineFeature() {
@@ -41,10 +40,6 @@ bool ClementineFeature::isSupported() {
 
 QVariant ClementineFeature::title() {
     return m_title;
-}
-
-QIcon ClementineFeature::getIcon() {
-    return m_icon;
 }
 
 void ClementineFeature::activate() {
@@ -84,7 +79,7 @@ void ClementineFeature::activate() {
         // append the playlist to the child model
         pRootItem->appendChild(playlist.name, playlist.playlistId);
     }
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
 
     m_pClementinePlaylistModel->setTableModel(0); // Gets the master playlist
     m_pClementinePlaylistModel->select();
@@ -111,8 +106,8 @@ void ClementineFeature::activateChild(const QModelIndex& index) {
     emit enableCoverArtDisplay(false);
 }
 
-TreeItemModel* ClementineFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* ClementineFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void ClementineFeature::appendTrackIdsFromRightClickIndex(

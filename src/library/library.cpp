@@ -23,6 +23,7 @@
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/mixxxlibraryfeature.h"
+#include "library/clementine/clementinefeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/rekordbox/rekordboxfeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"

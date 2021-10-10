@@ -20,9 +20,8 @@ class ClementineFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
 
     QVariant title() override;
-    QIcon getIcon() override;
 
-    TreeItemModel* getChildModel() override;
+    virtual TreeItemModel* sidebarModel() const;
 
   public slots:
     void activate() override;
@@ -36,7 +35,7 @@ class ClementineFeature : public BaseExternalLibraryFeature {
     bool m_isActivated;
 
     parented_ptr<ClementinePlaylistModel> m_pClementinePlaylistModel;
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     QStringList m_playlists;
 
     QFuture<TreeItem*> m_future;
