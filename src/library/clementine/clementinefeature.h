@@ -21,7 +21,7 @@ class ClementineFeature : public BaseExternalLibraryFeature {
 
     QVariant title() override;
 
-    virtual TreeItemModel* sidebarModel() const;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
