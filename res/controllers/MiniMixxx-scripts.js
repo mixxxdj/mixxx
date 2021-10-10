@@ -489,7 +489,7 @@ MiniMixxx.EncoderModeLibraryFocus = class extends MiniMixxx.Mode {
         if (MiniMixxx.kontrol.shiftActive()) {
             engine.setValue("[Library]", "search_history_selector", value);
         } else {
-            engine.setValue(this.channel, "LoadSelectedTrack", value);
+            engine.setValue("[Library]", "GoToItem", value);
         }
     }
     setLights() {
