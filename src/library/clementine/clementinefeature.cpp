@@ -21,7 +21,7 @@ ClementineFeature::ClementineFeature(
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_playlists(),
           m_future(),
-          m_title(tr("Clementine")){
+          m_title(tr("Clementine")) {
 }
 
 ClementineFeature::~ClementineFeature() {
