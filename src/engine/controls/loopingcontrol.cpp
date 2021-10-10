@@ -1235,39 +1235,27 @@ mixxx::audio::FramePos LoopingControl::findQuantizedBeatloopStart(
                         currentPosition - prevBeatPosition)
                 ? prevBeatPosition
                 : nextBeatPosition;
-        startPosition = closestBeatPosition;
-    } else {
-        // In case of beat length less then 1 beat:
-        // (| - beats, ^ - current track's position):
-        //
-        // ...|...................^........|...
-        //
-        // If we press 1/2 beatloop we want loop from 50% to 100%,
-        // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-        const mixxx::audio::FrameDiff_t framesSinceLastBeat =
-                currentPosition - prevBeatPosition;
-        // find the previous beat fraction and check if the current position is closer to this or the next one
-        // place the new loop start to the closer one
-        const mixxx::audio::FramePos previousFractionBeatPosition =
-                prevBeatPosition + floor(framesSinceLastBeat / loopLength) * loopLength;
-        double framesSinceLastFractionBeatPosition = currentPosition - previousFractionBeatPosition;
-        if (framesSinceLastFractionBeatPosition <= (loopLength / 2.0)) {
-            startPosition = previousFractionBeatPosition;
-        } else {
-            startPosition = previousFractionBeatPosition + loopLength;
-        }
-    }
-    // If running reverse, move the loop one loop size to the left.
-    // Thus, the loops end will be closest to the current position
-    bool reverse = false;
-    if (m_pRateControl != nullptr) {
-        reverse = m_pRateControl->isReverseButtonPressed();
-    }
-    if (reverse) {
-        startPosition -= loopLength;
+        return closestBeatPosition;
     }
 
-    return startPosition;
+    // In case of beat length less then 1 beat:
+    // (| - beats, ^ - current track's position):
+    //
+    // ...|...................^........|...
+    //
+    // If we press 1/2 beatloop we want loop from 50% to 100%,
+    // If I press 1/4 beatloop, we want loop from 50% to 75% etc
+    const mixxx::audio::FrameDiff_t framesSinceLastBeat =
+            currentPosition - prevBeatPosition;
+    // find the previous beat fraction and check if the current position is closer to this or the next one
+    // place the new loop start to the closer one
+    const mixxx::audio::FramePos previousFractionBeatPosition =
+            prevBeatPosition + floor(framesSinceLastBeat / loopLength) * loopLength;
+    double framesSinceLastFractionBeatPosition = currentPosition - previousFractionBeatPosition;
+    if (framesSinceLastFractionBeatPosition <= (loopLength / 2.0)) {
+        return previousFractionBeatPosition;
+    }
+    return previousFractionBeatPosition + loopLength;
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
@@ -1311,7 +1299,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             mixxx::audio::kInvalidFramePos,
             LoopSeekMode::MovedOut};
     LoopInfo loopInfo = m_loopInfo.getValue();
-    const auto currentPosition = m_currentPosition.getValue();
+    mixxx::audio::FramePos currentPosition = m_currentPosition.getValue();
 
     // Start from the current position/closest beat and
     // create the loop around X beats from there.
@@ -1321,12 +1309,24 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         } else {
             newloopInfo.startPosition = currentPosition;
         }
-    } else if (!m_pQuantizeEnabled->toBool()) {
-        newloopInfo.startPosition = currentPosition;
     } else {
-        // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
-        // The closest beat might be ahead of play position and will cause a catching loop.
-        newloopInfo.startPosition = findQuantizedBeatloopStart(pBeats, currentPosition, beats);
+        // If running reverse, move the loop one loop size to the left.
+        // Thus, the loops end will be closest to the current position
+        bool reverse = false;
+        if (m_pRateControl != nullptr) {
+            reverse = m_pRateControl->isReverseButtonPressed();
+        }
+        if (reverse) {
+            currentPosition = pBeats->findNBeatsFromPosition(currentPosition, -beats);
+        }
+
+        if (!m_pQuantizeEnabled->toBool()) {
+            newloopInfo.startPosition = currentPosition;
+        } else {
+            // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
+            // The closest beat might be ahead of play position and will cause a catching loop.
+            newloopInfo.startPosition = findQuantizedBeatloopStart(pBeats, currentPosition, beats);
+        }
     }
 
     newloopInfo.endPosition = pBeats->findNBeatsFromPosition(newloopInfo.startPosition, beats);
