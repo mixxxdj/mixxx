@@ -367,6 +367,9 @@ g4v.MixerStrip = function(deckNumber) {
         group: "[Channel" + deckNumber +"]",
         outKey: "VuMeter",
         max: 5,
+        shutdown: function() {
+            this.send(0x00);
+        },
     });
     this.loadBtn = new components.Button({
         midi: [0x93, 0x00 + deckNumber],
