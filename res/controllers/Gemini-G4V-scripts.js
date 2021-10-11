@@ -374,7 +374,6 @@ g4v.MixerStrip = function(deckNumber) {
     this.loadBtn = new components.Button({
         midi: [0x93, 0x00 + deckNumber],
         group: "[Channel" + deckNumber + "]",
-        inKey: "LoadSelectedTrack",
         outKey: "track_loaded",
         shift: function() { this.inKey = "eject"; },
         unshift: function() { this.inKey = "LoadSelectedTrack"; },
