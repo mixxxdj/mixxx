@@ -59,7 +59,7 @@ TEST_F(BeatMapTest, Scale) {
     constexpr int numBeats = 120;
     // Note beats must be in frames, not samples.
     QVector<mixxx::audio::FramePos> beats =
-            createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
+            createBeatVector(startOffsetFrames, numBeats + 1, beatLengthFrames);
     auto pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
     const auto trackEndPosition = audio::FramePos{60.0 * pMap->getSampleRate()};
 
