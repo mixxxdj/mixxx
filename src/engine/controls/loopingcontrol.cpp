@@ -1228,7 +1228,6 @@ mixxx::audio::FramePos LoopingControl::findQuantizedBeatloopStart(
 
     const mixxx::audio::FrameDiff_t beatLength = nextBeatPosition - prevBeatPosition;
     double loopLength = beatLength * beats;
-    mixxx::audio::FramePos startPosition;
     if (beats >= 1.0) {
         const mixxx::audio::FramePos closestBeatPosition =
                 (nextBeatPosition - currentPosition >
