@@ -228,6 +228,46 @@ TEST(BeatsTest, NonConstTempoSerialization) {
     EXPECT_EQ(byteArray, pBeats->toByteArray());
 }
 
+TEST(BeatsTest, NonConstTempoFromBeatPositions) {
+    QVector<audio::FramePos> beatPositions;
+    const audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
+    qWarning() << beatLengthFrames;
+    for (int i = 0; i < 8; i++) {
+        beatPositions.append(kStartPosition + i * beatLengthFrames);
+        qWarning() << beatPositions.last();
+    }
+
+    for (int i = 0; i < 16; i++) {
+        beatPositions.append(kStartPosition + 8 * beatLengthFrames + i * beatLengthFrames * 2);
+        qWarning() << beatPositions.last();
+    }
+
+    for (int i = 0; i <= 16; i++) {
+        beatPositions.append(kStartPosition + 40 * beatLengthFrames + i * beatLengthFrames / 2);
+    }
+
+    auto pBeats = Beats::fromBeatPositions(kSampleRate, beatPositions);
+    ASSERT_NE(nullptr, pBeats);
+
+    auto markers = pBeats->getMarkers();
+    ASSERT_EQ(3, markers.size());
+
+    EXPECT_DOUBLE_EQ(kStartPosition.value(), markers[0].position().value());
+    EXPECT_EQ(8, markers[0].beatsTillNextMarker());
+
+    EXPECT_DOUBLE_EQ((kStartPosition + 8 * beatLengthFrames).value(),
+            markers[1].position().value());
+    EXPECT_EQ(16, markers[1].beatsTillNextMarker());
+
+    EXPECT_DOUBLE_EQ((kStartPosition + 40 * beatLengthFrames).value(),
+            markers[2].position().value());
+    EXPECT_EQ(16, markers[2].beatsTillNextMarker());
+
+    EXPECT_DOUBLE_EQ((kStartPosition + 48 * beatLengthFrames).value(),
+            pBeats->getEndMarkerPosition().value());
+    EXPECT_EQ(kBpm * 2, pBeats->getEndMarkerBpm());
+}
+
 TEST(BeatsTest, ConstTempoFindNthBeatWhenOnBeat) {
     const auto it = kConstTempoBeats.cbegin() + 10;
     const audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();

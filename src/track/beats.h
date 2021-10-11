@@ -347,6 +347,16 @@ class Beats : private std::enable_shared_from_this<Beats> {
         return m_sampleRate;
     }
 
+    const std::vector<BeatMarker>& getMarkers() const {
+        return m_markers;
+    }
+    mixxx::audio::FramePos getEndMarkerPosition() const {
+        return m_endMarkerPosition;
+    }
+    mixxx::Bpm getEndMarkerBpm() const {
+        return m_endMarkerBpm;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
