@@ -362,7 +362,7 @@ g4v.Deck.prototype.modes = {
 g4v.MixerStrip = function(deckNumber) {
     components.ComponentContainer.call();
     // Controls in order from top to bottom in the strip
-    this.metter = new components.Component({
+    this.meter = new components.Component({
         midi: [0xB3, 0x13 + deckNumber],
         group: "[Channel" + deckNumber +"]",
         outKey: "VuMeter",
