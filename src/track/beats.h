@@ -235,6 +235,13 @@ class Beats : private std::enable_shared_from_this<Beats> {
             const QVector<audio::FramePos>& beatPositions,
             const QString& subVersion = QString());
 
+    static mixxx::BeatsPointer fromBeatMarkers(
+            audio::SampleRate sampleRate,
+            const std::vector<BeatMarker>& beatMarker,
+            const audio::FramePos endMarkerPosition,
+            const Bpm endMarkerBpm,
+            const QString& subVersion = QString());
+
     enum class BpmScale {
         Double,
         Halve,

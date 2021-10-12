@@ -237,6 +237,20 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
 }
 
 // static
+mixxx::BeatsPointer Beats::fromBeatMarkers(
+        audio::SampleRate sampleRate,
+        const std::vector<BeatMarker>& markers,
+        const audio::FramePos endMarkerPosition,
+        const Bpm endMarkerBpm,
+        const QString& subVersion) {
+    return BeatsPointer(new Beats(markers,
+            endMarkerPosition,
+            endMarkerBpm,
+            sampleRate,
+            subVersion));
+}
+
+// static
 mixxx::BeatsPointer Beats::fromByteArray(
         mixxx::audio::SampleRate sampleRate,
         const QString& beatsVersion,

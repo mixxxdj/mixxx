@@ -8,9 +8,6 @@ namespace {
 
 mixxx::Logger kLogger("SeratoBeatGrid");
 
-/// Max difference of two beat distances so that they can still be considered equal
-constexpr double kEpsilon = 1.0;
-
 constexpr quint16 kVersion = 0x0100;
 constexpr int kMarkerSizeID3 = 8;
 constexpr char kSeratoBeatGridBase64EncodedPrefixStr[] =
@@ -425,6 +422,8 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
         const audio::SignalInfo& signalInfo,
         const Duration& duration,
         double timingOffsetMillis) {
+    Q_UNUSED(duration);
+
     if (!pBeats) {
         setTerminalMarker(nullptr);
         setNonTerminalMarkers({});
@@ -433,85 +432,52 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
 
     const double timingOffsetSecs = timingOffsetMillis / 1000;
 
-    // Beats::findBeats expects a sample range. We want to retrieve all beats
-    // in the track, therefore we calculate the track duration in samples and
-    // round up. This value might be longer than the actual track, but that's
-    // okay because we want to make sure we get all beats.
-    const auto trackEndPosition = audio::FramePos(
-            signalInfo.secs2frames(std::ceil(duration.toDoubleSeconds())));
-    auto pBeatsIterator = pBeats->findBeats(audio::kStartFramePos, trackEndPosition);
-
-    // This might be null if the track doesn't contain any beats
-    if (!pBeatsIterator || !pBeatsIterator->hasNext()) {
-        qWarning() << "Serato Beatgrid: No beats available, exporting empty beatgrid!";
-        setTerminalMarker(nullptr);
-        setNonTerminalMarkers({});
-        return;
-    }
-
-    const audio::FrameDiff_t beatgridFrameOffset = pBeatsIterator->next().value();
-    audio::FramePos currentBeatPositionFrames = audio::kStartFramePos;
-    audio::FramePos previousBeatPositionFrames = audio::kStartFramePos;
-    audio::FrameDiff_t previousDeltaFrames = -1;
+    const auto markers = pBeats->getMarkers();
     QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers;
-    {
-        const double positionSecs = signalInfo.frames2secsFractional(
-                currentBeatPositionFrames.value() + beatgridFrameOffset);
-        nonTerminalMarkers.append(
-                std::make_shared<SeratoBeatGridNonTerminalMarker>(
-                        positionSecs - timingOffsetSecs, 0));
-    }
-    while (pBeatsIterator->hasNext()) {
-        previousBeatPositionFrames = currentBeatPositionFrames;
-        currentBeatPositionFrames = pBeatsIterator->next() - beatgridFrameOffset;
 
-        // Calculate the delta between the current beat and the previous beat.
-        // If the distance is the same as the distance between the previous
-        // beat and the beat before that, we can just increment
-        // `beatsSinceLastMarker`. If not, we need to add a new marker.
-        const audio::FrameDiff_t currentDeltaFrames =
-                currentBeatPositionFrames - previousBeatPositionFrames;
-        if (previousDeltaFrames < 0) {
-            previousDeltaFrames = currentDeltaFrames;
+    const float bpm = static_cast<float>(pBeats->getEndMarkerBpm().value());
+
+    if (markers.size() == 1) {
+        const auto& marker = markers.back();
+        const auto lastBeatLengthFrames = 60.0 * pBeats->getSampleRate() /
+                pBeats->getEndMarkerBpm().value();
+        const auto previousBeatLengthFrames =
+                (pBeats->getEndMarkerPosition() - marker.position()) /
+                marker.beatsTillNextMarker();
+        // If the following condition holds true, the marker only exists for backwards compatibility with the legacy beatgrid format.
+        //
+        // TODO: Remove this when the protobuf format is changed.
+        if (std::fabs(lastBeatLengthFrames - previousBeatLengthFrames) < 0.0001) {
+            const float positionSecs =
+                    static_cast<float>(signalInfo.frames2secsFractional(
+                                               marker.position().value()) -
+                            timingOffsetSecs);
+            setTerminalMarker(std::make_shared<SeratoBeatGridTerminalMarker>(positionSecs, bpm));
+            setNonTerminalMarkers({});
+            return;
         }
-
-        const audio::FrameDiff_t differenceBetweenCurrentAndPreviousDelta =
-                abs(currentDeltaFrames - previousDeltaFrames);
-        if (differenceBetweenCurrentAndPreviousDelta >= kEpsilon) {
-            const double positionSecs = signalInfo.frames2secsFractional(
-                    previousBeatPositionFrames.value() + beatgridFrameOffset);
-            nonTerminalMarkers.append(
-                    std::make_shared<SeratoBeatGridNonTerminalMarker>(
-                            positionSecs - timingOffsetSecs, 1));
-        } else {
-            // We are adding a new beat marker, therefore we need to update the
-            // `beatsSinceLastMarker` variable of the last marker we added.
-            const auto pNonTerminalMarker = nonTerminalMarkers.last();
-            pNonTerminalMarker->setBeatsTillNextMarker(
-                    pNonTerminalMarker->beatsTillNextMarker() + 1);
-        }
-
-        previousDeltaFrames = currentDeltaFrames;
     }
 
-    // If the beatgrid is constant, i.e. if there is only a single non-terminal
-    // beatgrid marker at the start of the beatgrid and a terminal marker at
-    // the end, then Serato discards the non-terminal marker and just saves the
-    // terminal marker instead.
-    if (nonTerminalMarkers.size() == 1) {
-        nonTerminalMarkers.clear();
-    }
+    nonTerminalMarkers.reserve(markers.size());
+    std::transform(markers.cbegin(),
+            markers.cend(),
+            std::back_inserter(nonTerminalMarkers),
+            [&signalInfo, timingOffsetSecs](const BeatMarker& marker)
+                    -> SeratoBeatGridNonTerminalMarkerPointer {
+                const float positionSecs =
+                        static_cast<float>(signalInfo.frames2secsFractional(
+                                                   marker.position().value()) -
+                                timingOffsetSecs);
+                return std::make_shared<SeratoBeatGridNonTerminalMarker>(
+                        positionSecs, marker.beatsTillNextMarker());
+            });
 
-    // Finally, create the terminal marker.
-    const audio::FramePos currentBeatPositionFramesWithOffset =
-            currentBeatPositionFrames + beatgridFrameOffset;
-    const double positionSecs = signalInfo.frames2secsFractional(
-            currentBeatPositionFramesWithOffset.value());
-    const mixxx::Bpm bpm = pBeats->getBpmAroundPosition(currentBeatPositionFramesWithOffset, 1);
+    const float positionSecs =
+            static_cast<float>(signalInfo.frames2secsFractional(
+                                       pBeats->getEndMarkerPosition().value()) -
+                    timingOffsetSecs);
 
-    // FIXME: calling bpm.value() without checking bpm.isValid()
-    setTerminalMarker(std::make_shared<SeratoBeatGridTerminalMarker>(
-            positionSecs - timingOffsetSecs, static_cast<float>(bpm.value())));
+    setTerminalMarker(std::make_shared<SeratoBeatGridTerminalMarker>(positionSecs, bpm));
     setNonTerminalMarkers(nonTerminalMarkers);
 }
 
