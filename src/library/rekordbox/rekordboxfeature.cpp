@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QTextCodec>
 #include <QtDebug>
 
 #include "engine/engine.h"
