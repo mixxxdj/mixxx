@@ -28,6 +28,10 @@ inline QString fileTypeFromSuffix(const QString& suffix) {
         // of an empty string which might either be null or "".
         return QString{};
     }
+    // Map shortened suffix "aif" to "aiff" for disambiguation
+    if (fileType == QStringLiteral("aif")) {
+        return QStringLiteral("aiff");
+    }
     return fileType;
 }
 
