@@ -369,10 +369,10 @@ void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) 
     } else {
         Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
         if (pOnlyPlayer) {
-            // Even if we didn't change leader, if there is only one player (us), then we should
-            // update the beat distance.
+            // Even if we didn't change leader, if there is only one player, then we should
+            // reinit leader params.
             pOnlyPlayer->notifyUniquePlaying();
-            updateLeaderBeatDistance(pOnlyPlayer, pOnlyPlayer->getBeatDistance());
+            reinitLeaderParams(pOnlyPlayer);
         }
     }
 }
@@ -446,6 +446,9 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beatDista
                         << pSyncable->getGroup() << beatDistance;
     }
     if (pSyncable != m_pInternalClock) {
+        if (getUniquePlayingSyncedDeck() == pSyncable) {
+            updateLeaderBeatDistance(pSyncable, beatDistance);
+        }
         return;
     }
 
