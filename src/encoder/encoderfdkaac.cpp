@@ -166,7 +166,7 @@ EncoderFdkAac::~EncoderFdkAac() {
     }
 
     delete[] m_pAacDataBuffer;
-    delete m_pFifoChunkBuffer;
+    delete[] m_pFifoChunkBuffer;
     delete m_pInputFifo;
 }
 
