@@ -56,7 +56,7 @@ TEST_F(BeatMapTest, Scale) {
     m_pTrack->trySetBpm(bpm.value());
     mixxx::audio::FrameDiff_t beatLengthFrames = getBeatLengthFrames(bpm);
     const auto startOffsetFrames = mixxx::audio::FramePos(7);
-    const int numBeats = 100;
+    constexpr int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<mixxx::audio::FramePos> beats =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
@@ -87,7 +87,7 @@ TEST_F(BeatMapTest, TestNthBeat) {
     m_pTrack->trySetBpm(bpm.value());
     mixxx::audio::FrameDiff_t beatLengthFrames = getBeatLengthFrames(bpm);
     const auto startOffsetFrames = mixxx::audio::FramePos(7);
-    const int numBeats = 100;
+    constexpr int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<mixxx::audio::FramePos> beats =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
@@ -133,14 +133,14 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     m_pTrack->trySetBpm(bpm.value());
     mixxx::audio::FrameDiff_t beatLengthFrames = getBeatLengthFrames(bpm);
     const auto startOffsetFrames = mixxx::audio::FramePos(7);
-    const int numBeats = 100;
+    constexpr int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<mixxx::audio::FramePos> beats =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
     auto pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
 
     // Pretend we're on the 20th beat;
-    const int curBeat = 20;
+    constexpr int curBeat = 20;
     const mixxx::audio::FramePos position = startOffsetFrames + beatLengthFrames * curBeat;
 
     // The spec dictates that a value of 0 is always invalid and returns an invalid position
@@ -176,7 +176,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     m_pTrack->trySetBpm(bpm.value());
     mixxx::audio::FrameDiff_t beatLengthFrames = getBeatLengthFrames(bpm);
     const auto startOffsetFrames = mixxx::audio::FramePos(7);
-    const int numBeats = 100;
+    constexpr int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<mixxx::audio::FramePos> beats =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
@@ -215,7 +215,7 @@ TEST_F(BeatMapTest, TestBpmAround) {
     constexpr mixxx::Bpm filebpm(60.0);
     double approx_beat_length = getBeatLengthFrames(filebpm);
     m_pTrack->trySetBpm(filebpm.value());
-    const int numBeats = 64;
+    constexpr int numBeats = 64;
 
     QVector<mixxx::audio::FramePos> beats;
     mixxx::audio::FramePos beat_pos = mixxx::audio::kStartFramePos;

@@ -56,6 +56,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void setupActionButton(QPushButton* pButton,
             void (DlgAutoDJ::*pSlot)(bool),
             const QString& fallbackText);
+    void shiftTabKeypress();
 
     const UserSettingsPointer m_pConfig;
 

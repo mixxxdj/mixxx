@@ -1,7 +1,5 @@
 #include "util/dnd.h"
 
-#include <QRegExp>
-
 #include "control/controlobject.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"

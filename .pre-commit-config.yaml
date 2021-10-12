@@ -81,7 +81,7 @@ repos:
     language: python
     files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
 - repo: https://github.com/psf/black
-  rev: 21.7b0
+  rev: 21.9b0
   hooks:
   - id: black
     files: ^tools/.*$
@@ -96,7 +96,7 @@ repos:
   hooks:
   - id: shellcheck
 - repo: https://github.com/DavidAnson/markdownlint-cli2
-  rev: v0.2.0
+  rev: v0.3.1
   hooks:
   - id: markdownlint-cli2
 - repo: local

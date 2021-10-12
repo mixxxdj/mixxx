@@ -9,6 +9,7 @@
 #include "moc_internalclock.cpp"
 #include "preferences/usersettings.h"
 #include "util/logger.h"
+#include "util/math.h"
 
 namespace {
 const mixxx::Logger kLogger("InternalClock");
@@ -232,10 +233,7 @@ void InternalClock::onCallbackEnd(mixxx::audio::SampleRate sampleRate, int buffe
         m_dBeatLength = 21338;
     }
 
-    while (m_dClockPosition >= m_dBeatLength) {
-        m_dClockPosition -= m_dBeatLength;
-    }
-
+    m_dClockPosition = fmod(m_dClockPosition, m_dBeatLength);
     double beatDistance = getBeatDistance();
     m_pClockBeatDistance->set(beatDistance);
     m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);

@@ -196,14 +196,7 @@ inline bool operator>=(Bpm bpm1, Bpm bpm2) {
     return bpm2 <= bpm1;
 }
 
-inline QDebug operator<<(QDebug dbg, Bpm arg) {
-    if (arg.isValid()) {
-        dbg.nospace() << "Bpm(" << arg.value() << ")";
-    } else {
-        dbg << "Bpm(Invalid)";
-    }
-    return dbg;
-}
+QDebug operator<<(QDebug dbg, Bpm arg);
 }
 
 Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);

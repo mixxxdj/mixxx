@@ -5,9 +5,9 @@
 #include "moc_broadcastsettingsmodel.cpp"
 
 namespace {
-const int kColumnEnabled = 0;
-const int kColumnName = 1;
-const int kColumnStatus = 2;
+constexpr int kColumnEnabled = 0;
+constexpr int kColumnName = 1;
+constexpr int kColumnStatus = 2;
 } // namespace
 
 BroadcastSettingsModel::BroadcastSettingsModel() {

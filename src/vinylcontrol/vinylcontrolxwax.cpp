@@ -21,7 +21,7 @@ constexpr int kChannels = 2;
 } // namespace
 
 // Sample threshold below which we consider there to be no signal.
-const double kMinSignal = 75.0 / SAMPLE_MAXIMUM;
+constexpr double kMinSignal = 75.0 / SAMPLE_MAXIMUM;
 
 bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
@@ -685,8 +685,8 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
     //track will be selected when the needle is moved back to play area
     //track selection can be cancelled by loading a track manually
 
-    const int SELECT_INTERVAL = 150;
-    const double NOPOS_SPEED = 0.50;
+    constexpr int SELECT_INTERVAL = 150;
+    constexpr double NOPOS_SPEED = 0.50;
 
     if (m_pControlTrackSelector == nullptr) {
         // this isn't done in the constructor because this object

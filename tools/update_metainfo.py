@@ -23,12 +23,15 @@ def parse_changelog(content):
             "version": matchobj.group("number"),
         }
         try:
-            attrib["date"] = datetime.datetime.strptime(
+            release_date = datetime.datetime.strptime(
                 matchobj.group("date"), " (%Y-%m-%d)"
-            ).strftime("%Y-%m-%d")
-            attrib["type"] = "stable"
+            ).replace(tzinfo=datetime.timezone.utc)
         except ValueError:
             attrib["type"] = "development"
+        else:
+            attrib["type"] = "stable"
+            attrib["date"] = release_date.strftime("%Y-%m-%d")
+            attrib["timestamp"] = "{:.0f}".format(release_date.timestamp())
 
         soup = bs4.BeautifulSoup(
             markdown.markdown(description_md), "html.parser"
@@ -46,6 +49,13 @@ def parse_changelog(content):
             new_tag = soup.new_tag("p")
             new_tag.string = tag.get_text()
             tag.replace_with(new_tag)
+
+        # Although the `<code>` tag is theoretically supported, it apparently
+        # leads to parser errors when using `appstream-util validate-relax` (as
+        # of version 0.7.18).
+        for tag in soup.find_all("code"):
+            tag.replace_with(tag.get_text())
+
         desc = soup.new_tag("description")
         desc.extend(soup.contents)
 

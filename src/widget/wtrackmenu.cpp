@@ -26,6 +26,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "util/defs.h"
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "util/qt.h"
@@ -211,6 +212,13 @@ void WTrackMenu::createActions() {
 
     if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct = new QAction(tr("Properties"), this);
+        // This is just for having the shortcut displayed next to the action
+        // when the menu is invoked from the tracks table.
+        // The keypress is caught in WTrackTableView::keyPressEvent
+        if (m_pTrackModel) {
+            m_pPropertiesAct->setShortcut(
+                    QKeySequence(kPropertiesShortcutModifier + kPropertiesShortcutKey));
+        }
         connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTrackInfo);
     }
 

@@ -1,6 +1,5 @@
 #include "track/beatgrid.h"
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "track/beatutils.h"
@@ -47,6 +46,7 @@ class BeatGridIterator : public BeatIterator {
 };
 
 BeatGrid::BeatGrid(
+        MakeSharedTag,
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const mixxx::track::io::BeatGrid& grid,
@@ -55,43 +55,56 @@ BeatGrid::BeatGrid(
           m_sampleRate(sampleRate),
           m_grid(grid),
           m_beatLengthFrames(beatLengthFrames) {
-    // BeatGrid should live in the same thread as the track it is associated
-    // with.
 }
 
-BeatGrid::BeatGrid(const BeatGrid& other,
+BeatGrid::BeatGrid(
+        MakeSharedTag,
+        const BeatGrid& other,
         const mixxx::track::io::BeatGrid& grid,
         audio::FrameDiff_t beatLengthFrames)
-        : m_subVersion(other.m_subVersion),
-          m_sampleRate(other.m_sampleRate),
-          m_grid(grid),
-          m_beatLengthFrames(beatLengthFrames) {
+        : BeatGrid(
+                  MakeSharedTag{},
+                  other.m_sampleRate,
+                  other.m_subVersion,
+                  grid,
+                  beatLengthFrames) {
 }
 
-BeatGrid::BeatGrid(const BeatGrid& other)
-        : BeatGrid(other, other.m_grid, other.m_beatLengthFrames) {
+BeatGrid::BeatGrid(
+        MakeSharedTag,
+        const BeatGrid& other)
+        : BeatGrid(MakeSharedTag{}, other, other.m_grid, other.m_beatLengthFrames) {
 }
 
 // static
 BeatsPointer BeatGrid::makeBeatGrid(
         audio::SampleRate sampleRate,
         mixxx::Bpm bpm,
-        mixxx::audio::FramePos firstBeatPosition,
+        mixxx::audio::FramePos firstBeatPositionOnFrameBoundary,
         const QString& subVersion) {
-    VERIFY_OR_DEBUG_ASSERT(bpm.isValid() && firstBeatPosition.isValid() &&
-            !firstBeatPosition.isFractional()) {
+    VERIFY_OR_DEBUG_ASSERT(bpm.isValid() && firstBeatPositionOnFrameBoundary.isValid()) {
         return nullptr;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!firstBeatPositionOnFrameBoundary.isFractional()) {
+        // The beat grid only stores integer frame positions. The caller
+        // is responsible to ensure that the position of the first beat
+        // is on a frame boundary. Implicitly rounding the given position
+        // to the nearest frame boundary might not be appropriate for all
+        // use cases.
+        firstBeatPositionOnFrameBoundary =
+                firstBeatPositionOnFrameBoundary.toNearestFrameBoundary();
     }
 
     mixxx::track::io::BeatGrid grid;
 
     grid.mutable_bpm()->set_bpm(bpm.value());
     grid.mutable_first_beat()->set_frame_position(
-            static_cast<google::protobuf::int32>(firstBeatPosition.value()));
+            static_cast<google::protobuf::int32>(firstBeatPositionOnFrameBoundary.value()));
     // Calculate beat length as sample offsets
     const audio::FrameDiff_t beatLengthFrames = 60.0 * sampleRate / bpm.value();
 
-    return BeatsPointer(new BeatGrid(sampleRate, subVersion, grid, beatLengthFrames));
+    return std::make_shared<BeatGrid>(
+            MakeSharedTag{}, sampleRate, subVersion, grid, beatLengthFrames);
 }
 
 // static
@@ -102,12 +115,16 @@ BeatsPointer BeatGrid::fromByteArray(
     mixxx::track::io::BeatGrid grid;
     if (grid.ParseFromArray(byteArray.constData(), byteArray.length())) {
         const audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / grid.bpm().bpm());
-        return BeatsPointer(new BeatGrid(sampleRate, subVersion, grid, beatLengthFrames));
+        return std::make_shared<BeatGrid>(MakeSharedTag{},
+                sampleRate,
+                subVersion,
+                grid,
+                beatLengthFrames);
     }
 
     // Legacy fallback for BeatGrid-1.0
     if (byteArray.size() != sizeof(BeatGridData)) {
-        return BeatsPointer(new BeatGrid(sampleRate, QString(), grid, 0));
+        return std::make_shared<BeatGrid>(MakeSharedTag{}, sampleRate, QString(), grid, 0);
     }
     const BeatGridData* blob = reinterpret_cast<const BeatGridData*>(byteArray.constData());
     const auto firstBeat = mixxx::audio::FramePos(blob->firstBeat);
@@ -241,27 +258,28 @@ mixxx::Bpm BeatGrid::getBpm() const {
 mixxx::Bpm BeatGrid::getBpmAroundPosition(audio::FramePos position, int n) const {
     Q_UNUSED(position);
     Q_UNUSED(n);
-
-    if (!isValid()) {
-        return {};
-    }
-    return bpm();
+    return getBpm();
 }
 
 BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
-    if (!isValid()) {
-        return BeatsPointer(new BeatGrid(*this));
+    VERIFY_OR_DEBUG_ASSERT(isValid()) {
+        return clonePointer();
     }
+
     mixxx::track::io::BeatGrid grid = m_grid;
     const audio::FramePos newFirstBeatPosition = firstBeatPosition() + offset;
     grid.mutable_first_beat()->set_frame_position(
             static_cast<google::protobuf::int32>(
                     newFirstBeatPosition.toLowerFrameBoundary().value()));
 
-    return BeatsPointer(new BeatGrid(*this, grid, m_beatLengthFrames));
+    return std::make_shared<BeatGrid>(MakeSharedTag{}, *this, grid, m_beatLengthFrames);
 }
 
 BeatsPointer BeatGrid::scale(BpmScale scale) const {
+    VERIFY_OR_DEBUG_ASSERT(isValid()) {
+        return clonePointer();
+    }
+
     mixxx::track::io::BeatGrid grid = m_grid;
     auto bpm = mixxx::Bpm(grid.bpm().bpm());
 
@@ -286,27 +304,28 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return BeatsPointer(new BeatGrid(*this));
+        return clonePointer();
     }
 
     if (!bpm.isValid()) {
-        return BeatsPointer(new BeatGrid(*this));
+        return clonePointer();
     }
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
     grid.mutable_bpm()->set_bpm(bpm.value());
     const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());
-    return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
+    return std::make_shared<BeatGrid>(MakeSharedTag{}, *this, grid, beatLengthFrames);
 }
 
-BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) {
+BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) const {
     VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
-        return nullptr;
+        return clonePointer();
     }
+
     mixxx::track::io::BeatGrid grid = m_grid;
     grid.mutable_bpm()->set_bpm(bpm.value());
     const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * m_sampleRate / bpm.value());
-    return BeatsPointer(new BeatGrid(*this, grid, beatLengthFrames));
+    return std::make_shared<BeatGrid>(MakeSharedTag{}, *this, grid, beatLengthFrames);
 }
 
 } // namespace mixxx

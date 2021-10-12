@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QString>
 #include <QtSql>
 
@@ -36,11 +36,11 @@ class SearchQueryParser {
     QStringList m_allFilters;
     QHash<QString, QStringList> m_fieldToSqlColumns;
 
-    QRegExp m_fuzzyMatcher;
-    QRegExp m_textFilterMatcher;
-    QRegExp m_crateFilterMatcher;
-    QRegExp m_numericFilterMatcher;
-    QRegExp m_specialFilterMatcher;
+    QRegularExpression m_fuzzyMatcher;
+    QRegularExpression m_textFilterMatcher;
+    QRegularExpression m_crateFilterMatcher;
+    QRegularExpression m_numericFilterMatcher;
+    QRegularExpression m_specialFilterMatcher;
 
     DISALLOW_COPY_AND_ASSIGN(SearchQueryParser);
 };

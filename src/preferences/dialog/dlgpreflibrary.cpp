@@ -11,6 +11,7 @@
 #include <QStringList>
 #include <QUrl>
 
+#include "defs_urls.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -110,10 +111,23 @@ DlgPrefLibrary::DlgPrefLibrary(
 #endif
     builtInFormats->setText(builtInFormatsStr);
 
+    // Create text color manual links
+    createLinkColor();
+    // Add link to the manual where configuration files are explained in detail
+    label_settingsManualLink->setText(coloredLinkString(
+            m_pLinkColor,
+            tr("See the manual for details"),
+            MIXXX_MANUAL_SETTINGS_DIRECTORY_URL));
+    connect(label_settingsManualLink,
+            &QLabel::linkActivated,
+            [](const QString& url) {
+                QDesktopServices::openUrl(url);
+            });
+
     connect(checkBox_SyncTrackMetadata,
             &QCheckBox::toggled,
             this,
-            &DlgPrefLibrary::slotSyncTrackMetadataExportToggled);
+            &DlgPrefLibrary::slotSyncTrackMetadataToggled);
 
     // Initialize the controls after all slots have been connected
     slotUpdate();
@@ -453,7 +467,7 @@ void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebounci
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 }
 
-void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {
+void DlgPrefLibrary::slotSyncTrackMetadataToggled() {
     if (isVisible() && checkBox_SyncTrackMetadata->isChecked()) {
         mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
     }

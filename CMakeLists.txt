@@ -75,11 +75,18 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
   endif()
 endif()
 
+option(QT6 "Build with Qt6" OFF)
+
 if(APPLE)
-  # Minimum macOS version supported by Qt 5.12
-  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
-  # Needed for deployment target < 10.14
-  add_compile_options(-fno-aligned-allocation)
+  if(QT6)
+    # Minimum macOS version supported by Qt 6
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+  else()
+    # Minimum macOS version supported by Qt 5.12
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+    # Needed for deployment target < 10.14
+    add_compile_options(-fno-aligned-allocation)
+  endif()
 endif()
 
 project(mixxx VERSION 2.4.0)
@@ -447,6 +454,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
   src/analyzer/plugins/buffering_utils.cpp
   src/analyzer/trackanalysisscheduler.cpp
+  src/audio/frame.cpp
   src/audio/types.cpp
   src/audio/signalinfo.cpp
   src/audio/streaminfo.cpp
@@ -798,27 +806,20 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
   src/recording/recordingmanager.cpp
-  src/skin/legacy/colorschemeparser.cpp
-  src/skin/legacy/imgcolor.cpp
-  src/skin/legacy/imginvert.cpp
-  src/skin/legacy/imgloader.cpp
-  src/skin/legacy/launchimage.cpp
-  src/skin/legacy/legacyskinparser.cpp
-  src/skin/legacy/pixmapsource.cpp
-  src/skin/legacy/legacyskin.cpp
-  src/skin/qml/asyncimageprovider.cpp
-  src/skin/qml/qmlcontrolproxy.cpp
-  src/skin/qml/qmlconfigproxy.cpp
-  src/skin/qml/qmleffectmanifestparametersmodel.cpp
-  src/skin/qml/qmleffectsmanagerproxy.cpp
-  src/skin/qml/qmleffectslotproxy.cpp
-  src/skin/qml/qmllibraryproxy.cpp
-  src/skin/qml/qmllibrarytracklistmodel.cpp
-  src/skin/qml/qmlplayermanagerproxy.cpp
-  src/skin/qml/qmlplayerproxy.cpp
-  src/skin/qml/qmlskin.cpp
-  src/skin/qml/qmlvisibleeffectsmodel.cpp
-  src/skin/qml/qmlwaveformoverview.cpp
+  src/qml/asyncimageprovider.cpp
+  src/qml/qmlapplication.cpp
+  src/qml/qmlcontrolproxy.cpp
+  src/qml/qmlconfigproxy.cpp
+  src/qml/qmldlgpreferencesproxy.cpp
+  src/qml/qmleffectmanifestparametersmodel.cpp
+  src/qml/qmleffectsmanagerproxy.cpp
+  src/qml/qmleffectslotproxy.cpp
+  src/qml/qmllibraryproxy.cpp
+  src/qml/qmllibrarytracklistmodel.cpp
+  src/qml/qmlplayermanagerproxy.cpp
+  src/qml/qmlplayerproxy.cpp
+  src/qml/qmlvisibleeffectsmodel.cpp
+  src/qml/qmlwaveformoverview.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
   src/skin/skinloader.cpp
@@ -933,125 +934,137 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
-  src/waveform/guitick.cpp
-  src/waveform/renderers/glslwaveformrenderersignal.cpp
-  src/waveform/renderers/glvsynctestrenderer.cpp
-  src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
-  src/waveform/renderers/glwaveformrendererrgb.cpp
-  src/waveform/renderers/glwaveformrenderersimplesignal.cpp
-  src/waveform/renderers/qtvsynctestrenderer.cpp
-  src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
-  src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
-  src/waveform/renderers/waveformmark.cpp
-  src/waveform/renderers/waveformmarkrange.cpp
-  src/waveform/renderers/waveformmarkset.cpp
-  src/waveform/renderers/waveformrenderbackground.cpp
-  src/waveform/renderers/waveformrenderbeat.cpp
-  src/waveform/renderers/waveformrendererabstract.cpp
-  src/waveform/renderers/waveformrendererendoftrack.cpp
-  src/waveform/renderers/waveformrendererfilteredsignal.cpp
-  src/waveform/renderers/waveformrendererhsv.cpp
-  src/waveform/renderers/waveformrendererpreroll.cpp
-  src/waveform/renderers/waveformrendererrgb.cpp
-  src/waveform/renderers/waveformrenderersignalbase.cpp
-  src/waveform/renderers/waveformrendermark.cpp
-  src/waveform/renderers/waveformrendermarkrange.cpp
-  src/waveform/renderers/waveformsignalcolors.cpp
-  src/waveform/renderers/waveformwidgetrenderer.cpp
-  src/waveform/sharedglcontext.cpp
-  src/waveform/visualplayposition.cpp
-  src/waveform/visualsmanager.cpp
-  src/waveform/vsyncthread.cpp
-  src/waveform/waveform.cpp
-  src/waveform/waveformfactory.cpp
-  src/waveform/waveformmarklabel.cpp
-  src/waveform/waveformwidgetfactory.cpp
-  src/waveform/widgets/emptywaveformwidget.cpp
-  src/waveform/widgets/glrgbwaveformwidget.cpp
-  src/waveform/widgets/glsimplewaveformwidget.cpp
-  src/waveform/widgets/glslwaveformwidget.cpp
-  src/waveform/widgets/glvsynctestwidget.cpp
-  src/waveform/widgets/glwaveformwidget.cpp
-  src/waveform/widgets/hsvwaveformwidget.cpp
-  src/waveform/widgets/qthsvwaveformwidget.cpp
-  src/waveform/widgets/qtrgbwaveformwidget.cpp
-  src/waveform/widgets/qtsimplewaveformwidget.cpp
-  src/waveform/widgets/qtvsynctestwidget.cpp
-  src/waveform/widgets/qtwaveformwidget.cpp
-  src/waveform/widgets/rgbwaveformwidget.cpp
-  src/waveform/widgets/softwarewaveformwidget.cpp
-  src/waveform/widgets/waveformwidgetabstract.cpp
-  src/widget/controlwidgetconnection.cpp
-  src/widget/hexspinbox.cpp
-  src/widget/paintable.cpp
-  src/widget/wanalysislibrarytableview.cpp
-  src/widget/wbasewidget.cpp
-  src/widget/wbattery.cpp
-  src/widget/wbeatspinbox.cpp
-  src/widget/wcolorpicker.cpp
-  src/widget/wcolorpickeraction.cpp
-  src/widget/wcombobox.cpp
-  src/widget/wcoverart.cpp
-  src/widget/wcoverartlabel.cpp
-  src/widget/wcoverartmenu.cpp
-  src/widget/wcuemenupopup.cpp
-  src/widget/wdisplay.cpp
-  src/widget/weffect.cpp
-  src/widget/weffectbuttonparameter.cpp
-  src/widget/weffectchain.cpp
-  src/widget/weffectparameter.cpp
-  src/widget/weffectparameterbase.cpp
-  src/widget/weffectparameterknob.cpp
-  src/widget/weffectparameterknobcomposed.cpp
-  src/widget/weffectpushbutton.cpp
-  src/widget/weffectselector.cpp
-  src/widget/whotcuebutton.cpp
-  src/widget/wimagestore.cpp
-  src/widget/wkey.cpp
-  src/widget/wknob.cpp
-  src/widget/wknobcomposed.cpp
-  src/widget/wlabel.cpp
-  src/widget/wlibrary.cpp
-  src/widget/wlibrarysidebar.cpp
-  src/widget/wlibrarytableview.cpp
-  src/widget/wlibrarytextbrowser.cpp
-  src/widget/wmainmenubar.cpp
-  src/widget/wnumber.cpp
-  src/widget/wnumberdb.cpp
-  src/widget/wnumberpos.cpp
-  src/widget/wnumberrate.cpp
-  src/widget/woverview.cpp
-  src/widget/woverviewhsv.cpp
-  src/widget/woverviewlmh.cpp
-  src/widget/woverviewrgb.cpp
-  src/widget/wpixmapstore.cpp
-  src/widget/wpushbutton.cpp
-  src/widget/wrecordingduration.cpp
-  src/widget/wscrollable.cpp
-  src/widget/wsearchlineedit.cpp
-  src/widget/wsearchrelatedtracksmenu.cpp
-  src/widget/wsingletoncontainer.cpp
-  src/widget/wsizeawarestack.cpp
-  src/widget/wskincolor.cpp
-  src/widget/wslidercomposed.cpp
-  src/widget/wspinny.cpp
-  src/widget/wsplitter.cpp
-  src/widget/wstarrating.cpp
-  src/widget/wstatuslight.cpp
-  src/widget/wtime.cpp
-  src/widget/wtrackmenu.cpp
-  src/widget/wtrackproperty.cpp
-  src/widget/wtracktableview.cpp
-  src/widget/wtracktableviewheader.cpp
-  src/widget/wtracktext.cpp
-  src/widget/wtrackwidgetgroup.cpp
-  src/widget/wvumeter.cpp
-  src/widget/wwaveformviewer.cpp
-  src/widget/wwidget.cpp
-  src/widget/wwidgetgroup.cpp
-  src/widget/wwidgetstack.cpp
-  src/widget/wraterange.cpp
 )
+if(NOT QT6)
+  target_sources(mixxx-lib PRIVATE
+    src/skin/legacy/colorschemeparser.cpp
+    src/skin/legacy/imgcolor.cpp
+    src/skin/legacy/imginvert.cpp
+    src/skin/legacy/imgloader.cpp
+    src/skin/legacy/launchimage.cpp
+    src/skin/legacy/legacyskinparser.cpp
+    src/skin/legacy/pixmapsource.cpp
+    src/skin/legacy/legacyskin.cpp
+    src/waveform/guitick.cpp
+    src/waveform/renderers/glslwaveformrenderersignal.cpp
+    src/waveform/renderers/glvsynctestrenderer.cpp
+    src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
+    src/waveform/renderers/glwaveformrendererrgb.cpp
+    src/waveform/renderers/glwaveformrenderersimplesignal.cpp
+    src/waveform/renderers/qtvsynctestrenderer.cpp
+    src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
+    src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
+    src/waveform/renderers/waveformmark.cpp
+    src/waveform/renderers/waveformmarkrange.cpp
+    src/waveform/renderers/waveformmarkset.cpp
+    src/waveform/renderers/waveformrenderbackground.cpp
+    src/waveform/renderers/waveformrenderbeat.cpp
+    src/waveform/renderers/waveformrendererabstract.cpp
+    src/waveform/renderers/waveformrendererendoftrack.cpp
+    src/waveform/renderers/waveformrendererfilteredsignal.cpp
+    src/waveform/renderers/waveformrendererhsv.cpp
+    src/waveform/renderers/waveformrendererpreroll.cpp
+    src/waveform/renderers/waveformrendererrgb.cpp
+    src/waveform/renderers/waveformrenderersignalbase.cpp
+    src/waveform/renderers/waveformrendermark.cpp
+    src/waveform/renderers/waveformrendermarkrange.cpp
+    src/waveform/renderers/waveformsignalcolors.cpp
+    src/waveform/renderers/waveformwidgetrenderer.cpp
+    src/waveform/sharedglcontext.cpp
+    src/waveform/visualplayposition.cpp
+    src/waveform/visualsmanager.cpp
+    src/waveform/vsyncthread.cpp
+    src/waveform/waveform.cpp
+    src/waveform/waveformfactory.cpp
+    src/waveform/waveformmarklabel.cpp
+    src/waveform/waveformwidgetfactory.cpp
+    src/waveform/widgets/emptywaveformwidget.cpp
+    src/waveform/widgets/glrgbwaveformwidget.cpp
+    src/waveform/widgets/glsimplewaveformwidget.cpp
+    src/waveform/widgets/glslwaveformwidget.cpp
+    src/waveform/widgets/glvsynctestwidget.cpp
+    src/waveform/widgets/glwaveformwidget.cpp
+    src/waveform/widgets/hsvwaveformwidget.cpp
+    src/waveform/widgets/qthsvwaveformwidget.cpp
+    src/waveform/widgets/qtrgbwaveformwidget.cpp
+    src/waveform/widgets/qtsimplewaveformwidget.cpp
+    src/waveform/widgets/qtvsynctestwidget.cpp
+    src/waveform/widgets/qtwaveformwidget.cpp
+    src/waveform/widgets/rgbwaveformwidget.cpp
+    src/waveform/widgets/softwarewaveformwidget.cpp
+    src/waveform/widgets/waveformwidgetabstract.cpp
+    src/widget/controlwidgetconnection.cpp
+    src/widget/hexspinbox.cpp
+    src/widget/paintable.cpp
+    src/widget/wanalysislibrarytableview.cpp
+    src/widget/wbasewidget.cpp
+    src/widget/wbattery.cpp
+    src/widget/wbeatspinbox.cpp
+    src/widget/wcolorpicker.cpp
+    src/widget/wcolorpickeraction.cpp
+    src/widget/wcombobox.cpp
+    src/widget/wcoverart.cpp
+    src/widget/wcoverartlabel.cpp
+    src/widget/wcoverartmenu.cpp
+    src/widget/wcuemenupopup.cpp
+    src/widget/wdisplay.cpp
+    src/widget/weffect.cpp
+    src/widget/weffectbuttonparameter.cpp
+    src/widget/weffectchain.cpp
+    src/widget/weffectparameter.cpp
+    src/widget/weffectparameterbase.cpp
+    src/widget/weffectparameterknob.cpp
+    src/widget/weffectparameterknobcomposed.cpp
+    src/widget/weffectpushbutton.cpp
+    src/widget/weffectselector.cpp
+    src/widget/whotcuebutton.cpp
+    src/widget/wimagestore.cpp
+    src/widget/wkey.cpp
+    src/widget/wknob.cpp
+    src/widget/wknobcomposed.cpp
+    src/widget/wlabel.cpp
+    src/widget/wlibrary.cpp
+    src/widget/wlibrarysidebar.cpp
+    src/widget/wlibrarytableview.cpp
+    src/widget/wlibrarytextbrowser.cpp
+    src/widget/wmainmenubar.cpp
+    src/widget/wnumber.cpp
+    src/widget/wnumberdb.cpp
+    src/widget/wnumberpos.cpp
+    src/widget/wnumberrate.cpp
+    src/widget/woverview.cpp
+    src/widget/woverviewhsv.cpp
+    src/widget/woverviewlmh.cpp
+    src/widget/woverviewrgb.cpp
+    src/widget/wpixmapstore.cpp
+    src/widget/wpushbutton.cpp
+    src/widget/wrecordingduration.cpp
+    src/widget/wscrollable.cpp
+    src/widget/wsearchlineedit.cpp
+    src/widget/wsearchrelatedtracksmenu.cpp
+    src/widget/wsingletoncontainer.cpp
+    src/widget/wsizeawarestack.cpp
+    src/widget/wskincolor.cpp
+    src/widget/wslidercomposed.cpp
+    src/widget/wspinny.cpp
+    src/widget/wsplitter.cpp
+    src/widget/wstarrating.cpp
+    src/widget/wstatuslight.cpp
+    src/widget/wtime.cpp
+    src/widget/wtrackmenu.cpp
+    src/widget/wtrackproperty.cpp
+    src/widget/wtracktableview.cpp
+    src/widget/wtracktableviewheader.cpp
+    src/widget/wtracktext.cpp
+    src/widget/wtrackwidgetgroup.cpp
+    src/widget/wvumeter.cpp
+    src/widget/wwaveformviewer.cpp
+    src/widget/wwidget.cpp
+    src/widget/wwidgetgroup.cpp
+    src/widget/wwidgetstack.cpp
+    src/widget/wraterange.cpp
+  )
+endif()
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)
@@ -1108,7 +1121,8 @@ if(MSVC)
     target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
 else()
-  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion -Werror=return-type -Wformat=2 -Wundef)
+  # TODO: Add -Wtrampolines, not yet supported by clazy
+  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion -Werror=return-type -Wformat=2 -Wformat-security -Wvla -Wundef)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()
@@ -1225,6 +1239,9 @@ endif()
 
 # The mixxx executable
 add_executable(mixxx WIN32 src/main.cpp)
+# ugly hack to get #include "preferences/dialog/ui_dlgpreferencesdlg.h" to work in
+# src/qmldlgpreferencesproxy.h, which is #included from src/qmlapplication.h.
+target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/mixxx-lib_autogen/include")
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_link_libraries(mixxx PRIVATE mixxx-lib mixxx-gitinfostore)
 
@@ -1408,7 +1425,7 @@ if(UNIX AND NOT APPLE)
   # Icon files for menu entry
   install(
     DIRECTORY
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons"
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/"
     DESTINATION
       "${CMAKE_INSTALL_DATADIR}/icons/hicolor"
     # This file is for Windows.
@@ -1550,7 +1567,6 @@ add_executable(mixxx-test
   src/test/colorconfig_test.cpp
   src/test/colormapperjsproxy_test.cpp
   src/test/colorpalette_test.cpp
-  src/test/compatibility_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_mapping_validation_test.cpp
   src/test/controllerscriptenginelegacy_test.cpp
@@ -1629,6 +1645,7 @@ add_executable(mixxx-test
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
+  src/test/uuid_test.cpp
   src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
@@ -1912,42 +1929,8 @@ if(ENGINEPRIME)
 endif()
 
 # Ebur128
-find_package(Ebur128)
-default_option(EBUR128_STATIC "Link libebur128 statically" "NOT Ebur128_FOUND")
-if(EBUR128_STATIC)
-  message(STATUS "Preparing internal Ebur128")
-  set(EBUR128_CMAKE_ARGS "-DBUILD_STATIC_LIBS=ON")
-  check_symbol_exists(STAILQ_HEAD sys/queue.h HAVE_STAILQ)
-  if(NOT HAVE_STAILQ)
-    list(APPEND EBUR128_CMAKE_ARGS "-DENABLE_INTERNAL_QUEUE_H=ON")
-  endif()
-  if(MSVC)
-    set(EBUR128_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
-  else()
-    set(EBUR128_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}ebur128${CMAKE_STATIC_LIBRARY_SUFFIX}")
-  endif()
-  ExternalProject_Add(libebur128
-    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128"
-    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128"
-    INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128-install"
-    CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> ${EBUR128_CMAKE_ARGS}
-    BUILD_BYPRODUCTS <INSTALL_DIR>/${EBUR128_LIBRARY}
-  )
-  set_target_properties(libebur128 PROPERTIES EXCLUDE_FROM_ALL TRUE)
-
-  add_library(mixxx-libebur128 STATIC IMPORTED)
-  add_dependencies(mixxx-libebur128 libebur128)
-  set(EBUR128_LIBRARY_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/lib/libebur128-install/${EBUR128_LIBRARY}")
-  message(STATUS "Linking internal libebur128 statically: ${EBUR128_LIBRARY_LOCATION}")
-  set_target_properties(mixxx-libebur128 PROPERTIES
-    IMPORTED_LOCATION "${EBUR128_LIBRARY_LOCATION}"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/lib/libebur128/ebur128"
-  )
-  target_link_libraries(mixxx-lib PRIVATE mixxx-libebur128)
-else()
-  message(STATUS "Linking libebur128 dynamically")
-  target_link_libraries(mixxx-lib PRIVATE Ebur128::Ebur128)
-endif()
+find_package(Ebur128 REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE Ebur128::Ebur128)
 
 # FidLib
 add_library(fidlib STATIC EXCLUDE_FROM_ALL lib/fidlib/fidlib.c)
@@ -2097,7 +2080,13 @@ target_link_libraries(mixxx-lib PRIVATE mixxx-proto)
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
-find_package(Qt5
+if(QT6)
+  find_package(QT NAMES Qt6 COMPONENTS Core REQUIRED)
+  set(QT6_NEW_COMPONENTS "SvgWidgets;Core5Compat")
+else()
+  find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
+endif()
+find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
     Concurrent
     Core
@@ -2112,27 +2101,33 @@ find_package(Qt5
     Test
     Widgets
     Xml
+    ${QT6_NEW_COMPONENTS}
   REQUIRED
 )
 # PUBLIC is required below to find included headers
 target_link_libraries(mixxx-lib PUBLIC
-  Qt5::Concurrent
-  Qt5::Core
-  Qt5::Gui
-  Qt5::Network
-  Qt5::OpenGL
-  Qt5::PrintSupport
-  Qt5::Qml
-  Qt5::QuickWidgets
-  Qt5::Sql
-  Qt5::Svg
-  Qt5::Test
-  Qt5::Widgets
-  Qt5::Xml)
-target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
-is_static_library(Qt5_IS_STATIC Qt5::Core)
-if(Qt5_IS_STATIC)
+  Qt${QT_VERSION_MAJOR}::Concurrent
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Network
+  Qt${QT_VERSION_MAJOR}::OpenGL
+  Qt${QT_VERSION_MAJOR}::PrintSupport
+  Qt${QT_VERSION_MAJOR}::Qml
+  Qt${QT_VERSION_MAJOR}::QuickWidgets
+  Qt${QT_VERSION_MAJOR}::Sql
+  Qt${QT_VERSION_MAJOR}::Svg
+  Qt${QT_VERSION_MAJOR}::Test
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Xml)
+if(QT6)
+  foreach(COMPONENT ${QT6_NEW_COMPONENTS})
+    target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
+  endforeach()
+endif()
 
+target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
+is_static_library(Qt_IS_STATIC Qt${QT_VERSION_MAJOR}::Core)
+if(Qt_IS_STATIC)
   # NOTE(rryan): If you are adding a plugin here, you must also
   # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
   # for it. Not all imageformats plugins are built as .libs when
@@ -2173,7 +2168,7 @@ endif()
 
 
 if(APPLE)
-  if(Qt5_IS_STATIC)
+  if(Qt_IS_STATIC)
     target_link_libraries(mixxx-lib PRIVATE
         "-weak_framework Accelerate"
         "-weak_framework AppKit"
@@ -2196,17 +2191,19 @@ if(APPLE)
         "-weak_framework IOKit"
     )
   endif()
-elseif(UNIX)
-  find_package(X11 REQUIRED)
-  find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
-  target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
+elseif(UNIX AND NOT APPLE)
+  if(NOT QT6)
+    find_package(X11 REQUIRED)
+    find_package(Qt5 COMPONENTS X11Extras REQUIRED)
+    target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
+    target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}" Qt5::X11Extras)
+  endif()
+  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
   target_link_libraries(mixxx-lib PRIVATE
-    "${X11_LIBRARIES}"
-    Qt5::X11Extras
-    Qt5::DBus
+    Qt${QT_VERSION_MAJOR}::DBus
   )
 elseif(WIN32)
-  if(Qt5_IS_STATIC)
+  if(Qt_IS_STATIC)
     target_link_libraries(mixxx-lib PRIVATE
       # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
       # QtCore
@@ -2231,7 +2228,6 @@ elseif(WIN32)
       # QtNetwork openssl-linked
       crypt32
 
-      # New libraries required by Qt5.
       dwmapi      # qtwindows
       iphlpapi    # qt5network
       mpr         # qt5core
@@ -2242,14 +2238,14 @@ elseif(WIN32)
       wtsapi32    # ?
     )
 
-    find_library(QT5FONTDATABASESUPPORT_LIBRARY Qt5FontDatabaseSupport)
-    target_link_libraries(mixxx-lib PRIVATE "${QT5FONTDATABASESUPPORT_LIBRARY}")
-    find_library(QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY Qt5WindowsUIAutomationSupport)
-    target_link_libraries(mixxx-lib PRIVATE "${QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY}")
-    find_library(QT5EVENTDISPATCHERSUPPORT_LIBRARY Qt5EventDispatcherSupport)
-    target_link_libraries(mixxx-lib PRIVATE "${QT5EVENTDISPATCHERSUPPORT_LIBRARY}")
-    find_library(QT5THEMESUPPORT_LIBRARY Qt5ThemeSupport)
-    target_link_libraries(mixxx-lib PRIVATE "${QT5THEMESUPPORT_LIBRARY}")
+    find_library(QTFONTDATABASESUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}FontDatabaseSupport)
+    target_link_libraries(mixxx-lib PRIVATE "${QTFONTDATABASESUPPORT_LIBRARY}")
+    find_library(QTWINDOWSUIAUTOMATIONSUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}WindowsUIAutomationSupport)
+    target_link_libraries(mixxx-lib PRIVATE "${QTWINDOWSUIAUTOMATIONSUPPORT_LIBRARY}")
+    find_library(QTEVENTDISPATCHERSUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}EventDispatcherSupport)
+    target_link_libraries(mixxx-lib PRIVATE "${QTEVENTDISPATCHERSUPPORT_LIBRARY}")
+    find_library(QTTHEMESUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}ThemeSupport)
+    target_link_libraries(mixxx-lib PRIVATE "${QTTHEMESUPPORT_LIBRARY}")
 
     find_library(QTFREETYPE_LIBRARY qtfreetype)
     target_link_libraries(mixxx-lib PRIVATE "${QTFREETYPE_LIBRARY}")
@@ -2336,7 +2332,7 @@ if(MSVC)
   target_compile_definitions(Reverb PRIVATE _USE_MATH_DEFINES)
 endif()
 target_include_directories(Reverb PRIVATE src)
-target_link_libraries(Reverb PRIVATE Qt5::Core)
+target_link_libraries(Reverb PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)
 target_link_libraries(mixxx-lib PRIVATE Reverb)
 
@@ -2353,32 +2349,8 @@ if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
 endif()
 
 # SoundTouch
-find_package(SoundTouch)
-default_option(SoundTouch_STATIC "Link libSoundTouch statically" "NOT SoundTouch_FOUND OR SoundTouch_VERSION VERSION_LESS 2.1.2")
-if(SoundTouch_STATIC)
-  message(STATUS "Preparing internal libSoundTouch")
-  add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
-    lib/soundtouch/AAFilter.cpp
-    lib/soundtouch/BPMDetect.cpp
-    lib/soundtouch/FIFOSampleBuffer.cpp
-    lib/soundtouch/FIRFilter.cpp
-    lib/soundtouch/InterpolateCubic.cpp
-    lib/soundtouch/InterpolateLinear.cpp
-    lib/soundtouch/InterpolateShannon.cpp
-    lib/soundtouch/PeakFinder.cpp
-    lib/soundtouch/RateTransposer.cpp
-    lib/soundtouch/SoundTouch.cpp
-    lib/soundtouch/TDStretch.cpp
-    lib/soundtouch/cpu_detect_x86.cpp
-    lib/soundtouch/mmx_optimized.cpp
-    lib/soundtouch/sse_optimized.cpp
-  )
-  target_include_directories(SoundTouch SYSTEM PUBLIC lib)
-  target_link_libraries(mixxx-lib PRIVATE SoundTouch)
-else()
-  message(STATUS "Linking libSoundTouch dynamically")
-  target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
-endif()
+find_package(SoundTouch 2.1.2 REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
@@ -2720,7 +2692,7 @@ endif()
 # QtKeychain
 option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" ON)
 if(QTKEYCHAIN)
-  find_package(Qt5Keychain REQUIRED)
+  find_package(Qt${QT_VERSION_MAJOR}Keychain REQUIRED)
   target_compile_definitions(mixxx-lib PUBLIC __QTKEYCHAIN__)
   target_link_libraries(mixxx-lib PRIVATE ${QTKEYCHAIN_LIBRARIES})
   target_include_directories(mixxx-lib SYSTEM PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
@@ -2916,36 +2888,8 @@ set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" 
 include(CPack)
 
 if(APPLE AND MACOS_BUNDLE)
-    if(NOT Qt5_IS_STATIC)
-        macro(install_qt5_plugin _qt_plugin_name _qt_plugins_var _prefix)
-            get_target_property(_qt_plugin_path "${_qt_plugin_name}" LOCATION)
-            if(EXISTS "${_qt_plugin_path}")
-                get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
-                get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
-                get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
-                set(_qt_plugin_dest "${_prefix}/Contents/PlugIns/${_qt_plugin_type}")
-                install(FILES "${_qt_plugin_path}"
-                    DESTINATION "${_qt_plugin_dest}")
-                set(${_qt_plugins_var}
-                    "${${_qt_plugins_var}};\$ENV{DEST_DIR}\${CMAKE_INSTALL_PREFIX}/${_qt_plugin_dest}/${_qt_plugin_file}")
-            else()
-                message(FATAL_ERROR "QT plugin ${_qt_plugin_name} not found")
-            endif()
-        endmacro()
-
-        install_qt5_plugin(Qt5::QCocoaIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QMacStylePlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QOffscreenIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QMinimalIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QSvgPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QJpegPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QICOPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-        install_qt5_plugin(Qt5::QSQLiteDriverPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    endif()
-
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
-    set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib;${Qt5Widgets_DIR}/../..")
+    set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib")
     set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/entitlements.plist")
 
     configure_file(cmake/modules/BundleInstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake" @ONLY)

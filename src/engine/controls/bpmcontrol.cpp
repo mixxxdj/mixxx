@@ -111,22 +111,6 @@ BpmControl::BpmControl(const QString& group,
             this, &BpmControl::slotBpmTap,
             Qt::DirectConnection);
 
-    // Beat sync (scale buffer tempo relative to tempo of other buffer)
-    m_pButtonSync = new ControlPushButton(ConfigKey(group, "beatsync"));
-    connect(m_pButtonSync, &ControlObject::valueChanged,
-            this, &BpmControl::slotControlBeatSync,
-            Qt::DirectConnection);
-
-    m_pButtonSyncPhase = new ControlPushButton(ConfigKey(group, "beatsync_phase"));
-    connect(m_pButtonSyncPhase, &ControlObject::valueChanged,
-            this, &BpmControl::slotControlBeatSyncPhase,
-            Qt::DirectConnection);
-
-    m_pButtonSyncTempo = new ControlPushButton(ConfigKey(group, "beatsync_tempo"));
-    connect(m_pButtonSyncTempo, &ControlObject::valueChanged,
-            this, &BpmControl::slotControlBeatSyncTempo,
-            Qt::DirectConnection);
-
     m_pTranslateBeats = new ControlPushButton(ConfigKey(group, "beats_translate_curpos"));
     connect(m_pTranslateBeats, &ControlObject::valueChanged,
             this, &BpmControl::slotBeatsTranslate,
@@ -144,15 +128,13 @@ BpmControl::BpmControl(const QString& group,
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
+    m_pSyncEnabled = new ControlProxy(group, "sync_enabled", this);
 }
 
 BpmControl::~BpmControl() {
     delete m_pLocalBpm;
     delete m_pEngineBpm;
     delete m_pButtonTap;
-    delete m_pButtonSync;
-    delete m_pButtonSyncPhase;
-    delete m_pButtonSyncTempo;
     delete m_pTranslateBeats;
     delete m_pBeatsTranslateMatchAlignment;
     delete m_pTranslateBeatsEarlier;
@@ -264,115 +246,6 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
             averageBpm,
             averageBpm + kBpmTabRounding);
     pTrack->trySetBeats(pBeats->setBpm(averageBpm));
-}
-
-void BpmControl::slotControlBeatSyncPhase(double value) {
-    if (value == 0) {
-        return;
-    }
-
-    if (isSynchronized()) {
-        m_dUserOffset.setValue(0.0);
-    }
-    getEngineBuffer()->requestSyncPhase();
-}
-
-void BpmControl::slotControlBeatSyncTempo(double value) {
-    if (value == 0) {
-        return;
-    }
-
-    syncTempo();
-}
-
-void BpmControl::slotControlBeatSync(double value) {
-    if (value == 0) {
-        return;
-    }
-
-    if (!syncTempo()) {
-        // syncTempo failed, nothing else to do
-        return;
-    }
-
-    // Also sync phase if quantize is enabled.
-    // this is used from controller scripts, where the latching behaviour of
-    // the sync_enable CO cannot be used
-    if (m_pPlayButton->toBool() && m_pQuantize->toBool()) {
-        slotControlBeatSyncPhase(value);
-    }
-}
-
-bool BpmControl::syncTempo() {
-    if (getSyncMode() == SyncMode::LeaderExplicit) {
-        return false;
-    }
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-
-    if (!pOtherEngineBuffer) {
-        return false;
-    }
-
-    const auto thisBpm = getBpm();
-    const auto thisLocalBpm = getLocalBpm();
-
-    const auto otherBpm = pOtherEngineBuffer->getBpm();
-    const auto otherLocalBpm = pOtherEngineBuffer->getLocalBpm();
-
-    //qDebug() << "this" << "bpm" << thisBpm << "filebpm" << thisLocalBpm;
-    //qDebug() << "other" << "bpm" << otherBpm << "filebpm" << otherLocalBpm;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Rough proof of how syncing works -- rryan 3/2011
-    // ------------------------------------------------
-    //
-    // Let this and other denote this deck versus the sync-target deck.
-    //
-    // The goal is for this deck's effective BPM to equal the other decks.
-    //
-    // thisBpm = otherBpm
-    ///
-    // An effective BPM is the file-bpm times the rate:
-    //
-    // bpm = fileBpm * rate
-    //
-    // So our goal is to tweak thisRate such that this equation is true:
-    //
-    // thisFileBpm * (1.0 + thisRate) = otherFileBpm * (1.0 + otherRate)
-    //
-    // so rearrange this equation in terms of thisRate:
-    //
-    // thisRate = (otherFileBpm * (1.0 + otherRate)) / thisFileBpm - 1.0
-    //
-    // So the new rateScale to set is:
-    //
-    // thisRateScale = ((otherFileBpm * (1.0 + otherRate)) / thisFileBpm - 1.0) / (thisRateDir * thisRateRange)
-
-    if (otherBpm.isValid() && thisBpm.isValid() && thisLocalBpm.isValid()) {
-        // The desired rate is the other decks effective rate divided by this
-        // deck's file BPM. This gives us the playback rate that will produce an
-        // effective BPM equivalent to the other decks.
-        double desiredRate = otherBpm / thisLocalBpm;
-
-        // Test if this buffer's bpm is the double of the other one, and adjust
-        // the rate scale. I believe this is intended to account for our BPM
-        // algorithm sometimes finding double or half BPMs. This avoids drastic
-        // scales.
-
-        const double fileBpmDelta = fabs(thisLocalBpm - otherLocalBpm);
-        if (fabs(thisLocalBpm * 2.0 - otherLocalBpm) < fileBpmDelta) {
-            desiredRate /= 2.0;
-        } else if (fabs(thisLocalBpm - otherLocalBpm * 2.0) < fileBpmDelta) {
-            desiredRate *= 2.0;
-        }
-
-        if (desiredRate < 2.0 && desiredRate > 0.5) {
-            m_pEngineBpm->set(m_pLocalBpm->get() * desiredRate);
-            m_pRateRatio->set(desiredRate);
-            return true;
-        }
-    }
-    return false;
 }
 
 // static
@@ -514,16 +387,16 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         // Threshold above which sync is really, really bad, so much so that we
         // don't even know if we're ahead or behind.  This can occur when quantize was
         // off, but then it gets turned on.
-        const double kTrainWreckThreshold = 0.2;
-        const double kSyncAdjustmentCap = 0.05;
+        constexpr double kTrainWreckThreshold = 0.2;
+        constexpr double kSyncAdjustmentCap = 0.05;
         if (fabs(error) > kTrainWreckThreshold) {
             // Assume poor reflexes (late button push) -- speed up to catch the other track.
             adjustment = 1.0 + kSyncAdjustmentCap;
         } else if (fabs(error) > kErrorThreshold) {
             // Proportional control constant. The higher this is, the more we
             // influence sync.
-            const double kSyncAdjustmentProportional = 0.7;
-            const double kSyncDeltaCap = 0.02;
+            constexpr double kSyncAdjustmentProportional = 0.7;
+            constexpr double kSyncDeltaCap = 0.02;
 
             // TODO(owilliams): There are a lot of "1.0"s in this code -- can we eliminate them?
             const double adjust = 1.0 + (-error * kSyncAdjustmentProportional);
@@ -1031,14 +904,21 @@ mixxx::audio::FrameDiff_t BpmControl::getPhaseOffset(mixxx::audio::FramePos this
 }
 
 void BpmControl::slotUpdateEngineBpm(double value) {
-    Q_UNUSED(value);
-    // Adjust playback bpm in response to a rate_ration update
+    // Adjust playback bpm in response to a rate_ratio update
     double dRate = m_pRateRatio->get();
+
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::slotUpdateEngineBpm"
+                        << value << m_pLocalBpm->get() << dRate;
+    }
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
 void BpmControl::slotUpdateRateSlider(double value) {
-    Q_UNUSED(value);
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::slotUpdateRateSlider"
+                        << value;
+    }
     // Adjust rate slider position response to a change in rate range or m_pEngineBpm
 
     double localBpm = m_pLocalBpm->get();

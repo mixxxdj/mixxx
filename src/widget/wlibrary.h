@@ -1,13 +1,13 @@
 #pragma once
 
+#include <QEvent>
 #include <QMap>
-#include <QMutex>
 #include <QStackedWidget>
 #include <QString>
-#include <QEvent>
 
 #include "library/libraryview.h"
 #include "skin/legacy/skincontext.h"
+#include "util/compatibility/qmutex.h"
 #include "widget/wbasewidget.h"
 
 class KeyboardEventFilter;
@@ -54,11 +54,7 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     bool event(QEvent* pEvent) override;
 
   private:
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    QRecursiveMutex m_mutex;
-#else
-    QMutex m_mutex;
-#endif
+    QT_RECURSIVE_MUTEX m_mutex;
     QMap<QString, QWidget*> m_viewMap;
     double m_trackTableBackgroundColorOpacity;
     bool m_bShowButtonText;

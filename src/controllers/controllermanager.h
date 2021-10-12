@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QMutex>
 #include <QSharedPointer>
 #include <QTimer>
 

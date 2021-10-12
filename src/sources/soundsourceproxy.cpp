@@ -1,6 +1,7 @@
 #include "sources/soundsourceproxy.h"
 
 #include <QApplication>
+#include <QRegularExpression>
 #include <QStandardPaths>
 
 #include "library/library_prefs.h"
@@ -47,7 +48,7 @@
 //Static memory allocation
 /*static*/ mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
 /*static*/ QStringList SoundSourceProxy::s_supportedFileNamePatterns;
-/*static*/ QRegExp SoundSourceProxy::s_supportedFileNamesRegex;
+/*static*/ QRegularExpression SoundSourceProxy::s_supportedFileNamesRegex;
 
 namespace {
 
@@ -244,8 +245,8 @@ bool SoundSourceProxy::registerProviders() {
     // Build regular expression of supported file extensions
     QString supportedFileExtensionsRegex(
             RegexUtils::fileExtensionsRegex(supportedFileExtensions));
-    s_supportedFileNamesRegex =
-            QRegExp(supportedFileExtensionsRegex, Qt::CaseInsensitive);
+    s_supportedFileNamesRegex = QRegularExpression(supportedFileExtensionsRegex,
+            QRegularExpression::CaseInsensitiveOption);
 
     return true;
 }
@@ -284,9 +285,9 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
         // silently ignore empty URLs
         return {};
     }
-    const QString fileExtension =
-            mixxx::SoundSource::getFileExtensionFromUrl(url);
-    if (fileExtension.isEmpty()) {
+    const QString fileType =
+            mixxx::SoundSource::getTypeFromUrl(url);
+    if (fileType.isEmpty()) {
         kLogger.warning()
                 << "Unknown file type:"
                 << url.toString();
@@ -294,7 +295,7 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
     }
     const auto providerRegistrations =
             allProviderRegistrationsForFileExtension(
-                    fileExtension);
+                    fileType);
     if (providerRegistrations.isEmpty()) {
         kLogger.warning()
                 << "Unsupported file type:"

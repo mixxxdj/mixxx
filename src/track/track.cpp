@@ -328,11 +328,11 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
 }
 
 void Track::adjustReplayGainFromPregain(double gain) {
-    QMutexLocker lock(&m_qMutex);
+    auto locked = lockMutex(&m_qMutex);
     mixxx::ReplayGain replayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     replayGain.setRatio(gain * replayGain.getRatio());
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
-        markDirtyAndUnlock(&lock);
+        markDirtyAndUnlock(&locked);
         emit replayGainAdjusted(replayGain);
     }
 }
@@ -1083,10 +1083,9 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
-    const auto pBeats = mixxx::Beats::fromBeatPositions(
-            m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate(),
+    const auto pBeats =
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
-                    getLocation(), *m_record.getStreamInfoFromSource()));
+                    getLocation(), *m_record.getStreamInfoFromSource());
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();
     return setBeatsWhileLocked(pBeats);

@@ -120,20 +120,19 @@ void LV2EffectProcessor::process(const ChannelHandle& inputHandle,
         m_params[i] = static_cast<float>(m_parameters[i]->value());
     }
 
-    int j = 0;
-    for (SINT i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
-        m_inputL[j] = pInput[i];
-        m_inputR[j] = pInput[i + 1];
-        j++;
+    SINT framesPerBuffer = bufferParameters.framesPerBuffer();
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < framesPerBuffer; ++i) {
+        m_inputL[i] = pInput[i * 2];
+        m_inputR[i] = pInput[i * 2 + 1];
     }
 
-    lilv_instance_run(pState->lilvIinstance(), bufferParameters.framesPerBuffer());
+    lilv_instance_run(pState->lilvIinstance(), framesPerBuffer);
 
-    j = 0;
-    for (SINT i = 0; i < bufferParameters.samplesPerBuffer(); i += 2) {
-        pOutput[i] = m_outputL[j];
-        pOutput[i + 1] = m_outputR[j];
-        j++;
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < framesPerBuffer; ++i) {
+        pOutput[i * 2] = m_outputL[i];
+        pOutput[i * 2 + 1] = m_outputR[i];
     }
 }
 

@@ -15,7 +15,6 @@
 #include "mixer/playermanager.h"
 #include "moc_setlogfeature.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
@@ -367,7 +366,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         m_recentTracks.push_front(currentPlayingTrackId);
 
         // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
-        const int kRecentTrackWindow = 6;
+        constexpr int kRecentTrackWindow = 6;
         while (m_recentTracks.size() > kRecentTrackWindow) {
             m_recentTracks.pop_back();
         }

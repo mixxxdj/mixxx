@@ -208,14 +208,7 @@ inline bool operator!=(FramePos frame1, FramePos frame2) {
     return !(frame1 == frame2);
 }
 
-inline QDebug operator<<(QDebug dbg, FramePos arg) {
-    if (arg.isValid()) {
-        dbg.nospace() << "FramePos(" << arg.value() << ")";
-    } else {
-        dbg << "FramePos()";
-    }
-    return dbg;
-}
+QDebug operator<<(QDebug dbg, FramePos arg);
 
 constexpr FramePos kInvalidFramePos = FramePos(FramePos::kInvalidValue);
 constexpr FramePos kStartFramePos = FramePos(FramePos::kStartValue);

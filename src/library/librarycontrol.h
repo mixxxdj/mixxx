@@ -147,6 +147,7 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pSelectHistoryNext;
     std::unique_ptr<ControlPushButton> m_pSelectHistoryPrev;
     std::unique_ptr<ControlEncoder> m_pSelectHistorySelect;
+    std::unique_ptr<ControlPushButton> m_pClearSearch;
 
     // Font sizes
     std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;

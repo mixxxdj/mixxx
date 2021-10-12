@@ -13,7 +13,6 @@
 #include "library/coverartutils.h"
 #include "moc_wspinny.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/fpclassify.h"
 #include "vinylcontrol/vinylcontrol.h"
@@ -329,7 +328,7 @@ void WSpinny::render(VSyncThread* vSyncThread) {
                 &m_dGhostAngleCurrentPlaypos);
     }
 
-    double scaleFactor = getDevicePixelRatioF(this);
+    double scaleFactor = devicePixelRatioF();
 
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
@@ -418,9 +417,10 @@ QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    QPixmap scaled = normal.scaled(size() * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    scaled.setDevicePixelRatio(getDevicePixelRatioF(this));
+    QPixmap scaled = normal.scaled(size() * devicePixelRatioF(),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(devicePixelRatioF());
     return scaled;
 }
 

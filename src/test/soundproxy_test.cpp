@@ -278,7 +278,7 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
 }
 
 TEST_F(SoundSourceProxyTest, seekForwardBackward) {
-    const SINT kReadFrameCount = 10000;
+    constexpr SINT kReadFrameCount = 10000;
 
     const QStringList filePaths = getFilePaths();
     for (const auto& filePath : filePaths) {
@@ -488,7 +488,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
 }
 
 TEST_F(SoundSourceProxyTest, seekBoundaries) {
-    const SINT kReadFrameCount = 1000;
+    constexpr SINT kReadFrameCount = 1000;
     const QStringList filePaths = getFilePaths();
     for (const auto& filePath : filePaths) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
@@ -601,7 +601,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
 }
 
 TEST_F(SoundSourceProxyTest, readBeyondEnd) {
-    const SINT kReadFrameCount = 1000;
+    constexpr SINT kReadFrameCount = 1000;
     const QStringList filePaths = getFilePaths();
     for (const auto& filePath : filePaths) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
@@ -719,4 +719,76 @@ TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
             }
         }
     }
+}
+
+TEST_F(SoundSourceProxyTest, getTypeFromFile) {
+    // Generate file names for the temporary file
+    const QString filePathWithoutSuffix =
+            mixxxtest::generateTemporaryFileName("file_with_no_file_suffix");
+    const QString filePathWithEmptySuffix =
+            mixxxtest::generateTemporaryFileName("file_with_empty_suffix.");
+    const QString filePathWithUnknownSuffix =
+            mixxxtest::generateTemporaryFileName("file_with.unknown_suffix");
+    const QString filePathWithWrongSuffix =
+            mixxxtest::generateTemporaryFileName("file_with_wrong_suffix.wav");
+    const QString filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix =
+            mixxxtest::generateTemporaryFileName("file_with_uppercase_suffix. MP3 ");
+
+    // Create the temporary files by copying an existing file
+    const QString validFilePath = kTestDir.absoluteFilePath(QStringLiteral("empty.mp3"));
+    mixxxtest::copyFile(validFilePath, filePathWithoutSuffix);
+    mixxxtest::copyFile(validFilePath, filePathWithEmptySuffix);
+    mixxxtest::copyFile(validFilePath, filePathWithUnknownSuffix);
+    mixxxtest::copyFile(validFilePath, filePathWithWrongSuffix);
+    mixxxtest::copyFile(validFilePath, filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix);
+
+    ASSERT_STREQ(qPrintable("mp3"), qPrintable(mixxx::SoundSource::getTypeFromFile(validFilePath)));
+
+    EXPECT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    filePathWithoutSuffix)));
+    EXPECT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    filePathWithEmptySuffix)));
+    EXPECT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    filePathWithUnknownSuffix)));
+    EXPECT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    filePathWithWrongSuffix)));
+    EXPECT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix)));
+}
+
+TEST_F(SoundSourceProxyTest, getTypeFromMissingFile) {
+    // Also verify that the shortened suffix ".aif" (case-insensitive) is
+    // mapped to file type "aiff", independent of whether the file exists or not!
+    const QFileInfo missingFileWithUppercaseSuffixAndLeadingTrailingWhitespaceSuffix =
+            kTestDir.absoluteFilePath(QStringLiteral("missing_file. AIF "));
+
+    ASSERT_FALSE(missingFileWithUppercaseSuffixAndLeadingTrailingWhitespaceSuffix.exists());
+
+    EXPECT_STREQ(qPrintable("aiff"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    missingFileWithUppercaseSuffixAndLeadingTrailingWhitespaceSuffix)));
+}
+
+TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {
+    const QString aiffFilePath =
+            kTestDir.absoluteFilePath(QStringLiteral("cover-test.aiff"));
+
+    ASSERT_TRUE(QFileInfo::exists(aiffFilePath));
+    ASSERT_STREQ(qPrintable("aiff"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    aiffFilePath)));
+
+    const QString aiffFilePathWithShortenedSuffix =
+            mixxxtest::generateTemporaryFileName(QStringLiteral("cover-test.aif"));
+    mixxxtest::copyFile(aiffFilePath, aiffFilePathWithShortenedSuffix);
+    ASSERT_TRUE(QFileInfo::exists(aiffFilePathWithShortenedSuffix));
+
+    EXPECT_STREQ(qPrintable("aiff"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    aiffFilePathWithShortenedSuffix)));
 }

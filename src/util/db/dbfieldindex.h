@@ -4,7 +4,7 @@
 // field indices of QSqlRecord.
 class DbFieldIndex {
 public:
-    static const int INVALID_INDEX = -1;
+    static constexpr int INVALID_INDEX = -1;
 
     // Implicit conversion from int
     DbFieldIndex(int index = INVALID_INDEX)

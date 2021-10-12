@@ -63,7 +63,7 @@ class EffectChainManager : public QObject {
     // Reloads all effect to the slots to update parameter assignments
     void refeshAllRacks();
 
-    static const int kNumStandardEffectChains = 4;
+    static constexpr int kNumStandardEffectChains = 4;
 
     bool isAdoptMetaknobValueEnabled() const;
 

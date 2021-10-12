@@ -170,14 +170,19 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
         mixxx::SeratoBeatsImporter beatsImporter(
                 seratoBeatGrid.nonTerminalMarkers(),
                 seratoBeatGrid.terminalMarker());
-        const QVector<mixxx::audio::FramePos> importedBeatPositionsFrames =
-                beatsImporter.importBeatsAndApplyTimingOffset(timingOffsetMillis, signalInfo);
-        ASSERT_EQ(beatPositionsFrames.size(), importedBeatPositionsFrames.size());
+        const auto pImportedBeats =
+                beatsImporter.importBeatsAndApplyTimingOffset(
+                        timingOffsetMillis, signalInfo);
+        auto pBeatsIterator =
+                pImportedBeats->findBeats(beatPositionsFrames.first() - 1000,
+                        beatPositionsFrames.last() + 1000);
         for (int i = 0; i < beatPositionsFrames.size(); i++) {
+            const auto importedPosition = pBeatsIterator->next();
             EXPECT_NEAR(beatPositionsFrames[i].value(),
-                    importedBeatPositionsFrames[i].value(),
+                    importedPosition.value(),
                     kEpsilon);
         }
+        ASSERT_FALSE(pBeatsIterator->hasNext());
     }
 
     constexpr int kNumBeats60BPM = 4;
@@ -218,14 +223,19 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
         mixxx::SeratoBeatsImporter beatsImporter(
                 seratoBeatGrid.nonTerminalMarkers(),
                 seratoBeatGrid.terminalMarker());
-        const QVector<mixxx::audio::FramePos> importedBeatPositionsFrames =
-                beatsImporter.importBeatsAndApplyTimingOffset(timingOffsetMillis, signalInfo);
-        ASSERT_EQ(beatPositionsFrames.size(), importedBeatPositionsFrames.size());
+        const auto pImportedBeats =
+                beatsImporter.importBeatsAndApplyTimingOffset(
+                        timingOffsetMillis, signalInfo);
+        auto pBeatsIterator =
+                pImportedBeats->findBeats(beatPositionsFrames.first() - 1000,
+                        beatPositionsFrames.last() + 1000);
         for (int i = 0; i < beatPositionsFrames.size(); i++) {
+            const auto importedPosition = pBeatsIterator->next();
             EXPECT_NEAR(beatPositionsFrames[i].value(),
-                    importedBeatPositionsFrames[i].value(),
+                    importedPosition.value(),
                     kEpsilon);
         }
+        ASSERT_FALSE(pBeatsIterator->hasNext());
     }
 
     qInfo() << "Step 3: Add" << kNumBeats120BPM << "beats at 100 bpm to the beatgrid";
@@ -274,14 +284,19 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
         mixxx::SeratoBeatsImporter beatsImporter(
                 seratoBeatGrid.nonTerminalMarkers(),
                 seratoBeatGrid.terminalMarker());
-        const QVector<mixxx::audio::FramePos> importedBeatPositionsFrames =
-                beatsImporter.importBeatsAndApplyTimingOffset(timingOffsetMillis, signalInfo);
-        ASSERT_EQ(beatPositionsFrames.size(), importedBeatPositionsFrames.size());
+        const auto pImportedBeats =
+                beatsImporter.importBeatsAndApplyTimingOffset(
+                        timingOffsetMillis, signalInfo);
+        auto pBeatsIterator =
+                pImportedBeats->findBeats(beatPositionsFrames.first() - 1000,
+                        beatPositionsFrames.last() + 1000);
         for (int i = 0; i < beatPositionsFrames.size(); i++) {
+            const auto importedPosition = pBeatsIterator->next();
             EXPECT_NEAR(beatPositionsFrames[i].value(),
-                    importedBeatPositionsFrames[i].value(),
+                    importedPosition.value(),
                     kEpsilon);
         }
+        ASSERT_FALSE(pBeatsIterator->hasNext());
     }
 }
 
