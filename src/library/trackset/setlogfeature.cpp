@@ -103,7 +103,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
-    int playlistId = index.data(TreeItemModel::kDataRole).toInt();
+    int playlistId = playlistIdFromIndex(index);
     // not a real entry
     if (playlistId == kInvalidPlaylistId) {
         return;
