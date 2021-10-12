@@ -1124,7 +1124,11 @@ void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
     pBeatLoopControl->deactivate();
     const double size = pBeatLoopControl->getSize();
-    auto* i = m_activeLoopRolls.begin();
+    // clang-tidy wants auto to be auto* because QStack inherits from QVector
+    // and QVector::iterator is a pointer type in Qt5, but QStack inherits
+    // from QList in Qt6 so QStack::iterator is not a pointer type in Qt6.
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    auto i = m_activeLoopRolls.begin();
     while (i != m_activeLoopRolls.end()) {
         if (size == *i) {
             i = m_activeLoopRolls.erase(i);
