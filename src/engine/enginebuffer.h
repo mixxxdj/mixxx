@@ -266,6 +266,8 @@ class EngineBuffer : public EngineObject {
     BpmControl* m_pBpmControl;
     KeyControl* m_pKeyControl;
     ClockControl* m_pClockControl;
+    FRIEND_TEST(CueControlTest, SeekOnSetCueCDJ);
+    FRIEND_TEST(CueControlTest, SeekOnSetCuePlay);
     CueControl* m_pCueControl;
 
     QList<EngineControl*> m_engineControls;

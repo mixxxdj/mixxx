@@ -528,6 +528,9 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         	hintFrameCount = kDefaultHintFrames;
             if (hintFrame < 0) {
             	hintFrameCount += hintFrame;
+                if (hintFrameCount <= 0) {
+                    continue;
+                }
                 hintFrame = 0;
             }
         }
