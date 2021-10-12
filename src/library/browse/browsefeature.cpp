@@ -262,6 +262,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         m_browseModel.setPath(std::move(dirAccess));
     }
     emit showTrackModel(&m_proxyModel);
+    emit disableSearch();
     emit enableCoverArtDisplay(false);
 }
 
