@@ -93,7 +93,9 @@ void MixxxApplication::registerMetaTypes() {
 
     // Sound devices
     qRegisterMetaType<SoundDeviceId>();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QMetaType::registerComparators<SoundDeviceId>();
+#endif
 
     // Various custom data types
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
