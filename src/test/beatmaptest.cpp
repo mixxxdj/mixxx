@@ -228,54 +228,6 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     EXPECT_EQ(nextBeat, foundNextBeat);
 }
 
-TEST_F(BeatMapTest, TestBpmAround) {
-    constexpr mixxx::Bpm filebpm(60.0);
-    double approx_beat_length = getBeatLengthFrames(filebpm);
-    m_pTrack->trySetBpm(filebpm.value());
-    constexpr int numBeats = 64;
-
-    QVector<mixxx::audio::FramePos> beats;
-    mixxx::audio::FramePos beat_pos = mixxx::audio::kStartFramePos;
-    for (unsigned int i = 0, bpmValue = 60; i < numBeats; ++i, ++bpmValue) {
-        const mixxx::audio::FrameDiff_t beat_length = getBeatLengthFrames(mixxx::Bpm(bpmValue));
-        beats.append(beat_pos);
-        beat_pos += beat_length;
-    }
-
-    auto pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
-
-    // The average of the first 8 beats should be different than the average
-    // of the last 8 beats.
-    EXPECT_DOUBLE_EQ(63.937645572318047,
-            pMap->getBpmAroundPosition(
-                        mixxx::audio::kStartFramePos + 4 * approx_beat_length,
-                        4)
-                    .value());
-    EXPECT_DOUBLE_EQ(118.96668932698844,
-            pMap->getBpmAroundPosition(
-                        mixxx::audio::kStartFramePos + 60 * approx_beat_length,
-                        4)
-                    .value());
-    // Also test at the beginning and end of the track
-    EXPECT_DOUBLE_EQ(62.937377309576974,
-            pMap->getBpmAroundPosition(mixxx::audio::kStartFramePos, 4).value());
-    EXPECT_DOUBLE_EQ(118.96668932698844,
-            pMap->getBpmAroundPosition(
-                        mixxx::audio::kStartFramePos + 65 * approx_beat_length,
-                        4)
-                    .value());
-
-    // Try a really, really short track
-    constexpr auto startFramePos = mixxx::audio::FramePos(10);
-    beats = createBeatVector(startFramePos, 3, approx_beat_length);
-    pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
-    EXPECT_DOUBLE_EQ(filebpm.value(),
-            pMap->getBpmAroundPosition(
-                        mixxx::audio::kStartFramePos + 1 * approx_beat_length,
-                        4)
-                    .value());
-}
-
 TEST_F(BeatMapTest, FindBeatsWithFractionalPos) {
     constexpr mixxx::Bpm bpm(60.0);
     constexpr int numBeats = 120;
