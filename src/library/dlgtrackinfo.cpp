@@ -520,33 +520,35 @@ void DlgTrackInfo::clear() {
 }
 
 void DlgTrackInfo::slotBpmDouble() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::Double);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::Double);
 }
 
 void DlgTrackInfo::slotBpmHalve() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::Halve);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::Halve);
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::TwoThirds);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::ThreeFourths);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
 }
 
 void DlgTrackInfo::slotBpmFourThirds() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::FourThirds);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
 }
 
 void DlgTrackInfo::slotBpmThreeHalves() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::ThreeHalves);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
+}
+
+void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
+    const auto scaledBeats = m_pBeatsClone->tryScale(bpmScale);
+    if (scaledBeats) {
+        m_pBeatsClone = *scaledBeats;
+        updateSpinBpmFromBeats();
+    }
 }
 
 void DlgTrackInfo::slotBpmClear() {
@@ -610,7 +612,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
         if (oldValue == bpm) {
             return;
         }
-        m_pBeatsClone = m_pBeatsClone->setBpm(bpm);
+        m_pBeatsClone = m_pBeatsClone->trySetBpm(bpm).value_or(m_pBeatsClone);
     }
 
     updateSpinBpmFromBeats();

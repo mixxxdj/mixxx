@@ -162,7 +162,11 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
     const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm.value() + deltaBpm));
     mixxx::Bpm adjustedBpm = BeatUtils::roundBpmWithinRange(
             centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);
-    pTrack->trySetBeats(pBeats->setBpm(adjustedBpm));
+    const auto newBeats = pBeats->trySetBpm(adjustedBpm);
+    if (!newBeats) {
+        return;
+    }
+    pTrack->trySetBeats(*newBeats);
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
@@ -191,7 +195,10 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (pBeats) {
         const double sampleOffset = frameInfo().sampleRate * -0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
-        pTrack->trySetBeats(pBeats->translate(frameOffset));
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
+        if (translatedBeats) {
+            pTrack->trySetBeats(*translatedBeats);
+        }
     }
 }
 
@@ -208,7 +215,10 @@ void BpmControl::slotTranslateBeatsLater(double v) {
         // TODO(rryan): Track::frameInfo is possibly inaccurate!
         const double sampleOffset = frameInfo().sampleRate * 0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
-        pTrack->trySetBeats(pBeats->translate(frameOffset));
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
+        if (translatedBeats) {
+            pTrack->trySetBeats(*translatedBeats);
+        }
     }
 }
 
@@ -245,7 +255,11 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     averageBpm = BeatUtils::roundBpmWithinRange(averageBpm - kBpmTabRounding,
             averageBpm,
             averageBpm + kBpmTabRounding);
-    pTrack->trySetBeats(pBeats->setBpm(averageBpm));
+    const auto newBeats = pBeats->trySetBpm(averageBpm);
+    if (!newBeats) {
+        return;
+    }
+    pTrack->trySetBeats(*newBeats);
 }
 
 // static
@@ -961,8 +975,11 @@ void BpmControl::slotBeatsTranslate(double v) {
     if (pBeats) {
         const auto currentPosition = frameInfo().currentPosition.toLowerFrameBoundary();
         const auto closestBeat = pBeats->findClosestBeat(currentPosition);
-        const mixxx::audio::FrameDiff_t delta = currentPosition - closestBeat;
-        pTrack->trySetBeats(pBeats->translate(delta));
+        const mixxx::audio::FrameDiff_t frameOffset = currentPosition - closestBeat;
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
+        if (translatedBeats) {
+            pTrack->trySetBeats(*translatedBeats);
+        }
     }
 }
 
@@ -980,8 +997,11 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         // otherwise it will always return 0 if sync lock is active.
         m_dUserOffset.setValue(0.0);
 
-        const mixxx::audio::FrameDiff_t frameOffset = getPhaseOffset(frameInfo().currentPosition);
-        pTrack->trySetBeats(pBeats->translate(-frameOffset));
+        const mixxx::audio::FrameDiff_t frameOffset = -getPhaseOffset(frameInfo().currentPosition);
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
+        if (translatedBeats) {
+            pTrack->trySetBeats(*translatedBeats);
+        }
     }
 }
 

@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVector>
 #include <memory>
+#include <optional>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -167,13 +168,22 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// Translate all beats in the song by `offset` frames. Beats that lie
     /// before the start of the track or after the end of the track are *not*
     /// removed.
-    virtual BeatsPointer translate(audio::FrameDiff_t offset) const = 0;
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    virtual std::optional<BeatsPointer> tryTranslate(audio::FrameDiff_t offset) const = 0;
 
     /// Scale the position of every beat in the song by `scale`.
-    virtual BeatsPointer scale(BpmScale scale) const = 0;
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    virtual std::optional<BeatsPointer> tryScale(BpmScale scale) const = 0;
 
     /// Adjust the beats so the global average BPM matches `bpm`.
-    virtual BeatsPointer setBpm(mixxx::Bpm bpm) const = 0;
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    virtual std::optional<BeatsPointer> trySetBpm(mixxx::Bpm bpm) const = 0;
 
   protected:
     /// Type tag for making public constructors of derived classes inaccessible.
