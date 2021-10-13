@@ -165,7 +165,7 @@ EncoderFdkAac::~EncoderFdkAac() {
     }
 
     delete[] m_pAacDataBuffer;
-    delete m_pFifoChunkBuffer;
+    delete[] m_pFifoChunkBuffer;
     delete m_pInputFifo;
 }
 
@@ -283,6 +283,9 @@ int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUs
     // This initializes the encoder handle but not the encoder itself.
     // Actual encoder init is done below.
     aacEncOpen(&m_aacEnc, 0, m_channels);
+    VERIFY_OR_DEBUG_ASSERT(!m_pAacDataBuffer) {
+        delete[] m_pAacDataBuffer;
+    }
     m_pAacDataBuffer = new unsigned char[kOutBufferBits * m_channels]();
 
     // AAC Object Type: specifies "mode": AAC-LC, HE-AAC, HE-AACv2, DAB AAC, etc...
@@ -345,8 +348,14 @@ int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUs
     // This is set to the buffer size of the sidechain engine because
     // Recording (which uses this engine) sends more samples at once to the encoder than
     // the Live Broadcasting implementation
+    VERIFY_OR_DEBUG_ASSERT(!m_pInputFifo) {
+        delete m_pInputFifo;
+    }
     m_pInputFifo = new FIFO<SAMPLE>(EngineSideChain::SIDECHAIN_BUFFER_SIZE * 2);
 
+    VERIFY_OR_DEBUG_ASSERT(!m_pFifoChunkBuffer) {
+        delete[] m_pFifoChunkBuffer;
+    }
     m_pFifoChunkBuffer = new SAMPLE[m_readRequired * sizeof(SAMPLE)]();
     return 0;
 }
