@@ -50,7 +50,7 @@ QList<QString> ParserCsv::parse(const QString& sFilename) {
             for (int i = 1; i < tokens.size(); ++i) {
                 if (loc_coll < tokens[i].size()) {
                     // Todo: check if path is relative
-                    QFileInfo fi = tokens[i][loc_coll];
+                    QFileInfo fi(tokens[i][loc_coll]);
                     if (fi.isRelative()) {
                         // add base path
                         qDebug() << "is relative" << basepath << fi.filePath();
