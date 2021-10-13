@@ -218,6 +218,7 @@ jobs:
     - name: "Configure"
       run: >-
         cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
+        -G Ninja
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
         -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=OFF
