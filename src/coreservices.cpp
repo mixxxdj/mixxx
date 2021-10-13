@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QStandardPaths>
 
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
