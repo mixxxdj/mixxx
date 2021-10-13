@@ -125,7 +125,12 @@ MiniMixxx.EncoderModeJog = class extends MiniMixxx.Mode {
             playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
             engine.setValue(this.channel, "playposition", playPosition);
         } else {
-            engine.setValue(this.channel, "jog", velo / 2.0);
+            if (engine.getValue(this.activeChannel, "play")) {
+                velo /= 4;
+            } else {
+                velo *= 2;
+            }
+            engine.setValue(this.channel, "jog", velo);
         }
     }
     handlePress(value) {
