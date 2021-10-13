@@ -285,6 +285,7 @@ int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUs
     aacEncOpen(&m_aacEnc, 0, m_channels);
     VERIFY_OR_DEBUG_ASSERT(!m_pAacDataBuffer) {
         delete[] m_pAacDataBuffer;
+        m_pAacDataBuffer = nullptr;
     }
     m_pAacDataBuffer = new unsigned char[kOutBufferBits * m_channels]();
 
@@ -350,11 +351,13 @@ int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUs
     // the Live Broadcasting implementation
     VERIFY_OR_DEBUG_ASSERT(!m_pInputFifo) {
         delete m_pInputFifo;
+        m_pInputFifo = nullptr;
     }
     m_pInputFifo = new FIFO<SAMPLE>(EngineSideChain::SIDECHAIN_BUFFER_SIZE * 2);
 
     VERIFY_OR_DEBUG_ASSERT(!m_pFifoChunkBuffer) {
         delete[] m_pFifoChunkBuffer;
+        m_pFifoChunkBuffer = nullptr;
     }
     m_pFifoChunkBuffer = new SAMPLE[m_readRequired * sizeof(SAMPLE)]();
     return 0;
