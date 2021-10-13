@@ -146,6 +146,15 @@ void MixxxMainWindow::initialize() {
     for (const QString& group : visualGroups) {
         m_pVisualsManager->addDeck(group);
     }
+    connect(pPlayerManager.get(),
+            &PlayerManager::numberOfDecksChanged,
+            this,
+            [this](int decks) {
+                for (int i = 0; i < decks; ++i) {
+                    QString group = PlayerManager::groupForDeck(i);
+                    m_pVisualsManager->addDeckIfNotExist(group);
+                }
+            });
 
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
@@ -819,7 +828,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
         mixxx::FileInfo fileInfo(trackPath);
         Sandbox::createSecurityToken(&fileInfo);
 
-        m_pCoreServices->getPlayerManager()->slotLoadToDeck(trackPath, deck);
+        pPlayerManager->slotLoadToDeck(trackPath, deck);
     }
 }
 

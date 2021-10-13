@@ -25,6 +25,10 @@ class DeckVisuals {
     DeckVisuals(const QString& group);
     void process(double remainingTimeTriggerSeconds);
 
+    const QString& getGroup() const {
+        return m_group;
+    }
+
   private:
     const QString m_group;
     int m_SlowTickCnt;
@@ -53,6 +57,16 @@ class VisualsManager {
     void addDeck(const QString& group) {
         m_deckVisuals.push_back(
                 std::make_unique<DeckVisuals>(group));
+        qDebug() << "VisualsManager::addDeck()" << group;
+    }
+
+    void addDeckIfNotExist(const QString& group) {
+        for (auto& pDeckVisuals : m_deckVisuals) {
+            if (pDeckVisuals->getGroup() == group) {
+                return;
+            }
+        }
+        addDeck(group);
     }
 
     void process(double remainingTimeTriggerSeconds) {
