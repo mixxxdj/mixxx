@@ -5,83 +5,46 @@ import QtQuick.Controls 1.4
 import "Theme"
 
 Item {
-    Rectangle {
-        color: Theme.deckBackgroundColor
-        anchors.fill: parent
+    ListView {
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.margins: 10
+        model: Mixxx.Library.model
 
-        TreeView {
-            id: sidebar
+        delegate: Item {
+            id: itemDelegate
 
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.margins: 10
-            width: 250
-            model: Mixxx.Library.getSidebarModel()
+            implicitWidth: 300
+            implicitHeight: 30
 
-            TableViewColumn {
-                title: "Icon"
-                role: "iconName"
-                width: 50
-
-                delegate: Image {
-                    fillMode: Image.PreserveAspectFit
-                    source: styleData.value ? "qrc:///images/library/ic_library_" + styleData.value + ".svg" : ""
-                }
-
+            Text {
+                anchors.fill: parent
+                text: artist + " - " + title
+                color: Theme.deckTextColor
             }
 
-            TableViewColumn {
-                title: "Title"
-                role: "display"
+            Image {
+                id: dragItem
+
+                Drag.active: dragArea.drag.active
+                Drag.dragType: Drag.Automatic
+                Drag.supportedActions: Qt.CopyAction
+                Drag.mimeData: {
+                    "text/uri-list": fileUrl,
+                    "text/plain": fileUrl
+                }
+                anchors.fill: parent
             }
 
-        }
+            MouseArea {
+                id: dragArea
 
-        ListView {
-            anchors.top: parent.top
-            anchors.left: sidebar.right
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.margins: 10
-            clip: true
-            model: Mixxx.Library.model
-
-            delegate: Item {
-                id: itemDelegate
-
-                implicitWidth: 300
-                implicitHeight: 30
-
-                Text {
-                    anchors.fill: parent
-                    text: artist + " - " + title
-                    color: Theme.deckTextColor
-                }
-
-                Image {
-                    id: dragItem
-
-                    Drag.active: dragArea.drag.active
-                    Drag.dragType: Drag.Automatic
-                    Drag.supportedActions: Qt.CopyAction
-                    Drag.mimeData: {
-                        "text/uri-list": fileUrl,
-                        "text/plain": fileUrl
-                    }
-                    anchors.fill: parent
-                }
-
-                MouseArea {
-                    id: dragArea
-
-                    anchors.fill: parent
-                    drag.target: dragItem
-                    onPressed: parent.grabToImage((result) => {
-                        dragItem.Drag.imageSource = result.url;
-                    })
-                }
-
+                anchors.fill: parent
+                drag.target: dragItem
+                onPressed: parent.grabToImage((result) => {
+                    dragItem.Drag.imageSource = result.url;
+                })
             }
 
         }

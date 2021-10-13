@@ -22,8 +22,6 @@ class QmlLibraryProxy : public QObject {
   public:
     explicit QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* parent = nullptr);
 
-    Q_INVOKABLE QAbstractItemModel* getSidebarModel();
-
   private:
     std::shared_ptr<Library> m_pLibrary;
     parented_ptr<QmlLibraryTrackListModel> m_pModel;

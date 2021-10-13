@@ -14,9 +14,5 @@ QmlLibraryProxy::QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* par
           m_pModel(make_parented<QmlLibraryTrackListModel>(m_pLibrary->trackTableModel(), this)) {
 }
 
-QAbstractItemModel* QmlLibraryProxy::getSidebarModel() {
-    return m_pLibrary->sidebarModel();
-}
-
 } // namespace qml
 } // namespace mixxx
