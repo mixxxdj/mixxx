@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QStandardPaths>
 
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
@@ -38,7 +39,7 @@
 #include "util/sandbox.h"
 #endif
 
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
 
@@ -70,7 +71,7 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
 
 // hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
 // https://bugs.launchpad.net/mixxx/+bug/1805559
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
 constexpr int NUM_HANDLERS = 256;
@@ -214,7 +215,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     VersionStore::logBuildDetails();
 
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // XESetWireToError will segfault if running as a Wayland client
     if (pApp->platformName() == QLatin1String("xcb")) {
         for (auto i = 0; i < NUM_HANDLERS; ++i) {
