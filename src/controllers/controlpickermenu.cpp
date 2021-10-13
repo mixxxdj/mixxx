@@ -874,10 +874,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
                  ++iSamplerNumber) {
                 // PlayerManager::groupForSampler is 0-indexed.
-                QString playerGroup = PlayerManager::groupForSampler(iSamplerNumber - 1);
+                QString samplerGroup = PlayerManager::groupForSampler(iSamplerNumber - 1);
                 // TODO(owen): Fix bad i18n here.
                 addControl(effectUnitGroup,
-                        QString("group_%1_enable").arg(playerGroup),
+                        QString("group_%1_enable").arg(samplerGroup),
                         assignString + m_samplerStr.arg(iSamplerNumber),
                         assignString + m_samplerStr.arg(iSamplerNumber),
                         effectUnitGroups,
