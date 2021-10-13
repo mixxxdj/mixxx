@@ -80,6 +80,7 @@ case "$1" in
             libusb-1.0-0-dev \
             libwavpack-dev \
             markdown \
+            ninja-build \
             portaudio19-dev \
             protobuf-compiler \
             qt5keychain-dev \
