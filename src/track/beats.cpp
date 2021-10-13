@@ -24,19 +24,6 @@ constexpr double kEpsilon = 0.01;
 
 namespace mixxx {
 
-bool BeatIterator::hasNext() const {
-    return *m_it <= m_endPosition;
-}
-
-audio::FramePos BeatIterator::next() {
-    VERIFY_OR_DEBUG_ASSERT(hasNext()) {
-        return audio::kInvalidFramePos;
-    }
-    const audio::FramePos position = *m_it;
-    m_it++;
-    return position;
-}
-
 mixxx::audio::FrameDiff_t Beats::ConstIterator::beatLengthFrames() const {
     if (m_it == m_beats->m_markers.cend()) {
         return m_beats->endBeatLengthFrames();
@@ -510,13 +497,6 @@ audio::FramePos Beats::findNBeatsFromPosition(audio::FramePos position, double b
     }
 
     return basePosition + it.beatLengthFrames() * fractionBeats;
-}
-
-std::unique_ptr<BeatIterator> Beats::findBeats(
-        audio::FramePos startPosition,
-        audio::FramePos endPosition) const {
-    auto it = iteratorFrom(startPosition);
-    return std::make_unique<BeatIterator>(std::move(it), endPosition);
 }
 
 bool Beats::hasBeatInRange(audio::FramePos startPosition, audio::FramePos endPosition) const {
