@@ -776,20 +776,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
   src/recording/recordingmanager.cpp
-  src/qml/asyncimageprovider.cpp
-  src/qml/qmlapplication.cpp
-  src/qml/qmlcontrolproxy.cpp
-  src/qml/qmlconfigproxy.cpp
-  src/qml/qmldlgpreferencesproxy.cpp
-  src/qml/qmleffectmanifestparametersmodel.cpp
-  src/qml/qmleffectsmanagerproxy.cpp
-  src/qml/qmleffectslotproxy.cpp
-  src/qml/qmllibraryproxy.cpp
-  src/qml/qmllibrarytracklistmodel.cpp
-  src/qml/qmlplayermanagerproxy.cpp
-  src/qml/qmlplayerproxy.cpp
-  src/qml/qmlvisibleeffectsmodel.cpp
-  src/qml/qmlwaveformoverview.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
   src/skin/skinloader.cpp
@@ -904,7 +890,24 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
 )
-if(NOT QT6)
+if(QT6)
+  target_sources(mixxx-lib PRIVATE
+    src/qml/asyncimageprovider.cpp
+    src/qml/qmlapplication.cpp
+    src/qml/qmlcontrolproxy.cpp
+    src/qml/qmlconfigproxy.cpp
+    src/qml/qmldlgpreferencesproxy.cpp
+    src/qml/qmleffectmanifestparametersmodel.cpp
+    src/qml/qmleffectsmanagerproxy.cpp
+    src/qml/qmleffectslotproxy.cpp
+    src/qml/qmllibraryproxy.cpp
+    src/qml/qmllibrarytracklistmodel.cpp
+    src/qml/qmlplayermanagerproxy.cpp
+    src/qml/qmlplayerproxy.cpp
+    src/qml/qmlvisibleeffectsmodel.cpp
+    src/qml/qmlwaveformoverview.cpp
+  )
+else()
   target_sources(mixxx-lib PRIVATE
     src/library/banshee/bansheedbconnection.cpp
     src/library/banshee/bansheefeature.cpp
