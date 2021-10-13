@@ -750,7 +750,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/samplerbank.cpp
   src/coreservices.cpp
   src/mixxxapplication.cpp
-  src/mixxxmainwindow.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
@@ -936,6 +935,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
 )
 if(NOT QT6)
   target_sources(mixxx-lib PRIVATE
+    src/mixxxmainwindow.cpp
     src/skin/legacy/colorschemeparser.cpp
     src/skin/legacy/imgcolor.cpp
     src/skin/legacy/imginvert.cpp
