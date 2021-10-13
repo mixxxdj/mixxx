@@ -33,9 +33,6 @@ class CmdlineArgs final {
     bool getStartInFullscreen() const { return m_startInFullscreen; }
     bool getMidiDebug() const { return m_midiDebug; }
     bool getDeveloper() const { return m_developer; }
-    bool getQml() const {
-        return m_qml;
-    }
     bool getSafeMode() const { return m_safeMode; }
     bool useColors() const {
         return m_useColors;
@@ -72,7 +69,6 @@ class CmdlineArgs final {
     bool m_startInFullscreen;       // Start in fullscreen mode
     bool m_midiDebug;
     bool m_developer; // Developer Mode
-    bool m_qml;
     bool m_safeMode;
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?

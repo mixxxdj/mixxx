@@ -785,21 +785,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
   src/recording/recordingmanager.cpp
-  src/qml/asyncimageprovider.cpp
-  src/qml/qmlapplication.cpp
-  src/qml/qmlcontrolproxy.cpp
-  src/qml/qmlconfigproxy.cpp
-  src/qml/qmldlgpreferencesproxy.cpp
-  src/qml/qmleffectmanifestparametersmodel.cpp
-  src/qml/qmleffectsmanagerproxy.cpp
-  src/qml/qmleffectslotproxy.cpp
-  src/qml/qmlplayermanagerproxy.cpp
-  src/qml/qmlplayerproxy.cpp
-  src/qml/qmlvisibleeffectsmodel.cpp
-  src/qml/qmlwaveformoverview.cpp
-  src/skin/legacy/skincontext.cpp
-  src/skin/legacy/tooltips.cpp
-  src/skin/skinloader.cpp
   src/soundio/sounddevice.cpp
   src/soundio/sounddevicenetwork.cpp
   src/soundio/sounddeviceportaudio.cpp
@@ -913,7 +898,24 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/waveform.cpp
   src/waveform/waveformfactory.cpp
 )
-if(NOT QT6)
+if(QT6)
+  target_sources(mixxx-lib PRIVATE
+    src/qml/asyncimageprovider.cpp
+    src/qml/qmlapplication.cpp
+    src/qml/qmlcontrolproxy.cpp
+    src/qml/qmlconfigproxy.cpp
+    src/qml/qmldlgpreferencesproxy.cpp
+    src/qml/qmleffectmanifestparametersmodel.cpp
+    src/qml/qmleffectsmanagerproxy.cpp
+    src/qml/qmleffectslotproxy.cpp
+    src/qml/qmllibraryproxy.cpp
+    src/qml/qmllibrarytracklistmodel.cpp
+    src/qml/qmlplayermanagerproxy.cpp
+    src/qml/qmlplayerproxy.cpp
+    src/qml/qmlvisibleeffectsmodel.cpp
+    src/qml/qmlwaveformoverview.cpp
+  )
+else()
   target_sources(mixxx-lib PRIVATE
     src/library/banshee/bansheedbconnection.cpp
     src/library/banshee/bansheefeature.cpp
@@ -950,9 +952,12 @@ if(NOT QT6)
     src/skin/legacy/imginvert.cpp
     src/skin/legacy/imgloader.cpp
     src/skin/legacy/launchimage.cpp
+    src/skin/legacy/legacyskin.cpp
     src/skin/legacy/legacyskinparser.cpp
     src/skin/legacy/pixmapsource.cpp
-    src/skin/legacy/legacyskin.cpp
+    src/skin/legacy/skincontext.cpp
+    src/skin/legacy/tooltips.cpp
+    src/skin/skinloader.cpp
     src/waveform/guitick.cpp
     src/waveform/renderers/glslwaveformrenderersignal.cpp
     src/waveform/renderers/glvsynctestrenderer.cpp
