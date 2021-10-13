@@ -657,6 +657,10 @@ void EngineSync::reinitLeaderParams(Syncable* pSource) {
     mixxx::Bpm bpm = pSource->getBpm();
     if (!bpm.isValid()) {
         bpm = baseBpm;
+        if (!bpm.isValid()) {
+            // This happens if the deck is the only playing one but the track has no beats
+            return;
+        }
     }
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "BaseSyncableListener::reinitLeaderParams, source is"
