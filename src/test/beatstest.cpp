@@ -14,6 +14,7 @@ namespace {
 constexpr auto kBpm = Bpm(120.0);
 constexpr auto kSampleRate = audio::SampleRate(48000);
 constexpr auto kStartPosition = audio::FramePos(400);
+const auto kEndPosition = kStartPosition + 24 * kSampleRate.value();
 constexpr double kMaxBeatError = 1e-9;
 
 const auto kConstTempoBeats = Beats(
@@ -33,11 +34,190 @@ const auto kNonConstTempoBeats = Beats(
         kSampleRate,
         QString());
 
-TEST(BeatsTest, ConstTempoGetBpm) {
+TEST(BeatsTest, ConstTempoGetBpmInRange) {
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kConstTempoBeats.getBpmInRange(kStartPosition, kEndPosition)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kConstTempoBeats.getBpmInRange(kStartPosition, kEndPosition * 0.5)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kConstTempoBeats.getBpmInRange(kStartPosition, kEndPosition * 2)
+                    .value());
+}
+
+TEST(BeatsTest, ConstTempoGetBpmAroundPosition) {
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kConstTempoBeats.getBpmAroundPosition(kStartPosition, 2).value());
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kConstTempoBeats.getBpmAroundPosition(kStartPosition, 4).value());
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kConstTempoBeats.getBpmAroundPosition(kStartPosition, 8).value());
     EXPECT_DOUBLE_EQ(kBpm.value(),
             kConstTempoBeats
-                    .getBpmInRange(
-                            kStartPosition, audio::FramePos{60 * kSampleRate})
+                    .getBpmAroundPosition(
+                            audio::FramePos{kEndPosition - kStartPosition}, 8)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value(), kConstTempoBeats.getBpmAroundPosition(kEndPosition, 2).value());
+    EXPECT_DOUBLE_EQ(kBpm.value(), kConstTempoBeats.getBpmAroundPosition(kEndPosition, 4).value());
+    EXPECT_DOUBLE_EQ(kBpm.value(), kConstTempoBeats.getBpmAroundPosition(kEndPosition, 8).value());
+}
+
+TEST(BeatsTest, NonConstTempoGetBpmInRange) {
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kNonConstTempoBeats
+                    .getBpmInRange(kStartPosition,
+                            kStartPosition + 8 * kSampleRate.value() / 2)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value() / 2,
+            kNonConstTempoBeats
+                    .getBpmInRange(kStartPosition + 8 * kSampleRate.value() / 2,
+                            kStartPosition + 8 * kSampleRate.value() / 2 +
+                                    16 * kSampleRate.value())
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kNonConstTempoBeats
+                    .getBpmInRange(kStartPosition +
+                                    8 * kSampleRate.value() / 2 +
+                                    16 * kSampleRate.value(),
+                            kEndPosition)
+                    .value());
+
+    // The relation between beatlength and BPM is defined as:
+    //
+    //  beatlen = 60 * sampleRate / bpm
+    //  <=> bpm = 60 * sampleRate / beatlen
+    //
+    // We have a section with 2 beats with regular bpm and 2 beats of double
+    // bpm, we can calculate the expected average bpm in relation to the
+    // original bpm like this:
+    //
+    //   bpm' = 60 * sampleRate / beatlen'
+    //        = 60 * sampleRate / ((16 * beatlen + 16 * 2 * beatlen) / 32)
+    //        = 60 * sampleRate / ((48 / 32) * beatlen)
+    //        = 60 * sampleRate / ((3 / 2) * beatlen)
+    //        = (2 / 3) * 60 * sampleRate / beatlen
+    //        = (2 / 3) * bpm
+    EXPECT_DOUBLE_EQ(kBpm.value() * (2.0 / 3.0),
+            kNonConstTempoBeats.getBpmInRange(kStartPosition, kEndPosition)
+                    .value());
+}
+
+TEST(BeatsTest, NonConstTempoGetBpmAroundPosition) {
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kNonConstTempoBeats.getBpmAroundPosition(kStartPosition, 4)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kNonConstTempoBeats.getBpmAroundPosition(kStartPosition, 8)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 2 * kSampleRate.value(), 4)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value() / 2,
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 8 * kSampleRate.value(), 4)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value() / 2,
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 12 * kSampleRate.value(), 8)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value() / 2,
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 16 * kSampleRate.value(), 4)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 24 * kSampleRate.value(), 4)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 28 * kSampleRate.value(), 8)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 32 * kSampleRate.value(), 4)
+                    .value());
+
+    // The relation between beatlength and BPM is defined as:
+    //
+    //  beatlen = 60 * sampleRate / bpm
+    //  <=> bpm = 60 * sampleRate / beatlen
+    //
+    // We have a section with 2 beats with regular bpm and 2 beats of double
+    // bpm, we can calculate the expected average bpm in relation to the
+    // original bpm like this:
+    //
+    //   bpm' = (4 / (2 + 2 * 2)) * bpm
+    //   bpm' = (4 / 6) * bpm
+    //        = (2 / 3) * bpm
+    EXPECT_DOUBLE_EQ(kBpm.value() * (2.0 / 3.0),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 4 * kSampleRate.value(), 2)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value() * (2.0 / 3.0),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 4 * kSampleRate.value(), 4)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value() * (2.0 / 3.0),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 4 * kSampleRate.value(), 8)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value() * (2.0 / 3.0),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 20 * kSampleRate.value(), 2)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value() * (2.0 / 3.0),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 20 * kSampleRate.value(), 4)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value() * (2.0 / 3.0),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 20 * kSampleRate.value(), 8)
+                    .value());
+
+    //   bpm' = (8 / (6 + 2 * 2)) * bpm
+    //        = (8 / 10) * bpm
+    //        = 0.8 * bpm
+    EXPECT_DOUBLE_EQ(kBpm.value() * 0.8,
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 3 * kSampleRate.value(), 4)
+                    .value());
+    EXPECT_DOUBLE_EQ(kBpm.value() * 0.8,
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 2 * kSampleRate.value(), 8)
+                    .value());
+
+    //   bpm' = (4 / (2 * 1 + 3)) * bpm
+    //        = (4 / 5) * bpm
+    //        = 0.8 * bpm
+    EXPECT_DOUBLE_EQ(kBpm.value() * 0.8,
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 20.5 * kSampleRate.value(), 2)
+                    .value());
+
+    //   bpm' = (8 / (2 * 1 + 7)) * bpm
+    //        = (8 / 9) * bpm
+    EXPECT_DOUBLE_EQ(kBpm.value() * (8.0 / 9.0),
+            kNonConstTempoBeats
+                    .getBpmAroundPosition(
+                            kStartPosition + 21.5 * kSampleRate.value(), 4)
                     .value());
 }
 
