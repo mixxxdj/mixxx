@@ -2080,7 +2080,7 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include
 
 # Qt
 if(QT6)
-  find_package(QT NAMES Qt6 COMPONENTS Core REQUIRED)
+  find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
   set(QT6_NEW_COMPONENTS "SvgWidgets;Core5Compat")
 else()
   find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
