@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QToolButton>
 
+#include "library/library_decl.h"
 #include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
 
@@ -39,6 +40,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
   signals:
     void search(const QString& text);
+    FocusWidget searchbarFocusChange(FocusWidget newFocusWidget);
 
   public slots:
     void slotSetFont(const QFont& font);

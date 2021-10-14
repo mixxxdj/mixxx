@@ -4,6 +4,7 @@
 
 WLibraryTextBrowser::WLibraryTextBrowser(QWidget* parent)
         : QTextBrowser(parent) {
+    qRegisterMetaType<FocusWidget>("FocusWidget");
 }
 
 bool WLibraryTextBrowser::hasFocus() const {
@@ -12,4 +13,14 @@ bool WLibraryTextBrowser::hasFocus() const {
 
 void WLibraryTextBrowser::setFocus() {
     QWidget::setFocus();
+}
+
+void WLibraryTextBrowser::focusInEvent(QFocusEvent* event) {
+    QWidget::focusInEvent(event);
+    emit textBrowserFocusChange(FocusWidget::TracksTable);
+}
+
+void WLibraryTextBrowser::focusOutEvent(QFocusEvent* event) {
+    QWidget::focusOutEvent(event);
+    emit textBrowserFocusChange(FocusWidget::None);
 }

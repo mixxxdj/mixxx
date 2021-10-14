@@ -5,6 +5,7 @@
 
 #include "control/controlproxy.h"
 #include "library/dao/playlistdao.h"
+#include "library/library_decl.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "preferences/usersettings.h"
 #include "util/duration.h"
@@ -53,6 +54,9 @@ class WTrackTableView : public WLibraryTableView {
         return m_pFocusBorderColor;
     }
 
+  signals:
+    void trackTableFocusChange(FocusWidget newFocusWidget);
+
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
@@ -62,6 +66,10 @@ class WTrackTableView : public WLibraryTableView {
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;
+
+  protected:
+    void focusInEvent(QFocusEvent* event) override;
+    void focusOutEvent(QFocusEvent* event) override;
 
   private slots:
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
