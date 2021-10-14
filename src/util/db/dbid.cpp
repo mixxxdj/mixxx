@@ -2,7 +2,11 @@
 
 
 //static
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+const QMetaType DbId::kVariantType = DbId().toVariant().metaType();
+#else
 const QVariant::Type DbId::kVariantType = DbId().toVariant().type();
+#endif
 
 //static
 DbId::value_type DbId::valueOf(QVariant /*pass-by-value*/ variant) {

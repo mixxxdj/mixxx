@@ -2099,10 +2099,10 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include
 
 # Qt
 if(QT6)
-  find_package(QT NAMES Qt6 COMPONENTS Core REQUIRED)
+  find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
   set(QT6_NEW_COMPONENTS "SvgWidgets;Core5Compat")
 else()
-  find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
+  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -2210,11 +2210,16 @@ if(APPLE)
     )
   endif()
 elseif(UNIX AND NOT APPLE)
-  if(NOT QT6)
+  if(QT6)
+    find_package(X11)
+  else()
     find_package(X11 REQUIRED)
     find_package(Qt5 COMPONENTS X11Extras REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE Qt5::X11Extras)
+  endif()
+  if(${X11_FOUND})
     target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
-    target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}" Qt5::X11Extras)
+    target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
   target_link_libraries(mixxx-lib PRIVATE

@@ -1,5 +1,7 @@
 #include "mixer/playermanager.h"
 
+#include <QRegularExpression>
+
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -27,6 +29,26 @@ const mixxx::Logger kLogger("PlayerManager");
 
 // Utilize half of the available cores for adhoc analysis of tracks
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2);
+
+const QRegularExpression kDeckRegex(QStringLiteral("\\[Channel\\d+\\]"));
+const QRegularExpression kSamplerRegex(QStringLiteral("\\[Sampler\\d+\\]"));
+const QRegularExpression kPreviewDeckRegex(QStringLiteral("\\[PreviewDeck\\d+\\]"));
+
+bool extractIntFromRegex(const QRegularExpression& regex, const QString& group, int* number) {
+    QRegularExpressionMatch match = regex.match(group);
+    if (!match.hasMatch()) {
+        return false;
+    }
+    if (number) {
+        bool okay = false;
+        const int numberFromMatch = match.captured(1).toInt(&okay);
+        VERIFY_OR_DEBUG_ASSERT(okay) {
+            return false;
+        }
+        *number = numberFromMatch;
+    }
+    return true;
+}
 
 } // anonymous namespace
 
@@ -169,53 +191,17 @@ QStringList PlayerManager::getVisualPlayerGroups() {
 
 // static
 bool PlayerManager::isDeckGroup(const QString& group, int* number) {
-    if (!group.startsWith("[Channel")) {
-        return false;
-    }
-
-    bool ok = false;
-    int deckNum = group.midRef(8,group.lastIndexOf("]")-8).toInt(&ok);
-    if (!ok || deckNum <= 0) {
-        return false;
-    }
-    if (number != nullptr) {
-        *number = deckNum;
-    }
-    return true;
+    return extractIntFromRegex(kDeckRegex, group, number);
 }
 
 // static
 bool PlayerManager::isSamplerGroup(const QString& group, int* number) {
-    if (!group.startsWith("[Sampler")) {
-        return false;
-    }
-
-    bool ok = false;
-    int deckNum = group.midRef(8,group.lastIndexOf("]")-8).toInt(&ok);
-    if (!ok || deckNum <= 0) {
-        return false;
-    }
-    if (number != nullptr) {
-        *number = deckNum;
-    }
-    return true;
+    return extractIntFromRegex(kSamplerRegex, group, number);
 }
 
 // static
 bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
-    if (!group.startsWith("[PreviewDeck")) {
-        return false;
-    }
-
-    bool ok = false;
-    int deckNum = group.midRef(12,group.lastIndexOf("]")-12).toInt(&ok);
-    if (!ok || deckNum <= 0) {
-        return false;
-    }
-    if (number != nullptr) {
-        *number = deckNum;
-    }
-    return true;
+    return extractIntFromRegex(kPreviewDeckRegex, group, number);
 }
 
 // static
