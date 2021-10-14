@@ -790,8 +790,7 @@ void MixxxMainWindow::connectMenuBar() {
 }
 
 void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
-    auto pPlayerManager = m_pCoreServices->getPlayerManager();
-    QString group = pPlayerManager->groupForDeck(deck - 1);
+    QString group = PlayerManager::groupForDeck(deck - 1);
 
     QString loadTrackText = tr("Load track to Deck %1").arg(QString::number(deck));
     QString deckWarningMessage = tr("Deck %1 is currently playing a track.")
@@ -828,7 +827,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
         mixxx::FileInfo fileInfo(trackPath);
         Sandbox::createSecurityToken(&fileInfo);
 
-        pPlayerManager->slotLoadToDeck(trackPath, deck);
+        m_pCoreServices->getPlayerManager()->slotLoadToDeck(trackPath, deck);
     }
 }
 
