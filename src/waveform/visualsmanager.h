@@ -57,7 +57,6 @@ class VisualsManager {
     void addDeck(const QString& group) {
         m_deckVisuals.push_back(
                 std::make_unique<DeckVisuals>(group));
-        qDebug() << "VisualsManager::addDeck()" << group;
     }
 
     void addDeckIfNotExist(const QString& group) {
