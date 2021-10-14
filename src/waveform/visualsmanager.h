@@ -55,6 +55,9 @@ class VisualsManager {
     }
 
     void addDeck(const QString& group) {
+        VERIFY_OR_DEBUG_ASSERT(!group.trimmed().isEmpty()) {
+            return;
+        }
         m_deckVisuals.push_back(
                 std::make_unique<DeckVisuals>(group));
     }
