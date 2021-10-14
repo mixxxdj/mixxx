@@ -2083,7 +2083,7 @@ if(QT6)
   find_package(QT NAMES Qt6 COMPONENTS Core REQUIRED)
   set(QT6_NEW_COMPONENTS "SvgWidgets;Core5Compat")
 else()
-  find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
+  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
