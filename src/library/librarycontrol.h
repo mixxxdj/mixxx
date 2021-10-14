@@ -106,6 +106,8 @@ class LibraryControl : public QObject {
     // Give the keyboard focus to the main library pane
     void setLibraryFocus();
 
+    std::unique_ptr<ControlPushButton> m_pMaximize;
+
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveUp;
     std::unique_ptr<ControlPushButton> m_pMoveDown;

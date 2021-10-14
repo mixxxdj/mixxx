@@ -70,6 +70,10 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_numSamplers.connectValueChanged(this, &LibraryControl::slotNumSamplersChanged);
     m_numPreviewDecks.connectValueChanged(this, &LibraryControl::slotNumPreviewDecksChanged);
 
+    // There is no C++ code interacting with this, but it needs to be created before
+    // controller scripts are initialized.
+    m_pMaximize = std::make_unique<ControlPushButton>(ConfigKey("[Master]", "maximize_library"));
+
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveUp"));
     m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveDown"));
