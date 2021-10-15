@@ -372,6 +372,7 @@ void EffectSlot::unloadEffect() {
     }
 
     m_pControlLoaded->forceSet(0.0);
+    m_pControlLoadedEffect->setAndConfirm(0.0);
     for (const auto& pControlNumParameters : std::as_const(m_pControlNumParameters)) {
         pControlNumParameters->forceSet(0.0);
     }
