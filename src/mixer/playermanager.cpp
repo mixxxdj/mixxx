@@ -31,9 +31,9 @@ const mixxx::Logger kLogger("PlayerManager");
 // Utilize half of the available cores for adhoc analysis of tracks
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2);
 
-const QRegularExpression kDeckRegex(QStringLiteral("\\[Channel\\d+\\]"));
-const QRegularExpression kSamplerRegex(QStringLiteral("\\[Sampler\\d+\\]"));
-const QRegularExpression kPreviewDeckRegex(QStringLiteral("\\[PreviewDeck\\d+\\]"));
+const QRegularExpression kDeckRegex(QStringLiteral("^\\[Channel(\\d+)\\]$"));
+const QRegularExpression kSamplerRegex(QStringLiteral("^\\[Sampler(\\d+)\\]$"));
+const QRegularExpression kPreviewDeckRegex(QStringLiteral("^\\[PreviewDeck(\\d+)\\]$"));
 
 bool extractIntFromRegex(const QRegularExpression& regex, const QString& group, int* number) {
     const QRegularExpressionMatch match = regex.match(group);
