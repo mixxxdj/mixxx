@@ -268,10 +268,6 @@ void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
 }
 
 void EffectSlot::loadEffectWithDefaults(const EffectManifestPointer pManifest) {
-    if (!pManifest) {
-        loadEffectInner(nullptr, nullptr, false);
-        return;
-    }
     EffectPresetPointer pPreset = m_pPresetManager->getDefaultPreset(pManifest);
     loadEffectInner(pManifest, pPreset, false);
 }
