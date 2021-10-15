@@ -473,11 +473,14 @@ g4v.OtherControls = function() {
     this.libraryEnc = new components.Encoder({
         midi: [0xB3, 0x1E],
         group: "[Library]",
+        shift: function () {this.inKey = "MoveHorizontal";},
+        unshift: function () {this.inKey = "MoveVertical";},
+        inValueScale: function (value) { return value === 0x41 ? -1 : 1;},
         input: function(_channel, _control, value, _status, _group) {
             if (engine.getValue("[PreviewDeck1]", "play")) {
                 engine.setValue("[PreviewDeck1]", (value === 0x41 ? "beatjump_4_forward" : "beatjump_4_backward"), 1);
             } else {
-                if (this.shift) { engine.setValue("[Library]", (value === 0x41 ? "MoveRight" : "MoveLeft"), 1); } else { engine.setValue(this.group, "MoveVertical", (value === 0x41 ? -1 : 1)); }
+                this.prototype.input(_channel, _control, value, _status, _group)
             }
         },
     });
