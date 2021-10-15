@@ -303,10 +303,12 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
             for (const auto& p : pEffectPreset->getParameterPresets()) {
                 if (p.id() == pManifestParameter->id()) {
                     parameterPreset = p;
+                    break;
                 }
             }
         }
-        EffectParameterPointer pParameter(new EffectParameter(m_pEngineEffect,
+        EffectParameterPointer pParameter(new EffectParameter(
+                m_pEngineEffect,
                 m_pMessenger,
                 pManifestParameter,
                 parameterPreset));
