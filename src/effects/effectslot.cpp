@@ -84,10 +84,11 @@ EffectSlot::EffectSlot(const QString& group,
             this,
             &EffectSlot::slotPrevEffect);
 
-    m_pControlLoadEffectAtListIndex = std::make_unique<ControlObject>(
+    m_pControlLoadedEffect = std::make_unique<ControlObject>(
             ConfigKey(m_group, "loaded_effect"));
-    m_pControlLoadEffectAtListIndex->connectValueChangeRequest(this,
-            &EffectSlot::slotLoadEffectAtListIndexRequest);
+    m_pControlLoadedEffect->connectValueChangeRequest(
+            this,
+            &EffectSlot::slotLoadedEffectRequest);
 
     connect(m_pVisibleEffects.get(),
             &VisibleEffectsList::visibleEffectsListChanged,
@@ -362,7 +363,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
     }
 
     // ControlObjects are 1-indexed
-    m_pControlLoadEffectAtListIndex->setAndConfirm(m_pVisibleEffects->indexOf(pManifest) + 1);
+    m_pControlLoadedEffect->setAndConfirm(m_pVisibleEffects->indexOf(pManifest) + 1);
 
     emit effectChanged();
     updateEngineState();
@@ -503,7 +504,7 @@ void EffectSlot::slotNextEffect(double v) {
     }
 }
 
-void EffectSlot::slotLoadEffectAtListIndexRequest(double value) {
+void EffectSlot::slotLoadedEffectRequest(double value) {
     // ControlObjects are 1-indexed
     int index = static_cast<int>(value) - 1;
     if (index < 0 || index >= m_pVisibleEffects->getList().size()) {
@@ -516,7 +517,7 @@ void EffectSlot::slotLoadEffectAtListIndexRequest(double value) {
 void EffectSlot::visibleEffectsListChanged() {
     if (isLoaded()) {
         // ControlObjects are 1-indexed
-        m_pControlLoadEffectAtListIndex->setAndConfirm(
+        m_pControlLoadedEffect->setAndConfirm(
                 m_pVisibleEffects->indexOf(m_pManifest) + 1);
     }
 }

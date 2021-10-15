@@ -136,7 +136,7 @@ class EffectSlot : public QObject {
 
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
-    void slotLoadEffectAtListIndexRequest(double value);
+    void slotLoadedEffectRequest(double value);
     void slotClear(double v);
     void slotEffectSelector(double v);
     void slotEffectMetaParameter(double v, bool force = false);
@@ -190,7 +190,7 @@ class EffectSlot : public QObject {
     std::unique_ptr<ControlPushButton> m_pControlEnabled;
     std::unique_ptr<ControlObject> m_pControlNextEffect;
     std::unique_ptr<ControlObject> m_pControlPrevEffect;
-    std::unique_ptr<ControlObject> m_pControlLoadEffectAtListIndex;
+    std::unique_ptr<ControlObject> m_pControlLoadedEffect;
     std::unique_ptr<ControlEncoder> m_pControlEffectSelector;
     std::unique_ptr<ControlObject> m_pControlClear;
     std::unique_ptr<ControlPotmeter> m_pControlMetaParameter;
