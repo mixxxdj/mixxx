@@ -261,9 +261,9 @@ mixxx::Bpm BeatGrid::getBpmAroundPosition(audio::FramePos position, int n) const
     return getBpm();
 }
 
-BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
+std::optional<BeatsPointer> BeatGrid::tryTranslate(audio::FrameDiff_t offset) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return clonePointer();
+        return std::nullopt;
     }
 
     mixxx::track::io::BeatGrid grid = m_grid;
@@ -275,9 +275,9 @@ BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
     return std::make_shared<BeatGrid>(MakeSharedTag{}, *this, grid, m_beatLengthFrames);
 }
 
-BeatsPointer BeatGrid::scale(BpmScale scale) const {
+std::optional<BeatsPointer> BeatGrid::tryScale(BpmScale scale) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return clonePointer();
+        return std::nullopt;
     }
 
     mixxx::track::io::BeatGrid grid = m_grid;
@@ -304,11 +304,12 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return clonePointer();
+        return std::nullopt;
     }
 
     if (!bpm.isValid()) {
-        return clonePointer();
+        qWarning() << "BeatGrid: Scaling would result in invalid BPM!";
+        return std::nullopt;
     }
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
@@ -317,9 +318,9 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
     return std::make_shared<BeatGrid>(MakeSharedTag{}, *this, grid, beatLengthFrames);
 }
 
-BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) const {
+std::optional<BeatsPointer> BeatGrid::trySetBpm(mixxx::Bpm bpm) const {
     VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
-        return clonePointer();
+        return std::nullopt;
     }
 
     mixxx::track::io::BeatGrid grid = m_grid;

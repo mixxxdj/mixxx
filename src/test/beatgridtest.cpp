@@ -34,22 +34,22 @@ TEST(BeatGridTest, Scale) {
             mixxx::Bpm(bpm));
 
     EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
-    pGrid = pGrid->scale(Beats::BpmScale::Double);
+    pGrid = *pGrid->tryScale(Beats::BpmScale::Double);
     EXPECT_DOUBLE_EQ(2 * bpm.value(), pGrid->getBpm().value());
 
-    pGrid = pGrid->scale(Beats::BpmScale::Halve);
+    pGrid = *pGrid->tryScale(Beats::BpmScale::Halve);
     EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
 
-    pGrid = pGrid->scale(Beats::BpmScale::TwoThirds);
+    pGrid = *pGrid->tryScale(Beats::BpmScale::TwoThirds);
     EXPECT_DOUBLE_EQ(bpm.value() * 2 / 3, pGrid->getBpm().value());
 
-    pGrid = pGrid->scale(Beats::BpmScale::ThreeHalves);
+    pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeHalves);
     EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
 
-    pGrid = pGrid->scale(Beats::BpmScale::ThreeFourths);
+    pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeFourths);
     EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4, pGrid->getBpm().value());
 
-    pGrid = pGrid->scale(Beats::BpmScale::FourThirds);
+    pGrid = *pGrid->tryScale(Beats::BpmScale::FourThirds);
     EXPECT_DOUBLE_EQ(bpm.value(), pGrid->getBpm().value());
 }
 
