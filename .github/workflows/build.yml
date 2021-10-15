@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 20.04 (gcc)
+          - name: Ubuntu 20.04 (gcc) Qt5
             os: ubuntu-20.04
             workspace: /home/runner/mixxx
             cmake_args: >-
@@ -34,7 +34,7 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-focal
             qt_qpa_platform: offscreen
-          - name: macOS 10.15
+          - name: macOS 10.15 Qt5
             os: macos-10.15
             workspace: /Users/runner/mixxx
             cmake_args: >-
@@ -55,7 +55,29 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
-          - name: Windows 2019 (MSVC)
+          - name: macOS 10.15 Qt6
+            os: macos-10.15
+            workspace: /Users/runner/mixxx
+            cmake_args: >-
+              -DQT6=ON
+              -DBULK=ON
+              -DCOREAUDIO=ON
+              -DHSS1394=ON
+              -DMACOS_BUNDLE=ON
+              -DMODPLUG=OFF
+              -DWAVPACK=OFF
+            # TODO: Fix this broken test on macOS
+            ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
+            cpack_generator: DragNDrop
+            compiler_cache: ccache
+            compiler_cache_path: /Users/runner/Library/Caches/ccache
+            buildenv_basepath: /Users/runner/buildenv
+            buildenv_script: tools/macos_buildenv.sh
+            artifacts_name: macOS DMG
+            artifacts_path: build/*.dmg
+            artifacts_slug: macos-macosintel
+            qt_qpa_platform: offscreen
+          - name: Windows 2019 (MSVC) Qt5
             os: windows-2019
             # The D drive runs out of space when building dependencies with vcpkg.
             workspace: C:\mixxx
@@ -64,6 +86,38 @@ jobs:
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
             cmake_args: >-
+              -DBULK=OFF
+              -DFFMPEG=OFF
+              -DHSS1394=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMEDIAFOUNDATION=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+            cc: cl
+            cxx: cl
+            # TODO: Fix these broken tests on Windows
+            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
+            cpack_generator: WIX
+            exe_suffix: .exe
+            compiler_cache: sccache
+            compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
+            buildenv_basepath: C:\buildenv
+            buildenv_script: tools/windows_buildenv.bat
+            artifacts_name: Windows Installer
+            artifacts_path: build/*.msi
+            artifacts_slug: windows-win64
+            qt_qpa_platform: windows
+          - name: Windows 2019 (MSVC) Qt6
+            os: windows-2019
+            # The D drive runs out of space when building dependencies with vcpkg.
+            workspace: C:\mixxx
+            # TODO: Re-enable FFmpeg after licensing issues have been clarified
+            # Attention: If you change the cmake_args for the Windows CI build,
+            #            also adjust the for the local Windows build setup in
+            #            ./tools/windows_buildenv.bat
+            cmake_args: >-
+              -DQT6=ON
               -DBULK=OFF
               -DFFMPEG=OFF
               -DHSS1394=ON
