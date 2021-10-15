@@ -217,7 +217,6 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     emit presetNameChanged(m_presetName);
 
     setControlLoadedPresetIndex(presetIndex());
-    m_pControlLoadedChainPreset->setAndConfirm(presetIndex() + 1);
 }
 
 void EffectChain::sendParameterUpdate() {
