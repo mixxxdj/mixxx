@@ -1,0 +1,94 @@
+{
+  "name": "mixxx",
+  "version": "2.4.0",
+  "description": "Mixxx is free cross platform DJ software",
+  "homepage": "https://mixxx.org/",
+  "license": "GPL-2.0-or-later",
+  "supports": "!uwp",
+  "dependencies": [
+    "chromaprint",
+    "fdk-aac",
+    "ffmpeg",
+    "fftw3",
+    "hidapi",
+    {
+      "name": "hss1394",
+      "platform": "windows | osx"
+    },
+    "libdjinterop",
+    "libebur128",
+    "libflac",
+    {
+      "name": "libid3tag",
+      "platform": "windows"
+    },
+    "libkeyfinder",
+    {
+      "name": "libmad",
+      "platform": "windows"
+    },
+    "libmodplug",
+    "libogg",
+    "libopusenc",
+    "libsndfile",
+    "libusb",
+    "libvorbis",
+    "lilv",
+    "mp3lame",
+    "opus",
+    "opusfile",
+    {
+      "name": "portaudio",
+      "features": [
+        "asio",
+        "jack"
+      ]
+    },
+    "portmidi",
+    "protobuf",
+    "pthreads",
+    "rubberband",
+    "soundtouch",
+    "taglib",
+    "wavpack"
+  ],
+  "features": {
+    "qt5": {
+      "description": "Build with Qt5",
+      "dependencies": [
+        {
+          "name": "angle",
+          "platform": "windows"
+        },
+        "qt5-base",
+        "qt5-declarative",
+        {
+          "name": "qt5-macextras",
+          "platform": "osx"
+        },
+        "qt5-svg",
+        "qt5-translations",
+        {
+          "name": "qt5-winextras",
+          "platform": "windows"
+        },
+        {
+          "name": "qt5-x11extras",
+          "platform": "linux"
+        },
+        "qtkeychain"
+      ]
+    },
+    "qt6": {
+      "description": "Build with Qt6",
+      "dependencies": [
+        "qt5compat",
+        "qtbase",
+        "qtdeclarative",
+        "qtkeychain-qt6",
+        "qtsvg",
+        "qttranslations"
+      ]
+    }
+  }
+}
