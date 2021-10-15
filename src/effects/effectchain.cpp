@@ -332,7 +332,7 @@ void EffectChain::slotControlChainSelector(double value) {
     int index = presetIndex();
     if (value > 0) {
         index++;
-    } else {
+    } else if (value < 0) {
         index--;
     }
     loadChainPreset(presetAtIndex(index));
