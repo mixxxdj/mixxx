@@ -247,7 +247,11 @@ bool BeatGrid::hasBeatInRange(audio::FramePos startPosition, audio::FramePos end
     return false;
 }
 
-mixxx::Bpm BeatGrid::getBpm() const {
+mixxx::Bpm BeatGrid::getBpmInRange(
+        audio::FramePos startPosition, audio::FramePos endPosition) const {
+    Q_UNUSED(startPosition);
+    Q_UNUSED(endPosition);
+
     if (!isValid()) {
         return {};
     }
@@ -258,7 +262,11 @@ mixxx::Bpm BeatGrid::getBpm() const {
 mixxx::Bpm BeatGrid::getBpmAroundPosition(audio::FramePos position, int n) const {
     Q_UNUSED(position);
     Q_UNUSED(n);
-    return getBpm();
+
+    if (!isValid()) {
+        return {};
+    }
+    return bpm();
 }
 
 std::optional<BeatsPointer> BeatGrid::tryTranslate(audio::FrameDiff_t offset) const {
