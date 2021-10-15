@@ -41,10 +41,10 @@ EffectChain::EffectChain(const QString& group,
             ConfigKey(m_group, "num_effectslots"));
     m_pControlNumEffectSlots->setReadOnly();
 
-    m_pControlNumPresetsAvailable = std::make_unique<ControlObject>(
-            ConfigKey(m_group, "num_presetsavailable"));
-    m_pControlNumPresetsAvailable->set(m_pChainPresetManager->numPresets());
-    m_pControlNumPresetsAvailable->setReadOnly();
+    m_pControlNumChainPresets = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "num_chain_presets"));
+    m_pControlNumChainPresets->set(m_pChainPresetManager->numPresets());
+    m_pControlNumChainPresets->setReadOnly();
     connect(m_pChainPresetManager.data(),
             &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
@@ -372,7 +372,7 @@ void EffectChain::slotChannelStatusChanged(
 
 void EffectChain::slotPresetListUpdated() {
     setControlLoadedPresetIndex(presetIndex());
-    m_pControlNumPresetsAvailable->forceSet(numPresets());
+    m_pControlNumChainPresets->forceSet(numPresets());
 }
 
 void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup) {

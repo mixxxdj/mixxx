@@ -108,7 +108,7 @@ class EffectChain : public QObject {
     EffectsMessengerPointer m_pMessenger;
     std::unique_ptr<ControlObject> m_pControlChainMix;
     std::unique_ptr<ControlObject> m_pControlChainSuperParameter;
-    std::unique_ptr<ControlObject> m_pControlNumPresetsAvailable;
+    std::unique_ptr<ControlObject> m_pControlNumChainPresets;
     QList<EffectSlotPointer> m_effectSlots;
 
   protected slots:

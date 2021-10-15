@@ -21,7 +21,7 @@ QuickEffectChain::QuickEffectChain(const QString& group,
             &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
             &QuickEffectChain::slotPresetListUpdated);
-    m_pControlNumPresetsAvailable->forceSet(m_pChainPresetManager->numQuickEffectPresets());
+    m_pControlNumChainPresets->forceSet(m_pChainPresetManager->numQuickEffectPresets());
     connect(m_pChainPresetManager.data(),
             &EffectChainPresetManager::quickEffectChainPresetListUpdated,
             this,
