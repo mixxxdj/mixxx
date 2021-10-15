@@ -635,20 +635,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
   src/library/autodj/dlgautodj.ui
-  src/library/banshee/bansheedbconnection.cpp
-  src/library/banshee/bansheefeature.cpp
-  src/library/banshee/bansheeplaylistmodel.cpp
-  src/library/baseexternallibraryfeature.cpp
-  src/library/baseexternalplaylistmodel.cpp
-  src/library/baseexternaltrackmodel.cpp
   src/library/basesqltablemodel.cpp
   src/library/basetrackcache.cpp
   src/library/basetracktablemodel.cpp
   src/library/bpmdelegate.cpp
-  src/library/browse/browsefeature.cpp
-  src/library/browse/browsetablemodel.cpp
-  src/library/browse/browsethread.cpp
-  src/library/browse/foldertreemodel.cpp
   src/library/colordelegate.cpp
   src/library/columncache.cpp
   src/library/coverart.cpp
@@ -681,31 +671,21 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/export/trackexportdlg.cpp
   src/library/export/trackexportwizard.cpp
   src/library/export/trackexportworker.cpp
-  src/library/externaltrackcollection.cpp
-  src/library/hiddentablemodel.cpp
-  src/library/itunes/itunesfeature.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
   src/library/librarycontrol.cpp
   src/library/libraryfeature.cpp
   src/library/librarytablemodel.cpp
   src/library/locationdelegate.cpp
-  src/library/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
   src/library/parserpls.cpp
-  src/library/playlisttablemodel.cpp
   src/library/previewbuttondelegate.cpp
   src/library/proxytrackmodel.cpp
-  src/library/recording/dlgrecording.cpp
-  src/library/recording/dlgrecording.ui
-  src/library/recording/recordingfeature.cpp
   src/library/rekordbox/rekordbox_anlz.cpp
   src/library/rekordbox/rekordbox_pdb.cpp
-  src/library/rekordbox/rekordboxfeature.cpp
-  src/library/rhythmbox/rhythmboxfeature.cpp
   src/library/scanner/importfilestask.cpp
   src/library/scanner/libraryscanner.cpp
   src/library/scanner/libraryscannerdlg.cpp
@@ -713,8 +693,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/scanner/scannertask.cpp
   src/library/searchquery.cpp
   src/library/searchqueryparser.cpp
-  src/library/serato/seratofeature.cpp
-  src/library/serato/seratoplaylistmodel.cpp
   src/library/sidebarmodel.cpp
   src/library/stardelegate.cpp
   src/library/stareditor.cpp
@@ -726,16 +704,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackloader.cpp
   src/library/trackmodeliterator.cpp
   src/library/trackprocessing.cpp
-  src/library/trackset/baseplaylistfeature.cpp
   src/library/trackset/basetracksetfeature.cpp
-  src/library/trackset/crate/cratefeature.cpp
-  src/library/trackset/crate/cratefeaturehelper.cpp
   src/library/trackset/crate/cratestorage.cpp
-  src/library/trackset/crate/cratetablemodel.cpp
-  src/library/trackset/playlistfeature.cpp
-  src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp
-  src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
   src/mixer/auxiliary.cpp
@@ -750,7 +721,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/samplerbank.cpp
   src/coreservices.cpp
   src/mixxxapplication.cpp
-  src/mixxxmainwindow.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
@@ -937,6 +907,36 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
 )
 if(NOT QT6)
   target_sources(mixxx-lib PRIVATE
+    src/library/banshee/bansheedbconnection.cpp
+    src/library/banshee/bansheefeature.cpp
+    src/library/banshee/bansheeplaylistmodel.cpp
+    src/library/browse/browsefeature.cpp
+    src/library/browse/browsetablemodel.cpp
+    src/library/browse/browsethread.cpp
+    src/library/browse/foldertreemodel.cpp
+    src/library/baseexternallibraryfeature.cpp
+    src/library/baseexternalplaylistmodel.cpp
+    src/library/baseexternaltrackmodel.cpp
+    src/library/externaltrackcollection.cpp
+    src/library/hiddentablemodel.cpp
+    src/library/itunes/itunesfeature.cpp
+    src/library/missingtablemodel.cpp
+    src/library/playlisttablemodel.cpp
+    src/library/recording/dlgrecording.cpp
+    src/library/recording/dlgrecording.ui
+    src/library/recording/recordingfeature.cpp
+    src/library/rekordbox/rekordboxfeature.cpp
+    src/library/rhythmbox/rhythmboxfeature.cpp
+    src/library/serato/seratofeature.cpp
+    src/library/serato/seratoplaylistmodel.cpp
+    src/library/trackset/baseplaylistfeature.cpp
+    src/library/trackset/crate/cratefeature.cpp
+    src/library/trackset/crate/cratefeaturehelper.cpp
+    src/library/trackset/crate/cratetablemodel.cpp
+    src/library/trackset/playlistfeature.cpp
+    src/library/trackset/setlogfeature.cpp
+    src/library/traktor/traktorfeature.cpp
+    src/mixxxmainwindow.cpp
     src/skin/legacy/colorschemeparser.cpp
     src/skin/legacy/imgcolor.cpp
     src/skin/legacy/imginvert.cpp
@@ -2081,10 +2081,10 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include
 
 # Qt
 if(QT6)
-  find_package(QT NAMES Qt6 COMPONENTS Core REQUIRED)
+  find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
   set(QT6_NEW_COMPONENTS "SvgWidgets;Core5Compat")
 else()
-  find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
+  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -2192,11 +2192,16 @@ if(APPLE)
     )
   endif()
 elseif(UNIX AND NOT APPLE)
-  if(NOT QT6)
+  if(QT6)
+    find_package(X11)
+  else()
     find_package(X11 REQUIRED)
     find_package(Qt5 COMPONENTS X11Extras REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE Qt5::X11Extras)
+  endif()
+  if(${X11_FOUND})
     target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
-    target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}" Qt5::X11Extras)
+    target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
   target_link_libraries(mixxx-lib PRIVATE

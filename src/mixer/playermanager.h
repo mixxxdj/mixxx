@@ -24,7 +24,6 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
-class VisualsManager;
 class ControlProxy;
 
 // For mocking PlayerManager

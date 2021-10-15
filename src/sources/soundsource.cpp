@@ -40,7 +40,7 @@ inline QString fileTypeFromSuffix(const QString& suffix) {
 //static
 QString SoundSource::getTypeFromUrl(const QUrl& url) {
     const QString filePath = validateLocalFileUrl(url).toLocalFile();
-    return getTypeFromFile(filePath);
+    return getTypeFromFile(QFileInfo(filePath));
 }
 
 //static

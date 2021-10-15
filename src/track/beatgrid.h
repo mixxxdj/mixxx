@@ -62,9 +62,9 @@ class BeatGrid final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    BeatsPointer translate(audio::FrameDiff_t offset) const override;
-    BeatsPointer scale(BpmScale scale) const override;
-    BeatsPointer setBpm(mixxx::Bpm bpm) const override;
+    std::optional<BeatsPointer> tryTranslate(audio::FrameDiff_t offset) const override;
+    std::optional<BeatsPointer> tryScale(BpmScale scale) const override;
+    std::optional<BeatsPointer> trySetBpm(mixxx::Bpm bpm) const override;
 
     ////////////////////////////////////////////////////////////////////////////
     // Hidden constructors

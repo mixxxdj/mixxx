@@ -1,3 +1,15 @@
+mixxx (2.3.1-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.1
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Wed, 29 Sep 2021 19:08:14 +0000
+
+mixxx (2.3.0-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.0
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Mon, 28 Jun 2021 20:45:05 +0000
+
 mixxx (2.2.4-0ubuntu3) bionic; urgency=medium
 
   * Bugfix release

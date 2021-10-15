@@ -360,10 +360,14 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
         return trySetBeatsWhileLocked(std::move(pBeats));
     } else if (m_pBeats->getBpm() != bpm) {
         // Continue with the regular cases
-        if (kLogger.debugEnabled()) {
-            kLogger.debug() << "Updating BPM:" << getLocation();
+        const auto newBeats = m_pBeats->trySetBpm(bpm);
+        if (newBeats) {
+            if (kLogger.debugEnabled()) {
+                kLogger.debug() << "Updating BPM:" << getLocation();
+            }
+
+            return trySetBeatsWhileLocked(*newBeats);
         }
-        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpm));
     }
     return false;
 }

@@ -63,22 +63,22 @@ TEST_F(BeatMapTest, Scale) {
     auto pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
 
     EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
-    pMap = pMap->scale(Beats::BpmScale::Double);
+    pMap = *pMap->tryScale(Beats::BpmScale::Double);
     EXPECT_DOUBLE_EQ(2 * bpm.value(), pMap->getBpm().value());
 
-    pMap = pMap->scale(Beats::BpmScale::Halve);
+    pMap = *pMap->tryScale(Beats::BpmScale::Halve);
     EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
 
-    pMap = pMap->scale(Beats::BpmScale::TwoThirds);
+    pMap = *pMap->tryScale(Beats::BpmScale::TwoThirds);
     EXPECT_DOUBLE_EQ(bpm.value() * 2 / 3, pMap->getBpm().value());
 
-    pMap = pMap->scale(Beats::BpmScale::ThreeHalves);
+    pMap = *pMap->tryScale(Beats::BpmScale::ThreeHalves);
     EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
 
-    pMap = pMap->scale(Beats::BpmScale::ThreeFourths);
+    pMap = *pMap->tryScale(Beats::BpmScale::ThreeFourths);
     EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4, pMap->getBpm().value());
 
-    pMap = pMap->scale(Beats::BpmScale::FourThirds);
+    pMap = *pMap->tryScale(Beats::BpmScale::FourThirds);
     EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
 }
 

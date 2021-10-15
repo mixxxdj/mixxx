@@ -140,11 +140,21 @@ void MixxxMainWindow::initialize() {
     // This allows us to turn off tooltips.
     installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
 
-    DEBUG_ASSERT(m_pCoreServices->getPlayerManager());
-    const QStringList visualGroups = m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
+    auto pPlayerManager = m_pCoreServices->getPlayerManager();
+    DEBUG_ASSERT(pPlayerManager);
+    const QStringList visualGroups = pPlayerManager->getVisualPlayerGroups();
     for (const QString& group : visualGroups) {
         m_pVisualsManager->addDeck(group);
     }
+    connect(pPlayerManager.get(),
+            &PlayerManager::numberOfDecksChanged,
+            this,
+            [this](int decks) {
+                for (int i = 0; i < decks; ++i) {
+                    QString group = PlayerManager::groupForDeck(i);
+                    m_pVisualsManager->addDeckIfNotExist(group);
+                }
+            });
 
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
@@ -195,7 +205,7 @@ void MixxxMainWindow::initialize() {
             m_pCoreServices->getScreensaverManager(),
             m_pSkinLoader,
             m_pCoreServices->getSoundManager(),
-            m_pCoreServices->getPlayerManager(),
+            pPlayerManager,
             m_pCoreServices->getControllerManager(),
             m_pCoreServices->getVinylControlManager(),
             m_pCoreServices->getLV2Backend(),
@@ -292,19 +302,19 @@ void MixxxMainWindow::initialize() {
     // pointer to it.
     m_pLaunchImage = nullptr;
 
-    connect(m_pCoreServices->getPlayerManager().get(),
+    connect(pPlayerManager.get(),
             &PlayerManager::noMicrophoneInputConfigured,
             this,
             &MixxxMainWindow::slotNoMicrophoneInputConfigured);
-    connect(m_pCoreServices->getPlayerManager().get(),
+    connect(pPlayerManager.get(),
             &PlayerManager::noAuxiliaryInputConfigured,
             this,
             &MixxxMainWindow::slotNoAuxiliaryInputConfigured);
-    connect(m_pCoreServices->getPlayerManager().get(),
+    connect(pPlayerManager.get(),
             &PlayerManager::noDeckPassthroughInputConfigured,
             this,
             &MixxxMainWindow::slotNoDeckPassthroughInputConfigured);
-    connect(m_pCoreServices->getPlayerManager().get(),
+    connect(pPlayerManager.get(),
             &PlayerManager::noVinylControlInputConfigured,
             this,
             &MixxxMainWindow::slotNoVinylControlInputConfigured);
@@ -728,13 +738,14 @@ void MixxxMainWindow::connectMenuBar() {
     }
 #endif
 
-    if (m_pCoreServices->getPlayerManager()) {
-        connect(m_pCoreServices->getPlayerManager().get(),
+    auto pPlayerManager = m_pCoreServices->getPlayerManager();
+    if (pPlayerManager) {
+        connect(pPlayerManager.get(),
                 &PlayerManager::numberOfDecksChanged,
                 m_pMenuBar,
                 &WMainMenuBar::onNumberOfDecksChanged,
                 Qt::UniqueConnection);
-        m_pMenuBar->onNumberOfDecksChanged(m_pCoreServices->getPlayerManager()->numberOfDecks());
+        m_pMenuBar->onNumberOfDecksChanged(pPlayerManager->numberOfDecks());
     }
 
     if (m_pCoreServices->getTrackCollectionManager()) {
@@ -779,7 +790,7 @@ void MixxxMainWindow::connectMenuBar() {
 }
 
 void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
-    QString group = m_pCoreServices->getPlayerManager()->groupForDeck(deck - 1);
+    QString group = PlayerManager::groupForDeck(deck - 1);
 
     QString loadTrackText = tr("Load track to Deck %1").arg(QString::number(deck));
     QString deckWarningMessage = tr("Deck %1 is currently playing a track.")
@@ -1115,8 +1126,9 @@ void MixxxMainWindow::checkDirectRendering() {
 bool MixxxMainWindow::confirmExit() {
     bool playing(false);
     bool playingSampler(false);
-    unsigned int deckCount = m_pCoreServices->getPlayerManager()->numDecks();
-    unsigned int samplerCount = m_pCoreServices->getPlayerManager()->numSamplers();
+    auto pPlayerManager = m_pCoreServices->getPlayerManager();
+    unsigned int deckCount = pPlayerManager->numDecks();
+    unsigned int samplerCount = pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
         if (ControlObject::toBool(
                     ConfigKey(PlayerManager::groupForDeck(i), "play"))) {

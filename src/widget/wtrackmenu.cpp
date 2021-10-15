@@ -1240,7 +1240,11 @@ class ScaleBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (!pBeats) {
             return;
         }
-        pTrack->trySetBeats(pBeats->scale(m_bpmScale));
+        const auto scaledBeats = pBeats->tryScale(m_bpmScale);
+        if (!scaledBeats) {
+            return;
+        }
+        pTrack->trySetBeats(*scaledBeats);
     }
 
     const mixxx::Beats::BpmScale m_bpmScale;

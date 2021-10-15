@@ -85,7 +85,8 @@ bool SoundManagerConfig::readFromDisk() {
     setForceNetworkClock(rootElement.attribute(xmlAttributeForceNetworkClock,
             "0").toUInt() != 0);
     setDeckCount(rootElement.attribute(xmlAttributeDeckCount,
-            QString(kDefaultDeckCount)).toUInt());
+                                    QString::number(kDefaultDeckCount))
+                         .toUInt());
     clearOutputs();
     clearInputs();
     QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
