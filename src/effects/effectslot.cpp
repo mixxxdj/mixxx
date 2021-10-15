@@ -257,7 +257,7 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
 }
 
 void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
-    if (!pPreset) {
+    if (!pPreset || pPreset->isEmpty()) {
         loadEffectInner(nullptr, nullptr, true);
         return;
     }

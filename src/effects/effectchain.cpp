@@ -206,11 +206,6 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     int effectSlotIndex = 0;
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
         EffectSlotPointer pEffectSlot = m_effectSlots.at(effectSlotIndex);
-        if (pEffectPreset->isEmpty()) {
-            pEffectSlot->loadEffectFromPreset(nullptr);
-            effectSlotIndex++;
-            continue;
-        }
         pEffectSlot->loadEffectFromPreset(pEffectPreset);
         effectSlotIndex++;
     }
