@@ -6,12 +6,15 @@ on:
 
 jobs:
   build:
+    permissions:
+      packages: write
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
+            workspace: /home/runner/mixxx
             cmake_args: >-
               -DWARNINGS_FATAL=ON
               -DBULK=ON
@@ -33,6 +36,7 @@ jobs:
             qt_qpa_platform: offscreen
           - name: macOS 10.15
             os: macos-10.15
+            workspace: /Users/runner/mixxx
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -53,6 +57,8 @@ jobs:
             qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
+            # The D drive runs out of space when building dependencies with vcpkg.
+            workspace: C:\mixxx
             # TODO: Re-enable FFmpeg after licensing issues have been clarified
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
@@ -71,6 +77,7 @@ jobs:
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
+            exe_suffix: .exe
             compiler_cache: sccache
             compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
             buildenv_basepath: C:\buildenv
@@ -114,8 +121,10 @@ jobs:
       run: cargo install --git https://github.com/mozilla/sccache.git --rev "${SCCACHE_COMMIT}"
 
     - name: "Check out repository"
-      uses: actions/checkout@v2
+      uses: LebedevRI/checkout@issue197
       with:
+        path: ${{ matrix.workspace }}
+        submodules: true
         # This is necessary for making `git describe` work.
         fetch-depth: 0
 
@@ -124,37 +133,23 @@ jobs:
       # workflow is triggered by a tag push event.
       # Possibly related: actions/checkout#290
       run: git fetch origin --force --tags
-
-    - name: "[macOS] Set up cmake"
-      uses: jwlawson/actions-setup-cmake@v1.9
-      # Ubuntu 20.04 should use the CMake version from the repos, and Visual
-      # Studio on Windows comes with its own CMake version anyway.
-      if: runner.os == 'macOS'
-      with:
-        # This should always match the minimum required version in
-        # our CMakeLists.txt
-        cmake-version: '3.16.x'
+      working-directory: ${{ matrix.workspace }}
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
       uses: seanmiddleditch/gha-setup-vsdevenv@v3
 
-    - name: "[macOS] install ccache and make"
+    - name: "[macOS] install dependencies"
       if: runner.os == 'macOS'
+      # nasm is needed for building ffmpeg
+      # automake is needed for building libusb
       run: |
-        brew install ccache ninja
+        brew install cmake ccache ninja nasm automake
 
-    - name: "[macOS/Windows] Get build environment name"
-      if: runner.os != 'Linux'
-      id: buildenv_name
-      run: ${{ matrix.buildenv_script }} name
-
-    - name: "[macOS/Windows] Set up build environment cache"
-      if: runner.os != 'Linux'
-      uses: actions/cache@v2
-      with:
-        path: ${{ matrix.buildenv_basepath }}
-        key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
+    - name: "[Ubuntu] Install dependencies"
+      if: runner.os == 'Linux'
+      run: tools/debian_buildenv.sh setup
+      working-directory: ${{ matrix.workspace }}
 
     - name: "[macOS] Import Apple code signing identity"
       id: apple_codesign
@@ -180,7 +175,7 @@ jobs:
 
     - name: "[Windows] Set up Windows code signing"
       env:
-        WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\packaging\certificates\windows_sectigo_codesign_certificate.pfx
+        WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ matrix.workspace }}\packaging\certificates\windows_sectigo_codesign_certificate.pfx
         WINDOWS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD }}
         WINDOWS_CODESIGN_SECURE_FILE_SALT: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SALT }}
         WINDOWS_CODESIGN_SECURE_FILE_SECRET: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SECRET }}
@@ -192,11 +187,27 @@ jobs:
         Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PASSWORD=$Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD"
         Add-Content -Path "$Env:GITHUB_ENV" -Value "CMAKE_ARGS_EXTRA=-DWINDOWS_CODESIGN=ON"
 
-    - name: "Set up build environment"
-      id: buildenv
-      run: ${{ matrix.buildenv_script }} setup
-      env:
-        BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+    - name: "Authenticate to GitHub Packages"
+      if: runner.os != 'Linux' && github.repository_owner == 'mixxxdj'
+      shell: bash
+      run: |
+        nuget sources add -Name mixxx-github-packages -Source https://nuget.pkg.github.com/mixxxdj/index.json -Username mixxxdj -Password ${{ secrets.GITHUB_TOKEN }} -StorePasswordInClearText -ForceEnglishOutput -NonInteractive
+        nuget setapikey ${{ secrets.GITHUB_TOKEN }} -Source mixxx-github-packages -ForceEnglishOutput -NonInteractive
+        echo "VCPKG_BINARY_SOURCES=clear;nuget,mixxx-github-packages,readwrite;" >> "${GITHUB_ENV}"
+
+    - name: Get Git commit of vcpkg submodule
+      if: runner.os != 'Linux'
+      shell: bash
+      run: echo VCPKG_COMMIT=$(git ls-tree HEAD vcpkg | awk '{print $3}') >> "${GITHUB_ENV}"
+      working-directory: ${{ matrix.workspace }}
+
+    # Cache the vcpkg executable to avoid bootstrapping each time
+    - name: "Setup vcpkg executable cache"
+      uses: actions/cache@v2
+      if: runner.os != 'Linux'
+      with:
+        path: ${{ matrix.workspace }}/vcpkg/vcpkg${{ matrix.exe_suffix }}
+        key: ${{ matrix.name }}-${{ env.VCPKG_COMMIT }}
 
     - name: "[Ubuntu/macOS] Set compiler cache size limit"
       # Set size to 2 GiB
@@ -214,11 +225,13 @@ jobs:
 
     - name: "Create build directory"
       run: mkdir build
+      working-directory: ${{ matrix.workspace }}
 
     - name: "Configure"
       run: >-
         cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -G Ninja
+        -DVCPKG_INSTALL_OPTIONS="--debug"
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
         -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=OFF
@@ -234,7 +247,7 @@ jobs:
         -DCMAKE_VERBOSE_MAKEFILE=OFF
         -L
         ..
-      working-directory: build
+      working-directory: ${{ matrix.workspace }}/build
       env:
         CC: ${{ matrix.cc }}
         CXX: ${{ matrix.cxx }}
@@ -249,7 +262,7 @@ jobs:
 
     - name: "Build"
       run: cmake --build . --config RelWithDebInfo
-      working-directory: build
+      working-directory: ${{ matrix.workspace }}/build
       env:
         CC: ${{ matrix.cc }}
         CXX: ${{ matrix.cxx }}
@@ -263,7 +276,7 @@ jobs:
 
     - name: "Test"
       run: ctest --timeout 45 ${{ matrix.ctest_args }}
-      working-directory: build
+      working-directory: ${{ matrix.workspace }}/build
       env:
         # Render analyzer waveform tests to an offscreen buffer
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
@@ -274,14 +287,14 @@ jobs:
 
     - name: Benchmark
       run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
-      working-directory: build
+      working-directory: ${{ matrix.workspace }}/build
       env:
         # Render analyzer waveform tests to an offscreen buffer
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
     - name: "Package"
       run: cpack -G ${{ matrix.cpack_generator }} -V
-      working-directory: build
+      working-directory: ${{ matrix.workspace }}/build
 
     - name: "[Ubuntu] Import PPA GPG key"
       if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
@@ -302,11 +315,12 @@ jobs:
           CPACK_ARGS="-D DEB_SOURCEPKG=ON"
         fi
         cpack -G External $CPACK_ARGS
-      working-directory: build
+      working-directory: ${{ matrix.workspace }}/build
 
     - name: "[macOS] Sign, Notarize, and Staple Package"
       if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
       run: packaging/macos/sign_notarize_staple.sh build/*.dmg
+      working-directory: ${{ matrix.workspace }}
       env:
         APPLE_ID_USERNAME: rryan@mixxx.org
         APPLE_BUNDLE_ID: org.mixxx.mixxx
@@ -316,7 +330,7 @@ jobs:
     - name: "[Windows] Sign Package"
       if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
       run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
-      working-directory: build
+      working-directory: ${{ matrix.workspace }}/build
 
     - name: "Prepare for deployment"
       # Copy the desired directory structure to the deploy/ directory. This
@@ -325,6 +339,7 @@ jobs:
       id: prepare_deploy
       if: github.event_name == 'push'
       shell: bash
+      working-directory: ${{ matrix.workspace }}
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
@@ -390,6 +405,7 @@ jobs:
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
       if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_AUTH_SOCK != null
       shell: bash --login -eo pipefail "{0}"
+      working-directory: ${{ matrix.workspace }}
       run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
       env:
         DESTDIR: public_html/downloads
@@ -408,6 +424,17 @@ jobs:
       with:
         name: ${{ matrix.artifacts_name }}
         path: ${{ matrix.artifacts_path }}
+
+    - name: Upload GitHub Actions artifacts of vcpkg logs
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: vcpkg-logs-${{ matrix.name }}
+        path: |
+          ${{ matrix.workspace }}/vcpkg/buildtrees/**/*.log
+          ${{ matrix.workspace }}/build/vcpkg-bootstrap.log
+          ${{ matrix.workspace }}/build/vcpkg-manifest-install.log
+        if-no-files-found: ignore
 
   update_manifest:
     name: "Update manifest file on download server"
