@@ -298,7 +298,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
     // an EffectParameter created, regardless of whether it is loaded in a slot.
     for (const auto& pManifestParameter : m_pManifest->parameters()) {
         // match the manifest parameter to the preset parameter
-        EffectParameterPreset parameterPreset = EffectParameterPreset();
+        EffectParameterPreset parameterPreset;
         if (pEffectPreset) {
             for (const auto& p : pEffectPreset->getParameterPresets()) {
                 if (p.id() == pManifestParameter->id()) {
