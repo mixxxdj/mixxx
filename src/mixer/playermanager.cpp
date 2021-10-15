@@ -30,18 +30,28 @@ const mixxx::Logger kLogger("PlayerManager");
 // Utilize half of the available cores for adhoc analysis of tracks
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2);
 
-const QRegularExpression kDeckRegex(QStringLiteral("\\[Channel\\d+\\]"));
-const QRegularExpression kSamplerRegex(QStringLiteral("\\[Sampler\\d+\\]"));
-const QRegularExpression kPreviewDeckRegex(QStringLiteral("\\[PreviewDeck\\d+\\]"));
+const QRegularExpression kDeckRegex(QStringLiteral("^\\[Channel(\\d+)\\]$"));
+const QRegularExpression kSamplerRegex(QStringLiteral("^\\[Sampler(\\d+)\\]$"));
+const QRegularExpression kPreviewDeckRegex(QStringLiteral("^\\[PreviewDeck(\\d+)\\]$"));
 
 bool extractIntFromRegex(const QRegularExpression& regex, const QString& group, int* number) {
-    QRegularExpressionMatch match = regex.match(group);
+    const QRegularExpressionMatch match = regex.match(group);
+    DEBUG_ASSERT(match.isValid());
     if (!match.hasMatch()) {
         return false;
     }
+    // The regex is expected to contain a single capture group with the number
+    constexpr int capturedNumberIndex = 1;
+    DEBUG_ASSERT(match.lastCapturedIndex() <= capturedNumberIndex);
+    if (match.lastCapturedIndex() < capturedNumberIndex) {
+        qWarning() << "No number found in group" << group;
+        return false;
+    }
     if (number) {
+        const QString capturedNumber = match.captured(capturedNumberIndex);
+        DEBUG_ASSERT(!capturedNumber.isNull());
         bool okay = false;
-        const int numberFromMatch = match.captured(1).toInt(&okay);
+        const int numberFromMatch = capturedNumber.toInt(&okay);
         VERIFY_OR_DEBUG_ASSERT(okay) {
             return false;
         }
