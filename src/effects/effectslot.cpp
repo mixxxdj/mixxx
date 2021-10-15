@@ -284,14 +284,13 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
     }
     unloadEffect();
 
-    m_pManifest = pManifest;
-
     if (!pManifest || !pEffectPreset) {
         // No new effect to load; just unload the old effect and return.
         emit effectChanged();
         return;
     }
 
+    m_pManifest = pManifest;
     addToEngine();
 
     // Create EffectParameters. Every parameter listed in the manifest must have
