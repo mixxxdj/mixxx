@@ -107,19 +107,19 @@ EffectChain::EffectChain(const QString& group,
             this,
             &EffectChain::slotControlLoadedChainPresetRequest);
 
-    m_pControlChainNextPreset = std::make_unique<ControlPushButton>(
+    m_pControlNextChainPreset = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "next_chain"));
-    connect(m_pControlChainNextPreset.get(),
+    connect(m_pControlNextChainPreset.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChain::slotControlChainNextPreset);
+            &EffectChain::slotControlNextChainPreset);
 
-    m_pControlChainPrevPreset = std::make_unique<ControlPushButton>(
+    m_pControlPrevChainPreset = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "prev_chain"));
-    connect(m_pControlChainPrevPreset.get(),
+    connect(m_pControlPrevChainPreset.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChain::slotControlChainPrevPreset);
+            &EffectChain::slotControlPrevChainPreset);
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pControlChainSelector = std::make_unique<ControlEncoder>(
@@ -354,13 +354,13 @@ void EffectChain::setControlLoadedPresetIndex(uint index) {
     m_pControlLoadedChainPreset->setAndConfirm(index + 1);
 }
 
-void EffectChain::slotControlChainNextPreset(double value) {
+void EffectChain::slotControlNextChainPreset(double value) {
     if (value > 0) {
         loadChainPreset(presetAtIndex(presetIndex() + 1));
     }
 }
 
-void EffectChain::slotControlChainPrevPreset(double value) {
+void EffectChain::slotControlPrevChainPreset(double value) {
     if (value > 0) {
         loadChainPreset(presetAtIndex(presetIndex() - 1));
     }
