@@ -255,7 +255,10 @@ QColor QmlWaveformOverview::getRgbPenColor(ConstWaveformPointer pWaveform, int c
     qreal max = math_max3(red, green, blue);
     if (max > 0.0) {
         QColor color;
-        color.setRgbF(red / max, green / max, blue / max);
+        color.setRgbF(
+                static_cast<float>(red / max),
+                static_cast<float>(green / max),
+                static_cast<float>(blue / max));
         return color;
     }
     return QColor();
