@@ -793,8 +793,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/qml/qmleffectmanifestparametersmodel.cpp
   src/qml/qmleffectsmanagerproxy.cpp
   src/qml/qmleffectslotproxy.cpp
-  src/qml/qmllibraryproxy.cpp
-  src/qml/qmllibrarytracklistmodel.cpp
   src/qml/qmlplayermanagerproxy.cpp
   src/qml/qmlplayerproxy.cpp
   src/qml/qmlvisibleeffectsmodel.cpp

@@ -8,8 +8,6 @@
 #include "qml/qmleffectmanifestparametersmodel.h"
 #include "qml/qmleffectslotproxy.h"
 #include "qml/qmleffectsmanagerproxy.h"
-#include "qml/qmllibraryproxy.h"
-#include "qml/qmllibrarytracklistmodel.h"
 #include "qml/qmlplayermanagerproxy.h"
 #include "qml/qmlplayerproxy.h"
 #include "qml/qmlvisibleeffectsmodel.h"
@@ -144,36 +142,6 @@ QmlApplication::QmlApplication(
             "Player",
             "Player objects can't be created directly, please use "
             "Mixxx.PlayerManager.getPlayer(group)");
-
-    qmlRegisterSingletonType<QmlConfigProxy>("Mixxx",
-            0,
-            1,
-            "Config",
-            lambda_to_singleton_type_factory_ptr(
-                    [pSettings = QWeakPointer(pCoreServices->getSettings())](
-                            QQmlEngine* pEngine,
-                            QJSEngine* pScriptEngine) -> QObject* {
-                        Q_UNUSED(pScriptEngine);
-                        return new QmlConfigProxy(pSettings, pEngine);
-                    }));
-
-    qmlRegisterUncreatableType<QmlLibraryTrackListModel>("Mixxx",
-            0,
-            1,
-            "LibraryTrackListModel",
-            "LibraryTrackListModel objects can't be created directly, "
-            "please use Mixxx.Library.model");
-    qmlRegisterSingletonType<QmlLibraryProxy>("Mixxx",
-            0,
-            1,
-            "Library",
-            lambda_to_singleton_type_factory_ptr(
-                    [pLibrary = std::weak_ptr<Library>(
-                             pCoreServices->getLibrary())](QQmlEngine* pEngine,
-                            QJSEngine* pScriptEngine) -> QObject* {
-                        Q_UNUSED(pScriptEngine);
-                        return new QmlLibraryProxy(pLibrary.lock(), pEngine);
-                    }));
 
     loadQml(m_mainFilePath);
 

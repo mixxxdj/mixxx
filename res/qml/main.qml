@@ -11,7 +11,6 @@ ApplicationWindow {
     property alias show4decks: show4DecksButton.checked
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
-    property alias maximizeLibrary: maximizeLibraryButton.checked
 
     width: 1920
     height: 1080
@@ -37,14 +36,6 @@ ApplicationWindow {
                     id: show4DecksButton
 
                     text: "4 Decks"
-                    activeColor: Theme.white
-                    checkable: true
-                }
-
-                Skin.Button {
-                    id: maximizeLibraryButton
-
-                    text: "Library"
                     activeColor: Theme.white
                     checkable: true
                 }
@@ -85,7 +76,6 @@ ApplicationWindow {
             leftDeckGroup: "[Channel1]"
             rightDeckGroup: "[Channel2]"
             width: parent.width
-            minimized: root.maximizeLibrary
         }
 
         Skin.CrossfaderRow {
@@ -93,7 +83,6 @@ ApplicationWindow {
 
             crossfaderWidth: decks12.mixer.width
             width: parent.width
-            visible: !root.maximizeLibrary
 
             FadeBehavior on visible {
                 fadeTarget: crossfader
@@ -107,7 +96,6 @@ ApplicationWindow {
             leftDeckGroup: "[Channel3]"
             rightDeckGroup: "[Channel4]"
             width: parent.width
-            minimized: root.maximizeLibrary
             visible: root.show4decks
 
             FadeBehavior on visible {
@@ -138,11 +126,6 @@ ApplicationWindow {
                 fadeTarget: effects
             }
 
-        }
-
-        Library {
-            width: parent.width
-            height: parent.height - y
         }
 
         move: Transition {
