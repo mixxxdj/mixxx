@@ -420,7 +420,7 @@ QVariant BaseTrackTableModel::data(
         DEBUG_ASSERT(bgColor.isValid());
         DEBUG_ASSERT(m_backgroundColorOpacity >= 0.0);
         DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
-        bgColor.setAlphaF(m_backgroundColorOpacity);
+        bgColor.setAlphaF(static_cast<float>(m_backgroundColorOpacity));
         return QBrush(bgColor);
     }
 
