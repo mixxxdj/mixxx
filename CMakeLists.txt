@@ -2136,30 +2136,30 @@ if(Qt_IS_STATIC)
 
   target_link_libraries(mixxx-lib PRIVATE
     # platform plugins
-    Qt5::QOffscreenIntegrationPlugin
-    Qt5::QMinimalIntegrationPlugin
+    Qt${QT_VERSION_MAJOR}::QOffscreenIntegrationPlugin
+    Qt${QT_VERSION_MAJOR}::QMinimalIntegrationPlugin
 
     # imageformats plugins
-    Qt5::QGifPlugin
-    Qt5::QICOPlugin
-    Qt5::QJpegPlugin
-    Qt5::QSvgPlugin
+    Qt${QT_VERSION_MAJOR}::QGifPlugin
+    Qt${QT_VERSION_MAJOR}::QICOPlugin
+    Qt${QT_VERSION_MAJOR}::QJpegPlugin
+    Qt${QT_VERSION_MAJOR}::QSvgPlugin
 
     # sqldrivers
-    Qt5::QSQLiteDriverPlugin
+    Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
   )
 
   if(WIN32)
     target_link_libraries(mixxx-lib PRIVATE
-      Qt5::QWindowsIntegrationPlugin
-      Qt5::QWindowsVistaStylePlugin
+      Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
+      Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
     )
   endif()
 
   if(APPLE)
     target_link_libraries(mixxx-lib PRIVATE
-      Qt5::QCocoaIntegrationPlugin
-      Qt5::QMacStylePlugin
+      Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin
+      Qt${QT_VERSION_MAJOR}::QMacStylePlugin
     )
   endif()
 
