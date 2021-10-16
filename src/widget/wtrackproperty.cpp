@@ -81,7 +81,7 @@ void WTrackProperty::slotTrackChanged(TrackId trackId) {
 void WTrackProperty::updateLabel() {
     if (m_pCurrentTrack) {
         QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
-        if (property.isValid() && property.canConvert(QMetaType::QString)) {
+        if (property.isValid() && property.canConvert<QString>()) {
             setText(property.toString());
             return;
         }
