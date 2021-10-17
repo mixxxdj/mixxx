@@ -768,31 +768,36 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             m_pTrackMenu->slotShowDlgTrackInfo();
         }
     } else if (event->key() == kHideRemoveShortcutKey) {
-        QModelIndexList indices = selectionModel()->selectedRows();
-        if (indices.size() > 0) {
-            TrackModel* pTrackModel = getTrackModel();
-            if (pTrackModel) {
-                const auto plibraryTableModel = dynamic_cast<LibraryTableModel*>(pTrackModel);
-                if (plibraryTableModel) {
-                    // Hide tracks if this is the main library table
-                    // confirmation dialog
-                    pTrackModel->hideTracks(indices);
-                } else {
-                    // Else remove the tracks from playlist/crate
-                    // confirmation dialog
-                    QMessageBox::StandardButton response;
-                    response = QMessageBox::question(this,
-                            tr("Confirm removal of track(s)"),
-                            tr("Are you sure you want to remove this/these "
-                               "track(s) from this crate/playlist?"));
-                    if (response == QMessageBox::Yes) {
-                        pTrackModel->removeTracks(indices);
-                    }
-                }
-            }
-        }
+        hideOrRemoveSelectedTracks();
     }
     QTableView::keyPressEvent(event);
+}
+
+void WTrackTableView::hideOrRemoveSelectedTracks() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.isEmpty())
+        return;
+
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel)
+        return;
+
+    const auto plibraryTableModel = dynamic_cast<LibraryTableModel*>(pTrackModel);
+    if (plibraryTableModel) {
+        // Hide tracks if this is the main library table
+        // TODO: Confirmation dialog
+        pTrackModel->hideTracks(indices);
+    } else {
+        // Else remove the tracks from AutoDJ/crate/playlist
+        QMessageBox::StandardButton response;
+        response = QMessageBox::question(this,
+                tr("Confirm removal of track(s)"),
+                tr("Are you sure you want to remove this/these track(s) from "
+                   "this crate/playlist?"));
+        if (response == QMessageBox::Yes) {
+            pTrackModel->removeTracks(indices);
+        }
+    }
 }
 
 void WTrackTableView::loadSelectedTrack() {
