@@ -216,18 +216,19 @@ void CoverInfoGuesser::guessAndSetCoverInfoForTracks(
     }
 }
 
-void guessTrackCoverInfoConcurrently(
+QFuture<void> guessTrackCoverInfoConcurrently(
         TrackPointer pTrack) {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return;
+        return {};
     }
     if (s_enableConcurrentGuessingOfTrackCoverInfo) {
-        QtConcurrent::run([pTrack] {
+        return QtConcurrent::run([pTrack] {
             CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
         });
     } else {
         // Disabled only during tests
         CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
+        return {};
     }
 }
 
