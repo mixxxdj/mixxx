@@ -910,6 +910,12 @@ void WTrackMenu::slotOpenInFileBrowser() {
 namespace {
 
 class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ImportMetadataFromFileTagsTrackPointerOperation(
+            UserSettingsPointer pConfig)
+            : m_pConfig(std::move(pConfig)) {
+    }
+
   private:
     void doApply(
             const TrackPointer& pTrack) const override {
@@ -917,8 +923,11 @@ class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPoint
         // to override the information within Mixxx! Custom cover art must be
         // reloaded separately.
         SoundSourceProxy(pTrack).updateTrackFromSource(
-                SoundSourceProxy::UpdateTrackFromSourceMode::Again);
+                m_pConfig,
+                SoundSourceProxy::UpdateTrackFromSourceMode::Always);
     }
+
+    const UserSettingsPointer m_pConfig;
 };
 
 } // anonymous namespace
@@ -943,7 +952,7 @@ void WTrackMenu::slotImportMetadataFromFileTags() {
     const auto progressLabelText =
             tr("Importing metadata of %n track(s) from file tags", "", getTrackCount());
     const auto trackOperator =
-            ImportMetadataFromFileTagsTrackPointerOperation();
+            ImportMetadataFromFileTagsTrackPointerOperation(m_pConfig);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator,
