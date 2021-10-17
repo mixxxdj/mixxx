@@ -782,18 +782,28 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
     if (!pTrackModel)
         return;
 
-    const auto plibraryTableModel = dynamic_cast<LibraryTableModel*>(pTrackModel);
-    if (plibraryTableModel) {
+    if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
         // Hide tracks if this is the main library table
         // TODO: Confirmation dialog
         pTrackModel->hideTracks(indices);
     } else {
         // Else remove the tracks from AutoDJ/crate/playlist
+        QString autoDjOrCrateOrPlaylist;
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
+            autoDjOrCrateOrPlaylist = tr("AutoDJ queue");
+        } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
+            autoDjOrCrateOrPlaylist = tr("this crate");
+        } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
+            autoDjOrCrateOrPlaylist = tr("this playlist");
+        } else {
+            return;
+        }
+
         QMessageBox::StandardButton response;
         response = QMessageBox::question(this,
-                tr("Confirm removal of track(s)"),
-                tr("Are you sure you want to remove this/these track(s) from "
-                   "this crate/playlist?"));
+                tr("Confirm track removal"),
+                tr("Are you sure you want to remove all selected tracks from %1?")
+                        .arg(autoDjOrCrateOrPlaylist));
         if (response == QMessageBox::Yes) {
             pTrackModel->removeTracks(indices);
         }
