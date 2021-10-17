@@ -16,7 +16,7 @@ To get started with Mixxx:
 
 1. For live use, [download the latest stable version][download-stable].
 2. For experimentation and testing, [download a development release][download-testing].
-3. To live on the bleeding edge, clone the repo: `git clone https://github.com/mixxxdj/mixxx.git`
+3. To build Mixxx yourself, refer to [BUILDING.md](BUILDING.md).
 
 ## Bug tracker
 
@@ -26,33 +26,6 @@ Have a bug or feature request? [File a bug on Launchpad][fileabug].
 
 Want to get involved in Mixxx development? Assign yourself a bug from the [easy
 bug list][easybugs] and get started!
-
-## Building Mixxx
-
-First, open a terminal (on Windows, use "x64 Native Tools Command Prompt for
-VS 2019"), download the mixxx source code and navigate to it:
-
-    $ git clone https://github.com/mixxxdj/mixxx.git
-    $ cd mixxx
-
-Fetch the required dependencies and set up the build environment (on Windows,
-macOS and Debian/Ubuntu, you can do that by running
-`tools\windows_buildenv.bat`, `source tools/macos_buildenv.sh setup` or `source
-tools/debian_buildenv.sh setup` respectively), then run:
-
-    $ mkdir build
-    $ cd build
-    $ cmake ..
-    $ cmake --build .
-
-There should now be a `mixxx` executable in the current directory that you can
-run. Alternatively, can generate a package using `cpack`.
-
-More Information can be found on the [wiki]:
-
-- [Compiling on Linux]
-- [Compiling on macOS]
-- [Compiling on Windows]
 
 ## Documentation
 
