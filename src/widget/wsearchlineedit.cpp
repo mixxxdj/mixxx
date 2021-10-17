@@ -362,6 +362,7 @@ void WSearchLineEdit::slotDisableSearch() {
         return;
     }
     setTextBlockSignals(kDisabledText);
+    updateClearButton(QString());
     setEnabled(false);
 }
 
@@ -487,7 +488,6 @@ void WSearchLineEdit::updateClearButton(const QString& text) {
             << "updateClearButton"
             << text;
 #endif // ENABLE_TRACE_LOG
-    DEBUG_ASSERT(isEnabled());
 
     if (text.isEmpty()) {
         // Disable while placeholder is shown
