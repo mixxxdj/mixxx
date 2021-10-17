@@ -649,7 +649,11 @@ bool insertTrackLibrary(
     pTrackLibraryInsert->bindValue(":mixxx_deleted", 0);
 
     // We no longer store the wavesummary in the library table.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    pTrackLibraryInsert->bindValue(":wavesummaryhex", QVariant(QMetaType(QMetaType::QByteArray)));
+#else
     pTrackLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
+#endif
 
     VERIFY_OR_DEBUG_ASSERT(pTrackLibraryInsert->exec()) {
         // We failed to insert the track. Maybe it is already in the library
@@ -2199,7 +2203,9 @@ TrackPointer TrackDAO::getOrAddTrack(
 
     // If the track wasn't in the library already then it has not yet
     // been checked for cover art.
-    guessTrackCoverInfoConcurrently(pTrack);
+    const auto future = guessTrackCoverInfoConcurrently(pTrack);
+    // Don't wait for the result and keep running in the background
+    Q_UNUSED(future)
 
     return pTrack;
 }

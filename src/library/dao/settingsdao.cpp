@@ -51,7 +51,7 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
 }
 
 bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
-    VERIFY_OR_DEBUG_ASSERT(value.canConvert(QMetaType::QString)) {
+    VERIFY_OR_DEBUG_ASSERT(value.canConvert<QString>()) {
         return false;
     }
 
