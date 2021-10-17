@@ -420,7 +420,7 @@ QVariant BaseTrackTableModel::data(
         DEBUG_ASSERT(bgColor.isValid());
         DEBUG_ASSERT(m_backgroundColorOpacity >= 0.0);
         DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
-        bgColor.setAlphaF(m_backgroundColorOpacity);
+        bgColor.setAlphaF(static_cast<float>(m_backgroundColorOpacity));
         return QBrush(bgColor);
     }
 
@@ -646,7 +646,11 @@ QVariant BaseTrackTableModel::roleValue(
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            if (rawValue.metaType().id() == QMetaType::QString) {
+#else
             if (rawValue.type() == QVariant::String) {
+#endif
                 // column value
                 lastPlayedAt = mixxx::sqlite::readGeneratedTimestamp(rawValue);
             } else {
