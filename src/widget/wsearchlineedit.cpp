@@ -219,7 +219,8 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
             "\n" + tr("For more information see User Manual > Mixxx Library") +
             "\n\n" +
-            tr("Shortcut") + ": \n" + tr("Ctrl+F") + "  " +
+            tr("Shortcuts") + ": \n" +
+            tr("Ctrl+F") + "  " +
             tr("Focus", "Give search bar input focus") + "\n" +
             tr("Ctrl+Backspace") + "  " +
             tr("Clear input", "Clear the search bar input field") + "\n" +
@@ -227,6 +228,7 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Toggle search history",
                     "Shows/hides the search history entries") +
             "\n" +
+            tr("Delete or Backspace") + "  " + tr("Delete query from history") + "\n" +
             tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
 }
 
@@ -297,6 +299,18 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
                 if (findCurrentTextIndex() == -1) {
                     slotSaveSearch();
                 }
+            }
+        } else {
+            if (keyEvent->key() == Qt::Key_Backspace ||
+                    keyEvent->key() == Qt::Key_Delete) {
+                // remove the highlighted item from the list
+                QComboBox::removeItem(view()->currentIndex().row());
+                // ToDo Resize the list to new item size
+                // Close the popup if all items were removed
+                if (count() == 0) {
+                    hidePopup();
+                }
+                return true;
             }
         }
         if (keyEvent->key() == Qt::Key_Enter) {
