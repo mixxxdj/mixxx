@@ -50,14 +50,6 @@ EffectChain::EffectChain(const QString& group,
             this,
             &EffectChain::slotPresetListUpdated);
 
-    // TODO: This [EffectRackn_EffectUnitn],loaded is always 1.0
-    // Implement a check if Effects in the unit are matching a
-    // chain preset
-    m_pControlChainLoaded =
-            std::make_unique<ControlObject>(ConfigKey(m_group, "loaded"));
-    m_pControlChainLoaded->setReadOnly();
-    m_pControlChainLoaded->forceSet(1.0);
-
     m_pControlChainEnabled =
             std::make_unique<ControlPushButton>(ConfigKey(m_group, "enabled"));
     m_pControlChainEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
