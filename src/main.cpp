@@ -115,9 +115,12 @@ int main(int argc, char * argv[]) {
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
 
+    // High DPI scaling is always enabled in Qt6.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // This needs to be set before initializing the QApplication.
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
 
     // workaround for https://bugreports.qt.io/browse/QTBUG-84363
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && QT_VERSION < QT_VERSION_CHECK(5, 15, 1)

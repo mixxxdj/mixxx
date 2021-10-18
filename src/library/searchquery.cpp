@@ -172,7 +172,7 @@ TextFilterNode::TextFilterNode(const QSqlDatabase& database,
 bool TextFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn : m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
-        if (!value.isValid() || !value.canConvert(QMetaType::QString)) {
+        if (!value.isValid() || !value.canConvert<QString>()) {
             continue;
         }
 
@@ -208,7 +208,7 @@ bool NullOrEmptyTextFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_sqlColumns.isEmpty()) {
         // only use the major column
         QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
-        if (!value.isValid() || !value.canConvert(QMetaType::QString)) {
+        if (!value.isValid() || !value.canConvert<QString>()) {
             return true;
         }
         return value.toString().isEmpty();
@@ -334,7 +334,7 @@ double NumericFilterNode::parse(const QString& arg, bool* ok) {
 bool NumericFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn : m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
-        if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
+        if (!value.isValid() || !value.canConvert<double>()) {
             if (m_bNullQuery) {
                 return true;
             }
@@ -401,7 +401,7 @@ bool NullNumericFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_sqlColumns.isEmpty()) {
         // only use the major column
         QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
-        if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
+        if (!value.isValid() || !value.canConvert<double>()) {
             return true;
         }
     }

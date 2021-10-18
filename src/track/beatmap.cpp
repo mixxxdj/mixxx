@@ -532,9 +532,9 @@ mixxx::Bpm BeatMap::getBpmAroundPosition(audio::FramePos position, int n) const 
             numberOfBeats, m_sampleRate, lowerFrame, upperFrame);
 }
 
-BeatsPointer BeatMap::translate(audio::FrameDiff_t offset) const {
+std::optional<BeatsPointer> BeatMap::tryTranslate(audio::FrameDiff_t offset) const {
     if (!isValid()) {
-        return clonePointer();
+        return std::nullopt;
     }
 
     BeatList beats = m_beats;
@@ -555,9 +555,9 @@ BeatsPointer BeatMap::translate(audio::FrameDiff_t offset) const {
     return std::make_shared<BeatMap>(MakeSharedTag{}, *this, beats, m_nominalBpm);
 }
 
-BeatsPointer BeatMap::scale(BpmScale scale) const {
+std::optional<BeatsPointer> BeatMap::tryScale(BpmScale scale) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return clonePointer();
+        return std::nullopt;
     }
 
     BeatList beats = m_beats;
@@ -596,16 +596,16 @@ BeatsPointer BeatMap::scale(BpmScale scale) const {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return clonePointer();
+        return std::nullopt;
     }
 
     mixxx::Bpm bpm = calculateNominalBpm(beats, m_sampleRate);
     return std::make_shared<BeatMap>(MakeSharedTag{}, *this, beats, bpm);
 }
 
-BeatsPointer BeatMap::setBpm(mixxx::Bpm bpm) const {
+std::optional<BeatsPointer> BeatMap::trySetBpm(mixxx::Bpm bpm) const {
     VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
-        return clonePointer();
+        return std::nullopt;
     }
 
     const auto firstBeatPosition = mixxx::audio::FramePos(m_beats.first().frame_position());

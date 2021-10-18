@@ -82,7 +82,12 @@ void StarEditor::paintEvent(QPaintEvent*) {
 }
 
 void StarEditor::mouseMoveEvent(QMouseEvent *event) {
-    int star = starAtPosition(event->x());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const int eventPosition = static_cast<int>(event->position().x());
+#else
+    const int eventPosition = event->x();
+#endif
+    int star = starAtPosition(eventPosition);
 
     if (star != m_starRating.starCount() && star != -1) {
         m_starRating.setStarCount(star);

@@ -19,6 +19,7 @@
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
+#include "library/library_prefs.h"
 #include "library/queryutil.h"
 #include "library/trackset/crate/cratestorage.h"
 #include "moc_trackdao.cpp"
@@ -648,7 +649,11 @@ bool insertTrackLibrary(
     pTrackLibraryInsert->bindValue(":mixxx_deleted", 0);
 
     // We no longer store the wavesummary in the library table.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    pTrackLibraryInsert->bindValue(":wavesummaryhex", QVariant(QMetaType(QMetaType::QByteArray)));
+#else
     pTrackLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
+#endif
 
     VERIFY_OR_DEBUG_ASSERT(pTrackLibraryInsert->exec()) {
         // We failed to insert the track. Maybe it is already in the library
@@ -849,8 +854,10 @@ TrackPointer TrackDAO::addTracksAddFile(
 
     // Initially (re-)import the metadata for the newly created track
     // from the file.
-    SoundSourceProxy(pTrack).updateTrackFromSource();
-    if (!pTrack->isSourceSynchronized()) {
+    SoundSourceProxy(pTrack).updateTrackFromSource(
+            m_pConfig,
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once);
+    if (!pTrack->checkSourceSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
@@ -1487,7 +1494,22 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         // file. This import might have never been completed successfully
         // before, so just check and try for every track that has been
         // freshly loaded from the database.
-        SoundSourceProxy(pTrack).updateTrackFromSource();
+        auto updateTrackFromSourceMode =
+                SoundSourceProxy::UpdateTrackFromSourceMode::Once;
+        if (m_pConfig &&
+                m_pConfig->getValueString(
+                                 mixxx::library::prefs::kSyncTrackMetadataConfigKey)
+                                .toInt() == 1) {
+            // An implicit re-import and update is performed if the
+            // user has enabled export of file tags in the preferences.
+            // Either they want to keep their file tags synchronized or
+            // not, no exceptions!
+            updateTrackFromSourceMode =
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
+        }
+        SoundSourceProxy(pTrack).updateTrackFromSource(
+                m_pConfig,
+                updateTrackFromSourceMode);
         if (kLogger.debugEnabled() && pTrack->isDirty()) {
             kLogger.debug()
                     << "Updated track metadata from file tags:"
@@ -2181,7 +2203,9 @@ TrackPointer TrackDAO::getOrAddTrack(
 
     // If the track wasn't in the library already then it has not yet
     // been checked for cover art.
-    guessTrackCoverInfoConcurrently(pTrack);
+    const auto future = guessTrackCoverInfoConcurrently(pTrack);
+    // Don't wait for the result and keep running in the background
+    Q_UNUSED(future)
 
     return pTrack;
 }

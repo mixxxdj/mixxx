@@ -810,6 +810,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/soundio/soundmanagerutil.cpp
   src/sources/audiosource.cpp
   src/sources/audiosourcestereoproxy.cpp
+  src/sources/metadatasource.cpp
   src/sources/metadatasourcetaglib.cpp
   src/sources/readaheadframebuffer.cpp
   src/sources/soundsource.cpp
@@ -2099,10 +2100,10 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include
 
 # Qt
 if(QT6)
-  find_package(QT NAMES Qt6 COMPONENTS Core REQUIRED)
+  find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
   set(QT6_NEW_COMPONENTS "SvgWidgets;Core5Compat")
 else()
-  find_package(QT NAMES Qt5 COMPONENTS Core REQUIRED)
+  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -2155,30 +2156,30 @@ if(Qt_IS_STATIC)
 
   target_link_libraries(mixxx-lib PRIVATE
     # platform plugins
-    Qt5::QOffscreenIntegrationPlugin
-    Qt5::QMinimalIntegrationPlugin
+    Qt${QT_VERSION_MAJOR}::QOffscreenIntegrationPlugin
+    Qt${QT_VERSION_MAJOR}::QMinimalIntegrationPlugin
 
     # imageformats plugins
-    Qt5::QGifPlugin
-    Qt5::QICOPlugin
-    Qt5::QJpegPlugin
-    Qt5::QSvgPlugin
+    Qt${QT_VERSION_MAJOR}::QGifPlugin
+    Qt${QT_VERSION_MAJOR}::QICOPlugin
+    Qt${QT_VERSION_MAJOR}::QJpegPlugin
+    Qt${QT_VERSION_MAJOR}::QSvgPlugin
 
     # sqldrivers
-    Qt5::QSQLiteDriverPlugin
+    Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
   )
 
   if(WIN32)
     target_link_libraries(mixxx-lib PRIVATE
-      Qt5::QWindowsIntegrationPlugin
-      Qt5::QWindowsVistaStylePlugin
+      Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
+      Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
     )
   endif()
 
   if(APPLE)
     target_link_libraries(mixxx-lib PRIVATE
-      Qt5::QCocoaIntegrationPlugin
-      Qt5::QMacStylePlugin
+      Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin
+      Qt${QT_VERSION_MAJOR}::QMacStylePlugin
     )
   endif()
 
@@ -2210,11 +2211,16 @@ if(APPLE)
     )
   endif()
 elseif(UNIX AND NOT APPLE)
-  if(NOT QT6)
+  if(QT6)
+    find_package(X11)
+  else()
     find_package(X11 REQUIRED)
     find_package(Qt5 COMPONENTS X11Extras REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE Qt5::X11Extras)
+  endif()
+  if(${X11_FOUND})
     target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
-    target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}" Qt5::X11Extras)
+    target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
   target_link_libraries(mixxx-lib PRIVATE
