@@ -464,6 +464,14 @@ void WSearchLineEdit::showPopup() {
         setCurrentIndex(cIndex);
     }
     QComboBox::showPopup();
+    // When (empty) index -1 is selected in the combobox and the list view is opened
+    // index 0 is auto-set but not highlighted.
+    // Select first index manually (only in the list).
+    if (cIndex == -1) {
+        view()->selectionModel()->select(
+                view()->currentIndex(),
+                QItemSelectionModel::Select);
+    }
 }
 
 void WSearchLineEdit::updateEditBox(const QString& text) {
