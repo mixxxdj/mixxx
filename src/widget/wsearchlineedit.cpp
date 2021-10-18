@@ -442,6 +442,9 @@ void WSearchLineEdit::slotSaveSearch() {
 }
 
 void WSearchLineEdit::slotMoveSelectedHistory(int steps) {
+    if (!isEnabled()) {
+        return;
+    }
     int nIndex = currentIndex() + steps;
     // at the top we manually wrap around to the last entry.
     // at the bottom wrap-around happens automatically due to invalid nIndex.
@@ -567,7 +570,9 @@ void WSearchLineEdit::slotClearSearch() {
     kLogger.trace()
             << "slotClearSearch";
 #endif // ENABLE_TRACE_LOG
-    DEBUG_ASSERT(isEnabled());
+    if (!isEnabled()) {
+        return;
+    }
     // select the last entry as current before cleaning the text field
     // so arrow keys will work as expected
     setCurrentIndex(-1);
