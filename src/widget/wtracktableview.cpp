@@ -784,8 +784,13 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
 
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
         // Hide tracks if this is the main library table
-        // TODO: Confirmation dialog
-        pTrackModel->hideTracks(indices);
+        QMessageBox::StandardButton response;
+        response = QMessageBox::question(this,
+                tr("Confirm track hide"),
+                tr("Are you sure you want to hide selected tracks?"));
+        if (response == QMessageBox::Yes) {
+            pTrackModel->hideTracks(indices);
+        }
     } else {
         // Else remove the tracks from AutoDJ/crate/playlist
         QString autoDjOrCrateOrPlaylist;
