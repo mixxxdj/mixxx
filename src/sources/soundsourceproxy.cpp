@@ -4,6 +4,7 @@
 #include <QRegularExpression>
 #include <QStandardPaths>
 
+#include "library/library_prefs.h"
 #include "sources/audiosourcetrackproxy.h"
 
 #ifdef __MAD__
@@ -517,7 +518,35 @@ SoundSourceProxy::importTrackMetadataAndCoverImage(
             pCoverImage);
 }
 
+namespace {
+
+inline bool shouldUpdateTrackMetadataFromSource(
+        SoundSourceProxy::UpdateTrackFromSourceMode mode,
+        mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus) {
+    return mode == SoundSourceProxy::UpdateTrackFromSourceMode::Always ||
+            (mode == SoundSourceProxy::UpdateTrackFromSourceMode::Newer &&
+                    sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Outdated) ||
+            (mode == SoundSourceProxy::UpdateTrackFromSourceMode::Once &&
+                    sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Void);
+}
+
+inline bool shouldImportSeratoTagsFromSource(
+        const UserSettingsPointer& pConfig,
+        mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus) {
+    // Only reimport track metadata from Serato markers if export of
+    // Serato markers is enabled. This should ensure that track color,
+    // cue points, and loops do not get lost after they have been
+    // modified in Mixxx.
+    // A reimport of metadata happens if
+    // sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Outdated
+    return sourceSyncStatus != mixxx::TrackRecord::SourceSyncStatus::Outdated ||
+            pConfig->getValue<bool>(mixxx::library::prefs::kSyncSeratoMetadataConfigKey);
+}
+
+} // namespace
+
 bool SoundSourceProxy::updateTrackFromSource(
+        const UserSettingsPointer& pConfig,
         UpdateTrackFromSourceMode mode) {
     DEBUG_ASSERT(m_pTrack);
 
@@ -540,9 +569,9 @@ bool SoundSourceProxy::updateTrackFromSource(
     // values if the corresponding file tags are missing. Depending
     // on the file type some kind of tags might even not be supported
     // at all and this information would get lost entirely otherwise!
-    bool headerParsed = false;
+    mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus;
     mixxx::TrackMetadata trackMetadata =
-            m_pTrack->getMetadata(&headerParsed);
+            m_pTrack->getMetadata(&sourceSyncStatus);
 
     // Save for later to replace the unreliable and imprecise audio
     // properties imported from file tags (see below).
@@ -555,17 +584,13 @@ bool SoundSourceProxy::updateTrackFromSource(
     DEBUG_ASSERT(coverImg.isNull());
     QImage* pCoverImg = nullptr; // pointer also serves as a flag
 
-    // If the file tags have already been parsed at least once, the
-    // existing track metadata should not be updated implicitly, i.e.
-    // if the user did not explicitly choose to (re-)import metadata
-    // explicitly from this file.
-    bool mergeExtraMetadataFromSource = false;
-    if (headerParsed && mode == UpdateTrackFromSourceMode::Once) {
-        // No (re-)import needed or desired, only merge missing properties
-        mergeExtraMetadataFromSource = true;
-    } else {
-        // Import the cover initially or when a reimport has been requested
+    const bool updateMetadataFromSource =
+            shouldUpdateTrackMetadataFromSource(mode, sourceSyncStatus);
+
+    // Decide if cover art needs to be re-imported
+    if (updateMetadataFromSource) {
         const auto coverInfo = m_pTrack->getCoverInfo();
+        // Avoid replacing user selected cover art with guessed cover art!
         if (coverInfo.source == CoverInfo::USER_SELECTED &&
                 coverInfo.type == CoverInfo::FILE) {
             // Ignore embedded cover art
@@ -593,16 +618,26 @@ bool SoundSourceProxy::updateTrackFromSource(
                 << "from file"
                 << getUrl().toString();
         // make sure that the trackMetadata was not messed up due to the failure
-        trackMetadata = m_pTrack->getMetadata(&headerParsed);
+        mixxx::TrackRecord::SourceSyncStatus sourceSyncStatusNew;
+        trackMetadata = m_pTrack->getMetadata(&sourceSyncStatusNew);
+        if (sourceSyncStatus != sourceSyncStatusNew) {
+            // Do not continue after detecting an inconsistency due to
+            // race conditions while restoring the track metadata.
+            // This is almost impossible, but it may happen. The preceding
+            // warning message already identifies the track that is affected.
+            kLogger.critical() << "Aborting update of track metadata from source "
+                                  "due to unexpected inconsistencies during recovery";
+            return false;
+        }
     }
 
     // Partial import
-    if (mergeExtraMetadataFromSource) {
-        // No reimport of embedded cover image desired in this case
+    if (!updateMetadataFromSource) {
+        // No reimport of embedded cover image desired in this case.
+        // Only import and merge extra metadata that might be missing
+        // in the database.
         DEBUG_ASSERT(!pCoverImg);
         if (metadataImportedFromSource.first == mixxx::MetadataSource::ImportResult::Succeeded) {
-            // Partial import of properties that are not (yet) stored
-            // in the database
             return m_pTrack->mergeExtraMetadataFromSource(trackMetadata);
         } else {
             // Nothing to do if no metadata has been imported
@@ -611,23 +646,26 @@ bool SoundSourceProxy::updateTrackFromSource(
     }
 
     // Full import
-    if (headerParsed) {
-        // Metadata has been synchronized successfully at least
-        // once in the past. Only overwrite this information if
-        // new data has actually been imported, otherwise abort
-        // and preserve the existing data!
-        if (kLogger.debugEnabled()) {
-            kLogger.debug()
-                    << "Updating track metadata"
-                    << (pCoverImg ? "and embedded cover art" : "")
-                    << "from file"
-                    << getUrl().toString();
-        }
-    } else {
+    DEBUG_ASSERT(updateMetadataFromSource);
+    if (!shouldImportSeratoTagsFromSource(
+                pConfig,
+                sourceSyncStatus)) {
+        // Reset Serato tags to disable the (re-)import
+        trackMetadata.refTrackInfo().refSeratoTags() = {};
+    }
+    if (sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Void) {
         DEBUG_ASSERT(pCoverImg);
         if (kLogger.debugEnabled()) {
             kLogger.debug()
                     << "Initializing track metadata and embedded cover art from file"
+                    << getUrl().toString();
+        }
+    } else {
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Re-importing track metadata"
+                    << (pCoverImg ? "and embedded cover art" : "")
+                    << "from file"
                     << getUrl().toString();
         }
     }
