@@ -7,6 +7,7 @@
 #include <QToolButton>
 
 #include "library/library_decl.h"
+#include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
 
@@ -26,8 +27,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
     virtual void showPopup() override;
 
-    explicit WSearchLineEdit(QWidget* pParent);
-    ~WSearchLineEdit() override = default;
+    explicit WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig = nullptr);
+    ~WSearchLineEdit();
 
     void setup(const QDomNode& node, const SkinContext& context);
 
@@ -90,6 +91,10 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     // Update the displayed text without (re-)starting the timer
     void setTextBlockSignals(const QString& text);
+
+    UserSettingsPointer m_pConfig;
+    void loadQueriesFromConfig();
+    void saveQueriesInConfig();
 
     parented_ptr<QToolButton> const m_clearButton;
 

@@ -24,6 +24,8 @@ const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
 const QString kDisabledText = QStringLiteral("- - -");
 
+const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
+
 constexpr int kClearButtonClearence = 1;
 
 inline QString clearButtonStyleSheet(int pxPadding, Qt::LayoutDirection direction) {
@@ -74,9 +76,10 @@ void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     s_debouncingTimeoutMillis = verifyDebouncingTimeoutMillis(debouncingTimeoutMillis);
 }
 
-WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
+WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
         : QComboBox(pParent),
           WBaseWidget(this),
+          m_pConfig(pConfig),
           m_clearButton(make_parented<QToolButton>(this)) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     setAcceptDrops(false);
@@ -147,7 +150,13 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             clearButtonSize.width() + m_frameWidth + kClearButtonClearence,
             layoutDirection()));
 
+    loadQueriesFromConfig();
+
     refreshState();
+}
+
+WSearchLineEdit::~WSearchLineEdit() {
+    saveQueriesInConfig();
 }
 
 void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
@@ -230,6 +239,44 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             "\n" +
             tr("Delete or Backspace") + "  " + tr("Delete query from history") + "\n" +
             tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
+}
+
+void WSearchLineEdit::loadQueriesFromConfig() {
+    if (!m_pConfig) {
+        return;
+    }
+    const QList<ConfigKey> queryKeys =
+            m_pConfig->getKeysWithGroup(kSavedQueriesConfigGroup);
+    QSet<QString> queryStrings;
+    for (const auto& queryKey : queryKeys) {
+        const auto& queryString = m_pConfig->getValueString(queryKey);
+        if (queryString.isEmpty() || queryStrings.contains(queryString)) {
+            // Don't add duplicate and remove it from the config immediately
+            m_pConfig->remove(queryKey);
+        } else {
+            // Restore query
+            addItem(queryString);
+            queryStrings.insert(queryString);
+        }
+    }
+}
+
+void WSearchLineEdit::saveQueriesInConfig() {
+    if (!m_pConfig) {
+        return;
+    }
+    // Delete saved queries in case the list was cleared
+    const QList<ConfigKey> queryKeys =
+            m_pConfig->getKeysWithGroup(kSavedQueriesConfigGroup);
+    for (const auto& queryKey : queryKeys) {
+        m_pConfig->remove(queryKey);
+    }
+    // Store queries
+    for (int index = 0; index < count(); index++) {
+        m_pConfig->setValue(
+                ConfigKey(kSavedQueriesConfigGroup, QString::number(index)),
+                itemText(index));
+    }
 }
 
 void WSearchLineEdit::updateStyleMetrics() {
