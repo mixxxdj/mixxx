@@ -41,21 +41,14 @@ EffectChain::EffectChain(const QString& group,
             ConfigKey(m_group, "num_effectslots"));
     m_pControlNumEffectSlots->setReadOnly();
 
-    m_pControlNumPresetsAvailable = std::make_unique<ControlObject>(
-            ConfigKey(m_group, "num_presetsavailable"));
-    m_pControlNumPresetsAvailable->set(m_pChainPresetManager->numPresets());
-    m_pControlNumPresetsAvailable->setReadOnly();
+    m_pControlNumChainPresets = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "num_chain_presets"));
+    m_pControlNumChainPresets->set(m_pChainPresetManager->numPresets());
+    m_pControlNumChainPresets->setReadOnly();
     connect(m_pChainPresetManager.data(),
             &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
             &EffectChain::slotPresetListUpdated);
-
-    m_pControlChainLoaded =
-            std::make_unique<ControlObject>(ConfigKey(m_group, "loaded"));
-    m_pControlChainLoaded->setReadOnly();
-    if (group != QString()) {
-        m_pControlChainLoaded->forceSet(1.0);
-    }
 
     m_pControlChainEnabled =
             std::make_unique<ControlPushButton>(ConfigKey(m_group, "enabled"));
@@ -101,24 +94,25 @@ EffectChain::EffectChain(const QString& group,
             this,
             &EffectChain::sendParameterUpdate);
 
-    m_pControlLoadedPreset = std::make_unique<ControlObject>(
-            ConfigKey(m_group, "loaded_preset"), false);
-    m_pControlLoadedPreset->connectValueChangeRequest(
-            this, &EffectChain::slotControlLoadedChainPresetRequest);
+    m_pControlLoadedChainPreset = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "loaded_chain_preset"), false);
+    m_pControlLoadedChainPreset->connectValueChangeRequest(
+            this,
+            &EffectChain::slotControlLoadedChainPresetRequest);
 
-    m_pControlChainNextPreset = std::make_unique<ControlPushButton>(
+    m_pControlNextChainPreset = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "next_chain"));
-    connect(m_pControlChainNextPreset.get(),
+    connect(m_pControlNextChainPreset.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChain::slotControlChainNextPreset);
+            &EffectChain::slotControlNextChainPreset);
 
-    m_pControlChainPrevPreset = std::make_unique<ControlPushButton>(
+    m_pControlPrevChainPreset = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "prev_chain"));
-    connect(m_pControlChainPrevPreset.get(),
+    connect(m_pControlPrevChainPreset.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChain::slotControlChainPrevPreset);
+            &EffectChain::slotControlPrevChainPreset);
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pControlChainSelector = std::make_unique<ControlEncoder>(
@@ -205,11 +199,6 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     int effectSlotIndex = 0;
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
         EffectSlotPointer pEffectSlot = m_effectSlots.at(effectSlotIndex);
-        if (pEffectPreset->isEmpty()) {
-            pEffectSlot->loadEffectFromPreset(nullptr);
-            effectSlotIndex++;
-            continue;
-        }
         pEffectSlot->loadEffectFromPreset(pEffectPreset);
         effectSlotIndex++;
     }
@@ -221,7 +210,6 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     emit presetNameChanged(m_presetName);
 
     setControlLoadedPresetIndex(presetIndex());
-    m_pControlLoadedPreset->setAndConfirm(presetIndex() + 1);
 }
 
 void EffectChain::sendParameterUpdate() {
@@ -332,7 +320,7 @@ void EffectChain::slotControlChainSelector(double value) {
     int index = presetIndex();
     if (value > 0) {
         index++;
-    } else {
+    } else if (value < 0) {
         index--;
     }
     loadChainPreset(presetAtIndex(index));
@@ -350,16 +338,16 @@ void EffectChain::slotControlLoadedChainPresetRequest(double value) {
 
 void EffectChain::setControlLoadedPresetIndex(uint index) {
     // add 1 to make the ControlObject 1-indexed like other ControlObjects
-    m_pControlLoadedPreset->setAndConfirm(index + 1);
+    m_pControlLoadedChainPreset->setAndConfirm(index + 1);
 }
 
-void EffectChain::slotControlChainNextPreset(double value) {
+void EffectChain::slotControlNextChainPreset(double value) {
     if (value > 0) {
         loadChainPreset(presetAtIndex(presetIndex() + 1));
     }
 }
 
-void EffectChain::slotControlChainPrevPreset(double value) {
+void EffectChain::slotControlPrevChainPreset(double value) {
     if (value > 0) {
         loadChainPreset(presetAtIndex(presetIndex() - 1));
     }
@@ -376,7 +364,7 @@ void EffectChain::slotChannelStatusChanged(
 
 void EffectChain::slotPresetListUpdated() {
     setControlLoadedPresetIndex(presetIndex());
-    m_pControlNumPresetsAvailable->forceSet(numPresets());
+    m_pControlNumChainPresets->forceSet(numPresets());
 }
 
 void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
