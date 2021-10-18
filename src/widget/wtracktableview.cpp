@@ -767,7 +767,8 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             m_pTrackMenu->loadTrackModelIndices(indices);
             m_pTrackMenu->slotShowDlgTrackInfo();
         }
-    } else if (event->key() == kHideRemoveShortcutKey) {
+    } else if (event->key() == kHideRemoveShortcutKey &&
+            event->modifiers() == kHideRemoveShortcutModifier) {
         hideOrRemoveSelectedTracks();
     }
     QTableView::keyPressEvent(event);

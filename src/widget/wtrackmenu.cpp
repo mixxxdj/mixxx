@@ -192,15 +192,18 @@ void WTrackMenu::createActions() {
         // Keyboard shortcuts are set here just to have them displayed in the menu.
         // Actual keypress is handled in WTrackTableView::keyPressEvent().
         m_pRemoveAct = new QAction(tr("Remove"), this);
-        m_pRemoveAct->setShortcut(QKeySequence(kHideRemoveShortcutKey));
+        m_pRemoveAct->setShortcut(QKeySequence(
+                kHideRemoveShortcutModifier + kHideRemoveShortcutKey));
         connect(m_pRemoveAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
         m_pRemovePlaylistAct = new QAction(tr("Remove from Playlist"), this);
-        m_pRemovePlaylistAct->setShortcut(QKeySequence(kHideRemoveShortcutKey));
+        m_pRemovePlaylistAct->setShortcut(QKeySequence(
+                kHideRemoveShortcutModifier + kHideRemoveShortcutKey));
         connect(m_pRemovePlaylistAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
         m_pRemoveCrateAct = new QAction(tr("Remove from Crate"), this);
-        m_pRemoveCrateAct->setShortcut(QKeySequence(kHideRemoveShortcutKey));
+        m_pRemoveCrateAct->setShortcut(QKeySequence(
+                kHideRemoveShortcutModifier + kHideRemoveShortcutKey));
         connect(m_pRemoveCrateAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
     }
 
@@ -208,7 +211,7 @@ void WTrackMenu::createActions() {
         m_pHideAct = new QAction(tr("Hide from Library"), this);
         // This is just for having the shortcut displayed next to the action in the menu.
         // The actual keypress is handled in WTrackTableView::keyPressEvent().
-        m_pHideAct->setShortcut(QKeySequence(kHideRemoveShortcutKey));
+        m_pHideAct->setShortcut(QKeySequence(kHideRemoveShortcutModifier + kHideRemoveShortcutKey));
         connect(m_pHideAct, &QAction::triggered, this, &WTrackMenu::slotHide);
 
         m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
