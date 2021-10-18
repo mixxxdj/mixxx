@@ -285,6 +285,8 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
     unloadEffect();
     DEBUG_ASSERT(!m_pManifest);
 
+    // The function shall be called only with both pointers set or both null.
+    DEBUG_ASSERT(pManifest.isNull() == pEffectPreset.isNull())
     if (!pManifest || !pEffectPreset) {
         // No new effect to load; just unload the old effect and return.
         emit effectChanged();
