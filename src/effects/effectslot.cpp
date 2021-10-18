@@ -84,10 +84,11 @@ EffectSlot::EffectSlot(const QString& group,
             this,
             &EffectSlot::slotPrevEffect);
 
-    m_pControlLoadEffectAtListIndex = std::make_unique<ControlObject>(
+    m_pControlLoadedEffect = std::make_unique<ControlObject>(
             ConfigKey(m_group, "loaded_effect"));
-    m_pControlLoadEffectAtListIndex->connectValueChangeRequest(this,
-            &EffectSlot::slotLoadEffectAtListIndexRequest);
+    m_pControlLoadedEffect->connectValueChangeRequest(
+            this,
+            &EffectSlot::slotLoadedEffectRequest);
 
     connect(m_pVisibleEffects.get(),
             &VisibleEffectsList::visibleEffectsListChanged,
@@ -267,10 +268,6 @@ void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
 }
 
 void EffectSlot::loadEffectWithDefaults(const EffectManifestPointer pManifest) {
-    if (!pManifest) {
-        loadEffectInner(nullptr, nullptr, false);
-        return;
-    }
     EffectPresetPointer pPreset = m_pPresetManager->getDefaultPreset(pManifest);
     loadEffectInner(pManifest, pPreset, false);
 }
@@ -286,30 +283,34 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         }
     }
     unloadEffect();
+    DEBUG_ASSERT(!m_pManifest);
 
-    m_pManifest = pManifest;
-
+    // The function shall be called only with both pointers set or both null.
+    DEBUG_ASSERT(pManifest.isNull() == pEffectPreset.isNull())
     if (!pManifest || !pEffectPreset) {
         // No new effect to load; just unload the old effect and return.
         emit effectChanged();
         return;
     }
 
+    m_pManifest = pManifest;
     addToEngine();
 
     // Create EffectParameters. Every parameter listed in the manifest must have
     // an EffectParameter created, regardless of whether it is loaded in a slot.
     for (const auto& pManifestParameter : m_pManifest->parameters()) {
         // match the manifest parameter to the preset parameter
-        EffectParameterPreset parameterPreset = EffectParameterPreset();
+        EffectParameterPreset parameterPreset;
         if (pEffectPreset) {
             for (const auto& p : pEffectPreset->getParameterPresets()) {
                 if (p.id() == pManifestParameter->id()) {
                     parameterPreset = p;
+                    break;
                 }
             }
         }
-        EffectParameterPointer pParameter(new EffectParameter(m_pEngineEffect,
+        EffectParameterPointer pParameter(new EffectParameter(
+                m_pEngineEffect,
                 m_pMessenger,
                 pManifestParameter,
                 parameterPreset));
@@ -362,7 +363,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
     }
 
     // ControlObjects are 1-indexed
-    m_pControlLoadEffectAtListIndex->setAndConfirm(m_pVisibleEffects->indexOf(pManifest) + 1);
+    m_pControlLoadedEffect->setAndConfirm(m_pVisibleEffects->indexOf(pManifest) + 1);
 
     emit effectChanged();
     updateEngineState();
@@ -374,6 +375,7 @@ void EffectSlot::unloadEffect() {
     }
 
     m_pControlLoaded->forceSet(0.0);
+    m_pControlLoadedEffect->setAndConfirm(0.0);
     for (const auto& pControlNumParameters : std::as_const(m_pControlNumParameters)) {
         pControlNumParameters->forceSet(0.0);
     }
@@ -503,7 +505,7 @@ void EffectSlot::slotNextEffect(double v) {
     }
 }
 
-void EffectSlot::slotLoadEffectAtListIndexRequest(double value) {
+void EffectSlot::slotLoadedEffectRequest(double value) {
     // ControlObjects are 1-indexed
     int index = static_cast<int>(value) - 1;
     if (index < 0 || index >= m_pVisibleEffects->getList().size()) {
@@ -516,7 +518,7 @@ void EffectSlot::slotLoadEffectAtListIndexRequest(double value) {
 void EffectSlot::visibleEffectsListChanged() {
     if (isLoaded()) {
         // ControlObjects are 1-indexed
-        m_pControlLoadEffectAtListIndex->setAndConfirm(
+        m_pControlLoadedEffect->setAndConfirm(
                 m_pVisibleEffects->indexOf(m_pManifest) + 1);
     }
 }
