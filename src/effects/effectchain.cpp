@@ -322,6 +322,9 @@ void EffectChain::slotControlChainSelector(double value) {
         index++;
     } else if (value < 0) {
         index--;
+    } else {
+        // Do not reload the current preset when set to 0.
+        return;
     }
     loadChainPreset(presetAtIndex(index));
 }
