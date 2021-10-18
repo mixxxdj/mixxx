@@ -288,6 +288,19 @@ LibraryControl::LibraryControl(Library* pLibrary)
                     m_pSearchbox->slotClearSearch();
                 }
             });
+    m_pDeleteSearchQuery = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "delete_search_query"));
+    connect(m_pDeleteSearchQuery.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value > 0.0) {
+                    m_pSearchbox->slotDeleteCurrentItem();
+                }
+            });
 
     /// Deprecated controls
     m_pSelectNextTrack = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectNextTrack"));

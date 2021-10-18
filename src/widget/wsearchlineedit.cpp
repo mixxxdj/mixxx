@@ -304,12 +304,7 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
             if (keyEvent->key() == Qt::Key_Backspace ||
                     keyEvent->key() == Qt::Key_Delete) {
                 // remove the highlighted item from the list
-                QComboBox::removeItem(view()->currentIndex().row());
-                // ToDo Resize the list to new item size
-                // Close the popup if all items were removed
-                if (count() == 0) {
-                    hidePopup();
-                }
+                deleteSelectedListItem();
                 return true;
             }
         }
@@ -455,6 +450,36 @@ void WSearchLineEdit::slotMoveSelectedHistory(int steps) {
     }
     setCurrentIndex(nIndex);
     m_saveTimer.stop();
+}
+
+void WSearchLineEdit::slotDeleteCurrentItem() {
+    if (!isEnabled()) {
+        return;
+    }
+    if (view()->isVisible()) {
+        deleteSelectedListItem();
+    } else {
+        deleteSelectedComboboxItem();
+    }
+}
+
+void WSearchLineEdit::deleteSelectedComboboxItem() {
+    int cIndex = currentIndex();
+    if (cIndex == -1) {
+        return;
+    } else {
+        slotClearSearch();
+        QComboBox::removeItem(cIndex);
+    }
+}
+
+void WSearchLineEdit::deleteSelectedListItem() {
+    QComboBox::removeItem(view()->currentIndex().row());
+    // ToDo Resize the list to new item size
+    // Close the popup if all items were removed
+    if (count() == 0) {
+        hidePopup();
+    }
 }
 
 void WSearchLineEdit::refreshState() {
