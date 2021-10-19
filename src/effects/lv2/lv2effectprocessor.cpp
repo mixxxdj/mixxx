@@ -9,16 +9,15 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
         const LilvPlugin* plugin,
         const QList<int>& audioPortIndices,
         const QList<int>& controlPortIndices)
-        : m_pPlugin(plugin),
+        : m_inputL(MAX_BUFFER_LEN),
+          m_inputR(MAX_BUFFER_LEN),
+          m_outputL(MAX_BUFFER_LEN),
+          m_outputR(MAX_BUFFER_LEN),
+          m_params(pManifest->parameters().size()),
+          m_pPlugin(plugin),
           m_audioPortIndices(audioPortIndices),
           m_controlPortIndices(controlPortIndices),
           m_pEffectsManager(nullptr) {
-    m_inputL = new float[MAX_BUFFER_LEN];
-    m_inputR = new float[MAX_BUFFER_LEN];
-    m_outputL = new float[MAX_BUFFER_LEN];
-    m_outputR = new float[MAX_BUFFER_LEN];
-    m_params = new float[pManifest->parameters().size()];
-
     const QList<EffectManifestParameterPointer>& effectManifestParameterList =
             pManifest->parameters();
 
@@ -51,11 +50,6 @@ LV2EffectProcessor::~LV2EffectProcessor() {
     }
     m_channelStateMatrix.clear();
 
-    delete[] m_inputL;
-    delete[] m_inputR;
-    delete[] m_outputL;
-    delete[] m_outputR;
-    delete[] m_params;
 }
 
 void LV2EffectProcessor::initialize(
@@ -147,10 +141,10 @@ LV2EffectGroupState* LV2EffectProcessor::createGroupState(const mixxx::EnginePar
 
         // We assume the audio ports are in the following order:
         // input_left, input_right, output_left, output_right
-        lilv_instance_connect_port(handle, m_audioPortIndices[0], m_inputL);
-        lilv_instance_connect_port(handle, m_audioPortIndices[1], m_inputR);
-        lilv_instance_connect_port(handle, m_audioPortIndices[2], m_outputL);
-        lilv_instance_connect_port(handle, m_audioPortIndices[3], m_outputR);
+        lilv_instance_connect_port(handle, m_audioPortIndices[0], m_inputL.data());
+        lilv_instance_connect_port(handle, m_audioPortIndices[1], m_inputR.data());
+        lilv_instance_connect_port(handle, m_audioPortIndices[2], m_outputL.data());
+        lilv_instance_connect_port(handle, m_audioPortIndices[3], m_outputR.data());
 
         lilv_instance_activate(handle);
     }

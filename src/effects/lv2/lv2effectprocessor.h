@@ -2,6 +2,8 @@
 
 #include <lilv/lilv.h>
 
+#include <vector>
+
 #include "effects/defs.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
@@ -56,11 +58,11 @@ class LV2EffectProcessor : public EffectProcessor {
     LV2EffectGroupState* createGroupState(const mixxx::EngineParameters& bufferParameters);
 
     QList<EngineEffectParameter*> m_parameters;
-    float* m_inputL;
-    float* m_inputR;
-    float* m_outputL;
-    float* m_outputR;
-    float* m_params;
+    std::vector<CSAMPLE> m_inputL;
+    std::vector<CSAMPLE> m_inputR;
+    std::vector<CSAMPLE> m_outputL;
+    std::vector<CSAMPLE> m_outputR;
+    std::vector<CSAMPLE> m_params;
     const LilvPlugin* m_pPlugin;
     const QList<int> m_audioPortIndices;
     const QList<int> m_controlPortIndices;
