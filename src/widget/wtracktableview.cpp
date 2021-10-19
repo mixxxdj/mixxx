@@ -785,9 +785,9 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
         return;
     }
 
+    QMessageBox::StandardButton response;
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
         // Hide tracks if this is the main library table
-        QMessageBox::StandardButton response;
         response = QMessageBox::question(this,
                 tr("Confirm track hide"),
                 tr("Are you sure you want to hide selected tracks?"));
@@ -807,7 +807,6 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
             return;
         }
 
-        QMessageBox::StandardButton response;
         response = QMessageBox::question(this, tr("Confirm track removal"), message);
         if (response == QMessageBox::Yes) {
             pTrackModel->removeTracks(indices);
