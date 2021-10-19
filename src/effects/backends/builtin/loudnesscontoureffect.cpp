@@ -59,21 +59,21 @@ EffectManifestPointer LoudnessContourEffect::getManifest() {
 }
 
 LoudnessContourEffectGroupState::LoudnessContourEffectGroupState(
-        const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters),
+        const mixxx::EngineParameters& engineParameters)
+        : EffectState(engineParameters),
           m_oldGainKnob(1.0),
           m_oldLoudness(0.0),
           m_oldGain(1.0f),
           m_oldFilterGainDb(0),
           m_oldUseGain(false),
-          m_oldSampleRate(bufferParameters.sampleRate()) {
-    m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
+          m_oldSampleRate(engineParameters.sampleRate()) {
+    m_pBuf = SampleUtil::alloc(engineParameters.samplesPerBuffer());
 
     // Initialize the filters with default parameters
     m_low = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate(), kLoPeakFreq, kHiShelveQ);
+            engineParameters.sampleRate(), kLoPeakFreq, kHiShelveQ);
     m_high = std::make_unique<EngineFilterBiquad1HighShelving>(
-            bufferParameters.sampleRate(), kHiShelveFreq, kHiShelveQ);
+            engineParameters.sampleRate(), kHiShelveFreq, kHiShelveQ);
 }
 
 LoudnessContourEffectGroupState::~LoudnessContourEffectGroupState() {
@@ -100,7 +100,7 @@ void LoudnessContourEffect::processChannel(
         LoudnessContourEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
@@ -118,11 +118,11 @@ void LoudnessContourEffect::processChannel(
         if (useGain != pState->m_oldUseGain ||
                 gainKnob != pState->m_oldGainKnob ||
                 loudness != pState->m_oldLoudness ||
-                bufferParameters.sampleRate() != pState->m_oldSampleRate) {
+                engineParameters.sampleRate() != pState->m_oldSampleRate) {
             pState->m_oldUseGain = useGain;
             pState->m_oldGainKnob = gainKnob;
             pState->m_oldLoudness = loudness;
-            pState->m_oldSampleRate = bufferParameters.sampleRate();
+            pState->m_oldSampleRate = engineParameters.sampleRate();
 
             if (useGain) {
                 gainKnob = math_clamp(gainKnob, 0.03, 1.0); // Limit at 0 .. -30 dB
@@ -134,22 +134,22 @@ void LoudnessContourEffect::processChannel(
                 // compensate filter boost to avoid clipping
                 gain = static_cast<CSAMPLE_GAIN>(db2ratio(-filterGainDb));
             }
-            pState->setFilters(bufferParameters.sampleRate(), filterGainDb);
+            pState->setFilters(engineParameters.sampleRate(), filterGainDb);
         }
     }
 
     if (filterGainDb == 0) {
         pState->m_low->pauseFilter();
         pState->m_high->pauseFilter();
-        SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
+        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
     } else {
-        pState->m_low->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
-        pState->m_high->process(pOutput, pState->m_pBuf, bufferParameters.samplesPerBuffer());
+        pState->m_low->process(pInput, pOutput, engineParameters.samplesPerBuffer());
+        pState->m_high->process(pOutput, pState->m_pBuf, engineParameters.samplesPerBuffer());
         SampleUtil::copyWithRampingGain(pOutput,
                 pState->m_pBuf,
                 pState->m_oldGain,
                 gain,
-                bufferParameters.samplesPerBuffer());
+                engineParameters.samplesPerBuffer());
     }
 
     pState->m_oldFilterGainDb = filterGainDb;

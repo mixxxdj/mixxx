@@ -11,8 +11,8 @@
 // Refer to EffectProcessor for documentation
 class LV2EffectGroupState final : public EffectState {
   public:
-    LV2EffectGroupState(const mixxx::EngineParameters& bufferParameters)
-            : EffectState(bufferParameters),
+    LV2EffectGroupState(const mixxx::EngineParameters& engineParameters)
+            : EffectState(engineParameters),
               m_pInstance(nullptr) {
     }
     ~LV2EffectGroupState() {
@@ -23,10 +23,10 @@ class LV2EffectGroupState final : public EffectState {
     }
 
     LilvInstance* lilvInstance(const LilvPlugin* pPlugin,
-            const mixxx::EngineParameters& bufferParameters) {
+            const mixxx::EngineParameters& engineParameters) {
         if (!m_pInstance) {
             m_pInstance = lilv_plugin_instantiate(
-                    pPlugin, bufferParameters.sampleRate(), nullptr);
+                    pPlugin, engineParameters.sampleRate(), nullptr);
         }
         return m_pInstance;
     }
@@ -47,13 +47,13 @@ class LV2EffectProcessor final : public EffectProcessorImpl<LV2EffectGroupState>
             LV2EffectGroupState* channelState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 
   private:
     LV2EffectGroupState* createSpecificState(
-            const mixxx::EngineParameters& bufferParameters) override;
+            const mixxx::EngineParameters& engineParameters) override;
 
     LV2EffectManifestPointer m_pManifest;
     QList<EngineEffectParameterPointer> m_engineEffectParameters;

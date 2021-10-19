@@ -68,9 +68,9 @@ EffectManifestPointer ThreeBandBiquadEQEffect::getManifest() {
 }
 
 ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
-        const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters),
-          m_tempBuf(bufferParameters.samplesPerBuffer()),
+        const mixxx::EngineParameters& engineParameters)
+        : EffectState(engineParameters),
+          m_tempBuf(engineParameters.samplesPerBuffer()),
           m_oldLowBoost(0),
           m_oldMidBoost(0),
           m_oldHighBoost(0),
@@ -79,21 +79,21 @@ ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
           m_oldHighCut(0),
           m_loFreqCorner(0),
           m_highFreqCorner(0),
-          m_oldSampleRate(bufferParameters.sampleRate()) {
+          m_oldSampleRate(engineParameters.sampleRate()) {
     // Initialize the filters with default parameters
 
     m_lowBoost = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate(), kStartupLoFreq, kQBoost);
+            engineParameters.sampleRate(), kStartupLoFreq, kQBoost);
     m_midBoost = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate(), kStartupMidFreq, kQBoost);
+            engineParameters.sampleRate(), kStartupMidFreq, kQBoost);
     m_highBoost = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate(), kStartupHiFreq, kQBoost);
+            engineParameters.sampleRate(), kStartupHiFreq, kQBoost);
     m_lowCut = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate(), kStartupLoFreq, kQKill);
+            engineParameters.sampleRate(), kStartupLoFreq, kQKill);
     m_midCut = std::make_unique<EngineFilterBiquad1Peaking>(
-            bufferParameters.sampleRate(), kStartupMidFreq, kQKill);
+            engineParameters.sampleRate(), kStartupMidFreq, kQKill);
     m_highCut = std::make_unique<EngineFilterBiquad1HighShelving>(
-            bufferParameters.sampleRate(), kStartupHiFreq / 2, kQKillShelve);
+            engineParameters.sampleRate(), kStartupHiFreq / 2, kQKillShelve);
 }
 
 ThreeBandBiquadEQEffectGroupState::~ThreeBandBiquadEQEffectGroupState() {
@@ -141,18 +141,18 @@ void ThreeBandBiquadEQEffect::processChannel(
         ThreeBandBiquadEQEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
-    if (pState->m_oldSampleRate != bufferParameters.sampleRate() ||
+    if (pState->m_oldSampleRate != engineParameters.sampleRate() ||
             (pState->m_loFreqCorner != m_pLoFreqCorner->get()) ||
             (pState->m_highFreqCorner != m_pHiFreqCorner->get())) {
         pState->m_loFreqCorner = m_pLoFreqCorner->get();
         pState->m_highFreqCorner = m_pHiFreqCorner->get();
-        pState->m_oldSampleRate = bufferParameters.sampleRate();
-        pState->setFilters(bufferParameters.sampleRate(),
+        pState->m_oldSampleRate = engineParameters.sampleRate();
+        pState->setFilters(engineParameters.sampleRate(),
                 pState->m_loFreqCorner,
                 pState->m_highFreqCorner);
     }
@@ -239,15 +239,15 @@ void ThreeBandBiquadEQEffect::processChannel(
             double lowCenter = getCenterFrequency(
                     kMinimumFrequency, pState->m_loFreqCorner);
             pState->m_lowBoost->setFrequencyCorners(
-                    bufferParameters.sampleRate(), lowCenter, kQBoost, bqGainLow);
+                    engineParameters.sampleRate(), lowCenter, kQBoost, bqGainLow);
             pState->m_oldLowBoost = bqGainLow;
         }
         if (bqGainLow > 0.0) {
             pState->m_lowBoost->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         } else {
             pState->m_lowBoost->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -259,15 +259,15 @@ void ThreeBandBiquadEQEffect::processChannel(
             double lowCenter = getCenterFrequency(
                     kMinimumFrequency, pState->m_loFreqCorner);
             pState->m_lowCut->setFrequencyCorners(
-                    bufferParameters.sampleRate(), lowCenter, kQKill, bqGainLow);
+                    engineParameters.sampleRate(), lowCenter, kQKill, bqGainLow);
             pState->m_oldLowCut = bqGainLow;
         }
         if (bqGainLow < 0.0) {
             pState->m_lowCut->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         } else {
             pState->m_lowCut->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -279,15 +279,15 @@ void ThreeBandBiquadEQEffect::processChannel(
             double midCenter = getCenterFrequency(
                     pState->m_loFreqCorner, pState->m_highFreqCorner);
             pState->m_midBoost->setFrequencyCorners(
-                    bufferParameters.sampleRate(), midCenter, kQBoost, bqGainMid);
+                    engineParameters.sampleRate(), midCenter, kQBoost, bqGainMid);
             pState->m_oldMidBoost = bqGainMid;
         }
         if (bqGainMid > 0.0) {
             pState->m_midBoost->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         } else {
             pState->m_midBoost->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -299,15 +299,15 @@ void ThreeBandBiquadEQEffect::processChannel(
             double midCenter = getCenterFrequency(
                     pState->m_loFreqCorner, pState->m_highFreqCorner);
             pState->m_midCut->setFrequencyCorners(
-                    bufferParameters.sampleRate(), midCenter, kQKill, bqGainMid);
+                    engineParameters.sampleRate(), midCenter, kQKill, bqGainMid);
             pState->m_oldMidCut = bqGainMid;
         }
         if (bqGainMid < 0.0) {
             pState->m_midCut->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         } else {
             pState->m_midCut->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -319,15 +319,15 @@ void ThreeBandBiquadEQEffect::processChannel(
             double highCenter = getCenterFrequency(
                     pState->m_highFreqCorner, kMaximumFrequency);
             pState->m_highBoost->setFrequencyCorners(
-                    bufferParameters.sampleRate(), highCenter, kQBoost, bqGainHigh);
+                    engineParameters.sampleRate(), highCenter, kQBoost, bqGainHigh);
             pState->m_oldHighBoost = bqGainHigh;
         }
         if (bqGainHigh > 0.0) {
             pState->m_highBoost->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         } else {
             pState->m_highBoost->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -339,15 +339,15 @@ void ThreeBandBiquadEQEffect::processChannel(
             double highCenter = getCenterFrequency(
                     pState->m_highFreqCorner, kMaximumFrequency);
             pState->m_highCut->setFrequencyCorners(
-                    bufferParameters.sampleRate(), highCenter / 2, kQKillShelve, bqGainHigh);
+                    engineParameters.sampleRate(), highCenter / 2, kQKillShelve, bqGainHigh);
             pState->m_oldHighCut = bqGainHigh;
         }
         if (bqGainHigh < 0.0) {
             pState->m_highCut->process(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         } else {
             pState->m_highCut->processAndPauseFilter(
-                    inBuffer[bufIndex], outBuffer[bufIndex], bufferParameters.samplesPerBuffer());
+                    inBuffer[bufIndex], outBuffer[bufIndex], engineParameters.samplesPerBuffer());
         }
         ++bufIndex;
     } else {
@@ -355,7 +355,7 @@ void ThreeBandBiquadEQEffect::processChannel(
     }
 
     if (activeFilters == 0) {
-        SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
+        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
     }
 
     if (enableState == EffectEnableState::Disabling) {

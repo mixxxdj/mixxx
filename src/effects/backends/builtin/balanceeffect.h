@@ -9,7 +9,7 @@
 
 class BalanceGroupState : public EffectState {
   public:
-    BalanceGroupState(const mixxx::EngineParameters& bufferParameters);
+    BalanceGroupState(const mixxx::EngineParameters& engineParameters);
     ~BalanceGroupState();
 
     void setFilters(int sampleRate, double freq);
@@ -41,7 +41,7 @@ class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
             BalanceGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 

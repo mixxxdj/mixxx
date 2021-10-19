@@ -42,7 +42,7 @@ void LV2EffectProcessor::processChannel(
         LV2EffectGroupState* channelState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
@@ -51,14 +51,14 @@ void LV2EffectProcessor::processChannel(
         m_LV2parameters[i] = static_cast<float>(m_engineEffectParameters[i]->value());
     }
 
-    SINT framesPerBuffer = bufferParameters.framesPerBuffer();
+    SINT framesPerBuffer = engineParameters.framesPerBuffer();
     // note: LOOP VECTORIZED.
     for (SINT i = 0; i < framesPerBuffer; ++i) {
         m_inputL[i] = pInput[i * 2];
         m_inputR[i] = pInput[i * 2 + 1];
     }
 
-    LilvInstance* instance = channelState->lilvInstance(m_pPlugin, bufferParameters);
+    LilvInstance* instance = channelState->lilvInstance(m_pPlugin, engineParameters);
 
     if (enableState == EffectEnableState::Enabling) {
         lilv_instance_activate(instance);
@@ -78,9 +78,9 @@ void LV2EffectProcessor::processChannel(
 }
 
 LV2EffectGroupState* LV2EffectProcessor::createSpecificState(
-        const mixxx::EngineParameters& bufferParameters) {
-    LV2EffectGroupState* pState = new LV2EffectGroupState(bufferParameters);
-    LilvInstance* pInstance = pState->lilvInstance(m_pPlugin, bufferParameters);
+        const mixxx::EngineParameters& engineParameters) {
+    LV2EffectGroupState* pState = new LV2EffectGroupState(engineParameters);
+    LilvInstance* pInstance = pState->lilvInstance(m_pPlugin, engineParameters);
     VERIFY_OR_DEBUG_ASSERT(pInstance) {
         return pState;
     }

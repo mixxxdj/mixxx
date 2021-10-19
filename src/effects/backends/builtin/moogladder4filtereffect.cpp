@@ -57,20 +57,20 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
 }
 
 MoogLadder4FilterGroupState::MoogLadder4FilterGroupState(
-        const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters),
+        const mixxx::EngineParameters& engineParameters)
+        : EffectState(engineParameters),
           m_loFreq(kMaxCorner),
           m_resonance(0),
           m_hiFreq(kMinCorner),
-          m_samplerate(bufferParameters.sampleRate()) {
-    m_pBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
+          m_samplerate(engineParameters.sampleRate()) {
+    m_pBuf = SampleUtil::alloc(engineParameters.samplesPerBuffer());
     m_pLowFilter = new EngineFilterMoogLadder4Low(
-            bufferParameters.sampleRate(),
-            m_loFreq * bufferParameters.sampleRate(),
+            engineParameters.sampleRate(),
+            m_loFreq * engineParameters.sampleRate(),
             m_resonance);
     m_pHighFilter = new EngineFilterMoogLadder4High(
-            bufferParameters.sampleRate(),
-            m_hiFreq * bufferParameters.sampleRate(),
+            engineParameters.sampleRate(),
+            m_hiFreq * engineParameters.sampleRate(),
             m_resonance);
 }
 
@@ -95,7 +95,7 @@ void MoogLadder4FilterEffect::processChannel(
         MoogLadder4FilterGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
@@ -114,17 +114,17 @@ void MoogLadder4FilterEffect::processChannel(
 
     if (pState->m_loFreq != lpf ||
             pState->m_resonance != resonance ||
-            pState->m_samplerate != bufferParameters.sampleRate()) {
-        pState->m_pLowFilter->setParameter(bufferParameters.sampleRate(),
-                static_cast<float>(lpf * bufferParameters.sampleRate()),
+            pState->m_samplerate != engineParameters.sampleRate()) {
+        pState->m_pLowFilter->setParameter(engineParameters.sampleRate(),
+                static_cast<float>(lpf * engineParameters.sampleRate()),
                 static_cast<float>(resonance));
     }
 
     if (pState->m_hiFreq != hpf ||
             pState->m_resonance != resonance ||
-            pState->m_samplerate != bufferParameters.sampleRate()) {
-        pState->m_pHighFilter->setParameter(bufferParameters.sampleRate(),
-                static_cast<float>(hpf * bufferParameters.sampleRate()),
+            pState->m_samplerate != engineParameters.sampleRate()) {
+        pState->m_pHighFilter->setParameter(engineParameters.sampleRate(),
+                static_cast<float>(hpf * engineParameters.sampleRate()),
                 static_cast<float>(resonance));
     }
 
@@ -138,12 +138,12 @@ void MoogLadder4FilterEffect::processChannel(
 
     if (hpf > kMinCorner) {
         // hpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pHighFilter->process(pInput, pHpfOutput, bufferParameters.samplesPerBuffer());
+        pState->m_pHighFilter->process(pInput, pHpfOutput, engineParameters.samplesPerBuffer());
     } else if (pState->m_hiFreq > kMinCorner) {
         // hpf disabling
         pState->m_pHighFilter->processAndPauseFilter(pInput,
                 pHpfOutput,
-                bufferParameters.samplesPerBuffer());
+                engineParameters.samplesPerBuffer());
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;
@@ -151,22 +151,22 @@ void MoogLadder4FilterEffect::processChannel(
 
     if (lpf < kMaxCorner) {
         // lpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pLowFilter->process(pLpfInput, pOutput, bufferParameters.samplesPerBuffer());
+        pState->m_pLowFilter->process(pLpfInput, pOutput, engineParameters.samplesPerBuffer());
     } else if (pState->m_loFreq < kMaxCorner) {
         // hpf disabling
         pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
                 pOutput,
-                bufferParameters.samplesPerBuffer());
+                engineParameters.samplesPerBuffer());
     } else if (pLpfInput == pInput) {
         // Both disabled
         if (pOutput != pInput) {
             // We need to copy pInput pOutput
-            SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
+            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
         }
     }
 
     pState->m_loFreq = lpf;
     pState->m_resonance = resonance;
     pState->m_hiFreq = hpf;
-    pState->m_samplerate = bufferParameters.sampleRate();
+    pState->m_samplerate = engineParameters.sampleRate();
 }

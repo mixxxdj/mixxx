@@ -194,7 +194,7 @@ void EffectSlot::updateEngineState() {
 
 void EffectSlot::fillEffectStatesMap(EffectStatesMap* pStatesMap) const {
     //TODO: get actual configuration of engine
-    const mixxx::EngineParameters bufferParameters(
+    const mixxx::EngineParameters engineParameters(
             mixxx::audio::SampleRate(96000),
             MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
@@ -202,7 +202,7 @@ void EffectSlot::fillEffectStatesMap(EffectStatesMap* pStatesMap) const {
         for (const auto& outputChannel :
                 m_pEffectsManager->registeredOutputChannels()) {
             pStatesMap->insert(outputChannel.handle(),
-                    m_pEngineEffect->createState(bufferParameters));
+                    m_pEngineEffect->createState(engineParameters));
         }
     } else {
         for (EffectState* pState : *pStatesMap) {

@@ -32,7 +32,7 @@ class EngineEffect final : public EffectsRequestHandler {
     ~EngineEffect();
 
     /// Called in main thread to allocate an EffectState
-    EffectState* createState(const mixxx::EngineParameters& bufferParameters);
+    EffectState* createState(const mixxx::EngineParameters& engineParameters);
 
     /// Called in audio thread to load EffectStates received from the main thread
     void loadStatesForInputChannel(const ChannelHandle* inputChannel,

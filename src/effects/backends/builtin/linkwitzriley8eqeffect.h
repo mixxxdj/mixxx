@@ -14,7 +14,7 @@
 
 class LinkwitzRiley8EQEffectGroupState : public EffectState {
   public:
-    LinkwitzRiley8EQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
+    LinkwitzRiley8EQEffectGroupState(const mixxx::EngineParameters& engineParameters);
     virtual ~LinkwitzRiley8EQEffectGroupState();
 
     void setFilters(int sampleRate, int lowFreq, int highFreq);
@@ -52,7 +52,7 @@ class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffect
             LinkwitzRiley8EQEffectGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;
 

@@ -10,7 +10,7 @@
 
 class MoogLadder4FilterGroupState : public EffectState {
   public:
-    MoogLadder4FilterGroupState(const mixxx::EngineParameters& bufferParameters);
+    MoogLadder4FilterGroupState(const mixxx::EngineParameters& engineParameters);
     ~MoogLadder4FilterGroupState();
     void setFilters(int sampleRate, double lowFreq, double highFreq);
 
@@ -39,7 +39,7 @@ class MoogLadder4FilterEffect : public EffectProcessorImpl<MoogLadder4FilterGrou
             MoogLadder4FilterGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 

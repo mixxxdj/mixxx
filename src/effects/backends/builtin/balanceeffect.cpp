@@ -65,16 +65,16 @@ EffectManifestPointer BalanceEffect::getManifest() {
     return pManifest;
 }
 
-BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters),
+BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& engineParameters)
+        : EffectState(engineParameters),
           m_pHighBuf(MAX_BUFFER_LEN),
-          m_oldSampleRate(bufferParameters.sampleRate()),
+          m_oldSampleRate(engineParameters.sampleRate()),
           m_freq(kMinCornerHz),
           m_oldBalance(0),
           m_oldMidSide(0) {
-    m_low = std::make_unique<EngineFilterLinkwitzRiley4Low>(bufferParameters.sampleRate(),
+    m_low = std::make_unique<EngineFilterLinkwitzRiley4Low>(engineParameters.sampleRate(),
             kMinCornerHz);
-    m_high = std::make_unique<EngineFilterLinkwitzRiley4High>(bufferParameters.sampleRate(),
+    m_high = std::make_unique<EngineFilterLinkwitzRiley4High>(engineParameters.sampleRate(),
             kMinCornerHz);
     m_high->setStartFromDry(true);
 }
@@ -101,7 +101,7 @@ void BalanceEffect::processChannel(
         BalanceGroupState* pGroupState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
@@ -114,36 +114,36 @@ void BalanceEffect::processChannel(
     }
 
     CSAMPLE_GAIN balanceDelta = (balance - pGroupState->m_oldBalance) /
-            CSAMPLE_GAIN(bufferParameters.framesPerBuffer());
+            CSAMPLE_GAIN(engineParameters.framesPerBuffer());
     CSAMPLE_GAIN midSideDelta = (midSide - pGroupState->m_oldMidSide) /
-            CSAMPLE_GAIN(bufferParameters.framesPerBuffer());
+            CSAMPLE_GAIN(engineParameters.framesPerBuffer());
 
     CSAMPLE_GAIN balanceStart = pGroupState->m_oldBalance + balanceDelta;
     CSAMPLE_GAIN midSideStart = pGroupState->m_oldMidSide + midSideDelta;
 
     double freq = pGroupState->m_freq;
-    if (pGroupState->m_oldSampleRate != bufferParameters.sampleRate() ||
+    if (pGroupState->m_oldSampleRate != engineParameters.sampleRate() ||
             (freq != m_pBypassFreqParameter->value())) {
         freq = m_pBypassFreqParameter->value();
-        pGroupState->m_oldSampleRate = bufferParameters.sampleRate();
-        pGroupState->setFilters(bufferParameters.sampleRate(), pGroupState->m_freq);
+        pGroupState->m_oldSampleRate = engineParameters.sampleRate();
+        pGroupState->setFilters(engineParameters.sampleRate(), pGroupState->m_freq);
     }
 
     if (pGroupState->m_freq > kMinCornerHz) {
         if (freq > kMinCornerHz && enableState != EffectEnableState::Disabling) {
             pGroupState->m_high->process(pInput,
                     pGroupState->m_pHighBuf.data(),
-                    bufferParameters.samplesPerBuffer());
-            pGroupState->m_low->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
+                    engineParameters.samplesPerBuffer());
+            pGroupState->m_low->process(pInput, pOutput, engineParameters.samplesPerBuffer());
         } else {
             pGroupState->m_high->processAndPauseFilter(pInput,
                     pGroupState->m_pHighBuf.data(),
-                    bufferParameters.samplesPerBuffer());
+                    engineParameters.samplesPerBuffer());
             pGroupState->m_low->processAndPauseFilter(
-                    pInput, pOutput, bufferParameters.samplesPerBuffer());
+                    pInput, pOutput, engineParameters.samplesPerBuffer());
         }
 
-        for (SINT i = 0; i < bufferParameters.samplesPerBuffer() / 2; ++i) {
+        for (SINT i = 0; i < engineParameters.samplesPerBuffer() / 2; ++i) {
             CSAMPLE mid = (pGroupState->m_pHighBuf[i * 2] +
                                   pGroupState->m_pHighBuf[i * 2 + 1]) /
                     2.0f;
@@ -169,7 +169,7 @@ void BalanceEffect::processChannel(
         pGroupState->m_high->pauseFilter();
         pGroupState->m_low->pauseFilter();
 
-        for (SINT i = 0; i < bufferParameters.samplesPerBuffer() / 2; ++i) {
+        for (SINT i = 0; i < engineParameters.samplesPerBuffer() / 2; ++i) {
             CSAMPLE mid = (pInput[i * 2] + pInput[i * 2 + 1]) / 2.0f;
             CSAMPLE side = (pInput[i * 2 + 1] - pInput[i * 2]) / 2.0f;
             CSAMPLE_GAIN currentMidSide = midSideStart + midSideDelta * i;

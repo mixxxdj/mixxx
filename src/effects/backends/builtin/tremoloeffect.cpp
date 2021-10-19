@@ -122,7 +122,7 @@ void TremoloEffect::processChannel(
         TremoloState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     const double width = m_pWidthParameter->value();
@@ -140,7 +140,7 @@ void TremoloEffect::processChannel(
     if (enableState == EffectEnableState::Enabling || quantizeEnabling || tripletDisabling) {
         if (gf.has_beat_length_sec && gf.has_beat_fraction) {
             currentFrame = static_cast<unsigned int>(gf.beat_fraction *
-                    gf.beat_length_sec * bufferParameters.sampleRate());
+                    gf.beat_length_sec * engineParameters.sampleRate());
         } else {
             currentFrame = 0;
         }
@@ -159,10 +159,10 @@ void TremoloEffect::processChannel(
             }
         }
         const auto framePerBeat = static_cast<int>(
-                gf.beat_length_sec * bufferParameters.sampleRate());
+                gf.beat_length_sec * engineParameters.sampleRate());
         framePerPeriod = static_cast<int>(framePerBeat / rate);
     } else {
-        framePerPeriod = static_cast<int>(bufferParameters.sampleRate() / rate);
+        framePerPeriod = static_cast<int>(engineParameters.sampleRate() / rate);
     }
 
     const auto phaseOffsetFrame = static_cast<unsigned int>(
@@ -170,8 +170,8 @@ void TremoloEffect::processChannel(
     currentFrame = currentFrame % framePerPeriod;
 
     for (SINT i = 0;
-            i < bufferParameters.samplesPerBuffer();
-            i += bufferParameters.channelCount()) {
+            i < engineParameters.samplesPerBuffer();
+            i += engineParameters.channelCount()) {
         unsigned int positionFrame = (currentFrame - phaseOffsetFrame);
         positionFrame = positionFrame % framePerPeriod;
 
@@ -203,7 +203,7 @@ void TremoloEffect::processChannel(
             gain = gainTarget;
         }
 
-        for (int channel = 0; channel < bufferParameters.channelCount(); channel++) {
+        for (int channel = 0; channel < engineParameters.channelCount(); channel++) {
             pOutput[i + channel] = static_cast<CSAMPLE_GAIN>(gain) * pInput[i + channel];
         }
 

@@ -20,26 +20,26 @@ class LVMixEQEffectGroupStateConstants {
 template<class LPF>
 class LVMixEQEffectGroupState : public EffectState {
   public:
-    explicit LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
-            : EffectState(bufferParameters),
+    explicit LVMixEQEffectGroupState(const mixxx::EngineParameters& engineParameters)
+            : EffectState(engineParameters),
               m_oldLow(1.0),
               m_oldMid(1.0),
               m_oldHigh(1.0),
               m_rampHoldOff(LVMixEQEffectGroupStateConstants::kRampDone),
-              m_oldSampleRate(bufferParameters.sampleRate()),
+              m_oldSampleRate(engineParameters.sampleRate()),
               m_loFreq(LVMixEQEffectGroupStateConstants::kStartupLoFreq),
               m_hiFreq(LVMixEQEffectGroupStateConstants::kStartupHiFreq) {
-        m_pLowBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
-        m_pBandBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
-        m_pHighBuf = SampleUtil::alloc(bufferParameters.samplesPerBuffer());
+        m_pLowBuf = SampleUtil::alloc(engineParameters.samplesPerBuffer());
+        m_pBandBuf = SampleUtil::alloc(engineParameters.samplesPerBuffer());
+        m_pHighBuf = SampleUtil::alloc(engineParameters.samplesPerBuffer());
 
-        m_low1 = new LPF(bufferParameters.sampleRate(),
+        m_low1 = new LPF(engineParameters.sampleRate(),
                 LVMixEQEffectGroupStateConstants::kStartupLoFreq);
-        m_low2 = new LPF(bufferParameters.sampleRate(),
+        m_low2 = new LPF(engineParameters.sampleRate(),
                 LVMixEQEffectGroupStateConstants::kStartupHiFreq);
         m_delay2 = new EngineFilterDelay<LVMixEQEffectGroupStateConstants::kMaxDelay>();
         m_delay3 = new EngineFilterDelay<LVMixEQEffectGroupStateConstants::kMaxDelay>();
-        setFilters(bufferParameters.sampleRate(),
+        setFilters(engineParameters.sampleRate(),
                 LVMixEQEffectGroupStateConstants::kStartupLoFreq,
                 LVMixEQEffectGroupStateConstants::kStartupHiFreq);
     }

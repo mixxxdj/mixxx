@@ -70,16 +70,16 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
 }
 
 GraphicEQEffectGroupState::GraphicEQEffectGroupState(
-        const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters) {
+        const mixxx::EngineParameters& engineParameters)
+        : EffectState(engineParameters) {
     m_oldLow = 0;
     for (int i = 0; i < 6; i++) {
         m_oldMid.append(1.0);
     }
     m_oldHigh = 0;
 
-    m_pBufs.append(SampleUtil::alloc(bufferParameters.samplesPerBuffer()));
-    m_pBufs.append(SampleUtil::alloc(bufferParameters.samplesPerBuffer()));
+    m_pBufs.append(SampleUtil::alloc(engineParameters.samplesPerBuffer()));
+    m_pBufs.append(SampleUtil::alloc(engineParameters.samplesPerBuffer()));
 
     // Initialize the default center frequencies
     m_centerFrequencies[0] = 81;
@@ -138,16 +138,16 @@ void GraphicEQEffect::processChannel(
         GraphicEQEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
     // If the sample rate has changed, initialize the filters using the new
     // sample rate
-    if (m_oldSampleRate != bufferParameters.sampleRate()) {
-        m_oldSampleRate = bufferParameters.sampleRate();
-        pState->setFilters(bufferParameters.sampleRate());
+    if (m_oldSampleRate != engineParameters.sampleRate()) {
+        m_oldSampleRate = engineParameters.sampleRate();
+        pState->setFilters(engineParameters.sampleRate());
     }
 
     float fLow;
@@ -171,20 +171,20 @@ void GraphicEQEffect::processChannel(
     }
 
     if (fLow != pState->m_oldLow) {
-        pState->m_low->setFrequencyCorners(bufferParameters.sampleRate(),
+        pState->m_low->setFrequencyCorners(engineParameters.sampleRate(),
                 pState->m_centerFrequencies[0],
                 Q,
                 fLow);
     }
     if (fHigh != pState->m_oldHigh) {
-        pState->m_high->setFrequencyCorners(bufferParameters.sampleRate(),
+        pState->m_high->setFrequencyCorners(engineParameters.sampleRate(),
                 pState->m_centerFrequencies[7],
                 Q,
                 fHigh);
     }
     for (int i = 0; i < 6; i++) {
         if (fMid[i] != pState->m_oldMid[i]) {
-            pState->m_bands[i]->setFrequencyCorners(bufferParameters.sampleRate(),
+            pState->m_bands[i]->setFrequencyCorners(engineParameters.sampleRate(),
                     pState->m_centerFrequencies[i + 1],
                     Q,
                     fMid[i]);
@@ -195,18 +195,18 @@ void GraphicEQEffect::processChannel(
     if (fLow != 0) {
         pState->m_low->process(pInput,
                 pState->m_pBufs[1 - bufIndex],
-                bufferParameters.samplesPerBuffer());
+                engineParameters.samplesPerBuffer());
         bufIndex = 1 - bufIndex;
     } else {
         pState->m_low->pauseFilter();
-        SampleUtil::copy(pState->m_pBufs[bufIndex], pInput, bufferParameters.samplesPerBuffer());
+        SampleUtil::copy(pState->m_pBufs[bufIndex], pInput, engineParameters.samplesPerBuffer());
     }
 
     for (int i = 0; i < 6; i++) {
         if (fMid[i] != 0) {
             pState->m_bands[i]->process(pState->m_pBufs[bufIndex],
                     pState->m_pBufs[1 - bufIndex],
-                    bufferParameters.samplesPerBuffer());
+                    engineParameters.samplesPerBuffer());
             bufIndex = 1 - bufIndex;
         } else {
             pState->m_bands[i]->pauseFilter();
@@ -216,9 +216,9 @@ void GraphicEQEffect::processChannel(
     if (fHigh != 0) {
         pState->m_high->process(pState->m_pBufs[bufIndex],
                 pOutput,
-                bufferParameters.samplesPerBuffer());
+                engineParameters.samplesPerBuffer());
     } else {
-        SampleUtil::copy(pOutput, pState->m_pBufs[bufIndex], bufferParameters.samplesPerBuffer());
+        SampleUtil::copy(pOutput, pState->m_pBufs[bufIndex], engineParameters.samplesPerBuffer());
         pState->m_high->pauseFilter();
     }
 

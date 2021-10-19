@@ -12,8 +12,8 @@
 
 class PhaserGroupState final : public EffectState {
   public:
-    PhaserGroupState(const mixxx::EngineParameters& bufferParameters)
-            : EffectState(bufferParameters) {
+    PhaserGroupState(const mixxx::EngineParameters& engineParameters)
+            : EffectState(engineParameters) {
         clear();
     }
 
@@ -51,7 +51,7 @@ class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
             PhaserGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 

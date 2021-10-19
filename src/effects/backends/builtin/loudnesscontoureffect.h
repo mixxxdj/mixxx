@@ -13,7 +13,7 @@
 
 class LoudnessContourEffectGroupState final : public EffectState {
   public:
-    LoudnessContourEffectGroupState(const mixxx::EngineParameters& bufferParameters);
+    LoudnessContourEffectGroupState(const mixxx::EngineParameters& engineParameters);
     ~LoudnessContourEffectGroupState();
 
     void setFilters(int sampleRate, double gain);
@@ -45,7 +45,7 @@ class LoudnessContourEffect
             LoudnessContourEffectGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;
 

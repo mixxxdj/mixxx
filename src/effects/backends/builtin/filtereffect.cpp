@@ -63,12 +63,12 @@ EffectManifestPointer FilterEffect::getManifest() {
     return pManifest;
 }
 
-FilterGroupState::FilterGroupState(const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters),
-          m_loFreq(kMaxCorner / bufferParameters.sampleRate()),
+FilterGroupState::FilterGroupState(const mixxx::EngineParameters& engineParameters)
+        : EffectState(engineParameters),
+          m_loFreq(kMaxCorner / engineParameters.sampleRate()),
           m_q(0.707106781),
-          m_hiFreq(kMinCorner / bufferParameters.sampleRate()) {
-    m_buffer = mixxx::SampleBuffer(bufferParameters.samplesPerBuffer());
+          m_hiFreq(kMinCorner / engineParameters.sampleRate()) {
+    m_buffer = mixxx::SampleBuffer(engineParameters.samplesPerBuffer());
     m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q, true);
     m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q, true);
 }
@@ -93,7 +93,7 @@ void FilterEffect::processChannel(
         FilterGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
@@ -102,16 +102,16 @@ void FilterEffect::processChannel(
     double lpf;
     double q = m_pQ->value();
 
-    const double minCornerNormalized = kMinCorner / bufferParameters.sampleRate();
-    const double maxCornerNormalized = kMaxCorner / bufferParameters.sampleRate();
+    const double minCornerNormalized = kMinCorner / engineParameters.sampleRate();
+    const double maxCornerNormalized = kMaxCorner / engineParameters.sampleRate();
 
     if (enableState == EffectEnableState::Disabling) {
         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
         hpf = minCornerNormalized;
         lpf = maxCornerNormalized;
     } else {
-        hpf = m_pHPF->value() / bufferParameters.sampleRate();
-        lpf = m_pLPF->value() / bufferParameters.sampleRate();
+        hpf = m_pHPF->value() / engineParameters.sampleRate();
+        lpf = m_pLPF->value() / engineParameters.sampleRate();
     }
 
     if ((pState->m_loFreq != lpf) ||
@@ -146,12 +146,12 @@ void FilterEffect::processChannel(
 
     if (hpf > minCornerNormalized) {
         // hpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pHighFilter->process(pInput, pHpfOutput, bufferParameters.samplesPerBuffer());
+        pState->m_pHighFilter->process(pInput, pHpfOutput, engineParameters.samplesPerBuffer());
     } else if (pState->m_hiFreq > minCornerNormalized) {
         // hpf disabling
         pState->m_pHighFilter->processAndPauseFilter(pInput,
                 pHpfOutput,
-                bufferParameters.samplesPerBuffer());
+                engineParameters.samplesPerBuffer());
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;
@@ -159,17 +159,17 @@ void FilterEffect::processChannel(
 
     if (lpf < maxCornerNormalized) {
         // lpf enabled, fade-in is handled in the filter when starting from pause
-        pState->m_pLowFilter->process(pLpfInput, pOutput, bufferParameters.samplesPerBuffer());
+        pState->m_pLowFilter->process(pLpfInput, pOutput, engineParameters.samplesPerBuffer());
     } else if (pState->m_loFreq < maxCornerNormalized) {
         // hpf disabling
         pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
                 pOutput,
-                bufferParameters.samplesPerBuffer());
+                engineParameters.samplesPerBuffer());
     } else if (pLpfInput == pInput) {
         // Both disabled
         if (pOutput != pInput) {
             // We need to copy pInput pOutput
-            SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
+            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
         }
     }
 

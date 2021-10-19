@@ -121,7 +121,7 @@ void PhaserEffect::processChannel(
         PhaserGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     if (enableState == EffectEnableState::Enabling) {
@@ -142,10 +142,10 @@ void PhaserEffect::processChannel(
             periodParameter /= 3.0;
         }
         periodSamples = periodParameter * groupFeatures.beat_length_sec *
-                bufferParameters.sampleRate();
+                engineParameters.sampleRate();
     } else {
         // periodParameter is a number of seconds
-        periodSamples = std::max(periodParameter, 1 / 4.0) * bufferParameters.sampleRate();
+        periodSamples = std::max(periodParameter, 1 / 4.0) * engineParameters.sampleRate();
     }
     // freqSkip is used to calculate the phase independently for each channel,
     // so do not multiply periodSamples by the number of channels.
@@ -167,15 +167,15 @@ void PhaserEffect::processChannel(
     CSAMPLE left = 0, right = 0;
 
     CSAMPLE_GAIN oldDepth = pState->oldDepth;
-    const CSAMPLE_GAIN depthDelta = (depth - oldDepth) / bufferParameters.framesPerBuffer();
+    const CSAMPLE_GAIN depthDelta = (depth - oldDepth) / engineParameters.framesPerBuffer();
     const CSAMPLE_GAIN depthStart = oldDepth + depthDelta;
 
     const auto stereoCheck = static_cast<int>(m_pStereoParameter->value());
     int counter = 0;
 
     for (SINT i = 0;
-            i < bufferParameters.samplesPerBuffer();
-            i += bufferParameters.channelCount()) {
+            i < engineParameters.samplesPerBuffer();
+            i += engineParameters.channelCount()) {
         left = pInput[i] + std::tanh(left * feedback);
         right = pInput[i + 1] + std::tanh(right * feedback);
 
@@ -206,7 +206,7 @@ void PhaserEffect::processChannel(
         left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
         right = processSample(right, oldInRight, oldOutRight, filterCoefRight, stages);
 
-        const CSAMPLE_GAIN depth = depthStart + depthDelta * (i / bufferParameters.channelCount());
+        const CSAMPLE_GAIN depth = depthStart + depthDelta * (i / engineParameters.channelCount());
 
         // Computing output combining the original and processed sample
         pOutput[i] = pInput[i] * (1.0f - 0.5f * depth) + left * depth * 0.5f;

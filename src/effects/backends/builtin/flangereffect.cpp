@@ -116,7 +116,7 @@ void FlangerEffect::processChannel(
         FlangerGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     double lfoPeriodParameter = m_pSpeedParameter->value();
@@ -128,11 +128,11 @@ void FlangerEffect::processChannel(
             lfoPeriodParameter /= 3.0;
         }
         lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length_sec *
-                bufferParameters.sampleRate();
+                engineParameters.sampleRate();
     } else {
         // lfoPeriodParameter is a number of seconds
         lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats) *
-                bufferParameters.sampleRate();
+                engineParameters.sampleRate();
     }
 
     // When the period is changed, the position of the sound shouldn't
@@ -149,12 +149,12 @@ void FlangerEffect::processChannel(
 
     const auto mix = static_cast<CSAMPLE_GAIN>(m_pMixParameter->value());
     RampingValue<CSAMPLE_GAIN> mixRamped(
-            pState->prev_mix, mix, bufferParameters.framesPerBuffer());
+            pState->prev_mix, mix, engineParameters.framesPerBuffer());
     pState->prev_mix = mix;
 
     const auto regen = static_cast<CSAMPLE_GAIN>(m_pRegenParameter->value());
     RampingValue<CSAMPLE_GAIN> regenRamped(
-            pState->prev_regen, regen, bufferParameters.framesPerBuffer());
+            pState->prev_regen, regen, engineParameters.framesPerBuffer());
     pState->prev_regen = regen;
 
     // With and Manual is limited by amount of amplitude that remains from width
@@ -166,19 +166,19 @@ void FlangerEffect::processChannel(
     manual = math_clamp(manual, minManual, maxManual);
 
     RampingValue<double> widthRamped(
-            pState->prev_width, width, bufferParameters.framesPerBuffer());
+            pState->prev_width, width, engineParameters.framesPerBuffer());
     pState->prev_width = static_cast<CSAMPLE_GAIN>(width);
 
     RampingValue<double> manualRamped(
-            pState->prev_manual, manual, bufferParameters.framesPerBuffer());
+            pState->prev_manual, manual, engineParameters.framesPerBuffer());
     pState->prev_manual = static_cast<CSAMPLE_GAIN>(manual);
 
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
     for (SINT i = 0;
-            i < bufferParameters.samplesPerBuffer();
-            i += bufferParameters.channelCount()) {
+            i < engineParameters.samplesPerBuffer();
+            i += engineParameters.channelCount()) {
         CSAMPLE_GAIN mix_ramped = mixRamped.getNext();
         CSAMPLE_GAIN regen_ramped = regenRamped.getNext();
         double width_ramped = widthRamped.getNext();
@@ -191,7 +191,7 @@ void FlangerEffect::processChannel(
 
         auto periodFraction = pState->lfoFrames / static_cast<float>(lfoPeriodFrames);
         double delayMs = manual_ramped + width_ramped / 2 * sin(M_PI * 2.0f * periodFraction);
-        double delayFrames = delayMs * bufferParameters.sampleRate() / 1000;
+        double delayFrames = delayMs * engineParameters.sampleRate() / 1000;
 
         SINT framePrev =
                 (pState->delayPos - static_cast<SINT>(floor(delayFrames)) +
