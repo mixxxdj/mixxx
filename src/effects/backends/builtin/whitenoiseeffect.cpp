@@ -43,7 +43,7 @@ void WhiteNoiseEffect::processChannel(
         WhiteNoiseGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
@@ -52,11 +52,11 @@ void WhiteNoiseEffect::processChannel(
 
     CSAMPLE drywet = static_cast<CSAMPLE>(m_pDryWetParameter->value());
     RampingValue<CSAMPLE_GAIN> drywet_ramping_value(
-            drywet, gs.previous_drywet, bufferParameters.framesPerBuffer());
+            drywet, gs.previous_drywet, engineParameters.framesPerBuffer());
 
     std::uniform_real_distribution<> r_distributor(0.0, 1.0);
 
-    for (unsigned int i = 0; i < bufferParameters.samplesPerBuffer(); i++) {
+    for (unsigned int i = 0; i < engineParameters.samplesPerBuffer(); i++) {
         CSAMPLE_GAIN drywet_ramped = drywet_ramping_value.getNext();
 
         float noise = static_cast<float>(

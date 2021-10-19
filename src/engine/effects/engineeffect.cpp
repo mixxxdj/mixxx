@@ -31,10 +31,10 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
     m_pProcessor->loadEngineEffectParameters(m_parametersById);
 
     //TODO: get actual configuration of engine
-    const mixxx::EngineParameters bufferParameters(
+    const mixxx::EngineParameters engineParameters(
             mixxx::audio::SampleRate(96000),
             MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
-    m_pProcessor->initialize(activeInputChannels, registeredOutputChannels, bufferParameters);
+    m_pProcessor->initialize(activeInputChannels, registeredOutputChannels, engineParameters);
     m_effectRampsFromDry = pManifest->effectRampsFromDry();
 }
 
@@ -46,11 +46,11 @@ EngineEffect::~EngineEffect() {
     m_parameters.clear();
 }
 
-EffectState* EngineEffect::createState(const mixxx::EngineParameters& bufferParameters) {
+EffectState* EngineEffect::createState(const mixxx::EngineParameters& engineParameters) {
     VERIFY_OR_DEBUG_ASSERT(m_pProcessor) {
-        return new EffectState(bufferParameters);
+        return new EffectState(engineParameters);
     }
-    return m_pProcessor->createState(bufferParameters);
+    return m_pProcessor->createState(engineParameters);
 }
 
 void EngineEffect::loadStatesForInputChannel(const ChannelHandle* inputChannel,
@@ -178,7 +178,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
 
     if (effectiveEffectEnableState != EffectEnableState::Disabled) {
         //TODO: refactor rest of audio engine to use mixxx::AudioParameters
-        const mixxx::EngineParameters bufferParameters(
+        const mixxx::EngineParameters engineParameters(
                 mixxx::audio::SampleRate(sampleRate),
                 numSamples / mixxx::kEngineChannelCount);
 
@@ -186,7 +186,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
                 outputHandle,
                 pInput,
                 pOutput,
-                bufferParameters,
+                engineParameters,
                 effectiveEffectEnableState,
                 groupFeatures);
 

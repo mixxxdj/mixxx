@@ -101,8 +101,8 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
 }
 
 ParametricEQEffectGroupState::ParametricEQEffectGroupState(
-        const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters),
+        const mixxx::EngineParameters& engineParameters)
+        : EffectState(engineParameters),
           m_oldSampleRate(44100) {
     for (int i = 0; i < kBandCount; i++) {
         m_oldGain.append(1.0);
@@ -115,7 +115,7 @@ ParametricEQEffectGroupState::ParametricEQEffectGroupState(
     // Initialize the filters with default parameters
     for (int i = 0; i < kBandCount; i++) {
         m_bands.push_back(std::make_unique<EngineFilterBiquad1Peaking>(
-                bufferParameters.sampleRate(), m_oldCenter[i], m_oldQ[i]));
+                engineParameters.sampleRate(), m_oldCenter[i], m_oldQ[i]));
     }
 }
 
@@ -143,16 +143,16 @@ void ParametricEQEffect::processChannel(
         ParametricEQEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
     // If the sample rate has changed, initialize the filters using the new
     // sample rate
-    if (pState->m_oldSampleRate != bufferParameters.sampleRate()) {
-        pState->m_oldSampleRate = bufferParameters.sampleRate();
-        pState->setFilters(bufferParameters.sampleRate());
+    if (pState->m_oldSampleRate != engineParameters.sampleRate()) {
+        pState->m_oldSampleRate = engineParameters.sampleRate();
+        pState->setFilters(engineParameters.sampleRate());
     }
 
     CSAMPLE_GAIN fGain[2];
@@ -172,24 +172,24 @@ void ParametricEQEffect::processChannel(
                 fQ[i] != pState->m_oldQ[i] ||
                 fCenter[i] != pState->m_oldCenter[i]) {
             pState->m_bands[i]->setFrequencyCorners(
-                    bufferParameters.sampleRate(), fCenter[i], fQ[i], fGain[i]);
+                    engineParameters.sampleRate(), fCenter[i], fQ[i], fGain[i]);
         }
     }
 
     if (fGain[0] != 0) {
-        pState->m_bands[0]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
+        pState->m_bands[0]->process(pInput, pOutput, engineParameters.samplesPerBuffer());
         if (fGain[1] != 0) {
-            pState->m_bands[1]->process(pOutput, pOutput, bufferParameters.samplesPerBuffer());
+            pState->m_bands[1]->process(pOutput, pOutput, engineParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
         }
     } else {
         pState->m_bands[0]->pauseFilter();
         if (fGain[1] != 0) {
-            pState->m_bands[1]->process(pInput, pOutput, bufferParameters.samplesPerBuffer());
+            pState->m_bands[1]->process(pInput, pOutput, engineParameters.samplesPerBuffer());
         } else {
             pState->m_bands[1]->pauseFilter();
-            SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
+            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
         }
     }
 

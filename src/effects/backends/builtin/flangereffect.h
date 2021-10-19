@@ -23,8 +23,8 @@ constexpr double kMaxLfoBeats = 32.0;
 } // anonymous namespace
 
 struct FlangerGroupState : public EffectState {
-    FlangerGroupState(const mixxx::EngineParameters& bufferParameters)
-            : EffectState(bufferParameters),
+    FlangerGroupState(const mixxx::EngineParameters& engineParameters)
+            : EffectState(engineParameters),
               delayPos(0),
               lfoFrames(0),
               previousPeriodFrames(-1),
@@ -61,7 +61,7 @@ class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
             FlangerGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 

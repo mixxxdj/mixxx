@@ -11,7 +11,7 @@
 #include "util/types.h"
 
 struct FilterGroupState : public EffectState {
-    FilterGroupState(const mixxx::EngineParameters& bufferParameters);
+    FilterGroupState(const mixxx::EngineParameters& engineParameters);
     ~FilterGroupState();
 
     void setFilters(int sampleRate, double lowFreq, double highFreq);
@@ -40,7 +40,7 @@ class FilterEffect : public EffectProcessorImpl<FilterGroupState> {
             FilterGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 

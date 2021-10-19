@@ -14,8 +14,8 @@
 
 class WhiteNoiseGroupState final : public EffectState {
   public:
-    WhiteNoiseGroupState(const mixxx::EngineParameters& bufferParameters)
-            : EffectState(bufferParameters),
+    WhiteNoiseGroupState(const mixxx::EngineParameters& engineParameters)
+            : EffectState(engineParameters),
               previous_drywet(0.0),
               gen(rs()) {
     }
@@ -38,7 +38,7 @@ class WhiteNoiseEffect : public EffectProcessorImpl<WhiteNoiseGroupState> {
             WhiteNoiseGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 

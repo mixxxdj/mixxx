@@ -52,14 +52,14 @@ void Bessel4LVMixEQEffect::processChannel(
         Bessel4LVMixEQEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
     if (enableState == EffectEnableState::Disabling) {
         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
-        pState->processChannelAndPause(pInput, pOutput, bufferParameters.samplesPerBuffer());
+        pState->processChannelAndPause(pInput, pOutput, engineParameters.samplesPerBuffer());
     } else {
         double fLow;
         double fMid;
@@ -81,8 +81,8 @@ void Bessel4LVMixEQEffect::processChannel(
         }
         pState->processChannel(pInput,
                 pOutput,
-                bufferParameters.samplesPerBuffer(),
-                bufferParameters.sampleRate(),
+                engineParameters.samplesPerBuffer(),
+                engineParameters.sampleRate(),
                 fLow,
                 fMid,
                 fHigh,

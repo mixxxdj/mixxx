@@ -85,7 +85,7 @@ void ReverbEffect::processChannel(
         ReverbGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
@@ -99,14 +99,14 @@ void ReverbEffect::processChannel(
     // from the last time the effect was enabled.
     // Also, update the sample rate if it has changed.
     if (enableState == EffectEnableState::Enabling ||
-            pState->sampleRate != bufferParameters.sampleRate()) {
-        pState->reverb.init(bufferParameters.sampleRate());
-        pState->sampleRate = bufferParameters.sampleRate();
+            pState->sampleRate != engineParameters.sampleRate()) {
+        pState->reverb.init(engineParameters.sampleRate());
+        pState->sampleRate = engineParameters.sampleRate();
     }
 
     pState->reverb.processBuffer(pInput,
             pOutput,
-            bufferParameters.samplesPerBuffer(),
+            engineParameters.samplesPerBuffer(),
             bandwidth,
             decay,
             damping,
@@ -117,7 +117,7 @@ void ReverbEffect::processChannel(
     // this effect must handle ramping to dry when disabling itself (instead
     // of being handled by EngineEffect::process).
     if (enableState == EffectEnableState::Disabling) {
-        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, bufferParameters.samplesPerBuffer());
+        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, engineParameters.samplesPerBuffer());
         pState->sendPrevious = 0;
     } else {
         pState->sendPrevious = sendCurrent;

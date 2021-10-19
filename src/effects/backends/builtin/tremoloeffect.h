@@ -9,8 +9,8 @@
 
 class TremoloState : public EffectState {
   public:
-    TremoloState(const mixxx::EngineParameters& bufferParameters)
-            : EffectState(bufferParameters){};
+    TremoloState(const mixxx::EngineParameters& engineParameters)
+            : EffectState(engineParameters){};
     double gain;
     unsigned int currentFrame;
     bool quantizeEnabled = false;
@@ -31,7 +31,7 @@ class TremoloEffect : public EffectProcessorImpl<TremoloState> {
             TremoloState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 

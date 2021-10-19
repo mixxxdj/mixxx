@@ -58,7 +58,7 @@ void MetronomeEffect::processChannel(
         MetronomeGroupState* pGroupState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(pInput);
@@ -72,10 +72,10 @@ void MetronomeEffect::processChannel(
 
     SINT clickSize = kClickSize44100;
     const CSAMPLE* click = kClick44100;
-    if (bufferParameters.sampleRate() >= 96000) {
+    if (engineParameters.sampleRate() >= 96000) {
         clickSize = kClickSize96000;
         click = kClick96000;
-    } else if (bufferParameters.sampleRate() >= 48000) {
+    } else if (engineParameters.sampleRate() >= 48000) {
         clickSize = kClickSize48000;
         click = kClick48000;
     }
@@ -83,7 +83,7 @@ void MetronomeEffect::processChannel(
     SINT maxFrames;
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
         maxFrames = static_cast<SINT>(
-                bufferParameters.sampleRate() * groupFeatures.beat_length_sec);
+                engineParameters.sampleRate() * groupFeatures.beat_length_sec);
         if (groupFeatures.has_beat_fraction) {
             const auto currentFrame = static_cast<SINT>(
                     maxFrames * groupFeatures.beat_fraction);
@@ -97,33 +97,33 @@ void MetronomeEffect::processChannel(
         }
     } else {
         maxFrames = static_cast<SINT>(
-                bufferParameters.sampleRate() * 60 / m_pBpmParameter->value());
+                engineParameters.sampleRate() * 60 / m_pBpmParameter->value());
     }
 
-    SampleUtil::copy(pOutput, pInput, bufferParameters.samplesPerBuffer());
+    SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
 
     if (gs->m_framesSinceClickStart < clickSize) {
         // still in click region, write remaining click frames.
         const SINT copyFrames =
-                math_min(bufferParameters.framesPerBuffer(),
+                math_min(engineParameters.framesPerBuffer(),
                         clickSize - gs->m_framesSinceClickStart);
         SampleUtil::addMonoToStereo(pOutput, &click[gs->m_framesSinceClickStart], copyFrames);
     }
 
-    gs->m_framesSinceClickStart += bufferParameters.framesPerBuffer();
+    gs->m_framesSinceClickStart += engineParameters.framesPerBuffer();
 
     if (gs->m_framesSinceClickStart > maxFrames) {
         // overflow, all overflowed frames are the start of a new click sound
         gs->m_framesSinceClickStart -= maxFrames;
-        while (gs->m_framesSinceClickStart > bufferParameters.framesPerBuffer()) {
+        while (gs->m_framesSinceClickStart > engineParameters.framesPerBuffer()) {
             // loop into a valid region, this happens if the maxFrames was lowered
-            gs->m_framesSinceClickStart -= bufferParameters.framesPerBuffer();
+            gs->m_framesSinceClickStart -= engineParameters.framesPerBuffer();
         }
 
         // gs->m_framesSinceClickStart matches now already at the first frame
         // of next pOutput.
         const unsigned int outputOffset =
-                bufferParameters.framesPerBuffer() - gs->m_framesSinceClickStart;
+                engineParameters.framesPerBuffer() - gs->m_framesSinceClickStart;
         const unsigned int copyFrames =
                 math_min(gs->m_framesSinceClickStart, clickSize);
         SampleUtil::addMonoToStereo(&pOutput[outputOffset * 2], click, copyFrames);

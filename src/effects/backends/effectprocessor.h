@@ -51,9 +51,9 @@
 /// relatively small compared to the additional code complexity.)
 class EffectState {
   public:
-    EffectState(const mixxx::EngineParameters& bufferParameters) {
+    EffectState(const mixxx::EngineParameters& engineParameters) {
         // Subclasses should call engineParametersChanged here.
-        Q_UNUSED(bufferParameters);
+        Q_UNUSED(engineParameters);
     };
     virtual ~EffectState(){};
 };
@@ -70,10 +70,10 @@ class EffectProcessor {
     virtual void initialize(
             const QSet<ChannelHandleAndGroup>& activeInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
-            const mixxx::EngineParameters& bufferParameters) = 0;
+            const mixxx::EngineParameters& engineParameters) = 0;
     virtual void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) = 0;
-    virtual EffectState* createState(const mixxx::EngineParameters& bufferParameters) = 0;
+    virtual EffectState* createState(const mixxx::EngineParameters& engineParameters) = 0;
     virtual void deleteStatesForInputChannel(const ChannelHandle* inputChannel) = 0;
 
     // Called from the audio thread
@@ -95,7 +95,7 @@ class EffectProcessor {
             const ChannelHandle& outputHandle,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) = 0;
 };
@@ -145,7 +145,7 @@ class EffectProcessorImpl : public EffectProcessor {
     virtual void processChannel(EffectSpecificState* channelState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) = 0;
 
@@ -153,7 +153,7 @@ class EffectProcessorImpl : public EffectProcessor {
             const ChannelHandle& outputHandle,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) final {
         EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
@@ -166,15 +166,15 @@ class EffectProcessorImpl : public EffectProcessor {
                            << "EffectState should have been preallocated in the"
                               "main thread.";
             }
-            pState = createSpecificState(bufferParameters);
+            pState = createSpecificState(engineParameters);
             m_channelStateMatrix[inputHandle][outputHandle] = pState;
         }
-        processChannel(pState, pInput, pOutput, bufferParameters, enableState, groupFeatures);
+        processChannel(pState, pInput, pOutput, engineParameters, enableState, groupFeatures);
     }
 
     void initialize(const QSet<ChannelHandleAndGroup>& activeInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
-            const mixxx::EngineParameters& bufferParameters) final {
+            const mixxx::EngineParameters& engineParameters) final {
         m_registeredOutputChannels = registeredOutputChannels;
 
         for (const ChannelHandleAndGroup& inputChannel : activeInputChannels) {
@@ -187,7 +187,7 @@ class EffectProcessorImpl : public EffectProcessor {
             for (const ChannelHandleAndGroup& outputChannel :
                     std::as_const(m_registeredOutputChannels)) {
                 outputChannelMap.insert(outputChannel.handle(),
-                        createSpecificState(bufferParameters));
+                        createSpecificState(engineParameters));
                 if (kEffectDebugOutput) {
                     qDebug() << this << "EffectProcessorImpl::initialize "
                                         "registering output"
@@ -198,8 +198,8 @@ class EffectProcessorImpl : public EffectProcessor {
         }
     };
 
-    EffectState* createState(const mixxx::EngineParameters& bufferParameters) final {
-        return createSpecificState(bufferParameters);
+    EffectState* createState(const mixxx::EngineParameters& engineParameters) final {
+        return createSpecificState(engineParameters);
     };
 
     bool loadStatesForInputChannel(const ChannelHandle* inputChannel,
@@ -287,8 +287,8 @@ class EffectProcessorImpl : public EffectProcessor {
     /// Subclasses for external effects plugins may reimplement this, but
     /// subclasses for built-in effects should not.
     virtual EffectSpecificState* createSpecificState(
-            const mixxx::EngineParameters& bufferParameters) {
-        EffectSpecificState* pState = new EffectSpecificState(bufferParameters);
+            const mixxx::EngineParameters& engineParameters) {
+        EffectSpecificState* pState = new EffectSpecificState(engineParameters);
         if (kEffectDebugOutput) {
             qDebug() << this << "EffectProcessorImpl creating EffectState" << pState;
         }

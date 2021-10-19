@@ -122,7 +122,7 @@ void EchoEffect::processChannel(
         EchoGroupState* pGroupState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
@@ -143,17 +143,17 @@ void EchoEffect::processChannel(
             period = 1 / 8.0;
         }
         delay_frames = static_cast<int>(period * groupFeatures.beat_length_sec *
-                bufferParameters.sampleRate());
+                engineParameters.sampleRate());
     } else {
         // period is a number of seconds
         period = std::max(period, 1 / 8.0);
-        delay_frames = static_cast<int>(period * bufferParameters.sampleRate());
+        delay_frames = static_cast<int>(period * engineParameters.sampleRate());
     }
     VERIFY_OR_DEBUG_ASSERT(delay_frames > 0) {
         delay_frames = 1;
     }
 
-    int delay_samples = delay_frames * bufferParameters.channelCount();
+    int delay_samples = delay_frames * engineParameters.channelCount();
     VERIFY_OR_DEBUG_ASSERT(delay_samples <= pGroupState->delay_buf.size()) {
         delay_samples = pGroupState->delay_buf.size();
     }
@@ -167,17 +167,17 @@ void EchoEffect::processChannel(
 
     RampingValue<CSAMPLE_GAIN> send(send_current,
             pGroupState->prev_send,
-            bufferParameters.framesPerBuffer());
+            engineParameters.framesPerBuffer());
     // Feedback the delay buffer and then add the new input.
 
     RampingValue<CSAMPLE_GAIN> feedback(feedback_current,
             pGroupState->prev_feedback,
-            bufferParameters.framesPerBuffer());
+            engineParameters.framesPerBuffer());
 
     //TODO: rewrite to remove assumption of stereo buffer
     for (SINT i = 0;
-            i < bufferParameters.samplesPerBuffer();
-            i += bufferParameters.channelCount()) {
+            i < engineParameters.samplesPerBuffer();
+            i += engineParameters.channelCount()) {
         CSAMPLE_GAIN send_ramped = send.getNext();
         CSAMPLE_GAIN feedback_ramped = feedback.getNext();
 
@@ -185,17 +185,17 @@ void EchoEffect::processChannel(
         CSAMPLE bufferedSampleRight = pGroupState->delay_buf[read_position + 1];
         if (read_position != prev_read_position) {
             const CSAMPLE_GAIN frac = static_cast<CSAMPLE_GAIN>(i) /
-                    bufferParameters.samplesPerBuffer();
+                    engineParameters.samplesPerBuffer();
             bufferedSampleLeft *= frac;
             bufferedSampleRight *= frac;
             bufferedSampleLeft += pGroupState->delay_buf[prev_read_position] * (1 - frac);
             bufferedSampleRight += pGroupState->delay_buf[prev_read_position + 1] * (1 - frac);
             incrementRing(&prev_read_position,
-                    bufferParameters.channelCount(),
+                    engineParameters.channelCount(),
                     pGroupState->delay_buf.size());
         }
         incrementRing(&read_position,
-                bufferParameters.channelCount(),
+                engineParameters.channelCount(),
                 pGroupState->delay_buf.size());
 
         // Actual delays distort and saturate, so clamp the buffer here.
@@ -227,7 +227,7 @@ void EchoEffect::processChannel(
         }
 
         incrementRing(&pGroupState->write_position,
-                bufferParameters.channelCount(),
+                engineParameters.channelCount(),
                 pGroupState->delay_buf.size());
 
         ++(pGroupState->ping_pong);
@@ -240,7 +240,7 @@ void EchoEffect::processChannel(
     // this effect must handle ramping to dry when disabling itself (instead
     // of being handled by EngineEffect::process).
     if (enableState == EffectEnableState::Disabling) {
-        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, bufferParameters.samplesPerBuffer());
+        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, engineParameters.samplesPerBuffer());
         pGroupState->delay_buf.clear();
         pGroupState->prev_send = 0;
     } else {

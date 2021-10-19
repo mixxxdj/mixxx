@@ -17,7 +17,7 @@
 
 class BiquadFullKillEQEffectGroupState : public EffectState {
   public:
-    BiquadFullKillEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
+    BiquadFullKillEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
 
     void setFilters(
             mixxx::audio::SampleRate sampleRate,
@@ -70,7 +70,7 @@ class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffect
             BiquadFullKillEQEffectGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;
 

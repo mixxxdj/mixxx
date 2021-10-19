@@ -23,7 +23,7 @@
 
 class ParametricEQEffectGroupState final : public EffectState {
   public:
-    ParametricEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
+    ParametricEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
 
     void setFilters(int sampleRate);
 
@@ -54,7 +54,7 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
             ParametricEQEffectGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;
 

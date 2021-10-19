@@ -31,7 +31,7 @@ class EffectsBenchmarkTest : public BaseEffectTest {
 };
 
 template <class EffectType>
-void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& bufferParameters,
+void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& engineParameters,
                                             benchmark::State* pState, EffectsManager* pEffectsManager) {
     EffectManifestPointer pManifest = EffectType::getManifest();
 
@@ -51,13 +51,13 @@ void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& buff
     GroupFeatureState featureState;
     EffectEnableState enableState = EffectEnableState::Enabled;
 
-    mixxx::SampleBuffer input(bufferParameters.samplesPerBuffer());
-    mixxx::SampleBuffer output(bufferParameters.samplesPerBuffer());
+    mixxx::SampleBuffer input(engineParameters.samplesPerBuffer());
+    mixxx::SampleBuffer output(engineParameters.samplesPerBuffer());
 
     while (pState->KeepRunning()) {
         effect.process(channel1, channel1, input.data(), output.data(),
-                       bufferParameters.samplesPerBuffer(),
-                       bufferParameters.sampleRate(),
+                       engineParameters.samplesPerBuffer(),
+                       engineParameters.sampleRate(),
                        enableState, featureState);
     }
 }
@@ -72,11 +72,11 @@ void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& buff
         ControlPotmeter hiEqFrequency(                                               \
                 ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);           \
         hiEqFrequency.setDefaultValue(2500.0);                                       \
-        mixxx::EngineParameters bufferParameters(                                    \
+        mixxx::EngineParameters engineParameters(                                    \
                 mixxx::audio::SampleRate(44100),                                     \
                 state.range_x());                                                    \
         benchmarkBuiltInEffectDefaultParameters<EffectName>(                         \
-                bufferParameters, &state, m_pEffectsManager);                        \
+                engineParameters, &state, m_pEffectsManager);                        \
     }                                                                                \
     FOR_COMMON_BUFFER_SIZES(BENCHMARK(BM_BuiltInEffects_DefaultParameters_##EffectName));
 

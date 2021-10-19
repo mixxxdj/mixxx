@@ -17,13 +17,13 @@
 
 class ReverbGroupState : public EffectState {
   public:
-    ReverbGroupState(const mixxx::EngineParameters& bufferParameters)
-            : EffectState(bufferParameters),
+    ReverbGroupState(const mixxx::EngineParameters& engineParameters)
+            : EffectState(engineParameters),
               sendPrevious(0) {
     }
 
-    void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
-        sampleRate = bufferParameters.sampleRate();
+    void engineParametersChanged(const mixxx::EngineParameters& engineParameters) {
+        sampleRate = engineParameters.sampleRate();
         sendPrevious = 0;
     }
 
@@ -47,7 +47,7 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
             ReverbGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
+            const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 

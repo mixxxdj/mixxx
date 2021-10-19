@@ -82,7 +82,7 @@ void AutoPanEffect::processChannel(
         AutoPanGroupState* pGroupState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const mixxx::EngineParameters& bufferParameters,
+        const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
     if (enableState == EffectEnableState::Disabled) {
@@ -96,14 +96,14 @@ void AutoPanEffect::processChannel(
     if (groupFeatures.has_beat_length_sec) {
         // period is a number of beats
         double beats = std::max(roundToFraction(period, 2), 0.25);
-        period = beats * groupFeatures.beat_length_sec * bufferParameters.sampleRate();
+        period = beats * groupFeatures.beat_length_sec * engineParameters.sampleRate();
 
         // TODO(xxx) sync phase
         //if (groupFeatures.has_beat_fraction) {
 
     } else {
         // period is a number of seconds
-        period = std::max(period, 0.25) * bufferParameters.sampleRate();
+        period = std::max(period, 0.25) * engineParameters.sampleRate();
     }
 
     // When the period is changed, the position of the sound shouldn't
@@ -137,7 +137,7 @@ void AutoPanEffect::processChannel(
     double sinusoid = 0;
 
     // NOTE: Assuming engine is working in stereo.
-    for (SINT i = 0; i + 1 < bufferParameters.samplesPerBuffer(); i += 2) {
+    for (SINT i = 0; i + 1 < engineParameters.samplesPerBuffer(); i += 2) {
         const auto periodFraction = static_cast<CSAMPLE>(pGroupState->time) /
                 static_cast<CSAMPLE>(period);
 
@@ -173,7 +173,7 @@ void AutoPanEffect::processChannel(
                 -0.005 *
                         math_clamp(
                                 ((pGroupState->frac * 2.0) - 1.0f), -1.0, 1.0) *
-                        bufferParameters.sampleRate());
+                        engineParameters.sampleRate());
 
         double lawCoef = computeLawCoefficient(sinusoid);
         pOutput[i] *= static_cast<CSAMPLE>(pGroupState->frac * lawCoef);
