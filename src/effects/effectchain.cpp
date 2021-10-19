@@ -101,26 +101,32 @@ EffectChain::EffectChain(const QString& group,
             &EffectChain::slotControlLoadedChainPresetRequest);
 
     m_pControlNextChainPreset = std::make_unique<ControlPushButton>(
-            ConfigKey(m_group, "next_chain"));
+            ConfigKey(m_group, "next_chain_preset"));
     connect(m_pControlNextChainPreset.get(),
             &ControlObject::valueChanged,
             this,
             &EffectChain::slotControlNextChainPreset);
+    ControlDoublePrivate::insertAlias(ConfigKey(m_group, "next_chain"),
+            ConfigKey(m_group, "next_chain_preset"));
 
     m_pControlPrevChainPreset = std::make_unique<ControlPushButton>(
-            ConfigKey(m_group, "prev_chain"));
+            ConfigKey(m_group, "prev_chain_preset"));
     connect(m_pControlPrevChainPreset.get(),
             &ControlObject::valueChanged,
             this,
             &EffectChain::slotControlPrevChainPreset);
+    ControlDoublePrivate::insertAlias(ConfigKey(m_group, "prev_chain"),
+            ConfigKey(m_group, "prev_chain_preset"));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pControlChainSelector = std::make_unique<ControlEncoder>(
-            ConfigKey(m_group, "chain_selector"), false);
-    connect(m_pControlChainSelector.get(),
+    m_pControlChainPresetSelector = std::make_unique<ControlEncoder>(
+            ConfigKey(m_group, "chain_preset_selector"), false);
+    connect(m_pControlChainPresetSelector.get(),
             &ControlObject::valueChanged,
             this,
-            &EffectChain::slotControlChainSelector);
+            &EffectChain::slotControlChainPresetSelector);
+    ControlDoublePrivate::insertAlias(ConfigKey(m_group, "chain_selector"),
+            ConfigKey(m_group, "chain_preset_preset"));
 
     // ControlObjects for skin <-> controller mapping interaction.
     // Refer to comment in header for full explanation.
@@ -316,7 +322,7 @@ void EffectChain::slotControlChainSuperParameter(double v, bool force) {
     }
 }
 
-void EffectChain::slotControlChainSelector(double value) {
+void EffectChain::slotControlChainPresetSelector(double value) {
     int index = presetIndex();
     if (value > 0) {
         index++;
