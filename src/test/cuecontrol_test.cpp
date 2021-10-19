@@ -402,6 +402,66 @@ TEST_F(CueControlTest, FollowCueOnSnapEnable) {
     EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, getCurrentFramePos());
 }
 
+TEST_F(CueControlTest, SeekOnSetCueCDJ) {
+    // Regression test for https://bugs.launchpad.net/mixxx/+bug/1946415
+    config()->set(ConfigKey("[Controls]", "CueRecall"),
+            ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
+    m_pQuantizeEnabled->set(1);
+    TrackPointer pTrack = createTestTrack();
+    pTrack->trySetBpm(120.0);
+
+    const int sampleRate = pTrack->getSampleRate();
+    const double bpm = pTrack->getBpm();
+    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / bpm);
+    const auto cuePos = mixxx::audio::FramePos(10 * beatLengthFrames);
+    pTrack->setMainCuePosition(cuePos);
+
+    loadTrack(pTrack);
+
+    EXPECT_FRAMEPOS_EQ_CONTROL(cuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(cuePos, getCurrentFramePos());
+
+    // Change the playpos and move the cue point there.
+    const auto newCuePos = mixxx::audio::FramePos(2.0 * beatLengthFrames);
+    setCurrentFramePos(newCuePos);
+    m_pChannel1->getEngineBuffer()->m_pCueControl->cueCDJ(1.0);
+    ProcessBuffer();
+
+    // Cue point and playpos should be at the same position.
+    EXPECT_FRAMEPOS_EQ_CONTROL(newCuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(newCuePos, getCurrentFramePos());
+}
+
+TEST_F(CueControlTest, SeekOnSetCuePlay) {
+    // Regression test for https://bugs.launchpad.net/mixxx/+bug/1946415
+    config()->set(ConfigKey("[Controls]", "CueRecall"),
+            ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
+    m_pQuantizeEnabled->set(1);
+    TrackPointer pTrack = createTestTrack();
+    pTrack->trySetBpm(120.0);
+
+    const int sampleRate = pTrack->getSampleRate();
+    const double bpm = pTrack->getBpm();
+    const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / bpm);
+    const auto cuePos = mixxx::audio::FramePos(10 * beatLengthFrames);
+    pTrack->setMainCuePosition(cuePos);
+
+    loadTrack(pTrack);
+
+    EXPECT_FRAMEPOS_EQ_CONTROL(cuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(cuePos, getCurrentFramePos());
+
+    // Change the playpos and do a cuePlay.
+    const auto newCuePos = mixxx::audio::FramePos(2.0 * beatLengthFrames);
+    setCurrentFramePos(newCuePos);
+    m_pChannel1->getEngineBuffer()->m_pCueControl->cuePlay(1.0);
+    ProcessBuffer();
+
+    // Cue point and playpos should be at the same position.
+    EXPECT_FRAMEPOS_EQ_CONTROL(newCuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(newCuePos, getCurrentFramePos());
+}
+
 TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
     TrackPointer pTrack = createAndLoadFakeTrack();
 
