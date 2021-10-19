@@ -78,6 +78,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QComboBox(pParent),
           WBaseWidget(this),
           m_clearButton(make_parented<QToolButton>(this)) {
+    qRegisterMetaType<FocusWidget>("FocusWidget");
     setAcceptDrops(false);
     setEditable(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -326,6 +327,7 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
             << "focusInEvent";
 #endif // ENABLE_TRACE_LOG
     QComboBox::focusInEvent(event);
+    emit searchbarFocusChange(FocusWidget::Searchbar);
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
@@ -334,6 +336,7 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
             << "focusOutEvent";
 #endif // ENABLE_TRACE_LOG
     QComboBox::focusOutEvent(event);
+    emit searchbarFocusChange(FocusWidget::None);
     if (m_debouncingTimer.isActive()) {
         // Trigger a pending search before leaving the edit box.
         // Otherwise the entered text might be ignored and get lost

@@ -111,6 +111,10 @@ bool DlgAnalysis::hasFocus() const {
     return m_pAnalysisLibraryTableView->hasFocus();
 }
 
+void DlgAnalysis::setFocus() {
+    m_pAnalysisLibraryTableView->setFocus();
+}
+
 void DlgAnalysis::onSearch(const QString& text) {
     m_pAnalysisLibraryTableModel->search(text);
 }

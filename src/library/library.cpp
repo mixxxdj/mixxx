@@ -43,6 +43,7 @@
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextbrowser.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
 
@@ -288,6 +289,10 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             &WSearchLineEdit::slotSetFont);
     emit setTrackTableFont(m_trackTableFont);
     m_pLibraryControl->bindSearchboxWidget(pSearchboxWidget);
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::searchbarFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -317,6 +322,11 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &WLibrarySidebar::rightClicked,
             m_pSidebarModel,
             &SidebarModel::rightClicked);
+
+    connect(pSidebarWidget,
+            &WLibrarySidebar::sidebarFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 
     pSidebarWidget->slotSetFont(m_trackTableFont);
     connect(this,
@@ -375,6 +385,10 @@ void Library::bindLibraryWidget(
             &WTrackTableView::setSelectedClick);
 
     m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
+    connect(pTrackTableView,
+            &WTrackTableView::trackTableFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 
     for (const auto& feature : qAsConst(m_features)) {
         feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
@@ -385,6 +399,13 @@ void Library::bindLibraryWidget(
     emit setTrackTableFont(m_trackTableFont);
     emit setTrackTableRowHeight(m_iTrackTableRowHeight);
     emit setSelectedClick(m_editMetadataSelectedClick);
+}
+
+void Library::bindFeatureRootView(WLibraryTextBrowser* pTextBrowser) {
+    connect(pTextBrowser,
+            &WLibraryTextBrowser::textBrowserFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 }
 
 void Library::addFeature(LibraryFeature* feature) {
