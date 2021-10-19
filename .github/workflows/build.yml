@@ -199,8 +199,12 @@ jobs:
         BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
     - name: "[Ubuntu/macOS] Set compiler cache size limit"
-      # Set size to 2 GiB
-      run: ${{ matrix.compiler_cache }}  -M 2097152
+      # A full build without a cache fills the cache with about 300 MB.
+      # GitHub Actions gives us 5 GB of cache for free.
+      # 3 operating systems * 2 conditions (Qt5 & Qt6) * 512 MB = 3 GB
+      # We use a new cache key for every job, so we would run out of
+      # space frequently if the cache was much bigger.
+      run: ${{ matrix.compiler_cache }} -M 524288
       if: runner.os != 'windows'
 
     - name: "Set up compiler cache"
