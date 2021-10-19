@@ -170,7 +170,7 @@ void WTrackMenu::createMenus() {
 }
 
 void WTrackMenu::createActions() {
-    const QKeySequence hideRemoveKeySequence =
+    const auto hideRemoveKeySequence =
             QKeySequence(kHideRemoveShortcutModifier + kHideRemoveShortcutKey);
 
     if (featureIsEnabled(Feature::AutoDJ)) {
