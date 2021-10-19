@@ -794,22 +794,19 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
         }
     } else {
         // Else remove the tracks from AutoDJ/crate/playlist
-        QString autoDjOrCrateOrPlaylist;
+        QString message;
         if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
-            autoDjOrCrateOrPlaylist = tr("AutoDJ queue");
+            message = tr("Are you sure you want to remove all selected tracks from AutoDJ queue?");
         } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
-            autoDjOrCrateOrPlaylist = tr("this crate");
+            message = tr("Are you sure you want to remove all selected tracks from this crate?");
         } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
-            autoDjOrCrateOrPlaylist = tr("this playlist");
+            message = tr("Are you sure you want to remove all selected tracks from this playlist?");
         } else {
             return;
         }
 
         QMessageBox::StandardButton response;
-        response = QMessageBox::question(this,
-                tr("Confirm track removal"),
-                tr("Are you sure you want to remove all selected tracks from %1?")
-                        .arg(autoDjOrCrateOrPlaylist));
+        response = QMessageBox::question(this, tr("Confirm track removal"), message);
         if (response == QMessageBox::Yes) {
             pTrackModel->removeTracks(indices);
         }
