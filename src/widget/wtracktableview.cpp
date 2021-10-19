@@ -776,12 +776,14 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
 
 void WTrackTableView::hideOrRemoveSelectedTracks() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.isEmpty())
+    if (indices.isEmpty()) {
         return;
+    }
 
     TrackModel* pTrackModel = getTrackModel();
-    if (!pTrackModel)
+    if (!pTrackModel) {
         return;
+    }
 
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
         // Hide tracks if this is the main library table
