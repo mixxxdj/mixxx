@@ -61,6 +61,7 @@ void DlgPrefBeats::loadSettings() {
     m_bAnalyzerEnabled = m_bpmSettings.getBpmDetectionEnabled();
     m_bFixedTempoEnabled = m_bpmSettings.getFixedTempoAssumption();
     m_bReanalyze =  m_bpmSettings.getReanalyzeWhenSettingsChange();
+    m_bReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bFastAnalysisEnabled = m_bpmSettings.getFastAnalysis();
 
     slotUpdate();
@@ -74,6 +75,7 @@ void DlgPrefBeats::slotResetToDefaults() {
     m_bFixedTempoEnabled = m_bpmSettings.getFixedTempoAssumptionDefault();
     m_bFastAnalysisEnabled = m_bpmSettings.getFastAnalysisDefault();
     m_bReanalyze = m_bpmSettings.getReanalyzeWhenSettingsChangeDefault();
+    m_bReanalyzeImported = m_bpmSettings.getReanalyzeImportedDefault();
 
     slotUpdate();
 }

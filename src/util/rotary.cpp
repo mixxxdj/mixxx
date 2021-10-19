@@ -2,7 +2,7 @@
 
 #include <QtDebug>
 
-const int kiRotaryFilterMaxLen = 50;
+constexpr int kiRotaryFilterMaxLen = 50;
 
 Rotary::Rotary()
     : m_iFilterPos(0),

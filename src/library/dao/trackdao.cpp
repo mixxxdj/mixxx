@@ -5,7 +5,6 @@
 #include <QDirIterator>
 #include <QFileInfo>
 #include <QImage>
-#include <QRegExp>
 #include <QtDebug>
 #include <QtSql>
 
@@ -31,7 +30,6 @@
 #include "track/track.h"
 #include "track/tracknumbers.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqlite.h"

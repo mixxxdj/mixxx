@@ -14,8 +14,8 @@
 namespace {
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
-const double kTransitionPreferenceDefault = 10.0;
-const double kKeepPosition = -1.0;
+constexpr double kTransitionPreferenceDefault = 10.0;
+constexpr double kKeepPosition = -1.0;
 
 static const bool sDebug = false;
 } // anonymous namespace
@@ -736,6 +736,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // loaded into the otherDeck
             thisDeck->fadeBeginPos = 1.0;
             thisDeck->fadeEndPos = 1.0;
+            otherDeck->isFromDeck = false;
             // Load the next track to otherDeck.
             loadNextTrackFromQueue(*otherDeck);
             emitAutoDJStateChanged(m_eState);

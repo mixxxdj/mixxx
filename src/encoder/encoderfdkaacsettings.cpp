@@ -4,7 +4,7 @@
 #include "util/logger.h"
 
 namespace {
-const int kDefaultQualityIndex = 6;
+constexpr int kDefaultQualityIndex = 6;
 const char* kQualityKey = "FdkAac_Quality";
 const mixxx::Logger kLogger("EncoderFdkAacSettings");
 } // namespace

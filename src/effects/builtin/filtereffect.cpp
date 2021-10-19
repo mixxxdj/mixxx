@@ -2,8 +2,8 @@
 #include "util/math.h"
 
 namespace {
-const double kMinCorner = 13; // Hz
-const double kMaxCorner = 22050; // Hz
+constexpr double kMinCorner = 13;    // Hz
+constexpr double kMaxCorner = 22050; // Hz
 } // anonymous namespace
 
 // static

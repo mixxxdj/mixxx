@@ -11,9 +11,9 @@
 #include "track/cueinfoimporter.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
+#include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/memory.h"
-#include "util/qtmutex.h"
 #include "waveform/waveform.h"
 
 class Track : public QObject {
@@ -67,7 +67,8 @@ class Track : public QObject {
     Q_PROPERTY(QString bpmText READ getBpmText STORED false NOTIFY bpmChanged)
     Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyChanged)
     Q_PROPERTY(double duration READ getDuration NOTIFY durationChanged)
-    Q_PROPERTY(QString durationText READ getDurationTextSeconds STORED false NOTIFY durationChanged)
+    Q_PROPERTY(QString durationTextSeconds READ getDurationTextSeconds
+                    STORED false NOTIFY durationChanged)
     Q_PROPERTY(QString durationTextCentiseconds READ getDurationTextCentiseconds
                     STORED false NOTIFY durationChanged)
     Q_PROPERTY(QString durationTextMilliseconds READ getDurationTextMilliseconds

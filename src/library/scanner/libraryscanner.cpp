@@ -20,7 +20,7 @@
 namespace {
 
 // TODO(rryan) make configurable
-const int kScannerThreadPoolSize = 1;
+constexpr int kScannerThreadPoolSize = 1;
 
 mixxx::Logger kLogger("LibraryScanner");
 
@@ -200,10 +200,10 @@ void LibraryScanner::slotStartScan() {
 
     QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
     QHash<QString, mixxx::cache_key_t> directoryHashes = m_libraryHashDao.getDirectoryHashes();
-    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
-    QRegExp coverExtensionFilter =
-            QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
-                    Qt::CaseInsensitive);
+    QRegularExpression extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
+    QRegularExpression coverExtensionFilter =
+            QRegularExpression(CoverArtUtils::supportedCoverArtExtensionsRegex(),
+                    QRegularExpression::CaseInsensitiveOption);
     QStringList directoryBlacklist = ScannerUtil::getDirectoryBlacklist();
 
     m_scannerGlobal = ScannerGlobalPointer(

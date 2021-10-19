@@ -1,7 +1,5 @@
 #include "mixer/playermanager.h"
 
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
 #include "effects/effectrack.h"
 #include "effects/effectsmanager.h"
@@ -19,6 +17,7 @@
 #include "soundio/soundmanager.h"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/logger.h"
 #include "util/sleepableqthread.h"

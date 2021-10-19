@@ -3,14 +3,12 @@
 #include <QAtomicInt>
 #include <QByteArray>
 #include <QMutex>
-#include <QMutexLocker>
 #include <QSharedPointer>
 #include <QString>
 #include <vector>
 
 #include "util/class.h"
-#include "util/compatibility.h"
-#include "util/qtmutex.h"
+#include "util/compatibility/qmutex.h"
 
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
@@ -32,7 +30,7 @@ class Waveform {
   public:
     enum class SaveState {
         NotSaved = 0,
-        SavePending, 
+        SavePending,
         Saved
     };
 
@@ -84,7 +82,7 @@ class Waveform {
         return m_saveState;
     }
 
-    // AnalysisDAO needs to be able to change the state to savePending when finished 
+    // AnalysisDAO needs to be able to change the state to savePending when finished
     // so we mark this as const and m_saveState mutable.
     void setSaveState(SaveState eState) const {
         m_saveState = eState;
@@ -99,7 +97,7 @@ class Waveform {
     // Atomically lookup the completion of the waveform. Represents the number
     // of data elements that have been processed out of dataSize.
     int getCompletion() const {
-        return atomicLoadAcquire(m_completion);
+        return m_completion.loadAcquire();
     }
     void setCompletion(int completion) {
         m_completion = completion;

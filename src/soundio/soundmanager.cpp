@@ -19,7 +19,7 @@
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/sleep.h"
@@ -39,7 +39,7 @@ struct DeviceMode {
 };
 
 #ifdef __LINUX__
-const unsigned int kSleepSecondsAfterClosingDevice = 5;
+constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
 } // anonymous namespace
 

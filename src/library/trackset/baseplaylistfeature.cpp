@@ -179,7 +179,9 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId, bool select) {
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
-    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
+    if (playlistId == kInvalidPlaylistId) {
+        // This happens if user clicks on group nodes
+        // like the year folder in the history feature
         return;
     }
     m_pPlaylistTableModel->setTableModel(playlistId);
@@ -361,14 +363,16 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 /// Returns a playlist that is a sibling inside the same parent
 /// as the start index
 int BasePlaylistFeature::getSiblingPlaylistIdOf(QModelIndex& start) {
-    for (int i = start.row() + 1; i >= (start.row() - 1); i -= 2) {
-        QModelIndex nextIndex = start.sibling(i, start.column());
-        if (nextIndex.isValid()) {
-            TreeItem* pTreeItem = m_pSidebarModel->getItem(nextIndex);
-            DEBUG_ASSERT(pTreeItem != nullptr);
-            if (!pTreeItem->hasChildren()) {
-                return playlistIdFromIndex(nextIndex);
-            }
+    QModelIndex nextIndex = start.sibling(start.row() + 1, start.column());
+    if (!nextIndex.isValid() && start.row() > 0) {
+        // No playlist below, looking above.
+        nextIndex = start.sibling(start.row() - 1, start.column());
+    }
+    if (nextIndex.isValid()) {
+        TreeItem* pTreeItem = m_pSidebarModel->getItem(nextIndex);
+        DEBUG_ASSERT(pTreeItem != nullptr);
+        if (!pTreeItem->hasChildren()) {
+            return playlistIdFromIndex(nextIndex);
         }
     }
     return kInvalidPlaylistId;

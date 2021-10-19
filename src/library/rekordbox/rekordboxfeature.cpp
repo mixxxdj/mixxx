@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QTextCodec>
 #include <QtDebug>
 
 #include "engine/engine.h"
@@ -499,7 +500,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     // Attempt was made to also recover HISTORY
     // playlists (which are found on removable Rekordbox devices), however
     // they didn't appear to contain valid row_ref_t structures.
-    const int totalTables = 8;
+    constexpr int totalTables = 8;
 
     rekordbox_pdb_t::page_type_t tableOrder[totalTables] = {
             rekordbox_pdb_t::PAGE_TYPE_KEYS,

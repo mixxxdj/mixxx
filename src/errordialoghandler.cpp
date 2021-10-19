@@ -1,14 +1,13 @@
 #include "errordialoghandler.h"
 
 #include <QCoreApplication>
-#include <QMutexLocker>
 #include <QScopedPointer>
 #include <QThread>
 #include <QtDebug>
 
 #include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
-#include "util/qtmutex.h"
+#include "util/compatibility/qmutex.h"
 #include "util/versionstore.h"
 
 ErrorDialogProperties::ErrorDialogProperties()
@@ -163,6 +162,10 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // This deletes the msgBox automatically, avoiding a memory leak
     pMsgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+    // Without this, QApplication would close Mixxx when closing this
+    // dialog and using the QML GUI because QApplication only takes
+    // into account QWidget windows.
+    pMsgBox->setAttribute(Qt::WA_QuitOnClose, false);
 
     auto locker = lockMutex(&m_mutex);
     // To avoid duplicate dialogs on the same error

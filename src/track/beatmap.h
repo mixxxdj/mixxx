@@ -20,7 +20,6 @@ namespace mixxx {
 
 class BeatMap final : public Beats {
   public:
-
     ~BeatMap() override = default;
 
     static BeatsPointer fromByteArray(
@@ -67,17 +66,29 @@ class BeatMap final : public Beats {
 
     BeatsPointer translate(audio::FrameDiff_t offset) const override;
     BeatsPointer scale(BpmScale scale) const override;
-    BeatsPointer setBpm(mixxx::Bpm bpm) override;
+    BeatsPointer setBpm(mixxx::Bpm bpm) const override;
 
-  private:
-    BeatMap(audio::SampleRate sampleRate,
+    ////////////////////////////////////////////////////////////////////////////
+    // Hidden constructors
+    ////////////////////////////////////////////////////////////////////////////
+
+    BeatMap(
+            MakeSharedTag,
+            audio::SampleRate sampleRate,
             const QString& subVersion,
             BeatList beats,
             mixxx::Bpm nominalBpm);
     // Constructor to update the beat map
-    BeatMap(const BeatMap& other, BeatList beats, mixxx::Bpm nominalBpm);
-    BeatMap(const BeatMap& other);
+    BeatMap(
+            MakeSharedTag,
+            const BeatMap& other,
+            BeatList beats,
+            mixxx::Bpm nominalBpm);
+    BeatMap(
+            MakeSharedTag,
+            const BeatMap& other);
 
+  private:
     bool isValid() const override;
 
     const QString m_subVersion;

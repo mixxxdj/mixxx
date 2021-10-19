@@ -23,7 +23,7 @@ TEST_F(BpmControlTest, ShortestPercentageChange) {
 }
 
 TEST_F(BpmControlTest, BeatContext_BeatGrid) {
-    const int sampleRate = 44100;
+    constexpr int sampleRate = 44100;
 
     TrackPointer pTrack = Track::newTemporary();
     pTrack->setAudioProperties(

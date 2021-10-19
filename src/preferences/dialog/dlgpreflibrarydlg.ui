@@ -397,6 +397,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="label_settingsManualLink">
+        <property name="text">
+         <string></string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label_settingsWarning">
         <property name="text">
          <string>Edit those files only if you know what you are doing and only while Mixxx is not running.</string>

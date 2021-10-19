@@ -1,19 +1,17 @@
 // Helper class to have easy access
 #include "mixer/playerinfo.h"
 
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "moc_playerinfo.cpp"
 #include "track/track.h"
-#include "util/qtmutex.h"
+#include "util/compatibility/qmutex.h"
 
 namespace {
 
-const int kPlayingDeckUpdateIntervalMillis = 2000;
+constexpr int kPlayingDeckUpdateIntervalMillis = 2000;
 
 PlayerInfo* s_pPlayerInfo = nullptr;
 
@@ -172,10 +170,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
         // Note: When starting Auto-DJ "play" might be processed before a new
         // is track is fully loaded. currentPlayingTrackChanged() is then emitted
         // after setTrackInfo().
-        TrackPointer pTrack = getCurrentPlayingTrack();
-        if (pTrack) {
-            emit currentPlayingTrackChanged(pTrack);
-        }
+        emit currentPlayingTrackChanged(getCurrentPlayingTrack());
     }
 }
 

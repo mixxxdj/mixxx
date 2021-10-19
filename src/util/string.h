@@ -76,10 +76,10 @@ inline QString convertWCStringToQString(
     const auto ilen = static_cast<int>(len);
     DEBUG_ASSERT(ilen >= 0); // unsigned -> signed
     switch (sizeof(wchar_t)) {
-    case sizeof(ushort):
-        return QString::fromUtf16(reinterpret_cast<const ushort*>(wcs), ilen);
-    case sizeof(uint):
-        return QString::fromUcs4(reinterpret_cast<const uint*>(wcs), ilen);
+    case sizeof(char16_t):
+        return QString::fromUtf16(reinterpret_cast<const char16_t*>(wcs), ilen);
+    case sizeof(char32_t):
+        return QString::fromUcs4(reinterpret_cast<const char32_t*>(wcs), ilen);
     default:
         DEBUG_ASSERT(!"unsupported character type");
         return QString();

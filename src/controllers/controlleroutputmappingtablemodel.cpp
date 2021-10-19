@@ -127,7 +127,7 @@ int ControllerOutputMappingTableModel::columnCount(const QModelIndex& parent) co
         return 0;
     }
     // Control and description
-    const int kBaseColumns = 2;
+    constexpr int kBaseColumns = 2;
     if (m_pMidiMapping != nullptr) {
         // Channel, Opcode, Control, On, Off, Min, Max
         return kBaseColumns + 7;

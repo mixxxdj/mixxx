@@ -2,13 +2,12 @@
 
 #include <QEvent>
 #include <QMap>
-#include <QMutex>
 #include <QStackedWidget>
 #include <QString>
 
 #include "library/libraryview.h"
 #include "skin/legacy/skincontext.h"
-#include "util/qtmutex.h"
+#include "util/compatibility/qmutex.h"
 #include "widget/wbasewidget.h"
 
 class KeyboardEventFilter;

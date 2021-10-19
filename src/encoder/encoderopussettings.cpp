@@ -3,10 +3,9 @@
 #include "encoder/encoderopussettings.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"
-#include "util/compatibility.h"
 
 namespace {
-const int kDefaultQualityIndex = 6;
+constexpr int kDefaultQualityIndex = 6;
 const char* kQualityKey = "Opus_Quality";
 const mixxx::Logger kLogger("EncoderOpusSettings");
 } // namespace

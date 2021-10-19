@@ -3,7 +3,6 @@
 #include <QAtomicInt>
 #include <QAtomicPointer>
 #include <QList>
-#include <QMutex>
 
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
@@ -11,8 +10,8 @@
 #include "preferences/usersettings.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
+#include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
-#include "util/qtmutex.h"
 
 #define NUM_HOT_CUES 37
 
