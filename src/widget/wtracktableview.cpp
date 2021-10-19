@@ -790,7 +790,7 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
         // Hide tracks if this is the main library table
         response = QMessageBox::question(this,
                 tr("Confirm track hide"),
-                tr("Are you sure you want to hide selected tracks?"));
+                tr("Are you sure you want to hide the selected tracks?"));
         if (response == QMessageBox::Yes) {
             pTrackModel->hideTracks(indices);
         }
@@ -798,11 +798,11 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
         // Else remove the tracks from AutoDJ/crate/playlist
         QString message;
         if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
-            message = tr("Are you sure you want to remove all selected tracks from AutoDJ queue?");
+            message = tr("Are you sure you want to remove the selected tracks from AutoDJ queue?");
         } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
-            message = tr("Are you sure you want to remove all selected tracks from this crate?");
+            message = tr("Are you sure you want to remove the selected tracks from this crate?");
         } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
-            message = tr("Are you sure you want to remove all selected tracks from this playlist?");
+            message = tr("Are you sure you want to remove the selected tracks from this playlist?");
         } else {
             return;
         }
