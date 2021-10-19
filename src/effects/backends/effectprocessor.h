@@ -157,6 +157,11 @@ class EffectProcessorImpl : public EffectProcessor {
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) final {
         EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
+        // TODO: The state can be null if we are in the deleteStatesForInputChannel() loop.
+        // A protection against this is missing. Since it can happen the assertion is incorrect
+        // The memory will be leaked.
+        // Idea: Skip the processing here?
+        // Probably related: https://bugs.launchpad.net/mixxx/+bug/1775497
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
             if (kEffectDebugOutput) {
                 qWarning() << "EffectProcessorImpl::process could not retrieve"
