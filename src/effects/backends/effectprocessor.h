@@ -273,6 +273,11 @@ class EffectProcessorImpl : public EffectProcessor {
         // m_channelStateMatrix may be accessed concurrently in the audio
         // engine thread in loadStatesForInputChannel.
 
+        // TODO: How is ensure that the statMap is not accessed during this loop?
+        // This is called in responds to DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL
+        // and it looks like that the objects pointed by m_channelStateMatrix
+        // may be still in use.
+        // Probably related: https://bugs.launchpad.net/mixxx/+bug/1775497
         ChannelHandleMap<EffectSpecificState*>& stateMap =
                 m_channelStateMatrix[*inputChannel];
         for (EffectSpecificState* pState : stateMap) {
