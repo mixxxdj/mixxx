@@ -222,9 +222,13 @@ mixxx::BeatsPointer Beats::fromBeatPositions(
     // can not reconstruct the last beats in the beatmap because we don't know
     // the length of the track.
     //
-    // Hence, we insert an additional marker here.
-    markers.push_back(BeatMarker(markerPosition.toLowerFrameBoundary(), beatsTillNextMarker));
-    markerPosition = beatPositions.back();
+    // This only applies if the beat positions cannot be represented by a (constant)
+    // beatgrid and require a beatmap instead. In that case, we have to insert
+    // an additional marker.
+    if (!markers.empty()) {
+        markers.push_back(BeatMarker(markerPosition.toLowerFrameBoundary(), beatsTillNextMarker));
+        markerPosition = beatPositions.back();
+    }
 
     auto bpm = Bpm(60.0 * sampleRate / previousBeatLengthFrames);
     DEBUG_ASSERT(markerPosition.isValid());
