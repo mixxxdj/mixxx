@@ -20,6 +20,7 @@ class RampedSample {
     inline RampedSample()
             : ramped(false),
               maxDifference(1.0f),
+              currentValue(0),
               initialized(false) {
     }
 
