@@ -2780,23 +2780,28 @@ if(HID)
 endif()
 
 # USB Bulk controller support
-default_option(BULK "USB Bulk controller support" "LibUSB_FOUND")
-if(BULK)
-  if(NOT LibUSB_FOUND)
-    message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
-  endif()
-  target_sources(mixxx-lib PRIVATE
-    src/controllers/bulk/bulkcontroller.cpp
-    src/controllers/bulk/bulkenumerator.cpp
-  )
-  if(NOT HID)
+# This is for a few old controllers that are not USB class
+# compliant and work with proprietary drivers only for
+# macOS or Windows.
+if(NOT WIN32)
+  default_option(BULK "USB Bulk controller support" "LibUSB_FOUND")
+  if(BULK)
+    if(NOT LibUSB_FOUND)
+        message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
+    endif()
     target_sources(mixxx-lib PRIVATE
-      src/controllers/hid/legacyhidcontrollermapping.cpp
-      src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
+        src/controllers/bulk/bulkcontroller.cpp
+        src/controllers/bulk/bulkenumerator.cpp
     )
+    if(NOT HID)
+        target_sources(mixxx-lib PRIVATE
+            src/controllers/hid/legacyhidcontrollermapping.cpp
+            src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
+        )
+    endif()
+    target_compile_definitions(mixxx-lib PUBLIC __BULK__)
+    target_link_libraries(mixxx-lib PRIVATE LibUSB::LibUSB)
   endif()
-  target_compile_definitions(mixxx-lib PUBLIC __BULK__)
-  target_link_libraries(mixxx-lib PRIVATE LibUSB::LibUSB)
 endif()
 
 # Vinyl Control
