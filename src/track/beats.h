@@ -150,8 +150,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
     virtual bool hasBeatInRange(audio::FramePos startPosition,
             audio::FramePos endPosition) const = 0;
 
-    /// Return the average BPM between `startPosition` and `endPosition` if the BPM is valid,
-    /// otherwise returns an invalid BPM value.
+    /// Return the predominant BPM value between `startPosition` and `endPosition`
+    /// if the BPM is valid, otherwise returns an invalid BPM value.
     virtual mixxx::Bpm getBpmInRange(audio::FramePos startPosition,
             audio::FramePos endPosition) const = 0;
 
