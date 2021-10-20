@@ -534,9 +534,16 @@ void WSearchLineEdit::deleteSelectedComboboxItem() {
 }
 
 void WSearchLineEdit::deleteSelectedListItem() {
+    bool wasEmpty = currentIndex() == -1 ? true : false;
     QComboBox::removeItem(view()->currentIndex().row());
     // ToDo Resize the list to new item size
     // Close the popup if all items were removed
+
+    // When an item is removed the combobox would pick a sibling and trigger a
+    // search. Avoid this if the box was empty when the popup was opened.
+    if (wasEmpty) {
+        QComboBox::setCurrentIndex(-1);
+    }
     if (count() == 0) {
         hidePopup();
     }
