@@ -406,7 +406,7 @@ TEST_F(CueControlTest, SeekOnSetCueCDJ) {
     // Regression test for https://bugs.launchpad.net/mixxx/+bug/1946415
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
-    m_pQuantizeEnabled->set(1);
+    m_pSnapEnabled->set(1);
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
@@ -436,7 +436,7 @@ TEST_F(CueControlTest, SeekOnSetCuePlay) {
     // Regression test for https://bugs.launchpad.net/mixxx/+bug/1946415
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
-    m_pQuantizeEnabled->set(1);
+    m_pSnapEnabled->set(1);
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
