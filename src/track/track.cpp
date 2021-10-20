@@ -49,8 +49,13 @@ inline bool compareAndSet(T* pField, T&& value) {
 }
 
 inline mixxx::Bpm getBeatsPointerBpm(
-        const mixxx::BeatsPointer& pBeats) {
-    return pBeats ? mixxx::Bpm{pBeats->getBpm()} : mixxx::Bpm{};
+        const mixxx::BeatsPointer& pBeats, double durationSecs) {
+    if (!pBeats) {
+        return mixxx::Bpm{};
+    }
+
+    const auto trackEndPosition = mixxx::audio::FramePos{durationSecs * pBeats->getSampleRate()};
+    return pBeats->getBpmInRange(mixxx::audio::kStartFramePos, trackEndPosition);
 }
 
 } // anonymous namespace
@@ -166,7 +171,10 @@ void Track::replaceMetadataFromSource(
         // Need to set BPM after sample rate since beat grid creation depends on
         // knowing the sample rate. Bug #1020438.
         auto beatsAndBpmModified = false;
-        if (importedBpm.isValid() && (!m_pBeats || !m_pBeats->getBpm().isValid())) {
+        if (importedBpm.isValid() &&
+                (!m_pBeats ||
+                        !getBeatsPointerBpm(m_pBeats, getDuration())
+                                 .isValid())) {
             // Only use the imported BPM if the current beat grid is either
             // missing or not valid! The BPM value in the metadata might be
             // imprecise (normalized or rounded), e.g. ID3v2 only supports
@@ -339,7 +347,8 @@ void Track::adjustReplayGainFromPregain(double gain) {
 
 mixxx::Bpm Track::getBpmWhileLocked() const {
     // BPM values must be synchronized at all times!
-    DEBUG_ASSERT(m_record.getMetadata().getTrackInfo().getBpm() == getBeatsPointerBpm(m_pBeats));
+    DEBUG_ASSERT(m_record.getMetadata().getTrackInfo().getBpm() ==
+            getBeatsPointerBpm(m_pBeats, getDuration()));
     return m_record.getMetadata().getTrackInfo().getBpm();
 }
 
@@ -358,7 +367,7 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
                 cuePosition,
                 bpm);
         return trySetBeatsWhileLocked(std::move(pBeats));
-    } else if (m_pBeats->getBpm() != bpm) {
+    } else if (getBeatsPointerBpm(m_pBeats, getDuration()) != bpm) {
         // Continue with the regular cases
         const auto newBeats = m_pBeats->trySetBpm(bpm);
         if (newBeats) {
@@ -402,7 +411,7 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
         return false;
     }
     m_pBeats = std::move(pBeats);
-    m_record.refMetadata().refTrackInfo().setBpm(getBeatsPointerBpm(m_pBeats));
+    m_record.refMetadata().refTrackInfo().setBpm(getBeatsPointerBpm(m_pBeats, getDuration()));
     return true;
 }
 

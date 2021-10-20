@@ -367,9 +367,15 @@ void DlgTrackInfo::updateTrackMetadataFields() {
 }
 
 void DlgTrackInfo::updateSpinBpmFromBeats() {
-    const auto bpmValue = m_pBeatsClone
-            ? m_pBeatsClone->getBpm().valueOr(mixxx::Bpm::kValueUndefined)
-            : mixxx::Bpm::kValueUndefined;
+    auto bpmValue = mixxx::Bpm::kValueUndefined;
+    if (m_pLoadedTrack && m_pBeatsClone) {
+        const auto trackEndPosition = mixxx::audio::FramePos{
+                m_pLoadedTrack->getDuration() * m_pBeatsClone->getSampleRate()};
+        bpmValue = m_pBeatsClone
+                           ->getBpmInRange(mixxx::audio::kStartFramePos,
+                                   trackEndPosition)
+                           .valueOr(mixxx::Bpm::kValueUndefined);
+    }
     spinBpm->setValue(bpmValue);
 }
 
@@ -607,9 +613,12 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
                 bpm);
     }
 
-    if (m_pBeatsClone) {
-        const mixxx::Bpm oldValue = m_pBeatsClone->getBpm();
-        if (oldValue == bpm) {
+    if (m_pLoadedTrack && m_pBeatsClone) {
+        const auto trackEndPosition = mixxx::audio::FramePos{
+                m_pLoadedTrack->getDuration() * m_pBeatsClone->getSampleRate()};
+        const mixxx::Bpm oldBpm = m_pBeatsClone->getBpmInRange(
+                mixxx::audio::kStartFramePos, trackEndPosition);
+        if (oldBpm == bpm) {
             return;
         }
         m_pBeatsClone = m_pBeatsClone->trySetBpm(bpm).value_or(m_pBeatsClone);

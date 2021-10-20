@@ -622,7 +622,7 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
 mixxx::Bpm SyncControl::fileBpm() const {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        return pBeats->getBpm();
+        return pBeats->getBpmInRange(mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
     }
     return {};
 }
