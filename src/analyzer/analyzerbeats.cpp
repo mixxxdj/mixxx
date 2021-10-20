@@ -233,7 +233,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
                 m_bPreferencesFixedTempo,
                 m_sampleRate);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
-                 << "beats. Average BPM:"
+                 << "beats. Predominant BPM:"
                  << (pBeats ? pBeats->getBpmInRange(
                                       mixxx::audio::kStartFramePos,
                                       mixxx::audio::FramePos{
