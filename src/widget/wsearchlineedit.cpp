@@ -391,6 +391,7 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
     kLogger.trace()
             << "focusOutEvent";
 #endif // ENABLE_TRACE_LOG
+    slotSaveSearch();
     QComboBox::focusOutEvent(event);
     emit searchbarFocusChange(FocusWidget::None);
     if (m_debouncingTimer.isActive()) {
