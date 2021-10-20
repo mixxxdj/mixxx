@@ -1018,8 +1018,6 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
-    m_pSyncControl->updateAudible();
-
     // Give the Reader hints as to which chunks of the current song we
     // really care about. It will try very hard to keep these in memory
     hintReader(rate);
@@ -1091,6 +1089,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // for postProcess so we can broadcast this update to followers.
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
     }
+    m_pSyncControl->updateAudible();
 
     m_iLastBufferSize = iBufferSize;
     m_bCrossfadeReady = false;
