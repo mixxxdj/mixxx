@@ -61,7 +61,7 @@ repos:
     #args: [--ignore-words, .codespellignore, --ignore-regex, "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))"]
     exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v7.32.0
+  rev: v8.0.0-1
   hooks:
   - id: eslint
     args: [--fix, --report-unused-disable-directives]
@@ -96,7 +96,7 @@ repos:
   hooks:
   - id: shellcheck
 - repo: https://github.com/DavidAnson/markdownlint-cli2
-  rev: v0.3.1
+  rev: v0.3.2
   hooks:
   - id: markdownlint-cli2
 - repo: local
