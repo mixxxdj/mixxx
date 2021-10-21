@@ -30,9 +30,9 @@ constexpr int kMaxHotCues = 8;
 
 constexpr uint8_t kDefaultWaveformOpacity = 127;
 
-const QStringList kSupportedFileTypes = {"aac",
+const QStringList kSupportedFileTypes = {
+        "aac",
         "m4a",
-        "aif",
         "aiff",
         "alac",
         "flac",
