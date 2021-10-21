@@ -36,18 +36,17 @@ g4v.shutdown = function()  {
     g4v.rightDeck.shutdown();
 
     // Switch off leds not connected to controls
-    midi.sendShortMsg(0x90, 0x1B, 0x00);
-    midi.sendShortMsg(0x90, 0x1C, 0x00);
-    midi.sendShortMsg(0x90, 0x1D, 0x00);
-    midi.sendShortMsg(0x90, 0x1E, 0x00);
-    midi.sendShortMsg(0x90, 0x26, 0x00);
-    midi.sendShortMsg(0x90, 0x26, 0x00);
-    midi.sendShortMsg(0x91, 0x1B, 0x00);
-    midi.sendShortMsg(0x91, 0x1C, 0x00);
-    midi.sendShortMsg(0x91, 0x1D, 0x00);
-    midi.sendShortMsg(0x91, 0x1E, 0x00);
-    midi.sendShortMsg(0x91, 0x26, 0x00);
-    midi.sendShortMsg(0x91, 0x26, 0x00);
+    midi.sendShortMsg(0x90, 0x1B, 0x00);	// Left HotCue pad mode select button
+    midi.sendShortMsg(0x90, 0x1C, 0x00);	// Left Auto Loop pad mode select button
+    midi.sendShortMsg(0x90, 0x1D, 0x00);	// Left Sample pad mode select button
+    midi.sendShortMsg(0x90, 0x1E, 0x00);	// Left Loop Roll pad mode select button
+    midi.sendShortMsg(0x90, 0x26, 0x00);	// Left Deck select button
+    midi.sendShortMsg(0x91, 0x1B, 0x00);	// Right HotCue pad mode select button
+    midi.sendShortMsg(0x91, 0x1C, 0x00);	// Right Auto Loop pad mode select button
+    midi.sendShortMsg(0x91, 0x1D, 0x00);	// Right Sample pad mode select button
+    midi.sendShortMsg(0x91, 0x1E, 0x00);	// Right Loop Roll pad mode select button
+    midi.sendShortMsg(0x91, 0x26, 0x00);	// Right Deck select button
+
     // Switch off VU metters
     midi.sendShortMsg(0xB3, 0x14, 0x00);
     midi.sendShortMsg(0xB3, 0x15, 0x00);
@@ -470,7 +469,7 @@ g4v.MixerStrip.prototype = new components.ComponentContainer();
 
 g4v.OtherControls = function() {
     components.ComponentContainer.call();
-    this.libraryEnc = new components.Component({
+    this.libraryEnc = new components.Encoder({
         midi: [0xB3, 0x1E],
         group: "[Library]",
         shift: function() { this.inKey = "MoveHorizontal"; },
