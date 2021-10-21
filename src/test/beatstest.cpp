@@ -83,23 +83,16 @@ TEST(BeatsTest, NonConstTempoGetBpmInRange) {
                             kEndPosition)
                     .value());
 
-    // The relation between beatlength and BPM is defined as:
-    //
-    //  beatlen = 60 * sampleRate / bpm
-    //  <=> bpm = 60 * sampleRate / beatlen
-    //
-    // We have a section with 2 beats with regular bpm and 2 beats of double
-    // bpm, we can calculate the expected average bpm in relation to the
-    // original bpm like this:
-    //
-    //   bpm' = 60 * sampleRate / beatlen'
-    //        = 60 * sampleRate / ((16 * beatlen + 16 * 2 * beatlen) / 32)
-    //        = 60 * sampleRate / ((48 / 32) * beatlen)
-    //        = 60 * sampleRate / ((3 / 2) * beatlen)
-    //        = (2 / 3) * 60 * sampleRate / beatlen
-    //        = (2 / 3) * bpm
-    EXPECT_DOUBLE_EQ(kBpm.value() * (2.0 / 3.0),
+    // The section at 60 BPM is longer than the two sections at 120 BPM combined;
+    EXPECT_DOUBLE_EQ(kBpm.value() / 2,
             kNonConstTempoBeats.getBpmInRange(kStartPosition, kEndPosition)
+                    .value());
+
+    // If the track is very long, the last section at 120 BPM becomes more important.
+    EXPECT_DOUBLE_EQ(kBpm.value(),
+            kNonConstTempoBeats
+                    .getBpmInRange(kStartPosition,
+                            kEndPosition + 24 * kSampleRate.value())
                     .value());
 }
 
@@ -155,8 +148,12 @@ TEST(BeatsTest, NonConstTempoGetBpmAroundPosition) {
     // bpm, we can calculate the expected average bpm in relation to the
     // original bpm like this:
     //
-    //   bpm' = (4 / (2 + 2 * 2)) * bpm
-    //   bpm' = (4 / 6) * bpm
+    //   bpm' = 60 * sampleRate / beatlen'
+    //        = 60 * sampleRate / ((2 * beatlen + 2 * 2 * beatlen) / 4)
+    //        = 60 * sampleRate / ((6 / 4) * beatlen)
+    //        = 60 * sampleRate / ((3 / 2) * beatlen)
+    //        = 60 * sampleRate * (2 / 3) / beatlen
+    //        = (2 / 3) * 60 * sampleRate / beatlen
     //        = (2 / 3) * bpm
     EXPECT_DOUBLE_EQ(kBpm.value() * (2.0 / 3.0),
             kNonConstTempoBeats

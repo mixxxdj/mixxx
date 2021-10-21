@@ -495,19 +495,70 @@ bool Beats::hasBeatInRange(audio::FramePos startPosition, audio::FramePos endPos
 }
 
 mixxx::Bpm Beats::getBpmInRange(audio::FramePos startPosition, audio::FramePos endPosition) const {
-    if (m_markers.empty()) {
-        return m_endMarkerBpm;
-    }
-
-    const auto start = iteratorFrom(startPosition);
-    const auto end = iteratorFrom(endPosition);
-
-    const int numBeats = std::distance(start, end);
-    if (numBeats < 2) {
+    // TODO: Make this a debug assertion and investigate why this is triggered.
+    if (!startPosition.isValid() || !endPosition.isValid() || startPosition >= endPosition) {
         return {};
     }
 
-    return BeatUtils::calculateAverageBpm(numBeats, m_sampleRate, *start, *end);
+    if (m_markers.empty() || startPosition >= m_endMarkerPosition) {
+        return m_endMarkerBpm;
+    }
+
+    std::unordered_map<int, audio::FrameDiff_t> map;
+
+    auto markerIt = m_markers.crbegin();
+    auto nextMarkerPosition = m_endMarkerPosition;
+
+    if (endPosition > m_endMarkerPosition) {
+        DEBUG_ASSERT(startPosition < m_endMarkerPosition);
+        const auto key = static_cast<int>(std::round(m_endMarkerBpm.value() * 100));
+        map.emplace(key, endPosition - m_endMarkerPosition);
+    }
+
+    while (markerIt != m_markers.crend() && nextMarkerPosition > startPosition) {
+        if (endPosition <= markerIt->position()) {
+            nextMarkerPosition = markerIt->position();
+            markerIt++;
+            continue;
+        }
+
+        audio::FrameDiff_t sectionLengthFrames = nextMarkerPosition - markerIt->position();
+        const audio::FrameDiff_t beatLengthFrames =
+                sectionLengthFrames / markerIt->beatsTillNextMarker();
+
+        // To mitigaste rounding issues, we save (100 * bpm) as integer, so
+        // that we can later return the BPM with two digits after the decimal
+        // point. This suffices for our use case.
+        const auto key = static_cast<int>(std::round(100 * 60.0 * m_sampleRate / beatLengthFrames));
+
+        if (endPosition > markerIt->position() && endPosition < nextMarkerPosition) {
+            sectionLengthFrames -= nextMarkerPosition - endPosition;
+        }
+        if (startPosition > markerIt->position() && startPosition < nextMarkerPosition) {
+            sectionLengthFrames -= startPosition - markerIt->position();
+        }
+
+        const auto found = map.find(key);
+        const auto value = (found != map.cend()) ? (*found).second : 0;
+        nextMarkerPosition = markerIt->position();
+        markerIt++;
+
+        if (markerIt == m_markers.crend() && nextMarkerPosition > startPosition) {
+            sectionLengthFrames += nextMarkerPosition - startPosition;
+        }
+
+        map.insert_or_assign(key, value + sectionLengthFrames);
+    }
+
+    // Find the BPM that has the longest duration in our map.
+    const auto maxBpmDuration = std::max_element(map.cbegin(),
+            map.cend(),
+            [](const std::pair<int, audio::FrameDiff_t>& lhs,
+                    const std::pair<int, audio::FrameDiff_t>& rhs) {
+                return (lhs.second < rhs.second);
+            });
+    qWarning() << "max" << maxBpmDuration->first << maxBpmDuration->second;
+    return Bpm(static_cast<double>(maxBpmDuration->first) / 100);
 }
 
 mixxx::Bpm Beats::getBpmAroundPosition(audio::FramePos position, int n) const {
