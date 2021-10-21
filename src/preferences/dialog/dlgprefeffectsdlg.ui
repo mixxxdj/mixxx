@@ -51,7 +51,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Drag and drop to rearrange lists and copy chains form the other list. Create and edit chain presets in the effect units in the main window. Please refer the manual for further details.</string>
+          <string>Drag and drop to rearrange lists and copy chains between lists. Create and edit chain presets in the effect units in the main window. Please refer the manual for further details.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
