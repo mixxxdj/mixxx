@@ -123,3 +123,7 @@ void DlgHidden::selectionChanged(const QItemSelection &selected,
 bool DlgHidden::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
+
+void DlgHidden::setFocus() {
+    m_pTrackTableView->setFocus();
+}

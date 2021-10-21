@@ -36,6 +36,7 @@ class TrackModel;
 class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
+class WLibraryTextBrowser;
 
 #ifdef __ENGINEPRIME__
 namespace mixxx {
@@ -69,6 +70,7 @@ class Library: public QObject {
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
+    void bindFeatureRootView(WLibraryTextBrowser* pTextBrowser);
 
     void addFeature(LibraryFeature* feature);
 

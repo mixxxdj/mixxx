@@ -61,25 +61,40 @@ TEST_F(BeatMapTest, Scale) {
     QVector<mixxx::audio::FramePos> beats =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
     auto pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
+    const auto trackEndPosition = audio::FramePos{m_pTrack->getDuration() * pMap->getSampleRate()};
 
-    EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
+    EXPECT_DOUBLE_EQ(bpm.value(),
+            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
     pMap = *pMap->tryScale(Beats::BpmScale::Double);
-    EXPECT_DOUBLE_EQ(2 * bpm.value(), pMap->getBpm().value());
+    EXPECT_DOUBLE_EQ(2 * bpm.value(),
+            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 
     pMap = *pMap->tryScale(Beats::BpmScale::Halve);
-    EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
+    EXPECT_DOUBLE_EQ(bpm.value(),
+            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 
     pMap = *pMap->tryScale(Beats::BpmScale::TwoThirds);
-    EXPECT_DOUBLE_EQ(bpm.value() * 2 / 3, pMap->getBpm().value());
+    EXPECT_DOUBLE_EQ(bpm.value() * 2 / 3,
+            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 
     pMap = *pMap->tryScale(Beats::BpmScale::ThreeHalves);
-    EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
+    EXPECT_DOUBLE_EQ(bpm.value(),
+            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 
     pMap = *pMap->tryScale(Beats::BpmScale::ThreeFourths);
-    EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4, pMap->getBpm().value());
+    EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4,
+            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 
     pMap = *pMap->tryScale(Beats::BpmScale::FourThirds);
-    EXPECT_DOUBLE_EQ(bpm.value(), pMap->getBpm().value());
+    EXPECT_DOUBLE_EQ(bpm.value(),
+            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
 }
 
 TEST_F(BeatMapTest, TestNthBeat) {

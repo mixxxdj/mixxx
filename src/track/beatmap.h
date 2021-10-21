@@ -53,7 +53,8 @@ class BeatMap final : public Beats {
             audio::FramePos endPosition) const override;
     bool hasBeatInRange(audio::FramePos startPosition, audio::FramePos endPosition) const override;
 
-    mixxx::Bpm getBpm() const override;
+    mixxx::Bpm getBpmInRange(audio::FramePos startPosition,
+            audio::FramePos endPosition) const override;
     mixxx::Bpm getBpmAroundPosition(audio::FramePos position, int n) const override;
 
     audio::SampleRate getSampleRate() const override {
@@ -76,14 +77,12 @@ class BeatMap final : public Beats {
             MakeSharedTag,
             audio::SampleRate sampleRate,
             const QString& subVersion,
-            BeatList beats,
-            mixxx::Bpm nominalBpm);
+            BeatList beats);
     // Constructor to update the beat map
     BeatMap(
             MakeSharedTag,
             const BeatMap& other,
-            BeatList beats,
-            mixxx::Bpm nominalBpm);
+            BeatList beats);
     BeatMap(
             MakeSharedTag,
             const BeatMap& other);
@@ -93,7 +92,6 @@ class BeatMap final : public Beats {
 
     const QString m_subVersion;
     const audio::SampleRate m_sampleRate;
-    const mixxx::Bpm m_nominalBpm;
     const BeatList m_beats;
 };
 

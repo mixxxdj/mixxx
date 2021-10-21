@@ -9,15 +9,11 @@
 
 AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig)
         : m_rgSettings(pConfig),
-          m_pLeftTempBuffer(nullptr),
-          m_pRightTempBuffer(nullptr),
           m_iBufferSize(0) {
     m_pReplayGain = new ReplayGain();
 }
 
 AnalyzerGain::~AnalyzerGain() {
-    delete[] m_pLeftTempBuffer;
-    delete[] m_pRightTempBuffer;
     delete m_pReplayGain;
 }
 
@@ -40,15 +36,16 @@ bool AnalyzerGain::processSamples(const CSAMPLE *pIn, const int iLen) {
 
     int halfLength = static_cast<int>(iLen / 2);
     if (halfLength > m_iBufferSize) {
-        delete[] m_pLeftTempBuffer;
-        delete[] m_pRightTempBuffer;
-        m_pLeftTempBuffer = new CSAMPLE[halfLength];
-        m_pRightTempBuffer = new CSAMPLE[halfLength];
+        m_pLeftTempBuffer.resize(halfLength);
+        m_pRightTempBuffer.resize(halfLength);
     }
-    SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer, m_pRightTempBuffer, pIn, halfLength);
-    SampleUtil::applyGain(m_pLeftTempBuffer, 32767, halfLength);
-    SampleUtil::applyGain(m_pRightTempBuffer, 32767, halfLength);
-    return m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer, halfLength);
+    SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer.data(),
+            m_pRightTempBuffer.data(),
+            pIn,
+            halfLength);
+    SampleUtil::applyGain(m_pLeftTempBuffer.data(), 32767, halfLength);
+    SampleUtil::applyGain(m_pRightTempBuffer.data(), 32767, halfLength);
+    return m_pReplayGain->process(m_pLeftTempBuffer.data(), m_pRightTempBuffer.data(), halfLength);
 }
 
 void AnalyzerGain::storeResults(TrackPointer tio) {

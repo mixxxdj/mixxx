@@ -62,6 +62,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_numDecks("[Master]", "num_decks", this),
           m_numSamplers("[Master]", "num_samplers", this),
           m_numPreviewDecks("[Master]", "num_preview_decks", this) {
+    qRegisterMetaType<FocusWidget>("FocusWidget");
 
     slotNumDecksChanged(m_numDecks.get());
     slotNumSamplersChanged(m_numSamplers.get());
@@ -121,7 +122,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotMoveHorizontal);
 
-    // Control to navigate between widgets (tab/shit+tab button)
+    // Controls to navigate between widgets
+    // Relative focus controls (tab/shift+tab button)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
     m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
     m_pMoveFocus = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveFocus"), false);
@@ -137,6 +139,25 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlEncoder::valueChanged,
             this,
             &LibraryControl::slotMoveFocus);
+    // Direct focus control, read/write
+    m_pLibraryFocusedWidgetCO = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "focused_widget"));
+    m_pLibraryFocusedWidgetCO->setStates(static_cast<int>(FocusWidget::Count));
+    m_pLibraryFocusedWidgetCO->connectValueChangeRequest(
+            this,
+            [this](double value) {
+                // Focus can not be removed from a widget just moved to another one.
+                // Thus, to keep the CO and QApplication::focusWidget() in sync we
+                // have to prevent scripts or GUI buttons setting the CO to 'None'.
+                // It's only set to 'None' internally when one of the library widgets
+                // receives a FocusOutEvent(), e.g. when the focus is moved to another
+                // widget, or when the main window loses focus.
+                const int valueInt = static_cast<int>(value);
+                if (valueInt != static_cast<int>(FocusWidget::None) &&
+                        valueInt < static_cast<int>(FocusWidget::Count)) {
+                    setLibraryFocus(static_cast<FocusWidget>(valueInt));
+                }
+            });
 
     // Control to "goto" the currently selected item in focused widget (context dependent)
     m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
@@ -355,7 +376,6 @@ void LibraryControl::slotNumSamplersChanged(double v) {
     }
 }
 
-
 void LibraryControl::slotNumPreviewDecksChanged(double v) {
     int iNumPreviewDecks = static_cast<int>(v);
 
@@ -405,8 +425,6 @@ void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
             this,
             &LibraryControl::searchboxWidgetDeleted);
 }
-
-
 
 void LibraryControl::libraryWidgetDeleted() {
     m_pLibraryWidget = nullptr;
@@ -612,11 +630,11 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     if (!keyIsTab && !m_pSidebarWidget->hasFocus()
             && !m_pLibraryWidget->getActiveView()->hasFocus()) {
         if (keyIsUpDown && !m_pSearchbox->hasFocus()) {
-            setLibraryFocus();
+            setLibraryFocus(FocusWidget::TracksTable);
         }
     }
     if (keyIsTab && !QApplication::focusWidget()){
-        setLibraryFocus();
+        setLibraryFocus(FocusWidget::TracksTable);
     }
 
     // Send the event pointer to the currently focused widget
@@ -628,24 +646,44 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     }
 }
 
-void LibraryControl::setLibraryFocus() {
-    // TODO: Set the focus of the library panel directly instead of sending tab from sidebar
-    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
+    // ignore no-op
+    if (static_cast<double>(newFocusWidget) == m_pLibraryFocusedWidgetCO->get()) {
         return;
     }
-    // Try to focus the sidebar.
-    m_pSidebarWidget->setFocus();
-
-    // This may have failed, for example when a Cover window still has focus,
-    // so make sure the sidebar is focused or we'll crash.
-    if (!m_pSidebarWidget->hasFocus()) {
-        return;
+    bool confirmed = false;
+    switch (newFocusWidget) {
+    case FocusWidget::Searchbar:
+        VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+            return;
+        }
+        m_pSearchbox->setFocus();
+        confirmed = m_pSearchbox->hasFocus();
+        break;
+    case FocusWidget::Sidebar:
+        VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+            return;
+        }
+        m_pSidebarWidget->setFocus();
+        confirmed = m_pSidebarWidget->hasFocus();
+        break;
+    case FocusWidget::TracksTable:
+        VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
+            return;
+        }
+        m_pLibraryWidget->getActiveView()->setFocus();
+        confirmed = m_pLibraryWidget->getActiveView()->hasFocus();
+        break;
+    case FocusWidget::None:
+        confirmed = true;
+        break;
+    default:
+        DEBUG_ASSERT(!"Invalid focus widget change request");
+        break;
     }
-    // Send Tab to move focus to the Tracks table.
-    // Obviously only works as desired if the skin widgets are arranged
-    // accordingly.
-    QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
-    QApplication::sendEvent(m_pSidebarWidget, &event);
+    if (confirmed) {
+        m_pLibraryFocusedWidgetCO->setAndConfirm(static_cast<double>(newFocusWidget));
+    }
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
@@ -707,7 +745,7 @@ void LibraryControl::slotGoToItem(double v) {
         // expanding those root items via controllers is considered dispensable
         // because the subfeatures' actions can't be accessed by controllers anyway.
         if (m_pSidebarWidget->isLeafNodeSelected()) {
-            setLibraryFocus();
+            setLibraryFocus(FocusWidget::TracksTable);
             return;
         } else {
             // Otherwise toggle the sidebar item expanded state
@@ -724,7 +762,7 @@ void LibraryControl::slotGoToItem(double v) {
 
     // If searchbox has focus jump to the tracks table
     if (m_pSearchbox->hasFocus()) {
-        return setLibraryFocus();
+        return setLibraryFocus(FocusWidget::TracksTable);
     }
 
     // Clear the search if the searchbox has focus
