@@ -19,6 +19,7 @@ class ReverbGroupState : public EffectState {
   public:
     ReverbGroupState(const mixxx::EngineParameters& engineParameters)
             : EffectState(engineParameters),
+              sampleRate(engineParameters.sampleRate()),
               sendPrevious(0) {
     }
 

@@ -168,4 +168,5 @@ class EffectsRequestHandler {
     virtual bool processEffectsRequest(
             EffectsRequest& message,
             EffectsResponsePipe* pResponsePipe) = 0;
+    virtual ~EffectsRequestHandler() = default;
 };
