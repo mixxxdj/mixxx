@@ -470,17 +470,17 @@ g4v.MixerStrip.prototype = new components.ComponentContainer();
 
 g4v.OtherControls = function() {
     components.ComponentContainer.call();
-    this.libraryEnc = new components.Encoder({
+    this.libraryEnc = new components.Component({
         midi: [0xB3, 0x1E],
         group: "[Library]",
-        shift: function () {this.inKey = "MoveHorizontal";},
-        unshift: function () {this.inKey = "MoveVertical";},
-        inValueScale: function (value) { return value === 0x41 ? -1 : 1;},
-        input: function(_channel, _control, value, _status, _group) {
+        shift: function() { this.inKey = "MoveHorizontal"; },
+        unshift: function() { this.inKey = "MoveVertical"; },
+        inValueScale: function(value) { return value === 0x41 ? -1 : 1; },
+        input: function(channel, control, value, status, group) {
             if (engine.getValue("[PreviewDeck1]", "play")) {
                 engine.setValue("[PreviewDeck1]", (value === 0x41 ? "beatjump_4_forward" : "beatjump_4_backward"), 1);
             } else {
-                this.prototype.input(_channel, _control, value, _status, _group)
+                this.prototype.input(channel, control, value, status, group);
             }
         },
     });
@@ -498,7 +498,7 @@ g4v.OtherControls = function() {
                 engine.beginTimer(100, function() { engine.setValue("[PreviewDeck1]", "play", 1); }, true);
             }
         },
-    }),
+    });
     this.libraryBackBtn = new components.Button({
         midi: [0x93, 0x12],
         group: "[Library]",
