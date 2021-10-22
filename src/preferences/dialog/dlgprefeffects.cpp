@@ -201,10 +201,10 @@ void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
                 // Code uses 0-indexed numbers; users see 1 indexed numbers
                 m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
             } else {
-                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + tr("None"));
+                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + "---");
             }
         } else {
-            m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + tr("None"));
+            m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + "---");
         }
     }
 
