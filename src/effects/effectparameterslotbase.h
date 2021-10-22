@@ -50,6 +50,8 @@ class EffectParameterSlotBase : public QObject {
         return m_iParameterSlotNumber;
     }
 
+    virtual void setParameter(double value) = 0;
+
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.
     void updated();
@@ -57,7 +59,6 @@ class EffectParameterSlotBase : public QObject {
   public slots:
     // Solely for handling control changes
     void slotValueChanged(double v);
-    virtual void slotParameterValueChanged(double value) = 0;
 
   protected:
     const unsigned int m_iParameterSlotNumber;

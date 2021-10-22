@@ -26,9 +26,7 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
 
     void clear() override;
 
-  private slots:
-    // Solely for handling control changes
-    void slotParameterValueChanged(double value) override;
+    void setParameter(double value) override;
 
   private:
     QString debugString() const {
