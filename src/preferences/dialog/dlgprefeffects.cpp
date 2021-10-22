@@ -31,6 +31,19 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     hiddenEffectsTableView->setModel(m_pHiddenEffectsModel);
     setupManifestTableView(hiddenEffectsTableView);
 
+    // Allow selection only in either of the effects lists at a time to clarify
+    // which effect/chain the info below refers to.
+    // Upon selection change, deselect items in the adjacent list (reset doesn't
+    // emit dataChanged() signal.
+    connect(visibleEffectsTableView->selectionModel(),
+            &QItemSelectionModel::currentRowChanged,
+            hiddenEffectsTableView->selectionModel(),
+            &QItemSelectionModel::reset);
+    connect(hiddenEffectsTableView->selectionModel(),
+            &QItemSelectionModel::currentRowChanged,
+            visibleEffectsTableView->selectionModel(),
+            &QItemSelectionModel::reset);
+
     setupChainListView(chainListView);
     setupChainListView(quickEffectListView);
 
@@ -66,7 +79,7 @@ void DlgPrefEffects::setupManifestTableView(QTableView* pTableView) {
     // QTableView won't remove dragged items without this??
     pTableView->setDragDropOverwriteMode(false);
     pTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    pTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    pTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     connect(pTableView->selectionModel(),
             &QItemSelectionModel::currentRowChanged,
             this,
@@ -78,11 +91,11 @@ void DlgPrefEffects::setupChainListView(QListView* pListView) {
     pListView->setModel(pModel);
     pListView->setDropIndicatorShown(true);
     pListView->setDragDropMode(QAbstractItemView::DragDrop);
-    pListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    pListView->setSelectionMode(QAbstractItemView::SingleSelection);
     //TODO: prevent drops of duplicate items
     pListView->setDefaultDropAction(Qt::CopyAction);
-    connect(pListView,
-            &QAbstractItemView::clicked,
+    connect(pListView->selectionModel(),
+            &QItemSelectionModel::currentRowChanged,
             this,
             &DlgPrefEffects::slotChainPresetSelected);
     pListView->installEventFilter(this);
@@ -287,6 +300,7 @@ bool DlgPrefEffects::eventFilter(QObject* pChainList, QEvent* event) {
             return false;
         }
         m_pFocusedChainList = pListView;
+        unfocusedChainList()->selectionModel()->reset();
     }
     return false;
 }
