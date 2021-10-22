@@ -91,6 +91,11 @@ void DlgPrefEffects::setupChainListView(QListView* pListView) {
 void DlgPrefEffects::slotUpdate() {
     clear();
 
+    // Prevent emission of dataChanged() when clearing the effects lists to not
+    // call effectsTableItemSelected() with a selection that has no model.
+    visibleEffectsTableView->selectionModel()->reset();
+    hiddenEffectsTableView->selectionModel()->reset();
+
     const QList<EffectManifestPointer> visibleEffects = m_pVisibleEffectsList->getList();
     m_pVisibleEffectsModel->setList(visibleEffects);
 
