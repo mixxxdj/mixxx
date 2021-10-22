@@ -10,6 +10,7 @@
 #include <QtDebug>
 #include <QtGlobal>
 #include <algorithm>
+#include <iterator>
 
 #include "track/beatutils.h"
 #include "track/track.h"
@@ -128,22 +129,6 @@ void scaleFourth(BeatList* pBeats) {
     }
 }
 
-mixxx::Bpm calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate sampleRate) {
-    QVector<mixxx::audio::FramePos> beatvect;
-    beatvect.reserve(beats.size());
-    for (const auto& beat : beats) {
-        if (beat.enabled()) {
-            beatvect.append(mixxx::audio::FramePos(beat.frame_position()));
-        }
-    }
-
-    if (beatvect.size() < 2) {
-        return {};
-    }
-
-    return BeatUtils::calculateBpm(beatvect, mixxx::audio::SampleRate(sampleRate));
-}
-
 } // namespace
 
 namespace mixxx {
@@ -181,31 +166,27 @@ BeatMap::BeatMap(
         MakeSharedTag,
         audio::SampleRate sampleRate,
         const QString& subVersion,
-        BeatList beats,
-        mixxx::Bpm nominalBpm)
+        BeatList beats)
         : m_subVersion(subVersion),
           m_sampleRate(sampleRate),
-          m_nominalBpm(nominalBpm),
           m_beats(std::move(beats)) {
 }
 
 BeatMap::BeatMap(
         MakeSharedTag,
         const BeatMap& other,
-        BeatList beats,
-        mixxx::Bpm nominalBpm)
+        BeatList beats)
         : BeatMap(
                   MakeSharedTag{},
                   other.m_sampleRate,
                   other.m_subVersion,
-                  std::move(beats),
-                  nominalBpm) {
+                  std::move(beats)) {
 }
 
 BeatMap::BeatMap(
         MakeSharedTag,
         const BeatMap& other)
-        : BeatMap(MakeSharedTag{}, other, other.m_beats, other.m_nominalBpm) {
+        : BeatMap(MakeSharedTag{}, other, other.m_beats) {
 }
 
 // static
@@ -213,7 +194,6 @@ BeatsPointer BeatMap::fromByteArray(
         audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
-    auto nominalBpm = mixxx::Bpm();
     BeatList beatList;
 
     track::io::BeatMap map;
@@ -222,12 +202,11 @@ BeatsPointer BeatMap::fromByteArray(
             const Beat& beat = map.beat(i);
             beatList.append(beat);
         }
-        nominalBpm = calculateNominalBpm(beatList, sampleRate);
     } else {
         qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
                  << byteArray.size();
     }
-    return std::make_shared<BeatMap>(MakeSharedTag{}, sampleRate, subVersion, beatList, nominalBpm);
+    return std::make_shared<BeatMap>(MakeSharedTag{}, sampleRate, subVersion, beatList);
 }
 
 // static
@@ -258,8 +237,7 @@ BeatsPointer BeatMap::makeBeatMap(
         beatList.append(beat);
         previousBeatPos = beatPos;
     }
-    const auto nominalBpm = calculateNominalBpm(beatList, sampleRate);
-    return std::make_shared<BeatMap>(MakeSharedTag{}, sampleRate, subVersion, beatList, nominalBpm);
+    return std::make_shared<BeatMap>(MakeSharedTag{}, sampleRate, subVersion, beatList);
 }
 
 QByteArray BeatMap::toByteArray() const {
@@ -478,11 +456,33 @@ bool BeatMap::hasBeatInRange(audio::FramePos startPosition, audio::FramePos endP
     return false;
 }
 
-mixxx::Bpm BeatMap::getBpm() const {
+mixxx::Bpm BeatMap::getBpmInRange(
+        audio::FramePos startPosition, audio::FramePos endPosition) const {
     if (!isValid()) {
         return {};
     }
-    return m_nominalBpm;
+
+    const Beat startBeat = beatFromFramePos(startPosition.toUpperFrameBoundary());
+    const Beat endBeat = beatFromFramePos(endPosition.toLowerFrameBoundary());
+
+    BeatList::const_iterator start = std::lower_bound(
+            m_beats.constBegin(), m_beats.constEnd(), startBeat, beatLessThan);
+    const BeatList::const_iterator end = std::upper_bound(
+            m_beats.constBegin(), m_beats.constEnd(), endBeat, beatLessThan);
+
+    const int numBeats = std::distance(start, end);
+    if (numBeats < 2) {
+        return {};
+    }
+
+    QVector<mixxx::audio::FramePos> beats;
+    beats.reserve(numBeats);
+    std::transform(start, end, std::back_inserter(beats), [](const Beat& beat) -> audio::FramePos {
+        return audio::FramePos(beat.frame_position());
+    });
+    DEBUG_ASSERT(beats.size() == numBeats);
+
+    return BeatUtils::calculateBpm(beats, m_sampleRate);
 }
 
 // Note: Also called from the engine thread
@@ -552,7 +552,7 @@ std::optional<BeatsPointer> BeatMap::tryTranslate(audio::FrameDiff_t offset) con
         }
     }
 
-    return std::make_shared<BeatMap>(MakeSharedTag{}, *this, beats, m_nominalBpm);
+    return std::make_shared<BeatMap>(MakeSharedTag{}, *this, beats);
 }
 
 std::optional<BeatsPointer> BeatMap::tryScale(BpmScale scale) const {
@@ -599,8 +599,7 @@ std::optional<BeatsPointer> BeatMap::tryScale(BpmScale scale) const {
         return std::nullopt;
     }
 
-    mixxx::Bpm bpm = calculateNominalBpm(beats, m_sampleRate);
-    return std::make_shared<BeatMap>(MakeSharedTag{}, *this, beats, bpm);
+    return std::make_shared<BeatMap>(MakeSharedTag{}, *this, beats);
 }
 
 std::optional<BeatsPointer> BeatMap::trySetBpm(mixxx::Bpm bpm) const {

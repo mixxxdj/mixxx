@@ -595,7 +595,10 @@ void bindTrackLibraryValues(
         beatsBlob = pBeats->toByteArray();
         beatsVersion = pBeats->getVersion();
         beatsSubVersion = pBeats->getSubVersion();
-        bpm = pBeats->getBpm();
+        const auto trackEndPosition = mixxx::audio::FramePos{
+                trackMetadata.getStreamInfo().getDuration().toDoubleSeconds() *
+                pBeats->getSampleRate()};
+        bpm = pBeats->getBpmInRange(mixxx::audio::kStartFramePos, trackEndPosition);
     }
     const double bpmValue = bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined;
     pTrackLibraryQuery->bindValue(":bpm", bpmValue);

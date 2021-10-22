@@ -3,6 +3,7 @@
 #include <lilv/lilv.h>
 
 #include <QSharedPointer>
+#include <vector>
 
 #include "effects/backends/effectmanifest.h"
 #include "effects/defs.h"
@@ -17,7 +18,6 @@ class LV2Manifest : public EffectManifest {
     };
 
     LV2Manifest(const LilvPlugin* plug, QHash<QString, LilvNode*>& properties);
-    ~LV2Manifest();
 
     QList<int> getAudioPortIndices();
     QList<int> getControlPortIndices();
@@ -40,9 +40,9 @@ class LV2Manifest : public EffectManifest {
     QList<int> controlPortIndices;
 
     // Arrays used for storing minimum, maximum and default parameter values
-    float* m_minimum;
-    float* m_maximum;
-    float* m_default;
+    std::vector<float> m_minimum;
+    std::vector<float> m_maximum;
+    std::vector<float> m_default;
     Status m_status;
 };
 

@@ -51,7 +51,8 @@ class BeatGrid final : public Beats {
     std::unique_ptr<BeatIterator> findBeats(audio::FramePos startPosition,
             audio::FramePos endPosition) const override;
     bool hasBeatInRange(audio::FramePos startPosition, audio::FramePos endPosition) const override;
-    mixxx::Bpm getBpm() const override;
+    mixxx::Bpm getBpmInRange(audio::FramePos startPosition,
+            audio::FramePos endPosition) const override;
     mixxx::Bpm getBpmAroundPosition(audio::FramePos position, int n) const override;
 
     audio::SampleRate getSampleRate() const override {

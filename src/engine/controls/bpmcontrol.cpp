@@ -157,7 +157,8 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
         return;
     }
 
-    mixxx::Bpm bpm = pBeats->getBpm();
+    const mixxx::Bpm bpm = pBeats->getBpmInRange(
+            mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
     // FIXME: calling bpm.value() without checking bpm.isValid()
     const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm.value() + deltaBpm));
     mixxx::Bpm adjustedBpm = BeatUtils::roundBpmWithinRange(
@@ -956,7 +957,10 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
 void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::trackBeatsUpdated"
-                        << (pBeats ? pBeats->getBpm() : mixxx::Bpm());
+                        << (pBeats ? pBeats->getBpmInRange(
+                                             mixxx::audio::kStartFramePos,
+                                             frameInfo().trackEndPosition)
+                                   : mixxx::Bpm());
     }
     m_pBeats = pBeats;
     updateLocalBpm();
@@ -1009,10 +1013,11 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
     mixxx::Bpm prevLocalBpm = mixxx::Bpm(m_pLocalBpm->get());
     mixxx::Bpm localBpm;
     const mixxx::BeatsPointer pBeats = m_pBeats;
+    const FrameInfo info = frameInfo();
     if (pBeats) {
-        localBpm = pBeats->getBpmAroundPosition(frameInfo().currentPosition, kLocalBpmSpan);
+        localBpm = pBeats->getBpmAroundPosition(info.currentPosition, kLocalBpmSpan);
         if (!localBpm.isValid()) {
-            localBpm = pBeats->getBpm();
+            localBpm = pBeats->getBpmInRange(mixxx::audio::kStartFramePos, info.trackEndPosition);
         }
     }
     if (localBpm != prevLocalBpm) {

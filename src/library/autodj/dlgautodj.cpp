@@ -388,3 +388,7 @@ void DlgAutoDJ::shiftTabKeypress() {
             QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
     QApplication::sendEvent(this, &backwardFocusKeyEvent);
 }
+
+void DlgAutoDJ::setFocus() {
+    m_pTrackTableView->setFocus();
+}

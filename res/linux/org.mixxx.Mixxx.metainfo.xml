@@ -222,6 +222,10 @@
    #4199
   </li>
   <li>
+   Re-import and update metadata after files have been modified when loading tracks
+   #4218
+  </li>
+  <li>
    Fix playlists sidebar navigation/activation
    #4193
    lp:1939082
