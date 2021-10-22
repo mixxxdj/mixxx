@@ -126,7 +126,7 @@ EffectChain::EffectChain(const QString& group,
             this,
             &EffectChain::slotControlChainPresetSelector);
     ControlDoublePrivate::insertAlias(ConfigKey(m_group, "chain_selector"),
-            ConfigKey(m_group, "chain_preset_preset"));
+            ConfigKey(m_group, "chain_preset_selector"));
 
     // ControlObjects for skin <-> controller mapping interaction.
     // Refer to comment in header for full explanation.
