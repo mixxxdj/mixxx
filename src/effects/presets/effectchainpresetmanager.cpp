@@ -294,9 +294,9 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
     emit effectChainPresetListUpdated();
 }
 
-void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
+bool EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
     VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(chainPresetName)) {
-        return;
+        return false;
     }
     auto pressedButton = QMessageBox::question(nullptr,
             tr("Remove effect chain preset"),
@@ -304,7 +304,7 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
                "\"%1\"?")
                     .arg(chainPresetName));
     if (pressedButton != QMessageBox::Yes) {
-        return;
+        return false;
     }
 
     QFile file(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory +
@@ -318,7 +318,7 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
         msgBox.setDetailedText(file.errorString());
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
-        return;
+        return false;
     }
 
     EffectChainPresetPointer pPreset =
@@ -327,6 +327,7 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
     m_quickEffectChainPresetsSorted.removeAll(pPreset);
     emit effectChainPresetListUpdated();
     emit quickEffectChainPresetListUpdated();
+    return true;
 }
 
 void EffectChainPresetManager::setPresetOrder(
