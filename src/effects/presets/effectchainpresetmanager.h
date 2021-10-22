@@ -54,7 +54,7 @@ class EffectChainPresetManager : public QObject {
     void importPreset();
     void exportPreset(const QString& chainPresetName);
     void renamePreset(const QString& oldName);
-    void deletePreset(const QString& chainPresetName);
+    bool deletePreset(const QString& chainPresetName);
 
     void resetToDefaults();
 

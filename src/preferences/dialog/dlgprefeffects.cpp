@@ -283,9 +283,12 @@ void DlgPrefEffects::slotDeletePreset() {
     for (const auto& index : selectedIndices) {
         QString selectedPresetName =
                 m_pFocusedChainList->model()->data(index).toString();
-        focusedChainStringList.removeAll(selectedPresetName);
         if (!unfocusedChainStringList.contains(selectedPresetName)) {
-            m_pChainPresetManager->deletePreset(selectedPresetName);
+            if (m_pChainPresetManager->deletePreset(selectedPresetName)) {
+                focusedChainStringList.removeAll(selectedPresetName);
+            }
+        } else {
+            focusedChainStringList.removeAll(selectedPresetName);
         }
     }
 
