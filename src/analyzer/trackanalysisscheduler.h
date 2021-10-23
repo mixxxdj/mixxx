@@ -43,14 +43,6 @@ class TrackAnalysisScheduler : public QObject {
     bool scheduleTrackById(TrackId trackId);
     int scheduleTracksById(const QList<TrackId>& trackIds);
 
-    // Returns the scheduled tracks that have not yet been analyzed.
-    // Includes both queued tracks as well as pending tracks that are
-    // currently being analyzed. The result may contain duplicates.
-    // TODO(XXX): Use this function for implementing the feature
-    // "Suspend and resume batch analysis"
-    // https://bugs.launchpad.net/mixxx/+bug/1443181
-    QList<TrackId> stopAndCollectScheduledTrackIds();
-
   public slots:
     void suspend();
 

@@ -327,18 +327,3 @@ void TrackAnalysisScheduler::stop() {
     m_pendingTrackIds.clear();
     DEBUG_ASSERT((allTracksFinished()));
 }
-
-QList<TrackId> TrackAnalysisScheduler::stopAndCollectScheduledTrackIds() {
-    QList<TrackId> scheduledTrackIds;
-    scheduledTrackIds.reserve(static_cast<int>(m_queuedTrackIds.size() + m_pendingTrackIds.size()));
-    for (auto queuedTrackId: m_queuedTrackIds) {
-        scheduledTrackIds.append(std::move(queuedTrackId));
-    }
-    for (auto pendingTrackId: m_pendingTrackIds) {
-        scheduledTrackIds.append(std::move(pendingTrackId));
-    }
-    // Stopping the scheduler will clear all queued and pending tracks,
-    // so we need to do this after we have collected all scheduled tracks!
-    stop();
-    return scheduledTrackIds;
-}
