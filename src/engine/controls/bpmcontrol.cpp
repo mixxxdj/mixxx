@@ -966,6 +966,10 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     resetSyncAdjustment();
 }
 
+void BpmControl::notifySeek(mixxx::audio::FramePos position) {
+    updateBeatDistance(position);
+}
+
 void BpmControl::slotBeatsTranslate(double v) {
     if (v <= 0) {
         return;

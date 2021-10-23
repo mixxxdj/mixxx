@@ -95,6 +95,7 @@ class BpmControl : public EngineControl {
     double getRateRatio() const;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+    void notifySeek(mixxx::audio::FramePos position) override;
 
   private slots:
     void slotAdjustBeatsFaster(double);
