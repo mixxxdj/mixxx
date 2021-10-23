@@ -378,9 +378,30 @@ void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) 
 }
 
 void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
-    // No special behavior for now.
-    Q_UNUSED(pSyncable);
-    Q_UNUSED(scratching);
+    if (!pSyncable->isPlaying() || !pSyncable->isQuantized()) {
+        return;
+    }
+    // Only take action if scratching is turning off.
+    if (scratching) {
+        return;
+    }
+    if (isFollower(pSyncable->getSyncMode())) {
+        pSyncable->getChannel()->getEngineBuffer()->requestSyncPhase();
+        return;
+    }
+    if (isLeader(pSyncable->getSyncMode())) {
+        Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
+        if (pOnlyPlayer) {
+            // Even if we didn't change leader, if there is only one player (us), then we should
+            // reinit the beat distance.
+            pOnlyPlayer->notifyUniquePlaying();
+            updateLeaderBeatDistance(pOnlyPlayer, pOnlyPlayer->getBeatDistance());
+        } else {
+            // If the Leader isn't the only player, then it will need to sync
+            // phase like followers do.
+            pSyncable->getChannel()->getEngineBuffer()->requestSyncPhase();
+        }
+    }
 }
 
 void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {

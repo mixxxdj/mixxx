@@ -59,9 +59,12 @@ class BpmControl : public EngineControl {
     void updateInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
     mixxx::Bpm updateLocalBpm();
+    /// Updates the beat distance based on the current play position.
     /// updateBeatDistance is adjusted to include the user offset so
     /// it's transparent to other decks.
     double updateBeatDistance();
+    /// Updates the beat distance based on the provided play position.
+    double updateBeatDistance(mixxx::audio::FramePos playpos);
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 

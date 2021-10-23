@@ -198,6 +198,10 @@ bool SyncControl::isAudible() const {
     return m_audible;
 }
 
+bool SyncControl::isQuantized() const {
+    return m_pQuantize->toBool();
+}
+
 double SyncControl::adjustSyncBeatDistance(double beatDistance) const {
     // Similar to adjusting the target beat distance, when we report our beat
     // distance we need to adjust it by the leader bpm adjustment factor.  If

@@ -112,6 +112,7 @@ class Syncable {
     // Only relevant for player Syncables.
     virtual bool isPlaying() const = 0;
     virtual bool isAudible() const = 0;
+    virtual bool isQuantized() const = 0;
 
     // Gets the current speed of the syncable in bpm (bpm * rate slider), doesn't
     // include scratch or FF/REW values.

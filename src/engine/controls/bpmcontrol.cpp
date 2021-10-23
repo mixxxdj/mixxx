@@ -1035,7 +1035,11 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    double beatDistance = getBeatDistance(frameInfo().currentPosition);
+    return updateBeatDistance(frameInfo().currentPosition);
+}
+
+double BpmControl::updateBeatDistance(mixxx::audio::FramePos playpos) {
+    double beatDistance = getBeatDistance(playpos);
     m_pThisBeatDistance->set(beatDistance);
     if (!isSynchronized() && m_dUserOffset.getValue() != 0.0) {
         m_dUserOffset.setValue(0.0);
@@ -1058,11 +1062,11 @@ void BpmControl::updateInstantaneousBpm(double instantaneousBpm) {
 }
 
 void BpmControl::resetSyncAdjustment() {
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::resetSyncAdjustment";
-    }
     // Immediately edit the beat distance to reflect the new reality.
     double new_distance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::resetSyncAdjustment: " << new_distance;
+    }
     m_pThisBeatDistance->set(new_distance);
     m_dUserOffset.setValue(0.0);
     m_resetSyncAdjustment = true;
