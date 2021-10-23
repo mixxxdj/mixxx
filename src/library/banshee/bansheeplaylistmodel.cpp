@@ -296,26 +296,26 @@ QUrl BansheePlaylistModel::getTrackUrl(const QModelIndex& index) const {
 
 // Gets the on-disk location of the track at the given location.
 QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
-    if (!index.isValid()) {
-        return "";
+    const QUrl url = getTrackUrl(index);
+    if (!url.isValid()) {
+        return {};
     }
-    QUrl url(getFieldString(index, CLM_URI));
 
-    QString location = mixxx::FileInfo::fromQUrl(url).location();
-    qDebug() << location << " = " << url;
-    if (!location.isEmpty()) {
-        return location;
+    if (url.isLocalFile()) {
+        const QString location = mixxx::FileInfo::fromQUrl(url).location();
+        if (!location.isEmpty()) {
+            return location;
+        }
     }
 
     // Try to convert a smb path location = url.toLocalFile();
     QString temp_location = url.toString();
-
     if (temp_location.startsWith("smb://")) {
         // Hack for samba mounts works only on German GNOME Linux
         // smb://daniel-desktop/volume/Musik/Lastfm/Limp Bizkit/Chocolate Starfish And The Hot Dog Flavored Water/06 - Rollin' (Air Raid Vehicle).mp3"
         // TODO(xxx): use gio instead
 
-        location = QDir::homePath() + "/.gvfs/";
+        QString location = QDir::homePath() + "/.gvfs/";
         location += temp_location.section('/', 3, 3);
         location += " auf ";
         location += temp_location.section('/', 2, 2);
@@ -325,7 +325,7 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
         return location;
     }
 
-    return QString();
+    return {};
 }
 
 bool BansheePlaylistModel::isColumnInternal(int column) {

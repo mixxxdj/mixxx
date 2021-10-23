@@ -253,7 +253,7 @@ TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
     } else {
         qWarning()
                 << "Track is not available in library"
-                << getTrackLocation(index);
+                << getTrackUrl(index);
         return TrackId();
     }
 }
@@ -274,7 +274,7 @@ CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
     } else {
         qWarning()
                 << "Track is not available in library"
-                << getTrackLocation(index);
+                << getTrackUrl(index);
         return CoverInfo();
     }
 }
