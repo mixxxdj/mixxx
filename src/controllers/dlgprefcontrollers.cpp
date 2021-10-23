@@ -130,9 +130,10 @@ void DlgPrefControllers::rescanControllers() {
 }
 
 void DlgPrefControllers::destroyControllerWidgets() {
-    for (auto* pController : m_pControllerManager->getControllerList(false, true)) {
-        pController->disconnect(SIGNAL(&Controller::openChanged));
+    for (auto conn : m_controllerConnections) {
+        disconnect(conn);
     }
+    m_controllerConnections.clear();
     while (!m_controllerPages.isEmpty()) {
         DlgPrefController* pControllerDlg = m_controllerPages.takeLast();
         m_pDlgPreferences->removePageWidget(pControllerDlg);
@@ -174,11 +175,11 @@ void DlgPrefControllers::setupControllerWidgets() {
 
         m_controllerPages.append(pControllerDlg);
 
-        connect(pController,
+        m_controllerConnections.append(connect(pController,
                 &Controller::openChanged,
                 [this, pControllerDlg](bool bOpen) {
                     slotHighlightDevice(pControllerDlg, bOpen);
-                });
+                }));
 
         QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
                 QTreeWidgetItem::Type);
