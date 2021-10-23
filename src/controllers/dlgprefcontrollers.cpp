@@ -131,7 +131,7 @@ void DlgPrefControllers::rescanControllers() {
 
 void DlgPrefControllers::destroyControllerWidgets() {
     for (auto* pController : m_pControllerManager->getControllerList(false, true)) {
-        pController->disconnect();
+        pController->disconnect(SIGNAL(&Controller::openChanged));
     }
     while (!m_controllerPages.isEmpty()) {
         DlgPrefController* pControllerDlg = m_controllerPages.takeLast();
