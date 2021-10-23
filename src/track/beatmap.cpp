@@ -327,86 +327,86 @@ audio::FramePos BeatMap::findNthBeat(audio::FramePos position, int n) const {
     return foundBeatPosition;
 }
 
+audio::FramePos BeatMap::findNBeatsFromPosition(audio::FramePos position, double beats) const {
+    audio::FramePos prevBeatPosition;
+    audio::FramePos nextBeatPosition;
+
+    if (!findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false)) {
+        return position;
+    }
+    const audio::FrameDiff_t fromFractionBeats = (position - prevBeatPosition) /
+            (nextBeatPosition - prevBeatPosition);
+    const audio::FrameDiff_t beatsFromPrevBeat = fromFractionBeats + beats;
+
+    const int fullBeats = static_cast<int>(beatsFromPrevBeat);
+    const audio::FrameDiff_t fractionBeats = beatsFromPrevBeat - fullBeats;
+
+    // Add the length between this beat and the fullbeats'th beat
+    // to the end position
+    audio::FramePos nthBeatPosition;
+    if (fullBeats > 0) {
+        nthBeatPosition = findNthBeat(nextBeatPosition, fullBeats);
+    } else {
+        nthBeatPosition = findNthBeat(prevBeatPosition, fullBeats - 1);
+    }
+
+    if (!nthBeatPosition.isValid()) {
+        return position;
+    }
+
+    // Add the fraction of the beat
+    if (fractionBeats != 0) {
+        nextBeatPosition = findNthBeat(nthBeatPosition, 2);
+        if (!nextBeatPosition.isValid()) {
+            return position;
+        }
+        nthBeatPosition += (nextBeatPosition - nthBeatPosition) * fractionBeats;
+    }
+
+    return nthBeatPosition;
+};
+
 bool BeatMap::findPrevNextBeats(audio::FramePos position,
-        audio::FramePos* prevBeatPosition,
-        audio::FramePos* nextBeatPosition,
+        audio::FramePos* pPrevBeatPosition,
+        audio::FramePos* pNextBeatPosition,
         bool snapToNearBeats) const {
-    *prevBeatPosition = audio::kInvalidFramePos;
-    *nextBeatPosition = audio::kInvalidFramePos;
+    *pPrevBeatPosition = audio::kInvalidFramePos;
+    *pNextBeatPosition = audio::kInvalidFramePos;
     if (!isValid() || !position.isValid()) {
         return false;
     }
 
-    Beat beat = beatFromFramePos(position.toNearestFrameBoundary());
-
-    // it points at the first occurrence of beat or the next largest beat
-    BeatList::const_iterator it =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, beatLessThan);
-
-    // If the position is within 1/10th of a second of the next or previous
-    // beat, pretend we are on that beat.
-    const double kFrameEpsilon = 0.1 * m_sampleRate;
-
-    // Back-up by one.
-    if (it != m_beats.begin()) {
-        --it;
+    double kFrameEpsilon = 0.0;
+    if (snapToNearBeats) {
+        // If the position is within 1/10th of a second of the next or previous
+        // beat, pretend we are on that beat.
+        kFrameEpsilon = 0.1 * m_sampleRate;
     }
 
-    // Scan forward to find whether we are on a beat.
-    BeatList::const_iterator on_beat = m_beats.constEnd();
-    BeatList::const_iterator previous_beat = m_beats.constEnd();
-    BeatList::const_iterator next_beat = m_beats.constEnd();
+    BeatList::const_iterator it = m_beats.constBegin();
     for (; it != m_beats.end(); ++it) {
-        qint32 delta = it->frame_position() - beat.frame_position();
-
-        if ((!snapToNearBeats && (delta == 0)) ||
-                (snapToNearBeats && (abs(delta) < kFrameEpsilon))) {
-            // We are "on" this beat.
-            on_beat = it;
+        audio::FramePos beatPos(it->frame_position());
+        if (beatPos.value() > position.value() + kFrameEpsilon) {
+            *pNextBeatPosition = beatPos;
             break;
         }
-
-        if (delta < 0) {
-            // If we are not on the beat and delta < 0 then this beat comes
-            // before our current position.
-            previous_beat = it;
-        } else {
-            // If we are past the beat and we aren't on it then this beat comes
-            // after our current position.
-            next_beat = it;
-            // Stop because we have everything we need now.
-            break;
-        }
+        *pPrevBeatPosition = beatPos;
     }
 
-    // If we are within epsilon samples of a beat then the immediately next and
-    // previous beats are the beat we are on.
-    if (on_beat != m_beats.end()) {
-        previous_beat = on_beat;
-        next_beat = on_beat + 1;
-    }
-
-    for (; next_beat != m_beats.end(); ++next_beat) {
-        if (!next_beat->enabled()) {
-            continue;
-        }
-        *nextBeatPosition = mixxx::audio::FramePos(next_beat->frame_position());
-        break;
-    }
-    if (previous_beat != m_beats.end()) {
-        for (; true; --previous_beat) {
-            if (previous_beat->enabled()) {
-                *prevBeatPosition = mixxx::audio::FramePos(previous_beat->frame_position());
-                break;
-            }
-
-            // Don't step before the start of the list.
-            if (previous_beat == m_beats.begin()) {
-                break;
+    if (!pPrevBeatPosition->isValid() && it != m_beats.end()) {
+        // we have no previous beat, assume a beat with the same length as the fist
+        ++it;
+        if (it != m_beats.end()) {
+            audio::FramePos afterNextBeatPos(it->frame_position());
+            audio::FramePos prevBeat = *pNextBeatPosition - (afterNextBeatPos - *pNextBeatPosition);
+            if (prevBeat.value() <= position.value() - kFrameEpsilon) {
+                *pPrevBeatPosition = prevBeat;
             }
         }
     }
-    return prevBeatPosition->isValid() && nextBeatPosition->isValid();
+
+    //qDebug() << "findPrevNextBeats()" << *pPrevBeatPosition << *pNextBeatPosition;
+    return pPrevBeatPosition->isValid() && pNextBeatPosition->isValid();
 }
 
 std::unique_ptr<BeatIterator> BeatMap::findBeats(

@@ -108,8 +108,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// `position`, and the second value is the next beat position. Returns
     /// `false` if *at least one* position is invalid.
     virtual bool findPrevNextBeats(audio::FramePos position,
-            audio::FramePos* prevBeatPosition,
-            audio::FramePos* nextBeatPosition,
+            audio::FramePos* pPrevBeatPosition,
+            audio::FramePos* pNextBeatPosition,
             bool snapToNearBeats) const = 0;
 
     /// Return the frame position of the first beat in the track, or an invalid
@@ -131,11 +131,19 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// be found, returns an invalid frame position.
     virtual audio::FramePos findNthBeat(audio::FramePos position, int n) const = 0;
 
+    /// This function snaps the position to a beat if near.
+    /// This is used for beat loops, where start and end positions might be slightly off
+    /// due to rounding or quantizations by the engine buffer.
+    /// It makes use of virtual findPrevNextBeats() as a single instance for snapping.
+    audio::FramePos snapPosToNearBeat(audio::FramePos position) const;
+
     int numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const;
 
     /// Find the frame position N beats away from `position`. The number of beats may be
-    /// negative and does not need to be an integer.
-    audio::FramePos findNBeatsFromPosition(audio::FramePos position, double beats) const;
+    /// negative and does not need to be an integer. In this case the returned position will
+    /// be between two beats as well at the same fraction.
+    virtual audio::FramePos findNBeatsFromPosition(
+            audio::FramePos position, double beats) const = 0;
 
     /// Reutns an iterator that yields frame position of every beat occurring
     /// between `startPosition` and `endPosition`. `BeatIterator` must be iterated

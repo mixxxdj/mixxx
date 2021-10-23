@@ -554,7 +554,7 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pNextBeat->get());
     mixxx::audio::FrameDiff_t thisBeatLengthFrames;
-    if (thisPrevBeatPosition.isValid() || thisNextBeatPosition.isValid() ||
+    if (!thisPrevBeatPosition.isValid() || !thisNextBeatPosition.isValid() ||
             thisPosition > thisNextBeatPosition ||
             thisPosition < thisPrevBeatPosition) {
         if (kLogger.traceEnabled()) {
@@ -751,10 +751,9 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
     mixxx::audio::FrameDiff_t thisBeatLengthFrames;
 
     // Look up the next beat and beat length for the new position
-    if (!thisNextBeatPosition.isValid() ||
+    if (!thisNextBeatPosition.isValid() || !thisPrevBeatPosition.isValid() ||
             thisPosition > thisNextBeatPosition ||
-            (thisPrevBeatPosition.isValid() &&
-                    thisPosition < thisPrevBeatPosition)) {
+            thisPosition < thisPrevBeatPosition) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "BpmControl::getBeatMatchPosition out of date"
                             << thisPrevBeatPosition << thisPosition << thisNextBeatPosition;
