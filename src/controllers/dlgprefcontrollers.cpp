@@ -130,6 +130,9 @@ void DlgPrefControllers::rescanControllers() {
 }
 
 void DlgPrefControllers::destroyControllerWidgets() {
+    for (auto* pController : m_pControllerManager->getControllerList(false, true)) {
+        pController->disconnect();
+    }
     while (!m_controllerPages.isEmpty()) {
         DlgPrefController* pControllerDlg = m_controllerPages.takeLast();
         m_pDlgPreferences->removePageWidget(pControllerDlg);
