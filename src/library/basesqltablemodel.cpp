@@ -764,6 +764,15 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     return QDir::fromNativeSeparators(nativeLocation);
 }
 
+QUrl BaseSqlTableModel::getTrackUrl(const QModelIndex& index) const {
+    const QString trackLocation = getTrackLocation(index);
+    DEBUG_ASSERT(trackLocation.trimmed() == trackLocation);
+    if (trackLocation.isEmpty()) {
+        return {};
+    }
+    return QUrl::fromLocalFile(trackLocation);
+}
+
 CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
     CoverInfo coverInfo;
     coverInfo.setImageDigest(

@@ -2,6 +2,7 @@
 
 #include <QItemDelegate>
 #include <QList>
+#include <QUrl>
 #include <QVector>
 #include <QtSql>
 
@@ -100,6 +101,15 @@ class TrackModel {
     // or TrackRef in this result set.
     virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
     virtual TrackPointer getTrackByRef(const TrackRef& trackRef) const = 0;
+
+    /// Get the URL of the track at the given QModelIndex.
+    ///
+    /// This function should be used in favor of getTrackId() to allow
+    /// decoupling the TrackModel from the internal database. It should
+    /// also be preferred over getTrackLocation() which implicitly
+    /// assumes that tracks are always stored on the local file system.
+    /// Using URLs for identifying tracks is more versatile.
+    virtual QUrl getTrackUrl(const QModelIndex& index) const = 0;
 
     // Gets the on-disk location of the track at the given location
     // with Qt separator "/".
