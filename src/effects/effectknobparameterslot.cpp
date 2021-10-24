@@ -110,8 +110,8 @@ void EffectKnobParameterSlot::clear() {
     emit updated();
 }
 
-void EffectKnobParameterSlot::slotParameterValueChanged(double value) {
-    m_pControlValue->set(value);
+void EffectKnobParameterSlot::setParameter(double value) {
+    m_pControlValue->setParameterFrom(value, this);
 }
 
 void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {

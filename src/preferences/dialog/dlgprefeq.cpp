@@ -443,7 +443,7 @@ void DlgPrefEQ::slotUpdateMainEQParameter(int value) {
 
         if (pParameterSlot->isLoaded()) {
             double dValue = value / 100.0;
-            pParameterSlot->slotParameterValueChanged(dValue);
+            pParameterSlot->setParameter(dValue);
             QLabel* valueLabel = m_mainEQValues[index];
             QString valueText = QString::number(dValue);
             valueLabel->setText(valueText);
@@ -709,7 +709,7 @@ void DlgPrefEQ::setMainEQParameter(int i, double value) {
                 EffectManifestParameter::ParameterType::Knob, i);
 
         if (pParameterSlot->isLoaded()) {
-            pParameterSlot->slotParameterValueChanged(value);
+            pParameterSlot->setParameter(value);
             m_mainEQSliders[i]->setValue(static_cast<int>(value * 100));
 
             QLabel* valueLabel = m_mainEQValues[i];

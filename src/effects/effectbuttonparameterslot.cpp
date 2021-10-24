@@ -77,7 +77,6 @@ void EffectButtonParameterSlot::clear() {
     emit updated();
 }
 
-void EffectButtonParameterSlot::slotParameterValueChanged(double value) {
-    //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
-    m_pControlValue->set(value);
+void EffectButtonParameterSlot::setParameter(double value) {
+    m_pControlValue->setParameterFrom(value, this);
 }

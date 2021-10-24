@@ -39,9 +39,10 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
     // Clear the currently loaded effect
     void clear() override;
 
+    void setParameter(double value) override;
+
   private slots:
     // Solely for handling control changes
-    void slotParameterValueChanged(double value) override;
     void slotLinkTypeChanging(double v);
     void slotLinkInverseChanged(double v);
 
