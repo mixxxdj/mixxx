@@ -134,7 +134,7 @@ g4v.Deck = function(deckNumbers, midiChannel) {
 
     // Layers for pads
     this.padsCue = new components.ComponentContainer();
-    for (var i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 8; i++) {
         this.padsCue["pad"+i] = new components.HotcueButton({
             midi: [0x8F + midiChannel, 0x08 + i],
             group: this.currentDeck,
@@ -142,7 +142,7 @@ g4v.Deck = function(deckNumbers, midiChannel) {
         });
     }
     this.padsLoop = new components.ComponentContainer();
-    for (i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 8; i++) {
         this.padsLoop["pad"+i] = new components.Button({
             group: this.currentDeck,
             midi: [0x8F + midiChannel, 0x08 + i],
@@ -151,7 +151,7 @@ g4v.Deck = function(deckNumbers, midiChannel) {
         });
     }
     this.padsLoopRoll = new components.ComponentContainer();
-    for (i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 8; i++) {
         this.padsLoopRoll["pad"+i] = new components.Button({
             group: this.currentDeck,
             midi: [0x8F + midiChannel, 0x08 + i],
@@ -160,7 +160,7 @@ g4v.Deck = function(deckNumbers, midiChannel) {
         });
     }
     this.padsBeatjump = new components.ComponentContainer();
-    for (i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 8; i++) {
         this.padsBeatjump["pad"+i] = new components.Button({
             // Save jump to avoid weird recalculations
             jump: (0.125*Math.pow(2, i-1)),
@@ -272,13 +272,14 @@ g4v.Deck = function(deckNumbers, midiChannel) {
     this.jogTopBtn = new components.Component({
         input: function(_channel, _control, value, _status, _group) {
             switch (value) {
-            case 0x7f:
-                var intervalsPerRev = 400;
-                var rpm = 30+1/3;
-                var alpha = (1.0/8);
-                var beta = (alpha / 32);
+            case 0x7f: {
+                const intervalsPerRev = 400;
+                const rpm = 30+1/3;
+                const alpha = (1.0/8);
+                const beta = (alpha / 32);
                 engine.scratchEnable(script.deckFromGroup(this.group), intervalsPerRev, rpm, alpha, beta);
                 break;
+            }
             case 0x00:
                 engine.scratchDisable(script.deckFromGroup(this.group), 1);
                 break;
@@ -469,9 +470,13 @@ g4v.OtherControls = function() {
             if (value === 0x00) { return; }
             if (engine.getValue("[PreviewDeck1]", "play", 1)) {
                 engine.setValue("[PreviewDeck1]", "play", 0);
-                engine.setValue("[PreviewDeck]", "show_previewdeck", 0);
+                engine.beginTimer(
+                    100, function() {
+                        engine.setValue("[PreviewDeck1]", "eject", 1);
+                        engine.setValue("[PreviewDeck1]", "eject", 0);
+                    },
+                    true);
             } else {
-                engine.setValue("[PreviewDeck]", "show_previewdeck", 1);
                 engine.setValue("[PreviewDeck1]", "LoadSelectedTrack", 1);
                 engine.setValue("[PreviewDeck1]", "play", 1);
                 engine.beginTimer(100, function() { engine.setValue("[PreviewDeck1]", "play", 1); }, true);
