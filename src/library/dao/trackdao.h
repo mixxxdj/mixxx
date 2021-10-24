@@ -131,6 +131,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
   private:
     friend class LibraryScanner;
     friend class TrackCollection;
+    friend class TrackAnalysisScheduler;
 
     TrackId getTrackIdByLocation(
             const QString& location) const;

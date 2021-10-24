@@ -6,7 +6,7 @@
 #include <QObject>
 #include <QPointer>
 
-#include "analyzer/analyzerprogress.h"
+#include "analyzer/trackanalysisscheduler.h"
 #include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
@@ -65,6 +65,10 @@ class Library: public QObject {
     }
 
     TrackCollectionManager* trackCollectionManager() const;
+
+    TrackAnalysisScheduler::Pointer createTrackAnalysisScheduler(
+            int numWorkerThreads,
+            AnalyzerModeFlags modeFlags) const;
 
     void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
