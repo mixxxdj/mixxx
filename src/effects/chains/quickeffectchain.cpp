@@ -49,7 +49,9 @@ EffectChainPresetPointer QuickEffectChain::presetAtIndex(int index) const {
 
 void QuickEffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     EffectChain::loadChainPreset(pPreset);
-    setSuperParameter(pPreset->superKnob(), true);
+    if (pPreset) {
+        setSuperParameter(pPreset->superKnob(), true);
+    }
 }
 
 int QuickEffectChain::numPresets() const {
