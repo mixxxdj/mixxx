@@ -275,6 +275,7 @@ class TrackAnalysisSchedulerEnvironmentImpl final : public TrackAnalysisSchedule
     }
 
   private:
+    // TODO: Use std::shared_ptr or std::weak_ptr instead of a plain pointer?
     const Library* const m_pLibrary;
 };
 } // namespace
