@@ -261,11 +261,29 @@ TrackCollectionManager* Library::trackCollectionManager() const {
     return m_pTrackCollectionManager;
 }
 
+namespace {
+class TrackAnalysisSchedulerEnvironmentImpl : public TrackAnalysisSchedulerEnvironment {
+  public:
+    explicit TrackAnalysisSchedulerEnvironmentImpl(const Library* pLibrary)
+            : m_pLibrary(pLibrary) {
+        DEBUG_ASSERT(m_pLibrary);
+    }
+    ~TrackAnalysisSchedulerEnvironmentImpl() override = default;
+
+    TrackPointer loadTrackById(TrackId trackId) const override {
+        return m_pLibrary->trackCollectionManager()->getTrackById(trackId);
+    }
+
+  private:
+    const Library* const m_pLibrary;
+};
+} // namespace
+
 TrackAnalysisScheduler::Pointer Library::createTrackAnalysisScheduler(
         int numWorkerThreads,
         AnalyzerModeFlags modeFlags) const {
     return TrackAnalysisScheduler::createInstance(
-            &m_pTrackCollectionManager->internalCollection()->getTrackDAO(),
+            std::make_unique<const TrackAnalysisSchedulerEnvironmentImpl>(this),
             numWorkerThreads,
             m_pDbConnectionPool,
             m_pConfig,
