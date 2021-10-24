@@ -60,10 +60,11 @@ class BpmControl : public EngineControl {
     void resetSyncAdjustment();
     mixxx::Bpm updateLocalBpm();
     /// Updates the beat distance based on the current play position.
-    /// updateBeatDistance is adjusted to include the user offset so
-    /// it's transparent to other decks.
+    /// This override is called on every engine callback to update the
+    /// beatposition based on the new current playposition.
     double updateBeatDistance();
-    /// Updates the beat distance based on the provided play position.
+    /// Updates the beat distance based on the provided play position. This
+    /// override is used for seeks.
     double updateBeatDistance(mixxx::audio::FramePos playpos);
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;

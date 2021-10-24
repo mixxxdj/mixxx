@@ -45,7 +45,13 @@ class SyncControl : public EngineControl, public Syncable {
 
     double adjustSyncBeatDistance(double beatDistance) const;
     double getBeatDistance() const override;
+    /// updateTargetBeatDistance calculates the correct beat distance that
+    /// we should sync against.  This may be different from the leader's
+    /// distance due to half/double calculation.  This override is called once
+    /// per callback and uses the current playposition as a reference point.
     void updateTargetBeatDistance();
+    /// This override uses the provided position, and is used after seeks.
+    void updateTargetBeatDistance(mixxx::audio::FramePos position);
     mixxx::Bpm getBaseBpm() const override;
 
     // The local bpm is the base bpm of the track around the current position.
@@ -73,6 +79,7 @@ class SyncControl : public EngineControl, public Syncable {
     void reportPlayerSpeed(double speed, bool scratching);
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+    void notifySeek(mixxx::audio::FramePos position) override;
 
   private slots:
     void slotControlBeatSync(double);

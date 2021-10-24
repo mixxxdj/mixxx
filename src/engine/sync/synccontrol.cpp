@@ -303,6 +303,10 @@ double SyncControl::determineBpmMultiplier(mixxx::Bpm myBpm, mixxx::Bpm targetBp
 }
 
 void SyncControl::updateTargetBeatDistance() {
+    updateTargetBeatDistance(frameInfo().currentPosition);
+}
+
+void SyncControl::updateTargetBeatDistance(mixxx::audio::FramePos refPosition) {
     double targetDistance = m_unmultipliedTargetBeatDistance;
     if (kLogger.traceEnabled()) {
         kLogger.trace()
@@ -324,8 +328,7 @@ void SyncControl::updateTargetBeatDistance() {
     } else if (m_leaderBpmAdjustFactor == kBpmHalve) {
         targetDistance *= kBpmHalve;
         // Our beat distance CO is still a buffer behind, so take the current value.
-        if (m_pBpmControl->getBeatDistance(
-                    frameInfo().currentPosition) >= 0.5) {
+        if (m_pBpmControl->getBeatDistance(refPosition) >= 0.5) {
             targetDistance += 0.5;
         }
     }
@@ -374,7 +377,7 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     // This slot is fired by a new file is loaded or if the user
     // has adjusted the beatgrid.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
+        kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
     }
 
     VERIFY_OR_DEBUG_ASSERT(m_pLocalBpm) {
@@ -436,6 +439,10 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
         m_pChannel->getEngineBuffer()->requestSyncMode(syncMode);
         m_pBpmControl->updateLocalBpm();
     }
+}
+
+void SyncControl::notifySeek(mixxx::audio::FramePos position) {
+    m_pEngineSync->notifySeek(this, position);
 }
 
 void SyncControl::slotControlBeatSyncPhase(double value) {

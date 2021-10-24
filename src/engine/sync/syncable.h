@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QString>
 
+#include "audio/frame.h"
 #include "track/bpm.h"
 
 class EngineChannel;
@@ -175,6 +176,9 @@ class SyncableListener {
 
     // Notify Syncable that the Syncable's scratching state changed.
     virtual void notifyScratching(Syncable* pSyncable, bool scratching) = 0;
+
+    // Notify that the Syncable has seeked.
+    virtual void notifySeek(Syncable* pSyncable, mixxx::audio::FramePos position) = 0;
 
     // A Syncable must never call notifyBeatDistanceChanged in response to a
     // setBeatDistance() call.
