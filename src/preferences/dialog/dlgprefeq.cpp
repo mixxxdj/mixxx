@@ -14,11 +14,11 @@
 #include "moc_dlgprefeq.cpp"
 
 namespace {
-const QString kConfigKey = "[Mixer Profile]";
-const QString kEffectForGroupPrefix = "EffectForGroup_";
-const QString kEnableEqs = "EnableEQs";
-const QString kEqsOnly = "EQsOnly";
-const QString kSingleEq = "SingleEQEffect";
+const QString kConfigKey = QStringLiteral("[Mixer Profile]");
+const QString kEffectForGroupPrefix = QStringLiteral("EffectForGroup_");
+const QString kEnableEqs = QStringLiteral("EnableEQs");
+const QString kEqsOnly = QStringLiteral("EQsOnly");
+const QString kSingleEq = QStringLiteral("SingleEQEffect");
 const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
         EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
 const QString kDefaultMainEqId = QString();
@@ -40,8 +40,8 @@ DlgPrefEQ::DlgPrefEQ(
         std::shared_ptr<EffectsManager> pEffectsManager,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
-          m_COLoFreq(kConfigKey, "LoEQFrequency"),
-          m_COHiFreq(kConfigKey, "HiEQFrequency"),
+          m_COLoFreq(kConfigKey, QStringLiteral("LoEQFrequency")),
+          m_COHiFreq(kConfigKey, QStringLiteral("HiEQFrequency")),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
