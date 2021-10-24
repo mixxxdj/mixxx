@@ -419,50 +419,30 @@ g4v.MixerStrip = function(deckNumber) {
         group: "[Channel" + deckNumber +"]",
         inKey: "volume",
     });
-    this.orientationLeftBtn = new components.Component({
+    this.orientationLeftBtn = new components.Button({
         midi: [0x93, 0x04 + deckNumber],
         group: "[Channel" + deckNumber +"]",
-        inKey: "orientation",
+        key: "orientation",
         input: function(_channel, _control, value, _status, _group) {
             if (!value) { return; }
             this.inSetValue(this.inGetValue() !== 0 ? 0 : 1);
         },
+        output: function(value, _group, _control) {
+            this.send(value === 0 ? this.on : this.off);
+        },
     });
-    this.orientationRightBtn = new components.Component({
+    this.orientationRightBtn = new components.Button({
         midi: [0x93, 0x08 + deckNumber],
         group: "[Channel" + deckNumber +"]",
-        inKey: "orientation",
+        key: "orientation",
         input: function(_channel, _control, value, _status, _group) {
             if (!value) { return; }
             this.inSetValue(this.inGetValue() !== 2 ? 2 : 1);
         },
-    });
-    this.orientationLed = new components.Component({
-        midi: [0x93, 0x04 + deckNumber],
-        group: "[Channel" + deckNumber +"]",
-        outKey: "orientation",
-        send: function(value) {
-            switch (value) {
-            case 0:
-                midi.sendShortMsg(this.midi[0], this.midi[1], 0x7F);
-                midi.sendShortMsg(this.midi[0], this.midi[1]+4, 0x00);
-                break;
-            case 127:
-                midi.sendShortMsg(this.midi[0], this.midi[1], 0x00);
-                midi.sendShortMsg(this.midi[0], this.midi[1]+4, 0x00);
-                break;
-            case 254:
-                midi.sendShortMsg(this.midi[0], this.midi[1], 0x00);
-                midi.sendShortMsg(this.midi[0], this.midi[1]+4, 0x7F);
-                break;
-            }
+        output: function(value, _group, _control) {
+            this.send(value === 2 ? this.on : this.off);
         },
-        shutdown: function() {
-            midi.sendShortMsg(this.midi[0], this.midi[1], 0x00);
-            midi.sendShortMsg(this.midi[0], this.midi[1]+4, 0x00);
-        }
     });
-
     this.reconnectComponents();
 };
 g4v.MixerStrip.prototype = new components.ComponentContainer();
@@ -475,13 +455,13 @@ g4v.OtherControls = function() {
         shift: function() { this.inKey = "MoveHorizontal"; },
         unshift: function() { this.inKey = "MoveVertical"; },
         inValueScale: function(value) { return value === 0x41 ? -1 : 1; },
-        input: function(channel, control, value, status, group) {
-            if (engine.getValue("[PreviewDeck1]", "play")) {
-                engine.setValue("[PreviewDeck1]", (value === 0x41 ? "beatjump_4_forward" : "beatjump_4_backward"), 1);
-            } else {
-                this.prototype.input(channel, control, value, status, group);
-            }
-        },
+        //        input: function(channel, control, value, status, group) {
+        //            if (engine.getValue("[PreviewDeck1]", "play")) {
+        //                engine.setValue("[PreviewDeck1]", (value === 0x41 ? "beatjump_4_forward" : "beatjump_4_backward"), 1);
+        //            } else {
+        //                this.prototype.input(channel, control, value, status, group);
+        //            }
+        //        },
     });
     this.libraryBtn = new components.Component({
         group: "[Library]",
