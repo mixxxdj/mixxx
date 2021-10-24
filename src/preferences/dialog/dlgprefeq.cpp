@@ -107,9 +107,9 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         QLabel* label = new QLabel(QObject::tr("Deck %1").arg(deckNo), this);
 
         // Create the drop down list for deck EQs
-        QComboBox* eqComboBox = new QComboBox(this);
-        m_deckEqEffectSelectors.append(eqComboBox);
-        connect(eqComboBox,
+        QComboBox* pEqComboBox = new QComboBox(this);
+        m_deckEqEffectSelectors.append(pEqComboBox);
+        connect(pEqComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
                 &DlgPrefEQ::slotEffectChangedOnDeck);
@@ -123,9 +123,10 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
 
         // Setup the GUI
         gridLayout_3->addWidget(label, deckNo, 0);
-        gridLayout_3->addWidget(eqComboBox, deckNo, 1);
-        gridLayout_3->addItem(new QSpacerItem(
-                                      40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum),
+        gridLayout_3->addWidget(pEqComboBox, deckNo, 1);
+        gridLayout_3->addItem(
+                new QSpacerItem(
+                        40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum),
                 deckNo,
                 3,
                 1,
@@ -136,8 +137,8 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         // Set the configured effect for box and simpleBox or default
         // if none is configured
         QString group = PlayerManager::groupForDeck(i);
-        QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
-                                                               kConfigKeyPrefix + group),
+        QString configuredEffect = m_pConfig->getValue(
+                ConfigKey(kConfigKey, kConfigKeyPrefix + group),
                 kDefaultEqId);
 
         const EffectManifestPointer pEQManifest =
@@ -246,20 +247,23 @@ void DlgPrefEQ::loadSettings() {
     QString highEqPrecise = m_pConfig->getValueString(ConfigKey(kConfigKey, "HiEQFrequencyPrecise"));
     QString lowEqCourse = m_pConfig->getValueString(ConfigKey(kConfigKey, "LoEQFrequency"));
     QString lowEqPrecise = m_pConfig->getValueString(ConfigKey(kConfigKey, "LoEQFrequencyPrecise"));
-    m_bEqAutoReset = static_cast<bool>(m_pConfig->getValueString(
-                                                        ConfigKey(kConfigKey, "EqAutoReset"))
-                                               .toInt());
+    m_bEqAutoReset = static_cast<bool>(
+            m_pConfig->getValueString(ConfigKey(kConfigKey, "EqAutoReset"))
+                    .toInt());
     CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
-    m_bGainAutoReset = static_cast<bool>(m_pConfig->getValueString(
-                                                          ConfigKey(kConfigKey, "GainAutoReset"))
-                                                 .toInt());
+    m_bGainAutoReset = static_cast<bool>(
+            m_pConfig->getValueString(ConfigKey(kConfigKey, "GainAutoReset"))
+                    .toInt());
     CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
-    CheckBoxBypass->setChecked(m_pConfig->getValue(
-                                       ConfigKey(kConfigKey, kEnableEqs), QString("yes")) == "no");
-    CheckBoxEqOnly->setChecked(m_pConfig->getValue(
-                                       ConfigKey(kConfigKey, kEqsOnly), "yes") == "yes");
-    CheckBoxSingleEqEffect->setChecked(m_pConfig->getValue(
-                                               ConfigKey(kConfigKey, kSingleEq), "yes") == "yes");
+    CheckBoxBypass->setChecked(
+            m_pConfig->getValue(
+                    ConfigKey(kConfigKey, kEnableEqs), QString("yes")) == "no");
+    CheckBoxEqOnly->setChecked(
+            m_pConfig->getValue(
+                    ConfigKey(kConfigKey, kEqsOnly), "yes") == "yes");
+    CheckBoxSingleEqEffect->setChecked(
+            m_pConfig->getValue(
+                    ConfigKey(kConfigKey, kSingleEq), "yes") == "yes");
 
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
