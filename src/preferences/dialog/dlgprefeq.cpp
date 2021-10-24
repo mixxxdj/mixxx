@@ -15,7 +15,7 @@
 
 namespace {
 const QString kConfigKey = "[Mixer Profile]";
-const QString kConfigKeyPrefix = "EffectForGroup_";
+const QString kEffectForGroupPrefix = "EffectForGroup_";
 const QString kEnableEqs = "EnableEQs";
 const QString kEqsOnly = "EQsOnly";
 const QString kSingleEq = "SingleEQEffect";
@@ -138,7 +138,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         // if none is configured
         QString group = PlayerManager::groupForDeck(i);
         QString configuredEffect = m_pConfig->getValue(
-                ConfigKey(kConfigKey, kConfigKeyPrefix + group),
+                ConfigKey(kConfigKey, kEffectForGroupPrefix + group),
                 kDefaultEqId);
 
         const EffectManifestPointer pEQManifest =
@@ -384,7 +384,7 @@ void DlgPrefEQ::applySelectionsToDecks() {
             if (pManifest) {
                 configString = pManifest->uniqueId();
             }
-            m_pConfig->set(ConfigKey(kConfigKey, kConfigKeyPrefix + group),
+            m_pConfig->set(ConfigKey(kConfigKey, kEffectForGroupPrefix + group),
                     configString);
 
             // This is required to remove a previous selected effect that does not
