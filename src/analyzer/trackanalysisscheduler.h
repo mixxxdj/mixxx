@@ -8,10 +8,18 @@
 
 #include "analyzer/analyzerthread.h"
 #include "util/db/dbconnectionpool.h"
-#include "util/qt.h"
 
-// forward declaration(s)
-class TrackDAO;
+/// Callbacks for triggering side-effects in the outer context of
+/// TrackAnalysisScheduler.
+///
+/// All functions will only be called from the host thread of
+/// TrackAnalysisScheduler, not from worker threads.
+class TrackAnalysisSchedulerEnvironment {
+  public:
+    virtual ~TrackAnalysisSchedulerEnvironment() = default;
+
+    virtual TrackPointer loadTrackById(TrackId trackId) const = 0;
+};
 
 class TrackAnalysisScheduler : public QObject {
     Q_OBJECT
@@ -25,17 +33,17 @@ class TrackAnalysisScheduler : public QObject {
     };
 
     static Pointer createInstance(
-            const TrackDAO* pTrackDao,
+            std::unique_ptr<const TrackAnalysisSchedulerEnvironment> pEnvironment,
             int numWorkerThreads,
             const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
             const UserSettingsPointer& pConfig,
             AnalyzerModeFlags modeFlags);
 
     /*private*/ TrackAnalysisScheduler(
-            const TrackDAO* pTrackDao,
+            std::unique_ptr<const TrackAnalysisSchedulerEnvironment> pEnvironment,
             int numWorkerThreads,
             const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
-            const UserSettingsPointer& pConfig,
+            const UserSettingsPointer& pUserSettings,
             AnalyzerModeFlags modeFlags);
     ~TrackAnalysisScheduler() override;
 
@@ -139,7 +147,7 @@ class TrackAnalysisScheduler : public QObject {
                 m_pendingTrackIds.empty();
     }
 
-    const mixxx::SafeQPointer<const TrackDAO> m_pTrackDao;
+    const std::unique_ptr<const TrackAnalysisSchedulerEnvironment> m_pEnvironment;
 
     std::vector<Worker> m_workers;
 
