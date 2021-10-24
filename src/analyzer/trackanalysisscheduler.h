@@ -1,18 +1,17 @@
 #pragma once
 
 #include <QList>
-
 #include <deque>
+#include <memory>
 #include <set>
 #include <vector>
 
 #include "analyzer/analyzerthread.h"
-
-#include "util/memory.h"
-
+#include "util/db/dbconnectionpool.h"
+#include "util/qt.h"
 
 // forward declaration(s)
-class Library;
+class TrackDAO;
 
 class TrackAnalysisScheduler : public QObject {
     Q_OBJECT
@@ -26,14 +25,16 @@ class TrackAnalysisScheduler : public QObject {
     };
 
     static Pointer createInstance(
-            Library* library,
+            const TrackDAO* pTrackDao,
             int numWorkerThreads,
+            const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
             const UserSettingsPointer& pConfig,
             AnalyzerModeFlags modeFlags);
 
     /*private*/ TrackAnalysisScheduler(
-            Library* library,
+            const TrackDAO* pTrackDao,
             int numWorkerThreads,
+            const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
             const UserSettingsPointer& pConfig,
             AnalyzerModeFlags modeFlags);
     ~TrackAnalysisScheduler() override;
@@ -138,7 +139,7 @@ class TrackAnalysisScheduler : public QObject {
                 m_pendingTrackIds.empty();
     }
 
-    Library* m_library;
+    const mixxx::SafeQPointer<const TrackDAO> m_pTrackDao;
 
     std::vector<Worker> m_workers;
 

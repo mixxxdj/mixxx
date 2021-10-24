@@ -1,8 +1,8 @@
 #include "analyzer/trackanalysisscheduler.h"
 
-#include "library/library.h"
-#include "library/trackcollectionmanager.h"
+#include "library/dao/trackdao.h"
 #include "moc_trackanalysisscheduler.cpp"
+#include "track/track.h"
 #include "util/logger.h"
 
 namespace {
@@ -31,24 +31,27 @@ TrackAnalysisScheduler::NullPointer::NullPointer()
 
 //static
 TrackAnalysisScheduler::Pointer TrackAnalysisScheduler::createInstance(
-        Library* library,
+        const TrackDAO* pTrackDao,
         int numWorkerThreads,
+        const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
         const UserSettingsPointer& pConfig,
         AnalyzerModeFlags modeFlags) {
     return Pointer(new TrackAnalysisScheduler(
-            library,
-            numWorkerThreads,
-            pConfig,
-            modeFlags),
+                           pTrackDao,
+                           numWorkerThreads,
+                           pDbConnectionPool,
+                           pConfig,
+                           modeFlags),
             deleteTrackAnalysisScheduler);
 }
 
 TrackAnalysisScheduler::TrackAnalysisScheduler(
-        Library* library,
+        const TrackDAO* pTrackDao,
         int numWorkerThreads,
+        const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
         const UserSettingsPointer& pConfig,
         AnalyzerModeFlags modeFlags)
-        : m_library(library),
+        : m_pTrackDao(pTrackDao),
           m_currentTrackProgress(kAnalyzerProgressUnknown),
           m_currentTrackNumber(0),
           m_dequeuedTracksCount(0),
@@ -70,11 +73,13 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
     for (int threadId = 0; threadId < numWorkerThreads; ++threadId) {
         m_workers.emplace_back(AnalyzerThread::createInstance(
                 threadId,
-                library->dbConnectionPool(),
+                pDbConnectionPool,
                 pConfig,
                 modeFlags));
-        connect(m_workers.back().thread(), &AnalyzerThread::progress,
-            this, &TrackAnalysisScheduler::onWorkerThreadProgress);
+        connect(m_workers.back().thread(),
+                &AnalyzerThread::progress,
+                this,
+                &TrackAnalysisScheduler::onWorkerThreadProgress);
     }
     // 2nd pass: Start worker threads in a suspended state
     for (const auto& worker: m_workers) {
@@ -270,12 +275,17 @@ void TrackAnalysisScheduler::resume() {
 
 bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
     DEBUG_ASSERT(worker);
+    const auto* const pTrackDao = m_pTrackDao.data();
+    VERIFY_OR_DEBUG_ASSERT(pTrackDao) {
+        kLogger.critical() << "TrackDAO pointer is dangling";
+        return false;
+    }
     while (!m_queuedTrackIds.empty()) {
         TrackId nextTrackId = m_queuedTrackIds.front();
         DEBUG_ASSERT(nextTrackId.isValid());
         if (nextTrackId.isValid()) {
             TrackPointer nextTrack =
-                    m_library->trackCollectionManager()->getTrackById(nextTrackId);
+                    pTrackDao->getTrackById(nextTrackId);
             if (nextTrack) {
                 if (m_pendingTrackIds.insert(nextTrackId).second) {
                     if (worker->submitNextTrack(std::move(nextTrack))) {

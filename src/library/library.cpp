@@ -254,13 +254,22 @@ Library::Library(
             kEditMetadataSelectedClickDefault);
 }
 
-Library::~Library() {
-    // Empty but required due to forward declarations in header file!
-}
+Library::~Library() = default;
 
 TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
     return m_pTrackCollectionManager;
+}
+
+TrackAnalysisScheduler::Pointer Library::createTrackAnalysisScheduler(
+        int numWorkerThreads,
+        AnalyzerModeFlags modeFlags) const {
+    return TrackAnalysisScheduler::createInstance(
+            &m_pTrackCollectionManager->internalCollection()->getTrackDAO(),
+            numWorkerThreads,
+            m_pDbConnectionPool,
+            m_pConfig,
+            modeFlags);
 }
 
 void Library::stopPendingTasks() {
