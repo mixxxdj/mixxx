@@ -262,19 +262,20 @@ TrackCollectionManager* Library::trackCollectionManager() const {
 }
 
 namespace {
-class TrackAnalysisSchedulerEnvironmentImpl : public TrackAnalysisSchedulerEnvironment {
+class TrackAnalysisSchedulerEnvironmentImpl final : public TrackAnalysisSchedulerEnvironment {
   public:
     explicit TrackAnalysisSchedulerEnvironmentImpl(const Library* pLibrary)
             : m_pLibrary(pLibrary) {
         DEBUG_ASSERT(m_pLibrary);
     }
-    ~TrackAnalysisSchedulerEnvironmentImpl() override = default;
+    ~TrackAnalysisSchedulerEnvironmentImpl() final = default;
 
-    TrackPointer loadTrackById(TrackId trackId) const override {
+    TrackPointer loadTrackById(TrackId trackId) const final {
         return m_pLibrary->trackCollectionManager()->getTrackById(trackId);
     }
 
   private:
+    // TODO: Use std::shared_ptr or std::weak_ptr instead of a plain pointer?
     const Library* const m_pLibrary;
 };
 } // namespace
