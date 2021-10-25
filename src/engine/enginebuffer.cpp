@@ -948,18 +948,6 @@ void EngineBuffer::processTrackLocked(
     // If pitch ratio and tempo ratio are equal, a linear scaler is used,
     // otherwise tempo and pitch are processed individual
 
-    // If we were scratching, and scratching is over, and we're a follower,
-    // and we're quantized, and not paused,
-    // we need to sync phase or we'll be totally out of whack and the sync
-    // adjuster will kick in and push the track back in to sync with the
-    // master.
-    if (m_scratching_old && !is_scratching && m_pQuantize->toBool() &&
-            isFollower(m_pSyncControl->getSyncMode()) && !paused) {
-        // TODO() The resulting seek is processed in the following callback
-        // That is to late
-        requestSyncPhase();
-    }
-
     double rate = 0;
     // If the baserate, speed, or pitch has changed, we need to update the
     // scaler. Also, if we have changed scalers then we need to update the
@@ -1171,12 +1159,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     }
 #endif
 
-    if (isLeader(m_pSyncControl->getSyncMode())) {
-        // Report our speed to SyncControl immediately instead of waiting
-        // for postProcess so we can broadcast this update to followers.
-        m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
-    }
-
     m_iLastBufferSize = iBufferSize;
     m_bCrossfadeReady = false;
 }
@@ -1330,11 +1312,10 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     m_pSyncControl->setLocalBpm(newLocalBpm);
     m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
+    m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
     if (isLeader(mode)) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beatDistance);
     } else if (isFollower(mode)) {
-        // Report our speed to SyncControl.  If we are leader, we already did this.
-        m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
         m_pSyncControl->updateTargetBeatDistance();
     }
 
