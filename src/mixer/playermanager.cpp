@@ -153,10 +153,8 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
             &Library::slotLoadLocationToPlayer);
 
     DEBUG_ASSERT(!m_pTrackAnalysisScheduler);
-    m_pTrackAnalysisScheduler = TrackAnalysisScheduler::createInstance(
-            pLibrary,
+    m_pTrackAnalysisScheduler = pLibrary->createTrackAnalysisScheduler(
             kNumberOfAnalyzerThreads,
-            m_pConfig,
             AnalyzerModeFlags::WithWaveform);
 
     connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::trackProgress,

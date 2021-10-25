@@ -97,6 +97,15 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     /// access as a friend.
     static bool getTrackHeaderParsedInternal(const mixxx::TrackRecord& trackRecord);
 
+    /// Lookup and load a track by URL.
+    ///
+    /// Only local file URLs are supported.
+    ///
+    /// Returns `nullptr` if no track matches the given URL.
+    TrackPointer getTrackByUrl(const QUrl& url) const {
+        return getTrackByRef(TrackRef::fromUrl(url));
+    }
+
   signals:
     // Forwarded from Track object
     void trackDirty(TrackId trackId);
@@ -122,6 +131,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
   private:
     friend class LibraryScanner;
     friend class TrackCollection;
+    friend class TrackAnalysisScheduler;
 
     TrackId getTrackIdByLocation(
             const QString& location) const;

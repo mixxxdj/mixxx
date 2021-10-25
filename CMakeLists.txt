@@ -902,6 +902,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
+  src/waveform/waveform.cpp
+  src/waveform/waveformfactory.cpp
 )
 if(NOT QT6)
   target_sources(mixxx-lib PRIVATE
@@ -972,8 +974,6 @@ if(NOT QT6)
     src/waveform/visualplayposition.cpp
     src/waveform/visualsmanager.cpp
     src/waveform/vsyncthread.cpp
-    src/waveform/waveform.cpp
-    src/waveform/waveformfactory.cpp
     src/waveform/waveformmarklabel.cpp
     src/waveform/waveformwidgetfactory.cpp
     src/waveform/widgets/emptywaveformwidget.cpp

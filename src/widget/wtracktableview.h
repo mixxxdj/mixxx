@@ -102,6 +102,8 @@ class WTrackTableView : public WLibraryTableView {
 
     void initTrackMenu();
 
+    void hideOrRemoveSelectedTracks();
+
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;
 
