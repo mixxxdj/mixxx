@@ -31,6 +31,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   private slots:
     void slotEffectChangedOnDeck(int effectIndex);
+    void slotQuickEffectChangedOnDeck(int effectIndex);
     void slotNumDecksChanged(double numDecks);
     void slotSingleEqChecked(int checked);
     // Slot for toggling between advanced and basic views
@@ -62,9 +63,11 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
     const QList<EffectManifestPointer> getFilteredManifests(
             EffectManifestFilterFnc filterFunc) const;
-    void populateDeckBoxList(
+    void populateDeckEqBoxList(
             const QList<QComboBox*>& boxList,
             EffectManifestFilterFnc filterFunc);
+    void populateDeckQuickEffectBoxList(
+            const QList<QComboBox*>& boxList);
 
     void applySelectionsToDecks();
 
@@ -73,10 +76,12 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     UserSettingsPointer m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 
+    EffectChainPresetManagerPointer m_pChainPresetManager;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     EffectsBackendManagerPointer m_pBackendManager;
     QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;
+    QList<QComboBox*> m_deckQuickEffectSelectors;
     ControlProxy* m_pNumDecks;
 
     bool m_inSlotPopulateDeckEffectSelectors;

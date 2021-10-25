@@ -9,6 +9,7 @@
 #include "defs_urls.h"
 #include "effects/backends/builtin/biquadfullkilleqeffect.h"
 #include "effects/chains/equalizereffectchain.h"
+#include "effects/chains/quickeffectchain.h"
 #include "effects/effectslot.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefeq.cpp"
@@ -21,6 +22,7 @@ const QString kEqsOnly = QStringLiteral("EQsOnly");
 const QString kSingleEq = QStringLiteral("SingleEQEffect");
 const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
         EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
+const QString kDefaultQuickEffectChainName = QStringLiteral("Filter");
 const QString kDefaultMainEqId = QString();
 
 constexpr int kFrequencyUpperLimit = 20050;
@@ -45,6 +47,7 @@ DlgPrefEQ::DlgPrefEQ(
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
+          m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pEffectsManager(pEffectsManager),
           m_pBackendManager(pEffectsManager->getBackendManager()),
           m_firstSelectorLabel(nullptr),
@@ -88,6 +91,11 @@ DlgPrefEQ::DlgPrefEQ(
     m_pNumDecks->connectValueChanged(this, &DlgPrefEQ::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 
+    connect(m_pChainPresetManager.data(),
+            &EffectChainPresetManager::quickEffectChainPresetListUpdated,
+            this,
+            &DlgPrefEQ::slotPopulateDeckEffectSelectors);
+
     setUpMainEQ();
 
     slotUpdate();
@@ -97,6 +105,9 @@ DlgPrefEQ::DlgPrefEQ(
 DlgPrefEQ::~DlgPrefEQ() {
     qDeleteAll(m_deckEqEffectSelectors);
     m_deckEqEffectSelectors.clear();
+
+    qDeleteAll(m_deckQuickEffectSelectors);
+    m_deckQuickEffectSelectors.clear();
 }
 
 void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
@@ -114,6 +125,26 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
                 this,
                 &DlgPrefEQ::slotEffectChangedOnDeck);
 
+        // Create the drop down list for Quick Effects
+        QComboBox* pQuickEffectComboBox = new QComboBox(this);
+        m_deckQuickEffectSelectors.append(pQuickEffectComboBox);
+        connect(pQuickEffectComboBox,
+                QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this,
+                &DlgPrefEQ::slotQuickEffectChangedOnDeck);
+
+        QString deckGroupName = PlayerManager::groupForDeck(deckNo - 1);
+        QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
+        EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
+        connect(pChain.data(),
+                &EffectChain::presetNameChanged,
+                this,
+                [this, pQuickEffectComboBox](const QString& name) {
+                    m_inSlotPopulateDeckEffectSelectors = true;
+                    pQuickEffectComboBox->setCurrentIndex(pQuickEffectComboBox->findText(name));
+                    m_inSlotPopulateDeckEffectSelectors = false;
+                });
+
         if (deckNo == 1) {
             m_firstSelectorLabel = label;
             if (CheckBoxEqOnly->isChecked()) {
@@ -124,6 +155,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         // Setup the GUI
         gridLayout_3->addWidget(label, deckNo, 0);
         gridLayout_3->addWidget(pEqComboBox, deckNo, 1);
+        gridLayout_3->addWidget(pQuickEffectComboBox, deckNo, 2);
         gridLayout_3->addItem(
                 new QSpacerItem(
                         40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum),
@@ -167,12 +199,13 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         filterEQ = nullptr; // take all
     }
 
-    populateDeckBoxList(m_deckEqEffectSelectors, filterEQ);
+    populateDeckEqBoxList(m_deckEqEffectSelectors, filterEQ);
+    populateDeckQuickEffectBoxList(m_deckQuickEffectSelectors);
 
     m_inSlotPopulateDeckEffectSelectors = false;
 }
 
-void DlgPrefEQ::populateDeckBoxList(
+void DlgPrefEQ::populateDeckEqBoxList(
         const QList<QComboBox*>& boxList,
         EffectManifestFilterFnc filterFunc) {
     const QList<EffectManifestPointer> pManifestList = getFilteredManifests(filterFunc);
@@ -211,6 +244,35 @@ void DlgPrefEQ::populateDeckBoxList(
     }
 }
 
+void DlgPrefEQ::populateDeckQuickEffectBoxList(
+        const QList<QComboBox*>& boxList) {
+    QList<EffectChainPresetPointer> presetList =
+            m_pChainPresetManager->getQuickEffectPresetsSorted();
+
+    int deck = 0;
+    for (QComboBox* box : boxList) {
+        box->clear();
+        int currentIndex = -1; // Nothing selected
+
+        QString deckGroupName = PlayerManager::groupForDeck(deck);
+        QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
+        EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
+
+        // Add empty item at the top: no effect
+        box->addItem(kNoEffectString);
+        int i = 1;
+        for (const auto& pChainPreset : presetList) {
+            box->addItem(pChainPreset->name());
+            if (pChain->presetName() == pChainPreset->name()) {
+                currentIndex = i;
+            }
+            ++i;
+        }
+        box->setCurrentIndex(currentIndex);
+        ++deck;
+    }
+}
+
 void DlgPrefEQ::slotSingleEqChecked(int checked) {
     bool do_hide = static_cast<bool>(checked);
     m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
@@ -221,9 +283,11 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
             m_deckEqEffectSelectors.at(i - 1)->setCurrentIndex(deck1EQIndex);
             gridLayout_3->itemAtPosition(i, 0)->widget()->hide();
             gridLayout_3->itemAtPosition(i, 1)->widget()->hide();
+            gridLayout_3->itemAtPosition(i, 2)->widget()->hide();
         } else {
             gridLayout_3->itemAtPosition(i, 0)->widget()->show();
             gridLayout_3->itemAtPosition(i, 1)->widget()->show();
+            gridLayout_3->itemAtPosition(i, 2)->widget()->show();
         }
     }
 
@@ -313,9 +377,13 @@ void DlgPrefEQ::setDefaultShelves() {
 void DlgPrefEQ::slotResetToDefaults() {
     slotMainEQToDefault();
     setDefaultShelves();
-    for (QComboBox* pCombo : std::as_const(m_deckEqEffectSelectors)) {
+    for (const auto& pCombo : std::as_const(m_deckEqEffectSelectors)) {
         pCombo->setCurrentIndex(
                 pCombo->findData(kDefaultEqId));
+    }
+    for (const auto& pCombo : std::as_const(m_deckQuickEffectSelectors)) {
+        pCombo->setCurrentIndex(
+                pCombo->findText(kDefaultQuickEffectChainName));
     }
     loadSettings();
     CheckBoxBypass->setChecked(false);
@@ -350,6 +418,36 @@ void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
     // This is required to remove a previous selected effect that does not
     // fit to the current ShowAllEffects checkbox
     slotPopulateDeckEffectSelectors();
+}
+
+void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
+    QComboBox* c = qobject_cast<QComboBox*>(sender());
+    // Check if qobject_cast was successful
+    if (!c || m_inSlotPopulateDeckEffectSelectors) {
+        return;
+    }
+
+    QList<QComboBox*>* pBoxList = &m_deckQuickEffectSelectors;
+    int deckNumber = pBoxList->indexOf(c);
+    // If we are in single-effect mode and the first effect was changed,
+    // change the others as well.
+    if (deckNumber == 0 && CheckBoxSingleEqEffect->isChecked()) {
+        for (int otherDeck = 1;
+                otherDeck < static_cast<int>(m_pNumDecks->get());
+                ++otherDeck) {
+            QComboBox* box = m_deckQuickEffectSelectors[otherDeck];
+            box->setCurrentIndex(effectIndex);
+        }
+    }
+
+    QString deckGroupName = PlayerManager::groupForDeck(deckNumber);
+    QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
+    EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
+    QList<EffectChainPresetPointer> presetList =
+            m_pChainPresetManager->getQuickEffectPresetsSorted();
+    if (pChain && effectIndex > 0 && effectIndex <= presetList.size()) {
+        pChain->loadChainPreset(presetList[effectIndex - 1]);
+    }
 }
 
 void DlgPrefEQ::applySelections() {
