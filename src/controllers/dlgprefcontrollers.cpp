@@ -130,10 +130,14 @@ void DlgPrefControllers::rescanControllers() {
 }
 
 void DlgPrefControllers::destroyControllerWidgets() {
-    for (auto conn : m_controllerConnections) {
-        disconnect(conn);
+    // NOTE: this assumes that the list of controllers does not change during the lifetime of Mixxx.
+    // This is currently true, but once we support hotplug, we will need better lifecycle management
+    // to keep this dialog and the controllermanager consistent.
+    QList<Controller*> controllerList =
+            m_pControllerManager->getControllerList(false, true);
+    for (auto controller : controllerList) {
+        controller->disconnect(this);
     }
-    m_controllerConnections.clear();
     while (!m_controllerPages.isEmpty()) {
         DlgPrefController* pControllerDlg = m_controllerPages.takeLast();
         m_pDlgPreferences->removePageWidget(pControllerDlg);
@@ -175,11 +179,11 @@ void DlgPrefControllers::setupControllerWidgets() {
 
         m_controllerPages.append(pControllerDlg);
 
-        m_controllerConnections.append(connect(pController,
+        connect(pController,
                 &Controller::openChanged,
                 [this, pControllerDlg](bool bOpen) {
                     slotHighlightDevice(pControllerDlg, bOpen);
-                }));
+                });
 
         QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
                 QTreeWidgetItem::Type);
