@@ -112,6 +112,7 @@ class EffectChain : public QObject {
     QList<EffectSlotPointer> m_effectSlots;
 
   protected slots:
+    void slotEffectChainPresetRenamed(const QString& oldName, const QString& newName);
     void slotPresetListUpdated();
 
   private slots:

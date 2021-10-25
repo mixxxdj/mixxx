@@ -46,6 +46,10 @@ EffectChain::EffectChain(const QString& group,
     m_pControlNumChainPresets->set(m_pChainPresetManager->numPresets());
     m_pControlNumChainPresets->setReadOnly();
     connect(m_pChainPresetManager.data(),
+            &EffectChainPresetManager::effectChainPresetRenamed,
+            this,
+            &EffectChain::slotEffectChainPresetRenamed);
+    connect(m_pChainPresetManager.data(),
             &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
             &EffectChain::slotPresetListUpdated);
@@ -368,6 +372,12 @@ void EffectChain::slotChannelStatusChanged(
         enableForInputChannel(handleGroup);
     } else {
         disableForInputChannel(handleGroup);
+    }
+}
+
+void EffectChain::slotEffectChainPresetRenamed(const QString& oldName, const QString& newName) {
+    if (m_presetName == oldName) {
+        m_presetName = newName;
     }
 }
 
