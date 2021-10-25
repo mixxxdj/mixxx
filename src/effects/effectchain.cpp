@@ -197,10 +197,10 @@ const QString& EffectChain::presetName() const {
 }
 
 void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
+    slotControlClear(1);
     VERIFY_OR_DEBUG_ASSERT(pPreset) {
         return;
     }
-    slotControlClear(1);
 
     int effectSlotIndex = 0;
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
