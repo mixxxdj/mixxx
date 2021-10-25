@@ -213,7 +213,7 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     m_pControlChainSuperParameter->setDefaultValue(pPreset->superKnob());
 
     m_presetName = pPreset->name();
-    emit presetNameChanged(m_presetName);
+    emit chainPresetChanged(m_presetName);
 
     setControlLoadedPresetIndex(presetIndex());
 }

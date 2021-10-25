@@ -18,7 +18,7 @@ class WEffectChainPresetSelector : public QComboBox, public WBaseWidget {
   private slots:
     void populate();
     void slotEffectChainPresetSelected(int index);
-    void slotEffectChainNameChanged(const QString& name);
+    void slotChainPresetChanged(const QString& name);
     bool event(QEvent* pEvent) override;
 
   private:
