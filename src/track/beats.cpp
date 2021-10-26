@@ -587,7 +587,6 @@ mixxx::Bpm Beats::getBpmInRange(audio::FramePos startPosition, audio::FramePos e
                     const std::pair<int, audio::FrameDiff_t>& rhs) {
                 return (lhs.second < rhs.second);
             });
-    qWarning() << "max" << maxBpmDuration->first << maxBpmDuration->second;
     return Bpm(static_cast<double>(maxBpmDuration->first) / 100);
 }
 
