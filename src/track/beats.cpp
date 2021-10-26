@@ -25,6 +25,14 @@ constexpr double kEpsilon = 0.01;
 
 namespace mixxx {
 
+int Beats::ConstIterator::beatsPerBar() const {
+    if (m_it == m_beats->m_markers.cend()) {
+        return m_beats->lastBeatsPerBar();
+    }
+
+    return m_it->beatsPerBar();
+}
+
 mixxx::audio::FrameDiff_t Beats::ConstIterator::beatLengthFrames() const {
     if (m_it == m_beats->m_markers.cend()) {
         return m_beats->lastBeatLengthFrames();
