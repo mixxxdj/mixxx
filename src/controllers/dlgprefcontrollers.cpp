@@ -181,6 +181,7 @@ void DlgPrefControllers::setupControllerWidgets() {
 
         connect(pController,
                 &Controller::openChanged,
+                this,
                 [this, pControllerDlg](bool bOpen) {
                     slotHighlightDevice(pControllerDlg, bOpen);
                 });
