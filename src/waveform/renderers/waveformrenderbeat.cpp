@@ -120,7 +120,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         painter->setPen(pen);
 
         // Make sure to use constData to prevent detaches!
-        painter->drawLines(m_beats.constData(), m_beats.size());
+        painter->drawLines(m_beats);
     }
 
     if (!m_downbeats.isEmpty()) {
@@ -129,6 +129,6 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         painter->setPen(pen);
 
         // Make sure to use constData to prevent detaches!
-        painter->drawLines(m_downbeats.constData(), m_downbeats.size());
+        painter->drawLines(m_downbeats);
     }
 }
