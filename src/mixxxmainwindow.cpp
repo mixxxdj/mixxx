@@ -6,7 +6,6 @@
 #include <QUrl>
 #include <QtDebug>
 
-#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
@@ -14,9 +13,6 @@
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferences.h"
-#ifdef __LILV__
-#include "effects/lv2/lv2backend.h"
-#endif
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
@@ -205,10 +201,8 @@ void MixxxMainWindow::initialize() {
             m_pCoreServices->getScreensaverManager(),
             m_pSkinLoader,
             m_pCoreServices->getSoundManager(),
-            pPlayerManager,
             m_pCoreServices->getControllerManager(),
             m_pCoreServices->getVinylControlManager(),
-            m_pCoreServices->getLV2Backend(),
             m_pCoreServices->getEffectsManager(),
             m_pCoreServices->getSettingsManager(),
             m_pCoreServices->getLibrary());

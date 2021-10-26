@@ -12,11 +12,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
-#include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
-#ifdef __LILV__
-#include "effects/lv2/lv2backend.h"
-#endif
 #include "engine/enginemaster.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
@@ -256,7 +252,7 @@ void CoreServices::initialize(QApplication* pApp) {
     auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
 
     emit initializationProgressUpdate(20, tr("effects"));
-    m_pEffectsManager = std::make_shared<EffectsManager>(this, pConfig, pChannelHandleFactory);
+    m_pEffectsManager = std::make_shared<EffectsManager>(pConfig, pChannelHandleFactory);
 
     m_pEngine = std::make_shared<EngineMaster>(
             pConfig,
@@ -264,20 +260,6 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pEffectsManager.get(),
             pChannelHandleFactory,
             true);
-
-    // Create effect backends. We do this after creating EngineMaster to allow
-    // effect backends to refer to controls that are produced by the engine.
-    BuiltInBackend* pBuiltInBackend = new BuiltInBackend(m_pEffectsManager.get());
-    m_pEffectsManager->addEffectsBackend(pBuiltInBackend);
-#ifdef __LILV__
-    m_pLV2Backend = new LV2Backend(m_pEffectsManager.get());
-    // EffectsManager takes ownership
-    m_pEffectsManager->addEffectsBackend(m_pLV2Backend);
-#else
-    m_pLV2Backend = nullptr;
-#endif
-
-    m_pEffectsManager->setup();
 
     emit initializationProgressUpdate(30, tr("audio interface"));
     // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
@@ -324,7 +306,7 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
 
-    m_pEffectsManager->loadEffectChains();
+    m_pEffectsManager->setup();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();

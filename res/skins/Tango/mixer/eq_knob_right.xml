@@ -9,8 +9,9 @@ Variables:
   parameter   : 1, 2, 3 (low, mid, high)
 -->
 <Template>
+  <SetVariable name="FxUnit">[EqualizerRack1_<Variable name="group"/>]</SetVariable>
   <SetVariable name="FxNum">1</SetVariable>
-  <SetVariable name="FxRack_FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+  <SetVariable name="FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect<Variable name="FxNum"/>]</SetVariable>
 
   <WidgetGroup>
     <ObjectName>EQKnobContainerRight</ObjectName>
@@ -35,15 +36,17 @@ Variables:
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>2.000</KnobCenterYOffset>
+                <EffectUnitGroup><Variable name="FxUnit"/></EffectUnitGroup>
+                <Effect><Variable name="FxNum"/></Effect>
+                <EffectParameter><Variable name="FxParameter"/></EffectParameter>
                 <Connection>
-                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
+                  <ConfigKey><Variable name="FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
                 </Connection>
               </EffectParameterKnobComposed>
 
-              <Template src="skin:../Tango/fx/button.xml">
+              <Template src="skin:eq_button.xml">
                 <SetVariable name="ObjectName">EQKilledUnderlay</SetVariable>
                 <SetVariable name="Size">30f,26f</SetVariable>
-                <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
@@ -53,10 +56,9 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:../Tango/fx/button.xml">
+              <Template src="skin:eq_button.xml">
                 <SetVariable name="ObjectName">EQKillButton</SetVariable>
                 <SetVariable name="Size">12f,30f</SetVariable>
-                <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -67,7 +69,7 @@ Variables:
 
         </Children>
         <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
+          <ConfigKey><Variable name="FxUnit_FxNum"/>,loaded</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EQ knob + Kill button -->
@@ -75,7 +77,7 @@ Variables:
       <WidgetGroup><!-- Spacer when no EQ plugin is loaded -->
         <Size>0min,26min</Size>
         <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
+          <ConfigKey><Variable name="FxUnit_FxNum"/>,loaded</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
