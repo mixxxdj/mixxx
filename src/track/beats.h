@@ -173,18 +173,31 @@ class Beats : private std::enable_shared_from_this<Beats> {
 
     ~Beats() = default;
 
+    /// Returns an iterator pointing to the position of the first beat marker.
     ConstIterator cbegin() const {
         return ConstIterator(this, m_markers.cbegin(), 0);
     }
 
+    /// Returns an iterator pointing to the position of the first beat after
+    /// the end beat marker.
     ConstIterator cend() const {
         return ConstIterator(this, m_markers.cend(), 1);
     }
 
+    /// Returns an iterator pointing to earliest representable beat position
+    /// (which is INT_MIN beats before the first beat marker).
+    ///
+    /// Warning: Decrementing the iterator returned by this function will
+    /// result in an integer underflow.
     ConstIterator cearliest() const {
         return ConstIterator(this, m_markers.cbegin(), std::numeric_limits<int>::lowest());
     }
 
+    /// Returns an iterator pointing to latest representable beat position
+    /// (which is INT_MAX beats behind the end beat marker).
+    ///
+    /// Warning: Incrementing the iterator returned by this function will
+    /// result in an integer overflow.
     ConstIterator clatest() const {
         return ConstIterator(this, m_markers.cend(), std::numeric_limits<int>::max());
     }
