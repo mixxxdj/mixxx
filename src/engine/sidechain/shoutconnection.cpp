@@ -33,11 +33,11 @@
 
 namespace {
 
-const int kConnectRetries = 30;
-const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
+constexpr int kConnectRetries = 30;
+constexpr int kMaxNetworkCache = 491520; // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
-const int kMaxShoutFailures = 3;
+constexpr int kMaxShoutFailures = 3;
 
 const QRegularExpression kArtistOrTitleRegex(QStringLiteral("\\$artist|\\$title"));
 const QRegularExpression kArtistRegex(QStringLiteral("\\$artist"));

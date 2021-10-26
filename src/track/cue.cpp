@@ -1,6 +1,5 @@
 #include "track/cue.h"
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "audio/frame.h"

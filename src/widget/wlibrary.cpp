@@ -1,6 +1,5 @@
 #include "widget/wlibrary.h"
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "controllers/keyboard/keyboardeventfilter.h"

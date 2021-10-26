@@ -116,6 +116,10 @@ bool DlgRecording::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
 
+void DlgRecording::setFocus() {
+    m_pTrackTableView->setFocus();
+}
+
 void DlgRecording::refreshBrowseModel() {
     m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
 }

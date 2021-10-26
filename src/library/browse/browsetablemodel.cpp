@@ -262,9 +262,18 @@ TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
     } else {
         qWarning()
                 << "Track is not available in library"
-                << getTrackLocation(index);
+                << getTrackUrl(index);
         return TrackId();
     }
+}
+
+QUrl BrowseTableModel::getTrackUrl(const QModelIndex& index) const {
+    const QString trackLocation = getTrackLocation(index);
+    DEBUG_ASSERT(trackLocation.trimmed() == trackLocation);
+    if (trackLocation.isEmpty()) {
+        return {};
+    }
+    return QUrl::fromLocalFile(trackLocation);
 }
 
 CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
@@ -274,7 +283,7 @@ CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
     } else {
         qWarning()
                 << "Track is not available in library"
-                << getTrackLocation(index);
+                << getTrackUrl(index);
         return CoverInfo();
     }
 }
@@ -330,7 +339,7 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList& indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
+                QUrl url = getTrackUrl(index);
                 if (!url.isValid()) {
                     qDebug() << "ERROR invalid url" << url;
                     continue;

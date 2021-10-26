@@ -367,9 +367,15 @@ void DlgTrackInfo::updateTrackMetadataFields() {
 }
 
 void DlgTrackInfo::updateSpinBpmFromBeats() {
-    const auto bpmValue = m_pBeatsClone
-            ? m_pBeatsClone->getBpm().valueOr(mixxx::Bpm::kValueUndefined)
-            : mixxx::Bpm::kValueUndefined;
+    auto bpmValue = mixxx::Bpm::kValueUndefined;
+    if (m_pLoadedTrack && m_pBeatsClone) {
+        const auto trackEndPosition = mixxx::audio::FramePos{
+                m_pLoadedTrack->getDuration() * m_pBeatsClone->getSampleRate()};
+        bpmValue = m_pBeatsClone
+                           ->getBpmInRange(mixxx::audio::kStartFramePos,
+                                   trackEndPosition)
+                           .valueOr(mixxx::Bpm::kValueUndefined);
+    }
     spinBpm->setValue(bpmValue);
 }
 
@@ -520,33 +526,35 @@ void DlgTrackInfo::clear() {
 }
 
 void DlgTrackInfo::slotBpmDouble() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::Double);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::Double);
 }
 
 void DlgTrackInfo::slotBpmHalve() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::Halve);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::Halve);
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::TwoThirds);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::ThreeFourths);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
 }
 
 void DlgTrackInfo::slotBpmFourThirds() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::FourThirds);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
 }
 
 void DlgTrackInfo::slotBpmThreeHalves() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::BpmScale::ThreeHalves);
-    updateSpinBpmFromBeats();
+    slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
+}
+
+void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
+    const auto scaledBeats = m_pBeatsClone->tryScale(bpmScale);
+    if (scaledBeats) {
+        m_pBeatsClone = *scaledBeats;
+        updateSpinBpmFromBeats();
+    }
 }
 
 void DlgTrackInfo::slotBpmClear() {
@@ -560,30 +568,14 @@ void DlgTrackInfo::slotBpmClear() {
 }
 
 void DlgTrackInfo::slotBpmConstChanged(int state) {
-    if (state != Qt::Unchecked) {
-        // const beatgrid requested
-        const auto bpm = mixxx::Bpm(spinBpm->value());
-        if (bpm.isValid()) {
-            // Since the user is not satisfied with the beat map,
-            // it is hard to predict a fitting beat. We know that we
-            // cannot use the first beat, since it is out of sync in
-            // almost all cases.
-            // The cue point should be set on a beat, so this seems
-            // to be a good alternative
-            const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
-            m_pBeatsClone = mixxx::Beats::fromConstTempo(
-                    m_pLoadedTrack->getSampleRate(),
-                    cuePosition,
-                    bpm);
-        } else {
-            m_pBeatsClone.reset();
-        }
-        spinBpm->setEnabled(true);
-        bpmTap->setEnabled(true);
-    } else {
+    if (state == Qt::Unchecked) {
         // try to reload BeatMap from the Track
         reloadTrackBeats(*m_pLoadedTrack);
+        return;
     }
+    spinBpm->setEnabled(true);
+    bpmTap->setEnabled(true);
+    slotSpinBpmValueChanged(spinBpm->value());
 }
 
 void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
@@ -609,19 +601,28 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     if (!m_pBeatsClone) {
-        const mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
+        mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
+        // This should never happen, but we cannot be sure
+        VERIFY_OR_DEBUG_ASSERT(cuePosition.isValid()) {
+            cuePosition = mixxx::audio::kStartFramePos;
+        }
         m_pBeatsClone = mixxx::Beats::fromConstTempo(
                 m_pLoadedTrack->getSampleRate(),
-                cuePosition,
+                // Cue positions might be fractional, i.e. not on frame boundaries!
+                cuePosition.toNearestFrameBoundary(),
                 bpm);
     }
 
-    const mixxx::Bpm oldValue = m_pBeatsClone->getBpm();
-    if (oldValue == bpm) {
-        return;
+    if (m_pLoadedTrack && m_pBeatsClone) {
+        const auto trackEndPosition = mixxx::audio::FramePos{
+                m_pLoadedTrack->getDuration() * m_pBeatsClone->getSampleRate()};
+        const mixxx::Bpm oldBpm = m_pBeatsClone->getBpmInRange(
+                mixxx::audio::kStartFramePos, trackEndPosition);
+        if (oldBpm == bpm) {
+            return;
+        }
+        m_pBeatsClone = m_pBeatsClone->trySetBpm(bpm).value_or(m_pBeatsClone);
     }
-
-    m_pBeatsClone = m_pBeatsClone->setBpm(bpm);
 
     updateSpinBpmFromBeats();
 }

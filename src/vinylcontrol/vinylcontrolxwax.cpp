@@ -21,7 +21,7 @@ constexpr int kChannels = 2;
 } // namespace
 
 // Sample threshold below which we consider there to be no signal.
-const double kMinSignal = 75.0 / SAMPLE_MAXIMUM;
+constexpr double kMinSignal = 75.0 / SAMPLE_MAXIMUM;
 
 bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
@@ -29,7 +29,7 @@ QMutex VinylControlXwax::s_xwaxLUTMutex;
 VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& group)
         : VinylControl(pConfig, group),
           m_dVinylPositionOld(0.0),
-          m_pWorkBuffer(new short[MAX_BUFFER_LEN]),
+          m_pWorkBuffer(MAX_BUFFER_LEN),
           m_workBufferSize(MAX_BUFFER_LEN),
           m_iQualPos(0),
           m_iQualFilled(0),
@@ -42,7 +42,6 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_dOldDuration(0.0),
           m_dOldDurationInaccurate(-1.0),
           m_bWasReversed(false),
-          m_pPitchRing(nullptr),
           m_iPitchRingSize(0),
           m_iPitchRingPos(0),
           m_iPitchRingFilled(0),
@@ -130,7 +129,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
     // Set pitch ring size to 1/4 of one revolution -- a full revolution adds
     // too much stickiness to the pitch.
     m_iPitchRingSize = static_cast<int>(60000 / (rpm * latency * 4));
-    m_pPitchRing = new double[m_iPitchRingSize];
+    m_pPitchRing.resize(m_iPitchRingSize);
 
     qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables for" << strVinylType << "with speed" << strVinylSpeed;
@@ -154,8 +153,6 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
 VinylControlXwax::~VinylControlXwax() {
     delete m_pSteadySubtle;
     delete m_pSteadyGross;
-    delete [] m_pPitchRing;
-    delete [] m_pWorkBuffer;
 
     // Cleanup xwax nicely
     timecoder_monitor_clear(&timecoder);
@@ -202,8 +199,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     size_t samplesSize = nFrames * kChannels;
 
     if (samplesSize > m_workBufferSize) {
-        delete [] m_pWorkBuffer;
-        m_pWorkBuffer = new short[samplesSize];
+        m_pWorkBuffer.resize(samplesSize);
         m_workBufferSize = samplesSize;
     }
 
@@ -222,7 +218,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     // Submit the samples to the xwax timecode processor. The size argument is
     // in stereo frames.
-    timecoder_submit(&timecoder, m_pWorkBuffer, nFrames);
+    timecoder_submit(&timecoder, m_pWorkBuffer.data(), nFrames);
 
     bool bHaveSignal = fabs(pSamples[0]) + fabs(pSamples[1]) > kMinSignal;
     //qDebug() << "signal?" << bHaveSignal;
@@ -685,8 +681,8 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
     //track will be selected when the needle is moved back to play area
     //track selection can be cancelled by loading a track manually
 
-    const int SELECT_INTERVAL = 150;
-    const double NOPOS_SPEED = 0.50;
+    constexpr int SELECT_INTERVAL = 150;
+    constexpr double NOPOS_SPEED = 0.50;
 
     if (m_pControlTrackSelector == nullptr) {
         // this isn't done in the constructor because this object

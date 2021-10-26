@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QMutex>
 #include <QTime>
 #include <QMap>
 #include <QAtomicPointer>

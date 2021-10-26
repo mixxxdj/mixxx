@@ -99,3 +99,7 @@ void DlgMissing::saveCurrentViewState() {
 void DlgMissing::restoreCurrentViewState() {
     m_pTrackTableView->restoreCurrentViewState();
 };
+
+void DlgMissing::setFocus() {
+    m_pTrackTableView->setFocus();
+}

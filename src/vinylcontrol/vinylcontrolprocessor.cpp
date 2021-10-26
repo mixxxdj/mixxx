@@ -1,7 +1,5 @@
 #include "vinylcontrol/vinylcontrolprocessor.h"
 
-#include <QMutexLocker>
-
 #include "control/controlpushbutton.h"
 #include "moc_vinylcontrolprocessor.cpp"
 #include "util/defs.h"
@@ -227,7 +225,7 @@ void VinylControlProcessor::receiveBuffer(const AudioInput& input,
         return;
     }
 
-    const int kChannels = 2;
+    constexpr int kChannels = 2;
     const int nSamples = nFrames * kChannels;
     int samplesWritten = pSamplePipe->write(pBuffer, nSamples);
 

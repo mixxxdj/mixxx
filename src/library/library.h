@@ -6,7 +6,7 @@
 #include <QObject>
 #include <QPointer>
 
-#include "analyzer/analyzerprogress.h"
+#include "analyzer/trackanalysisscheduler.h"
 #include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
@@ -36,6 +36,7 @@ class TrackModel;
 class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
+class WLibraryTextBrowser;
 
 #ifdef __ENGINEPRIME__
 namespace mixxx {
@@ -65,20 +66,20 @@ class Library: public QObject {
 
     TrackCollectionManager* trackCollectionManager() const;
 
+    TrackAnalysisScheduler::Pointer createTrackAnalysisScheduler(
+            int numWorkerThreads,
+            AnalyzerModeFlags modeFlags) const;
+
     void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
+    void bindFeatureRootView(WLibraryTextBrowser* pTextBrowser);
 
     void addFeature(LibraryFeature* feature);
 
     /// Needed for exposing models to QML
     LibraryTableModel* trackTableModel() const;
-
-    /// Needed for exposing sidebar to QML
-    SidebarModel* sidebarModel() const {
-        return m_pSidebarModel.get();
-    }
 
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;

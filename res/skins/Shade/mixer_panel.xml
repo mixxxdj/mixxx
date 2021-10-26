@@ -323,6 +323,9 @@
               **********************************************
               -->
               <EffectPushButton>
+                <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectButtonParameter>3</EffectButtonParameter>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -346,6 +349,9 @@
                 </Connection>
               </EffectPushButton>
               <EffectPushButton>
+                <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectButtonParameter>2</EffectButtonParameter>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -369,6 +375,9 @@
                 </Connection>
               </EffectPushButton>
               <EffectPushButton>
+                <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectButtonParameter>1</EffectButtonParameter>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -393,6 +402,9 @@
               </EffectPushButton>
 
               <EffectPushButton>
+                <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectButtonParameter>3</EffectButtonParameter>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -416,6 +428,9 @@
                 </Connection>
               </EffectPushButton>
               <EffectPushButton>
+                <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectButtonParameter>2</EffectButtonParameter>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -439,6 +454,9 @@
                 </Connection>
               </EffectPushButton>
               <EffectPushButton>
+                <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectButtonParameter>1</EffectButtonParameter>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -703,6 +721,9 @@
                 </Connection>
               </Knob>
               <EffectParameterKnob>
+                <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectParameter>3</EffectParameter>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>32,76</Pos>
@@ -715,6 +736,9 @@
                 </Connection>
               </EffectParameterKnob>
               <EffectParameterKnob>
+                <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectParameter>2</EffectParameter>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>32,105</Pos>
@@ -727,6 +751,9 @@
                 </Connection>
               </EffectParameterKnob>
               <EffectParameterKnob>
+                <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectParameter>1</EffectParameter>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>32,134</Pos>
@@ -749,6 +776,9 @@
                 </Connection>
               </Knob>
               <EffectParameterKnob>
+                <EffectUnitGroup>[EqualizerRack1_[Channel2]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectParameter>3</EffectParameter>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>197,76</Pos>
@@ -761,6 +791,9 @@
                 </Connection>
               </EffectParameterKnob>
               <EffectParameterKnob>
+                <EffectUnitGroup>[EqualizerRack1_[Channel2]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectParameter>2</EffectParameter>
                 <TooltipId>filterMid</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
@@ -774,6 +807,9 @@
                 </Connection>
               </EffectParameterKnob>
               <EffectParameterKnob>
+                <EffectUnitGroup>[EqualizerRack1_[Channel2]]</EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectParameter>1</EffectParameter>
                 <TooltipId>filterLow</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>

@@ -966,7 +966,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
 
     QHash<int, TrackId> trackPositionIds = allIds;
     QList<int> newPositions = positions;
-    const int searchDistance = math_max(trackPositionIds.count() / 4, 1);
+    const int searchDistance = math_max(static_cast<int>(trackPositionIds.count()) / 4, 1);
 
     qDebug() << "Shuffling Tracks";
     qDebug() << "*** Search Distance: " << searchDistance;

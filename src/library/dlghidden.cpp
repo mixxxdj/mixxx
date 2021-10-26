@@ -131,3 +131,7 @@ void DlgHidden::saveCurrentViewState() {
 void DlgHidden::restoreCurrentViewState() {
     m_pTrackTableView->restoreCurrentViewState();
 }
+
+void DlgHidden::setFocus() {
+    m_pTrackTableView->setFocus();
+}

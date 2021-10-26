@@ -382,19 +382,19 @@ void importTrackMetadataFromTag(
 
     QString trackArtistId;
     if (readCommentField(tag, "MUSICBRAINZ_ARTISTID", &trackArtistId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(trackArtistId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
     QString trackRecordingId;
     if (readCommentField(tag, "MUSICBRAINZ_TRACKID", &trackRecordingId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(trackRecordingId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(QUuid(trackRecordingId));
     }
     QString trackReleaseId;
     if (readCommentField(tag, "MUSICBRAINZ_RELEASETRACKID", &trackReleaseId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(trackReleaseId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(trackReleaseId));
     }
     QString trackWorkId;
     if (readCommentField(tag, "MUSICBRAINZ_WORKID", &trackWorkId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(trackWorkId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(QUuid(trackWorkId));
     }
     QString albumArtistId;
     if (readCommentField(tag, "MUSICBRAINZ_ALBUMARTISTID", &albumArtistId)) {

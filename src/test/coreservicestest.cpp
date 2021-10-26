@@ -10,7 +10,7 @@ class CoreServicesTest : public MixxxTest {
 // This test is disabled because it fails on CI for some unknown reason.
 TEST_F(CoreServicesTest, DISABLED_TestInitialization) {
     // Initialize the app
-    const int argc = 1;
+    constexpr int argc = 1;
     CmdlineArgs cmdlineArgs;
     char progName[] = "mixxxtest";
     char safeMode[] = "--safe-mode";

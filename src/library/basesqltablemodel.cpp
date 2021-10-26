@@ -28,8 +28,8 @@ const bool sDebug = false;
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
 // Column 0 is skipped when calculating the the columns of the view table
-const int kIdColumn = 0;
-const int kMaxSortColumns = 3;
+constexpr int kIdColumn = 0;
+constexpr int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
@@ -771,6 +771,15 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
                     .data()
                     .toString();
     return QDir::fromNativeSeparators(nativeLocation);
+}
+
+QUrl BaseSqlTableModel::getTrackUrl(const QModelIndex& index) const {
+    const QString trackLocation = getTrackLocation(index);
+    DEBUG_ASSERT(trackLocation.trimmed() == trackLocation);
+    if (trackLocation.isEmpty()) {
+        return {};
+    }
+    return QUrl::fromLocalFile(trackLocation);
 }
 
 CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {

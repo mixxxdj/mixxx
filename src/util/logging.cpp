@@ -9,7 +9,6 @@
 #include <QIODevice>
 #include <QLoggingCategory>
 #include <QMutex>
-#include <QMutexLocker>
 #include <QString>
 #include <QTextStream>
 #include <QThread>

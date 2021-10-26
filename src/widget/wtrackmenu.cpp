@@ -26,6 +26,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "util/defs.h"
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "util/qt.h"
@@ -169,6 +170,9 @@ void WTrackMenu::createMenus() {
 }
 
 void WTrackMenu::createActions() {
+    const auto hideRemoveKeySequence =
+            QKeySequence(kHideRemoveShortcutModifier + kHideRemoveShortcutKey);
+
     if (featureIsEnabled(Feature::AutoDJ)) {
         m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
         connect(m_pAutoDJBottomAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJBottom);
@@ -188,18 +192,26 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Remove)) {
+        // Keyboard shortcuts are set here just to have them displayed in the menu.
+        // Actual keypress is handled in WTrackTableView::keyPressEvent().
         m_pRemoveAct = new QAction(tr("Remove"), this);
+        m_pRemoveAct->setShortcut(hideRemoveKeySequence);
         connect(m_pRemoveAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
         m_pRemovePlaylistAct = new QAction(tr("Remove from Playlist"), this);
+        m_pRemovePlaylistAct->setShortcut(hideRemoveKeySequence);
         connect(m_pRemovePlaylistAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
         m_pRemoveCrateAct = new QAction(tr("Remove from Crate"), this);
+        m_pRemoveCrateAct->setShortcut(hideRemoveKeySequence);
         connect(m_pRemoveCrateAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
     }
 
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
         m_pHideAct = new QAction(tr("Hide from Library"), this);
+        // This is just for having the shortcut displayed next to the action in the menu.
+        // The actual keypress is handled in WTrackTableView::keyPressEvent().
+        m_pHideAct->setShortcut(hideRemoveKeySequence);
         connect(m_pHideAct, &QAction::triggered, this, &WTrackMenu::slotHide);
 
         m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
@@ -211,6 +223,13 @@ void WTrackMenu::createActions() {
 
     if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct = new QAction(tr("Properties"), this);
+        // This is just for having the shortcut displayed next to the action
+        // when the menu is invoked from the tracks table.
+        // The keypress is caught in WTrackTableView::keyPressEvent
+        if (m_pTrackModel) {
+            m_pPropertiesAct->setShortcut(
+                    QKeySequence(kPropertiesShortcutModifier + kPropertiesShortcutKey));
+        }
         connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTrackInfo);
     }
 
@@ -902,6 +921,12 @@ void WTrackMenu::slotOpenInFileBrowser() {
 namespace {
 
 class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ImportMetadataFromFileTagsTrackPointerOperation(
+            UserSettingsPointer pConfig)
+            : m_pConfig(std::move(pConfig)) {
+    }
+
   private:
     void doApply(
             const TrackPointer& pTrack) const override {
@@ -909,8 +934,11 @@ class ImportMetadataFromFileTagsTrackPointerOperation : public mixxx::TrackPoint
         // to override the information within Mixxx! Custom cover art must be
         // reloaded separately.
         SoundSourceProxy(pTrack).updateTrackFromSource(
-                SoundSourceProxy::UpdateTrackFromSourceMode::Again);
+                m_pConfig,
+                SoundSourceProxy::UpdateTrackFromSourceMode::Always);
     }
+
+    const UserSettingsPointer m_pConfig;
 };
 
 } // anonymous namespace
@@ -935,7 +963,7 @@ void WTrackMenu::slotImportMetadataFromFileTags() {
     const auto progressLabelText =
             tr("Importing metadata of %n track(s) from file tags", "", getTrackCount());
     const auto trackOperator =
-            ImportMetadataFromFileTagsTrackPointerOperation();
+            ImportMetadataFromFileTagsTrackPointerOperation(m_pConfig);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator,
@@ -1223,7 +1251,11 @@ class ScaleBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (!pBeats) {
             return;
         }
-        pTrack->trySetBeats(pBeats->scale(m_bpmScale));
+        const auto scaledBeats = pBeats->tryScale(m_bpmScale);
+        if (!scaledBeats) {
+            return;
+        }
+        pTrack->trySetBeats(*scaledBeats);
     }
 
     const mixxx::Beats::BpmScale m_bpmScale;

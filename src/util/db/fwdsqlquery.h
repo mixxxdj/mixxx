@@ -14,22 +14,26 @@
 class SqlQueryFinisher;
 class FwdSqlQuerySelectResult;
 
-// A forward-only QSqlQuery that is prepared immediately
-// during initialization. It offers a limited set of functions
-// from QSqlQuery.
-//
-// Setting QSqlQuery to forward-only causes memory savings since
-// QSqlCachedResult (what QtSQLite uses) won't allocate a giant
-// in-memory table that we won't use at all when invoking only
-// QSqlQuery::next() to iterate over the results.
-//
-// Prefer to use this derived class instead of QSqlQuery to avoid
-// performance bottlenecks and for implicit logging failed query
-// executions.
-//
-// Please note that forward-only queries don't provide information
-// about the size of the result set!
-class FwdSqlQuery : protected QSqlQuery {
+/// A forward-only QSqlQuery that is prepared immediately
+/// during initialization. It offers a limited set of functions
+/// from QSqlQuery.
+///
+/// Setting QSqlQuery to forward-only causes memory savings since
+/// QSqlCachedResult (what QtSQLite uses) won't allocate a giant
+/// in-memory table that we won't use at all when invoking only
+/// QSqlQuery::next() to iterate over the results.
+///
+/// Prefer to use this derived class instead of QSqlQuery to avoid
+/// performance bottlenecks and for implicit logging failed query
+/// executions.
+///
+/// Please note that forward-only queries don't provide information
+/// about the size of the result set!
+///
+/// Since the destructor of the base class QSqlQuery is non-virtual
+/// FwdSqlQuery must not contain any members with a non-trivial
+/// destructor to prevent memory leaks!
+class FwdSqlQuery final : protected QSqlQuery {
     friend class SqlQueryFinisher;
     friend class FwdSqlQuerySelectResult;
 
@@ -40,6 +44,11 @@ class FwdSqlQuery : protected QSqlQuery {
     FwdSqlQuery(
             const QSqlDatabase& database,
             const QString& statement);
+    // The copy constructor of QSqlQuery is marked as deprecated in Qt6
+    FwdSqlQuery(const FwdSqlQuery&) = delete;
+    FwdSqlQuery(FwdSqlQuery&&) = default;
+
+    FwdSqlQuery& operator=(FwdSqlQuery&&) = default;
 
     bool isPrepared() const {
         return m_prepared;
