@@ -32,12 +32,27 @@ class BeatMarker {
         DEBUG_ASSERT(m_beatsTillNextMarker > 0);
     }
 
+    /// Return the position of this beat marker.
     mixxx::audio::FramePos position() const {
         return m_position;
     }
 
+    /// Returns the number of beats between this marker and the next one.
+    ///
+    /// The length of an individual beat can be calculated by subtracting the
+    /// marker positions and dividing the result by the return value of this
+    /// function.
     int beatsTillNextMarker() const {
         return m_beatsTillNextMarker;
+    }
+
+    /// Returns the number of beats per bar.
+    ///
+    /// Note: Currently always returns 4, as time signatures other than 4/4
+    /// are not supported yet.
+    int beatsPerBar() const {
+        // TODO: Add support for different time signatures.
+        return 4;
     }
 
   private:
@@ -83,7 +98,24 @@ class Beats : private std::enable_shared_from_this<Beats> {
             updateValue();
         }
 
+        /// Returns the frame duration between this beat and the next beat.
         mixxx::audio::FrameDiff_t beatLengthFrames() const;
+
+        /// Returns the number of beats per bar.
+        ///
+        /// Note: Currently always returns 4, as time signatures other than 4/4
+        /// are not supported yet.
+        int beatsPerBar() const;
+
+        /// Returns the current index of the beat in the bar.
+        int beatIndexInBar() const {
+            return m_beatOffset % beatsPerBar();
+        }
+
+        /// Returns true if this beat is a downbeat.
+        bool isDownbeat() const {
+            return beatIndexInBar() == 0;
+        }
 
         // Iterator methods
 
@@ -429,6 +461,15 @@ class Beats : private std::enable_shared_from_this<Beats> {
 
     mixxx::audio::FrameDiff_t firstBeatLengthFrames() const;
     mixxx::audio::FrameDiff_t lastBeatLengthFrames() const;
+
+    /// Returns the number of beats per bar of the last marker.
+    ///
+    /// Note: Currently always returns 4, as time signatures other than 4/4
+    /// are not supported yet.
+    int lastBeatsPerBar() const {
+        // TODO: Add support for different time signatures.
+        return 4;
+    }
 
     std::vector<BeatMarker> m_markers;
     mixxx::audio::FramePos m_lastMarkerPosition;
