@@ -82,7 +82,7 @@ class EffectChain : public QObject {
     void slotControlClear(double value);
 
   signals:
-    void presetNameChanged(const QString& name);
+    void chainPresetChanged(const QString& name);
 
   protected slots:
     void sendParameterUpdate();
@@ -112,6 +112,7 @@ class EffectChain : public QObject {
     QList<EffectSlotPointer> m_effectSlots;
 
   protected slots:
+    void slotEffectChainPresetRenamed(const QString& oldName, const QString& newName);
     void slotPresetListUpdated();
 
   private slots:

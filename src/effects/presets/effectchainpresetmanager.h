@@ -72,6 +72,7 @@ class EffectChainPresetManager : public QObject {
     void saveEffectsXml(QDomDocument* pDoc, const EffectsXmlData& data);
 
   signals:
+    void effectChainPresetRenamed(const QString& oldName, const QString& newName);
     void effectChainPresetListUpdated();
     void quickEffectChainPresetListUpdated();
 

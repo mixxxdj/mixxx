@@ -28,13 +28,13 @@ void WEffectChain::setEffectChain(EffectChainPointer pEffectChain) {
     if (pEffectChain) {
         m_pEffectChain = pEffectChain;
         connect(pEffectChain.data(),
-                &EffectChain::presetNameChanged,
+                &EffectChain::chainPresetChanged,
                 this,
-                &WEffectChain::presetNameChanged);
-        presetNameChanged(m_pEffectChain->presetName());
+                &WEffectChain::chainPresetChanged);
+        chainPresetChanged(m_pEffectChain->presetName());
     }
 }
 
-void WEffectChain::presetNameChanged(const QString& newName) {
+void WEffectChain::chainPresetChanged(const QString& newName) {
     setText(newName);
 }

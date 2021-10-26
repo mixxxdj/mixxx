@@ -39,9 +39,9 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
             this,
             &WEffectChainPresetSelector::populate);
     connect(m_pChain.data(),
-            &EffectChain::presetNameChanged,
+            &EffectChain::chainPresetChanged,
             this,
-            &WEffectChainPresetSelector::slotEffectChainNameChanged);
+            &WEffectChainPresetSelector::slotChainPresetChanged);
     connect(this,
             QOverload<int>::of(&QComboBox::activated),
             this,
@@ -72,7 +72,7 @@ void WEffectChainPresetSelector::populate() {
         setItemData(i, pChainPreset->name(), Qt::ToolTipRole);
     }
 
-    slotEffectChainNameChanged(m_pChain->presetName());
+    slotChainPresetChanged(m_pChain->presetName());
     blockSignals(false);
 }
 
@@ -83,7 +83,7 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
     setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
 }
 
-void WEffectChainPresetSelector::slotEffectChainNameChanged(const QString& name) {
+void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {
     setCurrentIndex(findData(name));
     setBaseTooltip(name);
 }

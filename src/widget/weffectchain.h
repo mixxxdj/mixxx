@@ -18,7 +18,7 @@ class WEffectChain : public WLabel {
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
-    void presetNameChanged(const QString& newName);
+    void chainPresetChanged(const QString& newName);
 
   private:
     // Set the EffectChain that should be monitored by this WEffectChain
