@@ -456,13 +456,13 @@ g4v.OtherControls = function() {
         shift: function() { this.inKey = "MoveHorizontal"; },
         unshift: function() { this.inKey = "MoveVertical"; },
         inValueScale: function(value) { return value === 0x41 ? -1 : 1; },
-        //        input: function(channel, control, value, status, group) {
-        //            if (engine.getValue("[PreviewDeck1]", "play")) {
-        //                engine.setValue("[PreviewDeck1]", (value === 0x41 ? "beatjump_4_forward" : "beatjump_4_backward"), 1);
-        //            } else {
-        //                this.prototype.input(channel, control, value, status, group);
-        //            }
-        //        },
+                input: function(_channel, _control, value, _status, _group) {
+                    if (engine.getValue("[PreviewDeck1]", "play")) {
+                        engine.setValue("[PreviewDeck1]", (value === 0x41 ? "beatjump_4_forward" : "beatjump_4_backward"), 1);
+                    } else {
+                        this.inSetParameter(this.inValueScale(value));
+                    }
+                },
     });
     this.libraryBtn = new components.Component({
         group: "[Library]",
