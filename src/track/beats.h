@@ -20,7 +20,6 @@
 namespace mixxx {
 
 class Beats;
-class BeatIterator;
 typedef std::shared_ptr<const Beats> BeatsPointer;
 
 class BeatMarker {
@@ -174,18 +173,31 @@ class Beats : private std::enable_shared_from_this<Beats> {
 
     ~Beats() = default;
 
+    /// Returns an iterator pointing to the position of the first beat marker.
     ConstIterator cbegin() const {
         return ConstIterator(this, m_markers.cbegin(), 0);
     }
 
+    /// Returns an iterator pointing to the position of the first beat after
+    /// the end beat marker.
     ConstIterator cend() const {
         return ConstIterator(this, m_markers.cend(), 1);
     }
 
+    /// Returns an iterator pointing to earliest representable beat position
+    /// (which is INT_MIN beats before the first beat marker).
+    ///
+    /// Warning: Decrementing the iterator returned by this function will
+    /// result in an integer underflow.
     ConstIterator cearliest() const {
         return ConstIterator(this, m_markers.cbegin(), std::numeric_limits<int>::lowest());
     }
 
+    /// Returns an iterator pointing to latest representable beat position
+    /// (which is INT_MAX beats behind the end beat marker).
+    ///
+    /// Warning: Incrementing the iterator returned by this function will
+    /// result in an integer overflow.
     ConstIterator clatest() const {
         return ConstIterator(this, m_markers.cend(), std::numeric_limits<int>::max());
     }
@@ -335,15 +347,6 @@ class Beats : private std::enable_shared_from_this<Beats> {
     audio::FramePos findNBeatsFromPosition(
             audio::FramePos position, double beats) const;
 
-    /// Returns an iterator that yields frame position of every beat occurring
-    /// between `startPosition` and `endPosition`. `BeatIterator` must be iterated
-    /// while holding a strong references to the `Beats` object to ensure that
-    /// the `Beats` object is not deleted. Caller takes ownership of the returned
-    /// `BeatIterator`.
-    std::unique_ptr<BeatIterator> findBeats(
-            audio::FramePos startPosition,
-            audio::FramePos endPosition) const;
-
     /// Return whether or not a beat exists between `startPosition` and `endPosition`.
     bool hasBeatInRange(audio::FramePos startPosition,
             audio::FramePos endPosition) const;
@@ -423,22 +426,6 @@ class Beats : private std::enable_shared_from_this<Beats> {
 
     // The sub-version of this beatgrid.
     const QString m_subVersion;
-};
-
-class BeatIterator {
-  public:
-    BeatIterator(Beats::ConstIterator it, audio::FramePos endPosition)
-            : m_it(std::move(it)),
-              m_endPosition(endPosition) {
-    }
-
-    ~BeatIterator() = default;
-    bool hasNext() const;
-    audio::FramePos next();
-
-  private:
-    Beats::ConstIterator m_it;
-    const audio::FramePos m_endPosition;
 };
 
 } // namespace mixxx
