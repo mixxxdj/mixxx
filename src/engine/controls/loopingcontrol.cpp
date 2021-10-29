@@ -131,6 +131,10 @@ LoopingControl::LoopingControl(const QString& group,
     connect(m_pCOBeatLoop, &ControlObject::valueChanged, this,
             [=](double value){slotBeatLoop(value);}, Qt::DirectConnection);
 
+    m_pCOBeatLoopKeepLoopIn = new ControlObject(ConfigKey(group, "beatloop_keep_loopin"), false);
+    connect(m_pCOBeatLoopKeepLoopIn, &ControlObject::valueChanged, this,
+            [=](double value){slotBeatLoop(value, true);}, Qt::DirectConnection);
+
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
                                           true, false, false, 4.0);
     m_pCOBeatLoopSize->connectValueChangeRequest(this,
@@ -239,6 +243,7 @@ LoopingControl::~LoopingControl() {
     delete m_pLoopDoubleButton;
 
     delete m_pCOBeatLoop;
+    delete m_pCOBeatLoopKeepLoopIn;
     while (!m_beatLoops.isEmpty()) {
         BeatLoopingControl* pBeatLoop = m_beatLoops.takeLast();
         delete pBeatLoop;
