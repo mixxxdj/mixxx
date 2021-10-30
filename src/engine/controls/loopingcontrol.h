@@ -79,6 +79,7 @@ class LoopingControl : public EngineControl {
     void slotBeatLoop(double loopSize, bool keepStartPoint=false, bool enable=true);
     void slotBeatLoopSizeChangeRequest(double beats);
     void slotBeatLoopToggle(double pressed);
+    void slotBeatLoopKeepLoopIn(double pressed);
     void slotBeatLoopRollActivate(double pressed);
     void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl);

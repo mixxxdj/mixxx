@@ -131,10 +131,6 @@ LoopingControl::LoopingControl(const QString& group,
     connect(m_pCOBeatLoop, &ControlObject::valueChanged, this,
             [=](double value){slotBeatLoop(value);}, Qt::DirectConnection);
 
-    m_pCOBeatLoopKeepLoopIn = new ControlObject(ConfigKey(group, "beatloop_keep_loopin"), false);
-    connect(m_pCOBeatLoopKeepLoopIn, &ControlObject::valueChanged, this,
-            [=](double value){slotBeatLoop(value, true);}, Qt::DirectConnection);
-
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
                                           true, false, false, 4.0);
     m_pCOBeatLoopSize->connectValueChangeRequest(this,
@@ -142,6 +138,11 @@ LoopingControl::LoopingControl(const QString& group,
     m_pCOBeatLoopActivate = new ControlPushButton(ConfigKey(group, "beatloop_activate"));
     connect(m_pCOBeatLoopActivate, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatLoopToggle);
+    m_pCOBeatLoopKeepLoopIn = new ControlPushButton(ConfigKey(group, "beatloop_keep_loopin"));
+    connect(m_pCOBeatLoopKeepLoopIn,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotBeatLoopKeepLoopIn);
     m_pCOBeatLoopRollActivate = new ControlPushButton(ConfigKey(group, "beatlooproll_activate"));
     connect(m_pCOBeatLoopRollActivate, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatLoopRollActivate);
@@ -1407,6 +1408,12 @@ void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
 void LoopingControl::slotBeatLoopToggle(double pressed) {
     if (pressed > 0) {
         slotBeatLoop(m_pCOBeatLoopSize->get());
+    }
+}
+
+void LoopingControl::slotBeatLoopKeepLoopIn(double pressed) {
+    if (pressed > 0) {
+        slotBeatLoop(m_pCOBeatLoopSize->get(), true);
     }
 }
 
