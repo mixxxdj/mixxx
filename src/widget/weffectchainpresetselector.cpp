@@ -1,5 +1,8 @@
 #include "widget/weffectchainpresetselector.h"
 
+#include <QPaintEvent>
+#include <QStyleOption>
+#include <QStylePainter>
 #include <QtDebug>
 
 #include "effects/chains/quickeffectchain.h"
@@ -97,4 +100,26 @@ bool WEffectChainPresetSelector::event(QEvent* pEvent) {
     }
 
     return QComboBox::event(pEvent);
+}
+
+void WEffectChainPresetSelector::paintEvent(QPaintEvent* e) {
+    Q_UNUSED(e);
+    // The default paint implementation aligns the text based on the layout direction.
+    // Override to allow qss to align the text of the closed combobox with the
+    // Quick effect controls in the mixer.
+    QStylePainter painter(this);
+    QStyleOptionComboBox comboStyle;
+    // Inititialize the style and draw the frame, down-arrow etc.
+    // Note: using 'comboStyle.initFrom(this)' and 'painter.drawComplexControl(...)
+    // here would not paint the hover style of the down arrow.
+    initStyleOption(&comboStyle);
+    style()->drawComplexControl(QStyle::CC_ComboBox, &comboStyle, &painter, this);
+
+    QStyleOptionButton buttonStyle;
+    buttonStyle.initFrom(this);
+    buttonStyle.rect = style()->subControlRect(
+            QStyle::CC_ComboBox, &comboStyle, QStyle::SC_ComboBoxEditField, this);
+    buttonStyle.text = currentText();
+    // Draw the text for the selector button. Alternative: painter.drawControl(...)
+    style()->drawControl(QStyle::CE_PushButtonLabel, &buttonStyle, &painter, this);
 }
