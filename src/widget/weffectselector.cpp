@@ -1,5 +1,6 @@
 #include "widget/weffectselector.h"
 
+#include <QAbstractItemView>
 #include <QApplication>
 #include <QtDebug>
 
@@ -66,7 +67,7 @@ void WEffectSelector::populate() {
         const EffectManifestPointer pManifest = visibleEffectManifests.at(i);
         QString elidedDisplayName = metrics.elidedText(pManifest->displayName(),
                 Qt::ElideMiddle,
-                width() - 2);
+                view()->width() - 2);
         addItem(elidedDisplayName, QVariant(pManifest->uniqueId()));
 
         QString name = pManifest->name();

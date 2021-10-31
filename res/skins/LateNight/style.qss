@@ -121,9 +121,6 @@ WTrackMenu QMenu::right-arrow {
 }
 
 WEffectSelector QAbstractScrollArea {
-  /* This would set the maximum width only. The minimum seems to be
-    defined by the widget itself. Unfortunately, the widget width
-    is also used to calculate the text elide (center) TODO(ronso0) */
   min-width: 160px;
 }
 #fadeModeCombobox QAbstractScrollArea {
