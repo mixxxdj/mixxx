@@ -1,5 +1,6 @@
 #include "widget/weffectchainpresetselector.h"
 
+#include <QAbstractItemView>
 #include <QPaintEvent>
 #include <QStyleOption>
 #include <QStylePainter>
@@ -70,7 +71,7 @@ void WEffectChainPresetSelector::populate() {
         auto pChainPreset = presetList.at(i);
         QString elidedDisplayName = metrics.elidedText(pChainPreset->name(),
                 Qt::ElideMiddle,
-                width() - 2);
+                view()->width() - 2);
         addItem(elidedDisplayName, QVariant(pChainPreset->name()));
         setItemData(i, pChainPreset->name(), Qt::ToolTipRole);
     }
@@ -117,9 +118,16 @@ void WEffectChainPresetSelector::paintEvent(QPaintEvent* e) {
 
     QStyleOptionButton buttonStyle;
     buttonStyle.initFrom(this);
-    buttonStyle.rect = style()->subControlRect(
+    QRect buttonRect = style()->subControlRect(
             QStyle::CC_ComboBox, &comboStyle, QStyle::SC_ComboBoxEditField, this);
-    buttonStyle.text = currentText();
+    buttonStyle.rect = buttonRect;
+    QFontMetrics metrics(font());
+    // Since the chain selector and the popup can differ in width,
+    // elide the button text independently from the popup display name.
+    buttonStyle.text = metrics.elidedText(
+            currentData().toString(),
+            Qt::ElideRight,
+            buttonRect.width() - 2);
     // Draw the text for the selector button. Alternative: painter.drawControl(...)
     style()->drawControl(QStyle::CE_PushButtonLabel, &buttonStyle, &painter, this);
 }
