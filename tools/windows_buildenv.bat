@@ -88,7 +88,7 @@ EXIT /B 0
 
     SET "VCPKG_ROOT=!BUILDENV_PATH!"
     SET "CMAKE_GENERATOR=Ninja"
-    SET CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\x64-windows
+    SET "CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\x64-windows"
 
     ECHO ^Environment Variables:
     ECHO ^- VCPKG_ROOT='!VCPKG_ROOT!'
