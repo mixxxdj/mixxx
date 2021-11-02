@@ -352,7 +352,7 @@ QByteArray Beats::toBeatGridByteArray() const {
 
 QByteArray Beats::toBeatMapByteArray() const {
     mixxx::track::io::BeatMap map;
-    for (auto it = cfirstmarker(); it != clastmarker(); it++) {
+    for (auto it = cfirstmarker(); it != clastmarker() + 1; it++) {
         const auto position = (*it).toLowerFrameBoundary();
         qWarning() << position;
         track::io::Beat beat;
@@ -418,13 +418,13 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
     DEBUG_ASSERT(isValid());
     auto it = cfirstmarker();
     if (position > m_endMarkerPosition) {
-        DEBUG_ASSERT(*(clastmarker() - 1) == m_endMarkerPosition);
+        DEBUG_ASSERT(*clastmarker() == m_endMarkerPosition);
         // Lookup position is after the last marker position
         const double n = std::ceil((position - m_endMarkerPosition) / endBeatLengthFrames());
         if (n >= static_cast<double>(std::numeric_limits<int>::max())) {
             return clatest();
         }
-        it = (clastmarker() - 1) + static_cast<int>(n);
+        it = clastmarker() + static_cast<int>(n);
 
         // In some rare cases there may be extremely tiny floating point errors
         // that make `std::ceil` round up and makes us end up one beat too
@@ -442,7 +442,7 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
         }
         it -= static_cast<int>(n);
     } else {
-        it = std::lower_bound(cfirstmarker(), clastmarker(), position);
+        it = std::lower_bound(cfirstmarker(), clastmarker() + 1, position);
     }
     DEBUG_ASSERT(it == cearliest() || it == clatest() || *it >= position);
     DEBUG_ASSERT(it == cearliest() || it == clatest() ||

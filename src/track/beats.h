@@ -181,7 +181,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// Returns an iterator pointing to the position of the first beat after
     /// the end beat marker.
     ConstIterator clastmarker() const {
-        return ConstIterator(this, m_markers.cend(), 1);
+        return ConstIterator(this, m_markers.cend(), 0);
     }
 
     /// Returns an iterator pointing to earliest representable beat position
