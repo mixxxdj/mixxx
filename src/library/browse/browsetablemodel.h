@@ -54,8 +54,6 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
 
     // initiate table population, store path
     void setPath(mixxx::FileAccess path);
-    // clear stored path
-    void clearCurrentDir();
 
     TrackPointer getTrack(const QModelIndex& index) const override;
     TrackPointer getTrackByRef(const TrackRef& trackRef) const override;

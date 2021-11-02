@@ -213,13 +213,9 @@ void BrowseTableModel::setPath(mixxx::FileAccess path) {
     if (path.info().hasLocation()) {
         m_currentDirectory = path.info().locationPath();
     } else {
-        clearCurrentDir();
+        m_currentDirectory = QString();
     }
     m_pBrowseThread->executePopulation(std::move(path), this);
-}
-
-void BrowseTableModel::clearCurrentDir() {
-    m_currentDirectory = QString();
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
