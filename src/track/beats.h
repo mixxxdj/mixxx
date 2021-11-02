@@ -174,13 +174,13 @@ class Beats : private std::enable_shared_from_this<Beats> {
     ~Beats() = default;
 
     /// Returns an iterator pointing to the position of the first beat marker.
-    ConstIterator cbegin() const {
+    ConstIterator cfirstmarker() const {
         return ConstIterator(this, m_markers.cbegin(), 0);
     }
 
     /// Returns an iterator pointing to the position of the first beat after
     /// the end beat marker.
-    ConstIterator cend() const {
+    ConstIterator clastmarker() const {
         return ConstIterator(this, m_markers.cend(), 1);
     }
 

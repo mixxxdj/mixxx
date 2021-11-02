@@ -219,169 +219,169 @@ TEST(BeatsTest, NonConstTempoGetBpmAroundPosition) {
 }
 
 TEST(BeatsTest, ConstTempoIteratorSubtract) {
-    EXPECT_EQ(kConstTempoBeats.cbegin(), kConstTempoBeats.cend() - 1);
-    EXPECT_EQ(kConstTempoBeats.cbegin() - 5, kConstTempoBeats.cend() - 6);
-    EXPECT_EQ(kConstTempoBeats.cbegin() - 10, kConstTempoBeats.cend() - 11);
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker(), kConstTempoBeats.clastmarker() - 1);
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker() - 5, kConstTempoBeats.clastmarker() - 6);
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker() - 10, kConstTempoBeats.clastmarker() - 11);
 }
 
 TEST(BeatsTest, ConstTempoIteratorAddSubtractNegativeIsEquivalent) {
-    EXPECT_EQ(kConstTempoBeats.cbegin() + 1, kConstTempoBeats.cbegin() - (-1));
-    EXPECT_EQ(kConstTempoBeats.cbegin() + 5, kConstTempoBeats.cbegin() - (-5));
-    EXPECT_EQ(kConstTempoBeats.cbegin() - 1, kConstTempoBeats.cbegin() + (-1));
-    EXPECT_EQ(kConstTempoBeats.cbegin() - 5, kConstTempoBeats.cbegin() + (-5));
-    EXPECT_EQ(kConstTempoBeats.cend() + 1, kConstTempoBeats.cend() - (-1));
-    EXPECT_EQ(kConstTempoBeats.cend() + 5, kConstTempoBeats.cend() - (-5));
-    EXPECT_EQ(kConstTempoBeats.cend() - 1, kConstTempoBeats.cend() + (-1));
-    EXPECT_EQ(kConstTempoBeats.cend() - 5, kConstTempoBeats.cend() + (-5));
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker() + 1, kConstTempoBeats.cfirstmarker() - (-1));
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker() + 5, kConstTempoBeats.cfirstmarker() - (-5));
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker() - 1, kConstTempoBeats.cfirstmarker() + (-1));
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker() - 5, kConstTempoBeats.cfirstmarker() + (-5));
+    EXPECT_EQ(kConstTempoBeats.clastmarker() + 1, kConstTempoBeats.clastmarker() - (-1));
+    EXPECT_EQ(kConstTempoBeats.clastmarker() + 5, kConstTempoBeats.clastmarker() - (-5));
+    EXPECT_EQ(kConstTempoBeats.clastmarker() - 1, kConstTempoBeats.clastmarker() + (-1));
+    EXPECT_EQ(kConstTempoBeats.clastmarker() - 5, kConstTempoBeats.clastmarker() + (-5));
 }
 
 TEST(BeatsTest, ConstTempoIteratorSubtractPosition) {
     const audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
-    EXPECT_NEAR((*(kConstTempoBeats.cbegin() - 100)).value(),
-            ((*kConstTempoBeats.cbegin()) - 100 * beatLengthFrames).value(),
+    EXPECT_NEAR((*(kConstTempoBeats.cfirstmarker() - 100)).value(),
+            ((*kConstTempoBeats.cfirstmarker()) - 100 * beatLengthFrames).value(),
             kMaxBeatError);
-    EXPECT_NEAR((*(kConstTempoBeats.cend() - 100)).value(),
-            ((*kConstTempoBeats.cend()) - 100 * beatLengthFrames).value(),
+    EXPECT_NEAR((*(kConstTempoBeats.clastmarker() - 100)).value(),
+            ((*kConstTempoBeats.clastmarker()) - 100 * beatLengthFrames).value(),
             kMaxBeatError);
 }
 
 TEST(BeatsTest, ConstTempoIteratorAdd) {
-    EXPECT_EQ(kConstTempoBeats.cend(), kConstTempoBeats.cbegin() + 1);
-    EXPECT_EQ(kConstTempoBeats.cend() + 5, kConstTempoBeats.cbegin() + 6);
-    EXPECT_EQ(kConstTempoBeats.cend() + 10, kConstTempoBeats.cbegin() + 11);
+    EXPECT_EQ(kConstTempoBeats.clastmarker(), kConstTempoBeats.cfirstmarker() + 1);
+    EXPECT_EQ(kConstTempoBeats.clastmarker() + 5, kConstTempoBeats.cfirstmarker() + 6);
+    EXPECT_EQ(kConstTempoBeats.clastmarker() + 10, kConstTempoBeats.cfirstmarker() + 11);
 }
 
 TEST(BeatsTest, ConstTempoIteratorAddPosition) {
     const audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
-    EXPECT_NEAR((*(kConstTempoBeats.cbegin() + 100)).value(),
-            ((*kConstTempoBeats.cbegin()) + 100 * beatLengthFrames).value(),
+    EXPECT_NEAR((*(kConstTempoBeats.cfirstmarker() + 100)).value(),
+            ((*kConstTempoBeats.cfirstmarker()) + 100 * beatLengthFrames).value(),
             kMaxBeatError);
-    EXPECT_NEAR((*(kConstTempoBeats.cend() + 100)).value(),
-            ((*kConstTempoBeats.cend()) + 100 * beatLengthFrames).value(),
+    EXPECT_NEAR((*(kConstTempoBeats.clastmarker() + 100)).value(),
+            ((*kConstTempoBeats.clastmarker()) + 100 * beatLengthFrames).value(),
             kMaxBeatError);
 }
 
 TEST(BeatsTest, ConstTempoIteratorDifference) {
-    EXPECT_EQ(-1, kConstTempoBeats.cbegin() - kConstTempoBeats.cend());
-    EXPECT_EQ(1, kConstTempoBeats.cend() - kConstTempoBeats.cbegin());
+    EXPECT_EQ(-1, kConstTempoBeats.cfirstmarker() - kConstTempoBeats.clastmarker());
+    EXPECT_EQ(1, kConstTempoBeats.clastmarker() - kConstTempoBeats.cfirstmarker());
 
-    EXPECT_EQ(0, kConstTempoBeats.cend() - kConstTempoBeats.cend());
-    EXPECT_EQ(0, kConstTempoBeats.cbegin() - kConstTempoBeats.cbegin());
+    EXPECT_EQ(0, kConstTempoBeats.clastmarker() - kConstTempoBeats.clastmarker());
+    EXPECT_EQ(0, kConstTempoBeats.cfirstmarker() - kConstTempoBeats.cfirstmarker());
 }
 
 TEST(BeatsTest, ConstTempoIteratorPrefixIncrement) {
-    auto it = kConstTempoBeats.cbegin();
-    EXPECT_EQ(kConstTempoBeats.cbegin() + 1, ++it);
-    EXPECT_EQ(kConstTempoBeats.cbegin() + 2, ++it);
+    auto it = kConstTempoBeats.cfirstmarker();
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker() + 1, ++it);
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker() + 2, ++it);
 }
 
 TEST(BeatsTest, ConstTempoIteratorPostfixIncrement) {
-    auto it = kConstTempoBeats.cbegin();
-    EXPECT_EQ(kConstTempoBeats.cbegin(), it++);
-    EXPECT_EQ(kConstTempoBeats.cbegin() + 1, it++);
-    EXPECT_EQ(kConstTempoBeats.cbegin() + 2, it);
+    auto it = kConstTempoBeats.cfirstmarker();
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker(), it++);
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker() + 1, it++);
+    EXPECT_EQ(kConstTempoBeats.cfirstmarker() + 2, it);
 }
 
 TEST(BeatsTest, ConstTempoIteratorPrefixDecrement) {
-    auto it = kConstTempoBeats.cend();
-    EXPECT_EQ(kConstTempoBeats.cend() - 1, --it);
-    EXPECT_EQ(kConstTempoBeats.cend() - 2, --it);
+    auto it = kConstTempoBeats.clastmarker();
+    EXPECT_EQ(kConstTempoBeats.clastmarker() - 1, --it);
+    EXPECT_EQ(kConstTempoBeats.clastmarker() - 2, --it);
 }
 
 TEST(BeatsTest, ConstTempoIteratorPostfixDecrement) {
-    auto it = kConstTempoBeats.cend();
-    EXPECT_EQ(kConstTempoBeats.cend(), it--);
-    EXPECT_EQ(kConstTempoBeats.cend() - 1, it--);
-    EXPECT_EQ(kConstTempoBeats.cend() - 2, it);
+    auto it = kConstTempoBeats.clastmarker();
+    EXPECT_EQ(kConstTempoBeats.clastmarker(), it--);
+    EXPECT_EQ(kConstTempoBeats.clastmarker() - 1, it--);
+    EXPECT_EQ(kConstTempoBeats.clastmarker() - 2, it);
 }
 
 TEST(BeatsTest, NonConstTempoIteratorAdd) {
-    EXPECT_EQ(kNonConstTempoBeats.cend(), kNonConstTempoBeats.cbegin() + 25);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker(), kNonConstTempoBeats.cfirstmarker() + 25);
 
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 30, kNonConstTempoBeats.cend() + 5);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 35, kNonConstTempoBeats.cend() + 10);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 40, kNonConstTempoBeats.cend() + 15);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 45, kNonConstTempoBeats.cend() + 20);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 30, kNonConstTempoBeats.clastmarker() + 5);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 35, kNonConstTempoBeats.clastmarker() + 10);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 40, kNonConstTempoBeats.clastmarker() + 15);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 45, kNonConstTempoBeats.clastmarker() + 20);
 }
 
 TEST(BeatsTest, NonConstTempoIteratorSubtract) {
-    EXPECT_EQ(kNonConstTempoBeats.cbegin(), kNonConstTempoBeats.cend() - 25);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker(), kNonConstTempoBeats.clastmarker() - 25);
 
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() - 5, kNonConstTempoBeats.cend() - 30);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() - 10, kNonConstTempoBeats.cend() - 35);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() - 15, kNonConstTempoBeats.cend() - 40);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() - 20, kNonConstTempoBeats.cend() - 45);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() - 5, kNonConstTempoBeats.clastmarker() - 30);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() - 10, kNonConstTempoBeats.clastmarker() - 35);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() - 15, kNonConstTempoBeats.clastmarker() - 40);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() - 20, kNonConstTempoBeats.clastmarker() - 45);
 }
 
 TEST(BeatsTest, NonConstTempoIteratorAddSubtract) {
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 5, kNonConstTempoBeats.cend() - 20);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 10, kNonConstTempoBeats.cend() - 15);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 15, kNonConstTempoBeats.cend() - 10);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 20, kNonConstTempoBeats.cend() - 5);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 5, kNonConstTempoBeats.clastmarker() - 20);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 10, kNonConstTempoBeats.clastmarker() - 15);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 15, kNonConstTempoBeats.clastmarker() - 10);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 20, kNonConstTempoBeats.clastmarker() - 5);
 }
 
 TEST(BeatsTest, NonConstTempoIteratorDifference) {
-    EXPECT_EQ(-25, kNonConstTempoBeats.cbegin() - kNonConstTempoBeats.cend());
-    EXPECT_EQ(25, kNonConstTempoBeats.cend() - kNonConstTempoBeats.cbegin());
+    EXPECT_EQ(-25, kNonConstTempoBeats.cfirstmarker() - kNonConstTempoBeats.clastmarker());
+    EXPECT_EQ(25, kNonConstTempoBeats.clastmarker() - kNonConstTempoBeats.cfirstmarker());
 
-    EXPECT_EQ(0, kNonConstTempoBeats.cend() - kNonConstTempoBeats.cend());
-    EXPECT_EQ(0, kNonConstTempoBeats.cbegin() - kNonConstTempoBeats.cbegin());
+    EXPECT_EQ(0, kNonConstTempoBeats.clastmarker() - kNonConstTempoBeats.clastmarker());
+    EXPECT_EQ(0, kNonConstTempoBeats.cfirstmarker() - kNonConstTempoBeats.cfirstmarker());
 }
 
 TEST(BeatsTest, NonConstTempoIteratorPrefixIncrement) {
-    auto it = kNonConstTempoBeats.cbegin();
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 1, ++it);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 2, ++it);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 3, ++it);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 4, ++it);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 5, ++it);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 6, ++it);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 7, ++it);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 8, ++it);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 9, ++it);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 9, it);
+    auto it = kNonConstTempoBeats.cfirstmarker();
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 1, ++it);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 2, ++it);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 3, ++it);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 4, ++it);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 5, ++it);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 6, ++it);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 7, ++it);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 8, ++it);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 9, ++it);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 9, it);
 }
 
 TEST(BeatsTest, NonConstTempoIteratorPostfixIncrement) {
-    auto it = kNonConstTempoBeats.cbegin();
-    EXPECT_EQ(kNonConstTempoBeats.cbegin(), it++);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 1, it++);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 2, it++);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 3, it++);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 4, it++);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 5, it++);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 6, it++);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 7, it++);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 8, it++);
-    EXPECT_EQ(kNonConstTempoBeats.cbegin() + 9, it);
+    auto it = kNonConstTempoBeats.cfirstmarker();
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker(), it++);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 1, it++);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 2, it++);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 3, it++);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 4, it++);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 5, it++);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 6, it++);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 7, it++);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 8, it++);
+    EXPECT_EQ(kNonConstTempoBeats.cfirstmarker() + 9, it);
 }
 
 TEST(BeatsTest, NonConstTempoIteratorPrefixDecrement) {
-    auto it = kNonConstTempoBeats.cend();
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 1, --it);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 2, --it);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 3, --it);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 4, --it);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 5, --it);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 6, --it);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 7, --it);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 8, --it);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 9, --it);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 9, it);
+    auto it = kNonConstTempoBeats.clastmarker();
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 1, --it);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 2, --it);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 3, --it);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 4, --it);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 5, --it);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 6, --it);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 7, --it);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 8, --it);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 9, --it);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 9, it);
 }
 
 TEST(BeatsTest, NonConstTempoIteratorPostfixDecrement) {
-    auto it = kNonConstTempoBeats.cend();
-    EXPECT_EQ(kNonConstTempoBeats.cend(), it--);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 1, it--);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 2, it--);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 3, it--);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 4, it--);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 5, it--);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 6, it--);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 7, it--);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 8, it--);
-    EXPECT_EQ(kNonConstTempoBeats.cend() - 9, it);
+    auto it = kNonConstTempoBeats.clastmarker();
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker(), it--);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 1, it--);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 2, it--);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 3, it--);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 4, it--);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 5, it--);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 6, it--);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 7, it--);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 8, it--);
+    EXPECT_EQ(kNonConstTempoBeats.clastmarker() - 9, it);
 }
 
 TEST(BeatsTest, ConstTempoSerialization) {
@@ -446,7 +446,7 @@ TEST(BeatsTest, NonConstTempoFromBeatPositions) {
 }
 
 TEST(BeatsTest, ConstTempoFindNthBeatWhenOnBeat) {
-    const auto it = kConstTempoBeats.cbegin() + 10;
+    const auto it = kConstTempoBeats.cfirstmarker() + 10;
     const audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
     const audio::FramePos position = *it;
 
@@ -467,7 +467,7 @@ TEST(BeatsTest, ConstTempoFindNthBeatWhenOnBeat) {
 }
 
 TEST(BeatsTest, ConstTempoFindNthBeatWhenNotOnBeat) {
-    auto it = kConstTempoBeats.cbegin() + 10;
+    auto it = kConstTempoBeats.cfirstmarker() + 10;
     const mixxx::audio::FramePos previousBeat = *it;
     it++;
     const mixxx::audio::FramePos nextBeat = *it;
@@ -493,7 +493,7 @@ TEST(BeatsTest, ConstTempoFindNthBeatWhenNotOnBeat) {
 }
 
 TEST(BeatsTest, ConstTempoFindPrevNextBeatWhenOnBeat) {
-    const auto it = kConstTempoBeats.cbegin() + 10;
+    const auto it = kConstTempoBeats.cfirstmarker() + 10;
     const audio::FramePos position = *it;
     const audio::FrameDiff_t beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
 
@@ -514,7 +514,7 @@ TEST(BeatsTest, ConstTempoFindPrevNextBeatWhenOnBeat) {
 }
 
 TEST(BeatsTest, ConstTempoFindPrevNextBeatWhenNotOnBeat) {
-    auto it = kConstTempoBeats.cbegin() + 10;
+    auto it = kConstTempoBeats.cfirstmarker() + 10;
     const mixxx::audio::FramePos previousBeat = *it;
     it++;
     const mixxx::audio::FramePos nextBeat = *it;
