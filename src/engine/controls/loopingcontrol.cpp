@@ -138,7 +138,7 @@ LoopingControl::LoopingControl(const QString& group,
     m_pCOBeatLoopActivate = new ControlPushButton(ConfigKey(group, "beatloop_activate"));
     connect(m_pCOBeatLoopActivate, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatLoopToggle);
-    m_pCOBeatLoopKeepLoopIn = new ControlPushButton(ConfigKey(group, "beatloop_keep_loopin"));
+    m_pCOBeatLoopKeepLoopIn = new ControlPushButton(ConfigKey(group, "beatloop_keep_loop_in"));
     connect(m_pCOBeatLoopKeepLoopIn,
             &ControlObject::valueChanged,
             this,
