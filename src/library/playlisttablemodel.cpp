@@ -7,6 +7,12 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_playlisttablemodel.cpp"
 
+namespace {
+
+const QString kModelName = "playlist:";
+
+} // anonymous namespace
+
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace,
@@ -350,9 +356,9 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
 
 QString PlaylistTableModel::modelKey(bool noSearch) const {
     if (noSearch) {
-        return QStringLiteral("playlist:") + m_tableName;
+        return kModelName + m_tableName;
     }
-    return QStringLiteral("playlist:") + m_tableName +
+    return kModelName + m_tableName +
             QStringLiteral("#") +
             currentSearch();
 }

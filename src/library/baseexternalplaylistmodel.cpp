@@ -8,6 +8,12 @@
 #include "moc_baseexternalplaylistmodel.cpp"
 #include "track/track.h"
 
+namespace {
+
+const QString kModelName = "external:";
+
+} // anonymous namespace
+
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace,
@@ -168,10 +174,10 @@ TrackModel::Capabilities BaseExternalPlaylistModel::getCapabilities() const {
 
 QString BaseExternalPlaylistModel::modelKey(bool noSearch) const {
     if (noSearch) {
-        return QStringLiteral("external:") +
+        return kModelName +
                 QString::number(m_currentPlaylistId);
     }
-    return QStringLiteral("external:") +
+    return kModelName +
             QString::number(m_currentPlaylistId) +
             QStringLiteral("#") +
             currentSearch();

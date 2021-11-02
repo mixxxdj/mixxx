@@ -34,6 +34,8 @@ constexpr int kMaxSortColumns = 3;
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
 
+const QString kModelName = "table:";
+
 } // anonymous namespace
 
 BaseSqlTableModel::BaseSqlTableModel(
@@ -615,9 +617,9 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
 
 QString BaseSqlTableModel::modelKey(bool noSearch) const {
     if (noSearch) {
-        return QStringLiteral("table:") + m_tableName;
+        return kModelName + m_tableName;
     }
-    return QStringLiteral("table:") + m_tableName +
+    return kModelName + m_tableName +
             QStringLiteral("#") +
             currentSearch();
 }

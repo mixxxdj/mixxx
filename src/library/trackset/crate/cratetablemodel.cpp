@@ -10,6 +10,12 @@
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
 
+namespace {
+
+const QString kModelName = "crate";
+
+} // anonymous namespace
+
 CrateTableModel::CrateTableModel(
         QObject* pParent,
         TrackCollectionManager* pTrackCollectionManager)
@@ -183,20 +189,20 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
 }
 
 QString CrateTableModel::modelKey(bool noSearch) const {
-    if (this->m_selectedCrate.isValid()) {
+    if (m_selectedCrate.isValid()) {
         if (noSearch) {
-            return QStringLiteral("crate:") +
+            return kModelName + QStringLiteral(":") +
                     QString::number(m_selectedCrate.value());
         }
-        return QStringLiteral("crate:") +
+        return kModelName + QStringLiteral(":") +
                 QString::number(m_selectedCrate.value()) +
                 QStringLiteral("#") +
                 currentSearch();
     } else {
         if (noSearch) {
-            return QStringLiteral("crate");
+            return kModelName;
         }
-        return QStringLiteral("crate#") +
+        return kModelName + QStringLiteral("#") +
                 currentSearch();
     }
 }
