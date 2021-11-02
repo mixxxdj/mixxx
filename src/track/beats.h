@@ -189,7 +189,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     ///
     /// Warning: Decrementing the iterator returned by this function will
     /// result in an integer underflow.
-    ConstIterator cearliest() const {
+    ConstIterator cbegin() const {
         return ConstIterator(this, m_markers.cbegin(), std::numeric_limits<int>::lowest());
     }
 
@@ -198,7 +198,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     ///
     /// Warning: Incrementing the iterator returned by this function will
     /// result in an integer overflow.
-    ConstIterator clatest() const {
+    ConstIterator cend() const {
         return ConstIterator(this, m_markers.cend(), std::numeric_limits<int>::max());
     }
 
