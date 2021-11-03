@@ -174,14 +174,14 @@ class Beats : private std::enable_shared_from_this<Beats> {
     ~Beats() = default;
 
     /// Returns an iterator pointing to the position of the first beat marker.
-    ConstIterator cbegin() const {
+    ConstIterator cfirstmarker() const {
         return ConstIterator(this, m_markers.cbegin(), 0);
     }
 
     /// Returns an iterator pointing to the position of the first beat after
     /// the end beat marker.
-    ConstIterator cend() const {
-        return ConstIterator(this, m_markers.cend(), 1);
+    ConstIterator clastmarker() const {
+        return ConstIterator(this, m_markers.cend(), 0);
     }
 
     /// Returns an iterator pointing to earliest representable beat position
@@ -189,7 +189,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     ///
     /// Warning: Decrementing the iterator returned by this function will
     /// result in an integer underflow.
-    ConstIterator cearliest() const {
+    ConstIterator cbegin() const {
         return ConstIterator(this, m_markers.cbegin(), std::numeric_limits<int>::lowest());
     }
 
@@ -198,7 +198,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     ///
     /// Warning: Incrementing the iterator returned by this function will
     /// result in an integer overflow.
-    ConstIterator clatest() const {
+    ConstIterator cend() const {
         return ConstIterator(this, m_markers.cend(), std::numeric_limits<int>::max());
     }
 

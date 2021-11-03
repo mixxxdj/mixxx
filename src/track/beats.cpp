@@ -352,7 +352,7 @@ QByteArray Beats::toBeatGridByteArray() const {
 
 QByteArray Beats::toBeatMapByteArray() const {
     mixxx::track::io::BeatMap map;
-    for (auto it = cbegin(); it != cend(); it++) {
+    for (auto it = cfirstmarker(); it != clastmarker() + 1; it++) {
         const auto position = (*it).toLowerFrameBoundary();
         qWarning() << position;
         track::io::Beat beat;
@@ -378,11 +378,11 @@ bool Beats::findPrevNextBeats(audio::FramePos position,
         audio::FramePos* nextBeatPosition,
         bool snapToNearBeats) const {
     auto it = iteratorFrom(position);
-    if (it == clatest()) {
+    if (it == cend()) {
         *prevBeatPosition = *it;
         *nextBeatPosition = audio::kInvalidFramePos;
         return false;
-    } else if (it == cearliest()) {
+    } else if (it == cbegin()) {
         *prevBeatPosition = audio::kInvalidFramePos;
         *nextBeatPosition = *it;
         return false;
@@ -416,15 +416,15 @@ bool Beats::findPrevNextBeats(audio::FramePos position,
 
 Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
     DEBUG_ASSERT(isValid());
-    auto it = cbegin();
+    auto it = cfirstmarker();
     if (position > m_endMarkerPosition) {
-        DEBUG_ASSERT(*(cend() - 1) == m_endMarkerPosition);
+        DEBUG_ASSERT(*clastmarker() == m_endMarkerPosition);
         // Lookup position is after the last marker position
         const double n = std::ceil((position - m_endMarkerPosition) / endBeatLengthFrames());
         if (n >= static_cast<double>(std::numeric_limits<int>::max())) {
-            return clatest();
+            return cend();
         }
-        it = (cend() - 1) + static_cast<int>(n);
+        it = clastmarker() + static_cast<int>(n);
 
         // In some rare cases there may be extremely tiny floating point errors
         // that make `std::ceil` round up and makes us end up one beat too
@@ -438,14 +438,14 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
         // Lookup position is before the first marker position
         const double n = std::floor((*it - position) / firstBeatLengthFrames());
         if (n > static_cast<double>(std::numeric_limits<int>::max())) {
-            return cearliest();
+            return cbegin();
         }
         it -= static_cast<int>(n);
     } else {
-        it = std::lower_bound(cbegin(), cend(), position);
+        it = std::lower_bound(cfirstmarker(), clastmarker() + 1, position);
     }
-    DEBUG_ASSERT(it == cearliest() || it == clatest() || *it >= position);
-    DEBUG_ASSERT(it == cearliest() || it == clatest() ||
+    DEBUG_ASSERT(it == cbegin() || it == cend() || *it >= position);
+    DEBUG_ASSERT(it == cbegin() || it == cend() ||
             *it - position < std::prev(it).beatLengthFrames());
     return it;
 }
@@ -585,7 +585,7 @@ mixxx::Bpm Beats::getBpmAroundPosition(audio::FramePos position, int n) const {
     audio::FramePos endPosition = *it;
 
     // If we hit the end of the beat map, recalculate the lower bound.
-    if (it == clatest()) {
+    if (it == cend()) {
         it -= 2 * n;
         startPosition = *it;
     }
@@ -661,7 +661,7 @@ std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
 }
 
 std::optional<BeatsPointer> Beats::trySetBpm(mixxx::Bpm bpm) const {
-    const auto it = cbegin();
+    const auto it = cfirstmarker();
     return BeatsPointer(new Beats({}, *it, bpm, m_sampleRate, m_subVersion));
 }
 
@@ -680,7 +680,7 @@ bool Beats::isValid() const {
 }
 
 mixxx::audio::FrameDiff_t Beats::firstBeatLengthFrames() const {
-    const auto it = cbegin();
+    const auto it = cfirstmarker();
     return it.beatLengthFrames();
 }
 

@@ -63,7 +63,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     auto it = trackBeats->iteratorFrom(startPosition);
 
     // if no beat do not waste time saving/restoring painter
-    if (it == trackBeats->clatest() || *it > endPosition) {
+    if (it == trackBeats->cend() || *it > endPosition) {
         return;
     }
 
@@ -81,7 +81,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     int beatCount = 0;
 
-    for (; it != trackBeats->clatest() && *it <= endPosition; ++it) {
+    for (; it != trackBeats->cend() && *it <= endPosition; ++it) {
         double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
