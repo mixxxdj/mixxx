@@ -599,12 +599,14 @@ std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames)
             m_markers.cend(),
             std::back_inserter(markers),
             [offsetFrames](const BeatMarker& marker) -> BeatMarker {
-                return BeatMarker(marker.position() + offsetFrames,
+                const auto position = marker.position() + offsetFrames;
+                return BeatMarker(position.toLowerFrameBoundary(),
                         marker.beatsTillNextMarker());
             });
 
+    const auto endMarkerPosition = m_endMarkerPosition + offsetFrames;
     return BeatsPointer(new Beats(markers,
-            m_endMarkerPosition + offsetFrames,
+            endMarkerPosition.toLowerFrameBoundary(),
             m_endMarkerBpm,
             m_sampleRate,
             m_subVersion));
