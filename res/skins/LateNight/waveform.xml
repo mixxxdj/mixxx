@@ -26,6 +26,7 @@
             <SignalRGBLowColor><Variable name="SignalLowColor"/></SignalRGBLowColor>
             <BeatColor><Variable name="BeatColor"/></BeatColor>
             <DownbeatColor><Variable name="DownbeatColor"/></DownbeatColor>
+            <MarkerbeatColor><Variable name="MarkerbeatColor"/></MarkerbeatColor>
             <AxesColor><Variable name="AxesColor"/></AxesColor>
             <BeatHighlightColor></BeatHighlightColor>
             <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>

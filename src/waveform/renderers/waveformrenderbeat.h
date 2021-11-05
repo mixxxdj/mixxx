@@ -15,10 +15,12 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:
-    QColor m_downbeatColor;
     QColor m_beatColor;
+    QColor m_downbeatColor;
+    QColor m_markerbeatColor;
     QVector<QLineF> m_beats;
     QVector<QLineF> m_downbeats;
+    QVector<QLineF> m_markerbeats;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };
