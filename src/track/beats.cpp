@@ -354,7 +354,6 @@ QByteArray Beats::toBeatMapByteArray() const {
     mixxx::track::io::BeatMap map;
     for (auto it = cfirstmarker(); it != clastmarker() + 1; it++) {
         const auto position = (*it).toLowerFrameBoundary();
-        qWarning() << position;
         track::io::Beat beat;
         beat.set_frame_position(static_cast<google::protobuf::int32>(position.value()));
         map.add_beat()->CopyFrom(beat);
