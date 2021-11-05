@@ -13,6 +13,7 @@ WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRen
         : WaveformRendererAbstract(waveformWidgetRenderer) {
     m_beats.reserve(128);
     m_downbeats.reserve(32);
+    m_markerbeats.reserve(32);
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
@@ -24,6 +25,9 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 
     m_downbeatColor.setNamedColor(context.selectString(node, "DownbeatColor"));
     m_downbeatColor = WSkinColor::getCorrectColor(m_downbeatColor).toRgb();
+
+    m_markerbeatColor.setNamedColor(context.selectString(node, "MarkerbeatColor"));
+    m_markerbeatColor = WSkinColor::getCorrectColor(m_markerbeatColor).toRgb();
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -48,9 +52,11 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     // a large rectangle encompassing all beatlines is drawn.
     m_beatColor.setAlphaF(1.f);
     m_downbeatColor.setAlphaF(1.f);
+    m_markerbeatColor.setAlphaF(1.f);
 #else
     m_beatColor.setAlphaF(alpha/100.0);
     m_downbeatColor.setAlphaF(alpha / 100.0);
+    m_markerbeatColor.setAlphaF(alpha / 100.0);
 #endif
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
@@ -84,6 +90,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     m_beats.clear();
     m_downbeats.clear();
+    m_markerbeats.clear();
 
     for (; it != trackBeats->cend() && *it <= endPosition; ++it) {
         double beatPosition = it->toEngineSamplePos();
@@ -99,7 +106,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             line.setLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
         }
 
-        auto& lines = it.isDownbeat() ? m_downbeats : m_beats;
+        auto& lines = it.isMarker() ? m_markerbeats : (it.isDownbeat() ? m_downbeats : m_beats);
 
         // If we don't have enough space, double the capacity.
         if (lines.size() == lines.capacity()) {
@@ -116,8 +123,6 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         QPen pen(m_beatColor);
         pen.setWidthF(std::max(1.0, scaleFactor()));
         painter->setPen(pen);
-
-        // Make sure to use constData to prevent detaches!
         painter->drawLines(m_beats);
     }
 
@@ -125,8 +130,13 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         QPen pen(m_downbeatColor);
         pen.setWidthF(std::max(1.0, scaleFactor()));
         painter->setPen(pen);
-
-        // Make sure to use constData to prevent detaches!
         painter->drawLines(m_downbeats);
+    }
+
+    if (!m_markerbeats.isEmpty()) {
+        QPen pen(m_markerbeatColor);
+        pen.setWidthF(std::max(1.0, scaleFactor()));
+        painter->setPen(pen);
+        painter->drawLines(m_markerbeats);
     }
 }

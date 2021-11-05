@@ -112,6 +112,11 @@ class Beats : private std::enable_shared_from_this<Beats> {
             return m_beatOffset % beatsPerBar();
         }
 
+        /// Returns true if this beat is at a marker position.
+        bool isMarker() const {
+            return m_beatOffset == 0;
+        }
+
         /// Returns true if this beat is a downbeat.
         bool isDownbeat() const {
             return beatIndexInBar() == 0;
