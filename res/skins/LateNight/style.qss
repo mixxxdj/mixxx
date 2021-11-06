@@ -136,6 +136,7 @@ WEffectChainPresetSelector QAbstractScrollArea {
   }
   WEffectSelector::down-arrow,
   WEffectChainPresetSelector::down-arrow,
+  WSearchLineEdit::down-arrow,
   #fadeModeCombobox::down-arrow,
   WTrackTableView::indicator {
     border: 0;
@@ -151,6 +152,10 @@ WEffectChainPresetSelector::checked,
 WEffectChainPresetSelector::indicator,
 WEffectChainPresetSelector::indicator:unchecked,
 WEffectChainPresetSelector::drop-down,
+WSearchLineEdit::checked,
+WSearchLineEdit::indicator,
+WSearchLineEdit::indicator:unchecked,
+WSearchLineEdit::drop-down,
 #fadeModeCombobox::checked,
 #fadeModeCombobox::indicator,
 #fadeModeCombobox::indicator:unchecked,
@@ -164,6 +169,7 @@ WEffectChainPresetSelector::drop-down,
 /* Remove 3D border from unchecked effects checkmark space */
 WEffectSelector::item:selected,
 WEffectChainPresetSelector:item:selected,
+WSearchLineEdit::item:selected,
 #fadeModeCombobox::item:selected {
   border: 0px;
 }
@@ -301,7 +307,7 @@ WTrackTableViewHeader::item {
   WTrackTableViewHeader::down-arrow {
     width: 0.8em;
     padding: 0 0.15em;
-    }
+  }
 
 
 #HotcueButton {
@@ -629,13 +635,14 @@ WEffectChainPresetSelector {
 
   WEffectSelector QAbstractScrollArea,
   WEffectChainPresetSelector QAbstractScrollArea,
+  WSearchLineEdit QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     border: 1px solid #444;
     border-radius: 2px;
     padding: 0px;
     margin: 0px;
   }
-  /* selected item */
+  /* checked item */
   WEffectSelector:checked,
   WEffectChainPresetSelector:checked,
   #fadeModeCombobox:checked {
@@ -648,15 +655,12 @@ WEffectChainPresetSelector {
   /* hovered items */
   WEffectSelector::item:selected,
   WEffectChainPresetSelector::item:selected,
+  WSearchLineEdit::item:selected,
   #fadeModeCombobox::item:selected {
-    background-color: #333;
   /* Already one of those properties destroys font config and
      puts tick mark behind text:
     margin: 0px;
     padding: 0px; */
-  /* This moves the tick mark behind item text,
-    text sits at left border now
-    border: 0; */
   }
   WEffectSelector::indicator,
   #fadeModeCombobox::indicator {
