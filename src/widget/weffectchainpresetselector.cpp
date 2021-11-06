@@ -1,6 +1,7 @@
 #include "widget/weffectchainpresetselector.h"
 
 #include <QAbstractItemView>
+#include <QApplication>
 #include <QPaintEvent>
 #include <QStyleOption>
 #include <QStylePainter>
@@ -17,9 +18,11 @@ WEffectChainPresetSelector::WEffectChainPresetSelector(
           m_bQuickEffectChain(false),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pEffectsManager(pEffectsManager) {
-    // Prevent this widget from getting focused to avoid
-    // interfering with using the library via keyboard.
-    setFocusPolicy(Qt::NoFocus);
+    // Prevent this widget from getting focused by Tab/Shift+Tab
+    // to avoid interfering with using the library via keyboard.
+    // Allow click focus though so the list can always be opened by mouse,
+    // see https://bugs.launchpad.net/mixxx/+bug/1902125
+    setFocusPolicy(Qt::ClickFocus);
 }
 
 void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& context) {
@@ -85,6 +88,12 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
     setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
+    // After selecting an effect send Shift+Tab to move focus to the next
+    // keyboard-focusable widget (tracks table in official skins) in order
+    // to immediately allow keyboard shortcuts again.
+    QKeyEvent backwardFocusKeyEvent =
+            QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
+    QApplication::sendEvent(this, &backwardFocusKeyEvent);
 }
 
 void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {
