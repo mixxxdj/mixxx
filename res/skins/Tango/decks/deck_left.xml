@@ -110,23 +110,6 @@ Variables:
         <SizePolicy>f,min</SizePolicy>
         <Children>
           <Template src="skin:../Tango/mixer/mixer_channel_left.xml"/>
-
-          <WidgetGroup><!-- QuickEffect selector -->
-            <Size>0i,22f</Size>
-            <Layout>vertical</Layout>
-            <Children>
-              <EffectChainPresetSelector>
-                <ObjectName>EffectChainselectorLeft</ObjectName>
-                <Size>40me,22f</Size>
-                <EffectUnitGroup>[QuickEffectRack1_<Variable name="group"/>]</EffectUnitGroup>
-              </EffectChainPresetSelector>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
           <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0min,0me</Size></WidgetGroup>
         </Children>
         <Connection>
