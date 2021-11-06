@@ -104,6 +104,7 @@ WCoverArtMenu,
 WEffectChainPresetButton QMenu,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector QAbstractScrollArea,
+WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   padding: 0.15em;
 }
