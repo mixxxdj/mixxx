@@ -155,15 +155,24 @@
 
               <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
-              <!-- CurPos -->
-              <Template src="skin:../LateNight/controls/button_1state_right.xml">
-                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
-                <SetVariable name="Size">26f,52f</SetVariable>
-                <SetVariable name="BtnSize">library_tall</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
-              </Template>
+              <WidgetGroup><!-- beats set & remove marker -->
+                <Layout>vertical</Layout>
+                <Size>26f,52f</Size>
+                <Children>
+                  <Template src="skin:../LateNight/controls/button_1state.xml">
+                    <SetVariable name="TooltipId">beats_set_marker</SetVariable>
+                    <SetVariable name="ObjectName">BeatsSetMarker</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_set_marker</SetVariable>
+                  </Template>
+                  <Template src="skin:../LateNight/controls/button_1state.xml">
+                    <SetVariable name="TooltipId">beats_remove_marker</SetVariable>
+                    <SetVariable name="ObjectName">BeatsRemoveMarker</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_remove_marker</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /beats set & remove marker -->
 
               <WidgetGroup><!-- beats earlier & faster -->
                 <Layout>vertical</Layout>
