@@ -393,13 +393,23 @@ void Tooltips::addStandardTooltips() {
             << tr("BPM Tap")
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
 
+    add("beats_set_marker")
+            << tr("Set Beat Marker")
+            << tr("Set a beat marker at the current play position.");
+
+    add("beats_remove_marker")
+            << tr("Remove Beat Marker")
+            << tr("Remove the beat marker at the current play position.");
+
     add("beats_adjust_slower")
             << tr("Adjust BPM Down")
-            << tr("When tapped, adjusts the average BPM down by a small amount.");
+            << tr("When tapped, decrease the BPM of the region around the "
+                  "current play position by a small amount.");
 
     add("beats_adjust_faster")
             << tr("Adjust BPM Up")
-            << tr("When tapped, adjusts the average BPM up by a small amount.");
+            << tr("When tapped, increases the BPM of the region around the "
+                  "current play position by a small amount.");
 
     add("beats_translate_earlier")
             << tr("Adjust Beats Earlier")

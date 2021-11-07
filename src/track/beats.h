@@ -306,6 +306,11 @@ class Beats : private std::enable_shared_from_this<Beats> {
         ThreeHalves,
     };
 
+    enum class TempoAdjustment {
+        Faster,
+        Slower,
+    };
+
     /// Returns false if the beats implementation supports non-const beats.
     ///
     /// TODO: This is only needed for the "Asumme Constant Tempo" checkbox in
@@ -436,6 +441,28 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// Returns a pointer to the modified beats object, or `nullopt` on
     /// failure.
     std::optional<BeatsPointer> tryScale(BpmScale scale) const;
+
+    /// Adjust the tempo of the region around `position`. The direction is
+    /// determined by `adjustment`.
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    std::optional<BeatsPointer> tryAdjustTempo(
+            audio::FramePos position, TempoAdjustment adjustment) const;
+
+    /// Insert a new beat marker at `position`, or move a close existing marker
+    /// to `position`.
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    std::optional<BeatsPointer> trySetMarker(audio::FramePos position) const;
+
+    /// Remove the beat marker near `position`. The preceding beat marker is
+    /// updated, so that the beat length roughly stays the same.
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    std::optional<BeatsPointer> tryRemoveMarker(audio::FramePos position) const;
 
     /// Adjust the beats so the global average BPM matches `bpm`.
     //
