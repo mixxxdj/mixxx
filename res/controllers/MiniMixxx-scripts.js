@@ -52,6 +52,8 @@ MiniMixxx.Encoder = class {
                 this.encoders[mode] = new MiniMixxx.EncoderModeLibrary(this, channel, idx);
             } else if (mode === "LIBRARYFOCUS") {
                 this.encoders[mode] = new MiniMixxx.EncoderModeLibraryFocus(this, channel, idx);
+            } else if (mode === "LIBRARYHORIZ") {
+                this.encoders[mode] = new MiniMixxx.EncoderModeLibraryHorizontal(this, channel, idx);
             } else if (mode.startsWith("EFFECT-")) {
                 const tokens = mode.split("-");
                 const effectNum = tokens[1];
@@ -126,7 +128,7 @@ MiniMixxx.EncoderModeJog = class extends MiniMixxx.Mode {
             engine.setValue(this.channel, "playposition", playPosition);
         } else {
             if (engine.getValue(this.activeChannel, "play")) {
-                velo /= 4;
+                velo /= 8;
             } else {
                 velo *= 2;
             }
@@ -470,7 +472,7 @@ MiniMixxx.EncoderModeLibrary = class extends MiniMixxx.Mode {
 // Input:
 //   * Spin: move focus forward / back
 //   * Shift + Spin: scroll through track
-//   * Press: Load selected track
+//   * Press: "Go To Item" (opens trees)
 //   * Shift + Press: search history select
 // Output: Switch on.
 MiniMixxx.EncoderModeLibraryFocus = class extends MiniMixxx.Mode {
@@ -490,6 +492,42 @@ MiniMixxx.EncoderModeLibraryFocus = class extends MiniMixxx.Mode {
             } else if (velo < 0) {
                 engine.setValue("[Library]", "MoveFocusBackward", 1);
             }
+        }
+    }
+    handlePress(value) {
+        if (MiniMixxx.kontrol.shiftActive()) {
+            engine.setValue("[Library]", "search_history_selector", value);
+        } else {
+            engine.setValue("[Library]", "GoToItem", value);
+        }
+    }
+    setLights() {
+        midi.sendShortMsg(0xBF, this.idx, this.color);
+        midi.sendShortMsg(0xB0, this.idx, 0x00);
+        midi.sendShortMsg(0x90, this.idx, this.color);
+    }
+};
+
+// Library Horizontal Focus:
+// Input:
+//   * Spin: Scroll horizontal
+//   * Shift + Spin: scroll through track
+//   * Press: "Go To Item" (opens trees)
+//   * Shift + Press: search history select
+// Output: Switch on.
+MiniMixxx.EncoderModeLibraryHorizontal = class extends MiniMixxx.Mode {
+    constructor(parent, channel, idx) {
+        super(parent, "LIBRARYHORIZ", channel, idx);
+        this.color = MiniMixxx.LibraryFocusColor;
+    }
+    handleSpin(velo) {
+        if (MiniMixxx.kontrol.shiftActive()) {
+            let playPosition = engine.getValue(this.channel, "playposition");
+            playPosition += velo / 256.0;
+            playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
+            engine.setValue(this.channel, "playposition", playPosition);
+        } else {
+            engine.setValue("[Library]", "MoveHorizontal", velo);
         }
     }
     handlePress(value) {
@@ -1123,7 +1161,7 @@ MiniMixxx.Controller = class {
             0x03: new MiniMixxx.Encoder("[Channel2]", 3, {
                 "NONE": "JOG",
                 "LOOPLAYER": "BEATJUMP",
-                "LIBRARYLAYER": "LIBRARYFOCUS",
+                "LIBRARYLAYER": "LIBRARYHORIZ",
                 "FXLAYER": "EFFECT-SUPER",
                 "MAINGAINLAYER": "HEADMIX",
             })
@@ -1450,8 +1488,8 @@ MiniMixxx.pitchSliderHandler = function(_midino, _control, value, _status, group
 
 MiniMixxx.vuMeterColor = function(value) {
     value = Math.max(Math.min(value, 1.0), 0.0);
-    // Color: 85 to 22, multiples of 3. That's 21 levels.
-    return Math.round((1.0 - value) * 21.0) * 3 + 22;
+    // Color: 85 to 16, multiples of 3. That's 23 levels.
+    return Math.round((1.0 - value) * 23.0) * 3 + 16;
 };
 
 MiniMixxx.debugLights = function() {
