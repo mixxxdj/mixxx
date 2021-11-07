@@ -20,6 +20,7 @@ class WEffectChainPresetSelector : public QComboBox, public WBaseWidget {
     void slotEffectChainPresetSelected(int index);
     void slotChainPresetChanged(const QString& name);
     bool event(QEvent* pEvent) override;
+    void paintEvent(QPaintEvent* e) override;
 
   private:
     bool m_bQuickEffectChain;

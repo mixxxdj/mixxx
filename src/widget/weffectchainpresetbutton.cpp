@@ -36,7 +36,6 @@ void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& co
                 &WEffectChainPresetButton::populateMenu);
     }
     populateMenu();
-    // TODO: enable applying external stylesheets
 }
 
 void WEffectChainPresetButton::populateMenu() {
