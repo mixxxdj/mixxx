@@ -60,6 +60,7 @@ case "$1" in
             libmad0-dev \
             libmodplug-dev \
             libmp3lame-dev \
+            libopengl-dev \
             libopus-dev \
             libopusfile-dev \
             libportmidi-dev \
