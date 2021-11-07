@@ -22,6 +22,8 @@ WOverview, /* Hotcue labels in the overview */
 WEffectName,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 WLibrary QPushButton,
@@ -127,10 +129,12 @@ WEffectSelector QAbstractScrollArea {
   min-width: 185px;
   }
   WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     margin: 2px;
   }
   WEffectSelector::down-arrow,
+  WEffectChainPresetSelector::down-arrow,
   #fadeModeCombobox::down-arrow,
   WTrackTableView::indicator {
     border: 0;
@@ -142,8 +146,12 @@ WEffectSelector::checked, /* selected item */
 WEffectSelector::indicator, /* checkbox, tick mark */
 WEffectSelector::indicator:unchecked,
 WEffectSelector::drop-down,
-#fadeModeCombobox::checked, /* selected mode */
-#fadeModeCombobox::indicator, /* checkbox, tick mark */
+WEffectChainPresetSelector::checked,
+WEffectChainPresetSelector::indicator,
+WEffectChainPresetSelector::indicator:unchecked,
+WEffectChainPresetSelector::drop-down,
+#fadeModeCombobox::checked,
+#fadeModeCombobox::indicator,
 #fadeModeCombobox::indicator:unchecked,
 #fadeModeCombobox::drop-down {
   padding: 0px;
@@ -154,6 +162,7 @@ WEffectSelector::drop-down,
 }
 /* Remove 3D border from unchecked effects checkmark space */
 WEffectSelector::item:selected,
+WEffectChainPresetSelector:item:selected,
 #fadeModeCombobox::item:selected {
   border: 0px;
 }
@@ -199,6 +208,8 @@ WPushButton,
 WKey,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 #LibraryFeatureControls QLabel,
@@ -585,13 +596,38 @@ WEffectSelector {
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }
+WEffectChainPresetSelector {
+  border:  0px;
+}
 #fadeModeCombobox {
   height: 18px;
   margin: 0px 0px 3px 1px;
   padding: 1px 0px 1px 4px;
   }
 
+  /* QuickEffect selector of left-hand decks and in 4-decks mixer
+    has it's down arrow on the left side, below the QuickEffect toggle */
+  WEffectChainPresetSelector#QuickEffectSelectorLeft {
+    padding: 0px -5px 0px -1px;
+    margin: 0px;
+    text-align: left;
+    }
+    WEffectChainPresetSelector#QuickEffectSelectorLeft::drop-down {
+      subcontrol-origin: margin;
+      subcontrol-position: left center;
+    }
+  WEffectChainPresetSelector#QuickEffectSelectorRight {
+    padding: 0px -1px 0px -5px;
+    margin: 0px;
+    text-align: right;
+    }
+    WEffectChainPresetSelector#QuickEffectSelectorRight::drop-down {
+      subcontrol-origin: margin;
+      subcontrol-position: right center;
+    }
+
   WEffectSelector QAbstractScrollArea,
+  WEffectChainPresetSelector QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     border: 1px solid #444;
     border-radius: 2px;
@@ -600,6 +636,7 @@ WEffectSelector {
   }
   /* selected item */
   WEffectSelector:checked,
+  WEffectChainPresetSelector:checked,
   #fadeModeCombobox:checked {
     /* not applied
     padding-left: 5px;	*/
@@ -609,6 +646,7 @@ WEffectSelector {
   }
   /* hovered items */
   WEffectSelector::item:selected,
+  WEffectChainPresetSelector::item:selected,
   #fadeModeCombobox::item:selected {
     background-color: #333;
   /* Already one of those properties destroys font config and
