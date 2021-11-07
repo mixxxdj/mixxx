@@ -155,7 +155,12 @@ void DlgKeywheel::updateSvg() {
 
             if (text.isText()) {
                 QDomText textNode = text.toText();
-                ChromaticKey key = static_cast<ChromaticKey>(id.midRef(2).toInt());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                const int keyInt = QStringView(id).sliced(2).toInt();
+#else
+                const int keyInt = id.midRef(2).toInt();
+#endif
+                ChromaticKey key = static_cast<ChromaticKey>(keyInt);
                 QString keyString = KeyUtils::keyToString(key, m_notation);
                 textNode.setData(keyString);
             }

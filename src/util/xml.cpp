@@ -19,6 +19,12 @@ double XmlParse::selectNodeDouble(const QDomNode& nodeHeader,
     return selectNode(nodeHeader, sNode).toElement().text().toDouble(ok);
 }
 
+bool XmlParse::selectNodeBool(const QDomNode& nodeHeader,
+        const QString& sNode) {
+    QString text = selectNode(nodeHeader, sNode).toElement().text();
+    return text == "true" || static_cast<bool>(text.toDouble()) || static_cast<bool>(text.toInt());
+}
+
 QDomNode XmlParse::selectNode(const QDomNode& nodeHeader,
                               const QString& sNode) {
     QDomNode node = nodeHeader.firstChild();

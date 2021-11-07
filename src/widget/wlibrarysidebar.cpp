@@ -15,6 +15,7 @@ constexpr int expand_time = 250;
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this) {
+    qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
@@ -155,7 +156,6 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
     }
 }
 
-
 void WLibrarySidebar::toggleSelectedItem() {
     QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
     if (selectedIndices.size() > 0) {
@@ -287,6 +287,16 @@ bool WLibrarySidebar::event(QEvent* pEvent) {
         updateTooltip();
     }
     return QTreeView::event(pEvent);
+}
+
+void WLibrarySidebar::focusInEvent(QFocusEvent* event) {
+    QTreeView::focusInEvent(event);
+    emit sidebarFocusChange(FocusWidget::Sidebar);
+}
+
+void WLibrarySidebar::focusOutEvent(QFocusEvent* event) {
+    QTreeView::focusOutEvent(event);
+    emit sidebarFocusChange(FocusWidget::None);
 }
 
 void WLibrarySidebar::slotSetFont(const QFont& font) {

@@ -18,8 +18,8 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     // properties.
     Q_PROPERTY(QString group READ getGroup WRITE setGroup NOTIFY groupChanged)
     Q_PROPERTY(QString key READ getKey WRITE setKey NOTIFY keyChanged)
-    Q_PROPERTY(QString keyValid READ isKeyValid NOTIFY keyValidChanged)
-    Q_PROPERTY(QString initialized READ isInitialized NOTIFY initializedChanged)
+    Q_PROPERTY(bool keyValid READ isKeyValid NOTIFY keyValidChanged)
+    Q_PROPERTY(bool initialized READ isInitialized NOTIFY initializedChanged)
     Q_PROPERTY(double value READ getValue WRITE setValue NOTIFY valueChanged)
     Q_PROPERTY(double parameter READ getParameter WRITE setParameter NOTIFY parameterChanged)
 

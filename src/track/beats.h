@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVector>
 #include <memory>
+#include <optional>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -12,18 +13,45 @@
 #include "util/memory.h"
 #include "util/types.h"
 
+#define BEAT_GRID_1_VERSION "BeatGrid-1.0"
+#define BEAT_GRID_2_VERSION "BeatGrid-2.0"
+#define BEAT_MAP_VERSION "BeatMap-1.0"
+
 namespace mixxx {
 
 class Beats;
 typedef std::shared_ptr<const Beats> BeatsPointer;
 
-class BeatIterator {
+class BeatMarker {
   public:
-    virtual ~BeatIterator() = default;
-    virtual bool hasNext() const = 0;
-    virtual audio::FramePos next() = 0;
+    BeatMarker(mixxx::audio::FramePos position, int beatsTillNextMarker)
+            : m_position(position), m_beatsTillNextMarker(beatsTillNextMarker) {
+        DEBUG_ASSERT(m_position.isValid());
+        DEBUG_ASSERT(!m_position.isFractional());
+        DEBUG_ASSERT(m_beatsTillNextMarker > 0);
+    }
+
+    mixxx::audio::FramePos position() const {
+        return m_position;
+    }
+
+    int beatsTillNextMarker() const {
+        return m_beatsTillNextMarker;
+    }
+
+  private:
+    mixxx::audio::FramePos m_position;
+    int m_beatsTillNextMarker;
 };
 
+inline bool operator==(const BeatMarker& lhs, const BeatMarker& rhs) {
+    return (lhs.position() == rhs.position() &&
+            lhs.beatsTillNextMarker() == rhs.beatsTillNextMarker());
+}
+
+inline bool operator!=(const BeatMarker& lhs, const BeatMarker& rhs) {
+    return !(lhs == rhs);
+}
 /// Beats is the base class for BPM and beat management classes. It provides a
 /// specification of all methods a beat-manager class must provide, as well as
 /// a capability model for representing optional features.
@@ -31,7 +59,161 @@ class BeatIterator {
 /// All instances of this class are supposed to be managed by std::shared_ptr!
 class Beats : private std::enable_shared_from_this<Beats> {
   public:
-    virtual ~Beats() = default;
+    class ConstIterator {
+      public:
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = mixxx::audio::FramePos;
+        using difference_type = int;
+        using pointer = value_type*;
+        using reference = value_type&;
+
+        ConstIterator(const Beats* beats,
+                std::vector<BeatMarker>::const_iterator it,
+                int beatOffset)
+                : m_beats(beats), m_it(it), m_beatOffset(beatOffset) {
+            updateValue();
+        }
+
+        mixxx::audio::FrameDiff_t beatLengthFrames() const;
+
+        // Iterator methods
+
+        const value_type& operator*() const {
+            return m_value;
+        }
+
+        const value_type* operator->() const {
+            return &m_value;
+        }
+
+        ConstIterator& operator++() {
+            *this += 1;
+            return *this;
+        }
+
+        ConstIterator& operator--() {
+            *this -= 1;
+            return *this;
+        }
+
+        ConstIterator operator++(difference_type) {
+            ConstIterator tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+
+        ConstIterator operator--(difference_type) {
+            ConstIterator tmp = *this;
+            --(*this);
+            return tmp;
+        }
+
+        ConstIterator operator+(difference_type n) {
+            ConstIterator tmp = *this;
+            tmp += n;
+            return tmp;
+        }
+
+        ConstIterator operator-(difference_type n) {
+            ConstIterator tmp = *this;
+            tmp -= n;
+            return tmp;
+        }
+
+        ConstIterator operator+=(difference_type n);
+        ConstIterator operator-=(difference_type n);
+
+        difference_type operator-(const ConstIterator& other) const;
+
+        friend bool operator==(const ConstIterator& lhs, const ConstIterator& rhs) {
+            return lhs.m_beats == rhs.m_beats && lhs.m_it == rhs.m_it &&
+                    lhs.m_beatOffset == rhs.m_beatOffset;
+        }
+
+        friend bool operator!=(const ConstIterator& lhs, const ConstIterator& rhs) {
+            return !(lhs == rhs);
+        }
+
+      private:
+        void updateValue();
+
+        mixxx::audio::FramePos m_value;
+
+        const Beats* m_beats;
+        std::vector<BeatMarker>::const_iterator m_it;
+        int m_beatOffset;
+    };
+
+    Beats(std::vector<BeatMarker> markers,
+            mixxx::audio::FramePos endMarkerPosition,
+            mixxx::Bpm endMarkerBpm,
+            mixxx::audio::SampleRate sampleRate,
+            const QString& subVersion)
+            : m_markers(std::move(markers)),
+              m_endMarkerPosition(endMarkerPosition),
+              m_endMarkerBpm(endMarkerBpm),
+              m_sampleRate(sampleRate),
+              m_subVersion(subVersion) {
+        DEBUG_ASSERT(m_endMarkerPosition.isValid());
+        DEBUG_ASSERT(!m_endMarkerPosition.isFractional());
+        DEBUG_ASSERT(m_endMarkerBpm.isValid());
+        DEBUG_ASSERT(m_sampleRate.isValid());
+    }
+
+    Beats(mixxx::audio::FramePos endMarkerPosition,
+            mixxx::Bpm endMarkerBpm,
+            mixxx::audio::SampleRate sampleRate,
+            const QString& subVersion)
+            : Beats(std::vector<BeatMarker>(),
+                      endMarkerPosition,
+                      endMarkerBpm,
+                      sampleRate,
+                      subVersion) {
+    }
+
+    ~Beats() = default;
+
+    /// Returns an iterator pointing to the position of the first beat marker.
+    ConstIterator cfirstmarker() const {
+        return ConstIterator(this, m_markers.cbegin(), 0);
+    }
+
+    /// Returns an iterator pointing to the position of the first beat after
+    /// the end beat marker.
+    ConstIterator clastmarker() const {
+        return ConstIterator(this, m_markers.cend(), 0);
+    }
+
+    /// Returns an iterator pointing to earliest representable beat position
+    /// (which is INT_MIN beats before the first beat marker).
+    ///
+    /// Warning: Decrementing the iterator returned by this function will
+    /// result in an integer underflow.
+    ConstIterator cbegin() const {
+        return ConstIterator(this, m_markers.cbegin(), std::numeric_limits<int>::lowest());
+    }
+
+    /// Returns an iterator pointing to latest representable beat position
+    /// (which is INT_MAX beats behind the end beat marker).
+    ///
+    /// Warning: Incrementing the iterator returned by this function will
+    /// result in an integer overflow.
+    ConstIterator cend() const {
+        return ConstIterator(this, m_markers.cend(), std::numeric_limits<int>::max());
+    }
+
+    ConstIterator iteratorFrom(audio::FramePos position) const;
+
+    friend bool operator==(const Beats& lhs, const Beats& rhs) {
+        return lhs.m_markers == rhs.m_markers &&
+                lhs.m_endMarkerPosition == rhs.m_endMarkerPosition &&
+                lhs.m_endMarkerBpm == rhs.m_endMarkerBpm && lhs.m_sampleRate &&
+                rhs.m_sampleRate;
+    }
+
+    friend bool operator!=(const Beats& lhs, const Beats& rhs) {
+        return !(lhs == rhs);
+    }
 
     BeatsPointer clonePointer() const {
         // All instances are immutable and can be shared safely
@@ -44,6 +226,16 @@ class Beats : private std::enable_shared_from_this<Beats> {
             const QString& beatsSubVersion,
             const QByteArray& beatsSerialized);
 
+    static BeatsPointer fromBeatGridByteArray(
+            audio::SampleRate sampleRate,
+            const QString& subVersion,
+            const QByteArray& byteArray);
+
+    static BeatsPointer fromBeatMapByteArray(
+            audio::SampleRate sampleRate,
+            const QString& subVersion,
+            const QByteArray& byteArray);
+
     static mixxx::BeatsPointer fromConstTempo(
             audio::SampleRate sampleRate,
             audio::FramePos position,
@@ -53,6 +245,13 @@ class Beats : private std::enable_shared_from_this<Beats> {
     static mixxx::BeatsPointer fromBeatPositions(
             audio::SampleRate sampleRate,
             const QVector<audio::FramePos>& beatPositions,
+            const QString& subVersion = QString());
+
+    static mixxx::BeatsPointer fromBeatMarkers(
+            audio::SampleRate sampleRate,
+            const std::vector<BeatMarker>& beatMarker,
+            const audio::FramePos endMarkerPosition,
+            const Bpm endMarkerBpm,
             const QString& subVersion = QString());
 
     enum class BpmScale {
@@ -69,18 +268,22 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// TODO: This is only needed for the "Asumme Constant Tempo" checkbox in
     /// `DlgTrackInfo`. This should probably be removed or reimplemented to
     /// check if all neighboring beats in this object have the same distance.
-    virtual bool hasConstantTempo() const = 0;
+    bool hasConstantTempo() const {
+        return m_markers.empty();
+    }
 
     /// Serialize beats to QByteArray.
-    virtual QByteArray toByteArray() const = 0;
+    QByteArray toByteArray() const;
 
     /// A string representing the version of the beat-processing code that
     /// produced this Beats instance. Used by BeatsFactory for associating a
     /// given serialization with the version that produced it.
-    virtual QString getVersion() const = 0;
+    QString getVersion() const;
     /// A sub-version can be used to represent the preferences used to generate
     /// the beats object.
-    virtual QString getSubVersion() const = 0;
+    QString getSubVersion() const {
+        return m_subVersion;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -106,10 +309,10 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// `position` refers to the location of the beat, the first value is
     /// `position`, and the second value is the next beat position. Returns
     /// `false` if *at least one* position is invalid.
-    virtual bool findPrevNextBeats(audio::FramePos position,
+    bool findPrevNextBeats(audio::FramePos position,
             audio::FramePos* prevBeatPosition,
             audio::FramePos* nextBeatPosition,
-            bool snapToNearBeats) const = 0;
+            bool snapToNearBeats) const;
 
     /// Return the frame position of the first beat in the track, or an invalid
     /// position if none exists.
@@ -128,37 +331,49 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// `findNextBeat` and `findPrevBeat`, respectively. If `position` refers
     /// to the location of a beat, then `position` is returned. If no beat can
     /// be found, returns an invalid frame position.
-    virtual audio::FramePos findNthBeat(audio::FramePos position, int n) const = 0;
+    audio::FramePos findNthBeat(audio::FramePos position, int n) const;
+
+    /// This function snaps the position to a beat if near.
+    /// This is used for beat loops, where start and end positions might be slightly off
+    /// due to rounding or quantizations by the engine buffer.
+    /// It makes use of virtual findPrevNextBeats() as a single instance for snapping.
+    audio::FramePos snapPosToNearBeat(audio::FramePos position) const;
 
     int numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const;
 
     /// Find the frame position N beats away from `position`. The number of beats may be
-    /// negative and does not need to be an integer.
-    audio::FramePos findNBeatsFromPosition(audio::FramePos position, double beats) const;
-
-    /// Reutns an iterator that yields frame position of every beat occurring
-    /// between `startPosition` and `endPosition`. `BeatIterator` must be iterated
-    /// while holding a strong references to the `Beats` object to ensure that
-    /// the `Beats` object is not deleted. Caller takes ownership of the returned
-    /// `BeatIterator`.
-    virtual std::unique_ptr<BeatIterator> findBeats(
-            audio::FramePos startPosition,
-            audio::FramePos endPosition) const = 0;
+    /// negative and does not need to be an integer. In this case the returned position will
+    /// be between two beats as well at the same fraction.
+    audio::FramePos findNBeatsFromPosition(
+            audio::FramePos position, double beats) const;
 
     /// Return whether or not a beat exists between `startPosition` and `endPosition`.
-    virtual bool hasBeatInRange(audio::FramePos startPosition,
-            audio::FramePos endPosition) const = 0;
+    bool hasBeatInRange(audio::FramePos startPosition,
+            audio::FramePos endPosition) const;
 
-    /// Return the average BPM over the entire track if the BPM is valid,
-    /// otherwise returns an invalid bpm value.
-    virtual mixxx::Bpm getBpm() const = 0;
+    /// Return the predominant BPM value between `startPosition` and `endPosition`
+    /// if the BPM is valid, otherwise returns an invalid BPM value.
+    mixxx::Bpm getBpmInRange(audio::FramePos startPosition,
+            audio::FramePos endPosition) const;
 
-    /// Return the average BPM over the range of n*2 beats centered around
+    /// Return the arithmetic average BPM over the range of n*2 beats centered around
     /// frame position `position`. For example, n=4 results in an averaging of 8 beats.
     /// The returned Bpm value may be invalid.
-    virtual mixxx::Bpm getBpmAroundPosition(audio::FramePos position, int n) const = 0;
+    mixxx::Bpm getBpmAroundPosition(audio::FramePos position, int n) const;
 
-    virtual audio::SampleRate getSampleRate() const = 0;
+    audio::SampleRate getSampleRate() const {
+        return m_sampleRate;
+    }
+
+    const std::vector<BeatMarker>& getMarkers() const {
+        return m_markers;
+    }
+    mixxx::audio::FramePos getEndMarkerPosition() const {
+        return m_endMarkerPosition;
+    }
+    mixxx::Bpm getEndMarkerBpm() const {
+        return m_endMarkerBpm;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
@@ -167,13 +382,22 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// Translate all beats in the song by `offset` frames. Beats that lie
     /// before the start of the track or after the end of the track are *not*
     /// removed.
-    virtual BeatsPointer translate(audio::FrameDiff_t offset) const = 0;
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    std::optional<BeatsPointer> tryTranslate(audio::FrameDiff_t offset) const;
 
     /// Scale the position of every beat in the song by `scale`.
-    virtual BeatsPointer scale(BpmScale scale) const = 0;
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    std::optional<BeatsPointer> tryScale(BpmScale scale) const;
 
     /// Adjust the beats so the global average BPM matches `bpm`.
-    virtual BeatsPointer setBpm(mixxx::Bpm bpm) const = 0;
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    std::optional<BeatsPointer> trySetBpm(mixxx::Bpm bpm) const;
 
   protected:
     /// Type tag for making public constructors of derived classes inaccessible.
@@ -183,11 +407,25 @@ class Beats : private std::enable_shared_from_this<Beats> {
 
     Beats() = default;
 
-    virtual bool isValid() const = 0;
+    bool isValid() const;
 
   private:
     Beats(const Beats&) = delete;
     Beats(Beats&&) = delete;
+
+    QByteArray toBeatGridByteArray() const;
+    QByteArray toBeatMapByteArray() const;
+
+    mixxx::audio::FrameDiff_t firstBeatLengthFrames() const;
+    mixxx::audio::FrameDiff_t endBeatLengthFrames() const;
+
+    std::vector<BeatMarker> m_markers;
+    mixxx::audio::FramePos m_endMarkerPosition;
+    mixxx::Bpm m_endMarkerBpm;
+    mixxx::audio::SampleRate m_sampleRate;
+
+    // The sub-version of this beatgrid.
+    const QString m_subVersion;
 };
 
 } // namespace mixxx

@@ -20,7 +20,7 @@ class QmlEffectsManagerProxy : public QObject {
             QObject* parent = nullptr);
 
     Q_INVOKABLE mixxx::qml::QmlEffectSlotProxy* getEffectSlot(
-            int rackNumber, int unitNumber, int effectNumber) const;
+            int unitNumber, int effectNumber) const;
 
   private:
     const std::shared_ptr<EffectsManager> m_pEffectsManager;

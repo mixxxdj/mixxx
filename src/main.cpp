@@ -10,7 +10,9 @@
 #include "coreservices.h"
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "mixxxmainwindow.h"
+#endif
 #include "qml/qmlapplication.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
@@ -34,10 +36,14 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
     int exitCode;
-
+    // TODO: remove --qml command line option and make QML only available
+    // with Qt6 when Mixxx can build with Qt6.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (args.getQml()) {
+#endif
         mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
         exitCode = pApp->exec();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     } else {
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
@@ -65,6 +71,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
             exitCode = pApp->exec();
         }
     }
+#endif
     return exitCode;
 }
 
@@ -108,9 +115,12 @@ int main(int argc, char * argv[]) {
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
 
+    // High DPI scaling is always enabled in Qt6.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // This needs to be set before initializing the QApplication.
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
 
     // workaround for https://bugreports.qt.io/browse/QTBUG-84363
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && QT_VERSION < QT_VERSION_CHECK(5, 15, 1)

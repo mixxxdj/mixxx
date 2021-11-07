@@ -76,7 +76,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
+        m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
         m_pEngineMaster = new TestEngineMaster(m_pConfig,
                 m_sMasterGroup,
                 m_pEffectsManager,
@@ -155,11 +155,14 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     }
 
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
+        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+        if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+            pEngineDeck->getEngineBuffer()->slotEjectTrack(1);
+        }
         pDeck->slotLoadTrack(pTrack, false);
 
         // Wait for the track to load.
         ProcessBuffer();
-        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
         while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
             QTest::qSleep(1); // millis
         }

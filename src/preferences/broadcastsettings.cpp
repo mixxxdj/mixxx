@@ -194,7 +194,7 @@ void BroadcastSettings::onConnectionStatusChanged(int newStatus) {
 }
 
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
-    auto it = m_profiles.begin() + index;
+    auto it = std::next(m_profiles.begin(), index);
     return it != m_profiles.end() ? it.value() : BroadcastProfilePtr(nullptr);
 }
 

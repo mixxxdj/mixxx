@@ -1,5 +1,6 @@
 #include "library/autodj/dlgautodj.h"
 
+#include <QApplication>
 #include <QMessageBox>
 
 #include "library/playlisttablemodel.h"
@@ -160,7 +161,14 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     fadeModeCombobox->setFocusPolicy(Qt::ClickFocus);
     spinBoxTransition->setFocusPolicy(Qt::ClickFocus);
     // work around QLineEdit being protected
-    spinBoxTransition->findChild<QLineEdit*>()->setFocusPolicy(Qt::ClickFocus);
+    QLineEdit* lineEditTransition(spinBoxTransition->findChild<QLineEdit*>());
+    lineEditTransition->setFocusPolicy(Qt::ClickFocus);
+    // Catch any Return keypress to pass focus to tracks table
+    connect(lineEditTransition,
+            &QLineEdit::returnPressed,
+            this,
+            // Move focus to tracks table to immediately allow keyboard shortcuts again.
+            &DlgAutoDJ::setFocus);
 
     connect(spinBoxTransition,
             QOverload<int>::of(&QSpinBox::valueChanged),
@@ -178,7 +186,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     fadeModeCombobox->setCurrentIndex(
             fadeModeCombobox->findData(static_cast<int>(m_pAutoDJProcessor->getTransitionMode())));
     connect(fadeModeCombobox,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            QOverload<int>::of(&QComboBox::activated),
             this,
             &DlgAutoDJ::slotTransitionModeChanged);
 
@@ -330,9 +338,12 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
     }
 }
 
-void DlgAutoDJ::slotTransitionModeChanged(int comboboxIndex) {
-    m_pAutoDJProcessor->setTransitionMode(static_cast<AutoDJProcessor::TransitionMode>(
-            fadeModeCombobox->itemData(comboboxIndex).toInt()));
+void DlgAutoDJ::slotTransitionModeChanged(int newIndex) {
+    m_pAutoDJProcessor->setTransitionMode(
+            static_cast<AutoDJProcessor::TransitionMode>(
+                    fadeModeCombobox->itemData(newIndex).toInt()));
+    // Move focus to tracks table to immediately allow keyboard shortcuts again.
+    setFocus();
 }
 
 void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
@@ -369,4 +380,8 @@ void DlgAutoDJ::updateSelectionInfo() {
 
 bool DlgAutoDJ::hasFocus() const {
     return m_pTrackTableView->hasFocus();
+}
+
+void DlgAutoDJ::setFocus() {
+    m_pTrackTableView->setFocus();
 }

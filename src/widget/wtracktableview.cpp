@@ -60,6 +60,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
           m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
+    qRegisterMetaType<FocusWidget>("FocusWidget");
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
@@ -767,8 +768,51 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             m_pTrackMenu->loadTrackModelIndices(indices);
             m_pTrackMenu->slotShowDlgTrackInfo();
         }
+    } else if (event->key() == kHideRemoveShortcutKey &&
+            event->modifiers() == kHideRemoveShortcutModifier) {
+        hideOrRemoveSelectedTracks();
     }
     QTableView::keyPressEvent(event);
+}
+
+void WTrackTableView::hideOrRemoveSelectedTracks() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    QMessageBox::StandardButton response;
+    if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
+        // Hide tracks if this is the main library table
+        response = QMessageBox::question(this,
+                tr("Confirm track hide"),
+                tr("Are you sure you want to hide the selected tracks?"));
+        if (response == QMessageBox::Yes) {
+            pTrackModel->hideTracks(indices);
+        }
+    } else {
+        // Else remove the tracks from AutoDJ/crate/playlist
+        QString message;
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
+            message = tr("Are you sure you want to remove the selected tracks from AutoDJ queue?");
+        } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
+            message = tr("Are you sure you want to remove the selected tracks from this crate?");
+        } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
+            message = tr("Are you sure you want to remove the selected tracks from this playlist?");
+        } else {
+            return;
+        }
+
+        response = QMessageBox::question(this, tr("Confirm track removal"), message);
+        if (response == QMessageBox::Yes) {
+            pTrackModel->removeTracks(indices);
+        }
+    }
 }
 
 void WTrackTableView::loadSelectedTrack() {
@@ -1024,8 +1068,22 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     }
 }
 
+void WTrackTableView::focusInEvent(QFocusEvent* event) {
+    QWidget::focusInEvent(event);
+    emit trackTableFocusChange(FocusWidget::TracksTable);
+}
+
+void WTrackTableView::focusOutEvent(QFocusEvent* event) {
+    QWidget::focusOutEvent(event);
+    emit trackTableFocusChange(FocusWidget::None);
+}
+
 bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
+}
+
+void WTrackTableView::setFocus() {
+    QWidget::setFocus();
 }
 
 void WTrackTableView::saveCurrentVScrollBarPos() {

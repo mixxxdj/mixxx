@@ -15,11 +15,11 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="EQRackOptions">
+    <widget class="QGroupBox" name="DeckEqualizerOptions">
      <property name="title">
-      <string>Equalizer Rack</string>
+      <string>Deck Equalizers</string>
      </property>
-      <layout class="QVBoxLayout" name="Racklayout" stretch="0,0,0,0">
+      <layout class="QVBoxLayout" name="DeckEqualizerCheckboxes" stretch="0,0,0,0">
        <item>
         <widget class="QCheckBox" name="CheckBoxEqOnly">
          <property name="text">

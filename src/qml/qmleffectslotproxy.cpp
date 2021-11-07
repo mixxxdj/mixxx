@@ -3,44 +3,42 @@
 #include <QObject>
 #include <QQmlEngine>
 
-#include "effects/effectrack.h"
+#include "effects/effectchain.h"
 #include "effects/effectslot.h"
 #include "qml/qmleffectmanifestparametersmodel.h"
 
 namespace mixxx {
 namespace qml {
 
-QmlEffectSlotProxy::QmlEffectSlotProxy(EffectRackPointer pRack,
-        EffectChainSlotPointer pChainSlot,
+QmlEffectSlotProxy::QmlEffectSlotProxy(
+        std::shared_ptr<EffectsManager> pEffectsManager,
+        int unitNumber,
+        EffectChainPointer pChainSlot,
         EffectSlotPointer pEffectSlot,
         QObject* parent)
         : QObject(parent),
-          m_pRack(pRack),
+          m_pEffectsManager(pEffectsManager),
+          m_unitNumber(unitNumber),
           m_pChainSlot(pChainSlot),
           m_pEffectSlot(pEffectSlot) {
-    DEBUG_ASSERT(m_pRack);
     DEBUG_ASSERT(m_pChainSlot);
     DEBUG_ASSERT(m_pEffectSlot);
     connect(m_pEffectSlot.get(),
-            &EffectSlot::updated,
+            &EffectSlot::effectChanged,
             this,
             &QmlEffectSlotProxy::effectIdChanged);
     connect(m_pEffectSlot.get(),
-            &EffectSlot::updated,
+            &EffectSlot::effectChanged,
+            this,
+            &QmlEffectSlotProxy::parametersModelChanged);
+    connect(m_pEffectSlot.get(),
+            &EffectSlot::parametersChanged,
             this,
             &QmlEffectSlotProxy::parametersModelChanged);
 }
 
-int QmlEffectSlotProxy::getRackNumber() const {
-    return m_pRack->getRackNumber();
-}
-
-QString QmlEffectSlotProxy::getRackGroup() const {
-    return m_pRack->getGroup();
-}
-
 int QmlEffectSlotProxy::getChainSlotNumber() const {
-    return m_pChainSlot->getChainSlotNumber();
+    return m_unitNumber;
 }
 
 QString QmlEffectSlotProxy::getChainSlotGroup() const {
@@ -56,30 +54,19 @@ QString QmlEffectSlotProxy::getGroup() const {
 }
 
 QString QmlEffectSlotProxy::getEffectId() const {
-    const EffectPointer pEffect = m_pEffectSlot->getEffect();
-    if (!pEffect) {
-        return QString();
-    }
-
-    const EffectManifestPointer pManifest = pEffect->getManifest();
-    return pManifest->id();
+    return m_pEffectSlot->id();
 }
 
 void QmlEffectSlotProxy::setEffectId(const QString& effectId) {
-    m_pRack->maybeLoadEffect(
-            m_pChainSlot->getChainSlotNumber(),
-            m_pEffectSlot->getEffectSlotNumber(),
-            effectId);
+    const EffectManifestPointer pManifest =
+            m_pEffectsManager->getBackendManager()->getManifestFromUniqueId(
+                    effectId);
+    m_pEffectSlot->loadEffectWithDefaults(pManifest);
 }
 
 QmlEffectManifestParametersModel* QmlEffectSlotProxy::getParametersModel() const {
-    const EffectPointer pEffect = m_pEffectSlot->getEffect();
-    if (!pEffect) {
-        return nullptr;
-    }
-
-    const EffectManifestPointer pManifest = pEffect->getManifest();
-    VERIFY_OR_DEBUG_ASSERT(pManifest) {
+    const EffectManifestPointer pManifest = m_pEffectSlot->getManifest();
+    if (!pManifest) {
         return nullptr;
     }
 

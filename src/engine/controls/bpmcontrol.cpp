@@ -111,22 +111,6 @@ BpmControl::BpmControl(const QString& group,
             this, &BpmControl::slotBpmTap,
             Qt::DirectConnection);
 
-    // Beat sync (scale buffer tempo relative to tempo of other buffer)
-    m_pButtonSync = new ControlPushButton(ConfigKey(group, "beatsync"));
-    connect(m_pButtonSync, &ControlObject::valueChanged,
-            this, &BpmControl::slotControlBeatSync,
-            Qt::DirectConnection);
-
-    m_pButtonSyncPhase = new ControlPushButton(ConfigKey(group, "beatsync_phase"));
-    connect(m_pButtonSyncPhase, &ControlObject::valueChanged,
-            this, &BpmControl::slotControlBeatSyncPhase,
-            Qt::DirectConnection);
-
-    m_pButtonSyncTempo = new ControlPushButton(ConfigKey(group, "beatsync_tempo"));
-    connect(m_pButtonSyncTempo, &ControlObject::valueChanged,
-            this, &BpmControl::slotControlBeatSyncTempo,
-            Qt::DirectConnection);
-
     m_pTranslateBeats = new ControlPushButton(ConfigKey(group, "beats_translate_curpos"));
     connect(m_pTranslateBeats, &ControlObject::valueChanged,
             this, &BpmControl::slotBeatsTranslate,
@@ -144,15 +128,13 @@ BpmControl::BpmControl(const QString& group,
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
+    m_pSyncEnabled = new ControlProxy(group, "sync_enabled", this);
 }
 
 BpmControl::~BpmControl() {
     delete m_pLocalBpm;
     delete m_pEngineBpm;
     delete m_pButtonTap;
-    delete m_pButtonSync;
-    delete m_pButtonSyncPhase;
-    delete m_pButtonSyncTempo;
     delete m_pTranslateBeats;
     delete m_pBeatsTranslateMatchAlignment;
     delete m_pTranslateBeatsEarlier;
@@ -175,12 +157,17 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
         return;
     }
 
-    mixxx::Bpm bpm = pBeats->getBpm();
+    const mixxx::Bpm bpm = pBeats->getBpmInRange(
+            mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
     // FIXME: calling bpm.value() without checking bpm.isValid()
     const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm.value() + deltaBpm));
     mixxx::Bpm adjustedBpm = BeatUtils::roundBpmWithinRange(
             centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);
-    pTrack->trySetBeats(pBeats->setBpm(adjustedBpm));
+    const auto newBeats = pBeats->trySetBpm(adjustedBpm);
+    if (!newBeats) {
+        return;
+    }
+    pTrack->trySetBeats(*newBeats);
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
@@ -209,7 +196,10 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (pBeats) {
         const double sampleOffset = frameInfo().sampleRate * -0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
-        pTrack->trySetBeats(pBeats->translate(frameOffset));
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
+        if (translatedBeats) {
+            pTrack->trySetBeats(*translatedBeats);
+        }
     }
 }
 
@@ -226,7 +216,10 @@ void BpmControl::slotTranslateBeatsLater(double v) {
         // TODO(rryan): Track::frameInfo is possibly inaccurate!
         const double sampleOffset = frameInfo().sampleRate * 0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
-        pTrack->trySetBeats(pBeats->translate(frameOffset));
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
+        if (translatedBeats) {
+            pTrack->trySetBeats(*translatedBeats);
+        }
     }
 }
 
@@ -263,116 +256,11 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     averageBpm = BeatUtils::roundBpmWithinRange(averageBpm - kBpmTabRounding,
             averageBpm,
             averageBpm + kBpmTabRounding);
-    pTrack->trySetBeats(pBeats->setBpm(averageBpm));
-}
-
-void BpmControl::slotControlBeatSyncPhase(double value) {
-    if (value == 0) {
+    const auto newBeats = pBeats->trySetBpm(averageBpm);
+    if (!newBeats) {
         return;
     }
-
-    if (isSynchronized()) {
-        m_dUserOffset.setValue(0.0);
-    }
-    getEngineBuffer()->requestSyncPhase();
-}
-
-void BpmControl::slotControlBeatSyncTempo(double value) {
-    if (value == 0) {
-        return;
-    }
-
-    syncTempo();
-}
-
-void BpmControl::slotControlBeatSync(double value) {
-    if (value == 0) {
-        return;
-    }
-
-    if (!syncTempo()) {
-        // syncTempo failed, nothing else to do
-        return;
-    }
-
-    // Also sync phase if quantize is enabled.
-    // this is used from controller scripts, where the latching behaviour of
-    // the sync_enable CO cannot be used
-    if (m_pPlayButton->toBool() && m_pQuantize->toBool()) {
-        slotControlBeatSyncPhase(value);
-    }
-}
-
-bool BpmControl::syncTempo() {
-    if (getSyncMode() == SyncMode::LeaderExplicit) {
-        return false;
-    }
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-
-    if (!pOtherEngineBuffer) {
-        return false;
-    }
-
-    const auto thisBpm = getBpm();
-    const auto thisLocalBpm = getLocalBpm();
-
-    const auto otherBpm = pOtherEngineBuffer->getBpm();
-    const auto otherLocalBpm = pOtherEngineBuffer->getLocalBpm();
-
-    //qDebug() << "this" << "bpm" << thisBpm << "filebpm" << thisLocalBpm;
-    //qDebug() << "other" << "bpm" << otherBpm << "filebpm" << otherLocalBpm;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Rough proof of how syncing works -- rryan 3/2011
-    // ------------------------------------------------
-    //
-    // Let this and other denote this deck versus the sync-target deck.
-    //
-    // The goal is for this deck's effective BPM to equal the other decks.
-    //
-    // thisBpm = otherBpm
-    ///
-    // An effective BPM is the file-bpm times the rate:
-    //
-    // bpm = fileBpm * rate
-    //
-    // So our goal is to tweak thisRate such that this equation is true:
-    //
-    // thisFileBpm * (1.0 + thisRate) = otherFileBpm * (1.0 + otherRate)
-    //
-    // so rearrange this equation in terms of thisRate:
-    //
-    // thisRate = (otherFileBpm * (1.0 + otherRate)) / thisFileBpm - 1.0
-    //
-    // So the new rateScale to set is:
-    //
-    // thisRateScale = ((otherFileBpm * (1.0 + otherRate)) / thisFileBpm - 1.0) / (thisRateDir * thisRateRange)
-
-    if (otherBpm.isValid() && thisBpm.isValid() && thisLocalBpm.isValid()) {
-        // The desired rate is the other decks effective rate divided by this
-        // deck's file BPM. This gives us the playback rate that will produce an
-        // effective BPM equivalent to the other decks.
-        double desiredRate = otherBpm / thisLocalBpm;
-
-        // Test if this buffer's bpm is the double of the other one, and adjust
-        // the rate scale. I believe this is intended to account for our BPM
-        // algorithm sometimes finding double or half BPMs. This avoids drastic
-        // scales.
-
-        const double fileBpmDelta = fabs(thisLocalBpm - otherLocalBpm);
-        if (fabs(thisLocalBpm * 2.0 - otherLocalBpm) < fileBpmDelta) {
-            desiredRate /= 2.0;
-        } else if (fabs(thisLocalBpm - otherLocalBpm * 2.0) < fileBpmDelta) {
-            desiredRate *= 2.0;
-        }
-
-        if (desiredRate < 2.0 && desiredRate > 0.5) {
-            m_pEngineBpm->set(m_pLocalBpm->get() * desiredRate);
-            m_pRateRatio->set(desiredRate);
-            return true;
-        }
-    }
-    return false;
+    pTrack->trySetBeats(*newBeats);
 }
 
 // static
@@ -491,14 +379,6 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
     const double error = shortestPercentageChange(syncTargetBeatDistance, thisBeatDistance);
     const double curUserOffset = m_dUserOffset.getValue();
 
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << m_group << "****************";
-        kLogger.trace() << "target beat distance:" << syncTargetBeatDistance;
-        kLogger.trace() << "my     beat distance:" << thisBeatDistance;
-        kLogger.trace() << "user offset distance:" << curUserOffset;
-        kLogger.trace() << "error               :" << error;
-    }
-
     double adjustment = 1.0;
 
     if (userTweakingSync) {
@@ -541,6 +421,14 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         }
     }
     m_dLastSyncAdjustment = adjustment;
+    if (kLogger.traceEnabled() && adjustment - 1.0 > 0.01) {
+        kLogger.trace() << m_group << "****************";
+        kLogger.trace() << "target beat distance:" << syncTargetBeatDistance;
+        kLogger.trace() << "my     beat distance:" << thisBeatDistance;
+        kLogger.trace() << "user offset distance:" << curUserOffset;
+        kLogger.trace() << "error               :" << error;
+        kLogger.trace() << "adjustment          :" << adjustment;
+    }
     return adjustment;
 }
 
@@ -666,7 +554,7 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pNextBeat->get());
     mixxx::audio::FrameDiff_t thisBeatLengthFrames;
-    if (thisPrevBeatPosition.isValid() || thisNextBeatPosition.isValid() ||
+    if (!thisPrevBeatPosition.isValid() || !thisNextBeatPosition.isValid() ||
             thisPosition > thisNextBeatPosition ||
             thisPosition < thisPrevBeatPosition) {
         if (kLogger.traceEnabled()) {
@@ -863,10 +751,9 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
     mixxx::audio::FrameDiff_t thisBeatLengthFrames;
 
     // Look up the next beat and beat length for the new position
-    if (!thisNextBeatPosition.isValid() ||
+    if (!thisNextBeatPosition.isValid() || !thisPrevBeatPosition.isValid() ||
             thisPosition > thisNextBeatPosition ||
-            (thisPrevBeatPosition.isValid() &&
-                    thisPosition < thisPrevBeatPosition)) {
+            thisPosition < thisPrevBeatPosition) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "BpmControl::getBeatMatchPosition out of date"
                             << thisPrevBeatPosition << thisPosition << thisNextBeatPosition;
@@ -1031,14 +918,21 @@ mixxx::audio::FrameDiff_t BpmControl::getPhaseOffset(mixxx::audio::FramePos this
 }
 
 void BpmControl::slotUpdateEngineBpm(double value) {
-    Q_UNUSED(value);
-    // Adjust playback bpm in response to a rate_ration update
+    // Adjust playback bpm in response to a rate_ratio update
     double dRate = m_pRateRatio->get();
+
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::slotUpdateEngineBpm"
+                        << value << m_pLocalBpm->get() << dRate;
+    }
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
 void BpmControl::slotUpdateRateSlider(double value) {
-    Q_UNUSED(value);
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::slotUpdateRateSlider"
+                        << value;
+    }
     // Adjust rate slider position response to a change in rate range or m_pEngineBpm
 
     double localBpm = m_pLocalBpm->get();
@@ -1062,11 +956,18 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
 void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::trackBeatsUpdated"
-                        << (pBeats ? pBeats->getBpm() : mixxx::Bpm());
+                        << (pBeats ? pBeats->getBpmInRange(
+                                             mixxx::audio::kStartFramePos,
+                                             frameInfo().trackEndPosition)
+                                   : mixxx::Bpm());
     }
     m_pBeats = pBeats;
     updateLocalBpm();
     resetSyncAdjustment();
+}
+
+void BpmControl::notifySeek(mixxx::audio::FramePos position) {
+    updateBeatDistance(position);
 }
 
 void BpmControl::slotBeatsTranslate(double v) {
@@ -1081,8 +982,11 @@ void BpmControl::slotBeatsTranslate(double v) {
     if (pBeats) {
         const auto currentPosition = frameInfo().currentPosition.toLowerFrameBoundary();
         const auto closestBeat = pBeats->findClosestBeat(currentPosition);
-        const mixxx::audio::FrameDiff_t delta = currentPosition - closestBeat;
-        pTrack->trySetBeats(pBeats->translate(delta));
+        const mixxx::audio::FrameDiff_t frameOffset = currentPosition - closestBeat;
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
+        if (translatedBeats) {
+            pTrack->trySetBeats(*translatedBeats);
+        }
     }
 }
 
@@ -1100,8 +1004,11 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         // otherwise it will always return 0 if sync lock is active.
         m_dUserOffset.setValue(0.0);
 
-        const mixxx::audio::FrameDiff_t frameOffset = getPhaseOffset(frameInfo().currentPosition);
-        pTrack->trySetBeats(pBeats->translate(-frameOffset));
+        const mixxx::audio::FrameDiff_t frameOffset = -getPhaseOffset(frameInfo().currentPosition);
+        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
+        if (translatedBeats) {
+            pTrack->trySetBeats(*translatedBeats);
+        }
     }
 }
 
@@ -1109,10 +1016,11 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
     mixxx::Bpm prevLocalBpm = mixxx::Bpm(m_pLocalBpm->get());
     mixxx::Bpm localBpm;
     const mixxx::BeatsPointer pBeats = m_pBeats;
+    const FrameInfo info = frameInfo();
     if (pBeats) {
-        localBpm = pBeats->getBpmAroundPosition(frameInfo().currentPosition, kLocalBpmSpan);
+        localBpm = pBeats->getBpmAroundPosition(info.currentPosition, kLocalBpmSpan);
         if (!localBpm.isValid()) {
-            localBpm = pBeats->getBpm();
+            localBpm = pBeats->getBpmInRange(mixxx::audio::kStartFramePos, info.trackEndPosition);
         }
     }
     if (localBpm != prevLocalBpm) {
@@ -1131,7 +1039,11 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    double beatDistance = getBeatDistance(frameInfo().currentPosition);
+    return updateBeatDistance(frameInfo().currentPosition);
+}
+
+double BpmControl::updateBeatDistance(mixxx::audio::FramePos playpos) {
+    double beatDistance = getBeatDistance(playpos);
     m_pThisBeatDistance->set(beatDistance);
     if (!isSynchronized() && m_dUserOffset.getValue() != 0.0) {
         m_dUserOffset.setValue(0.0);
@@ -1154,11 +1066,11 @@ void BpmControl::updateInstantaneousBpm(double instantaneousBpm) {
 }
 
 void BpmControl::resetSyncAdjustment() {
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::resetSyncAdjustment";
-    }
     // Immediately edit the beat distance to reflect the new reality.
     double new_distance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::resetSyncAdjustment: " << new_distance;
+    }
     m_pThisBeatDistance->set(new_distance);
     m_dUserOffset.setValue(0.0);
     m_resetSyncAdjustment = true;

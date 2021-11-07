@@ -67,7 +67,8 @@ class Track : public QObject {
     Q_PROPERTY(QString bpmText READ getBpmText STORED false NOTIFY bpmChanged)
     Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyChanged)
     Q_PROPERTY(double duration READ getDuration NOTIFY durationChanged)
-    Q_PROPERTY(QString durationText READ getDurationTextSeconds STORED false NOTIFY durationChanged)
+    Q_PROPERTY(QString durationTextSeconds READ getDurationTextSeconds
+                    STORED false NOTIFY durationChanged)
     Q_PROPERTY(QString durationTextCentiseconds READ getDurationTextCentiseconds
                     STORED false NOTIFY durationChanged)
     Q_PROPERTY(QString durationTextMilliseconds READ getDurationTextMilliseconds
@@ -155,8 +156,9 @@ class Track : public QObject {
     // Returns ReplayGain
     mixxx::ReplayGain getReplayGain() const;
 
-    // Indicates if the metadata has been parsed from file tags.
-    bool isSourceSynchronized() const;
+    /// Checks if the internal metadata is in-sync with the
+    /// metadata stored in file tags.
+    bool checkSourceSynchronized() const;
 
     // The date/time of the last import or export of metadata
     void setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt);
@@ -391,7 +393,8 @@ class Track : public QObject {
             const QDateTime& sourceSynchronizedAt);
 
     mixxx::TrackMetadata getMetadata(
-            bool* pHeaderParsed = nullptr) const;
+            mixxx::TrackRecord::SourceSyncStatus*
+                    pSourceSyncStatus = nullptr) const;
 
     mixxx::TrackRecord getRecord(
             bool* pDirty = nullptr) const;

@@ -50,7 +50,7 @@ QList<QString> ParserCsv::parse(const QString& sFilename) {
             for (int i = 1; i < tokens.size(); ++i) {
                 if (loc_coll < tokens[i].size()) {
                     // Todo: check if path is relative
-                    QFileInfo fi = tokens[i][loc_coll];
+                    QFileInfo fi(tokens[i][loc_coll]);
                     if (fi.isRelative()) {
                         // add base path
                         qDebug() << "is relative" << basepath << fi.filePath();
@@ -140,9 +140,14 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
 
     qDebug() << "Basepath: " << base;
     QTextStream out(&file);
-    out.setCodec("UTF-8"); // rfc4180: Common usage of CSV is US-ASCII ...
-                           // Using UTF-8 to get around codepage issues
-                           // and it's the default encoding in Ooo Calc
+    // rfc4180: Common usage of CSV is US-ASCII ...
+    // Using UTF-8 to get around codepage issues
+    // and it's the default encoding in Ooo Calc
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    DEBUG_ASSERT(out.encoding() == QStringConverter::Utf8);
+#else
+    out.setCodec("UTF-8");
+#endif
 
     // writing header section
     bool first = true;
