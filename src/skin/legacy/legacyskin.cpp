@@ -1,5 +1,7 @@
 #include "skin/legacy/legacyskin.h"
 
+#include <QRegularExpression>
+
 #include "coreservices.h"
 #include "skin/legacy/legacyskinparser.h"
 
