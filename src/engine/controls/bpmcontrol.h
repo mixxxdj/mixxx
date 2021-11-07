@@ -109,6 +109,8 @@ class BpmControl : public EngineControl {
     void slotTempoTap(double value);
     void slotTempoTapFilter(double averageLength, int numSamples);
 
+    void slotBeatsSetMarker(double);
+    void slotBeatsRemoveMarker(double);
     void slotUpdateRateSlider(double v = 0.0);
     void slotUpdateEngineBpm(double v = 0.0);
     void slotBeatsTranslate(double);
@@ -151,6 +153,8 @@ class BpmControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pTranslateBeatsLater;
     std::unique_ptr<ControlEncoder> m_pTranslateBeatsMove;
     std::unique_ptr<ControlPushButton> m_pBeatsUndo;
+    std::unique_ptr<ControlPushButton> m_pBeatsSetMarker;
+    std::unique_ptr<ControlPushButton> m_pBeatsRemoveMarker;
 
     std::unique_ptr<ControlPushButton> m_pBeatsHalve;
     std::unique_ptr<ControlPushButton> m_pBeatsTwoThirds;
