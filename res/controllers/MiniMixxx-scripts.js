@@ -127,8 +127,8 @@ MiniMixxx.EncoderModeJog = class extends MiniMixxx.Mode {
             playPosition = Math.max(Math.min(playPosition, 1.0), 0.0);
             engine.setValue(this.channel, "playposition", playPosition);
         } else {
-            if (engine.getValue(this.activeChannel, "play")) {
-                velo /= 8;
+            if (engine.getValue(this.channel, "play")) {
+                velo /= 2;
             } else {
                 velo *= 2;
             }
