@@ -57,7 +57,7 @@
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
-                <ArcUnipolar><Variable name="ArcUnipolar"/></ArcUnipolar>
+                <ArcUnipolar>true</ArcUnipolar>
                 <ArcReversed><Variable name="ArcReversed"/></ArcReversed>
                 <ArcColor><Variable name="ArcColorFx12Quick"/></ArcColor>
                 <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
