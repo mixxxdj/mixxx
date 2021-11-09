@@ -474,6 +474,22 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
     return it;
 }
 
+Beats::ConstIterator Beats::iteratorClosestTo(audio::FramePos position) const {
+    auto it = iteratorFrom(position);
+    if (it == cbegin()) {
+        return it;
+    }
+
+    const auto deltaFrames = *it - position;
+    it--;
+    if ((position - *it) < deltaFrames) {
+        return it;
+    }
+
+    it++;
+    return it;
+}
+
 audio::FramePos Beats::findNthBeat(audio::FramePos position, int n) const {
     if (n == 0) {
         return audio::kInvalidFramePos;

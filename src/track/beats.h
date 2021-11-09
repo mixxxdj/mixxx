@@ -245,6 +245,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
     }
 
     ConstIterator iteratorFrom(audio::FramePos position) const;
+    ConstIterator iteratorClosestTo(audio::FramePos position) const;
 
     friend bool operator==(const Beats& lhs, const Beats& rhs) {
         return lhs.m_markers == rhs.m_markers &&
