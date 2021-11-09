@@ -599,8 +599,8 @@ std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames)
             m_markers.cend(),
             std::back_inserter(markers),
             [offsetFrames](const BeatMarker& marker) -> BeatMarker {
-                const auto position = marker.position() + offsetFrames;
-                return BeatMarker(position.toLowerFrameBoundary(),
+                const auto translatedPosition = marker.position() + offsetFrames;
+                return BeatMarker(translatedPosition.toLowerFrameBoundary(),
                         marker.beatsTillNextMarker());
             });
 
