@@ -435,14 +435,14 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
     const auto markers = pBeats->getMarkers();
     QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers;
 
-    const float bpm = static_cast<float>(pBeats->getEndMarkerBpm().value());
+    const float bpm = static_cast<float>(pBeats->getLastMarkerBpm().value());
 
     if (markers.size() == 1) {
         const auto& marker = markers.back();
         const auto lastBeatLengthFrames = 60.0 * pBeats->getSampleRate() /
-                pBeats->getEndMarkerBpm().value();
+                pBeats->getLastMarkerBpm().value();
         const auto previousBeatLengthFrames =
-                (pBeats->getEndMarkerPosition() - marker.position()) /
+                (pBeats->getLastMarkerPosition() - marker.position()) /
                 marker.beatsTillNextMarker();
         // If the following condition holds true, the marker only exists for backwards compatibility with the legacy beatgrid format.
         //
@@ -474,7 +474,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
 
     const float positionSecs =
             static_cast<float>(signalInfo.frames2secsFractional(
-                                       pBeats->getEndMarkerPosition().value()) -
+                                       pBeats->getLastMarkerPosition().value()) -
                     timingOffsetSecs);
 
     setTerminalMarker(std::make_shared<SeratoBeatGridTerminalMarker>(positionSecs, bpm));

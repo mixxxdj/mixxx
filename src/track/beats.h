@@ -145,28 +145,28 @@ class Beats : private std::enable_shared_from_this<Beats> {
     };
 
     Beats(std::vector<BeatMarker> markers,
-            mixxx::audio::FramePos endMarkerPosition,
-            mixxx::Bpm endMarkerBpm,
+            mixxx::audio::FramePos lastMarkerPosition,
+            mixxx::Bpm lastMarkerBpm,
             mixxx::audio::SampleRate sampleRate,
             const QString& subVersion)
             : m_markers(std::move(markers)),
-              m_endMarkerPosition(endMarkerPosition),
-              m_endMarkerBpm(endMarkerBpm),
+              m_lastMarkerPosition(lastMarkerPosition),
+              m_lastMarkerBpm(lastMarkerBpm),
               m_sampleRate(sampleRate),
               m_subVersion(subVersion) {
-        DEBUG_ASSERT(m_endMarkerPosition.isValid());
-        DEBUG_ASSERT(!m_endMarkerPosition.isFractional());
-        DEBUG_ASSERT(m_endMarkerBpm.isValid());
+        DEBUG_ASSERT(m_lastMarkerPosition.isValid());
+        DEBUG_ASSERT(!m_lastMarkerPosition.isFractional());
+        DEBUG_ASSERT(m_lastMarkerBpm.isValid());
         DEBUG_ASSERT(m_sampleRate.isValid());
     }
 
-    Beats(mixxx::audio::FramePos endMarkerPosition,
-            mixxx::Bpm endMarkerBpm,
+    Beats(mixxx::audio::FramePos lastMarkerPosition,
+            mixxx::Bpm lastMarkerBpm,
             mixxx::audio::SampleRate sampleRate,
             const QString& subVersion)
             : Beats(std::vector<BeatMarker>(),
-                      endMarkerPosition,
-                      endMarkerBpm,
+                      lastMarkerPosition,
+                      lastMarkerBpm,
                       sampleRate,
                       subVersion) {
     }
@@ -206,8 +206,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
 
     friend bool operator==(const Beats& lhs, const Beats& rhs) {
         return lhs.m_markers == rhs.m_markers &&
-                lhs.m_endMarkerPosition == rhs.m_endMarkerPosition &&
-                lhs.m_endMarkerBpm == rhs.m_endMarkerBpm && lhs.m_sampleRate &&
+                lhs.m_lastMarkerPosition == rhs.m_lastMarkerPosition &&
+                lhs.m_lastMarkerBpm == rhs.m_lastMarkerBpm && lhs.m_sampleRate &&
                 rhs.m_sampleRate;
     }
 
@@ -250,8 +250,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
     static mixxx::BeatsPointer fromBeatMarkers(
             audio::SampleRate sampleRate,
             const std::vector<BeatMarker>& beatMarker,
-            const audio::FramePos endMarkerPosition,
-            const Bpm endMarkerBpm,
+            const audio::FramePos lastMarkerPosition,
+            const Bpm lastMarkerBpm,
             const QString& subVersion = QString());
 
     enum class BpmScale {
@@ -368,11 +368,12 @@ class Beats : private std::enable_shared_from_this<Beats> {
     const std::vector<BeatMarker>& getMarkers() const {
         return m_markers;
     }
-    mixxx::audio::FramePos getEndMarkerPosition() const {
-        return m_endMarkerPosition;
+
+    mixxx::audio::FramePos getLastMarkerPosition() const {
+        return m_lastMarkerPosition;
     }
-    mixxx::Bpm getEndMarkerBpm() const {
-        return m_endMarkerBpm;
+    mixxx::Bpm getLastMarkerBpm() const {
+        return m_lastMarkerBpm;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -417,11 +418,11 @@ class Beats : private std::enable_shared_from_this<Beats> {
     QByteArray toBeatMapByteArray() const;
 
     mixxx::audio::FrameDiff_t firstBeatLengthFrames() const;
-    mixxx::audio::FrameDiff_t endBeatLengthFrames() const;
+    mixxx::audio::FrameDiff_t lastBeatLengthFrames() const;
 
     std::vector<BeatMarker> m_markers;
-    mixxx::audio::FramePos m_endMarkerPosition;
-    mixxx::Bpm m_endMarkerBpm;
+    mixxx::audio::FramePos m_lastMarkerPosition;
+    mixxx::Bpm m_lastMarkerBpm;
     mixxx::audio::SampleRate m_sampleRate;
 
     // The sub-version of this beatgrid.

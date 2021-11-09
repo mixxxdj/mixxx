@@ -446,8 +446,8 @@ TEST(BeatsTest, NonConstTempoFromBeatPositions) {
     EXPECT_EQ(16, markers[2].beatsTillNextMarker());
 
     EXPECT_DOUBLE_EQ((kStartPosition + 48 * beatLengthFrames).value(),
-            pBeats->getEndMarkerPosition().value());
-    EXPECT_EQ(kBpm * 2, pBeats->getEndMarkerBpm());
+            pBeats->getLastMarkerPosition().value());
+    EXPECT_EQ(kBpm * 2, pBeats->getLastMarkerBpm());
 }
 
 TEST(BeatsTest, ConstTempoFindNthBeatWhenOnBeat) {

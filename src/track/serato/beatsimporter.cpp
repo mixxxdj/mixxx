@@ -59,10 +59,10 @@ BeatsPointer SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
         markers.push_back(BeatMarker{position.toLowerFrameBoundary(), beatsTillNextMarker});
     }
 
-    const auto endMarkerPosition = audio::FramePos(
+    const auto lastMarkerPosition = audio::FramePos(
             signalInfo.secs2frames(m_pTerminalMarker->positionSecs()) +
             timingOffsetFrames);
-    const auto endMarkerBpm = Bpm(m_pTerminalMarker->bpm());
+    const auto lastMarkerBpm = Bpm(m_pTerminalMarker->bpm());
 
     m_nonTerminalMarkers.clear();
     m_pTerminalMarker.reset();
@@ -70,8 +70,8 @@ BeatsPointer SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
     return Beats::fromBeatMarkers(
             signalInfo.getSampleRate(),
             std::move(markers),
-            endMarkerPosition.toLowerFrameBoundary(),
-            endMarkerBpm);
+            lastMarkerPosition.toLowerFrameBoundary(),
+            lastMarkerBpm);
 }
 
 } // namespace mixxx
