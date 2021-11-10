@@ -22,6 +22,7 @@ namespace mixxx {
 class Beats;
 typedef std::shared_ptr<const Beats> BeatsPointer;
 
+/// A beat marker is denotes the border of a tempo section inside a track.
 class BeatMarker {
   public:
     BeatMarker(mixxx::audio::FramePos position, int beatsTillNextMarker)
@@ -52,9 +53,15 @@ inline bool operator==(const BeatMarker& lhs, const BeatMarker& rhs) {
 inline bool operator!=(const BeatMarker& lhs, const BeatMarker& rhs) {
     return !(lhs == rhs);
 }
-/// Beats is the base class for BPM and beat management classes. It provides a
-/// specification of all methods a beat-manager class must provide, as well as
-/// a capability model for representing optional features.
+
+/// This class represents the beats of a track.
+///
+/// Internally, it uses the following data structure:
+/// - 0 - N beat markers, followed by
+/// - exactly one tempo marker ("last marker").
+///
+/// If the track has a constant tempo, there are 0 beat markers, and the last
+/// marker is positioned at the first downbeat and is set to the tracks BPM.
 ///
 /// All instances of this class are supposed to be managed by std::shared_ptr!
 class Beats : private std::enable_shared_from_this<Beats> {
