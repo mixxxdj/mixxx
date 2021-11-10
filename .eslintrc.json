@@ -16,7 +16,7 @@
     "computed-property-spacing" : ["warn", "never", {
         "enforceForClassMembers": true
     }],
-    "dot-location": "warn",
+    "dot-location": ["warn", "property"],
     "dot-notation": "warn",
     "eqeqeq": ["error", "always"],
     "func-call-spacing": "warn",
@@ -27,6 +27,7 @@
     "key-spacing": "warn",
     "keyword-spacing": "warn",
     "linebreak-style": ["warn", "unix"],
+    "newline-per-chained-call": "warn",
     "no-constructor-return": "warn",
     "no-extra-bind": "warn",
     "no-sequences": "warn",
