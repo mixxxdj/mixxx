@@ -1808,7 +1808,7 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
 
 # KeyFinder
-set(LIBKEYFINDER_VERSION 2.2.4)
+set(LIBKEYFINDER_VERSION 2.2.5)
 find_package(KeyFinder ${LIBKEYFINDER_VERSION})
 option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
@@ -1824,7 +1824,7 @@ if(KEYFINDER)
     # the configuration.
     ExternalProject_Add(libkeyfinder
       URL "https://github.com/mixxxdj/libkeyfinder/archive/refs/tags/v${LIBKEYFINDER_VERSION}.zip"
-      URL_HASH SHA256=cb3fea8c7213257281b6c7006b2430809f466ad8a1d485663324378d6fc0782c
+      URL_HASH SHA256=a43bfa56333e8abbfa2bf7b31f896e553a8b250ba4c4ad21ec85338041651240
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libkeyfinder-${LIBKEYFINDER_VERSION}.zip"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"

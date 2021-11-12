@@ -7,7 +7,7 @@
 ### Packaging
 
 * Downloads of external dependencies are placed in build/downloads
-* The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.4.zip instead of build/download/libkeyfinder/v2.2.4.zip
+* The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
 
 ## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (2021-09-29)
 
