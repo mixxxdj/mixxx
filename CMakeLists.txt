@@ -1808,7 +1808,8 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
 
 # KeyFinder
-find_package(KeyFinder)
+set(LIBKEYFINDER_VERSION 2.2.5)
+find_package(KeyFinder ${LIBKEYFINDER_VERSION})
 option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
   if (KeyFinder_FOUND)
@@ -1818,11 +1819,14 @@ if(KEYFINDER)
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
+    # For offline builds download the archive file from the URL and
+    # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
+    # the configuration.
     ExternalProject_Add(libkeyfinder
-      URL "https://github.com/mixxxdj/libkeyfinder/archive/v2.2.4.zip"
-      URL_HASH SHA256=cb3fea8c7213257281b6c7006b2430809f466ad8a1d485663324378d6fc0782c
-      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libkeyfinder"
+      URL "https://github.com/mixxxdj/libkeyfinder/archive/refs/tags/v${LIBKEYFINDER_VERSION}.zip"
+      URL_HASH SHA256=a43bfa56333e8abbfa2bf7b31f896e553a8b250ba4c4ad21ec85338041651240
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+      DOWNLOAD_NAME "libkeyfinder-${LIBKEYFINDER_VERSION}.zip"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
         -DBUILD_SHARED_LIBS=OFF
