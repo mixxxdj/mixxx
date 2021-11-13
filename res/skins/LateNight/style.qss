@@ -122,7 +122,8 @@ WTrackMenu QMenu::right-arrow {
   height: 0.7em;
 }
 
-WEffectSelector QAbstractScrollArea {
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea {
   min-width: 160px;
 }
 #fadeModeCombobox QAbstractScrollArea {
