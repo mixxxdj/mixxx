@@ -560,6 +560,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/reverbeffect.cpp
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
+  src/effects/backends/builtin/semiparametriceq3knobeffect.cpp
+  src/effects/backends/builtin/semiparametriceq4knobeffect.cpp
   src/effects/backends/builtin/whitenoiseeffect.cpp
   src/effects/backends/effectsbackendmanager.cpp
   src/effects/chains/equalizereffectchain.cpp

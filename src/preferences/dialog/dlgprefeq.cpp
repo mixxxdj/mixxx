@@ -476,10 +476,8 @@ void DlgPrefEQ::applySelectionsToDecks() {
             auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(group);
             auto pEffectSlot = pChainSlot->getEffectSlot(0);
             pEffectSlot->loadEffectWithDefaults(pManifest);
-            if (pManifest && pManifest->isMixingEQ()) {
-                pChainSlot->setFilterWaveform(true);
-            } else {
-                pChainSlot->setFilterWaveform(false);
+            if (pManifest) {
+                pChainSlot->setFilterWaveform(pManifest->isWaveformChangingEQ());
             }
 
             if (!startingUp) {

@@ -27,6 +27,7 @@ class EffectManifest {
     EffectManifest()
             : m_backendType(EffectBackendType::Unknown),
               m_isMixingEQ(false),
+              m_isWaveformChangingEQ(false),
               m_isMasterEQ(false),
               m_effectRampsFromDry(false),
               m_bAddDryToWet(false),
@@ -102,6 +103,14 @@ class EffectManifest {
 
     void setIsMixingEQ(const bool value) {
         m_isMixingEQ = value;
+    }
+
+    bool isWaveformChangingEQ() const {
+        return m_isWaveformChangingEQ;
+    }
+
+    void setIsWaveformChangingEQ(const bool value) {
+        m_isWaveformChangingEQ = value;
     }
 
     const bool& isMasterEQ() const {
@@ -183,6 +192,7 @@ class EffectManifest {
     QString m_description;
     /// This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
+    bool m_isWaveformChangingEQ;
     bool m_isMasterEQ;
     QList<EffectManifestParameterPointer> m_parameters;
     bool m_effectRampsFromDry;

@@ -41,6 +41,7 @@ class EffectManifestParameter {
         SampleRate,
         /// Multiples of a Beat
         Beats,
+        Decibels,
     };
 
     enum class LinkType : int {
