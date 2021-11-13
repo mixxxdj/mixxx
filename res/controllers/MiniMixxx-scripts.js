@@ -782,8 +782,8 @@ MiniMixxx.Button = class {
             } else if (mode === "LOOPLAYER") {
                 this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0, MiniMixxx.LoopColor]);
             } else if (mode === "SAMPLERLAYER-HOTCUE2LAYER") {
-                this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "SAMPLERLAYER", "", idx, [0, MiniMixxx.SamplerColor]);
-                this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
+                this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
+                this.buttons[mode].addShiftedButton(this, "SAMPLERLAYER", "", idx, [0, MiniMixxx.SamplerColor]);
                 const shiftedButton = this.buttons[mode].shiftedButton;
                 this.layers[shiftedButton.layerName] = shiftedButton;
             } else if (mode === "LIBRARYLAYER-MAINGAINLAYER") {
@@ -792,8 +792,8 @@ MiniMixxx.Button = class {
                 const shiftedButton = this.buttons[mode].shiftedButton;
                 this.layers[shiftedButton.layerName] = shiftedButton;
             } else if (mode === "FXLAYER-HOTCUE1LAYER") {
-                this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "FXLAYER", "", idx, [0, MiniMixxx.FXColor]);
-                this.buttons[mode].addShiftedButton(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
+                this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
+                this.buttons[mode].addShiftedButton(this, "FXLAYER", "", idx, [0, MiniMixxx.FXColor]);
                 const shiftedButton = this.buttons[mode].shiftedButton;
                 this.layers[shiftedButton.layerName] = shiftedButton;
             } else {
