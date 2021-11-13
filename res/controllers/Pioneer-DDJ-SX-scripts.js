@@ -1116,7 +1116,7 @@ PioneerDDJSX.slicerButtons = function(channel, control, value, status, group) {
     if (PioneerDDJSX.activeSlicerMode[deck] === PioneerDDJSX.slicerModes.contSlice) {
         engine.setValue(group, "slip_enabled", value);
         engine.setValue(group, "beatloop_size", PioneerDDJSX.selectedSlicerQuantization[deck]);
-        engine.setValue(group, "beatloop_activate", value);
+        engine.setValue(group, "beatloop_toggle", value);
     }
 };
 
@@ -1418,8 +1418,8 @@ PioneerDDJSX.autoLoopButton = function(channel, control, value, status, group) {
             engine.setValue(group, "reloop_toggle", true);
             engine.setValue(group, "reloop_toggle", false);
         } else {
-            engine.setValue(group, "beatloop_activate", true);
-            engine.setValue(group, "beatloop_activate", false);
+            engine.setValue(group, "beatloop_toggle", true);
+            engine.setValue(group, "beatloop_toggle", false);
         }
     }
 };

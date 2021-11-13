@@ -292,8 +292,8 @@ PioneerDDJSB2.Deck = function(deckNumber) {
     this.topPadRow.autoLoopLayer.beatloopButton = new components.Button({
         midi: [0x96 + deckNumber, 0x10],
         unshift: function() {
-            this.inKey = "beatloop_activate";
-            this.outKey = "beatloop_activate";
+            this.inKey = "beatloop_toggle";
+            this.outKey = "beatloop_toggle";
             this.disconnect();
             this.connect();
             this.trigger();

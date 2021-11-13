@@ -343,7 +343,7 @@ joyMIDI.hotcueButton = function(channel, control, value, status, group) {
 joyMIDI.reloopToggleButton = function(channel, control, value, status, group) {
     var usr = joyMIDI.userSetting.beatLoopRollEnable;
     var sft = joyMIDI[group].btnShift;
-    var cmd = sft ? (usr?"beatlooproll_activate":"beatloop_activate") : "reloop_toggle";
+    var cmd = sft ? (usr?"beatlooproll_activate":"beatloop_toggle") : "reloop_toggle";
     var val = (value > 0) ? 1 : 0;
 
     engine.setValue(group, cmd, val);

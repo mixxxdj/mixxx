@@ -150,8 +150,8 @@ NumarkN4.topContainer = function(channel) {
         },
         unshift: function() {
             this.type=components.Button.prototype.types.push;
-            this.inKey="beatloop_activate";
-            this.outKey="beatloop_activate";
+            this.inKey="beatloop_toggle";
+            this.outKey="beatloop_toggle";
         },
     });
     this.btnSample4 = new components.Button({

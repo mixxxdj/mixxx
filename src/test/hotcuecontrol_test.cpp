@@ -14,7 +14,7 @@ class HotcueControlTest : public BaseSignalPathTest {
         BaseSignalPathTest::SetUp();
 
         m_pPlay = std::make_unique<ControlProxy>(m_sGroup1, "play");
-        m_pBeatloopActivate = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_activate");
+        m_pBeatloopActivate = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_toggle");
         m_pBeatloopSize = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_size");
         m_pLoopStartPosition = std::make_unique<ControlProxy>(m_sGroup1, "loop_start_position");
         m_pLoopEndPosition = std::make_unique<ControlProxy>(m_sGroup1, "loop_end_position");

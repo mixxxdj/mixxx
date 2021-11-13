@@ -715,7 +715,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Double the size of an existing beatloop, or double the size of the next beatloop set with the Beatloop button.");
 
     //beatloop and beatlooproll
-    add("beatloop_activate")
+    add("beatloop_toggle")
             << tr("Beatloop")
             << QString("%1: %2").arg(leftClick, tr("Start a loop over the set number of beats."))
             << quantizeSnap

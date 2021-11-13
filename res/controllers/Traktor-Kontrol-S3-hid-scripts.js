@@ -549,7 +549,7 @@ TraktorS3.Deck.prototype.activateLoopHandler = function(field) {
         if (isLoopActive) {
             engine.setValue(this.activeChannel, "reloop_toggle", field.value);
         } else {
-            engine.setValue(this.activeChannel, "beatloop_activate", field.value);
+            engine.setValue(this.activeChannel, "beatloop_toggle", field.value);
         }
     }
 };

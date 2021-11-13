@@ -56,7 +56,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pBeatLoop64Enabled = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_64_enabled");
         m_pBeatLoop = std::make_unique<ControlProxy>(m_sGroup1, "beatloop");
         m_pBeatLoopSize = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_size");
-        m_pButtonBeatLoopActivate = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_activate");
+        m_pButtonBeatLoopToggle = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_toggle");
         m_pBeatJumpSize = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_size");
         m_pButtonBeatJumpForward = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_forward");
         m_pButtonBeatJumpBackward = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_backward");
@@ -105,7 +105,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pBeatLoop64Enabled;
     std::unique_ptr<ControlProxy> m_pBeatLoop;
     std::unique_ptr<ControlProxy> m_pBeatLoopSize;
-    std::unique_ptr<ControlProxy> m_pButtonBeatLoopActivate;
+    std::unique_ptr<ControlProxy> m_pButtonBeatLoopToggle;
     std::unique_ptr<ControlProxy> m_pBeatJumpSize;
     std::unique_ptr<ControlProxy> m_pButtonBeatJumpForward;
     std::unique_ptr<ControlProxy> m_pButtonBeatJumpBackward;
@@ -434,8 +434,8 @@ TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
     m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(16.0);
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     m_pButtonLoopDouble->set(1.0);
     m_pButtonLoopDouble->set(0.0);
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
@@ -459,8 +459,8 @@ TEST_F(LoopingControlTest, LoopDoubleButton_DoesNotResizeManualLoop) {
 TEST_F(LoopingControlTest, LoopDoubleButton_UpdatesNumberedBeatloopActivationControls) {
     m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(2.0);
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
     EXPECT_FALSE(m_pBeatLoop4Enabled->toBool());
 
@@ -485,8 +485,8 @@ TEST_F(LoopingControlTest, LoopHalveButton_IgnoresTooSmall) {
 TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSize) {
     m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(64.0);
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     m_pButtonLoopHalve->set(1);
     m_pButtonLoopHalve->set(0);
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
@@ -510,8 +510,8 @@ TEST_F(LoopingControlTest, LoopHalveButton_DoesNotResizeManualLoop) {
 TEST_F(LoopingControlTest, LoopHalveButton_UpdatesNumberedBeatloopActivationControls) {
     m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(4.0);
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
 
@@ -638,13 +638,13 @@ TEST_F(LoopingControlTest, BeatLoopSize_SetAndToggle) {
     m_pBeatLoopSize->set(2.0);
     EXPECT_FALSE(m_pLoopEnabled->toBool());
 
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
 
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_FALSE(m_pLoopEnabled->toBool());
     EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
 }
@@ -671,8 +671,8 @@ TEST_F(LoopingControlTest, BeatLoopSize_IgnoresPastTrackEnd) {
 TEST_F(LoopingControlTest, BeatLoopSize_SetsNumberedControls) {
     m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(2.0);
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
     EXPECT_FALSE(m_pBeatLoop4Enabled->toBool());
 
@@ -691,8 +691,8 @@ TEST_F(LoopingControlTest, BeatLoopSize_IsSetByNumberedControl) {
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_EQ(2.0, m_pBeatLoopSize->get());
 
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
     EXPECT_FALSE(m_pLoopEnabled->toBool());
     EXPECT_EQ(2.0, m_pBeatLoopSize->get());
@@ -708,8 +708,8 @@ TEST_F(LoopingControlTest, BeatLoopSize_ResizeKeepsStartPosition) {
     setCurrentPosition(mixxx::audio::FramePos{50});
     m_pTrack1->trySetBpm(160.0);
     m_pBeatLoopSize->set(2.0);
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     double oldStart = m_pLoopStartPoint->get();
 
     ProcessBuffer();
@@ -724,8 +724,8 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotActivateLoop) {
     setCurrentPosition(mixxx::audio::FramePos{50});
     m_pTrack1->trySetBpm(160.0);
     m_pBeatLoopSize->set(2.0);
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
 
     m_pButtonReloopToggle->set(1.0);
@@ -740,8 +740,8 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeResizesBeatLoop) {
     setCurrentPosition(mixxx::audio::FramePos{50});
     m_pTrack1->trySetBpm(160.0);
     m_pBeatLoopSize->set(2.0);
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     double oldLoopStart = m_pLoopStartPoint->get();
     double oldLoopEnd = m_pLoopEndPoint->get();
@@ -830,8 +830,8 @@ TEST_F(LoopingControlTest, Beatjump_MovesActiveLoop) {
     EXPECT_NE(0, beatLengthFrames);
 
     m_pBeatLoopSize->set(4.0);
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     const auto loopStartPosition = mixxx::audio::kStartFramePos;
     const auto loopEndPosition = mixxx::audio::FramePos{beatLengthFrames * 4};
     EXPECT_FRAMEPOS_EQ_CONTROL(loopStartPosition, m_pLoopStartPoint);
@@ -868,8 +868,8 @@ TEST_F(LoopingControlTest, Beatjump_MovesLoopBoundaries) {
     EXPECT_NE(0, beatLengthFrames);
 
     m_pBeatLoopSize->set(4.0);
-    m_pButtonBeatLoopActivate->set(1.0);
-    m_pButtonBeatLoopActivate->set(0.0);
+    m_pButtonBeatLoopToggle->set(1.0);
+    m_pButtonBeatLoopToggle->set(0.0);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pLoopStartPoint);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{beatLengthFrames * 4}, m_pLoopEndPoint);
 

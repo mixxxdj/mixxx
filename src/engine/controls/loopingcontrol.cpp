@@ -135,9 +135,15 @@ LoopingControl::LoopingControl(const QString& group,
                                           true, false, false, 4.0);
     m_pCOBeatLoopSize->connectValueChangeRequest(this,
             &LoopingControl::slotBeatLoopSizeChangeRequest, Qt::DirectConnection);
-    m_pCOBeatLoopActivate = new ControlPushButton(ConfigKey(group, "beatloop_activate"));
-    connect(m_pCOBeatLoopActivate, &ControlObject::valueChanged,
-            this, &LoopingControl::slotBeatLoopToggle);
+    m_pCOBeatLoopToggle = new ControlPushButton(ConfigKey(group, "beatloop_toggle"));
+    connect(m_pCOBeatLoopToggle,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotBeatLoopToggle);
+    ControlDoublePrivate::insertAlias(
+            ConfigKey(group, "beatloop_activate"),
+            ConfigKey(group, "beatloop_toggle"));
+
     m_pCOBeatLoopRollActivate = new ControlPushButton(ConfigKey(group, "beatlooproll_activate"));
     connect(m_pCOBeatLoopRollActivate, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatLoopRollActivate);
@@ -244,7 +250,7 @@ LoopingControl::~LoopingControl() {
         delete pBeatLoop;
     }
     delete m_pCOBeatLoopSize;
-    delete m_pCOBeatLoopActivate;
+    delete m_pCOBeatLoopToggle;
     delete m_pCOBeatLoopRollActivate;
 
     delete m_pCOBeatJump;

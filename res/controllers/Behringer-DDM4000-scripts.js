@@ -180,7 +180,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
 
             var LoopMode = function(options) {
                 options = options || {};
-                options.key = options.inKey || "beatloop_activate";
+                options.key = options.inKey || "beatloop_toggle";
                 c.Button.call(this, options);
                 this.inSetValue(true);
             };

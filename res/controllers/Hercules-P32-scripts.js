@@ -259,13 +259,13 @@ P32.Deck = function(deckNumbers, channel) {
                     if (engine.getValue(this.group, "loop_enabled") === 1) {
                         engine.setValue(this.group, "reloop_toggle", 1);
                     } else {
-                        engine.setValue(this.group, "beatloop_activate", 1);
+                        engine.setValue(this.group, "beatloop_toggle", 1);
                     }
                 } else {
                     if (engine.getValue(this.group, "reloop_toggle") !== 1) {
                         engine.setValue(this.group, "reloop_toggle", 0);
-                    } else if (engine.getValue(this.group, "beatloop_activate") !== 0) {
-                        engine.setValue(this.group, "beatloop_activate", 0);
+                    } else if (engine.getValue(this.group, "beatloop_toggle") !== 0) {
+                        engine.setValue(this.group, "beatloop_toggle", 0);
                     }
                 }
             };
@@ -276,8 +276,8 @@ P32.Deck = function(deckNumbers, channel) {
             if (engine.getValue(this.group, "reloop_toggle") !== 0) {
                 engine.setValue(this.group, "reloop_toggle", 0);
             }
-            if (engine.getValue(this.group, "beatloop_activate") !== 0) {
-                engine.setValue(this.group, "beatloop_activate", 0);
+            if (engine.getValue(this.group, "beatloop_toggle") !== 0) {
+                engine.setValue(this.group, "beatloop_toggle", 0);
             }
 
             this.input = function(_channel, _control, value, _status, _group) {

@@ -520,7 +520,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Loops
     QMenu* loopMenu = addSubmenu(tr("Looping"));
-    // add beatloop_activate and beatlooproll_activate to both the
+    // add beatloop_toggle and beatlooproll_activate to both the
     // Loop and Beat-Loop menus to make sure users can find them.
     QString beatloopActivateTitle = tr("Loop Selected Beats");
     QString beatloopActivateDescription = tr("Create a beat loop of selected beat size");
@@ -548,7 +548,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     humanBeatSizes[64] = tr("64");
 
     // Beatloops
-    addDeckControl("beatloop_activate",
+    addDeckControl("beatloop_toggle",
             beatloopActivateTitle,
             beatloopActivateDescription,
             loopMenu);

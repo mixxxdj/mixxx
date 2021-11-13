@@ -297,7 +297,7 @@ MixtrackProFX.Deck = function(number) {
 
             if (!MixtrackProFX.shifted) {
                 if (engine.getValue(group, "loop_enabled") === 0) {
-                    script.triggerControl(group, "beatloop_activate");
+                    script.triggerControl(group, "beatloop_toggle");
                 } else {
                     script.triggerControl(group, "beatlooproll_activate");
                 }

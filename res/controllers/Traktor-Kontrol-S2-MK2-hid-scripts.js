@@ -1260,7 +1260,7 @@ TraktorS2MK2.rightEncoderPress = function(field) {
         if (loopEnabled) {
             script.triggerControl(group, "reloop_toggle");
         } else {
-            script.triggerControl(group, "beatloop_activate");
+            script.triggerControl(group, "beatloop_toggle");
         }
     }
 };

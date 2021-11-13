@@ -545,7 +545,7 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
 
     this.bottomButtonLayers.loop[2] = new components.Button({
         unshift: function () {
-            this.inKey = 'beatloop_activate';
+            this.inKey = 'beatloop_toggle';
         },
         shift: function () {
             this.inKey = 'beatlooproll_activate';

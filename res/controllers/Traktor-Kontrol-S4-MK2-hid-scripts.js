@@ -1458,7 +1458,7 @@ TraktorS4MK2.loopSetHandler = function(field) {
     if (TraktorS4MK2.controller.shift_pressed[group]) {
         engine.setValue(field.group, "pitch_adjust_set_default", field.value);
     } else {
-        engine.setValue(field.group, "beatloop_activate", field.value);
+        engine.setValue(field.group, "beatloop_toggle", field.value);
     }
 };
 

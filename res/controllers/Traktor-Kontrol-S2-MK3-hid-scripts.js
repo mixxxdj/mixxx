@@ -445,7 +445,7 @@ TraktorS2MK3.activateLoopHandler = function (field) {
     if (TraktorS2MK3.shiftPressed[field.group]) {
         engine.setValue(field.group, "reloop_toggle", field.value);
     } else {
-        engine.setValue(field.group, "beatloop_activate", field.value);
+        engine.setValue(field.group, "beatloop_toggle", field.value);
     }
 };
 

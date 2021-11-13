@@ -209,7 +209,7 @@ TerminalMix.crossfaderCurve = function (channel, control, value, status, group) 
 TerminalMix.loopLengthPress = function (channel, control, value, status, group) {
   if (value) {
     if (engine.getValue(group,"loop_enabled") === 0) {
-      script.triggerControl(group,"beatloop_activate",100);
+      script.triggerControl(group,"beatloop_toggle",100);
     } else {
       script.triggerControl(group,"reloop_toggle",100);
     }

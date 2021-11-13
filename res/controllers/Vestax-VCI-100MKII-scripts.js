@@ -323,8 +323,8 @@ VCI102.loop = function(ch, midino, value, status, group) {
         if (engine.getValue(group, "loop_enabled")) {
             engine.setValue(group, "reloop_toggle", 1);
         } else {
-            engine.setValue(group, "beatloop_activate", 1);
-            engine.setValue(group, "beatloop_activate", 0);
+            engine.setValue(group, "beatloop_toggle", 1);
+            engine.setValue(group, "beatloop_toggle", 0);
         }
     }
 };

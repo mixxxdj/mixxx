@@ -22,12 +22,12 @@ Variables:
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
           <Template src="skin:../Tango/controls/button_2state_right_display.xml">
-            <SetVariable name="TooltipId">beatloop_activate</SetVariable>
+            <SetVariable name="TooltipId">beatloop_toggle</SetVariable>
             <SetVariable name="ObjectName">LoopActivateButton</SetVariable>
             <SetVariable name="Size">30f,22f</SetVariable>
             <SetVariable name="state_0_icon">loop.svg</SetVariable>
             <SetVariable name="state_1_icon">loop_on.svg</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_activate</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_toggle</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
           </Template>

@@ -99,7 +99,7 @@ CueControl::CueControl(const QString& group,
     m_pLoopStartPosition = make_parented<ControlProxy>(group, "loop_start_position", this);
     m_pLoopEndPosition = make_parented<ControlProxy>(group, "loop_end_position", this);
     m_pLoopEnabled = make_parented<ControlProxy>(group, "loop_enabled", this);
-    m_pBeatLoopActivate = make_parented<ControlProxy>(group, "beatloop_activate", this);
+    m_pBeatLoopActivate = make_parented<ControlProxy>(group, "beatloop_toggle", this);
     m_pBeatLoopSize = make_parented<ControlProxy>(group, "beatloop_size", this);
 
     m_pCuePoint = new ControlObject(ConfigKey(group, "cue_point"));

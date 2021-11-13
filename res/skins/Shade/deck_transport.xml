@@ -322,7 +322,7 @@
       **********************************************
       -->
       <PushButton>
-        <TooltipId>beatloop_activate</TooltipId>
+        <TooltipId>beatloop_toggle</TooltipId>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
         <RightClickIsPushButton>true</RightClickIsPushButton>

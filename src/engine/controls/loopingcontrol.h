@@ -139,7 +139,7 @@ class LoopingControl : public EngineControl {
             mixxx::audio::FramePos currentPosition,
             double beats) const;
 
-    ControlPushButton* m_pCOBeatLoopActivate;
+    ControlPushButton* m_pCOBeatLoopToggle;
     ControlPushButton* m_pCOBeatLoopRollActivate;
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;

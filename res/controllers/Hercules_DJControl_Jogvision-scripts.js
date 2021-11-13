@@ -399,7 +399,7 @@ var DJCJV = {
         // If "MODE" button IS pressed, activate beatloop at current playposition
         if (DJCJV.Channel[group].modePressed) {
             engine.setValue(group, "slip_enabled", value);
-            engine.setValue(group, "beatloop_activate", value);
+            engine.setValue(group, "beatloop_toggle", value);
         } else {
             engine.setValue(group, "reloop_toggle", value);
         }

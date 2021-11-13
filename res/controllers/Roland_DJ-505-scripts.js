@@ -534,7 +534,7 @@ DJ505.Deck = function(deckNumbers, offset) {
     });
     this.autoLoop = new components.Button({
         midi: [0x94 + offset, 0x40],
-        inKey: "beatloop_activate",
+        inKey: "beatloop_toggle",
         outKey: "loop_enabled",
     });
 

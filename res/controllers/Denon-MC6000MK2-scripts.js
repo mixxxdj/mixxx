@@ -965,7 +965,7 @@ DenonMC6000MK2.OldDeck.prototype.onAutoLoopButton = function(isButtonPressed) {
             if (this.getShiftState()) {
                 this.setValue("beatlooproll_activate", true);
             } else {
-                this.setValue("beatloop_activate", true);
+                this.setValue("beatloop_toggle", true);
             }
         }
     }
