@@ -373,6 +373,7 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
             }
             return true;
         }
+        // if the line edit has focus Ctrl + F selects the text
     }
     return QComboBox::eventFilter(obj, event);
 }
@@ -691,7 +692,11 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
 }
 
 void WSearchLineEdit::slotSetShortcutFocus() {
-    setFocus(Qt::ShortcutFocusReason);
+    if (hasFocus()) {
+        lineEdit()->selectAll();
+    } else {
+        setFocus(Qt::ShortcutFocusReason);
+    }
 }
 
 // Use the same font as the library table and the sidebar
