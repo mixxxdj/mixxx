@@ -1462,10 +1462,8 @@ DJ505.RollMode = function(deck, offset) {
     this.minSize = 0.03125;  // 1/32
     this.maxSize = 32;
 
-    let loopSize;
-    let i;
-    for (i = 0; i <= 3; i++) {
-        loopSize = (this.loopSize * Math.pow(2, i));
+    for (let i = 0; i <= 3; i++) {
+        const loopSize = (this.loopSize * Math.pow(2, i));
         this.pads[i] = new components.Button({
             midi: [0x94 + offset, 0x14 + i],
             sendShifted: true,
