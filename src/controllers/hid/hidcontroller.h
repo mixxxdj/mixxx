@@ -55,7 +55,7 @@ class HidController final : public Controller {
     // as in the polling functionality (including ReportID in first byte).
     // The returned list can be used to call the incomingData
     // function of the common-hid-packet-parser.
-    QList<int> getInputReport(unsigned int reportID);
+    QByteArray getInputReport(unsigned int reportID);
 
     // getFeatureReport receives a feature reports on request.
     // HID doesn't support polling feature reports, therefore this is the
@@ -64,7 +64,7 @@ class HidController final : public Controller {
     // changing the other bits. The returned list matches the input
     // format of sendFeatureReport, allowing it to be read, modified
     // and sent it back to the controller.
-    QList<int> getFeatureReport(unsigned int reportID);
+    QByteArray getFeatureReport(unsigned int reportID);
 
     const mixxx::hid::DeviceInfo m_deviceInfo;
 
@@ -96,7 +96,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
         m_pHidController->sendReport(data, length, reportID);
     }
 
-    Q_INVOKABLE QList<int> getInputReport(
+    Q_INVOKABLE QByteArray getInputReport(
             unsigned int reportID) {
         return m_pHidController->getInputReport(reportID);
     }
@@ -106,7 +106,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
         m_pHidController->sendFeatureReport(dataList, reportID);
     }
 
-    Q_INVOKABLE QList<int> getFeatureReport(
+    Q_INVOKABLE QByteArray getFeatureReport(
             unsigned int reportID) {
         return m_pHidController->getFeatureReport(reportID);
     }
