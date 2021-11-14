@@ -1714,13 +1714,13 @@ void WTrackMenu::slotRemoveFromDisk() {
     }
 
     {
-        // Set up and run the confirmation dalog
-        QDialog* dlgDelConfirm = new QDialog(nullptr);
-        dlgDelConfirm->setModal(true); // just to be sure
-        dlgDelConfirm->setWindowTitle(tr("Delete Track Files"));
+        // Set up and run the delete confirmation dalog
+        QDialog dlgDelConfirm(this);
+        dlgDelConfirm.setModal(true); // just to be sure
+        dlgDelConfirm.setWindowTitle(tr("Delete Track Files"));
 
-        QVBoxLayout* delLayout = new QVBoxLayout;
-        QLabel* delWarning = new QLabel;
+        QVBoxLayout* delLayout = new QVBoxLayout();
+        QLabel* delWarning = new QLabel();
         delWarning->setText(tr("Permanently delete these files from disk?") +
                 QString("<br><br><b>") +
                 tr("This can not be undone!") + QString("</b>"));
@@ -1730,7 +1730,7 @@ void WTrackMenu::slotRemoveFromDisk() {
 
         // NOTE(ronso0) We could also make this a table to allow showing
         // artist and title if file names don't suffice to identify tracks.
-        QListWidget* delListWidget = new QListWidget;
+        QListWidget* delListWidget = new QListWidget();
         delListWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::MinimumExpanding));
         delListWidget->addItems(locations);
@@ -1746,15 +1746,15 @@ void WTrackMenu::slotRemoveFromDisk() {
         cancelBtn->setDefault(true);
         // This is required after customizing the buttons, otherwise neither button
         // would close the dialog.
-        connect(cancelBtn, &QPushButton::clicked, dlgDelConfirm, &QDialog::reject);
-        connect(deleteBtn, &QPushButton::clicked, dlgDelConfirm, &QDialog::accept);
+        connect(cancelBtn, &QPushButton::clicked, &dlgDelConfirm, &QDialog::reject);
+        connect(deleteBtn, &QPushButton::clicked, &dlgDelConfirm, &QDialog::accept);
 
         delLayout->addWidget(delListWidget);
         delLayout->addWidget(delWarning);
         delLayout->addWidget(delButtons);
-        dlgDelConfirm->setLayout(delLayout);
+        dlgDelConfirm.setLayout(delLayout);
 
-        if (dlgDelConfirm->exec() == QDialog::Rejected) {
+        if (dlgDelConfirm.exec() == QDialog::Rejected) {
             return;
         }
     }
@@ -1775,10 +1775,10 @@ void WTrackMenu::slotRemoveFromDisk() {
     if (tracksToPurge.length() > 0) {
         // Purge only those tracks whose files were actually deleted.
         m_pLibrary->trackCollectionManager()->purgeTracks(tracksToPurge);
-        // Optional message box:
-        QMessageBox msgBoxPurgeTracks(QMessageBox::Information,
-                QObject::tr("Track Files Deleted"),
-                nullptr);
+        // Purge summary
+        QMessageBox msgBoxPurgeTracks(this);
+        msgBoxPurgeTracks.setIcon(QMessageBox::Information);
+        msgBoxPurgeTracks.setWindowTitle(tr("Track Files Deleted"));
         msgBoxPurgeTracks.setText(
                 tr("%1 track files were deleted from disk and purged "
                    "from the Mixxx database.")
@@ -1787,6 +1787,7 @@ void WTrackMenu::slotRemoveFromDisk() {
                 tr("Note: if you are in Browse or Recording you need to "
                    "click the current view again to see changes."));
         msgBoxPurgeTracks.setTextFormat(Qt::RichText);
+        msgBoxPurgeTracks.setStandardButtons(QMessageBox::Ok);
         msgBoxPurgeTracks.exec();
     }
 
@@ -1796,9 +1797,9 @@ void WTrackMenu::slotRemoveFromDisk() {
     }
 
     {
-        // If there are tracks that could not be deleted show a message with those listed.
-        QDialog* dlgNotDeleted = new QDialog(nullptr);
-        dlgNotDeleted->setWindowTitle(tr("Delete Track Files"));
+        // Else show a message with a list of tracks that could not be deleted.
+        QDialog dlgNotDeleted(this);
+        dlgNotDeleted.setWindowTitle(tr("Delete Track Files"));
         QVBoxLayout* notDeletedLayout = new QVBoxLayout;
         QLabel* notDeletedLabel = new QLabel;
         notDeletedLabel->setText(
@@ -1816,8 +1817,8 @@ void WTrackMenu::slotRemoveFromDisk() {
         notDeletedLayout->addWidget(notDeletedLabel);
         notDeletedLayout->addWidget(notDeletedListWidget);
         notDeletedLayout->addWidget(notDeletedButtons);
-        dlgNotDeleted->setLayout(notDeletedLayout);
-        dlgNotDeleted->exec();
+        dlgNotDeleted.setLayout(notDeletedLayout);
+        dlgNotDeleted.exec();
     }
 }
 
