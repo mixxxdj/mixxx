@@ -51,11 +51,8 @@ class HidController final : public Controller {
     // getInputReport receives an input report on request.
     // This can be used on startup to initialize the knob positions in Mixxx
     // to the physical position of the hardware knobs on the controller.
-    // The returned data structure for the input reports is the same
-    // as in the polling functionality (including ReportID in first byte).
-    // The returned list can be used to call the incomingData
-    // function of the common-hid-packet-parser.
-    QList<int> getInputReport(unsigned int reportID);
+    // The data is automatically passed to the script's incomingData function.
+    void getInputReport(unsigned int reportID);
 
     // getFeatureReport receives a feature reports on request.
     // HID doesn't support polling feature reports, therefore this is the
@@ -96,7 +93,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
         m_pHidController->sendReport(data, length, reportID);
     }
 
-    Q_INVOKABLE QList<int> getInputReport(
+    Q_INVOKABLE void getInputReport(
             unsigned int reportID) {
         return m_pHidController->getInputReport(reportID);
     }

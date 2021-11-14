@@ -163,7 +163,7 @@ void HidController::processInputReport(int bytesRead) {
     receive(incomingData, mixxx::Time::elapsed());
 }
 
-QList<int> HidController::getInputReport(unsigned int reportID) {
+void HidController::getInputReport(unsigned int reportID) {
     Trace hidRead("HidController getInputReport");
     int bytesRead;
 
@@ -186,17 +186,10 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
         // Otherwise minimum possible value is 1, because 1 byte is for the reportID,
         // the smallest report with data is therefore 2 bytes.
         DEBUG_ASSERT(bytesRead <= kReportIdSize);
-        return QList<int>();
+        return;
     }
 
-    // Convert array of bytes read in a JavaScript compatible return type
-    // For compatibility with the array provided by HidController::poll the reportID is contained as prefix
-    QList<int> dataList;
-    dataList.reserve(bytesRead);
-    for (int i = 0; i < bytesRead; i++) {
-        dataList.append(m_pPollData[m_pollingBufferIndex][i]);
-    }
-    return dataList;
+    processInputReport(bytesRead);
 }
 
 bool HidController::poll() {
