@@ -178,6 +178,9 @@ void ControllerManager::slotShutdown() {
 }
 
 void ControllerManager::updateControllerList() {
+    // NOTE: Currently this function is only called on startup. If hotplug is added, changes to the
+    // controller list must be synchronized with dlgprefcontrollers to avoid dangling connections
+    // and possible crashes.
     auto locker = lockMutex(&m_mutex);
     if (m_enumerators.isEmpty()) {
         qWarning() << "updateControllerList called but no enumerators have been added!";

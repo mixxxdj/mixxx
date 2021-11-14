@@ -1,8 +1,6 @@
 // Helper class to have easy access
 #include "mixer/playerinfo.h"
 
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
@@ -13,7 +11,7 @@
 
 namespace {
 
-const int kPlayingDeckUpdateIntervalMillis = 2000;
+constexpr int kPlayingDeckUpdateIntervalMillis = 2000;
 
 PlayerInfo* s_pPlayerInfo = nullptr;
 

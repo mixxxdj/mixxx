@@ -5,7 +5,7 @@
 #include "util/logger.h"
 
 namespace {
-const int kDefaultQualityIndex = 6;
+constexpr int kDefaultQualityIndex = 6;
 const char* kQualityKey = "Opus_Quality";
 const mixxx::Logger kLogger("EncoderOpusSettings");
 } // namespace

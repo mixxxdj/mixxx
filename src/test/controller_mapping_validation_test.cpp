@@ -53,7 +53,8 @@ void LegacyControllerMappingValidationTest::SetUp() {
 
 bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& mapping) {
     std::shared_ptr<LegacyControllerMapping> pMapping =
-            LegacyControllerMappingFileHandler::loadMapping(mapping.getPath(), m_mappingPath);
+            LegacyControllerMappingFileHandler::loadMapping(
+                    QFileInfo(mapping.getPath()), m_mappingPath);
     if (!pMapping) {
         return false;
     }

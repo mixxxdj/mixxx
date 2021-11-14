@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset mixxxVersion="2.3" schemaVersion="1">
+<MixxxControllerPreset mixxxVersion="2.3.1" schemaVersion="1">
     <info>
     	<name>Denon MC7000</name>
     	<author>OsZ</author>
-    	<description>Denon MC7000 mapping. Check your Linux Kernel version to get the Audio Interface working - see WIKI</description>
+    	<description>A professional 4-channel DJ controller featuring 2 separate audio interfaces. Please refer to the Mixxx user manual to get the audio interfaces working on Linux.</description>
     	<forums>https://mixxx.discourse.group/t/denon-mc7000-mapping/18235</forums>
     	<wiki>https://github.com/mixxxdj/mixxx/wiki/Denon-MC7000</wiki>
         <manual>denon_mc7000</manual>
@@ -939,7 +939,7 @@
                     <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[Channel1]</group>
                 <key>MC7000.wheelTouch</key>
                 <description>MIDI Learned from 759 messages.</description>

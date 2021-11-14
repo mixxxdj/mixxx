@@ -4,13 +4,14 @@
 #include <QContextMenuEvent>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
+#include <QEvent>
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QPoint>
 #include <QTimerEvent>
 #include <QTreeView>
-#include <QEvent>
 
+#include "library/library_decl.h"
 #include "widget/wbasewidget.h"
 
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
@@ -34,9 +35,12 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
+    FocusWidget sidebarFocusChange(FocusWidget newFocus);
 
   protected:
     bool event(QEvent* pEvent) override;
+    void focusInEvent(QFocusEvent*) override;
+    void focusOutEvent(QFocusEvent*) override;
 
   private:
     QBasicTimer m_expandTimer;

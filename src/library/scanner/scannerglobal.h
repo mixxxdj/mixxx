@@ -3,7 +3,6 @@
 #include <QDir>
 #include <QHash>
 #include <QMutex>
-#include <QMutexLocker>
 #include <QRegularExpression>
 #include <QSet>
 #include <QSharedPointer>

@@ -1,6 +1,5 @@
 #include "widget/wlibrary.h"
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -78,7 +77,7 @@ void WLibrary::switchToView(const QString& name) {
         WTrackTableView* ttWidgetView = qobject_cast<WTrackTableView*>(
                 widget);
 
-        if (ttWidgetView != nullptr){
+        if (ttWidgetView != nullptr) {
             qDebug("trying to restore position");
             ttWidgetView->restoreCurrentVScrollBarPos();
         }

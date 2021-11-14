@@ -54,7 +54,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     // References:
     // https://bugs.launchpad.net/ubuntu/+bug/1263233
     // https://bitbucket.org/breakfastquay/rubberband/issue/4/sigfpe-zero-division-with-high-time-ratios
-    const double kMinSeekSpeed = 1.0 / 128.0;
+    constexpr double kMinSeekSpeed = 1.0 / 128.0;
     double speed_abs = fabs(*pTempoRatio);
     if (speed_abs < kMinSeekSpeed) {
         // Let the caller know we ignored their speed.

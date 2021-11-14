@@ -22,9 +22,9 @@
 
 namespace {
 
-const double kNoTrackColor = -1;
-const double kShiftCuesOffsetMillis = 10;
-const double kShiftCuesOffsetSmallMillis = 1;
+constexpr double kNoTrackColor = -1;
+constexpr double kShiftCuesOffsetMillis = 10;
+constexpr double kShiftCuesOffsetSmallMillis = 1;
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);

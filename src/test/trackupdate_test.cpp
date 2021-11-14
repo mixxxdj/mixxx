@@ -27,10 +27,12 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
         return Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
     }
 
-    static TrackPointer newTestTrackParsed() {
+    TrackPointer newTestTrackParsed() const {
         auto pTrack = newTestTrack();
-        EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource());
-        EXPECT_TRUE(pTrack->isSourceSynchronized());
+        EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+                config(),
+                SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+        EXPECT_TRUE(pTrack->checkSourceSynchronized());
         EXPECT_TRUE(hasTrackMetadata(pTrack));
         EXPECT_TRUE(hasCoverArt(pTrack));
         pTrack->markClean();
@@ -38,7 +40,7 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
         return pTrack;
     }
 
-    static TrackPointer newTestTrackParsedModified() {
+    TrackPointer newTestTrackParsedModified() const {
         auto pTrack = newTestTrackParsed();
         pTrack->setArtist(pTrack->getArtist() + pTrack->getArtist());
         auto coverInfo = pTrack->getCoverInfo();
@@ -60,13 +62,14 @@ TEST_F(TrackUpdateTest, parseModifiedCleanOnce) {
 
     // Re-update from source should have no effect
     ASSERT_FALSE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Once));
 
     const auto trackMetadataAfter = pTrack->getMetadata();
     const auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Verify that the track has not been modified
-    ASSERT_TRUE(pTrack->isSourceSynchronized());
+    ASSERT_TRUE(pTrack->checkSourceSynchronized());
     ASSERT_FALSE(pTrack->isDirty());
     ASSERT_EQ(trackMetadataBefore, trackMetadataAfter);
     ASSERT_EQ(coverInfoBefore, coverInfoAfter);
@@ -80,13 +83,14 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainSkipCover) {
     const auto coverInfoBefore = pTrack->getCoverInfo();
 
     EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Again));
+            config(),
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always));
 
     const auto trackMetadataAfter = pTrack->getMetadata();
     const auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Updated
-    EXPECT_TRUE(pTrack->isSourceSynchronized());
+    EXPECT_TRUE(pTrack->checkSourceSynchronized());
     EXPECT_TRUE(pTrack->isDirty());
     EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
@@ -104,13 +108,14 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainUpdateCover) {
     const auto coverInfoBefore = pTrack->getCoverInfo();
 
     EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Again));
+            config(),
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always));
 
     const auto trackMetadataAfter = pTrack->getMetadata();
     const auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Updated
-    EXPECT_TRUE(pTrack->isSourceSynchronized());
+    EXPECT_TRUE(pTrack->checkSourceSynchronized());
     EXPECT_TRUE(pTrack->isDirty());
     EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
     EXPECT_NE(coverInfoBefore, coverInfoAfter);
@@ -123,14 +128,17 @@ TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     const auto coverInfoBefore = pTrack->getCoverInfo();
 
     EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Again));
+            config(),
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always));
 
     const auto trackMetadataAfter = pTrack->getMetadata();
     const auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Updated
-    EXPECT_TRUE(pTrack->isSourceSynchronized());
+    EXPECT_TRUE(pTrack->checkSourceSynchronized());
     EXPECT_TRUE(pTrack->isDirty());
     EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
 }
+
+// TODO: Add tests for SoundSourceProxy::UpdateTrackFromSourceMode::Newer

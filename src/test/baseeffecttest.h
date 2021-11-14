@@ -1,62 +1,64 @@
 #pragma once
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <QScopedPointer>
 
-#include "effects/effectchain.h"
-#include "effects/effect.h"
-#include "effects/effectsmanager.h"
-#include "effects/effectmanifest.h"
-#include "effects/effectsbackend.h"
 #include "effects/effectinstantiator.h"
+#include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
-
-
+#include "effects/effectsbackend.h"
+#include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
 #include "test/mixxxtest.h"
 
 class TestEffectBackend : public EffectsBackend {
   public:
-    TestEffectBackend() : EffectsBackend(NULL, EffectBackendType::Unknown) {
+    TestEffectBackend()
+            : EffectsBackend(NULL, EffectBackendType::Unknown) {
     }
 
     // Expose as public
     void registerEffect(const QString& id,
-                        EffectManifestPointer pManifest,
-                        EffectInstantiatorPointer pInstantiator) {
+            EffectManifestPointer pManifest,
+            EffectInstantiatorPointer pInstantiator) {
         EffectsBackend::registerEffect(id, pManifest, pInstantiator);
     }
 };
 
 class MockEffectProcessor : public EffectProcessor {
   public:
-    MockEffectProcessor() {}
+    MockEffectProcessor() {
+    }
 
-    MOCK_METHOD3(initialize, void(const QSet<ChannelHandleAndGroup>& activeInputChannels,
-                                  EffectsManager* pEffectsManager,
-                                  const mixxx::EngineParameters& bufferParameters));
-    MOCK_METHOD1(createState, EffectState*(const mixxx::EngineParameters& bufferParameters));
-    MOCK_METHOD2(loadStatesForInputChannel, bool(const ChannelHandle* inputChannel,
-          const EffectStatesMap* pStatesMap));
+    MOCK_METHOD3(initialize,
+            void(const QSet<ChannelHandleAndGroup>& activeInputChannels,
+                    const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
+                    const mixxx::EngineParameters& engineParameters));
+    MOCK_METHOD1(createState, EffectState*(const mixxx::EngineParameters& engineParameters));
+    MOCK_METHOD2(loadStatesForInputChannel,
+            bool(const ChannelHandle* inputChannel,
+                    const EffectStatesMap* pStatesMap));
     MOCK_METHOD1(deleteStatesForInputChannel, void(const ChannelHandle* inputChannel));
-    MOCK_METHOD7(process, void(const ChannelHandle& inputHandle,
-                               const ChannelHandle& outputHandle,
-                               const CSAMPLE* pInput,
-                               CSAMPLE* pOutput,
-                               const mixxx::EngineParameters& bufferParameters,
-                               const EffectEnableState enableState,
-                               const GroupFeatureState& groupFeatures));
-
+    MOCK_METHOD7(process,
+            void(const ChannelHandle& inputHandle,
+                    const ChannelHandle& outputHandle,
+                    const CSAMPLE* pInput,
+                    CSAMPLE* pOutput,
+                    const mixxx::EngineParameters& engineParameters,
+                    const EffectEnableState enableState,
+                    const GroupFeatureState& groupFeatures));
 };
 
 class MockEffectInstantiator : public EffectInstantiator {
   public:
-    MockEffectInstantiator() {}
-    MOCK_METHOD2(instantiate, EffectProcessor*(EngineEffect* pEngineEffect,
-                                               EffectManifestPointer pManifest));
+    MockEffectInstantiator() {
+    }
+    MOCK_METHOD2(instantiate,
+            EffectProcessor*(EngineEffect* pEngineEffect,
+                    EffectManifestPointer pManifest));
 };
-
 
 class BaseEffectTest : public MixxxTest {
   protected:

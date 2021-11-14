@@ -2,7 +2,6 @@
 
 #include <QDomElement>
 #include <QList>
-#include <QMutex>
 #include <QString>
 #include <QtDebug>
 

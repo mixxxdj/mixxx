@@ -31,7 +31,7 @@ namespace {
 // i.e. only 3 instead of 4 characters.
 // https://en.wikipedia.org/wiki/ID3#ID3v2
 // http://id3.org/Developer%20Information
-const unsigned int kMinVersion = 3;
+constexpr unsigned int kMinVersion = 3;
 
 bool checkHeaderVersionSupported(
         const TagLib::ID3v2::Header& header) {

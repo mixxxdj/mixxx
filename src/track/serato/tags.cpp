@@ -21,7 +21,7 @@ namespace {
 
 QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
     const QString fileExtension =
-            mixxx::SoundSource::getFileExtensionFromUrl(QUrl::fromLocalFile(filePath));
+            mixxx::SoundSource::getTypeFromFile(QFileInfo(filePath));
     const mixxx::SoundSourceProviderPointer pPrimaryProvider =
             SoundSourceProxy::getPrimaryProviderForFileExtension(fileExtension);
     if (pPrimaryProvider) {

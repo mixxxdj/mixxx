@@ -37,7 +37,7 @@ constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
 
 // We warn only at invalid timing 3, since the first two
 // callbacks can be always wrong due to a setup/open jitter
-const int m_invalidTimeInfoWarningCount = 3;
+constexpr int m_invalidTimeInfoWarningCount = 3;
 
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,

@@ -132,16 +132,22 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_SyncTrackMetadataExport">
+       <widget class="QCheckBox" name="checkBox_SyncTrackMetadata">
         <property name="text">
-         <string>Automatically write modified track metadata from the library into file tags</string>
+         <string>Synchronize library track metadata from/to file tags</string>
+        </property>
+        <property name="toolTip">
+         <string>Automatically write modified track metadata from the library into file tags and reimport metadata from updated file tags into the library</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QCheckBox" name="checkBox_SeratoMetadataExport">
         <property name="text">
-         <string>Write Serato Metadata to files (experimental)</string>
+         <string>Synchronize Serato track metadata from/to file tags (experimental)</string>
+        </property>
+        <property name="toolTip">
+         <string>Keeps track color, beat grid, bpm lock, cue points, and loops synchronized with SERATO_MARKERS/MARKERS2 file tags.&lt;br/&gt;&lt;br/&gt;WARNING: Enabling this option also enables the reimport of Serato metadata after files have been modified outside of Mixxx. On reimport existing metadata in Mixxx is replaced with the metadata found in file tags. Custom metadata not included in file tags like loop colors is lost.</string>
         </property>
        </widget>
       </item>
@@ -397,6 +403,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="label_settingsManualLink">
+        <property name="text">
+         <string></string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label_settingsWarning">
         <property name="text">
          <string>Edit those files only if you know what you are doing and only while Mixxx is not running.</string>
@@ -443,7 +459,8 @@
   <tabstop>PushButtonAddDir</tabstop>
   <tabstop>PushButtonRelocateDir</tabstop>
   <tabstop>PushButtonRemoveDir</tabstop>
-  <tabstop>checkBox_SyncTrackMetadataExport</tabstop>
+  <tabstop>checkBox_SyncTrackMetadata</tabstop>
+  <tabstop>checkBox_SeratoMetadataExport</tabstop>
   <tabstop>checkBox_library_scan</tabstop>
   <tabstop>checkBoxEditMetadataSelectedClicked</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>

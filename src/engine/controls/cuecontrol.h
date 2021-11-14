@@ -1,9 +1,10 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QAtomicInt>
 #include <QAtomicPointer>
 #include <QList>
-#include <QMutex>
 
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
@@ -237,8 +238,10 @@ class CueControl : public EngineControl {
     void cueGotoAndPlay(double v);
     void cueGotoAndStop(double v);
     void cuePreview(double v);
+    FRIEND_TEST(CueControlTest, SeekOnSetCueCDJ);
     void cueCDJ(double v);
     void cueDenon(double v);
+    FRIEND_TEST(CueControlTest, SeekOnSetCuePlay);
     void cuePlay(double v);
     void cueDefault(double v);
     void pause(double v);

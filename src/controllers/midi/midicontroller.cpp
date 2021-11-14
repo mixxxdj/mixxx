@@ -76,13 +76,8 @@ void MidiController::createOutputHandlers() {
         return;
     }
 
-    QHashIterator<ConfigKey, MidiOutputMapping> outIt(m_pMapping->getOutputMappings());
     QStringList failures;
-    while (outIt.hasNext()) {
-        outIt.next();
-
-        const MidiOutputMapping& mapping = outIt.value();
-
+    for (const auto& mapping : m_pMapping->getOutputMappings()) {
         QString group = mapping.controlKey.group;
         QString key = mapping.controlKey.item;
 

@@ -18,7 +18,7 @@
 #include "waveform/visualplayposition.h"
 
 namespace {
-const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
+constexpr int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Related chunk sizes:
 // Mp3 frames = 1152 samples
 // Ogg frames = 64 to 8192 samples.

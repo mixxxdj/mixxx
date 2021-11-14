@@ -149,7 +149,12 @@ bool DragAndDropHelper::allowDeckCloneAttempt(
     }
 
     // forbid clone if shift is pressed
-    if (event.keyboardModifiers().testFlag(Qt::ShiftModifier)) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const auto modifiers = event.modifiers();
+#else
+    const auto modifiers = event.keyboardModifiers();
+#endif
+    if (modifiers.testFlag(Qt::ShiftModifier)) {
         return false;
     }
 

@@ -17,14 +17,7 @@ namespace {
 // in the sidebar tree. This is essential to allow smooth scrolling through
 // a list of items with an encoder or the keyboard! A value of 300 ms has
 // been chosen as a compromise between usability and responsiveness.
-const int kPressedUntilClickedTimeoutMillis = 300;
-
-const QHash<int, QByteArray> kRoleNames = {
-        // Only roles that are useful in QML are added here.
-        {Qt::DisplayRole, "display"},
-        {Qt::ToolTipRole, "tooltip"},
-        {SidebarModel::IconNameRole, "iconName"},
-};
+constexpr int kPressedUntilClickedTimeoutMillis = 300;
 
 } // anonymous namespace
 
@@ -277,10 +270,6 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             return QVariant();
         }
     }
-}
-
-QHash<int, QByteArray> SidebarModel::roleNames() const {
-    return kRoleNames;
 }
 
 void SidebarModel::startPressedUntilClickedTimer(const QModelIndex& pressedIndex) {

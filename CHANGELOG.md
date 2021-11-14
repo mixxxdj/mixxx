@@ -68,6 +68,7 @@
 * Add support for m4v files [#4088](https://github.com/mixxxdj/mixxx/pull/4088)
 * Adjust ReplayGain: Allow user to update the replaygain value based on a deck pregain value [#4031](https://github.com/mixxxdj/mixxx/pull/4031)
 * Automatic analyze and optimize database [#4199](https://github.com/mixxxdj/mixxx/pull/4199)
+* Re-import and update metadata after files have been modified when loading tracks [#4218](https://github.com/mixxxdj/mixxx/pull/4218)
 * Fix playlists sidebar navigation/activation [#4193](https://github.com/mixxxdj/mixxx/pull/4193) [lp:1939082](https://bugs.launchpad.net/mixxx/+bug/1939082)
 * Refactoring of library code
   [#2756](https://github.com/mixxxdj/mixxx/pull/2756)
@@ -401,11 +402,23 @@
   [#4238](https://github.com/mixxxdj/mixxx/pull/4238)
   [#4236](https://github.com/mixxxdj/mixxx/pull/4236)
 
-## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (Unreleased)
+## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (Unreleased)
 
-* Added mapping for the Numark DJ2GO Touch controller [#4108](https://github.com/mixxxdj/mixxx/pull/4108)
+* Improve robustness of file type detection by considering the actual MIME type of the content. [lp:1445885](https://bugs.launchpad.net/mixxx/+bug/1445885) [#4356](https://github.com/mixxxdj/mixxx/pull/4356) [#4357](https://github.com/mixxxdj/mixxx/pull/4357)
+
+### Packaging
+
+* Downloads of external dependencies are placed in build/downloads
+* The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
+
+## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (2021-09-29)
+
+* Added mapping for the Numark DJ2GO2 Touch controller [#4108](https://github.com/mixxxdj/mixxx/pull/4108) [#4287](https://github.com/mixxxdj/mixxx/pull/4287)
 * Added mapping for the Numark Mixtrack Pro FX controller [#4160](https://github.com/mixxxdj/mixxx/pull/4160)
 * Updated mapping for Behringer DDM4000 mixer [#4262](https://github.com/mixxxdj/mixxx/pull/4262)
+* Updated mapping for Denon MC7000 controller [#4021](https://github.com/mixxxdj/mixxx/pull/4021)
+* Hercules Inpulse 300: Add better FX controls and other minor improvements [#4246](https://github.com/mixxxdj/mixxx/pull/4246)
+* Denon MC7000: Improve slip mode and jog wheel handling [#4021](https://github.com/mixxxdj/mixxx/pull/4021) [#4324](https://github.com/mixxxdj/mixxx/pull/4324)
 * Disabled detection of keyboards and mice as HID controllers [#4243](https://github.com/mixxxdj/mixxx/pull/4243)
 * Disabled detection of all HID controllers with Apple's vendor ID. Apple doesn't build actual controllers. [#4260](https://github.com/mixxxdj/mixxx/pull/4260) [#4273](https://github.com/mixxxdj/mixxx/pull/4273)
 * Add support for HiDPI scale factors of 125% and 175% (only with Qt 5.14+) [lp1938102](https://bugs.launchpad.net/mixxx/+bug/1938102) [#4161](https://github.com/mixxxdj/mixxx/pull/4161)
@@ -415,7 +428,7 @@
 * Fix bad phase seek when a channel's audible status changes [#4156](https://github.com/mixxxdj/mixxx/pull/4156)
 * Tango skin: Show crossfader assign buttons by default [#4046](https://github.com/mixxxdj/mixxx/pull/4046)
 * Fix keyfinder library in arm64 builds [#4047](https://github.com/mixxxdj/mixxx/pull/4047)
-* Fix wrong track being recorded in History [lp1933991](https://bugs.launchpad.net/mixxx/+bug/1933991) [#4041](https://github.com/mixxxdj/mixxx/pull/4041) [#4059](https://github.com/mixxxdj/mixxx/pull/4059) [#4107](https://github.com/mixxxdj/mixxx/pull/4107)
+* Fix wrong track being recorded in History [lp1933991](https://bugs.launchpad.net/mixxx/+bug/1933991) [#4041](https://github.com/mixxxdj/mixxx/pull/4041) [#4059](https://github.com/mixxxdj/mixxx/pull/4059) [#4107](https://github.com/mixxxdj/mixxx/pull/4107) [#4296](https://github.com/mixxxdj/mixxx/pull/4296)
 * Fix support for relative paths in the skin system which caused missing images in third-party skins [#4151](https://github.com/mixxxdj/mixxx/pull/4151)
 * Fix relocation of directories with special/reserved characters in path name [#4146](https://github.com/mixxxdj/mixxx/pull/4146)
 * Update keyboard shortcuts sheet [#4042](https://github.com/mixxxdj/mixxx/pull/4042)
@@ -431,6 +444,9 @@
 * Library sidebar: Also activate items on PageUp/Down events. [#4237](https://github.com/mixxxdj/mixxx/pull/4237)
 * Fix handling of preview button cell events in developer mode. [#4264](https://github.com/mixxxdj/mixxx/pull/4264) [lp:1929141](https://bugs.launchpad.net/mixxx/+bug/1929141)
 * Auto DJ: Fix bug which could make an empty track stop Auto DJ. [#4267](https://github.com/mixxxdj/mixxx/pull/4267) [lp:1941743](https://bugs.launchpad.net/mixxx/+bug/1941743)
+* Fix Auto DJ skipping tracks randomly [#4319](https://github.com/mixxxdj/mixxx/pull/4319) [lp1941989](https://bugs.launchpad.net/mixxx/+bug/1941989)
+* Fix high CPU load due to extremely high internal sync clock values [#4312](https://github.com/mixxxdj/mixxx/pull/4312) [lp1943320](https://bugs.launchpad.net/mixxx/+bug/1943320)
+* Fix preference option for re-analyzing beatgrids imported from other software [#4288](https://github.com/mixxxdj/mixxx/pull/4288)
 
 ### Packaging
 
@@ -439,9 +455,9 @@
 * .desktop file has be renamed to org.mixxx.Mixxx.desktop according to Freedesktop standards [#4206](https://github.com/mixxxdj/mixxx/pull/4206)
 * Uses system provided hidapi library if version >= 0.10.1 [#4215](https://github.com/mixxxdj/mixxx/pull/4215)
 * Please update PortAudio to [19.7](https://github.com/PortAudio/portaudio/releases/tag/v19.7.0) if you have not done so already. This is required for Mixxx to work with PipeWire via the JACK API for many devices.
-* Install multiple sizes of rasterized icons [#4204](https://github.com/mixxxdj/mixxx/pull/4204)
+* Install multiple sizes of rasterized icons [#4204](https://github.com/mixxxdj/mixxx/pull/4204) [#4315](https://github.com/mixxxdj/mixxx/pull/4315)
 * CMake: Fixed detection of SoundTouch pkgconfig file and version [#4209](https://github.com/mixxxdj/mixxx/pull/4209)
-* Fix AppStream metainfo [#4205](https://github.com/mixxxdj/mixxx/pull/4205)
+* Fix AppStream metainfo [#4205](https://github.com/mixxxdj/mixxx/pull/4205) [#4317](https://github.com/mixxxdj/mixxx/pull/4317)
 
 ## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (2021-06-28)
 
@@ -625,7 +641,7 @@
 * Disable track metadata export for .ogg files and TagLib 1.11.1. [lp:1833190](https://bugs.launchpad.net/mixxx/+bug/1833190)
 * Fix interaction of hot cue buttons and looping. [lp:1778246](https://bugs.launchpad.net/mixxx/+bug/1778246)
 * Fix detection of moved tracks. [#2197](https://github.com/mixxxdj/mixxx/pull/2197)
-* Fix playlist import. [lp:16878282](https://bugs.launchpad.net/mixxx/+bug/16878282)
+* Fix playlist import. [#2200](https://github.com/mixxxdj/mixxx/pull/2200) [lp:1687828](https://bugs.launchpad.net/mixxx/+bug/1687828)
 * Fix updating playlist labels. [lp:1837315](https://bugs.launchpad.net/mixxx/+bug/1837315)
 * Fix potential segfault on exit. [lp:1828360](https://bugs.launchpad.net/mixxx/+bug/1828360)
 * Fix parsing of invalid BPM values in MP3 files. [lp:1832325](https://bugs.launchpad.net/mixxx/+bug/1832325)

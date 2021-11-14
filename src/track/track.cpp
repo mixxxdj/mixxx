@@ -49,8 +49,13 @@ inline bool compareAndSet(T* pField, T&& value) {
 }
 
 inline mixxx::Bpm getBeatsPointerBpm(
-        const mixxx::BeatsPointer& pBeats) {
-    return pBeats ? mixxx::Bpm{pBeats->getBpm()} : mixxx::Bpm{};
+        const mixxx::BeatsPointer& pBeats, double durationSecs) {
+    if (!pBeats) {
+        return mixxx::Bpm{};
+    }
+
+    const auto trackEndPosition = mixxx::audio::FramePos{durationSecs * pBeats->getSampleRate()};
+    return pBeats->getBpmInRange(mixxx::audio::kStartFramePos, trackEndPosition);
 }
 
 } // anonymous namespace
@@ -166,7 +171,10 @@ void Track::replaceMetadataFromSource(
         // Need to set BPM after sample rate since beat grid creation depends on
         // knowing the sample rate. Bug #1020438.
         auto beatsAndBpmModified = false;
-        if (importedBpm.isValid() && (!m_pBeats || !m_pBeats->getBpm().isValid())) {
+        if (importedBpm.isValid() &&
+                (!m_pBeats ||
+                        !getBeatsPointerBpm(m_pBeats, getDuration())
+                                 .isValid())) {
             // Only use the imported BPM if the current beat grid is either
             // missing or not valid! The BPM value in the metadata might be
             // imprecise (normalized or rounded), e.g. ID3v2 only supports
@@ -240,10 +248,11 @@ bool Track::mergeExtraMetadataFromSource(
 }
 
 mixxx::TrackMetadata Track::getMetadata(
-        bool* pSourceSynchronized) const {
+        mixxx::TrackRecord::SourceSyncStatus* pSourceSyncStatus) const {
     const auto locked = lockMutex(&m_qMutex);
-    if (pSourceSynchronized) {
-        *pSourceSynchronized = m_record.isSourceSynchronized();
+    if (pSourceSyncStatus) {
+        *pSourceSyncStatus =
+                m_record.checkSourceSyncStatus(m_fileAccess.info());
     }
     return m_record.getMetadata();
 }
@@ -338,7 +347,8 @@ void Track::adjustReplayGainFromPregain(double gain) {
 
 mixxx::Bpm Track::getBpmWhileLocked() const {
     // BPM values must be synchronized at all times!
-    DEBUG_ASSERT(m_record.getMetadata().getTrackInfo().getBpm() == getBeatsPointerBpm(m_pBeats));
+    DEBUG_ASSERT(m_record.getMetadata().getTrackInfo().getBpm() ==
+            getBeatsPointerBpm(m_pBeats, getDuration()));
     return m_record.getMetadata().getTrackInfo().getBpm();
 }
 
@@ -357,12 +367,16 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
                 cuePosition,
                 bpm);
         return trySetBeatsWhileLocked(std::move(pBeats));
-    } else if (m_pBeats->getBpm() != bpm) {
+    } else if (getBeatsPointerBpm(m_pBeats, getDuration()) != bpm) {
         // Continue with the regular cases
-        if (kLogger.debugEnabled()) {
-            kLogger.debug() << "Updating BPM:" << getLocation();
+        const auto newBeats = m_pBeats->trySetBpm(bpm);
+        if (newBeats) {
+            if (kLogger.debugEnabled()) {
+                kLogger.debug() << "Updating BPM:" << getLocation();
+            }
+
+            return trySetBeatsWhileLocked(*newBeats);
         }
-        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpm));
     }
     return false;
 }
@@ -397,7 +411,7 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
         return false;
     }
     m_pBeats = std::move(pBeats);
-    m_record.refMetadata().refTrackInfo().setBpm(getBeatsPointerBpm(m_pBeats));
+    m_record.refMetadata().refTrackInfo().setBpm(getBeatsPointerBpm(m_pBeats, getDuration()));
     return true;
 }
 
@@ -471,9 +485,10 @@ void Track::emitChangedSignalsForAllMetadata() {
     emit keyChanged();
 }
 
-bool Track::isSourceSynchronized() const {
+bool Track::checkSourceSynchronized() const {
     const auto locked = lockMutex(&m_qMutex);
-    return m_record.isSourceSynchronized();
+    return m_record.checkSourceSyncStatus(m_fileAccess.info()) ==
+            mixxx::TrackRecord::SourceSyncStatus::Synchronized;
 }
 
 void Track::setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt) {
@@ -1081,10 +1096,9 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
-    const auto pBeats = mixxx::Beats::fromBeatPositions(
-            m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate(),
+    const auto pBeats =
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
-                    getLocation(), *m_record.getStreamInfoFromSource()));
+                    getLocation(), *m_record.getStreamInfoFromSource());
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();
     return setBeatsWhileLocked(pBeats);
@@ -1441,8 +1455,11 @@ ExportTrackMetadataResult Track::exportMetadata(
     // TODO(XXX): Use sourceSynchronizedAt to decide if metadata
     // should be (re-)imported before exporting it. The file might
     // have been updated by external applications. Overwriting
-    // this modified metadata might not be intended.
-    if (!m_bMarkedForMetadataExport && !m_record.isSourceSynchronized()) {
+    // this modified metadata is probably not be intended if not
+    // explicitly requested by m_bMarkedForMetadataExport.
+    if (!m_bMarkedForMetadataExport &&
+            m_record.checkSourceSyncStatus(m_fileAccess.info()) !=
+                    mixxx::TrackRecord::SourceSyncStatus::Synchronized) {
         // If the metadata has never been imported from file tags it
         // must be exported explicitly once. This ensures that we don't
         // overwrite existing file tags with completely different
@@ -1454,7 +1471,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Skipped;
     }
 
-    if (pConfig->getValue<bool>(mixxx::library::prefs::kSeratoMetadataExportConfigKey)) {
+    if (pConfig->getValue<bool>(mixxx::library::prefs::kSyncSeratoMetadataConfigKey)) {
         const auto streamInfo = m_record.getStreamInfoFromSource();
         VERIFY_OR_DEBUG_ASSERT(streamInfo &&
                 streamInfo->getSignalInfo().isValid() &&

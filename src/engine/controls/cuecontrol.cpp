@@ -1,7 +1,5 @@
 #include "engine/controls/cuecontrol.h"
 
-#include <QMutexLocker>
-
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -1344,8 +1342,13 @@ void CueControl::cueCDJ(double value) {
             // If quantize is enabled, jump to the cue point since it's not
             // necessarily where we currently are
             if (m_pQuantizeEnabled->toBool()) {
-                // Enginebuffer will quantize more exactly than we can.
-                seekAbs(mainCuePosition);
+                // We need to re-get the cue point since it changed.
+                const auto newCuePosition = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        m_pCuePoint->get());
+                if (newCuePosition.isValid()) {
+                    // Enginebuffer will quantize more exactly than we can.
+                    seekAbs(newCuePosition);
+                }
             }
         }
     } else if (m_currentlyPreviewingIndex == kMainCueIndex) {
@@ -1436,8 +1439,12 @@ void CueControl::cuePlay(double value) {
             // If quantize is enabled, jump to the cue point since it's not
             // necessarily where we currently are
             if (m_pQuantizeEnabled->toBool()) {
-                // Enginebuffer will quantize more exactly than we can.
-                seekAbs(mainCuePosition);
+                const auto newCuePosition = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        m_pCuePoint->get());
+                if (newCuePosition.isValid()) {
+                    // Enginebuffer will quantize more exactly than we can.
+                    seekAbs(newCuePosition);
+                }
             }
         }
     } else if (trackAt == TrackAt::Cue) {

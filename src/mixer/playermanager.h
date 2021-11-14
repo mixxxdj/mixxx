@@ -2,7 +2,6 @@
 
 #include <QList>
 #include <QMap>
-#include <QMutex>
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
@@ -25,7 +24,6 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
-class VisualsManager;
 class ControlProxy;
 
 // For mocking PlayerManager

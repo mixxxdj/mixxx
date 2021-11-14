@@ -25,7 +25,7 @@ const mixxx::Logger kLogger("SyncControl");
 SyncControl::SyncControl(const QString& group,
         UserSettingsPointer pConfig,
         EngineChannel* pChannel,
-        SyncableListener* pEngineSync)
+        EngineSync* pEngineSync)
         : EngineControl(group, pConfig),
           m_sGroup(group),
           m_pChannel(pChannel),
@@ -43,8 +43,7 @@ SyncControl::SyncControl(const QString& group,
     // Play button.  We only listen to this to disable leader if the deck is
     // stopped.
     m_pPlayButton = new ControlProxy(group, "play", this);
-    m_pPlayButton->connectValueChanged(this, &SyncControl::slotControlPlay,
-                                       Qt::DirectConnection);
+    m_pPlayButton->connectValueChanged(this, &SyncControl::slotControlPlay, Qt::DirectConnection);
 
     m_pSyncMode.reset(new ControlPushButton(ConfigKey(group, "sync_mode")));
     m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
@@ -67,13 +66,36 @@ SyncControl::SyncControl(const QString& group,
     m_pSyncEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncEnabledChangeRequest, Qt::DirectConnection);
 
+    // Beat sync (scale buffer tempo relative to tempo of other buffer)
+    m_pButtonSync = new ControlPushButton(ConfigKey(group, "beatsync"));
+    connect(m_pButtonSync,
+            &ControlObject::valueChanged,
+            this,
+            &SyncControl::slotControlBeatSync,
+            Qt::DirectConnection);
+
+    m_pButtonSyncPhase = new ControlPushButton(ConfigKey(group, "beatsync_phase"));
+    connect(m_pButtonSyncPhase,
+            &ControlObject::valueChanged,
+            this,
+            &SyncControl::slotControlBeatSyncPhase,
+            Qt::DirectConnection);
+
+    m_pButtonSyncTempo = new ControlPushButton(ConfigKey(group, "beatsync_tempo"));
+    connect(m_pButtonSyncTempo,
+            &ControlObject::valueChanged,
+            this,
+            &SyncControl::slotControlBeatSyncTempo,
+            Qt::DirectConnection);
+
     // The relative position between two beats in the range 0.0 ... 1.0
     m_pBeatDistance.reset(
             new ControlObject(ConfigKey(group, "beat_distance")));
 
     m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(this,
-            &SyncControl::slotPassthroughChanged, Qt::DirectConnection);
+            &SyncControl::slotPassthroughChanged,
+            Qt::DirectConnection);
 
     m_pQuantize = new ControlProxy(group, "quantize", this);
 
@@ -81,10 +103,13 @@ SyncControl::SyncControl(const QString& group,
 }
 
 SyncControl::~SyncControl() {
+    delete m_pButtonSync;
+    delete m_pButtonSyncPhase;
+    delete m_pButtonSyncTempo;
 }
 
 void SyncControl::setEngineControls(RateControl* pRateControl,
-                                    BpmControl* pBpmControl) {
+        BpmControl* pBpmControl) {
     m_pRateControl = pRateControl;
     m_pBpmControl = pBpmControl;
 
@@ -96,8 +121,7 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pLocalBpm = new ControlProxy(getGroup(), "local_bpm", this);
 
     m_pRateRatio = new ControlProxy(getGroup(), "rate_ratio", this);
-    m_pRateRatio->connectValueChanged(this, &SyncControl::slotRateChanged,
-                                       Qt::DirectConnection);
+    m_pRateRatio->connectValueChanged(this, &SyncControl::slotRateChanged, Qt::DirectConnection);
 
     m_pSyncPhaseButton = new ControlProxy(getGroup(), "beatsync_phase", this);
 
@@ -109,8 +133,8 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
     DEBUG_ASSERT(m_pVCEnabled->valid());
 
-    m_pVCEnabled->connectValueChanged(this, &SyncControl::slotVinylControlChanged,
-                                      Qt::DirectConnection);
+    m_pVCEnabled->connectValueChanged(
+            this, &SyncControl::slotVinylControlChanged, Qt::DirectConnection);
 #endif
 }
 
@@ -172,6 +196,10 @@ bool SyncControl::isPlaying() const {
 
 bool SyncControl::isAudible() const {
     return m_audible;
+}
+
+bool SyncControl::isQuantized() const {
+    return m_pQuantize->toBool();
 }
 
 double SyncControl::adjustSyncBeatDistance(double beatDistance) const {
@@ -275,6 +303,10 @@ double SyncControl::determineBpmMultiplier(mixxx::Bpm myBpm, mixxx::Bpm targetBp
 }
 
 void SyncControl::updateTargetBeatDistance() {
+    updateTargetBeatDistance(frameInfo().currentPosition);
+}
+
+void SyncControl::updateTargetBeatDistance(mixxx::audio::FramePos refPosition) {
     double targetDistance = m_unmultipliedTargetBeatDistance;
     if (kLogger.traceEnabled()) {
         kLogger.trace()
@@ -296,13 +328,15 @@ void SyncControl::updateTargetBeatDistance() {
     } else if (m_leaderBpmAdjustFactor == kBpmHalve) {
         targetDistance *= kBpmHalve;
         // Our beat distance CO is still a buffer behind, so take the current value.
-        if (m_pBpmControl->getBeatDistance(
-                    frameInfo().currentPosition) >= 0.5) {
+        if (m_pBpmControl->getBeatDistance(refPosition) >= 0.5) {
             targetDistance += 0.5;
         }
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::updateTargetBeatDistance, adjusted target is" << targetDistance;
+        kLogger.trace()
+                << getGroup()
+                << "SyncControl::updateTargetBeatDistance, adjusted target is"
+                << targetDistance;
     }
     m_pBpmControl->setTargetBeatDistance(targetDistance);
 }
@@ -340,19 +374,48 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
     }
-    trackBeatsUpdated(pBeats);
-}
-
-void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // This slot is fired by a new file is loaded or if the user
     // has adjusted the beatgrid.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
+        kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
     }
 
     VERIFY_OR_DEBUG_ASSERT(m_pLocalBpm) {
         // object not initialized
         return;
+    }
+
+    const bool hadBeats = m_pBeats != nullptr;
+    m_pBeats = pBeats;
+    m_leaderBpmAdjustFactor = kBpmUnity;
+
+    m_pBpmControl->updateLocalBpm();
+    if (isSynchronized()) {
+        if (!m_pBeats) {
+            // If we were soft leader and now we have no beats, go to follower.
+            // This is a bit of "enginesync" logic that has bled into this Syncable,
+            // is there a better way to handle "soft leaders no longer have bpm"?
+            if (getSyncMode() == SyncMode::LeaderSoft) {
+                m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
+            }
+            return;
+        }
+
+        // Re-requesting the existing sync mode will resync us.
+        m_pChannel->getEngineBuffer()->requestSyncMode(getSyncMode());
+        if (!hadBeats) {
+            // There is a chance we were beatless leader before, so we notify a basebpm change
+            // to possibly reinit leader params.
+            m_pChannel->getEngineBuffer()->requestSyncMode(getSyncMode());
+            m_pEngineSync->notifyBaseBpmChanged(this, getBaseBpm());
+        }
+    }
+}
+
+void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    // This slot is fired by if the user has adjusted the beatgrid.
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
     }
 
     m_pBeats = pBeats;
@@ -365,7 +428,7 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
             // be leader.
             m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
         } else {
-            // We are remaining leader, so notify the engine with our update.
+            // We should not change playback speed.
             m_pBpmControl->updateLocalBpm();
             m_pEngineSync->notifyBaseBpmChanged(this, getBaseBpm());
         }
@@ -375,6 +438,44 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
         // a bpm, we might need to become leader.
         m_pChannel->getEngineBuffer()->requestSyncMode(syncMode);
         m_pBpmControl->updateLocalBpm();
+    }
+}
+
+void SyncControl::notifySeek(mixxx::audio::FramePos position) {
+    m_pEngineSync->notifySeek(this, position);
+}
+
+void SyncControl::slotControlBeatSyncPhase(double value) {
+    if (value == 0) {
+        return;
+    }
+
+    m_pChannel->getEngineBuffer()->requestSyncPhase();
+}
+
+void SyncControl::slotControlBeatSyncTempo(double value) {
+    if (value == 0) {
+        return;
+    }
+    // This request is a noop if we are already synced.
+    const auto localBpm = getLocalBpm();
+    if (isSynchronized() || !localBpm.isValid()) {
+        return;
+    }
+
+    Syncable* target = m_pEngineSync->pickNonSyncSyncTarget(getChannel());
+    if (target == nullptr) {
+        return;
+    }
+
+    double multiplier = determineBpmMultiplier(fileBpm(), target->getBaseBpm());
+    m_pRateRatio->set(target->getBpm() * multiplier / localBpm);
+}
+
+void SyncControl::slotControlBeatSync(double value) {
+    if (value > 0) {
+        m_pChannel->getEngineBuffer()->requestEnableSync(true);
+        m_pChannel->getEngineBuffer()->requestEnableSync(false);
     }
 }
 
@@ -532,7 +633,7 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
 mixxx::Bpm SyncControl::fileBpm() const {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        return pBeats->getBpm();
+        return pBeats->getBpmInRange(mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
     }
     return {};
 }

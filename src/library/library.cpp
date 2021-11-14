@@ -43,6 +43,7 @@
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextbrowser.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
 
@@ -253,13 +254,41 @@ Library::Library(
             kEditMetadataSelectedClickDefault);
 }
 
-Library::~Library() {
-    // Empty but required due to forward declarations in header file!
-}
+Library::~Library() = default;
 
 TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
     return m_pTrackCollectionManager;
+}
+
+namespace {
+class TrackAnalysisSchedulerEnvironmentImpl final : public TrackAnalysisSchedulerEnvironment {
+  public:
+    explicit TrackAnalysisSchedulerEnvironmentImpl(const Library* pLibrary)
+            : m_pLibrary(pLibrary) {
+        DEBUG_ASSERT(m_pLibrary);
+    }
+    ~TrackAnalysisSchedulerEnvironmentImpl() final = default;
+
+    TrackPointer loadTrackById(TrackId trackId) const final {
+        return m_pLibrary->trackCollectionManager()->getTrackById(trackId);
+    }
+
+  private:
+    // TODO: Use std::shared_ptr or std::weak_ptr instead of a plain pointer?
+    const Library* const m_pLibrary;
+};
+} // namespace
+
+TrackAnalysisScheduler::Pointer Library::createTrackAnalysisScheduler(
+        int numWorkerThreads,
+        AnalyzerModeFlags modeFlags) const {
+    return TrackAnalysisScheduler::createInstance(
+            std::make_unique<const TrackAnalysisSchedulerEnvironmentImpl>(this),
+            numWorkerThreads,
+            m_pDbConnectionPool,
+            m_pConfig,
+            modeFlags);
 }
 
 void Library::stopPendingTasks() {
@@ -288,6 +317,10 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             &WSearchLineEdit::slotSetFont);
     emit setTrackTableFont(m_trackTableFont);
     m_pLibraryControl->bindSearchboxWidget(pSearchboxWidget);
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::searchbarFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -317,6 +350,11 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &WLibrarySidebar::rightClicked,
             m_pSidebarModel,
             &SidebarModel::rightClicked);
+
+    connect(pSidebarWidget,
+            &WLibrarySidebar::sidebarFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 
     pSidebarWidget->slotSetFont(m_trackTableFont);
     connect(this,
@@ -375,6 +413,10 @@ void Library::bindLibraryWidget(
             &WTrackTableView::setSelectedClick);
 
     m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
+    connect(pTrackTableView,
+            &WTrackTableView::trackTableFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 
     for (const auto& feature : qAsConst(m_features)) {
         feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
@@ -385,6 +427,13 @@ void Library::bindLibraryWidget(
     emit setTrackTableFont(m_trackTableFont);
     emit setTrackTableRowHeight(m_iTrackTableRowHeight);
     emit setSelectedClick(m_editMetadataSelectedClick);
+}
+
+void Library::bindFeatureRootView(WLibraryTextBrowser* pTextBrowser) {
+    connect(pTextBrowser,
+            &WLibraryTextBrowser::textBrowserFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 }
 
 void Library::addFeature(LibraryFeature* feature) {
