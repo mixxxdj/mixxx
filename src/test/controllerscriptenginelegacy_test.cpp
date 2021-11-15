@@ -8,7 +8,6 @@
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/softtakeover.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
@@ -36,7 +35,6 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
         QThread::currentThread()->setObjectName("Main");
         cEngine = new ControllerScriptEngineLegacy(nullptr, logger);
         cEngine->initialize();
-        ControllerDebug::setTesting(true);
     }
 
     void TearDown() override {
@@ -82,29 +80,17 @@ TEST_F(ControllerScriptEngineLegacyTest, setValue) {
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, getValue_InvalidKey) {
-    ControllerDebug::setEnabled(false);
-    ControllerDebug::setTesting(false);
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('', '');"));
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('', 'invalid');"));
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('[Invalid]', '');"));
-    ControllerDebug::setTesting(true);
-    ControllerDebug::setEnabled(true);
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, setValue_InvalidControl) {
-    ControllerDebug::setEnabled(false);
-    ControllerDebug::setTesting(false);
     EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Nothing]', 'nothing', 1.0);"));
-    ControllerDebug::setTesting(true);
-    ControllerDebug::setEnabled(true);
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, getValue_InvalidControl) {
-    ControllerDebug::setEnabled(false);
-    ControllerDebug::setTesting(false);
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('[Nothing]', 'nothing');"));
-    ControllerDebug::setTesting(true);
-    ControllerDebug::setEnabled(true);
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, setValue_IgnoresNaN) {

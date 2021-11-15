@@ -1,7 +1,6 @@
 #include "controllers/midi/midicontroller.h"
 
 #include "control/controlobject.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/midiutils.h"
 #include "defs_urls.h"

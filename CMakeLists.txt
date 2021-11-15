@@ -475,7 +475,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlpushbutton.cpp
   src/control/controlttrotary.cpp
   src/controllers/controller.cpp
-  src/controllers/controllerdebug.cpp
   src/controllers/controllerenumerator.cpp
   src/controllers/controllerinputmappingtablemodel.cpp
   src/controllers/controllerlearningeventfilter.cpp

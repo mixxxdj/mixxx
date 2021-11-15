@@ -2,7 +2,6 @@
 
 #include "control/controlobject.h"
 #include "controllers/controller.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/scripting/colormapperjsproxy.h"
 #include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
 #include "errordialoghandler.h"
@@ -150,7 +149,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     } else { // m_pController is nullptr in tests.
         args << QJSValue();
     }
-    args << QJSValue(ControllerDebug::isEnabled());
+    args << QJSValue(m_logger().isDebugEnabled());
     if (!callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true)) {
         shutdown();
         return false;

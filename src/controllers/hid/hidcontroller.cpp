@@ -2,7 +2,6 @@
 
 #include <hidapi.h>
 
-#include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "moc_hidcontroller.cpp"
