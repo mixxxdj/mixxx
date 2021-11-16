@@ -30,9 +30,13 @@ String.prototype.toInt = function() {
 
 // ----------------- Function overloads ---------------------
 
-// Causes script print() calls to appear in the log file as well
-var print = function(string) {
-    engine.log(string);
+/**
+ * Prints a message to the terminal and the log file.
+ * @param {string} message - The log message.
+ * @deprecated Use console.log()/console.warn()/console.debug() instead.
+ */
+var print = function(message) {
+    console.log(message);
 };
 
 // eslint-disable-next-line no-unused-vars
