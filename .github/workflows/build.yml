@@ -31,6 +31,25 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-focal
             qt_qpa_platform: offscreen
+          - name: Arch Linux (Qt6, gcc)
+            os: ubuntu-20.04
+            # The Dockerfile for this container can be found at:
+            # https://github.com/Holzhaus/mixxx-ci-docker
+            container: holzhaus/mixxx-ci:20211016-qt6
+            cmake_args: >-
+              -DWARNINGS_FATAL=ON
+              -DQT6=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+            ctest_args:
+            compiler_cache: ccache
+            compiler_cache_path: ~/.ccache
+            qt_qpa_platform: offscreen
           - name: macOS 10.15
             os: macos-10.15
             cmake_args: >-
@@ -89,6 +108,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
+    container: ${{ matrix.container }}
     outputs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
@@ -296,7 +316,7 @@ jobs:
 
     - name: "Package for PPA"
       # No need to do the PPA build for both Ubuntu versions
-      if: matrix.os == 'ubuntu-20.04'
+      if: matrix.os == 'ubuntu-20.04' && matrix.container == null
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
