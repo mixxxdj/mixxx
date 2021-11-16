@@ -142,15 +142,6 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
   public:
     ~AudioSource() override = default;
 
-    // All sources are required to produce a signal of frames
-    // where each frame contains samples from all channels that are
-    // coincident in time.
-    //
-    // A frame for a mono signal contains a single sample. A frame
-    // for a stereo signal contains a pair of samples, one for the
-    // left and right channel respectively.
-    static constexpr audio::SampleLayout kSampleLayout = mixxx::kEngineSampleLayout;
-
     /// Defines how thoroughly the stream properties should be verified
     /// when opening an audio stream.
     enum class OpenMode {
@@ -178,7 +169,7 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
         /// internal errors of if the format of the content is not
         /// supported it should return Aborted.
         ///
-        /// Returing this error result gives other decoders with a
+        /// Returning this error result gives other decoders with a
         /// lower priority the chance to open the same file.
         /// Example: A SoundSourceProvider has been registered for
         /// files with a certain extension, but the corresponding
@@ -201,16 +192,13 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     // Parameters for opening audio sources
     class OpenParams {
       public:
-        OpenParams()
-                : m_signalInfo(kSampleLayout) {
-        }
+        OpenParams() = default;
         OpenParams(
                 audio::ChannelCount channelCount,
                 audio::SampleRate sampleRate)
                 : m_signalInfo(
                           channelCount,
-                          sampleRate,
-                          kSampleLayout) {
+                          sampleRate) {
         }
 
         const audio::SignalInfo& getSignalInfo() const {
@@ -317,7 +305,7 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     explicit AudioSource(const QUrl& url);
 
     bool initChannelCountOnce(audio::ChannelCount channelCount);
-    bool initChannelCountOnce(SINT channelCount) {
+    bool initChannelCountOnce(int channelCount) {
         return initChannelCountOnce(audio::ChannelCount(channelCount));
     }
 

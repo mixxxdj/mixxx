@@ -25,6 +25,8 @@ bool ControllerScriptEngineBase::initialize() {
     // Create the Script Engine
     m_pJSEngine = std::make_shared<QJSEngine>(this);
 
+    m_pJSEngine->installExtensions(QJSEngine::ConsoleExtension);
+
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
 
     QJSValue mapper = m_pJSEngine->newQMetaObject(
@@ -55,7 +57,10 @@ void ControllerScriptEngineBase::shutdown() {
 }
 
 void ControllerScriptEngineBase::reload() {
-    shutdown();
+    // JSEngine needs to exist for it to be shutdown
+    if (m_pJSEngine) {
+        shutdown();
+    }
     initialize();
 }
 
@@ -100,25 +105,19 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
     QString backtrace = evaluationResult.property("stack").toString();
     QString filename = evaluationResult.property("fileName").toString();
 
-    QString errorText;
     if (filename.isEmpty()) {
-        errorText = QString("Uncaught exception at line %1 in passed code.")
-                            .arg(line);
-    } else {
-        errorText = QString("Uncaught exception at line %1 in file %2.")
-                            .arg(line, filename);
+        filename = QStringLiteral("<passed code>");
     }
-
-    errorText += QStringLiteral("\n\nException:\n  ") + errorMessage;
+    QString errorText = QString("Uncaught exception: %1:%2: %3").arg(filename, line, errorMessage);
 
     // Do not include backtrace in dialog key because it might contain midi
     // slider values that will differ most of the time. This would break
     // the "Ignore" feature of the error dialog.
     QString key = errorText;
-    qWarning() << "ControllerScriptHandlerBase:" << errorText;
 
     // Add backtrace to the error details
-    errorText += QStringLiteral("\n\nBacktrace:\n") + backtrace;
+    errorText += QStringLiteral("\nBacktrace: ") + backtrace;
+    qWarning() << "ControllerScriptHandlerBase:" << errorText;
 
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, key, bFatalError);
@@ -207,13 +206,5 @@ void ControllerScriptEngineBase::errorDialogButton(
 }
 
 void ControllerScriptEngineBase::throwJSError(const QString& message) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 12, 0)
-    QString errorText = tr("Uncaught exception: %1").arg(message);
-    qWarning() << "ControllerEngine:" << errorText;
-    if (!m_bDisplayingExceptionDialog) {
-        scriptErrorDialog(errorText, errorText);
-    }
-#else
     m_pJSEngine->throwError(message);
-#endif
 }

@@ -708,6 +708,42 @@
                     <script-binding/>
                 </options>
             </control>
+           <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.syncKey.input</key>
+                <status>0x91</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.pitchUp.input</key>
+                <status>0x91</status>
+                <midino>0x4F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.pitchDown.input</key>
+                <status>0x91</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.resetKey.input</key>
+                <status>0x91</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.enableEffectUnitButtons[0].input</key>
@@ -2280,6 +2316,42 @@
                 <key>P32.rightDeck.alignBeats.input</key>
                 <status>0x95</status>
                 <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+           <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.syncKey.input</key>
+                <status>0x92</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.pitchUp.input</key>
+                <status>0x92</status>
+                <midino>0x4F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.pitchDown.input</key>
+                <status>0x92</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.rightDeck.resetKey.input</key>
+                <status>0x92</status>
+                <midino>0x47</midino>
                 <options>
                     <script-binding/>
                 </options>

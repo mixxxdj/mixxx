@@ -9,7 +9,8 @@ CueInfo::CueInfo()
           m_startPositionMillis(std::nullopt),
           m_endPositionMillis(std::nullopt),
           m_hotCueIndex(std::nullopt),
-          m_color(std::nullopt) {
+          m_color(std::nullopt),
+          m_flags(CueFlag::None) {
 }
 
 CueInfo::CueInfo(
@@ -18,13 +19,15 @@ CueInfo::CueInfo(
         const std::optional<double>& endPositionMillis,
         const std::optional<int>& hotCueIndex,
         QString label,
-        const mixxx::RgbColor::optional_t& color)
+        const mixxx::RgbColor::optional_t& color,
+        CueFlags flags)
         : m_type(type),
           m_startPositionMillis(startPositionMillis),
           m_endPositionMillis(endPositionMillis),
           m_hotCueIndex(hotCueIndex),
           m_label(std::move(label)),
-          m_color(color) {
+          m_color(color),
+          m_flags(flags) {
 }
 
 CueType CueInfo::getType() const {
@@ -129,6 +132,7 @@ QDebug operator<<(QDebug debug, const CueInfo& cueInfo) {
             << ", index=" << cueInfo.getHotCueIndex()
             << ", label=" << cueInfo.getLabel()
             << ", color=" << cueInfo.getColor()
+            << ", flags=" << cueInfo.flags()
             << "]";
     return debug;
 }

@@ -50,7 +50,8 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
         box->insertWidget(1, m_pAnalysisLibraryTableView);
     }
 
-    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pLibrary->trackCollections());
+    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(
+            this, pLibrary->trackCollectionManager());
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded,
@@ -108,6 +109,10 @@ void DlgAnalysis::onShow() {
 
 bool DlgAnalysis::hasFocus() const {
     return m_pAnalysisLibraryTableView->hasFocus();
+}
+
+void DlgAnalysis::setFocus() {
+    m_pAnalysisLibraryTableView->setFocus();
 }
 
 void DlgAnalysis::onSearch(const QString& text) {

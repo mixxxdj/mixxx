@@ -28,13 +28,15 @@ namespace {
 constexpr QChar kUnsafeFilenameReplacement = '-';
 }
 
-BasePlaylistFeature::BasePlaylistFeature(
-        Library* pLibrary,
+BasePlaylistFeature::BasePlaylistFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         PlaylistTableModel* pModel,
-        const QString& rootViewName)
-        : BaseTrackSetFeature(pLibrary, pConfig, rootViewName),
-          m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
+        const QString& rootViewName,
+        const QString& iconName)
+        : BaseTrackSetFeature(pLibrary, pConfig, rootViewName, iconName),
+          m_playlistDao(pLibrary->trackCollectionManager()
+                                ->internalCollection()
+                                ->getPlaylistDAO()),
           m_pPlaylistTableModel(pModel) {
     pModel->setParent(this);
 
@@ -136,7 +138,10 @@ void BasePlaylistFeature::initActions() {
     connect(m_pLibrary,
             &Library::trackSelected,
             this,
-            &BasePlaylistFeature::slotTrackSelected);
+            [this](const TrackPointer& pTrack) {
+                const auto trackId = pTrack ? pTrack->getId() : TrackId{};
+                slotTrackSelected(trackId);
+            });
     connect(m_pLibrary,
             &Library::switchToView,
             this,
@@ -175,31 +180,24 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
     if (playlistId == kInvalidPlaylistId) {
+        // This happens if user clicks on group nodes
+        // like the year folder in the history feature
         return;
     }
-
     m_pPlaylistTableModel->setTableModel(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
-    // Update selection
-    emit featureSelect(this, m_lastRightClickedIndex);
-
-    if (!m_pSidebarWidget) {
-        return;
-    }
-    m_pSidebarWidget->selectChildIndex(index);
 }
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
-    // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
-    if (playlistId == kInvalidPlaylistId) {
+    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (!index.isValid()) {
+    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
+    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }
-
     m_lastRightClickedIndex = index;
     m_pPlaylistTableModel->setTableModel(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
@@ -365,14 +363,16 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 /// Returns a playlist that is a sibling inside the same parent
 /// as the start index
 int BasePlaylistFeature::getSiblingPlaylistIdOf(QModelIndex& start) {
-    for (int i = start.row() + 1; i >= (start.row() - 1); i -= 2) {
-        QModelIndex nextIndex = start.sibling(i, start.column());
-        if (nextIndex.isValid()) {
-            TreeItem* pTreeItem = m_childModel.getItem(nextIndex);
-            DEBUG_ASSERT(pTreeItem != nullptr);
-            if (!pTreeItem->hasChildren()) {
-                return playlistIdFromIndex(nextIndex);
-            }
+    QModelIndex nextIndex = start.sibling(start.row() + 1, start.column());
+    if (!nextIndex.isValid() && start.row() > 0) {
+        // No playlist below, looking above.
+        nextIndex = start.sibling(start.row() - 1, start.column());
+    }
+    if (nextIndex.isValid()) {
+        TreeItem* pTreeItem = m_pSidebarModel->getItem(nextIndex);
+        DEBUG_ASSERT(pTreeItem != nullptr);
+        if (!pTreeItem->hasChildren()) {
+            return playlistIdFromIndex(nextIndex);
         }
     }
     return kInvalidPlaylistId;
@@ -557,7 +557,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
             new PlaylistTableModel(this,
-                    m_pLibrary->trackCollections(),
+                    m_pLibrary->trackCollectionManager(),
                     "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
@@ -599,7 +599,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 void BasePlaylistFeature::slotExportTrackFiles() {
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
             new PlaylistTableModel(this,
-                    m_pLibrary->trackCollections(),
+                    m_pLibrary->trackCollectionManager(),
                     "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
@@ -655,8 +655,8 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     }
 }
 
-TreeItemModel* BasePlaylistFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* BasePlaylistFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
@@ -670,6 +670,7 @@ void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
             this,
             &BasePlaylistFeature::htmlLinkClicked);
     libraryWidget->registerView(m_rootViewName, edit);
+    m_pLibrary->bindFeatureRootView(edit);
 }
 
 void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -691,9 +692,9 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
 
     QVariant variantId = QVariant(playlistId);
 
-    for (int row = 0; row < m_childModel.rowCount(); ++row) {
-        QModelIndex index = m_childModel.index(row, 0);
-        TreeItem* pTreeItem = m_childModel.getItem(index);
+    for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
+        QModelIndex index = m_pSidebarModel->index(row, 0);
+        TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
         DEBUG_ASSERT(pTreeItem != nullptr);
         if (!pTreeItem->hasChildren() && // leaf node
                 pTreeItem->getData() == variantId) {
@@ -707,13 +708,13 @@ void BasePlaylistFeature::updateChildModel(int playlistId) {
   * Clears the child model dynamically, but the invisible root item remains
   */
 void BasePlaylistFeature::clearChildModel() {
-    m_childModel.removeRows(0, m_childModel.rowCount());
+    m_pSidebarModel->removeRows(0, m_pSidebarModel->rowCount());
 }
 
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     QVariant variantId = QVariant(playlistId);
-    QModelIndexList results = m_childModel.match(
-            m_childModel.getRootIndex(),
+    QModelIndexList results = m_pSidebarModel->match(
+            m_pSidebarModel->getRootIndex(),
             TreeItemModel::kDataRole,
             variantId,
             1,
@@ -724,22 +725,18 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     return QModelIndex();
 }
 
-void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
-    m_pSelectedTrack = pTrack;
-    TrackId trackId;
-    if (pTrack) {
-        trackId = pTrack->getId();
-    }
-    m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistIdsOfSelectedTrack);
+void BasePlaylistFeature::slotTrackSelected(TrackId trackId) {
+    m_selectedTrackId = trackId;
+    m_playlistDao.getPlaylistsTrackIsIn(m_selectedTrackId, &m_playlistIdsOfSelectedTrack);
 
-    for (int row = 0; row < m_childModel.rowCount(); ++row) {
-        QModelIndex index = m_childModel.index(row, 0);
-        TreeItem* pTreeItem = m_childModel.getItem(index);
+    for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
+        QModelIndex index = m_pSidebarModel->index(row, 0);
+        TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
         DEBUG_ASSERT(pTreeItem != nullptr);
         markTreeItem(pTreeItem);
     }
 
-    m_childModel.triggerRepaint();
+    m_pSidebarModel->triggerRepaint();
 }
 
 void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
@@ -766,5 +763,5 @@ void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
 }
 
 void BasePlaylistFeature::slotResetSelectedTrack() {
-    slotTrackSelected(TrackPointer());
+    slotTrackSelected(TrackId{});
 }

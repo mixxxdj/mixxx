@@ -7,10 +7,6 @@
 #include "util/duration.h"
 #include "util/logger.h"
 
-// TagLib has support for length in milliseconds since version 1.10
-#define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
-
 namespace mixxx {
 
 namespace {
@@ -56,14 +52,25 @@ bool parseReplayGainPeak(
 
 namespace taglib {
 
-TagLib::String toTString(
-        const QString& str) {
-    if (str.isNull()) {
-        return TagLib::String::null;
-    } else {
-        const QByteArray qba(str.toUtf8());
-        return TagLib::String(qba.constData(), TagLib::String::UTF8);
+QString toQString(
+        const TagLib::String& tString) {
+    if (tString.isEmpty()) {
+        // TagLib::null/isNull() is deprecated so we cannot distinguish
+        // between null and empty strings.
+        return QString();
     }
+    return TStringToQString(tString);
+}
+
+TagLib::String toTString(
+        const QString& qString) {
+    if (qString.isEmpty()) {
+        // TagLib::null/isNull() is deprecated so we cannot distinguish
+        // between null and empty strings.
+        return TagLib::String();
+    }
+    const QByteArray qba(qString.toUtf8());
+    return TagLib::String(qba.constData(), TagLib::String::UTF8);
 }
 
 TagLib::String firstNonEmptyStringListItem(

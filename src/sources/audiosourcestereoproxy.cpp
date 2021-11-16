@@ -9,15 +9,14 @@ namespace {
 
 const Logger kLogger("AudioSourceStereoProxy");
 
-constexpr audio::ChannelCount kChannelCount = audio::ChannelCount(2);
+constexpr audio::ChannelCount kChannelCount = audio::ChannelCount::stereo();
 
 audio::SignalInfo proxySignalInfo(
         const audio::SignalInfo& signalInfo) {
     DEBUG_ASSERT(signalInfo.isValid());
     return audio::SignalInfo(
             kChannelCount,
-            signalInfo.getSampleRate(),
-            signalInfo.getSampleLayout());
+            signalInfo.getSampleRate());
 }
 
 } // anonymous namespace

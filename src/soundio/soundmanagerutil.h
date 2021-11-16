@@ -1,12 +1,13 @@
 #pragma once
 
-#include <QString>
-#include <QMutex>
 #include <QDomElement>
 #include <QList>
+#include <QString>
+#include <QtDebug>
 
-#include "util/types.h"
+#include "util/compatibility/qhash.h"
 #include "util/fifo.h"
+#include "util/types.h"
 
 /// Describes a group of channels, typically a pair for stereo sound in Mixxx.
 class ChannelGroup {
@@ -20,9 +21,9 @@ class ChannelGroup {
         return (m_channels << 8) |
                 m_channelBase;
     }
-    friend uint qHash(
+    friend qhash_seed_t qHash(
             const ChannelGroup& group,
-            uint seed = 0) {
+            qhash_seed_t seed = 0) {
         return qHash(group.hashValue(), seed);
     }
 
@@ -95,9 +96,9 @@ public:
         return (m_type << 8) |
                 m_index;
     }
-    friend uint qHash(
+    friend qhash_seed_t qHash(
             const AudioPath& path,
-            uint seed = 0) {
+            qhash_seed_t seed = 0) {
         return qHash(path.hashValue(), seed);
     }
 
@@ -272,9 +273,9 @@ inline bool operator<(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
 
 Q_DECLARE_METATYPE(SoundDeviceId);
 
-inline uint qHash(
+inline qhash_seed_t qHash(
         const SoundDeviceId& id,
-        uint seed = 0) {
+        qhash_seed_t seed = 0) {
     return qHash(id.name, seed) ^
             qHash(id.alsaHwDevice, seed) ^
             qHash(id.portAudioIndex, seed);

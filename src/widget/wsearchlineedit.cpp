@@ -8,7 +8,7 @@
 #include <QStyle>
 
 #include "moc_wsearchlineedit.cpp"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/assert.h"
 #include "util/logger.h"
 #include "wskincolor.h"
@@ -23,6 +23,8 @@ const mixxx::Logger kLogger("WSearchLineEdit");
 const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
 const QString kDisabledText = QStringLiteral("- - -");
+
+const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
 
 constexpr int kClearButtonClearence = 1;
 
@@ -74,10 +76,12 @@ void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     s_debouncingTimeoutMillis = verifyDebouncingTimeoutMillis(debouncingTimeoutMillis);
 }
 
-WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
+WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
         : QComboBox(pParent),
           WBaseWidget(this),
+          m_pConfig(pConfig),
           m_clearButton(make_parented<QToolButton>(this)) {
+    qRegisterMetaType<FocusWidget>("FocusWidget");
     setAcceptDrops(false);
     setEditable(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -146,7 +150,13 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             clearButtonSize.width() + m_frameWidth + kClearButtonClearence,
             layoutDirection()));
 
+    loadQueriesFromConfig();
+
     refreshState();
+}
+
+WSearchLineEdit::~WSearchLineEdit() {
+    saveQueriesInConfig();
 }
 
 void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
@@ -199,14 +209,12 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     DEBUG_ASSERT(backgroundColor != foregroundColor);
     pal.setBrush(backgroundRole(), backgroundColor);
     pal.setBrush(foregroundRole(), foregroundColor);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     auto placeholderColor = foregroundColor;
     placeholderColor.setAlpha(placeholderColor.alpha() * 3 / 4); // 75% opaque
     //kLogger.debug()
     //        << "Placeholder color:"
     //        << placeholderColor;
     pal.setBrush(QPalette::PlaceholderText, placeholderColor);
-#endif
     setPalette(pal);
 
     m_clearButton->setToolTip(tr("Clear input") + "\n" +
@@ -220,7 +228,8 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
             "\n" + tr("For more information see User Manual > Mixxx Library") +
             "\n\n" +
-            tr("Shortcut") + ": \n" + tr("Ctrl+F") + "  " +
+            tr("Shortcuts") + ": \n" +
+            tr("Ctrl+F") + "  " +
             tr("Focus", "Give search bar input focus") + "\n" +
             tr("Ctrl+Backspace") + "  " +
             tr("Clear input", "Clear the search bar input field") + "\n" +
@@ -228,7 +237,46 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Toggle search history",
                     "Shows/hides the search history entries") +
             "\n" +
+            tr("Delete or Backspace") + "  " + tr("Delete query from history") + "\n" +
             tr("Esc") + "  " + tr("Exit search", "Exit search bar and leave focus"));
+}
+
+void WSearchLineEdit::loadQueriesFromConfig() {
+    if (!m_pConfig) {
+        return;
+    }
+    const QList<ConfigKey> queryKeys =
+            m_pConfig->getKeysWithGroup(kSavedQueriesConfigGroup);
+    QSet<QString> queryStrings;
+    for (const auto& queryKey : queryKeys) {
+        const auto& queryString = m_pConfig->getValueString(queryKey);
+        if (queryString.isEmpty() || queryStrings.contains(queryString)) {
+            // Don't add duplicate and remove it from the config immediately
+            m_pConfig->remove(queryKey);
+        } else {
+            // Restore query
+            addItem(queryString);
+            queryStrings.insert(queryString);
+        }
+    }
+}
+
+void WSearchLineEdit::saveQueriesInConfig() {
+    if (!m_pConfig) {
+        return;
+    }
+    // Delete saved queries in case the list was cleared
+    const QList<ConfigKey> queryKeys =
+            m_pConfig->getKeysWithGroup(kSavedQueriesConfigGroup);
+    for (const auto& queryKey : queryKeys) {
+        m_pConfig->remove(queryKey);
+    }
+    // Store queries
+    for (int index = 0; index < count(); index++) {
+        m_pConfig->setValue(
+                ConfigKey(kSavedQueriesConfigGroup, QString::number(index)),
+                itemText(index));
+    }
 }
 
 void WSearchLineEdit::updateStyleMetrics() {
@@ -276,19 +324,38 @@ QString WSearchLineEdit::getSearchText() const {
 bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-        if (keyEvent->key() == Qt::Key_Down) {
-            // after clearing the text field the down key is expected to
-            // show the last entry
-            if (currentText().isEmpty()) {
-                setCurrentIndex(0);
+        // if the popup is open don't intercept Up/Down keys
+        if (!view()->isVisible()) {
+            if (keyEvent->key() == Qt::Key_Up) {
+                // if we're at the top of the list the Up key clears the search bar,
+                // no matter if it's a saved and unsaved query
+                if (findCurrentTextIndex() == 0 ||
+                        (findCurrentTextIndex() == -1 && !currentText().isEmpty())) {
+                    slotClearSearch();
+                    return true;
+                }
+            } else if (keyEvent->key() == Qt::Key_Down) {
+                // after clearing the text field the down key is expected to
+                // show the latest entry
+                if (currentText().isEmpty()) {
+                    setCurrentIndex(0);
+                    return true;
+                }
+                // in case the user entered a new search query
+                // and presses the down key, save the query for later recall
+                if (findCurrentTextIndex() == -1) {
+                    slotSaveSearch();
+                }
+            }
+        } else {
+            if (keyEvent->key() == Qt::Key_Backspace ||
+                    keyEvent->key() == Qt::Key_Delete) {
+                // remove the highlighted item from the list
+                deleteSelectedListItem();
                 return true;
             }
-            // in case the user entered a new search query
-            // und presses the down key, save the query for later recall
-            if (findCurrentTextIndex() == -1) {
-                slotSaveSearch();
-            }
-        } else if (keyEvent->key() == Qt::Key_Enter) {
+        }
+        if (keyEvent->key() == Qt::Key_Enter) {
             if (findCurrentTextIndex() == -1) {
                 slotSaveSearch();
             }
@@ -298,7 +365,7 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
             return true;
         } else if (keyEvent->key() == Qt::Key_Space &&
                 keyEvent->modifiers() == Qt::ControlModifier) {
-            // open popup on ctrl + space
+            // open/close popup on ctrl + space
             if (view()->isVisible()) {
                 hidePopup();
             } else {
@@ -306,6 +373,7 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
             }
             return true;
         }
+        // if the line edit has focus Ctrl + F selects the text
     }
     return QComboBox::eventFilter(obj, event);
 }
@@ -316,6 +384,7 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
             << "focusInEvent";
 #endif // ENABLE_TRACE_LOG
     QComboBox::focusInEvent(event);
+    emit searchbarFocusChange(FocusWidget::Searchbar);
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
@@ -323,7 +392,9 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
     kLogger.trace()
             << "focusOutEvent";
 #endif // ENABLE_TRACE_LOG
+    slotSaveSearch();
     QComboBox::focusOutEvent(event);
+    emit searchbarFocusChange(FocusWidget::None);
     if (m_debouncingTimer.isActive()) {
         // Trigger a pending search before leaving the edit box.
         // Otherwise the entered text might be ignored and get lost
@@ -352,6 +423,7 @@ void WSearchLineEdit::slotDisableSearch() {
         return;
     }
     setTextBlockSignals(kDisabledText);
+    updateClearButton(QString());
     setEnabled(false);
 }
 
@@ -394,23 +466,32 @@ void WSearchLineEdit::slotTriggerSearch() {
 
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
-    int cIndex = findCurrentTextIndex();
 #if ENABLE_TRACE_LOG
     kLogger.trace()
             << "save search. Index: "
             << cIndex;
 #endif // ENABLE_TRACE_LOG
     m_saveTimer.stop();
-    // entry already exists and is on top
-    if (cIndex == 0) {
+    if (currentText().isEmpty() || !isEnabled()) {
         return;
     }
-    if (!currentText().isEmpty() && isEnabled()) {
-        // we remove the existing item and add a new one at the top
-        if (cIndex != -1) {
-            removeItem(cIndex);
-        }
-        insertItem(0, currentText());
+    QString cText = currentText();
+    if (currentIndex() == -1) {
+        removeItem(-1);
+    }
+    // Check if the text is already listed
+    QSet<QString> querySet;
+    for (int index = 0; index < count(); index++) {
+        querySet.insert(itemText(index));
+    }
+    if (querySet.contains(cText)) {
+        // If query exists clear the box and use its index to set the currentIndex
+        int cIndex = findCurrentTextIndex();
+        setCurrentIndex(cIndex);
+        return;
+    } else {
+        // Else add it at the top
+        insertItem(0, cText);
         setCurrentIndex(0);
         while (count() > kMaxSearchEntries) {
             removeItem(kMaxSearchEntries);
@@ -419,13 +500,54 @@ void WSearchLineEdit::slotSaveSearch() {
 }
 
 void WSearchLineEdit::slotMoveSelectedHistory(int steps) {
+    if (!isEnabled()) {
+        return;
+    }
     int nIndex = currentIndex() + steps;
-    // we wrap around to the last entry on backwards direction
+    // at the top we manually wrap around to the last entry.
+    // at the bottom wrap-around happens automatically due to invalid nIndex.
     if (nIndex < -1) {
         nIndex = count() - 1;
     }
     setCurrentIndex(nIndex);
     m_saveTimer.stop();
+}
+
+void WSearchLineEdit::slotDeleteCurrentItem() {
+    if (!isEnabled()) {
+        return;
+    }
+    if (view()->isVisible()) {
+        deleteSelectedListItem();
+    } else {
+        deleteSelectedComboboxItem();
+    }
+}
+
+void WSearchLineEdit::deleteSelectedComboboxItem() {
+    int cIndex = currentIndex();
+    if (cIndex == -1) {
+        return;
+    } else {
+        slotClearSearch();
+        QComboBox::removeItem(cIndex);
+    }
+}
+
+void WSearchLineEdit::deleteSelectedListItem() {
+    bool wasEmpty = currentIndex() == -1 ? true : false;
+    QComboBox::removeItem(view()->currentIndex().row());
+    // ToDo Resize the list to new item size
+    // Close the popup if all items were removed
+
+    // When an item is removed the combobox would pick a sibling and trigger a
+    // search. Avoid this if the box was empty when the popup was opened.
+    if (wasEmpty) {
+        QComboBox::setCurrentIndex(-1);
+    }
+    if (count() == 0) {
+        hidePopup();
+    }
 }
 
 void WSearchLineEdit::refreshState() {
@@ -449,6 +571,14 @@ void WSearchLineEdit::showPopup() {
         setCurrentIndex(cIndex);
     }
     QComboBox::showPopup();
+    // When (empty) index -1 is selected in the combobox and the list view is opened
+    // index 0 is auto-set but not highlighted.
+    // Select first index manually (only in the list).
+    if (cIndex == -1) {
+        view()->selectionModel()->select(
+                view()->currentIndex(),
+                QItemSelectionModel::Select);
+    }
 }
 
 void WSearchLineEdit::updateEditBox(const QString& text) {
@@ -476,7 +606,6 @@ void WSearchLineEdit::updateClearButton(const QString& text) {
             << "updateClearButton"
             << text;
 #endif // ENABLE_TRACE_LOG
-    DEBUG_ASSERT(isEnabled());
 
     if (text.isEmpty()) {
         // Disable while placeholder is shown
@@ -506,7 +635,9 @@ void WSearchLineEdit::slotClearSearch() {
     kLogger.trace()
             << "slotClearSearch";
 #endif // ENABLE_TRACE_LOG
-    DEBUG_ASSERT(isEnabled());
+    if (!isEnabled()) {
+        return;
+    }
     // select the last entry as current before cleaning the text field
     // so arrow keys will work as expected
     setCurrentIndex(-1);
@@ -515,7 +646,9 @@ void WSearchLineEdit::slotClearSearch() {
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
     // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
-    clear();
+    // Note that just clear() would also erase all combobox items,
+    // thus clear the entire search history.
+    lineEdit()->clear();
     // Refocus the edit field
     setFocus(Qt::OtherFocusReason);
 }
@@ -559,7 +692,11 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
 }
 
 void WSearchLineEdit::slotSetShortcutFocus() {
-    setFocus(Qt::ShortcutFocusReason);
+    if (hasFocus()) {
+        lineEdit()->selectAll();
+    } else {
+        setFocus(Qt::ShortcutFocusReason);
+    }
 }
 
 // Use the same font as the library table and the sidebar

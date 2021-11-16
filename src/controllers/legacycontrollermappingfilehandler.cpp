@@ -15,7 +15,7 @@ namespace {
 /// @return Returns a QFileInfo object. If the script was not found in either
 /// of the search directories, the QFileInfo object might point to a
 /// non-existing file.
-QFileInfo findScriptFile(LegacyControllerMapping* mapping,
+QFileInfo findScriptFile(std::shared_ptr<LegacyControllerMapping> mapping,
         const QString& filename,
         const QDir& systemMappingsPath) {
     // Always try to load script from the mapping's directory first
@@ -31,12 +31,12 @@ QFileInfo findScriptFile(LegacyControllerMapping* mapping,
 } // namespace
 
 // static
-LegacyControllerMappingPointer LegacyControllerMappingFileHandler::loadMapping(
+std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loadMapping(
         const QFileInfo& mappingFile, const QDir& systemMappingsPath) {
     if (!mappingFile.exists() || !mappingFile.isReadable()) {
         qDebug() << "Mapping" << mappingFile.absoluteFilePath()
                  << "does not exist or is unreadable.";
-        return LegacyControllerMappingPointer();
+        return nullptr;
     }
 
     LegacyControllerMappingFileHandler* pHandler = nullptr;
@@ -53,10 +53,10 @@ LegacyControllerMappingPointer LegacyControllerMappingFileHandler::loadMapping(
     if (pHandler == nullptr) {
         qDebug() << "Mapping" << mappingFile.absoluteFilePath()
                  << "has an unrecognized extension.";
-        return LegacyControllerMappingPointer();
+        return nullptr;
     }
 
-    LegacyControllerMappingPointer pMapping = pHandler->load(
+    std::shared_ptr<LegacyControllerMapping> pMapping = pHandler->load(
             mappingFile.absoluteFilePath(), systemMappingsPath);
     if (pMapping) {
         pMapping->setDirty(false);
@@ -64,16 +64,15 @@ LegacyControllerMappingPointer LegacyControllerMappingFileHandler::loadMapping(
     return pMapping;
 }
 
-LegacyControllerMappingPointer LegacyControllerMappingFileHandler::load(
+std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::load(
         const QString& path, const QDir& systemMappingsPath) {
     qDebug() << "Loading controller mapping from" << path;
-    LegacyControllerMappingPointer pMapping = load(
+    return load(
             XmlParse::openXMLFile(path, "controller"), path, systemMappingsPath);
-    return pMapping;
 }
 
 void LegacyControllerMappingFileHandler::parseMappingInfo(
-        const QDomElement& root, LegacyControllerMapping* mapping) const {
+        const QDomElement& root, std::shared_ptr<LegacyControllerMapping> mapping) const {
     if (root.isNull() || !mapping) {
         return;
     }
@@ -115,7 +114,7 @@ QDomElement LegacyControllerMappingFileHandler::getControllerNode(
 
 void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
         const QDomElement& controller,
-        LegacyControllerMapping* mapping,
+        std::shared_ptr<LegacyControllerMapping> mapping,
         const QDir& systemMappingsPath) const {
     if (controller.isNull()) {
         return;

@@ -182,7 +182,7 @@ class RgbColor {
         if (varCode.isNull()) {
             return defaultColor;
         }
-        VERIFY_OR_DEBUG_ASSERT(varCode.canConvert(QMetaType::UInt)) {
+        VERIFY_OR_DEBUG_ASSERT(varCode.canConvert<uint>()) {
             return defaultColor;
         }
         const auto value = varCode.value<code_t>();
@@ -195,7 +195,7 @@ class RgbColor {
         if (varColor.isNull()) {
             return defaultColor;
         }
-        VERIFY_OR_DEBUG_ASSERT(varColor.canConvert(QMetaType::QColor)) {
+        VERIFY_OR_DEBUG_ASSERT(varColor.canConvert<QColor>()) {
             return defaultColor;
         }
         const auto value = varColor.value<QColor>();
@@ -208,7 +208,7 @@ class RgbColor {
         if (varString.isNull()) {
             return defaultColor;
         }
-        VERIFY_OR_DEBUG_ASSERT(varString.canConvert(QMetaType::QString)) {
+        VERIFY_OR_DEBUG_ASSERT(varString.canConvert<QString>()) {
             return defaultColor;
         }
         const auto value = varString.value<QString>();
@@ -238,7 +238,5 @@ inline QDebug operator<<(QDebug dbg, const RgbColor::optional_t& optionalColor) 
 
 } // namespace mixxx
 
-// Assumption: A primitive type wrapped into std::optional is
-// still a primitive type.
-Q_DECLARE_TYPEINFO(std::optional<mixxx::RgbColor>, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(std::optional<mixxx::RgbColor>, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(std::optional<mixxx::RgbColor>)

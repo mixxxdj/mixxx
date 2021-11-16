@@ -1,5 +1,7 @@
 #include "database/mixxxdb.h"
 
+#include <QDir>
+
 #include "database/schemamanager.h"
 #include "moc_mixxxdb.cpp"
 #include "util/assert.h"
@@ -10,7 +12,7 @@
 const QString MixxxDb::kDefaultSchemaFile(":/schema.xml");
 
 //static
-const int MixxxDb::kRequiredSchemaVersion = 37;
+const int MixxxDb::kRequiredSchemaVersion = 40;
 
 namespace {
 

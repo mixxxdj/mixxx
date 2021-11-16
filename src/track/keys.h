@@ -1,14 +1,14 @@
 #pragma once
 
 #include <QByteArray>
+#include <QList>
 #include <QPair>
-#include <QVector>
 
 #include "proto/keys.pb.h"
 
 #define KEY_MAP_VERSION "KeyMap-1.0"
 
-typedef QVector<QPair<mixxx::track::io::key::ChromaticKey, double> > KeyChangeList;
+typedef QList<QPair<mixxx::track::io::key::ChromaticKey, double> > KeyChangeList;
 
 class KeyFactory;
 
@@ -52,3 +52,9 @@ class Keys final {
     // For private constructor access.
     friend class KeyFactory;
 };
+
+bool operator==(const Keys& lhs, const Keys& rhs);
+
+inline bool operator!=(const Keys& lhs, const Keys& rhs) {
+    return !(lhs == rhs);
+}

@@ -9,6 +9,7 @@
       <!-- lock icon for crates, playlists & history -->
         <file>images/library/ic_library_locked_tracklist.svg</file>
         <file>images/library/cover_default.svg</file>
+      <!-- icons for library side bar -->
         <file>images/library/ic_library_autodj.svg</file>
         <file>images/library/ic_library_banshee.svg</file>
         <file>images/library/ic_library_computer.svg</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
@@ -28,15 +29,19 @@
         <file>images/library/ic_library_traktor.svg</file>
         <file>images/library/ic_library_rekordbox.svg</file>
         <file>images/library/ic_library_serato.svg</file>
-        <file>images/mixxx_logo.svg</file> <!-- logo in 'About' dialog -->
-        <file>images/mixxx_icon.svg</file> <!-- icon in 'About' dialog -->
+      <!-- logo and icons for 'About' dialog -->
+        <file>images/mixxx_logo.svg</file>
+        <file>images/icons/scalable/apps/mixxx.svg</file>
+        <file>images/heart_icon_light.svg</file>
+        <file>images/heart_icon_dark.svg</file>
+        <file>images/heart_icon_rainbow.svg</file>
         <file>images/mixxx-icon-logo-symbolic.svg</file> <!-- default launch image -->
         <file>images/skin_preview_placeholder.png</file>
         <file>images/ic_checkmark.svg</file>
-        <file>images/ic_custom.svg</file>
         <file>images/ic_delete.svg</file>
-        <file>images/ic_mixxx_symbolic.svg</file>
-        <file>images/ic_none.svg</file>
+      <!-- keywheel dialog image -->
+        <file>images/keywheel/keywheel.svg</file>
+      <!-- dark icon set for preferences -->
         <file>images/preferences/dark/ic_preferences_autodj.svg</file>
         <file>images/preferences/dark/ic_preferences_bpmdetect.svg</file>
         <file>images/preferences/dark/ic_preferences_broadcast.svg</file>
@@ -56,6 +61,10 @@
         <file>images/preferences/dark/ic_preferences_soundhardware.svg</file>
         <file>images/preferences/dark/ic_preferences_vinyl.svg</file>
         <file>images/preferences/dark/ic_preferences_waveforms.svg</file>
+        <file>images/preferences/dark/ic_custom.svg</file>
+        <file>images/preferences/dark/ic_mixxx_symbolic.svg</file>
+        <file>images/preferences/dark/ic_none.svg</file>
+      <!-- light icon set for preferences -->
         <file>images/preferences/light/ic_preferences_autodj.svg</file>
         <file>images/preferences/light/ic_preferences_bpmdetect.svg</file>
         <file>images/preferences/light/ic_preferences_broadcast.svg</file>
@@ -75,6 +84,10 @@
         <file>images/preferences/light/ic_preferences_soundhardware.svg</file>
         <file>images/preferences/light/ic_preferences_vinyl.svg</file>
         <file>images/preferences/light/ic_preferences_waveforms.svg</file>
+        <file>images/preferences/light/ic_custom.svg</file>
+        <file>images/preferences/light/ic_mixxx_symbolic.svg</file>
+        <file>images/preferences/light/ic_none.svg</file>
+        <!-- skin oversize warning -->
         <file>images/preferences/ic_preferences_warning.svg</file>
         <file>schema.xml</file>
         <file>shaders/filteredsignal.frag</file>

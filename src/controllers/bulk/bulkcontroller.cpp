@@ -6,7 +6,6 @@
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
-#include "util/compatibility.h"
 #include "util/time.h"
 #include "util/trace.h"
 
@@ -28,7 +27,7 @@ void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    while (atomicLoadAcquire(m_stop) == 0) {
+    while (m_stop.loadAcquire() == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data
@@ -98,16 +97,15 @@ QString BulkController::mappingExtension() {
     return BULK_MAPPING_EXTENSION;
 }
 
-void BulkController::visit(const LegacyMidiControllerMapping* mapping) {
-    Q_UNUSED(mapping);
-    // TODO(XXX): throw a hissy fit.
-    qWarning() << "ERROR: Attempting to load a LegacyMidiControllerMapping to an HidController!";
+void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
 }
 
-void BulkController::visit(const LegacyHidControllerMapping* mapping) {
-    m_mapping = *mapping;
-    // Emit mappingLoaded with a clone of the mapping.
-    emit mappingLoaded(getMapping());
+std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
+    if (!m_pMapping) {
+        return nullptr;
+    }
+    return m_pMapping->clone();
 }
 
 bool BulkController::matchMapping(const MappingInfo& mapping) {

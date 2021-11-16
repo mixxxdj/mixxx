@@ -23,7 +23,8 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::BPM |
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
-        WTrackMenu::Feature::Properties;
+        WTrackMenu::Feature::Properties |
+        WTrackMenu::Feature::UpdateReplayGain;
 
 } // anonymous namespace
 
@@ -121,7 +122,7 @@ void WTrackWidgetGroup::dropEvent(QDropEvent* event) {
 void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* event) {
     event->accept();
     if (m_pCurrentTrack) {
-        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Create the right-click menu
         m_pTrackMenu->popup(event->globalPos());
     }

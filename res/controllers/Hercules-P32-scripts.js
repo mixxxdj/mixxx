@@ -93,7 +93,7 @@ P32.browseEncoder = function(_channel, _control, value, _status, _group) {
 
 P32.headMixEncoder = function(_channel, _control, value, _status, _group) {
     var direction = (value > 64) ? -1 : 1;
-    engine.setValue("[Master]", "headMix", engine.getValue("[Master]", "headMix") + (0.25 * direction));
+    engine.setValue("[Master]", "headMix", engine.getValue("[Master]", "headMix") + (0.1 * direction));
 };
 
 P32.recordButton = new components.Button({
@@ -462,6 +462,31 @@ P32.Deck = function(deckNumbers, channel) {
         key: "beats_translate_curpos",
         on: P32.padColors.red,
         off: P32.padColors.blue,
+    });
+
+    this.syncKey = new components.Button({
+        midi: [0x90 + channel, 0x53],
+        key: "sync_key",
+        on: P32.padColors.blue,
+        off: P32.padColors.red,
+    });
+    this.pitchUp = new components.Button({
+        midi: [0x90 + channel, 0x4F],
+        key: "pitch_up",
+        on: P32.padColors.purple,
+        off: P32.padColors.red,
+    });
+    this.pitchDown = new components.Button({
+        midi: [0x90 + channel, 0x4B],
+        key: "pitch_down",
+        on: P32.padColors.purple,
+        off: P32.padColors.red,
+    });
+    this.resetKey = new components.Button({
+        midi: [0x90 + channel, 0x47],
+        key: "reset_key",
+        on: P32.padColors.blue,
+        off: P32.padColors.red,
     });
 
     // SLICER layer

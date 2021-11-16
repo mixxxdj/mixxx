@@ -4,19 +4,19 @@
 
 ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent)
         : QAbstractTableModel(pParent),
-          m_pMidiMapping(nullptr),
-          m_pHidMapping(nullptr) {
+          m_pMidiMapping(nullptr) {
 }
 
 ControllerMappingTableModel::~ControllerMappingTableModel() {
 
 }
 
-void ControllerMappingTableModel::setMapping(LegacyControllerMappingPointer pMapping) {
-    m_pMapping = pMapping;
-    if (m_pMapping) {
-        // This immediately calls one of the two visit() methods below.
-        m_pMapping->accept(this);
+void ControllerMappingTableModel::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMidiMapping = std::dynamic_pointer_cast<LegacyMidiControllerMapping>(pMapping);
+    // Only legacy MIDI mappings are supported
+    // TODO: prevent calling this code for unsupported mapping types?
+    if (!m_pMidiMapping) {
+        return;
     }
 
     // Notify the child class a mapping was loaded.
@@ -25,16 +25,8 @@ void ControllerMappingTableModel::setMapping(LegacyControllerMappingPointer pMap
 
 void ControllerMappingTableModel::cancel() {
     // Apply mutates the mapping so to revert to the time just before the last
-    // apply, simply call setMapping again.
-    setMapping(m_pMapping);
-}
-
-void ControllerMappingTableModel::visit(LegacyMidiControllerMapping* pMidiMapping) {
-    m_pMidiMapping = pMidiMapping;
-}
-
-void ControllerMappingTableModel::visit(LegacyHidControllerMapping* pHidMapping) {
-    m_pHidMapping = pHidMapping;
+    // apply, simply reload the mapping.
+    onMappingLoaded();
 }
 
 bool ControllerMappingTableModel::setHeaderData(int section,

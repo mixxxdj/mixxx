@@ -48,10 +48,9 @@ class TagFetcher : public QObject {
             const mixxx::network::JsonWebResponse& response);
     void slotAcoustIdTaskAborted();
     void slotAcoustIdTaskNetworkError(
-            const QUrl& requestUrl,
             QNetworkReply::NetworkError errorCode,
             const QString& errorString,
-            const QByteArray& errorContent);
+            const mixxx::network::WebResponseWithContent& responseWithContent);
 
     void slotMusicBrainzTaskSucceeded(
             const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
@@ -61,12 +60,14 @@ class TagFetcher : public QObject {
             const QString& errorMessage);
     void slotMusicBrainzTaskAborted();
     void slotMusicBrainzTaskNetworkError(
-            const QUrl& requestUrl,
             QNetworkReply::NetworkError errorCode,
             const QString& errorString,
-            const QByteArray& errorContent);
+            const mixxx::network::WebResponseWithContent& responseWithContent);
 
   private:
+    bool onAcoustIdTaskTerminated();
+    bool onMusicBrainzTaskTerminated();
+
     QNetworkAccessManager m_network;
 
     QFutureWatcher<QString> m_fingerprintWatcher;

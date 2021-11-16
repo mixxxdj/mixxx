@@ -5,6 +5,7 @@
 
 #include "control/controlproxy.h"
 #include "library/dao/playlistdao.h"
+#include "library/library_decl.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "preferences/usersettings.h"
 #include "util/duration.h"
@@ -17,9 +18,6 @@ class DlgTrackInfo;
 class ExternalTrackCollection;
 class Library;
 class WTrackMenu;
-
-const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
-const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
 
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
@@ -35,6 +33,7 @@ class WTrackTableView : public WLibraryTableView {
     void onSearch(const QString& text) override;
     void onShow() override;
     bool hasFocus() const override;
+    void setFocus() override;
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
@@ -55,6 +54,9 @@ class WTrackTableView : public WLibraryTableView {
         return m_pFocusBorderColor;
     }
 
+  signals:
+    void trackTableFocusChange(FocusWidget newFocusWidget);
+
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
@@ -64,6 +66,10 @@ class WTrackTableView : public WLibraryTableView {
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;
+
+  protected:
+    void focusInEvent(QFocusEvent* event) override;
+    void focusOutEvent(QFocusEvent* event) override;
 
   private slots:
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
@@ -95,6 +101,8 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
 
     void initTrackMenu();
+
+    void hideOrRemoveSelectedTracks();
 
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;

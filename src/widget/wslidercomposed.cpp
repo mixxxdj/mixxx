@@ -201,6 +201,10 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
     m_handler.mousePressEvent(this, e);
 }
 
+void WSliderComposed::mouseDoubleClickEvent(QMouseEvent* e) {
+    m_handler.mouseDoubleClickEvent(this, e);
+}
+
 void WSliderComposed::paintEvent(QPaintEvent * /*unused*/) {
     QStyleOption option;
     option.initFrom(this);

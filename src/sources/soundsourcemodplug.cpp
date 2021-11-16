@@ -32,20 +32,20 @@ const QStringList kSupportedFileExtensions = {
 constexpr SINT kChunkSizeInBytes = SINT(1) << 19;
 
 QString getModPlugTypeFromUrl(const QUrl& url) {
-    const QString fileExtension(SoundSource::getFileExtensionFromUrl(url));
-    if (fileExtension == "mod") {
+    const QString fileType = SoundSource::getTypeFromUrl(url);
+    if (fileType == "mod") {
         return "Protracker";
-    } else if (fileExtension == "med") {
+    } else if (fileType == "med") {
         return "OctaMed";
-    } else if (fileExtension == "okt") {
+    } else if (fileType == "okt") {
         return "Oktalyzer";
-    } else if (fileExtension == "s3m") {
+    } else if (fileType == "s3m") {
         return "Scream Tracker 3";
-    } else if (fileExtension == "stm") {
+    } else if (fileType == "stm") {
         return "Scream Tracker";
-    } else if (fileExtension == "xm") {
+    } else if (fileType == "xm") {
         return "FastTracker2";
-    } else if (fileExtension == "it") {
+    } else if (fileType == "it") {
         return "Impulse Tracker";
     } else {
         return "Module";
@@ -53,15 +53,6 @@ QString getModPlugTypeFromUrl(const QUrl& url) {
 }
 
 } // anonymous namespace
-
-//static
-constexpr SINT SoundSourceModPlug::kChannelCount;
-
-//static
-constexpr SINT SoundSourceModPlug::kBitsPerSample;
-
-//static
-constexpr SINT SoundSourceModPlug::kSampleRate;
 
 //static
 unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;

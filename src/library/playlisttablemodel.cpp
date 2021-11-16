@@ -92,6 +92,9 @@ void PlaylistTableModel::initSortColumnMapping() {
             TrackModel::SortColumnId::Preview)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
     m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Color)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
+    m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::CoverArt)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
     m_columnIndexBySortColumnId[static_cast<int>(
@@ -172,7 +175,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         return 0;
     }
 
-    QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()->resolveTrackIdsFromLocations(
+    QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromLocations(
             locations);
 
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);

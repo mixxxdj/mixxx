@@ -88,6 +88,15 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const override;
 
+    bool updateTrackGenre(
+            Track* pTrack,
+            const QString& genre) const override;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMood(
+            Track* pTrack,
+            const QString& mood) const override;
+#endif // __EXTRA_METADATA__
+
   protected:
     static constexpr int defaultColumnWidth() {
         return 50;
@@ -195,6 +204,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// COLUMN_LIBRARYTABLE_COVERART_COLOR: mixxx::RgbColor::code_t (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_DIGEST: QByteArray (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_HASH: quint16 (pass-through)
+    /// COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: QDateTime
     /// COLUMN_PLAYLISTTABLE_DATETIMEADDED: QDateTime
     virtual QVariant rawValue(
             const QModelIndex& index) const;
@@ -202,9 +212,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const QModelIndex& index,
             ColumnCache::Column siblingField) const;
 
-    // Reimplement in derived classes to handle columns other
-    // then COLUMN_LIBRARYTABLE
-    virtual QVariant roleValue(
+    QVariant roleValue(
             const QModelIndex& index,
             QVariant&& rawValue,
             int role) const;
@@ -222,9 +230,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     }
 
   private slots:
-    void slotTrackLoaded(
+    void slotTrackChanged(
             const QString& group,
-            TrackPointer pTrack);
+            TrackPointer pNewTrack,
+            TrackPointer pOldTrack);
 
     void slotRefreshCoverRows(
             const QList<int>& rows);

@@ -15,73 +15,62 @@ const Logger kLogger("TrackMetadata");
 
 bool TrackMetadata::updateStreamInfoFromSource(
         const audio::StreamInfo& streamInfo) {
-    bool changed = false;
+    if (getStreamInfo() == streamInfo) {
+        return false;
+    }
     const auto streamChannelCount =
             streamInfo.getSignalInfo().getChannelCount();
     if (streamChannelCount.isValid() &&
-            streamChannelCount != getStreamInfo().getSignalInfo().getChannelCount()) {
-        if (getStreamInfo().getSignalInfo().getChannelCount().isValid()) {
-            kLogger.debug()
-                    << "Modifying channel count:"
-                    << getStreamInfo().getSignalInfo().getChannelCount()
-                    << "->"
-                    << streamChannelCount;
-        }
-        refStreamInfo().refSignalInfo().setChannelCount(streamChannelCount);
-        changed = true;
+            streamChannelCount != getStreamInfo().getSignalInfo().getChannelCount() &&
+            getStreamInfo().getSignalInfo().getChannelCount().isValid()) {
+        kLogger.debug()
+                << "Modifying channel count:"
+                << getStreamInfo().getSignalInfo().getChannelCount()
+                << "->"
+                << streamChannelCount;
     }
     const auto streamSampleRate =
             streamInfo.getSignalInfo().getSampleRate();
     if (streamSampleRate.isValid() &&
-            streamSampleRate != getStreamInfo().getSignalInfo().getSampleRate()) {
-        if (getStreamInfo().getSignalInfo().getSampleRate().isValid()) {
-            kLogger.debug()
-                    << "Modifying sample rate:"
-                    << getStreamInfo().getSignalInfo().getSampleRate()
-                    << "->"
-                    << streamSampleRate;
-        }
-        refStreamInfo().refSignalInfo().setSampleRate(streamSampleRate);
-        changed = true;
+            streamSampleRate != getStreamInfo().getSignalInfo().getSampleRate() &&
+            getStreamInfo().getSignalInfo().getSampleRate().isValid()) {
+        kLogger.debug()
+                << "Modifying sample rate:"
+                << getStreamInfo().getSignalInfo().getSampleRate()
+                << "->"
+                << streamSampleRate;
     }
     const auto streamBitrate =
             streamInfo.getBitrate();
     if (streamBitrate.isValid() &&
-            streamBitrate != getStreamInfo().getBitrate()) {
-        if (getStreamInfo().getSignalInfo().isValid()) {
-            kLogger.debug()
-                    << "Modifying bitrate:"
-                    << getStreamInfo().getSignalInfo()
-                    << "->"
-                    << streamBitrate;
-        }
-        refStreamInfo().setBitrate(streamBitrate);
-        changed = true;
+            streamBitrate != getStreamInfo().getBitrate() &&
+            getStreamInfo().getSignalInfo().isValid()) {
+        kLogger.debug()
+                << "Modifying bitrate:"
+                << getStreamInfo().getSignalInfo()
+                << "->"
+                << streamBitrate;
     }
     const auto streamDuration =
             streamInfo.getDuration();
     if (streamDuration > Duration::empty() &&
-            streamDuration != getStreamInfo().getDuration()) {
-        if (getStreamInfo().getDuration() > Duration::empty()) {
-            kLogger.debug()
-                    << "Modifying duration:"
-                    << getStreamInfo().getDuration()
-                    << "->"
-                    << streamDuration;
-        }
-        refStreamInfo().setDuration(streamDuration);
-        changed = true;
+            streamDuration != getStreamInfo().getDuration() &&
+            getStreamInfo().getDuration() > Duration::empty()) {
+        kLogger.debug()
+                << "Modifying duration:"
+                << getStreamInfo().getDuration()
+                << "->"
+                << streamDuration;
     }
-    return changed;
+    setStreamInfo(streamInfo);
+    return true;
 }
 
 QString TrackMetadata::getBitrateText() const {
     if (!getStreamInfo().getBitrate().isValid()) {
         return QString();
     }
-    return QString::number(getStreamInfo().getBitrate()) +
-            QChar(' ') +
-            audio::Bitrate::unit();
+    return QString::number(getStreamInfo().getBitrate());
 }
 
 QString TrackMetadata::getDurationText(

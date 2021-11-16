@@ -1,16 +1,14 @@
 #pragma once
 
-
+#include <QString>
+#include <QVariant>
+#include <QtDebug>
 #include <functional>
 #include <ostream>
 #include <utility>
 
-#include <QString>
-#include <QVariant>
-#include <QtDebug>
-
 #include "util/assert.h"
-
+#include "util/compatibility/qhash.h"
 
 // Base class for ID values of objects that are stored in the database.
 //
@@ -30,7 +28,7 @@ class DbId {
     // need to change it from 'int' to 'long' or any other type.
     typedef int value_type;
 
-    static const value_type s_invalidValue = -1;
+    static constexpr value_type s_invalidValue = -1;
 
     explicit DbId(value_type value = s_invalidValue)
             : m_value(value) {
@@ -99,14 +97,18 @@ class DbId {
         return debug << dbId.m_value;
     }
 
-    friend uint qHash(
+    friend qhash_seed_t qHash(
             const DbId& dbId,
-            uint seed = 0) {
+            qhash_seed_t seed = 0) {
         return qHash(dbId.m_value, seed);
     }
 
   private:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    static const QMetaType kVariantType;
+#else
     static const QVariant::Type kVariantType;
+#endif
 
     static bool isValidValue(value_type value) {
         return 0 <= value;

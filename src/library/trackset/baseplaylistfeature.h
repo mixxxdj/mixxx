@@ -12,7 +12,7 @@
 
 #include "library/dao/playlistdao.h"
 #include "library/trackset/basetracksetfeature.h"
-#include "track/track_decl.h"
+#include "track/trackid.h"
 
 class WLibrary;
 class KeyboardEventFilter;
@@ -30,10 +30,11 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     BasePlaylistFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
             PlaylistTableModel* pModel,
-            const QString& rootViewName);
+            const QString& rootViewName,
+            const QString& iconName);
     ~BasePlaylistFeature() override = default;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
@@ -114,7 +115,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QSet<int> m_playlistIdsOfSelectedTrack;
 
   private slots:
-    void slotTrackSelected(TrackPointer pTrack);
+    void slotTrackSelected(TrackId trackId);
     void slotResetSelectedTrack();
 
   private:
@@ -122,5 +123,5 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual QString getRootViewHtml() const = 0;
     void markTreeItem(TreeItem* pTreeItem);
 
-    TrackPointer m_pSelectedTrack;
+    TrackId m_selectedTrackId;
 };

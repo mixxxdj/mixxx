@@ -1,6 +1,5 @@
 #include "widget/wlibrary.h"
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -12,7 +11,7 @@
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
-          m_mutex(QMutex::Recursive),
+          m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_trackTableBackgroundColorOpacity(kDefaultTrackTableBackgroundColorOpacity),
           m_bShowButtonText(true) {
 }
@@ -33,7 +32,7 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 bool WLibrary::registerView(const QString& name, QWidget* view) {
-    QMutexLocker lock(&m_mutex);
+    const auto lock = lockMutex(&m_mutex);
     if (m_viewMap.contains(name)) {
         return false;
     }
@@ -49,7 +48,7 @@ bool WLibrary::registerView(const QString& name, QWidget* view) {
 }
 
 void WLibrary::switchToView(const QString& name) {
-    QMutexLocker lock(&m_mutex);
+    const auto lock = lockMutex(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
 
     WTrackTableView* ttView = qobject_cast<WTrackTableView*>(
@@ -78,7 +77,7 @@ void WLibrary::switchToView(const QString& name) {
         WTrackTableView* ttWidgetView = qobject_cast<WTrackTableView*>(
                 widget);
 
-        if (ttWidgetView != nullptr){
+        if (ttWidgetView != nullptr) {
             qDebug("trying to restore position");
             ttWidgetView->restoreCurrentVScrollBarPos();
         }
@@ -86,7 +85,7 @@ void WLibrary::switchToView(const QString& name) {
 }
 
 void WLibrary::search(const QString& name) {
-    QMutexLocker lock(&m_mutex);
+    auto lock = lockMutex(&m_mutex);
     QWidget* current = currentWidget();
     LibraryView* view = dynamic_cast<LibraryView*>(current);
     if (view == nullptr) {

@@ -19,7 +19,7 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
         return pluginInfo();
     }
 
-    bool initialize(int samplerate) override;
+    bool initialize(mixxx::audio::SampleRate sampleRate) override;
     bool processSamples(const CSAMPLE* pIn, const int iLen) override;
     bool finalize() override;
 

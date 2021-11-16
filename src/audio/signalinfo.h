@@ -14,21 +14,14 @@ class SignalInfo final {
     // Properties
     MIXXX_DECL_PROPERTY(ChannelCount, channelCount, ChannelCount)
     MIXXX_DECL_PROPERTY(SampleRate, sampleRate, SampleRate)
-    MIXXX_DECL_PROPERTY(OptionalSampleLayout, sampleLayout, SampleLayout)
 
   public:
     constexpr SignalInfo() = default;
-    constexpr explicit SignalInfo(
-            const OptionalSampleLayout& sampleLayout)
-            : m_sampleLayout(sampleLayout) {
-    }
     SignalInfo(
             ChannelCount channelCount,
-            SampleRate sampleRate,
-            const OptionalSampleLayout& sampleLayout = std::nullopt)
+            SampleRate sampleRate)
             : m_channelCount(channelCount),
-              m_sampleRate(sampleRate),
-              m_sampleLayout(sampleLayout) {
+              m_sampleRate(sampleRate) {
     }
     SignalInfo(SignalInfo&&) = default;
     SignalInfo(const SignalInfo&) = default;
@@ -36,7 +29,6 @@ class SignalInfo final {
 
     constexpr bool isValid() const {
         return getChannelCount().isValid() &&
-                getSampleLayout() &&
                 getSampleRate().isValid();
     }
 
@@ -51,6 +43,12 @@ class SignalInfo final {
         return samples / getChannelCount();
     }
 
+    // Conversion: #samples / sample offset -> #frames / frame offset
+    double samples2framesFractional(double samples) const {
+        DEBUG_ASSERT(getChannelCount().isValid());
+        return samples / getChannelCount();
+    }
+
     // Conversion: #frames / frame offset -> #samples / sample offset
     SINT frames2samples(SINT frames) const {
         DEBUG_ASSERT(getChannelCount().isValid());
@@ -58,9 +56,14 @@ class SignalInfo final {
     }
 
     // Conversion: #frames / frame offset -> second offset
-    double frames2secs(SINT frames) const {
+    double frames2secsFractional(double frames) const {
         DEBUG_ASSERT(getSampleRate().isValid());
-        return static_cast<double>(frames) / getSampleRate();
+        return frames / getSampleRate();
+    }
+
+    // Conversion: #frames / frame offset -> second offset
+    double frames2secs(SINT frames) const {
+        return frames2secsFractional(static_cast<double>(frames));
     }
 
     // Conversion: second offset -> #frames / frame offset

@@ -1,7 +1,7 @@
 #include <QDomDocument>
 
 #include "test/mixxxtest.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class SkinContextTest : public MixxxTest {
   public:

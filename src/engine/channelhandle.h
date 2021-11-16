@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "util/assert.h"
+#include "util/compatibility/qhash.h"
 
 // ChannelHandle defines a unique identifier for channels of audio in the engine
 // (e.g. headphone output, master output, deck 1, microphone 3). Previously we
@@ -75,9 +76,9 @@ inline QDebug operator<<(QDebug stream, const ChannelHandle& h) {
     return stream;
 }
 
-inline uint qHash(
+inline qhash_seed_t qHash(
         const ChannelHandle& handle,
-        uint seed = 0) {
+        qhash_seed_t seed = 0) {
     return qHash(handle.handle(), seed);
 }
 
@@ -115,9 +116,9 @@ inline QDebug operator<<(QDebug stream, const ChannelHandleAndGroup& g) {
     return stream;
 }
 
-inline uint qHash(
+inline qhash_seed_t qHash(
         const ChannelHandleAndGroup& handleGroup,
-        uint seed = 0) {
+        qhash_seed_t seed = 0) {
     return qHash(handleGroup.handle(), seed);
 }
 
@@ -166,11 +167,15 @@ typedef std::shared_ptr<ChannelHandleFactory> ChannelHandleFactoryPointer;
 // integer value.
 template <class T>
 class ChannelHandleMap {
-    static const int kMaxExpectedGroups = 256;
+    static constexpr int kMaxExpectedGroups = 256;
     typedef QVarLengthArray<T, kMaxExpectedGroups> container_type;
   public:
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::const_iterator const_iterator;
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::iterator iterator;
+
+    ChannelHandleMap()
+            : m_dummy{} {
+    }
 
     const T& at(const ChannelHandle& handle) const {
         if (!handle.valid()) {
@@ -220,8 +225,16 @@ class ChannelHandleMap {
 
   private:
     inline void maybeExpand(int iSize) {
-        if (m_data.size() < iSize) {
-            m_data.resize(iSize);
+        if (QTypeInfo<T>::isComplex) {
+            // The value for complex types is initialized by QVarLengthArray
+            if (m_data.size() < iSize) {
+                m_data.resize(iSize);
+            }
+        } else {
+            // We need to initialize simple types ourselves
+            while (m_data.size() < iSize) {
+                m_data.append({});
+            }
         }
     }
     container_type m_data;

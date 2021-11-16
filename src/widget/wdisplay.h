@@ -1,13 +1,13 @@
 #pragma once
 
-#include <QVector>
-#include <QPixmap>
 #include <QPaintEvent>
+#include <QPixmap>
 #include <QString>
+#include <QVector>
 
-#include "widget/wwidget.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/wpixmapstore.h"
-#include "skin/skincontext.h"
+#include "widget/wwidget.h"
 
 class WDisplay : public WWidget {
    Q_OBJECT
@@ -15,7 +15,7 @@ class WDisplay : public WWidget {
     explicit WDisplay(QWidget *parent=nullptr);
     ~WDisplay() override;
 
-    void setup(const QDomNode& node, const SkinContext& context);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
 
     void onConnectedControlChanged(double dParameter, double dValue) override;
 

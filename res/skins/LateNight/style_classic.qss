@@ -15,7 +15,11 @@
 
 /**********************************************************************
 ************** Colors & borders of GUI containers ********************/
-
+#MainMenu,
+#MainMenu::item,
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
 #ToolBar,
 #WaveformsContainer,
 #Deck1, #DeckCompact1, #DeckMini1,
@@ -23,17 +27,19 @@
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
 #VuMeterDeck1_Compact,
-  #VuMeterDeck2_Compact,
-  #VuMeterDeck3_Compact,
-  #VuMeterDeck4_Compact,
-  #VuMeterMaster_Compact,
+#VuMeterDeck2_Compact,
+#VuMeterDeck3_Compact,
+#VuMeterDeck4_Compact,
+#VuMeterMaster_Compact,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
-  #FxUnitControlsExpanded, #FxUnitControlsCollapsed,
-  #FxSlotsExpanded, #FxSlotsCollapsed,
+#FxUnitControlsExpanded, #FxUnitControlsCollapsed,
+#FxSlotsExpanded, #FxSlotsCollapsed,
 #MixerContainer,
 #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini,
-WEffectSelector::checked, #fadeModeCombobox::checked,
+WEffectSelector::checked,
+WEffectChainPresetSelector,
+#fadeModeCombobox::checked,
 WLibrary,
 #SidebarCoverSplitter,
 #SidebarBox,
@@ -53,11 +59,11 @@ WStarRating {
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
 #MixerContainer,
-  #VuMeterDeck1_Compact,
-  #VuMeterDeck2_Compact,
-  #VuMeterDeck3_Compact,
-  #VuMeterDeck4_Compact,
-  #VuMeterMaster_Compact,
+#VuMeterDeck1_Compact,
+#VuMeterDeck2_Compact,
+#VuMeterDeck3_Compact,
+#VuMeterDeck4_Compact,
+#VuMeterMaster_Compact,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini,
@@ -76,6 +82,15 @@ WLibrary,
   #WaveformsContainer {
     border-width: 1px 0px;
     border-radius: 0px;
+  }
+
+
+#BpmTapContainer:hover {
+  background-color: #151517;
+  border-radius: 1px;
+  }
+  #BpmTap[pressed="true"] {
+   border: 1px solid #7d350d;
   }
 
 /* borders of embedded regions like deck buttons & Master mixer */
@@ -196,7 +211,7 @@ WSearchLineEdit,
   qproperty-layoutSpacing: 2;
 }
 #ToolBar {
-  padding: 1px 2px 0px 2px;
+  padding: 0px 2px 0px 2px;
   }
   #ToolBarSeparator {}
   #BatteryBox {
@@ -206,7 +221,7 @@ WSearchLineEdit,
     margin-bottom: 2px;
   }
   #LatencyLabel {
-    padding-bottom: 2px;
+    margin-top: 1px;
   }
 
 #DeckRateSeparator,
@@ -215,15 +230,24 @@ WSearchLineEdit,
 #SkinSettingsSeparator {
   /* needs a background color to paint the borders */
   background-color: transparent;
-  min-width: 0px;
-  max-width: 0px;
+  }
+  #DeckRateSeparator,
+  #DeckRateSeparatorCompact,
+  #MasterMixerSeparator {
+    min-width: 0px;
+    max-width: 0px;
+  }
+  #SkinSettingsSeparator {
+    min-height: 0px;
+    max-height: 0px;
   }
 
-  #FxSlotSeparatorV {
+  #FxFlowIndicatorCollapsed,
+  #FxMixerSeparatorCollapsed {
     min-width: 1px;
     max-width: 1px;
-    image: url(skin:/classic/style/fx_separator.svg) repeat center center;
     margin: 2px 1px;
+    image: url(skin:/classic/style/fx_separator.svg) no-repeat center center;
   }
   #FxSlotSeparatorH {
     min-height: 2px;
@@ -259,7 +283,6 @@ WLibrary {
   }
 
 #LibExpandBox {
-  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
   border-width: 1px 0px 1px 0px;
   border-radius: 0px;
   padding: 0px 0px 2px 2px;
@@ -555,9 +578,6 @@ WLibrary {
 #RateContainer {
   padding: 4px 0px 0px 0px;
   }
-  #RateContainerCompact {
-    padding: 0px 0px 0px 0px;
-  }
 
   #RateText {
     padding: 0px;
@@ -565,7 +585,7 @@ WLibrary {
   }
 
   #SyncBox {
-    margin: 2px 1px 1px 0px;
+    margin: 2px 1px 1px 2px;
   }
 
   #RateControls {
@@ -597,6 +617,7 @@ WLibrary {
     height: 19px;
     padding: 0px -15px 0px 0px;
     margin: 0px 2px 3px 5px;
+    background-color: #0f0f0f;
     }
     #spinBoxTransition:focus {
       border-image: url(skin:/classic/buttons/spinbox_embedded_border_focus_orange.svg) 3 19 2 3;
@@ -755,9 +776,6 @@ WLibrary {
   #FxUnitHeader {
     padding: 0px 2px 0px 2px;
   }
-  #FxUnitLabel {
-    alignment: left;
-  }
 #FxUnitHeaderCollapsed[highlight="1"],
 #FxUnitHeaderExpanded[highlight="1"] {
   border-top: 1px solid #d09300;
@@ -780,17 +798,12 @@ WLibrary {
   margin: 0px 1px;
 }
 
-#FxUnitControlsCollapsed #FxUnitLabel {
-  alignment: right;
-}
-#FxUnitControlsExpanded #FxUnitLabel {
-  alignment: left;
+#FxSlotsCollapsed #FxSlotContainer {
+  margin: 2px 7px 1px 5px;
 }
 
-#FxSlotsCollapsed #FxSlotContainer {
-  margin: 2px 0px 1px 0px;
-  padding-right: 0px;
-  padding-left: 0px;
+#FxSlotsExpanded #FxSlotControls {
+  margin: 1px 5px 1px 4px;
 }
 
 #FxMetaKnob {
@@ -819,11 +832,44 @@ WLibrary {
   margin: 2px 1px;
 }
 
+#FxFocusButtonBox {
+  margin-right: 3px;
+}
+
 WPushButton#FxSuperLinkButton,
 WPushButton#FxSuperLinkInvertButton {
   border-radius: 3px;
   margin: 1px 1px 0px 0px;
 }
+
+WEffectSelector,
+#fadeModeCombobox {
+  /* The 3D frame on the combo box becomes flat when you give it a border
+  border-radius: 3px; */
+  }
+  WEffectSelector:!editable,
+  WEffectSelector:!editable:on {
+    /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+        names start getting cut off. Adding explicit padding improves this. */
+    padding: 0px 0px 2px 5px;
+    margin: 0px;
+  }
+  #fadeModeCombobox:!editable,
+  #fadeModeCombobox:!editable:on {
+    height: 19px;
+    padding: 0px 0px 1px 5px;
+    margin: 0px 1px 2px 1px;
+  }
+  WEffectSelector::down-arrow,
+  WEffectChainPresetSelector::down-arrow,
+  #fadeModeCombobox::down-arrow {
+    image: url(skin:/classic/buttons/btn__fx_selector_down.svg);
+    }
+    WEffectSelector::down-arrow:hover,
+    WEffectChainPresetSelector::down-arrow:hover,
+    #fadeModeCombobox::down-arrow:hover {
+      image: url(skin:/classic/buttons/btn__fx_selector_down_pressed.svg);
+    }
 
 
 /************** Sampler ****************************************************/
@@ -1013,7 +1059,15 @@ WPushButton#FxSuperLinkInvertButton {
 
 /************** font colors ***************************************************
 ******************************************************************************/
-
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea {
+  font-family: "Open Sans";
+  font-weight: bold;
+}
 /* yellow */
 #Deck1 WLabel, #DeckCompact1 WLabel, #DeckMini1 WLabel,
   #Deck1 WStarRating, #DeckCompact1 WStarRating,
@@ -1029,24 +1083,24 @@ WPushButton#FxSuperLinkInvertButton {
 WSearchLineEdit,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
-#LibraryContainer QTableView,
-#LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView,
-WLibrary QLabel, WLibrary QRadioButton,
-WLibrary QTableView::indicator,
+WTrackTableView,
+WTrackTableView::indicator,
+WLibraryTextBrowser,
+WLibrarySidebar,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton,
 QToolTip,
-WBeatSpinBox QMenu,
-#LibraryContainer QMenu,
-#LibraryContainer QMenu QCheckBox,
-WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCueMenuPopup QLabel,
-#CueLabelEdit,
-WCoverArtMenu,
+WLibrarySidebar QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
-WTrackMenu QCheckBox,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
+QLineEdit QMenu,
+WCoverArtMenu,
+WCueMenuPopup,
+WCueMenuPopup QLabel,
+#CueLabelEdit,
 #LatencyLabel, WTime {
   color: #f0bb2b;
   }
@@ -1088,15 +1142,19 @@ WTrackMenu QMenu QCheckBox,
     color: #0795b5;
   }
 
-/* Grey. default for all deck labels */
-#PlayPositionText, #PlayPositionTextSmall,
-#DurationText, #RateText,
-#KeyText, #KeyTextSmall,
+/* Grey */
 #PreviewLabel,
-WEffectSelector, WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
+WEffectSelector:!editable,
+WEffectSelector:!editable:on,
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
+#fadeModeCombobox:!editable,
+#fadeModeCombobox:!editable:on,
+#fadeModeCombobox QAbstractScrollArea,
 WBeatSpinBox, #spinBoxTransition,
-WLibrary QLabel, WLibrary QRadioButton {
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
   color: #888;
 }
 
@@ -1106,14 +1164,13 @@ WLibrary QLabel, WLibrary QRadioButton {
 #FxButtonLabel,
 #FxUnitLabel[highlight="0"],
 #MicAuxLabelUnconfigured,
-#DlgMissing > QPushButton:!enabled,
-#DlgHidden > QPushButton:!enabled,
-#DlgAutoDJ > QPushButton:!enabled,
-#DlgRecording > QPushButton:!enabled,
-#DlgAnalysis > QPushButton:!enabled {
+#LibraryFeatureControls QPushButton:!enabled {
   color: #666;
 }
 
+#MainMenu::item,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
 #VinylButton[displayValue="0"],
 #VinylModeButton,
 #PassthroughButton[displayValue="0"],
@@ -1132,45 +1189,22 @@ WLibrary QLabel, WLibrary QRadioButton {
 #FxAssignButtons WPushButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
-#BroadcastButton[displayValue="1"], /* connecting: yellow */
-#RecDuration[highlight="1"],  /* initializing */
-#RecDuration[highlight="2"],  /* recording */
-#RecName[highlight="1"],  /* armed */
-#RecName[highlight="2"],  /* recording */
+#BroadcastButton[displayValue="1"],
+#BroadcastButton[displayValue="2"],
+#BroadcastButton[displayValue="3"],
+#BroadcastButton[displayValue="4"],
+#RecDuration[highlight="1"],
+#RecDuration[highlight="2"],
 #SkinSettingsToggle[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
 QPushButton#pushButtonRepeatPlaylist:checked,
-#DlgAnalysis > QPushButton:checked,
+QPushButton#pushButtonAnalyze:checked,
 QPushButton#pushButtonRecording:checked {
   color: #000;
 }
 
-#DlgMissing > QPushButton:pressed,
-#DlgHidden > QPushButton:pressed,
-#DlgAutoDJ > QPushButton:pressed,
-#DlgRecording > QPushButton:pressed,
-#DlgAnalysis > QPushButton:pressed {
+#LibraryFeatureControls QPushButton:pressed {
   color: #999;
-}
-
-#HotcueButton {
-  /* ronso0
-  TEST pixel fonts instead of icons
-  FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
-
-  font-size: tried a lot of integers as well as .5 values
-  didn't find the magic number.. it's some unintuitive floating point value
-  that aligns font pixels to screen pixels so the fonts look sharp.
-
-  font-family: "Acknowledge TT (BRK)";
-  font-family: "Bulky Pixels";
-  font-family: "Irresistor";
-  font-family: "Visitor TT1 BRK";
-  font-family: "Boxy Bold";
-  font-family: "Pixel Intv";
-  font-size: 13px;
-  color: #eee;
-  */
 }
 
 #MixerMasterHeadphone WLabel,
@@ -1199,11 +1233,7 @@ WOverview #PassthroughLabel {
 
 
 /* Library controls in AutoDJ etc. */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
+#LibraryFeatureControls QPushButton {
   color: #bbb;
   }
 
@@ -1219,6 +1249,7 @@ WOverview #PassthroughLabel {
 #VinylModeButton,
 #VinylCueButton[displayValue="0"],
 #PassthroughButton[displayValue="0"],
+#SyncLeader[value="0"],
 #FxAssignButtons WPushButton[displayValue="0"] {
   outline: none;
   border-width: 2px 2px 2px 1px;
@@ -1228,6 +1259,8 @@ WOverview #PassthroughLabel {
   #VinylCueButton[displayValue="1"],
   #VinylCueButton[displayValue="2"],
   #PassthroughButton[displayValue="1"],
+  #SyncLeader[value="1"],
+  #SyncLeader[value="2"],
   #FxAssignButtons WPushButton[displayValue="1"] {
     outline: none;
     border-width: 2px 2px 2px 1px;
@@ -1237,16 +1270,13 @@ WPushButton#FxAssignButton1[displayValue="0"],
 #VinylButton[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
+#SyncDeck[displayValue="0"],
 #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton,
-WEffectSelector,
-WEffectSelector:on {
+#LibraryFeatureControls QPushButton,
+WEffectSelector:!editable,
+#fadeModeCombobox:!editable {
   border-width: 2px;
   border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
@@ -1254,21 +1284,21 @@ WPushButton#VinylButton[displayValue="1"],
 WPushButton#FxAssignButton1[displayValue="1"],
 #KeyMatchReset[pressed="true"],
 #GuiToggleButton[displayValue="1"],
+#SyncDeck[displayValue="1"],
 #RecFeedback[displayValue="1"],
 #RecFeedback[displayValue="2"],
 #BroadcastButton[displayValue="1"],
 #BroadcastButton[displayValue="2"],
 #BroadcastButton[displayValue="3"],
+#BroadcastButton[displayValue="4"],
 #SkinSettingsToggle[displayValue="1"],
-#DlgMissing > QPushButton:pressed,
-#DlgHidden > QPushButton:pressed,
-#DlgAutoDJ > QPushButton:pressed,
-#DlgRecording > QPushButton:pressed,
-#DlgAnalysis > QPushButton:pressed,
+#LibraryFeatureControls QPushButton:pressed,
 QPushButton#pushButtonAutoDJ:checked,
 QPushButton#pushButtonRepeatPlaylist:checked,
-#DlgAnalysis > QPushButton:checked,
-QPushButton#pushButtonRecording:checked {
+QPushButton#pushButtonAnalyze:checked,
+QPushButton#pushButtonRecording:checked,
+WEffectSelector:!editable:on,
+#fadeModeCombobox:!editable:on {
   border-width: 2px;
   border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
@@ -1282,35 +1312,16 @@ QPushButton#pushButtonRecording:checked {
     }
 
 /* Library controls in AutoDJ etc. */
-  #DlgMissing > QPushButton:focus,
-  #DlgHidden > QPushButton:focus,
-  #DlgAutoDJ > QPushButton:focus,
-  #DlgRecording > QPushButton:focus,
-  #DlgAnalysis > QPushButton:focus {
+  #LibraryFeatureControls QPushButton:focus {
     outline: none;
   }
 
-  WEffectSelector:on {
-    /* not applied. Only visible on Windows (nad macOS?)
-    padding-left: 10px; */
-  }
-  /* Highlight WEffectSelector when effect is active */
-  WEffectSelector[highlight="1"] {  /*
-    background-color: #6AAF04;
-    color: #000;
-    border-image: url(skin:/classic/buttons/btn_embedded_effectselector_active.svg) 2 2 2 2;  */
-  }
-
-#fadeModeCombobox,
-#fadeModeCombobox:on {
-  border-width: 2px 2px 2px 2px;
-  }
-  #fadeModeCombobox {
-    border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
-  }
-  #fadeModeCombobox:on {
-    border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
-  }
+/* Highlight WEffectSelector when effect is active */
+WEffectSelector[highlight="1"] {  /*
+  background-color: #6AAF04;
+  color: #000;
+  border-image: url(skin:/classic/buttons/btn_embedded_effectselector_active.svg) 2 2 2 2;  */
+}
 
 #BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
@@ -1320,8 +1331,7 @@ WPushButton#PlayIndicator,
 WPushButton#CueDeck,
 #PlayCueMini WPushButton,
 WPushButton#LoopActivate,
-#RateControls WPushButton,
-WPushButton#SyncDeck,
+WPushButton#RateControls WPushButton,
 WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
@@ -1340,6 +1350,8 @@ WPushButton#SamplerExpand,
 #FxAssignButtons WPushButton,
 #VinylControls WPushButton,
 #KeyControls WPushButton,
+WPushButton#SyncDeck,
+WPushButton#SyncLeader,
 #SamplerSettings WPushButton,
 #SamplerSettingsMini WPushButton,
 WPushButton#CrossfaderButton,
@@ -1369,17 +1381,14 @@ WPushButton#VinylModeButton[displayValue="2"],
 WPushButton#MixModeButton[displayValue="1"],
 #RateControls WPushButton[displayValue="0"],
 WPushButton#SyncDeck[value="0"],
+WPushButton#SyncLeader[value="0"],
 #MixerContainer WPushButton[displayValue="0"],
 #FxUnitContainer WPushButton[displayValue="0"],
 #Sampler WPushButton[displayValue="0"],
 #MicAuxRack WPushButton[displayValue="0"],
 /* library buttons */
 QPushButton#pushButtonAutoDJ:enabled:!checked,
-#DlgMissing > QPushButton:enabled,
-#DlgHidden > QPushButton:enabled,
-#DlgAutoDJ > QPushButton:enabled,
-#DlgRecording > QPushButton:enabled,
-#DlgAnalysis > QPushButton:enabled,
+#LibraryFeatureControls QPushButton:enabled,
 WPushButton#GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 WPushButton#BroadcastButton[displayValue="0"],
@@ -1387,10 +1396,17 @@ WPushButton#SkinSettingsToggle[displayValue="0"] {
   background-color: #262626;
 }
 
+/* Orange for 'partially active' status */
+#SyncLeader[value="1"] {
+  background-color: #db7700;
+}
+
 /* Red for 'active' status */
 #BeatgridControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
-#SyncDeck[value="1"], #SyncSampler[displayValue="1"],
+#SyncDeck[value="1"],
+#SyncLeader[value="2"],
+#SyncSampler[displayValue="1"],
 WPushButton#PlayDeck[displayValue="1"],
 WPushButton#PlayDeckMini[displayValue="1"],
 WPushButton#PlaySampler[displayValue="1"],
@@ -1399,6 +1415,7 @@ WPushButton#PlayIndicator[displayValue="1"],
 #LibraryPreviewButton:checked,
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
+#KeyControls WPushButton[pressed="true"],
 #LoopControls WPushButton[value="1"],
 #LoopActivate[displayValue="1"],
 #BeatjumpControls WPushButton[value="1"],
@@ -1407,10 +1424,7 @@ WPushButton#Reverse[pressed="true"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"], #MicDucking[value="2"],
 #RecFeedback[displayValue="2"],
-QPushButton#pushButtonRecording:checked,
-#MacroActivate[value="2"],
-#MacroActivate[value="4"]
-{
+QPushButton#pushButtonRecording:checked {
   background-color: #db0000;
   }
   /* Red border for Play buttons when previewing from
@@ -1453,7 +1467,8 @@ QPushButton#pushButtonRepeatPlaylist:checked {
   background-color: #888;
 }
 
-#BroadcastButton[displayValue="3"] {
+#BroadcastButton[displayValue="3"],
+#BroadcastButton[displayValue="4"] {
   /* pink */
   background-color: #f856e7;
 }
@@ -1465,10 +1480,9 @@ QPushButton#pushButtonRepeatPlaylist:checked {
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"],   /* connecting: yellow */
 #RecFeedback[displayValue="1"],   /* initialize recording */
-#MacroActivate[value="1"],
 #SkinSettingsToggle[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
-#DlgAnalysis > QPushButton:checked {
+QPushButton#pushButtonAnalyze:checked {
   background-color: #d09300;
 }
 
@@ -1563,9 +1577,7 @@ WPushButton#FxExpandOverlay[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 #BeatgridControlsToggle,
 #SamplerControlsMini WPushButton,
-#RecDot,
-#MacroActivate
-{
+#RecDot {
   background-color: transparent;
 }
 
@@ -1581,12 +1593,10 @@ WPushButton#SamplerExpand[displayValue="0"],
   #PlayDeckMini[value="1"] {
     image: url(skin:/classic/buttons/btn__pause_deck_mini.svg) no-repeat center center;
   }
-#MacroActivate[value="3"],
 #PlaySampler[value="0"],
 #PlayPreview[displayValue="0"] {
   image: url(skin:/classic/buttons/btn__play_sampler.svg) no-repeat center center;
   }
-  #MacroActivate[value="4"],
   #PlaySampler[value="1"],
   #PlayPreview[displayValue="1"] {
     image: url(skin:/classic/buttons/btn__pause_sampler.svg) no-repeat center center;
@@ -1675,6 +1685,14 @@ WPushButton#SamplerExpand[displayValue="0"],
 /* Rate buttons */
 #SyncDeck {
   image: url(skin:/classic/buttons/btn__sync_deck.svg) no-repeat center center;
+  }
+
+#SyncLeader[value="0"] {
+  image: url(skin:/classic/buttons/btn__sync_leader.svg) no-repeat center center;
+  }
+  #SyncLeader[value="1"],
+  #SyncLeader[value="2"] {
+    image: url(skin:/classic/buttons/btn__sync_leader_active.svg) no-repeat center center;
   }
 
   #SyncSampler {
@@ -1878,23 +1896,23 @@ WPushButton#SamplerExpand[displayValue="0"],
     image: url(skin:/classic/buttons/btn__mic_duck_manual.svg) no-repeat center center;
   }
 
-#MacroActivate[value="0"],
 #RecDot[highlight="0"] {
   image: url(skin:/classic/buttons/btn__rec_dot.svg) no-repeat center center;
   }
-  #MacroActivate[value="1"], #MacroActivate[value="2"],
-  #RecDot[highlight="1"], #RecDot[highlight="2"] {
+  #RecDot[highlight="1"],
+  #RecDot[highlight="2"] {
     image: url(skin:/classic/buttons/btn__rec_dot_active.svg) no-repeat center center;
   }
 
 #BroadcastButton[displayValue="0"] {
-  /* for some reason the alignment isn't respected, so the icons
+  /* for some reason the alignment isn't rescpected, so the icons
     have to be sized like available area (button size - margin) */
   image: url(skin:/classic/buttons/btn__broadcast_off.svg) no-repeat left top;
   }
   #BroadcastButton[displayValue="1"],
   #BroadcastButton[displayValue="2"],
-  #BroadcastButton[displayValue="3"] {
+  #BroadcastButton[displayValue="3"],
+  #BroadcastButton[displayValue="4"] {
     image: url(skin:/classic/buttons/btn__broadcast_on.svg) no-repeat left top;
   }
 
@@ -2003,9 +2021,9 @@ WLibrary,
   border-top-left-radius: 0px;
 }
 
-#LibraryContainer QTableView,
-#LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView {
+WTrackTableView,
+WLibraryTextBrowser,
+WLibrarySidebar {
   border-top: 1px solid #0a0a0a;
   border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #333,
@@ -2022,28 +2040,25 @@ WLibrary,
   /* background of Color delegate in selected row */
   selection-background-color: #5e4507;
 }
-#LibraryContainer QTableView:focus,
-#LibraryContainer QTreeView:focus,
-#LibraryContainer QTextBrowser:focus {
+WTrackTableView:focus,
+WLibrarySidebar:focus,
+WLibraryTextBrowser:focus {
   border: 1px solid #d09300;
 }
 
 /* Selected rows in Tree and Tracks table */
-#LibraryContainer QTreeView::item:selected,
-#LibraryContainer QTableView::item:selected,
+WLibrarySidebar::item:selected,
+WTrackTableView::item:selected,
 #LibraryBPMButton::item:selected {
   color: #fff;
   background-color: #5e4507;
 }
-#LibraryContainer QTreeView::item:focus {
-  outline: none;
-}
 
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
-#LibraryContainer QTableView,
+WTrackTableView,
 /* This is for the BPM cell */
-#LibraryContainer QTableView QCheckBox:focus {
+WTrackTableView QCheckBox:focus {
   outline: 1px solid #fff;
 }
 /* This uses a custom qproperty to set the focus border
@@ -2053,35 +2068,13 @@ WTrackTableView {
   qproperty-focusBorderColor: #fff;
 }
 
-#LibraryContainer QTreeView {
+WLibrarySidebar {
   show-decoration-selected: 0;
 }
-#LibraryContainer QTreeView,
-#LibraryContainer QTreeView::item:focus {
+WLibrarySidebar,
+WLibrarySidebar::item:focus {
   outline: none;
 }
-
-/* This is the only way to select the 'Played' checkbox.
-  Note that this also selects the BPM lock. */
-#LibraryContainer QTableView::indicator {
-/* This results in 10x10px + 1px border = 12x12px
-  Omitting this definitions makes the checkbox grow to
-  12x12px + 1px border = 14x14px */
-  width: 10px;
-  height: 10px;
-  /* border is added to size defined above */
-  border: 1px solid transparent;
-  margin: 0px;
-  padding: 0px;
-  }
-  #LibraryContainer QTableView::indicator:checked {
-    image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);
-    border: 1px solid #ff6600;
-    }
-  #LibraryContainer QTableView::indicator:unchecked {
-    image: none;
-    border: 1px solid rgba(151,151,151,128);
-    }
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
@@ -2143,24 +2136,24 @@ WCueMenuPopup QPushButton:focus {
 
 /*********** table header styles *********************************/
 
-#LibraryContainer QHeaderView {
+WTrackTableViewHeader {
   color: #bbb;
   border-bottom: 1px solid #000;
   }
-  #LibraryContainer QHeaderView,
-  #LibraryContainer QHeaderView::section,
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
+  WTrackTableViewHeader,
+  WTrackTableViewHeader::section,
+  WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #222,
       stop:1 #111);
   }
-  #LibraryContainer QHeaderView::section {
+  WTrackTableViewHeader::section {
     border-right: 1px solid #000;
     border-bottom: 1px solid #000;
   }
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
+  WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
     border-right: 1px solid #000;
     /* gradient colors should match those of QHeaderView gradient,
       with a little transparency added to not cut off the header label */
@@ -2168,10 +2161,10 @@ WCueMenuPopup QPushButton:focus {
       stop:0 rgba(34,34,34,190),
       stop:1 rgba(17,17,17,190));
     }
-    #LibraryContainer QHeaderView::up-arrow {
+    WTrackTableViewHeader::up-arrow {
       image: url(skin:/classic/buttons/btn__lib_sort_up.svg);
       }
-    #LibraryContainer QHeaderView::down-arrow {
+    WTrackTableViewHeader::down-arrow {
       image: url(skin:/classic/buttons/btn__lib_sort_down.svg);
     }
 
@@ -2179,7 +2172,8 @@ WCueMenuPopup QPushButton:focus {
 
 /*********** scrollbars *********************************/
 #LibraryContainer QScrollBar,
-WEffectSelector QAbstractScrollArea QScrollBar {
+WEffectSelector QAbstractScrollArea QScrollBar,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar {
   border: 0px solid #585858;
   background: #000;
   border-radius: 2px;
@@ -2187,7 +2181,8 @@ WEffectSelector QAbstractScrollArea QScrollBar {
   color: #999999;
   }
   #LibraryContainer QScrollBar:horizontal,
-  WEffectSelector QAbstractScrollArea QScrollBar:horizontal {
+  WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal {
     min-width: 12px;
     height: 15px;
     border-top-left-radius: 0px;
@@ -2195,7 +2190,8 @@ WEffectSelector QAbstractScrollArea QScrollBar {
     background-color: #000;
   }
   #LibraryContainer QScrollBar:vertical,
-  WEffectSelector QAbstractScrollArea QScrollBar:vertical {
+  WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
     border-top-left-radius: 0px;
@@ -2204,10 +2200,11 @@ WEffectSelector QAbstractScrollArea QScrollBar {
     background-color: #000;
   }
   /* catch scroll bar of focused treeview like this:
-  #LibraryContainer QTreeView:focus QScrollBar:vertical {
+  WLibrarySidebar:focus QScrollBar:vertical {
   }*/
 #LibraryContainer QScrollBar::handle:horizontal,
-WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal {
+WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 25px;
   border-radius: 2px;
   background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -2215,7 +2212,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal {
     stop:1 #412f05);
 }
 #LibraryContainer QScrollBar::handle:vertical,
-WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical {
+WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 25px;
   border-radius: 2px;
   background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -2227,7 +2225,9 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical {
 #LibraryContainer QScrollBar::add-page,
 #LibraryContainer QScrollBar::sub-page,
 WEffectSelector QAbstractScrollArea QScrollBar::add-page,
-WEffectSelector QAbstractScrollArea QScrollBar::sub-page {
+WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-page,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-page {
   min-width: 15px;
   min-height: 15px;
   background-color: #000;
@@ -2237,7 +2237,9 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-page {
 #LibraryContainer QScrollBar::add-line,
 #LibraryContainer QScrollBar::sub-line,
 WEffectSelector QAbstractScrollArea QScrollBar::add-line,
-WEffectSelector QAbstractScrollArea QScrollBar::sub-line{
+WEffectSelector QAbstractScrollArea QScrollBar::sub-line,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-line,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line {
   width: 0px;
   height: 0px;
   border: 0px;
@@ -2245,7 +2247,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-line{
 
 /* Corner in between two scrollbars */
 #LibraryContainer QAbstractScrollArea::corner,
-WEffectSelector QAbstractScrollArea QScrollBar::corner {
+WEffectSelector QAbstractScrollArea QScrollBar::corner,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::corner {
   background-color: #1e1e1e;
 }
 /*********** scrollbars *********************************/
@@ -2329,37 +2332,37 @@ WLibrary QRadioButton::indicator:unchecked {
 
 /* triangle for closed/opened branches in treeview */
 /* closed */
-#LibraryContainer QTreeView::branch:closed:has-children:!has-siblings:!selected,
-#LibraryContainer QTreeView::branch:closed:has-children:has-siblings:!selected {
+WLibrarySidebar::branch:closed:has-children:!has-siblings:!selected,
+WLibrarySidebar::branch:closed:has-children:has-siblings:!selected {
 /*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
   border-image: none;
-    image: url(skin:/classic/style/library_branch_closed_grey.png);
+  image: url(skin:/classic/style/library_branch_closed.svg);
   }
   /* closed, selected */
-  #LibraryContainer QTreeView::branch:closed:has-children:!has-siblings:selected,
-  #LibraryContainer QTreeView::branch:closed:has-children:has-siblings:selected {
+  WLibrarySidebar::branch:closed:has-children:!has-siblings:selected,
+  WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/classic/style/library_branch_closed_selected_white.png);
+    image: url(skin:/classic/style/library_branch_closed_selected.svg);
     background-color: #5e4507;
   }
 /* open */
-#LibraryContainer QTreeView::branch:open:has-children:!has-siblings,
-#LibraryContainer QTreeView::branch:open:has-children:has-siblings {
+WLibrarySidebar::branch:open:has-children:!has-siblings,
+WLibrarySidebar::branch:open:has-children:has-siblings {
   border-image: none;
-  image: url(skin:/classic/style/library_branch_open_grey.png);
+  image: url(skin:/classic/style/library_branch_open.svg);
   }
   /* open, selected */
-  #LibraryContainer QTreeView::branch:open:has-children:!has-siblings:selected,
-  #LibraryContainer QTreeView::branch:open:has-children:has-siblings:selected {
+  WLibrarySidebar::branch:open:has-children:!has-siblings:selected,
+  WLibrarySidebar::branch:open:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/classic/style/library_branch_open_selected_white.png);
+    image: url(skin:/classic/style/library_branch_open_selected.svg);
     background-color: #5e4507;
     }
   /* space left of selected child item */
-  #LibraryContainer QTreeView::branch:closed:!has-children:!has-siblings:selected,
-  #LibraryContainer QTreeView::branch:closed:!has-children:has-siblings:selected,
-  #LibraryContainer QTreeView::branch:open:!has-children:!has-siblings:selected,
-  #LibraryContainer QTreeView::branch:open:!has-children:has-siblings:selected {
+  WLibrarySidebar::branch:closed:!has-children:!has-siblings:selected,
+  WLibrarySidebar::branch:closed:!has-children:has-siblings:selected,
+  WLibrarySidebar::branch:open:!has-children:!has-siblings:selected,
+  WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
     border-image: none;
     background-color: #0f0f0f;
   }
@@ -2369,290 +2372,197 @@ WLibrary QRadioButton::indicator:unchecked {
 
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea,
 QToolTip,
-WBeatSpinBox QMenu,
-#LibraryContainer QMenu,
-WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCoverArtMenu,
+#MainMenu QMenu,
+WLibrarySidebar QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
-WTrackMenu QMenu {
-  padding: 3px;
+WTrackMenu QMenu,
+QLineEdit QMenu,
+WCueMenuPopup,
+WCoverArtMenu,
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea,
+#fadeModeCombobox QAbstractScrollArea {
   border: 1px solid #888;
   border-radius: 2px;
 }
 
-#SkinContainer {
-  background-color: #0f0f0f;
-}
+#SkinContainer,
 #CrossfaderButtonContainer_Deck,
 #CrossfaderButtonContainer_Aux,
 WPushButton#CrossfaderButton[value="0"],
 QToolTip,
-WBeatSpinBox QMenu,
-  WCueMenuPopup,
-  #LibraryContainer QMenu,
-  WCueMenuPopup QMenu,
-  WCoverArtMenu,
-  WTrackMenu,
-  WTrackMenu QMenu,
-WBeatSpinBox QMenu::item,
-  #LibraryContainer QMenu::item,
-  WCueMenuPopup QMenu::item,
-  WCueMenuPopup QLabel,
-  WCoverArtMenu::item,
-  WTrackMenu::item,
-  WTrackMenu QMenu::item,
-#LibraryContainer QMenu QCheckBox,
-WTrackMenu QCheckBox,
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
+WLibrarySidebar QMenu,
+WLibrarySidebar QMenu::item,
+WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
+WLibraryTextBrowser QMenu,
+WLibraryTextBrowser QMenu::item,
+WTrackMenu,
+WTrackMenu::item,
+WTrackMenu QMenu,
+WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
-WBeatSpinBox,
-#spinBoxTransition,
-#SkinSettings,
-WSearchLineEdit,
+QLineEdit QMenu,
+QLineEdit QMenu::item,
+WCoverArtMenu,
+WCoverArtMenu::item,
+WCueMenuPopup,
+WCueMenuPopup QLabel,
 WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea,
 WEffectSelector::item,
+WEffectChainPresetSelector QAbstractScrollArea,
+WEffectChainPresetSelector::item,
+#fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox::item {
   background-color: #0f0f0f;
 }
-WEffectSelector, #fadeModeCombobox {
+WEffectSelector,
+#fadeModeCombobox {
   background-color: #161616;
 }
-  /* hovered items */
-  WEffectSelector::item:selected,
-  #fadeModeCombobox::item:selected,
-  WBeatSpinBox QMenu::item:selected,
-  #LibraryContainer QMenu::item:selected,
-  WCueMenuPopup QMenu::item:selected,
-  WCoverArtMenu::item:selected,
-  WTrackMenu::item:selected,
-  WTrackMenu QMenu::item:selected,
-  #LibraryContainer QMenu QCheckBox:selected,
-  #LibraryContainer QMenu QCheckBox:focus,  /* selected by keyboard */
-  #LibraryContainer QMenu QCheckBox:hover, /* mouse hover */
-  WTrackMenu QCheckBox:selected,
-  WTrackMenu QCheckBox:focus,
-  WTrackMenu QCheckBox:hover,
-  WTrackMenu QMenu QCheckBox:selected,
-  WTrackMenu QMenu QCheckBox:focus,
-  WTrackMenu QMenu QCheckBox:hover,
-  #SkinSettingsButton[hover="true"],
-  #SkinSettingsNumToggle[hover="true"],
-  #SkinSettingsNumToggleHeader[hover="true"],
-  #SkinSettingsMixerToggle[hover="true"],
-  #SkinSettingsLabelButton[hover="true"] {
-    background-color: #5E4507;
-    color: white;
-    /* remove OS focus indicator */
-    outline: none;
+/* hovered items */
+#MainMenu::item:selected,
+#MainMenu QMenu::item:selected,
+#MainMenu QMenu::item:focus,
+#MainMenu QMenu::item:hover,
+#MainMenu QMenu::indicator:checked:selected,
+/* ::indicator:!checked won't work. use 'unchecked' */
+#MainMenu QMenu::indicator:unchecked:selected,
+WLibrarySidebar QMenu::item:selected,
+WTrackTableViewHeader QMenu::item:selected,
+WTrackMenu::item:selected,
+WTrackMenu QMenu::item:selected,
+WTrackMenu QMenu QCheckBox:selected,
+WTrackMenu QMenu QCheckBox:focus,
+WTrackMenu QMenu QCheckBox:hover,
+QLineEdit QMenu::item:selected,
+WCoverArtMenu::item:selected,
+WEffectSelector::item:selected,
+WEffectChainPresetSelector:item:selected,
+#fadeModeCombobox::item:selected,
+#SkinSettingsButton[hover="true"],
+#SkinSettingsNumToggle[hover="true"],
+#SkinSettingsNumToggleHeader[hover="true"],
+#SkinSettingsMixerToggle[hover="true"],
+#SkinSettingsLabelButton[hover="true"] {
+  background-color: #5E4507;
+  color: white;
+  /* remove OS focus indicator */
+  outline: none;
   }
   /* hover over checked effect */
   WEffectSelector::item:checked:selected,
+  WEffectChainPresetSelector::item:checked:selected,
   #fadeModeCombobox::item:checked:selected {
     background-color: #2a1e03;
     color: #fff;
     }
+/* disabled menu items and checkboxes */
+#MainMenu::item:disabled,
+#MainMenu QMenu::item:disabled,
+WLibrarySidebar QMenu::item:disabled,
+WTrackMenu::item:disabled,
+WTrackMenu QMenu::item:disabled,
+WTrackMenu QMenu QCheckBox:disabled,
+QLineEdit QMenu::item:disabled {
+  color: #494949;
+}
 
+#MainMenu QMenu::indicator:checked,
+#MainMenu QMenu::indicator:checked:selected {
+  image: url(skin:/classic/buttons/btn__menu_checkbox_checked.svg);
+  }
+  #MainMenu QMenu::indicator:unchecked,
+  #MainMenu QMenu::indicator:unchecked:selected {
+    image: url(skin:/classic/buttons/btn__menu_checkbox.svg);
+  }
 
-WEffectSelector,
-#fadeModeCombobox {
-  /* The 3D frame on the combo box becomes flat when you give it a border
-  border-radius: 3px; */
-  }
-  WEffectSelector {
-    /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-        names start getting cut off. Adding explicit padding improves this. */
-    padding: 0px 0px 2px 5px;
-    margin: 0px;
-  }
-  #fadeModeCombobox {
-    height: 19px;
-    padding: 0px 0px 1px 5px;
-    margin: 0px 1px 2px 1px;
-  }
-  WEffectSelector::down-arrow,
-  #fadeModeCombobox::down-arrow {
-    image: url(skin:/classic/buttons/btn__fx_selector_down.svg);
-    border: 0;
-    padding: 0;
-    margin: 0;
-    }
-    WEffectSelector::down-arrow:hover,
-    #fadeModeCombobox::down-arrow:hover {
-      image: url(skin:/classic/buttons/btn__fx_selector_down_pressed.svg);
-    }
-
-  WEffectSelector QAbstractScrollArea {
-    min-width: 160px;
-  }
-  #fadeModeCombobox QAbstractScrollArea {
-    min-width: 185px;
-  }
-  WEffectSelector::indicator:checked,
-  #fadeModeCombobox::indicator:checked {
-    /* checkbox container is 28 x 22px;
-      use margin + border to create a square checkbox sized like kill buttons */
-    margin: 2px;
-    image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);
-  }
-  WEffectSelector::checked, /* selected item */
-  WEffectSelector::indicator, /* checkbox, tick mark */
-  WEffectSelector::drop-down,
-  WEffectSelector::indicator:!checked,
-  #fadeModeCombobox::checked, /* selected mode */
-  #fadeModeCombobox::indicator, /* checkbox, tick mark */
-  #fadeModeCombobox::drop-down,
-  #fadeModeCombobox::indicator:!checked,
-  WBeatSpinBox QMenu::item,
-  #LibraryContainer QMenu::item,
-  WCueMenuPopup QMenu::item,
-  WCoverArtMenu::item,
-  WTrackMenu::item,
-  WTrackMenu QMenu::item,
-  #LibraryContainer QMenu QCheckBox,
-  WTrackMenu QCheckBox,
-  WTrackMenu QMenu QCheckBox {
-      padding: 0px;
-      margin: 0px;
-      image: none;
-      outline: none;
-      border: 0px solid transparent;
-    }
-  WBeatSpinBox QMenu::separator,
-  #LibraryContainer QMenu::separator,
-  WCueMenuPopup QMenu::separator,
-  WTrackMenu::separator,
-  WTrackMenu QMenu::separator,
-  #SkinSettingsSeparator {
-    border-top: 1px solid #000;
-    border-bottom: 1px solid #222;
-    }
-    WBeatSpinBox QMenu::separator,
-    #LibraryContainer QMenu::separator,
-    WCueMenuPopup QMenu::separator,
-    WTrackMenu::separator,
-    WTrackMenu QMenu::separator {
-        height: 0px;
-        margin: 4px;
-      }
-  WBeatSpinBox QMenu::item,
-  #LibraryContainer QMenu::item,
-  WCueMenuPopup QMenu::item,
-  WCoverArtMenu::item,
-  WTrackMenu::item,
-  WTrackMenu QMenu::item {
-  /* Right padding creates a margin to the menu expand arrow.
-    Left padding should be bigger than menu icon width + menu icon
-    left/right margin */
-    padding: 5px 12px 5px 26px;
-  }
-  /* Icons in QLineEdit menus:
-   beatsize spinbox, searchbox, editable track properties */
-  WBeatSpinBox QMenu::icon,
-  #LibraryContainer QMenu::icon,
-  WCueMenuPopup QMenu::icon,
-  WTrackMenu::icon,
-  WTrackMenu QMenu::icon,
-  /* checkbox in Crate name context menu:
-    "[ ] Auto DJ Track Source"  */
-  #LibraryContainer QMenu::indicator,
-  WTrackMenu::indicator,
-  WTrackMenu QMenu::indicator {
-    margin: 0px 4px 0px 5px;
-    }
-  /* items in Crate sub menu */
-  #LibraryContainer QMenu QCheckBox,
-  WTrackMenu QCheckBox,
-  WTrackMenu QMenu QCheckBox {
-    padding: 3px 10px 3px 5px;
-    }
-  #LibraryContainer QMenu QCheckBox::indicator,
-  #LibraryContainer QMenu::indicator,
-  WCueMenuPopup QMenu::indicator,
-  WTrackMenu QCheckBox::indicator,
-  WTrackMenu::indicator,
-  WTrackMenu QMenu QCheckBox::indicator,
-  WTrackMenu QMenu::indicator {
-    width: 13px;
-    height: 13px;
-    border: 1px solid #333;
-    border-radius: 1px;
-    background-color: #000;
-    /* remove OS focus indicator */
-    outline: none;
-    }
-  #LibraryContainer QMenu QCheckBox::indicator:checked,
-  #LibraryContainer QMenu::indicator:checked,
-  WTrackMenu QCheckBox::indicator:checked,
-  WTrackMenu::indicator:checked,
+  WLibrarySidebar QMenu::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
-  WTrackMenu QMenu::indicator:checked,
-  WCueMenuPopup QMenu::indicator:checked {
+  WTrackTableViewHeader QMenu::indicator:checked,
+  WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
     image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);
+    }
+    WEffectSelector::indicator:checked,
+    WEffectChainPresetSelector::indicator:checked,
+    #fadeModeCombobox::indicator:checked {
+      width: 13px;
+      height: 13px;
+      margin-left: 8px;
     }
   /* disabled menu item and checkbox */
-  #LibraryContainer QMenu QCheckBox:!enabled,
-  #LibraryContainer QMenu::item:!enabled,
-  WTrackMenu QCheckBox:!enabled,
-  WTrackMenu::item:!enabled,
-  WTrackMenu QMenu QCheckBox:!enabled,
-  WTrackMenu QMenu::item:!enabled,
-  WCueMenuPopup QMenu::item:!enabled,
-  WCoverArtMenu::item:!enabled,
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled,
-  WTrackMenu QCheckBox::indicator:!enabled,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled {
-    color: #494949;
-    }
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled:!checked,
-  #LibraryContainer QMenu::indicator:!enabled:!checked,
-  WTrackMenu QCheckBox::indicator:!enabled:!checked,
-  WTrackMenu::indicator:!enabled:!checked,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled:!checked,
-  WTrackMenu QMenu::indicator:!enabled:!checked,
-  WCueMenuPopup QMenu::indicator:!enabled:!checked {
-    border: 1px solid #222;
-    background-color: #222;
-    }
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked,
-  WTrackMenu QCheckBox::indicator:!enabled:checked,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled:checked {
-    image: url(skin:/classic/buttons/btn__lib_checkmark_grey.svg);
-    border: 1px solid #222;
-    background-color: #222;
-    }
-  #LibraryContainer QMenu QCheckBox::indicator:indeterminate,
-  #LibraryContainer QCheckBox::indicator:indeterminate:!enabled,
-  WTrackMenu QCheckBox::indicator:indeterminate,
+  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
   WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+    background-color: #222;
+  }
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
     image: url(skin:/classic/buttons/btn__lib_checkmark_grey.svg);
   }
+  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+    image: url(skin:/classic/buttons/btn__lib_checkmark_indeterminate_orange.svg);
+  }
+  WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
+    image: url(skin:/classic/buttons/btn__lib_checkmark_indeterminate_grey.svg);
+  }
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
+  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked {
+    border: 1px solid #222;
+  }
 
-  #LibraryContainer QMenu::right-arrow,
+  #MainMenu QMenu::right-arrow,
   WTrackMenu::right-arrow,
   WTrackMenu QMenu::right-arrow {
-    width: 10px;
-    height: 10px;
     image: url(skin:/classic/style/menu_arrow_yellow.svg);
     }
-  #LibraryContainer QMenu::right-arrow:selected,
+  #MainMenu QMenu::right-arrow:selected,
   WTrackMenu::right-arrow:selected,
   WTrackMenu QMenu::right-arrow:selected {
     image: url(skin:/classic/style/menu_arrow_white.svg);
   }
 
-  #LibraryContainer QHeaderView QMenu::indicator {
-    width: 10px;
-    height: 10px;
-    margin-left: 2px;
-    border: none;
-    background: none;
+/* This is the only way to select the 'Played' checkbox.
+  Note that this also selects the BPM lock. */
+  WTrackTableView::indicator:checked {
+    image: url(skin:/classic/buttons/btn__lib_checkbox_checked.svg);
     }
-    #LibraryContainer QHeaderView QMenu::indicator:checked {
-      image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);
+  WTrackTableView::indicator:unchecked {
+    image: url(skin:/classic/buttons/btn__lib_checkbox.svg);
     }
+
+  #MainMenu QMenu::separator,
+  WLibrarySidebar QMenu::separator,
+  WTrackTableViewHeader QMenu::separator,
+  WTrackMenu::separator,
+  WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
+  QLineEdit QMenu::separator,
+  #SkinSettingsSeparator {
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #222;
+    }
+
+/* explicitly remove icons from unchecked items otherwise
+  selected, unchecked items would have a checkmark */
+WLibrarySidebar QMenu::indicator:unchecked,
+WLibrarySidebar QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu::indicator:unchecked,
+WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+WEffectSelector::indicator:unchecked,
+WEffectSelector::indicator:unchecked:selected,
+WEffectChainPresetSelector::indicator:unchecked,
+WEffectChainPresetSelector::indicator:unchecked:selected,
+#fadeModeCombobox::indicator:unchecked,
+#fadeModeCombobox::indicator:unchecked:selected {
+  image: none;
+}
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/

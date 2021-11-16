@@ -591,5 +591,3 @@ LPD8RK.test = function (channel, control, value, status, group) {
     print("LPD8RK.looptype: ##"+LPD8RK.looptype+"##");
     print("test: ##"+2+"##");
     };
-
-

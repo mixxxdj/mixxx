@@ -3,13 +3,13 @@
 #include <QModelIndex>
 #include <QWidget>
 
-#include "preferences/dialog/ui_dlgprefbroadcastdlg.h"
-#include "control/controlobject.h"
-#include "preferences/usersettings.h"
 #include "broadcast/defs_broadcast.h"
-#include "preferences/dlgpreferencepage.h"
+#include "control/controlobject.h"
 #include "preferences/broadcastsettings.h"
 #include "preferences/broadcastsettingsmodel.h"
+#include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/dialog/ui_dlgprefbroadcastdlg.h"
+#include "preferences/usersettings.h"
 
 class ControlProxy;
 

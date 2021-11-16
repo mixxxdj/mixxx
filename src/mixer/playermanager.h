@@ -2,13 +2,13 @@
 
 #include <QList>
 #include <QMap>
-#include <QMutex>
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 
@@ -24,7 +24,6 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
-class VisualsManager;
 class ControlProxy;
 
 // For mocking PlayerManager
@@ -251,7 +250,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void addAuxiliaryInner();
 
     // Used to protect access to PlayerManager state across threads.
-    mutable QMutex m_mutex;
+    mutable QT_RECURSIVE_MUTEX m_mutex;
 
     PerformanceTimer m_cloneTimer;
     QString m_lastLoadedPlayer;

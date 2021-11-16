@@ -50,11 +50,6 @@ let inherit (nixroot) stdenv pkgs lib
     cd cbuild
     cmake .. "$@"
     cd ..
-    if [ ! -e venv/bin/pre-commit ]; then
-      virtualenv -p python3 venv
-      ./venv/bin/pip install pre-commit
-      ./venv/bin/pre-commit install
-    fi
   '';
 
   shell-build = nixroot.writeShellScriptBin "build" ''

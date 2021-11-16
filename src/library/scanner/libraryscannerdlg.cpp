@@ -5,12 +5,13 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 
+#include "defs_urls.h"
 #include "moc_libraryscannerdlg.cpp"
 
 LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
         : QWidget(parent, f),
           m_bCancelled(false) {
-    setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
+    setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
     QVBoxLayout* pLayout = new QVBoxLayout(this);
 

@@ -175,7 +175,7 @@ bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {
 
     QJSValueList args;
     args << m_pJSEngine->toScriptValue(data);
-    args << QJSValue(data.size());
+    args << QJSValue(static_cast<uint>(data.size()));
 
     for (const QJSValue& function : std::as_const(m_incomingDataFunctions)) {
         ControllerScriptEngineBase::executeFunction(function, args);

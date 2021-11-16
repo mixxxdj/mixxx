@@ -44,23 +44,14 @@ class BulkController : public Controller {
 
     QString mappingExtension() override;
 
-    LegacyControllerMappingPointer getMapping() const override {
-        LegacyHidControllerMapping* pClone = new LegacyHidControllerMapping();
-        *pClone = m_mapping;
-        return LegacyControllerMappingPointer(pClone);
-    }
-
-    void visit(const LegacyMidiControllerMapping* mapping) override;
-    void visit(const LegacyHidControllerMapping* mapping) override;
-
-    void accept(ControllerVisitor* visitor) override {
-        if (visitor) {
-            visitor->visit(this);
-        }
-    }
+    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
+    void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
     bool isMappable() const override {
-        return m_mapping.isMappable();
+        if (!m_pMapping) {
+            return false;
+        }
+        return m_pMapping->isMappable();
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
@@ -76,12 +67,6 @@ class BulkController : public Controller {
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     void sendBytes(const QByteArray& data) override;
-
-    // Returns a pointer to the currently loaded controller mapping. For internal
-    // use only.
-    LegacyControllerMapping* mapping() override {
-        return &m_mapping;
-    }
 
     bool matchProductInfo(const ProductInfo& product);
 
@@ -99,5 +84,5 @@ class BulkController : public Controller {
 
     QString m_sUID;
     BulkReader* m_pReader;
-    LegacyHidControllerMapping m_mapping;
+    std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
 };

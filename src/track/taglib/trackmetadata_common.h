@@ -9,17 +9,8 @@
 #include <QString>
 
 #if defined(__EXTRA_METADATA__)
-// UUID -> QString
-#include "util/compatibility.h"
+#include "util/quuid.h"
 #endif // __EXTRA_METADATA__
-
-// TagLib has support for the Ogg Opus file format since version 1.9
-#define TAGLIB_HAS_OPUSFILE \
-    ((TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9)))
-
-// TagLib has support for hasID3v2Tag()/ID3v2Tag() for WAV files since version 1.9
-#define TAGLIB_HAS_WAV_ID3V2TAG \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 
 #include "track/trackmetadata.h"
 
@@ -27,18 +18,11 @@ namespace mixxx {
 
 namespace taglib {
 
-inline QString toQString(
-        const TagLib::String& tString) {
-    if (tString.isNull()) {
-        // null -> null
-        return QString();
-    } else {
-        return TStringToQString(tString);
-    }
-}
+QString toQString(
+        const TagLib::String& tString);
 
 TagLib::String toTString(
-        const QString& str);
+        const QString& qString);
 
 /// Returns the first element of TagLib string list that is not empty.
 TagLib::String firstNonEmptyStringListItem(
@@ -47,33 +31,23 @@ TagLib::String firstNonEmptyStringListItem(
 /// Returns a QByteArray that owns the data.
 inline QByteArray toQByteArray(
         const TagLib::ByteVector& tByteVector) {
-    if (tByteVector.isNull()) {
-        // null -> null
-        return QByteArray();
-    } else {
         return QByteArray(
                 tByteVector.data(),
                 tByteVector.size());
-    }
 }
 
 /// Returns a QByteArray that directly accesses the underlying byte vector!
 inline QByteArray toQByteArrayRaw(
         const TagLib::ByteVector& tByteVector) {
-    if (tByteVector.isNull()) {
-        // null -> null
-        return QByteArray();
-    } else {
         return QByteArray::fromRawData(
                 tByteVector.data(),
                 tByteVector.size());
-    }
 }
 
 inline TagLib::ByteVector toTByteVector(
         const QByteArray& byteArray) {
     if (byteArray.isNull()) {
-        return TagLib::ByteVector::null;
+        return TagLib::ByteVector();
     } else {
         return TagLib::ByteVector(byteArray.constData(), byteArray.size());
     }
@@ -88,8 +62,11 @@ inline TagLib::String uuidToTString(
 
 inline QString formatBpm(
         const TrackMetadata& trackMetadata) {
-    return Bpm::valueToString(
-            trackMetadata.getTrackInfo().getBpm().getValue());
+    const Bpm bpm = trackMetadata.getTrackInfo().getBpm();
+    if (!bpm.isValid()) {
+        return {};
+    }
+    return Bpm::valueToString(bpm.value());
 }
 
 bool parseBpm(

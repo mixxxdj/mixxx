@@ -12,9 +12,12 @@
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
+#ifdef __ENGINEPRIME__
+#include "library/export/libraryexporter.h"
+#endif
 #include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
-#include "library/library_preferences.h"
+#include "library/library_prefs.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
@@ -24,7 +27,6 @@
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/serato/seratofeature.h"
 #include "library/sidebarmodel.h"
-#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 #include "library/trackset/crate/cratefeature.h"
@@ -40,15 +42,15 @@
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextbrowser.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
 
 namespace {
 const mixxx::Logger kLogger("Library");
-const QString kConfigGroup("[Library]");
 } // anonymous namespace
 
-//static
+using namespace mixxx::library::prefs;
 
 // This is the name which we use to register the WTrackTableView with the
 // WLibrary
@@ -74,9 +76,10 @@ Library::Library(
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
-    qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
+    qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
-    m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
+    m_pKeyNotation.reset(
+            new ControlObject(mixxx::library::prefs::kKeyNotationConfigKey));
 
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
@@ -89,12 +92,32 @@ Library::Library(
             this,
             m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
+#ifdef __ENGINEPRIME__
+    connect(m_pMixxxLibraryFeature,
+            &MixxxLibraryFeature::exportLibrary,
+            this,
+            &Library::exportLibrary,
+            Qt::DirectConnection /* signal-to-signal */);
+#endif
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
+
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
+#ifdef __ENGINEPRIME__
+    connect(m_pCrateFeature,
+            &CrateFeature::exportAllCrates,
+            this,
+            &Library::exportLibrary, // signal-to-signal
+            Qt::DirectConnection);
+    connect(m_pCrateFeature,
+            &CrateFeature::exportCrate,
+            this,
+            &Library::exportCrate, // signal-to-signal
+            Qt::DirectConnection);
+#endif
 
     BrowseFeature* browseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
@@ -192,12 +215,25 @@ Library::Library(
     // On startup we need to check if all of the user's library folders are
     // accessible to us. If the user is using a database from <1.12.0 with
     // sandboxing then we will need them to give us permission.
-    qDebug() << "Checking for access to user's library directories:";
-    foreach (QString directoryPath, getDirs()) {
-        QFileInfo directory(directoryPath);
-        bool hasAccess = Sandbox::askForAccess(directory.canonicalFilePath());
-        qDebug() << "Checking for access to" << directoryPath << ":"
-                 << hasAccess;
+    const auto rootDirs = m_pTrackCollectionManager->internalCollection()->loadRootDirs();
+    for (mixxx::FileInfo dirInfo : rootDirs) {
+        if (!dirInfo.exists() || !dirInfo.isDir()) {
+            kLogger.warning()
+                    << "Skipping access check for missing or invalid directory"
+                    << dirInfo;
+            continue;
+        }
+        if (Sandbox::askForAccess(&dirInfo)) {
+            kLogger.info()
+                    << "Access to directory"
+                    << dirInfo
+                    << "from sandbox granted";
+        } else {
+            kLogger.warning()
+                    << "Access to directory"
+                    << dirInfo
+                    << "from sandbox denied";
+        }
     }
 
     m_iTrackTableRowHeight = m_pConfig->getValue(
@@ -211,17 +247,45 @@ Library::Library(
     }
 
     m_editMetadataSelectedClick = m_pConfig->getValue(
-            ConfigKey(kConfigGroup, "EditMetadataSelectedClick"),
-            PREF_LIBRARY_EDIT_METADATA_DEFAULT);
+            kEditMetadataSelectedClickConfigKey,
+            kEditMetadataSelectedClickDefault);
 }
 
-Library::~Library() {
-    // Empty but required due to forward declarations in header file!
-}
+Library::~Library() = default;
 
-TrackCollectionManager* Library::trackCollections() const {
+TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
     return m_pTrackCollectionManager;
+}
+
+namespace {
+class TrackAnalysisSchedulerEnvironmentImpl final : public TrackAnalysisSchedulerEnvironment {
+  public:
+    explicit TrackAnalysisSchedulerEnvironmentImpl(const Library* pLibrary)
+            : m_pLibrary(pLibrary) {
+        DEBUG_ASSERT(m_pLibrary);
+    }
+    ~TrackAnalysisSchedulerEnvironmentImpl() final = default;
+
+    TrackPointer loadTrackById(TrackId trackId) const final {
+        return m_pLibrary->trackCollectionManager()->getTrackById(trackId);
+    }
+
+  private:
+    // TODO: Use std::shared_ptr or std::weak_ptr instead of a plain pointer?
+    const Library* const m_pLibrary;
+};
+} // namespace
+
+TrackAnalysisScheduler::Pointer Library::createTrackAnalysisScheduler(
+        int numWorkerThreads,
+        AnalyzerModeFlags modeFlags) const {
+    return TrackAnalysisScheduler::createInstance(
+            std::make_unique<const TrackAnalysisSchedulerEnvironmentImpl>(this),
+            numWorkerThreads,
+            m_pDbConnectionPool,
+            m_pConfig,
+            modeFlags);
 }
 
 void Library::stopPendingTasks() {
@@ -250,6 +314,10 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             &WSearchLineEdit::slotSetFont);
     emit setTrackTableFont(m_trackTableFont);
     m_pLibraryControl->bindSearchboxWidget(pSearchboxWidget);
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::searchbarFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -279,6 +347,11 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &WLibrarySidebar::rightClicked,
             m_pSidebarModel,
             &SidebarModel::rightClicked);
+
+    connect(pSidebarWidget,
+            &WLibrarySidebar::sidebarFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 
     pSidebarWidget->slotSetFont(m_trackTableFont);
     connect(this,
@@ -337,6 +410,10 @@ void Library::bindLibraryWidget(
             &WTrackTableView::setSelectedClick);
 
     m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
+    connect(pTrackTableView,
+            &WTrackTableView::trackTableFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 
     for (const auto& feature : qAsConst(m_features)) {
         feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
@@ -347,6 +424,13 @@ void Library::bindLibraryWidget(
     emit setTrackTableFont(m_trackTableFont);
     emit setTrackTableRowHeight(m_iTrackTableRowHeight);
     emit setSelectedClick(m_editMetadataSelectedClick);
+}
+
+void Library::bindFeatureRootView(WLibraryTextBrowser* pTextBrowser) {
+    connect(pTextBrowser,
+            &WLibraryTextBrowser::textBrowserFocusChange,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -423,7 +507,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void Library::slotLoadLocationToPlayer(const QString& location, const QString& group) {
-    auto trackRef = TrackRef::fromFileInfo(location);
+    auto trackRef = TrackRef::fromFilePath(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
         emit loadTrackToPlayer(pTrack, group);
@@ -461,9 +545,9 @@ void Library::slotRequestAddDir(const QString& dir) {
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
     QDir directory(dir);
-    Sandbox::createSecurityToken(directory);
+    Sandbox::createSecurityTokenForDir(directory);
 
-    if (!m_pTrackCollectionManager->addDirectory(dir)) {
+    if (!m_pTrackCollectionManager->addDirectory(mixxx::FileInfo(dir))) {
         QMessageBox::information(nullptr,
                 tr("Add Directory to Library"),
                 tr("Could not add the directory to your library. Either this "
@@ -472,21 +556,26 @@ void Library::slotRequestAddDir(const QString& dir) {
     }
     // set at least one directory in the config file so that it will be possible
     // to downgrade from 1.12
-    if (m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR).length() < 1) {
-        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dir);
+    if (m_pConfig->getValueString(kLegacyDirectoryConfigKey).length() < 1) {
+        m_pConfig->set(kLegacyDirectoryConfigKey, dir);
     }
 }
 
-void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) {
+void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType removalType) {
+    // Remove the directory from the directory list.
+    if (!m_pTrackCollectionManager->removeDirectory(mixxx::FileInfo(dir))) {
+        return;
+    }
+
     switch (removalType) {
-    case RemovalType::KeepTracks:
+    case LibraryRemovalType::KeepTracks:
         break;
-    case RemovalType::HideTracks:
+    case LibraryRemovalType::HideTracks:
         // Mark all tracks in this directory as deleted but DON'T purge them
         // in case the user re-adds them manually.
         m_pTrackCollectionManager->hideAllTracks(dir);
         break;
-    case RemovalType::PurgeTracks:
+    case LibraryRemovalType::PurgeTracks:
         // The user requested that we purge all metadata.
         m_pTrackCollectionManager->purgeAllTracks(dir);
         break;
@@ -494,21 +583,19 @@ void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) 
         DEBUG_ASSERT(!"unreachable");
     }
 
-    // Remove the directory from the directory list.
-    m_pTrackCollectionManager->removeDirectory(dir);
-
     // Also update the config file if necessary so that downgrading is still
     // possible.
-    QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+    QString confDir = m_pConfig->getValueString(kLegacyDirectoryConfigKey);
 
     if (QDir(dir) == QDir(confDir)) {
-        QStringList dirList = getDirs();
-        if (!dirList.isEmpty()) {
-            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dirList.first());
-        } else {
+        const QList<mixxx::FileInfo> dirList =
+                m_pTrackCollectionManager->internalCollection()->loadRootDirs();
+        if (dirList.isEmpty()) {
             // Save empty string so that an old version of mixxx knows it has to
             // ask for a new directory.
-            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, QString());
+            m_pConfig->set(kLegacyDirectoryConfigKey, QString());
+        } else {
+            m_pConfig->set(kLegacyDirectoryConfigKey, dirList.first().location());
         }
     }
 }
@@ -518,14 +605,10 @@ void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDi
 
     // also update the config file if necessary so that downgrading is still
     // possible
-    QString conDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+    QString conDir = m_pConfig->getValueString(kLegacyDirectoryConfigKey);
     if (oldDir == conDir) {
-        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, newDir);
+        m_pConfig->set(kLegacyDirectoryConfigKey, newDir);
     }
-}
-
-QStringList Library::getDirs() {
-    return m_pTrackCollectionManager->internalCollection()->getDirectoryDAO().getDirs();
 }
 
 void Library::setFont(const QFont& font) {
@@ -553,12 +636,6 @@ void Library::setEditMedatataSelectedClick(bool enabled) {
     emit setSelectedClick(enabled);
 }
 
-TrackCollection& Library::trackCollection() {
-    DEBUG_ASSERT(m_pTrackCollectionManager);
-    DEBUG_ASSERT(m_pTrackCollectionManager->internalCollection());
-    return *m_pTrackCollectionManager->internalCollection();
-}
-
 void Library::searchTracksInCollection(const QString& query) {
     VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
         return;
@@ -566,4 +643,20 @@ void Library::searchTracksInCollection(const QString& query) {
     m_pMixxxLibraryFeature->searchAndActivate(query);
     emit switchToView(m_sTrackViewName);
     m_pSidebarModel->activateDefaultSelection();
+}
+
+#ifdef __ENGINEPRIME__
+std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
+        QWidget* parent) {
+    return std::make_unique<mixxx::LibraryExporter>(
+            parent, m_pConfig, m_pTrackCollectionManager);
+}
+#endif
+
+LibraryTableModel* Library::trackTableModel() const {
+    VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
+        return nullptr;
+    }
+
+    return m_pMixxxLibraryFeature->trackTableModel();
 }

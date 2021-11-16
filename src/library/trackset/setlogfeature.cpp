@@ -15,7 +15,6 @@
 #include "mixer/playermanager.h"
 #include "moc_setlogfeature.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
@@ -32,20 +31,21 @@ SetlogFeature::SetlogFeature(
                   pConfig,
                   new PlaylistTableModel(
                           nullptr,
-                          pLibrary->trackCollections(),
+                          pLibrary->trackCollectionManager(),
                           "mixxx.db.model.setlog",
                           /*keep deleted tracks*/ true),
-                  QStringLiteral("SETLOGHOME")),
-          m_playlistId(kInvalidPlaylistId),
-          m_libraryWidget(nullptr),
-          m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
+                  QStringLiteral("SETLOGHOME"),
+                  QStringLiteral("history")),
+          m_playlistId(kInvalidPlaylistId) {
     // clear old empty entries
-    ScopedTransaction transaction(pLibrary->trackCollections()->internalCollection()->database());
+    ScopedTransaction transaction(pLibrary->trackCollectionManager()
+                                          ->internalCollection()
+                                          ->database());
     m_playlistDao.deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG, 1);
     transaction.commit();
 
     //construct child model
-    m_childModel.setRootItem(TreeItem::newRoot(this));
+    m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
     constructChildModel(kInvalidPlaylistId);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous (below)"), this);
@@ -78,10 +78,6 @@ QVariant SetlogFeature::title() {
     return tr("History");
 }
 
-QIcon SetlogFeature::getIcon() {
-    return m_icon;
-}
-
 void SetlogFeature::bindLibraryWidget(
         WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
     BasePlaylistFeature::bindLibraryWidget(libraryWidget, keyboard);
@@ -89,7 +85,7 @@ void SetlogFeature::bindLibraryWidget(
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &SetlogFeature::slotPlayingTrackChanged);
-    m_libraryWidget = libraryWidget;
+    m_libraryWidget = QPointer(libraryWidget);
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -107,7 +103,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
-    int playlistId = index.data(TreeItemModel::kDataRole).toInt();
+    int playlistId = playlistIdFromIndex(index);
     // not a real entry
     if (playlistId == kInvalidPlaylistId) {
         return;
@@ -154,7 +150,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this,
-            m_pLibrary->trackCollections()->internalCollection()->database());
+            m_pLibrary->trackCollectionManager()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
     playlistTableModel.setFilter("hidden=" + QString::number(PlaylistDAO::PLHT_SET_LOG));
     playlistTableModel.setSort(
@@ -219,7 +215,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertTreeItemRows(itemList, 0);
+    m_pSidebarModel->insertTreeItemRows(itemList, 0);
 
     if (selectedId) {
         return indexFromPlaylistId(selectedId);
@@ -230,7 +226,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this,
-            m_pLibrary->trackCollections()->internalCollection()->database());
+            m_pLibrary->trackCollectionManager()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
     QString filter = "id=" + QString::number(playlistId);
     playlistTableModel.setFilter(filter);
@@ -370,7 +366,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         m_recentTracks.push_front(currentPlayingTrackId);
 
         // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
-        const int kRecentTrackWindow = 6;
+        constexpr int kRecentTrackWindow = 6;
         while (m_recentTracks.size() > kRecentTrackWindow) {
             m_recentTracks.pop_back();
         }
@@ -395,17 +391,23 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
         // View needs a refresh
 
-        WTrackTableView* view = dynamic_cast<WTrackTableView*>(
-                m_libraryWidget->getActiveView());
-        if (view != nullptr) {
-            // We have a active view on the history. The user may have some
-            // important active selection. For example putting track into crates
-            // while the song changes trough autodj. The selection is then lost
-            // and dataloss occurs
-            const QList<TrackId> trackIds = view->getSelectedTrackIds();
-            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
-            view->setSelectedTracks(trackIds);
-        } else {
+        bool hasActiveView = false;
+        if (m_libraryWidget) {
+            WTrackTableView* view = dynamic_cast<WTrackTableView*>(
+                    m_libraryWidget->getActiveView());
+            if (view != nullptr) {
+                // We have a active view on the history. The user may have some
+                // important active selection. For example putting track into crates
+                // while the song changes through autodj. The selection is then lost
+                // and dataloss occurs
+                hasActiveView = true;
+                const QList<TrackId> trackIds = view->getSelectedTrackIds();
+                m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+                view->setSelectedTracks(trackIds);
+            }
+        }
+
+        if (!hasActiveView) {
             m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
         }
     } else {

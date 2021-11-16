@@ -2,7 +2,7 @@
 
 #include "waveformrendererabstract.h"
 #include "waveformsignalcolors.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class ControlObject;
 class ControlProxy;

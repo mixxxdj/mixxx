@@ -10,7 +10,7 @@
 #include "track/track.h"
 #include "util/event.h"
 
-const int kMetaDataLifeTimeout = 16;
+constexpr int kMetaDataLifeTimeout = 16;
 
 EngineRecord::EngineRecord(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
@@ -32,7 +32,7 @@ EngineRecord::~EngineRecord() {
     delete m_pSamplerate;
 }
 
-void EngineRecord::updateFromPreferences() {
+int EngineRecord::updateFromPreferences() {
     m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Path"));
     m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title"));
     m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author"));
@@ -49,13 +49,27 @@ void EngineRecord::updateFromPreferences() {
     m_encoding = format.internalName;
     m_pEncoder = EncoderFactory::getFactory().createRecordingEncoder(
             format, m_pConfig, this);
-    m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
 
-    QString errorMsg;
-    if(m_pEncoder->initEncoder(m_sampleRate, errorMsg) < 0) {
-        qWarning() << errorMsg;
+    QString userErrorMsg;
+    int ret = -1;
+    if (m_pEncoder) {
+        m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
+        ret = m_pEncoder->initEncoder(m_sampleRate, &userErrorMsg);
+    }
+
+    if (ret < 0) {
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(format.label + QChar(' ') + QObject::tr(" encoder failure"));
+        if (userErrorMsg.isEmpty()) {
+            userErrorMsg = QObject::tr(
+                    "Failed to apply the selected settings.");
+        }
+        props->setText(userErrorMsg);
+        ErrorDialogHandler::instance()->requestErrorDialog(props);
         m_pEncoder.reset();
     }
+    return ret;
 }
 
 bool EngineRecord::metaDataHasChanged() {
@@ -112,8 +126,16 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     } else if (recordingStatus == RECORD_READY) {
         // If we are ready for recording, i.e, the output file has been selected, we
         // open a new file.
-        updateFromPreferences();  // Update file location from preferences.
-        if (openFile()) {
+
+        // Update file location from preferences.
+        if (updateFromPreferences() < 0) {
+            // Maybe the encoder could not be initialized
+            qDebug() << "Setting record flag to: OFF";
+            m_pRecReady->set(RECORD_OFF);
+            // Just report that we don't record
+            // There was already a message Box
+            emit isRecording(false, false);
+        } else if (openFile()) {
             Event::start(tag);
             qDebug("Setting record flag to: ON");
             m_pRecReady->set(RECORD_ON);
@@ -131,10 +153,10 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
                 openCueFile();
                 m_cueTrack = 0;
             }
-        } else {  // Maybe the encoder could not be initialized
+        } else {
             qDebug() << "Could not open" << m_fileName << "for writing.";
             qDebug("Setting record flag to: OFF");
-            m_pRecReady->slotSet(RECORD_OFF);
+            m_pRecReady->set(RECORD_OFF);
             // An error occurred.
             emit isRecording(false, true);
         }
@@ -168,7 +190,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             qDebug() << "Could not open" << m_fileName << "for writing.";
             Event::end(tag);
             qDebug("Setting record flag to: OFF");
-            m_pRecReady->slotSet(RECORD_OFF);
+            m_pRecReady->set(RECORD_OFF);
             // An error occurred.
             emit isRecording(false, true);
         }

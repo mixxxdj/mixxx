@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_FLAC QUIET flac)
@@ -82,5 +84,13 @@ if(FLAC_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_FLAC_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${FLAC_INCLUDE_DIR}"
     )
+    is_static_library(FLAC_IS_STATIC FLAC::FLAC)
+    if(FLAC_IS_STATIC)
+      if(WIN32)
+        set_property(TARGET FLAC::FLAC APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
+          FLAC__NO_DLL
+        )
+      endif()
+    endif()
   endif()
 endif()

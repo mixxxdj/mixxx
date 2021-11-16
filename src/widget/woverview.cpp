@@ -29,7 +29,6 @@
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
 #include "util/color/color.h"
-#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 #include "util/math.h"
@@ -304,6 +303,7 @@ void WOverview::onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyz
 
 void WOverview::slotTrackLoaded(TrackPointer pTrack) {
     Q_UNUSED(pTrack); // only used in DEBUG_ASSERT
+    //qDebug() << "WOverview::slotTrackLoaded()" << m_pCurrentTrack.get() << pTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pTrack);
     m_trackLoaded = true;
     if (m_pCurrentTrack) {
@@ -734,20 +734,20 @@ void WOverview::drawAnalyzerProgress(QPainter* pPainter) {
         if (m_analyzerProgress <= kAnalyzerProgressHalf) { // remove text after progress by wf is recognizable
             if (m_trackLoaded) {
                 //: Text on waveform overview when file is playable but no waveform is visible
-                paintText(tr("Ready to play, analyzing .."), pPainter);
+                paintText(tr("Ready to play, analyzing..."), pPainter);
             } else {
                 //: Text on waveform overview when file is cached from source
-                paintText(tr("Loading track .."), pPainter);
+                paintText(tr("Loading track..."), pPainter);
             }
         } else if (m_analyzerProgress >= kAnalyzerProgressFinalizing) {
             //: Text on waveform overview during finalizing of waveform analysis
-            paintText(tr("Finalizing .."), pPainter);
+            paintText(tr("Finalizing..."), pPainter);
         }
     } else if (!m_trackLoaded) {
         // This happens if the track samples are not loaded, but we have
         // a cached track
         //: Text on waveform overview when file is cached from source
-        paintText(tr("Loading track .."), pPainter);
+        paintText(tr("Loading track..."), pPainter);
     }
 }
 
@@ -938,7 +938,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatioF());
         }
 
         // Show cue position when hovered
@@ -986,7 +986,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatioF());
 
             QPointF timeDistancePoint(positionTextPoint.x(),
                     (fontMetrics.height() + height()) / 2);
@@ -998,7 +998,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatioF());
             markHovered = true;
         }
     }
@@ -1093,7 +1093,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
                 m_labelTextColor,
                 m_labelBackgroundColor,
                 width(),
-                getDevicePixelRatioF(this));
+                devicePixelRatioF());
         m_timeRulerPositionLabel.draw(pPainter);
 
         QString timeDistanceText = mixxx::Duration::formatTime(fabs(timeDistance));
@@ -1109,7 +1109,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
                 m_labelTextColor,
                 m_labelBackgroundColor,
                 width(),
-                getDevicePixelRatioF(this));
+                devicePixelRatioF());
         m_timeRulerDistanceLabel.draw(pPainter);
     } else {
         m_timeRulerPositionLabel.clear();
@@ -1181,7 +1181,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatioF());
 
             if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel) || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel) || markRange.m_durationLabel.intersects(m_timeRulerPositionLabel) || markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
                 markRange.m_durationLabel.draw(pPainter);
@@ -1206,17 +1206,7 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
     QFont font = pPainter->font();
     QFontMetrics fm(font);
 
-// TODO: The following use of QFontMetrics::width(const QString&, int) const
-// is deprecated and should be replaced with
-// QFontMetrics::horizontalAdvance(const QString&, int) const. However, the
-// proposed alternative has just been introduced in Qt 5.11.
-// Until the minimum required Qt version of Mixxx is increased, we need a
-// version check here.
-#if (QT_VERSION < QT_VERSION_CHECK(5, 11, 0))
-    int textWidth = fm.width(text);
-    #else
     int textWidth = fm.horizontalAdvance(text);
-    #endif
 
     if (textWidth > length()) {
         qreal pointSize = font.pointSizeF();
@@ -1244,8 +1234,8 @@ void WOverview::resizeEvent(QResizeEvent* pEvent) {
     Q_UNUSED(pEvent);
     // Play-position potmeters range from 0 to 1 but they allow out-of-range
     // sets. This is to give VC access to the pre-roll area.
-    const double kMaxPlayposRange = 1.0;
-    const double kMinPlayposRange = 0.0;
+    constexpr double kMaxPlayposRange = 1.0;
+    constexpr double kMinPlayposRange = 0.0;
 
     // Values of zero and one in normalized space.
     const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
@@ -1256,7 +1246,7 @@ void WOverview::resizeEvent(QResizeEvent* pEvent) {
     m_a = (length() - 1) / (one - zero);
     m_b = zero * m_a;
 
-    m_devicePixelRatio = getDevicePixelRatioF(this);
+    m_devicePixelRatio = devicePixelRatioF();
 
     m_waveformImageScaled = QImage();
     m_diffGain = 0;

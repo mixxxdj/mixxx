@@ -33,7 +33,7 @@ QList<QString> ParserCsv::parse(const QString& sFilename) {
 
     clearLocations();
     //qDebug() << "ParserCsv: Starting to parse.";
-    if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
+    if (file.open(QIODevice::ReadOnly)) {
         QByteArray ba = file.readAll();
 
         QList<QList<QString> > tokens = tokenize(ba, ',');
@@ -50,7 +50,7 @@ QList<QString> ParserCsv::parse(const QString& sFilename) {
             for (int i = 1; i < tokens.size(); ++i) {
                 if (loc_coll < tokens[i].size()) {
                     // Todo: check if path is relative
-                    QFileInfo fi = tokens[i][loc_coll];
+                    QFileInfo fi(tokens[i][loc_coll]);
                     if (fi.isRelative()) {
                         // add base path
                         qDebug() << "is relative" << basepath << fi.filePath();
@@ -140,9 +140,14 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
 
     qDebug() << "Basepath: " << base;
     QTextStream out(&file);
-    out.setCodec("UTF-8"); // rfc4180: Common usage of CSV is US-ASCII ...
-                           // Using UTF-8 to get around codepage issues
-                           // and it's the default encoding in Ooo Calc
+    // rfc4180: Common usage of CSV is US-ASCII ...
+    // Using UTF-8 to get around codepage issues
+    // and it's the default encoding in Ooo Calc
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    DEBUG_ASSERT(out.encoding() == QStringConverter::Utf8);
+#else
+    out.setCodec("UTF-8");
+#endif
 
     // writing header section
     bool first = true;
@@ -180,12 +185,22 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
                 first = false;
             }
             out << "\"";
-            QString field = pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();
-            if (useRelativePath &&
-                    i ==
-                            pPlaylistTableModel->fieldIndex(ColumnCache::
-                                            COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
-                field = base_dir.relativeFilePath(field);
+            QString field;
+            if (i ==
+                    pPlaylistTableModel->fieldIndex(
+                            ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
+                field = pPlaylistTableModel
+                                ->data(pPlaylistTableModel->index(j, i),
+                                        BaseTrackTableModel::kDataExportRole)
+                                .toString();
+                if (useRelativePath) {
+                    field = base_dir.relativeFilePath(field);
+                }
+            } else {
+                field = pPlaylistTableModel
+                                ->data(pPlaylistTableModel->index(j, i),
+                                        BaseTrackTableModel::kDataExportRole)
+                                .toString();
             }
             out << field.replace('\"', "\"\"");  // escape "
             out << "\"";
@@ -222,14 +237,21 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
         // writing fields section
         i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
         if (i >= 0) {
-            int nr = pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toInt();
+            int nr = pPlaylistTableModel
+                             ->data(pPlaylistTableModel->index(j, i),
+                                     BaseSqlTableModel::kDataExportRole)
+                             .toInt();
             out << QString("%1.").arg(nr,2,10,QLatin1Char('0'));
         }
 
         if (writeTimestamp) {
             i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
             if (i >= 0) {
-                QTime time = pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toTime();
+                QTime time =
+                        pPlaylistTableModel
+                                ->data(pPlaylistTableModel->index(j, i),
+                                        BaseTrackTableModel::kDataExportRole)
+                                .toTime();
                 if (j == 0) {
                     msecsFromStartToMidnight = time.msecsTo(QTime(0,0,0,0));
                 }
@@ -242,7 +264,10 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
         i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
         if (i >= 0) {
             out << " ";
-            out << pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();
+            out << pPlaylistTableModel
+                            ->data(pPlaylistTableModel->index(j, i),
+                                    BaseTrackTableModel::kDataExportRole)
+                            .toString();
         }
         i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
         if (i >= 0) {

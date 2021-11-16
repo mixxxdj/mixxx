@@ -1,18 +1,17 @@
 // Helper class to have easy access
 #include "mixer/playerinfo.h"
 
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "moc_playerinfo.cpp"
 #include "track/track.h"
+#include "util/compatibility/qmutex.h"
 
 namespace {
 
-const int kPlayingDeckUpdateIntervalMillis = 2000;
+constexpr int kPlayingDeckUpdateIntervalMillis = 2000;
 
 PlayerInfo* s_pPlayerInfo = nullptr;
 
@@ -52,30 +51,32 @@ void PlayerInfo::destroy() {
 }
 
 TrackPointer PlayerInfo::getTrackInfo(const QString& group) {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     return m_loadedTrackMap.value(group);
 }
 
-void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& track) {
+void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& pTrack) {
     TrackPointer pOld;
     { // Scope
-        QMutexLocker locker(&m_mutex);
+        const auto locker = lockMutex(&m_mutex);
         pOld = m_loadedTrackMap.value(group);
-        m_loadedTrackMap.insert(group, track);
+        m_loadedTrackMap.insert(group, pTrack);
     }
-    if (pOld) {
-        emit trackUnloaded(group, pOld);
-    }
-    emit trackLoaded(group, track);
+    emit trackChanged(group, pTrack, pOld);
 
-    if (m_currentlyPlayingDeck >= 0 &&
-            group == PlayerManager::groupForDeck(m_currentlyPlayingDeck)) {
-        emit currentPlayingTrackChanged(track);
+    if (pTrack) {
+        updateCurrentPlayingDeck();
+
+        int playingDeck = m_currentlyPlayingDeck;
+        if (playingDeck >= 0 &&
+                group == PlayerManager::groupForDeck(playingDeck)) {
+            emit currentPlayingTrackChanged(pTrack);
+        }
     }
 }
 
 bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
     while (it.hasNext()) {
         it.next();
@@ -87,13 +88,13 @@ bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
 }
 
 QMap<QString, TrackPointer> PlayerInfo::getLoadedTracks() {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     QMap<QString, TrackPointer> ret = m_loadedTrackMap;
     return ret;
 }
 
 bool PlayerInfo::isFileLoaded(const QString& track_location) const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
     while (it.hasNext()) {
         it.next();
@@ -113,7 +114,7 @@ void PlayerInfo::timerEvent(QTimerEvent* pTimerEvent) {
 }
 
 void PlayerInfo::updateCurrentPlayingDeck() {
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
 
     double maxVolume = 0;
     int maxDeck = -1;
@@ -166,6 +167,9 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     int oldDeck = m_currentlyPlayingDeck.fetchAndStoreRelease(maxDeck);
     if (maxDeck != oldDeck) {
         emit currentPlayingDeckChanged(maxDeck);
+        // Note: When starting Auto-DJ "play" might be processed before a new
+        // is track is fully loaded. currentPlayingTrackChanged() is then emitted
+        // after setTrackInfo().
         emit currentPlayingTrackChanged(getCurrentPlayingTrack());
     }
 }

@@ -19,7 +19,8 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::BPM |
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
-        WTrackMenu::Feature::Properties;
+        WTrackMenu::Feature::Properties |
+        WTrackMenu::Feature::UpdateReplayGain;
 } // namespace
 
 WTrackProperty::WTrackProperty(
@@ -40,6 +41,11 @@ void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
 
     m_property = context.selectString(node, "Property");
     m_macroSlot = context.selectInt(node, "MacroSlot");
+
+    // Check if property with that name exists in Track class
+    if (Track::staticMetaObject.indexOfProperty(m_property.toUtf8().constData()) == -1) {
+        qWarning() << "WTrackProperty: Unknown track property:" << m_property;
+    }
 }
 
 void WTrackProperty::slotTrackLoaded(TrackPointer pTrack) {
@@ -79,7 +85,7 @@ void WTrackProperty::updateLabel() {
             }
         } else {
             QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
-            if (property.isValid() && property.canConvert(QMetaType::QString)) {
+            if (property.isValid() && property.canConvert<QString>()) {
                 setText(property.toString());
                 return;
             }
@@ -96,7 +102,7 @@ void WTrackProperty::mouseMoveEvent(QMouseEvent* event) {
 void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
     if (m_pCurrentTrack) {
-        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         m_pTrackMenu->slotShowDlgTrackInfo();
     }
 }
@@ -112,7 +118,7 @@ void WTrackProperty::dropEvent(QDropEvent* event) {
 void WTrackProperty::contextMenuEvent(QContextMenuEvent* event) {
     event->accept();
     if (m_pCurrentTrack) {
-        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Create the right-click menu
         m_pTrackMenu->popup(event->globalPos());
     }

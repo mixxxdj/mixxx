@@ -9,14 +9,14 @@
 #include "track/trackid.h"
 #include "util/class.h"
 
-class TrackCollection;
+class TrackCollectionManager;
 
 class AutoDJCratesDAO : public QObject {
     Q_OBJECT
   public:
     AutoDJCratesDAO(
             int iAutoDjPlaylistId,
-            TrackCollection* pTrackCollection,
+            TrackCollectionManager* pTrackCollectionManager,
             UserSettingsPointer a_pConfig);
     ~AutoDJCratesDAO() override;
 
@@ -89,17 +89,20 @@ class AutoDJCratesDAO : public QObject {
 
     // Signaled by the PlayerInfo singleton when a track is loaded to, or
     // unloaded from, a deck.
-    void slotPlayerInfoTrackLoaded(const QString& group, TrackPointer pTrack);
-    void slotPlayerInfoTrackUnloaded(const QString& group, TrackPointer pTrack);
+    void slotPlayerInfoTrackChanged(const QString& group,
+            TrackPointer pNewTrack,
+            TrackPointer pOldTrack);
 
   private:
+    void playerInfoTrackLoaded(const QString& group, TrackId trackId);
+    void playerInfoTrackUnloaded(const QString& group, TrackId trackId);
     void updateAutoDjCrate(CrateId crateId);
     void deleteAutoDjCrate(CrateId crateId);
 
     // The auto-DJ playlist's ID.
     const int m_iAutoDjPlaylistId;
 
-    TrackCollection* m_pTrackCollection;
+    TrackCollectionManager* m_pTrackCollectionManager;
 
     // The SQL database we interact with.
     QSqlDatabase m_database;

@@ -3,12 +3,12 @@
 #include <QFont>
 #include <QStandardItemModel>
 #include <QWidget>
+#include <memory>
 
 #include "defs_urls.h"
-#include "library/library.h"
-#include "library/library_preferences.h"
+#include "library/library_decl.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
@@ -25,7 +25,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
             QWidget* pParent,
             UserSettingsPointer pConfig,
             std::shared_ptr<Library> pLibrary);
-    ~DlgPrefLibrary() override {}
+    ~DlgPrefLibrary() override;
 
     QUrl helpUrl() const override;
 
@@ -47,14 +47,15 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void apply();
     void scanLibrary();
     void requestAddDir(const QString& dir);
-    void requestRemoveDir(const QString& dir, Library::RemovalType removalType);
+    void requestRemoveDir(const QString& dir, LibraryRemovalType removalType);
     void requestRelocateDir(const QString& currentDir, const QString& newDir);
 
   private slots:
     void slotRowHeightValueChanged(int);
     void slotSelectFont();
-    void slotSyncTrackMetadataExportToggled();
+    void slotSyncTrackMetadataToggled();
     void slotSearchDebouncingTimeoutMillisChanged(int);
+    void slotSeratoMetadataExportClicked(bool);
 
   private:
     void initializeDirList();

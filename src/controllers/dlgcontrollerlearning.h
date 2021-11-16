@@ -14,7 +14,6 @@
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/controller.h"
-#include "controllers/controllervisitor.h"
 #include "preferences/usersettings.h"
 
 class LegacyControllerMapping;
@@ -23,17 +22,12 @@ class LegacyControllerMapping;
 
 /// The controller mapping learning wizard
 class DlgControllerLearning : public QDialog,
-                              public ControllerVisitor,
                               public Ui::DlgControllerLearning {
     Q_OBJECT
 
   public:
     DlgControllerLearning(QWidget *parent, Controller *controller);
     virtual ~DlgControllerLearning();
-
-    void visit(MidiController* pController);
-    void visit(HidController* pController);
-    void visit(BulkController* pController);
 
   signals:
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
@@ -72,7 +66,7 @@ class DlgControllerLearning : public QDialog,
     void showControlMenu();
 #ifdef CONTROLLERLESSTESTING
     void DEBUGFakeMidiMessage();
-    void DEBUGFakeMidiMessage2();
+    void DEBUGFakeMidiMessage();
 #endif
 
   private:
@@ -83,7 +77,6 @@ class DlgControllerLearning : public QDialog,
     void populateComboBox();
 
     Controller* m_pController;
-    MidiController* m_pMidiController;
     ControlPickerMenu m_controlPickerMenu;
     ConfigKey m_currentControl;
     bool m_messagesLearned;

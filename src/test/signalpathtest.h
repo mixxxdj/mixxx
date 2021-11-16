@@ -6,6 +6,7 @@
 #include <QTest>
 #include <QtDebug>
 
+#include "control/controlindicatortimer.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/bufferscalers/enginebufferscale.h"
@@ -21,17 +22,32 @@
 #include "mixer/sampler.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+#include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "util/defs.h"
 #include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
-#include "waveform/guitick.h"
+#include "waveform/visualsmanager.h"
 
 class EngineSync;
 
 using ::testing::_;
 using ::testing::Return;
+
+#define EXPECT_FRAMEPOS_EQ(pos1, pos2)                    \
+    EXPECT_EQ((pos1).isValid(), (pos2).isValid());        \
+    if ((pos1).isValid()) {                               \
+        EXPECT_DOUBLE_EQ((pos1).value(), (pos2).value()); \
+    }
+
+#define EXPECT_FRAMEPOS_EQ_CONTROL(position, control)                    \
+    {                                                                    \
+        const auto controlPos =                                          \
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid( \
+                        control->get());                                 \
+        EXPECT_FRAMEPOS_EQ(position, controlPos);                        \
+    }
 
 // Subclass of EngineMaster that provides access to the master buffer object
 // for comparison.
@@ -57,15 +73,14 @@ class TestEngineMaster : public EngineMaster {
     }
 };
 
-class BaseSignalPathTest : public MixxxTest {
+class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     explicit BaseSignalPathTest()
             : m_pChannelHandleFactory(std::make_shared<ChannelHandleFactory>()),
               m_pNumDecks(new ControlObject(
                       ConfigKey(m_sMasterGroup, "num_decks"))),
-              m_pGuiTick(std::make_unique<GuiTick>()),
-              m_pEffectsManager(new EffectsManager(
-                      nullptr, config(), m_pChannelHandleFactory)),
+              m_pControlIndicatorTimer(std::make_unique<mixxx::ControlIndicatorTimer>()),
+              m_pEffectsManager(new EffectsManager(config(), m_pChannelHandleFactory)),
               m_pEngineMaster(new TestEngineMaster(
                       m_pConfig,
                       m_sMasterGroup,
@@ -145,15 +160,18 @@ class BaseSignalPathTest : public MixxxTest {
 
     const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
     TrackPointer getTestTrack() const {
-        return Track::newTemporary(kTrackLocationTest);
+        return Track::newTemporary(mixxx::FileAccess(mixxx::FileInfo(kTrackLocationTest)));
     }
 
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
+        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+        if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+            pEngineDeck->getEngineBuffer()->slotEjectTrack(1);
+        }
         pDeck->slotLoadTrack(pTrack, false);
 
         // Wait for the track to load.
         ProcessBuffer();
-        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
         while (pEngineDeck->getEngineBuffer()->getLoadedTrack() != pTrack) {
             QTest::qSleep(1); // millis
         }
@@ -189,9 +207,10 @@ class BaseSignalPathTest : public MixxxTest {
                     break;
                 }
                 bool ok = false;
-                double gold_value0 = line[0].toDouble(&ok);
-                double gold_value1 = line[1].toDouble(&ok);
-                EXPECT_TRUE(ok);
+                const double gold_value0 = line[0].toDouble(&ok);
+                ASSERT_TRUE(ok);
+                const double gold_value1 = line[1].toDouble(&ok);
+                ASSERT_TRUE(ok);
                 if (fabs(gold_value0 - pBuffer[i]) > delta) {
                     qWarning() << "Golden check failed at index" << i << ", "
                                << gold_value0 << "vs" << pBuffer[i];
@@ -227,12 +246,13 @@ class BaseSignalPathTest : public MixxxTest {
     }
 
     void ProcessBuffer() {
+        qDebug() << "------- Process Buffer -------";
         m_pEngineMaster->process(kProcessBufferSize);
     }
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
-    std::unique_ptr<GuiTick> m_pGuiTick;
+    std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
 
     VisualsManager* m_pVisualsManager;
     EffectsManager* m_pEffectsManager;
