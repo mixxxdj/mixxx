@@ -46,9 +46,9 @@ class Macro {
     const QList<MacroAction>& getActions() const;
     void addAction(const MacroAction& action);
 
-    double getStartSamplePos() const;
+    mixxx::audio::FramePos getStart() const;
     /// Sets the end of the Macro (relevant for looping).
-    void setEnd(double framePos);
+    void setEnd(mixxx::audio::FramePos framePos);
 
     void clear();
 

@@ -18,7 +18,7 @@ class MacroDAOTest : public MixxxDbTest {
 
 TEST_F(MacroDAOTest, SaveAndLoadMacro) {
     TrackId track(1);
-    MacroAction action(0, 7);
+    MacroAction action(mixxx::audio::FramePos(0), mixxx::audio::FramePos(7));
     Macro saved(QList<MacroAction>{action}, "Test", Macro::StateFlag::Looped);
 
     m_macroDAO.saveMacro(track, &saved, 1);

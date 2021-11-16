@@ -14,8 +14,10 @@ class MacroControl : public EngineControl {
     MacroControl(const QString& group, UserSettingsPointer pConfig, int slot);
 
     void trackLoaded(TrackPointer pNewTrack) override;
-    void process(const double dRate, const double dCurrentSample, const int iBufferSize) override;
-    void notifySeek(double dNewPlaypos) override;
+    void process(const double dRate,
+            mixxx::audio::FramePos currentPosition,
+            const int iBufferSize) override;
+    void notifySeek(mixxx::audio::FramePos position) override;
 
     bool isRecording() const;
 
@@ -42,7 +44,7 @@ class MacroControl : public EngineControl {
     void slotToggle(double value = 1);
     void slotClear(double value = 1);
 
-    void slotJumpQueued(double samplePos);
+    void slotJumpQueued(mixxx::audio::FramePos samplePos);
 
   private:
     /// Returns whether a new action was recorded
@@ -60,7 +62,7 @@ class MacroControl : public EngineControl {
     QString m_controlPattern;
 
     /// The unquantized FramePos of a jump that is yet to be processed
-    double m_queuedJumpTarget;
+    mixxx::audio::FramePos m_queuedJumpTarget;
 
     rigtorp::SPSCQueue<MacroAction> m_recordedActions;
     QTimer m_updateRecordingTimer;

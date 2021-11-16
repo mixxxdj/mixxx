@@ -76,28 +76,28 @@ MacroControl::MacroControl(const QString& group, UserSettingsPointer pConfig, in
             &MacroControl::slotClear);
 }
 
-void MacroControl::process(const double dRate, const double dCurrentSample, const int iBufferSize) {
+void MacroControl::process(const double dRate,
+        mixxx::audio::FramePos currentPosition,
+        const int iBufferSize) {
     Q_UNUSED(dRate);
-    if (m_queuedJumpTarget >= 0) {
+    if (m_queuedJumpTarget.value() >= 0) {
         // if a cue press doesn't change the position, notifySeek isn't called, thus m_queuedJumpTarget isn't reset
         if (getStatus() == Status::Armed) {
             // start the recording on a cue press even when there is no jump
-            notifySeek(dCurrentSample);
+            notifySeek(currentPosition);
         }
-        m_queuedJumpTarget = -1;
+        m_queuedJumpTarget = mixxx::audio::FramePos(-1);
     }
     if (getStatus() != Status::Playing) {
         return;
     }
-    double framePos = dCurrentSample / mixxx::kEngineChannelCount;
     const MacroAction& nextAction = m_pMacro->getActions().at(m_iNextAction);
-    double nextActionPos = nextAction.getSourcePosition();
-    int bufFrames = iBufferSize / 2;
-    // The process method is called roughly every iBufferSize/2 samples, the
+    // The process method is called roughly every iBufferSize frames, the
     // tolerance range is double that to be safe. It is ahead of the position
     // because the seek is executed in the next EngineBuffer process cycle.
-    if (framePos > nextActionPos - bufFrames && framePos < nextActionPos + bufFrames) {
-        seekExact(nextAction.getTargetPositionSample());
+    if (currentPosition > nextAction.getSourcePosition() - iBufferSize &&
+            currentPosition < nextAction.getSourcePosition() + iBufferSize) {
+        seekExact(nextAction.getTargetPosition());
         m_iNextAction++;
         if (m_iNextAction == m_pMacro->size()) {
             if (m_pMacro->isLooped()) {
@@ -134,26 +134,26 @@ void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     }
 }
 
-void MacroControl::notifySeek(double dNewPlaypos) {
-    if (m_queuedJumpTarget < 0) {
+void MacroControl::notifySeek(mixxx::audio::FramePos position) {
+    if (m_queuedJumpTarget.value() < 0) {
         return;
     }
-    double originalDestFramePos = m_queuedJumpTarget;
-    m_queuedJumpTarget = -1;
+    auto queuedTarget = m_queuedJumpTarget;
+    m_queuedJumpTarget = mixxx::audio::FramePos(-1);
     if (getStatus() == Status::Armed) {
         setStatus(Status::Recording);
     }
     if (getStatus() != Status::Recording) {
         return;
     }
-    double sourceFramePos = getSampleOfTrack().current / mixxx::kEngineChannelCount;
-    double destFramePos = dNewPlaypos / mixxx::kEngineChannelCount;
-    double diff = originalDestFramePos - destFramePos;
-    m_recordedActions.try_emplace(sourceFramePos + diff, originalDestFramePos);
+    // Account for quantization so the jump stays in-phase but snaps exactly to the original target
+    m_recordedActions.try_emplace(
+            frameInfo().currentPosition + (queuedTarget - position),
+            queuedTarget);
 }
 
-void MacroControl::slotJumpQueued(double samplePos) {
-    m_queuedJumpTarget = samplePos / mixxx::kEngineChannelCount;
+void MacroControl::slotJumpQueued(mixxx::audio::FramePos samplePos) {
+    m_queuedJumpTarget = samplePos;
 }
 
 MacroControl::Status MacroControl::getStatus() const {
@@ -218,13 +218,12 @@ bool MacroControl::stopRecording() {
     } else {
         // This will still be the position of the previous track when called from trackLoaded
         // since trackLoaded is invoked before the SampleOfTrack of the controls is updated.
-        m_pMacro->setEnd(getSampleOfTrack().current / mixxx::kEngineChannelCount);
+        m_pMacro->setEnd(frameInfo().currentPosition);
         if (m_pMacro->getLabel().isEmpty()) {
-            // Automatically set the start position in seconds as label if there
-            // is no user-defined one
-            double secPos = m_pMacro->getStartSamplePos() /
-                    mixxx::kEngineChannelCount / getSampleOfTrack().rate;
-            m_pMacro->setLabel(QString::number(secPos, 'f', 2));
+            // Automatically set the start position in seconds as label
+            // if there is no user-defined one
+            auto secPos = m_pMacro->getStart() / frameInfo().sampleRate;
+            m_pMacro->setLabel(QString::number(secPos.value(), 'f', 2));
         }
         setStatus(Status::Recorded);
         if (m_pMacro->isEnabled()) {
@@ -324,7 +323,7 @@ void MacroControl::slotToggle(double value) {
 
 void MacroControl::slotGotoPlay(double value) {
     if (value > 0 && getStatus() > Status::Recording) {
-        seekExact(m_pMacro->getStartSamplePos());
+        seekExact(m_pMacro->getStart());
         play();
     }
 }

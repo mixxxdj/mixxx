@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/frame.h"
 #include "engine/engine.h"
 #include "proto/macro.pb.h"
 namespace proto = mixxx::track::io;
@@ -7,41 +8,33 @@ namespace proto = mixxx::track::io;
 /// A MacroAction is the building block of a Macro.
 /// It contains a position as well as the action to be taken at that position.
 ///
-/// Note that currently only jumps to a target position are available, but that
-/// is subject to change.
+/// Note that currently only jumps to a target position are available,
+/// but that is subject to change.
 class MacroAction {
   public:
     enum class Type : uint32_t {
         Jump = 0
     };
 
-    MacroAction(double sourceFramePos, double targetFramePos)
-            : sourceFrame(sourceFramePos), targetFrame(targetFramePos), type(Type::Jump){};
+    MacroAction(mixxx::audio::FramePos source, mixxx::audio::FramePos target)
+            : source(source), target(target), type(Type::Jump){};
 
     Type getType() const {
         return type;
     }
 
-    double getSourcePosition() const {
-        return sourceFrame;
+    mixxx::audio::FramePos getSourcePosition() const {
+        return source;
     }
-    double getTargetPosition() const {
-        return targetFrame;
-    }
-
-    double getSourcePositionSample() const {
-        return sourceFrame * mixxx::kEngineChannelCount;
-    }
-    double getTargetPositionSample() const {
-        return targetFrame * mixxx::kEngineChannelCount;
+    mixxx::audio::FramePos getTargetPosition() const {
+        return target;
     }
 
     proto::Macro_Action* serialize() const;
 
   private:
-    // use FramePos once https://github.com/mixxxdj/mixxx/pull/2961 is merged
-    double sourceFrame;
-    double targetFrame;
+    mixxx::audio::FramePos source;
+    mixxx::audio::FramePos target;
     Type type;
 };
 

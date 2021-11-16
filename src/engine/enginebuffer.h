@@ -64,13 +64,13 @@ class EngineBuffer : public EngineObject {
         SEEK_PHASE = 1u,
         /// Bypass Quantization
         SEEK_EXACT = 2u,
-        /// This is an artificial state that happens if an exact seek and a
-        /// phase seek are scheduled at the same time.
+        /// This artificial state occurs when an exact seek and a phase seek
+        /// are scheduled at the same time.
         SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT,
-        /// #SEEK_PHASE if Quantize enables, otherwise SEEK_EXACT
+        /// SEEK_PHASE if Quantization is enabled, otherwise SEEK_EXACT
         SEEK_STANDARD = 4u,
-        /// This is an artificial state that happens if a standard seek and a
-        /// phase seek are scheduled at the same time.
+        /// This artificial state occurs when a standard seek and a phase seek
+        /// are scheduled at the same time.
         SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE,
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
@@ -185,7 +185,7 @@ class EngineBuffer : public EngineObject {
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
-    void cueJumpQueued(double samplePos);
+    void cueJumpQueued(mixxx::audio::FramePos targetPosition);
 
   private slots:
     void slotTrackLoading();

@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 TEST(MacroTest, SerializeMacroActions) {
-    QList<MacroAction> actions{MacroAction(0, 1)};
+    QList<MacroAction> actions{MacroAction(mixxx::audio::FramePos(0), mixxx::audio::FramePos(1))};
 
     QString filename(QDir::currentPath() % "/src/test/macros/macro_proto");
     ASSERT_TRUE(QFile::exists(filename));

@@ -1,9 +1,9 @@
 #include "macroaction.h"
 
 proto::Macro_Action* MacroAction::serialize() const {
-    auto serialized = new proto::Macro_Action();
-    serialized->set_sourceframe(static_cast<uint64_t>(sourceFrame));
-    serialized->set_targetframe(static_cast<uint64_t>(targetFrame));
+    auto* serialized = new proto::Macro_Action();
+    serialized->set_sourceframe(static_cast<uint64_t>(source.value()));
+    serialized->set_targetframe(static_cast<uint64_t>(target.value()));
     serialized->set_type(static_cast<uint32_t>(type));
     return serialized;
 }

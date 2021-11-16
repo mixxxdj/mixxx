@@ -11,7 +11,8 @@ QList<MacroAction> Macro::deserialize(const QByteArray& serialized) {
     QList<MacroAction> result;
     result.reserve(macroProto.actions_size());
     for (const proto::Macro_Action& action : macroProto.actions()) {
-        result.append(MacroAction(action.sourceframe(), action.targetframe()));
+        result.append(MacroAction(mixxx::audio::FramePos(action.sourceframe()),
+                mixxx::audio::FramePos(action.targetframe())));
     }
     return result;
 }
@@ -88,14 +89,14 @@ void Macro::addAction(const MacroAction& action) {
     m_actions.append(action);
 }
 
-double Macro::getStartSamplePos() const {
+mixxx::audio::FramePos Macro::getStart() const {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
-        return 0;
+        return mixxx::audio::FramePos(0);
     }
-    return m_actions.first().getTargetPositionSample();
+    return m_actions.first().getTargetPosition();
 }
 
-void Macro::setEnd(double framePos) {
+void Macro::setEnd(mixxx::audio::FramePos framePos) {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return;
     }

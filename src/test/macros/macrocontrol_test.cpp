@@ -20,7 +20,7 @@ class MacroControlTest : public MacroControl, public testing::Test {
         EXPECT_FALSE(isRecording());
     }
 
-    MOCK_METHOD1(seekExact, void(double));
+    MOCK_METHOD1(seekExact, void(mixxx::audio::FramePos));
 
     const TrackPointer pLoadedTrack = Track::newTemporary();
 };
@@ -39,37 +39,37 @@ TEST_F(MacroControlTest, RecordSeek) {
     EXPECT_TRUE(isRecording());
     EXPECT_EQ(getMacro()->getLabel(), " [Recording]");
     // Prepare recording
-    int frameRate = 1'000;
-    auto seek = [this, frameRate](double position) {
+    mixxx::audio::SampleRate frameRate(1'000);
+    auto seek = [this, frameRate](mixxx::audio::FramePos position) {
         notifySeek(position);
-        setCurrentSample(position, 99'000, frameRate);
-        process(0, position, 2);
+        setFrameInfo(position, mixxx::audio::FramePos(99'000), frameRate);
+        process(frameRate, position, 1);
     };
-    seek(0);
+    seek(mixxx::audio::FramePos(0));
     ASSERT_EQ(getStatus(), MacroControl::Status::Armed);
 
     // Initial jump
-    double startPos = 1'008;
+    mixxx::audio::FramePos startPos(504);
     slotJumpQueued(startPos);
     seek(startPos);
     // Jump with quantization adjustment
     TestMacro testMacro;
-    double diff = 20;
-    seek(testMacro.action.getSourcePositionSample() - diff);
-    slotJumpQueued(testMacro.action.getTargetPositionSample());
-    seek(testMacro.action.getTargetPositionSample() - diff);
+    mixxx::audio::FrameDiff_t diff(10);
+    seek(testMacro.action.getSourcePosition() - diff);
+    slotJumpQueued(testMacro.action.getTargetPosition());
+    seek(testMacro.action.getTargetPosition() - diff);
 
     // Stop recording
-    seek(testMacro.action.getTargetPositionSample());
+    seek(testMacro.action.getTargetPosition());
     EXPECT_CALL(*this, seekExact(startPos));
     slotRecord(0);
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
     // Check recording result
     testMacro.checkMacroAction(getMacro());
-    EXPECT_EQ(getMacro()->getActions().first().getTargetPositionSample(), startPos);
+    EXPECT_EQ(getMacro()->getActions().first().getTargetPosition(), startPos);
     EXPECT_TRUE(pLoadedTrack->isDirty());
     // Check generated label
-    EXPECT_EQ(startPos / mixxx::kEngineChannelCount / frameRate, 0.504);
+    EXPECT_EQ((startPos / frameRate).value(), 0.504);
     EXPECT_EQ(getMacro()->getLabel().toStdString(), "0.50");
     // Activate
     EXPECT_CALL(*this, seekExact(startPos));
@@ -107,8 +107,8 @@ TEST_F(MacroControlTest, ControlObjects) {
     ControlProxy(kChannelGroup, "macro_2_enable").set(0);
     ControlProxy(kChannelGroup, "macro_2_loop").set(1);
     EXPECT_TRUE(getMacro()->isLooped());
-    slotJumpQueued(0);
-    notifySeek(0);
+    slotJumpQueued(mixxx::audio::FramePos(0));
+    notifySeek(mixxx::audio::FramePos(0));
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Recorded);
     EXPECT_EQ(getMacro()->getLabel(), label);
@@ -116,7 +116,7 @@ TEST_F(MacroControlTest, ControlObjects) {
     ASSERT_STATUS(MacroControl::Status::Playing);
 
     // Restart
-    EXPECT_CALL(*this, seekExact(0));
+    EXPECT_CALL(*this, seekExact(mixxx::audio::FramePos(0)));
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Playing);
 
@@ -131,7 +131,7 @@ TEST_F(MacroControlTest, ControlObjects) {
 }
 
 TEST_F(MacroControlTest, LoadTrackAndPlayAndClear) {
-    MacroAction jumpAction(40'000, 0);
+    MacroAction jumpAction(mixxx::audio::FramePos(40'000), mixxx::audio::FramePos(0));
     TestMacro testMacro;
 
     QString label = QStringLiteral("test");
@@ -146,23 +146,23 @@ TEST_F(MacroControlTest, LoadTrackAndPlayAndClear) {
     slotActivate();
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
     EXPECT_CALL(*this, seekExact(jumpAction.getTargetPosition()));
-    process(0, jumpAction.getSourcePositionSample(), 2);
+    process(0, jumpAction.getSourcePosition(), 2);
     EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
 
     // LOOP
     slotLoop(1);
-    EXPECT_CALL(*this, seekExact(testMacro.action.getTargetPositionSample()));
+    EXPECT_CALL(*this, seekExact(testMacro.action.getTargetPosition()));
     slotActivate();
     slotActivate();
     // Jump
-    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample()));
-    process(0, jumpAction.getSourcePositionSample(), 2);
+    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPosition()));
+    process(0, jumpAction.getSourcePosition(), 2);
     // Loop back
-    EXPECT_CALL(*this, seekExact(testMacro.action.getTargetPositionSample()));
-    process(0, testMacro.action.getSourcePositionSample(), 2);
+    EXPECT_CALL(*this, seekExact(testMacro.action.getTargetPosition()));
+    process(0, testMacro.action.getSourcePosition(), 2);
     // Jump again
-    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample()));
-    process(0, jumpAction.getSourcePositionSample(), 2);
+    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPosition()));
+    process(0, jumpAction.getSourcePosition(), 2);
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
 
     // Stop playing
