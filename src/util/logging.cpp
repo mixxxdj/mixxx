@@ -249,10 +249,8 @@ namespace mixxx {
 
 namespace {
 
-bool isControllerIoLoggingCategory(const QString& categoryName) {
-    return categoryName.startsWith("controller") &&
-            (categoryName.endsWith("input") ||
-                    categoryName.endsWith("output"));
+bool isControllerLoggingCategory(const QString& categoryName) {
+    return categoryName.startsWith("controller.");
 }
 
 // Debug message handler which outputs to stderr and a logfile,
@@ -281,7 +279,7 @@ void handleMessage(
         // write debug messages into the log file, but skip controller I/O
         // to avoid flooding the log file.
         // Skip expensive string comparisons if WriteFlag::File is already set.
-        if (!writeFlags.testFlag(WriteFlag::File) && !isControllerIoLoggingCategory(categoryName)) {
+        if (!writeFlags.testFlag(WriteFlag::File) && !isControllerLoggingCategory(categoryName)) {
             writeFlags |= WriteFlag::File;
         }
         break;
