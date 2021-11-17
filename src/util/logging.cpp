@@ -30,13 +30,19 @@ QFile s_logfile;
 
 QLoggingCategory::CategoryFilter oldCategoryFilter = nullptr;
 
+/// Filters logging categories for the `--controller-debug` command line
+/// argument, so that debug messages are enabled for all categories in the
+/// `controller` namespace, and disabled for all other categories.
 void controllerDebugCategoryFilter(QLoggingCategory* category) {
     // Configure controller.*.input/output category here, otherwise forward to to default filter.
     constexpr char controllerPrefix[] = "controller.";
     const char* categoryName = category->categoryName();
     if (qstrncmp(categoryName, controllerPrefix, sizeof(controllerPrefix) - 1) == 0) {
+        // If the logging category name starts with `controller.`, show debug messages.
         category->setEnabled(QtDebugMsg, true);
     } else {
+        // Otherwise, pass it on to the default filter (via function pointer)
+        // and disable all debug messages for those categories.
         oldCategoryFilter(category);
         category->setEnabled(QtDebugMsg, false);
     }
@@ -402,9 +408,18 @@ void Logging::initialize(
 #endif
 
     if (CmdlineArgs::Instance().getControllerDebug()) {
+        // Due to our hacky custom logging system, all debug messages are
+        // discarded if the overall log level is not `Debug` - even if debug
+        // messages for a specific category are enabled. So if we want to be
+        // able to show controller debug messages on the terminal, the log
+        // level has to be set to `Debug`. We then filter out all
+        // non-controller-related debug messages via the custom
+        // `controllerDebugCategoryFilter`.
         setLogLevel(LogLevel::Debug);
-        // This looks weird, but it's the proposed workaround for this 6 year
-        // old bug: https://bugreports.qt.io/browse/QTBUG-49704
+        // Move the the old filter to oldCategoryFilter first, because it is
+        // used in controllerDebugCategoryFilter(). Qt 5 does not have
+        // a function to just copy the old filter. This is the proposed
+        // workaround in: https://bugreports.qt.io/browse/QTBUG-49704
         oldCategoryFilter = QLoggingCategory::installFilter(nullptr);
         QLoggingCategory::installFilter(controllerDebugCategoryFilter);
     }
