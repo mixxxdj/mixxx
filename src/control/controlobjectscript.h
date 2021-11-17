@@ -4,12 +4,15 @@
 
 #include "control/controlproxy.h"
 #include "controllers/scripting/legacy/scriptconnection.h"
+#include "util/runtimeloggingcategory.h"
 
 // this is used for communicate with controller scripts
 class ControlObjectScript : public ControlProxy {
     Q_OBJECT
   public:
-    explicit ControlObjectScript(const ConfigKey& key, QObject* pParent = nullptr);
+    explicit ControlObjectScript(const ConfigKey& key,
+            const RuntimeLoggingCategory& logger,
+            QObject* pParent = nullptr);
 
     bool addScriptConnection(const ScriptConnection& conn);
 
@@ -37,4 +40,5 @@ class ControlObjectScript : public ControlProxy {
 
   private:
     QVector<ScriptConnection> m_scriptConnections;
+    const RuntimeLoggingCategory m_logger;
 };

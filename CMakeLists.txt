@@ -475,7 +475,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlpushbutton.cpp
   src/control/controlttrotary.cpp
   src/controllers/controller.cpp
-  src/controllers/controllerdebug.cpp
   src/controllers/controllerenumerator.cpp
   src/controllers/controllerinputmappingtablemodel.cpp
   src/controllers/controllerlearningeventfilter.cpp
@@ -889,6 +888,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/readaheadsamplebuffer.cpp
   src/util/rlimit.cpp
   src/util/rotary.cpp
+  src/util/runtimeloggingcategory.cpp
   src/util/sample.cpp
   src/util/samplebuffer.cpp
   src/util/sandbox.cpp

@@ -13,7 +13,6 @@
 #include <QTextStream>
 #include <QThread>
 
-#include "controllers/controllerdebug.h"
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
@@ -28,6 +27,26 @@ QMutex s_mutexStdErr;
 
 // The file handle for Mixxx's log file.
 QFile s_logfile;
+
+QLoggingCategory::CategoryFilter oldCategoryFilter = nullptr;
+
+/// Filters logging categories for the `--controller-debug` command line
+/// argument, so that debug messages are enabled for all categories in the
+/// `controller` namespace, and disabled for all other categories.
+void controllerDebugCategoryFilter(QLoggingCategory* category) {
+    // Configure controller.*.input/output category here, otherwise forward to to default filter.
+    constexpr char controllerPrefix[] = "controller.";
+    const char* categoryName = category->categoryName();
+    if (qstrncmp(categoryName, controllerPrefix, sizeof(controllerPrefix) - 1) == 0) {
+        // If the logging category name starts with `controller.`, show debug messages.
+        category->setEnabled(QtDebugMsg, true);
+    } else {
+        // Otherwise, pass it on to the default filter (via function pointer)
+        // and disable all debug messages for those categories.
+        oldCategoryFilter(category);
+        category->setEnabled(QtDebugMsg, false);
+    }
+}
 
 // The log level.
 // Whether to break on debug assertions.
@@ -236,6 +255,10 @@ namespace mixxx {
 
 namespace {
 
+bool isControllerLoggingCategory(const QString& categoryName) {
+    return categoryName.startsWith("controller.");
+}
+
 // Debug message handler which outputs to stderr and a logfile,
 // prepending the thread name, log category, and log level.
 void handleMessage(
@@ -245,15 +268,11 @@ void handleMessage(
     const char* levelName = nullptr;
     WriteFlags writeFlags = WriteFlag::None;
     bool isDebugAssert = false;
-    bool isControllerDebug = false;
+    const QString categoryName(context.category);
     switch (type) {
     case QtDebugMsg:
         levelName = "Debug";
-        isControllerDebug =
-                input.startsWith(QLatin1String(
-                        ControllerDebug::kLogMessagePrefix));
-        if (isControllerDebug ||
-                Logging::enabled(LogLevel::Debug)) {
+        if (Logging::enabled(LogLevel::Debug)) {
             writeFlags |= WriteFlag::StdErr;
             writeFlags |= WriteFlag::File;
         }
@@ -263,8 +282,12 @@ void handleMessage(
         // TODO: Remove the following line.
         // Do not write debug log messages into log file if log level
         // Debug is not enabled starting with release 2.4.0! Until then
-        // write debug messages unconditionally into the log file
-        writeFlags |= WriteFlag::File;
+        // write debug messages into the log file, but skip controller I/O
+        // to avoid flooding the log file.
+        // Skip expensive string comparisons if WriteFlag::File is already set.
+        if (!writeFlags.testFlag(WriteFlag::File) && !isControllerLoggingCategory(categoryName)) {
+            writeFlags |= WriteFlag::File;
+        }
         break;
     case QtInfoMsg:
         levelName = "Info";
@@ -383,6 +406,23 @@ void Logging::initialize(
             "*.debug=true\n"
             "qt.*.debug=false");
 #endif
+
+    if (CmdlineArgs::Instance().getControllerDebug()) {
+        // Due to our hacky custom logging system, all debug messages are
+        // discarded if the overall log level is not `Debug` - even if debug
+        // messages for a specific category are enabled. So if we want to be
+        // able to show controller debug messages on the terminal, the log
+        // level has to be set to `Debug`. We then filter out all
+        // non-controller-related debug messages via the custom
+        // `controllerDebugCategoryFilter`.
+        setLogLevel(LogLevel::Debug);
+        // Move the the old filter to oldCategoryFilter first, because it is
+        // used in controllerDebugCategoryFilter(). Qt 5 does not have
+        // a function to just copy the old filter. This is the proposed
+        // workaround in: https://bugreports.qt.io/browse/QTBUG-49704
+        oldCategoryFilter = QLoggingCategory::installFilter(nullptr);
+        QLoggingCategory::installFilter(controllerDebugCategoryFilter);
+    }
 }
 
 // static
