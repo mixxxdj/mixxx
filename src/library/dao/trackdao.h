@@ -14,12 +14,12 @@
 #include "util/class.h"
 #include "util/memory.h"
 
-class FwdSqlQuery;
-class SqlTransaction;
-class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
+class FwdSqlQuery;
 class LibraryHashDAO;
+class PlaylistDAO;
+class SqlTransaction;
 
 namespace mixxx {
 

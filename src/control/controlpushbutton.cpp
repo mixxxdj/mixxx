@@ -23,7 +23,7 @@ ControlPushButton::~ControlPushButton() {
 
 // Tell this PushButton how to act on rising and falling edges
 void ControlPushButton::setButtonMode(enum ButtonMode mode) {
-    //qDebug() << "Setting " << m_Key.group << m_Key.item << "as toggle";
+    //qDebug() << "Setting " << m_key.group << m_key.item << "to mode" << buttonModeToString(mode);
     m_buttonMode = mode;
 
     if (m_pControl) {

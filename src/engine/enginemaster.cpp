@@ -10,8 +10,6 @@
 #include "effects/effectsmanager.h"
 #include "engine/channelmixer.h"
 #include "engine/channels/enginechannel.h"
-#include "engine/channels/enginedeck.h"
-#include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedelay.h"
 #include "engine/enginetalkoverducking.h"
@@ -25,7 +23,6 @@
 #include "preferences/usersettings.h"
 #include "util/defs.h"
 #include "util/sample.h"
-#include "util/timer.h"
 #include "util/trace.h"
 
 EngineMaster::EngineMaster(

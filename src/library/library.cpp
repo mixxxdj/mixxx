@@ -27,7 +27,6 @@
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/serato/seratofeature.h"
 #include "library/sidebarmodel.h"
-#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 #include "library/trackset/crate/cratefeature.h"
@@ -48,9 +47,7 @@
 #include "widget/wtracktableview.h"
 
 namespace {
-
 const mixxx::Logger kLogger("Library");
-
 } // anonymous namespace
 
 using namespace mixxx::library::prefs;

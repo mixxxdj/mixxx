@@ -345,6 +345,16 @@ void Track::adjustReplayGainFromPregain(double gain) {
     }
 }
 
+void Track::analysisFinished() {
+    emit analyzed();
+}
+
+double Track::getBpm() const {
+    const auto locked = lockMutex(&m_qMutex);
+    const mixxx::Bpm bpm = getBpmWhileLocked();
+    return bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined;
+}
+
 mixxx::Bpm Track::getBpmWhileLocked() const {
     // BPM values must be synchronized at all times!
     DEBUG_ASSERT(m_record.getMetadata().getTrackInfo().getBpm() ==
@@ -379,12 +389,6 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
         }
     }
     return false;
-}
-
-double Track::getBpm() const {
-    const auto locked = lockMutex(&m_qMutex);
-    const mixxx::Bpm bpm = getBpmWhileLocked();
-    return bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined;
 }
 
 bool Track::trySetBpm(mixxx::Bpm bpm) {
@@ -839,6 +843,18 @@ void Track::resetId() {
     m_record.setId(TrackId());
 }
 
+int Track::getRating() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getRating();
+}
+
+void Track::setRating(int rating) {
+    auto locked = lockMutex(&m_qMutex);
+    if (compareAndSet(m_record.ptrRating(), rating)) {
+        markDirtyAndUnlock(&locked);
+    }
+}
+
 void Track::setURL(const QString& url) {
     auto locked = lockMutex(&m_qMutex);
     if (compareAndSet(m_record.ptrUrl(), url)) {
@@ -919,10 +935,6 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
     }
 
     markDirtyAndUnlock(&locked);
-}
-
-void Track::analysisFinished() {
-    emit analyzed();
 }
 
 mixxx::audio::FramePos Track::getMainCuePosition() const {
@@ -1327,18 +1339,6 @@ void Track::markForMetadataExport() {
 bool Track::isMarkedForMetadataExport() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_bMarkedForMetadataExport;
-}
-
-int Track::getRating() const {
-    const auto locked = lockMutex(&m_qMutex);
-    return m_record.getRating();
-}
-
-void Track::setRating (int rating) {
-    auto locked = lockMutex(&m_qMutex);
-    if (compareAndSet(m_record.ptrRating(), rating)) {
-        markDirtyAndUnlock(&locked);
-    }
 }
 
 void Track::afterKeysUpdated(QT_RECURSIVE_MUTEX_LOCKER* pLock) {

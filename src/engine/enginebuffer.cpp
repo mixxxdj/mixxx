@@ -27,7 +27,6 @@
 #include "engine/sync/synccontrol.h"
 #include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
-#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility/qatomic.h"
@@ -45,20 +44,20 @@
 namespace {
 const mixxx::Logger kLogger("EngineBuffer");
 
-// This value is used to make sure the initial seek after loading a track is
-// not omitted. Therefore this value must be different for 0.0 or any likely
-// value for the main cue
+/// Used to ensure the initial seek after loading a track is not omitted.
+/// Therefore this value must stray away from 0.0 or any probable value for the main cue.
 constexpr auto kInitialPlayPosition =
         mixxx::audio::FramePos::fromEngineSamplePos(
                 std::numeric_limits<double>::lowest());
 
-constexpr double kLinearScalerElipsis =
-        1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
+/// 2^(0.01/12): changes < 1 cent allows a linear scaler
+constexpr double kLinearScalerElipsis = 1.00058;
 
-constexpr SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
+/// Engine buffer uses Stereo frames only
+constexpr SINT kSamplesPerFrame = 2;
 
-// Rate at which the playpos slider is updated
-constexpr int kPlaypositionUpdateRate = 15; // updates per second
+/// Updates per second of the playpos slider
+constexpr int kPlaypositionUpdateRate = 15;
 
 } // anonymous namespace
 
@@ -474,7 +473,7 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 // the engine callback!
 void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << m_group << "EngineBuffer::setNewPlaypos" << position;
+        kLogger.trace() << getGroup() << "EngineBuffer::setNewPlaypos" << position;
     }
 
     m_playPosition = position;
@@ -754,38 +753,33 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
 }
 
-void EngineBuffer::slotControlStart(double v)
-{
+void EngineBuffer::slotControlStart(double v) {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
     }
 }
 
-void EngineBuffer::slotControlEnd(double v)
-{
+void EngineBuffer::slotControlEnd(double v) {
     if (v > 0.0) {
         doSeekFractional(1., SEEK_EXACT);
     }
 }
 
-void EngineBuffer::slotControlPlayFromStart(double v)
-{
+void EngineBuffer::slotControlPlayFromStart(double v) {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
         m_playButton->set(1);
     }
 }
 
-void EngineBuffer::slotControlJumpToStartAndStop(double v)
-{
+void EngineBuffer::slotControlJumpToStartAndStop(double v) {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
         m_playButton->set(0);
     }
 }
 
-void EngineBuffer::slotControlStop(double v)
-{
+void EngineBuffer::slotControlStop(double v) {
     if (v > 0.0) {
         m_playButton->set(0);
     }
@@ -992,8 +986,8 @@ void EngineBuffer::processTrackLocked(
         // The way we treat rate inside of EngineBuffer is actually a
         // description of "sample consumption rate" or percentage of samples
         // consumed relative to playing back the track at its native sample
-        // rate and normal speed. pitch_adjust does not change the playback
-        // rate.
+        // rate and normal speed.
+        // pitch_adjust does not change the playback rate.
         rate = baserate * speed;
 
         // Scaler is up to date now.

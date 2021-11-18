@@ -23,17 +23,9 @@
 #include <QTextStream>
 #endif
 
-class EngineChannel;
-class EngineControl;
 class BpmControl;
-class KeyControl;
-class RateControl;
-class SyncControl;
-class VinylControlControl;
-class LoopingControl;
 class ClockControl;
 class CueControl;
-class ReadAheadManager;
 class ControlObject;
 class ControlProxy;
 class ControlPushButton;
@@ -42,10 +34,18 @@ class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineBufferScaleRubberBand;
+class EngineChannel;
+class EngineControl;
+class EngineMaster;
 class EngineSync;
 class EngineWorkerScheduler;
+class KeyControl;
+class LoopingControl;
+class RateControl;
+class ReadAheadManager;
+class SyncControl;
+class VinylControlControl;
 class VisualPlayPosition;
-class EngineMaster;
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
@@ -63,13 +63,13 @@ class EngineBuffer : public EngineObject {
         SEEK_PHASE = 1u,
         /// Bypass Quantization
         SEEK_EXACT = 2u,
-        /// This is an artificial state that happens if an exact seek and a
-        /// phase seek are scheduled at the same time.
+        /// This artificial state occurs when an exact seek and a phase seek
+        /// are scheduled at the same time.
         SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT,
-        /// #SEEK_PHASE if Quantize enables, otherwise SEEK_EXACT
+        /// SEEK_PHASE if Quantization is enabled, otherwise SEEK_EXACT
         SEEK_STANDARD = 4u,
-        /// This is an artificial state that happens if a standard seek and a
-        /// phase seek are scheduled at the same time.
+        /// This artificial state occurs when a standard seek and a phase seek
+        /// are scheduled at the same time.
         SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE,
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
@@ -80,8 +80,10 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(const QString& group, UserSettingsPointer pConfig,
-                 EngineChannel* pChannel, EngineMaster* pMixingEngine);
+    EngineBuffer(const QString& group,
+            UserSettingsPointer pConfig,
+            EngineChannel* pChannel,
+            EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -161,6 +163,7 @@ class EngineBuffer : public EngineObject {
         m_channelIndex = channelIndex;
     }
 
+    /// Seek to the given sample Position in phase
     void seekAbs(mixxx::audio::FramePos);
     void seekExact(mixxx::audio::FramePos);
 
@@ -171,10 +174,12 @@ class EngineBuffer : public EngineObject {
     void slotControlStop(double);
     void slotControlStart(double);
     void slotControlEnd(double);
+    /// Seek to a relative position (0-1) in the track
     void slotControlSeek(double);
     void slotKeylockEngineChanged(double);
 
-    void slotEjectTrack(double);
+    /// Eject current track if the supplied value is greater than 0
+    void slotEjectTrack(double value);
 
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -250,15 +255,16 @@ class EngineBuffer : public EngineObject {
     friend class LoopingControlTest;
 
     LoopingControl* m_pLoopingControl; // used for testes
-    FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
-    FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
+    FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
     FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange);
     FRIEND_TEST(EngineSyncTest, BeatMapQuantizePlay);
-    FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
+    FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
+    FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
+
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;

@@ -56,8 +56,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
   public:
     PlayerManager(UserSettingsPointer pConfig,
             SoundManager* pSoundManager,
-            EffectsManager* pEffectsManager,
-            EngineMaster* pEngine);
+            EngineMaster* pEngine,
+            EffectsManager* pEffectsManager);
     ~PlayerManager() override;
 
     // Add a deck to the PlayerManager

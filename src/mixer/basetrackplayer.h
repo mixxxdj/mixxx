@@ -14,11 +14,11 @@
 #include "util/memory.h"
 #include "util/parented_ptr.h"
 
-class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
+class EngineMaster;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
 // rest of Mixxx. Also makes testing a lot easier.

@@ -1,7 +1,6 @@
 #include "library/dao/cuedao.h"
 
 #include <QVariant>
-#include <QtDebug>
 #include <QtSql>
 
 #include "engine/engine.h"
@@ -11,7 +10,6 @@
 #include "util/color/rgbcolor.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/logger.h"
-#include "util/performancetimer.h"
 
 namespace {
 

@@ -14,22 +14,20 @@
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 
-class EngineWorkerScheduler;
+class ControlPotmeter;
+class ControlPushButton;
+class EffectsManager;
 class EngineBuffer;
 class EngineChannel;
 class EngineDeck;
-class EngineFlanger;
-class EngineVuMeter;
-class ControlPotmeter;
-class ControlPushButton;
-class EngineSideChain;
-class EffectsManager;
+class EngineDelay;
 class EngineEffectsManager;
-class SyncWorker;
-class GuiTick;
 class EngineSync;
 class EngineTalkoverDucking;
-class EngineDelay;
+class EngineVuMeter;
+class EngineSideChain;
+class EngineWorkerScheduler;
+class GuiTick;
 
 // The number of channels to pre-allocate in various structures in the
 // engine. Prevents memory allocation in EngineMaster::addChannel.
