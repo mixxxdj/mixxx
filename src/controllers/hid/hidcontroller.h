@@ -46,7 +46,7 @@ class HidController final : public Controller {
     // 0x0.
     void sendBytes(const QByteArray& data) override;
     void sendBytesReport(QByteArray data, unsigned int reportID);
-    void sendFeatureReport(const QList<int>& dataList, unsigned int reportID);
+    void sendFeatureReport(const QByteArray& reportData, unsigned int reportID);
 
     // getInputReport receives an input report on request.
     // This can be used on startup to initialize the knob positions in Mixxx
@@ -102,8 +102,8 @@ class HidControllerJSProxy : public ControllerJSProxy {
     }
 
     Q_INVOKABLE void sendFeatureReport(
-            const QList<int>& dataList, unsigned int reportID) {
-        m_pHidController->sendFeatureReport(dataList, reportID);
+            const QByteArray& reportData, unsigned int reportID) {
+        m_pHidController->sendFeatureReport(reportData, reportID);
     }
 
     Q_INVOKABLE QByteArray getFeatureReport(
