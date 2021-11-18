@@ -17,7 +17,8 @@ class MacroAction {
     };
 
     MacroAction(mixxx::audio::FramePos source, mixxx::audio::FramePos target)
-            : source(source), target(target), type(Type::Jump){};
+            : source(source), target(target), type(Type::Jump) {
+    }
 
     Type getType() const {
         return type;
@@ -30,7 +31,7 @@ class MacroAction {
         return target;
     }
 
-    proto::Macro_Action* serialize() const;
+    proto::Macro_Action serialize() const;
 
   private:
     mixxx::audio::FramePos source;

@@ -590,10 +590,12 @@ reapplying those migrations.
       CREATE TABLE IF NOT EXISTS macros (
         id INTEGER PRIMARY KEY,
         track_id INTEGER NOT NULL REFERENCES library(id),
-        slot INTEGER,
+        slot INTEGER NOT NULL,
         label TEXT,
         state INTEGER,
-        content BLOB);
+        content BLOB,
+        UNIQUE (track_id, slot)
+      );
     </sql>
   </revision>
 </schema>

@@ -9,8 +9,8 @@
 #include "util/db/dbid.h"
 namespace proto = mixxx::track::io;
 
-const QLoggingCategory macroLoggingCategory("macros");
 constexpr int kMacrosPerChannel = 16;
+extern const QLoggingCategory kMacroLoggingCategory;
 
 /// A Macro stores a list of MacroActions as well as its current state and label.
 class Macro {
@@ -24,13 +24,13 @@ class Macro {
     };
     Q_DECLARE_FLAGS(State, StateFlag);
 
-    explicit Macro(const QList<MacroAction>& actions = {},
-            const QString& label = "",
-            State state = State(StateFlag::Enabled),
-            int dbId = DbId::s_invalidValue);
+    Macro();
+    Macro(const QList<MacroAction>& actions,
+            const QString& label,
+            State state);
 
     bool isDirty() const;
-    int getId() const;
+    DbId getId() const;
 
     QString getLabel() const;
     void setLabel(const QString&);
@@ -54,10 +54,10 @@ class Macro {
 
   private:
     void setDirty(bool dirty = true);
-    void setId(int id);
+    void setId(DbId id);
 
-    bool m_bDirty;
-    int m_iId;
+    bool m_bDirty = false;
+    DbId m_iId;
 
     /// The list of actions. The first action marks the jump from end to start.
     QList<MacroAction> m_actions;

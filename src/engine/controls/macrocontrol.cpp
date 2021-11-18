@@ -280,7 +280,7 @@ void MacroControl::slotClear(double value) {
         return;
     }
     if (getStatus() == Status::Recorded) {
-        qCDebug(macroLoggingCategory) << "Clearing macro" << m_slot;
+        qCDebug(kMacroLoggingCategory) << "Clearing macro" << m_slot;
         m_pMacro->clear();
         if (QRegExp("[0-9. ]+(\\[\\w*\\])?").exactMatch(m_pMacro->getLabel())) {
             m_pMacro->setLabel("");

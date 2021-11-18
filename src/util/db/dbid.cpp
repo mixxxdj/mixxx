@@ -24,5 +24,5 @@ DbId::value_type DbId::valueOf(QVariant /*pass-by-value*/ variant) {
     }
     qCritical() << "Invalid database identifier value:"
             << variant;
-    return s_invalidValue;
+    return kInvalidValue;
 }

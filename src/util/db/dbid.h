@@ -28,11 +28,11 @@ class DbId {
     // need to change it from 'int' to 'long' or any other type.
     typedef int value_type;
 
-    static constexpr value_type s_invalidValue = -1;
+    static constexpr value_type kInvalidValue = -1;
 
-    explicit DbId(value_type value = s_invalidValue)
+    explicit DbId(value_type value = kInvalidValue)
             : m_value(value) {
-        DEBUG_ASSERT(isValid() || (s_invalidValue == m_value));
+        DEBUG_ASSERT(isValid() || (kInvalidValue == m_value));
     }
     explicit DbId(QVariant variant)
             : DbId(valueOf(std::move(variant))) {
@@ -111,7 +111,7 @@ class DbId {
 #endif
 
     static bool isValidValue(value_type value) {
-        return 0 <= value;
+        return value >= 0;
     }
 
     static value_type valueOf(QVariant /*pass-by-value*/ variant);

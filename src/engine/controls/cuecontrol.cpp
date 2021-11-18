@@ -2530,7 +2530,6 @@ void HotcueControl::slotHotcueCueLoop(double v) {
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
-    qCDebug(QLoggingCategory("macros")) << "hotcue" << m_hotcueIndex + 1 << "activated:" << v;
     emit hotcueActivate(this, v, HotcueSetMode::Auto);
 }
 

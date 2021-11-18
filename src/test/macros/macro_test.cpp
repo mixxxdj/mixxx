@@ -23,9 +23,10 @@ TEST(MacroTest, CreateMacroAndChangeLabel) {
     EXPECT_FALSE(macro.isDirty());
     EXPECT_TRUE(macro.isEmpty());
     macro.clear();
-    EXPECT_EQ(macro, Macro());
+    const Macro macro2;
+    EXPECT_EQ(macro, macro2);
 
     macro.setLabel("hello");
     EXPECT_TRUE(macro.isDirty());
-    EXPECT_NE(macro, Macro());
+    EXPECT_NE(macro, macro2);
 }

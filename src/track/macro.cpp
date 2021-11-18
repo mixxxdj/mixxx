@@ -4,15 +4,20 @@
 
 #include "util/assert.h"
 
+const QLoggingCategory kMacroLoggingCategory("macros");
+
 // static
 QList<MacroAction> Macro::deserialize(const QByteArray& serialized) {
     proto::Macro macroProto = proto::Macro();
-    macroProto.ParseFromArray(serialized.data(), serialized.length());
     QList<MacroAction> result;
+    VERIFY_OR_DEBUG_ASSERT(macroProto.ParseFromArray(serialized.data(), serialized.length())) {
+        qCDebug(kMacroLoggingCategory) << "Failed parsing Macro from " << serialized;
+        return result;
+    }
     result.reserve(macroProto.actions_size());
     for (const proto::Macro_Action& action : macroProto.actions()) {
-        result.append(MacroAction(mixxx::audio::FramePos(action.sourceframe()),
-                mixxx::audio::FramePos(action.targetframe())));
+        result.append(MacroAction(mixxx::audio::FramePos(action.source_frame()),
+                mixxx::audio::FramePos(action.target_frame())));
     }
     return result;
 }
@@ -20,18 +25,21 @@ QList<MacroAction> Macro::deserialize(const QByteArray& serialized) {
 // static
 QByteArray Macro::serialize(const QList<MacroAction>& actions) {
     proto::Macro macroProto;
-    auto actionsProto = macroProto.mutable_actions();
+    auto* actionsProto = macroProto.mutable_actions();
     for (const MacroAction& action : actions) {
-        actionsProto->AddAllocated(action.serialize());
+        actionsProto->Add(action.serialize());
     }
-    auto string = macroProto.SerializeAsString();
-    return QByteArray(string.data(), string.length());
+    return QByteArray::fromStdString(macroProto.SerializeAsString());
 }
 
-Macro::Macro(const QList<MacroAction>& actions, const QString& label, State state, int dbId)
-        : m_bDirty(false),
-          m_iId(dbId),
-          m_actions(actions),
+Macro::Macro()
+        : m_actions({}),
+          m_label(QString("")),
+          m_state(StateFlag::Enabled) {
+}
+
+Macro::Macro(const QList<MacroAction>& actions, const QString& label, State state)
+        : m_actions(actions),
           m_label(label),
           m_state(state) {
 }
@@ -40,7 +48,7 @@ bool Macro::isDirty() const {
     return m_bDirty;
 }
 
-int Macro::getId() const {
+DbId Macro::getId() const {
     return m_iId;
 }
 
@@ -114,7 +122,7 @@ void Macro::setDirty(bool dirty) {
     m_bDirty = dirty;
 }
 
-void Macro::setId(int id) {
+void Macro::setId(DbId id) {
     m_iId = id;
 }
 

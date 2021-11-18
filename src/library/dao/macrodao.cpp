@@ -8,7 +8,7 @@
 bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
     QSqlQuery query(m_database);
     DEBUG_ASSERT(slot > 0);
-    if (macro->getId() == DbId::s_invalidValue) {
+    if (!macro->getId().isValid()) {
         query.prepare(QStringLiteral(
                 "INSERT INTO macros "
                 "(track_id, slot, label, state, content) "
@@ -23,7 +23,7 @@ bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
                 "state=:state,"
                 "content=:content"
                 " WHERE id=:id"));
-        query.bindValue(":id", macro->getId());
+        query.bindValue(":id", macro->getId().value());
     }
     query.bindValue(":track_id", trackId.toVariant());
     query.bindValue(":slot", slot);
@@ -32,8 +32,10 @@ bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
     query.bindValue(":content", Macro::serialize(macro->getActions()));
 
     if (query.exec()) {
-        if (macro->getId() == DbId::s_invalidValue) {
-            macro->setId(query.lastInsertId().toInt());
+        if (!macro->getId().isValid()) {
+            macro->setId(DbId(query.lastInsertId()));
+        } else {
+            DEBUG_ASSERT(query.lastInsertId() == macro->getId().value())
         }
         macro->setDirty(false);
         return true;
@@ -51,12 +53,12 @@ void MacroDAO::saveMacros(TrackId trackId, const QMap<int, MacroPointer>& macros
             return;
         }
         // Newly recorded macros must be dirty
-        DEBUG_ASSERT(pMacro->getId() >= 0 || pMacro->isDirty());
+        DEBUG_ASSERT(pMacro->getId().isValid() || pMacro->isDirty());
         if (pMacro->isDirty()) {
             saveMacro(trackId, pMacro.get(), it.key());
         }
         // After saving each macro must have a valid id and not be dirty
-        DEBUG_ASSERT(pMacro->getId() >= 0 && !pMacro->isDirty());
+        DEBUG_ASSERT(pMacro->getId().isValid() && !pMacro->isDirty());
     }
 }
 
@@ -82,13 +84,12 @@ QMap<int, MacroPointer> MacroDAO::loadMacros(TrackId trackId) const {
     int labelColumn = record.indexOf("label");
     int contentColumn = record.indexOf("content");
     while (query.next()) {
-        result.insert(
-                query.value(slotColumn).toInt(),
-                std::make_shared<Macro>(
-                        Macro::deserialize(query.value(contentColumn).toByteArray()),
-                        query.value(labelColumn).toString(),
-                        Macro::State(query.value(stateColumn).toInt()),
-                        query.value(idColumn).toInt()));
+        auto macro = std::make_shared<Macro>(
+                Macro::deserialize(query.value(contentColumn).toByteArray()),
+                query.value(labelColumn).toString(),
+                Macro::State(query.value(stateColumn).toInt()));
+        macro->setId(DbId(query.value(idColumn)));
+        result.insert(query.value(slotColumn).toInt(), macro);
     }
     return result;
 }
