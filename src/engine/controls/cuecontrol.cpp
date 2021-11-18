@@ -1,5 +1,7 @@
 #include "engine/controls/cuecontrol.h"
 
+#include <QDebug>
+
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -2528,6 +2530,7 @@ void HotcueControl::slotHotcueCueLoop(double v) {
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
+    qCDebug(QLoggingCategory("macros")) << "hotcue" << m_hotcueIndex + 1 << "activated:" << v;
     emit hotcueActivate(this, v, HotcueSetMode::Auto);
 }
 
