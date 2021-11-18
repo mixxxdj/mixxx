@@ -314,8 +314,6 @@ QByteArray HidController::getFeatureReport(
     // For compatibility with input array HidController::sendFeatureReport, a reportID prefix is not added here
     QByteArray byteArray;
     byteArray.reserve(bytesRead - kReportIdSize);
-    for (int i = kReportIdSize; i < bytesRead; i++) {
-        byteArray[i - 1] = dataRead[i];
-    }
-    return byteArray;
+    auto featureReportStart = reinterpret_cast<const char*>(dataRead + kReportIdSize);
+    return QByteArray(featureReportStart, bytesRead);
 }
