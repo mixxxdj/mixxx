@@ -23,8 +23,10 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
     m_pDuckStrength->set(
             m_pConfig->getValue<double>(ConfigKey(m_group, "duckStrength"), 90) / 100);
-    connect(m_pDuckStrength, &ControlObject::valueChanged,
-            this, &EngineTalkoverDucking::slotDuckStrengthChanged,
+    connect(m_pDuckStrength,
+            &ControlObject::valueChanged,
+            this,
+            &EngineTalkoverDucking::slotDuckStrengthChanged,
             Qt::DirectConnection);
 
     // We only allow the strength to be configurable for now.  The next most likely
@@ -41,8 +43,10 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     m_pTalkoverDucking->set(
             m_pConfig->getValue<double>(
                 ConfigKey(m_group, "duckMode"), AUTO));
-    connect(m_pTalkoverDucking, &ControlObject::valueChanged,
-            this, &EngineTalkoverDucking::slotDuckModeChanged,
+    connect(m_pTalkoverDucking,
+            &ControlObject::valueChanged,
+            this,
+            &EngineTalkoverDucking::slotDuckModeChanged,
             Qt::DirectConnection);
 }
 
@@ -63,10 +67,7 @@ void EngineTalkoverDucking::slotSampleRateChanged(double samplerate) {
 }
 
 void EngineTalkoverDucking::slotDuckStrengthChanged(double strength) {
-    setParameters(kDuckThreshold,
-            static_cast<CSAMPLE>(strength),
-            static_cast<unsigned int>(m_pSampleRate->get() / 2 * .1),
-            static_cast<unsigned int>(m_pSampleRate->get() / 2));
+    setStrength(static_cast<CSAMPLE>(strength));
     m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(strength * 100));
 }
 
