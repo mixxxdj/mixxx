@@ -1,4 +1,4 @@
-const g4v = {};
+var g4v = {};
 
 g4v.init = function() {
     // Controls not linked to any mixer or deck
@@ -455,7 +455,7 @@ g4v.OtherControls = function() {
         group: "[Library]",
         shift: function() { this.inKey = "MoveHorizontal"; },
         unshift: function() { this.inKey = "MoveVertical"; },
-        inValueScale: function(value) { return value === 0x41 ? -1 : 1; },
+        inValueScale: function(value) { return value === 0x41 ? 1 : -1; },
         input: function(_channel, _control, value, _status, _group) {
             if (engine.getValue("[PreviewDeck1]", "play")) {
                 engine.setValue("[PreviewDeck1]", (value === 0x41 ? "beatjump_4_forward" : "beatjump_4_backward"), 1);
@@ -485,8 +485,16 @@ g4v.OtherControls = function() {
     });
     this.libraryBackBtn = new components.Button({
         midi: [0x93, 0x12],
-        group: "[Library]",
-        inKey: "MoveFocusForward",
+        shift: function() {
+            this.group = "[Master]";
+            this.inKey = "maximize_library";
+            this.type = components.Button.prototype.types.toggle;
+        },
+        unshift: function() {
+            this.group = "[Library]";
+            this.inKey = "MoveFocusForward";
+            this.type = components.Button.prototype.types.push;
+        },
     });
     this.masterVolumePot = new components.Pot({
         midi: [0xB3, 0x1B],
