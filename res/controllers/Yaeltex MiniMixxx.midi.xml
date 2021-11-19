@@ -9,7 +9,7 @@
   </info>
   <controller id="MiniMixxx">
     <scriptfiles>
-      <file filename="MiniMixxx-scripts.js" functionprefix="MiniMixxx" />
+      <file filename="Yaeltex-MiniMixxx-scripts.js" functionprefix="MiniMixxx" />
     </scriptfiles>
     <controls>
       <control>
