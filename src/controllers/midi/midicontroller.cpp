@@ -1,7 +1,6 @@
 #include "controllers/midi/midicontroller.h"
 
 #include "control/controlobject.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/midiutils.h"
 #include "defs_urls.h"
@@ -11,8 +10,8 @@
 #include "util/math.h"
 #include "util/screensaver.h"
 
-MidiController::MidiController()
-        : Controller() {
+MidiController::MidiController(const QString& deviceName)
+        : Controller(deviceName) {
     setDeviceCategory(tr("MIDI Controller"));
 }
 
@@ -88,16 +87,25 @@ void MidiController::createOutputHandlers() {
         double min = mapping.output.min;
         double max = mapping.output.max;
 
-        controllerDebug(QString(
-                "Creating output handler for %1,%2 between %3 and %4 to MIDI out: 0x%5 0x%6, on: 0x%7 off: 0x%8")
-                        .arg(group, key,
-                                QString::number(min), QString::number(max),
-                                QString::number(status, 16).toUpper(),
-                                QString::number(control, 16).toUpper().rightJustified(2,'0'),
-                                QString::number(on, 16).toUpper().rightJustified(2,'0'),
-                                QString::number(off, 16).toUpper().rightJustified(2,'0')));
+        qCDebug(m_logBase)
+                << QString("Creating output handler for %1,%2 between %3 and "
+                           "%4 to MIDI out: 0x%5 0x%6, on: 0x%7 off: 0x%8")
+                           .arg(group,
+                                   key,
+                                   QString::number(min),
+                                   QString::number(max),
+                                   QString::number(status, 16).toUpper(),
+                                   QString::number(control, 16)
+                                           .toUpper()
+                                           .rightJustified(2, '0'),
+                                   QString::number(on, 16)
+                                           .toUpper()
+                                           .rightJustified(2, '0'),
+                                   QString::number(off, 16)
+                                           .toUpper()
+                                           .rightJustified(2, '0'));
 
-        MidiOutputHandler* moh = new MidiOutputHandler(this, mapping);
+        MidiOutputHandler* moh = new MidiOutputHandler(this, mapping, m_logOutput);
         if (!moh->validate()) {
             QString errorLog =
                     QString("MIDI output message 0x%1 0x%2 has invalid MixxxControl %3, %4")
@@ -106,10 +114,10 @@ void MidiController::createOutputHandlers() {
                                     group,
                                     key)
                             .toUtf8();
-            qWarning() << errorLog;
+            qCWarning(m_logBase) << errorLog;
 
             int deckNum = 0;
-            if (ControllerDebug::isEnabled()) {
+            if (m_logBase().isDebugEnabled()) {
                 failures.append(errorLog);
             } else if (PlayerManager::isDeckGroup(group, &deckNum)) {
                 int numDecks = PlayerManager::numDecks();
@@ -219,8 +227,8 @@ void MidiController::receivedShortMessage(unsigned char status,
         return;
     }
 
-    controllerDebug(MidiUtils::formatMidiOpCode(
-            getName(), status, control, value, channel, opCode, timestamp));
+    qCDebug(m_logInput) << MidiUtils::formatMidiOpCode(
+            getName(), status, control, value, channel, opCode, timestamp);
     MidiKey mappingKey(status, control);
 
     triggerActivity();
@@ -265,8 +273,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         args << QJSValue(status);
         args << QJSValue(mapping.control.group);
         if (!pEngine->executeFunction(function, args)) {
-            qDebug() << "MidiController: Invalid script function"
-                     << mapping.control.item;
+            qCWarning(m_logBase) << "MidiController: Invalid script function"
+                                 << mapping.control.item;
         }
         return;
     }
@@ -282,9 +290,9 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     const bool mapping_is_14bit = mapping.options &
             (MidiOption::FourteenBitMSB | MidiOption::FourteenBitLSB);
     if (!mapping_is_14bit && !m_fourteen_bit_queued_mappings.isEmpty()) {
-        qWarning() << "MidiController was waiting for the MSB/LSB of a 14-bit"
-                   << "message but the next message received was not mapped as 14-bit."
-                   << "Ignoring the original message.";
+        qCWarning(m_logBase) << "MidiController was waiting for the MSB/LSB of a 14-bit"
+                             << "message but the next message received was not mapped as 14-bit."
+                             << "Ignoring the original message.";
         m_fourteen_bit_queued_mappings.clear();
     }
 
@@ -297,8 +305,10 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
             if (it->first.control == mapping.control) {
                 if ((it->first.options & mapping.options) &
                         (MidiOption::FourteenBitLSB | MidiOption::FourteenBitMSB)) {
-                    qWarning() << "MidiController: 14-bit MIDI mapping has mis-matched LSB/MSB options."
-                               << "Ignoring both messages.";
+                    qCWarning(m_logBase)
+                            << "MidiController: 14-bit MIDI mapping has "
+                               "mis-matched LSB/MSB options."
+                            << "Ignoring both messages.";
                     m_fourteen_bit_queued_mappings.erase(it);
                     return;
                 }
@@ -475,7 +485,7 @@ double MidiController::computeValue(
 }
 
 void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) {
-    controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
+    qCDebug(m_logInput) << MidiUtils::formatSysexMessage(getName(), data, timestamp);
 
     MidiKey mappingKey(data.at(0), 0xFF);
 
@@ -513,6 +523,6 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         pEngine->handleIncomingData(data);
         return;
     }
-    qWarning() << "MidiController: No script function specified for"
-               << MidiUtils::formatSysexMessage(getName(), data, timestamp);
+    qCWarning(m_logBase) << "MidiController: No script function specified for"
+                         << MidiUtils::formatSysexMessage(getName(), data, timestamp);
 }

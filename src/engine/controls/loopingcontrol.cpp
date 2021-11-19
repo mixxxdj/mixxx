@@ -1401,7 +1401,13 @@ void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
 
 void LoopingControl::slotBeatLoopToggle(double pressed) {
     if (pressed > 0) {
-        slotBeatLoop(m_pCOBeatLoopSize->get());
+        if (m_bLoopingEnabled) {
+            // Deactivate the loop if we're already looping
+            setLoopingEnabled(false);
+        } else {
+            // Create a loop at current position
+            slotBeatLoop(m_pCOBeatLoopSize->get());
+        }
     }
 }
 

@@ -70,6 +70,12 @@ class KnobEventHandler {
         }
     }
 
+    void mouseDoubleClickEvent(T* pWidget, QMouseEvent* e) {
+        if (e->button() == Qt::LeftButton) {
+            pWidget->resetControlParameter();
+        }
+    }
+
     void mouseReleaseEvent(T* pWidget, QMouseEvent* e) {
         double value = 0.0;
         switch (e->button()) {

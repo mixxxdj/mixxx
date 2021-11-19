@@ -706,6 +706,17 @@
    #4357
   </li>
  </ul>
+ <p>
+  Packaging
+ </p>
+ <ul>
+  <li>
+   Downloads of external dependencies are placed in build/downloads
+  </li>
+  <li>
+   The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
+  </li>
+ </ul>
 </description>
     </release>
     <release version="2.3.1" type="stable" date="2021-09-29" timestamp="1632873600">

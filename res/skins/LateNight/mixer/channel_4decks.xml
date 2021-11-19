@@ -60,6 +60,24 @@
       <Template src="skin:/mixer/quick_effect_knob_4decks.xml"/>
 
       <WidgetGroup>
+        <SizePolicy>i,f</SizePolicy>
+        <MinimumSize>,18</MinimumSize>
+        <MaximumSize>,18</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <EffectChainPresetSelector>
+            <ObjectName>QuickEffectSelectorLeft</ObjectName>
+            <Size>40min,18f</Size>
+            <EffectUnitGroup>[QuickEffectRack1_<Variable name="Group"/>]</EffectUnitGroup>
+          </EffectChainPresetSelector>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
         <ObjectName>PflBox_4Decks</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>

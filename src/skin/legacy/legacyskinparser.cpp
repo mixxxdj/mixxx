@@ -111,9 +111,8 @@ ControlObject* LegacySkinParser::controlFromConfigKey(
 
     // TODO(rryan): Make this configurable by the skin.
     if (CmdlineArgs::Instance().getDeveloper()) {
-        qWarning() << "Requested control does not exist:"
-                   << QString("%1,%2").arg(key.group, key.item)
-                   << "Creating it.";
+        qInfo() << "Creating skin control object:"
+                << QString("%1,%2").arg(key.group, key.item);
     }
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.

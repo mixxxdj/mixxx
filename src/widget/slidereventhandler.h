@@ -90,6 +90,12 @@ class SliderEventHandler {
         }
     }
 
+    void mouseDoubleClickEvent(T* pWidget, QMouseEvent* e) {
+        if (e->button() == Qt::LeftButton) {
+            pWidget->resetControlParameter();
+        }
+    }
+
     void mouseReleaseEvent(T* pWidget, QMouseEvent* e) {
         if (!m_bEventWhileDrag) {
             pWidget->mouseMoveEvent(e);

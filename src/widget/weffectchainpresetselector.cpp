@@ -1,5 +1,10 @@
 #include "widget/weffectchainpresetselector.h"
 
+#include <QAbstractItemView>
+#include <QApplication>
+#include <QPaintEvent>
+#include <QStyleOption>
+#include <QStylePainter>
 #include <QtDebug>
 
 #include "effects/chains/quickeffectchain.h"
@@ -13,9 +18,11 @@ WEffectChainPresetSelector::WEffectChainPresetSelector(
           m_bQuickEffectChain(false),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pEffectsManager(pEffectsManager) {
-    // Prevent this widget from getting focused to avoid
-    // interfering with using the library via keyboard.
-    setFocusPolicy(Qt::NoFocus);
+    // Prevent this widget from getting focused by Tab/Shift+Tab
+    // to avoid interfering with using the library via keyboard.
+    // Allow click focus though so the list can always be opened by mouse,
+    // see https://bugs.launchpad.net/mixxx/+bug/1902125
+    setFocusPolicy(Qt::ClickFocus);
 }
 
 void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& context) {
@@ -67,7 +74,7 @@ void WEffectChainPresetSelector::populate() {
         auto pChainPreset = presetList.at(i);
         QString elidedDisplayName = metrics.elidedText(pChainPreset->name(),
                 Qt::ElideMiddle,
-                width() - 2);
+                view()->width() - 2);
         addItem(elidedDisplayName, QVariant(pChainPreset->name()));
         setItemData(i, pChainPreset->name(), Qt::ToolTipRole);
     }
@@ -81,6 +88,12 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
     setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
+    // After selecting an effect send Shift+Tab to move focus to the next
+    // keyboard-focusable widget (tracks table in official skins) in order
+    // to immediately allow keyboard shortcuts again.
+    QKeyEvent backwardFocusKeyEvent =
+            QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
+    QApplication::sendEvent(this, &backwardFocusKeyEvent);
 }
 
 void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {
@@ -97,4 +110,33 @@ bool WEffectChainPresetSelector::event(QEvent* pEvent) {
     }
 
     return QComboBox::event(pEvent);
+}
+
+void WEffectChainPresetSelector::paintEvent(QPaintEvent* e) {
+    Q_UNUSED(e);
+    // The default paint implementation aligns the text based on the layout direction.
+    // Override to allow qss to align the text of the closed combobox with the
+    // Quick effect controls in the mixer.
+    QStylePainter painter(this);
+    QStyleOptionComboBox comboStyle;
+    // Inititialize the style and draw the frame, down-arrow etc.
+    // Note: using 'comboStyle.initFrom(this)' and 'painter.drawComplexControl(...)
+    // here would not paint the hover style of the down arrow.
+    initStyleOption(&comboStyle);
+    style()->drawComplexControl(QStyle::CC_ComboBox, &comboStyle, &painter, this);
+
+    QStyleOptionButton buttonStyle;
+    buttonStyle.initFrom(this);
+    QRect buttonRect = style()->subControlRect(
+            QStyle::CC_ComboBox, &comboStyle, QStyle::SC_ComboBoxEditField, this);
+    buttonStyle.rect = buttonRect;
+    QFontMetrics metrics(font());
+    // Since the chain selector and the popup can differ in width,
+    // elide the button text independently from the popup display name.
+    buttonStyle.text = metrics.elidedText(
+            currentData().toString(),
+            Qt::ElideRight,
+            buttonRect.width() - 2);
+    // Draw the text for the selector button. Alternative: painter.drawControl(...)
+    style()->drawControl(QStyle::CE_PushButtonLabel, &buttonStyle, &painter, this);
 }
