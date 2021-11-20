@@ -42,8 +42,6 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
-    void saveCurrentVScrollBarPos();
-    void restoreCurrentVScrollBarPos();
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
@@ -58,7 +56,7 @@ class WTrackTableView : public WLibraryTableView {
     void trackTableFocusChange(FocusWidget newFocusWidget);
 
   public slots:
-    void loadTrackModel(QAbstractItemModel* model);
+    void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
@@ -66,6 +64,12 @@ class WTrackTableView : public WLibraryTableView {
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;
+    void slotSaveCurrentViewState() {
+        saveCurrentViewState();
+    };
+    void slotRestoreCurrentViewState() {
+        restoreCurrentViewState();
+    };
 
   protected:
     void focusInEvent(QFocusEvent* event) override;
@@ -82,6 +86,9 @@ class WTrackTableView : public WLibraryTableView {
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
     void keyNotationChanged();
+
+  protected:
+    QString getModelStateKey() const override;
 
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);

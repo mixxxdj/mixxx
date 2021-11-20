@@ -124,6 +124,14 @@ bool DlgHidden::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
 
+void DlgHidden::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+}
+
+void DlgHidden::restoreCurrentViewState() {
+    m_pTrackTableView->restoreCurrentViewState();
+}
+
 void DlgHidden::setFocus() {
     m_pTrackTableView->setFocus();
 }

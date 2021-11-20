@@ -93,6 +93,13 @@ bool DlgMissing::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
 
+void DlgMissing::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+};
+void DlgMissing::restoreCurrentViewState() {
+    m_pTrackTableView->restoreCurrentViewState();
+};
+
 void DlgMissing::setFocus() {
     m_pTrackTableView->setFocus();
 }

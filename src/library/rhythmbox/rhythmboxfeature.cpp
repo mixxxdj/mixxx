@@ -123,7 +123,7 @@ void RhythmboxFeature::activate() {
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
         emit featureIsLoading(this, true);
     }
-
+    emit saveModelState();
     emit showTrackModel(m_pRhythmboxTrackModel);
     emit enableCoverArtDisplay(false);
 }
@@ -132,6 +132,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "RhythmboxFeature::activateChild()" << index;
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
+    emit saveModelState();
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
     emit showTrackModel(m_pRhythmboxPlaylistModel);
     emit enableCoverArtDisplay(false);

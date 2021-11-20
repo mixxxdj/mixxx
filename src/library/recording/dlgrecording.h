@@ -34,6 +34,8 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
+    void saveCurrentViewState() override;
+    void restoreCurrentViewState() override;
 
   public slots:
     void slotRecordingStateChanged(bool);
@@ -46,6 +48,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, const QString& group, bool play);
     void restoreSearch(const QString& search);
+    void restoreModelState();
 
   private:
     UserSettingsPointer m_pConfig;

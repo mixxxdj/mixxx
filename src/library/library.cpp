@@ -393,7 +393,14 @@ void Library::bindLibraryWidget(
             &Library::switchToView,
             pLibraryWidget,
             &WLibrary::switchToView);
-
+    connect(this,
+            &Library::saveModelState,
+            pTrackTableView,
+            &WTrackTableView::slotSaveCurrentViewState);
+    connect(this,
+            &Library::restoreModelState,
+            pTrackTableView,
+            &WTrackTableView::slotRestoreCurrentViewState);
     connect(pTrackTableView,
             &WTrackTableView::trackSelected,
             this,
@@ -474,6 +481,14 @@ void Library::addFeature(LibraryFeature* feature) {
             &LibraryFeature::trackSelected,
             this,
             &Library::trackSelected);
+    connect(feature,
+            &LibraryFeature::saveModelState,
+            this,
+            &Library::saveModelState);
+    connect(feature,
+            &LibraryFeature::restoreModelState,
+            this,
+            &Library::restoreModelState);
 }
 
 void Library::onPlayerManagerTrackAnalyzerProgress(

@@ -8,6 +8,12 @@
 #include "moc_baseexternalplaylistmodel.cpp"
 #include "track/track.h"
 
+namespace {
+
+const QString kModelName = "external:";
+
+} // anonymous namespace
+
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace,
@@ -17,7 +23,8 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
-          m_trackSource(trackSource) {
+          m_trackSource(trackSource),
+          m_currentPlaylistId(-1) {
 }
 
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
@@ -134,6 +141,7 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
         return;
     }
 
+    m_currentPlaylistId = playlistId;
     playlistViewColumns.last() = LIBRARYTABLE_PREVIEW;
     setTable(playlistViewTable, playlistViewColumns.first(), playlistViewColumns, m_trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
@@ -162,4 +170,15 @@ TrackModel::Capabilities BaseExternalPlaylistModel::getCapabilities() const {
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
             Capability::LoadToSampler;
+}
+
+QString BaseExternalPlaylistModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName +
+                QString::number(m_currentPlaylistId);
+    }
+    return kModelName +
+            QString::number(m_currentPlaylistId) +
+            QStringLiteral("#") +
+            currentSearch();
 }
