@@ -1299,6 +1299,8 @@ bool Track::isDirty() {
     if (m_bDirty) {
         return true;
     }
+    // FIXME(xeruf) this should be incorporated in the dirty state of the track itself
+    // but that is non-trivial, since, unlike other track properties, Macros are mutable
     for (const MacroPointer& pMacro : qAsConst(m_macros)) {
         if (pMacro->isDirty()) {
             return true;

@@ -76,6 +76,8 @@ MacroControl::MacroControl(const QString& group, UserSettingsPointer pConfig, in
             &MacroControl::slotClear);
 }
 
+// FIXME(xeruf) Jumps while paused (e.g. via GotoAndStop) are not properly recorded
+// since this function is not called
 void MacroControl::process(const double dRate,
         mixxx::audio::FramePos currentPosition,
         const int iBufferSize) {
@@ -109,6 +111,8 @@ void MacroControl::process(const double dRate,
     }
 }
 
+// TODO(xeruf) Verify that all active Macros are fully unloaded and inactive
+// before a new track is loading - https://github.com/mixxxdj/mixxx/pull/2989#issuecomment-753465755
 void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     if (isRecording()) {
         if (stopRecording()) {
@@ -160,6 +164,7 @@ MacroControl::Status MacroControl::getStatus() const {
     return Status(m_COStatus.get());
 }
 
+// TODO(xeruf) Waveform dimming when running
 void MacroControl::setStatus(Status status) {
     m_COStatus.forceSet(static_cast<int>(status));
     m_COPlay.set(status == Status::Playing ? 1 : 0);
