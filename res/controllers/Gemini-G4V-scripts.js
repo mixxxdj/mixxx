@@ -467,21 +467,26 @@ g4v.OtherControls = function() {
     });
     this.libraryBtn = new components.Component({
         group: "[Library]",
-        input: function(_channel, _control, value, _status, _group) {
-            if (value === 0x00) { return; }
-            if (engine.getValue("[PreviewDeck1]", "play", 1)) {
-                engine.setValue("[PreviewDeck1]", "play", 0);
-                engine.beginTimer(
-                    100, function() {
-                        engine.setValue("[PreviewDeck1]", "eject", 1);
-                        engine.setValue("[PreviewDeck1]", "eject", 0);
-                    },
-                    true);
-            } else {
-                engine.setValue("[PreviewDeck1]", "LoadSelectedTrack", 1);
-                engine.setValue("[PreviewDeck1]", "play", 1);
-                engine.beginTimer(100, function() { engine.setValue("[PreviewDeck1]", "play", 1); }, true);
-            }
+        shift: function() {
+            this.input = function(_channel, _control, value, _status, _group) {
+                if (value === 0x00) { return; }
+                if (engine.getValue("[PreviewDeck1]", "play", 1)) {
+                    engine.setValue("[PreviewDeck1]", "play", 0);
+                    engine.beginTimer(
+                        100, function() {
+                            engine.setValue("[PreviewDeck1]", "eject", 1);
+                            engine.setValue("[PreviewDeck1]", "eject", 0);
+                        },
+                        true);
+                } else {
+                    engine.setValue("[PreviewDeck1]", "LoadSelectedTrack", 1);
+                    engine.setValue("[PreviewDeck1]", "play", 1);
+                    engine.beginTimer(100, function() { engine.setValue("[PreviewDeck1]", "play", 1); }, true);
+                }
+            };
+        },
+        unshift: function() {
+            this.input = components.Component.input;
         },
     });
     this.libraryBackBtn = new components.Button({
