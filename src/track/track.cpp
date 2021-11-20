@@ -1311,11 +1311,10 @@ void Track::setDirtyAndUnlock(QT_RECURSIVE_MUTEX_LOCKER* pLock, bool bDirty) {
     }
 }
 
-bool Track::isDirty() {
+bool Track::isDirty() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_bDirty;
 }
-
 
 void Track::markForMetadataExport() {
     const auto locked = lockMutex(&m_qMutex);

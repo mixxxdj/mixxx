@@ -345,7 +345,7 @@ class Track : public QObject {
             mixxx::CueInfoImporterPointer pCueInfoImporter);
     ImportStatus getCueImportStatus() const;
 
-    bool isDirty();
+    bool isDirty() const;
 
     // Get the track's Beats list
     mixxx::BeatsPointer getBeats() const;
