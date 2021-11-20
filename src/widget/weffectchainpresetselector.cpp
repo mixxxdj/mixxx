@@ -136,7 +136,7 @@ void WEffectChainPresetSelector::paintEvent(QPaintEvent* e) {
     buttonStyle.text = metrics.elidedText(
             currentData().toString(),
             Qt::ElideRight,
-            buttonRect.width() - 2);
+            buttonRect.width());
     // Draw the text for the selector button. Alternative: painter.drawControl(...)
     style()->drawControl(QStyle::CE_PushButtonLabel, &buttonStyle, &painter, this);
 }
