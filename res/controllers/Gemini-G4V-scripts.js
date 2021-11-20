@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-var
 var g4v = {};
 
 g4v.init = function() {
