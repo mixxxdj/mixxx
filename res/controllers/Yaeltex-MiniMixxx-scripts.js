@@ -42,36 +42,51 @@ MiniMixxx.Encoder = class {
 
         for (const layerName in layerConfig) {
             const mode = layerConfig[layerName];
-            if (mode === "JOG") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeJog(this, channel, idx);
-            } else if (mode === "GAIN") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeGain(this, channel, idx);
-            } else if (mode === "LOOP") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeLoop(this, channel, idx);
-            } else if (mode === "BEATJUMP") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeBeatJump(this, channel, idx);
-            } else if (mode === "LIBRARY") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeLibrary(this, channel, idx);
-            } else if (mode === "LIBRARYFOCUS") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeLibraryFocus(this, channel, idx);
-            } else if (mode === "LIBRARYHORIZ") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeLibraryHorizontal(this, channel, idx);
-            } else if (mode.startsWith("EFFECT-")) {
+            if (mode.startsWith("EFFECT-")) {
                 const tokens = mode.split("-");
                 const effectNum = tokens[1];
                 this.encoders[mode] = new MiniMixxx.EncoderModeFX(this, channel, idx, effectNum);
-            } else if (mode === "MAINGAIN") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeMainGain(this, "[Master]", idx);
-            } else if (mode === "BALANCE") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeBalance(this, "[Master]", idx);
-            } else if (mode === "HEADGAIN") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeHeadGain(this, "[Master]", idx);
-            } else if (mode === "HEADMIX") {
-                this.encoders[mode] = new MiniMixxx.EncoderModeHeadMix(this, "[Master]", idx);
             } else {
-                console.log("Ignoring unknown encoder mode: " + mode);
-                continue;
+                switch (mode) {
+                case "JOG":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeJog(this, channel, idx);
+                    break;
+                case "GAIN":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeGain(this, channel, idx);
+                    break;
+                case "LOOP":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeLoop(this, channel, idx);
+                    break;
+                case "BEATJUMP":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeBeatJump(this, channel, idx);
+                    break;
+                case "LIBRARY":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeLibrary(this, channel, idx);
+                    break;
+                case "LIBRARYFOCUS":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeLibraryFocus(this, channel, idx);
+                    break;
+                case "LIBRARYHORIZ":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeLibraryHorizontal(this, channel, idx);
+                    break;
+                case "MAINGAIN":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeMainGain(this, "[Master]", idx);
+                    break;
+                case "BALANCE":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeBalance(this, "[Master]", idx);
+                    break;
+                case "HEADGAIN":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeHeadGain(this, "[Master]", idx);
+                    break;
+                case "HEADMIX":
+                    this.encoders[mode] = new MiniMixxx.EncoderModeHeadMix(this, "[Master]", idx);
+                    break;
+                default:
+                    console.log("Ignoring unknown encoder mode: " + mode);
+                    continue;
+                }
             }
+
             this.layers[layerName] = this.encoders[mode];
         }
         this.activateLayer("NONE", "");
@@ -762,15 +777,8 @@ MiniMixxx.Button = class {
 
         for (const layerName in layerConfig) {
             const mode = layerConfig[layerName];
-            if (mode === "EMPTY") {
-                this.buttons[mode] = new MiniMixxx.ButtonModeEmpty(this, channel, idx);
-            } else if (mode === "SYNC") {
-                this.buttons[mode] = new MiniMixxx.ButtonModeSync(this, channel, idx);
-            } else if (mode === "KEYLOCK") {
-                this.buttons[mode] = new MiniMixxx.ButtonModeKeylock(this, channel, idx);
-            } else if (mode === "SHIFT") {
-                this.buttons[mode] = new MiniMixxx.ButtonModeShift(this, "", idx);
-            } else if (mode.startsWith("SAMPLER-")) {
+
+            if (mode.startsWith("SAMPLER-")) {
                 const tokens = mode.split("-");
                 const samplerNum = tokens[1];
                 this.buttons[mode] = new MiniMixxx.ButtonModeSampler(this, "", idx, samplerNum);
@@ -781,26 +789,46 @@ MiniMixxx.Button = class {
             } else if (mode.startsWith("FX-")) {
                 // We only use FX 1 for now.
                 this.buttons[mode] = new MiniMixxx.ButtonModeFX(this, channel, idx);
-            } else if (mode === "LOOPLAYER") {
-                this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0, MiniMixxx.LoopColor]);
-            } else if (mode === "SAMPLERLAYER-HOTCUE2LAYER") {
-                this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
-                this.buttons[mode].addShiftedButton(this, "SAMPLERLAYER", "", idx, [0, MiniMixxx.SamplerColor]);
-                const shiftedButton = this.buttons[mode].shiftedButton;
-                this.layers[shiftedButton.layerName] = shiftedButton;
-            } else if (mode === "LIBRARYLAYER-MAINGAINLAYER") {
-                this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0, MiniMixxx.LibraryColor]);
-                this.buttons[mode].addShiftedButton(this, "MAINGAINLAYER", "", idx, [0, MiniMixxx.MainOutColor]);
-                const shiftedButton = this.buttons[mode].shiftedButton;
-                this.layers[shiftedButton.layerName] = shiftedButton;
-            } else if (mode === "FXLAYER-HOTCUE1LAYER") {
-                this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
-                this.buttons[mode].addShiftedButton(this, "FXLAYER", "", idx, [0, MiniMixxx.FXColor]);
-                const shiftedButton = this.buttons[mode].shiftedButton;
-                this.layers[shiftedButton.layerName] = shiftedButton;
             } else {
-                console.log("Ignoring unknown button mode: " + mode);
-                continue;
+                let shiftedButton = {};
+                switch (mode) {
+                case "EMPTY":
+                    this.buttons[mode] = new MiniMixxx.ButtonModeEmpty(this, channel, idx);
+                    break;
+                case "SYNC":
+                    this.buttons[mode] = new MiniMixxx.ButtonModeSync(this, channel, idx);
+                    break;
+                case "KEYLOCK":
+                    this.buttons[mode] = new MiniMixxx.ButtonModeKeylock(this, channel, idx);
+                    break;
+                case "SHIFT":
+                    this.buttons[mode] = new MiniMixxx.ButtonModeShift(this, "", idx);
+                    break;
+                case "LOOPLAYER":
+                    this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LOOPLAYER", channel, idx, [0, MiniMixxx.LoopColor]);
+                    break;
+                case "SAMPLERLAYER-HOTCUE2LAYER":
+                    this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
+                    this.buttons[mode].addShiftedButton(this, "SAMPLERLAYER", "", idx, [0, MiniMixxx.SamplerColor]);
+                    shiftedButton = this.buttons[mode].shiftedButton;
+                    this.layers[shiftedButton.layerName] = shiftedButton;
+                    break;
+                case "LIBRARYLAYER-MAINGAINLAYER":
+                    this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "LIBRARYLAYER", "", idx, [0, MiniMixxx.LibraryColor]);
+                    this.buttons[mode].addShiftedButton(this, "MAINGAINLAYER", "", idx, [0, MiniMixxx.MainOutColor]);
+                    shiftedButton = this.buttons[mode].shiftedButton;
+                    this.layers[shiftedButton.layerName] = shiftedButton;
+                    break;
+                case "FXLAYER-HOTCUE1LAYER":
+                    this.buttons[mode] = new MiniMixxx.ButtonModeLayer(this, "HOTCUELAYER", channel, idx, [0, MiniMixxx.HotcueColor]);
+                    this.buttons[mode].addShiftedButton(this, "FXLAYER", "", idx, [0, MiniMixxx.FXColor]);
+                    shiftedButton = this.buttons[mode].shiftedButton;
+                    this.layers[shiftedButton.layerName] = shiftedButton;
+                    break;
+                default:
+                    console.log("Ignoring unknown button mode: " + mode);
+                    continue;
+                }
             }
             this.layers[layerName] = this.buttons[mode];
         }
