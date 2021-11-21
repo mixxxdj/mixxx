@@ -15,9 +15,6 @@ extern const QLoggingCategory kMacroLoggingCategory;
 /// A Macro stores a list of MacroActions as well as its current state and label.
 class Macro {
   public:
-    static QByteArray serialize(const QList<MacroAction>& actions);
-    static QList<MacroAction> deserialize(const QByteArray& serialized);
-
     enum class StateFlag {
         Enabled = 1u,
         Looped = 2u,
@@ -40,7 +37,6 @@ class Macro {
     const State& getState() const;
     void setState(StateFlag flag, bool enable = true);
 
-    bool isEmpty() const;
     unsigned int size() const;
 
     const QList<MacroAction>& getActions() const;
@@ -53,6 +49,9 @@ class Macro {
     void clear();
 
   private:
+    static QByteArray serialize(const QList<MacroAction>& actions);
+    static QList<MacroAction> deserialize(const QByteArray& serialized);
+
     void setDirty(bool dirty = true);
     void setId(DbId id);
 
