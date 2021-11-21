@@ -22,23 +22,20 @@
 // not add any additional state (= member variables). Inheritance is
 // only needed for type-safety.
 class DbId {
-protected:
-public:
+  public:
     // Alias for the corresponding native type. It keeps the
     // implementation of this class flexible if we ever gonna
     // need to change it from 'int' to 'long' or any other type.
     typedef int value_type;
 
-    DbId()
-        : m_value(kInvalidValue) {
-        DEBUG_ASSERT(!isValid());
-    }
-    explicit DbId(value_type value)
-        : m_value(value) {
+    static constexpr value_type kInvalidValue = -1;
+
+    explicit DbId(value_type value = kInvalidValue)
+            : m_value(value) {
         DEBUG_ASSERT(isValid() || (kInvalidValue == m_value));
     }
     explicit DbId(QVariant variant)
-        : DbId(valueOf(std::move(variant))) {
+            : DbId(valueOf(std::move(variant))) {
     }
 
     bool isValid() const {
@@ -106,17 +103,15 @@ public:
         return qHash(dbId.m_value, seed);
     }
 
-private:
-  static constexpr value_type kInvalidValue = -1;
-
+  private:
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-  static const QMetaType kVariantType;
+    static const QMetaType kVariantType;
 #else
     static const QVariant::Type kVariantType;
 #endif
 
     static bool isValidValue(value_type value) {
-        return 0 <= value;
+        return value >= 0;
     }
 
     static value_type valueOf(QVariant /*pass-by-value*/ variant);

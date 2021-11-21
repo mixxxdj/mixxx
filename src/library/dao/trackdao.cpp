@@ -81,11 +81,12 @@ QString locationPathPrefixFromRootDir(const QDir& rootDir) {
 } // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
-                   PlaylistDAO& playlistDao,
-                   AnalysisDao& analysisDao,
-                   LibraryHashDAO& libraryHashDao,
-                   UserSettingsPointer pConfig)
+        PlaylistDAO& playlistDao,
+        AnalysisDao& analysisDao,
+        LibraryHashDAO& libraryHashDao,
+        UserSettingsPointer pConfig)
         : m_cueDao(cueDao),
+          m_macroDao(),
           m_playlistDao(playlistDao),
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
@@ -107,6 +108,12 @@ TrackDAO::~TrackDAO() {
     qDebug() << "~TrackDAO()";
     //clear all leftover Transactions and rollback the db
     addTracksFinish(true);
+}
+
+void TrackDAO::initialize(
+        const QSqlDatabase& database) {
+    DAO::initialize(database);
+    m_macroDao.initialize(database);
 }
 
 void TrackDAO::finish() {
@@ -1486,6 +1493,8 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // Populate track cues from the cues table.
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
 
+    pTrack->setMacros(m_macroDao.loadMacros(trackId));
+
     // Normally we will set the track as clean but sometimes when loading from
     // the database we need to perform upkeep that ought to be written back to
     // the database when the track is deleted.
@@ -1686,8 +1695,8 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
             trackId,
             pTrack->getWaveform(),
             pTrack->getWaveformSummary());
-    m_cueDao.saveTrackCues(
-            trackId, pTrack->getCuePoints());
+    m_cueDao.saveTrackCues(trackId, pTrack->getCuePoints());
+    m_macroDao.saveMacros(trackId, pTrack->getMacros());
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();

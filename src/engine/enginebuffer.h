@@ -9,6 +9,7 @@
 #include "audio/frame.h"
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
+#include "engine/controls/macrocontrol.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
@@ -179,6 +180,7 @@ class EngineBuffer : public EngineObject {
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
+    void cueJumpQueued(mixxx::audio::FramePos targetPosition);
 
   private slots:
     void slotTrackLoading();
@@ -269,6 +271,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(CueControlTest, SeekOnSetCueCDJ);
     FRIEND_TEST(CueControlTest, SeekOnSetCuePlay);
     CueControl* m_pCueControl;
+    QList<MacroControl*> m_macroControls;
 
     QList<EngineControl*> m_engineControls;
 
