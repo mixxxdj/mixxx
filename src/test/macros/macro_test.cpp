@@ -21,7 +21,7 @@ TEST(MacroTest, SerializeMacroActions) {
 TEST(MacroTest, CreateMacroAndChangeLabel) {
     Macro macro;
     EXPECT_FALSE(macro.isDirty());
-    EXPECT_TRUE(macro.isEmpty());
+    EXPECT_TRUE(macro.getActions().isEmpty());
     macro.clear();
     const Macro macro2;
     EXPECT_EQ(macro, macro2);

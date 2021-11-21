@@ -125,7 +125,7 @@ TEST_F(MacroControlTest, ControlObjects) {
     ASSERT_STATUS(MacroControl::Status::Recorded);
 
     ControlProxy(kChannelGroup, "macro_2_clear").set(1);
-    EXPECT_TRUE(getMacro()->isEmpty());
+    EXPECT_TRUE(getMacro()->getActions().isEmpty());
     EXPECT_EQ(getMacro()->getLabel(), label);
     ASSERT_STATUS(MacroControl::Status::Empty);
 }
@@ -170,6 +170,6 @@ TEST_F(MacroControlTest, LoadTrackAndPlayAndClear) {
     EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
     // Clear
     slotClear();
-    EXPECT_TRUE(getMacro()->isEmpty());
+    EXPECT_TRUE(getMacro()->getActions().isEmpty());
     EXPECT_EQ(getMacro()->getLabel(), label);
 }

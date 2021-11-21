@@ -275,8 +275,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
 class SignalPathTest : public BaseSignalPathTest {
   protected:
-    SignalPathTest()
-            : BaseSignalPathTest() {
+    SignalPathTest() {
         TrackPointer pTrack = getTestTrack();
         loadTrack(m_pMixerDeck1, pTrack);
         loadTrack(m_pMixerDeck2, pTrack);

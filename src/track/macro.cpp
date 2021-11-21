@@ -33,9 +33,7 @@ QByteArray Macro::serialize(const QList<MacroAction>& actions) {
 }
 
 Macro::Macro()
-        : m_actions({}),
-          m_label(QString("")),
-          m_state(StateFlag::Enabled) {
+        : m_state(StateFlag::Enabled) {
 }
 
 Macro::Macro(const QList<MacroAction>& actions, const QString& label, State state)
@@ -80,10 +78,6 @@ void Macro::setState(StateFlag flag, bool enable) {
     }
 }
 
-bool Macro::isEmpty() const {
-    return m_actions.isEmpty();
-}
-
 unsigned int Macro::size() const {
     return m_actions.size();
 }
@@ -98,14 +92,14 @@ void Macro::addAction(const MacroAction& action) {
 }
 
 mixxx::audio::FramePos Macro::getStart() const {
-    VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
+    VERIFY_OR_DEBUG_ASSERT(!getActions().isEmpty()) {
         return mixxx::audio::FramePos(0);
     }
     return m_actions.first().getTargetPosition();
 }
 
 void Macro::setEnd(mixxx::audio::FramePos framePos) {
-    VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
+    VERIFY_OR_DEBUG_ASSERT(!getActions().isEmpty()) {
         return;
     }
     // can't use replace because MacroAction is immutable

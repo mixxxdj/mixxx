@@ -129,7 +129,7 @@ void MacroControl::trackLoaded(TrackPointer pNewTrack) {
         m_pMacro = std::make_shared<Macro>();
         pNewTrack->addMacro(m_slot, m_pMacro);
     }
-    if (m_pMacro->isEmpty()) {
+    if (m_pMacro->getActions().isEmpty()) {
         setStatus(Status::Empty);
     } else if (m_pMacro->isEnabled()) {
         play();
@@ -180,14 +180,14 @@ bool MacroControl::isRecording() const {
 }
 
 void MacroControl::play() {
-    DEBUG_ASSERT(m_pMacro && !m_pMacro->isEmpty() && !isRecording());
+    DEBUG_ASSERT(m_pMacro && !m_pMacro->getActions().isEmpty() && !isRecording());
     m_iNextAction = m_pMacro->size() > 1 ? 1 : 0;
     setStatus(Status::Playing);
     m_pMacro->setState(Macro::StateFlag::Enabled);
 }
 
 void MacroControl::stop() {
-    DEBUG_ASSERT(m_pMacro && !m_pMacro->isEmpty() && !isRecording());
+    DEBUG_ASSERT(m_pMacro && !m_pMacro->getActions().isEmpty() && !isRecording());
     m_iNextAction = INT_MAX;
     setStatus(Status::Recorded);
     m_pMacro->setState(Macro::StateFlag::Enabled, false);
