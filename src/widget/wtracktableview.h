@@ -68,8 +68,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotSaveCurrentViewState() {
         saveCurrentViewState();
     };
-    void slotRestoreCurrentViewState() {
-        restoreCurrentViewState();
+    bool slotRestoreCurrentViewState() {
+        return restoreCurrentViewState();
     };
 
   protected:

@@ -38,9 +38,12 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     /// item selection and current index values associated with model by given
     /// key and restores it
     /// @param key unique for trackmodel
-    void restoreTrackModelState(const QAbstractItemModel* model, const QString& key);
+    /// @return true if restore succeeded
+    bool restoreTrackModelState(const QAbstractItemModel* model, const QString& key);
     void saveCurrentViewState() override;
-    void restoreCurrentViewState() override;
+    /// @brief restores current view state.
+    /// @return true if restore succeeded
+    bool restoreCurrentViewState() override;
 
   signals:
     void loadTrack(TrackPointer pTrack);

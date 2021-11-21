@@ -133,12 +133,12 @@ void WLibraryTableView::saveTrackModelState(
     m_modelStateCache.insert(key, state, 1);
 }
 
-void WLibraryTableView::restoreTrackModelState(
+bool WLibraryTableView::restoreTrackModelState(
         const QAbstractItemModel* model, const QString& key) {
     //qDebug() << "restoreTrackModelState:" << model << key;
     //qDebug() << m_modelStateCache.keys();
     if (model == nullptr) {
-        return;
+        return false;
     }
 
     ModelState* state = m_modelStateCache.take(key);
@@ -148,7 +148,7 @@ void WLibraryTableView::restoreTrackModelState(
         verticalScrollBar()->setValue(0);
         horizontalScrollBar()->setValue(0);
         setCurrentIndex(QModelIndex());
-        return;
+        return false;
     }
 
     verticalScrollBar()->setValue(state->verticalScrollPosition);
@@ -171,6 +171,7 @@ void WLibraryTableView::restoreTrackModelState(
 
     // reinsert the state into the cache
     m_modelStateCache.insert(key, state, 1);
+    return true;
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
@@ -212,13 +213,13 @@ void WLibraryTableView::saveCurrentViewState() {
     saveTrackModelState(currentModel, key);
 }
 
-void WLibraryTableView::restoreCurrentViewState() {
+bool WLibraryTableView::restoreCurrentViewState() {
     const QAbstractItemModel* currentModel = model();
     QString key = getModelStateKey();
     if (!currentModel || key.isEmpty()) {
-        return;
+        return false;
     }
-    restoreTrackModelState(currentModel, key);
+    return restoreTrackModelState(currentModel, key);
 }
 
 void WLibraryTableView::focusInEvent(QFocusEvent* event) {
