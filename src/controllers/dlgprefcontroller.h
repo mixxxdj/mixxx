@@ -96,7 +96,7 @@ class DlgPrefController : public DlgPreferencePage {
     /// that can be applied or discarded.
     ///
     /// @param bDirty The new dialog's dirty state.
-    bool isDirty() {
+    bool isDirty() const {
         return m_bDirty;
     }
 

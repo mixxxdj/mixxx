@@ -306,12 +306,12 @@ void TrackDAO::saveTrack(Track* pTrack) const {
     qDebug() << "TrackDAO: Saving track"
             << trackId
             << pTrack->getFileInfo();
-    if (updateTrack(pTrack)) {
+    if (updateTrack(*pTrack)) {
         // BaseTrackCache must be informed separately, because the
         // track has already been disconnected and TrackDAO does
         // not receive any signals that are usually forwarded to
         // BaseTrackCache.
-        DEBUG_ASSERT(!pTrack->isDirty());
+        pTrack->markClean();
         emit mixxx::thisAsNonConst(this)->trackClean(trackId);
     }
 }
@@ -1598,14 +1598,14 @@ TrackPointer TrackDAO::getTrackByRef(
 }
 
 // Saves a track's info back to the database
-bool TrackDAO::updateTrack(Track* pTrack) const {
-    const TrackId trackId = pTrack->getId();
+bool TrackDAO::updateTrack(const Track& track) const {
+    const TrackId trackId = track.getId();
     DEBUG_ASSERT(trackId.isValid());
 
     qDebug() << "TrackDAO:"
-            << "Updating track in database"
-            << trackId
-            << pTrack->getFileInfo();
+             << "Updating track in database"
+             << trackId
+             << track.getFileInfo();
 
     SqlTransaction transaction(m_database);
     // PerformanceTimer time;
@@ -1664,11 +1664,11 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
 
     query.bindValue(":track_id", trackId.toVariant());
 
-    const auto trackRecord = pTrack->getRecord();
+    const auto trackRecord = track.getRecord();
     bindTrackLibraryValues(
             &query,
             trackRecord,
-            pTrack->getBeats());
+            track.getBeats());
 
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -1684,16 +1684,14 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
     //time.start();
     m_analysisDao.saveTrackAnalyses(
             trackId,
-            pTrack->getWaveform(),
-            pTrack->getWaveformSummary());
+            track.getWaveform(),
+            track.getWaveformSummary());
     m_cueDao.saveTrackCues(
-            trackId, pTrack->getCuePoints());
+            trackId, track.getCuePoints());
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();
     //time.start();
-    pTrack->markClean();
-    //qDebug() << "Dirtying track took: " << time.elapsed().formatMillisWithUnit();
     return true;
 }
 
