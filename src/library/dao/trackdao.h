@@ -8,6 +8,7 @@
 #include <QString>
 
 #include "library/dao/dao.h"
+#include "library/dao/macrodao.h"
 #include "library/relocatedtrack.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
@@ -49,6 +50,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             UserSettingsPointer pConfig);
     ~TrackDAO() override;
 
+    void initialize(
+            const QSqlDatabase& database) override;
     void finish();
 
     QList<TrackId> resolveTrackIds(
@@ -201,6 +204,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             mixxx::FileAccess fileAccess) override;
 
     CueDAO& m_cueDao;
+    MacroDAO m_macroDao;
     PlaylistDAO& m_playlistDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;

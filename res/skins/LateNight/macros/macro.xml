@@ -1,0 +1,99 @@
+<Template>
+  <SetVariable name="MacroPrefix"><Variable name="Group"/>,macro_<Variable name="MacroSlot"/>_</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>Macro</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <PushButton>
+        <!--<TooltipId>macro_activate_toggle</TooltipId>-->
+        <ObjectName>MacroActivate</ObjectName>
+        <Size>34f,34f</Size>
+        <NumberStates>1</NumberStates>
+        <Connection>
+          <ConfigKey><Variable name="MacroPrefix"/>activate</ConfigKey>
+          <ConnectValueToWidget>false</ConnectValueToWidget>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="MacroPrefix"/>toggle</ConfigKey>
+          <ConnectValueToWidget>false</ConnectValueToWidget>
+          <ButtonState>RightButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="MacroPrefix"/>status</ConfigKey>
+          <ConnectValueFromWidget>false</ConnectValueFromWidget>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup>
+        <ObjectName></ObjectName>
+        <Layout>vertical</Layout>
+        <Size>0me,36f</Size>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>SamplerTitleBoxMini</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>i,f</SizePolicy>
+            <MinimumSize>,18</MinimumSize>
+            <Children>
+              <Label>
+                <ObjectName>SamplerTitleMini</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <Elide>right</Elide>
+                <Text>Macro <Variable name="MacroSlot"/></Text>
+                <Connection>
+                  <ConfigKey><Variable name="MacroPrefix"/>status</ConfigKey>
+                  <BindProperty>Text</BindProperty>
+                </Connection>
+              </Label>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>SamplerBPMSettingsMini</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>,18f</Size>
+            <Children>
+              <TrackProperty>
+                <ObjectName>SamplerBpm</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <Property>title</Property>
+                <Group><Variable name="Group"/></Group>
+                <Elide>right</Elide>
+              </TrackProperty>
+
+              <PushButton>
+                <!--<SetVariable name="TooltipId">macro_clear</SetVariable>-->
+                <ObjectName>EjectButton12</ObjectName>
+                <Size>21f,18f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="MacroPrefix"/>clear</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="MacroPrefix"/>status</ConfigKey>
+                  <Transform><IsEqual>3</IsEqual></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </PushButton>
+            </Children>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- SamplerBPMSettingsMini -->
+
+        </Children>
+      </WidgetGroup><!-- SamplerMiniControls -->
+
+    </Children>
+  </WidgetGroup><!-- SamplerMini -->
+</Template>

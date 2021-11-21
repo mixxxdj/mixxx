@@ -36,14 +36,11 @@ WTrackProperty::WTrackProperty(
     setAcceptDrops(true);
 }
 
-WTrackProperty::~WTrackProperty() {
-    // Required to allow forward declaration of WTrackMenu in header
-}
-
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 
     m_property = context.selectString(node, "Property");
+    m_macroSlot = context.selectInt(node, "MacroSlot");
 
     // Check if property with that name exists in Track class
     if (Track::staticMetaObject.indexOfProperty(m_property.toUtf8().constData()) == -1) {
@@ -80,10 +77,18 @@ void WTrackProperty::slotTrackChanged(TrackId trackId) {
 
 void WTrackProperty::updateLabel() {
     if (m_pCurrentTrack) {
-        QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
-        if (property.isValid() && property.canConvert<QString>()) {
-            setText(property.toString());
-            return;
+        if (m_macroSlot > 0) {
+            MacroPointer macro = m_pCurrentTrack->getMacros().value(m_macroSlot);
+            if (macro) {
+                setText(macro->getLabel());
+                return;
+            }
+        } else {
+            QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
+            if (property.isValid() && property.canConvert<QString>()) {
+                setText(property.toString());
+                return;
+            }
         }
     }
     setText("");

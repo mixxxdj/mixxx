@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package mixxx.track.io;
+
+option optimize_for = LITE_RUNTIME;
+
+message Macro {
+  message Action {
+    optional uint32 type = 1;
+    optional uint64 source_frame = 2;
+    optional uint64 target_frame = 3;
+  }
+  repeated Action actions = 1;
+}

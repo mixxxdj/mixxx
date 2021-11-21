@@ -1276,6 +1276,37 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
     emit cuesUpdated();
 }
 
+QMap<int, MacroPointer> Track::getMacros() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_macros;
+}
+
+void Track::setMacros(const QMap<int, MacroPointer>& macros) {
+    const auto locked = lockMutex(&m_qMutex);
+    m_macros = macros;
+}
+
+void Track::addMacro(int slot, const MacroPointer& pMacro) {
+    auto locked = lockMutex(&m_qMutex);
+    m_macros.insert(slot, pMacro);
+    if (pMacro->isDirty()) {
+        markDirtyAndUnlock(&locked);
+    }
+}
+
+bool Track::isDirty() {
+    const auto locked = lockMutex(&m_qMutex);
+    if (m_bDirty) {
+        return true;
+    }
+    for (const MacroPointer& pMacro : qAsConst(m_macros)) {
+        if (pMacro->isDirty()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Track::markDirty() {
     auto locked = lockMutex(&m_qMutex);
     setDirtyAndUnlock(&locked, true);
@@ -1310,12 +1341,6 @@ void Track::setDirtyAndUnlock(QT_RECURSIVE_MUTEX_LOCKER* pLock, bool bDirty) {
         emit changed(trackId);
     }
 }
-
-bool Track::isDirty() {
-    const auto locked = lockMutex(&m_qMutex);
-    return m_bDirty;
-}
-
 
 void Track::markForMetadataExport() {
     const auto locked = lockMutex(&m_qMutex);
