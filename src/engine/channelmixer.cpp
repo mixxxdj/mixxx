@@ -5,7 +5,7 @@
 
 // static
 void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator& gainCalculator,
-        QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
+        const QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>& activeChannels,
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
         CSAMPLE* pOutput,
         const ChannelHandle& outputHandle,
@@ -23,8 +23,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
     // The original channel input buffers are not modified.
     SampleUtil::clear(pOutput, iBufferSize);
     ScopedTimer t("EngineMaster::applyEffectsAndMixChannels");
-    for (int i = 0; i < activeChannels->size(); ++i) {
-        EngineMaster::ChannelInfo* pChannelInfo = activeChannels->at(i);
+    for (auto* pChannelInfo : activeChannels) {
         EngineMaster::GainCache& gainCache = (*channelGainCache)[pChannelInfo->m_index];
         CSAMPLE_GAIN oldGain = gainCache.m_gain;
         CSAMPLE_GAIN newGain;
@@ -49,7 +48,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
 
 void ChannelMixer::applyEffectsInPlaceAndMixChannels(
         const EngineMaster::GainCalculator& gainCalculator,
-        QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>*
+        const QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>&
                 activeChannels,
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>*
                 channelGainCache,
@@ -66,8 +65,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
     // 4. Mix the channel buffers together to make pOutput, overwriting the pOutput buffer from the last engine callback
     ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels");
     SampleUtil::clear(pOutput, iBufferSize);
-    for (int i = 0; i < activeChannels->size(); ++i) {
-        EngineMaster::ChannelInfo* pChannelInfo = activeChannels->at(i);
+    for (auto* pChannelInfo : activeChannels) {
         EngineMaster::GainCache& gainCache = (*channelGainCache)[pChannelInfo->m_index];
         CSAMPLE_GAIN oldGain = gainCache.m_gain;
         CSAMPLE_GAIN newGain;
