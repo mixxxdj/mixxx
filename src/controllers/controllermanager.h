@@ -70,7 +70,7 @@ class ControllerManager : public QObject {
     void pollDevices();
     void startPolling();
     void stopPolling();
-    void maybeStartOrStopPolling();
+    void pollIfAnyControllersOpen();
 
   private:
     UserSettingsPointer m_pConfig;
