@@ -28,7 +28,11 @@ Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
 Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMacStylePlugin)
 #else
-#error "Q_IMPORT_PLUGIN() for the current patform is missing"
+Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+Q_IMPORT_PLUGIN(QWaylandIntegrationPlugin)
+Q_IMPORT_PLUGIN(QWaylandEglPlatformIntegrationPlugin)
+#endif
 #endif
 Q_IMPORT_PLUGIN(QOffscreenIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
