@@ -61,7 +61,7 @@ g4v.shutdown = function()  {
 g4v.Deck = function(deckNumbers, midiChannel) {
     components.Deck.call(this, deckNumbers);
     this.cueBtn = new components.CueButton([0x8F + midiChannel, 0x02]);
-    this.cupBtn = new 	components.Button({
+    this.cupBtn = new components.Button({
         midi: [0x8F + midiChannel, 0x03],
         inKey: "cue_gotoandplay",
     });
