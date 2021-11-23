@@ -397,7 +397,7 @@ TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
 
 void WTrackTableView::assignPreviousTrackColor() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() <= 0) {
+    if (indices.isEmpty()) {
         return;
     }
 
@@ -418,7 +418,7 @@ void WTrackTableView::assignPreviousTrackColor() {
 
 void WTrackTableView::assignNextTrackColor() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() <= 0) {
+    if (indices.isEmpty()) {
         return;
     }
 
@@ -439,22 +439,32 @@ void WTrackTableView::assignNextTrackColor() {
 
 void WTrackTableView::slotPurge() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0) {
-        TrackModel* trackModel = getTrackModel();
-        if (trackModel) {
-            trackModel->purgeTracks(indices);
-        }
+    if (indices.isEmpty()) {
+        return;
     }
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel) {
+        trackModel->purgeTracks(indices);
+    }
+}
+
+void WTrackTableView::slotDeleteTracksFromDisk() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+    m_pTrackMenu->loadTrackModelIndices(indices);
+    m_pTrackMenu->slotRemoveFromDisk();
 }
 
 void WTrackTableView::slotUnhide() {
     QModelIndexList indices = selectionModel()->selectedRows();
-
-    if (indices.size() > 0) {
-        TrackModel* trackModel = getTrackModel();
-        if (trackModel) {
-            trackModel->unhideTracks(indices);
-        }
+    if (indices.isEmpty()) {
+        return;
+    }
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel) {
+        trackModel->unhideTracks(indices);
     }
 }
 
@@ -809,32 +819,34 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
 
 void WTrackTableView::loadSelectedTrack() {
     auto indices = selectionModel()->selectedRows();
-    if (indices.size() > 0) {
-        slotMouseDoubleClicked(indices.at(0));
+    if (indices.isEmpty()) {
+        return;
     }
+    slotMouseDoubleClicked(indices.at(0));
 }
 
 void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) {
     auto indices = selectionModel()->selectedRows();
-    if (indices.size() > 0) {
-        // If the track load override is disabled, check to see if a track is
-        // playing before trying to load it
-        if (!(m_pConfig->getValueString(
-                               ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"))
-                            .toInt())) {
-            // TODO(XXX): Check for other than just the first preview deck.
-            if (group != "[PreviewDeck1]" &&
-                    ControlObject::get(ConfigKey(group, "play")) > 0.0) {
-                return;
-            }
+    if (indices.isEmpty()) {
+        return;
+    }
+    // If the track load override is disabled, check to see if a track is
+    // playing before trying to load it
+    if (!(m_pConfig->getValueString(
+                           ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"))
+                        .toInt())) {
+        // TODO(XXX): Check for other than just the first preview deck.
+        if (group != "[PreviewDeck1]" &&
+                ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+            return;
         }
-        auto index = indices.at(0);
-        auto* trackModel = getTrackModel();
-        TrackPointer pTrack;
-        if (trackModel &&
-                (pTrack = trackModel->getTrack(index))) {
-            emit loadTrackToPlayer(pTrack, group, play);
-        }
+    }
+    auto index = indices.at(0);
+    auto* trackModel = getTrackModel();
+    TrackPointer pTrack;
+    if (trackModel &&
+            (pTrack = trackModel->getTrack(index))) {
+        emit loadTrackToPlayer(pTrack, group, play);
     }
 }
 

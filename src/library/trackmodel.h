@@ -49,6 +49,7 @@ class TrackModel {
         Purge = 1u << 13u,
         RemovePlaylist = 1u << 14u,
         RemoveCrate = 1u << 15u,
+        RemoveFromDisk = 1u << 16u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 

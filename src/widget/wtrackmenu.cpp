@@ -1,8 +1,11 @@
 #include "widget/wtrackmenu.h"
 
 #include <QCheckBox>
+#include <QDialogButtonBox>
 #include <QInputDialog>
+#include <QListWidget>
 #include <QModelIndex>
+#include <QVBoxLayout>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -30,6 +33,7 @@
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "util/qt.h"
+#include "util/widgethelper.h"
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
@@ -167,6 +171,11 @@ void WTrackMenu::createMenus() {
                     m_pLibrary->searchTracksInCollection(searchQuery);
                 });
     }
+
+    if (featureIsEnabled(Feature::RemoveFromDisk)) {
+        m_pRemoveFromDiskMenu = new QMenu(this);
+        m_pRemoveFromDiskMenu->setTitle(tr("Delete Track Files"));
+    }
 }
 
 void WTrackMenu::createActions() {
@@ -219,6 +228,14 @@ void WTrackMenu::createActions() {
 
         m_pPurgeAct = new QAction(tr("Purge from Library"), this);
         connect(m_pPurgeAct, &QAction::triggered, this, &WTrackMenu::slotPurge);
+    }
+
+    if (featureIsEnabled(Feature::RemoveFromDisk)) {
+        m_pRemoveFromDiskAct = new QAction(tr("Delete Files from Disk"), m_pRemoveFromDiskMenu);
+        connect(m_pRemoveFromDiskAct,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotRemoveFromDisk);
     }
 
     if (featureIsEnabled(Feature::Properties)) {
@@ -518,6 +535,12 @@ void WTrackMenu::setupActions() {
         }
     }
 
+    if (featureIsEnabled(Feature::RemoveFromDisk) &&
+            m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk)) {
+        m_pRemoveFromDiskMenu->addAction(m_pRemoveFromDiskAct);
+        addMenu(m_pRemoveFromDiskMenu);
+    }
+
     if (featureIsEnabled(Feature::FileBrowser)) {
         addAction(m_pFileBrowserAct);
     }
@@ -763,6 +786,13 @@ void WTrackMenu::updateMenus() {
         }
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge)) {
             m_pPurgeAct->setEnabled(!locked);
+        }
+    }
+
+    if (featureIsEnabled(Feature::RemoveFromDisk)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk)) {
+            m_pRemoveFromDiskAct->setEnabled(!locked);
         }
     }
 
@@ -1627,6 +1657,181 @@ void WTrackMenu::slotClearAllMetadata() {
             &trackOperator);
 }
 
+namespace {
+
+class RemoveTrackFilesFromDiskTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    const QList<TrackRef>& getTracksToPurge() const {
+        return mTracksToPurge;
+    }
+    const QList<QString>& getTracksToKeep() const {
+        return mTracksToKeep;
+    }
+
+  private:
+    mutable QList<TrackRef> mTracksToPurge;
+    mutable QList<QString> mTracksToKeep;
+
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        auto trackRef = TrackRef::fromFileInfo(
+                pTrack->getFileInfo(),
+                pTrack->getId());
+        VERIFY_OR_DEBUG_ASSERT(trackRef.isValid()) {
+            return;
+        }
+        QString location = pTrack->getLocation();
+        QFile file(location);
+        if (file.exists() && !file.remove()) {
+            // Deletion failed, log warning and queue location for the
+            // Failed Deletions warning.
+            qWarning()
+                    << "Queued file"
+                    << location
+                    << "could not be deleted. Track is not purged";
+            mTracksToKeep.append(location);
+        } else {
+            // File doesn't exist or was deleted.
+            // Note: we must NOT purge every single track here since
+            // TrackDAO::afterPurgingTracks would enforce a track model update (select())
+            // So we add it to the purge queue and purge all tracks at once
+            // in slotRemoveFromDisk() afterwards.
+            mTracksToPurge.append(trackRef);
+        }
+    }
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotRemoveFromDisk() {
+    const auto trackRefs = getTrackRefs();
+    QStringList locations;
+    locations.reserve(trackRefs.size());
+    for (const auto& trackRef : trackRefs) {
+        QString location = trackRef.getLocation();
+        locations.append(location);
+    }
+    locations.removeDuplicates();
+
+    {
+        // Prepare the delete confirmation dialog
+        // List view for the files to be deleted
+        // NOTE(ronso0) We could also make this a table to allow showing
+        // artist and title if file names don't suffice to identify tracks.
+        QListWidget* delListWidget = new QListWidget();
+        delListWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
+                QSizePolicy::MinimumExpanding));
+        delListWidget->addItems(locations);
+        mixxx::widgethelper::growListWidget(*delListWidget, *this);
+        // Warning text
+        QLabel* delWarning = new QLabel();
+        delWarning->setText(tr("Permanently delete these files from disk?") +
+                QString("<br><br><b>") +
+                tr("This can not be undone!") + QString("</b>"));
+        delWarning->setTextFormat(Qt::RichText);
+        delWarning->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
+                QSizePolicy::Minimum));
+        // Buttons
+        QDialogButtonBox* delButtons = new QDialogButtonBox();
+        QPushButton* cancelBtn = delButtons->addButton(
+                tr("Cancel"),
+                QDialogButtonBox::RejectRole);
+        QPushButton* deleteBtn = delButtons->addButton(
+                tr("Delete Files"),
+                QDialogButtonBox::AcceptRole);
+        cancelBtn->setDefault(true);
+
+        // Populate the main layout
+        QVBoxLayout* delLayout = new QVBoxLayout();
+        delLayout->addWidget(delListWidget);
+        delLayout->addWidget(delWarning);
+        delLayout->addWidget(delButtons);
+
+        QDialog dlgDelConfirm;
+        dlgDelConfirm.setModal(true); // just to be sure
+        dlgDelConfirm.setWindowTitle(tr("Delete Track Files"));
+        // This is required after customizing the buttons, otherwise neither button
+        // would close the dialog.
+        connect(cancelBtn, &QPushButton::clicked, &dlgDelConfirm, &QDialog::reject);
+        connect(deleteBtn, &QPushButton::clicked, &dlgDelConfirm, &QDialog::accept);
+        dlgDelConfirm.setLayout(delLayout);
+
+        if (dlgDelConfirm.exec() == QDialog::Rejected) {
+            return;
+        }
+    }
+
+    // Set up and initiate the track batch operation
+    const auto progressLabelText =
+            tr("Removing %1 track file(s) from disk...",
+                    "",
+                    getTrackCount());
+    const auto trackOperator =
+            RemoveTrackFilesFromDiskTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+
+    // Purge deleted tracks and show deletion summary message.
+    const QList<TrackRef> tracksToPurge(trackOperator.getTracksToPurge());
+    if (!tracksToPurge.isEmpty()) {
+        // Purge only those tracks whose files have actually been deleted.
+        m_pLibrary->trackCollectionManager()->purgeTracks(tracksToPurge);
+
+        // Show purge summary message
+        QMessageBox msgBoxPurgeTracks;
+        msgBoxPurgeTracks.setIcon(QMessageBox::Information);
+        msgBoxPurgeTracks.setWindowTitle(tr("Track Files Deleted"));
+        msgBoxPurgeTracks.setText(
+                tr("%1 track files were deleted from disk and purged "
+                   "from the Mixxx database.")
+                        .arg(QString::number(tracksToPurge.length())) +
+                QString("<br><br>") +
+                tr("Note: if you are in Browse or Recording you need to "
+                   "click the current view again to see changes."));
+        msgBoxPurgeTracks.setTextFormat(Qt::RichText);
+        msgBoxPurgeTracks.setStandardButtons(QMessageBox::Ok);
+        msgBoxPurgeTracks.exec();
+    }
+
+    const QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
+    if (!tracksToKeep.isEmpty()) {
+        return;
+    }
+
+    {
+        // Else show a message with a list of tracks that could not be deleted.
+        QLabel* notDeletedLabel = new QLabel;
+        notDeletedLabel->setText(
+                tr("The following %1 files could not be deleted from disk")
+                        .arg(QString::number(
+                                tracksToKeep.length())));
+        notDeletedLabel->setTextFormat(Qt::RichText);
+
+        QListWidget* notDeletedListWidget = new QListWidget;
+        notDeletedListWidget->addItems(tracksToKeep);
+        mixxx::widgethelper::growListWidget(*notDeletedListWidget, *this);
+
+        QDialogButtonBox* notDeletedButtons = new QDialogButtonBox();
+        QPushButton* closeBtn = notDeletedButtons->addButton(
+                tr("Close"),
+                QDialogButtonBox::AcceptRole);
+
+        QVBoxLayout* notDeletedLayout = new QVBoxLayout;
+        notDeletedLayout->addWidget(notDeletedLabel);
+        notDeletedLayout->addWidget(notDeletedListWidget);
+        notDeletedLayout->addWidget(notDeletedButtons);
+
+        QDialog dlgNotDeleted;
+        dlgNotDeleted.setModal(true);
+        dlgNotDeleted.setWindowTitle(tr("Remaining Track Files"));
+        dlgNotDeleted.setLayout(notDeletedLayout);
+        // Required for being able to close the dialog
+        connect(closeBtn, &QPushButton::clicked, &dlgNotDeleted, &QDialog::close);
+        dlgNotDeleted.exec();
+    }
+}
+
 void WTrackMenu::slotShowDlgTrackInfo() {
     if (isEmpty()) {
         return;
@@ -1836,6 +2041,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide) ||
                 m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide) ||
                 m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge);
+    case Feature::RemoveFromDisk:
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk);
     case Feature::FileBrowser:
         return true;
     case Feature::Properties:
