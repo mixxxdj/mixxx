@@ -1709,9 +1709,9 @@ void WTrackMenu::slotRemoveFromDisk() {
     locations.reserve(trackRefs.size());
     for (const auto& trackRef : trackRefs) {
         QString location = trackRef.getLocation();
-        // TODO de-duplicate when extending this feature to Playlists
         locations.append(location);
     }
+    locations.removeDuplicates();
 
     {
         // Prepare the delete confirmation dalog
