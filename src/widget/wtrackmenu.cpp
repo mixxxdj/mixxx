@@ -1774,7 +1774,7 @@ void WTrackMenu::slotRemoveFromDisk() {
 
     // Purge deleted tracks and show deletion summary message.
     QList<TrackRef> tracksToPurge(trackOperator.getTracksToPurge());
-    if (tracksToPurge.length() > 0) {
+    if (!tracksToPurge.isEmpty()) {
         // Purge only those tracks whose files have actually been deleted.
         m_pLibrary->trackCollectionManager()->purgeTracks(tracksToPurge);
 
@@ -1795,7 +1795,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     }
 
     QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
-    if (tracksToKeep.length() == 0) {
+    if (!tracksToKeep.isEmpty()) {
         return;
     }
 
