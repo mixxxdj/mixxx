@@ -38,13 +38,14 @@ class Macro {
     const State& getState() const;
     void setState(StateFlag flag, bool enable = true);
 
+    /// Returns true if the Macro has neither a label nor any actions
+    bool isEmpty() const;
     unsigned int size() const;
-
     const QList<MacroAction>& getActions() const;
     void addAction(const MacroAction& action);
 
     mixxx::audio::FramePos getStart() const;
-    /// Sets the end of the Macro (relevant for looping).
+    /// Set the end of the Macro (required for looping).
     void setEnd(mixxx::audio::FramePos framePos);
 
     void clear();

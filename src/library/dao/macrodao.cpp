@@ -49,7 +49,7 @@ void MacroDAO::saveMacros(TrackId trackId, const QMap<int, MacroPointer>& macros
     for (auto it = macros.constBegin(); it != macros.constEnd(); ++it) {
         auto pMacro = it.value();
         // Don't save placeholder Macros
-        if (pMacro->getActions().isEmpty() && !pMacro->isDirty()) {
+        if (pMacro->isEmpty() && !pMacro->isDirty()) {
             return;
         }
         // Newly recorded macros must be dirty

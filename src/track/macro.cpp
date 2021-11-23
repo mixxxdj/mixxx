@@ -78,6 +78,10 @@ void Macro::setState(StateFlag flag, bool enable) {
     }
 }
 
+bool Macro::isEmpty() const {
+    return getActions().isEmpty() && getLabel().isEmpty();
+}
+
 unsigned int Macro::size() const {
     return m_actions.size();
 }
