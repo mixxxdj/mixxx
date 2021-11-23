@@ -1661,10 +1661,10 @@ namespace {
 
 class RemoveTrackFilesFromDiskTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
-    QList<TrackRef> getTracksToPurge() const {
+    const QList<TrackRef>& getTracksToPurge() const {
         return mTracksToPurge;
     }
-    QList<QString> getTracksToKeep() const {
+    const QList<QString>& getTracksToKeep() const {
         return mTracksToKeep;
     }
 
@@ -1773,7 +1773,7 @@ void WTrackMenu::slotRemoveFromDisk() {
             &trackOperator);
 
     // Purge deleted tracks and show deletion summary message.
-    QList<TrackRef> tracksToPurge(trackOperator.getTracksToPurge());
+    const QList<TrackRef> tracksToPurge(trackOperator.getTracksToPurge());
     if (!tracksToPurge.isEmpty()) {
         // Purge only those tracks whose files have actually been deleted.
         m_pLibrary->trackCollectionManager()->purgeTracks(tracksToPurge);
@@ -1794,7 +1794,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         msgBoxPurgeTracks.exec();
     }
 
-    QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
+    const QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
     if (!tracksToKeep.isEmpty()) {
         return;
     }
