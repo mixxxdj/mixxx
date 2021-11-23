@@ -1714,7 +1714,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     locations.removeDuplicates();
 
     {
-        // Prepare the delete confirmation dalog
+        // Prepare the delete confirmation dialog
         // List view for the files to be deleted
         // NOTE(ronso0) We could also make this a table to allow showing
         // artist and title if file names don't suffice to identify tracks.
