@@ -412,8 +412,7 @@ g4v.MixerStrip = function(deckNumber) {
     this.pflBtn = new components.Button({
         midi: [0x93, 0x0C + deckNumber],
         group: "[Channel" + deckNumber +"]",
-        inKey: "pfl",
-        outKey: "pfl",
+        key: "pfl",
         type: components.Button.prototype.types.toggle,
     });
     this.volumePot = new components.Pot({
