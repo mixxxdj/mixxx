@@ -346,10 +346,7 @@ class Track : public QObject {
             mixxx::CueInfoImporterPointer pCueInfoImporter);
     ImportStatus getCueImportStatus() const;
 
-    QMap<int, MacroPointer> getMacros() const;
-
-    void setMacros(const QMap<int, MacroPointer>& macros);
-    void addMacro(int slot, const MacroPointer&);
+    MacroPointer getMacro(int slot);
 
     // Get the track's Beats list
     mixxx::BeatsPointer getBeats() const;
@@ -529,6 +526,12 @@ class Track : public QObject {
             const QList<CuePointer>& cuePoints);
     void importPendingCueInfosMarkDirtyAndUnlock(
             QT_RECURSIVE_MUTEX_LOCKER* pLock);
+
+    // Get/Set all Macros of the track, only used from TrackDAO and tests
+    QMap<int, MacroPointer> getMacros() const;
+    void setMacros(const QMap<int, MacroPointer>& macros);
+    FRIEND_TEST(MacroControlTest, LoadTrackAndPlayAndClear);
+    FRIEND_TEST(MacroPlaybackTest, Playback);
 
     /// Merge additional metadata that is not (yet) stored in the database
     /// and only available from file tags.

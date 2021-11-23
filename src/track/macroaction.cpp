@@ -12,9 +12,6 @@ bool operator==(const MacroAction& lhs, const MacroAction& rhs) {
     return lhs.getSourcePosition() == rhs.getSourcePosition() &&
             lhs.getTargetPosition() == rhs.getTargetPosition();
 }
-bool operator!=(const MacroAction& lhs, const MacroAction& rhs) {
-    return !(lhs == rhs);
-}
 
 QDebug operator<<(QDebug debug, const MacroAction& action) {
     debug << "Jump from" << action.getSourcePosition() << "to" << action.getTargetPosition();

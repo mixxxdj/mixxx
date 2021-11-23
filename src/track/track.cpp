@@ -1286,12 +1286,15 @@ void Track::setMacros(const QMap<int, MacroPointer>& macros) {
     m_macros = macros;
 }
 
-void Track::addMacro(int slot, const MacroPointer& pMacro) {
-    auto locked = lockMutex(&m_qMutex);
-    m_macros.insert(slot, pMacro);
-    if (pMacro->isDirty()) {
-        markDirtyAndUnlock(&locked);
+MacroPointer Track::getMacro(int slot) {
+    const auto locked = lockMutex(&m_qMutex);
+    MacroPointer macro = m_macros.value(slot);
+    if(!macro) {
+        macro = std::make_shared<Macro>();
+        m_macros.insert(slot, macro);
     }
+    // No need to mark the track dirty, we don't need to save empty Macros
+    return macro;
 }
 
 bool Track::isDirty() {

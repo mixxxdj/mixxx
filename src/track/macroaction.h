@@ -40,6 +40,8 @@ class MacroAction {
 };
 
 bool operator==(const MacroAction& lhs, const MacroAction& rhs);
-inline bool operator!=(const MacroAction& lhs, const MacroAction& rhs);
+inline bool operator!=(const MacroAction& lhs, const MacroAction& rhs) {
+    return !(lhs == rhs);
+}
 
 QDebug operator<<(QDebug debug, const MacroAction& action);

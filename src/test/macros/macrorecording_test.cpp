@@ -22,7 +22,7 @@ class MacroRecordingTest : public BaseSignalPathTest {
     }
 
     MacroPointer getMacro() {
-        return m_pEngineBuffer1->getLoadedTrack()->getMacros().value(kMacro);
+        return m_pEngineBuffer1->getLoadedTrack()->getMacro(kMacro);
     }
 
     /// Starts recording and performs the initial jump to samplePos with assertions

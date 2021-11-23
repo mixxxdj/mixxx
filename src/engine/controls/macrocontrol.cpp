@@ -124,11 +124,7 @@ void MacroControl::trackLoaded(TrackPointer pNewTrack) {
         setStatus(Status::NoTrack);
         return;
     }
-    m_pMacro = pNewTrack->getMacros().value(m_slot);
-    if (!m_pMacro) {
-        m_pMacro = std::make_shared<Macro>();
-        pNewTrack->addMacro(m_slot, m_pMacro);
-    }
+    m_pMacro = pNewTrack->getMacro(m_slot);
     if (m_pMacro->getActions().isEmpty()) {
         setStatus(Status::Empty);
     } else if (m_pMacro->isEnabled()) {
