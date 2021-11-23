@@ -34,7 +34,7 @@ class WTrackMenu : public QMenu {
     Q_OBJECT
   public:
     enum Feature {
-        AutoDJ = 1,
+        AutoDJ = 1 << 0,
         // The loadTrackToPlayer signal emitted from this class must be handled to make LoadTo work.
         LoadTo = 1 << 1,
         Playlist = 1 << 2,
@@ -53,7 +53,7 @@ class WTrackMenu : public QMenu {
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
-                Properties | SearchRelated
+                Properties | SearchRelated | UpdateReplayGain
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
