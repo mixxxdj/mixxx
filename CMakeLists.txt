@@ -589,7 +589,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/cachingreader/cachingreader.cpp
   src/engine/cachingreader/cachingreaderchunk.cpp
   src/engine/cachingreader/cachingreaderworker.cpp
-  src/engine/channelmixer_autogen.cpp
+  src/engine/channelmixer.cpp
   src/engine/channels/engineaux.cpp
   src/engine/channels/enginechannel.cpp
   src/engine/channels/enginedeck.cpp
@@ -2869,10 +2869,7 @@ set(CPACK_GIT_COMMIT_DATE ${GIT_COMMIT_DATE})
 set(CPACK_SOURCE_IGNORE_FILES  "\\\\.#;/#;.*~;\\\\.o$")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.git/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.github/")
-list(APPEND CPACK_SOURCE_IGNORE_FILES "/cache/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/build/")
-list(APPEND CPACK_SOURCE_IGNORE_FILES "/.*_build/")
-list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.sconf_temp/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "${CMAKE_CURRENT_BINARY_DIR}/")
 set(CPACK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 

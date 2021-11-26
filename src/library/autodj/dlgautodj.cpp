@@ -385,3 +385,11 @@ bool DlgAutoDJ::hasFocus() const {
 void DlgAutoDJ::setFocus() {
     m_pTrackTableView->setFocus();
 }
+
+void DlgAutoDJ::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+}
+
+void DlgAutoDJ::restoreCurrentViewState() {
+    m_pTrackTableView->restoreCurrentViewState();
+}

@@ -96,6 +96,22 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="btnDelete">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+          <string>Purge selected tracks from the library and delete files from disk.</string>
+          </property>
+          <property name="text">
+          <string>Purge And Delete Files</string>
+          </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

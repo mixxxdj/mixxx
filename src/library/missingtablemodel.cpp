@@ -8,6 +8,7 @@
 namespace {
 
 const QString kMissingFilter = "mixxx_deleted=0 AND fs_deleted=1";
+const QString kModelName = "missing:";
 
 } // anonymous namespace
 
@@ -88,4 +89,13 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
 
 TrackModel::Capabilities MissingTableModel::getCapabilities() const {
     return Capability::Purge;
+}
+
+QString MissingTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName + m_tableName;
+    }
+    return kModelName + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
 }

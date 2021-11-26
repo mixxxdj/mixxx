@@ -73,6 +73,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     int fieldIndex(
             ColumnCache::Column column) const final;
 
+    QString modelKey(bool noSearch) const override;
+
   protected:
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from BaseTrackTableModel
@@ -98,6 +100,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QList<TrackRef> getTrackRefs(const QModelIndexList& indices) const;
 
     QSqlDatabase m_database;
+    QString m_tableName;
 
     QString m_tableOrderBy;
     int m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::IdMax)];
@@ -140,7 +143,6 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     QVector<RowInfo> m_rowInfo;
 
-    QString m_tableName;
     QString m_idColumn;
     QSharedPointer<BaseTrackCache> m_trackSource;
     QStringList m_tableColumns;

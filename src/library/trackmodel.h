@@ -49,6 +49,7 @@ class TrackModel {
         Purge = 1u << 13u,
         RemovePlaylist = 1u << 14u,
         RemoveCrate = 1u << 15u,
+        RemoveFromDisk = 1u << 16u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
@@ -210,6 +211,11 @@ class TrackModel {
 
     virtual void select() {
     }
+
+    /// @brief modelKey returns a unique identifier for the model
+    /// @param noSearch don't include the current search in the key
+    /// @param baseOnly return only a identifier for the whole subsystem
+    virtual QString modelKey(bool noSearch) const = 0;
 
     virtual bool updateTrackGenre(
             Track* pTrack,
