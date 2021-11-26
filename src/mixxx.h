@@ -34,6 +34,7 @@ class SettingsManager;
 class BroadcastManager;
 class SkinLoader;
 class SoundManager;
+class SoundManagerConfig;
 class VinylControlManager;
 class WMainMenuBar;
 
