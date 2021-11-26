@@ -799,7 +799,7 @@ int VinylControlXwax::getPositionQuality() {
         positionQualityPercent = 0;
     } else if ((m_iPosition <= m_iQualityLastPosition - 5) ||
             (m_iPosition >= m_iQualityLastPosition + 5)) {
-        // Position code changed not by more than 5. This indicates a normal spinning conrol vinyl.
+        // Position code changed not by more than 5. This indicates a normal spinning control vinyl.
         positionQualityPercent = 100;
     } else {
         // Position code changed by more than 5. This indicates a fast spinning control vinyl, a jumping needle or a false signal.
