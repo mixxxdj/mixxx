@@ -2049,6 +2049,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
+    case Feature::UpdateReplayGain:
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     default:
         DEBUG_ASSERT(!"unreachable");
         return false;
