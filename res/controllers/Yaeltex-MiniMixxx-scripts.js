@@ -40,7 +40,8 @@ MiniMixxx.Encoder = class {
         this.layers = {};
         this.activeMode = {};
 
-        for (const mode of layerConfig) {
+        for (const layerName in layerConfig) {
+            const mode = layerConfig[layerName];
             if (mode.startsWith("EFFECT-")) {
                 const tokens = mode.split("-");
                 const effectNum = tokens[1];
