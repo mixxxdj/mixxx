@@ -7,7 +7,6 @@
 #include "track/globaltrackcache.h"
 #include "track/keyutils.h"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/performancetimer.h"
 
 namespace {
@@ -17,10 +16,10 @@ constexpr bool sDebug = false;
 }  // namespace
 
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
-                               const QString& tableName,
-                               const QString& idColumn,
-                               const QStringList& columns,
-                               bool isCaching)
+        const QString& tableName,
+        const QString& idColumn,
+        const QStringList& columns,
+        bool isCaching)
         : m_tableName(tableName),
           m_idColumn(idColumn),
           m_columnCount(columns.size()),

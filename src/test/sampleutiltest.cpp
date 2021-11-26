@@ -1,9 +1,10 @@
 #include <benchmark/benchmark.h>
 #include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QList>
 #include <QPair>
+#include <QtDebug>
+#include <vector>
 
 #include "util/sample.h"
 #include "util/timer.h"
@@ -255,17 +256,17 @@ TEST_F(SampleUtilTest, copy3WithGain) {
 
 TEST_F(SampleUtilTest, convertS16ToFloat32) {
     // Shorts are asymmetric, so SAMPLE_MAX is less than -SAMPLE_MIN.
-    const float expectedMax = static_cast<float>(SAMPLE_MAX) /
-                              static_cast<float>(-SAMPLE_MIN);
+    const float expectedMax = static_cast<float>(SAMPLE_MAXIMUM) /
+            static_cast<float>(-SAMPLE_MINIMUM);
     for (int i = 0; i < buffers.size(); ++i) {
         CSAMPLE* buffer = buffers[i];
         int size = sizes[i];
-        SAMPLE* s16 = new SAMPLE[size];
+        auto s16 = std::vector<SAMPLE>(size);
         FillBuffer(buffer, 1.0f, size);
         for (int j = 0; j < size; ++j) {
-            s16[j] = SAMPLE_MAX;
+            s16[j] = SAMPLE_MAXIMUM;
         }
-        SampleUtil::convertS16ToFloat32(buffer, s16, size);
+        SampleUtil::convertS16ToFloat32(buffer, s16.data(), size);
         for (int j = 0; j < size; ++j) {
             EXPECT_FLOAT_EQ(expectedMax, buffer[j]);
         }
@@ -273,19 +274,18 @@ TEST_F(SampleUtilTest, convertS16ToFloat32) {
         for (int j = 0; j < size; ++j) {
             s16[j] = 0;
         }
-        SampleUtil::convertS16ToFloat32(buffer, s16, size);
+        SampleUtil::convertS16ToFloat32(buffer, s16.data(), size);
         for (int j = 0; j < size; ++j) {
             EXPECT_FLOAT_EQ(0.0f, buffer[j]);
         }
         FillBuffer(buffer, -1.0f, size);
         for (int j = 0; j < size; ++j) {
-            s16[j] = SAMPLE_MIN;
+            s16[j] = SAMPLE_MINIMUM;
         }
-        SampleUtil::convertS16ToFloat32(buffer, s16, size);
+        SampleUtil::convertS16ToFloat32(buffer, s16.data(), size);
         for (int j = 0; j < size; ++j) {
             EXPECT_FLOAT_EQ(-1.0f, buffer[j]);
         }
-        delete [] s16;
     }
 }
 

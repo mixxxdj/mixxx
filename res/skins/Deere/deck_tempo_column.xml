@@ -81,19 +81,82 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
+      <WidgetGroup><!-- Rate slider + range displays -->
+        <Layout>stacked</Layout>
+        <SizePolicy>max,me</SizePolicy>
         <Children>
-          <SliderComposed>
-            <TooltipId>rate</TooltipId>
-            <Size>40f,-1me</Size>
-            <MaximumSize>40,200</MaximumSize>
-            <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-            <Handle scalemode="STRETCH_ASPECT">handle-vertical-blue.svg</Handle>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
-            </Connection>
-          </SliderComposed>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <SliderComposed>
+                <TooltipId>rate</TooltipId>
+                <Size>50f,-1me</Size>
+                <MaximumSize>40,200</MaximumSize>
+                <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">handle-vertical-blue.svg</Handle>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+                </Connection>
+              </SliderComposed>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Pitch range indicators: prefix / spacer / range number -->
+          <WidgetGroup>
+            <SizePolicy>me,me</SizePolicy>
+            <Layout>vertical</Layout>
+            <Size>50f,-1me</Size>
+            <Children>
+              <WidgetGroup>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <!-- Top range limit + prefix -->
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayTopPrefix</ObjectName>
+                    <Channel><Variable name="i" /></Channel>
+                    <Position>Top</Position>
+                    <Display>prefix</Display>
+                    <SizePolicy>me,me</SizePolicy>
+                  </RateRange>
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayTopRate</ObjectName>
+                    <Channel><Variable name="i" /></Channel>
+                    <Position>Top</Position>
+                    <Display>range</Display>
+                    <SizePolicy>me,me</SizePolicy>
+                  </RateRange>
+                </Children>
+              </WidgetGroup><!-- Pitch range indicators -->
+
+              <WidgetGroup>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <!-- Bottom range limit + prefix -->
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayBottomPrefix</ObjectName>
+                    <Channel><Variable name="i" /></Channel>
+                    <Position>Bottom</Position>
+                    <Align>Bottom</Align>
+                    <Display>prefix</Display>
+                    <SizePolicy>me,me</SizePolicy>
+                  </RateRange>
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayBottomRate</ObjectName>
+                    <Channel><Variable name="i" /></Channel>
+                    <Align>Bottom</Align>
+                    <Display>range</Display>
+                    <SizePolicy>me,me</SizePolicy>
+                  </RateRange>
+                </Children>
+              </WidgetGroup><!-- Pitch range indicators -->
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
 

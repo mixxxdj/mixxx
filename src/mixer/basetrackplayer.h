@@ -19,7 +19,6 @@ class ControlObject;
 class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
-class VisualsManager;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
 // rest of Mixxx. Also makes testing a lot easier.
@@ -82,6 +81,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, const QString& reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
+    // When the replaygain is adjusted, we modify the track pregain
+    // to compensate so there is no audible change in volume.
+    void slotAdjustReplayGain(mixxx::ReplayGain replayGain);
     void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
     void slotPlayToggled(double);
 
@@ -97,6 +99,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotWaveformZoomSetDefault(double pressed);
     void slotShiftCuesMillis(double milliseconds);
     void slotShiftCuesMillisButton(double value, double milliseconds);
+    void slotUpdateReplayGainFromPregain(double pressed);
 
   private:
     void setReplayGain(double value);
@@ -141,6 +144,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pShiftCuesLater;
     std::unique_ptr<ControlPushButton> m_pShiftCuesLaterSmall;
     std::unique_ptr<ControlObject> m_pShiftCues;
+
+    std::unique_ptr<ControlObject> m_pUpdateReplayGainFromPregain;
 
     parented_ptr<ControlProxy> m_pReplayGain;
     parented_ptr<ControlProxy> m_pPlay;

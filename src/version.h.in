@@ -1,0 +1,10 @@
+#pragma once
+// This file contains the basic Mixxx version and prerelease name. This doesn't
+// change very often, so this file can be included in other parts of the code
+// where the version number needs to be known at the preprocessor stage and
+// using the VersionInfo class is not an option.
+#define MIXXX_VERSION_MAJOR @CMAKE_PROJECT_VERSION_MAJOR@
+#define MIXXX_VERSION_MINOR @CMAKE_PROJECT_VERSION_MINOR@
+#define MIXXX_VERSION_PATCH @CMAKE_PROJECT_VERSION_PATCH@
+#define MIXXX_VERSION_SUFFIX "@MIXXX_VERSION_PRERELEASE@"
+#define MIXXX_BUILD_FLAGS "@MIXXX_BUILD_FLAGS@"

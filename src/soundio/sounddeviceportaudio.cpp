@@ -20,7 +20,7 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
 
-#ifdef __LINUX__
+#ifdef PA_USE_ALSA
 // for PaAlsa_EnableRealtimeScheduling
 #include <pa_linux_alsa.h>
 #endif
@@ -37,7 +37,7 @@ constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
 
 // We warn only at invalid timing 3, since the first two
 // callbacks can be always wrong due to a setup/open jitter
-const int m_invalidTimeInfoWarningCount = 3;
+constexpr int m_invalidTimeInfoWarningCount = 3;
 
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
@@ -113,7 +113,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         m_deviceId.name = deviceInfo->name;
     }
     m_deviceId.portAudioIndex = devIndex;
-    m_strDisplayName = QString::fromLocal8Bit(deviceInfo->name);
+    m_strDisplayName = QString::fromUtf8(deviceInfo->name);
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 
@@ -333,8 +333,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         qDebug() << "Opened PortAudio stream successfully... starting";
     }
 
-
-#ifdef __LINUX__
+#ifdef PA_USE_ALSA
     if (m_deviceTypeId == paALSA) {
         qInfo() << "Enabling ALSA real-time scheduling";
         PaAlsa_EnableRealtimeScheduling(pStream, 1);
@@ -905,7 +904,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #endif
 #endif
 
-#ifdef aarch64
+#if defined(__aarch64__)
         // Flush-to-zero on aarch64 is controlled by the Floating-point Control Register
         // Load the register into our variable.
         int savedFPCR;

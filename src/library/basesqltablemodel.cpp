@@ -28,11 +28,13 @@ const bool sDebug = false;
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
 // Column 0 is skipped when calculating the the columns of the view table
-const int kIdColumn = 0;
-const int kMaxSortColumns = 3;
+constexpr int kIdColumn = 0;
+constexpr int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
+
+const QString kModelName = "table:";
 
 } // anonymous namespace
 
@@ -140,6 +142,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::SampleRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::LastPlayedAt)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
@@ -610,6 +615,15 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
     return tableIndex;
 }
 
+QString BaseSqlTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName + m_tableName;
+    }
+    return kModelName + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
+}
+
 QVariant BaseSqlTableModel::rawValue(
         const QModelIndex& index) const {
     DEBUG_ASSERT(index.isValid());
@@ -692,7 +706,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) == column) {
         pTrack->setYear(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
-        pTrack->setGenre(value.toString());
+        updateTrackGenre(pTrack.get(), value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
         pTrack->setComposer(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) == column) {
@@ -702,7 +716,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
         pTrack->setComment(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
-        pTrack->setBpm(static_cast<double>(value.toDouble()));
+        pTrack->trySetBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
         // Update both the played flag and the number of times played
         pTrack->updatePlayCounter(value.toBool());
@@ -738,7 +752,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
+    return m_pTrackCollectionManager->getTrackById(getTrackId(index));
 }
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
@@ -759,6 +773,15 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
                     .data()
                     .toString();
     return QDir::fromNativeSeparators(nativeLocation);
+}
+
+QUrl BaseSqlTableModel::getTrackUrl(const QModelIndex& index) const {
+    const QString trackLocation = getTrackLocation(index);
+    DEBUG_ASSERT(trackLocation.trimmed() == trackLocation);
+    if (trackLocation.isEmpty()) {
+        return {};
+    }
+    return QUrl::fromLocalFile(trackLocation);
 }
 
 CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
@@ -839,8 +862,8 @@ QList<TrackRef> BaseSqlTableModel::getTrackRefs(
     QList<TrackRef> trackRefs;
     trackRefs.reserve(indices.size());
     foreach (QModelIndex index, indices) {
-        trackRefs.append(TrackRef::fromFileInfo(
-                TrackFile(getTrackLocation(index)),
+        trackRefs.append(TrackRef::fromFilePath(
+                getTrackLocation(index),
                 getTrackId(index)));
     }
     return trackRefs;

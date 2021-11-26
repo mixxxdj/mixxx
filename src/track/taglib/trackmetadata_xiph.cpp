@@ -7,10 +7,6 @@
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
-// TagLib has support for XiphComment::pictureList() since version 1.11
-#define TAGLIB_HAS_VORBIS_COMMENT_PICTURES \
-    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 11))
-
 namespace mixxx {
 
 namespace {
@@ -173,14 +169,12 @@ bool importCoverImageFromTag(
         return false; // nothing to do
     }
 
-#if (TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
     const QImage image =
             importCoverImageFromPictureList(tag.pictureList());
     if (!image.isNull()) {
         *pCoverArt = image;
         return false; // done
     }
-#endif
 
     // NOTE(uklotzde, 2016-07-13): Legacy code for parsing cover art (part 1)
     //
@@ -195,12 +189,10 @@ bool importCoverImageFromTag(
         // https://wiki.xiph.org/VorbisComment#METADATA_BLOCK_PICTURE
         const TagLib::StringList& base64EncodedList =
                 tag.fieldListMap()["METADATA_BLOCK_PICTURE"];
-#if (TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
         if (!base64EncodedList.isEmpty()) {
             kLogger.warning()
                     << "Taking legacy code path for reading cover art from VorbisComment field METADATA_BLOCK_PICTURE";
         }
-#endif
         for (const auto& base64Encoded : base64EncodedList) {
             TagLib::FLAC::Picture picture;
             if (parseBase64EncodedPicture(&picture, base64Encoded)) {
@@ -390,19 +382,19 @@ void importTrackMetadataFromTag(
 
     QString trackArtistId;
     if (readCommentField(tag, "MUSICBRAINZ_ARTISTID", &trackArtistId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(trackArtistId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
     QString trackRecordingId;
     if (readCommentField(tag, "MUSICBRAINZ_TRACKID", &trackRecordingId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(trackRecordingId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(QUuid(trackRecordingId));
     }
     QString trackReleaseId;
     if (readCommentField(tag, "MUSICBRAINZ_RELEASETRACKID", &trackReleaseId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(trackReleaseId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzReleaseId(QUuid(trackReleaseId));
     }
     QString trackWorkId;
     if (readCommentField(tag, "MUSICBRAINZ_WORKID", &trackWorkId)) {
-        pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(trackWorkId);
+        pTrackMetadata->refTrackInfo().setMusicBrainzWorkId(QUuid(trackWorkId));
     }
     QString albumArtistId;
     if (readCommentField(tag, "MUSICBRAINZ_ALBUMARTISTID", &albumArtistId)) {
@@ -601,14 +593,13 @@ bool exportTrackMetadataIntoTag(
             pTag, "DISCNUMBER", toTString(trackMetadata.getTrackInfo().getDiscNumber()));
 #endif // __EXTRA_METADATA__
 
-    // Export of Serato markers is disabled, because Mixxx
-    // does not modify them.
-#if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
     //
     // FIXME: We're only dumping FLAC tags for now, since the Ogg format is
     // different we don't support it yet.
-    if (fileType == FileType::FLAC) {
+    if (fileType == FileType::FLAC &&
+            trackMetadata.getTrackInfo().getSeratoTags().status() !=
+                    SeratoTags::ParserStatus::Failed) {
         writeCommentField(
                 pTag,
                 kCommentFieldKeySeratoBeatGrid,
@@ -619,9 +610,6 @@ bool exportTrackMetadataIntoTag(
                 kCommentFieldKeySeratoMarkers2FLAC,
                 dumpSeratoMarkers2(trackMetadata, fileType));
     }
-#else
-    Q_UNUSED(fileType);
-#endif // __EXPORT_SERATO_MARKERS__
 
     return true;
 }

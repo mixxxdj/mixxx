@@ -36,6 +36,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_zoomFactor(1.0),
           m_visualSamplePerPixel(1.0),
           m_audioSamplePerPixel(1.0),
+          m_audioVisualRatio(1.0),
           m_alphaBeatGrid(90),
           // Really create some to manage those;
           m_visualPlayPosition(nullptr),
@@ -123,18 +124,20 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     double visualSamplePerPixel = m_zoomFactor * m_rateRatio / m_scaleFactor;
     m_visualSamplePerPixel = math_max(0.01, visualSamplePerPixel);
 
-    TrackPointer pTrack(m_pTrack);
-    ConstWaveformPointer pWaveform = pTrack ? pTrack->getWaveform() : ConstWaveformPointer();
-    if (pWaveform) {
-        m_audioSamplePerPixel = m_visualSamplePerPixel * pWaveform->getAudioVisualRatio();
-    } else {
-        m_audioSamplePerPixel = 0.0;
+    TrackPointer pTrack = m_pTrack;
+    if (pTrack) {
+        ConstWaveformPointer pWaveform = pTrack->getWaveform();
+        if (pWaveform) {
+            m_audioVisualRatio = pWaveform->getAudioVisualRatio();
+        }
     }
 
-    double truePlayPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
-    // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
+    m_audioSamplePerPixel = m_visualSamplePerPixel * m_audioVisualRatio;
 
-    if (m_audioSamplePerPixel != 0 && truePlayPos != -1) {
+    double truePlayPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
+    // truePlayPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
+
+    if (m_audioSamplePerPixel > 0 && truePlayPos != -1) {
         // Track length in pixels.
         m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
 

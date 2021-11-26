@@ -127,7 +127,7 @@ int ControllerOutputMappingTableModel::columnCount(const QModelIndex& parent) co
         return 0;
     }
     // Control and description
-    const int kBaseColumns = 2;
+    constexpr int kBaseColumns = 2;
     if (m_pMidiMapping != nullptr) {
         // Channel, Opcode, Control, On, Off, Min, Max
         return kBaseColumns + 7;
@@ -157,7 +157,7 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.output.status);
             case MIDI_COLUMN_OPCODE:
-                return MidiUtils::opCodeFromStatus(mapping.output.status);
+                return MidiUtils::opCodeValue(MidiUtils::opCodeFromStatus(mapping.output.status));
             case MIDI_COLUMN_CONTROL:
                 return mapping.output.control;
             case MIDI_COLUMN_ON:

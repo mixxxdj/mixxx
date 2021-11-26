@@ -5,12 +5,11 @@
     <SingletonDefinition>
       <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
       <Children>
-        <Template src="skin:spinny_coverart.xml"/>
+        <Template src="skin:/decks/spinny_coverart.xml"/>
       </Children>
     </SingletonDefinition>
 
-    <!-- ...used in full & compact deck, minimal deck has its own instance
-         with smaller labels. -->
+    <!-- ...used in full & compact deck -->
     <SingletonDefinition>
       <ObjectName>DeckOverview<Variable name="ChanNum"/></ObjectName>
       <Children>
@@ -20,7 +19,6 @@
       </Children>
     </SingletonDefinition>
 
-    <!-- ...used in full & compact deck. -->
     <SingletonDefinition>
       <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
       <Children>
@@ -28,11 +26,68 @@
       </Children>
     </SingletonDefinition>
 
-    <!-- ...used in full & compact deck -->
     <SingletonDefinition>
       <ObjectName>KeyControls<Variable name="ChanNum"/></ObjectName>
       <Children>
         <Template src="skin:/decks/key_controls.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <!-- Rate range displays, top & bottom -->
+    <SingletonDefinition>
+      <ObjectName>RateRangeDisplayTop<Variable name="ChanNum"/></ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Size>53f,17f</Size>
+          <Children>
+            <RateRange>
+              <TooltipId>rate_range_display</TooltipId>
+              <ObjectName>RateRangePrefix</ObjectName>
+              <Channel><Variable name="ChanNum"/></Channel>
+              <Position>Top</Position>
+              <Display>prefix</Display>
+              <Size>7f,16f</Size>
+              <Pos>3,0</Pos>
+            </RateRange>
+            <RateRange>
+              <TooltipId>rate_range_display</TooltipId>
+              <ObjectName>RateRangeText</ObjectName>
+              <Channel><Variable name="ChanNum"/></Channel>
+              <Position>Top</Position>
+              <Display>range</Display>
+              <Size>18f,16f</Size>
+              <Pos>35,1</Pos>
+            </RateRange>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </SingletonDefinition>
+    <SingletonDefinition>
+      <ObjectName>RateRangeDisplayBottom<Variable name="ChanNum"/></ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Size>53f,16f</Size>
+          <Children>
+            <RateRange>
+              <TooltipId>rate_range_display</TooltipId>
+              <ObjectName>RateRangePrefix</ObjectName>
+              <Channel><Variable name="ChanNum" /></Channel>
+              <Position>Bottom</Position>
+              <Display>prefix</Display>
+              <Size>7f,16f</Size>
+              <Pos>3,0</Pos>
+            </RateRange>
+            <RateRange>
+              <TooltipId>rate_range_display</TooltipId>
+              <ObjectName>RateRangeText</ObjectName>
+              <Channel><Variable name="ChanNum" /></Channel>
+              <Position>Bottom</Position>
+              <Display>range</Display>
+              <Size>18f,16f</Size>
+              <Pos>35,0</Pos>
+            </RateRange>
+          </Children>
+        </WidgetGroup>
       </Children>
     </SingletonDefinition>
 

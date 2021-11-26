@@ -7,6 +7,12 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_playlisttablemodel.cpp"
 
+namespace {
+
+const QString kModelName = "playlist:";
+
+} // anonymous namespace
+
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace,
@@ -92,6 +98,9 @@ void PlaylistTableModel::initSortColumnMapping() {
             TrackModel::SortColumnId::Preview)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
     m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Color)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
+    m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::CoverArt)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
     m_columnIndexBySortColumnId[static_cast<int>(
@@ -172,7 +181,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         return 0;
     }
 
-    QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()->resolveTrackIdsFromLocations(
+    QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromLocations(
             locations);
 
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
@@ -343,6 +352,15 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
     }
 
     return caps;
+}
+
+QString PlaylistTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName + m_tableName;
+    }
+    return kModelName + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
 }
 
 void PlaylistTableModel::playlistsChanged(const QSet<int>& playlistIds) {

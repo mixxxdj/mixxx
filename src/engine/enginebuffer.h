@@ -4,12 +4,15 @@
 
 #include <QAtomicInt>
 #include <QMutex>
+#include <cfloat>
 
+#include "audio/frame.h"
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
+#include "track/bpm.h"
 #include "track/track_decl.h"
 #include "util/rotary.h"
 #include "util/types.h"
@@ -34,9 +37,6 @@ class ReadAheadManager;
 class ControlObject;
 class ControlProxy;
 class ControlPushButton;
-class ControlIndicator;
-class ControlBeat;
-class ControlTTRotary;
 class ControlPotmeter;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
@@ -46,15 +46,6 @@ class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
-
-// Length of audio beat marks in samples
-const int audioBeatMarkLen = 40;
-
-// Temporary buffer length
-const int kiTempLength = 200000;
-
-// Rate at which the playpos slider is updated
-const int kiPlaypositionUpdateRate = 15; // updates per second
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
@@ -100,19 +91,21 @@ class EngineBuffer : public EngineObject {
     double getSpeed() const;
     bool getScratching() const;
     bool isReverse() const;
-    // Returns current bpm value (not thread-safe)
-    double getBpm() const;
-    // Returns the BPM of the loaded track around the current position (not thread-safe)
-    double getLocalBpm() const;
+    /// Returns current bpm value (not thread-safe)
+    mixxx::Bpm getBpm() const;
+    /// Returns the BPM of the loaded track around the current position (not thread-safe)
+    mixxx::Bpm getLocalBpm() const;
     /// Sets a beatloop for the loaded track (not thread safe)
-    void setBeatLoop(double startPosition, bool enabled);
+    void setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled);
     /// Sets a loop for the loaded track (not thread safe)
-    void setLoop(double startPosition, double endPositon, bool enabled);
+    void setLoop(mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPositon,
+            bool enabled);
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
     // Queues a new seek position. Use SEEK_EXACT or SEEK_STANDARD as seekType
-    void queueNewPlaypos(double newpos, enum SeekRequest seekType);
+    void queueNewPlaypos(mixxx::audio::FramePos newpos, enum SeekRequest seekType);
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);
@@ -123,16 +116,18 @@ class EngineBuffer : public EngineObject {
     void processSlip(int iBufferSize);
     void postProcess(const int iBufferSize);
 
-    /// Return true iff a seek is currently queued but not yet processed
-    /// If no seek was queued, the seek position is set to -1
-    bool getQueuedSeekPosition(double* pSeekPosition) const;
+    /// Returns the seek position iff a seek is currently queued but not yet
+    /// processed. If no seek was queued, and invalid frame position is returned.
+    mixxx::audio::FramePos queuedSeekPosition() const;
 
     bool isTrackLoaded() const;
     TrackPointer getLoadedTrack() const;
 
-    double getExactPlayPos() const;
+    mixxx::audio::FramePos getExactPlayPos() const;
     double getVisualPlayPos() const;
-    double getTrackSamples() const;
+    mixxx::audio::FramePos getTrackEndPosition() const;
+    void setTrackEndPosition(mixxx::audio::FramePos position);
+    double getUserOffset() const;
 
     double getRateRatio() const;
 
@@ -162,6 +157,13 @@ class EngineBuffer : public EngineObject {
     // has completed.
     void loadTrack(TrackPointer pTrack, bool play);
 
+    void setChannelIndex(int channelIndex) {
+        m_channelIndex = channelIndex;
+    }
+
+    void seekAbs(mixxx::audio::FramePos);
+    void seekExact(mixxx::audio::FramePos);
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -170,8 +172,6 @@ class EngineBuffer : public EngineObject {
     void slotControlStart(double);
     void slotControlEnd(double);
     void slotControlSeek(double);
-    void slotControlSeekAbs(double);
-    void slotControlSeekExact(double);
     void slotKeylockEngineChanged(double);
 
     void slotEjectTrack(double);
@@ -191,6 +191,11 @@ class EngineBuffer : public EngineObject {
     void slotUpdatedTrackBeats();
 
   private:
+    struct QueuedSeek {
+        mixxx::audio::FramePos position;
+        enum SeekRequest seekType;
+    };
+
     // Add an engine control to the EngineBuffer
     // must not be called outside the Constructor
     void addControl(EngineControl* pControl);
@@ -204,10 +209,10 @@ class EngineBuffer : public EngineObject {
 
     void ejectTrack();
 
-    double fractionalPlayposFromAbsolute(double absolutePlaypos);
+    double fractionalPlayposFromAbsolute(mixxx::audio::FramePos position);
 
     void doSeekFractional(double fractionalPos, enum SeekRequest seekType);
-    void doSeekPlayPos(double playpos, enum SeekRequest seekType);
+    void doSeekPlayPos(mixxx::audio::FramePos position, enum SeekRequest seekType);
 
     // Read one buffer from the current scaler into the crossfade buffer.  Used
     // for transitioning from one scaler to another, or reseeking a scaler
@@ -218,36 +223,41 @@ class EngineBuffer : public EngineObject {
     void seekCloneBuffer(EngineBuffer* pOtherBuffer);
 
     // Reset buffer playpos and set file playpos.
-    void setNewPlaypos(double playpos);
+    void setNewPlaypos(mixxx::audio::FramePos playpos);
 
     void processSyncRequests();
     void processSeek(bool paused);
-
+    // For debugging / testing -- returns true if the previous buffer call resulted in a seek.
+    FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInSyncDisable);
+    bool previousBufferSeek() const {
+        return m_previousBufferSeek;
+    }
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay);
     void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);
+    void processTrackLocked(CSAMPLE* pOutput,
+            const int iBufferSize,
+            mixxx::audio::SampleRate sampleRate);
 
     // Holds the name of the control group
     const QString m_group;
+    int m_channelIndex;
+
     UserSettingsPointer m_pConfig;
 
     friend class CueControlTest;
     friend class HotcueControlTest;
+    friend class LoopingControlTest;
 
     LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
-    FRIEND_TEST(LoopingControlTest, LoopMoveTest);
-    FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
-    FRIEND_TEST(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead);
-    FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
-    FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
-    FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
+    FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange);
+    FRIEND_TEST(EngineSyncTest, BeatMapQuantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
@@ -256,6 +266,8 @@ class EngineBuffer : public EngineObject {
     BpmControl* m_pBpmControl;
     KeyControl* m_pKeyControl;
     ClockControl* m_pClockControl;
+    FRIEND_TEST(CueControlTest, SeekOnSetCueCDJ);
+    FRIEND_TEST(CueControlTest, SeekOnSetCuePlay);
     CueControl* m_pCueControl;
 
     QList<EngineControl*> m_engineControls;
@@ -270,7 +282,7 @@ class EngineBuffer : public EngineObject {
     HintVector m_hintList;
 
     // The current sample to play in the file.
-    double m_filepos_play;
+    mixxx::audio::FramePos m_playPosition;
 
     // The previous callback's speed. Used to check if the scaler parameters
     // need updating.
@@ -297,10 +309,10 @@ class EngineBuffer : public EngineObject {
     double m_rate_old;
 
     // Copy of length of file
-    double m_trackSamplesOld;
+    mixxx::audio::FramePos m_trackEndPositionOld;
 
     // Copy of file sample rate
-    double m_trackSampleRateOld;
+    mixxx::audio::SampleRate m_trackSampleRateOld;
 
     // Mutex controlling whether the process function is in pause mode. This happens
     // during seek and loading of a new track
@@ -309,7 +321,7 @@ class EngineBuffer : public EngineObject {
     int m_iSamplesSinceLastIndicatorUpdate;
 
     // The location where the track would have been had slip not been engaged
-    double m_dSlipPosition;
+    mixxx::audio::FramePos m_slipPosition;
     // Saved value of rate for slip mode
     double m_dSlipRate;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
@@ -374,11 +386,14 @@ class EngineBuffer : public EngineObject {
     // Indicates that dependency injection has taken place.
     bool m_bScalerOverride;
 
-    QAtomicInt m_iSeekQueued;
     QAtomicInt m_iSeekPhaseQueued;
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
-    ControlValueAtomic<double> m_queuedSeekPosition;
+    ControlValueAtomic<QueuedSeek> m_queuedSeek;
+    bool m_previousBufferSeek = false;
+
+    /// Indicates that no seek is queued
+    static constexpr QueuedSeek kNoQueuedSeek = {mixxx::audio::kInvalidFramePos, SEEK_NONE};
     QAtomicPointer<EngineChannel> m_pChannelToCloneFrom;
 
     // Is true if the previous buffer was silent due to pausing
@@ -386,7 +401,7 @@ class EngineBuffer : public EngineObject {
     bool m_bPlayAfterLoading;
     // Records the sample rate so we can detect when it changes. Initialized to
     // 0 to guarantee we see a change on the first callback.
-    int m_iSampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
 
     TrackPointer m_pCurrentTrack;
 #ifdef __SCALER_DEBUG__

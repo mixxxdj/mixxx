@@ -2,26 +2,26 @@
 
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
-#include "util/math.h"
+#include "util/fpclassify.h"
 #include "util/time.h"
 
 namespace {
-const int kDecks = 16;
+constexpr int kDecks = 16;
 
 // Use 1ms for the Alpha-Beta dt. We're assuming the OS actually gives us a 1ms
 // timer.
-const int kScratchTimerMs = 1;
+constexpr int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 } // anonymous namespace
 
 ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
-        ControllerScriptEngineLegacy* m_pEngine)
-        : m_pScriptEngineLegacy(m_pEngine) {
+        ControllerScriptEngineLegacy* m_pEngine, const RuntimeLoggingCategory& logger)
+        : m_pScriptEngineLegacy(m_pEngine),
+          m_logger(logger) {
     // Pre-allocate arrays for average number of virtual decks
     m_intervalAccumulator.resize(kDecks);
     m_lastMovement.resize(kDecks);
@@ -53,7 +53,7 @@ ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
     QHashIterator<int, int> it(m_scratchTimers);
     while (it.hasNext()) {
         it.next();
-        qDebug() << "Aborting scratching on deck" << it.value();
+        qCDebug(m_logger) << "Aborting scratching on deck" << it.value();
         // Clear scratch2_enable. PlayerManager::groupForDeck is 0-indexed.
         QString group = PlayerManager::groupForDeck(it.value() - 1);
         ControlObjectScript* pScratch2Enable =
@@ -72,7 +72,7 @@ ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
     {
         auto it = m_controlCache.begin();
         while (it != m_controlCache.end()) {
-            qDebug()
+            qCDebug(m_logger)
                     << "Deleting ControlObjectScript"
                     << it.key().group
                     << it.key().item;
@@ -89,7 +89,7 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
     ControlObjectScript* coScript = m_controlCache.value(key, nullptr);
     if (coScript == nullptr) {
         // create COT
-        coScript = new ControlObjectScript(key, this);
+        coScript = new ControlObjectScript(key, m_logger, this);
         if (coScript->valid()) {
             m_controlCache.insert(key, coScript);
         } else {
@@ -103,8 +103,8 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        qWarning() << "Unknown control" << group << name
-                   << ", returning 0.0";
+        qCWarning(m_logger) << "Unknown control" << group << name
+                            << ", returning 0.0";
         return 0.0;
     }
     return coScript->get();
@@ -112,9 +112,9 @@ double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QSt
 
 void ControllerScriptInterfaceLegacy::setValue(
         const QString& group, const QString& name, double newValue) {
-    if (isnan(newValue)) {
-        qWarning() << "script setting [" << group << ","
-                   << name << "] to NotANumber, ignoring.";
+    if (util_isnan(newValue)) {
+        qCWarning(m_logger) << "script setting [" << group << ","
+                            << name << "] to NotANumber, ignoring.";
         return;
     }
 
@@ -122,11 +122,11 @@ void ControllerScriptInterfaceLegacy::setValue(
 
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControllerDebug::controlFlags());
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl &&
                 !m_st.ignore(
                         pControl, coScript->getParameterForValue(newValue))) {
-            coScript->slotSet(newValue);
+            coScript->set(newValue);
         }
     }
 }
@@ -134,8 +134,8 @@ void ControllerScriptInterfaceLegacy::setValue(
 double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        qWarning() << "Unknown control" << group << name
-                   << ", returning 0.0";
+        qCWarning(m_logger) << "Unknown control" << group << name
+                            << ", returning 0.0";
         return 0.0;
     }
     return coScript->getParameter();
@@ -143,9 +143,9 @@ double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const
 
 void ControllerScriptInterfaceLegacy::setParameter(
         const QString& group, const QString& name, double newParameter) {
-    if (isnan(newParameter)) {
-        qWarning() << "script setting [" << group << ","
-                   << name << "] to NotANumber, ignoring.";
+    if (util_isnan(newParameter)) {
+        qCWarning(m_logger) << "script setting [" << group << ","
+                            << name << "] to NotANumber, ignoring.";
         return;
     }
 
@@ -153,7 +153,7 @@ void ControllerScriptInterfaceLegacy::setParameter(
 
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControllerDebug::controlFlags());
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, newParameter)) {
             coScript->setParameter(newParameter);
         }
@@ -162,17 +162,17 @@ void ControllerScriptInterfaceLegacy::setParameter(
 
 double ControllerScriptInterfaceLegacy::getParameterForValue(
         const QString& group, const QString& name, double value) {
-    if (isnan(value)) {
-        qWarning() << "script setting [" << group << ","
-                   << name << "] to NotANumber, ignoring.";
+    if (util_isnan(value)) {
+        qCWarning(m_logger) << "script setting [" << group << ","
+                            << name << "] to NotANumber, ignoring.";
         return 0.0;
     }
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "Unknown control" << group << name
-                   << ", returning 0.0";
+        qCWarning(m_logger) << "Unknown control" << group << name
+                            << ", returning 0.0";
         return 0.0;
     }
 
@@ -190,8 +190,8 @@ double ControllerScriptInterfaceLegacy::getDefaultValue(const QString& group, co
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "Unknown control" << group << name
-                   << ", returning 0.0";
+        qCWarning(m_logger) << "Unknown control" << group << name
+                            << ", returning 0.0";
         return 0.0;
     }
 
@@ -203,8 +203,8 @@ double ControllerScriptInterfaceLegacy::getDefaultParameter(
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "Unknown control" << group << name
-                   << ", returning 0.0";
+        qCWarning(m_logger) << "Unknown control" << group << name
+                            << ", returning 0.0";
         return 0.0;
     }
 
@@ -358,7 +358,7 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
             // not break.
             ScriptConnection connection = coScript->firstConnection();
 
-            qWarning() << "Tried to make duplicate connection between (" +
+            qCWarning(m_logger) << "Tried to make duplicate connection between (" +
                             group + ", " + name + ") and " +
                             passedCallback.toString() +
                             " but this is not allowed when passing a callback "
@@ -380,8 +380,8 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
         QObject* qobject = passedCallback.toQObject();
         const QMetaObject* qmeta = qobject->metaObject();
 
-        qWarning() << "QObject passed to engine.connectControl. Assuming it is"
-                   << "a connection object to disconnect and returning false.";
+        qCWarning(m_logger) << "QObject passed to engine.connectControl. Assuming it is"
+                            << "a connection object to disconnect and returning false.";
         if (!strcmp(qmeta->className(), "ScriptConnectionJSProxy")) {
             ScriptConnectionJSProxy* proxy = (ScriptConnectionJSProxy*)qobject;
             proxy->disconnect();
@@ -415,7 +415,8 @@ void ControllerScriptInterfaceLegacy::trigger(const QString& group, const QStrin
 }
 
 void ControllerScriptInterfaceLegacy::log(const QString& message) {
-    controllerDebug(message);
+    qCDebug(m_logger) << "engine.log is deprecated. Use console.log instead.";
+    qCDebug(m_logger) << message;
 }
 int ControllerScriptInterfaceLegacy::beginTimer(
         int intervalMillis, QJSValue timerCallback, bool oneShot) {
@@ -434,8 +435,8 @@ int ControllerScriptInterfaceLegacy::beginTimer(
     }
 
     if (intervalMillis < 20) {
-        qWarning() << "Timer request for" << intervalMillis
-                   << "ms is too short. Setting to the minimum of 20ms.";
+        qCWarning(m_logger) << "Timer request for" << intervalMillis
+                            << "ms is too short. Setting to the minimum of 20ms.";
         intervalMillis = 20;
     }
 
@@ -448,22 +449,22 @@ int ControllerScriptInterfaceLegacy::beginTimer(
     info.oneShot = oneShot;
     m_timers[timerId] = info;
     if (timerId == 0) {
-        qWarning() << "Script timer could not be created";
+        qCWarning(m_logger) << "Script timer could not be created";
     } else if (oneShot) {
-        controllerDebug("Starting one-shot timer:" << timerId);
+        qCDebug(m_logger) << "Starting one-shot timer:" << timerId;
     } else {
-        controllerDebug("Starting timer:" << timerId);
+        qCDebug(m_logger) << "Starting timer:" << timerId;
     }
     return timerId;
 }
 
 void ControllerScriptInterfaceLegacy::stopTimer(int timerId) {
     if (!m_timers.contains(timerId)) {
-        qWarning() << "Killing timer" << timerId
-                   << ": That timer does not exist!";
+        qCWarning(m_logger) << "Killing timer" << timerId
+                            << ": That timer does not exist!";
         return;
     }
-    controllerDebug("Killing timer:" << timerId);
+    qCDebug(m_logger) << "Killing timer:" << timerId;
     killTimer(timerId);
     m_timers.remove(timerId);
 }
@@ -479,8 +480,8 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
 
     auto it = m_timers.constFind(timerId);
     if (it == m_timers.constEnd()) {
-        qWarning() << "Timer" << timerId
-                   << "fired but there's no function mapped to it!";
+        qCWarning(m_logger) << "Timer" << timerId
+                            << "fired but there's no function mapped to it!";
         return;
     }
 
@@ -499,7 +500,7 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
 void ControllerScriptInterfaceLegacy::softTakeover(
         const QString& group, const QString& name, bool set) {
     ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControllerDebug::controlFlags());
+            ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         return;
     }
@@ -513,7 +514,7 @@ void ControllerScriptInterfaceLegacy::softTakeover(
 void ControllerScriptInterfaceLegacy::softTakeoverIgnoreNextValue(
         const QString& group, const QString& name) {
     ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControllerDebug::controlFlags());
+            ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         return;
     }
@@ -557,7 +558,7 @@ void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
         bool ramp) {
     // If we're already scratching this deck, override that with this request
     if (static_cast<bool>(m_dx[deck])) {
-        //qDebug() << "Already scratching deck" << deck << ". Overriding.";
+        //qCDebug(m_logger) << "Already scratching deck" << deck << ". Overriding.";
         int timerId = m_scratchTimers.key(deck);
         killTimer(timerId);
         m_scratchTimers.remove(timerId);
@@ -568,8 +569,8 @@ void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
     double intervalsPerSecond = (rpm * intervalsPerRev) / 60.0;
 
     if (intervalsPerSecond == 0.0) {
-        qWarning() << "Invalid rpm or intervalsPerRev supplied to "
-                      "scratchEnable. Ignoring request.";
+        qCWarning(m_logger) << "Invalid rpm or intervalsPerRev supplied to "
+                               "scratchEnable. Ignoring request.";
         return;
     }
 
@@ -621,7 +622,7 @@ void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
 
     // Set scratch2_enable
     if (pScratch2Enable != nullptr) {
-        pScratch2Enable->slotSet(1);
+        pScratch2Enable->set(1);
     }
 }
 
@@ -636,7 +637,7 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
     QString group = PlayerManager::groupForDeck(deck - 1);
     AlphaBetaFilter* filter = m_scratchFilters[deck];
     if (!filter) {
-        qWarning() << "Scratch filter pointer is null on deck" << deck;
+        qCWarning(m_logger) << "Scratch filter pointer is null on deck" << deck;
         return;
     }
 
@@ -688,10 +689,10 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
 
         if (m_brakeActive[deck]) {
             // If in brake mode, set scratch2 rate to 0 and turn off the play button.
-            pScratch2->slotSet(0.0);
+            pScratch2->set(0.0);
             ControlObjectScript* pPlay = getControlObjectScript(group, "play");
             if (pPlay != nullptr) {
-                pPlay->slotSet(0.0);
+                pPlay->set(0.0);
             }
         }
 
@@ -701,7 +702,7 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
         if (pScratch2Enable == nullptr) {
             return; // abort and maybe it'll work on the next pass
         }
-        pScratch2Enable->slotSet(0);
+        pScratch2Enable->set(0);
 
         // Remove timer
         killTimer(timerId);
@@ -724,7 +725,7 @@ void ControllerScriptInterfaceLegacy::scratchDisable(int deck, bool ramp) {
         // Clear scratch2_enable
         ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
         if (pScratch2Enable != nullptr) {
-            pScratch2Enable->slotSet(0);
+            pScratch2Enable->set(0);
         }
         // Can't return here because we need scratchProcess to stop the timer.
         // So it's still actually ramping, we just won't hear or see it.
@@ -761,7 +762,7 @@ void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double fact
     // enable/disable scratch2 mode
     ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
     if (pScratch2Enable != nullptr) {
-        pScratch2Enable->slotSet(activate ? 1 : 0);
+        pScratch2Enable->set(activate ? 1 : 0);
     }
 
     // used in scratchProcess for the different timer behavior we need
@@ -792,7 +793,7 @@ void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double fact
 
         ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
         if (pScratch2 != nullptr) {
-            pScratch2->slotSet(initRate);
+            pScratch2->set(initRate);
         }
 
         // setup the filter with default alpha and beta*factor
@@ -824,7 +825,7 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
     // enable/disable scratch2 mode
     ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
     if (pScratch2Enable != nullptr) {
-        pScratch2Enable->slotSet(activate ? 1 : 0);
+        pScratch2Enable->set(activate ? 1 : 0);
     }
 
     // used in scratchProcess for the different timer behavior we need
@@ -851,12 +852,12 @@ void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double 
 
         ControlObjectScript* pPlay = getControlObjectScript(group, "play");
         if (pPlay != nullptr) {
-            pPlay->slotSet(1.0);
+            pPlay->set(1.0);
         }
 
         ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
         if (pScratch2 != nullptr) {
-            pScratch2->slotSet(initRate);
+            pScratch2->set(initRate);
         }
 
         // setup the filter like in brake(), with default alpha and beta*factor

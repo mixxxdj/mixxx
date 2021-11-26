@@ -1,21 +1,18 @@
-/*  push skin settings Close button to the left so it's not in the same screen
-    position as the Open button.
-    fixes lp1795663 "settings panel disappears instantly after opening it in Tango & Deere skin"
-*/
+/*  push skin settings Close button to the left so it's not in
+    the same screen position as the Open button. Fixes lp1795663
+    "settings panel disappears instantly after opening it in Tango & Deere skin" */
 #SkinSettingsTop {
   padding-right: 27px;
 }
 
-
-/* Previously necessayr hack to hide the checkmark, otherwise text gets cut off
-on the right on Retina screens. This can only be done for macOS
-because it cuts off text on the left on KDE
-WEffectSelector QAbstractItemView {
-  margin: 0 0 0 -24px;
+/* Previously necessary hack to avoid cut-off effect names with scaled checkbox
+    on Macs with Retina screens */
+/* WEffectSelector QAbstractItemView {
+  margin: 0px 0px 0px -27px;
 } */
 
-/* hide the checkmark just in case the above shows a
-partial checkmark on some untested screen
-WEffectSelector::indicator {
+/* just in case there is a partial checkmark shown on some
+  untested screen, hide the checkmark */
+/* WEffectSelector::indicator {
     border: 0;
 } */

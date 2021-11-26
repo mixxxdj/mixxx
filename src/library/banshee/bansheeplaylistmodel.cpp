@@ -9,7 +9,6 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "moc_bansheeplaylistmodel.cpp"
-#include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/track.h"
 
@@ -225,7 +224,7 @@ TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
     if (pTrack) {
         for (int row = 0; row < rowCount(); ++row) {
             const QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
-            if (TrackFile::fromUrl(rowUrl) == pTrack->getFileInfo()) {
+            if (mixxx::FileInfo::fromQUrl(rowUrl) == pTrack->getFileInfo()) {
                 return TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
             }
         }
@@ -253,7 +252,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
@@ -266,20 +265,15 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         pTrack->setAlbum(getFieldString(index, CLM_ALBUM));
         pTrack->setAlbumArtist(getFieldString(index, CLM_ALBUM_ARTIST));
         pTrack->setYear(getFieldString(index, CLM_YEAR));
-        pTrack->setGenre(getFieldString(index, CLM_GENRE));
+        updateTrackGenre(pTrack.get(), getFieldString(index, CLM_GENRE));
         pTrack->setGrouping(getFieldString(index, CLM_GROUPING));
         pTrack->setRating(getFieldString(index, CLM_RATING).toInt());
         pTrack->setTrackNumber(getFieldString(index, CLM_TRACKNUMBER));
         double bpm = getFieldString(index, CLM_BPM).toDouble();
-        bpm = pTrack->setBpm(bpm);
+        pTrack->trySetBpm(bpm);
         pTrack->setBitrate(getFieldString(index, CLM_BITRATE).toInt());
         pTrack->setComment(getFieldString(index, CLM_COMMENT));
         pTrack->setComposer(getFieldString(index, CLM_COMPOSER));
-        // If the track has a BPM, then give it a static beatgrid.
-        if (bpm > 0) {
-            mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0.0);
-            pTrack->setBeats(pBeats);
-        }
     }
     return pTrack;
 }
@@ -293,28 +287,35 @@ TrackId BansheePlaylistModel::getTrackId(const QModelIndex& index) const {
     }
 }
 
+QUrl BansheePlaylistModel::getTrackUrl(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return {};
+    }
+    return QUrl(getFieldString(index, CLM_URI));
+}
+
 // Gets the on-disk location of the track at the given location.
 QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
-    if (!index.isValid()) {
-        return "";
+    const QUrl url = getTrackUrl(index);
+    if (!url.isValid()) {
+        return {};
     }
-    QUrl url(getFieldString(index, CLM_URI));
 
-    QString location = TrackFile::fromUrl(url).location();
-    qDebug() << location << " = " << url;
-    if (!location.isEmpty()) {
-        return location;
+    if (url.isLocalFile()) {
+        const QString location = mixxx::FileInfo::fromQUrl(url).location();
+        if (!location.isEmpty()) {
+            return location;
+        }
     }
 
     // Try to convert a smb path location = url.toLocalFile();
     QString temp_location = url.toString();
-
     if (temp_location.startsWith("smb://")) {
         // Hack for samba mounts works only on German GNOME Linux
         // smb://daniel-desktop/volume/Musik/Lastfm/Limp Bizkit/Chocolate Starfish And The Hot Dog Flavored Water/06 - Rollin' (Air Raid Vehicle).mp3"
         // TODO(xxx): use gio instead
 
-        location = QDir::homePath() + "/.gvfs/";
+        QString location = QDir::homePath() + "/.gvfs/";
         location += temp_location.section('/', 3, 3);
         location += " auf ";
         location += temp_location.section('/', 2, 2);
@@ -324,7 +325,7 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
         return location;
     }
 
-    return QString();
+    return {};
 }
 
 bool BansheePlaylistModel::isColumnInternal(int column) {

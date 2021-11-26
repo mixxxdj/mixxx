@@ -1,13 +1,17 @@
 #include "widget/wbeatspinbox.h"
 
+#include <QApplication>
 #include <QLineEdit>
+#include <QRegularExpression>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "moc_wbeatspinbox.cpp"
 #include "util/math.h"
 
-QRegExp WBeatSpinBox::s_regexpBlacklist("[^0-9.,/ ]");
+namespace {
+const QRegularExpression kBlockListRegex(QStringLiteral("[^0-9.,/ ]"));
+}
 
 WBeatSpinBox::WBeatSpinBox(QWidget* parent,
         const ConfigKey& configKey,
@@ -201,7 +205,8 @@ double WBeatSpinBox::valueFromText(const QString& text) const {
 
 QValidator::State WBeatSpinBox::validate(QString& input, int& pos) const {
     Q_UNUSED(pos);
-    if (input.contains(s_regexpBlacklist)) {
+    QRegularExpressionMatch blockListMatch = kBlockListRegex.match(input);
+    if (blockListMatch.hasMatch()) {
         return QValidator::Invalid;
     }
     if (input.isEmpty()) {
@@ -289,6 +294,18 @@ bool WBeatSpinBox::event(QEvent* pEvent) {
         }
     }
     return QDoubleSpinBox::event(pEvent);
+}
+
+void WBeatSpinBox::keyPressEvent(QKeyEvent* pEvent) {
+    // Return key applies current value and sends a Shift+Tab event in order
+    // to focus a library widget. In official skins this would be the tracks table.
+    if (pEvent->key() == Qt::Key_Return) {
+        QDoubleSpinBox::keyPressEvent(pEvent);
+        QKeyEvent returnKeyEvent = QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
+        QApplication::sendEvent(this, &returnKeyEvent);
+        return;
+    }
+    return QDoubleSpinBox::keyPressEvent(pEvent);
 }
 
 bool WBeatLineEdit::event(QEvent* pEvent) {

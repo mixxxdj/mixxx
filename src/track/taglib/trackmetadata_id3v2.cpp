@@ -31,7 +31,7 @@ namespace {
 // i.e. only 3 instead of 4 characters.
 // https://en.wikipedia.org/wiki/ID3#ID3v2
 // http://id3.org/Developer%20Information
-const unsigned int kMinVersion = 3;
+constexpr unsigned int kMinVersion = 3;
 
 bool checkHeaderVersionSupported(
         const TagLib::ID3v2::Header& header) {
@@ -283,6 +283,7 @@ QByteArray readFirstUniqueFileIdentifierFrame(
 TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjectFrame(
         const TagLib::ID3v2::Tag& tag,
         const QString& description,
+        const TagLib::String& mimeType,
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
     TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFirstFrame = nullptr;
@@ -298,6 +299,10 @@ TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjec
             const QString frameDescription(
                     toQString(pFrame->description()));
             if (0 == frameDescription.compare(description, Qt::CaseInsensitive)) {
+                if (!mimeType.isEmpty() && mimeType != pFrame->mimeType()) {
+                    // MIME type mismatch
+                    continue;
+                }
                 if (preferNotEmpty && pFrame->toString().isEmpty()) {
                     // we might need the first matching frame later
                     // even if it is empty
@@ -317,9 +322,10 @@ TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjec
 
 inline QByteArray readFirstGeneralEncapsulatedObjectFrame(
         const TagLib::ID3v2::Tag& tag,
-        const QString& description) {
+        const QString& description,
+        const QString& mimeType = QString()) {
     const TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pGeobFrame =
-            findFirstGeneralEncapsulatedObjectFrame(tag, description);
+            findFirstGeneralEncapsulatedObjectFrame(tag, description, toTString(mimeType));
     if (pGeobFrame) {
         return toQByteArrayRaw(pGeobFrame->object());
     } else {
@@ -507,13 +513,13 @@ void writeUniqueFileIdentifierFrame(
 }
 #endif // __EXTRA_METADATA__
 
-#if defined(__EXPORT_SERATO_MARKERS__)
 void writeGeneralEncapsulatedObjectFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& description,
-        const QByteArray& data) {
+        const QByteArray& data,
+        const TagLib::String& mimeType = TagLib::String()) {
     TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFrame =
-            findFirstGeneralEncapsulatedObjectFrame(*pTag, description);
+            findFirstGeneralEncapsulatedObjectFrame(*pTag, description, mimeType);
     if (pFrame) {
         // Modify existing frame
         if (data.isEmpty()) {
@@ -522,22 +528,27 @@ void writeGeneralEncapsulatedObjectFrame(
         } else {
             pFrame->setDescription(toTString(description));
             pFrame->setObject(toTByteVector(data));
+            VERIFY_OR_DEBUG_ASSERT(pFrame->mimeType() == mimeType) {
+                pFrame->setMimeType(mimeType);
+            }
         }
     } else {
-        // Add a new (non-empty) frame
-        if (!data.isEmpty()) {
-            auto pFrame =
-                    std::make_unique<TagLib::ID3v2::GeneralEncapsulatedObjectFrame>();
-            pFrame->setDescription(toTString(description));
-            pFrame->setObject(toTByteVector(data));
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
+        if (data.isEmpty()) {
+            // Don't add an empty frame
+            return;
         }
+        // Add a new, non-empty frame
+        auto pFrame =
+                std::make_unique<TagLib::ID3v2::GeneralEncapsulatedObjectFrame>();
+        pFrame->setDescription(toTString(description));
+        pFrame->setObject(toTByteVector(data));
+        pFrame->setMimeType(mimeType);
+        pTag->addFrame(pFrame.get());
+        // Now that the plain pointer in pFrame is owned and managed by
+        // pTag we need to release the ownership to avoid double deletion!
+        pFrame.release();
     }
 }
-#endif // __EXPORT_SERATO_MARKERS__
 
 template<typename T>
 const T* downcastFrame(TagLib::ID3v2::Frame* frame) {
@@ -563,12 +574,12 @@ inline QImage loadImageFromPictureFrame(
 
 inline QString formatBpmInteger(
         const TrackMetadata& trackMetadata) {
-    if (!trackMetadata.getTrackInfo().getBpm().hasValue()) {
+    if (!trackMetadata.getTrackInfo().getBpm().isValid()) {
         return QString();
     }
     return QString::number(
             Bpm::valueToInteger(
-                    trackMetadata.getTrackInfo().getBpm().getValue()));
+                    trackMetadata.getTrackInfo().getBpm().value()));
 }
 
 } // anonymous namespace
@@ -797,44 +808,46 @@ void importTrackMetadataFromTag(
     if (!bpmFrames.isEmpty()) {
         parseBpm(pTrackMetadata,
                 firstNonEmptyFrameToQString(bpmFrames));
-        double bpmValue = pTrackMetadata->getTrackInfo().getBpm().getValue();
-        // Some software use (or used) to write decimated values without comma,
-        // so the number reads as 1352 or 14525 when it is 135.2 or 145.25
-        if (bpmValue < Bpm::kValueMin || bpmValue > 1000 * Bpm::kValueMax) {
-            // Considered out of range, don't try to adjust it
-            kLogger.warning()
-                    << "Ignoring invalid bpm value"
-                    << bpmValue;
-            bpmValue = Bpm::kValueUndefined;
-        } else {
-            double bpmValueOriginal = bpmValue;
-            DEBUG_ASSERT(Bpm::kValueUndefined <= Bpm::kValueMax);
-            bool adjusted = false;
-            while (bpmValue > Bpm::kValueMax) {
-                double bpmValueAdjusted = bpmValue / 10;
-                if (bpmValueAdjusted < bpmValue) {
-                    bpmValue = bpmValueAdjusted;
-                    adjusted = true;
-                    continue;
-                }
-                // Ensure that the loop always terminates even for invalid
-                // values like Inf and NaN!
+        if (pTrackMetadata->getTrackInfo().getBpm().isValid()) {
+            double bpmValue = pTrackMetadata->getTrackInfo().getBpm().value();
+            // Some software use (or used) to write decimated values without comma,
+            // so the number reads as 1352 or 14525 when it is 135.2 or 145.25
+            if (bpmValue < Bpm::kValueMin || bpmValue > 1000 * Bpm::kValueMax) {
+                // Considered out of range, don't try to adjust it
                 kLogger.warning()
                         << "Ignoring invalid bpm value"
-                        << bpmValueOriginal;
-                bpmValue = Bpm::kValueUndefined;
-                break;
-            }
-            if (adjusted) {
-                kLogger.info()
-                        << "Adjusted bpm value from"
-                        << bpmValueOriginal
-                        << "to"
                         << bpmValue;
+                bpmValue = Bpm::kValueUndefined;
+            } else {
+                double bpmValueOriginal = bpmValue;
+                DEBUG_ASSERT(Bpm::kValueUndefined <= Bpm::kValueMax);
+                bool adjusted = false;
+                while (bpmValue > Bpm::kValueMax) {
+                    double bpmValueAdjusted = bpmValue / 10;
+                    if (bpmValueAdjusted < bpmValue) {
+                        bpmValue = bpmValueAdjusted;
+                        adjusted = true;
+                        continue;
+                    }
+                    // Ensure that the loop always terminates even for invalid
+                    // values like Inf and NaN!
+                    kLogger.warning()
+                            << "Ignoring invalid bpm value"
+                            << bpmValueOriginal;
+                    bpmValue = Bpm::kValueUndefined;
+                    break;
+                }
+                if (adjusted) {
+                    kLogger.info()
+                            << "Adjusted bpm value from"
+                            << bpmValueOriginal
+                            << "to"
+                            << bpmValue;
+                }
             }
-        }
-        if (bpmValue != Bpm::kValueUndefined) {
-            pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+            if (bpmValue != Bpm::kValueUndefined) {
+                pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+            }
         }
     }
 
@@ -1282,21 +1295,21 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
 
     // Export of Serato markers is disabled, because Mixxx
     // does not modify them.
-#if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
-    writeGeneralEncapsulatedObjectFrame(
-            pTag,
-            kFrameDescriptionSeratoBeatGrid,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
-    writeGeneralEncapsulatedObjectFrame(
-            pTag,
-            kFrameDescriptionSeratoMarkers,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
-    writeGeneralEncapsulatedObjectFrame(
-            pTag,
-            kFrameDescriptionSeratoMarkers2,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
-#endif // __EXPORT_SERATO_MARKERS__
+    if (trackMetadata.getTrackInfo().getSeratoTags().status() != SeratoTags::ParserStatus::Failed) {
+        writeGeneralEncapsulatedObjectFrame(
+                pTag,
+                kFrameDescriptionSeratoBeatGrid,
+                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
+        writeGeneralEncapsulatedObjectFrame(
+                pTag,
+                kFrameDescriptionSeratoMarkers,
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
+        writeGeneralEncapsulatedObjectFrame(
+                pTag,
+                kFrameDescriptionSeratoMarkers2,
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
+    }
 
     return true;
 }

@@ -36,6 +36,13 @@ TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : TrackId();
 }
 
+QUrl ProxyTrackModel::getTrackUrl(const QModelIndex& index) const {
+    if (!m_pTrackModel) {
+        return {};
+    }
+    return m_pTrackModel->getTrackUrl(mapToSource(index));
+}
+
 CoverInfo ProxyTrackModel::getCoverInfo(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel ? m_pTrackModel->getCoverInfo(indexSource) : CoverInfo();
@@ -67,6 +74,10 @@ void ProxyTrackModel::search(const QString& searchText, const QString& extraFilt
     } else if (m_pTrackModel) {
         m_pTrackModel->search(searchText);
     }
+}
+
+QString ProxyTrackModel::modelKey(bool noSearch) const {
+    return m_pTrackModel ? m_pTrackModel->modelKey(noSearch) : QString();
 }
 
 const QString ProxyTrackModel::currentSearch() const {
@@ -112,6 +123,20 @@ TrackModel::Capabilities ProxyTrackModel::getCapabilities() const {
     return m_pTrackModel ? m_pTrackModel->getCapabilities() : Capability::None;
 }
 
+bool ProxyTrackModel::updateTrackGenre(
+        Track* pTrack,
+        const QString& genre) const {
+    return m_pTrackModel ? m_pTrackModel->updateTrackGenre(pTrack, genre) : false;
+}
+
+#if defined(__EXTRA_METADATA__)
+bool ProxyTrackModel::updateTrackMood(
+        Track* pTrack,
+        const QString& mood) const {
+    return m_pTrackModel ? m_pTrackModel->updateTrackMood(pTrack, mood) : false;
+}
+#endif // __EXTRA_METADATA__
+
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         const QModelIndex& sourceParent) const {
     if (!m_bHandleSearches) {
@@ -127,14 +152,14 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
             dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
     bool rowMatches = false;
 
-    QRegExp filter = filterRegExp();
+    QRegularExpression filter = filterRegularExpression();
     QListIterator<int> iter(filterColumns);
 
     while (!rowMatches && iter.hasNext()) {
         int i = iter.next();
         QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
         QVariant data = itemModel->data(index);
-        if (data.canConvert(QMetaType::QString)) {
+        if (data.canConvert<QString>()) {
             QString strData = data.toString();
             if (strData.contains(filter)) {
                 rowMatches = true;

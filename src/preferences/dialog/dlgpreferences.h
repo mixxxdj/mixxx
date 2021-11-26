@@ -8,19 +8,20 @@
 #include <memory>
 
 #include "control/controlpushbutton.h"
+#include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
 
-class MixxxMainWindow;
 class SoundManager;
 class DlgPrefSound;
 class DlgPrefLibrary;
 class DlgPrefController;
 class DlgPrefControllers;
+#ifdef __VINYLCONTROL__
 class DlgPrefVinyl;
-class DlgPrefNoVinyl;
+#endif // __VINYLCONTROL__
 class DlgPrefInterface;
 class DlgPrefWaveform;
 class DlgPrefDeck;
@@ -29,24 +30,29 @@ class DlgPrefEQ;
 class DlgPrefEffects;
 class DlgPrefCrossfader;
 class DlgPrefAutoDJ;
+#ifdef __BROADCAST__
 class DlgPrefBroadcast;
+#endif // __BROADCAST__
 class DlgPrefRecord;
 class DlgPrefBeats;
 class DlgPrefKey;
 class DlgPrefReplayGain;
-#ifdef __LILV__
-class DlgPrefLV2;
-#endif /* __LILV__ */
 class LV2Backend;
 class ControllerManager;
 class EffectsManager;
-class SkinLoader;
 class PlayerManager;
 class Library;
 class VinylControlManager;
 #ifdef __MODPLUG__
 class DlgPrefModplug;
-#endif
+#endif // __MODPLUG__
+
+namespace mixxx {
+class ScreensaverManager;
+namespace skin {
+class SkinLoader;
+}
+} // namespace mixxx
 
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
@@ -62,13 +68,12 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
         QTreeWidgetItem* pTreeItem;
     };
 
-    DlgPreferences(MixxxMainWindow* mixxx,
-            std::shared_ptr<SkinLoader> pSkinLoader,
+    DlgPreferences(
+            std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
+            std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
             std::shared_ptr<SoundManager> pSoundManager,
-            std::shared_ptr<PlayerManager> pPlayerManager,
             std::shared_ptr<ControllerManager> pControllerManager,
             std::shared_ptr<VinylControlManager> pVCManager,
-            LV2Backend* pLV2Backend,
             std::shared_ptr<EffectsManager> pEffectsManager,
             std::shared_ptr<SettingsManager> pSettingsManager,
             std::shared_ptr<Library> pLibrary);
@@ -95,6 +100,10 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void cancelPreferences();
     // Emitted if the user clicks Reset to Defaults.
     void resetToDefaults();
+
+  signals:
+    void reloadUserInterface();
+    void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
 
   protected:
     bool eventFilter(QObject*, QEvent*);

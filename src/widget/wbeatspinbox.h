@@ -3,7 +3,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "widget/wbasewidget.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include <QDoubleSpinBox>
 #include <QLineEdit>
 
@@ -30,10 +30,10 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
     QString fractionString(int numerator, int denominator) const;
 
     ControlProxy m_valueControl;
-    static QRegExp s_regexpBlacklist;
 
     // for font scaling
     bool event(QEvent* pEvent) override;
+    void keyPressEvent(QKeyEvent* pEvent) override;
     double m_scaleFactor;
 };
 

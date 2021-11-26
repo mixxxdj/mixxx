@@ -8,6 +8,7 @@
 #include "controllers/midi/portmidienumerator.h"
 #include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
+#include "util/compatibility/qmutex.h"
 #include "util/time.h"
 #include "util/trace.h"
 #ifdef __HSS1394__
@@ -87,7 +88,8 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
           m_pollTimer(this),
           m_skipPoll(false) {
-    qRegisterMetaType<LegacyControllerMappingPointer>("LegacyControllerMappingPointer");
+    qRegisterMetaType<std::shared_ptr<LegacyControllerMapping>>(
+            "std::shared_ptr<LegacyControllerMapping>");
 
     // Create controller mapping paths in the user's home directory.
     QString userMappings = userMappingsPath(m_pConfig);
@@ -161,7 +163,7 @@ void ControllerManager::slotShutdown() {
 
     // Clear m_enumerators before deleting the enumerators to prevent other code
     // paths from accessing them.
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     QList<ControllerEnumerator*> enumerators = m_enumerators;
     m_enumerators.clear();
     locker.unlock();
@@ -176,7 +178,10 @@ void ControllerManager::slotShutdown() {
 }
 
 void ControllerManager::updateControllerList() {
-    QMutexLocker locker(&m_mutex);
+    // NOTE: Currently this function is only called on startup. If hotplug is added, changes to the
+    // controller list must be synchronized with dlgprefcontrollers to avoid dangling connections
+    // and possible crashes.
+    auto locker = lockMutex(&m_mutex);
     if (m_enumerators.isEmpty()) {
         qWarning() << "updateControllerList called but no enumerators have been added!";
         return;
@@ -198,14 +203,14 @@ void ControllerManager::updateControllerList() {
 }
 
 QList<Controller*> ControllerManager::getControllers() const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     return m_controllers;
 }
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
     qDebug() << "ControllerManager::getControllerList";
 
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
 
@@ -262,14 +267,16 @@ void ControllerManager::slotSetUpDevices() {
             continue;
         }
 
-        LegacyControllerMappingPointer pMapping = LegacyControllerMappingFileHandler::loadMapping(
-                mappingFile, resourceMappingsPath(m_pConfig));
+        std::shared_ptr<LegacyControllerMapping> pMapping =
+                LegacyControllerMappingFileHandler::loadMapping(
+                        mappingFile, resourceMappingsPath(m_pConfig));
 
         if (!pMapping) {
             continue;
         }
 
-        pController->setMapping(*pMapping);
+        // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
+        pController->setMapping(pMapping->clone());
 
         // If we are in safe mode, skip opening controllers.
         if (CmdlineArgs::Instance().getSafeMode()) {
@@ -287,11 +294,11 @@ void ControllerManager::slotSetUpDevices() {
         pController->applyMapping();
     }
 
-    maybeStartOrStopPolling();
+    pollIfAnyControllersOpen();
 }
 
-void ControllerManager::maybeStartOrStopPolling() {
-    QMutexLocker locker(&m_mutex);
+void ControllerManager::pollIfAnyControllersOpen() {
+    auto locker = lockMutex(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
 
@@ -371,7 +378,7 @@ void ControllerManager::openController(Controller* pController) {
         pController->close();
     }
     int result = pController->open();
-    maybeStartOrStopPolling();
+    pollIfAnyControllersOpen();
 
     // If successfully opened the device, apply the mapping and save the
     // preference setting.
@@ -389,14 +396,14 @@ void ControllerManager::closeController(Controller* pController) {
         return;
     }
     pController->close();
-    maybeStartOrStopPolling();
+    pollIfAnyControllersOpen();
     // Update configuration to reflect controller is disabled.
     m_pConfig->setValue(
             ConfigKey("[Controller]", sanitizeDeviceName(pController->getName())), 0);
 }
 
 void ControllerManager::slotApplyMapping(Controller* pController,
-        LegacyControllerMappingPointer pMapping,
+        std::shared_ptr<LegacyControllerMapping> pMapping,
         bool bEnabled) {
     VERIFY_OR_DEBUG_ASSERT(pController) {
         qWarning() << "slotApplyMapping got invalid controller!";
@@ -415,11 +422,13 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         qWarning() << "Mapping is dirty, changes might be lost on restart!";
     }
 
-    pController->setMapping(*pMapping);
 
     // Save the file path/name in the config so it can be auto-loaded at
     // startup next time
     m_pConfig->set(key, pMapping->filePath());
+
+    // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
+    pController->setMapping(pMapping->clone());
 
     if (bEnabled) {
         openController(pController);

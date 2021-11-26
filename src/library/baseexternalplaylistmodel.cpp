@@ -8,6 +8,12 @@
 #include "moc_baseexternalplaylistmodel.cpp"
 #include "track/track.h"
 
+namespace {
+
+const QString kModelName = "external:";
+
+} // anonymous namespace
+
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace,
@@ -17,7 +23,8 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
-          m_trackSource(trackSource) {
+          m_trackSource(trackSource),
+          m_currentPlaylistId(-1) {
 }
 
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
@@ -34,7 +41,7 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
@@ -54,10 +61,11 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
         pTrack->setYear(year);
 
         QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
-        pTrack->setGenre(genre);
+        updateTrackGenre(pTrack.get(), genre);
 
-        float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
-        pTrack->setBpm(bpm);
+        float bpm = index.sibling(
+                index.row(), fieldIndex("bpm")).data().toString().toFloat();
+        pTrack->trySetBpm(bpm);
     }
     return pTrack;
 }
@@ -133,6 +141,7 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
         return;
     }
 
+    m_currentPlaylistId = playlistId;
     playlistViewColumns.last() = LIBRARYTABLE_PREVIEW;
     setTable(playlistViewTable, playlistViewColumns.first(), playlistViewColumns, m_trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
@@ -161,4 +170,15 @@ TrackModel::Capabilities BaseExternalPlaylistModel::getCapabilities() const {
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
             Capability::LoadToSampler;
+}
+
+QString BaseExternalPlaylistModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName +
+                QString::number(m_currentPlaylistId);
+    }
+    return kModelName +
+            QString::number(m_currentPlaylistId) +
+            QStringLiteral("#") +
+            currentSearch();
 }

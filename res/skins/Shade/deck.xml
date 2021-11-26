@@ -516,6 +516,45 @@
                     </Connection>
                   </SliderComposed>
 
+                  <!-- Pitch range indicators -->
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayTopPrefix</ObjectName>
+                    <Channel><Variable name="channum" /></Channel>
+                    <Position>Top</Position>
+                    <Display>prefix</Display>
+                    <Size>20f,-1me</Size>
+                    <Pos>0,62</Pos>
+                  </RateRange>
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayTopRate</ObjectName>
+                    <Channel><Variable name="channum" /></Channel>
+                    <Position>Top</Position>
+                    <Display>range</Display>
+                    <Size>20f,-1me</Size>
+                    <Pos>32,62</Pos>
+                  </RateRange>
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayBottomPrefix</ObjectName>
+                    <Channel><Variable name="channum" /></Channel>
+                    <Position>Bottom</Position>
+                    <Align>Bottom</Align>
+                    <Display>prefix</Display>
+                    <Size>20f,-1me</Size>
+                    <Pos>0,148</Pos>
+                  </RateRange>
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayBottomRate</ObjectName>
+                    <Channel><Variable name="channum" /></Channel>
+                    <Align>Bottom</Align>
+                    <Display>range</Display>
+                    <Size>20f,-1me</Size>
+                    <Pos>32,148</Pos>
+                  </RateRange>
+
                   <SliderComposed>
                     <TooltipId>rate</TooltipId>
                     <Handle>knob_pitch.png</Handle>
@@ -536,7 +575,7 @@
                       <Number>0</Number>
                       <Text>►</Text>
                     </State>
-                    <Pos>36,148</Pos>
+                    <Pos>36,138</Pos>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,rate_temp_up</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -557,7 +596,7 @@
                       <Number>0</Number>
                       <Text>◄</Text>
                     </State>
-                    <Pos>7,148</Pos>
+                    <Pos>7,138</Pos>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,rate_temp_down</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>

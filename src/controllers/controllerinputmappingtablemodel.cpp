@@ -160,7 +160,7 @@ int ControllerInputMappingTableModel::columnCount(const QModelIndex& parent) con
         return 0;
     }
     // Control and description.
-    const int kBaseColumns = 2;
+    constexpr int kBaseColumns = 2;
     if (m_pMidiMapping != nullptr) {
         // Channel, Opcode, Control, Options
         return kBaseColumns + 4;
@@ -190,13 +190,13 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.key.status);
             case MIDI_COLUMN_OPCODE:
-                return MidiUtils::opCodeFromStatus(mapping.key.status);
+                return MidiUtils::opCodeValue(MidiUtils::opCodeFromStatus(mapping.key.status));
             case MIDI_COLUMN_CONTROL:
                 return mapping.key.control;
             case MIDI_COLUMN_OPTIONS:
                 // UserRole is used for sorting.
                 if (role == Qt::UserRole) {
-                    return mapping.options.all;
+                    return QVariant(mapping.options);
                 }
                 return QVariant::fromValue(mapping.options);
             case MIDI_COLUMN_ACTION:

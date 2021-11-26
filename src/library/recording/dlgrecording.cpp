@@ -26,7 +26,7 @@ DlgRecording::DlgRecording(
                           pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           true)),
-          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
+          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
@@ -69,6 +69,10 @@ DlgRecording::DlgRecording(
             &RecordingManager::durationRecorded,
             this,
             &DlgRecording::slotDurationRecorded);
+    connect(&m_browseModel,
+            &BrowseTableModel::restoreModelState,
+            m_pTrackTableView,
+            &WTrackTableView::restoreCurrentViewState);
 
     QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -83,7 +87,7 @@ DlgRecording::DlgRecording(
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
 
-    m_browseModel.setPath(m_recordingDir);
+    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
     m_pTrackTableView->loadTrackModel(&m_proxyModel);
 
     connect(pushButtonRecording,
@@ -105,15 +109,19 @@ DlgRecording::~DlgRecording() {
 
 void DlgRecording::onShow() {
     m_recordingDir = m_pRecordingManager->getRecordingDir();
-    m_browseModel.setPath(m_recordingDir);
+    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
 }
 
 bool DlgRecording::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
 
+void DlgRecording::setFocus() {
+    m_pTrackTableView->setFocus();
+}
+
 void DlgRecording::refreshBrowseModel() {
-     m_browseModel.setPath(m_recordingDir);
+    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
 }
 
 void DlgRecording::onSearch(const QString& text) {
@@ -168,7 +176,7 @@ void DlgRecording::slotRecordingStateChanged(bool isRecording) {
         labelRecStatistics->hide();
     }
     //This will update the recorded track table view
-    m_browseModel.setPath(m_recordingDir);
+    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
 }
 
 // gets number of recorded bytes and update label
@@ -192,4 +200,12 @@ void DlgRecording::refreshLabels() {
                               .arg(m_bytesRecordedStr, m_durationRecordedStr);
     labelRecFilename->setText(recFile);
     labelRecStatistics->setText(recData);
+}
+
+void DlgRecording::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+}
+
+void DlgRecording::restoreCurrentViewState() {
+    m_pTrackTableView->restoreCurrentViewState();
 }

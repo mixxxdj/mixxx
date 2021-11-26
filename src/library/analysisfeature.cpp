@@ -6,7 +6,7 @@
 #include "library/dlganalysis.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_analysisfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/debug.h"
@@ -48,12 +48,12 @@ AnalyzerModeFlags getAnalyzerModeFlags(
 AnalysisFeature::AnalysisFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
-        m_baseTitle(tr("Analyze")),
-        m_icon(":/images/library/ic_library_prepare.svg"),
-        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
-        m_pAnalysisView(nullptr),
-        m_title(m_baseTitle) {
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("prepare")),
+          m_baseTitle(tr("Analyze")),
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
+          m_pAnalysisView(nullptr),
+          m_title(m_baseTitle) {
 }
 
 void AnalysisFeature::resetTitle() {
@@ -111,8 +111,8 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(kViewName, m_pAnalysisView);
 }
 
-TreeItemModel* AnalysisFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* AnalysisFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void AnalysisFeature::refreshLibraryModels() {
@@ -137,10 +137,8 @@ void AnalysisFeature::analyzeTracks(const QList<TrackId>& trackIds) {
                 << "Starting analysis using"
                 << numAnalyzerThreads
                 << "analyzer threads";
-        m_pTrackAnalysisScheduler = TrackAnalysisScheduler::createInstance(
-                m_pLibrary,
+        m_pTrackAnalysisScheduler = m_pLibrary->createTrackAnalysisScheduler(
                 numAnalyzerThreads,
-                m_pConfig,
                 getAnalyzerModeFlags(m_pConfig));
 
         connect(m_pTrackAnalysisScheduler.get(),
@@ -226,8 +224,10 @@ void AnalysisFeature::onTrackAnalysisSchedulerFinished() {
 }
 
 bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
-    QList<TrackId> trackIds = m_pLibrary->trackCollection().resolveTrackIdsFromUrls(urls,
-            !pSource);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
+                    urls,
+                    !pSource);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }

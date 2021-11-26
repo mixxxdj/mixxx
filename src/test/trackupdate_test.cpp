@@ -1,10 +1,10 @@
 #include <QtDebug>
 
-#include "test/mixxxtest.h"
-
-#include "track/track.h"
 #include "library/coverart.h"
 #include "sources/soundsourceproxy.h"
+#include "test/mixxxtest.h"
+#include "test/soundsourceproviderregistration.h"
+#include "track/track.h"
 
 namespace {
 
@@ -13,7 +13,7 @@ const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 } // anonymous namespace
 
 // Test for updating track metadata and cover art from files.
-class TrackUpdateTest: public MixxxTest {
+class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     static bool hasTrackMetadata(const TrackPointer& pTrack) {
         return !pTrack->getArtist().isEmpty();
@@ -24,14 +24,15 @@ class TrackUpdateTest: public MixxxTest {
     }
 
     static TrackPointer newTestTrack() {
-        return Track::newTemporary(TrackFile(
-                kTestDir, "TOAL_TPE2.mp3"));
+        return Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
     }
 
-    static TrackPointer newTestTrackParsed() {
+    TrackPointer newTestTrackParsed() const {
         auto pTrack = newTestTrack();
-        SoundSourceProxy(pTrack).updateTrackFromSource();
-        EXPECT_TRUE(pTrack->isMetadataSynchronized());
+        EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+                config(),
+                SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+        EXPECT_TRUE(pTrack->checkSourceSynchronized());
         EXPECT_TRUE(hasTrackMetadata(pTrack));
         EXPECT_TRUE(hasCoverArt(pTrack));
         pTrack->markClean();
@@ -39,7 +40,7 @@ class TrackUpdateTest: public MixxxTest {
         return pTrack;
     }
 
-    static TrackPointer newTestTrackParsedModified() {
+    TrackPointer newTestTrackParsedModified() const {
         auto pTrack = newTestTrackParsed();
         pTrack->setArtist(pTrack->getArtist() + pTrack->getArtist());
         auto coverInfo = pTrack->getCoverInfo();
@@ -56,41 +57,40 @@ TEST_F(TrackUpdateTest, parseModifiedCleanOnce) {
     auto pTrack = newTestTrackParsedModified();
     pTrack->markClean();
 
-    mixxx::TrackMetadata trackMetadataBefore;
-    pTrack->readTrackMetadata(&trackMetadataBefore);
-    auto coverInfoBefore = pTrack->getCoverInfo();
+    const auto trackMetadataBefore = pTrack->getMetadata();
+    const auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Once);
+    // Re-update from source should have no effect
+    ASSERT_FALSE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
 
-    mixxx::TrackMetadata trackMetadataAfter;
-    pTrack->readTrackMetadata(&trackMetadataAfter);
-    auto coverInfoAfter = pTrack->getCoverInfo();
+    const auto trackMetadataAfter = pTrack->getMetadata();
+    const auto coverInfoAfter = pTrack->getCoverInfo();
 
-    // Not updated
-    EXPECT_TRUE(pTrack->isMetadataSynchronized());
-    EXPECT_FALSE(pTrack->isDirty());
-    EXPECT_EQ(trackMetadataBefore, trackMetadataAfter);
-    EXPECT_EQ(coverInfoBefore, coverInfoAfter);
+    // Verify that the track has not been modified
+    ASSERT_TRUE(pTrack->checkSourceSynchronized());
+    ASSERT_FALSE(pTrack->isDirty());
+    ASSERT_EQ(trackMetadataBefore, trackMetadataAfter);
+    ASSERT_EQ(coverInfoBefore, coverInfoAfter);
 }
 
 TEST_F(TrackUpdateTest, parseModifiedCleanAgainSkipCover) {
     auto pTrack = newTestTrackParsedModified();
     pTrack->markClean();
 
-    mixxx::TrackMetadata trackMetadataBefore;
-    pTrack->readTrackMetadata(&trackMetadataBefore);
-    auto coverInfoBefore = pTrack->getCoverInfo();
+    const auto trackMetadataBefore = pTrack->getMetadata();
+    const auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always));
 
-    mixxx::TrackMetadata trackMetadataAfter;
-    pTrack->readTrackMetadata(&trackMetadataAfter);
-    auto coverInfoAfter = pTrack->getCoverInfo();
+    const auto trackMetadataAfter = pTrack->getMetadata();
+    const auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Updated
-    EXPECT_TRUE(pTrack->isMetadataSynchronized());
+    EXPECT_TRUE(pTrack->checkSourceSynchronized());
     EXPECT_TRUE(pTrack->isDirty());
     EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
@@ -104,19 +104,18 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainUpdateCover) {
     pTrack->setCoverInfo(coverInfo);
     pTrack->markClean();
 
-    mixxx::TrackMetadata trackMetadataBefore;
-    pTrack->readTrackMetadata(&trackMetadataBefore);
-    auto coverInfoBefore = pTrack->getCoverInfo();
+    const auto trackMetadataBefore = pTrack->getMetadata();
+    const auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always));
 
-    mixxx::TrackMetadata trackMetadataAfter;
-    pTrack->readTrackMetadata(&trackMetadataAfter);
-    auto coverInfoAfter = pTrack->getCoverInfo();
+    const auto trackMetadataAfter = pTrack->getMetadata();
+    const auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Updated
-    EXPECT_TRUE(pTrack->isMetadataSynchronized());
+    EXPECT_TRUE(pTrack->checkSourceSynchronized());
     EXPECT_TRUE(pTrack->isDirty());
     EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
     EXPECT_NE(coverInfoBefore, coverInfoAfter);
@@ -125,20 +124,21 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainUpdateCover) {
 TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     auto pTrack = newTestTrackParsedModified();
 
-    mixxx::TrackMetadata trackMetadataBefore;
-    pTrack->readTrackMetadata(&trackMetadataBefore);
-    auto coverInfoBefore = pTrack->getCoverInfo();
+    const auto trackMetadataBefore = pTrack->getMetadata();
+    const auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always));
 
-    mixxx::TrackMetadata trackMetadataAfter;
-    pTrack->readTrackMetadata(&trackMetadataAfter);
-    auto coverInfoAfter = pTrack->getCoverInfo();
+    const auto trackMetadataAfter = pTrack->getMetadata();
+    const auto coverInfoAfter = pTrack->getCoverInfo();
 
     // Updated
-    EXPECT_TRUE(pTrack->isMetadataSynchronized());
+    EXPECT_TRUE(pTrack->checkSourceSynchronized());
     EXPECT_TRUE(pTrack->isDirty());
     EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
 }
+
+// TODO: Add tests for SoundSourceProxy::UpdateTrackFromSourceMode::Newer

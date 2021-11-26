@@ -1,14 +1,13 @@
-IDI_ICON1               ICON    DISCARDABLE     "res/images/ic_mixxx.ico"
+IDI_ICON1               ICON    DISCARDABLE     "res/images/icons/ic_mixxx.ico"
 
 #include <windows.h>
-#include <defs_version.h>
 
 #include "mixxx.rc.include"
 
 #define VER_PRODUCTNAME_STR         "Mixxx\0"
 #define VER_FILEDESCRIPTION_STR     "Mixxx digital DJ software"
 #define VER_COMPANYNAME_STR         "The Mixxx Development Team"
-// \xA9 for (c) symbol. The Microsoft Resource Compiler compiler asumes Latin-1 strings
+// \xA9 for (c) symbol. The Microsoft Resource Compiler compiler assumes Latin-1 strings
 #define VER_LEGALCOPYRIGHT_STR      "\xA9 2001-" CUR_YEAR " Mixxx Development Team\0"
 #define VER_ORIGINALFILENAME_STR    "Mixxx.exe"
 
@@ -39,7 +38,7 @@ VS_VERSION_INFO VERSIONINFO
 FILEVERSION    	VER_FILEVERSION
 PRODUCTVERSION 	VER_PRODUCTVERSION
 FILEFLAGSMASK  	VS_FFI_FILEFLAGSMASK
-FILEFLAGS      	(VER_DEBUG|VER_PRERELEASE)
+FILEFLAGS      	(VER_DEBUG|VER_PRERELEASE|VER_PATCHED)
 FILEOS         	VOS__WINDOWS32
 FILETYPE       	VFT_APP
 BEGIN

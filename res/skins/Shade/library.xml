@@ -47,7 +47,7 @@
 
               <Library>
                 <ShowButtonText>false</ShowButtonText>
-                <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
+                <TrackTableBackgroundColorOpacity>0.250</TrackTableBackgroundColorOpacity>
               </Library>
 
             </Children>

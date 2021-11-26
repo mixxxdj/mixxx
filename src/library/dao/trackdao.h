@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QFileInfo>
+#include <QList>
 #include <QObject>
 #include <QSet>
-#include <QList>
 #include <QSqlDatabase>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
+#include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"
@@ -20,6 +20,13 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
+
+namespace mixxx {
+
+class FileInfo;
+class TrackRecord;
+
+} // namespace mixxx
 
 class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
@@ -45,7 +52,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void finish();
 
     QList<TrackId> resolveTrackIds(
-            const QList<TrackFile> &trackFiles,
+            const QList<mixxx::FileInfo>& fileInfos,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
     TrackId getTrackIdByRef(
@@ -74,6 +81,31 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     bool updatePlayCounterFromPlayedHistory(
             const QSet<TrackId>& trackIds) const;
 
+    /// Don't use even if public!!! Ugly workaround for C++ visibility restrictions.
+    /// This method is invoked by a free function that needs to access
+    /// a private Track member that only TrackDAO is allowed to access
+    /// as a friend.
+    static void setTrackGenreInternal(Track* pTrack, const QString& genre);
+    /// Don't use even if public!!! Ugly workaround for C++ visibility restrictions.
+    /// This method is invoked by a free function that needs to access
+    /// a private TrackRecord member that only TrackDAO is allowed to
+    /// access as a friend.
+    static void setTrackHeaderParsedInternal(Track* pTrack, bool headerParsed);
+    /// Don't use even if public!!! Ugly workaround for C++ visibility restrictions.
+    /// This method is invoked by a free function that needs to access
+    /// private TrackRecord member that only TrackDAO is allowed to
+    /// access as a friend.
+    static bool getTrackHeaderParsedInternal(const mixxx::TrackRecord& trackRecord);
+
+    /// Lookup and load a track by URL.
+    ///
+    /// Only local file URLs are supported.
+    ///
+    /// Returns `nullptr` if no track matches the given URL.
+    TrackPointer getTrackByUrl(const QUrl& url) const {
+        return getTrackByRef(TrackRef::fromUrl(url));
+    }
+
   signals:
     // Forwarded from Track object
     void trackDirty(TrackId trackId);
@@ -99,6 +131,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
   private:
     friend class LibraryScanner;
     friend class TrackCollection;
+    friend class TrackAnalysisScheduler;
 
     TrackId getTrackIdByLocation(
             const QString& location) const;
@@ -119,11 +152,18 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const TrackPointer& pTrack,
             bool unremove);
     TrackPointer addTracksAddFile(
-            const TrackFile& trackFile,
+            const mixxx::FileAccess& fileAccess,
             bool unremove);
+    TrackPointer addTracksAddFile(
+            const QString& filePath,
+            bool unremove) {
+        return addTracksAddFile(
+                mixxx::FileAccess(mixxx::FileInfo(filePath)),
+                unremove);
+    }
     void addTracksFinish(bool rollback = false);
 
-    bool updateTrack(Track* pTrack) const;
+    bool updateTrack(const Track& track) const;
 
     void hideAllTracks(const QDir& rootDir) const;
 
@@ -149,16 +189,16 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void markUnverifiedTracksAsDeleted();
 
     bool verifyRemainingTracks(
-            const QStringList& libraryRootDirs,
+            const QList<mixxx::FileInfo>& libraryRootDirs,
             volatile const bool* pCancel);
 
     void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                                         QSet<TrackId>* pTracksChanged);
 
     // Callback for GlobalTrackCache
-    TrackFile relocateCachedTrack(
+    mixxx::FileAccess relocateCachedTrack(
             TrackId trackId,
-            TrackFile fileInfo) override;
+            mixxx::FileAccess fileAccess) override;
 
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;

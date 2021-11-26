@@ -16,7 +16,7 @@
 #include "util/math.h"
 
 // interval (in ms) of the timer which calls update()
-const int kiUpdateInterval = 5000;
+constexpr int kiUpdateInterval = 5000;
 
 Battery::Battery(QObject* parent)
         : QObject(parent),
@@ -44,7 +44,7 @@ Battery* Battery::getBattery(QObject* parent) {
 }
 
 void Battery::update() {
-    const double kPercentageEpsilon = 0.1;
+    constexpr double kPercentageEpsilon = 0.1;
     double lastPercentage = m_dPercentage;
     int lastMinutesLeft = m_iMinutesLeft;
     ChargingState lastChargingState = m_chargingState;

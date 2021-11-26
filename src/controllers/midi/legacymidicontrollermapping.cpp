@@ -8,18 +8,6 @@ bool LegacyMidiControllerMapping::saveMapping(const QString& fileName) const {
     return handler.save(*this, fileName);
 }
 
-void LegacyMidiControllerMapping::accept(LegacyControllerMappingVisitor* visitor) {
-    if (visitor) {
-        visitor->visit(this);
-    }
-}
-
-void LegacyMidiControllerMapping::accept(ConstLegacyControllerMappingVisitor* visitor) const {
-    if (visitor) {
-        visitor->visit(this);
-    }
-}
-
 bool LegacyMidiControllerMapping::isMappable() const {
     return true;
 }

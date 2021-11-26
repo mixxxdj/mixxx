@@ -8,7 +8,6 @@
 #include "library/coverartutils.h"
 #include "moc_coverartcache.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
 
@@ -182,7 +181,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     DEBUG_ASSERT(!res.coverInfoUpdated);
 
     auto loadedImage = coverInfo.loadImage(
-            pTrack ? pTrack->getSecurityToken() : SecurityTokenPointer());
+            pTrack ? pTrack->getFileAccess().token() : SecurityTokenPointer());
     if (!loadedImage.image.isNull()) {
         // Refresh hash before resizing the original image!
         res.coverInfoUpdated = coverInfo.refreshImageDigest(loadedImage.image);
@@ -228,7 +227,7 @@ void CoverArtCache::coverLoaded() {
     QPixmap pixmap;
     if (res.coverArt.loadedImage.result != CoverInfo::LoadedImage::Result::NoImage) {
         if (res.coverArt.loadedImage.result == CoverInfo::LoadedImage::Result::Ok) {
-            DEBUG_ASSERT(!res.coverArt.loadedImage.filePath.isEmpty());
+            DEBUG_ASSERT(!res.coverArt.loadedImage.location.isEmpty());
         } else {
             DEBUG_ASSERT(res.coverArt.loadedImage.image.isNull());
             kLogger.warning()

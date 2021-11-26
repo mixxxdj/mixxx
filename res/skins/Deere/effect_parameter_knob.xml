@@ -9,6 +9,7 @@
     EffectParameter: the parameter
 -->
 <Template>
+  <SetVariable name="EffectUnitGroup">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
   <WidgetGroup>
     <Layout>vertical</Layout>
     <MinimumSize>34,</MinimumSize>
@@ -26,6 +27,9 @@
             <Knob>knob_small.svg</Knob>
             <MinAngle>-230</MinAngle>
             <MaxAngle>50</MaxAngle>
+            <EffectUnitGroup><Variable name="EffectUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="Effect"/></Effect>
+            <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
             <Connection>
               <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
             </Connection>
