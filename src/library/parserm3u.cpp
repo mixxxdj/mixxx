@@ -15,6 +15,7 @@
 
 #include <QDir>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <QTextCodec>
 #include <QUrl>
 #include <QtDebug>
@@ -25,6 +26,8 @@ namespace {
 // according to http://en.wikipedia.org/wiki/M3U the default encoding of m3u is Windows-1252
 // see also http://tools.ietf.org/html/draft-pantos-http-live-streaming-07
 const char* kStandardM3uTextEncoding = "Windows-1250";
+// Note: The RegEx pattern is compiled, when first used the first time
+const auto kUniveralEndOfLineRegEx = QRegularExpression(QStringLiteral("\r\n|\r|\n"));
 } // anonymous namespace
 
 /**
@@ -62,13 +65,6 @@ QList<QString> ParserM3u::parse(const QString& filename) {
         return paths;
     }
 
-    // Unfortunately QTextStream does not handle <CR> (=\r or asci value 13) line breaks.
-    // This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
-    // rather that <LF>.
-    //
-    // Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
-    // We replace any '\r' with '\n' if applicaple
-    // This ensures that playlists from iTunes on OS X can be parsed
     QByteArray byteArray = file.readAll();
     QString fileContents;
     if (isUtf8(byteArray.constData())) {
@@ -80,7 +76,7 @@ QList<QString> ParserM3u::parse(const QString& filename) {
     }
 
     QFileInfo fileInfo(filename);
-    const QStringList fileLines = fileContents.split(QRegExp("\r\n|\r|\n"));
+    const QStringList fileLines = fileContents.split(kUniveralEndOfLineRegEx);
     for (const QString& line : fileLines) {
         auto trackFile = playlistEntryToFileInfo(line, fileInfo.canonicalPath());
         if (trackFile.checkFileExists()) {
