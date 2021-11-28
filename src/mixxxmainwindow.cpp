@@ -248,7 +248,9 @@ void MixxxMainWindow::initialize() {
         checkDirectRendering();
     }
 
-    // Try open player device If that fails, the preference panel is opened.
+    // Sound hardware setup
+    // Try to open configured devices. If that fails, display dialogs
+    // that allow to either retry, reconfigure devices or exit.
     bool retryClicked;
     do {
         retryClicked = false;
@@ -266,11 +268,10 @@ void MixxxMainWindow::initialize() {
         }
     } while (retryClicked);
 
-    // test for at least one out device, if none, display another dlg that
-    // says "mixxx will barely work with no outs"
-    // In case persisting errors, the user has already received a message
-    // box from the preferences dialog above. So we can watch here just the
-    // output count.
+    // Test for at least one output device. If none, display another dialog
+    // that says "mixxx will barely work with no outs".
+    // In case of persisting errors, the user has already received a message
+    // above. So we can just check the output count here.
     while (m_pCoreServices->getSoundManager()->getConfig().getOutputs().count() == 0) {
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if result != OK
@@ -282,6 +283,10 @@ void MixxxMainWindow::initialize() {
             break;
         }
     }
+
+    // The user has either reconfigured devices or accepted no outputs,
+    // so it's now safe to write the new config to disk.
+    m_pCoreServices->getSoundManager()->getConfig().writeToDisk();
 
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
@@ -467,6 +472,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
             m_pCoreServices->getSoundManager()->clearAndQueryDevices();
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
+            // Open preferences, sound hardware page is selected (default on first call)
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
                 return QDialog::Accepted;
