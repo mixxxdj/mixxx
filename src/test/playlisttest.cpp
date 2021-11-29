@@ -7,7 +7,9 @@
 #include <QtGlobal>
 
 #include "library/parser.h"
+#include "library/parsercsv.h"
 #include "library/parserm3u.h"
+#include "library/parserpls.h"
 
 class DummyParser : public Parser {
   public:
@@ -74,4 +76,33 @@ TEST_F(PlaylistTest, m3uEndOfLine) {
     EXPECT_TRUE(entries[2].endsWith(QStringLiteral("lf.mp3")));
     EXPECT_TRUE(entries[3].endsWith(QStringLiteral("EuroSign\u20AC.mp3")));
     EXPECT_TRUE(entries[4].endsWith(QStringLiteral("end.mp3")));
+}
+
+TEST_F(PlaylistTest, csvEndOfLine) {
+    QTemporaryFile csvFile;
+    ASSERT_TRUE(csvFile.open());
+    csvFile.write("#,Location\r\n");
+    csvFile.write("1,cr.mp3\r");
+    csvFile.write("2,lf.mp3\n");
+    csvFile.close();
+
+    QList<QString> entries = ParserCsv().parse(csvFile.fileName());
+    ASSERT_EQ(entries.size(), 2);
+    EXPECT_TRUE(entries[0].endsWith(QStringLiteral("cr.mp3")));
+    EXPECT_TRUE(entries[1].endsWith(QStringLiteral("lf.mp3")));
+}
+
+TEST_F(PlaylistTest, plsEndOfLine) {
+    QTemporaryFile plsFile;
+    ASSERT_TRUE(plsFile.open());
+    plsFile.write("[playlist]\n");
+    plsFile.write("NumberOfEntries=2\r");
+    plsFile.write("File0=cr.mp3\r");
+    plsFile.write("File1=lf.mp3\n");
+    plsFile.close();
+
+    QList<QString> entries = ParserPls().parse(plsFile.fileName());
+    ASSERT_EQ(entries.size(), 2);
+    EXPECT_TRUE(entries[0].endsWith(QStringLiteral("cr.mp3")));
+    EXPECT_TRUE(entries[1].endsWith(QStringLiteral("lf.mp3")));
 }
