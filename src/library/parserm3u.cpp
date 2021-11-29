@@ -20,7 +20,6 @@
 #include <QUrl>
 #include <QtDebug>
 
-#include "moc_parserm3u.cpp"
 
 namespace {
 // according to http://en.wikipedia.org/wiki/M3U the default encoding of m3u is Windows-1252
@@ -47,13 +46,10 @@ const auto kUniveralEndOfLineRegEx = QRegularExpression(QStringLiteral("\r\n|\r|
           or on a mounted harddrive.
  **/
 
-ParserM3u::ParserM3u() : Parser()
-{
-}
-
-ParserM3u::~ParserM3u()
-{
-
+// static
+bool ParserM3u::isPlaylistFilenameSupported(const QString& fileName) {
+    return fileName.endsWith(".m3u", Qt::CaseInsensitive) ||
+            fileName.endsWith(".m3u8", Qt::CaseInsensitive);
 }
 
 QList<QString> ParserM3u::parse(const QString& playlistFile, bool keepMissingFiles) {
@@ -138,8 +134,8 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
-                tr("Playlist Export Failed"),
-                tr("Could not create file") + " " + file_str);
+                QObject::tr("Playlist Export Failed"),
+                QObject::tr("Could not create file") + " " + file_str);
         return false;
     }
     file.write(outputByteArray);

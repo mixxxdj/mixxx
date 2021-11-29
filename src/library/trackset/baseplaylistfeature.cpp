@@ -440,28 +440,9 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlist_file) {
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
 
-    Parser* playlist_parser = nullptr;
-
-    if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
-            playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
-        playlist_parser = new ParserM3u();
-    } else if (playlist_file.endsWith(".pls", Qt::CaseInsensitive)) {
-        playlist_parser = new ParserPls();
-    } else if (playlist_file.endsWith(".csv", Qt::CaseInsensitive)) {
-        playlist_parser = new ParserCsv();
-    } else {
-        return;
-    }
-
-    if (playlist_parser) {
-        QStringList entries = playlist_parser->parse(playlist_file, false);
-
-        // Iterate over the List that holds URLs of playlist entries
-        m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
-
-        // delete the parser object
-        delete playlist_parser;
-    }
+    QList<QString> locations = Parser::parse(playlist_file, false);
+    // Iterate over the List that holds locations of playlist entries
+    m_pPlaylistTableModel->addTracks(QModelIndex(), locations);
 }
 
 void BasePlaylistFeature::slotCreateImportPlaylist() {

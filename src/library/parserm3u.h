@@ -19,13 +19,10 @@
 
 #include "library/parser.h"
 
-class ParserM3u : public Parser
-{
-    Q_OBJECT
-public:
-    ParserM3u();
-    ~ParserM3u() override;
-    QList<QString> parse(const QString& playlistFile, bool keepMissingFiles) override;
+class ParserM3u : Parser {
+  public:
+    static bool isPlaylistFilenameSupported(const QString& fileName);
+    static QList<QString> parse(const QString& playlistFile, bool keepMissingFiles);
     /// Playlist Export
     static bool writeM3UFile(const QString &file_str, const QList<QString> &items, bool useRelativePath, bool useUtf8);
     static bool writeM3UFile(const QString &file, const QList<QString> &items, bool useRelativePath);

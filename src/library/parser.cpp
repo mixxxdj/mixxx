@@ -1,28 +1,33 @@
-//
-// C++ Implementation: parser
-//
-// Description: superclass for external formats parsers
-//
-//
-// Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
-// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
+#include "library/parser.h"
 
-#include <QtDebug>
 #include <QDir>
 #include <QFile>
 #include <QIODevice>
 #include <QUrl>
+#include <QtDebug>
 
-#include "library/parser.h"
+#include "library/parsercsv.h"
+#include "library/parserm3u.h"
+#include "library/parserpls.h"
 
-Parser::Parser() {
+// static
+bool Parser::isPlaylistFilenameSupported(const QString& playlistFile) {
+    return ParserM3u::isPlaylistFilenameSupported(playlistFile) ||
+            ParserPls::isPlaylistFilenameSupported(playlistFile) ||
+            ParserCsv::isPlaylistFilenameSupported(playlistFile);
 }
 
-Parser::~Parser() {
+// static
+QList<QString> Parser::parse(const QString& playlistFile, bool keepMissingFiles) {
+    QList<QString> locations;
+    if (ParserM3u::isPlaylistFilenameSupported(playlistFile)) {
+        locations = ParserM3u::parse(playlistFile, keepMissingFiles);
+    } else if (ParserPls::isPlaylistFilenameSupported(playlistFile)) {
+        locations = ParserM3u::parse(playlistFile, keepMissingFiles);
+    } else if (ParserCsv::isPlaylistFilenameSupported(playlistFile)) {
+        locations = ParserM3u::parse(playlistFile, keepMissingFiles);
+    }
+    return locations;
 }
 
 // The following public domain code is taken from

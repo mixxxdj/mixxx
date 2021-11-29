@@ -26,18 +26,10 @@ it afterwards for proper functioning
 
 #include "util/fileinfo.h"
 
-class Parser : public QObject {
+class Parser {
   public:
-    static bool isPlaylistFilenameSupported(const QString& fileName) {
-        return fileName.endsWith(".m3u", Qt::CaseInsensitive) ||
-                fileName.endsWith(".m3u8", Qt::CaseInsensitive) ||
-                fileName.endsWith(".pls", Qt::CaseInsensitive) ||
-                fileName.endsWith(".csv", Qt::CaseInsensitive);
-    }
-
-    Parser();
-    ~Parser() override;
-    virtual QList<QString> parse(const QString& playlistFile, bool keepMissingFiles) = 0;
+    static bool isPlaylistFilenameSupported(const QString& playlistFile);
+    static QList<QString> parse(const QString& playlistFile, bool keepMissingFiles);
 
   protected:
     // check for Utf8 encoding

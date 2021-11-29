@@ -1,17 +1,3 @@
-//
-// C++ Implementation: parsercsv
-//
-// Description: module to parse Comma-Separated Values (CSV) formatted playlists (rfc4180)
-//
-//
-// Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
-// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
-// Author: Daniel Schürmann daschuer@gmx.de, (C) 2011
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-
 #include "library/parsercsv.h"
 
 #include <QDir>
@@ -19,14 +5,14 @@
 #include <QTextStream>
 #include <QtDebug>
 
-#include "moc_parsercsv.cpp"
+#include "library/parser.h"
 
-ParserCsv::ParserCsv() : Parser() {
+// static
+bool ParserCsv::isPlaylistFilenameSupported(const QString& playlistFile) {
+    return playlistFile.endsWith(".csv", Qt::CaseInsensitive);
 }
 
-ParserCsv::~ParserCsv() {
-}
-
+// static
 QList<QString> ParserCsv::parse(const QString& playlistFile, bool keepMissingFiles) {
     Q_UNUSED(keepMissingFiles);
     QFile file(playlistFile);
@@ -43,7 +29,7 @@ QList<QString> ParserCsv::parse(const QString& playlistFile, bool keepMissingFil
         int loc_coll = 0x7fffffff;
         if (tokens.size()) {
             for (int i = 0; i < tokens[0].size(); ++i) {
-                if (tokens[0][i] == tr("Location")) {
+                if (tokens[0][i] == QObject::tr("Location")) {
                     loc_coll = i;
                     break;
                 }
@@ -122,8 +108,8 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
-                tr("Playlist Export Failed"),
-                tr("Could not create file") + " " + file_str);
+                QObject::tr("Playlist Export Failed"),
+                QObject::tr("Could not create file") + " " + file_str);
         return false;
     }
     //Base folder of file
@@ -213,8 +199,8 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
-                tr("Readable text Export Failed"),
-                tr("Could not create file") + " " + file_str);
+                QObject::tr("Readable text Export Failed"),
+                QObject::tr("Could not create file") + " " + file_str);
         return false;
     }
 

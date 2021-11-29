@@ -1,15 +1,3 @@
-//
-// C++ Implementation: parserpls
-//
-// Description: module to parse pls formatted playlists
-//
-//
-// Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
-// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
 #include "library/parserpls.h"
 
 #include <QDir>
@@ -18,20 +6,14 @@
 #include <QUrl>
 #include <QtDebug>
 
-#include "moc_parserpls.cpp"
+#include "library/parser.h"
 
-/**
-   ToDo:
-    - parse ALL information from the pls file if available ,
-          not only the filepath;
- **/
-
-ParserPls::ParserPls() : Parser() {
+// static
+bool ParserPls::isPlaylistFilenameSupported(const QString& playlistFile) {
+    return playlistFile.endsWith(".pls", Qt::CaseInsensitive);
 }
 
-ParserPls::~ParserPls() {
-}
-
+// static
 QList<QString> ParserPls::parse(const QString& playlistFile, bool keepMissingFiles) {
     Q_UNUSED(keepMissingFiles);
     QFile file(playlistFile);
@@ -71,27 +53,7 @@ QList<QString> ParserPls::parse(const QString& playlistFile, bool keepMissingFil
     return locations;
 }
 
-long ParserPls::getNumEntries(QTextStream *stream) {
-    QString textline;
-    textline = stream->readLine();
-
-    if (textline.contains("[playlist]")) {
-        while (!textline.contains("NumberOfEntries")) {
-            textline = stream->readLine();
-        }
-
-        QString temp = textline.section("=",-1,-1);
-
-        return temp.toLong();
-
-    } else{
-        qDebug() << "ParserPls: pls file is not a playlist! \n";
-        return 0;
-    }
-
-}
-
-
+// static
 QString ParserPls::getFilePath(QTextStream *stream, const QString& basePath) {
     QString textline = stream->readLine();
     while (!textline.isEmpty()) {
@@ -123,8 +85,8 @@ bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &item
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
-                tr("Playlist Export Failed"),
-                tr("Could not create file") + " " + file_str);
+                QObject::tr("Playlist Export Failed"),
+                QObject::tr("Could not create file") + " " + file_str);
         return false;
     }
     //Base folder of file

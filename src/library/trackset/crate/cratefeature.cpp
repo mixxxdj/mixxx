@@ -606,19 +606,11 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlist_file) {
     // register a security bookmark.
     // TODO(XXX): Parsing a list of track locations from a playlist file
     // is a general task and should be implemented separately.
-    QList<QString> entries;
-    if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
-            playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
-        // .m3u8 is Utf8 representation of an m3u playlist
-        entries = ParserM3u().parse(playlist_file, false);
-    } else if (playlist_file.endsWith(".pls", Qt::CaseInsensitive)) {
-        entries = ParserPls().parse(playlist_file, false);
-    } else if (playlist_file.endsWith(".csv", Qt::CaseInsensitive)) {
-        entries = ParserCsv().parse(playlist_file, false);
-    } else {
+    QList<QString> locations = Parser().parse(playlist_file, false);
+    if (locations.empty()) {
         return;
     }
-    m_crateTableModel.addTracks(QModelIndex(), entries);
+    m_crateTableModel.addTracks(QModelIndex(), locations);
 }
 
 void CrateFeature::slotCreateImportCrate() {

@@ -20,18 +20,17 @@
 #include "library/parser.h"
 #include "library/basesqltablemodel.h"
 
-class ParserCsv : public Parser
-{
-    Q_OBJECT
-public:
-    ParserCsv();
-    ~ParserCsv() override;
-    QList<QString> parse(const QString&, bool keepMissingFiles) override;
+class ParserCsv : Parser {
+  public:
+    // static
+    static bool isPlaylistFilenameSupported(const QString& playlistFile);
+    static QList<QString> parse(const QString&, bool keepMissingFiles);
     // Playlist Export
     static bool writeCSVFile(const QString &file, BaseSqlTableModel* pPlaylistTableModel, bool useRelativePath);
     // Readable Text export
     static bool writeReadableTextFile(const QString &file, BaseSqlTableModel* pPlaylistTableModel,  bool writeTimestamp);
-private:
-  // Reads a line from the file and returns filepath if a valid file
-  QList<QList<QString> > tokenize(const QByteArray& str, char delimiter);
+
+  private:
+    // Reads a line from the file and returns filepath if a valid file
+    static QList<QList<QString> > tokenize(const QByteArray& str, char delimiter);
 };

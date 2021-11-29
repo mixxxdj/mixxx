@@ -11,12 +11,6 @@
 
 class DummyParser : public Parser {
   public:
-    QList<QString> parse(const QString& sFilename, bool keepMissingFiles) override {
-        Q_UNUSED(sFilename);
-        Q_UNUSED(keepMissingFiles);
-        return QList<QString>();
-    }
-
     QString playlistEntryToFilePath(
             const QString& playlistEntry,
             const QString& basePath = QString()) {
