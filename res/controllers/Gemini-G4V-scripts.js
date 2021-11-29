@@ -47,14 +47,6 @@ g4v.shutdown = function()  {
     midi.sendShortMsg(0x91, 0x1D, 0x00);	// Right Sample pad mode select button
     midi.sendShortMsg(0x91, 0x1E, 0x00);	// Right Loop Roll pad mode select button
     midi.sendShortMsg(0x91, 0x26, 0x00);	// Right Deck select button
-
-    // Switch off VU metters
-    midi.sendShortMsg(0xB3, 0x14, 0x00);
-    midi.sendShortMsg(0xB3, 0x15, 0x00);
-    midi.sendShortMsg(0xB3, 0x16, 0x00);
-    midi.sendShortMsg(0xB3, 0x17, 0x00);
-    midi.sendShortMsg(0xB3, 0x18, 0x00);
-    midi.sendShortMsg(0xB3, 0x19, 0x00);
 };
 
 // Custom deck definition
