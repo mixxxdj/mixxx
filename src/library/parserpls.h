@@ -23,7 +23,7 @@ class ParserPls : public Parser {
     ParserPls();
     virtual ~ParserPls();
     /**Can be called to parse a pls file**/
-    QList<QString> parse(const QString&);
+    QList<QString> parse(const QString& sFilename, bool keepMissingFiles);
     //Playlist Export
     static bool writePLSFile(const QString &file, const QList<QString> &items, bool useRelativePath);
 

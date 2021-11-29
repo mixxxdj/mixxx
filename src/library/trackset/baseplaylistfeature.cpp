@@ -454,7 +454,7 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlist_file) {
     }
 
     if (playlist_parser) {
-        QStringList entries = playlist_parser->parse(playlist_file);
+        QStringList entries = playlist_parser->parse(playlist_file, false);
 
         // Iterate over the List that holds URLs of playlist entries
         m_pPlaylistTableModel->addTracks(QModelIndex(), entries);

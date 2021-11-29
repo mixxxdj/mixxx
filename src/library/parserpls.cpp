@@ -32,7 +32,8 @@ ParserPls::ParserPls() : Parser() {
 ParserPls::~ParserPls() {
 }
 
-QList<QString> ParserPls::parse(const QString& sFilename) {
+QList<QString> ParserPls::parse(const QString& sFilename, bool keepMissingFiles) {
+    Q_UNUSED(keepMissingFiles);
     //long numEntries =0;
     QFile file(sFilename);
     const auto basePath = sFilename.section('/', 0, -2);

@@ -117,13 +117,13 @@ QList<mixxx::FileInfo> DragAndDropHelper::supportedTracksFromUrls(
 
         if (acceptPlaylists && (file.endsWith(".m3u") || file.endsWith(".m3u8"))) {
             QScopedPointer<ParserM3u> playlist_parser(new ParserM3u());
-            QList<QString> track_list = playlist_parser->parse(file);
+            QList<QString> track_list = playlist_parser->parse(file, false);
             foreach (const QString& playlistFile, track_list) {
                 addFileToList(mixxx::FileInfo(playlistFile), &fileInfos);
             }
         } else if (acceptPlaylists && url.toString().endsWith(".pls")) {
             QScopedPointer<ParserPls> playlist_parser(new ParserPls());
-            QList<QString> track_list = playlist_parser->parse(file);
+            QList<QString> track_list = playlist_parser->parse(file, false);
             foreach (const QString& playlistFile, track_list) {
                 addFileToList(mixxx::FileInfo(playlistFile), &fileInfos);
             }

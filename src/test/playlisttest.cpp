@@ -1,14 +1,19 @@
 #include <gtest/gtest.h>
 
+#include <QDataStream>
 #include <QDebug>
+#include <QTemporaryFile>
 #include <QUrl>
 #include <QtGlobal>
 
 #include "library/parser.h"
+#include "library/parserm3u.h"
 
 class DummyParser : public Parser {
   public:
-    QList<QString> parse(const QString&) override {
+    QList<QString> parse(const QString& sFilename, bool keepMissingFiles) override {
+        Q_UNUSED(sFilename);
+        Q_UNUSED(keepMissingFiles);
         return QList<QString>();
     }
 
@@ -55,4 +60,26 @@ TEST_F(PlaylistTest, Relative) {
             parser.playlistEntryToFilePath("../foo/bar.mp3", "base/folder"));
     EXPECT_EQ(QString("base/folder/../../bar.mp3"),
             parser.playlistEntryToFilePath("../../bar.mp3", "base/folder"));
+}
+
+TEST_F(PlaylistTest, m3uEndOfLine) {
+    QTemporaryFile m3uFile;
+    ASSERT_TRUE(m3uFile.open());
+    m3uFile.write("crlf.mp3\r\n");
+    m3uFile.write("cr.mp3\r");
+    m3uFile.write("lf.mp3\n");
+    // Check for Windows-1250 Euro Sign
+    m3uFile.write("EuroSign\x80.mp3\n");
+    m3uFile.write("end.mp3");
+    m3uFile.close();
+
+    QList<QString> entries = ParserM3u().parse(m3uFile.fileName(), true);
+    EXPECT_EQ(entries.size(), 5);
+    if (entries.size() == 5) {
+        EXPECT_TRUE(entries[0].endsWith(QStringLiteral("crlf.mp3")));
+        EXPECT_TRUE(entries[1].endsWith(QStringLiteral("cr.mp3")));
+        EXPECT_TRUE(entries[2].endsWith(QStringLiteral("lf.mp3")));
+        EXPECT_TRUE(entries[3].endsWith(QStringLiteral("EuroSign\u20AC.mp3")));
+        EXPECT_TRUE(entries[4].endsWith(QStringLiteral("end.mp3")));
+    }
 }

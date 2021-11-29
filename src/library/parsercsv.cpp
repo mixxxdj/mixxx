@@ -27,7 +27,8 @@ ParserCsv::ParserCsv() : Parser() {
 ParserCsv::~ParserCsv() {
 }
 
-QList<QString> ParserCsv::parse(const QString& sFilename) {
+QList<QString> ParserCsv::parse(const QString& sFilename, bool keepMissingFiles) {
+    Q_UNUSED(keepMissingFiles);
     QFile file(sFilename);
     QString basepath = sFilename.section('/', 0, -2);
 

@@ -54,7 +54,7 @@ ParserM3u::~ParserM3u()
 
 }
 
-QList<QString> ParserM3u::parse(const QString& filename) {
+QList<QString> ParserM3u::parse(const QString& filename, bool keepMissingFiles) {
     QList<QString> paths;
 
     QFile file(filename);
@@ -79,7 +79,7 @@ QList<QString> ParserM3u::parse(const QString& filename) {
     const QStringList fileLines = fileContents.split(kUniveralEndOfLineRegEx);
     for (const QString& line : fileLines) {
         auto trackFile = playlistEntryToFileInfo(line, fileInfo.canonicalPath());
-        if (trackFile.checkFileExists()) {
+        if (keepMissingFiles || trackFile.checkFileExists()) {
             paths.append(trackFile.location());
         } else {
             qInfo() << "File" << trackFile.location() << "from M3U playlist"

@@ -610,11 +610,11 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlist_file) {
     if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
             playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
         // .m3u8 is Utf8 representation of an m3u playlist
-        entries = ParserM3u().parse(playlist_file);
+        entries = ParserM3u().parse(playlist_file, false);
     } else if (playlist_file.endsWith(".pls", Qt::CaseInsensitive)) {
-        entries = ParserPls().parse(playlist_file);
+        entries = ParserPls().parse(playlist_file, false);
     } else if (playlist_file.endsWith(".csv", Qt::CaseInsensitive)) {
-        entries = ParserCsv().parse(playlist_file);
+        entries = ParserCsv().parse(playlist_file, false);
     } else {
         return;
     }
