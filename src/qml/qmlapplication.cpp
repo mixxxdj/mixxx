@@ -53,10 +53,8 @@ QmlApplication::QmlApplication(
             m_pCoreServices->getScreensaverManager(),
             nullptr,
             m_pCoreServices->getSoundManager(),
-            m_pCoreServices->getPlayerManager(),
             m_pCoreServices->getControllerManager(),
             m_pCoreServices->getVinylControlManager(),
-            m_pCoreServices->getLV2Backend(),
             m_pCoreServices->getEffectsManager(),
             m_pCoreServices->getSettingsManager(),
             m_pCoreServices->getLibrary());

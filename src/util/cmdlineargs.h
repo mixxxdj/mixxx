@@ -31,7 +31,9 @@ class CmdlineArgs final {
 
     const QList<QString>& getMusicFiles() const { return m_musicFiles; }
     bool getStartInFullscreen() const { return m_startInFullscreen; }
-    bool getMidiDebug() const { return m_midiDebug; }
+    bool getControllerDebug() const {
+        return m_controllerDebug;
+    }
     bool getDeveloper() const { return m_developer; }
     bool getQml() const {
         return m_qml;
@@ -70,7 +72,7 @@ class CmdlineArgs final {
 
     QList<QString> m_musicFiles;    // List of files to load into players at startup
     bool m_startInFullscreen;       // Start in fullscreen mode
-    bool m_midiDebug;
+    bool m_controllerDebug;
     bool m_developer; // Developer Mode
     bool m_qml;
     bool m_safeMode;

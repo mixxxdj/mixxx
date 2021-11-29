@@ -261,11 +261,30 @@ TrackCollectionManager* Library::trackCollectionManager() const {
     return m_pTrackCollectionManager;
 }
 
+namespace {
+class TrackAnalysisSchedulerEnvironmentImpl final : public TrackAnalysisSchedulerEnvironment {
+  public:
+    explicit TrackAnalysisSchedulerEnvironmentImpl(const Library* pLibrary)
+            : m_pLibrary(pLibrary) {
+        DEBUG_ASSERT(m_pLibrary);
+    }
+    ~TrackAnalysisSchedulerEnvironmentImpl() final = default;
+
+    TrackPointer loadTrackById(TrackId trackId) const final {
+        return m_pLibrary->trackCollectionManager()->getTrackById(trackId);
+    }
+
+  private:
+    // TODO: Use std::shared_ptr or std::weak_ptr instead of a plain pointer?
+    const Library* const m_pLibrary;
+};
+} // namespace
+
 TrackAnalysisScheduler::Pointer Library::createTrackAnalysisScheduler(
         int numWorkerThreads,
         AnalyzerModeFlags modeFlags) const {
     return TrackAnalysisScheduler::createInstance(
-            &m_pTrackCollectionManager->internalCollection()->getTrackDAO(),
+            std::make_unique<const TrackAnalysisSchedulerEnvironmentImpl>(this),
             numWorkerThreads,
             m_pDbConnectionPool,
             m_pConfig,
@@ -374,7 +393,14 @@ void Library::bindLibraryWidget(
             &Library::switchToView,
             pLibraryWidget,
             &WLibrary::switchToView);
-
+    connect(this,
+            &Library::saveModelState,
+            pTrackTableView,
+            &WTrackTableView::slotSaveCurrentViewState);
+    connect(this,
+            &Library::restoreModelState,
+            pTrackTableView,
+            &WTrackTableView::slotRestoreCurrentViewState);
     connect(pTrackTableView,
             &WTrackTableView::trackSelected,
             this,
@@ -455,6 +481,14 @@ void Library::addFeature(LibraryFeature* feature) {
             &LibraryFeature::trackSelected,
             this,
             &Library::trackSelected);
+    connect(feature,
+            &LibraryFeature::saveModelState,
+            this,
+            &Library::saveModelState);
+    connect(feature,
+            &LibraryFeature::restoreModelState,
+            this,
+            &Library::restoreModelState);
 }
 
 void Library::onPlayerManagerTrackAnalyzerProgress(

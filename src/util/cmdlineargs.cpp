@@ -19,7 +19,7 @@
 
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
-          m_midiDebug(false),
+          m_controllerDebug(false),
           m_developer(false),
           m_safeMode(false),
           m_debugAssertBreak(false),
@@ -325,7 +325,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_timelinePath = parser.value(timelinePathDeprecated);
     }
 
-    m_midiDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
+    m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
     m_developer = parser.isSet(developer);
     m_qml = parser.isSet(qml);
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);

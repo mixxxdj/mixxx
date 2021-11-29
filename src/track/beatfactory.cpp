@@ -1,8 +1,6 @@
 #include <QtDebug>
 #include <QStringList>
 
-#include "track/beatgrid.h"
-#include "track/beatmap.h"
 #include "track/beatfactory.h"
 #include "track/beatutils.h"
 

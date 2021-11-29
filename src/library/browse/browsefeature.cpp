@@ -40,6 +40,10 @@ BrowseFeature::BrowseFeature(
             &BrowseFeature::requestAddDir,
             pLibrary,
             &Library::slotRequestAddDir);
+    connect(&m_browseModel,
+            &BrowseTableModel::restoreModelState,
+            this,
+            &LibraryFeature::restoreModelState);
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
     connect(m_pAddQuickLinkAction,
@@ -245,6 +249,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 
     QString path = item->getData().toString();
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+        emit saveModelState();
         m_browseModel.setPath({});
     } else {
         // Open a security token for this path and if we do not have access, ask
@@ -260,6 +265,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
                 return;
             }
         }
+        emit saveModelState();
         m_browseModel.setPath(std::move(dirAccess));
     }
     emit showTrackModel(&m_proxyModel);

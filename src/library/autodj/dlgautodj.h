@@ -34,6 +34,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
+    void saveCurrentViewState() override;
+    void restoreCurrentViewState() override;
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);
@@ -57,7 +59,6 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void setupActionButton(QPushButton* pButton,
             void (DlgAutoDJ::*pSlot)(bool),
             const QString& fallbackText);
-    void shiftTabKeypress();
 
     const UserSettingsPointer m_pConfig;
 

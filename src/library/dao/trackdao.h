@@ -163,7 +163,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     }
     void addTracksFinish(bool rollback = false);
 
-    bool updateTrack(Track* pTrack) const;
+    bool updateTrack(const Track& track) const;
 
     void hideAllTracks(const QDir& rootDir) const;
 

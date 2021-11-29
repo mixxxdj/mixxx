@@ -460,6 +460,7 @@
   <tabstop>PushButtonRelocateDir</tabstop>
   <tabstop>PushButtonRemoveDir</tabstop>
   <tabstop>checkBox_SyncTrackMetadata</tabstop>
+  <tabstop>checkBox_SeratoMetadataExport</tabstop>
   <tabstop>checkBox_library_scan</tabstop>
   <tabstop>checkBoxEditMetadataSelectedClicked</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>

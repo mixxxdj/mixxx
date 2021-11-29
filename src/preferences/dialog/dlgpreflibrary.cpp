@@ -205,6 +205,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
     setLibraryFont(QApplication::font());
+    searchDebouncingTimeoutSpinBox->setValue(
+            WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -257,6 +259,11 @@ void DlgPrefLibrary::slotUpdate() {
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBoxRowHeight->setValue(m_iOriginalTrackTableRowHeight);
     setLibraryFont(m_originalTrackTableFont);
+    const auto searchDebouncingTimeoutMillis =
+            m_pConfig->getValue(
+                    kSearchDebouncingTimeoutMillisConfigKey,
+                    WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
+    searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
 }
 
 void DlgPrefLibrary::slotCancel() {

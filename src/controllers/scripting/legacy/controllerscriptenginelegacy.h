@@ -13,7 +13,8 @@
 class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     Q_OBJECT
   public:
-    explicit ControllerScriptEngineLegacy(Controller* controller);
+    explicit ControllerScriptEngineLegacy(
+            Controller* controller, const RuntimeLoggingCategory& logger);
     ~ControllerScriptEngineLegacy() override;
 
     bool initialize() override;
