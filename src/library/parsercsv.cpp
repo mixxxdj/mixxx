@@ -25,7 +25,7 @@ QList<QString> ParserCsv::parse(const QString& playlistFile) {
         QList<QList<QString> > tokens = tokenize(ba, ',');
 
         // detect Location column
-        int loc_col = 0x7fffffff;
+        int loc_col = -1;
         if (tokens.size()) {
             for (int i = 0; i < tokens[0].size(); ++i) {
                 if (tokens[0][i] == QObject::tr("Location")) {
@@ -33,12 +33,27 @@ QList<QString> ParserCsv::parse(const QString& playlistFile) {
                     break;
                 }
             }
-            for (int i = 1; i < tokens.size(); ++i) {
-                qDebug() << tokens;
-                if (loc_col < tokens[i].size()) {
-                    qDebug() << tokens[i][loc_col];
-                    locations.append(tokens[i][loc_col]);
+            qDebug() << loc_col;
+            if (loc_col < 0 && tokens.size() > 1) {
+                // Last resort, find column with path separators
+                // This happens in case of csv files in a different language
+                for (int i = 0; i < tokens[1].size(); ++i) {
+                    if (tokens[1][i].contains(QDir::separator())) {
+                        loc_col = i;
+                        break;
+                    }
                 }
+            }
+            if (loc_col >= 0) {
+                for (int i = 1; i < tokens.size(); ++i) {
+                    qDebug() << tokens;
+                    if (loc_col < tokens[i].size()) {
+                        locations.append(tokens[i][loc_col]);
+                    }
+                }
+            } else {
+                qInfo() << "No location column found in"
+                        << playlistFile;
             }
         }
         file.close();
@@ -62,7 +77,7 @@ QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter
         if (!quotes && c == '"') {
             quotes = true;
         } else if (quotes && c== '"' ) {
-            if (pos + 1 < str.length() && str[pos+1]== '"') {
+            if (pos + 1 < str.length() && str[pos + 1] == '"') {
                 field.append(c);
                 pos++;
             } else {
@@ -75,6 +90,8 @@ QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter
                 tokens[row].append(QString::fromLatin1(field));
             }
             field.clear();
+        } else if (!quotes && c == '\r' && str[pos + 1] == '\n') {
+            // skip \r in \r\n
         } else if (!quotes && (c == '\r' || c == '\n')) {
             if (Parser::isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
