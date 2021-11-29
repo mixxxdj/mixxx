@@ -25,7 +25,9 @@
 namespace {
 // according to http://en.wikipedia.org/wiki/M3U the default encoding of m3u is Windows-1252
 // see also http://tools.ietf.org/html/draft-pantos-http-live-streaming-07
-const char* kStandardM3uTextEncoding = "Windows-1250";
+const char kStandardM3uTextEncoding[] = "Windows-1250";
+const char kM3uHeader[] = "#EXTM3U";
+const char kM3uCommentPrefix[] = "#";
 // Note: The RegEx pattern is compiled, when first used the first time
 const auto kUniveralEndOfLineRegEx = QRegularExpression(QStringLiteral("\r\n|\r|\n"));
 } // anonymous namespace
@@ -75,9 +77,17 @@ QList<QString> ParserM3u::parse(const QString& filename, bool keepMissingFiles) 
                                ->toUnicode(byteArray);
     }
 
+    if (!fileContents.startsWith(kM3uHeader)) {
+        qWarning() << "M3U playlist file" << filename << "does not start with" << kM3uHeader;
+    }
+
     QFileInfo fileInfo(filename);
     const QStringList fileLines = fileContents.split(kUniveralEndOfLineRegEx);
     for (const QString& line : fileLines) {
+        if (line.startsWith(kM3uCommentPrefix)) {
+            // Skip lines with comments
+            continue;
+        }
         auto trackFile = playlistEntryToFileInfo(line, fileInfo.canonicalPath());
         if (keepMissingFiles || trackFile.checkFileExists()) {
             paths.append(trackFile.location());
