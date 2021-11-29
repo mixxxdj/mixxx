@@ -33,7 +33,6 @@ QList<QString> ParserCsv::parse(const QString& playlistFile) {
                     break;
                 }
             }
-            qDebug() << loc_col;
             if (loc_col < 0 && tokens.size() > 1) {
                 // Last resort, find column with path separators
                 // This happens in case of csv files in a different language
@@ -46,7 +45,6 @@ QList<QString> ParserCsv::parse(const QString& playlistFile) {
             }
             if (loc_col >= 0) {
                 for (int i = 1; i < tokens.size(); ++i) {
-                    qDebug() << tokens;
                     if (loc_col < tokens[i].size()) {
                         locations.append(tokens[i][loc_col]);
                     }
