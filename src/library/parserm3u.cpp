@@ -56,14 +56,14 @@ ParserM3u::~ParserM3u()
 
 }
 
-QList<QString> ParserM3u::parse(const QString& filename, bool keepMissingFiles) {
+QList<QString> ParserM3u::parse(const QString& playlistFile, bool keepMissingFiles) {
     QList<QString> paths;
 
-    QFile file(filename);
+    QFile file(playlistFile);
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning()
                 << "Failed to open playlist file"
-                << filename;
+                << playlistFile;
         return paths;
     }
 
@@ -78,10 +78,10 @@ QList<QString> ParserM3u::parse(const QString& filename, bool keepMissingFiles) 
     }
 
     if (!fileContents.startsWith(kM3uHeader)) {
-        qWarning() << "M3U playlist file" << filename << "does not start with" << kM3uHeader;
+        qWarning() << "M3U playlist file" << playlistFile << "does not start with" << kM3uHeader;
     }
 
-    QFileInfo fileInfo(filename);
+    QFileInfo fileInfo(playlistFile);
     const QStringList fileLines = fileContents.split(kUniveralEndOfLineRegEx);
     for (const QString& line : fileLines) {
         if (line.startsWith(kM3uCommentPrefix)) {
@@ -93,7 +93,7 @@ QList<QString> ParserM3u::parse(const QString& filename, bool keepMissingFiles) 
             paths.append(trackFile.location());
         } else {
             qInfo() << "File" << trackFile.location() << "from M3U playlist"
-                    << filename << "does not exist.";
+                    << playlistFile << "does not exist.";
         }
     }
 

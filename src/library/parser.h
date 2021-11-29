@@ -41,7 +41,7 @@ class Parser : public QObject {
     Note for developers:
     This function should return an empty PtrList
      or 0 in order for the trackimporter to function**/
-    virtual QList<QString> parse(const QString& sFilename, bool keepMissingFiles) = 0;
+    virtual QList<QString> parse(const QString& playlistFile, bool keepMissingFiles) = 0;
 
   protected:
     // Pointer to the parsed Filelocations

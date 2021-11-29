@@ -25,8 +25,8 @@ class ParserM3u : public Parser
 public:
     ParserM3u();
     ~ParserM3u() override;
-    QList<QString> parse(const QString&, bool keepMissingFiles) override;
-    //Playlist Export
+    QList<QString> parse(const QString& playlistFile, bool keepMissingFiles) override;
+    /// Playlist Export
     static bool writeM3UFile(const QString &file_str, const QList<QString> &items, bool useRelativePath, bool useUtf8);
     static bool writeM3UFile(const QString &file, const QList<QString> &items, bool useRelativePath);
     static bool writeM3U8File(const QString &file_str, const QList<QString> &items, bool useRelativePath);
