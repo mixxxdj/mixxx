@@ -440,7 +440,7 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlist_file) {
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
 
-    QList<QString> locations = Parser::parse(playlist_file, false);
+    QList<QString> locations = Parser::parse(playlist_file);
     // Iterate over the List that holds locations of playlist entries
     m_pPlaylistTableModel->addTracks(QModelIndex(), locations);
 }

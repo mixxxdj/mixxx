@@ -20,11 +20,7 @@
 class ParserPls : Parser {
   public:
     static bool isPlaylistFilenameSupported(const QString& fileName);
-    QList<QString> parse(const QString& playlistFile, bool keepMissingFiles);
+    static QList<QString> parse(const QString& playlistFile);
     /// Playlist Export
     static bool writePLSFile(const QString &file, const QList<QString> &items, bool useRelativePath);
-
-  private:
-    /// Reads a line from the file and returns filepath
-    static QString getFilePath(QTextStream*, const QString& basePath);
 };

@@ -606,7 +606,7 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlist_file) {
     // register a security bookmark.
     // TODO(XXX): Parsing a list of track locations from a playlist file
     // is a general task and should be implemented separately.
-    QList<QString> locations = Parser().parse(playlist_file, false);
+    QList<QString> locations = Parser().parse(playlist_file);
     if (locations.empty()) {
         return;
     }

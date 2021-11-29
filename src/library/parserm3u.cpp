@@ -52,7 +52,7 @@ bool ParserM3u::isPlaylistFilenameSupported(const QString& fileName) {
             fileName.endsWith(".m3u8", Qt::CaseInsensitive);
 }
 
-QList<QString> ParserM3u::parse(const QString& playlistFile, bool keepMissingFiles) {
+QList<QString> ParserM3u::parse(const QString& playlistFile) {
     QList<QString> paths;
 
     QFile file(playlistFile);
@@ -77,22 +77,14 @@ QList<QString> ParserM3u::parse(const QString& playlistFile, bool keepMissingFil
         qWarning() << "M3U playlist file" << playlistFile << "does not start with" << kM3uHeader;
     }
 
-    QFileInfo fileInfo(playlistFile);
     const QStringList fileLines = fileContents.split(kUniveralEndOfLineRegEx);
     for (const QString& line : fileLines) {
         if (line.startsWith(kM3uCommentPrefix)) {
             // Skip lines with comments
             continue;
         }
-        auto trackFile = Parser::playlistEntryToFileInfo(line, fileInfo.canonicalPath());
-        if (keepMissingFiles || trackFile.checkFileExists()) {
-            paths.append(trackFile.location());
-        } else {
-            qInfo() << "File" << trackFile.location() << "from M3U playlist"
-                    << playlistFile << "does not exist.";
-        }
+        paths.append(line);
     }
-
     return paths;
 }
 

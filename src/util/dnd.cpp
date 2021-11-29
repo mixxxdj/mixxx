@@ -116,7 +116,7 @@ QList<mixxx::FileInfo> DragAndDropHelper::supportedTracksFromUrls(
         }
 
         if (acceptPlaylists && Parser::isPlaylistFilenameSupported(file)) {
-            const QList<QString> track_list = Parser::parse(file, false);
+            const QList<QString> track_list = Parser::parse(file);
             for (auto& playlistFile : track_list) {
                 addFileToList(mixxx::FileInfo(playlistFile), &fileInfos);
             }

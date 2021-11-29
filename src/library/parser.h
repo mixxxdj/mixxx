@@ -29,7 +29,7 @@ it afterwards for proper functioning
 class Parser {
   public:
     static bool isPlaylistFilenameSupported(const QString& playlistFile);
-    static QList<QString> parse(const QString& playlistFile, bool keepMissingFiles);
+    static QList<QString> parse(const QString& playlistFile);
 
   protected:
     // check for Utf8 encoding

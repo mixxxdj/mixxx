@@ -8,14 +8,35 @@
 
 #include "library/parser.h"
 
+namespace {
+
+QString getFilePath(QTextStream* stream) {
+    QString textline = stream->readLine();
+    while (!textline.isEmpty()) {
+        if (textline.isNull()) {
+            break;
+        }
+
+        if (textline.contains("File")) {
+            int iPos = textline.indexOf("=", 0);
+            ++iPos;
+            return textline.right(textline.length() - iPos);
+        }
+        textline = stream->readLine();
+    }
+    // Signal we reached the end
+    return QString();
+}
+
+} // namespace
+
 // static
 bool ParserPls::isPlaylistFilenameSupported(const QString& playlistFile) {
     return playlistFile.endsWith(".pls", Qt::CaseInsensitive);
 }
 
 // static
-QList<QString> ParserPls::parse(const QString& playlistFile, bool keepMissingFiles) {
-    Q_UNUSED(keepMissingFiles);
+QList<QString> ParserPls::parse(const QString& playlistFile) {
     QFile file(playlistFile);
     const auto basePath = playlistFile.section('/', 0, -2);
 
@@ -39,7 +60,7 @@ QList<QString> ParserPls::parse(const QString& playlistFile, bool keepMissingFil
         QTextStream textstream(ba.constData());
 
         while(!textstream.atEnd()) {
-            QString psLine = getFilePath(&textstream, basePath);
+            QString psLine = getFilePath(&textstream);
             if(psLine.isNull()) {
                 break;
             } else {
@@ -51,33 +72,6 @@ QList<QString> ParserPls::parse(const QString& playlistFile, bool keepMissingFil
         file.close();
     }
     return locations;
-}
-
-// static
-QString ParserPls::getFilePath(QTextStream *stream, const QString& basePath) {
-    QString textline = stream->readLine();
-    while (!textline.isEmpty()) {
-        if (textline.isNull()) {
-            break;
-        }
-
-        if(textline.contains("File")) {
-            int iPos = textline.indexOf("=", 0);
-            ++iPos;
-
-            QString filename = textline.right(textline.length() - iPos);
-            auto trackFile = Parser::playlistEntryToFileInfo(filename, basePath);
-            if (trackFile.checkFileExists()) {
-                return trackFile.location();
-            }
-            // We couldn't match this to a real file so ignore it
-            qWarning() << trackFile << "not found";
-        }
-        textline = stream->readLine();
-    }
-
-    // Signal we reached the end
-    return QString();
 }
 
 bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &items, bool useRelativePath)

@@ -22,7 +22,7 @@
 class ParserM3u : Parser {
   public:
     static bool isPlaylistFilenameSupported(const QString& fileName);
-    static QList<QString> parse(const QString& playlistFile, bool keepMissingFiles);
+    static QList<QString> parse(const QString& playlistFile);
     /// Playlist Export
     static bool writeM3UFile(const QString &file_str, const QList<QString> &items, bool useRelativePath, bool useUtf8);
     static bool writeM3UFile(const QString &file, const QList<QString> &items, bool useRelativePath);

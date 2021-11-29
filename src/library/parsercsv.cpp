@@ -13,8 +13,7 @@ bool ParserCsv::isPlaylistFilenameSupported(const QString& playlistFile) {
 }
 
 // static
-QList<QString> ParserCsv::parse(const QString& playlistFile, bool keepMissingFiles) {
-    Q_UNUSED(keepMissingFiles);
+QList<QString> ParserCsv::parse(const QString& playlistFile) {
     QFile file(playlistFile);
     QString basepath = playlistFile.section('/', 0, -2);
 
@@ -26,24 +25,19 @@ QList<QString> ParserCsv::parse(const QString& playlistFile, bool keepMissingFil
         QList<QList<QString> > tokens = tokenize(ba, ',');
 
         // detect Location column
-        int loc_coll = 0x7fffffff;
+        int loc_col = 0x7fffffff;
         if (tokens.size()) {
             for (int i = 0; i < tokens[0].size(); ++i) {
                 if (tokens[0][i] == QObject::tr("Location")) {
-                    loc_coll = i;
+                    loc_col = i;
                     break;
                 }
             }
             for (int i = 1; i < tokens.size(); ++i) {
-                if (loc_coll < tokens[i].size()) {
-                    // Todo: check if path is relative
-                    QFileInfo fi(tokens[i][loc_coll]);
-                    if (fi.isRelative()) {
-                        // add base path
-                        qDebug() << "is relative" << basepath << fi.filePath();
-                        fi.setFile(basepath,fi.filePath());
-                    }
-                    locations.append(fi.filePath());
+                qDebug() << tokens;
+                if (loc_col < tokens[i].size()) {
+                    qDebug() << tokens[i][loc_col];
+                    locations.append(tokens[i][loc_col]);
                 }
             }
         }
