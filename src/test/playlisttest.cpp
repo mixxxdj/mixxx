@@ -68,12 +68,10 @@ TEST_F(PlaylistTest, m3uEndOfLine) {
     m3uFile.close();
 
     QList<QString> entries = ParserM3u().parse(m3uFile.fileName());
-    EXPECT_EQ(entries.size(), 5);
-    if (entries.size() == 5) {
-        EXPECT_TRUE(entries[0].endsWith(QStringLiteral("crlf.mp3")));
-        EXPECT_TRUE(entries[1].endsWith(QStringLiteral("cr.mp3")));
-        EXPECT_TRUE(entries[2].endsWith(QStringLiteral("lf.mp3")));
-        EXPECT_TRUE(entries[3].endsWith(QStringLiteral("EuroSign\u20AC.mp3")));
-        EXPECT_TRUE(entries[4].endsWith(QStringLiteral("end.mp3")));
-    }
+    ASSERT_EQ(entries.size(), 5);
+    EXPECT_TRUE(entries[0].endsWith(QStringLiteral("crlf.mp3")));
+    EXPECT_TRUE(entries[1].endsWith(QStringLiteral("cr.mp3")));
+    EXPECT_TRUE(entries[2].endsWith(QStringLiteral("lf.mp3")));
+    EXPECT_TRUE(entries[3].endsWith(QStringLiteral("EuroSign\u20AC.mp3")));
+    EXPECT_TRUE(entries[4].endsWith(QStringLiteral("end.mp3")));
 }
