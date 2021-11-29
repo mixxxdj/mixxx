@@ -69,7 +69,7 @@ QList<QString> ParserM3u::parse(const QString& playlistFile, bool keepMissingFil
 
     QByteArray byteArray = file.readAll();
     QString fileContents;
-    if (isUtf8(byteArray.constData())) {
+    if (Parser::isUtf8(byteArray.constData())) {
         fileContents = QString::fromUtf8(byteArray);
     } else {
         // FIXME: replace deprecated QTextCodec with direct usage of libicu
@@ -88,7 +88,7 @@ QList<QString> ParserM3u::parse(const QString& playlistFile, bool keepMissingFil
             // Skip lines with comments
             continue;
         }
-        auto trackFile = playlistEntryToFileInfo(line, fileInfo.canonicalPath());
+        auto trackFile = Parser::playlistEntryToFileInfo(line, fileInfo.canonicalPath());
         if (keepMissingFiles || trackFile.checkFileExists()) {
             paths.append(trackFile.location());
         } else {

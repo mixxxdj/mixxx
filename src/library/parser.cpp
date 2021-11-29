@@ -25,14 +25,6 @@ Parser::Parser() {
 Parser::~Parser() {
 }
 
-void Parser::clearLocations() {
-    m_sLocations.clear();
-}
-
-long Parser::countParsed() {
-    return (long)m_sLocations.count();
-}
-
 // The following public domain code is taken from
 // http://stackoverflow.com/questions/1031645/how-to-detect-utf-8-in-plain-c
 // Thank you Christoph!
@@ -115,6 +107,7 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
+// static
 mixxx::FileInfo Parser::playlistEntryToFileInfo(
         const QString& playlistEntry,
         const QString& basePath) {

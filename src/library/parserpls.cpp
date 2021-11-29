@@ -37,8 +37,7 @@ QList<QString> ParserPls::parse(const QString& playlistFile, bool keepMissingFil
     QFile file(playlistFile);
     const auto basePath = playlistFile.section('/', 0, -2);
 
-    clearLocations();
-
+    QList<QString> locations;
     if (file.open(QIODevice::ReadOnly)) {
         /* Unfortunately, QT 4.7 does not handle <CR> (=\r or asci value 13) line breaks.
          * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
@@ -62,22 +61,14 @@ QList<QString> ParserPls::parse(const QString& playlistFile, bool keepMissingFil
             if(psLine.isNull()) {
                 break;
             } else {
-                m_sLocations.append(psLine);
+                locations.append(psLine);
             }
 
         }
 
         file.close();
-
-        if (m_sLocations.count() != 0) {
-            return m_sLocations;
-        } else {
-            return QList<QString>(); // NULL pointer returned when no locations were found
-        }
     }
-
-    file.close();
-    return QList<QString>(); //if we get here something went wrong :D
+    return locations;
 }
 
 long ParserPls::getNumEntries(QTextStream *stream) {
@@ -113,7 +104,7 @@ QString ParserPls::getFilePath(QTextStream *stream, const QString& basePath) {
             ++iPos;
 
             QString filename = textline.right(textline.length() - iPos);
-            auto trackFile = playlistEntryToFileInfo(filename, basePath);
+            auto trackFile = Parser::playlistEntryToFileInfo(filename, basePath);
             if (trackFile.checkFileExists()) {
                 return trackFile.location();
             }

@@ -32,7 +32,7 @@ QList<QString> ParserCsv::parse(const QString& playlistFile, bool keepMissingFil
     QFile file(playlistFile);
     QString basepath = playlistFile.section('/', 0, -2);
 
-    clearLocations();
+    QList<QString> locations;
     //qDebug() << "ParserCsv: Starting to parse.";
     if (file.open(QIODevice::ReadOnly)) {
         QByteArray ba = file.readAll();
@@ -57,22 +57,13 @@ QList<QString> ParserCsv::parse(const QString& playlistFile, bool keepMissingFil
                         qDebug() << "is relative" << basepath << fi.filePath();
                         fi.setFile(basepath,fi.filePath());
                     }
-                    m_sLocations.append(fi.filePath());
+                    locations.append(fi.filePath());
                 }
             }
         }
-
         file.close();
-
-        if (m_sLocations.count() != 0) {
-            return m_sLocations;
-        } else {
-            return QList<QString>(); // NULL pointer returned when no locations were found
-        }
     }
-
-    file.close();
-    return QList<QString>(); //if we get here something went wrong
+    return locations;
 }
 
 // Code was posted at http://www.qtcentre.org/threads/35511-Parsing-CSV-data
@@ -98,14 +89,14 @@ QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter
                 quotes = false;
             }
         } else if (!quotes && c == delimiter) {
-            if (isUtf8(field.constData())) {
+            if (Parser::isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
             } else {
                 tokens[row].append(QString::fromLatin1(field));
             }
             field.clear();
         } else if (!quotes && (c == '\r' || c == '\n')) {
-            if (isUtf8(field.constData())) {
+            if (Parser::isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
             } else {
                 tokens[row].append(QString::fromLatin1(field));

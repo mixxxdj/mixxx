@@ -37,23 +37,13 @@ class Parser : public QObject {
 
     Parser();
     ~Parser() override;
-    /**Can be called to parse a pls file
-    Note for developers:
-    This function should return an empty PtrList
-     or 0 in order for the trackimporter to function**/
     virtual QList<QString> parse(const QString& playlistFile, bool keepMissingFiles) = 0;
 
   protected:
-    // Pointer to the parsed Filelocations
-    QList<QString> m_sLocations;
-    // Returns the number of parsed locations
-    long countParsed();
-    // Clears m_psLocations
-    void clearLocations();
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
     // Resolve an absolute or relative file path
-    mixxx::FileInfo playlistEntryToFileInfo(
+    static mixxx::FileInfo playlistEntryToFileInfo(
             const QString& playlistEntry,
             const QString& basePath = QString());
 };
