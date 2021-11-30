@@ -1723,6 +1723,8 @@ decks, samplers, mic, aux, fx */
       /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
           names start getting cut off. Adding explicit padding improves this. */
       padding: 0px 28px 0px 0px;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
     }
     #fadeModeCombobox {
       border: 1px solid #666;
@@ -1809,12 +1811,12 @@ decks, samplers, mic, aux, fx */
     background-color: #101010;
     width: 11px;
     height: 20px; */
-    image: url(skin:/../Tango/buttons/btn_arrow_down.svg) no-repeat center center;
+    image: url(skin:/../Tango/buttons/btn_arrow_down_fx.svg) no-repeat center center;
     }
     WEffectSelector::down-arrow:hover,
     WEffectChainPresetButton::menu-indicator:hover,
     #fadeModeCombobox::down-arrow:hover {
-      image: url(skin:/../Tango/buttons/btn_arrow_down_hover.svg) no-repeat center center;
+      image: url(skin:/../Tango/buttons/btn_arrow_down_fx_hover.svg) no-repeat center center;
     }
   WEffectChainPresetSelector::down-arrow {
     image: url(skin:/../Tango/buttons/btn_arrow_down_fxquick.svg) no-repeat center center;
@@ -2292,7 +2294,8 @@ WEffectChainPresetSelector::item,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu::item,
 WEffectChainPresetButton QMenu QCheckBox,
-#fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea::item {
   background-color: #1a1a1a;
   color: #ccc;
@@ -2338,13 +2341,15 @@ WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
-#fadeModeCombobox::item:selected,
+WEffectSelector::item:selected,
 WEffectChainPresetSelector::item:selected,
-WEffectSelector::item:selected {
+#fadeModeCombobox::item:selected {
   background-color: #555;
   color: #fff;
   /* remove OS focus indicator */
   outline: none;
+  /* Remove 3D border from unchecked effects checkmark space */
+  border: 0px;
 }
 
 /* disabled menu items and checkboxes */
