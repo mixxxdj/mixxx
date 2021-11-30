@@ -38,7 +38,6 @@ bool ParserPls::isPlaylistFilenameSupported(const QString& playlistFile) {
 // static
 QList<QString> ParserPls::parse(const QString& playlistFile) {
     QFile file(playlistFile);
-    const auto basePath = playlistFile.section('/', 0, -2);
 
     QList<QString> locations;
     if (file.open(QIODevice::ReadOnly)) {

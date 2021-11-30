@@ -15,7 +15,6 @@ bool ParserCsv::isPlaylistFilenameSupported(const QString& playlistFile) {
 // static
 QList<QString> ParserCsv::parse(const QString& playlistFile) {
     QFile file(playlistFile);
-    QString basepath = playlistFile.section('/', 0, -2);
 
     QList<QString> locations;
     //qDebug() << "ParserCsv: Starting to parse.";
