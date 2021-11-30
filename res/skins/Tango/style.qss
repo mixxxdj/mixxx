@@ -1806,8 +1806,9 @@ decks, samplers, mic, aux, fx */
   WEffectSelector::down-arrow,
   WEffectChainPresetButton::menu-indicator,
   #fadeModeCombobox::down-arrow {
-    /* With a fixed size and the skin being scaled, the bg-color
-    would be applied to the (unscaled!) button image only.
+    /* With a fixed size and the skin being scaled
+    * button icon is not scaled
+    * bg-color is applied only to the icon rectangle
     background-color: #101010;
     width: 11px;
     height: 20px; */
@@ -1866,13 +1867,17 @@ decks, samplers, mic, aux, fx */
     won't change. Also, only with this option the hover bg color defined
     above will be applied... it's qt magic
     background: #0081B7; */
-    margin: 3px;
+    margin: 3px 3px 3px 6px;
     image: url(skin:/../Tango/buttons/btn_lib_checkmark_white.svg) no-repeat center center;
   }
-  WEffectSelector::indicator:!checked,
-  WEffectChainPresetSelector::indicator:!checked,
-  #fadeModeCombobox::indicator:!checked {
-    image: url(skin:/../Tango/buttons/btn_.svg) no-repeat center center;
+  /* Wtf?
+  This removes 3D border from unchecked effects checkmark space.
+  But: his will also prevent the icons from being scaled up,
+  so set desired size in the svg itself. */
+  WEffectSelector::item:selected,
+  WEffectChainPresetSelector::item:selected,
+  #fadeModeCombobox::item:selected {
+    border: 0px;
   }
 
 #FxParametersLeft {
@@ -2348,8 +2353,6 @@ WEffectChainPresetSelector::item:selected,
   color: #fff;
   /* remove OS focus indicator */
   outline: none;
-  /* Remove 3D border from unchecked effects checkmark space */
-  border: 0px;
 }
 
 /* disabled menu items and checkboxes */
