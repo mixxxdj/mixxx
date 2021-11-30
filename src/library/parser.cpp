@@ -18,20 +18,30 @@ bool Parser::isPlaylistFilenameSupported(const QString& playlistFile) {
 }
 
 // static
-QList<QString> Parser::parse(const QString& playlistFile) {
-    QList<QString> locations;
+QList<QString> Parser::parseAllLocations(const QString& playlistFile) {
     if (ParserM3u::isPlaylistFilenameSupported(playlistFile)) {
-        locations = ParserM3u::parse(playlistFile);
-    } else if (ParserPls::isPlaylistFilenameSupported(playlistFile)) {
-        locations = ParserPls::parse(playlistFile);
-    } else if (ParserCsv::isPlaylistFilenameSupported(playlistFile)) {
-        locations = ParserCsv::parse(playlistFile);
+        return ParserM3u::parseAllLocations(playlistFile);
     }
+
+    if (ParserPls::isPlaylistFilenameSupported(playlistFile)) {
+        return ParserPls::parseAllLocations(playlistFile);
+    }
+
+    if (ParserCsv::isPlaylistFilenameSupported(playlistFile)) {
+        return ParserCsv::parseAllLocations(playlistFile);
+    }
+
+    return QList<QString>();
+}
+
+// static
+QList<QString> Parser::parse(const QString& playlistFile) {
+    const QList<QString> allLocations = parseAllLocations(playlistFile);
 
     QFileInfo fileInfo(playlistFile);
 
     QList<QString> existingLocations;
-    for (auto& location : locations) {
+    for (const auto& location : allLocations) {
         mixxx::FileInfo trackFile = Parser::playlistEntryToFileInfo(
                 location, fileInfo.canonicalPath());
         if (trackFile.checkFileExists()) {

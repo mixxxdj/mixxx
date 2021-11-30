@@ -13,7 +13,7 @@ bool ParserCsv::isPlaylistFilenameSupported(const QString& playlistFile) {
 }
 
 // static
-QList<QString> ParserCsv::parse(const QString& playlistFile) {
+QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
     QFile file(playlistFile);
 
     QList<QString> locations;

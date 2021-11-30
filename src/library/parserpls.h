@@ -20,7 +20,7 @@
 class ParserPls : Parser {
   public:
     static bool isPlaylistFilenameSupported(const QString& fileName);
-    static QList<QString> parse(const QString& playlistFile);
+    static QList<QString> parseAllLocations(const QString& playlistFile);
     /// Playlist Export
     static bool writePLSFile(const QString &file, const QList<QString> &items, bool useRelativePath);
 };

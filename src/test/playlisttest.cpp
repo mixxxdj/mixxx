@@ -69,7 +69,7 @@ TEST_F(PlaylistTest, m3uEndOfLine) {
     m3uFile.write("end.mp3");
     m3uFile.close();
 
-    QList<QString> entries = ParserM3u().parse(m3uFile.fileName());
+    QList<QString> entries = ParserM3u().parseAllLocations(m3uFile.fileName());
     ASSERT_EQ(entries.size(), 5);
     EXPECT_TRUE(entries[0].endsWith(QStringLiteral("crlf.mp3")));
     EXPECT_TRUE(entries[1].endsWith(QStringLiteral("cr.mp3")));
@@ -86,7 +86,7 @@ TEST_F(PlaylistTest, csvEndOfLine) {
     csvFile.write("2,lf.mp3\n");
     csvFile.close();
 
-    QList<QString> entries = ParserCsv().parse(csvFile.fileName());
+    QList<QString> entries = ParserCsv().parseAllLocations(csvFile.fileName());
     ASSERT_EQ(entries.size(), 2);
     EXPECT_TRUE(entries[0].endsWith(QStringLiteral("cr.mp3")));
     EXPECT_TRUE(entries[1].endsWith(QStringLiteral("lf.mp3")));
@@ -101,7 +101,7 @@ TEST_F(PlaylistTest, plsEndOfLine) {
     plsFile.write("File1=lf.mp3\n");
     plsFile.close();
 
-    QList<QString> entries = ParserPls().parse(plsFile.fileName());
+    QList<QString> entries = ParserPls().parseAllLocations(plsFile.fileName());
     ASSERT_EQ(entries.size(), 2);
     EXPECT_TRUE(entries[0].endsWith(QStringLiteral("cr.mp3")));
     EXPECT_TRUE(entries[1].endsWith(QStringLiteral("lf.mp3")));

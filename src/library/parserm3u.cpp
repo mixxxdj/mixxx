@@ -52,7 +52,7 @@ bool ParserM3u::isPlaylistFilenameSupported(const QString& fileName) {
             fileName.endsWith(".m3u8", Qt::CaseInsensitive);
 }
 
-QList<QString> ParserM3u::parse(const QString& playlistFile) {
+QList<QString> ParserM3u::parseAllLocations(const QString& playlistFile) {
     QList<QString> paths;
 
     QFile file(playlistFile);

@@ -36,7 +36,7 @@ bool ParserPls::isPlaylistFilenameSupported(const QString& playlistFile) {
 }
 
 // static
-QList<QString> ParserPls::parse(const QString& playlistFile) {
+QList<QString> ParserPls::parseAllLocations(const QString& playlistFile) {
     QFile file(playlistFile);
 
     QList<QString> locations;

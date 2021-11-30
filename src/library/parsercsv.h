@@ -24,7 +24,7 @@ class ParserCsv : Parser {
   public:
     // static
     static bool isPlaylistFilenameSupported(const QString& playlistFile);
-    static QList<QString> parse(const QString&);
+    static QList<QString> parseAllLocations(const QString&);
     // Playlist Export
     static bool writeCSVFile(const QString &file, BaseSqlTableModel* pPlaylistTableModel, bool useRelativePath);
     // Readable Text export
