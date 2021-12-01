@@ -54,7 +54,7 @@ FolderTreeModel::FolderTreeModel(QObject* parent)
 
                 auto* folders = new QList<TreeItem*>();
                 QFutureSynchronizer<void> sync;
-                // loop through all the item and construct the childs
+                // loop through all the item and construct the children
                 foreach (QFileInfo one, all) {
 #if defined(__APPLE__)
                     if (one.isDir() && one.fileName().endsWith(".app")) {
