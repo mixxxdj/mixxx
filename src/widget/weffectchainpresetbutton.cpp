@@ -62,7 +62,7 @@ void WEffectChainPresetButton::populateMenu() {
         const QString effectSlotNumPrefix(QString::number(effectSlotIndex + 1) + ": ");
         auto pManifest = pEffectSlot->getManifest();
         if (pManifest == nullptr) {
-            m_pMenu->addAction(effectSlotNumPrefix + tr("Empty Effect Slot"));
+            m_pMenu->addAction(effectSlotNumPrefix + kNoEffectString);
             continue;
         }
 
