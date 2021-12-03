@@ -512,7 +512,6 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceBusyDlg(bool* retryClicked) {
     return soundDeviceErrorDlg(title, text, retryClicked);
 }
 
-
 QDialog::DialogCode MixxxMainWindow::soundDeviceErrorMsgDlg(
         SoundDeviceError err, bool* retryClicked) {
     QString title(tr("Sound Device Error"));
@@ -862,17 +861,21 @@ void MixxxMainWindow::slotDeveloperToolsClosed() {
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
-    qDebug() << "";
+    qDebug() << "....";
     qDebug() << "   slotViewFullScreen(" << toggle << ")";
-    qDebug() << "   isFullScreen() before" << isFullScreen();
+    qDebug() << "     isFullScreen() before" << isFullScreen();
+    qDebug() << "     windowState() before " << windowState();
     if (isFullScreen() == toggle) {
-        qDebug() << "   > return";
+        qDebug() << "     isFullScreen() == toggle";
+        qDebug() << "     > return";
         return;
     }
+    qDebug() << ".";
 
     if (toggle) {
-        qDebug() << "   > showFullScreen()";
-        showFullScreen();
+        qDebug() << "     > set Qt::WindowFullScreen";
+        // showFullScreen();
+        setWindowState(Qt::WindowFullScreen);
 #ifdef __LINUX__
         // Fix for "No menu bar with ubuntu unity in full screen mode" Bug
         // #885890 and Bug #1076789. Before touching anything here, please read
@@ -888,13 +891,15 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
         createMenuBar();
         connectMenuBar();
 #endif
-        qDebug() << "   > showNormal()";
-        showNormal();
+        qDebug() << "   > unset Qt::WindowFullScreen";
+        //showNormal();
+        setWindowState(windowState() & ~Qt::WindowFullScreen);
     }
-    qDebug() << "";
-    qDebug() << "   isFullScreen after" << isFullScreen();
-    qDebug() << "   emit fullScreenChanged(" << toggle << ")";
-    qDebug() << "";
+    qDebug() << ".";
+    qDebug() << "     isFullScreen() after" << isFullScreen();
+    qDebug() << "     windowState() after " << windowState();
+    qDebug() << "     emit fullScreenChanged(" << toggle << ")";
+    qDebug() << ".";
     emit fullScreenChanged(toggle);
 }
 
@@ -987,9 +992,9 @@ void MixxxMainWindow::slotTooltipModeChanged(mixxx::TooltipsPreference tt) {
 }
 
 void MixxxMainWindow::rebootMixxxView() {
-    qDebug() << "";
-    qDebug() << "";
-    qDebug() << "";
+    qDebug() << ".";
+    qDebug() << ".";
+    qDebug() << ".";
     qDebug() << "Now in rebootMixxxView...";
 
     // safe geometry for later restoration
@@ -997,9 +1002,9 @@ void MixxxMainWindow::rebootMixxxView() {
 
     // store the fullscreen state and restore after skin change
     bool wasFullScreen = isFullScreen();
-    qDebug() << "";
+    qDebug() << ".";
     qDebug() << "   wasFullScreen" << wasFullScreen;
-    qDebug() << "";
+    qDebug() << ".";
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -1013,17 +1018,17 @@ void MixxxMainWindow::rebootMixxxView() {
         delete m_pCentralWidget;
         m_pCentralWidget = nullptr;
         qDebug() << "   m_pWidgetParent deleted";
-        qDebug() << "";
+        qDebug() << ".";
     }
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
     // mode. If you change skins while in fullscreen (on Linux, at least) the
-    // window returns to 0,0 but and the backdrop disappears so it looks as if
+    // window returns to 0,0 but the backdrop disappears so it looks as if
     // it is not fullscreen, but acts as if it is.
     qDebug() << "   1 isFullScreen()" << isFullScreen();
     slotViewFullScreen(false);
     qDebug() << "   2 isFullScreen()" << isFullScreen();
-    qDebug() << "";
+    qDebug() << ".";
 
     if (!loadConfiguredSkin()) {
         QMessageBox::critical(this,
@@ -1033,7 +1038,7 @@ void MixxxMainWindow::rebootMixxxView() {
         return;
     }
     qDebug() << "   new skin loaded";
-    qDebug() << "";
+    qDebug() << ".";
     m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
 
     setCentralWidget(m_pCentralWidget);
@@ -1046,7 +1051,7 @@ void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "   adjustSize()";
     adjustSize();
     qDebug() << "   4 isFullScreen()" << isFullScreen();
-    qDebug() << "";
+    qDebug() << ".";
 #endif
 
     qDebug() << "   wasFullScreen" << wasFullScreen;
@@ -1065,7 +1070,7 @@ void MixxxMainWindow::rebootMixxxView() {
         setGeometry(initGeometry);
     }
     qDebug() << "   5 isFullScreen()" << isFullScreen();
-    qDebug() << "";
+    qDebug() << ".";
 
     qDebug() << "rebootMixxxView DONE";
 }
@@ -1120,7 +1125,6 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     }
     QMainWindow::closeEvent(event);
 }
-
 
 void MixxxMainWindow::checkDirectRendering() {
     // IF

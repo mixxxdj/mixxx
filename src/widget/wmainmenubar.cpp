@@ -314,7 +314,10 @@ void WMainMenuBar::initialize() {
     pViewFullScreen->setChecked(false);
     pViewFullScreen->setStatusTip(fullScreenText);
     pViewFullScreen->setWhatsThis(buildWhatsThis(fullScreenTitle, fullScreenText));
-    connect(pViewFullScreen, &QAction::triggered, this, &WMainMenuBar::toggleFullScreen);
+    connect(pViewFullScreen,
+            &QAction::triggered,
+            this,
+            &WMainMenuBar::toggleFullScreen);
     connect(this,
             &WMainMenuBar::internalFullScreenStateChange,
             pViewFullScreen,
