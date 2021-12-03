@@ -22,6 +22,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/dnd.h"
+#include "util/string.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -686,18 +687,21 @@ void CrateFeature::slotExportPlaylist() {
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
-    QString file_location = QFileDialog::getSaveFileName(nullptr,
+    QString fileFilter = tr("M3U Playlist (*.m3u)");
+    QString fileLocationInput = QFileDialog::getSaveFileName(
+            nullptr,
             tr("Export Crate"),
             lastCrateDirectory.append("/").append(crate.getName()),
             tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist "
-               "(*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
+               "(*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"),
+            &fileFilter);
+    QString fileLocation = filePathWithSelectedExtension(fileLocationInput, fileFilter);
     // Exit method if user cancelled the open dialog.
-    if (file_location.isNull() || file_location.isEmpty()) {
+    if (fileLocation.isEmpty()) {
         return;
     }
-
+    QFileInfo fileName(fileLocation);
     // Update the import/export crate directory
-    QFileInfo fileName(file_location);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
 
@@ -718,21 +722,21 @@ void CrateFeature::slotExportPlaylist() {
     pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
     pCrateTableModel->select();
 
-    if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(file_location, pCrateTableModel.data(), useRelativePath);
-    } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
-        ParserCsv::writeReadableTextFile(file_location, pCrateTableModel.data(), false);
-    } else{
+    if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
+        ParserCsv::writeCSVFile(fileLocation, pCrateTableModel.data(), useRelativePath);
+    } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
+        ParserCsv::writeReadableTextFile(fileLocation, pCrateTableModel.data(), false);
+    } else {
         // populate a list of files of the crate
-        QList<QString> playlist_items;
+        QList<QString> playlistItems;
         int rows = pCrateTableModel->rowCount();
         for (int i = 0; i < rows; ++i) {
             QModelIndex index = m_crateTableModel.index(i, 0);
-            playlist_items << m_crateTableModel.getTrackLocation(index);
+            playlistItems << m_crateTableModel.getTrackLocation(index);
         }
         exportPlaylistItemsIntoFile(
-                file_location,
-                playlist_items,
+                fileLocation,
+                playlistItems,
                 useRelativePath);
     }
 }
