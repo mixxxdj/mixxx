@@ -23,6 +23,13 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
+namespace {
+
+const ConfigKey kConfigKeyLastImportExportPlaylistDirectory(
+        "[Library]", "LastImportExportPlaylistDirectory");
+
+} // anonymous namespace
+
 BasePlaylistFeature::BasePlaylistFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
@@ -357,9 +364,9 @@ void BasePlaylistFeature::slotImportPlaylist() {
     }
 
     // Update the import/export playlist directory
-    QFileInfo fileName(playlist_file);
-    m_pConfig->set(ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-            ConfigValue(fileName.dir().absolutePath()));
+    QFileInfo fileInfo(playlist_file);
+    m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
+            ConfigValue(fileInfo.dir().absolutePath()));
 
     slotImportPlaylistFile(playlist_file);
     activateChild(m_lastRightClickedIndex);
@@ -403,18 +410,18 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     }
 
     // Set last import directory
-    QFileInfo fileName(playlist_files.first());
-    m_pConfig->set(ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-            ConfigValue(fileName.dir().absolutePath()));
+    QFileInfo fileInfo(playlist_files.first());
+    m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
+            ConfigValue(fileInfo.dir().absolutePath()));
 
     int lastPlaylistId = -1;
 
     // For each selected element create a different playlist.
     for (const QString& playlistFile : playlist_files) {
-        fileName = QFileInfo(playlistFile);
+        fileInfo = QFileInfo(playlistFile);
 
         // Get a valid name
-        QString baseName = fileName.baseName();
+        QString baseName = fileInfo.baseName();
         QString name;
 
         bool validNameGiven = false;
@@ -456,7 +463,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     qDebug() << "Export playlist" << playlistName;
 
     QString lastPlaylistDirectory = m_pConfig->getValue(
-            ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
+            kConfigKeyLastImportExportPlaylistDirectory,
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     // Open a dialog to let the user choose the file location for playlist export.
@@ -475,10 +482,10 @@ void BasePlaylistFeature::slotExportPlaylist() {
     if (fileLocation.isEmpty()) {
         return;
     }
-    QFileInfo fileName(fileLocation);
+    QFileInfo fileInfo(fileLocation);
     // Update the import/export playlist directory
-    m_pConfig->set(ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-            ConfigValue(fileName.dir().absolutePath()));
+    m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
+            ConfigValue(fileInfo.dir().absolutePath()));
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this

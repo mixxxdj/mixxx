@@ -37,6 +37,9 @@ QString formatLabel(
         crateSummary.getTrackDurationText());
 }
 
+const ConfigKey kConfigKeyLastImportExportCrateDirectoryKey(
+        "[Library]", "LastImportExportCrateDirectory");
+
 } // anonymous namespace
 
 CrateFeature::CrateFeature(Library* pLibrary,
@@ -570,9 +573,9 @@ void CrateFeature::slotImportPlaylist() {
     }
 
     // Update the import/export crate directory
-    QFileInfo fileName(playlist_file);
-    m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
-                   ConfigValue(fileName.dir().absolutePath()));
+    QFileInfo fileInfo(playlist_file);
+    m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
+            ConfigValue(fileInfo.dir().absolutePath()));
 
     slotImportPlaylistFile(playlist_file);
     activateChild(m_lastRightClickedIndex);
@@ -610,20 +613,20 @@ void CrateFeature::slotCreateImportCrate() {
 
 
     // Set last import directory
-    QFileInfo fileName(playlist_files.first());
-    m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
-                ConfigValue(fileName.dir().absolutePath()));
+    QFileInfo fileInfo(playlist_files.first());
+    m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
+            ConfigValue(fileInfo.dir().absolutePath()));
 
     CrateId lastCrateId;
 
     // For each selected file
     for (const QString& playlistFile : playlist_files) {
-        fileName = QFileInfo(playlistFile);
+        fileInfo = QFileInfo(playlistFile);
 
         Crate crate;
 
         // Get a valid name
-        QString baseName = fileName.baseName();
+        QString baseName = fileInfo.baseName();
         for (int i = 0;; ++i) {
             auto name = baseName;
             if (i > 0) {
@@ -684,7 +687,7 @@ void CrateFeature::slotExportPlaylist() {
     }
 
     QString lastCrateDirectory = m_pConfig->getValue(
-            ConfigKey("[Library]", "LastImportExportCrateDirectory"),
+            kConfigKeyLastImportExportCrateDirectoryKey,
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     QString fileFilter = tr("M3U Playlist (*.m3u)");
@@ -700,10 +703,10 @@ void CrateFeature::slotExportPlaylist() {
     if (fileLocation.isEmpty()) {
         return;
     }
-    QFileInfo fileName(fileLocation);
+    QFileInfo fileInfo(fileLocation);
     // Update the import/export crate directory
-    m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
-                ConfigValue(fileName.dir().absolutePath()));
+    m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
+            ConfigValue(fileInfo.dir().absolutePath()));
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
