@@ -10,8 +10,8 @@
 
 namespace {
 
-QString getFilePath(QTextStream* stream) {
-    QString textline = stream->readLine();
+QString getFilePath(QTextStream* pStream) {
+    QString textline = pStream->readLine();
     while (!textline.isEmpty()) {
         if (textline.isNull()) {
             break;
@@ -22,7 +22,7 @@ QString getFilePath(QTextStream* stream) {
             ++iPos;
             return textline.right(textline.length() - iPos);
         }
-        textline = stream->readLine();
+        textline = pStream->readLine();
     }
     // Signal we reached the end
     return QString();
