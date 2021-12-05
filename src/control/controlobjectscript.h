@@ -14,7 +14,7 @@ class ControlObjectScript : public ControlProxy {
             const RuntimeLoggingCategory& logger,
             QObject* pParent = nullptr);
 
-    bool addScriptConnection(const ScriptConnection& conn);
+    bool addScriptConnection(ScriptConnection& conn);
 
     bool removeScriptConnection(const ScriptConnection& conn);
 
@@ -36,7 +36,7 @@ class ControlObjectScript : public ControlProxy {
 
   protected slots:
     // Receives the value from the master control by a unique queued connection
-    void slotValueChanged(double v, QObject*);
+    virtual void slotValueChanged(double v, QObject*);
 
   private:
     QVector<ScriptConnection> m_scriptConnections;

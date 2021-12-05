@@ -3,6 +3,7 @@
 #include <QJSValue>
 #include <QUuid>
 
+#include "control/controlcompressingproxy.h"
 #include "preferences/configobject.h"
 
 class ControllerScriptEngineLegacy;
@@ -18,6 +19,7 @@ class ScriptConnection {
     QJSValue callback;
     ControllerScriptInterfaceLegacy* engineJSProxy;
     ControllerScriptEngineLegacy* controllerEngine;
+    CompressingProxy* proxy;
 
     void executeCallback(double value) const;
 

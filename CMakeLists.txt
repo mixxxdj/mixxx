@@ -461,6 +461,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/control.cpp
   src/control/controlaudiotaperpot.cpp
   src/control/controlbehavior.cpp
+  src/control/controlcompressingproxy.cpp
   src/control/controleffectknob.cpp
   src/control/controlencoder.cpp
   src/control/controlindicator.cpp
@@ -1589,6 +1590,7 @@ add_executable(mixxx-test
   src/test/controller_mapping_validation_test.cpp
   src/test/controllerscriptenginelegacy_test.cpp
   src/test/controlobjecttest.cpp
+  src/test/controlobjectscripttest.cpp
   src/test/coreservicestest.cpp
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp

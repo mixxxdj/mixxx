@@ -8,15 +8,21 @@ ControlObjectScript::ControlObjectScript(
           m_logger(logger) {
 }
 
-bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
+bool ControlObjectScript::addScriptConnection(ScriptConnection& conn) {
     if (m_scriptConnections.isEmpty()) {
         // Only connect the slots when they are actually needed
         // by script connections.
+        conn.proxy = new CompressingProxy(this);
         connect(m_pControl.data(),
                 &ControlDoublePrivate::valueChanged,
+                conn.proxy,
+                &CompressingProxy::slotValueChanged,
+                Qt::QueuedConnection);
+        connect(conn.proxy,
+                &CompressingProxy::signalValueChanged,
                 this,
                 &ControlObjectScript::slotValueChanged,
-                Qt::QueuedConnection);
+                Qt::DirectConnection);
         connect(this,
                 &ControlObjectScript::trigger,
                 this,
@@ -56,12 +62,17 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
         // no ScriptConnections left, so disconnect signals
         disconnect(m_pControl.data(),
                 &ControlDoublePrivate::valueChanged,
+                conn.proxy,
+                &CompressingProxy::slotValueChanged);
+        disconnect(conn.proxy,
+                &CompressingProxy::signalValueChanged,
                 this,
                 &ControlObjectScript::slotValueChanged);
         disconnect(this,
                 &ControlObjectScript::trigger,
                 this,
                 &ControlObjectScript::slotValueChanged);
+        delete (conn.proxy);
     }
     return success;
 }
