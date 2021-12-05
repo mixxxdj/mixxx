@@ -1,6 +1,5 @@
 #include "library/recording/dlgrecording.h"
 
-#include <QDesktopServices>
 
 #include "control/controlobject.h"
 #include "library/trackcollectionmanager.h"

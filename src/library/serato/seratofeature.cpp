@@ -3,7 +3,6 @@
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
-#include <QStandardPaths>
 #include <QtDebug>
 
 #include "library/dao/trackschema.h"

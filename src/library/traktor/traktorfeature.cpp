@@ -5,7 +5,6 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <QSettings>
-#include <QStandardPaths>
 #include <QXmlStreamReader>
 #include <QtDebug>
 

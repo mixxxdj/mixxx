@@ -4,7 +4,6 @@
 #include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
-#include <QStandardPaths>
 #include <QStringList>
 #include <QTreeView>
 
