@@ -71,11 +71,11 @@ TEST_F(PlaylistTest, m3uEndOfLine) {
 
     const QList<QString> entries = ParserM3u().parseAllLocations(m3uFile.fileName());
     ASSERT_EQ(entries.size(), 5);
-    EXPECT_TRUE(entries[0].endsWith(QStringLiteral("crlf.mp3")));
-    EXPECT_TRUE(entries[1].endsWith(QStringLiteral("cr.mp3")));
-    EXPECT_TRUE(entries[2].endsWith(QStringLiteral("lf.mp3")));
-    EXPECT_TRUE(entries[3].endsWith(QStringLiteral("EuroSign\u20AC.mp3")));
-    EXPECT_TRUE(entries[4].endsWith(QStringLiteral("end.mp3")));
+    EXPECT_TRUE(entries.at(0).endsWith(QStringLiteral("crlf.mp3")));
+    EXPECT_TRUE(entries.at(1).endsWith(QStringLiteral("cr.mp3")));
+    EXPECT_TRUE(entries.at(2).endsWith(QStringLiteral("lf.mp3")));
+    EXPECT_TRUE(entries.at(3).endsWith(QStringLiteral("EuroSign\u20AC.mp3")));
+    EXPECT_TRUE(entries.at(4).endsWith(QStringLiteral("end.mp3")));
 }
 
 TEST_F(PlaylistTest, csvEndOfLine) {
@@ -88,8 +88,8 @@ TEST_F(PlaylistTest, csvEndOfLine) {
 
     const QList<QString> entries = ParserCsv().parseAllLocations(csvFile.fileName());
     ASSERT_EQ(entries.size(), 2);
-    EXPECT_TRUE(entries[0].endsWith(QStringLiteral("cr.mp3")));
-    EXPECT_TRUE(entries[1].endsWith(QStringLiteral("lf.mp3")));
+    EXPECT_TRUE(entries.at(0).endsWith(QStringLiteral("cr.mp3")));
+    EXPECT_TRUE(entries.at(1).endsWith(QStringLiteral("lf.mp3")));
 }
 
 TEST_F(PlaylistTest, plsEndOfLine) {
@@ -103,6 +103,6 @@ TEST_F(PlaylistTest, plsEndOfLine) {
 
     const QList<QString> entries = ParserPls().parseAllLocations(plsFile.fileName());
     ASSERT_EQ(entries.size(), 2);
-    EXPECT_TRUE(entries[0].endsWith(QStringLiteral("cr.mp3")));
-    EXPECT_TRUE(entries[1].endsWith(QStringLiteral("lf.mp3")));
+    EXPECT_TRUE(entries.at(0).endsWith(QStringLiteral("cr.mp3")));
+    EXPECT_TRUE(entries.at(1).endsWith(QStringLiteral("lf.mp3")));
 }
