@@ -24,28 +24,28 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
         QList<QList<QString> > tokens = tokenize(ba, ',');
 
         // detect Location column
-        int loc_col = -1;
+        int locationColumnIndex = -1;
         if (tokens.size()) {
             for (int i = 0; i < tokens[0].size(); ++i) {
                 if (tokens[0][i] == QObject::tr("Location")) {
-                    loc_col = i;
+                    locationColumnIndex = i;
                     break;
                 }
             }
-            if (loc_col < 0 && tokens.size() > 1) {
+            if (locationColumnIndex < 0 && tokens.size() > 1) {
                 // Last resort, find column with path separators
                 // This happens in case of csv files in a different language
                 for (int i = 0; i < tokens[1].size(); ++i) {
                     if (tokens[1][i].contains(QDir::separator())) {
-                        loc_col = i;
+                        locationColumnIndex = i;
                         break;
                     }
                 }
             }
-            if (loc_col >= 0) {
-                for (int i = 1; i < tokens.size(); ++i) {
-                    if (loc_col < tokens[i].size()) {
-                        locations.append(tokens[i][loc_col]);
+            if (locationColumnIndex >= 0) {
+                for (int row = 1; row < tokens.size(); ++row) {
+                    if (locationColumnIndex < tokens[row].size()) {
+                        locations.append(tokens[row][locationColumnIndex]);
                     }
                 }
             } else {
