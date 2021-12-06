@@ -31,8 +31,6 @@ public:
     TrackRef() {
         DEBUG_ASSERT(verifyConsistency());
     }
-    // Regular copy constructor
-    TrackRef(const TrackRef& other) = default;
     // Custom copy constructor:  Creates a copy of an existing TrackRef,
     // but overwrite the TrackId with a custom value.
     TrackRef(
