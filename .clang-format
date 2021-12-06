@@ -1,4 +1,5 @@
 ---
+# Common configuration for all languages
 BasedOnStyle: Google
 IndentWidth:  4
 TabWidth:     8
@@ -8,10 +9,11 @@ UseTab:       Never
 # If the line length exceeds 100, "ColumnLimit:  80" is used in scripts/line-length.py
 ColumnLimit:  0
 ---
+Language: Cpp
+Standard: c++17
 # Customize only those options that differ from the base style!
 # Dumping the options of the base style for comparison:
 # clang-format -style=google -dump-config > .clang-format_google
-Language:     Cpp
 AccessModifierOffset: -2
 AlignAfterOpenBracket: DontAlign
 AlignOperands: false
