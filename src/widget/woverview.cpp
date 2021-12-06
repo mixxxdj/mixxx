@@ -436,9 +436,17 @@ void WOverview::receiveCuesUpdated() {
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
         if (m_orientation == Qt::Horizontal) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+#else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
+#endif
         } else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+#else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
+#endif
         }
     }
 
@@ -500,9 +508,17 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     }
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+#else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
+#endif
         } else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+#else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
+#endif
         }
 
         if (m_pHoveredMark != nullptr) {
@@ -544,7 +560,11 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     return;
                 } else {
                     m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    m_pCueMenuPopup->popup(e->globalPosition().toPoint());
+#else
                     m_pCueMenuPopup->popup(e->globalPos());
+#endif
                 }
             }
         }
