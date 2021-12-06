@@ -560,8 +560,13 @@ void WSpinny::updateSlipEnabled(double enabled) {
 }
 
 void WSpinny::mouseMoveEvent(QMouseEvent * e) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    int y = e->position().y();
+    int x = e->position().x();
+#else
     int y = e->y();
     int x = e->x();
+#endif
 
     // Keeping these around in case we want to switch to control relative
     // to the original mouse position.
@@ -653,7 +658,11 @@ void WSpinny::mousePressEvent(QMouseEvent * e) {
         if (!m_loadedCover.isNull()) {
             m_pDlgCoverArt->init(m_loadedTrack);
         } else if (!m_pDlgCoverArt->isVisible() && m_bShowCover) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_pCoverMenu->popup(e->globalPosition().toPoint());
+#else
             m_pCoverMenu->popup(e->globalPos());
+#endif
         }
     }
 }
