@@ -23,7 +23,9 @@
 namespace {
 
 // Exit codes
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 constexpr int kFatalErrorOnStartupExitCode = 1;
+#endif
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
