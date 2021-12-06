@@ -164,7 +164,6 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     }
 
     SINT total_received_frames = 0;
-    SINT total_read_frames = 0;
 
     SINT remaining_frames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
@@ -214,7 +213,6 @@ double EngineBufferScaleRubberBand::scaleBuffer(
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
-                total_read_frames += iAvailFrames;
                 deinterleaveAndProcess(m_buffer_back, iAvailFrames, false);
             } else {
                 if (last_read_failed) {
