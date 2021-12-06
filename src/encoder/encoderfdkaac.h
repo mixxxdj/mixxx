@@ -3,6 +3,7 @@
 #include <QLibrary>
 #include <QString>
 #include <memory>
+#include <vector>
 
 #include "encoder/encoder.h"
 #include "util/fifo.h"
@@ -205,10 +206,10 @@ class EncoderFdkAac : public Encoder {
     EncoderCallback* m_pCallback;
     std::unique_ptr<QLibrary> m_pLibrary;
     FIFO<SAMPLE>* m_pInputFifo;
-    SAMPLE* m_pFifoChunkBuffer;
+    std::vector<SAMPLE> m_pFifoChunkBuffer;
     int m_readRequired;
     HANDLE_AACENCODER m_aacEnc;
-    unsigned char* m_pAacDataBuffer;
+    std::vector<unsigned char> m_pAacDataBuffer;
     AACENC_InfoStruct m_aacInfo;
     bool m_hasSbr;
 };

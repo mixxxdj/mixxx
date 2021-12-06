@@ -36,6 +36,13 @@ TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : TrackId();
 }
 
+QUrl ProxyTrackModel::getTrackUrl(const QModelIndex& index) const {
+    if (!m_pTrackModel) {
+        return {};
+    }
+    return m_pTrackModel->getTrackUrl(mapToSource(index));
+}
+
 CoverInfo ProxyTrackModel::getCoverInfo(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel ? m_pTrackModel->getCoverInfo(indexSource) : CoverInfo();
@@ -67,6 +74,10 @@ void ProxyTrackModel::search(const QString& searchText, const QString& extraFilt
     } else if (m_pTrackModel) {
         m_pTrackModel->search(searchText);
     }
+}
+
+QString ProxyTrackModel::modelKey(bool noSearch) const {
+    return m_pTrackModel ? m_pTrackModel->modelKey(noSearch) : QString();
 }
 
 const QString ProxyTrackModel::currentSearch() const {

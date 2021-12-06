@@ -107,7 +107,6 @@ jobs:
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
 
     runs-on: ${{ matrix.os }}
-    container: ${{ matrix.container }}
     name: ${{ matrix.name }}
     outputs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
@@ -165,12 +164,12 @@ jobs:
         brew install ccache ninja
 
     - name: "[macOS/Windows] Get build environment name"
-      if: runner.os != 'Linux' && matrix.buildenv_script != null
+      if: runner.os != 'Linux'
       id: buildenv_name
       run: ${{ matrix.buildenv_script }} name
 
     - name: "[macOS/Windows] Set up build environment cache"
-      if: runner.os != 'Linux' && matrix.buildenv_script != null
+      if: runner.os != 'Linux'
       uses: actions/cache@v2
       with:
         path: ${{ matrix.buildenv_basepath }}
@@ -214,14 +213,17 @@ jobs:
 
     - name: "Set up build environment"
       id: buildenv
-      if: matrix.buildenv_script != null
       run: ${{ matrix.buildenv_script }} setup
       env:
         BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
     - name: "[Ubuntu/macOS] Set compiler cache size limit"
-      # Set size to 2 GiB
-      run: ${{ matrix.compiler_cache }}  -M 2097152
+      # A full build without a cache fills the cache with about 300 MB.
+      # GitHub Actions gives us 5 GB of cache for free.
+      # 3 operating systems * 2 conditions (Qt5 & Qt6) * 512 MB = 3 GB
+      # We use a new cache key for every job, so we would run out of
+      # space frequently if the cache was much bigger.
+      run: ${{ matrix.compiler_cache }} -M 524288
       if: runner.os != 'windows'
 
     - name: "Set up compiler cache"
@@ -300,7 +302,6 @@ jobs:
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
     - name: "Package"
-      if: matrix.cpack_generator != null
       run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: build
 
@@ -312,7 +313,7 @@ jobs:
 
     - name: "Package for PPA"
       # No need to do the PPA build for both Ubuntu versions
-      if: matrix.os == 'ubuntu-20.04' && matrix.cpack_generator == 'DEB'
+      if: matrix.os == 'ubuntu-20.04'
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
@@ -344,8 +345,7 @@ jobs:
       # also generates metadata for file artifact and write it to the job
       # output using the artifacts_slug value.
       id: prepare_deploy
-      if: github.event_name == 'push' && matrix.artifacts_slug != null && matrix.artifacts_path != null
-
+      if: github.event_name == 'push'
       shell: bash
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
@@ -395,7 +395,7 @@ jobs:
         Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
     - name: "Set up SSH Agent"
-      if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null && matrix.artifacts_slug != null && matrix.artifacts_path != null
+      if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
       shell: bash
       env:
         SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -410,7 +410,7 @@ jobs:
 
     - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-      if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_AUTH_SOCK != null && matrix.artifacts_slug != null && matrix.artifacts_path != null
+      if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_AUTH_SOCK != null
       shell: bash --login -eo pipefail "{0}"
       run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
       env:
@@ -426,7 +426,6 @@ jobs:
         echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
     - name: "Upload GitHub Actions artifacts"
-      if: matrix.artifacts_name != null && matrix.artifacts_path != null
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.artifacts_name }}

@@ -68,6 +68,7 @@
 * Add support for m4v files [#4088](https://github.com/mixxxdj/mixxx/pull/4088)
 * Adjust ReplayGain: Allow user to update the replaygain value based on a deck pregain value [#4031](https://github.com/mixxxdj/mixxx/pull/4031)
 * Automatic analyze and optimize database [#4199](https://github.com/mixxxdj/mixxx/pull/4199)
+* Re-import and update metadata after files have been modified when loading tracks [#4218](https://github.com/mixxxdj/mixxx/pull/4218)
 * Fix playlists sidebar navigation/activation [#4193](https://github.com/mixxxdj/mixxx/pull/4193) [lp:1939082](https://bugs.launchpad.net/mixxx/+bug/1939082)
 * Refactoring of library code
   [#2756](https://github.com/mixxxdj/mixxx/pull/2756)
@@ -404,6 +405,11 @@
 ## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (Unreleased)
 
 * Improve robustness of file type detection by considering the actual MIME type of the content. [lp:1445885](https://bugs.launchpad.net/mixxx/+bug/1445885) [#4356](https://github.com/mixxxdj/mixxx/pull/4356) [#4357](https://github.com/mixxxdj/mixxx/pull/4357)
+
+### Packaging
+
+* Downloads of external dependencies are placed in build/downloads
+* The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
 
 ## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (2021-09-29)
 

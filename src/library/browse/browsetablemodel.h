@@ -52,6 +52,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     BrowseTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, RecordingManager* pRec);
     virtual ~BrowseTableModel();
 
+    // initiate table population, store path
     void setPath(mixxx::FileAccess path);
 
     TrackPointer getTrack(const QModelIndex& index) const override;
@@ -60,6 +61,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
 
     QString getTrackLocation(const QModelIndex& index) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
+    QUrl getTrackUrl(const QModelIndex& index) const final;
     CoverInfo getCoverInfo(const QModelIndex& index) const override;
     const QVector<int> getTrackRows(TrackId trackId) const override;
     void search(const QString& searchText,const QString& extraFilter = QString()) override;
@@ -77,6 +79,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     bool isColumnSortable(int column) const override;
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) const override;
     int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
+    QString modelKey(bool noSearch) const override;
 
     bool updateTrackGenre(
             Track* pTrack,
@@ -86,6 +89,9 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
             Track* pTrack,
             const QString& mood) const override;
 #endif // __EXTRA_METADATA__
+
+  signals:
+    void restoreModelState();
 
   public slots:
     void slotClear(BrowseTableModel*);
@@ -100,6 +106,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     QList<int> m_searchColumns;
     RecordingManager* m_pRecordingManager;
     BrowseThreadPointer m_pBrowseThread;
+    QString m_currentDirectory;
     QString m_previewDeckGroup;
     int m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::IdMax)];
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;

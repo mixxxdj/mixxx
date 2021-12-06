@@ -28,12 +28,14 @@ const ConfigKey mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SearchDebouncingTimeoutMillis")};
 
-const ConfigKey mixxx::library::prefs::kSyncTrackMetadataExportConfigKey =
+// The "Export" suffix in the key is kept for backward compatibility
+const ConfigKey mixxx::library::prefs::kSyncTrackMetadataConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SyncTrackMetadataExport")};
 
-const ConfigKey mixxx::library::prefs::kSeratoMetadataExportConfigKey =
+// The naming is unchanged for backward compatibility
+const ConfigKey mixxx::library::prefs::kSyncSeratoMetadataConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SeratoMetadataExport")};

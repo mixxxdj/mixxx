@@ -76,7 +76,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
+        m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
         m_pEngineMaster = new TestEngineMaster(m_pConfig,
                 m_sMasterGroup,
                 m_pEffectsManager,

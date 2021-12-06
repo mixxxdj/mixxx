@@ -167,7 +167,8 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     connect(lineEditTransition,
             &QLineEdit::returnPressed,
             this,
-            &DlgAutoDJ::shiftTabKeypress);
+            // Move focus to tracks table to immediately allow keyboard shortcuts again.
+            &DlgAutoDJ::setFocus);
 
     connect(spinBoxTransition,
             QOverload<int>::of(&QSpinBox::valueChanged),
@@ -341,7 +342,8 @@ void DlgAutoDJ::slotTransitionModeChanged(int newIndex) {
     m_pAutoDJProcessor->setTransitionMode(
             static_cast<AutoDJProcessor::TransitionMode>(
                     fadeModeCombobox->itemData(newIndex).toInt()));
-    shiftTabKeypress();
+    // Move focus to tracks table to immediately allow keyboard shortcuts again.
+    setFocus();
 }
 
 void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
@@ -380,11 +382,14 @@ bool DlgAutoDJ::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
 
-void DlgAutoDJ::shiftTabKeypress() {
-    // After selecting a mode or editing the transition time, send Shift+Tab
-    // to move focus to the next keyboard-focusable widget (tracks table in
-    // official skins) in order to immediately allow keyboard shortcuts again.
-    QKeyEvent backwardFocusKeyEvent =
-            QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
-    QApplication::sendEvent(this, &backwardFocusKeyEvent);
+void DlgAutoDJ::setFocus() {
+    m_pTrackTableView->setFocus();
+}
+
+void DlgAutoDJ::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+}
+
+void DlgAutoDJ::restoreCurrentViewState() {
+    m_pTrackTableView->restoreCurrentViewState();
 }

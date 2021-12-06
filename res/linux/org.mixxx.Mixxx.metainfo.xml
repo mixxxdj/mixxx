@@ -222,6 +222,10 @@
    #4199
   </li>
   <li>
+   Re-import and update metadata after files have been modified when loading tracks
+   #4218
+  </li>
+  <li>
    Fix playlists sidebar navigation/activation
    #4193
    lp:1939082
@@ -700,6 +704,17 @@
    lp:1445885
    #4356
    #4357
+  </li>
+ </ul>
+ <p>
+  Packaging
+ </p>
+ <ul>
+  <li>
+   Downloads of external dependencies are placed in build/downloads
+  </li>
+  <li>
+   The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
   </li>
  </ul>
 </description>

@@ -1,29 +1,23 @@
 #pragma once
 
-#include <QVariant>
 #include <QString>
+#include <QVariant>
 #include <QtGlobal>
 
+#include "effects/defs.h"
+#include "effects/effectchainmixmode.h"
+#include "engine/channelhandle.h"
 #include "util/memory.h"
 #include "util/messagepipe.h"
-#include "effects/defs.h"
-#include "engine/channelhandle.h"
 
-class EngineEffectRack;
 class EngineEffectChain;
 class EngineEffect;
 
 struct EffectsRequest {
     enum MessageType {
-        // Messages for EngineEffectsManager
-        ADD_EFFECT_RACK = 0,
-        REMOVE_EFFECT_RACK,
-
-        // Messages for EngineEffectRack
-        ADD_CHAIN_TO_RACK,
-        REMOVE_CHAIN_FROM_RACK,
-
         // Messages for EngineEffectChain
+        ADD_EFFECT_CHAIN,
+        REMOVE_EFFECT_CHAIN,
         SET_EFFECT_CHAIN_PARAMETERS,
         ADD_EFFECT_TO_CHAIN,
         REMOVE_EFFECT_FROM_CHAIN,
@@ -43,18 +37,12 @@ struct EffectsRequest {
     EffectsRequest()
             : type(NUM_REQUEST_TYPES),
               request_id(-1),
-              minimum(0.0),
-              maximum(0.0),
-              default_value(0.0),
               value(0.0) {
-        pTargetRack = nullptr;
         pTargetChain = nullptr;
         pTargetEffect = nullptr;
 #define CLEAR_STRUCT(x) memset(&x, 0, sizeof(x));
-        CLEAR_STRUCT(AddEffectRack);
-        CLEAR_STRUCT(RemoveEffectRack);
-        CLEAR_STRUCT(AddChainToRack);
-        CLEAR_STRUCT(RemoveChainFromRack);
+        CLEAR_STRUCT(AddEffectChain);
+        CLEAR_STRUCT(RemoveEffectChain);
         CLEAR_STRUCT(EnableInputChannelForChain);
         CLEAR_STRUCT(DisableInputChannelForChain);
         CLEAR_STRUCT(AddEffectToChain);
@@ -85,10 +73,6 @@ struct EffectsRequest {
     // Target of the message.
     union {
         // Used by:
-        // - ADD_CHAIN_TO_RACK
-        // - REMOVE_CHAIN_FROM_RACK
-        EngineEffectRack* pTargetRack;
-        // Used by:
         // - ADD_EFFECT_TO_CHAIN
         // - REMOVE_EFFECT_FROM_CHAIN
         // - SET_EFFECT_CHAIN_PARAMETERS
@@ -103,21 +87,14 @@ struct EffectsRequest {
     // Message-specific data.
     union {
         struct {
-            EngineEffectRack* pRack;
+            EngineEffectChain* pChain;
             SignalProcessingStage signalProcessingStage;
-        } AddEffectRack;
-        struct {
-            EngineEffectRack* pRack;
-            SignalProcessingStage signalProcessingStage;
-        } RemoveEffectRack;
+        } AddEffectChain;
         struct {
             EngineEffectChain* pChain;
             int iIndex;
-        } AddChainToRack;
-        struct {
-            EngineEffectChain* pChain;
-            int iIndex;
-        } RemoveChainFromRack;
+            SignalProcessingStage signalProcessingStage;
+        } RemoveEffectChain;
         struct {
             EffectStatesMapArray* pEffectStatesMapArray;
             const ChannelHandle* pChannelHandle;
@@ -135,7 +112,7 @@ struct EffectsRequest {
         } RemoveEffectFromChain;
         struct {
             bool enabled;
-            EffectChainMixMode mix_mode;
+            EffectChainMixMode::Type mix_mode;
             double mix;
         } SetEffectChainParameters;
         struct {
@@ -147,9 +124,6 @@ struct EffectsRequest {
     };
 
     // Used by SET_EFFECT_PARAMETER.
-    double minimum;
-    double maximum;
-    double default_value;
     double value;
 };
 
@@ -157,7 +131,6 @@ struct EffectsResponse {
     enum StatusCode {
         OK,
         UNHANDLED_MESSAGE_TYPE,
-        NO_SUCH_RACK,
         NO_SUCH_CHAIN,
         NO_SUCH_EFFECT,
         NO_SUCH_PARAMETER,
@@ -173,7 +146,7 @@ struct EffectsResponse {
               status(NUM_STATUS_CODES) {
     }
 
-    EffectsResponse(const EffectsRequest& request, bool succeeded=false)
+    EffectsResponse(const EffectsRequest& request, bool succeeded = false)
             : request_id(request.request_id),
               success(succeeded),
               status(NUM_STATUS_CODES) {
@@ -193,6 +166,7 @@ typedef MessagePipe<EffectsResponse, EffectsRequest*> EffectsResponsePipe;
 class EffectsRequestHandler {
   public:
     virtual bool processEffectsRequest(
-        EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe) = 0;
+            EffectsRequest& message,
+            EffectsResponsePipe* pResponsePipe) = 0;
+    virtual ~EffectsRequestHandler() = default;
 };

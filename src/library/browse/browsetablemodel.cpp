@@ -210,6 +210,11 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 
 void BrowseTableModel::setPath(mixxx::FileAccess path) {
+    if (path.info().hasLocation()) {
+        m_currentDirectory = path.info().locationPath();
+    } else {
+        m_currentDirectory = QString();
+    }
     m_pBrowseThread->executePopulation(std::move(path), this);
 }
 
@@ -253,9 +258,18 @@ TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
     } else {
         qWarning()
                 << "Track is not available in library"
-                << getTrackLocation(index);
+                << getTrackUrl(index);
         return TrackId();
     }
+}
+
+QUrl BrowseTableModel::getTrackUrl(const QModelIndex& index) const {
+    const QString trackLocation = getTrackLocation(index);
+    DEBUG_ASSERT(trackLocation.trimmed() == trackLocation);
+    if (trackLocation.isEmpty()) {
+        return {};
+    }
+    return QUrl::fromLocalFile(trackLocation);
 }
 
 CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
@@ -265,7 +279,7 @@ CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
     } else {
         qWarning()
                 << "Track is not available in library"
-                << getTrackLocation(index);
+                << getTrackUrl(index);
         return CoverInfo();
     }
 }
@@ -321,7 +335,7 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList& indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
+                QUrl url = getTrackUrl(index);
                 if (!url.isValid()) {
                     qDebug() << "ERROR invalid url" << url;
                     continue;
@@ -351,6 +365,7 @@ void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*> >& rows,
             appendRow(rows.at(i));
         }
     }
+    emit restoreModelState();
 }
 
 TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
@@ -358,7 +373,14 @@ TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
             Capability::AddToAutoDJ |
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
-            Capability::LoadToSampler;
+            Capability::LoadToSampler |
+            Capability::RemoveFromDisk;
+}
+
+QString BrowseTableModel::modelKey(bool noSearch) const {
+    // Browse feature does currently not support searching.
+    Q_UNUSED(noSearch);
+    return QStringLiteral("browse:") + m_currentDirectory;
 }
 
 Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {

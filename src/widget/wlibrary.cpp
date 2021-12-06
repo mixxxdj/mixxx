@@ -51,13 +51,8 @@ void WLibrary::switchToView(const QString& name) {
     const auto lock = lockMutex(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
 
-    WTrackTableView* ttView = qobject_cast<WTrackTableView*>(
+    LibraryView* oldLibraryView = dynamic_cast<LibraryView*>(
             currentWidget());
-
-    if (ttView != nullptr){
-        //qDebug("trying to save position");
-        ttView->saveCurrentVScrollBarPos();
-    }
 
     QWidget* widget = m_viewMap.value(name, nullptr);
     if (widget != nullptr) {
@@ -69,17 +64,13 @@ void WLibrary::switchToView(const QString& name) {
             return;
         }
         if (currentWidget() != widget) {
+            if (oldLibraryView) {
+                oldLibraryView->saveCurrentViewState();
+            }
             //qDebug() << "WLibrary::setCurrentWidget" << name;
             setCurrentWidget(widget);
             lview->onShow();
-        }
-
-        WTrackTableView* ttWidgetView = qobject_cast<WTrackTableView*>(
-                widget);
-
-        if (ttWidgetView != nullptr){
-            qDebug("trying to restore position");
-            ttWidgetView->restoreCurrentVScrollBarPos();
+            lview->restoreCurrentViewState();
         }
     }
 }

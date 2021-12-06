@@ -25,6 +25,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     Capabilities getCapabilities() const final;
     TrackPointer getTrack(const QModelIndex& index) const final;
     TrackPointer getTrackByRef(const TrackRef& trackRef) const final;
+    QUrl getTrackUrl(const QModelIndex& index) const final;
     QString getTrackLocation(const QModelIndex& index) const final;
     TrackId getTrackId(const QModelIndex& index) const final;
     CoverInfo getCoverInfo(const QModelIndex& index) const final;
@@ -54,6 +55,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
 
     // Inherited from QAbstractItemModel
     void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) final;
+    QString modelKey(bool noSearch) const override;
 
   private:
     TrackModel* m_pTrackModel;

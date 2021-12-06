@@ -9,6 +9,7 @@
     EffectParameter: the parameter
 -->
 <Template>
+  <SetVariable name="FxUnitGroup">[EffectRack1_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
   <SetVariable name="FxRack_FxUnit_FxNum"><Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/></SetVariable>
 
   <WidgetGroup>
@@ -29,6 +30,9 @@
             <BackPath>skin:/<Variable name="KnobScheme"/>/knobs/knob_bg_fx.svg</BackPath>
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+            <EffectUnitGroup><Variable name="FxUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="FxNum"/></Effect>
+            <EffectParameter><Variable name="FxParameter"/></EffectParameter>
             <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
             <ArcColor><Variable name="ArcColorFxParameter"/></ArcColor>
             <ArcThickness><Variable name="ArcThickness"/></ArcThickness>

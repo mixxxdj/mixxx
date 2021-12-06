@@ -31,10 +31,8 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
           m_pCallback(pCallback),
           m_pLibrary(nullptr),
           m_pInputFifo(nullptr),
-          m_pFifoChunkBuffer(nullptr),
           m_readRequired(0),
           m_aacEnc(),
-          m_pAacDataBuffer(nullptr),
           m_aacInfo(),
           m_hasSbr(false) {
     // Load the shared library
@@ -164,8 +162,6 @@ EncoderFdkAac::~EncoderFdkAac() {
         kLogger.debug() << "Unloaded libfdk-aac";
     }
 
-    delete[] m_pAacDataBuffer;
-    delete[] m_pFifoChunkBuffer;
     delete m_pInputFifo;
 }
 
@@ -283,11 +279,7 @@ int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUs
     // This initializes the encoder handle but not the encoder itself.
     // Actual encoder init is done below.
     aacEncOpen(&m_aacEnc, 0, m_channels);
-    VERIFY_OR_DEBUG_ASSERT(!m_pAacDataBuffer) {
-        delete[] m_pAacDataBuffer;
-        m_pAacDataBuffer = nullptr;
-    }
-    m_pAacDataBuffer = new unsigned char[kOutBufferBits * m_channels]();
+    m_pAacDataBuffer.resize(kOutBufferBits * m_channels);
 
     // AAC Object Type: specifies "mode": AAC-LC, HE-AAC, HE-AACv2, DAB AAC, etc...
     if (aacEncoder_SetParam(m_aacEnc, AACENC_AOT, m_aacAot) != AACENC_OK) {
@@ -355,11 +347,7 @@ int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUs
     }
     m_pInputFifo = new FIFO<SAMPLE>(EngineSideChain::SIDECHAIN_BUFFER_SIZE * 2);
 
-    VERIFY_OR_DEBUG_ASSERT(!m_pFifoChunkBuffer) {
-        delete[] m_pFifoChunkBuffer;
-        m_pFifoChunkBuffer = nullptr;
-    }
-    m_pFifoChunkBuffer = new SAMPLE[m_readRequired * sizeof(SAMPLE)]();
+    m_pFifoChunkBuffer.resize(m_readRequired * sizeof(SAMPLE));
     return 0;
 }
 
@@ -394,12 +382,12 @@ void EncoderFdkAac::encodeBuffer(const CSAMPLE* samples, const int sampleCount) 
 }
 
 void EncoderFdkAac::processFIFO() {
-    if (!m_pInputFifo || !m_pFifoChunkBuffer) {
+    if (!m_pInputFifo || m_pFifoChunkBuffer.empty()) {
         return;
     }
 
     while (m_pInputFifo->readAvailable() >= m_readRequired) {
-        m_pInputFifo->read(m_pFifoChunkBuffer, m_readRequired);
+        m_pInputFifo->read(m_pFifoChunkBuffer.data(), m_readRequired);
 
         // fdk-aac only accept pointers for most buffer settings.
         // Declare settings here and point to them below.
@@ -414,7 +402,8 @@ void EncoderFdkAac::processFIFO() {
         // Input Buffer
         AACENC_BufDesc inputBuf;
         inputBuf.numBufs = 1;
-        inputBuf.bufs = (void**)&m_pFifoChunkBuffer;
+        void* chunkBuffer[] = {m_pFifoChunkBuffer.data()};
+        inputBuf.bufs = chunkBuffer;
         inputBuf.bufSizes = &inDataSize;
         inputBuf.bufElSizes = &inSampleSize;
         inputBuf.bufferIdentifiers = &inDataDescription;
@@ -426,7 +415,8 @@ void EncoderFdkAac::processFIFO() {
         // Output (result) Buffer
         AACENC_BufDesc outputBuf;
         outputBuf.numBufs = 1;
-        outputBuf.bufs = (void**)&m_pAacDataBuffer;
+        void* dataBuffer[] = {m_pAacDataBuffer.data()};
+        outputBuf.bufs = dataBuffer;
         outputBuf.bufSizes = &outDataSize;
         outputBuf.bufElSizes = &outElemSize;
         outputBuf.bufferIdentifiers = &outDataDescription;
@@ -445,7 +435,7 @@ void EncoderFdkAac::processFIFO() {
             kLogger.warning() << "encoder ignored" << sampleDiff << "samples!";
         }
 
-        m_pCallback->write(nullptr, m_pAacDataBuffer, 0, outputDesc.numOutBytes);
+        m_pCallback->write(nullptr, m_pAacDataBuffer.data(), 0, outputDesc.numOutBytes);
     }
 }
 

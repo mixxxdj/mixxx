@@ -1,11 +1,12 @@
 #pragma once
 
 #include <QTime>
+#include <vector>
 
 #include "soundio/soundmanagerutil.h"
-#include "vinylcontrol/vinylcontrol.h"
-#include "vinylcontrol/steadypitch.h"
 #include "util/types.h"
+#include "vinylcontrol/steadypitch.h"
+#include "vinylcontrol/vinylcontrol.h"
 
 #ifdef _MSC_VER
 #include "timecoder.h"
@@ -53,7 +54,7 @@ class VinylControlXwax : public VinylControl {
     double m_dVinylPositionOld;
 
     // Scratch buffer for CSAMPLE -> short conversions.
-    short* m_pWorkBuffer;
+    std::vector<short> m_pWorkBuffer;
     size_t m_workBufferSize;
 
     // Signal quality ring buffer.
@@ -91,7 +92,7 @@ class VinylControlXwax : public VinylControl {
     // The pitch ring buffer.
     // TODO(XXX): Replace with CircularBuffer instead of handling the ring logic
     // in VinylControlXwax.
-    double* m_pPitchRing;
+    std::vector<double> m_pPitchRing;
     // How large the pitch ring buffer is.
     int m_iPitchRingSize;
     // Our current position in the pitch ring buffer.

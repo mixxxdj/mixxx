@@ -49,6 +49,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     TrackId getTrackId(const QModelIndex& index) const override;
     QString getTrackLocation(const QModelIndex& index) const override;
 
+    QUrl getTrackUrl(const QModelIndex& index) const override;
+
     CoverInfo getCoverInfo(const QModelIndex& index) const override;
 
     const QVector<int> getTrackRows(TrackId trackId) const override {
@@ -70,6 +72,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     ///////////////////////////////////////////////////////////////////////////
     int fieldIndex(
             ColumnCache::Column column) const final;
+
+    QString modelKey(bool noSearch) const override;
 
   protected:
     ///////////////////////////////////////////////////////////////////////////
@@ -96,6 +100,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QList<TrackRef> getTrackRefs(const QModelIndexList& indices) const;
 
     QSqlDatabase m_database;
+    QString m_tableName;
 
     QString m_tableOrderBy;
     int m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::IdMax)];
@@ -138,7 +143,6 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     QVector<RowInfo> m_rowInfo;
 
-    QString m_tableName;
     QString m_idColumn;
     QSharedPointer<BaseTrackCache> m_trackSource;
     QStringList m_tableColumns;

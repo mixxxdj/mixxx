@@ -40,12 +40,18 @@ class TrackRef final {
                 std::move(id));
     }
 
+    /// Convert a local file URL into a TrackRef.
+    static TrackRef fromUrl(
+            const QUrl& url,
+            TrackId id = TrackId()) {
+        const auto fileInfo = mixxx::FileInfo::fromQUrl(url);
+        return TrackRef::fromFileInfo(fileInfo, id);
+    }
+
     // Default constructor
     TrackRef() {
         DEBUG_ASSERT(verifyConsistency());
     }
-    // Regular copy constructor
-    TrackRef(const TrackRef& other) = default;
     // Custom copy constructor:  Creates a copy of an existing TrackRef,
     // but overwrite the TrackId with a custom value.
     TrackRef(

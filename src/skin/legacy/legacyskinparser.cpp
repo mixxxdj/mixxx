@@ -37,11 +37,12 @@
 #include "widget/wcombobox.h"
 #include "widget/wcoverart.h"
 #include "widget/wdisplay.h"
-#include "widget/weffect.h"
-#include "widget/weffectbuttonparameter.h"
+#include "widget/weffectbuttonparametername.h"
 #include "widget/weffectchain.h"
-#include "widget/weffectparameter.h"
-#include "widget/weffectparameterbase.h"
+#include "widget/weffectchainpresetbutton.h"
+#include "widget/weffectchainpresetselector.h"
+#include "widget/weffectknobparametername.h"
+#include "widget/weffectname.h"
 #include "widget/weffectparameterknob.h"
 #include "widget/weffectparameterknobcomposed.h"
 #include "widget/weffectpushbutton.h"
@@ -110,9 +111,8 @@ ControlObject* LegacySkinParser::controlFromConfigKey(
 
     // TODO(rryan): Make this configurable by the skin.
     if (CmdlineArgs::Instance().getDeveloper()) {
-        qWarning() << "Requested control does not exist:"
-                   << QString("%1,%2").arg(key.group, key.item)
-                   << "Creating it.";
+        qInfo() << "Creating skin control object:"
+                << QString("%1,%2").arg(key.group, key.item);
     }
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
@@ -569,6 +569,10 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseSizeAwareStack(node));
     } else if (nodeName == "EffectChainName") {
         result = wrapWidget(parseEffectChainName(node));
+    } else if (nodeName == "EffectChainPresetButton") {
+        result = wrapWidget(parseEffectChainPresetButton(node));
+    } else if (nodeName == "EffectChainPresetSelector") {
+        result = wrapWidget(parseEffectChainPresetSelector(node));
     } else if (nodeName == "EffectName") {
         result = wrapWidget(parseEffectName(node));
     } else if (nodeName == "EffectSelector") {
@@ -1299,7 +1303,7 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 
-    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
+    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent, m_pConfig);
     commonWidgetSetup(node, pLineEditSearch, false);
     pLineEditSearch->setup(node, *m_pContext);
 
@@ -1665,8 +1669,23 @@ QWidget* LegacySkinParser::parseEffectChainName(const QDomElement& node) {
     return pEffectChain;
 }
 
+QWidget* LegacySkinParser::parseEffectChainPresetButton(const QDomElement& node) {
+    WEffectChainPresetButton* pButton = new WEffectChainPresetButton(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pButton);
+    pButton->setup(node, *m_pContext);
+    return pButton;
+}
+
+QWidget* LegacySkinParser::parseEffectChainPresetSelector(const QDomElement& node) {
+    WEffectChainPresetSelector* pSelector = new WEffectChainPresetSelector(
+            m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pSelector);
+    pSelector->setup(node, *m_pContext);
+    return pSelector;
+}
+
 QWidget* LegacySkinParser::parseEffectName(const QDomElement& node) {
-    WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
+    WEffectName* pEffect = new WEffectName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffect);
     return pEffect;
 }
@@ -1691,14 +1710,6 @@ QWidget* LegacySkinParser::parseEffectParameterKnob(const QDomElement& node) {
     pParameterKnob->installEventFilter(
         m_pControllerManager->getControllerLearningEventFilter());
     pParameterKnob->Init();
-    const QList<ControlParameterWidgetConnection*> connections =
-            pParameterKnob->connections();
-    if (!connections.isEmpty()) {
-        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
-    } else {
-        SKIN_WARNING(node, *m_pContext)
-                << "EffectParameterKnob node could not attach to effect parameter.";
-    }
     return pParameterKnob;
 }
 
@@ -1711,14 +1722,6 @@ QWidget* LegacySkinParser::parseEffectParameterKnobComposed(const QDomElement& n
     pParameterKnob->installEventFilter(
         m_pControllerManager->getControllerLearningEventFilter());
     pParameterKnob->Init();
-    const QList<ControlParameterWidgetConnection*> connections =
-            pParameterKnob->connections();
-    if (!connections.isEmpty()) {
-        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
-    } else {
-        SKIN_WARNING(node, *m_pContext)
-                << "EffectParameterKnobComposed node could not attach to effect parameter.";
-    }
     return pParameterKnob;
 }
 
@@ -1730,25 +1733,20 @@ QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {
     pWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
     pWidget->Init();
-    const QList<ControlParameterWidgetConnection*> connections =
-            pWidget->leftConnections();
-    if (!connections.isEmpty()) {
-        pWidget->setupEffectParameterSlot(connections.at(0)->getKey());
-    } else {
-        SKIN_WARNING(element, *m_pContext)
-                << "EffectPushButton node could not attach to effect parameter.";
-    }
     return pWidget;
 }
 
 QWidget* LegacySkinParser::parseEffectParameterName(const QDomElement& node) {
-    WEffectParameterBase* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
+    WEffectParameterNameBase* pEffectParameter =
+            new WEffectKnobParameterName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectParameter);
     return pEffectParameter;
 }
 
-QWidget* LegacySkinParser::parseEffectButtonParameterName(const QDomElement& node) {
-    WEffectParameterBase* pEffectButtonParameter = new WEffectButtonParameter(m_pParent, m_pEffectsManager);
+QWidget* LegacySkinParser::parseEffectButtonParameterName(
+        const QDomElement& node) {
+    WEffectParameterNameBase* pEffectButtonParameter =
+            new WEffectButtonParameterName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectButtonParameter);
     return pEffectButtonParameter;
 }

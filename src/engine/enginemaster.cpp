@@ -428,8 +428,9 @@ void EngineMaster::process(const int iBufferSize) {
         // Process effects and mix PFL channels together for the headphones.
         // Effects will be reprocessed post-fader for the crossfader buses
         // and master mix, so the channel input buffers cannot be modified here.
-        ChannelMixer::applyEffectsAndMixChannels(m_headphoneGain,
-                &m_activeHeadphoneChannels,
+        ChannelMixer::applyEffectsAndMixChannels(
+                m_headphoneGain,
+                m_activeHeadphoneChannels,
                 &m_channelHeadphoneGainCache,
                 m_pHead,
                 m_headphoneHandle.handle(),
@@ -461,8 +462,9 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Mix all the talkover enabled channels together.
     // Effects processing is done in place to avoid unnecessary buffer copying.
-    ChannelMixer::applyEffectsInPlaceAndMixChannels(m_talkoverGain,
-            &m_activeTalkoverChannels,
+    ChannelMixer::applyEffectsInPlaceAndMixChannels(
+            m_talkoverGain,
+            m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
             m_pTalkover,
             m_masterHandle.handle(),
@@ -518,7 +520,7 @@ void EngineMaster::process(const int iBufferSize) {
 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         ChannelMixer::applyEffectsInPlaceAndMixChannels(m_masterGain,
-                &m_activeBusChannels[o],
+                m_activeBusChannels[o],
                 &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
                 m_pOutputBusBuffers[o],
                 m_masterHandle.handle(),
