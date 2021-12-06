@@ -14,7 +14,7 @@ QString SqlStringFormatter::format(
         return value; // unformatted
     }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QSqlField stringField(QString(), QMetaType(QMetaType::QString));
+    QSqlField stringField{QString(), QMetaType(QMetaType::QString)};
 #else
     QSqlField stringField(QString(), QVariant::String);
 #endif
