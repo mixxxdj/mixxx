@@ -20,7 +20,7 @@
 #include "library/parser.h"
 #include "library/basesqltablemodel.h"
 
-class ParserCsv : Parser {
+class ParserCsv : public Parser {
   public:
     // static
     static bool isPlaylistFilenameSupported(const QString& playlistFile);

@@ -19,7 +19,7 @@
 
 #include "library/parser.h"
 
-class ParserM3u : Parser {
+class ParserM3u : public Parser {
   public:
     static bool isPlaylistFilenameSupported(const QString& fileName);
     static QList<QString> parseAllLocations(const QString& playlistFile);

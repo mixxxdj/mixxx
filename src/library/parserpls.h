@@ -17,7 +17,7 @@
 
 #include "library/parser.h"
 
-class ParserPls : Parser {
+class ParserPls : public Parser {
   public:
     static bool isPlaylistFilenameSupported(const QString& fileName);
     static QList<QString> parseAllLocations(const QString& playlistFile);
