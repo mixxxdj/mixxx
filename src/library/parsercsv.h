@@ -32,5 +32,5 @@ class ParserCsv : public Parser {
 
   private:
     // Reads a line from the file and returns filepath if a valid file
-    static QList<QList<QString> > tokenize(const QByteArray& str, char delimiter);
+    static QList<QList<QString>> tokenize(const QByteArray& str, char delimiter);
 };
