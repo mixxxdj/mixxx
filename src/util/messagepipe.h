@@ -77,7 +77,7 @@ class TwoWayMessagePipe {
                  MessagePipe<ReceiverMessageType, SenderMessageType>*> makeTwoWayMessagePipe(
                      int sender_fifo_size,
                      int receiver_fifo_size) {
-        QSharedPointer<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> > pipe(
+        QSharedPointer<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType>> pipe(
             new TwoWayMessagePipe<SenderMessageType, ReceiverMessageType>(
                 sender_fifo_size, receiver_fifo_size));
 
@@ -85,10 +85,10 @@ class TwoWayMessagePipe {
                      MessagePipe<ReceiverMessageType, SenderMessageType>*>(
                          new MessagePipe<SenderMessageType, ReceiverMessageType>(
                              pipe->m_receiver_messages, pipe->m_sender_messages,
-                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe)),
+                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType>>(pipe)),
                          new MessagePipe<ReceiverMessageType, SenderMessageType>(
                              pipe->m_sender_messages, pipe->m_receiver_messages,
-                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe)));
+                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType>>(pipe)));
     }
 
   private:

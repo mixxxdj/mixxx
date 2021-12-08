@@ -54,6 +54,6 @@ class ControlModel final : public QAbstractTableModel {
         ControlProxy* pControl;
     };
 
-    QVector<QHash<int, QVariant> > m_headerInfo;
+    QVector<QHash<int, QVariant>> m_headerInfo;
     QList<ControlInfo> m_controls;
 };
