@@ -535,8 +535,7 @@ void WTrackMenu::setupActions() {
         }
     }
 
-    if (featureIsEnabled(Feature::RemoveFromDisk) &&
-            m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk)) {
+    if (featureIsEnabled(Feature::RemoveFromDisk)) {
         m_pRemoveFromDiskMenu->addAction(m_pRemoveFromDiskAct);
         addMenu(m_pRemoveFromDiskMenu);
     }
@@ -790,9 +789,11 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
-        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
-        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk)) {
-            m_pRemoveFromDiskAct->setEnabled(!locked);
+        if (m_pTrackModel) {
+            bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
+            if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveFromDisk)) {
+                m_pRemoveFromDiskAct->setEnabled(!locked);
+            }
         }
     }
 
@@ -1704,14 +1705,21 @@ class RemoveTrackFilesFromDiskTrackPointerOperation : public mixxx::TrackPointer
 } // anonymous namespace
 
 void WTrackMenu::slotRemoveFromDisk() {
-    const auto trackRefs = getTrackRefs();
     QStringList locations;
-    locations.reserve(trackRefs.size());
-    for (const auto& trackRef : trackRefs) {
-        QString location = trackRef.getLocation();
+    if (m_pTrackModel) {
+        const auto trackRefs = getTrackRefs();
+        locations.reserve(trackRefs.size());
+        for (const auto& trackRef : trackRefs) {
+            QString location = trackRef.getLocation();
+            locations.append(location);
+        }
+        locations.removeDuplicates();
+    } else if (m_pTrack) {
+        QString location = m_pTrack->getLocation();
         locations.append(location);
+    } else {
+        return;
     }
-    locations.removeDuplicates();
 
     {
         // Prepare the delete confirmation dialog
@@ -1782,14 +1790,26 @@ void WTrackMenu::slotRemoveFromDisk() {
         // Show purge summary message
         QMessageBox msgBoxPurgeTracks;
         msgBoxPurgeTracks.setIcon(QMessageBox::Information);
-        msgBoxPurgeTracks.setWindowTitle(tr("Track Files Deleted"));
-        msgBoxPurgeTracks.setText(
-                tr("%1 track files were deleted from disk and purged "
-                   "from the Mixxx database.")
-                        .arg(QString::number(tracksToPurge.length())) +
-                QString("<br><br>") +
-                tr("Note: if you are in Browse or Recording you need to "
-                   "click the current view again to see changes."));
+        QString msgTitle;
+        QString msgText;
+        if (m_pTrackModel) {
+            msgTitle = tr("Track Files Deleted");
+            msgText =
+                    tr("%1 track files were deleted from disk and purged "
+                       "from the Mixxx database.")
+                            .arg(QString::number(tracksToPurge.length())) +
+                    QString("<br><br>") +
+                    tr("Note: if you are in Browse or Recording you need to "
+                       "click the current view again to see changes.");
+        } else {
+            // ToDo(ronso0) Eject track after deletion.
+            msgTitle = tr("Track File Deleted");
+            msgText = tr(
+                    "Track file was deleted from disk and purged "
+                    "from the Mixxx database.");
+        }
+        msgBoxPurgeTracks.setWindowTitle(msgTitle);
+        msgBoxPurgeTracks.setText(msgText);
         msgBoxPurgeTracks.setTextFormat(Qt::RichText);
         msgBoxPurgeTracks.setStandardButtons(QMessageBox::Ok);
         msgBoxPurgeTracks.exec();
@@ -1802,10 +1822,16 @@ void WTrackMenu::slotRemoveFromDisk() {
     }
     // Else show a message with a list of tracks that could not be deleted.
     QLabel* notDeletedLabel = new QLabel;
-    notDeletedLabel->setText(
-            tr("The following %1 files could not be deleted from disk")
-                    .arg(QString::number(
-                            tracksToKeep.length())));
+    QString msgText;
+    if (m_pTrackModel) {
+        msgText =
+                tr("The following %1 files could not be deleted from disk")
+                        .arg(QString::number(
+                                tracksToKeep.length()));
+    } else {
+        msgText = tr("Track file could not be deleted from disk.");
+    }
+    notDeletedLabel->setText(msgText);
     notDeletedLabel->setTextFormat(Qt::RichText);
 
     QListWidget* notDeletedListWidget = new QListWidget;
@@ -1825,7 +1851,7 @@ void WTrackMenu::slotRemoveFromDisk() {
 
     QDialog dlgNotDeleted;
     dlgNotDeleted.setModal(true);
-    dlgNotDeleted.setWindowTitle(tr("Remaining Track Files"));
+    dlgNotDeleted.setWindowTitle(tr("Remaining Track File(s)"));
     dlgNotDeleted.setLayout(notDeletedLayout);
     // Required for being able to close the dialog
     connect(closeBtn, &QPushButton::clicked, &dlgNotDeleted, &QDialog::close);
