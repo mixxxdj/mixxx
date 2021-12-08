@@ -1802,7 +1802,11 @@ void WTrackMenu::slotRemoveFromDisk() {
                     tr("Note: if you are in Browse or Recording you need to "
                        "click the current view again to see changes.");
         } else {
-            // ToDo(ronso0) Eject track after deletion.
+            // Eject track from deck
+            ControlProxy* ejectTrackProxy = new ControlProxy(
+                    m_deckGroup, "eject", this);
+            ejectTrackProxy->set(1.0);
+
             msgTitle = tr("Track File Deleted");
             msgText = tr(
                     "Track file was deleted from disk and purged "
