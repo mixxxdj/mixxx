@@ -34,9 +34,9 @@ QList<QString> ParserCsv::parse(const QString& sFilename) {
     clearLocations();
     //qDebug() << "ParserCsv: Starting to parse.";
     if (file.open(QIODevice::ReadOnly)) {
-        QByteArray ba = file.readAll();
+        QByteArray bytes = file.readAll();
 
-        QList<QList<QString>> tokens = tokenize(ba, ',');
+        QList<QList<QString>> tokens = tokenize(bytes, ',');
 
         // detect Location column
         int loc_coll = 0x7fffffff;
