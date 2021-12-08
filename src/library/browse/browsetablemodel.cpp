@@ -159,7 +159,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
 
     setHorizontalHeaderLabels(headerLabels);
     // register the QList<T> as a metatype since we use QueuedConnection below
-    qRegisterMetaType<QList<QList<QStandardItem*>> >(
+    qRegisterMetaType<QList<QList<QStandardItem*>>>(
             "QList< QList<QStandardItem*>>");
     qRegisterMetaType<BrowseTableModel*>("BrowseTableModel*");
 

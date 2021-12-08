@@ -134,7 +134,7 @@ void BrowseThread::populateModel() {
     // see signal/slot connection in BrowseTableModel
     emit clearModel(thisModelObserver);
 
-    QList< QList<QStandardItem*>> rows;
+    QList<QList<QStandardItem*>> rows;
 
     int row = 0;
     // Iterate over the files

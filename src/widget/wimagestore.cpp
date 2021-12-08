@@ -88,7 +88,7 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
 
 // static
 void WImageStore::deleteImage(QImage* p) {
-    QMutableHashIterator<QString, std::weak_ptr<QImage>>it(m_dictionary);
+    QMutableHashIterator<QString, std::weak_ptr<QImage>> it(m_dictionary);
     while (it.hasNext()) {
         if(it.next().value().expired()) {
             it.remove();
