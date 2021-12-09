@@ -14,6 +14,7 @@ namespace qml {
 
 class QmlPlayerProxy : public QObject {
     Q_OBJECT
+    Q_PROPERTY(bool isLoaded READ isLoaded NOTIFY trackChanged)
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist NOTIFY artistChanged)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
@@ -37,6 +38,7 @@ class QmlPlayerProxy : public QObject {
   public:
     explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
 
+    bool isLoaded() const;
     QString getTrack() const;
     QString getTitle() const;
     QString getArtist() const;

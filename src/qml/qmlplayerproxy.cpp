@@ -157,6 +157,10 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit trackLocationUrlChanged();
 }
 
+bool QmlPlayerProxy::isLoaded() const {
+    return m_pCurrentTrack != nullptr;
+}
+
 PROPERTY_IMPL(QString, artist, getArtist, setArtist)
 PROPERTY_IMPL(QString, title, getTitle, setTitle)
 PROPERTY_IMPL(QString, album, getAlbum, setAlbum)

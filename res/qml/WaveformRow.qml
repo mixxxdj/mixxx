@@ -7,6 +7,7 @@ Item {
     id: root
 
     property string group // required
+    property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
 
     Item {
         id: waveformContainer
@@ -59,6 +60,7 @@ Item {
             width: waveformContainer.duration * effectiveZoomFactor
             height: parent.height
             x: 0.5 * waveformContainer.width - playPositionControl.value * width
+            visible: root.deckPlayer.isLoaded
 
             Mixxx.WaveformOverview {
                 player: Mixxx.PlayerManager.getPlayer(root.group)
