@@ -58,7 +58,7 @@ TEST_F(PlaylistTest, Relative) {
             parser.playlistEntryToFilePath("../../bar.mp3", "base/folder"));
 }
 
-TEST_F(PlaylistTest, m3uEndOfLine) {
+TEST_F(PlaylistTest, M3uEndOfLine) {
     QTemporaryFile m3uFile;
     ASSERT_TRUE(m3uFile.open());
     m3uFile.write("crlf.mp3\r\n");
@@ -78,7 +78,7 @@ TEST_F(PlaylistTest, m3uEndOfLine) {
     EXPECT_TRUE(entries.at(4).endsWith(QStringLiteral("end.mp3")));
 }
 
-TEST_F(PlaylistTest, csvEndOfLine) {
+TEST_F(PlaylistTest, CsvEndOfLine) {
     QTemporaryFile csvFile;
     ASSERT_TRUE(csvFile.open());
     csvFile.write("#,Location\r\n");
@@ -92,7 +92,7 @@ TEST_F(PlaylistTest, csvEndOfLine) {
     EXPECT_TRUE(entries.at(1).endsWith(QStringLiteral("lf.mp3")));
 }
 
-TEST_F(PlaylistTest, plsEndOfLine) {
+TEST_F(PlaylistTest, PlsEndOfLine) {
     QTemporaryFile plsFile;
     ASSERT_TRUE(plsFile.open());
     plsFile.write("[playlist]\n");
