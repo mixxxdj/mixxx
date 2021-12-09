@@ -1733,10 +1733,19 @@ void WTrackMenu::slotRemoveFromDisk() {
         delListWidget->addItems(locations);
         mixxx::widgethelper::growListWidget(*delListWidget, *this);
         // Warning text
+        QString delWarningText;
+        if (m_pTrackModel) {
+            delWarningText = tr("Permanently delete these files from disk?") +
+                    QString("<br><br><b>") +
+                    tr("This can not be undone!") + QString("</b>");
+        } else {
+            delWarningText =
+                    tr("Stop the deck and permanently delete this track file from disk?") +
+                    QString("<br><br><b>") +
+                    tr("This can not be undone!") + QString("</b>");
+        }
         QLabel* delWarning = new QLabel();
-        delWarning->setText(tr("Permanently delete these files from disk?") +
-                QString("<br><br><b>") +
-                tr("This can not be undone!") + QString("</b>"));
+        delWarning->setText(delWarningText);
         delWarning->setTextFormat(Qt::RichText);
         delWarning->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::Minimum));
@@ -1768,6 +1777,17 @@ void WTrackMenu::slotRemoveFromDisk() {
         if (dlgDelConfirm.exec() == QDialog::Rejected) {
             return;
         }
+    }
+
+    // If the operation was initiated from a deck's track menu
+    // we'll first stop the deck and eject the track.
+    if (m_pTrack) {
+        ControlProxy* stopDeckProxy = new ControlProxy(
+                m_deckGroup, "stop", this);
+        stopDeckProxy->set(1.0);
+        ControlProxy* ejectTrackProxy = new ControlProxy(
+                m_deckGroup, "eject", this);
+        ejectTrackProxy->set(1.0);
     }
 
     // Set up and initiate the track batch operation
@@ -1802,11 +1822,6 @@ void WTrackMenu::slotRemoveFromDisk() {
                     tr("Note: if you are in Browse or Recording you need to "
                        "click the current view again to see changes.");
         } else {
-            // Eject track from deck
-            ControlProxy* ejectTrackProxy = new ControlProxy(
-                    m_deckGroup, "eject", this);
-            ejectTrackProxy->set(1.0);
-
             msgTitle = tr("Track File Deleted");
             msgText = tr(
                     "Track file was deleted from disk and purged "
