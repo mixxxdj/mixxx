@@ -137,7 +137,7 @@ Item {
 
             startX: parent.width / 2
             startY: 0
-            strokeColor: "white"
+            strokeColor: Theme.waveformCursorColor
             strokeWidth: 1
 
             PathLine {
