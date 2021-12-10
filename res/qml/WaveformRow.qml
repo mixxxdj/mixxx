@@ -130,6 +130,17 @@ Item {
                     }
                 }
             }
+
+            Repeater {
+                model: root.deckPlayer.beatsModel
+
+                Rectangle {
+                    width: 1
+                    height: waveform.height
+                    x: (framePosition * 2 / samplesControl.value) * waveform.width
+                    color: Theme.waveformBeatColor
+                }
+            }
         }
     }
 

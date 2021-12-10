@@ -7,6 +7,7 @@
 #include <QtQml>
 
 #include "mixer/basetrackplayer.h"
+#include "qml/qmlbeatsmodel.h"
 #include "track/track.h"
 
 namespace mixxx {
@@ -41,6 +42,8 @@ class QmlPlayerProxy : public QObject {
                     waveformTextureSizeChanged)
     Q_PROPERTY(int waveformTextureStride READ getWaveformTextureStride NOTIFY
                     waveformTextureStrideChanged)
+
+    Q_PROPERTY(mixxx::qml::QmlBeatsModel* beatsModel MEMBER m_pBeatsModel CONSTANT);
 
   public:
     explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
@@ -81,6 +84,7 @@ class QmlPlayerProxy : public QObject {
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotTrackChanged();
     void slotWaveformChanged();
+    void slotBeatsChanged();
 
     void setArtist(const QString& artist);
     void setTitle(const QString& title);
@@ -129,6 +133,7 @@ class QmlPlayerProxy : public QObject {
     QImage m_waveformTexture;
     QPointer<BaseTrackPlayer> m_pTrackPlayer;
     TrackPointer m_pCurrentTrack;
+    QmlBeatsModel* m_pBeatsModel;
 };
 
 } // namespace qml

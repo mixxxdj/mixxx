@@ -2692,6 +2692,7 @@ if(QML)
     src/qml/asyncimageprovider.cpp
     src/qml/qmlapplication.cpp
     src/qml/qmlautoreload.cpp
+    src/qml/qmlbeatsmodel.cpp
     src/qml/qmlcontrolproxy.cpp
     src/qml/qmlconfigproxy.cpp
     src/qml/qmldlgpreferencesproxy.cpp
