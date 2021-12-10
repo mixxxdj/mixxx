@@ -286,12 +286,12 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         QDir newOSXDir(OSXLocation190);
         newOSXDir.mkpath(OSXLocation190);
 
-        QList<QPair<QString, QString> > dirsToMove;
+        QList<QPair<QString, QString>> dirsToMove;
         dirsToMove.push_back(QPair<QString, QString>(OSXLocation180, OSXLocation190));
         dirsToMove.push_back(QPair<QString, QString>(OSXLocation180 + "/midi", OSXLocation190 + "midi"));
         dirsToMove.push_back(QPair<QString, QString>(OSXLocation180 + "/presets", OSXLocation190 + "presets"));
 
-        QListIterator<QPair<QString, QString> > dirIt(dirsToMove);
+        QListIterator<QPair<QString, QString>> dirIt(dirsToMove);
         QPair<QString, QString> curPair;
         while (dirIt.hasNext())
         {

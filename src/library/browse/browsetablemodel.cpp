@@ -159,8 +159,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
 
     setHorizontalHeaderLabels(headerLabels);
     // register the QList<T> as a metatype since we use QueuedConnection below
-    qRegisterMetaType<QList<QList<QStandardItem*> > >(
-            "QList< QList<QStandardItem*> >");
+    qRegisterMetaType<QList<QList<QStandardItem*>>>(
+            "QList< QList<QStandardItem*>>");
     qRegisterMetaType<BrowseTableModel*>("BrowseTableModel*");
 
     m_pBrowseThread = BrowseThread::getInstanceRef();
@@ -354,7 +354,7 @@ void BrowseTableModel::slotClear(BrowseTableModel* caller_object) {
     }
 }
 
-void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*> >& rows,
+void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*>>& rows,
         BrowseTableModel* caller_object) {
     // There exists more than one BrowseTableModel in Mixxx We only want to
     // receive items here, this object has 'ordered' by the BrowserThread
