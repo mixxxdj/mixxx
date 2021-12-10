@@ -6,6 +6,12 @@ import "Theme"
 Item {
     id: root
 
+    enum MouseStatus {
+        Normal,
+        Bending,
+        Scratching
+    }
+
     property string group // required
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
 
@@ -146,6 +152,83 @@ Item {
                 x: playMarkerPath.startX
                 y: playMarkerShape.height
             }
+        }
+    }
+
+    Mixxx.ControlProxy {
+        id: scratchPositionEnableControl
+
+        group: root.group
+        key: "scratch_position_enable"
+    }
+
+    Mixxx.ControlProxy {
+        id: scratchPositionControl
+
+        group: root.group
+        key: "scratch_position"
+    }
+
+    Mixxx.ControlProxy {
+        id: wheelControl
+
+        group: root.group
+        key: "wheel"
+    }
+
+    MouseArea {
+        property int mouseStatus: WaveformRow.MouseStatus.Normal
+        property point mouseAnchor: Qt.point(0, 0)
+
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onPressed: {
+            mouseAnchor = Qt.point(mouse.x, mouse.y);
+            if (mouse.button == Qt.LeftButton) {
+                if (mouseStatus == WaveformRow.MouseStatus.Bending)
+                    wheelControl.parameter = 0.5;
+
+                mouseStatus = WaveformRow.MouseStatus.Scratching;
+                scratchPositionEnableControl.value = 1;
+                // TODO: Calculate position properly
+                scratchPositionControl.value = -mouse.x * waveform.effectiveZoomFactor * 2;
+                console.log(mouse.x);
+            } else {
+                if (mouseStatus == WaveformRow.MouseStatus.Scratching)
+                    scratchPositionEnableControl.value = 0;
+
+                wheelControl.parameter = 0.5;
+                mouseStatus = WaveformRow.MouseStatus.Bending;
+            }
+        }
+        onPositionChanged: {
+            switch (mouseStatus) {
+                case WaveformRow.MouseStatus.Bending: {
+                    const diff = mouse.x - mouseAnchor.x;
+                    // Start at the middle of [0.0, 1.0], and emit values based on how far
+                    // the mouse has traveled horizontally. Note, for legacy (MIDI) reasons,
+                    // this is tuned to 127.
+                    const v = 0.5 + (diff / 1270);
+                    // clamp to [0.0, 1.0]
+                    wheelControl.parameter = Mixxx.MathUtils.clamp(v, 0, 1);
+                    break;
+                };
+                case WaveformRow.MouseStatus.Scratching:
+                // TODO: Calculate position properly
+                    scratchPositionControl.value = -mouse.x * waveform.effectiveZoomFactor * 2;
+                    break;
+            }
+        }
+        onReleased: {
+            switch (mouseStatus) {
+                case WaveformRow.MouseStatus.Bending:
+                    wheelControl.parameter = 0.5;
+                    break;
+                case WaveformRow.MouseStatus.Scratching:
+                    scratchPositionEnableControl.value = 0;
+                    break;
+            }
+            mouseStatus = WaveformRow.MouseStatus.Normal;
         }
     }
 }
