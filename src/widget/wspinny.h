@@ -36,7 +36,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
     void setup(const QDomNode& node,
             const SkinContext& context,
-            const ConfigKey showCoverConfigKey);
+            const ConfigKey& showCoverConfigKey);
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
 

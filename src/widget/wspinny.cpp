@@ -148,7 +148,7 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 
 void WSpinny::setup(const QDomNode& node,
         const SkinContext& context,
-        const ConfigKey showCoverConfigKey) {
+        const ConfigKey& showCoverConfigKey) {
     // Set images
     QDomElement backPathElement = context.selectElement(node, "PathBackground");
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement),
