@@ -1285,7 +1285,12 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     connect(spinny, &WSpinny::trackDropped, m_pPlayerManager, &PlayerManager::slotLoadToPlayer);
     connect(spinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
-    spinny->setup(node, *m_pContext);
+    ControlObject* showCoverControl = controlFromConfigNode(node.toElement(), "ShowCoverControl");
+    ConfigKey configKey;
+    if (showCoverControl) {
+        configKey = showCoverControl->getKey();
+    }
+    spinny->setup(node, *m_pContext, configKey);
     spinny->installEventFilter(m_pKeyboard);
     spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     spinny->Init();

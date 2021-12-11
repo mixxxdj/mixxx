@@ -146,7 +146,9 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 #endif
 }
 
-void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
+void WSpinny::setup(const QDomNode& node,
+        const SkinContext& context,
+        const ConfigKey showCoverConfigKey) {
     // Set images
     QDomElement backPathElement = context.selectElement(node, "PathBackground");
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement),
@@ -176,7 +178,19 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
                 size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
 
-    m_bShowCover = context.selectBool(node, "ShowCover", false);
+    // Dynamic skin option, set in WSpinny's <ShowCoverControl> node.
+    if (showCoverConfigKey.isValid()) {
+        m_pShowCoverProxy = new ControlProxy(
+                showCoverConfigKey, this);
+        m_pShowCoverProxy->connectValueChanged(
+                this,
+                [this](double v) {
+                    m_bShowCover = v > 0.0;
+                });
+        m_bShowCover = m_pShowCoverProxy->get() > 0.0;
+    } else {
+        m_bShowCover = context.selectBool(node, "ShowCover", false);
+    }
 
 #ifdef __VINYLCONTROL__
     // Find the vinyl input we should listen to reports about.
@@ -413,7 +427,6 @@ void WSpinny::swap() {
     }
     swapBuffers();
 }
-
 
 QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
