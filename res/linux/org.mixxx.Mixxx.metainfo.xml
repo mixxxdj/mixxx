@@ -134,6 +134,7 @@
    #4087
    #4102
    #4143
+   #4463
   </li>
   <li>
    Rekordbox: Save all loops and correct AAC timing offset for CoreAudio
@@ -156,6 +157,29 @@
    #3262
   </li>
   <li>
+   Search: save queries across restarts, related tweaks &amp; fixes
+   #4458
+   lp:1943084
+   lp:1947479
+  </li>
+  <li>
+   Browse/Recording: disable the not working search box
+   #4382
+  </li>
+  <li>
+   Search: update Clear button when search is disabled
+   #4447
+  </li>
+  <li>
+   Fix reset to default of search timeout in preferences
+   #4504
+   lp:1948690
+  </li>
+  <li>
+   Search: Ctrl+F in focused search box selects the entire search string
+   #4515
+  </li>
+  <li>
    Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers
    #3076
   </li>
@@ -170,6 +194,8 @@
   <li>
    Improve presentation of the history library tree
    #2996
+   #4298
+   lp:1944029
   </li>
   <li>
    Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags
@@ -184,6 +210,7 @@
    #3871
    #3870
    #3924
+   #4368
    #3906
    #3998
   </li>
@@ -231,6 +258,45 @@
    lp:1939082
   </li>
   <li>
+   Sidebar: Left key jumps to parent and activates it
+   #4253
+  </li>
+  <li>
+   Fix DEBUG ASSERT when navigating history playlists
+   #4297
+   lp:1943643
+  </li>
+  <li>
+   Library: add keyboard short to open track properties Ctrl+Enter
+   #4347
+  </li>
+  <li>
+   Reanable short cut keys after editing controls
+   #4360
+   lp:1902125
+   lp:1943325
+  </li>
+  <li>
+   History feature: fix right-click index
+   #4384
+  </li>
+  <li>
+   Allow to remove tracks by pressing Delete key
+   #4330
+   lp:1227676
+   lp:1851457
+   lp:1856402
+   lp:1944565
+  </li>
+  <li>
+   Keep selected track when browthing though the library, save model state
+   #4177
+  </li>
+  <li>
+   Allow to remove a track form the disk
+   #3212
+  </li>
+  <li>
    Refactoring of library code
    #2756
    #2717
@@ -246,6 +312,11 @@
    #4162
    #4101
    #4214
+   #4280
+   #4429
+   #4477
+   #4475
+   #4480
   </li>
  </ul>
  <p>
@@ -265,6 +336,8 @@
    #4119
    #4135
    #4149
+   #4276
+   #3944
   </li>
   <li>
    Fix issue with half/double BPM calculation when using sync
@@ -275,6 +348,19 @@
    Sync Lock: Don't seek phase when disabling sync
    #4169
   </li>
+  <li>
+   Sync Lock: Fix issues with single-playing syncables
+   #4155
+   #4389
+  </li>
+  <li>
+   Fix out of sync after scratching
+   #4005
+  </li>
+  <li>
+   Fix audio artefacts when fading from or to zero
+   #4363
+  </li>
  </ul>
  <p>
   Audio Codecs
@@ -283,6 +369,19 @@
   <li>
    Fix recovering from FAAD2 decoding issues
    #2850
+  </li>
+  <li>
+   SoundSourceMP3: Log recoverable errors as info instead of warning
+   #4365
+  </li>
+  <li>
+   Fix type detection of AIFF files
+   #4364
+  </li>
+  <li>
+   EncoderFdkAac: Fixed a memory leak
+   #4386
+   #4408
   </li>
  </ul>
  <p>
@@ -294,6 +393,8 @@
    #2194
    #3267
    #3202
+   #4265
+   lp:1367159
   </li>
   <li>
    Fix an issue when pressing multiple cue buttons at the same time
@@ -304,6 +405,34 @@
    #4137
    lp1937074
    #4153
+  </li>
+  <li>
+   Add halve/double controls for beatjump size
+   #4269
+  </li>
+  <li>
+   Fix possible segfault when edjecting track
+   #4362
+   lp:1940589
+  </li>
+  <li>
+   CachingReader: Fixed an assertion when loop is before track start
+   #4383
+   lp:1946759
+  </li>
+  <li>
+   Fix/Improve snapping to beats in various situations
+   #4366
+   lp:1945238
+  </li>
+  <li>
+   Allow to cancel active loops via beatloop_activate
+   #4328
+   lp:1876003
+  </li>
+  <li>
+   Don't wipe inapplicable sound config immediately
+   #4544
   </li>
   <li>
    Refactoring of beatgrid/beatmap code
@@ -325,6 +454,19 @@
    #4259
    #4263
    #4272
+   #4268
+   #4270
+   #4342
+   #4336
+   #4409
+   #4361
+   #4255
+   #4488
+   #4411
+   #4498
+   #4500
+   #4499
+   #4510
   </li>
   <li>
    Refactoring of audio engine code
@@ -367,6 +509,8 @@
    #4257
    #4266
    #4217
+   #1966
+   #4535
   </li>
  </ul>
  <p>
@@ -405,13 +549,55 @@
    #4157
   </li>
   <li>
+   Introduce new control object
+   [Library],clear_search
+   #4331
+  </li>
+  <li>
+   Introduce new control object
+   [Library],focused_widget
+   to focus library directly
+   #4369
+   #4490
+  </li>
+  <li>
    Don't automatically enable controller if it was disabled before
    #4244
    lp:1941042
   </li>
   <li>
-   Roland DJ-505: Use new ControlIndicator COs for blinking lights
+   Enable Qt logging categories for controller logging (--controllerDebug remains).
+   #4523
+  </li>
+  <li>
+   Fix segfault during Mixxx shutdown due to a stale controller connection
+   #4476
+   lp:1946581
+  </li>
+  <li>
+   Components JS: Fix syncbutton
+   #4329
+  </li>
+  <li>
+   Roland DJ-505: Use new ControlIndicator COs for blinking lights and other improvements
    #4159
+   #4517
+  </li>
+  <li>
+   Behringer DDM4000 mixer: Update controller mapping
+   #4262
+  </li>
+  <li>
+   Numark DJ2GO2 Touch: Fix sampler, hotcue, beatloop buttons
+   #4287
+  </li>
+  <li>
+   Denon MC6000MK2: Improve mapping code
+   #4385
+  </li>
+  <li>
+   Minimixxx controller config
+   #4350
   </li>
   <li>
    Prepare code for upcoming ES6 based controller mapping system with module support
@@ -432,6 +618,9 @@
    #3676
    #3880
    #4085
+   #4524
+   #4533
+   #4521
   </li>
  </ul>
  <p>
@@ -439,7 +628,7 @@
  </p>
  <ul>
   <li>
-   Add experimental QML skin
+   Add an experimental QML skin
    #3345
    #3446
    #3854
@@ -475,8 +664,11 @@
    #4068
    #4060
    #4037
+   #4414
    #3934
    #4117
+   #4327
+   #4339
   </li>
   <li>
    Add new "RGB Stacked" waveform
@@ -493,18 +685,80 @@
    #3608
   </li>
   <li>
+   Allow skin scaling from preferences
+   #3960
+  </li>
+  <li>
+   Invert scroll wheel waveform zoom direction to mach other applications
+   #4195
+  </li>
+  <li>
    Fix crash if no skin is available
    #3918
    #3939
   </li>
   <li>
-   Inverted scroll wheel waveform zoom direction to mach other applications
-   #4195
-  </li>
-  <li>
    Fix leaked controls
    #4213
    lp:1912129
+  </li>
+  <li>
+   Shade: remove initial setting of now accessible effect controls
+   #4398
+   lp:1946811
+  </li>
+  <li>
+   Fix switching from Shade to other skins
+   #4421
+   lp:1946812
+  </li>
+  <li>
+   Use double click to reset knobs and sliders
+   #4509
+   lp:1875999
+  </li>
+  <li>
+   Use info not warning for skin COs
+   #4525
+  </li>
+ </ul>
+ <p>
+  Effects
+ </p>
+ <ul>
+  <li>
+   Add a Noise effect
+   #2921
+  </li>
+  <li>
+   Use '---' instead of 'None' for empty slots to spot them easier
+   #4469
+  </li>
+  <li>
+   Effect refactoring: Effect chain saving/loading, parameter hiding/rearrangement, effect preferences overhaul
+   #4467
+   #4431
+   #4426
+   #4457
+   #4456
+   #4459
+   #4462
+   #4466
+   #4468
+   #4472
+   #4470
+   #4471
+   #4483
+   #4482
+   #4484
+   #4486
+   #4502
+   #4501
+   #4518
+   #4532
+   #4461
+   #4548
+   #4503
   </li>
  </ul>
  <p>
@@ -512,39 +766,60 @@
  </p>
  <ul>
   <li>
-   Improve/fix the build system
-   #2796
-   #2937
+   Improve/fix the CMake build system
    #2943
-   #3041
    #3046
    #3114
-   #3182
-   #3274
-   #3300
    #3471
-   #3514
    #3765
    #3849
    #3876
-   #3861
-   #3923
-   #3948
-   #3929
-   #4007
-   #4070
-   #4084
    #4098
    #4113
-   #4163
    #4166
    #4185
    #4187
-   #4192
-   #4226
-   #4203
+   #4351
+   #4423
+   #4422
+   #4497
+   #4514
+   #3550
+  </li>
+  <li>
+   Improve GitHub workflow continuous integration
+   #2937
+   #3041
+   #3300
+   #4007
+   #4084
    #4250
    #4274
+   #4313
+   #4226
+   #4452
+  </li>
+  <li>
+   Improve pre-commit hook
+   #2796
+   #3923
+   #3948
+   #3929
+   #4192
+   #4282
+   #4278
+   #4314
+   #4321
+   #4374
+   #4494
+   #4512
+   #4558
+  </li>
+  <li>
+   Improve Lauchpad PPA builds
+   #4277
+   #4285
+   #4425
   </li>
   <li>
    Drop Ubuntu Bionic support, require Qt 5.12
@@ -552,6 +827,10 @@
    #3735
    #3736
    #3985
+  </li>
+  <li>
+   Drop Ubuntu Groovy support because of EOL
+   #4283
   </li>
   <li>
    Add NixOS support
@@ -566,25 +845,115 @@
    #3545
   </li>
   <li>
-   Add support for saving loops as hotcues
-   #2194
-   #4265
-   lp:1367159
+   Update VCPK build environment for Windows and MacOS
+   #4163
+   #4225
+   #4338
   </li>
   <li>
-   Make use of inclusive language
+   Devendor libraries from the mixxx lib folder
+   #4201
+   #4202
+  </li>
+  <li>
+   Update Benchmark library to v1.6.0
+   #4540
+  </li>
+  <li>
+   Migration to Qt6 (work in progress)
+   #4052
+   #4295
+   #4293
+   #4294
+   #4291
+   #4290
+   #4300
+   #4302
+   #4289
+   #4292
+   #4299
+   #4051
+   #4303
+   #4305
+   #4304
+   #4306
+   #4308
+   #4309
+   #4322
+   #4373
+   #4371
+   #4375
+   #4378
+   #4381
+   #4380
+   #4376
+   #4379
+   #4372
+   #4377
+   #4387
+   #4391
+   #4392
+   #4395
+   #4397
+   #4396
+   #4402
+   #4405
+   #4394
+   #4404
+   #4401
+   #4400
+   #4403
+   #4407
+   #4399
+   #4406
+   #4420
+   #4415
+   #4417
+   #4419
+   #4416
+   #4418
+   #4433
+   #4434
+   #4441
+   #4445
+   #4446
+   #4444
+   #4436
+   #4437
+   #4440
+   #4430
+   #4435
+   #4443
+   #4439
+   #4442
+   #4438
+   #4449
+   #4451
+   #4453
+   #4478
+   #4479
+   #4506
+   #4556
+   #4554
+   #4555
+   #4552
+   #4549
+  </li>
+  <li>
+   Disable QWidget based library with Qt6, support only QML skins
+   #4393
+  </li>
+  <li>
+   Made use of inclusive language
    #2894
    #3868
   </li>
   <li>
-   Add Noise effect
-   #2921
-  </li>
-  <li>
-   Improve Unittests
+   Improve the unit tests
    #2938
    #2980
    #3006
+   #4345
   </li>
   <li>
    Logging: Add support for
@@ -612,11 +981,11 @@
    lp:1921541
   </li>
   <li>
-   Move contribution guidelines into our git repository
+   Moved contribution guidelines into our git repository
    #2699
   </li>
   <li>
-   Automize deployment of CHANGELOG to the manual
+   Automate deployment of CHANGELOG to the manual
    #4180
    #4256
    #4208
@@ -637,6 +1006,18 @@
    #4251
    #4252
    lp:1940777
+  </li>
+  <li>
+   DlgTrackInfo: Fixed a SIGSEGV after a debug assertion
+   #4316
+  </li>
+  <li>
+   Library Preferences: Added link to settings files info in the manual
+   #4367
+  </li>
+  <li>
+   Use rounded Mixxx Icon for MacOS to follow Apples style guide
+   #4545
   </li>
   <li>
    Misc. refactorings
@@ -692,6 +1073,29 @@
    #4223
    #4238
    #4236
+   #4320
+   #4325
+   #4203
+   #3861
+   #3514
+   #3274
+   #3182
+   #4343
+   #4358
+   #4388
+   #4427
+   #4341
+   #4473
+   #4464
+   #4481
+   #4527
+   #4534
+   #4537
+   #4541
+   #4543
+   #4546
+   #4542
+   #4559
   </li>
  </ul>
 </description>
