@@ -115,7 +115,8 @@ DlgAbout::DlgAbout()
             << "Michael Ehlen"
             << "tcoyvwac"
             << "Tobias Oszlanyi (OsZ)"
-            << "Fredrik Wieczerkowski";
+            << "Fredrik Wieczerkowski"
+            << "Viktor Gal";
 
     QStringList specialThanks;
     specialThanks
