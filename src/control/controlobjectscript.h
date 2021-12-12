@@ -14,7 +14,7 @@ class ControlObjectScript : public ControlProxy {
             const RuntimeLoggingCategory& logger,
             QObject* pParent = nullptr);
 
-    bool addScriptConnection(ScriptConnection& conn);
+    bool addScriptConnection(ScriptConnection* const conn);
 
     bool removeScriptConnection(const ScriptConnection& conn);
 

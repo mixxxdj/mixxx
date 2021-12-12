@@ -8,17 +8,17 @@ ControlObjectScript::ControlObjectScript(
           m_logger(logger) {
 }
 
-bool ControlObjectScript::addScriptConnection(ScriptConnection& conn) {
+bool ControlObjectScript::addScriptConnection(ScriptConnection* const conn) {
     if (m_scriptConnections.isEmpty()) {
         // Only connect the slots when they are actually needed
         // by script connections.
-        conn.proxy = new CompressingProxy(this);
+        conn->proxy = new CompressingProxy(this);
         connect(m_pControl.data(),
                 &ControlDoublePrivate::valueChanged,
-                conn.proxy,
+                conn->proxy,
                 &CompressingProxy::slotValueChanged,
                 Qt::QueuedConnection);
-        connect(conn.proxy,
+        connect(conn->proxy,
                 &CompressingProxy::signalValueChanged,
                 this,
                 &ControlObjectScript::slotValueChanged,
@@ -31,19 +31,19 @@ bool ControlObjectScript::addScriptConnection(ScriptConnection& conn) {
     }
 
     for (const auto& priorConnection : qAsConst(m_scriptConnections)) {
-        if (conn == priorConnection) {
-            qCWarning(m_logger) << "Connection " + conn.id.toString() +
+        if (*conn == priorConnection) {
+            qCWarning(m_logger) << "Connection " + conn->id.toString() +
                             " already connected to (" +
-                            conn.key.group + ", " + conn.key.item +
+                            conn->key.group + ", " + conn->key.item +
                             "). Ignoring attempt to connect again.";
             return false;
         }
     }
 
-    m_scriptConnections.append(conn);
+    m_scriptConnections.append(*conn);
     qCDebug(m_logger) << "Connected (" +
-                    conn.key.group + ", " + conn.key.item +
-                    ") to connection " + conn.id.toString();
+                    conn->key.group + ", " + conn->key.item +
+                    ") to connection " + conn->id.toString();
     return true;
 }
 
