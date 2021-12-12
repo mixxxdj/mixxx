@@ -112,15 +112,6 @@
    #4352
    lp:1945976
   </li>
-  <li>
-   Fix clang compiler warnings
-   #4551
-   #4553
-  </li>
-  <li>
-   ClangFormat: Enable c++17 formatting
-   #4557
-  </li>
  </ul>
  <p>
   Packaging

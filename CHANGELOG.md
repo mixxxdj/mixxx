@@ -4,8 +4,6 @@
 
 * Improve robustness of file type detection by considering the actual MIME type of the content. [lp:1445885](https://bugs.launchpad.net/mixxx/+bug/1445885) [#4356](https://github.com/mixxxdj/mixxx/pull/4356) [#4357](https://github.com/mixxxdj/mixxx/pull/4357)
 * Playlist: Enable sorting by color [#4352](https://github.com/mixxxdj/mixxx/pull/4352) [lp:1945976](https://bugs.launchpad.net/mixxx/+bug/1945976)
-* Fix clang compiler warnings [#4551](https://github.com/mixxxdj/mixxx/pull/4551) [#4553](https://github.com/mixxxdj/mixxx/pull/4553)
-* ClangFormat: Enable c++17 formatting [#4557](https://github.com/mixxxdj/mixxx/pull/4557)
 
 ### Packaging
 
