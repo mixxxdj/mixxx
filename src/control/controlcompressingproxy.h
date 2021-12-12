@@ -3,10 +3,13 @@
 #include <QApplication>
 #include <QMetaObject>
 
+enum class stateOfprocessQueuedEvent { last_event,
+    outdated_event };
+
 class CompressingProxy : public QObject {
     Q_OBJECT
   private:
-    bool isLatestEventInQueue();
+    stateOfprocessQueuedEvent processQueuedEvents();
 
     bool m_recursiveSearchForLastEventOngoing;
 
