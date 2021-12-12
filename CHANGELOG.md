@@ -82,15 +82,15 @@
 * Automatic analyze and optimize database [#4199](https://github.com/mixxxdj/mixxx/pull/4199)
 * Re-import and update metadata after files have been modified when loading tracks [#4218](https://github.com/mixxxdj/mixxx/pull/4218)
 * Fix playlists sidebar navigation/activation [#4193](https://github.com/mixxxdj/mixxx/pull/4193) [lp:1939082](https://bugs.launchpad.net/mixxx/+bug/1939082)
-* Sidebar: Left key jumps to parent and activates it [#4253](https://github.com/mixxxdj/mixxx/pull/4253)
+* Sidebar: Map Left Arrow Key to jump to parent node and activates it [#4253](https://github.com/mixxxdj/mixxx/pull/4253)
 * Fix assertion when navigating history playlists [#4297](https://github.com/mixxxdj/mixxx/pull/4297) [lp:1943643](https://bugs.launchpad.net/mixxx/+bug/1943643)
 * Library: Add keyboard shortcut Ctrl+Enter to open track properties [#4347](https://github.com/mixxxdj/mixxx/pull/4347)
 * Re-enable shortcuts after editing controls
   [#4360](https://github.com/mixxxdj/mixxx/pull/4360)
   [lp:1902125](https://bugs.launchpad.net/mixxx/+bug/1902125)
   [lp:1943325](https://bugs.launchpad.net/mixxx/+bug/1943325)
-* History feature: fix right-click index [#4384](https://github.com/mixxxdj/mixxx/pull/4384)
-* Allow to remove tracks by pressing Delete key
+* History: Fix sidebar context menu actions [#4384](https://github.com/mixxxdj/mixxx/pull/4384)
+* Allow to remove tracks from the library by pressing the Delete key
   [#4330](https://github.com/mixxxdj/mixxx/pull/4330)
   [lp:1227676](https://bugs.launchpad.net/mixxx/+bug/1227676)
   [lp:1851457](https://bugs.launchpad.net/mixxx/+bug/1851457)
@@ -142,7 +142,7 @@
 * Sync Lock: Fix issues with single-playing syncables
   [#4155](https://github.com/mixxxdj/mixxx/pull/4155)
   [#4389](https://github.com/mixxxdj/mixxx/pull/4389)
-* Fix out of sync after scratching [#4005](https://github.com/mixxxdj/mixxx/pull/4005)
+* Re-sync to leader after scratching [#4005](https://github.com/mixxxdj/mixxx/pull/4005)
 * Fix audio artifacts when fading from or to zero [#4363](https://github.com/mixxxdj/mixxx/pull/4363)
 
 ### Audio Codecs

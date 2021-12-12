@@ -157,17 +157,17 @@
    #3262
   </li>
   <li>
-   Search: save queries across restarts, related tweaks &amp; fixes
+   Search: Save queries across restarts
    #4458
    lp:1943084
    lp:1947479
   </li>
   <li>
-   Browse/Recording: disable the not working search box
+   Browse/Recording: Disable the non-working search box
    #4382
   </li>
   <li>
-   Search: update Clear button when search is disabled
+   Search: Update Clear button when search is disabled
    #4447
   </li>
   <li>
@@ -258,30 +258,30 @@
    lp:1939082
   </li>
   <li>
-   Sidebar: Left key jumps to parent and activates it
+   Sidebar: Map Left Arrow Key to jump to parent node and activates it
    #4253
   </li>
   <li>
-   Fix DEBUG ASSERT when navigating history playlists
+   Fix assertion when navigating history playlists
    #4297
    lp:1943643
   </li>
   <li>
-   Library: add keyboard short to open track properties Ctrl+Enter
+   Library: Add keyboard shortcut Ctrl+Enter to open track properties
    #4347
   </li>
   <li>
-   Reanable short cut keys after editing controls
+   Re-enable shortcuts after editing controls
    #4360
    lp:1902125
    lp:1943325
   </li>
   <li>
-   History feature: fix right-click index
+   History: Fix sidebar context menu actions
    #4384
   </li>
   <li>
-   Allow to remove tracks by pressing Delete key
+   Allow to remove tracks from the library by pressing the Delete key
    #4330
    lp:1227676
    lp:1851457
@@ -289,7 +289,7 @@
    lp:1944565
   </li>
   <li>
-   Keep selected track when browthing though the library, save model state
+   Remember track selection when switching library features, save model state
    #4177
   </li>
   <li>
@@ -354,11 +354,11 @@
    #4389
   </li>
   <li>
-   Fix out of sync after scratching
+   Re-sync to leader after scratching
    #4005
   </li>
   <li>
-   Fix audio artefacts when fading from or to zero
+   Fix audio artifacts when fading from or to zero
    #4363
   </li>
  </ul>
@@ -379,7 +379,7 @@
    #4364
   </li>
   <li>
-   EncoderFdkAac: Fixed a memory leak
+   AAC encoder: Fixed a memory leak
    #4386
    #4408
   </li>
@@ -411,12 +411,12 @@
    #4269
   </li>
   <li>
-   Fix possible segfault when edjecting track
+   Fix possible segfault when ejecting track
    #4362
    lp:1940589
   </li>
   <li>
-   CachingReader: Fixed an assertion when loop is before track start
+   Fixed an assertion when loop is before track start
    #4383
    lp:1946759
   </li>
@@ -566,7 +566,7 @@
    lp:1941042
   </li>
   <li>
-   Enable Qt logging categories for controller logging (--controllerDebug remains).
+   Enable Qt logging categories for controller logging
    #4523
   </li>
   <li>
@@ -579,7 +579,7 @@
    #4329
   </li>
   <li>
-   Roland DJ-505: Use new ControlIndicator COs for blinking lights and other improvements
+   Roland DJ-505: Make blinking lights blink in sync and other improvements
    #4159
    #4517
   </li>
@@ -596,7 +596,7 @@
    #4385
   </li>
   <li>
-   Minimixxx controller config
+   Yaeltex MiniMixxx: Add controller mapping
    #4350
   </li>
   <li>
@@ -628,7 +628,7 @@
  </p>
  <ul>
   <li>
-   Add an experimental QML skin
+   Add experimental QML user interface
    #3345
    #3446
    #3854
@@ -845,18 +845,18 @@
    #3545
   </li>
   <li>
-   Update VCPK build environment for Windows and MacOS
+   Update vcpkg build environment for Windows and macOS
    #4163
    #4225
    #4338
   </li>
   <li>
-   Devendor libraries from the mixxx lib folder
+   Devendor libraries from the mixxx lib directory
    #4201
    #4202
   </li>
   <li>
-   Update Benchmark library to v1.6.0
+   Update Google Benchmark library to v1.6.0
    #4540
   </li>
   <li>
