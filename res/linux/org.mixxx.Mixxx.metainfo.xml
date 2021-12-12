@@ -113,10 +113,6 @@
    lp:1945976
   </li>
   <li>
-   CMake: Adjust the download directory and name of external dependencies
-   #4511
-  </li>
-  <li>
    Fix clang compiler warnings
    #4551
    #4553
@@ -135,6 +131,10 @@
   </li>
   <li>
    The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
+  </li>
+  <li>
+   CMake: Adjust the download directory and name of external dependencies
+   #4511
   </li>
   <li>
    Fix/Improve Appstream metainfo
