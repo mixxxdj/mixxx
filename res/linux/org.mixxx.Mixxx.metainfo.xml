@@ -108,13 +108,7 @@
    #4357
   </li>
   <li>
-   Fix/Improve Appstream metainfo
-   #4344
-   #4346
-   #4349
-  </li>
-  <li>
-   Playlist: enable sorting by color
+   Playlist: Enable sorting by color
    #4352
    lp:1945976
   </li>
@@ -141,6 +135,12 @@
   </li>
   <li>
    The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
+  </li>
+  <li>
+   Fix/Improve Appstream metainfo
+   #4344
+   #4346
+   #4349
   </li>
  </ul>
 </description>

@@ -3,11 +3,7 @@
 ## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (Unreleased)
 
 * Improve robustness of file type detection by considering the actual MIME type of the content. [lp:1445885](https://bugs.launchpad.net/mixxx/+bug/1445885) [#4356](https://github.com/mixxxdj/mixxx/pull/4356) [#4357](https://github.com/mixxxdj/mixxx/pull/4357)
-* Fix/Improve Appstream metainfo
-  [#4344](https://github.com/mixxxdj/mixxx/pull/4344)
-  [#4346](https://github.com/mixxxdj/mixxx/pull/4346)
-  [#4349](https://github.com/mixxxdj/mixxx/pull/4349)
-* Playlist: enable sorting by color [#4352](https://github.com/mixxxdj/mixxx/pull/4352) [lp:1945976](https://bugs.launchpad.net/mixxx/+bug/1945976)
+* Playlist: Enable sorting by color [#4352](https://github.com/mixxxdj/mixxx/pull/4352) [lp:1945976](https://bugs.launchpad.net/mixxx/+bug/1945976)
 * CMake: Adjust the download directory and name of external dependencies [#4511](https://github.com/mixxxdj/mixxx/pull/4511)
 * Fix clang compiler warnings [#4551](https://github.com/mixxxdj/mixxx/pull/4551) [#4553](https://github.com/mixxxdj/mixxx/pull/4553)
 * ClangFormat: Enable c++17 formatting [#4557](https://github.com/mixxxdj/mixxx/pull/4557)
@@ -16,6 +12,10 @@
 
 * Downloads of external dependencies are placed in build/downloads
 * The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
+* Fix/Improve Appstream metainfo
+  [#4344](https://github.com/mixxxdj/mixxx/pull/4344)
+  [#4346](https://github.com/mixxxdj/mixxx/pull/4346)
+  [#4349](https://github.com/mixxxdj/mixxx/pull/4349)
 
 ## [2.3.1](https://launchpad.net/mixxx/+milestone/2.3.1) (2021-09-29)
 
