@@ -35,12 +35,12 @@
 * Add recent searches to a drop down menu of the search box
   [#3171](https://github.com/mixxxdj/mixxx/pull/3171)
   [#3262](https://github.com/mixxxdj/mixxx/pull/3262)
-* Search: save queries across restarts, related tweaks & fixes
+* Search: Save queries across restarts
   [#4458](https://github.com/mixxxdj/mixxx/pull/4458)
   [lp:1943084](https://bugs.launchpad.net/mixxx/+bug/1943084)
   [lp:1947479](https://bugs.launchpad.net/mixxx/+bug/1947479)
-* Browse/Recording: disable the not working search box [#4382](https://github.com/mixxxdj/mixxx/pull/4382)
-* Search: update Clear button when search is disabled [#4447](https://github.com/mixxxdj/mixxx/pull/4447)
+* Browse/Recording: Disable the non-working search box [#4382](https://github.com/mixxxdj/mixxx/pull/4382)
+* Search: Update Clear button when search is disabled [#4447](https://github.com/mixxxdj/mixxx/pull/4447)
 * Fix reset to default of search timeout in preferences [#4504](https://github.com/mixxxdj/mixxx/pull/4504) [lp:1948690](https://bugs.launchpad.net/mixxx/+bug/1948690)
 * Search: Ctrl+F in focused search box selects the entire search string [#4515](https://github.com/mixxxdj/mixxx/pull/4515)
 * Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
@@ -83,9 +83,9 @@
 * Re-import and update metadata after files have been modified when loading tracks [#4218](https://github.com/mixxxdj/mixxx/pull/4218)
 * Fix playlists sidebar navigation/activation [#4193](https://github.com/mixxxdj/mixxx/pull/4193) [lp:1939082](https://bugs.launchpad.net/mixxx/+bug/1939082)
 * Sidebar: Left key jumps to parent and activates it [#4253](https://github.com/mixxxdj/mixxx/pull/4253)
-* Fix DEBUG ASSERT when navigating history playlists [#4297](https://github.com/mixxxdj/mixxx/pull/4297) [lp:1943643](https://bugs.launchpad.net/mixxx/+bug/1943643)
-* Library: add keyboard short to open track properties Ctrl+Enter [#4347](https://github.com/mixxxdj/mixxx/pull/4347)
-* Reanable short cut keys after editing controls
+* Fix assertion when navigating history playlists [#4297](https://github.com/mixxxdj/mixxx/pull/4297) [lp:1943643](https://bugs.launchpad.net/mixxx/+bug/1943643)
+* Library: Add keyboard shortcut Ctrl+Enter to open track properties [#4347](https://github.com/mixxxdj/mixxx/pull/4347)
+* Re-enable shortcuts after editing controls
   [#4360](https://github.com/mixxxdj/mixxx/pull/4360)
   [lp:1902125](https://bugs.launchpad.net/mixxx/+bug/1902125)
   [lp:1943325](https://bugs.launchpad.net/mixxx/+bug/1943325)
@@ -96,7 +96,7 @@
   [lp:1851457](https://bugs.launchpad.net/mixxx/+bug/1851457)
   [lp:1856402](https://bugs.launchpad.net/mixxx/+bug/1856402)
   [lp:1944565](https://bugs.launchpad.net/mixxx/+bug/1944565)
-* Keep selected track when browthing though the library, save model state [#4177](https://github.com/mixxxdj/mixxx/pull/4177)
+* Remember track selection when switching library features, save model state [#4177](https://github.com/mixxxdj/mixxx/pull/4177)
 * Allow to remove a track form the disk [#3212](https://github.com/mixxxdj/mixxx/pull/3212)
 * Refactoring of library code
   [#2756](https://github.com/mixxxdj/mixxx/pull/2756)
@@ -143,14 +143,14 @@
   [#4155](https://github.com/mixxxdj/mixxx/pull/4155)
   [#4389](https://github.com/mixxxdj/mixxx/pull/4389)
 * Fix out of sync after scratching [#4005](https://github.com/mixxxdj/mixxx/pull/4005)
-* Fix audio artefacts when fading from or to zero [#4363](https://github.com/mixxxdj/mixxx/pull/4363)
+* Fix audio artifacts when fading from or to zero [#4363](https://github.com/mixxxdj/mixxx/pull/4363)
 
 ### Audio Codecs
 
 * Fix recovering from FAAD2 decoding issues [#2850](https://github.com/mixxxdj/mixxx/pull/2850)
 * SoundSourceMP3: Log recoverable errors as info instead of warning [#4365](https://github.com/mixxxdj/mixxx/pull/4365)
 * Fix type detection of AIFF files [#4364](https://github.com/mixxxdj/mixxx/pull/4364)
-* EncoderFdkAac: Fixed a memory leak [#4386](https://github.com/mixxxdj/mixxx/pull/4386) [#4408](https://github.com/mixxxdj/mixxx/pull/4408)
+* AAC encoder: Fixed a memory leak [#4386](https://github.com/mixxxdj/mixxx/pull/4386) [#4408](https://github.com/mixxxdj/mixxx/pull/4408)
 
 ### Audio Engine
 
@@ -166,8 +166,8 @@
   [lp1937074](https://bugs.launchpad.net/mixxx/+bug/1937074)
   [#4153](https://github.com/mixxxdj/mixxx/pull/4153)
 * Add halve/double controls for beatjump size [#4269](https://github.com/mixxxdj/mixxx/pull/4269)
-* Fix possible segfault when edjecting track [#4362](https://github.com/mixxxdj/mixxx/pull/4362) [lp:1940589](https://bugs.launchpad.net/mixxx/+bug/1940589)
-* CachingReader: Fixed an assertion when loop is before track start [#4383](https://github.com/mixxxdj/mixxx/pull/4383) [lp:1946759](https://bugs.launchpad.net/mixxx/+bug/1946759)
+* Fix possible segfault when ejecting track [#4362](https://github.com/mixxxdj/mixxx/pull/4362) [lp:1940589](https://bugs.launchpad.net/mixxx/+bug/1940589)
+* Fixed an assertion when loop is before track start [#4383](https://github.com/mixxxdj/mixxx/pull/4383) [lp:1946759](https://bugs.launchpad.net/mixxx/+bug/1946759)
 * Fix/Improve snapping to beats in various situations [#4366](https://github.com/mixxxdj/mixxx/pull/4366) [lp:1945238](https://bugs.launchpad.net/mixxx/+bug/1945238)
 * Allow to cancel active loops via beatloop_activate [#4328](https://github.com/mixxxdj/mixxx/pull/4328) [lp:1876003](https://bugs.launchpad.net/mixxx/+bug/1876003)
 * Don't wipe inapplicable sound config immediately [#4544](https://github.com/mixxxdj/mixxx/pull/4544)
@@ -258,14 +258,14 @@
 * Introduce new control object `[Library],clear_search` [#4331](https://github.com/mixxxdj/mixxx/pull/4331)
 * Introduce new control object `[Library],focused_widget` to focus library directly [#4369](https://github.com/mixxxdj/mixxx/pull/4369) [#4490](https://github.com/mixxxdj/mixxx/pull/4490)
 * Don't automatically enable controller if it was disabled before [#4244](https://github.com/mixxxdj/mixxx/pull/4244) [lp:1941042](https://bugs.launchpad.net/mixxx/+bug/1941042)
-* Enable Qt logging categories for controller logging (--controllerDebug remains). [#4523](https://github.com/mixxxdj/mixxx/pull/4523)
+* Enable Qt logging categories for controller logging [#4523](https://github.com/mixxxdj/mixxx/pull/4523)
 * Fix segfault during Mixxx shutdown due to a stale controller connection [#4476](https://github.com/mixxxdj/mixxx/pull/4476) [lp:1946581](https://bugs.launchpad.net/mixxx/+bug/1946581)
 * Components JS: Fix syncbutton [#4329](https://github.com/mixxxdj/mixxx/pull/4329)
-* Roland DJ-505: Use new ControlIndicator COs for blinking lights and other improvements [#4159](https://github.com/mixxxdj/mixxx/pull/4159) [#4517](https://github.com/mixxxdj/mixxx/pull/4517)
+* Roland DJ-505: Make blinking lights blink in sync and other improvements [#4159](https://github.com/mixxxdj/mixxx/pull/4159) [#4517](https://github.com/mixxxdj/mixxx/pull/4517)
 * Behringer DDM4000 mixer: Update controller mapping [#4262](https://github.com/mixxxdj/mixxx/pull/4262)
 * Numark DJ2GO2 Touch: Fix sampler, hotcue, beatloop buttons [#4287](https://github.com/mixxxdj/mixxx/pull/4287)
 * Denon MC6000MK2: Improve mapping code [#4385](https://github.com/mixxxdj/mixxx/pull/4385)
-* Minimixxx controller config [#4350](https://github.com/mixxxdj/mixxx/pull/4350)
+* Yaeltex MiniMixxx: Add controller mapping [#4350](https://github.com/mixxxdj/mixxx/pull/4350)
 * Prepare code for upcoming ES6 based controller mapping system with module support
   [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
   [#2868](https://github.com/mixxxdj/mixxx/pull/2868)
@@ -288,7 +288,7 @@
 
 ### Skins
 
-* Add an experimental QML skin
+* Add experimental QML user interface
   [#3345](https://github.com/mixxxdj/mixxx/pull/3345)
   [#3446](https://github.com/mixxxdj/mixxx/pull/3446)
   [#3854](https://github.com/mixxxdj/mixxx/pull/3854)
@@ -442,14 +442,14 @@
   [#3113](https://github.com/mixxxdj/mixxx/pull/3113)
   [#3089](https://github.com/mixxxdj/mixxx/pull/3089)
   [#3545](https://github.com/mixxxdj/mixxx/pull/3545)
-* Update VCPK build environment for Windows and MacOS
+* Update vcpkg build environment for Windows and macOS
   [#4163](https://github.com/mixxxdj/mixxx/pull/4163)
   [#4225](https://github.com/mixxxdj/mixxx/pull/4225)
   [#4338](https://github.com/mixxxdj/mixxx/pull/4338)
-* Devendor libraries from the mixxx lib folder
+* Devendor libraries from the mixxx lib directory
   [#4201](https://github.com/mixxxdj/mixxx/pull/4201)
   [#4202](https://github.com/mixxxdj/mixxx/pull/4202)
-* Update Benchmark library to v1.6.0 [#4540](https://github.com/mixxxdj/mixxx/pull/4540)
+* Update Google Benchmark library to v1.6.0 [#4540](https://github.com/mixxxdj/mixxx/pull/4540)
 * Migration to Qt6 (work in progress)
   [#4052](https://github.com/mixxxdj/mixxx/pull/4052)
   [#4295](https://github.com/mixxxdj/mixxx/pull/4295)
