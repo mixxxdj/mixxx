@@ -6,9 +6,9 @@
 class CompressingProxy : public QObject {
     Q_OBJECT
   private:
-    bool emitCheck();
+    bool isLatestEventInQueue();
 
-    bool m_lastEventRecursionOngoing;
+    bool m_recursiveSearchForLastEventOngoing;
 
   public slots:
     void slotValueChanged(double value, QObject* obj);

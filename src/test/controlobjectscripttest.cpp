@@ -25,8 +25,7 @@ class MockControlObjectScript : public ControlObjectScript {
             QObject* pParent)
             : ControlObjectScript(key, logger, pParent) {
     }
-    ~MockControlObjectScript() override {
-    }
+    ~MockControlObjectScript() override = default;
     MOCK_METHOD2(slotValueChanged, void(double value, QObject*));
 };
 

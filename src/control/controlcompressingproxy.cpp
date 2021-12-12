@@ -2,23 +2,32 @@
 
 #include "moc_controlcompressingproxy.cpp"
 
-// Compressor
+// Event queue compressing proxy
 CompressingProxy::CompressingProxy(QObject* parent)
-        : QObject(parent){};
+        : QObject(parent) {
+}
 
-bool CompressingProxy::emitCheck() {
-    m_lastEventRecursionOngoing = true;
+// This function is called recursive by QCoreApplication::sendPostedEvents, until no more events are in the queue.
+// When the last event is found, QCoreApplication::sendPostedEvents returns for the isLatestEventInQueue() instance of this event,
+// and m_recursiveSearchForLastEventOngoing is set to false, while returning true itself.
+// All previous started instances of isLatestEventInQueue() will return false in consequence,
+// because the return value depends on the member variable and not on the stack of the instance.
+bool CompressingProxy::isLatestEventInQueue() {
+    m_recursiveSearchForLastEventOngoing = true;
 
-    // sendPostedEventstriggers recursive execution of slotValueChanged until no more events for this slot are in the queue
+    // sendPostedEvents recursive executes slotValueChanged until no more events for this slot are in the queue
+    // Each call of sendPostedEvents triggers the processing of the next event in the queue,
+    // by sending the signal to execute slotValueChanged again
     QCoreApplication::sendPostedEvents(this, QEvent::MetaCall);
 
-    // Execution continues here, if last event for this slot is processed
-    bool isLastEvent = m_lastEventRecursionOngoing;
-    m_lastEventRecursionOngoing = false;
+    // Execution continues here, when last event for this slot is processed
+    bool isLastEvent = m_recursiveSearchForLastEventOngoing;
+    m_recursiveSearchForLastEventOngoing = false;
     return isLastEvent;
 }
 
 void CompressingProxy::slotValueChanged(double value, QObject* obj) {
-    if (emitCheck())
+    if (isLatestEventInQueue()) {
         emit signalValueChanged(value, obj);
+    }
 }
