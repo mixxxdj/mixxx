@@ -246,7 +246,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnection(
     connection.callback = callback;
     connection.id = QUuid::createUuid();
 
-    if (coScript->addScriptConnection(&connection)) {
+    if (coScript->addScriptConnection(connection)) {
         return pJsEngine->newQObject(
                 new ScriptConnectionJSProxy(connection));
     }

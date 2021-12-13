@@ -2,8 +2,10 @@
 
 #include <QVector>
 
+#include "control/controlcompressingproxy.h"
 #include "control/controlproxy.h"
 #include "controllers/scripting/legacy/scriptconnection.h"
+#include "util/memory.h"
 #include "util/runtimeloggingcategory.h"
 
 // this is used for communicate with controller scripts
@@ -14,7 +16,7 @@ class ControlObjectScript : public ControlProxy {
             const RuntimeLoggingCategory& logger,
             QObject* pParent = nullptr);
 
-    bool addScriptConnection(ScriptConnection* const conn);
+    bool addScriptConnection(const ScriptConnection& conn);
 
     bool removeScriptConnection(const ScriptConnection& conn);
 
@@ -41,4 +43,5 @@ class ControlObjectScript : public ControlProxy {
   private:
     QVector<ScriptConnection> m_scriptConnections;
     const RuntimeLoggingCategory m_logger;
+    std::unique_ptr<CompressingProxy> m_proxy;
 };

@@ -52,8 +52,8 @@ class ControlObjectScriptTest : public MixxxTest {
         conn2.callback = "mock_callback2";
         conn2.id = QUuid::createUuid();
 
-        coScript1->addScriptConnection(&conn1);
-        coScript2->addScriptConnection(&conn2);
+        coScript1->addScriptConnection(conn1);
+        coScript2->addScriptConnection(conn2);
     }
 
     void TearDown() override {

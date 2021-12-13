@@ -6,19 +6,19 @@ ControlObjectScript::ControlObjectScript(
         const ConfigKey& key, const RuntimeLoggingCategory& logger, QObject* pParent)
         : ControlProxy(key, pParent, ControlFlag::AllowMissingOrInvalid),
           m_logger(logger) {
+    m_proxy = std::make_unique<CompressingProxy>(this);
 }
 
-bool ControlObjectScript::addScriptConnection(ScriptConnection* const conn) {
+bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
     if (m_scriptConnections.isEmpty()) {
         // Only connect the slots when they are actually needed
         // by script connections.
-        conn->proxy = new CompressingProxy(this);
         connect(m_pControl.data(),
                 &ControlDoublePrivate::valueChanged,
-                conn->proxy,
+                m_proxy.get(),
                 &CompressingProxy::slotValueChanged,
                 Qt::QueuedConnection);
-        connect(conn->proxy,
+        connect(m_proxy.get(),
                 &CompressingProxy::signalValueChanged,
                 this,
                 &ControlObjectScript::slotValueChanged,
@@ -31,19 +31,19 @@ bool ControlObjectScript::addScriptConnection(ScriptConnection* const conn) {
     }
 
     for (const auto& priorConnection : qAsConst(m_scriptConnections)) {
-        if (*conn == priorConnection) {
-            qCWarning(m_logger) << "Connection " + conn->id.toString() +
+        if (conn == priorConnection) {
+            qCWarning(m_logger) << "Connection " + conn.id.toString() +
                             " already connected to (" +
-                            conn->key.group + ", " + conn->key.item +
+                            conn.key.group + ", " + conn.key.item +
                             "). Ignoring attempt to connect again.";
             return false;
         }
     }
 
-    m_scriptConnections.append(*conn);
+    m_scriptConnections.append(conn);
     qCDebug(m_logger) << "Connected (" +
-                    conn->key.group + ", " + conn->key.item +
-                    ") to connection " + conn->id.toString();
+                    conn.key.group + ", " + conn.key.item +
+                    ") to connection " + conn.id.toString();
     return true;
 }
 
@@ -62,9 +62,9 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
         // no ScriptConnections left, so disconnect signals
         disconnect(m_pControl.data(),
                 &ControlDoublePrivate::valueChanged,
-                conn.proxy,
+                m_proxy.get(),
                 &CompressingProxy::slotValueChanged);
-        disconnect(conn.proxy,
+        disconnect(m_proxy.get(),
                 &CompressingProxy::signalValueChanged,
                 this,
                 &ControlObjectScript::slotValueChanged);
@@ -72,7 +72,6 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
                 &ControlObjectScript::trigger,
                 this,
                 &ControlObjectScript::slotValueChanged);
-        delete (conn.proxy);
     }
     return success;
 }
