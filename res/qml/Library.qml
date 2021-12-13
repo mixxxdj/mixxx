@@ -8,8 +8,87 @@ Item {
         color: Theme.deckBackgroundColor
         anchors.fill: parent
 
+        Mixxx.ControlProxy {
+            id: focusedWidgetControl
+
+            group: "[Library]"
+            key: "focused_widget"
+            Component.onCompleted: value = 3
+        }
+
+        Mixxx.ControlProxy {
+            group: "[Playlist]"
+            key: "SelectTrackKnob"
+            onValueChanged: {
+                listView.moveSelection(value);
+            }
+        }
+
+        Mixxx.ControlProxy {
+            group: "[Playlist]"
+            key: "SelectPrevTrack"
+            onValueChanged: {
+                if (value != 0)
+                    listView.moveSelection(-1);
+
+            }
+        }
+
+        Mixxx.ControlProxy {
+            group: "[Playlist]"
+            key: "SelectNextTrack"
+            onValueChanged: {
+                if (value != 0)
+                    listView.moveSelection(1);
+
+            }
+        }
+
+        Mixxx.ControlProxy {
+            group: "[Library]"
+            key: "MoveVertical"
+            onValueChanged: {
+                if (focusedWidgetControl.value == 3)
+                    listView.moveSelection(value);
+
+            }
+        }
+
+        Mixxx.ControlProxy {
+            group: "[Library]"
+            key: "MoveUp"
+            onValueChanged: {
+                if (value != 0 && focusedWidgetControl.value == 3)
+                    listView.moveSelection(-1);
+
+            }
+        }
+
+        Mixxx.ControlProxy {
+            group: "[Library]"
+            key: "MoveDown"
+            onValueChanged: {
+                if (value != 0 && focusedWidgetControl.value == 3)
+                    listView.moveSelection(1);
+
+            }
+        }
+
         ListView {
             id: listView
+
+            function moveSelection(value) {
+                if (value == 0)
+                    return ;
+
+                const rowCount = model.rowCount();
+                if (rowCount == 0)
+                    return ;
+
+                let newIndex = currentIndex = (currentIndex + value) % rowCount;
+                while (newIndex < 0)newIndex += rowCount
+                currentIndex = newIndex;
+            }
 
             anchors.fill: parent
             anchors.margins: 10
