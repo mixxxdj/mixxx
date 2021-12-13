@@ -9,21 +9,34 @@ Item {
         anchors.fill: parent
 
         ListView {
+            id: listView
+
             anchors.fill: parent
             anchors.margins: 10
             clip: true
+            focus: true
+            highlightMoveDuration: 250
+            highlightResizeDuration: 50
             model: Mixxx.Library.model
 
             delegate: Item {
                 id: itemDelegate
 
-                implicitWidth: 300
+                implicitWidth: listView.width
                 implicitHeight: 30
 
                 Text {
-                    anchors.fill: parent
+                    anchors.verticalCenter: parent.verticalCenter
                     text: artist + " - " + title
-                    color: Theme.deckTextColor
+                    color: listView.currentIndex == index ? Theme.blue : Theme.deckTextColor
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: listView.highlightMoveDuration
+                        }
+
+                    }
+
                 }
 
                 Image {
@@ -44,11 +57,20 @@ Item {
 
                     anchors.fill: parent
                     drag.target: dragItem
-                    onPressed: parent.grabToImage((result) => {
-                        dragItem.Drag.imageSource = result.url;
-                    })
+                    onPressed: {
+                        listView.currentIndex = index;
+                        parent.grabToImage((result) => {
+                            dragItem.Drag.imageSource = result.url;
+                        });
+                    }
                 }
 
+            }
+
+            highlight: Rectangle {
+                border.color: Theme.blue
+                border.width: 1
+                color: "transparent"
             }
 
         }
