@@ -1,5 +1,6 @@
 #include "qmlapplication.h"
 
+#include "control/controlmodel.h"
 #include "moc_qmlapplication.cpp"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmlconfigproxy.h"
@@ -93,6 +94,7 @@ QmlApplication::QmlApplication(
                     }));
 
     qmlRegisterType<QmlControlProxy>("Mixxx", 0, 1, "ControlProxy");
+    qmlRegisterType<ControlModel>("Mixxx", 0, 1, "ControlModel");
     qmlRegisterType<QmlWaveformOverview>("Mixxx", 0, 1, "WaveformOverview");
 
     qmlRegisterSingletonType<QmlEffectsManagerProxy>("Mixxx",
