@@ -14,26 +14,6 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
           m_pConfig(pConfig) {
     setupUi(this);
 
-    const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
-            ControlDoublePrivate::getAllInstances();
-    const QHash<ConfigKey, ConfigKey> controlAliases =
-            ControlDoublePrivate::getControlAliases();
-
-    for (auto it = controlsList.constBegin();
-            it != controlsList.constEnd(); ++it) {
-        const QSharedPointer<ControlDoublePrivate>& pControl = *it;
-        if (pControl) {
-            m_controlModel.addControl(pControl->getKey(), pControl->name(),
-                                      pControl->description());
-
-            ConfigKey aliasKey = controlAliases[pControl->getKey()];
-            if (aliasKey.isValid()) {
-                m_controlModel.addControl(aliasKey, pControl->name(),
-                                          "Alias for " + pControl->getKey().group + pControl->getKey().item);
-            }
-        }
-    }
-
     m_controlProxyModel.setSourceModel(&m_controlModel);
     m_controlProxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_controlProxyModel.setFilterKeyColumn(ControlModel::CONTROL_COLUMN_FILTER);

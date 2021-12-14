@@ -11,6 +11,30 @@ ControlModel::ControlModel(QObject* pParent)
     setHeaderData(CONTROL_COLUMN_PARAMETER, Qt::Horizontal, tr("Parameter"));
     setHeaderData(CONTROL_COLUMN_TITLE, Qt::Horizontal, tr("Title"));
     setHeaderData(CONTROL_COLUMN_DESCRIPTION, Qt::Horizontal, tr("Description"));
+
+    // Add all controls to Model
+    const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
+            ControlDoublePrivate::getAllInstances();
+    const QHash<ConfigKey, ConfigKey> controlAliases =
+            ControlDoublePrivate::getControlAliases();
+
+    for (const QSharedPointer<ControlDoublePrivate>& pControl : controlsList) {
+        if (!pControl) {
+            continue;
+        }
+
+        addControl(pControl->getKey(),
+                pControl->name(),
+                pControl->description());
+
+        ConfigKey aliasKey = controlAliases[pControl->getKey()];
+        if (aliasKey.isValid()) {
+            addControl(aliasKey,
+                    pControl->name(),
+                    QStringLiteral("Alias for ") + pControl->getKey().group +
+                            pControl->getKey().item);
+        }
+    }
 }
 
 ControlModel::~ControlModel() {
