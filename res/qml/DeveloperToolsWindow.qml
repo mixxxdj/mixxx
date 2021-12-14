@@ -1,7 +1,7 @@
 import Mixxx 0.1 as Mixxx
 import Qt.labs.qmlmodels 1.0
 import QtQuick 2.12
-import QtQuick.Controls 2.12
+import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
 import QtQuick.Window 2.12
 import "Theme"
@@ -21,6 +21,38 @@ Window {
 
             Layout.fillWidth: true
             placeholderText: "Search Term..."
+            onTextChanged: controlModel.setFilterFixedString(text)
+        }
+
+        HorizontalHeaderView {
+            id: horizontalHeader
+
+            Layout.fillWidth: true
+            syncView: tableView
+
+            delegate: Rectangle {
+                implicitHeight: columnName.contentHeight + 5
+                implicitWidth: columnName.contentWidth + 5
+                color: Theme.backgroundColor
+                visible: column < 3
+
+                Text {
+                    id: columnName
+
+                    text: display
+                    color: Theme.blue
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    elide: Text.ElideRight
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                TapHandler {
+                    onTapped: controlModel.toggleSortColumn(column)
+                }
+
+            }
+
         }
 
         TableView {
@@ -35,6 +67,13 @@ Window {
 
             model: Mixxx.ControlSortFilterModel {
                 id: controlModel
+
+                function toggleSortColumn(column) {
+                    const descending = (sortColumn == column) ? !sortDescending : false;
+                    sortByColumn(column, descending);
+                }
+
+                Component.onCompleted: toggleSortColumn(0)
             }
 
             delegate: DelegateChooser {
