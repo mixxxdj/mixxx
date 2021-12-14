@@ -5,6 +5,7 @@
 // Event queue compressing proxy
 CompressingProxy::CompressingProxy(QObject* parent)
         : QObject(parent) {
+    m_recursionCounter = 0;
 }
 
 // This function is called recursive by QCoreApplication::sendPostedEvents, until no more events are in the queue.
@@ -15,10 +16,20 @@ CompressingProxy::CompressingProxy(QObject* parent)
 stateOfprocessQueuedEvent CompressingProxy::processQueuedEvents() {
     m_recursiveSearchForLastEventOngoing = true;
 
+    if (m_recursionCounter >= kMaxNumOfRecursions) {
+        // To many events in queue -> Delete all unprocessed events in queue, to prevent stack overflow
+        QCoreApplication::removePostedEvents(this, QEvent::MetaCall);
+        // We just return, without resetting m_recursiveSearchForLastEventOngoing,
+        // this ensures that the event found in the last iteration will be send
+        return stateOfprocessQueuedEvent::no_event;
+    }
+
+    m_recursionCounter++;
     // sendPostedEvents recursive executes slotValueChanged until no more events for this slot are in the queue
     // Each call of QCoreApplication::sendPostedEvents triggers the processing of the next event in the queue,
     // by sending the signal to execute slotValueChanged again
     QCoreApplication::sendPostedEvents(this, QEvent::MetaCall);
+    m_recursionCounter--;
 
     // Execution continues here, when last event for this slot is processed
 

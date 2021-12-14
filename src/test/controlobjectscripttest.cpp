@@ -52,6 +52,12 @@ class ControlObjectScriptTest : public MixxxTest {
         conn2.callback = "mock_callback2";
         conn2.id = QUuid::createUuid();
 
+        conn3.key = ck2;
+        conn3.engineJSProxy = nullptr;
+        conn3.controllerEngine = nullptr;
+        conn3.callback = "mock_callback3";
+        conn3.id = QUuid::createUuid();
+
         coScript1->addScriptConnection(conn1);
         coScript2->addScriptConnection(conn2);
     }
@@ -68,7 +74,7 @@ class ControlObjectScriptTest : public MixxxTest {
     std::unique_ptr<MockControlObjectScript> coScript1;
     std::unique_ptr<MockControlObjectScript> coScript2;
 
-    ScriptConnection conn1, conn2;
+    ScriptConnection conn1, conn2, conn3;
 };
 
 TEST_F(ControlObjectScriptTest, CompressingProxyCompareCount1) {
@@ -141,6 +147,59 @@ TEST_F(ControlObjectScriptTest, CompressingProxyCompareValueMulti) {
     co2->set(21.0);
     co1->set(22.0);
     co2->set(23.0);
+    application()->processEvents();
+}
+
+TEST_F(ControlObjectScriptTest, CompressingProxyMultiConnection) {
+    // Check that slotValueChanged callback is called 1 time if multiple connections exist forthe same slot
+    EXPECT_CALL(*coScript1, slotValueChanged(32.0, _))
+            .Times(1)
+            .WillOnce(Return());
+    EXPECT_CALL(*coScript2, slotValueChanged(33.0, _))
+            .Times(1)
+            .WillOnce(Return());
+
+    coScript2->addScriptConnection(conn3);
+    co1->set(30.0);
+    co2->set(31.0);
+    co1->set(32.0);
+    co2->set(33.0);
+    application()->processEvents();
+
+    coScript2->removeScriptConnection(conn3);
+}
+
+TEST_F(ControlObjectScriptTest, CompressingProxyManyEvents) {
+    // Check maximum number of recursions
+    EXPECT_CALL(*coScript1, slotValueChanged(kMaxNumOfRecursions, _))
+            .Times(1)
+            .WillOnce(Return());
+    EXPECT_CALL(*coScript2, slotValueChanged(42.0, _))
+            .Times(1)
+            .WillOnce(Return());
+
+    // Add more 3x more events than the recursion limit of the compressing proxy
+    for (int i = 1; i <= kMaxNumOfRecursions * 3; i++) {
+        co1->set(i);
+    }
+
+    // Event queue of second slot
+    co2->set(41);
+    co2->set(42);
+
+    // Event queue should be cleared
+    application()->processEvents();
+    EXPECT_CALL(*coScript1, slotValueChanged(_, _))
+            .Times(0)
+            .WillOnce(Return());
+    application()->processEvents();
+
+    // Verify that compressing proxy works again after clearing event queue
+    EXPECT_CALL(*coScript1, slotValueChanged(2, _))
+            .Times(1)
+            .WillOnce(Return());
+    co1->set(1);
+    co1->set(2);
     application()->processEvents();
 }
 

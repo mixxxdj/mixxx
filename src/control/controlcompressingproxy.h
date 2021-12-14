@@ -3,8 +3,15 @@
 #include <QApplication>
 #include <QMetaObject>
 
-enum class stateOfprocessQueuedEvent { last_event,
-    outdated_event };
+namespace {
+constexpr int kMaxNumOfRecursions = 128;
+}
+
+enum class stateOfprocessQueuedEvent {
+    last_event,
+    outdated_event,
+    no_event
+};
 
 class CompressingProxy : public QObject {
     Q_OBJECT
@@ -12,6 +19,7 @@ class CompressingProxy : public QObject {
     stateOfprocessQueuedEvent processQueuedEvents();
 
     bool m_recursiveSearchForLastEventOngoing;
+    int m_recursionCounter;
 
   public slots:
     void slotValueChanged(double value, QObject* obj);
@@ -20,7 +28,6 @@ class CompressingProxy : public QObject {
     void signalValueChanged(double, QObject*);
 
   public:
-    // No default constructor, since the proxy must be a child of the
-    // target object.
+    // No default constructor, since the proxy must be a child of the object with the Qt event queue
     explicit CompressingProxy(QObject* parent);
 };
