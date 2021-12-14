@@ -155,4 +155,10 @@ ApplicationWindow {
 
     }
 
+    DeveloperToolsWindow {
+        width: 640
+        height: 480
+        visible: true
+    }
+
 }
