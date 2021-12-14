@@ -33,7 +33,8 @@ Window {
             clip: true
             onWidthChanged: forceLayout()
 
-            model: Mixxx.ControlModel {
+            model: Mixxx.ControlSortFilterModel {
+                id: controlModel
             }
 
             delegate: DelegateChooser {

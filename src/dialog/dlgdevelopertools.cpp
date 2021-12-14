@@ -14,9 +14,6 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
           m_pConfig(pConfig) {
     setupUi(this);
 
-    m_controlProxyModel.setSourceModel(&m_controlModel);
-    m_controlProxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_controlProxyModel.setFilterKeyColumn(ControlModel::CONTROL_COLUMN_FILTER);
     controlsTable->setModel(&m_controlProxyModel);
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_TITLE);
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_DESCRIPTION);
