@@ -25,6 +25,8 @@ Window {
             onTextChanged: controlModel.setFilterFixedString(text)
         }
 
+        // FIXME: Header items currently get squeezed when the table is empty
+        // (i.e. if a non-existing search term was entered).
         HorizontalHeaderView {
             id: horizontalHeader
 
