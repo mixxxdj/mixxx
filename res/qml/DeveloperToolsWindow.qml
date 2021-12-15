@@ -130,12 +130,14 @@ Window {
                         color: root.color
 
                         TextField {
-                            // TODO: Make editing work
-
                             id: valueField
 
                             anchors.fill: parent
                             text: display
+                            onEditingFinished: {
+                                const idx = controlModel.index(row, column);
+                                controlModel.setData(idx, parseFloat(text));
+                            }
 
                             validator: DoubleValidator {
                             }
