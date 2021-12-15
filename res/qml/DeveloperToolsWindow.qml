@@ -1,3 +1,4 @@
+import "." as Skin
 import Mixxx 0.1 as Mixxx
 import Qt.labs.qmlmodels 1.0
 import QtQuick 2.12
@@ -16,7 +17,7 @@ Window {
         anchors.fill: parent
         anchors.margins: 5
 
-        TextField {
+        Skin.TextField {
             id: searchField
 
             Layout.fillWidth: true
@@ -30,21 +31,57 @@ Window {
             Layout.fillWidth: true
             syncView: tableView
 
-            delegate: Rectangle {
+            delegate: Item {
                 implicitHeight: columnName.contentHeight + 5
                 implicitWidth: columnName.contentWidth + 5
-                color: Theme.backgroundColor
-                visible: column < 3
+                visible: column < tableView.columnWidths.length
+
+                BorderImage {
+                    anchors.fill: parent
+                    horizontalTileMode: BorderImage.Stretch
+                    verticalTileMode: BorderImage.Stretch
+                    source: Theme.imgPopupBackground
+
+                    border {
+                        top: 10
+                        left: 20
+                        right: 20
+                        bottom: 10
+                    }
+
+                }
 
                 Text {
                     id: columnName
 
                     text: display
-                    color: Theme.blue
                     anchors.fill: parent
                     anchors.margins: 5
                     elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
+                    font.family: Theme.fontFamily
+                    font.capitalization: Font.AllUppercase
+                    font.bold: true
+                    font.pixelSize: Theme.buttonFontPixelSize
+                    color: Theme.buttonNormalColor
+                }
+
+                Text {
+                    id: sortIndicator
+
+                    text: controlModel.sortDescending ? "▲" : "▼"
+                    visible: controlModel.sortColumn == column
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignRight
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: Theme.fontFamily
+                    font.capitalization: Font.AllUppercase
+                    font.bold: true
+                    font.pixelSize: Theme.buttonFontPixelSize
+                    color: Theme.buttonNormalColor
                 }
 
                 TapHandler {
@@ -58,12 +95,15 @@ Window {
         TableView {
             id: tableView
 
+            property var columnWidths: [0.3, 0.4, 0.15, 0.15]
+
             Layout.fillHeight: true
             Layout.fillWidth: true
             columnSpacing: 1
             rowSpacing: 1
             clip: true
             onWidthChanged: forceLayout()
+            boundsBehavior: Flickable.StopAtBounds
 
             model: Mixxx.ControlSortFilterModel {
                 id: controlModel
@@ -73,7 +113,11 @@ Window {
                     sortByColumn(column, descending);
                 }
 
-                Component.onCompleted: toggleSortColumn(0)
+                Component.onCompleted: {
+                    // First order by key, then by group.
+                    sortByColumn(1, false);
+                    sortByColumn(0, false);
+                }
             }
 
             delegate: DelegateChooser {
@@ -81,7 +125,7 @@ Window {
                     column: 0
 
                     delegate: Rectangle {
-                        implicitWidth: (root.width - 10) * 0.3
+                        implicitWidth: (root.width - 10) * tableView.columnWidths[column]
                         implicitHeight: groupName.contentHeight
                         color: root.color
 
@@ -103,7 +147,7 @@ Window {
                     column: 1
 
                     delegate: Rectangle {
-                        implicitWidth: (root.width - 10) * 0.5
+                        implicitWidth: (root.width - 10) * tableView.columnWidths[column]
                         implicitHeight: keyName.contentHeight
                         color: root.color
 
@@ -125,18 +169,61 @@ Window {
                     column: 2
 
                     delegate: Rectangle {
-                        implicitWidth: (root.width - 10) * 0.2
+                        implicitWidth: (root.width - 10) * tableView.columnWidths[column]
                         implicitHeight: valueField.implicitHeight
                         color: root.color
 
-                        TextField {
+                        Skin.TextField {
                             id: valueField
 
                             anchors.fill: parent
                             text: display
+                            inputMethodHints: Qt.ImhFormattedNumbersOnly
                             onEditingFinished: {
                                 const idx = controlModel.index(row, column);
                                 controlModel.setData(idx, parseFloat(text));
+                            }
+                            color: Theme.textColor
+
+                            background: Rectangle {
+                                anchors.fill: parent
+                                color: Theme.embeddedBackgroundColor
+                                radius: 5
+                            }
+
+                            validator: DoubleValidator {
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                DelegateChoice {
+                    column: 3
+
+                    delegate: Rectangle {
+                        implicitWidth: (root.width - 10) * tableView.columnWidths[column]
+                        implicitHeight: valueField.implicitHeight
+                        color: root.color
+
+                        Skin.TextField {
+                            id: valueField
+
+                            anchors.fill: parent
+                            text: display
+                            inputMethodHints: Qt.ImhFormattedNumbersOnly
+                            onEditingFinished: {
+                                const idx = controlModel.index(row, column);
+                                controlModel.setData(idx, parseFloat(text));
+                            }
+                            color: Theme.textColor
+
+                            background: Rectangle {
+                                anchors.fill: parent
+                                color: Theme.embeddedBackgroundColor
+                                radius: 5
                             }
 
                             validator: DoubleValidator {
