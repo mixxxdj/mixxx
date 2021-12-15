@@ -2,6 +2,10 @@
 
 #include "moc_controlcompressingproxy.cpp"
 
+namespace {
+constexpr int kMaxNumOfRecursions = 128;
+}
+
 // Event queue compressing proxy
 CompressingProxy::CompressingProxy(QObject* parent)
         : QObject(parent), m_recursionDepth(0) {
@@ -12,7 +16,7 @@ CompressingProxy::CompressingProxy(QObject* parent)
 // and m_recursiveSearchForLastEventOngoing is set to false, while returning true itself.
 // All previous started instances of processQueuedEvents() will return false in consequence,
 // because the return value depends on the member variable and not on the stack of the instance.
-StateOfProcessQueuedEvent CompressingProxy::processQueuedEvents() {
+CompressingProxy::StateOfProcessQueuedEvent CompressingProxy::processQueuedEvents() {
     m_recursiveSearchForLastEventOngoing = true;
 
     if (m_recursionDepth >= kMaxNumOfRecursions) {

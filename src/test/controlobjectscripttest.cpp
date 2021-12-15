@@ -17,6 +17,7 @@ using ::testing::StrictMock;
 namespace {
 
 const RuntimeLoggingCategory k_logger(QString("test").toLocal8Bit());
+constexpr int kMaxNumOfRecursions = 128;
 
 class MockControlObjectScript : public ControlObjectScript {
   public:

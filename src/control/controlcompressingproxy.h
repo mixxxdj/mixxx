@@ -3,19 +3,14 @@
 #include <QApplication>
 #include <QMetaObject>
 
-namespace {
-constexpr int kMaxNumOfRecursions = 128;
-}
-
-enum class StateOfProcessQueuedEvent {
-    LastEvent,
-    OutdatedEvent,
-    NoEvent
-};
-
 class CompressingProxy : public QObject {
     Q_OBJECT
   private:
+    enum class StateOfProcessQueuedEvent {
+        LastEvent,
+        OutdatedEvent,
+        NoEvent
+    };
     StateOfProcessQueuedEvent processQueuedEvents();
 
     bool m_recursiveSearchForLastEventOngoing;
