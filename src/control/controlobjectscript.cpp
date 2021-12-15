@@ -5,8 +5,8 @@
 ControlObjectScript::ControlObjectScript(
         const ConfigKey& key, const RuntimeLoggingCategory& logger, QObject* pParent)
         : ControlProxy(key, pParent, ControlFlag::AllowMissingOrInvalid),
-          m_logger(logger) {
-    m_proxy = std::make_unique<CompressingProxy>(this);
+          m_logger(logger),
+          m_proxy(this) {
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
@@ -15,10 +15,10 @@ bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
         // by script connections.
         connect(m_pControl.data(),
                 &ControlDoublePrivate::valueChanged,
-                m_proxy.get(),
+                &m_proxy,
                 &CompressingProxy::slotValueChanged,
                 Qt::QueuedConnection);
-        connect(m_proxy.get(),
+        connect(&m_proxy,
                 &CompressingProxy::signalValueChanged,
                 this,
                 &ControlObjectScript::slotValueChanged,
@@ -62,9 +62,9 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
         // no ScriptConnections left, so disconnect signals
         disconnect(m_pControl.data(),
                 &ControlDoublePrivate::valueChanged,
-                m_proxy.get(),
+                &m_proxy,
                 &CompressingProxy::slotValueChanged);
-        disconnect(m_proxy.get(),
+        disconnect(&m_proxy,
                 &CompressingProxy::signalValueChanged,
                 this,
                 &ControlObjectScript::slotValueChanged);

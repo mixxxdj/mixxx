@@ -7,19 +7,19 @@ namespace {
 constexpr int kMaxNumOfRecursions = 128;
 }
 
-enum class stateOfprocessQueuedEvent {
-    last_event,
-    outdated_event,
-    no_event
+enum class StateOfProcessQueuedEvent {
+    LastEvent,
+    OutdatedEvent,
+    NoEvent
 };
 
 class CompressingProxy : public QObject {
     Q_OBJECT
   private:
-    stateOfprocessQueuedEvent processQueuedEvents();
+    StateOfProcessQueuedEvent processQueuedEvents();
 
     bool m_recursiveSearchForLastEventOngoing;
-    int m_recursionCounter;
+    int m_recursionDepth;
 
   public slots:
     void slotValueChanged(double value, QObject* obj);

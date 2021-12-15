@@ -5,7 +5,6 @@
 #include "control/controlcompressingproxy.h"
 #include "control/controlproxy.h"
 #include "controllers/scripting/legacy/scriptconnection.h"
-#include "util/memory.h"
 #include "util/runtimeloggingcategory.h"
 
 // this is used for communicate with controller scripts
@@ -43,5 +42,5 @@ class ControlObjectScript : public ControlProxy {
   private:
     QVector<ScriptConnection> m_scriptConnections;
     const RuntimeLoggingCategory m_logger;
-    std::unique_ptr<CompressingProxy> m_proxy;
+    CompressingProxy m_proxy;
 };
