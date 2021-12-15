@@ -49,10 +49,17 @@ void ControlModel::addControl(const ConfigKey& key,
     info.description = description;
     info.pControl = new ControlProxy(info.key, this);
 
-    beginInsertRows(QModelIndex(), m_controls.size(),
-                    m_controls.size());
+    const int row = m_controls.size();
+
+    beginInsertRows(QModelIndex(), row, row);
     m_controls.append(info);
     endInsertRows();
+
+    info.pControl->connectValueChanged(this, [this, row]() {
+        const QModelIndex topLeft = index(row, CONTROL_COLUMN_VALUE);
+        const QModelIndex bottomRight = index(row, CONTROL_COLUMN_PARAMETER);
+        emit dataChanged(topLeft, bottomRight);
+    });
 }
 
 int ControlModel::rowCount(const QModelIndex& parent) const {
@@ -143,15 +150,15 @@ QVariant ControlModel::headerData(int section,
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-bool ControlModel::setData(const QModelIndex& index,
-                           const QVariant& value,
-                           int role) {
-    if (!index.isValid() || role != Qt::EditRole) {
+bool ControlModel::setData(const QModelIndex& modelIndex,
+        const QVariant& value,
+        int role) {
+    if (!modelIndex.isValid() || role != Qt::EditRole) {
         return false;
     }
 
-    int row = index.row();
-    int column = index.column();
+    int row = modelIndex.row();
+    int column = modelIndex.column();
 
     if (row < 0 || row >= m_controls.size()) {
         return false;
@@ -159,12 +166,15 @@ bool ControlModel::setData(const QModelIndex& index,
 
     ControlInfo& control = m_controls[row];
 
+    static_assert(CONTROL_COLUMN_VALUE + 1 == CONTROL_COLUMN_PARAMETER);
     switch (column) {
         case CONTROL_COLUMN_VALUE:
             control.pControl->set(value.toDouble());
+            emit dataChanged(modelIndex, index(modelIndex.row(), CONTROL_COLUMN_PARAMETER));
             return true;
         case CONTROL_COLUMN_PARAMETER:
             control.pControl->setParameter(value.toDouble());
+            emit dataChanged(index(modelIndex.row(), CONTROL_COLUMN_VALUE), modelIndex);
             return true;
     }
 

@@ -93,9 +93,6 @@ void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {
                 logTextView->append(newLines.join(""));
             }
         }
-    } else if (toolTabWidget->currentWidget() == controlsTab) {
-        //m_controlModel.updateDirtyRows();
-        controlsTable->update();
     } else if (toolTabWidget->currentWidget() == statsTab) {
         StatsManager* pManager = StatsManager::instance();
         if (pManager) {
