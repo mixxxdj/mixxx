@@ -75,6 +75,29 @@ ApplicationWindow {
                     }
                 }
 
+                Skin.Button {
+                    id: showDevToolsButton
+
+                    text: "Develop"
+                    activeColor: Theme.white
+                    checkable: true
+                    checked: devToolsWindow.visible
+                    onClicked: {
+                        if (devToolsWindow.visible)
+                            devToolsWindow.close();
+                        else
+                            devToolsWindow.show();
+                    }
+
+                    DeveloperToolsWindow {
+                        id: devToolsWindow
+
+                        width: 640
+                        height: 480
+                    }
+
+                }
+
             }
 
         }
@@ -153,12 +176,6 @@ ApplicationWindow {
 
         }
 
-    }
-
-    DeveloperToolsWindow {
-        width: 640
-        height: 480
-        visible: true
     }
 
 }
