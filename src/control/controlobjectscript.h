@@ -37,6 +37,7 @@ class ControlObjectScript : public ControlProxy {
 
   protected slots:
     // Receives the value from the master control by a unique queued connection
+    // This is specified virtual, to allow gmock to replace it in the test case
     virtual void slotValueChanged(double v, QObject*);
 
   private:
