@@ -2,7 +2,7 @@
 /**
  * Components JS library for Mixxx
  * Documentation is on the Mixxx wiki at
- * http://mixxx.org/wiki/doku.php/components_js
+ * https://github.com/mixxxdj/mixxx/wiki/Components-JS
  *
  * Copyright (C) 2017 Be <be.0@gmx.com>
  *
