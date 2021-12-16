@@ -22,6 +22,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/dnd.h"
+#include "util/file.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -686,13 +687,17 @@ void CrateFeature::slotExportPlaylist() {
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
-    QString file_location = QFileDialog::getSaveFileName(nullptr,
+    // Open a dialog to let the user choose the file location for crate export.
+    // The location is set to the last used directory for import/export and the file
+    // name to the playlist name.
+    const QString file_location = getFilePathWithVerifiedExtensionFromFileDialog(
             tr("Export Crate"),
             lastCrateDirectory.append("/").append(crate.getName()),
             tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist "
-               "(*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
+               "(*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"),
+            tr("M3U Playlist (*.m3u)"));
     // Exit method if user cancelled the open dialog.
-    if (file_location.isNull() || file_location.isEmpty()) {
+    if (file_location.isEmpty()) {
         return;
     }
 

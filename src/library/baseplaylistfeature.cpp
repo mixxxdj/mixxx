@@ -19,6 +19,7 @@
 #include "moc_baseplaylistfeature.cpp"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/file.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
@@ -461,16 +462,14 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Open a dialog to let the user choose the file location for playlist export.
     // The location is set to the last used directory for import/export and the file
     // name to the playlist name.
-    QString filefilter = tr("M3U Playlist (*.m3u)");
-    QString file_location = QFileDialog::getSaveFileName(
-            nullptr,
+    const QString file_location = getFilePathWithVerifiedExtensionFromFileDialog(
             tr("Export Playlist"),
-            lastPlaylistDirectory.append("/").append(playlistName),
+            lastPlaylistDirectory.append("/").append(playlistName).append(".m3u"),
             tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
                "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"),
-            &filefilter);
-    // Exit method if user cancelled the open dialog.
-    if (file_location.isNull() || file_location.isEmpty()) {
+            tr("M3U Playlist (*.m3u)"));
+    // Exit method if the file name is empty because the user cancelled the save dialog.
+    if (file_location.isEmpty()) {
         return;
     }
     QFileInfo fileName(file_location);
