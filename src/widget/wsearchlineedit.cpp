@@ -92,7 +92,13 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
 
     //: Shown in the library search bar when it is empty.
     lineEdit()->setPlaceholderText(tr("Search..."));
-    installEventFilter(this);
+
+    // The goal is to make Esc natively close the popup, while in the line edit it
+    // should move the keyboard focus to the tracks table. Unfortunately, eventFilter()
+    // can't catch Esc before the popup is closed, and keyPressEvent() can't catch
+    // keyPresses sent to the popup. So the only way to get this to work is to use
+    // keyPressEvent() for catching all keypress events sent to the line edit,
+    // while eventFilter() catches those sent to the popup.
     view()->installEventFilter(this);
 
     m_clearButton->setCursor(Qt::ArrowCursor);
@@ -324,63 +330,76 @@ QString WSearchLineEdit::getSearchText() const {
 bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-        // only intercept Up/Down keys if the popup is not open!
-        if (!view()->isVisible()) {
-            if (keyEvent->key() == Qt::Key_Up) {
-                // if we're at the top of the list the Up key clears the search bar,
-                // no matter if it's a saved and unsaved query
-                if (findCurrentTextIndex() == 0 ||
-                        (findCurrentTextIndex() == -1 && !currentText().isEmpty())) {
-                    slotClearSearch();
-                    return true;
-                }
-            } else if (keyEvent->key() == Qt::Key_Down) {
-                // after clearing the text field the down key is expected to
-                // show the latest entry
-                if (currentText().isEmpty()) {
-                    setCurrentIndex(0);
-                    return true;
-                }
-                // in case the user entered a new search query
-                // and presses the down key, save the query for later recall
-                if (findCurrentTextIndex() == -1) {
-                    slotSaveSearch();
-                }
-            }
-        } else { // popup is open
-            if (keyEvent->key() == Qt::Key_Backspace ||
-                    keyEvent->key() == Qt::Key_Delete) {
-                // remove the highlighted item from the list
-                deleteSelectedListItem();
-                return true;
-            }
-        }
-
-        // shortcuts applied no matter if popup is open
-        if (keyEvent->key() == Qt::Key_Enter) {
-            if (findCurrentTextIndex() == -1) {
-                slotSaveSearch();
-            }
-            // The default handler will add the entry to the list,
-            // this already happened in slotSaveSearch
-            slotTriggerSearch();
-            return true;
-        } else if (keyEvent->key() == Qt::Key_Space &&
-                keyEvent->modifiers() == Qt::ControlModifier) {
-            // open/close popup on ctrl + space
-            if (view()->isVisible()) {
-                hidePopup();
-            } else {
-                showPopup();
-            }
-            return true;
-        } else if (keyEvent->key() == Qt::Key_Escape) {
-            emit searchbarFocusChange(FocusWidget::TracksTable);
+        const int key = keyEvent->key();
+        // Esc has already closed the popup by now and we don't want to process it.
+        // We don't need to handle Up/Down in the popup either.
+        // Any other keypress is forwarded.
+        if (key != Qt::Key_Escape &&
+                key != Qt::Key_Down &&
+                key != Qt::Key_Up) {
+            keyPressEvent(keyEvent);
             return true;
         }
-        // if the line edit has focus Ctrl + F selects the text
     }
     return QComboBox::eventFilter(obj, event);
+}
+
+void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
+    const int key = keyEvent->key();
+    if (view()->isVisible()) {
+        if (key == Qt::Key_Backspace ||
+                key == Qt::Key_Delete) {
+            // remove the highlighted item from the list
+            deleteSelectedListItem();
+            return;
+        }
+    }
+
+    if (key == Qt::Key_Up) {
+        // If we're at the top of the list the Up key clears the search bar,
+        // no matter if it's a saved or unsaved query.
+        // Otherwise Up is handled by the combobox itself.
+        const int currentTextIndex = findCurrentTextIndex();
+        if (currentTextIndex == 0 ||
+                (currentTextIndex == -1 && !currentText().isEmpty())) {
+            slotClearSearch();
+            return;
+        }
+    } else if (key == Qt::Key_Down) {
+        // After clearing the text field the down key is expected to show
+        // the latest entry
+        if (currentText().isEmpty()) {
+            setCurrentIndex(0);
+            return;
+        }
+        // In case the user entered a new search query and presses the down key,
+        // save the query for later recall
+        if (findCurrentTextIndex() == -1) {
+            slotSaveSearch();
+        }
+    } else if (key == Qt::Key_Enter) {
+        if (findCurrentTextIndex() == -1) {
+            slotSaveSearch();
+        }
+        // The default handler will add the entry to the list,
+        // this already happened in slotSaveSearch
+        slotTriggerSearch();
+        return;
+    } else if (key == Qt::Key_Space &&
+            keyEvent->modifiers() == Qt::ControlModifier) {
+        // Open/close popup on ctrl + space
+        if (view()->isVisible()) {
+            hidePopup();
+        } else {
+            showPopup();
+        }
+        return;
+    } else if (key == Qt::Key_Escape) {
+        emit searchbarFocusChange(FocusWidget::TracksTable);
+        return;
+    }
+    // If the line edit has focus Ctrl + F selects the text
+    return QComboBox::keyPressEvent(keyEvent);
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
