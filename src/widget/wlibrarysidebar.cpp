@@ -183,15 +183,16 @@ bool WLibrarySidebar::isLeafNodeSelected() {
 }
 
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Return) {
+    const int key = event->key();
+    if (key == Qt::Key_Return) {
         toggleSelectedItem();
         return;
-    } else if (event->key() == Qt::Key_Down ||
-            event->key() == Qt::Key_Up ||
-            event->key() == Qt::Key_PageDown ||
-            event->key() == Qt::Key_PageUp ||
-            event->key() == Qt::Key_End ||
-            event->key() == Qt::Key_Home) {
+    } else if (key == Qt::Key_Down ||
+            key == Qt::Key_Up ||
+            key == Qt::Key_PageDown ||
+            key == Qt::Key_PageUp ||
+            key == Qt::Key_End ||
+            key == Qt::Key_Home) {
         // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
         // But force the index to be activated/clicked after the selection
@@ -204,11 +205,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
             emit pressed(index);
         }
         return;
-    //} else if (event->key() == Qt::Key_Enter && (event->modifiers() & Qt::AltModifier)) {
-    //    // encoder click via "GoToItem"
-    //    qDebug() << "GoToItem";
-    //    TODO(xxx) decide what todo here instead of in librarycontrol
-    } else if (event->key() == Qt::Key_Left) {
+    } else if (key == Qt::Key_Left) {
         auto selModel = selectionModel();
         QModelIndexList selectedRows = selModel->selectedRows();
         if (selectedRows.isEmpty()) {
@@ -227,6 +224,9 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
             selectIndex(parentIndex);
             emit pressed(parentIndex);
         }
+        return;
+    } else if (key == Qt::Key_Escape) {
+        emit sidebarFocusChange(FocusWidget::TracksTable);
         return;
     }
 

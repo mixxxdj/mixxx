@@ -324,7 +324,7 @@ QString WSearchLineEdit::getSearchText() const {
 bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-        // if the popup is open don't intercept Up/Down keys
+        // only intercept Up/Down keys if the popup is not open!
         if (!view()->isVisible()) {
             if (keyEvent->key() == Qt::Key_Up) {
                 // if we're at the top of the list the Up key clears the search bar,
@@ -347,7 +347,7 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
                     slotSaveSearch();
                 }
             }
-        } else {
+        } else { // popup is open
             if (keyEvent->key() == Qt::Key_Backspace ||
                     keyEvent->key() == Qt::Key_Delete) {
                 // remove the highlighted item from the list
@@ -355,6 +355,8 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
                 return true;
             }
         }
+
+        // shortcuts applied no matter if popup is open
         if (keyEvent->key() == Qt::Key_Enter) {
             if (findCurrentTextIndex() == -1) {
                 slotSaveSearch();
@@ -371,6 +373,9 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
             } else {
                 showPopup();
             }
+            return true;
+        } else if (keyEvent->key() == Qt::Key_Escape) {
+            emit searchbarFocusChange(FocusWidget::TracksTable);
             return true;
         }
         // if the line edit has focus Ctrl + F selects the text
