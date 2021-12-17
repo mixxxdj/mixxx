@@ -15,16 +15,20 @@
 
 #include <QDir>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <QTextCodec>
 #include <QUrl>
 #include <QtDebug>
 
-#include "moc_parserm3u.cpp"
 
 namespace {
 // according to http://en.wikipedia.org/wiki/M3U the default encoding of m3u is Windows-1252
 // see also http://tools.ietf.org/html/draft-pantos-http-live-streaming-07
-const char* kStandardM3uTextEncoding = "Windows-1250";
+const char kStandardM3uTextEncoding[] = "Windows-1250";
+const char kM3uHeader[] = "#EXTM3U";
+const char kM3uCommentPrefix[] = "#";
+// Note: The RegEx pattern is compiled, when first used the first time
+const auto kUniveralEndOfLineRegEx = QRegularExpression(QStringLiteral("\r\n|\r|\n"));
 } // anonymous namespace
 
 /**
@@ -42,43 +46,26 @@ const char* kStandardM3uTextEncoding = "Windows-1250";
           or on a mounted harddrive.
  **/
 
-ParserM3u::ParserM3u() : Parser()
-{
+// static
+bool ParserM3u::isPlaylistFilenameSupported(const QString& fileName) {
+    return fileName.endsWith(".m3u", Qt::CaseInsensitive) ||
+            fileName.endsWith(".m3u8", Qt::CaseInsensitive);
 }
 
-ParserM3u::~ParserM3u()
-{
-
-}
-
-QList<QString> ParserM3u::parse(const QString& filename) {
+QList<QString> ParserM3u::parseAllLocations(const QString& playlistFile) {
     QList<QString> paths;
 
-    QFile file(filename);
+    QFile file(playlistFile);
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning()
                 << "Failed to open playlist file"
-                << filename;
+                << playlistFile;
         return paths;
     }
 
-    // Unfortunately QTextStream does not handle <CR> (=\r or asci value 13) line breaks.
-    // This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
-    // rather that <LF>.
-    //
-    // Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
-    // We replace any '\r' with '\n' if applicaple
-    // This ensures that playlists from iTunes on OS X can be parsed
     QByteArray byteArray = file.readAll();
-    //detect encoding
-    bool isCRLF_encoded = byteArray.contains("\r\n");
-    bool isCR_encoded = byteArray.contains("\r");
-    if (isCR_encoded && !isCRLF_encoded) {
-        byteArray.replace('\r', '\n');
-    }
-
     QString fileContents;
-    if (isUtf8(byteArray.constData())) {
+    if (Parser::isUtf8(byteArray.constData())) {
         fileContents = QString::fromUtf8(byteArray);
     } else {
         // FIXME: replace deprecated QTextCodec with direct usage of libicu
@@ -86,18 +73,18 @@ QList<QString> ParserM3u::parse(const QString& filename) {
                                ->toUnicode(byteArray);
     }
 
-    QFileInfo fileInfo(filename);
-    const QStringList fileLines = fileContents.split('\n');
-    for (const QString& line : fileLines) {
-        auto trackFile = playlistEntryToFileInfo(line, fileInfo.canonicalPath());
-        if (trackFile.checkFileExists()) {
-            paths.append(trackFile.location());
-        } else {
-            qInfo() << "File" << trackFile.location() << "from M3U playlist"
-                    << filename << "does not exist.";
-        }
+    if (!fileContents.startsWith(kM3uHeader)) {
+        qWarning() << "M3U playlist file" << playlistFile << "does not start with" << kM3uHeader;
     }
 
+    const QStringList fileLines = fileContents.split(kUniveralEndOfLineRegEx);
+    for (const QString& line : fileLines) {
+        if (line.startsWith(kM3uCommentPrefix)) {
+            // Skip lines with comments
+            continue;
+        }
+        paths.append(line);
+    }
     return paths;
 }
 
@@ -139,8 +126,8 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
-                tr("Playlist Export Failed"),
-                tr("Could not create file") + " " + file_str);
+                QObject::tr("Playlist Export Failed"),
+                QObject::tr("Could not create file") + " " + file_str);
         return false;
     }
     file.write(outputByteArray);
