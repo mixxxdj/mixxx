@@ -223,7 +223,7 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             tr("Shortcut") + ": \n" +
             tr("Ctrl+Backspace"));
 
-    setToolTip(tr("Search", "noun") + "\n" +
+    setBaseTooltip(tr("Search", "noun") + "\n" +
             tr("Enter a string to search for") + "\n" +
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") +
             "\n" + tr("For more information see User Manual > Mixxx Library") +
