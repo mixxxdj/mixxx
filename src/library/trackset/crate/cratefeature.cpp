@@ -1,6 +1,5 @@
 #include "library/trackset/crate/cratefeature.h"
 
-#include <QDesktopServices>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QLineEdit>

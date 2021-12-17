@@ -1,6 +1,5 @@
 #include "library/dlgtrackinfo.h"
 
-#include <QDesktopServices>
 #include <QSignalBlocker>
 #include <QStringBuilder>
 #include <QTreeWidget>

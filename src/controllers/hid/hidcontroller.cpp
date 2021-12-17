@@ -162,7 +162,7 @@ void HidController::processInputReport(int bytesRead) {
     receive(incomingData, mixxx::Time::elapsed());
 }
 
-QList<int> HidController::getInputReport(unsigned int reportID) {
+QByteArray HidController::getInputReport(unsigned int reportID) {
     Trace hidRead("HidController getInputReport");
     int bytesRead;
 
@@ -185,17 +185,11 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
         // Otherwise minimum possible value is 1, because 1 byte is for the reportID,
         // the smallest report with data is therefore 2 bytes.
         DEBUG_ASSERT(bytesRead <= kReportIdSize);
-        return QList<int>();
+        return QByteArray();
     }
 
-    // Convert array of bytes read in a JavaScript compatible return type
-    // For compatibility with the array provided by HidController::poll the reportID is contained as prefix
-    QList<int> dataList;
-    dataList.reserve(bytesRead);
-    for (int i = 0; i < bytesRead; i++) {
-        dataList.append(m_pPollData[m_pollingBufferIndex][i]);
-    }
-    return dataList;
+    return QByteArray::fromRawData(
+            reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]), bytesRead);
 }
 
 bool HidController::poll() {
@@ -255,14 +249,14 @@ void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
 }
 
 void HidController::sendFeatureReport(
-        const QList<int>& dataList, unsigned int reportID) {
+        const QByteArray& reportData, unsigned int reportID) {
     QByteArray dataArray;
-    dataArray.reserve(kReportIdSize + dataList.size());
+    dataArray.reserve(kReportIdSize + reportData.size());
 
     // Append the Report ID to the beginning of dataArray[] per the API..
     dataArray.append(reportID);
 
-    for (const int datum : dataList) {
+    for (const int datum : reportData) {
         dataArray.append(datum);
     }
 
@@ -287,7 +281,7 @@ ControllerJSProxy* HidController::jsProxy() {
     return new HidControllerJSProxy(this);
 }
 
-QList<int> HidController::getFeatureReport(
+QByteArray HidController::getFeatureReport(
         unsigned int reportID) {
     unsigned char dataRead[kReportIdSize + kBufferSize];
     dataRead[0] = reportID;
@@ -318,10 +312,8 @@ QList<int> HidController::getFeatureReport(
 
     // Convert array of bytes read in a JavaScript compatible return type
     // For compatibility with input array HidController::sendFeatureReport, a reportID prefix is not added here
-    QList<int> dataList;
-    dataList.reserve(bytesRead - kReportIdSize);
-    for (int i = kReportIdSize; i < bytesRead; i++) {
-        dataList.append(dataRead[i]);
-    }
-    return dataList;
+    QByteArray byteArray;
+    byteArray.reserve(bytesRead - kReportIdSize);
+    auto featureReportStart = reinterpret_cast<const char*>(dataRead + kReportIdSize);
+    return QByteArray(featureReportStart, bytesRead);
 }

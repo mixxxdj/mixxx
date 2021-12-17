@@ -5,7 +5,6 @@
 #include <QFileInfo>
 #include <QMenu>
 #include <QMessageBox>
-#include <QStandardPaths>
 #include <QUrl>
 #include <QXmlStreamReader>
 #include <QtDebug>

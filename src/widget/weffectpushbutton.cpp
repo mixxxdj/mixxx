@@ -51,7 +51,11 @@ void WEffectPushButton::onConnectedControlChanged(double dParameter, double dVal
 void WEffectPushButton::mousePressEvent(QMouseEvent* e) {
     const bool rightClick = e->button() == Qt::RightButton;
     if (rightClick && m_pButtonMenu->actions().size()) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_pButtonMenu->exec(e->globalPosition().toPoint());
+#else
         m_pButtonMenu->exec(e->globalPos());
+#endif
         return;
     }
 
@@ -105,7 +109,7 @@ void WEffectPushButton::parameterUpdated() {
 
     m_pButtonMenu->clear();
     EffectManifestParameterPointer pManifest = m_pEffectParameterSlot->getManifest();
-    QList<QPair<QString, double> > options;
+    QList<QPair<QString, double>> options;
     if (pManifest) {
         options = pManifest->getSteps();
     }

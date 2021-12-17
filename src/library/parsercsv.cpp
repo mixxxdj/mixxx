@@ -19,9 +19,9 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
     QList<QString> locations;
     //qDebug() << "ParserCsv: Starting to parse.";
     if (file.open(QIODevice::ReadOnly)) {
-        QByteArray ba = file.readAll();
+        QByteArray bytes = file.readAll();
 
-        QList<QList<QString> > tokens = tokenize(ba, ',');
+        QList<QList<QString>> tokens = tokenize(bytes, ',');
 
         // detect Location column
         int locationColumnIndex = -1;
@@ -60,8 +60,8 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
 
 // Code was posted at http://www.qtcentre.org/threads/35511-Parsing-CSV-data
 // by "adzajac" and adapted to use QT Classes
-QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter) {
-    QList<QList<QString> > tokens;
+QList<QList<QString>> ParserCsv::tokenize(const QByteArray& str, char delimiter) {
+    QList<QList<QString>> tokens;
 
     unsigned int row = 0;
     bool quotes = false;

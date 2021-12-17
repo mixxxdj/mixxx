@@ -5,7 +5,6 @@
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
-#include <QStandardPaths>
 #include <QTextCodec>
 #include <QtDebug>
 

@@ -1,6 +1,5 @@
 #include "widget/wmainmenubar.h"
 
-#include <QDesktopServices>
 #include <QUrl>
 
 #include "config.h"

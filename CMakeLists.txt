@@ -80,7 +80,7 @@ option(QT6 "Build with Qt6" OFF)
 if(APPLE)
   if(QT6)
     # Minimum macOS version supported by Qt 6
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
   else()
     # Minimum macOS version supported by Qt 5.12
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
@@ -468,6 +468,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controllinpotmeter.cpp
   src/control/controllogpotmeter.cpp
   src/control/controlmodel.cpp
+  src/control/controlsortfiltermodel.cpp
   src/control/controlobject.cpp
   src/control/controlobjectscript.cpp
   src/control/controlpotmeter.cpp

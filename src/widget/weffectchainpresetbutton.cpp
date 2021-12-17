@@ -58,18 +58,20 @@ void WEffectChainPresetButton::populateMenu() {
     // TODO: get number of currently visible effect slots from skin
     for (int effectSlotIndex = 0; effectSlotIndex < 3; effectSlotIndex++) {
         auto pEffectSlot = m_pChain->getEffectSlots().at(effectSlotIndex);
-        const ParameterMap loadedParameters = pEffectSlot->getLoadedParameters();
-        const ParameterMap hiddenParameters = pEffectSlot->getHiddenParameters();
 
+        const QString effectSlotNumPrefix(QString::number(effectSlotIndex + 1) + ": ");
         auto pManifest = pEffectSlot->getManifest();
         if (pManifest == nullptr) {
-            m_pMenu->addAction(tr("Empty Effect Slot %1").arg(effectSlotIndex + 1));
+            m_pMenu->addAction(effectSlotNumPrefix + kNoEffectString);
             continue;
         }
 
-        auto pEffectMenu = make_parented<QMenu>(m_pMenu);
-        pEffectMenu->setTitle(pEffectSlot->getManifest()->displayName());
+        auto pEffectMenu = make_parented<QMenu>(
+                effectSlotNumPrefix + pEffectSlot->getManifest()->displayName(),
+                m_pMenu);
 
+        const ParameterMap loadedParameters = pEffectSlot->getLoadedParameters();
+        const ParameterMap hiddenParameters = pEffectSlot->getHiddenParameters();
         int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NumTypes);
         for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
             const EffectManifestParameter::ParameterType parameterType =
@@ -111,8 +113,9 @@ void WEffectChainPresetButton::populateMenu() {
 
                 pEffectMenu->addAction(pAction.get());
             }
-            pEffectMenu->addSeparator();
         }
+        pEffectMenu->addSeparator();
+
         pEffectMenu->addAction(tr("Save snapshot"), this, [this, pEffectSlot] {
             m_pEffectsManager->getEffectPresetManager()->saveDefaultForEffect(pEffectSlot);
         });
