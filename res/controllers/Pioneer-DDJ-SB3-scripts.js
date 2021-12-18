@@ -1,16 +1,5 @@
 var PioneerDDJSB3 = {};
 
-PioneerDDJSB3.PadMode = {
-    HotCue: 0x1B,
-    FxFadeMix: 0x1E,
-    PadScratch: 0x20,
-    Sampler: 0x22,
-    BeatJump: 0x69,
-    Roll: 0x6B,
-    Slicer: 0x6D,
-    Trans: 0x6E
-};
-
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
@@ -59,6 +48,17 @@ PioneerDDJSB3.looprollIntervals = [1 / 16, 1 / 8, 1 / 4, 1 / 2, 1, 2, 4, 8];
       https://github.com/hrudham/Mixxx-Pioneer-DDJ-SR
 
 */
+
+PioneerDDJSB3.PadMode = {
+    HotCue: 0x1B,
+    FxFadeMix: 0x1E,
+    PadScratch: 0x20,
+    Sampler: 0x22,
+    BeatJump: 0x69,
+    Roll: 0x6B,
+    Slicer: 0x6D,
+    Trans: 0x6E
+};
 
 ///////////////////////////////////////////////////////////////
 //               INIT, SHUTDOWN & GLOBAL HELPER              //
