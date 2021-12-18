@@ -26,20 +26,8 @@ const QString kDisabledText = QStringLiteral("- - -");
 
 const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
 
-constexpr int kClearButtonClearence = 1;
-
-inline QString clearButtonStyleSheet(int pxPadding, Qt::LayoutDirection direction) {
-    DEBUG_ASSERT(pxPadding >= 0);
-    if (direction == Qt::RightToLeft) {
-        return QString(
-                QStringLiteral("WSearchLineEdit { padding-left: %1px; }"))
-                .arg(pxPadding);
-    } else {
-        return QString(
-                QStringLiteral("WSearchLineEdit { padding-right: %1px; }"))
-                .arg(pxPadding);
-    }
-}
+// Border width, max. 2 px when focused (in official skins)
+constexpr int kBorderWidth = 2;
 
 int verifyDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     VERIFY_OR_DEBUG_ASSERT(debouncingTimeoutMillis >= WSearchLineEdit::kMinDebouncingTimeoutMillis) {
@@ -97,8 +85,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
 
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setObjectName(QStringLiteral("SearchClearButton"));
-    // Query style for arrow width and frame border
-    updateStyleMetrics();
 
     m_clearButton->hide();
     connect(m_clearButton,
@@ -142,14 +128,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
                     slotTriggerSearch();
                 }
             });
-
-    QSize clearButtonSize = m_clearButton->sizeHint();
-
-    // Ensures the text does not obscure the clear image.
-    setStyleSheet(clearButtonStyleSheet(
-            clearButtonSize.width() + m_frameWidth + kClearButtonClearence,
-            layoutDirection()));
-
     loadQueriesFromConfig();
 
     refreshState();
@@ -279,20 +257,9 @@ void WSearchLineEdit::saveQueriesInConfig() {
     }
 }
 
-void WSearchLineEdit::updateStyleMetrics() {
-    QStyleOptionComboBox styleArrow;
-    styleArrow.initFrom(this);
-    QRect rectArrow(style()->subControlRect(
-            QStyle::CC_ComboBox, &styleArrow, QStyle::SC_ComboBoxArrow, this));
-
-    m_dropButtonWidth = rectArrow.width() + 1;
-    m_frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth, nullptr, this);
-}
-
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QComboBox::resizeEvent(e);
-    updateStyleMetrics();
-    m_innerHeight = this->height() - 2 * m_frameWidth;
+    m_innerHeight = height() - 2 * kBorderWidth;
     // Test if this is a vertical resize due to changed library font.
     // Assuming current button height is innerHeight from last resize,
     // we will resize the Clear button icon only if height has changed.
@@ -300,15 +267,18 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
         QSize newSize = QSize(m_innerHeight, m_innerHeight);
         m_clearButton->resize(newSize);
         m_clearButton->setIconSize(newSize);
-        // Note(ronso0): For some reason this ensures the search text
-        // is being displayed after skin change/reload.
+        // Needed to update the Clear button and the down arrow
+        // after skin change/reload.
         refreshState();
     }
-    int top = rect().top() + m_frameWidth;
+    int top = rect().top() + kBorderWidth;
     if (layoutDirection() == Qt::LeftToRight) {
-        m_clearButton->move(rect().right() - m_innerHeight - m_frameWidth - m_dropButtonWidth, top);
+        m_clearButton->move(rect().right() -
+                        static_cast<int>(1.7 * m_innerHeight) - kBorderWidth,
+                top);
     } else {
-        m_clearButton->move(m_frameWidth + m_dropButtonWidth, top);
+        m_clearButton->move(static_cast<int>(0.7 * m_innerHeight) + kBorderWidth,
+                top);
     }
 }
 
@@ -423,8 +393,8 @@ void WSearchLineEdit::slotDisableSearch() {
         return;
     }
     setTextBlockSignals(kDisabledText);
-    updateClearButton(QString());
     setEnabled(false);
+    updateClearAndDropdownButton(QString());
 }
 
 void WSearchLineEdit::enableSearch(const QString& text) {
@@ -594,33 +564,44 @@ void WSearchLineEdit::updateEditBox(const QString& text) {
     } else {
         setTextBlockSignals(text);
     }
-    updateClearButton(text);
+    updateClearAndDropdownButton(text);
 
     // This gets rid of the blue mac highlight.
     setAttribute(Qt::WA_MacShowFocusRect, false);
 }
 
-void WSearchLineEdit::updateClearButton(const QString& text) {
+void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "updateClearButton"
+            << "updateClearAndDropdownButton"
             << text;
 #endif // ENABLE_TRACE_LOG
+    // Hide clear button if the text is empty and while placeholder is shown,
+    // see disableSearch()
+    m_clearButton->setVisible(!text.isEmpty());
 
-    if (text.isEmpty()) {
-        // Disable while placeholder is shown
-        m_clearButton->setVisible(false);
-        // no right padding
-        setStyleSheet(clearButtonStyleSheet(0, layoutDirection()));
-    } else {
-        // Enable otherwise
-        m_clearButton->setVisible(true);
-        // make sure the text won't be drawn behind the Clear button icon
-        setStyleSheet(clearButtonStyleSheet(
-                m_innerHeight + m_dropButtonWidth +
-                        m_frameWidth + kClearButtonClearence,
-                layoutDirection()));
-    }
+    // Ensure the text is not obscured by the clear button. Otherwise no text,
+    // no clear button, so the placeholder should use the entire width.
+    const int paddingPx = text.isEmpty() ? 0 : m_innerHeight;
+    const QString clearPos(layoutDirection() == Qt::RightToLeft ? "left" : "right");
+
+    // Hide the nonfunctional drop-down button if the search is disabled.
+    const int dropDownWidth = isEnabled() ? static_cast<int>(m_innerHeight * 0.7) : 0;
+
+    const QString styleSheet = QStringLiteral(
+            "WSearchLineEdit { padding-%1: %2px; }"
+            // With every paintEvent(?) the width of the drop-down button
+            // is reset to default, so we need to re-adjust it.
+            "WSearchLineEdit::down-arrow,"
+            "WSearchLineEdit::drop-down {"
+            "subcontrol-origin: padding;"
+            "subcontrol-position: %1 center;"
+            "width: %3; height: %4;}")
+                                       .arg(clearPos,
+                                               QString::number(paddingPx),
+                                               QString::number(dropDownWidth),
+                                               QString::number(m_innerHeight));
+    setStyleSheet(styleSheet);
 }
 
 bool WSearchLineEdit::event(QEvent* pEvent) {
@@ -678,7 +659,7 @@ void WSearchLineEdit::slotTextChanged(const QString& text) {
         setTextBlockSignals(kDisabledText);
         return;
     }
-    updateClearButton(text);
+    updateClearAndDropdownButton(text);
     DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
     if (s_debouncingTimeoutMillis > 0) {
         m_debouncingTimer.start(s_debouncingTimeoutMillis);
@@ -701,9 +682,11 @@ void WSearchLineEdit::slotSetShortcutFocus() {
 
 // Use the same font as the library table and the sidebar
 void WSearchLineEdit::slotSetFont(const QFont& font) {
-    updateStyleMetrics();
     setFont(font);
     if (lineEdit()) {
         lineEdit()->setFont(font);
+        // Decreasing the font doesn't trigger a resizeEvent,
+        // so we immediately refresh the controls manually.
+        updateClearAndDropdownButton(getSearchText());
     }
 }
