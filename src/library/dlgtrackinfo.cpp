@@ -77,6 +77,7 @@ void DlgTrackInfo::init() {
         btnPrev->hide();
     }
 
+    // QDialog buttons
     connect(btnApply,
             &QPushButton::clicked,
             this,
@@ -92,6 +93,7 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotCancel);
 
+    // BPM edit buttons
     connect(bpmDouble,
             &QPushButton::clicked,
             this,
@@ -150,19 +152,22 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refTrackInfo().setTitle(txtTrackName->text().trimmed());
+                m_trackRecord.refMetadata().refTrackInfo().setTitle(
+                        txtTrackName->text().trimmed());
             });
     connect(txtArtist,
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refTrackInfo().setArtist(txtArtist->text().trimmed());
+                m_trackRecord.refMetadata().refTrackInfo().setArtist(
+                        txtArtist->text().trimmed());
             });
     connect(txtAlbum,
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refAlbumInfo().setTitle(txtAlbum->text().trimmed());
+                m_trackRecord.refMetadata().refAlbumInfo().setTitle(
+                        txtAlbum->text().trimmed());
             });
     connect(txtAlbumArtist,
             &QLineEdit::editingFinished,
@@ -196,13 +201,18 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refTrackInfo().setYear(txtYear->text().trimmed());
+                m_trackRecord.refMetadata().refTrackInfo().setYear(
+                        txtYear->text().trimmed());
             });
-    connect(txtTrackNumber, &QLineEdit::editingFinished, [this]() {
-        m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
-                txtTrackNumber->text().trimmed());
-    });
+    connect(txtTrackNumber,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
+                        txtTrackNumber->text().trimmed());
+            });
 
+    // Import and file browser buttons
     connect(btnImportMetadataFromFile,
             &QPushButton::clicked,
             this,
@@ -218,6 +228,7 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotOpenInFileBrowser);
 
+    // Cover art
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
@@ -481,6 +492,19 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
 void DlgTrackInfo::saveTrack() {
     if (!m_pLoadedTrack) {
         return;
+    }
+
+    // In case Apply is triggered by hotkey AND a QLineEdit with pending changes
+    // is focused AND the user did not hit Enter to finish editing,
+    // the content of that focused line edit would be reset to the last confirmed state.
+    // This hack makes a focused QLineEdit emit editingFinished() (clearFocus()
+    // implicitly emits a focusOutEvent()
+    if (this == QApplication::activeWindow()) {
+        auto focusWidget = QApplication::focusWidget();
+        if (focusWidget) {
+            focusWidget->clearFocus();
+            focusWidget->setFocus();
+        }
     }
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
