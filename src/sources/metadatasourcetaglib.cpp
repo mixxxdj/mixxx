@@ -630,7 +630,8 @@ class SafelyWritableFile final {
         // See also: https://bugs.launchpad.net/mixxx/+bug/1815305
         DEBUG_ASSERT(m_origFileName.isNull());
         DEBUG_ASSERT(m_tempFileName.isNull());
-        if (!QFileInfo(origFileName).isWritable()) {
+        const auto origFileInfo = QFileInfo(origFileName);
+        if (!origFileInfo.isWritable()) {
             kLogger.warning()
                     << "Failed to prepare file for writing:"
                     << origFileName
@@ -671,6 +672,25 @@ class SafelyWritableFile final {
                 // Abort constructor
                 return;
             }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+            // Copy remaining file metadata separately. According to the docs
+            // QFile::copy() only promises to copy the permissions but no other
+            // metadata: https://doc.qt.io/qt-5/qfile.html#copy
+            if (origFileInfo.birthTime().isValid()) {
+                // Preserve the creation time of the original file if available
+                // (might only be supported on Windows). The file needs to be
+                // opened for this purpose.
+                if (!(tempFile.open(QIODevice::ReadOnly) &&
+                            tempFile.setFileTime(
+                                    origFileInfo.birthTime(),
+                                    QFileDevice::FileBirthTime))) {
+                    kLogger.warning()
+                            << "Failed to adjust creation time of temporary file:"
+                            << tempFile.errorString();
+                }
+                // The modification time will be set when writing into the file
+            }
+#endif
             // Successfully cloned original into temporary file for writing - finish initialization
             m_origFileName = std::move(origFileName);
             m_tempFileName = std::move(tempFileName);
