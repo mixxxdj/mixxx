@@ -6,7 +6,7 @@ ControlObjectScript::ControlObjectScript(
         const ConfigKey& key, const RuntimeLoggingCategory& logger, QObject* pParent)
         : ControlProxy(key, pParent, ControlFlag::AllowMissingOrInvalid),
           m_logger(logger),
-          m_proxy(this) {
+          m_proxy(key, logger, this) {
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
