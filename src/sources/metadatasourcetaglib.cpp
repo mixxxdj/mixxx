@@ -736,7 +736,7 @@ class SafelyWritableFile final {
             if (!oldFile.rename(backupFileName)) {
                 kLogger.critical()
                         << oldFile.errorString()
-                        << "- Failed to rename the original file for backup before writing:"
+                        << "- Failed to rename the original file for backup after writing:"
                         << oldFile.fileName()
                         << "->"
                         << backupFileName;
