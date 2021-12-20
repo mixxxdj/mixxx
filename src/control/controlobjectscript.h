@@ -2,6 +2,7 @@
 
 #include <QVector>
 
+#include "control/controlcompressingproxy.h"
 #include "control/controlproxy.h"
 #include "controllers/scripting/legacy/scriptconnection.h"
 #include "util/runtimeloggingcategory.h"
@@ -36,9 +37,12 @@ class ControlObjectScript : public ControlProxy {
 
   protected slots:
     // Receives the value from the master control by a unique queued connection
-    void slotValueChanged(double v, QObject*);
+    // This is specified virtual, to allow gmock to replace it in the test case
+    virtual void slotValueChanged(double v, QObject*);
 
   private:
     QVector<ScriptConnection> m_scriptConnections;
     const RuntimeLoggingCategory m_logger;
+    CompressingProxy m_proxy;
+    bool m_skipSuperseded; // This flag is combined for all connections of this Control Object
 };
