@@ -24,6 +24,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
     QVariant data(const QModelIndex& index, int role) const override;
     int columnCount(const QModelIndex& index = QModelIndex()) const override;
     QHash<int, QByteArray> roleNames() const override;
+    Q_INVOKABLE QVariant get(int row) const;
 };
 
 } // namespace qml
