@@ -31,8 +31,10 @@ class ControllerScriptInterfaceLegacy : public QObject {
     Q_INVOKABLE void reset(const QString& group, const QString& name);
     Q_INVOKABLE double getDefaultValue(const QString& group, const QString& name);
     Q_INVOKABLE double getDefaultParameter(const QString& group, const QString& name);
-    Q_INVOKABLE QJSValue makeConnection(
-            const QString& group, const QString& name, const QJSValue& callback);
+    Q_INVOKABLE QJSValue makeConnection(const QString& group,
+            const QString& name,
+            const QJSValue& callback,
+            bool skipSuperseded = false);
     // DEPRECATED: Use makeConnection instead.
     Q_INVOKABLE QJSValue connectControl(const QString& group,
             const QString& name,

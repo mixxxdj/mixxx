@@ -212,7 +212,7 @@ double ControllerScriptInterfaceLegacy::getDefaultParameter(
 }
 
 QJSValue ControllerScriptInterfaceLegacy::makeConnection(
-        const QString& group, const QString& name, const QJSValue& callback) {
+        const QString& group, const QString& name, const QJSValue& callback, bool skipSuperseded) {
     auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
@@ -245,6 +245,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnection(
     connection.controllerEngine = m_pScriptEngineLegacy;
     connection.callback = callback;
     connection.id = QUuid::createUuid();
+    connection.skipSuperseded = skipSuperseded;
 
     if (coScript->addScriptConnection(connection)) {
         return pJsEngine->newQObject(

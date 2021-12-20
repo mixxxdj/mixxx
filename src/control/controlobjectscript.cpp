@@ -6,28 +6,62 @@ ControlObjectScript::ControlObjectScript(
         const ConfigKey& key, const RuntimeLoggingCategory& logger, QObject* pParent)
         : ControlProxy(key, pParent, ControlFlag::AllowMissingOrInvalid),
           m_logger(logger),
-          m_proxy(key, logger, this) {
+          m_proxy(key, logger, this),
+          m_skipSuperseded(false) {
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
     if (m_scriptConnections.isEmpty()) {
         // Only connect the slots when they are actually needed
         // by script connections.
-        connect(m_pControl.data(),
-                &ControlDoublePrivate::valueChanged,
-                &m_proxy,
-                &CompressingProxy::slotValueChanged,
-                Qt::QueuedConnection);
-        connect(&m_proxy,
-                &CompressingProxy::signalValueChanged,
-                this,
-                &ControlObjectScript::slotValueChanged,
-                Qt::DirectConnection);
+        m_skipSuperseded = conn.skipSuperseded;
+        if (conn.skipSuperseded) {
+            connect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    &m_proxy,
+                    &CompressingProxy::slotValueChanged,
+                    Qt::QueuedConnection);
+            connect(&m_proxy,
+                    &CompressingProxy::signalValueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged,
+                    Qt::DirectConnection);
+        } else {
+            connect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged,
+                    Qt::QueuedConnection);
+        }
         connect(this,
                 &ControlObjectScript::trigger,
                 this,
                 &ControlObjectScript::slotValueChanged,
                 Qt::QueuedConnection);
+    } else {
+        // At least one callback function is already connected to this CO
+        if (conn.skipSuperseded == false && m_skipSuperseded == true) {
+            // Disconnect proxy if this is first callback function connected with skipSuperseded false
+            m_skipSuperseded = false;
+            qCWarning(m_logger) << conn.key.group + ", " + conn.key.item +
+                            "is connected to different callback functions with "
+                            "differing state of the skipSuperseded. Disable "
+                            "skipping of superseded events for all these "
+                            "callback functions.";
+            disconnect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    &m_proxy,
+                    &CompressingProxy::slotValueChanged);
+            disconnect(&m_proxy,
+                    &CompressingProxy::signalValueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged);
+            connect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged,
+                    Qt::QueuedConnection);
+        }
     }
 
     for (const auto& priorConnection : qAsConst(m_scriptConnections)) {
@@ -60,14 +94,21 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
     }
     if (m_scriptConnections.isEmpty()) {
         // no ScriptConnections left, so disconnect signals
-        disconnect(m_pControl.data(),
-                &ControlDoublePrivate::valueChanged,
-                &m_proxy,
-                &CompressingProxy::slotValueChanged);
-        disconnect(&m_proxy,
-                &CompressingProxy::signalValueChanged,
-                this,
-                &ControlObjectScript::slotValueChanged);
+        if (m_skipSuperseded) {
+            disconnect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    &m_proxy,
+                    &CompressingProxy::slotValueChanged);
+            disconnect(&m_proxy,
+                    &CompressingProxy::signalValueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged);
+        } else {
+            disconnect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    this,
+                    &ControlObjectScript::slotValueChanged);
+        }
         disconnect(this,
                 &ControlObjectScript::trigger,
                 this,
