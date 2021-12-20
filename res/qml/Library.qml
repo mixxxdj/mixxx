@@ -1,5 +1,6 @@
 import "." as Skin
 import Mixxx 0.1 as Mixxx
+import QtQml.Models 2.12
 import QtQuick 2.12
 import "Theme"
 
@@ -8,70 +9,9 @@ Item {
         color: Theme.deckBackgroundColor
         anchors.fill: parent
 
-        Mixxx.ControlProxy {
-            id: focusedWidgetControl
-
-            group: "[Library]"
-            key: "focused_widget"
-            Component.onCompleted: value = 3
-        }
-
-        Mixxx.ControlProxy {
-            group: "[Playlist]"
-            key: "SelectTrackKnob"
-            onValueChanged: {
-                listView.moveSelection(value);
-            }
-        }
-
-        Mixxx.ControlProxy {
-            group: "[Playlist]"
-            key: "SelectPrevTrack"
-            onValueChanged: {
-                if (value != 0)
-                    listView.moveSelection(-1);
-
-            }
-        }
-
-        Mixxx.ControlProxy {
-            group: "[Playlist]"
-            key: "SelectNextTrack"
-            onValueChanged: {
-                if (value != 0)
-                    listView.moveSelection(1);
-
-            }
-        }
-
-        Mixxx.ControlProxy {
-            group: "[Library]"
-            key: "MoveVertical"
-            onValueChanged: {
-                if (focusedWidgetControl.value == 3)
-                    listView.moveSelection(value);
-
-            }
-        }
-
-        Mixxx.ControlProxy {
-            group: "[Library]"
-            key: "MoveUp"
-            onValueChanged: {
-                if (value != 0 && focusedWidgetControl.value == 3)
-                    listView.moveSelection(-1);
-
-            }
-        }
-
-        Mixxx.ControlProxy {
-            group: "[Library]"
-            key: "MoveDown"
-            onValueChanged: {
-                if (value != 0 && focusedWidgetControl.value == 3)
-                    listView.moveSelection(1);
-
-            }
+        LibraryControl {
+            onMoveSelection: listView.moveSelection(offset)
+            onLoadSelectedTrack: listView.loadSelectedTrack(group, play)
         }
 
         ListView {
@@ -88,6 +28,18 @@ Item {
                 let newIndex = currentIndex = (currentIndex + value) % rowCount;
                 while (newIndex < 0)newIndex += rowCount
                 currentIndex = newIndex;
+            }
+
+            function loadSelectedTrack(group, play) {
+                const url = model.get(currentIndex).fileUrl;
+                if (!url)
+                    return ;
+
+                const player = Mixxx.PlayerManager.getPlayer(group);
+                if (!player)
+                    return ;
+
+                player.loadTrackFromLocationUrl(url, play);
             }
 
             anchors.fill: parent
