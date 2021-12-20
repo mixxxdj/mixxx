@@ -212,6 +212,16 @@ double ControllerScriptInterfaceLegacy::getDefaultParameter(
 }
 
 QJSValue ControllerScriptInterfaceLegacy::makeConnection(
+        const QString& group, const QString& name, const QJSValue& callback) {
+    return ControllerScriptInterfaceLegacy::makeConnectionInternal(group, name, callback, false);
+}
+
+QJSValue ControllerScriptInterfaceLegacy::makeCompressedConnection(
+        const QString& group, const QString& name, const QJSValue& callback) {
+    return ControllerScriptInterfaceLegacy::makeConnectionInternal(group, name, callback, true);
+}
+
+QJSValue ControllerScriptInterfaceLegacy::makeConnectionInternal(
         const QString& group, const QString& name, const QJSValue& callback, bool skipSuperseded) {
     auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
