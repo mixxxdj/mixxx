@@ -7,6 +7,7 @@ namespace mixxx {
 namespace qml {
 
 class QmlLibraryTrackListModel : public QIdentityProxyModel {
+    Q_OBJECT
   public:
     enum Roles {
         TitleRole = Qt::UserRole,
