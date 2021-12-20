@@ -56,6 +56,7 @@ class WTrackTableView : public WLibraryTableView {
 
   signals:
     void trackTableFocusChange(FocusWidget newFocusWidget);
+    void trackMenuVisible(bool visible);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
@@ -63,6 +64,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnhide();
     void slotPurge();
     void slotDeleteTracksFromDisk();
+    void slotShowHideTrackMenu(bool show);
 
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;

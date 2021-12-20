@@ -342,6 +342,13 @@ void WTrackTableView::initTrackMenu() {
             &WTrackMenu::loadTrackToPlayer,
             this,
             &WTrackTableView::loadTrackToPlayer);
+
+    connect(m_pTrackMenu,
+            &WTrackMenu::trackMenuVisible,
+            this,
+            [this](bool visible) {
+                emit trackMenuVisible(visible);
+            });
 }
 
 // slot
@@ -462,6 +469,22 @@ void WTrackTableView::slotUnhide() {
     }
 }
 
+void WTrackTableView::slotShowHideTrackMenu(bool show) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
+        return;
+    }
+    if (show == m_pTrackMenu->isVisible()) {
+        emit trackMenuVisible(show);
+        return;
+    }
+    if (show) {
+        QContextMenuEvent event(QContextMenuEvent::Mouse, QCursor::pos());
+        contextMenuEvent(&event);
+    } else {
+        m_pTrackMenu->close();
+    }
+}
+
 void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
         initTrackMenu();
@@ -471,7 +494,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     QModelIndexList indices = selectionModel()->selectedRows();
     m_pTrackMenu->loadTrackModelIndices(indices);
 
-    //Create the right-click menu
+    // Create the right-click menu
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     m_pTrackMenu->popup(event->globalPosition().toPoint());
 #else
