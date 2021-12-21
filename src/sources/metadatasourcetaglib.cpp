@@ -745,6 +745,23 @@ class SafelyWritableFile final {
                         << "before replacing by"
                         << m_tempFileName;
                 return false;
+            case ERROR_SHARING_VIOLATION:  
+                // The process cannot access the file because it is being used by another process.
+                kLogger.critical()
+                        << "Unable to replace"
+                        << m_origFileName
+                        << "by"
+                        << m_tempFileName
+                        << "because it is used by another process";
+                return false;
+            case ERROR_ACCESS_DENIED:
+                kLogger.critical()
+                        << "Unable to replace"
+                        << m_origFileName
+                        << "by"
+                        << m_tempFileName
+                        << "Access is denied";
+                return false;
             default:
                 // If any other error is returned, such as ERROR_INVALID_PARAMETER, the replaced
                 // and replacement files will retain their original file names. In this scenario,
