@@ -26,7 +26,6 @@ int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
     // If startup produced a fatal error, then don't even start the
     // Qt event loop.
     if (ErrorDialogHandler::instance()->checkError()) {
-        mainWindow.finalize();
         return kFatalErrorOnStartupExitCode;
     } else {
         qDebug() << "Displaying main window";

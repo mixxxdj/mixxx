@@ -713,7 +713,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 }
 
 void MixxxMainWindow::finalize() {
-    Timer t("MixxxMainWindow::~finalize");
+    Timer t("MixxxMainWindow::finalize");
     t.start();
 
     if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
