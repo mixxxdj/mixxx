@@ -298,7 +298,7 @@ void EncoderOpus::pushTagsPacket() {
     int commentCount = 0;
 
     const char* vendorString = opus_get_version_string();
-    int vendorStringLength = strlen(vendorString);
+    int vendorStringLength = static_cast<int>(strlen(vendorString));
 
     // == Compute tags frame size ==
     // - Magic signature: 8 bytes
