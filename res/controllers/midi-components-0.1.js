@@ -314,21 +314,21 @@
         }
         output(value) {
             const outval = this.outValueScale(value);
-            // NOTE: outputColor only handles hotcueColors
+            // NOTE: _outputColor only handles hotcueColors
             // and there is no hotcueColor for turning the LED
             // off. So the `send()` function is responsible for turning the
             // actual LED off.
             if (this.colorKey !== undefined && outval !== this.off) {
-                this.outputColor(engine.getValue(this.group, this.colorKey));
+                this._outputColor(engine.getValue(this.group, this.colorKey));
             } else {
                 this.send(outval);
             }
         }
-        outputColor(colorCode) {
+        _outputColor(colorCode) {
             // Sends the color from the colorCode to the controller. This
             // method will not be called if no colorKey has been specified.
             if (colorCode === undefined || colorCode < 0 || colorCode > 0xFFFFFF) {
-                console.warn("Ignoring invalid color code '" + colorCode + "' in outputColor()");
+                console.warn("Ignoring invalid color code '" + colorCode + "' in _outputColor()");
                 return;
             }
 
@@ -339,7 +339,7 @@
                 const nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
                 this.send(nearestColorValue);
             } else {
-                // Since outputColor has been called but no ColorMapper is
+                // Since _outputColor has been called but no ColorMapper is
                 // available, we can assume that controller supports arbitrary
                 // RGB color output.
                 this.sendRGB(colorCodeToObject(colorCode));
@@ -348,7 +348,8 @@
         sendRGB(_colorObject) {
             // This method needs to be overridden in controller mappings,
             // because the procedure is controller-dependent.
-            throw "sendRGB(colorObject) not implemented -- unable to send RGB colors";
+            throw "sendRGB(colorObject) not overridden -- unable to send RGB colors. \
+            Controller scripts must override this function with the implementation specific to that controller.";
         }
         connect() {
             super.connect();
@@ -356,7 +357,7 @@
                 // TODO (Swiftb0y): replace with arrow function once https://bugreports.qt.io/browse/QTBUG-95677 got fixed
                 this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
                     if (engine.getValue(this.group, this.outKey)) {
-                        this.outputColor(color);
+                        this._outputColor(color);
                     }
                 }.bind(this));
             }
