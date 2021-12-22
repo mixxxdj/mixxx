@@ -218,7 +218,7 @@ void PortMidiController::send(const QByteArray& data) {
     // Pm_WriteSysEx. Instead, it scans for a MIDI_EOX byte to know when the
     // message is over. If one is not provided, it will overflow the buffer and
     // cause a segfault.
-    if (!data.endsWith(MIDI_EOX)) {
+    if (!data.endsWith(static_cast<char>(MIDI_EOX))) {
         controllerDebug("SysEx message does not end with 0xF7 -- ignoring.");
         return;
     }
