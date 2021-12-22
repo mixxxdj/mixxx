@@ -354,7 +354,7 @@
         connect() {
             super.connect();
             if (this.group !== undefined && this.colorKey !== undefined) {
-                // TODO (Swiftb0y): replace with arrow function once https://bugreports.qt.io/browse/QTBUG-95677 got fixed
+                // TODO (https://bugreports.qt.io/browse/QTBUG-95677): replace with arrow function once this QT bug is fixed.
                 this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
                     if (engine.getValue(this.group, this.outKey)) {
                         this._outputColor(color);
