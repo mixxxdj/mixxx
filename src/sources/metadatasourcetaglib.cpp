@@ -34,6 +34,14 @@ const QString kSafelyWritableTempFileSuffix = QStringLiteral("_temp");
 // potential failures caused by exceeded path length.
 const QString kSafelyWritableOrigFileSuffix = QStringLiteral("_orig");
 
+#ifdef __WINDOWS__
+// After Mixxx has closed the track file, the indexer or virus scanner
+// might kick in and fail ReplaceFileW() with a sharing violation when
+// replacing the original file with the one with the updated metadata.
+const int kWindowsSharingViolationsRetries = 5;
+const int kWindowsSharingViolationsSleepMs = 100;
+#endif
+
 // Workaround for missing functionality in TagLib 1.11.x that
 // doesn't support to read text chunks from AIFF files.
 // See also:
@@ -708,74 +716,79 @@ class SafelyWritableFile final {
         }
         QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
 #ifdef __WINDOWS__
-        if (!ReplaceFileW(
-                    reinterpret_cast<LPCWSTR>(m_origFileName.utf16()),
-                    reinterpret_cast<LPCWSTR>(m_tempFileName.utf16()),
-                    reinterpret_cast<LPCWSTR>(backupFileName.utf16()),
-                    REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS,
-                    nullptr,
-                    nullptr)) {
-            DWORD error = GetLastError();
-            switch (error) {
-            case ERROR_UNABLE_TO_MOVE_REPLACEMENT:
-                // The m_tempFileName file could not be renamed. m_origFileName
-                // file and m_tempFileName file retain their original file names.
-                kLogger.critical()
-                        << "Unable to rename replacement file"
-                        << m_tempFileName
-                        << "->"
-                        << m_origFileName;
-                return false;
-            case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2:
-                // The m_tempFileName file could not be moved. The m_tempFileName file still exists
-                // under its original name; however, it has inherited the file streams and
-                // attributes from the file it is replacing. The m_origFileName file still exists.
-                kLogger.critical()
-                        << "Unable to move replacement file"
-                        << m_tempFileName
-                        << "->"
-                        << m_origFileName;
-                return false;
-            case ERROR_UNABLE_TO_REMOVE_REPLACED:
-                // The replaced file could not be deleted. The replaced and replacement files
-                // retain their original file names.
-                kLogger.critical()
-                        << "Unable to remove"
-                        << m_origFileName
-                        << "before replacing by"
-                        << m_tempFileName;
-                return false;
-            case ERROR_SHARING_VIOLATION:  
-                // The process cannot access the file because it is being used by another process.
-                kLogger.critical()
-                        << "Unable to replace"
-                        << m_origFileName
-                        << "by"
-                        << m_tempFileName
-                        << "because it is used by another process";
-                return false;
-            case ERROR_ACCESS_DENIED:
-                kLogger.critical()
-                        << "Unable to replace"
-                        << m_origFileName
-                        << "by"
-                        << m_tempFileName
-                        << "Access is denied";
-                return false;
-            default:
-                // If any other error is returned, such as ERROR_INVALID_PARAMETER, the replaced
-                // and replacement files will retain their original file names. In this scenario,
-                // a backup file does not exist and it is not guaranteed that the replacement file
-                // will have inherited all of the attributes and streams of the replaced file.
-                kLogger.critical()
-                        << "Error"
-                        << error
-                        << "during replacing"
-                        << m_origFileName
-                        << "by"
-                        << m_tempFileName;
-                return false;
+        int i = 0;
+        for (; i < kWindowsSharingViolationsRetries; ++i) {
+            if (!ReplaceFileW(
+                        reinterpret_cast<LPCWSTR>(m_origFileName.utf16()),
+                        reinterpret_cast<LPCWSTR>(m_tempFileName.utf16()),
+                        reinterpret_cast<LPCWSTR>(backupFileName.utf16()),
+                        REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS,
+                        nullptr,
+                        nullptr)) {
+                DWORD error = GetLastError();
+                switch (error) {
+                case ERROR_UNABLE_TO_MOVE_REPLACEMENT:
+                    // The m_tempFileName file could not be renamed. m_origFileName
+                    // file and m_tempFileName file retain their original file names.
+                    kLogger.critical()
+                            << "Unable to rename replacement file"
+                            << m_tempFileName
+                            << "->"
+                            << m_origFileName;
+                    return false;
+                case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2:
+                    // The m_tempFileName file could not be moved. The m_tempFileName file still exists
+                    // under its original name; however, it has inherited the file streams and
+                    // attributes from the file it is replacing. The m_origFileName file still exists.
+                    kLogger.critical()
+                            << "Unable to move replacement file"
+                            << m_tempFileName
+                            << "->"
+                            << m_origFileName;
+                    return false;
+                case ERROR_UNABLE_TO_REMOVE_REPLACED:
+                    // The replaced file could not be deleted. The replaced and replacement files
+                    // retain their original file names.
+                    kLogger.critical()
+                            << "Unable to remove"
+                            << m_origFileName
+                            << "before replacing by"
+                            << m_tempFileName;
+                    return false;
+                case ERROR_SHARING_VIOLATION:
+                    // The process cannot access the file because it is being used by another process.
+                    kLogger.critical()
+                            << "Unable to replace"
+                            << m_origFileName
+                            << "by"
+                            << m_tempFileName
+                            << "because it is used by another process";
+                    Sleep(kWindowsSharingViolationsSleepMs); // Note: Capital S for Windows API Sleep()
+                    continue;                                // Retry
+                case ERROR_ACCESS_DENIED:
+                    kLogger.critical()
+                            << "Unable to replace"
+                            << m_origFileName
+                            << "by"
+                            << m_tempFileName
+                            << "Access is denied";
+                    return false;
+                default:
+                    // If any other error is returned, such as ERROR_INVALID_PARAMETER, the replaced
+                    // and replacement files will retain their original file names. In this scenario,
+                    // a backup file does not exist and it is not guaranteed that the replacement file
+                    // will have inherited all of the attributes and streams of the replaced file.
+                    kLogger.critical()
+                            << "Error"
+                            << error
+                            << "during replacing"
+                            << m_origFileName
+                            << "by"
+                            << m_tempFileName;
+                    return false;
+                }
             }
+            break;
         }
         QFile backupFile(backupFileName);
         if (backupFile.exists()) {
@@ -786,6 +799,10 @@ class SafelyWritableFile final {
                         << backupFile.fileName();
                 return false;
             }
+        }
+        if (i >= kWindowsSharingViolationsRetries) {
+            // We have given up after the maximum retries in the loop above.
+            return false;
         }
 #else
         QFile newFile(m_tempFileName);
