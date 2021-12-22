@@ -691,6 +691,7 @@
         }
     };
 
+    // TODO: pull this out into separate library once we support ES6 modules
     const EffectUnit = class extends ComponentContainer {
         constructor(unitNumbers, allowFocusWhenParametersHidden, colors) {
             super();
