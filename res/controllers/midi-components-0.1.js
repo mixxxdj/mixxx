@@ -683,15 +683,11 @@
         }
         toggle() {
             // cycle through deckNumbers array
-            let index = this.deckNumbers.indexOf(parseInt(
+            const oldIndex = this.deckNumbers.indexOf(parseInt(
                 script.channelRegEx.exec(this.currentDeck)[1]
             ));
-            if (index === (this.deckNumbers.length - 1)) {
-                index = 0;
-            } else {
-                index += 1;
-            }
-            this.setCurrentDeck("[Channel" + this.deckNumbers[index] + "]");
+            const newIndex = (oldIndex + 1) % this.deckNumbers.length;
+            this.setCurrentDeck("[Channel" + this.deckNumbers[newIndex] + "]");
         }
     };
 
@@ -788,13 +784,9 @@
 
             this.toggle = function() {
                 // cycle through unitNumbers array
-                let index = this.unitNumbers.indexOf(this.currentUnitNumber);
-                if (index === (this.unitNumbers.length - 1)) {
-                    index = 0;
-                } else {
-                    index += 1;
-                }
-                this.setCurrentUnit(this.unitNumbers[index]);
+                const oldIndex = this.unitNumbers.indexOf(this.currentUnitNumber);
+                const newIndex = (oldIndex + 1) % this.deckNumbers.length;
+                this.setCurrentUnit(this.unitNumbers[newIndex]);
             };
 
             if (unitNumbers !== undefined) {
