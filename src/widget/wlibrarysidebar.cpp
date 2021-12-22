@@ -183,37 +183,43 @@ bool WLibrarySidebar::isLeafNodeSelected() {
 }
 
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
-    const int key = event->key();
-    if (key == Qt::Key_Return) {
+    switch (event->key()) {
+    case Qt::Key_Return:
         toggleSelectedItem();
         return;
-    } else if (key == Qt::Key_Down ||
-            key == Qt::Key_Up ||
-            key == Qt::Key_PageDown ||
-            key == Qt::Key_PageUp ||
-            key == Qt::Key_End ||
-            key == Qt::Key_Home) {
+    case Qt::Key_Down:
+    case Qt::Key_Up:
+    case Qt::Key_PageDown:
+    case Qt::Key_PageUp:
+    case Qt::Key_End:
+    case Qt::Key_Home: {
         // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
-        // But force the index to be activated/clicked after the selection
-        // changes. (Saves you from having to push "enter" after changing the
-        // selection.)
+        // After the selection changed force-activate (click) the newly selected
+        // item to save us from having to push "Enter".
         QModelIndexList selectedIndices = selectionModel()->selectedRows();
-        //Note: have to get the selected indices _after_ QTreeView::keyPressEvent()
-        if (selectedIndices.size() > 0) {
-            QModelIndex index = selectedIndices.at(0);
-            emit pressed(index);
+        if (selectedIndices.isEmpty()) {
+            return;
         }
+        QModelIndex selIndex = selectedIndices.first();
+        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
+            qDebug() << "invalid sidebar index";
+            return;
+        }
+        emit pressed(selIndex);
         return;
-    } else if (key == Qt::Key_Left) {
-        auto selModel = selectionModel();
-        QModelIndexList selectedRows = selModel->selectedRows();
-        if (selectedRows.isEmpty()) {
+    }
+    case Qt::Key_Left: {
+        QModelIndexList selectedIndices = selectionModel()->selectedRows();
+        if (selectedIndices.isEmpty()) {
             return;
         }
         // If an expanded item is selected let QTreeView collapse it
-        QModelIndex selIndex = selectedRows.first();
-        DEBUG_ASSERT(selIndex.isValid());
+        QModelIndex selIndex = selectedIndices.first();
+        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
+            qDebug() << "invalid sidebar index";
+            return;
+        }
         if (isExpanded(selIndex)) {
             QTreeView::keyPressEvent(event);
             return;
@@ -225,13 +231,14 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
             emit pressed(parentIndex);
         }
         return;
-    } else if (key == Qt::Key_Escape) {
+    }
+    case Qt::Key_Escape:
+        // Focus tracks table
         emit sidebarFocusChange(FocusWidget::TracksTable);
         return;
+    default:
+        QTreeView::keyPressEvent(event);
     }
-
-    // Fall through to default handler.
-    QTreeView::keyPressEvent(event);
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
