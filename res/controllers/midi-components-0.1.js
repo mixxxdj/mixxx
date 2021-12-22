@@ -165,13 +165,17 @@
             return value > 0;
         }
         input(channel, control, value, status, _group) {
-            if (this.type === undefined || this.type === Button.types.push) {
+            switch (this.type) {
+            case undefined:
+            case Button.types.push:
                 this.inSetValue(this.isPress(channel, control, value, status));
-            } else if (this.type === Button.types.toggle) {
+                break;
+            case Button.types.toggle:
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                 }
-            } else if (this.type === Button.types.powerWindow) {
+                break;
+            case Button.types.powerWindow:
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                     this.isLongPressed = false;
@@ -189,6 +193,11 @@
                     }
                     this.isLongPressed = false;
                 }
+                break;
+            default:
+                console.warn(`invalid button type: ${this.type}`);
+                console.warn("make sure to only use components.Button.types.*");
+                break;
             }
         }
         outValueScale(value) {
