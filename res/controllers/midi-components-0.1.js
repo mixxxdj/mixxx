@@ -455,10 +455,7 @@
             if (this.MSB !== undefined) {
                 value = (this.MSB << 7) + value;
             }
-            let newValue = this.inValueScale(value);
-            if (this.invert) {
-                newValue = 1 - newValue;
-            }
+            const newValue = this.inValueScale(value);
             this.inSetParameter(newValue);
             if (!this.firstValueReceived) {
                 this.firstValueReceived = true;
