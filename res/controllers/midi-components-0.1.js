@@ -982,14 +982,15 @@
                         this.color = colors.focusChooseMode;
                     }
                     this.input = function(channel, control, value, status, _group) {
-                        if (this.isPress(channel, control, value, status)) {
-                            if (engine.getValue(eu.group, "focused_effect") === this.number) {
-                                // unfocus and make knobs control metaknobs
-                                engine.setValue(eu.group, "focused_effect", 0);
-                            } else {
-                                // focus this effect
-                                engine.setValue(eu.group, "focused_effect", this.number);
-                            }
+                        if (!this.isPress(channel, control, value, status)) {
+                            return;
+                        }
+                        if (engine.getValue(eu.group, "focused_effect") === this.number) {
+                            // unfocus and make knobs control metaknobs
+                            engine.setValue(eu.group, "focused_effect", 0);
+                        } else {
+                            // focus this effect
+                            engine.setValue(eu.group, "focused_effect", this.number);
                         }
                     };
                     this.output = function(value, _group, _control) {
@@ -1047,14 +1048,15 @@
                             this.longPressTimer = engine.beginTimer(this.longPressTimeout,
                                 this.startEffectFocusChooseMode.bind(this),
                                 true);
-                            if (!showParameters) {
-                                if (!allowFocusWhenParametersHidden) {
-                                    engine.setValue(this.group, "show_parameters", 1);
-                                    // eu.onShowParametersChange will refocus the
-                                    // previously focused effect and show focus in skin
-                                }
-                                this.pressedWhenParametersHidden = true;
+                            if (showParameters) {
+                                return;
                             }
+                            if (!allowFocusWhenParametersHidden) {
+                                engine.setValue(this.group, "show_parameters", 1);
+                                // eu.onShowParametersChange will refocus the
+                                // previously focused effect and show focus in skin
+                            }
+                            this.pressedWhenParametersHidden = true;
                         } else {
                             if (this.longPressTimer) {
                                 engine.stopTimer(this.longPressTimer);
