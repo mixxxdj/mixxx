@@ -70,6 +70,8 @@ repos:
     stages:
     - commit
     - manual
+    additional_dependencies:
+    - eslint-plugin-jsdoc@^v37.4.0
 - repo: local
   hooks:
   - id: clang-format

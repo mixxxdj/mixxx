@@ -1,5 +1,5 @@
 {
-  "extends": "eslint:recommended",
+  "extends": ["eslint:recommended", "plugin:jsdoc/recommended"],
   "parserOptions": {
     "ecmaVersion": 7,
     "sourceType": "script"
@@ -7,6 +7,7 @@
   "env": {
     "es6": true
   },
+  "plugins": ["jsdoc"],
   "rules": {
     "array-bracket-spacing" : "warn",
     "block-spacing": "warn",
