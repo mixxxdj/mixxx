@@ -222,6 +222,7 @@ void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     libraryWidget->registerView("BROWSEHOME", edit);
+    m_pLibrary->bindFeatureRootView(edit);
 }
 
 void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -262,6 +263,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         m_browseModel.setPath(std::move(dirAccess));
     }
     emit showTrackModel(&m_proxyModel);
+    emit disableSearch();
     emit enableCoverArtDisplay(false);
 }
 

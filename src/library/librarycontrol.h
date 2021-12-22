@@ -4,6 +4,7 @@
 
 #include "control/controlencoder.h"
 #include "control/controlproxy.h"
+#include "library/library_decl.h"
 #include "util/memory.h"
 
 class ControlObject;
@@ -43,6 +44,8 @@ class LibraryControl : public QObject {
     void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
     void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
+    // Give the keyboard focus to one of the library widgets
+    void setLibraryFocus(FocusWidget newFocusWidget);
 
   signals:
     void clearSearchIfClearButtonHasFocus();
@@ -103,8 +106,6 @@ class LibraryControl : public QObject {
 
     // Simulate pressing a key on the keyboard
     void emitKeyEvent(QKeyEvent&& event);
-    // Give the keyboard focus to the main library pane
-    void setLibraryFocus();
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveUp;
@@ -125,6 +126,7 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pMoveFocusForward;
     std::unique_ptr<ControlPushButton> m_pMoveFocusBackward;
     std::unique_ptr<ControlEncoder> m_pMoveFocus;
+    std::unique_ptr<ControlPushButton> m_pLibraryFocusedWidgetCO;
 
     // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pGoToItem;

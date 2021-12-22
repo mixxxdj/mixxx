@@ -428,11 +428,11 @@ void LibraryScanner::slotFinishUnhashedScan() {
            "%d changed/added directories. "
            "%d tracks verified from changed/added directories. "
            "%d new tracks.",
-           m_scannerGlobal->timerElapsed().formatNanosWithUnit().toLocal8Bit().constData(),
-           m_scannerGlobal->verifiedDirectories().size(),
-           m_scannerGlobal->numScannedDirectories(),
-           m_scannerGlobal->verifiedTracks().size(),
-           m_scannerGlobal->addedTracks().size());
+            m_scannerGlobal->timerElapsed().formatNanosWithUnit().toLocal8Bit().constData(),
+            static_cast<int>(m_scannerGlobal->verifiedDirectories().size()),
+            m_scannerGlobal->numScannedDirectories(),
+            static_cast<int>(m_scannerGlobal->verifiedTracks().size()),
+            static_cast<int>(m_scannerGlobal->addedTracks().size()));
 
     m_scannerGlobal.clear();
     changeScannerState(FINISHED);

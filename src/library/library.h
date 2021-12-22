@@ -36,6 +36,7 @@ class TrackModel;
 class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
+class WLibraryTextBrowser;
 
 #ifdef __ENGINEPRIME__
 namespace mixxx {
@@ -69,16 +70,12 @@ class Library: public QObject {
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
+    void bindFeatureRootView(WLibraryTextBrowser* pTextBrowser);
 
     void addFeature(LibraryFeature* feature);
 
     /// Needed for exposing models to QML
     LibraryTableModel* trackTableModel() const;
-
-    /// Needed for exposing sidebar to QML
-    SidebarModel* sidebarModel() const {
-        return m_pSidebarModel.get();
-    }
 
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;

@@ -247,7 +247,11 @@ bool BeatGrid::hasBeatInRange(audio::FramePos startPosition, audio::FramePos end
     return false;
 }
 
-mixxx::Bpm BeatGrid::getBpm() const {
+mixxx::Bpm BeatGrid::getBpmInRange(
+        audio::FramePos startPosition, audio::FramePos endPosition) const {
+    Q_UNUSED(startPosition);
+    Q_UNUSED(endPosition);
+
     if (!isValid()) {
         return {};
     }
@@ -258,12 +262,16 @@ mixxx::Bpm BeatGrid::getBpm() const {
 mixxx::Bpm BeatGrid::getBpmAroundPosition(audio::FramePos position, int n) const {
     Q_UNUSED(position);
     Q_UNUSED(n);
-    return getBpm();
+
+    if (!isValid()) {
+        return {};
+    }
+    return bpm();
 }
 
-BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
+std::optional<BeatsPointer> BeatGrid::tryTranslate(audio::FrameDiff_t offset) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return clonePointer();
+        return std::nullopt;
     }
 
     mixxx::track::io::BeatGrid grid = m_grid;
@@ -275,9 +283,9 @@ BeatsPointer BeatGrid::translate(audio::FrameDiff_t offset) const {
     return std::make_shared<BeatGrid>(MakeSharedTag{}, *this, grid, m_beatLengthFrames);
 }
 
-BeatsPointer BeatGrid::scale(BpmScale scale) const {
+std::optional<BeatsPointer> BeatGrid::tryScale(BpmScale scale) const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
-        return clonePointer();
+        return std::nullopt;
     }
 
     mixxx::track::io::BeatGrid grid = m_grid;
@@ -304,11 +312,12 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return clonePointer();
+        return std::nullopt;
     }
 
     if (!bpm.isValid()) {
-        return clonePointer();
+        qWarning() << "BeatGrid: Scaling would result in invalid BPM!";
+        return std::nullopt;
     }
 
     bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
@@ -317,9 +326,9 @@ BeatsPointer BeatGrid::scale(BpmScale scale) const {
     return std::make_shared<BeatGrid>(MakeSharedTag{}, *this, grid, beatLengthFrames);
 }
 
-BeatsPointer BeatGrid::setBpm(mixxx::Bpm bpm) const {
+std::optional<BeatsPointer> BeatGrid::trySetBpm(mixxx::Bpm bpm) const {
     VERIFY_OR_DEBUG_ASSERT(bpm.isValid()) {
-        return clonePointer();
+        return std::nullopt;
     }
 
     mixxx::track::io::BeatGrid grid = m_grid;

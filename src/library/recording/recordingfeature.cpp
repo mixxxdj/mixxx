@@ -67,7 +67,6 @@ void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 void RecordingFeature::activate() {
     emit refreshBrowseModel();
     emit switchToView(kViewName);
-    // Ask the view to emit a restoreSearch signal.
-    emit requestRestoreSearch();
+    emit disableSearch();
     emit enableCoverArtDisplay(false);
 }

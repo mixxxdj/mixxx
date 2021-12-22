@@ -40,6 +40,7 @@ Q_IMPORT_PLUGIN(QJpegPlugin)
 Q_IMPORT_PLUGIN(QGifPlugin)
 #endif // QT_STATIC
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 namespace {
 
 /// This class allows to change the button of a mouse event on the fly.
@@ -53,6 +54,7 @@ class QMouseEventEditable : public QMouseEvent {
 };
 
 } // anonymous namespace
+#endif
 
 MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
@@ -91,7 +93,9 @@ void MixxxApplication::registerMetaTypes() {
 
     // Sound devices
     qRegisterMetaType<SoundDeviceId>();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QMetaType::registerComparators<SoundDeviceId>();
+#endif
 
     // Various custom data types
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
@@ -103,6 +107,7 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 bool MixxxApplication::notify(QObject* target, QEvent* event) {
     // All touch events are translated into two simultaneous events: one for
     // the target QWidgetWindow and one for the target QWidget.
@@ -147,3 +152,4 @@ bool MixxxApplication::touchIsRightButton() {
     }
     return m_pTouchShift->toBool();
 }
+#endif
