@@ -144,10 +144,14 @@
             }
         }
     };
+    // if true, output values are sent not only to the designated midi channel and control, but also sent to associated midi controls.
     Component.prototype.max = 127;
     Component.prototype.shiftOffset = 0;
+    // only if `sendShifted` is true, will `sendShifted` or `shiftControl` be respected. See Component#send() code above.
     Component.prototype.sendShifted = false;
+    // if `shiftChannel` is true, output values will be sent to the regular midi channel as well as the channel offset by `shiftOffset`.
     Component.prototype.shiftChannel = false;
+    // if `shiftControl` is true, output values will be sent to the regular midi control as well as the control offset by `shiftOffset`.
     Component.prototype.shiftControl = false;
 
     const Button = class extends Component {
