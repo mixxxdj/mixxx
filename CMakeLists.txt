@@ -813,8 +813,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/sources/soundsourcesndfile.cpp
   src/track/albuminfo.cpp
   src/track/beatfactory.cpp
-  src/track/beatgrid.cpp
-  src/track/beatmap.cpp
   src/track/beats.cpp
   src/track/beatutils.cpp
   src/track/bpm.cpp
@@ -904,6 +902,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
+  src/waveform/waveform.cpp
+  src/waveform/waveformfactory.cpp
 )
 if(NOT QT6)
   target_sources(mixxx-lib PRIVATE
@@ -974,8 +974,6 @@ if(NOT QT6)
     src/waveform/visualplayposition.cpp
     src/waveform/visualsmanager.cpp
     src/waveform/vsyncthread.cpp
-    src/waveform/waveform.cpp
-    src/waveform/waveformfactory.cpp
     src/waveform/waveformmarklabel.cpp
     src/waveform/waveformwidgetfactory.cpp
     src/waveform/widgets/emptywaveformwidget.cpp
@@ -1557,6 +1555,7 @@ add_executable(mixxx-test
   src/test/baseeffecttest.cpp
   src/test/beatgridtest.cpp
   src/test/beatmaptest.cpp
+  src/test/beatstest.cpp
   src/test/beatstranslatetest.cpp
   src/test/bpmtest.cpp
   src/test/bpmcontrol_test.cpp

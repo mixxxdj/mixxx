@@ -13,7 +13,7 @@
 namespace {
 
 // Maximum allowed frame position inaccuracy after reimport
-constexpr double kEpsilon = 0.1;
+constexpr double kEpsilon = 1;
 
 } // namespace
 

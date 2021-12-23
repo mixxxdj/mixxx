@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QString>
 
+#include "audio/frame.h"
 #include "track/bpm.h"
 
 class EngineChannel;
@@ -112,6 +113,7 @@ class Syncable {
     // Only relevant for player Syncables.
     virtual bool isPlaying() const = 0;
     virtual bool isAudible() const = 0;
+    virtual bool isQuantized() const = 0;
 
     // Gets the current speed of the syncable in bpm (bpm * rate slider), doesn't
     // include scratch or FF/REW values.
@@ -174,6 +176,9 @@ class SyncableListener {
 
     // Notify Syncable that the Syncable's scratching state changed.
     virtual void notifyScratching(Syncable* pSyncable, bool scratching) = 0;
+
+    // Notify that the Syncable has seeked.
+    virtual void notifySeek(Syncable* pSyncable, mixxx::audio::FramePos position) = 0;
 
     // A Syncable must never call notifyBeatDistanceChanged in response to a
     // setBeatDistance() call.

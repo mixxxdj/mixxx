@@ -379,14 +379,6 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
     const double error = shortestPercentageChange(syncTargetBeatDistance, thisBeatDistance);
     const double curUserOffset = m_dUserOffset.getValue();
 
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << m_group << "****************";
-        kLogger.trace() << "target beat distance:" << syncTargetBeatDistance;
-        kLogger.trace() << "my     beat distance:" << thisBeatDistance;
-        kLogger.trace() << "user offset distance:" << curUserOffset;
-        kLogger.trace() << "error               :" << error;
-    }
-
     double adjustment = 1.0;
 
     if (userTweakingSync) {
@@ -429,6 +421,14 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         }
     }
     m_dLastSyncAdjustment = adjustment;
+    if (kLogger.traceEnabled() && adjustment - 1.0 > 0.01) {
+        kLogger.trace() << m_group << "****************";
+        kLogger.trace() << "target beat distance:" << syncTargetBeatDistance;
+        kLogger.trace() << "my     beat distance:" << thisBeatDistance;
+        kLogger.trace() << "user offset distance:" << curUserOffset;
+        kLogger.trace() << "error               :" << error;
+        kLogger.trace() << "adjustment          :" << adjustment;
+    }
     return adjustment;
 }
 
@@ -966,6 +966,10 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     resetSyncAdjustment();
 }
 
+void BpmControl::notifySeek(mixxx::audio::FramePos position) {
+    updateBeatDistance(position);
+}
+
 void BpmControl::slotBeatsTranslate(double v) {
     if (v <= 0) {
         return;
@@ -1035,7 +1039,11 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    double beatDistance = getBeatDistance(frameInfo().currentPosition);
+    return updateBeatDistance(frameInfo().currentPosition);
+}
+
+double BpmControl::updateBeatDistance(mixxx::audio::FramePos playpos) {
+    double beatDistance = getBeatDistance(playpos);
     m_pThisBeatDistance->set(beatDistance);
     if (!isSynchronized() && m_dUserOffset.getValue() != 0.0) {
         m_dUserOffset.setValue(0.0);
@@ -1058,11 +1066,11 @@ void BpmControl::updateInstantaneousBpm(double instantaneousBpm) {
 }
 
 void BpmControl::resetSyncAdjustment() {
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::resetSyncAdjustment";
-    }
     // Immediately edit the beat distance to reflect the new reality.
     double new_distance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::resetSyncAdjustment: " << new_distance;
+    }
     m_pThisBeatDistance->set(new_distance);
     m_dUserOffset.setValue(0.0);
     m_resetSyncAdjustment = true;

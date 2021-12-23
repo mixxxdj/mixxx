@@ -944,7 +944,7 @@ QList<QUrl> BaseTrackTableModel::collectUrls(
             continue;
         }
         visitedRows.insert(index.row());
-        QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
+        QUrl url = getTrackUrl(index);
         if (url.isValid()) {
             urls.append(url);
         }
