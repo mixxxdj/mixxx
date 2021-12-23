@@ -583,13 +583,13 @@ void LibraryControl::slotSelectTrack(double v) {
 
 void LibraryControl::slotMoveUp(double v) {
     if (v > 0) {
-        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier});
+        slotMoveVertical(1);
     }
 }
 
 void LibraryControl::slotMoveDown(double v) {
     if (v > 0) {
-        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier});
+        slotMoveVertical(-1);
     }
 }
 
@@ -652,13 +652,13 @@ void LibraryControl::slotMoveVertical(double v) {
 
 void LibraryControl::slotScrollUp(double v) {
     if (v > 0) {
-        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_PageUp, Qt::NoModifier});
+        slotScrollVertical(-1);
     }
 }
 
 void LibraryControl::slotScrollDown(double v) {
     if (v > 0) {
-        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_PageDown, Qt::NoModifier});
+        slotScrollVertical(1);
     }
 }
 
@@ -670,13 +670,13 @@ void LibraryControl::slotScrollVertical(double v) {
 
 void LibraryControl::slotMoveLeft(double v) {
     if (v > 0) {
-        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Left, Qt::NoModifier});
+        slotMoveHorizontal(-1);
     }
 }
 
 void LibraryControl::slotMoveRight(double v) {
     if (v > 0) {
-        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Right, Qt::NoModifier});
+        slotMoveHorizontal(1);
     }
 }
 
@@ -688,13 +688,13 @@ void LibraryControl::slotMoveHorizontal(double v) {
 
 void LibraryControl::slotMoveFocusForward(double v) {
     if (v > 0) {
-        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier});
+        slotMoveFocus(1);
     }
 }
 
 void LibraryControl::slotMoveFocusBackward(double v) {
     if (v > 0) {
-        emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier});
+        slotMoveFocus(-1);
     }
 }
 
