@@ -227,6 +227,9 @@ bool HidController::poll() {
             return false;
         } else if (bytesRead == 0) {
             // No packets left to be read
+
+            // If we are below both limits, we can say safely that no packages are lost.
+            // If we are at or above the limits, it can be, that reports are dropped. -> Print warning
             if ((inputReportCounter >= kSmallestRingBufferInReports) ||
                     (inputReportByteCounter >= kSmallestRingBufferInBytes)) {
                 qCWarning(m_logOutput)
