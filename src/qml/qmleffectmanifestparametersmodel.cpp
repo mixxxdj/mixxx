@@ -2,7 +2,7 @@
 
 #include <QModelIndex>
 
-#include "effects/effectmanifest.h"
+#include "effects/backends/effectmanifest.h"
 
 namespace mixxx {
 namespace qml {
@@ -12,7 +12,7 @@ const QHash<int, QByteArray> kRoleNames = {
         {QmlEffectManifestParametersModel::NameRole, "name"},
         {QmlEffectManifestParametersModel::ShortNameRole, "shortName"},
         {QmlEffectManifestParametersModel::DescriptionRole, "description"},
-        {QmlEffectManifestParametersModel::ControlHintRole, "controlHint"},
+        {QmlEffectManifestParametersModel::TypeRole, "type"},
         {QmlEffectManifestParametersModel::ControlKeyRole, "controlKey"},
 };
 }
@@ -39,10 +39,10 @@ QVariant QmlEffectManifestParametersModel::data(const QModelIndex& index, int ro
         return pParameter->shortName();
     case QmlEffectManifestParametersModel::DescriptionRole:
         return pParameter->description();
-    case QmlEffectManifestParametersModel::ControlHintRole:
+    case QmlEffectManifestParametersModel::TypeRole:
         // TODO: Remove this cast, instead expose the enum directly using
         // Q_ENUM after #2618 has been merged.
-        return static_cast<int>(pParameter->controlHint());
+        return static_cast<int>(pParameter->parameterType());
     case QmlEffectManifestParametersModel::ControlKeyRole: {
         // FIXME: Unfortunately our effect parameter controls are messed up.
         // Even though we only have a single, ordered list of parameters, our
@@ -70,21 +70,14 @@ QVariant QmlEffectManifestParametersModel::data(const QModelIndex& index, int ro
         // Due to backwards compatibility, we cannot fix this. This attempts to
         // solve this problem by letting the user fetch the appropriate key
         // from the model.
-        if (pParameter->controlHint() == EffectManifestParameter::ControlHint::UNKNOWN) {
-            return QString();
-        }
-        const bool isButton = pParameter->controlHint() ==
-                EffectManifestParameter::ControlHint::TOGGLE_STEPPING;
+        const bool isButton = pParameter->parameterType() ==
+                EffectManifestParameter::ParameterType::Button;
         int keyNumber = 1;
         for (int i = 0; i < index.row(); i++) {
             const EffectManifestParameterPointer pPrevParameter = parameters.at(i);
-            if (pPrevParameter->controlHint() == EffectManifestParameter::ControlHint::UNKNOWN) {
-                continue;
-            }
             if (isButton ==
-                    (pPrevParameter->controlHint() ==
-                            EffectManifestParameter::ControlHint::
-                                    TOGGLE_STEPPING)) {
+                    (pPrevParameter->parameterType() ==
+                            EffectManifestParameter::ParameterType::Button)) {
                 keyNumber++;
             }
         }

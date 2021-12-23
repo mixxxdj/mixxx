@@ -6,7 +6,7 @@ import "Theme"
 Item {
     id: root
 
-    property Mixxx.EffectSlotProxy slot: Mixxx.EffectsManager.getEffectSlot(1, unitNumber, effectNumber)
+    property Mixxx.EffectSlotProxy slot: Mixxx.EffectsManager.getEffectSlot(unitNumber, effectNumber)
     property int unitNumber // required
     property int effectNumber // required
     property bool expanded: false
@@ -111,8 +111,8 @@ Item {
             // TODO: Use null coalescing when we switch to Qt >= 5.15
             property string label: shortName ? shortName : name
             property string key: controlKey
-            property bool isButton: controlHint > 0 && controlHint == 6
-            property bool isKnob: controlHint > 0 && controlHint < 6
+            property bool isKnob: type == 0
+            property bool isButton: type == 1
 
             width: 50
             height: 50

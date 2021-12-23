@@ -3,7 +3,6 @@
 #include <QRegularExpression>
 
 #include "control/controlobject.h"
-#include "effects/effectrack.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/enginemaster.h"
@@ -414,25 +413,8 @@ void PlayerManager::addDeckInner() {
     m_pSoundManager->registerInput(
             AudioInput(AudioInput::VINYLCONTROL, 0, 2, deckIndex), pEngineDeck);
 
-    // Setup equalizer rack for this deck.
-    EqualizerRackPointer pEqRack = m_pEffectsManager->getEqualizerRack(0);
-    VERIFY_OR_DEBUG_ASSERT(pEqRack) {
-        return;
-    }
-    pEqRack->setupForGroup(handleGroup.name());
-
-    // BaseTrackPlayer needs to delay until we have setup the equalizer rack for
-    // this deck to fetch the legacy EQ controls.
-    // TODO(rryan): Find a way to remove this cruft.
-    pDeck->setupEqControls();
-
-    // Setup quick effect rack for this deck.
-    QuickEffectRackPointer pQuickEffectRack =
-            m_pEffectsManager->getQuickEffectRack(0);
-    VERIFY_OR_DEBUG_ASSERT(pQuickEffectRack) {
-        return;
-    }
-    pQuickEffectRack->setupForGroup(handleGroup.name());
+    // Setup equalizer and QuickEffect chain for this deck.
+    m_pEffectsManager->addDeck(handleGroup.m_name);
 }
 
 void PlayerManager::loadSamplers() {

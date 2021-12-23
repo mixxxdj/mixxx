@@ -527,41 +527,51 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgkeywheel.ui
   src/dialog/dlgreplacecuecolor.cpp
   src/dialog/dlgreplacecuecolordlg.ui
-  src/effects/builtin/autopaneffect.cpp
-  src/effects/builtin/balanceeffect.cpp
-  src/effects/builtin/bessel4lvmixeqeffect.cpp
-  src/effects/builtin/bessel8lvmixeqeffect.cpp
-  src/effects/builtin/biquadfullkilleqeffect.cpp
-  src/effects/builtin/bitcrushereffect.cpp
-  src/effects/builtin/builtinbackend.cpp
-  src/effects/builtin/echoeffect.cpp
-  src/effects/builtin/filtereffect.cpp
-  src/effects/builtin/flangereffect.cpp
-  src/effects/builtin/graphiceqeffect.cpp
-  src/effects/builtin/linkwitzriley8eqeffect.cpp
-  src/effects/builtin/loudnesscontoureffect.cpp
-  src/effects/builtin/metronomeeffect.cpp
-  src/effects/builtin/whitenoiseeffect.cpp
-  src/effects/builtin/moogladder4filtereffect.cpp
-  src/effects/builtin/parametriceqeffect.cpp
-  src/effects/builtin/phasereffect.cpp
-  src/effects/builtin/reverbeffect.cpp
-  src/effects/builtin/threebandbiquadeqeffect.cpp
-  src/effects/builtin/tremoloeffect.cpp
-  src/effects/effect.cpp
   src/effects/effectbuttonparameterslot.cpp
   src/effects/effectchain.cpp
-  src/effects/effectchainmanager.cpp
-  src/effects/effectchainslot.cpp
-  src/effects/effectmanifest.cpp
-  src/effects/effectmanifestparameter.cpp
+  src/effects/effectchainmixmode.cpp
   src/effects/effectparameter.cpp
-  src/effects/effectparameterslot.cpp
+  src/effects/effectknobparameterslot.cpp
   src/effects/effectparameterslotbase.cpp
-  src/effects/effectrack.cpp
-  src/effects/effectsbackend.cpp
   src/effects/effectslot.cpp
   src/effects/effectsmanager.cpp
+  src/effects/effectsmessenger.cpp
+  src/effects/visibleeffectslist.cpp
+  src/effects/backends/effectsbackend.cpp
+  src/effects/backends/effectmanifest.cpp
+  src/effects/backends/effectmanifestparameter.cpp
+  src/effects/backends/builtin/autopaneffect.cpp
+  src/effects/backends/builtin/balanceeffect.cpp
+  src/effects/backends/builtin/bessel4lvmixeqeffect.cpp
+  src/effects/backends/builtin/bessel8lvmixeqeffect.cpp
+  src/effects/backends/builtin/biquadfullkilleqeffect.cpp
+  src/effects/backends/builtin/bitcrushereffect.cpp
+  src/effects/backends/builtin/builtinbackend.cpp
+  src/effects/backends/builtin/echoeffect.cpp
+  src/effects/backends/builtin/filtereffect.cpp
+  src/effects/backends/builtin/flangereffect.cpp
+  src/effects/backends/builtin/graphiceqeffect.cpp
+  src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
+  src/effects/backends/builtin/loudnesscontoureffect.cpp
+  src/effects/backends/builtin/metronomeeffect.cpp
+  src/effects/backends/builtin/moogladder4filtereffect.cpp
+  src/effects/backends/builtin/parametriceqeffect.cpp
+  src/effects/backends/builtin/phasereffect.cpp
+  src/effects/backends/builtin/reverbeffect.cpp
+  src/effects/backends/builtin/threebandbiquadeqeffect.cpp
+  src/effects/backends/builtin/tremoloeffect.cpp
+  src/effects/backends/builtin/whitenoiseeffect.cpp
+  src/effects/backends/effectsbackendmanager.cpp
+  src/effects/chains/equalizereffectchain.cpp
+  src/effects/chains/outputeffectchain.cpp
+  src/effects/chains/pergroupeffectchain.cpp
+  src/effects/chains/quickeffectchain.cpp
+  src/effects/chains/standardeffectchain.cpp
+  src/effects/presets/effectchainpreset.cpp
+  src/effects/presets/effectchainpresetmanager.cpp
+  src/effects/presets/effectparameterpreset.cpp
+  src/effects/presets/effectpreset.cpp
+  src/effects/presets/effectpresetmanager.cpp
   src/encoder/encoder.cpp
   src/encoder/encoderfdkaac.cpp
   src/encoder/encoderfdkaacsettings.cpp
@@ -595,7 +605,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/controls/ratecontrol.cpp
   src/engine/effects/engineeffect.cpp
   src/engine/effects/engineeffectchain.cpp
-  src/engine/effects/engineeffectrack.cpp
   src/engine/effects/engineeffectsmanager.cpp
   src/engine/enginebuffer.cpp
   src/engine/enginedelay.cpp
@@ -756,7 +765,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefkeydlg.ui
   src/preferences/dialog/dlgpreflibrary.cpp
   src/preferences/dialog/dlgpreflibrarydlg.ui
-  src/preferences/dialog/dlgpreflv2dlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
@@ -768,7 +776,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefvinyldlg.ui
   src/preferences/dialog/dlgprefwaveform.cpp
   src/preferences/dialog/dlgprefwaveformdlg.ui
-  src/preferences/effectsettingsmodel.cpp
+  src/preferences/effectchainpresetlistmodel.cpp
+  src/preferences/effectmanifesttablemodel.cpp
   src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditormodel.cpp
   src/preferences/colorpalettesettings.cpp
@@ -868,6 +877,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/experiment.cpp
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
+  src/util/filename.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
   src/util/logger.cpp
@@ -1006,13 +1016,15 @@ if(NOT QT6)
     src/widget/wcoverartmenu.cpp
     src/widget/wcuemenupopup.cpp
     src/widget/wdisplay.cpp
-    src/widget/weffect.cpp
-    src/widget/weffectbuttonparameter.cpp
+    src/widget/weffectbuttonparametername.cpp
     src/widget/weffectchain.cpp
-    src/widget/weffectparameter.cpp
-    src/widget/weffectparameterbase.cpp
+    src/widget/weffectchainpresetbutton.cpp
+    src/widget/weffectchainpresetselector.cpp
+    src/widget/weffectknobparametername.cpp
+    src/widget/weffectname.cpp
     src/widget/weffectparameterknob.cpp
     src/widget/weffectparameterknobcomposed.cpp
+    src/widget/weffectparameternamebase.cpp
     src/widget/weffectpushbutton.cpp
     src/widget/weffectselector.cpp
     src/widget/whotcuebutton.cpp
@@ -1348,6 +1360,14 @@ install(
     "${MIXXX_INSTALL_DATADIR}"
 )
 
+# Effect presets
+install(
+  DIRECTORY
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/effects"
+  DESTINATION
+    "${MIXXX_INSTALL_DATADIR}"
+)
+
 # Translation files
 install(
   DIRECTORY
@@ -1552,7 +1572,6 @@ add_executable(mixxx-test
   src/test/analyzersilence_test.cpp
   src/test/audiotaperpot_test.cpp
   src/test/autodjprocessor_test.cpp
-  src/test/baseeffecttest.cpp
   src/test/beatgridtest.cpp
   src/test/beatmaptest.cpp
   src/test/beatstest.cpp
@@ -1581,9 +1600,8 @@ add_executable(mixxx-test
   src/test/directorydaotest.cpp
   src/test/duration_test.cpp
   src/test/durationutiltest.cpp
-  src/test/effectchainslottest.cpp
-  src/test/effectslottest.cpp
-  src/test/effectsmanagertest.cpp
+  #TODO: write useful tests for refactored effects system
+  #src/test/effectchainslottest.cpp
   src/test/enginebufferscalelineartest.cpp
   src/test/enginebuffertest.cpp
   src/test/enginefilterbiquadtest.cpp
@@ -1605,7 +1623,8 @@ add_executable(mixxx-test
   src/test/main.cpp
   src/test/mathutiltest.cpp
   src/test/metadatatest.cpp
-  src/test/metaknob_link_test.cpp
+  #TODO: make this build again
+  #src/test/metaknob_link_test.cpp
   src/test/midicontrollertest.cpp
   src/test/mixxxtest.cpp
   src/test/movinginterquartilemean_test.cpp
@@ -2579,10 +2598,9 @@ if(LILV)
     message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and its development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE
-    src/effects/lv2/lv2backend.cpp
-    src/effects/lv2/lv2effectprocessor.cpp
-    src/effects/lv2/lv2manifest.cpp
-    src/preferences/dialog/dlgpreflv2.cpp
+    src/effects/backends/lv2/lv2backend.cpp
+    src/effects/backends/lv2/lv2effectprocessor.cpp
+    src/effects/backends/lv2/lv2manifest.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __LILV__)
   target_link_libraries(mixxx-lib PRIVATE lilv::lilv)
