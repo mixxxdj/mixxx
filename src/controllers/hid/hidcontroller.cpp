@@ -12,7 +12,6 @@
 namespace {
 constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
-constexpr int kMaxHidInputReportId = 255;
 } // namespace
 
 HidController::HidController(
@@ -195,7 +194,7 @@ QByteArray HidController::getInputReport(unsigned int reportID) {
 
 bool HidController::poll() {
     Trace hidRead("HidController poll");
-    // This function reads the available HID Input Reports using hidapi
+    // This function reads the available HID Input Reports using hidapi.
     // Important to know is, that this reading is not a hardware operation,
     // instead it reads previously received HID Input Reports from a ring buffer.
     // Depending on the hidapi backend implementation the ring buffer is either part
@@ -211,31 +210,36 @@ bool HidController::poll() {
     // - If the processing of all received HID Input Reports in the JS mapping code takes longer than the interval between incoming reports,
     //   it could stall other low priority tasks.
 
-    int inputReportCounter[kMaxHidInputReportId + 1] = {0};
+    constexpr int kSmallestRingBufferInReports = 30;
+    constexpr int kSmallestRingBufferInBytes = 2048;
+
+    int inputReportCounter = 0;
+    int inputReportByteCounter = 0;
     while (true) {
         int bytesRead = hid_read(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
         if (bytesRead < 0) {
             // -1 is the only error value according to hidapi documentation.
+            qCWarning(m_logOutput) << "Unable to read HID Input Reports from" << getName() << ":"
+                                   << mixxx::convertWCStringToQString(
+                                              hid_error(m_pHidDevice),
+                                              kMaxHidErrorMessageSize);
             DEBUG_ASSERT(bytesRead == -1);
             return false;
         } else if (bytesRead == 0) {
-            // No packet was available to be read
-            for (int rptIdx = 0; rptIdx <= kMaxHidInputReportId; rptIdx++) {
-                if (inputReportCounter[rptIdx] > 1) {
-                    qCWarning(m_logOutput)
-                            << getName() << ": Read "
-                            << inputReportCounter[rptIdx]
-                            << " HID input reports with Report ID " << rptIdx
-                            << "in the same polling interval. This indicates a "
-                               "performance problem with controller mapping or "
-                               "a too slow polling interval.";
-                }
+            // No packets left to be read
+            if ((inputReportCounter >= kSmallestRingBufferInReports) ||
+                    (inputReportByteCounter >= kSmallestRingBufferInBytes)) {
+                qCWarning(m_logOutput)
+                        << getName() << ": Read "
+                        << inputReportCounter
+                        << " HID Input Reports with a combined size of " << inputReportByteCounter
+                        << "in the same polling interval. This indicates a "
+                           "performance problem with controller mapping.";
             }
             return true;
         }
-        inputReportCounter[m_pPollData
-                        [m_pollingBufferIndex]
-                        [0]]++; // Count reports read in this while loop per ID
+        inputReportCounter++;
+        inputReportByteCounter += bytesRead;
         processInputReport(bytesRead);
     }
 }
