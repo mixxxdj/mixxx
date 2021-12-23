@@ -97,6 +97,10 @@ TrackDAO::TrackDAO(CueDAO& cueDao,
             &PlaylistDAO::tracksRemovedFromPlayedHistory,
             this,
             [this](const QSet<TrackId>& playedTrackIds) {
+                if (playedTrackIds.isEmpty()) {
+                    // Nothing to do
+                    return;
+                }
                 VERIFY_OR_DEBUG_ASSERT(updatePlayCounterFromPlayedHistory(playedTrackIds)) {
                     return;
                 }
@@ -2225,6 +2229,14 @@ mixxx::FileAccess TrackDAO::relocateCachedTrack(
 
 bool TrackDAO::updatePlayCounterFromPlayedHistory(
         const QSet<TrackId>& trackIds) const {
+    // Invoking this function with an empty list is pointless.
+    // All following database queries assume that the list is
+    // not empty. Otherwise the played history of all tracks
+    // might be reset!!!
+    // https://bugs.launchpad.net/mixxx/+bug/1955159
+    VERIFY_OR_DEBUG_ASSERT(!trackIds.isEmpty()) {
+        return false;
+    }
     // Update both timesplay and last_played_at according to the
     // corresponding aggregated properties from the played history,
     // i.e. COUNT for the number of times a track has been played
