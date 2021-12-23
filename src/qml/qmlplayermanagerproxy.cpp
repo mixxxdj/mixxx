@@ -31,8 +31,8 @@ QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
     connect(pPlayerProxy,
             &QmlPlayerProxy::loadTrackFromLocationRequested,
             this,
-            [this, group](const QString& trackLocation) {
-                emit loadLocationToPlayer(trackLocation, group);
+            [this, group](const QString& trackLocation, bool play) {
+                emit loadLocationToPlayer(trackLocation, group, play);
             });
     connect(pPlayerProxy,
             &QmlPlayerProxy::cloneFromGroup,
