@@ -134,6 +134,10 @@ class LoopingControl : public EngineControl {
             mixxx::audio::FramePos oldLoopInPosition,
             mixxx::audio::FramePos newLoopInPosition,
             mixxx::audio::FramePos newLoopOutPosition);
+    mixxx::audio::FramePos findSnappedBeatloopStart(
+            const mixxx::BeatsPointer& pBeats,
+            mixxx::audio::FramePos currentPosition,
+            double beats) const;
 
     ControlPushButton* m_pCOBeatLoopActivate;
     ControlPushButton* m_pCOBeatLoopRollActivate;

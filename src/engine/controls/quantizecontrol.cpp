@@ -55,8 +55,13 @@ void QuantizeControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 void QuantizeControl::setFrameInfo(mixxx::audio::FramePos currentPosition,
         mixxx::audio::FramePos trackEndPosition,
         mixxx::audio::SampleRate sampleRate) {
-    EngineControl::setFrameInfo(currentPosition, trackEndPosition, sampleRate);
-    playPosChanged(currentPosition);
+    FrameInfo frameInf = frameInfo();
+    if (frameInf.currentPosition != currentPosition ||
+            frameInf.trackEndPosition != trackEndPosition ||
+            frameInf.sampleRate != sampleRate) {
+        EngineControl::setFrameInfo(currentPosition, trackEndPosition, sampleRate);
+        playPosChanged(currentPosition);
+    }
 }
 
 void QuantizeControl::playPosChanged(mixxx::audio::FramePos position) {
