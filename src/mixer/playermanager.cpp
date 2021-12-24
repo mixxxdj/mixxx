@@ -691,6 +691,17 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
     pDeck->slotLoadTrack(pTrack, false);
 }
 
+void PlayerManager::slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play) {
+    auto locker = lockMutex(&m_mutex);
+    BaseTrackPlayer* pDeck = findFirstStoppedPlayerInList(m_decks);
+    if (pDeck == nullptr) {
+        qDebug() << "PlayerManager: No stopped deck found, not loading track!";
+        return;
+    }
+
+    slotLoadLocationToPlayer(location, pDeck->getGroup(), play);
+}
+
 void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
     auto locker = lockMutex(&m_mutex);
     BaseTrackPlayer* pSampler = findFirstStoppedPlayerInList(m_samplers);

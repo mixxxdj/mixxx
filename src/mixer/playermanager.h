@@ -187,6 +187,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
+    void slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play = false);
     // Loads the location to the deck. deckNumber is 1-indexed
     void slotLoadToDeck(const QString& location, int deckNumber);
 

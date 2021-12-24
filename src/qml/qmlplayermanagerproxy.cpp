@@ -39,6 +39,20 @@ QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
     return pPlayerProxy;
 }
 
+void QmlPlayerManagerProxy::loadLocationIntoNextAvailableDeck(
+        const QString& trackLocation, bool play) {
+    m_pPlayerManager->slotLoadLocationIntoNextAvailableDeck(trackLocation, play);
+}
+
+void QmlPlayerManagerProxy::loadLocationUrlIntoNextAvailableDeck(
+        const QUrl& trackLocationUrl, bool play) {
+    if (trackLocationUrl.isLocalFile()) {
+        loadLocationIntoNextAvailableDeck(trackLocationUrl.toLocalFile(), play);
+    } else {
+        qWarning() << "QmlPlayerManagerProxy: URL" << trackLocationUrl << "is not a local file!";
+    }
+}
+
 void QmlPlayerManagerProxy::loadLocationToPlayer(
         const QString& location, const QString& group, bool play) {
     m_pPlayerManager->slotLoadLocationToPlayer(location, group, play);
