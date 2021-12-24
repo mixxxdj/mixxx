@@ -9,7 +9,7 @@ class BasePlayer : public QObject {
     BasePlayer(QObject* pParent, const QString& group);
     ~BasePlayer() override = default;
 
-    inline const QString& getGroup() {
+    inline const QString& getGroup() const {
         return m_group;
     }
 
