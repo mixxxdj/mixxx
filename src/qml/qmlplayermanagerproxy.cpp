@@ -11,10 +11,6 @@ namespace qml {
 QmlPlayerManagerProxy::QmlPlayerManagerProxy(
         std::shared_ptr<PlayerManager> pPlayerManager, QObject* parent)
         : QObject(parent), m_pPlayerManager(pPlayerManager) {
-    connect(this,
-            &QmlPlayerManagerProxy::loadLocationToPlayer,
-            m_pPlayerManager.get(),
-            &PlayerManager::loadLocationToPlayer);
 }
 
 QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
@@ -32,7 +28,7 @@ QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
             &QmlPlayerProxy::loadTrackFromLocationRequested,
             this,
             [this, group](const QString& trackLocation, bool play) {
-                emit loadLocationToPlayer(trackLocation, group, play);
+                loadLocationToPlayer(trackLocation, group, play);
             });
     connect(pPlayerProxy,
             &QmlPlayerProxy::cloneFromGroup,
@@ -41,6 +37,11 @@ QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
                 m_pPlayerManager->slotCloneDeck(sourceGroup, group);
             });
     return pPlayerProxy;
+}
+
+void QmlPlayerManagerProxy::loadLocationToPlayer(
+        const QString& location, const QString& group, bool play) {
+    m_pPlayerManager->slotLoadLocationToPlayer(location, group, play);
 }
 
 } // namespace qml
