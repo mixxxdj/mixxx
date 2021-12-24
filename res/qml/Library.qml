@@ -12,6 +12,7 @@ Item {
         LibraryControl {
             onMoveSelection: listView.moveSelection(offset)
             onLoadSelectedTrack: listView.loadSelectedTrack(group, play)
+            onLoadSelectedTrackIntoNextAvailableDeck: listView.loadSelectedTrackIntoNextAvailableDeck(play)
         }
 
         ListView {
@@ -28,6 +29,14 @@ Item {
                 let newIndex = currentIndex = (currentIndex + value) % rowCount;
                 while (newIndex < 0)newIndex += rowCount
                 currentIndex = newIndex;
+            }
+
+            function loadSelectedTrackIntoNextAvailableDeck(play) {
+                const url = model.get(currentIndex).fileUrl;
+                if (!url)
+                    return ;
+
+                Mixxx.PlayerManager.loadLocationUrlIntoNextAvailableDeck(url, play);
             }
 
             function loadSelectedTrack(group, play) {

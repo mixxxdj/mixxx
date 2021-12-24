@@ -8,6 +8,7 @@ Item {
 
     signal moveSelection(int offset)
     signal loadSelectedTrack(string group, bool play)
+    signal loadSelectedTrackIntoNextAvailableDeck(bool play)
 
     Mixxx.ControlProxy {
         id: focusedWidgetControl
@@ -15,6 +16,26 @@ Item {
         group: "[Library]"
         key: "focused_widget"
         Component.onCompleted: value = 3
+    }
+
+    Mixxx.ControlProxy {
+        group: "[Library]"
+        key: "GoToItem"
+        onValueChanged: {
+            if (value != 0 && root.focused)
+                root.loadSelectedTrackIntoNextAvailableDeck(false);
+
+        }
+    }
+
+    Mixxx.ControlProxy {
+        group: "[Playlist]"
+        key: "LoadSelectedIntoFirstStopped"
+        onValueChanged: {
+            if (value != 0)
+                root.loadSelectedTrackIntoNextAvailableDeck(false);
+
+        }
     }
 
     Mixxx.ControlProxy {
