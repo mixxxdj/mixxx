@@ -114,12 +114,12 @@ MixtrackPlatinum.init = function(id, debug) {
     engine.makeConnection("[Controls]", "ShowDurationRemaining", MixtrackPlatinum.timeElapsedCallback);
 
     // setup vumeter tracking
-    engine.makeConnection("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
+    engine.makeCompressedConnection("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeCompressedConnection("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeCompressedConnection("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeCompressedConnection("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeCompressedConnection("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
+    engine.makeCompressedConnection("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
 };
 
 MixtrackPlatinum.shutdown = function() {

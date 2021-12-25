@@ -255,7 +255,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         this.showGain = false;
         engine.makeConnection(this.channel, "pregain", this.pregainIndicator.bind(this));
         engine.makeConnection(this.channel, "pfl", this.pflIndicator.bind(this));
-        engine.makeConnection(this.channel, "VuMeter", this.vuIndicator.bind(this));
+        engine.makeCompressedConnection(this.channel, "VuMeter", this.vuIndicator.bind(this));
         engine.makeConnection(this.channel, "PeakIndicator", this.peakIndicator.bind(this));
     }
     handleSpin(velo) {
