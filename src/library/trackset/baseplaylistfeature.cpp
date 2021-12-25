@@ -19,15 +19,20 @@
 #include "moc_baseplaylistfeature.cpp"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/file.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 namespace {
 constexpr QChar kUnsafeFilenameReplacement = '-';
-}
+const ConfigKey kConfigKeyLastImportExportPlaylistDirectory(
+        "[Library]", "LastImportExportPlaylistDirectory");
 
-BasePlaylistFeature::BasePlaylistFeature(Library* pLibrary,
+} // anonymous namespace
+
+BasePlaylistFeature::BasePlaylistFeature(
+        Library* pLibrary,
         UserSettingsPointer pConfig,
         PlaylistTableModel* pModel,
         const QString& rootViewName,
@@ -419,17 +424,18 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 
 void BasePlaylistFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" << m_lastRightClickedIndex.data();
-    QString playlist_file = getPlaylistFile();
-    if (playlist_file.isEmpty()) {
+    const QString playlistFile = getPlaylistFile();
+    if (playlistFile.isEmpty()) {
         return;
     }
 
     // Update the import/export playlist directory
-    QFileInfo fileName(playlist_file);
-    m_pConfig->set(ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-            ConfigValue(fileName.dir().absolutePath()));
+    QString fileDirectory(playlistFile);
+    fileDirectory.truncate(playlistFile.lastIndexOf(QDir::separator()));
+    m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
+            ConfigValue(fileDirectory));
 
-    slotImportPlaylistFile(playlist_file);
+    slotImportPlaylistFile(playlistFile);
     activateChild(m_lastRightClickedIndex);
 }
 
@@ -446,24 +452,24 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlist_file) {
 
 void BasePlaylistFeature::slotCreateImportPlaylist() {
     // Get file to read
-    QStringList playlist_files = LibraryFeature::getPlaylistFiles();
-    if (playlist_files.isEmpty()) {
+    const QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
+    if (playlistFiles.isEmpty()) {
         return;
     }
 
     // Set last import directory
-    QFileInfo fileName(playlist_files.first());
-    m_pConfig->set(ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-            ConfigValue(fileName.dir().absolutePath()));
+    QString fileDirectory(playlistFiles.first());
+    fileDirectory.truncate(playlistFiles.first().lastIndexOf(QDir::separator()));
+    m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
+            ConfigValue(fileDirectory));
 
     int lastPlaylistId = kInvalidPlaylistId;
 
     // For each selected element create a different playlist.
-    for (const QString& playlistFile : playlist_files) {
-        fileName = QFileInfo(playlistFile);
-
+    for (const QString& playlistFile : playlistFiles) {
+        const QFileInfo fileInfo(playlistFile);
         // Get a valid name
-        QString baseName = fileName.baseName();
+        const QString baseName = fileInfo.baseName();
         QString name;
 
         bool validNameGiven = false;
@@ -508,28 +514,28 @@ void BasePlaylistFeature::slotExportPlaylist() {
     qDebug() << "Export playlist" << playlistName;
 
     QString lastPlaylistDirectory = m_pConfig->getValue(
-            ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
+            kConfigKeyLastImportExportPlaylistDirectory,
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     // Open a dialog to let the user choose the file location for playlist export.
     // The location is set to the last used directory for import/export and the file
     // name to the playlist name.
-    QString filefilter = tr("M3U Playlist (*.m3u)");
-    QString file_location = QFileDialog::getSaveFileName(
-            nullptr,
+    const QString fileLocation = getFilePathWithVerifiedExtensionFromFileDialog(
             tr("Export Playlist"),
-            lastPlaylistDirectory.append("/").append(playlistName),
+            lastPlaylistDirectory.append("/").append(playlistName).append(".m3u"),
             tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
                "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"),
-            &filefilter);
-    // Exit method if user cancelled the open dialog.
-    if (file_location.isNull() || file_location.isEmpty()) {
+            tr("M3U Playlist (*.m3u)"));
+    // Exit method if the file name is empty because the user cancelled the save dialog.
+    if (fileLocation.isEmpty()) {
         return;
     }
-    QFileInfo fileName(file_location);
+
     // Update the import/export playlist directory
-    m_pConfig->set(ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-            ConfigValue(fileName.dir().absolutePath()));
+    QString fileDirectory(fileLocation);
+    fileDirectory.truncate(fileLocation.lastIndexOf(QDir::separator()));
+    m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
+            ConfigValue(fileDirectory));
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
@@ -555,28 +561,27 @@ void BasePlaylistFeature::slotExportPlaylist() {
     bool useRelativePath = m_pConfig->getValue<bool>(
             ConfigKey("[Library]", "UseRelativePathOnExport"));
 
-    if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(
-                file_location, pPlaylistTableModel.data(), useRelativePath);
-    } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
+    if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
+        ParserCsv::writeCSVFile(fileLocation, pPlaylistTableModel.data(), useRelativePath);
+    } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
         if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) ==
                 PlaylistDAO::PLHT_SET_LOG) {
-            ParserCsv::writeReadableTextFile(
-                    file_location, pPlaylistTableModel.data(), true);
+            ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.data(), true);
         } else {
-            ParserCsv::writeReadableTextFile(
-                    file_location, pPlaylistTableModel.data(), false);
+            ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.data(), false);
         }
     } else {
         // Create and populate a list of files of the playlist
-        QList<QString> playlist_items;
+        QList<QString> playlistItems;
         int rows = pPlaylistTableModel->rowCount();
         for (int i = 0; i < rows; ++i) {
             QModelIndex index = pPlaylistTableModel->index(i, 0);
-            playlist_items << pPlaylistTableModel->getTrackLocation(index);
+            playlistItems << pPlaylistTableModel->getTrackLocation(index);
         }
         exportPlaylistItemsIntoFile(
-                file_location, playlist_items, useRelativePath);
+                fileLocation,
+                playlistItems,
+                useRelativePath);
     }
 }
 
