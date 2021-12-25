@@ -60,6 +60,30 @@ bool extractIntFromRegex(const QRegularExpression& regex, const QString& group, 
     return true;
 }
 
+/// Returns the first object from a list of `BaseTrackPlayer` instances where
+/// the corresponding `play` CO is set to 0.
+template<class T>
+T* findFirstStoppedPlayerInList(const QList<T*>& players) {
+    for (T* pPlayer : players) {
+        VERIFY_OR_DEBUG_ASSERT(pPlayer != nullptr) {
+            continue;
+        }
+
+        ControlObject* pPlayControl = ControlObject::getControl(
+                ConfigKey(pPlayer->getGroup(), "play"));
+        VERIFY_OR_DEBUG_ASSERT(pPlayControl != nullptr) {
+            continue;
+        }
+
+        if (!pPlayControl->toBool()) {
+            return pPlayer;
+        }
+    }
+
+    // There is no stopped player in the list.
+    return nullptr;
+}
+
 } // anonymous namespace
 
 //static
@@ -658,37 +682,25 @@ void PlayerManager::slotLoadToSampler(const QString& location, int sampler) {
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
     auto locker = lockMutex(&m_mutex);
-    QList<Deck*>::iterator it = m_decks.begin();
-    while (it != m_decks.end()) {
-        Deck* pDeck = *it;
-        ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
-        if (playControl && playControl->get() != 1.) {
-            locker.unlock();
-            pDeck->slotLoadTrack(pTrack, false);
-            // Test for a fixed race condition with fast loads
-            //SleepableQThread::sleep(1);
-            //pDeck->slotLoadTrack(TrackPointer(), false);
-            return;
-        }
-        ++it;
+    BaseTrackPlayer* pDeck = findFirstStoppedPlayerInList(m_decks);
+    if (pDeck == nullptr) {
+        qDebug() << "PlayerManager: No stopped deck found, not loading track!";
+        return;
     }
+
+    pDeck->slotLoadTrack(pTrack, false);
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
     auto locker = lockMutex(&m_mutex);
-    QList<Sampler*>::iterator it = m_samplers.begin();
-    while (it != m_samplers.end()) {
-        Sampler* pSampler = *it;
-        ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pSampler->getGroup(), "play"));
-        if (playControl && playControl->get() != 1.) {
-            locker.unlock();
-            pSampler->slotLoadTrack(pTrack, false);
-            return;
-        }
-        ++it;
+    BaseTrackPlayer* pSampler = findFirstStoppedPlayerInList(m_samplers);
+    if (pSampler == nullptr) {
+        qDebug() << "PlayerManager: No stopped sampler found, not loading track!";
+        return;
     }
+    locker.unlock();
+
+    pSampler->slotLoadTrack(pTrack, false);
 }
 
 void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
