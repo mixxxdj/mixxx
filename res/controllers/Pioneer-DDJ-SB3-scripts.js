@@ -1129,41 +1129,14 @@ PioneerDDJSB3.hotCueLeds = function(value, group, control) {
     for (hotCueNum = 1; hotCueNum <= 8; hotCueNum++) {
         if (control === "hotcue_" + hotCueNum + "_enabled") {
             padNum = (hotCueNum - 1);
-
-            if (hotCueNum <= 4) {
-                PioneerDDJSB3.padLedControl(group, PioneerDDJSB3.ledGroups.hotCue, shiftedGroup, padNum, false, value);
-            } else {
-                PioneerDDJSB3.hotCueLedStates[group].states[hotCueNum] = value;
-                PioneerDDJSB3.updateHotCueLeds();
-            }
+            PioneerDDJSB3.padLedControl(group, PioneerDDJSB3.ledGroups.hotCue, shiftedGroup, padNum, false, value);
         }
     }
 };
 
 PioneerDDJSB3.shiftListeners.push(function(group, isShifted) {
     PioneerDDJSB3.hotCueLedStates[group].isShifted = isShifted;
-    PioneerDDJSB3.updateHotCueLeds();
 });
-
-PioneerDDJSB3.updateHotCueLeds = function() {
-    var shiftedGroup = false;
-
-    for (var channelIdx = 1; channelIdx <= 4; channelIdx++) {
-        var group = "[Channel" + channelIdx + "]";
-        var channel = PioneerDDJSB3.hotCueLedStates[group];
-
-
-        for (var hotCue = 5; hotCue <= 8; hotCue++) {
-            var padNum = hotCue - 1;
-
-            if (channel.isShifted && channel.states[hotCue]) {
-                PioneerDDJSB3.padLedControl(group, PioneerDDJSB3.ledGroups.hotCue, shiftedGroup, padNum, false, true);
-            } else {
-                PioneerDDJSB3.padLedControl(group, PioneerDDJSB3.ledGroups.hotCue, shiftedGroup, padNum, false, false);
-            }
-        }
-    }
-};
 
 PioneerDDJSB3.VuMeterLeds = function(value, group, control) {
     // The red LED lights up with MIDI values 119 (0x77) and above. That should only light up when
