@@ -363,6 +363,8 @@ void DlgPreferences::onShow() {
     }
     int newX = m_geometry[0].toInt();
     int newY = m_geometry[1].toInt();
+    int newWidth = m_geometry[2].toInt();
+    int newHeight = m_geometry[3].toInt();
 
     const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
     QSize screenSpace;
@@ -371,12 +373,29 @@ void DlgPreferences::onShow() {
         screenSpace = QSize(800, 600);
     }
     else {
-        screenSpace = pScreen->size();
+        screenSpace = pScreen->availableSize();
     }
-    newX = std::max(0, std::min(newX, screenSpace.width() - m_geometry[2].toInt()));
-    newY = std::max(0, std::min(newY, screenSpace.height() - m_geometry[3].toInt()));
+
+    // Make sure the entire window is visible on screen and is not occluded by taskbar
+    // Note: Window geometry excludes window decoration
+    int windowDecorationWidth = frameGeometry().width() - geometry().width();
+    int windowDecorationHeight = frameGeometry().height() - geometry().height();
+    if (windowDecorationWidth <= 0) {
+        windowDecorationWidth = 2;
+    }
+    if (windowDecorationHeight <= 0) {
+        windowDecorationHeight = 30;
+    }
+    int availableWidth = screenSpace.width() - windowDecorationWidth;
+    int availableHeight = screenSpace.height() - windowDecorationHeight;
+    newWidth = std::min(newWidth, availableWidth);
+    newHeight = std::min(newHeight, availableHeight);
+    newX = std::max(0, std::min(newX, availableWidth - newWidth));
+    newY = std::max(0, std::min(newY, availableHeight - newHeight));
     m_geometry[0] = QString::number(newX);
     m_geometry[1] = QString::number(newY);
+    m_geometry[2] = QString::number(newWidth);
+    m_geometry[3] = QString::number(newHeight);
 
     // Update geometry with last values
 #ifdef __WINDOWS__
@@ -393,8 +412,8 @@ void DlgPreferences::onShow() {
     newY += offsetY;
     setGeometry(newX,  // x position
                 newY,  // y position
-                m_geometry[2].toInt(),  // width
-                m_geometry[3].toInt()); // height
+                newWidth,  // width
+                newHeight); // height
 #endif // __LINUX__ / __MACOS__
     // Move is also needed on linux.
     move(newX, newY);
