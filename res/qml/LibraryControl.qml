@@ -4,25 +4,23 @@ import QtQuick 2.12
 Item {
     id: root
 
-    property bool focused: focusedWidgetControl.value == 3
+    property alias focusWidget: focusedWidgetControl.value
 
     signal moveSelection(int offset)
     signal loadSelectedTrack(string group, bool play)
     signal loadSelectedTrackIntoNextAvailableDeck(bool play)
 
-    Mixxx.ControlProxy {
+    FocusedWidgetControl {
         id: focusedWidgetControl
 
-        group: "[Library]"
-        key: "focused_widget"
-        Component.onCompleted: value = 3
+        Component.onCompleted: this.value = FocusedWidgetControl.WidgetKind.LibraryView
     }
 
     Mixxx.ControlProxy {
         group: "[Library]"
         key: "GoToItem"
         onValueChanged: {
-            if (value != 0 && root.focused)
+            if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.loadSelectedTrackIntoNextAvailableDeck(false);
 
         }
@@ -32,7 +30,7 @@ Item {
         group: "[Playlist]"
         key: "LoadSelectedIntoFirstStopped"
         onValueChanged: {
-            if (value != 0)
+            if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.loadSelectedTrackIntoNextAvailableDeck(false);
 
         }
@@ -42,9 +40,10 @@ Item {
         group: "[Playlist]"
         key: "SelectTrackKnob"
         onValueChanged: {
-            if (value != 0)
+            if (value != 0) {
+                root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
                 root.moveSelection(value);
-
+            }
         }
     }
 
@@ -52,9 +51,10 @@ Item {
         group: "[Playlist]"
         key: "SelectPrevTrack"
         onValueChanged: {
-            if (value != 0)
+            if (value != 0) {
+                root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
                 root.moveSelection(-1);
-
+            }
         }
     }
 
@@ -62,9 +62,10 @@ Item {
         group: "[Playlist]"
         key: "SelectNextTrack"
         onValueChanged: {
-            if (value != 0)
+            if (value != 0) {
+                root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
                 root.moveSelection(1);
-
+            }
         }
     }
 
@@ -72,7 +73,7 @@ Item {
         group: "[Library]"
         key: "MoveVertical"
         onValueChanged: {
-            if (root.focused && value != 0)
+            if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveSelection(value);
 
         }
@@ -82,7 +83,7 @@ Item {
         group: "[Library]"
         key: "MoveUp"
         onValueChanged: {
-            if (root.focused && value != 0)
+            if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveSelection(-1);
 
         }
@@ -92,7 +93,7 @@ Item {
         group: "[Library]"
         key: "MoveDown"
         onValueChanged: {
-            if (root.focused && value != 0)
+            if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveSelection(1);
 
         }
@@ -110,7 +111,7 @@ Item {
 
         delegate: LibraryControlLoadSelectedTrackHandler {
             group: "[Channel" + (index + 1) + "]"
-            enabled: root.focused
+            enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
             onLoadTrackRequested: root.loadSelectedTrack(group, play)
         }
 
@@ -128,7 +129,7 @@ Item {
 
         delegate: LibraryControlLoadSelectedTrackHandler {
             group: "[PreviewDeck" + (index + 1) + "]"
-            enabled: root.focused
+            enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
             onLoadTrackRequested: root.loadSelectedTrack(group, play)
         }
 
@@ -146,7 +147,7 @@ Item {
 
         delegate: LibraryControlLoadSelectedTrackHandler {
             group: "[Sampler" + (index + 1) + "]"
-            enabled: root.focused
+            enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
             onLoadTrackRequested: root.loadSelectedTrack(group, play)
         }
 

@@ -10,6 +10,8 @@ Item {
         anchors.fill: parent
 
         LibraryControl {
+            id: libraryControl
+
             onMoveSelection: listView.moveSelection(offset)
             onLoadSelectedTrack: listView.loadSelectedTrack(group, play)
             onLoadSelectedTrackIntoNextAvailableDeck: listView.loadSelectedTrackIntoNextAvailableDeck(play)
