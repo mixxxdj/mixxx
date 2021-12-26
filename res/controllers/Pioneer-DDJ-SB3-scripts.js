@@ -13,7 +13,7 @@ PioneerDDJSB3.vinylModeOnStartup = false;
 PioneerDDJSB3.reverseRollOnShiftCue = false;
 
 // Sets the jogwheels sensivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
-PioneerDDJSB3.jogwheelSensivity = 1.0;
+PioneerDDJSB3.jogwheelSensitivity = 1.0;
 
 // Sets how much more sensitive the jogwheels get when holding shift.
 // Set to 1 to disable jogwheel sensitivity increase when holding shift.
@@ -1281,7 +1281,7 @@ PioneerDDJSB3.toggleScratch = function(channel, control, value, status, group) {
 PioneerDDJSB3.pitchBendFromJog = function(channel, movement) {
     var group = (typeof channel === "string" ? channel : "[Channel" + channel + 1 + "]");
 
-    engine.setValue(group, "jog", movement / 5 * PioneerDDJSB3.jogwheelSensivity);
+    engine.setValue(group, "jog", movement / 5 * PioneerDDJSB3.jogwheelSensitivity);
 };
 
 
