@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QThread>
+
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
+#include "controllers/hid/hidio.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 #include "util/duration.h"
 
@@ -36,18 +39,10 @@ class HidController final : public Controller {
     int open() override;
     int close() override;
 
-    bool poll() override;
-
   private:
     bool isPolling() const override;
-    void processInputReport(int bytesRead);
 
-    // For devices which only support a single report, reportID must be set to
-    // 0x0.
-    void sendBytes(const QByteArray& data) override;
-    void sendBytesReport(QByteArray data, unsigned int reportID);
-    void sendFeatureReport(const QByteArray& reportData, unsigned int reportID);
-
+  signals:
     // getInputReport receives an input report on request.
     // This can be used on startup to initialize the knob positions in Mixxx
     // to the physical position of the hardware knobs on the controller.
@@ -56,6 +51,10 @@ class HidController final : public Controller {
     // The returned list can be used to call the incomingData
     // function of the common-hid-packet-parser.
     QByteArray getInputReport(unsigned int reportID);
+
+    void sendOutputReport(const QByteArray& data, unsigned int reportID);
+
+    void sendFeatureReport(const QByteArray& reportData, unsigned int reportID);
 
     // getFeatureReport receives a feature reports on request.
     // HID doesn't support polling feature reports, therefore this is the
@@ -66,16 +65,16 @@ class HidController final : public Controller {
     // and sent it back to the controller.
     QByteArray getFeatureReport(unsigned int reportID);
 
+  private:
+    // For devices which only support a single report, reportID must be set to
+    // 0x0.
+    void sendBytes(const QByteArray& data) override;
+
     const mixxx::hid::DeviceInfo m_deviceInfo;
 
     hid_device* m_pHidDevice;
+    HidIo* m_pHidIo;
     std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
-
-    static constexpr int kNumBuffers = 2;
-    static constexpr int kBufferSize = 255;
-    unsigned char m_pPollData[kNumBuffers][kBufferSize];
-    int m_lastPollSize;
-    int m_pollingBufferIndex;
 
     friend class HidControllerJSProxy;
 };
@@ -98,17 +97,17 @@ class HidControllerJSProxy : public ControllerJSProxy {
 
     Q_INVOKABLE QByteArray getInputReport(
             unsigned int reportID) {
-        return m_pHidController->getInputReport(reportID);
+        return emit m_pHidController->getInputReport(reportID);
     }
 
     Q_INVOKABLE void sendFeatureReport(
             const QByteArray& reportData, unsigned int reportID) {
-        m_pHidController->sendFeatureReport(reportData, reportID);
+        emit m_pHidController->sendFeatureReport(reportData, reportID);
     }
 
     Q_INVOKABLE QByteArray getFeatureReport(
             unsigned int reportID) {
-        return m_pHidController->getFeatureReport(reportID);
+        return emit m_pHidController->getFeatureReport(reportID);
     }
 
   private:
