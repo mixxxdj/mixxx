@@ -348,31 +348,30 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
     }
 }
 
+// Used during tests only
 SoundSourceProxy::SoundSourceProxy(
         TrackPointer pTrack,
-        const mixxx::SoundSourceProviderPointer& pProvider)
+        mixxx::SoundSourceProviderPointer pProvider)
         : m_pTrack(std::move(pTrack)),
           m_url(m_pTrack ? m_pTrack->getFileInfo().toQUrl() : QUrl()),
-          m_providerRegistrations(allProviderRegistrationsForUrl(m_url)),
           m_providerRegistrationIndex(-1) {
-    initSoundSource(pProvider);
+    initSoundSource(std::move(pProvider));
 }
 
-SoundSourceProxy::SoundSourceProxy(
-        const QUrl& url,
-        const mixxx::SoundSourceProviderPointer& pProvider)
+SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
+        : m_pTrack(std::move(pTrack)),
+          m_url(m_pTrack ? m_pTrack->getFileInfo().toQUrl() : QUrl()),
+          m_providerRegistrations(allProviderRegistrationsForUrl(m_url)) {
+    findAndInitSoundSource();
+}
+
+SoundSourceProxy::SoundSourceProxy(const QUrl& url)
         : m_url(url),
-          m_providerRegistrations(allProviderRegistrationsForUrl(m_url)),
-          m_providerRegistrationIndex(-1) {
-    initSoundSource(pProvider);
+          m_providerRegistrations(allProviderRegistrationsForUrl(m_url)) {
+    findAndInitSoundSource();
 }
 
-mixxx::SoundSourceProviderPointer SoundSourceProxy::primaryProvider(
-        const mixxx::SoundSourceProviderPointer& pProvider) {
-    if (pProvider) {
-        m_providerRegistrationIndex = -1;
-        return pProvider;
-    }
+mixxx::SoundSourceProviderPointer SoundSourceProxy::primaryProvider() {
     m_providerRegistrationIndex = 0;
     if (m_providerRegistrationIndex < m_providerRegistrations.size()) {
         return m_providerRegistrations[m_providerRegistrationIndex].getProvider();
@@ -424,47 +423,52 @@ SoundSourceProxy::nextProviderWithOpenMode(
     }
 }
 
-void SoundSourceProxy::initSoundSource(
-        const mixxx::SoundSourceProviderPointer& pProvider) {
+void SoundSourceProxy::findAndInitSoundSource() {
     DEBUG_ASSERT(!m_pProvider);
     DEBUG_ASSERT(!m_pSoundSource);
-    auto pNextProvider = primaryProvider(pProvider);
-    while (!m_pSoundSource && pNextProvider) {
-        m_pSoundSource = pNextProvider->newSoundSource(m_url);
-        if (m_pSoundSource) {
-            m_pProvider = std::move(pNextProvider);
-            if (kLogger.debugEnabled()) {
-                kLogger.debug() << "SoundSourceProvider"
-                                << m_pProvider->getDisplayName()
-                                << "created a SoundSource for file"
-                                << getUrl().toString()
-                                << "of type"
-                                << m_pSoundSource->getType();
-            }
-            // Done
-            return;
-        }
-        kLogger.warning() << "SoundSourceProvider"
-                          << pNextProvider->getDisplayName()
-                          << "failed to create a SoundSource for file"
-                          << getUrl().toString();
-        if (pProvider) {
-            // Only a single attempt for the given provider
-            return;
-        }
-        // Switch to next available provider
-        pNextProvider = nextProvider();
-        if (pNextProvider) {
+    for (m_providerRegistrationIndex = 0;
+            m_providerRegistrationIndex < m_providerRegistrations.size();
+            ++m_providerRegistrationIndex) {
+        mixxx::SoundSourceProviderPointer pProvider =
+                m_providerRegistrations[m_providerRegistrationIndex]
+                        .getProvider();
+        VERIFY_OR_DEBUG_ASSERT(pProvider) {
             continue;
         }
-        if (!getUrl().isEmpty()) {
-            kLogger.warning()
-                    << "No SoundSourceProvider for file"
-                    << getUrl().toString();
+        if (initSoundSource(std::move(pProvider))) {
+            return; // Success
         }
-        // Abort after failure
-        return;
     }
+    if (!getUrl().isEmpty()) {
+        kLogger.warning()
+                << "No SoundSourceProvider for file"
+                << getUrl().toString();
+    }
+}
+
+bool SoundSourceProxy::initSoundSource(
+        mixxx::SoundSourceProviderPointer&& pProvider) {
+    DEBUG_ASSERT(!m_pProvider);
+    DEBUG_ASSERT(!m_pSoundSource);
+    DEBUG_ASSERT(pProvider);
+    m_pSoundSource = pProvider->newSoundSource(m_url);
+    if (m_pSoundSource) {
+        m_pProvider = pProvider;
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "SoundSourceProvider"
+                            << m_pProvider->getDisplayName()
+                            << "created a SoundSource for file"
+                            << getUrl().toString()
+                            << "of type"
+                            << m_pSoundSource->getType();
+        }
+        return true;
+    }
+    kLogger.warning() << "SoundSourceProvider"
+                      << pProvider->getDisplayName()
+                      << "failed to create a SoundSource for file"
+                      << getUrl().toString();
+    return false;
 }
 
 namespace {
