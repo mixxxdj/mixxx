@@ -311,7 +311,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
         const UserSettingsPointer& pConfig) {
     DEBUG_ASSERT(pTrack);
     const auto fileInfo = pTrack->getFileInfo();
-    mixxx::MetadataSourcePointer pMetadataSource;
+    mixxx::SoundSourcePointer pSoundSource;
     {
         auto proxy = SoundSourceProxy(fileInfo.toQUrl());
         // Ensure that the actual audio properties of the
@@ -319,27 +319,25 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
         // This might be needed for converting sample positions
         // to time positions and vice versa.
         if (!pTrack->hasStreamInfoFromSource()) {
-            auto pAudioSource = proxy.openAudioSource();
-            if (pAudioSource) {
+            if (proxy.openSoundSource()) {
+                pSoundSource = proxy.m_pSoundSource;
                 pTrack->updateStreamInfoFromSource(
-                        pAudioSource->getStreamInfo());
+                        pSoundSource->getStreamInfo());
                 DEBUG_ASSERT(pTrack->hasStreamInfoFromSource());
                 // Make sure that the track file is closed after reading.
                 // Otherwise writing of track metadata into file tags
                 // might fail.
-                pAudioSource->close();
+                pSoundSource->close();
             } else {
                 kLogger.warning()
                         << "Failed to update stream info from audio "
                            "source before exporting metadata";
             }
         }
-        pMetadataSource = proxy.m_pSoundSource;
+        pSoundSource = proxy.m_pSoundSource;
     }
-    if (pMetadataSource) {
-        return pTrack->exportMetadata(
-                *pMetadataSource,
-                pConfig);
+    if (pSoundSource) {
+        return pTrack->exportMetadata(*pSoundSource, pConfig);
     } else {
         kLogger.warning()
                 << "Unable to export track metadata into file"
@@ -771,7 +769,7 @@ bool SoundSourceProxy::updateTrackFromSource(
     return true;
 }
 
-mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
+bool SoundSourceProxy::openSoundSource(
         const mixxx::AudioSource::OpenParams& params) {
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
     int attemptCount = 0;
@@ -781,16 +779,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
                 m_pSoundSource->open(openMode, params);
         if (openResult == mixxx::SoundSource::OpenResult::Succeeded) {
             if (m_pSoundSource->verifyReadable()) {
-                // The internal m_pTrack might be null when opening the AudioSource
-                // before exporting metadata. In this case the caller (this class)
-                // is responsible for updating the stream info if needed.
-                if (!m_pTrack) {
-                    return m_pSoundSource;
-                }
-                // Overwrite metadata with actual audio properties
-                m_pTrack->updateStreamInfoFromSource(
-                        m_pSoundSource->getStreamInfo());
-                return mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
+                return true;
             }
             kLogger.warning()
                     << "Failed to read file"
@@ -811,7 +800,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
                     // Do NOT retry with the next SoundSource provider if the file
                     // itself seems to be the cause when opening still fails during
                     // the 2nd (= permissive) round.
-                    return nullptr;
+                    return false;
                 } else {
                     // Continue and give other providers the chance to open the file
                     // in turn.
@@ -843,5 +832,19 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
             << "after"
             << attemptCount
             << "unsuccessful attempts";
+    return false;
+}
+
+mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
+        const mixxx::AudioSource::OpenParams& params) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
+        return nullptr;
+    }
+    if (openSoundSource(params)) {
+        // Overwrite metadata with actual audio properties
+        m_pTrack->updateStreamInfoFromSource(
+                m_pSoundSource->getStreamInfo());
+        return mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
+    }
     return nullptr;
 }

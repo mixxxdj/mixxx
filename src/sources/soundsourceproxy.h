@@ -186,6 +186,9 @@ class SoundSourceProxy {
     // for writing metadata immediately before the TIO is destroyed.
     explicit SoundSourceProxy(const QUrl& url);
 
+    bool openSoundSource(
+            const mixxx::AudioSource::OpenParams& params = mixxx::AudioSource::OpenParams());
+
     const TrackPointer m_pTrack;
 
     const QUrl m_url;
