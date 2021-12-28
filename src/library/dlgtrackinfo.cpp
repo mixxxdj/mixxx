@@ -94,30 +94,24 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotCancel);
 
     // BPM edit buttons
-    connect(bpmDouble,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmDouble);
-    connect(bpmHalve,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmHalve);
-    connect(bpmTwoThirds,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmTwoThirds);
-    connect(bpmThreeFourth,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmThreeFourth);
-    connect(bpmFourThirds,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmFourThirds);
-    connect(bpmThreeHalves,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmThreeHalves);
+    connect(bpmDouble, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::Double);
+    });
+    connect(bpmHalve, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::Halve);
+    });
+    connect(bpmTwoThirds, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
+    });
+    connect(bpmThreeFourth, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
+    });
+    connect(bpmFourThirds, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
+    });
+    connect(bpmThreeHalves, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
+    });
     connect(bpmClear,
             &QPushButton::clicked,
             this,
@@ -548,31 +542,10 @@ void DlgTrackInfo::clear() {
     txtLocation->setText("");
 }
 
-void DlgTrackInfo::slotBpmDouble() {
-    slotBpmScale(mixxx::Beats::BpmScale::Double);
-}
-
-void DlgTrackInfo::slotBpmHalve() {
-    slotBpmScale(mixxx::Beats::BpmScale::Halve);
-}
-
-void DlgTrackInfo::slotBpmTwoThirds() {
-    slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
-}
-
-void DlgTrackInfo::slotBpmThreeFourth() {
-    slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
-}
-
-void DlgTrackInfo::slotBpmFourThirds() {
-    slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
-}
-
-void DlgTrackInfo::slotBpmThreeHalves() {
-    slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
-}
-
 void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
+    if (!m_pBeatsClone) {
+        return;
+    }
     const auto scaledBeats = m_pBeatsClone->tryScale(bpmScale);
     if (scaledBeats) {
         m_pBeatsClone = *scaledBeats;
