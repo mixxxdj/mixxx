@@ -1109,6 +1109,11 @@
    #4356
    #4357
   </li>
+  <li>
+   Playlist: Enable sorting by color
+   #4352
+   lp:1945976
+  </li>
  </ul>
  <p>
   Packaging
@@ -1119,6 +1124,16 @@
   </li>
   <li>
    The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
+  </li>
+  <li>
+   CMake: Adjust the download directory and name of external dependencies
+   #4511
+  </li>
+  <li>
+   Fix/Improve Appstream metainfo
+   #4344
+   #4346
+   #4349
   </li>
  </ul>
 </description>
@@ -1278,6 +1293,10 @@
    Fix preference option for re-analyzing beatgrids imported from other software
    #4288
   </li>
+  <li>
+   Fix wrong base tag used for deployment and displayed in About dialog
+   #4070
+  </li>
  </ul>
  <p>
   Packaging
@@ -1314,6 +1333,7 @@
    Install multiple sizes of rasterized icons
    #4204
    #4315
+   #4254
   </li>
   <li>
    CMake: Fixed detection of SoundTouch pkgconfig file and version

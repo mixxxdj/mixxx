@@ -51,12 +51,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void trackUpdated();
 
-    void slotBpmDouble();
-    void slotBpmHalve();
-    void slotBpmTwoThirds();
-    void slotBpmThreeFourth();
-    void slotBpmFourThirds();
-    void slotBpmThreeHalves();
     void slotBpmScale(mixxx::Beats::BpmScale bpmScale);
     void slotBpmClear();
     void slotBpmConstChanged(int state);
