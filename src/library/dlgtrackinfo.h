@@ -89,6 +89,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void unloadTrack(bool save);
     void clear();
     void init();
+    void scaleBpm(const mixxx::Beats::BPMScale scale);
 
     const TrackModel* const m_pTrackModel;
 
