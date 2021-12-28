@@ -493,24 +493,24 @@ WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
 }
 
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
-WLibrary QLabel, WLibrary QRadioButton {
+#LibraryFeatureControls QLabel, #LibraryFeatureControls QRadioButton {
   /* same as QTreeview */
   color: #d2d2d2;
   margin: 9px 5px 6px 0px;
   font-size: 12px;
 }
 
-WLibrary QRadioButton::indicator {
+#LibraryFeatureControls QRadioButton::indicator {
   margin: 0px 0px 0px 2px;
   width: 18px;
   height: 18px;
 }
 
-WLibrary QRadioButton::indicator:checked {
+#LibraryFeatureControls QRadioButton::indicator:checked {
   image: url(skin:/../Deere/icon/ic_radio_button_on_18px.svg);
 }
 
-WLibrary QRadioButton::indicator:unchecked {
+#LibraryFeatureControls QRadioButton::indicator:unchecked {
   image: url(skin:/../Deere/icon/ic_radio_button_off_18px.svg);
 }
 /* buttons in library (in hierarchical order of appearance)
@@ -802,7 +802,7 @@ WSearchLineEdit QAbstractScrollArea::corner,
 
 #Mixxx, WWidget,
 QToolTip,
-WLabel, QLabel,
+WLabel, #LibraryFeatureControls QLabel,
 WNumber, WNumberPos,
 WPushButton,
 WKey,
@@ -838,16 +838,16 @@ WSearchLineEdit,
 WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-WLibrary QPushButton,
-WLibrary QLabel,
-WLibrary QRadioButton {
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
   font-family: "Open Sans";
   font-style: normal;
   font-weight: normal;
 }
 
-WLabel, WLibrary QLabel,
-WPushButton, WLibrary QPushButton {
+WLabel, #LibraryFeatureControls QLabel,
+WPushButton, #LibraryFeatureControls QPushButton {
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
