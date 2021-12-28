@@ -8,36 +8,34 @@
 #include "util/compatibility/qatomic.h"
 #include "util/duration.h"
 
-class HidIoReport : public QObject {
-    Q_OBJECT
+class HidIoReport {
   public:
     HidIoReport(const unsigned char& reportId,
             hid_device* device,
             const mixxx::hid::DeviceInfo&& deviceInfo,
             const RuntimeLoggingCategory& logOutput);
-    ~HidIoReport();
     void sendOutputReport(QByteArray data);
 
   private:
     const unsigned char m_reportId;
-    hid_device* m_pHidDevice;
+    hid_device* const
+            m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
     const mixxx::hid::DeviceInfo m_deviceInfo;
     const RuntimeLoggingCategory m_logOutput;
-    QByteArray m_lastSentOutputreport;
+    QByteArray m_lastSentOutputReport;
 };
 
-class HidIo : public QThread {
+class HidIoThread : public QThread {
     Q_OBJECT
   public:
-    HidIo(hid_device* device,
+    HidIoThread(hid_device* device,
             const mixxx::hid::DeviceInfo&& deviceInfo,
             const RuntimeLoggingCategory& logBase,
             const RuntimeLoggingCategory& logInput,
             const RuntimeLoggingCategory& logOutput);
-    ~HidIo();
 
     void stop() {
-        m_stop = 1;
+        atomicStoreRelaxed(m_stop, 1);
     }
 
     static constexpr int kNumBuffers = 2;
@@ -65,7 +63,8 @@ class HidIo : public QThread {
   private:
     void poll();
     void processInputReport(int bytesRead);
-    hid_device* m_pHidDevice;
+    hid_device* const
+            m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
     const mixxx::hid::DeviceInfo m_deviceInfo;
     QAtomicInt m_stop;
     std::map<unsigned char, std::unique_ptr<HidIoReport>> m_outputReports;

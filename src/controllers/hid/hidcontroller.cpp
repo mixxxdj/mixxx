@@ -103,17 +103,17 @@ int HidController::open() {
     startEngine();
 
     if (m_pHidIo != nullptr) {
-        qWarning() << "HidIo already present for" << getName();
+        qWarning() << "HidIoThread already present for" << getName();
     } else {
-        m_pHidIo = new HidIo(m_pHidDevice,
+        m_pHidIo = new HidIoThread(m_pHidDevice,
                 std::move(m_deviceInfo),
                 m_logBase,
                 m_logInput,
                 m_logOutput);
-        m_pHidIo->setObjectName(QString("HidIo %1").arg(getName()));
+        m_pHidIo->setObjectName(QString("HidIoThread %1").arg(getName()));
 
         connect(m_pHidIo,
-                &HidIo::receive,
+                &HidIoThread::receive,
                 this,
                 &HidController::receive,
                 Qt::QueuedConnection);
@@ -121,24 +121,24 @@ int HidController::open() {
         connect(this,
                 &HidController::getInputReport,
                 m_pHidIo,
-                &HidIo::getInputReport,
+                &HidIoThread::getInputReport,
                 Qt::DirectConnection); // Enforces syncronisation of mapping and IO thread
 
         connect(this,
                 &HidController::sendOutputReport,
                 m_pHidIo,
-                &HidIo::sendOutputReport,
+                &HidIoThread::sendOutputReport,
                 Qt::QueuedConnection);
 
         connect(this,
                 &HidController::getFeatureReport,
                 m_pHidIo,
-                &HidIo::getFeatureReport,
+                &HidIoThread::getFeatureReport,
                 Qt::DirectConnection); // Enforces syncronisation of mapping and IO thread
         connect(this,
                 &HidController::sendFeatureReport,
                 m_pHidIo,
-                &HidIo::sendFeatureReport,
+                &HidIoThread::sendFeatureReport,
                 Qt::DirectConnection); // Enforces syncronisation of mapping and IO thread
 
         // Controller input needs to be prioritized since it can affect the
@@ -158,32 +158,32 @@ int HidController::close() {
 
     // Stop the reading thread
     if (m_pHidIo == nullptr) {
-        qWarning() << "HidIo not present for" << getName()
+        qWarning() << "HidIoThread not present for" << getName()
                    << "yet the device is open!";
     } else {
         disconnect(m_pHidIo,
-                &HidIo::receive,
+                &HidIoThread::receive,
                 this,
                 &HidController::receive);
 
         disconnect(this,
                 &HidController::getInputReport,
                 m_pHidIo,
-                &HidIo::getInputReport);
+                &HidIoThread::getInputReport);
 
         disconnect(this,
                 &HidController::sendOutputReport,
                 m_pHidIo,
-                &HidIo::sendOutputReport);
+                &HidIoThread::sendOutputReport);
 
         disconnect(this,
                 &HidController::getFeatureReport,
                 m_pHidIo,
-                &HidIo::getFeatureReport);
+                &HidIoThread::getFeatureReport);
         disconnect(this,
                 &HidController::sendFeatureReport,
                 m_pHidIo,
-                &HidIo::sendFeatureReport);
+                &HidIoThread::sendFeatureReport);
 
         m_pHidIo->stop();
         hid_set_nonblocking(m_pHidDevice, 1); // Quit blocking

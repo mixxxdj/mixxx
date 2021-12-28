@@ -22,23 +22,20 @@ HidIoReport::HidIoReport(const unsigned char& reportId,
           m_pHidDevice(device),
           m_deviceInfo(std::move(deviceInfo)),
           m_logOutput(logOutput),
-          m_lastSentOutputreport("") {
-}
-
-HidIoReport::~HidIoReport() {
+          m_lastSentOutputReport() {
 }
 
 void HidIoReport::sendOutputReport(QByteArray data) {
     auto startOfHidWrite = mixxx::Time::elapsed();
-    if (!m_lastSentOutputreport.compare(data)) {
+    if (!m_lastSentOutputReport.compare(data)) {
         qCDebug(m_logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
                              << " Skipped identical Output Report for" << m_deviceInfo.formatName()
                              << "serial #" << m_deviceInfo.serialNumberRaw()
                              << "(Report ID" << m_reportId << ")";
         return; // Same data sent last time
     }
-    m_lastSentOutputreport.clear();
-    m_lastSentOutputreport.append(data);
+    m_lastSentOutputReport.clear();
+    m_lastSentOutputReport.append(data);
 
     // Prepend the Report ID to the beginning of data[] per the API..
     data.prepend(m_reportId);
@@ -59,7 +56,7 @@ void HidIoReport::sendOutputReport(QByteArray data) {
     }
 }
 
-HidIo::HidIo(hid_device* device,
+HidIoThread::HidIoThread(hid_device* device,
         const mixxx::hid::DeviceInfo&& deviceInfo,
         const RuntimeLoggingCategory& logBase,
         const RuntimeLoggingCategory& logInput,
@@ -78,19 +75,16 @@ HidIo::HidIo(hid_device* device,
     m_lastPollSize = 0;
 }
 
-HidIo::~HidIo() {
-}
-
-void HidIo::run() {
-    m_stop = 0;
+void HidIoThread::run() {
+    atomicStoreRelaxed(m_stop, 0);
     while (atomicLoadRelaxed(m_stop) == 0) {
         poll();
         usleep(1000);
     }
 }
 
-void HidIo::poll() {
-    Trace hidRead("HidIo poll");
+void HidIoThread::poll() {
+    Trace hidRead("HidIoThread poll");
 
     // This loop risks becoming a high priority endless loop in case processing
     // the mapping JS code takes longer than the controller polling rate.
@@ -111,7 +105,7 @@ void HidIo::poll() {
     }
 }
 
-void HidIo::processInputReport(int bytesRead) {
+void HidIoThread::processInputReport(int bytesRead) {
     Trace process("HidIO processInputReport");
     unsigned char* pPreviousBuffer = m_pPollData[(m_pollingBufferIndex + 1) % kNumBuffers];
     unsigned char* pCurrentBuffer = m_pPollData[m_pollingBufferIndex];
@@ -138,7 +132,7 @@ void HidIo::processInputReport(int bytesRead) {
     emit receive(incomingData, mixxx::Time::elapsed());
 }
 
-QByteArray HidIo::getInputReport(unsigned int reportID) {
+QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     auto startOfHidGetInputReport = mixxx::Time::elapsed();
     int bytesRead;
 
@@ -169,7 +163,7 @@ QByteArray HidIo::getInputReport(unsigned int reportID) {
             reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]), bytesRead);
 }
 
-void HidIo::sendOutputReport(const QByteArray& data, unsigned int reportID) {
+void HidIoThread::sendOutputReport(const QByteArray& data, unsigned int reportID) {
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
         std::unique_ptr<HidIoReport> pNewOutputReport;
         m_outputReports[reportID] = std::make_unique<HidIoReport>(
@@ -182,7 +176,7 @@ void HidIo::sendOutputReport(const QByteArray& data, unsigned int reportID) {
     poll(); // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
 }
 
-void HidIo::sendFeatureReport(
+void HidIoThread::sendFeatureReport(
         const QByteArray& reportData, unsigned int reportID) {
     auto startOfHidSendFeatureReport = mixxx::Time::elapsed();
     QByteArray dataArray;
@@ -216,7 +210,7 @@ void HidIo::sendFeatureReport(
     }
 }
 
-QByteArray HidIo::getFeatureReport(
+QByteArray HidIoThread::getFeatureReport(
         unsigned int reportID) {
     auto startOfHidGetFeatureReport = mixxx::Time::elapsed();
     unsigned char dataRead[kReportIdSize + kBufferSize];
