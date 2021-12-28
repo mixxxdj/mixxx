@@ -1,14 +1,14 @@
 #include "sources/metadatasourcetaglib.h"
 
-#include "track/taglib/trackmetadata.h"
-
-#include "util/logger.h"
-#include "util/memory.h"
+#include <taglib/vorbisfile.h>
 
 #include <QFile>
 #include <QFileInfo>
+#include <QThread>
 
-#include <taglib/vorbisfile.h>
+#include "track/taglib/trackmetadata.h"
+#include "util/logger.h"
+#include "util/memory.h"
 #if (TAGLIB_HAS_OPUSFILE)
 #include <taglib/opusfile.h>
 #endif
@@ -763,8 +763,8 @@ class SafelyWritableFile final {
                             << "by"
                             << m_tempFileName
                             << "because it is used by another process";
-                    Sleep(kWindowsSharingViolationsSleepMs); // Note: Capital S for Windows API Sleep()
-                    continue;                                // Retry
+                    QThread::msleep(kWindowsSharingViolationsSleepMs);
+                    continue; // Retry
                 case ERROR_ACCESS_DENIED:
                     kLogger.critical()
                             << "Unable to replace"
