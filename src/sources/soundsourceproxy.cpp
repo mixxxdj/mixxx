@@ -361,8 +361,8 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack, UserSettingsPoi
                 pTrack->updateStreamInfoFromSource(
                         pAudioSource->getStreamInfo());
                 DEBUG_ASSERT(pTrack->hasStreamInfoFromSource());
-                // Make sure that the track file is closes after reading
-                // proxy.closeAudioSource(); does not work here, because
+                // Make sure that the track file is closed after reading.
+                // proxy.closeAudioSource() does not work here, because
                 // proxy.m_pAuidioSource is still null because SoundSourceProxy
                 // has been created without a TrackPointer
                 DEBUG_ASSERT(!proxy.m_pAudioSource);
@@ -737,7 +737,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
                 // before exporting metadata. In this case the caller (this class)
                 // is responsible for updating the stream info if needed.
                 if (!m_pTrack) {
-                    // TODO() It is surprising to receive here a m_pSoundSource;
+                    // TODO: It is surprising that openAudioSource returns a m_pSoundSource
                     return m_pSoundSource;
                 }
                 m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);

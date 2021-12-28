@@ -35,9 +35,6 @@ const QString kSafelyWritableTempFileSuffix = QStringLiteral("_temp");
 const QString kSafelyWritableOrigFileSuffix = QStringLiteral("_orig");
 
 #ifdef __WINDOWS__
-// After Mixxx has closed the track file, the indexer or virus scanner
-// might kick in and fail ReplaceFileW() with a sharing violation when
-// replacing the original file with the one with the updated metadata.
 const int kWindowsSharingViolationMaxRetries = 5;
 const int kWindowsSharingViolationSleepBeforeNextRetryMillis = 100;
 #endif
@@ -716,15 +713,21 @@ class SafelyWritableFile final {
         }
         QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
 #ifdef __WINDOWS__
+        // After Mixxx has closed the track file, the indexer or virus scanner
+        // might kick in and fail ReplaceFileW() with a sharing violation when
+        // replacing the original file with the one with the updated metadata.
         int i = 0;
         for (; i < kWindowsSharingViolationMaxRetries; ++i) {
-            if (!ReplaceFileW(
+            if (ReplaceFileW(
                         reinterpret_cast<LPCWSTR>(m_origFileName.utf16()),
                         reinterpret_cast<LPCWSTR>(m_tempFileName.utf16()),
                         reinterpret_cast<LPCWSTR>(backupFileName.utf16()),
                         REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS,
                         nullptr,
                         nullptr)) {
+                // Success, break retry loop
+                break;
+            } else {
                 DWORD error = GetLastError();
                 switch (error) {
                 case ERROR_UNABLE_TO_MOVE_REPLACEMENT:
@@ -757,7 +760,7 @@ class SafelyWritableFile final {
                     return false;
                 case ERROR_SHARING_VIOLATION:
                     // The process cannot access the file because it is being used by another process.
-                    kLogger.critical()
+                    kLogger.warning()
                             << "Unable to replace"
                             << m_origFileName
                             << "by"
@@ -788,7 +791,6 @@ class SafelyWritableFile final {
                     return false;
                 }
             }
-            break;
         }
         QFile backupFile(backupFileName);
         if (backupFile.exists()) {
