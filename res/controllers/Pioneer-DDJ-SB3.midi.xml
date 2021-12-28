@@ -1916,26 +1916,6 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>PioneerDDJSB3.headphoneLevel.inputMSB</key>
-        <description>Headphone volume / (Shift for headphone master mix), Button: Headphones Vol (MSB)</description>
-        <status>0xB6</status>
-        <midino>0x0D</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>PioneerDDJSB3.headphoneLevel.inputLSB</key>
-        <description>Headphone volume / (Shift for headphone master mix), Button: Headphones Vol (LSB)</description>
-        <status>0xB6</status>
-        <midino>0x2D</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
         <group>[Channel1]</group>
         <key>PioneerDDJSB3.autoLoopButton</key>
         <description>Deck 1 Auto Loop, Button: Auto Loop</description>
@@ -2194,27 +2174,7 @@
         <options>
           <fourteen-bit-lsb/>
         </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>PioneerDDJSB3.masterGain.inputMSB</key>
-        <description>Master Gain (MSB), Master Volume</description>
-        <status>0xB6</status>
-        <midino>0x08</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>PioneerDDJSB3.masterGain.inputLSB</key>
-        <description>Master Gain (LSB), Master Volume</description>
-        <status>0xB6</status>
-        <midino>0x28</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
+      </control>  
       <control>
         <group>[Channel1]</group>
         <key>PioneerDDJSB3.padForDeck[1].beatJumpDivide</key>
