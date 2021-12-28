@@ -98,30 +98,24 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotCancel);
 
-    connect(bpmDouble,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmDouble);
-    connect(bpmHalve,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmHalve);
-    connect(bpmTwoThirds,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmTwoThirds);
-    connect(bpmThreeFourth,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmThreeFourth);
-    connect(bpmFourThirds,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmFourThirds);
-    connect(bpmThreeHalves,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmThreeHalves);
+    connect(bpmDouble, &QPushButton::clicked, this, [this] {
+        slotScaleBpm(mixxx::Beats::DOUBLE);
+    });
+    connect(bpmHalve, &QPushButton::clicked, this, [this] {
+        slotScaleBpm(mixxx::Beats::HALVE);
+    });
+    connect(bpmTwoThirds, &QPushButton::clicked, this, [this] {
+        slotScaleBpm(mixxx::Beats::TWOTHIRDS);
+    });
+    connect(bpmThreeFourth, &QPushButton::clicked, this, [this] {
+        slotScaleBpm(mixxx::Beats::THREEFOURTHS);
+    });
+    connect(bpmFourThirds, &QPushButton::clicked, this, [this] {
+        slotScaleBpm(mixxx::Beats::FOURTHIRDS);
+    });
+    connect(bpmThreeHalves, &QPushButton::clicked, this, [this] {
+        slotScaleBpm(mixxx::Beats::THREEHALVES);
+    });
     connect(bpmClear,
             &QPushButton::clicked,
             this,
@@ -468,46 +462,13 @@ void DlgTrackInfo::clear() {
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
 }
 
-void DlgTrackInfo::slotBpmDouble() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::DOUBLE);
+void DlgTrackInfo::slotScaleBpm(mixxx::Beats::BPMScale scale) {
+    if (!m_pBeatsClone) {
+        return;
+    }
+    m_pBeatsClone = m_pBeatsClone->scale(scale);
     // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
-}
-
-void DlgTrackInfo::slotBpmHalve() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::HALVE);
-    // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
-}
-
-void DlgTrackInfo::slotBpmTwoThirds() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::TWOTHIRDS);
-    // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
-}
-
-void DlgTrackInfo::slotBpmThreeFourth() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::THREEFOURTHS);
-    // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
-}
-
-void DlgTrackInfo::slotBpmFourThirds() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::FOURTHIRDS);
-    // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
-}
-
-void DlgTrackInfo::slotBpmThreeHalves() {
-    m_pBeatsClone = m_pBeatsClone->scale(mixxx::Beats::THREEHALVES);
-    // read back the actual value
-    double newValue = m_pBeatsClone->getBpm();
-    spinBpm->setValue(newValue);
+    spinBpm->setValue(m_pBeatsClone->getBpm());
 }
 
 void DlgTrackInfo::slotBpmClear() {
