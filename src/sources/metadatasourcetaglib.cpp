@@ -38,8 +38,8 @@ const QString kSafelyWritableOrigFileSuffix = QStringLiteral("_orig");
 // After Mixxx has closed the track file, the indexer or virus scanner
 // might kick in and fail ReplaceFileW() with a sharing violation when
 // replacing the original file with the one with the updated metadata.
-const int kWindowsSharingViolationsRetries = 5;
-const int kWindowsSharingViolationsSleepMs = 100;
+const int kWindowsSharingViolationMaxRetries = 5;
+const int kWindowsSharingViolationSleepBeforeNextRetryMillis = 100;
 #endif
 
 // Workaround for missing functionality in TagLib 1.11.x that
@@ -717,7 +717,7 @@ class SafelyWritableFile final {
         QString backupFileName = m_origFileName + kSafelyWritableOrigFileSuffix;
 #ifdef __WINDOWS__
         int i = 0;
-        for (; i < kWindowsSharingViolationsRetries; ++i) {
+        for (; i < kWindowsSharingViolationMaxRetries; ++i) {
             if (!ReplaceFileW(
                         reinterpret_cast<LPCWSTR>(m_origFileName.utf16()),
                         reinterpret_cast<LPCWSTR>(m_tempFileName.utf16()),
@@ -763,7 +763,7 @@ class SafelyWritableFile final {
                             << "by"
                             << m_tempFileName
                             << "because it is used by another process";
-                    QThread::msleep(kWindowsSharingViolationsSleepMs);
+                    QThread::msleep(kWindowsSharingViolationSleepBeforeNextRetryMillis);
                     continue; // Retry
                 case ERROR_ACCESS_DENIED:
                     kLogger.critical()
@@ -800,7 +800,7 @@ class SafelyWritableFile final {
                 return false;
             }
         }
-        if (i >= kWindowsSharingViolationsRetries) {
+        if (i >= kWindowsSharingViolationMaxRetries) {
             // We have given up after the maximum retries in the loop above.
             return false;
         }
