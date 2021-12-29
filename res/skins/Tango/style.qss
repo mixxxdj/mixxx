@@ -15,7 +15,7 @@
   background-color: #1e1e1e;
 }
 
-WLabel, QLabel,
+WLabel,
 WNumber, WNumberPos,
 WPushButton,
 WKey,
@@ -26,12 +26,11 @@ WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
 WOverview #PassthroughLabel,
-WCueMenuPopup,
 WEffectName,
 WLibraryTextBrowser,
-WLibrary QPushButton,
-WLibrary QLabel,
-WLibrary QRadioButton {
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
   font-family: Ubuntu;
   font-weight: normal;
   font-style: normal;
@@ -43,7 +42,9 @@ WLibrary QRadioButton {
 #MainMenu,
 #MainMenu QMenu,
 QToolTip,
+WCueMenuPopup,
 WCueMenuPopup QLabel,
+WCueMenuPopup QLineEdit,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
@@ -74,9 +75,9 @@ WPushButton {
 }
 
 WPushButton,
-WLibrary QPushButton,
-WLibrary QLabel,
-WLibrary QRadioButton {
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
   font-size: 12px/12px;
 }
 
@@ -3054,7 +3055,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
     image: url(skin:/../Tango/buttons/btn_lib_checkbox.svg);
     }
 
-WLibrary QSpinBox {
+#LibraryFeatureControls QSpinBox {
   min-height: 22px;
   max-height: 22px;
   min-width: 40px;
@@ -3079,8 +3080,8 @@ WSearchLineEdit {
   }
   /* Clear button: see /skins/default.qss */
 
-WLibrary QLabel,
-WLibrary QRadioButton { /*
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton { /*
   background: none;
   Extra declaration for QRadioButton otherwise it shows up with
   wrong colors in Linux with Gnome  */
@@ -3097,11 +3098,11 @@ QRadioButton#radioButtonRecentlyAdded {
   margin: 0px 3px 0px 5px;
 }
 
-WLibrary QRadioButton::indicator:checked {
+#LibraryFeatureControls QRadioButton::indicator:checked {
   image: url(skin:/../Tango/buttons/btn_lib_radio_button_on.svg) center center;
 }
 
-WLibrary QRadioButton::indicator:unchecked {
+#LibraryFeatureControls QRadioButton::indicator:unchecked {
   image: url(skin:/../Tango/buttons/btn_lib_radio_button_off.svg) center center;
 }
 

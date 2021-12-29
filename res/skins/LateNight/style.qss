@@ -4,7 +4,7 @@
 
 #Mixxx,
 WWidget,
-WLabel, QLabel,
+WLabel,
 WNumber, WNumberPos,
 WPushButton,
 WKey,
@@ -26,9 +26,9 @@ WEffectChainPresetSelector,
 WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-WLibrary QPushButton,
-WLibrary QLabel,
-WLibrary QRadioButton,
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton,
 WTrackTableViewHeader,
 WTrackTableViewHeader::section {
   /* On Linux all weight variants of Open Sans are identified
