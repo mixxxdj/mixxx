@@ -13,7 +13,7 @@
 #include <taglib/opusfile.h>
 #endif
 
-#if __WINDOWS__
+#if defined(__WINDOWS__)
 #include <Windows.h>
 #endif
 
@@ -34,7 +34,7 @@ const QString kSafelyWritableTempFileSuffix = QStringLiteral("_temp");
 // potential failures caused by exceeded path length.
 const QString kSafelyWritableOrigFileSuffix = QStringLiteral("_orig");
 
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__)
 const int kWindowsSharingViolationMaxRetries = 5;
 const int kWindowsSharingViolationSleepBeforeNextRetryMillis = 100;
 #endif
