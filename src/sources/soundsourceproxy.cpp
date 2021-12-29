@@ -788,7 +788,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
         openMode = nextProviderWithOpenModePair.second;
         m_pProvider.reset();
         m_pSoundSource.reset();
-        initSoundSource(std::move(std::move(pNextProvider)));
+        initSoundSource(std::move(pNextProvider));
         // try again
     }
     // All available providers have returned OpenResult::Aborted when
