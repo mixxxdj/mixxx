@@ -16,6 +16,8 @@
 #include "qml/qmllibrarytracklistmodel.h"
 #include "qml/qmlplayermanagerproxy.h"
 #include "qml/qmlplayerproxy.h"
+#include "qml/qmltablefromlistmodel.h"
+#include "qml/qmltablefromlistmodelcolumn.h"
 #include "qml/qmlvisibleeffectsmodel.h"
 #include "qml/qmlwaveformoverview.h"
 #include "soundio/soundmanager.h"
