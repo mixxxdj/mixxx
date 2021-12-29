@@ -1,5 +1,5 @@
 import Mixxx 1.0 as Mixxx
-import QtQuick 2.12
+import QtQuick
 import "Theme"
 
 Item {
@@ -11,94 +11,117 @@ Item {
             id: libraryControl
 
             onMoveVertical: (offset) => {
-                listView.moveSelectionVertical(offset);
+                tableView.selectionModel.moveSelectionVertical(offset);
             }
             onLoadSelectedTrack: (group, play) => {
-                listView.loadSelectedTrack(group, play);
+                tableView.loadSelectedTrack(group, play);
             }
             onLoadSelectedTrackIntoNextAvailableDeck: (play) => {
-                listView.loadSelectedTrackIntoNextAvailableDeck(play);
+                tableView.loadSelectedTrackIntoNextAvailableDeck(play);
             }
             onFocusWidgetChanged: {
                 switch (focusWidget) {
                     case FocusedWidgetControl.WidgetKind.LibraryView:
-                        listView.forceActiveFocus();
+                        tableView.forceActiveFocus();
                         break;
                 }
             }
         }
 
-        ListView {
-            id: listView
-
-            function moveSelectionVertical(value) {
-                if (value == 0)
-                    return ;
-
-                const rowCount = model.rowCount();
-                if (rowCount == 0)
-                    return ;
-
-                currentIndex = Mixxx.MathUtils.positiveModulo(currentIndex + value, rowCount);
-            }
+        TableView {
+            id: tableView
 
             function loadSelectedTrackIntoNextAvailableDeck(play) {
-                const url = model.get(currentIndex).fileUrl;
-                if (!url)
+                const urls = this.selectionModel.selectedTrackUrls();
+                if (urls.length == 0)
                     return ;
 
-                Mixxx.PlayerManager.loadLocationUrlIntoNextAvailableDeck(url, play);
+                Mixxx.PlayerManager.loadLocationUrlIntoNextAvailableDeck(urls[0], play);
             }
 
             function loadSelectedTrack(group, play) {
-                const url = model.get(currentIndex).fileUrl;
-                if (!url)
+                const urls = this.selectionModel.selectedTrackUrls();
+                if (urls.length == 0)
                     return ;
 
-                const player = Mixxx.PlayerManager.getPlayer(group);
-                if (!player)
-                    return ;
-
-                player.loadTrackFromLocationUrl(url, play);
+                player.loadTrackFromLocationUrl(urls[0], play);
             }
 
             anchors.fill: parent
-            anchors.margins: 10
+            anchors.margins: 5
             clip: true
-            keyNavigationWraps: true
-            highlightMoveDuration: 250
-            highlightResizeDuration: 50
-            model: Mixxx.Library.model
-            Keys.onPressed: (event) => {
-                switch (event.key) {
-                    case Qt.Key_Enter:
-                        case Qt.Key_Return:
-                            listView.loadSelectedTrackIntoNextAvailableDeck(false);
-                        break;
+            focus: true
+            Keys.onUpPressed: this.selectionModel.moveSelectionVertical(-1)
+            Keys.onDownPressed: this.selectionModel.moveSelectionVertical(1)
+            Keys.onEnterPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
+            Keys.onReturnPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
+
+            model: Mixxx.TableFromListModel {
+                sourceModel: Mixxx.Library.model
+
+                Mixxx.TableFromListModelColumn {
+                    display: "title"
+                    decoration: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "artist"
+                    decoration: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "album"
+                    decoration: "fileUrl"
                 }
             }
 
+            selectionModel: ItemSelectionModel {
+                function selectRow(row) {
+                    const rowCount = this.model.rowCount();
+                    if (rowCount == 0) {
+                        this.clear();
+                        return ;
+                    }
+                    const newRow = Mixxx.MathUtils.positiveModulo(row, rowCount);
+                    this.select(this.model.index(newRow, 0), ItemSelectionModel.Rows | ItemSelectionModel.Select | ItemSelectionModel.Clear | ItemSelectionModel.Current);
+                }
+
+                function moveSelectionVertical(value) {
+                    if (value == 0)
+                        return ;
+
+                    const selected = this.selectedIndexes;
+                    const oldRow = (selected.length == 0) ? 0 : selected[0].row;
+                    this.selectRow(oldRow + value);
+                }
+
+                function selectedTrackUrls() {
+                    return this.selectedIndexes.map((index) => {
+                            return this.model.sourceModel.get(index.row).fileUrl;
+                    });
+                }
+
+                model: tableView.model
+            }
+
             delegate: Item {
-                id: itemDlgt
+                id: itemDelegate
 
-                required property int index
-                required property url fileUrl
-                required property string artist
-                required property string title
+                required property int row
+                required property int column
+                required property bool selected
+                required property string decoration
+                required property string display
 
-                implicitWidth: listView.width
+                implicitWidth: 300
                 implicitHeight: 30
 
                 Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: itemDlgt.artist + " - " + itemDlgt.title
-                    color: (listView.currentIndex == itemDlgt.index && listView.activeFocus) ? Theme.blue : Theme.deckTextColor
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: listView.highlightMoveDuration
-                        }
-                    }
+                    anchors.fill: parent
+                    text: display
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                    color: itemDelegate.selected ? Theme.blue : Theme.white
                 }
 
                 Image {
@@ -108,8 +131,8 @@ Item {
                     Drag.dragType: Drag.Automatic
                     Drag.supportedActions: Qt.CopyAction
                     Drag.mimeData: {
-                        "text/uri-list": itemDlgt.fileUrl,
-                        "text/plain": itemDlgt.fileUrl
+                        "text/uri-list": itemDelegate.decoration,
+                        "text/plain": itemDelegate.decoration
                     }
                     anchors.fill: parent
                 }
@@ -120,20 +143,16 @@ Item {
                     anchors.fill: parent
                     drag.target: dragItem
                     onPressed: {
-                        listView.forceActiveFocus();
-                        listView.currentIndex = itemDlgt.index;
+                        tableView.selectionModel.selectRow(itemDelegate.row);
                         parent.grabToImage((result) => {
                                 dragItem.Drag.imageSource = result.url;
                         });
                     }
-                    onDoubleClicked: listView.loadSelectedTrackIntoNextAvailableDeck(false)
+                    onDoubleClicked: {
+                        tableView.selectionModel.selectRow(itemDelegate.row);
+                        tableView.loadSelectedTrackIntoNextAvailableDeck(false);
+                    }
                 }
-            }
-
-            highlight: Rectangle {
-                border.color: listView.activeFocus ? Theme.blue : Theme.deckTextColor
-                border.width: 1
-                color: "transparent"
             }
         }
     }
