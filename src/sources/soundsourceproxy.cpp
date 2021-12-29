@@ -362,11 +362,12 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack, UserSettingsPoi
                         pAudioSource->getStreamInfo());
                 DEBUG_ASSERT(pTrack->hasStreamInfoFromSource());
                 // Make sure that the track file is closed after reading.
-                // proxy.closeAudioSource() does not work here, because
-                // proxy.m_pAuidioSource is still null because SoundSourceProxy
-                // has been created without a TrackPointer
-                DEBUG_ASSERT(!proxy.m_pAudioSource);
-                proxy.m_pSoundSource->close();
+                // Otherwise writing of track metadata into file tags
+                // might fail.
+                proxy.closeAudioSource();
+                // The SoundSource must still be available after closing
+                // the AudioSource.
+                DEBUG_ASSERT(proxy.m_pSoundSource);
             } else {
                 kLogger.warning()
                         << "Failed to update stream info from audio "
@@ -737,8 +738,11 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
                 // before exporting metadata. In this case the caller (this class)
                 // is responsible for updating the stream info if needed.
                 if (!m_pTrack) {
-                    // TODO: It is surprising that openAudioSource returns a m_pSoundSource
-                    return m_pSoundSource;
+                    // Initialize the internal AudioSource without a valid TrackPointer
+                    // This is required to ensure that the corresponding invocation of
+                    // closeAudioSource() works as expected.
+                    m_pAudioSource = m_pSoundSource;
+                    return m_pAudioSource;
                 }
                 m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
                 DEBUG_ASSERT(m_pAudioSource);
