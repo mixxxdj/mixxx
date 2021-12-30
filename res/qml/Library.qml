@@ -1,4 +1,5 @@
 import Mixxx 1.0 as Mixxx
+import Qt.labs.qmlmodels
 import QtQuick
 import "Theme"
 
@@ -51,27 +52,73 @@ Item {
             anchors.margins: 5
             clip: true
             focus: true
+            reuseItems: false
             Keys.onUpPressed: this.selectionModel.moveSelectionVertical(-1)
             Keys.onDownPressed: this.selectionModel.moveSelectionVertical(1)
             Keys.onEnterPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
             Keys.onReturnPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
+            columnWidthProvider: function(column) {
+                switch (column) {
+                    case 0:
+                        return 30;
+                    case 1:
+                        return 50;
+                    case 2:
+                        case 3:
+                        case 4:
+                        return 300;
+                    default:
+                        return 100;
+                }
+            }
 
             model: Mixxx.TableFromListModel {
                 sourceModel: Mixxx.Library.model
 
                 Mixxx.TableFromListModelColumn {
-                    display: "title"
-                    decoration: "fileUrl"
+                    decoration: "color"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "coverArtUrl"
+                    decoration: "coverArtColor"
+                    edit: "fileUrl"
                 }
 
                 Mixxx.TableFromListModelColumn {
                     display: "artist"
-                    decoration: "fileUrl"
+                    edit: "fileUrl"
                 }
 
                 Mixxx.TableFromListModelColumn {
                     display: "album"
-                    decoration: "fileUrl"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "year"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "bpm"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "key"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "fileType"
+                    edit: "fileUrl"
+                }
+
+                Mixxx.TableFromListModelColumn {
+                    display: "bitrate"
+                    edit: "fileUrl"
                 }
             }
 
@@ -104,53 +151,93 @@ Item {
                 model: tableView.model
             }
 
-            delegate: Item {
-                id: itemDelegate
+            delegate: DelegateChooser {
+                DelegateChoice {
+                    column: 0
 
-                required property int row
-                required property int column
-                required property bool selected
-                required property string decoration
-                required property string display
+                    Rectangle {
+                        id: trackColorDelegate
 
-                implicitWidth: 300
-                implicitHeight: 30
+                        required property bool selected
+                        required property color decoration
 
-                Text {
-                    anchors.fill: parent
-                    text: display
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                    color: itemDelegate.selected ? Theme.blue : Theme.white
+                        implicitWidth: 30
+                        implicitHeight: 30
+                        color: trackColorDelegate.decoration
+                    }
                 }
 
-                Image {
-                    id: dragItem
+                DelegateChoice {
+                    column: 1
 
-                    Drag.active: dragArea.drag.active
-                    Drag.dragType: Drag.Automatic
-                    Drag.supportedActions: Qt.CopyAction
-                    Drag.mimeData: {
-                        "text/uri-list": itemDelegate.decoration,
-                        "text/plain": itemDelegate.decoration
+                    Rectangle {
+                        id: coverArtDelegate
+
+                        required property color decoration
+                        required property url display
+
+                        implicitWidth: 60
+                        implicitHeight: 30
+                        color: coverArtDelegate.decoration
+
+                        Image {
+                            anchors.fill: parent
+                            fillMode: Image.PreserveAspectCrop
+                            source: coverArtDelegate.display
+                            clip: true
+                            asynchronous: true
+                        }
                     }
-                    anchors.fill: parent
                 }
 
-                MouseArea {
-                    id: dragArea
+                DelegateChoice {
+                    Item {
+                        id: itemDelegate
 
-                    anchors.fill: parent
-                    drag.target: dragItem
-                    onPressed: {
-                        tableView.selectionModel.selectRow(itemDelegate.row);
-                        parent.grabToImage((result) => {
-                                dragItem.Drag.imageSource = result.url;
-                        });
-                    }
-                    onDoubleClicked: {
-                        tableView.selectionModel.selectRow(itemDelegate.row);
-                        tableView.loadSelectedTrackIntoNextAvailableDeck(false);
+                        required property int row
+                        required property bool selected
+                        required property string display
+
+                        implicitWidth: 300
+                        implicitHeight: 30
+
+                        Text {
+                            anchors.fill: parent
+                            text: itemDelegate.display
+                            verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideRight
+                            color: itemDelegate.selected ? Theme.blue : Theme.white
+                        }
+
+                        Image {
+                            id: dragItem
+
+                            Drag.active: dragArea.drag.active
+                            Drag.dragType: Drag.Automatic
+                            Drag.supportedActions: Qt.CopyAction
+                            Drag.mimeData: {
+                                "text/uri-list": edit,
+                                "text/plain": edit
+                            }
+                            anchors.fill: parent
+                        }
+
+                        MouseArea {
+                            id: dragArea
+
+                            anchors.fill: parent
+                            drag.target: dragItem
+                            onPressed: {
+                                tableView.selectionModel.selectRow(itemDelegate.row);
+                                parent.grabToImage((result) => {
+                                        dragItem.Drag.imageSource = result.url;
+                                });
+                            }
+                            onDoubleClicked: {
+                                tableView.selectionModel.selectRow(itemDelegate.row);
+                                tableView.loadSelectedTrackIntoNextAvailableDeck(false);
+                            }
+                        }
                     }
                 }
             }
