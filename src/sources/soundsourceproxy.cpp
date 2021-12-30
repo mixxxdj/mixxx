@@ -741,13 +741,16 @@ bool SoundSourceProxy::updateTrackFromSource(
         kLogger.debug()
                 << "Opening audio source to finish import of beats/cues";
         const auto pAudioSource = openAudioSource();
-        Q_UNUSED(pAudioSource); // only used in debug assertion
         DEBUG_ASSERT(!pAudioSource ||
                 m_pTrack->getBeatsImportStatus() ==
                         Track::ImportStatus::Complete);
         DEBUG_ASSERT(!pAudioSource ||
                 m_pTrack->getCueImportStatus() ==
                         Track::ImportStatus::Complete);
+        if (pAudioSource) {
+            // Close open file handles
+            pAudioSource->close();
+        }
     }
 
     if (pCoverImg) {
