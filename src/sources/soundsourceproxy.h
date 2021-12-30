@@ -156,6 +156,11 @@ class SoundSourceProxy {
     /// audio properties of the corresponding track object. Returns
     /// a null pointer on failure.
     ///
+    /// The caller is responsible for invoking AudioSource::close().
+    /// Otherwise the underlying files will remain open until the
+    /// last reference is dropped. One of these references is hold
+    /// by SoundSourceProxy as a member.
+    ///
     /// Note: If opening the audio stream fails the selection
     /// process may continue among the available providers and
     /// sound sources might be resumed and continue until a
@@ -163,12 +168,6 @@ class SoundSourceProxy {
     /// found.
     mixxx::AudioSourcePointer openAudioSource(
             const mixxx::AudioSource::OpenParams& params = mixxx::AudioSource::OpenParams());
-
-    /// Explicitly close the AudioSource.
-    ///
-    /// This will happen implicitly when the instance goes out
-    /// of scope, i.e. upon destruction.
-    void closeAudioSource();
 
   private:
     static mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
@@ -214,10 +213,4 @@ class SoundSourceProxy {
     // This pointer must stay in this class together with
     // the corresponding track pointer. Don't pass it around!!
     mixxx::SoundSourcePointer m_pSoundSource;
-
-    // Keeps track of opening and closing the corresponding
-    // SoundSource. This pointer can safely be passed around,
-    // because internally it contains a reference to the TIO
-    // that keeps it alive.
-    mixxx::AudioSourcePointer m_pAudioSource;
 };

@@ -327,10 +327,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
                 // Make sure that the track file is closed after reading.
                 // Otherwise writing of track metadata into file tags
                 // might fail.
-                proxy.closeAudioSource();
-                // The SoundSource must still be available after closing
-                // the AudioSource.
-                DEBUG_ASSERT(proxy.m_pSoundSource);
+                pAudioSource->close();
             } else {
                 kLogger.warning()
                         << "Failed to update stream info from audio "
@@ -431,7 +428,6 @@ void SoundSourceProxy::initSoundSource(
         const mixxx::SoundSourceProviderPointer& pProvider) {
     DEBUG_ASSERT(!m_pProvider);
     DEBUG_ASSERT(!m_pSoundSource);
-    DEBUG_ASSERT(!m_pAudioSource);
     auto pNextProvider = primaryProvider(pProvider);
     while (!m_pSoundSource && pNextProvider) {
         m_pSoundSource = pNextProvider->newSoundSource(m_url);
@@ -464,7 +460,6 @@ void SoundSourceProxy::initSoundSource(
         if (!getUrl().isEmpty()) {
             kLogger.warning()
                     << "No SoundSourceProvider for file"
-
                     << getUrl().toString();
         }
         // Abort after failure
@@ -746,13 +741,16 @@ bool SoundSourceProxy::updateTrackFromSource(
         kLogger.debug()
                 << "Opening audio source to finish import of beats/cues";
         const auto pAudioSource = openAudioSource();
-        Q_UNUSED(pAudioSource); // only used in debug assertion
         DEBUG_ASSERT(!pAudioSource ||
                 m_pTrack->getBeatsImportStatus() ==
                         Track::ImportStatus::Complete);
         DEBUG_ASSERT(!pAudioSource ||
                 m_pTrack->getCueImportStatus() ==
                         Track::ImportStatus::Complete);
+        if (pAudioSource) {
+            // Close open file handles
+            pAudioSource->close();
+        }
     }
 
     if (pCoverImg) {
@@ -773,7 +771,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
         const mixxx::AudioSource::OpenParams& params) {
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
     int attemptCount = 0;
-    while (m_pProvider && m_pSoundSource && !m_pAudioSource) {
+    while (m_pProvider && m_pSoundSource) {
         ++attemptCount;
         const mixxx::SoundSource::OpenResult openResult =
                 m_pSoundSource->open(openMode, params);
@@ -783,18 +781,12 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
                 // before exporting metadata. In this case the caller (this class)
                 // is responsible for updating the stream info if needed.
                 if (!m_pTrack) {
-                    // Initialize the internal AudioSource without a valid TrackPointer
-                    // This is required to ensure that the corresponding invocation of
-                    // closeAudioSource() works as expected.
-                    m_pAudioSource = m_pSoundSource;
-                    return m_pAudioSource;
+                    return m_pSoundSource;
                 }
-                m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
-                DEBUG_ASSERT(m_pAudioSource);
                 // Overwrite metadata with actual audio properties
                 m_pTrack->updateStreamInfoFromSource(
-                        m_pAudioSource->getStreamInfo());
-                return m_pAudioSource;
+                        m_pSoundSource->getStreamInfo());
+                return mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
             }
             kLogger.warning()
                     << "Failed to read file"
@@ -815,8 +807,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
                     // Do NOT retry with the next SoundSource provider if the file
                     // itself seems to be the cause when opening still fails during
                     // the 2nd (= permissive) round.
-                    DEBUG_ASSERT(!m_pAudioSource);
-                    return m_pAudioSource;
+                    return nullptr;
                 } else {
                     // Continue and give other providers the chance to open the file
                     // in turn.
@@ -848,18 +839,5 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
             << "after"
             << attemptCount
             << "unsuccessful attempts";
-    DEBUG_ASSERT(!m_pAudioSource);
-    return m_pAudioSource;
-}
-
-void SoundSourceProxy::closeAudioSource() {
-    if (m_pAudioSource) {
-        DEBUG_ASSERT(m_pSoundSource);
-        m_pSoundSource->close();
-        m_pAudioSource = mixxx::AudioSourcePointer();
-        if (kLogger.debugEnabled()) {
-            kLogger.debug() << "Closed AudioSource for file"
-                            << getUrl().toString();
-        }
-    }
+    return nullptr;
 }
