@@ -14,11 +14,34 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
 
   public:
     enum Roles {
-        TitleRole = Qt::UserRole,
-        ArtistRole,
+        AlbumArtistRole = Qt::UserRole,
         AlbumRole,
-        AlbumArtistRole,
+        ArtistRole,
+        BitrateRole,
+        BpmLockRole,
+        BpmRole,
+        ColorRole,
+        CommentRole,
+        ComposerRole,
+        CoverArtColorRole,
+        CoverArtUrlRole,
+        DatetimeAddedRole,
+        DeletedRole,
+        DurationSecondsRole,
+        FileTypeRole,
         FileUrlRole,
+        GenreRole,
+        GroupingRole,
+        KeyIdRole,
+        KeyRole,
+        LastPlayedAtRole,
+        PlayedRole,
+        RatingRole,
+        ReplayGainRole,
+        TimesPlayedRole,
+        TitleRole,
+        TrackNumberRole,
+        YearRole,
     };
     Q_ENUM(Roles);
 
