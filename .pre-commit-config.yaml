@@ -30,7 +30,7 @@ default_language_version:
   python: python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.0.1
+  rev: v4.1.0
   hooks:
   - id: fix-byte-order-marker
     exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
@@ -63,7 +63,7 @@ repos:
     #args: [--ignore-words, .codespellignore, --ignore-regex, "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))"]
     exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v8.4.0
+  rev: v8.6.0
   hooks:
   - id: eslint
     args: [--fix, --report-unused-disable-directives]
@@ -96,7 +96,7 @@ repos:
     files: ^tools/.*$
     types: [text, python]
 - repo: https://github.com/shellcheck-py/shellcheck-py
-  rev: v0.8.0.1
+  rev: v0.8.0.3
   hooks:
   - id: shellcheck
 - repo: https://github.com/DavidAnson/markdownlint-cli2
