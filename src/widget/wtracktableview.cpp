@@ -77,13 +77,6 @@ WTrackTableView::WTrackTableView(QWidget* parent,
             &WTrackTableView::scrollValueChanged,
             this,
             &WTrackTableView::slotScrollValueChanged);
-
-    QShortcut* setFocusShortcut =
-            new QShortcut(QKeySequence(tr("ESC", "Focus")), this);
-    connect(setFocusShortcut,
-            &QShortcut::activated,
-            this,
-            QOverload<>::of(&WTrackTableView::setFocus));
 }
 
 WTrackTableView::~WTrackTableView() {
