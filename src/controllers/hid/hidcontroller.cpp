@@ -12,6 +12,8 @@
 namespace {
 constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
+constexpr int kSmallestRingBufferInReports = 30;
+constexpr int kSmallestRingBufferInBytes = 2048;
 } // namespace
 
 HidController::HidController(
@@ -210,9 +212,6 @@ bool HidController::poll() {
     // - If the processing of all received HID Input Reports in the JS mapping code takes longer than the interval between incoming reports,
     //   it could stall other low priority tasks.
 
-    constexpr int kSmallestRingBufferInReports = 30;
-    constexpr int kSmallestRingBufferInBytes = 2048;
-
     int inputReportCounter = 0;
     int inputReportByteCounter = 0;
     while (true) {
@@ -237,7 +236,7 @@ bool HidController::poll() {
                         << inputReportCounter
                         << " HID Input Reports with a combined size of " << inputReportByteCounter
                         << "in the same polling interval. This indicates a "
-                           "performance problem with controller mapping.";
+                           "performance problem.";
             }
             return true;
         }
