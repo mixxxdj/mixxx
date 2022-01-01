@@ -81,7 +81,9 @@ DlgPrefInterface::DlgPrefInterface(QWidget* parent,
     const auto translationsDir = QDir(
             m_pConfig->getResourcePath() +
             QStringLiteral("translations/"));
-    DEBUG_ASSERT(translationsDir.exists());
+    if (!translationsDir.exists()) {
+        qWarning() << "Translations directory does not exist" << translationsDir.absolutePath();
+    }
 
     QStringList fileNames = translationsDir.entryList(QStringList("mixxx_*.qm"));
     // Add source language as a fake value

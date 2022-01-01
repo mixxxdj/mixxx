@@ -164,12 +164,16 @@ TrackCollectionManager::~TrackCollectionManager() {
 }
 
 void TrackCollectionManager::startLibraryScan() {
-    DEBUG_ASSERT(m_pScanner);
+    VERIFY_OR_DEBUG_ASSERT(m_pScanner) {
+        return;
+    }
     m_pScanner->scan();
 }
 
 void TrackCollectionManager::stopLibraryScan() {
-    DEBUG_ASSERT(m_pScanner);
+    VERIFY_OR_DEBUG_ASSERT(m_pScanner) {
+        return;
+    }
     m_pScanner->slotCancel();
 }
 

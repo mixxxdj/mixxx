@@ -235,9 +235,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
-    if (m_pDeveloperToolsDlg) {
-        delete m_pDeveloperToolsDlg;
-    }
+    delete m_pDeveloperToolsDlg;
     finalize();
     // SkinLoader depends on Config;
     delete m_pSkinLoader;
@@ -715,7 +713,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 }
 
 void MixxxMainWindow::finalize() {
-    Timer t("MixxxMainWindow::~finalize");
+    Timer t("MixxxMainWindow::finalize");
     t.start();
 
     if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {

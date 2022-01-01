@@ -37,11 +37,11 @@ class LaunchImage: public QWidget {
     Q_OBJECT
   public:
     LaunchImage(QWidget* pParent, const QString& styleSheet);
-    virtual ~LaunchImage();
+    ~LaunchImage() override = default;
     void progress(int value);
 
   protected:
-    virtual void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent*) override;
 
   private:
     QProgressBar* m_pProgressBar;

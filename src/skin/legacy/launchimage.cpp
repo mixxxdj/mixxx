@@ -53,9 +53,6 @@ LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
     hbox->addStretch();
 }
 
-LaunchImage::~LaunchImage() {
-}
-
 void LaunchImage::progress(int value) {
     m_pProgressBar->setValue(value);
 }
