@@ -55,9 +55,6 @@ LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
     hbox->addStretch();
 }
 
-LaunchImage::~LaunchImage() {
-}
-
 void LaunchImage::progress(int value, const QString& serviceName) {
     m_pProgressBar->setValue(value);
     // TODO: show serviceName
