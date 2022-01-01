@@ -176,7 +176,8 @@ WSearchLineEdit::item:selected,
 
   WLibrarySidebar QMenu::indicator,
   WTrackTableViewHeader QMenu::indicator,
-  WTrackMenu QMenu QCheckBox::indicator {
+  WTrackMenu QMenu QCheckBox::indicator,
+  WEffectChainPresetButton QMenu QCheckBox::indicator {
     border: 1px solid #333;
     border-radius: 1px;
     background-color: #000;
@@ -461,7 +462,7 @@ WSpinny { /*
 
 /************** Mixer  ********************************************************/
 #MixerContainer {
-  qproperty-layoutAlignment: 'AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #MixerDecks {
@@ -671,6 +672,18 @@ WEffectChainPresetSelector {
     margin: 0px;
     padding: 0px;*/
   }
+
+WEffectChainPresetButton,
+WEffectChainPresetButton::menu-indicator {
+  background-color: transparent;
+  border:  0px;
+  margin:  0px;
+  padding: 0px;
+}
+WEffectChainPresetButton::menu-indicator {
+  subcontrol-origin: margin;
+  subcontrol-position:  center center;
+}
 /************** Effects *******************************************************/
 
 
