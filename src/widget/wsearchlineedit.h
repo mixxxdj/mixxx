@@ -38,6 +38,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void focusOutEvent(QFocusEvent*) override;
     bool event(QEvent*) override;
     bool eventFilter(QObject* obj, QEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
   signals:
     void search(const QString& text);

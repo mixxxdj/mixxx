@@ -3,6 +3,7 @@
 #include <portaudio.h>
 
 #include <QLibrary>
+#include <QThread>
 #include <QtDebug>
 #include <cstring> // for memcpy and strcmp
 
@@ -22,7 +23,6 @@
 #include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/sample.h"
-#include "util/sleep.h"
 #include "util/versionstore.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -165,7 +165,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 #ifdef __LINUX__
         // Sleep for 5 sec to allow asynchronously sound APIs like "pulse" to free
         // its resources as well
-        sleep(kSleepSecondsAfterClosingDevice);
+        QThread::sleep(kSleepSecondsAfterClosingDevice);
 #endif
     }
 
