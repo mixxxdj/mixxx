@@ -80,6 +80,7 @@ HidIoThread::HidIoThread(hid_device* device,
 }
 
 void HidIoThread::timerEvent(QTimerEvent* event) {
+    Q_UNUSED(event);
     poll();
 }
 
