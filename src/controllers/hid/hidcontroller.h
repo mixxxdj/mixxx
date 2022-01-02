@@ -40,30 +40,8 @@ class HidController final : public Controller {
     int close() override;
 
   private:
-    bool isPolling() const override;
-
   signals:
-    // getInputReport receives an input report on request.
-    // This can be used on startup to initialize the knob positions in Mixxx
-    // to the physical position of the hardware knobs on the controller.
-    // The returned data structure for the input reports is the same
-    // as in the polling functionality (including ReportID in first byte).
-    // The returned list can be used to call the incomingData
-    // function of the common-hid-packet-parser.
-    QByteArray getInputReport(unsigned int reportID);
-
     void sendOutputReport(const QByteArray& data, unsigned int reportID);
-
-    void sendFeatureReport(const QByteArray& reportData, unsigned int reportID);
-
-    // getFeatureReport receives a feature reports on request.
-    // HID doesn't support polling feature reports, therefore this is the
-    // only method to get this information.
-    // Usually, single bits in a feature report need to be set without
-    // changing the other bits. The returned list matches the input
-    // format of sendFeatureReport, allowing it to be read, modified
-    // and sent it back to the controller.
-    QByteArray getFeatureReport(unsigned int reportID);
 
   private:
     // For devices which only support a single report, reportID must be set to
@@ -73,7 +51,7 @@ class HidController final : public Controller {
     const mixxx::hid::DeviceInfo m_deviceInfo;
 
     hid_device* m_pHidDevice;
-    HidIoThread* m_pHidIo;
+    HidIoThread* m_pHidIoThread;
     std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
 
     friend class HidControllerJSProxy;
@@ -95,19 +73,32 @@ class HidControllerJSProxy : public ControllerJSProxy {
         m_pHidController->sendReport(data, length, reportID);
     }
 
+    // getInputReport receives an input report on request.
+    // This can be used on startup to initialize the knob positions in Mixxx
+    // to the physical position of the hardware knobs on the controller.
+    // The returned data structure for the input reports is the same
+    // as in the polling functionality (including ReportID in first byte).
+    // The returned list can be used to call the incomingData
+    // function of the common-hid-packet-parser.
     Q_INVOKABLE QByteArray getInputReport(
             unsigned int reportID) {
-        return emit m_pHidController->getInputReport(reportID);
+        return m_pHidController->m_pHidIoThread->getInputReport(reportID);
     }
 
     Q_INVOKABLE void sendFeatureReport(
             const QByteArray& reportData, unsigned int reportID) {
-        emit m_pHidController->sendFeatureReport(reportData, reportID);
+        m_pHidController->m_pHidIoThread->sendFeatureReport(reportData, reportID);
     }
-
+    // getFeatureReport receives a feature reports on request.
+    // HID doesn't support polling feature reports, therefore this is the
+    // only method to get this information.
+    // Usually, single bits in a feature report need to be set without
+    // changing the other bits. The returned list matches the input
+    // format of sendFeatureReport, allowing it to be read, modified
+    // and sent it back to the controller.
     Q_INVOKABLE QByteArray getFeatureReport(
             unsigned int reportID) {
-        return emit m_pHidController->getFeatureReport(reportID);
+        return m_pHidController->m_pHidIoThread->getFeatureReport(reportID);
     }
 
   private:

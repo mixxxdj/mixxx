@@ -14,7 +14,7 @@ HidController::HidController(
         : Controller(deviceInfo.formatName()),
           m_deviceInfo(std::move(deviceInfo)),
           m_pHidDevice(nullptr),
-          m_pHidIo(nullptr) {
+          m_pHidIoThread(nullptr) {
     setDeviceCategory(mixxx::hid::DeviceCategory::guessFromDeviceInfo(m_deviceInfo));
 
     // All HID devices are full-duplex
@@ -102,48 +102,32 @@ int HidController::open() {
     setOpen(true);
     startEngine();
 
-    if (m_pHidIo != nullptr) {
+    if (m_pHidIoThread != nullptr) {
         qWarning() << "HidIoThread already present for" << getName();
     } else {
-        m_pHidIo = new HidIoThread(m_pHidDevice,
+        m_pHidIoThread = new HidIoThread(m_pHidDevice,
                 std::move(m_deviceInfo),
                 m_logBase,
                 m_logInput,
                 m_logOutput);
-        m_pHidIo->setObjectName(QString("HidIoThread %1").arg(getName()));
+        m_pHidIoThread->setObjectName(QString("HidIoThread %1").arg(getName()));
 
-        connect(m_pHidIo,
+        connect(m_pHidIoThread,
                 &HidIoThread::receive,
                 this,
                 &HidController::receive,
                 Qt::QueuedConnection);
 
         connect(this,
-                &HidController::getInputReport,
-                m_pHidIo,
-                &HidIoThread::getInputReport,
-                Qt::DirectConnection); // Enforces syncronisation of mapping and IO thread
-
-        connect(this,
                 &HidController::sendOutputReport,
-                m_pHidIo,
+                m_pHidIoThread,
                 &HidIoThread::sendOutputReport,
                 Qt::QueuedConnection);
 
-        connect(this,
-                &HidController::getFeatureReport,
-                m_pHidIo,
-                &HidIoThread::getFeatureReport,
-                Qt::DirectConnection); // Enforces syncronisation of mapping and IO thread
-        connect(this,
-                &HidController::sendFeatureReport,
-                m_pHidIo,
-                &HidIoThread::sendFeatureReport,
-                Qt::DirectConnection); // Enforces syncronisation of mapping and IO thread
-
         // Controller input needs to be prioritized since it can affect the
         // audio directly, like when scratching
-        m_pHidIo->start(QThread::HighPriority);
+        m_pHidIoThread->start(QThread::HighPriority);
+        m_pHidIoThread->startPollTimer();
     }
     return 0;
 }
@@ -157,47 +141,33 @@ int HidController::close() {
     qCInfo(m_logBase) << "Shutting down HID device" << getName();
 
     // Stop the reading thread
-    if (m_pHidIo == nullptr) {
+    if (m_pHidIoThread == nullptr) {
         qWarning() << "HidIoThread not present for" << getName()
                    << "yet the device is open!";
     } else {
-        disconnect(m_pHidIo,
+        disconnect(m_pHidIoThread,
                 &HidIoThread::receive,
                 this,
                 &HidController::receive);
 
         disconnect(this,
-                &HidController::getInputReport,
-                m_pHidIo,
-                &HidIoThread::getInputReport);
-
-        disconnect(this,
                 &HidController::sendOutputReport,
-                m_pHidIo,
+                m_pHidIoThread,
                 &HidIoThread::sendOutputReport);
 
-        disconnect(this,
-                &HidController::getFeatureReport,
-                m_pHidIo,
-                &HidIoThread::getFeatureReport);
-        disconnect(this,
-                &HidController::sendFeatureReport,
-                m_pHidIo,
-                &HidIoThread::sendFeatureReport);
-
-        m_pHidIo->stop();
+        m_pHidIoThread->stop();
         hid_set_nonblocking(m_pHidDevice, 1); // Quit blocking
         qDebug() << "Waiting on IO thread to finish";
-        m_pHidIo->wait();
+        m_pHidIoThread->wait();
     }
 
     // Stop controller engine here to ensure it's done before the device is closed
     // in case it has any final parting messages
     stopEngine();
 
-    if (m_pHidIo != nullptr) {
-        delete m_pHidIo;
-        m_pHidIo = nullptr;
+    if (m_pHidIoThread != nullptr) {
+        delete m_pHidIoThread;
+        m_pHidIoThread = nullptr;
     }
 
     // Close device
@@ -207,12 +177,6 @@ int HidController::close() {
     hid_close(m_pHidDevice);
     setOpen(false);
     return 0;
-}
-
-
-
-bool HidController::isPolling() const {
-    return isOpen();
 }
 
 void HidController::sendReport(QList<int> data, unsigned int length, unsigned int reportID) {

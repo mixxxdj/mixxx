@@ -2,6 +2,8 @@
 
 #include <hidapi.h>
 
+#include <QTimer>
+
 #include "controllers/defs_controllers.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "moc_hidio.cpp"
@@ -67,7 +69,9 @@ HidIoThread::HidIoThread(hid_device* device,
           m_logInput(logInput),
           m_logOutput(logOutput),
           m_pHidDevice(device),
-          m_deviceInfo(std::move(deviceInfo)) {
+          m_deviceInfo(std::move(deviceInfo)),
+          m_HidDeviceMutex(QT_RECURSIVE_MUTEX_INIT),
+          mPollTimerId(0) {
     // This isn't strictly necessary but is good practice.
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
@@ -75,17 +79,25 @@ HidIoThread::HidIoThread(hid_device* device,
     m_lastPollSize = 0;
 }
 
-void HidIoThread::run() {
-    atomicStoreRelaxed(m_stop, 0);
-    while (atomicLoadRelaxed(m_stop) == 0) {
-        poll();
-        usleep(1000);
+void HidIoThread::timerEvent(QTimerEvent* event) {
+    poll();
+}
+
+void HidIoThread::startPollTimer() {
+    if (mPollTimerId == 0) {
+        mPollTimerId = startTimer(1, Qt::PreciseTimer);
     }
+}
+
+void HidIoThread::stop() {
+    printf("Stop HidIoThread\n");
+    killTimer(mPollTimerId);
+    quit();
 }
 
 void HidIoThread::poll() {
     Trace hidRead("HidIoThread poll");
-
+    auto lock = lockMutex(&m_HidDeviceMutex);
     // This loop risks becoming a high priority endless loop in case processing
     // the mapping JS code takes longer than the controller polling rate.
     // This could stall other low priority tasks.
@@ -134,6 +146,7 @@ void HidIoThread::processInputReport(int bytesRead) {
 
 QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     auto startOfHidGetInputReport = mixxx::Time::elapsed();
+    auto lock = lockMutex(&m_HidDeviceMutex);
     int bytesRead;
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
@@ -159,19 +172,21 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
         return QByteArray();
     }
 
-    return QByteArray::fromRawData(
-            reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]), bytesRead);
+    // Return deep-copy of the polled data, for thread safety.
+    return QByteArray(reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]), bytesRead);
 }
 
 void HidIoThread::sendOutputReport(const QByteArray& data, unsigned int reportID) {
-    if (m_outputReports.find(reportID) == m_outputReports.end()) {
-        std::unique_ptr<HidIoReport> pNewOutputReport;
-        m_outputReports[reportID] = std::make_unique<HidIoReport>(
-                reportID, m_pHidDevice, std::move(m_deviceInfo), m_logOutput);
+    {
+        auto lock = lockMutex(&m_HidDeviceMutex);
+        if (m_outputReports.find(reportID) == m_outputReports.end()) {
+            std::unique_ptr<HidIoReport> pNewOutputReport;
+            m_outputReports[reportID] = std::make_unique<HidIoReport>(
+                    reportID, m_pHidDevice, std::move(m_deviceInfo), m_logOutput);
+        }
+        // SendOutputReports executes a hardware operation, which take several milliseconds
+        m_outputReports[reportID]->sendOutputReport(data);
     }
-    // SendOutputReports executes a hardware operation, which take several milliseconds
-    m_outputReports[reportID]->sendOutputReport(data);
-
     // Ensure that all InputReports are read from the ring buffer, before the next OutputReport blocks the IO again
     poll(); // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
 }
@@ -179,6 +194,7 @@ void HidIoThread::sendOutputReport(const QByteArray& data, unsigned int reportID
 void HidIoThread::sendFeatureReport(
         const QByteArray& reportData, unsigned int reportID) {
     auto startOfHidSendFeatureReport = mixxx::Time::elapsed();
+    auto lock = lockMutex(&m_HidDeviceMutex);
     QByteArray dataArray;
     dataArray.reserve(kReportIdSize + reportData.size());
 
@@ -213,6 +229,7 @@ void HidIoThread::sendFeatureReport(
 QByteArray HidIoThread::getFeatureReport(
         unsigned int reportID) {
     auto startOfHidGetFeatureReport = mixxx::Time::elapsed();
+    auto lock = lockMutex(&m_HidDeviceMutex);
     unsigned char dataRead[kReportIdSize + kBufferSize];
     dataRead[0] = reportID;
 
