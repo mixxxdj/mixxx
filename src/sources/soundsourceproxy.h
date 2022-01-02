@@ -49,8 +49,8 @@ class SoundSourceProxy {
 
     explicit SoundSourceProxy(TrackPointer pTrack);
 
-    // Used during unit tests to check SoundSources explicit
-    explicit SoundSourceProxy(
+    // Only needed for testing all available providers explicitly
+    SoundSourceProxy(
             TrackPointer pTrack,
             mixxx::SoundSourceProviderPointer pProvider);
 
