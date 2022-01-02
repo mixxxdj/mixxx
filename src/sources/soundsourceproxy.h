@@ -47,9 +47,12 @@ class SoundSourceProxy {
     static mixxx::SoundSourceProviderPointer getPrimaryProviderForFileExtension(
             const QString& fileExtension);
 
+    explicit SoundSourceProxy(TrackPointer pTrack);
+
+    // Used during unit tests to check SoundSources explicit
     explicit SoundSourceProxy(
             TrackPointer pTrack,
-            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
+            mixxx::SoundSourceProviderPointer pProvider);
 
     /// The track object that has been passed at construction.
     ///
@@ -181,9 +184,10 @@ class SoundSourceProxy {
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.
-    explicit SoundSourceProxy(
-            const QUrl& url,
-            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
+    explicit SoundSourceProxy(const QUrl& url);
+
+    bool openSoundSource(
+            const mixxx::AudioSource::OpenParams& params = mixxx::AudioSource::OpenParams());
 
     const TrackPointer m_pTrack;
 
@@ -196,11 +200,12 @@ class SoundSourceProxy {
     // provider and is initialized with -1 if no
     int m_providerRegistrationIndex;
 
-    void initSoundSource(
-            const mixxx::SoundSourceProviderPointer& pProvider);
+    void findProviderAndInitSoundSource();
 
-    mixxx::SoundSourceProviderPointer primaryProvider(
-            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
+    bool initSoundSourceWithProvider(
+            mixxx::SoundSourceProviderPointer&& pProvider);
+
+    mixxx::SoundSourceProviderPointer primaryProvider();
     mixxx::SoundSourceProviderPointer nextProvider();
     std::pair<mixxx::SoundSourceProviderPointer, mixxx::SoundSource::OpenMode>
             nextProviderWithOpenMode(mixxx::SoundSource::OpenMode);
