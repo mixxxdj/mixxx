@@ -336,14 +336,13 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
         }
         pSoundSource = proxy.m_pSoundSource;
     }
-    if (pSoundSource) {
-        return pTrack->exportMetadata(*pSoundSource, pConfig);
-    } else {
+    if (!pSoundSource) {
         kLogger.warning()
                 << "Unable to export track metadata into file"
                 << fileInfo;
         return ExportTrackMetadataResult::Skipped;
     }
+    return pTrack->exportMetadata(*pSoundSource, pConfig);
 }
 
 // Used during tests only
@@ -371,10 +370,10 @@ SoundSourceProxy::SoundSourceProxy(const QUrl& url)
 
 mixxx::SoundSourceProviderPointer SoundSourceProxy::primaryProvider() {
     m_providerRegistrationIndex = 0;
-    if (m_providerRegistrationIndex < m_providerRegistrations.size()) {
-        return m_providerRegistrations[m_providerRegistrationIndex].getProvider();
+    if (m_providerRegistrationIndex >= m_providerRegistrations.size()) {
+        return nullptr;
     }
-    return nullptr;
+    return m_providerRegistrations[m_providerRegistrationIndex].getProvider();
 }
 
 mixxx::SoundSourceProviderPointer SoundSourceProxy::nextProvider() {
@@ -385,10 +384,10 @@ mixxx::SoundSourceProviderPointer SoundSourceProxy::nextProvider() {
         return nullptr;
     }
     ++m_providerRegistrationIndex;
-    if (m_providerRegistrationIndex < m_providerRegistrations.size()) {
-        return m_providerRegistrations[m_providerRegistrationIndex].getProvider();
+    if (m_providerRegistrationIndex >= m_providerRegistrations.size()) {
+        return nullptr;
     }
-    return nullptr;
+    return m_providerRegistrations[m_providerRegistrationIndex].getProvider();
 }
 
 std::pair<mixxx::SoundSourceProviderPointer, mixxx::SoundSource::OpenMode>
@@ -450,23 +449,23 @@ bool SoundSourceProxy::initSoundSourceWithProvider(
     DEBUG_ASSERT(!m_pSoundSource);
     DEBUG_ASSERT(pProvider);
     m_pSoundSource = pProvider->newSoundSource(m_url);
-    if (m_pSoundSource) {
-        m_pProvider = pProvider;
-        if (kLogger.debugEnabled()) {
-            kLogger.debug() << "SoundSourceProvider"
-                            << m_pProvider->getDisplayName()
-                            << "created a SoundSource for file"
-                            << getUrl().toString()
-                            << "of type"
-                            << m_pSoundSource->getType();
-        }
-        return true;
+    if (!m_pSoundSource) {
+        kLogger.warning() << "SoundSourceProvider"
+                          << pProvider->getDisplayName()
+                          << "failed to create a SoundSource for file"
+                          << getUrl().toString();
+        return false;
     }
-    kLogger.warning() << "SoundSourceProvider"
-                      << pProvider->getDisplayName()
-                      << "failed to create a SoundSource for file"
-                      << getUrl().toString();
-    return false;
+    m_pProvider = pProvider;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "SoundSourceProvider"
+                        << m_pProvider->getDisplayName()
+                        << "created a SoundSource for file"
+                        << getUrl().toString()
+                        << "of type"
+                        << m_pSoundSource->getType();
+    }
+    return true;
 }
 
 namespace {
