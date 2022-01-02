@@ -72,28 +72,28 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
 
     // libxwax indexes by C-strings so we pass libxwax string literals so we
     // don't have to deal with freeing the strings later
-    char* timecode = nullptr;
+    const char* timecode = nullptr;
 
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
-        timecode = (char*)"serato_2a";
+        timecode = "serato_2a";
     }
     else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
-        timecode = (char*)"serato_2b";
+        timecode = "serato_2b";
     } else if (strVinylType == MIXXX_VINYL_SERATOCD) {
-        timecode = (char*)"serato_cd";
+        timecode = "serato_cd";
         m_bCDControl = true;
         // Set up very sensitive steady monitors for CDJs.
         m_pSteadySubtle = new SteadyPitch(0.06, true);
         m_pSteadyGross = new SteadyPitch(0.25, true);
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
-        timecode = (char*)"traktor_a";
+        timecode = "traktor_a";
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
-        timecode = (char*)"traktor_b";
+        timecode = "traktor_b";
     } else if (strVinylType == MIXXX_VINYL_MIXVIBESDVS) {
-        timecode = (char*)"mixvibes_v2";
+        timecode = "mixvibes_v2";
     } else {
         qDebug() << "Unknown vinyl type, defaulting to serato_2a";
-        timecode = (char*)"serato_2a";
+        timecode = "serato_2a";
     }
 
     // If we didn't set up the steady monitors already (not CDJ), do it now.
@@ -107,7 +107,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
     timecode_def* tc_def = timecoder_find_definition(timecode);
     if (tc_def == nullptr) {
         qDebug() << "Error finding timecode definition for " << timecode << ", defaulting to serato_2a";
-        timecode = (char*)"serato_2a";
+        timecode = "serato_2a";
         tc_def = timecoder_find_definition(timecode);
     }
 
