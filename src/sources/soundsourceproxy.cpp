@@ -353,20 +353,20 @@ SoundSourceProxy::SoundSourceProxy(
         : m_pTrack(std::move(pTrack)),
           m_url(m_pTrack ? m_pTrack->getFileInfo().toQUrl() : QUrl()),
           m_providerRegistrationIndex(-1) {
-    initSoundSource(std::move(pProvider));
+    initSoundSourceWithProvider(std::move(pProvider));
 }
 
 SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
         : m_pTrack(std::move(pTrack)),
           m_url(m_pTrack ? m_pTrack->getFileInfo().toQUrl() : QUrl()),
           m_providerRegistrations(allProviderRegistrationsForUrl(m_url)) {
-    findAndInitSoundSource();
+    findProviderAndInitSoundSource();
 }
 
 SoundSourceProxy::SoundSourceProxy(const QUrl& url)
         : m_url(url),
           m_providerRegistrations(allProviderRegistrationsForUrl(m_url)) {
-    findAndInitSoundSource();
+    findProviderAndInitSoundSource();
 }
 
 mixxx::SoundSourceProviderPointer SoundSourceProxy::primaryProvider() {
@@ -421,7 +421,7 @@ SoundSourceProxy::nextProviderWithOpenMode(
     }
 }
 
-void SoundSourceProxy::findAndInitSoundSource() {
+void SoundSourceProxy::findProviderAndInitSoundSource() {
     DEBUG_ASSERT(!m_pProvider);
     DEBUG_ASSERT(!m_pSoundSource);
     for (m_providerRegistrationIndex = 0;
@@ -433,7 +433,7 @@ void SoundSourceProxy::findAndInitSoundSource() {
         VERIFY_OR_DEBUG_ASSERT(pProvider) {
             continue;
         }
-        if (initSoundSource(std::move(pProvider))) {
+        if (initSoundSourceWithProvider(std::move(pProvider))) {
             return; // Success
         }
     }
@@ -444,7 +444,7 @@ void SoundSourceProxy::findAndInitSoundSource() {
     }
 }
 
-bool SoundSourceProxy::initSoundSource(
+bool SoundSourceProxy::initSoundSourceWithProvider(
         mixxx::SoundSourceProviderPointer&& pProvider) {
     DEBUG_ASSERT(!m_pProvider);
     DEBUG_ASSERT(!m_pSoundSource);
@@ -821,7 +821,7 @@ bool SoundSourceProxy::openSoundSource(
         openMode = nextProviderWithOpenModePair.second;
         m_pProvider.reset();
         m_pSoundSource.reset();
-        initSoundSource(std::move(pNextProvider));
+        initSoundSourceWithProvider(std::move(pNextProvider));
         // try again
     }
     // All available providers have returned OpenResult::Aborted when

@@ -200,9 +200,9 @@ class SoundSourceProxy {
     // provider and is initialized with -1 if no
     int m_providerRegistrationIndex;
 
-    void findAndInitSoundSource();
+    void findProviderAndInitSoundSource();
 
-    bool initSoundSource(
+    bool initSoundSourceWithProvider(
             mixxx::SoundSourceProviderPointer&& pProvider);
 
     mixxx::SoundSourceProviderPointer primaryProvider();
