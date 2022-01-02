@@ -75,25 +75,30 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
     const char* timecode = nullptr;
 
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
-        timecode = "serato_2a";
-    }
-    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
-        timecode = "serato_2b";
+        timecode = MIXXX_VINYL_SERATOCV02VINYLSIDEA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
+        timecode = MIXXX_VINYL_SERATOCV02VINYLSIDEB_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_SERATOCD) {
-        timecode = "serato_cd";
+        timecode = MIXXX_VINYL_SERATOCD_XWAX_NAME;
         m_bCDControl = true;
         // Set up very sensitive steady monitors for CDJs.
         m_pSteadySubtle = new SteadyPitch(0.06, true);
         m_pSteadyGross = new SteadyPitch(0.25, true);
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
-        timecode = "traktor_a";
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEA_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
-        timecode = "traktor_b";
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEB_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_MIXVIBESDVS) {
-        timecode = "mixvibes_v2";
+        timecode = MIXXX_VINYL_MIXVIBESDVS_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_MIXVIBES7INCH) {
+        timecode = MIXXX_VINYL_MIXVIBES7INCH_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_PIONEERA) {
+        timecode = MIXXX_VINYL_PIONEERA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_PIONEERB) {
+        timecode = MIXXX_VINYL_PIONEERB_XWAX_NAME;
     } else {
-        qDebug() << "Unknown vinyl type, defaulting to serato_2a";
-        timecode = "serato_2a";
+        qDebug() << "Unknown vinyl type, defaulting to" << MIXXX_VINYL_DEFAULT_XWAX_NAME;
+        timecode = MIXXX_VINYL_DEFAULT_XWAX_NAME;
     }
 
     // If we didn't set up the steady monitors already (not CDJ), do it now.
@@ -106,8 +111,9 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
 
     timecode_def* tc_def = timecoder_find_definition(timecode);
     if (tc_def == nullptr) {
-        qDebug() << "Error finding timecode definition for " << timecode << ", defaulting to serato_2a";
-        timecode = "serato_2a";
+        qDebug() << "Error finding timecode definition for " << timecode
+                 << ", defaulting to" << MIXXX_VINYL_DEFAULT_XWAX_NAME;
+        timecode = MIXXX_VINYL_DEFAULT_XWAX_NAME;
         tc_def = timecoder_find_definition(timecode);
     }
 
