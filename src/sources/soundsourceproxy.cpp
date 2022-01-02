@@ -840,11 +840,11 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
     VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
         return nullptr;
     }
-    if (openSoundSource(params)) {
-        // Overwrite metadata with actual audio properties
-        m_pTrack->updateStreamInfoFromSource(
-                m_pSoundSource->getStreamInfo());
-        return mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
+    if (!openSoundSource(params)) {
+        return nullptr;
     }
-    return nullptr;
+    // Overwrite metadata with actual audio properties
+    m_pTrack->updateStreamInfoFromSource(
+            m_pSoundSource->getStreamInfo());
+    return mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
 }
