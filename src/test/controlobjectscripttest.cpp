@@ -81,6 +81,14 @@ class ControlObjectScriptTest : public MixxxTest {
         coScript4->removeScriptConnection(conn4);
     }
 
+    void processEvents() {
+        // Calling processEvents() twice ensures that at least all queued and
+        // the next round of emitted events are processed.
+        // Test fails occurred here for a local debug build on Linux, but not on CI (see https://github.com/mixxxdj/mixxx/pull/4588)
+        application()->processEvents();
+        application()->processEvents();
+    }
+
     ConfigKey ck1, ck2, ck4;
     std::unique_ptr<ControlObject> co1;
     std::unique_ptr<ControlObject> co2;
@@ -102,7 +110,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyCompareCount1) {
             .Times(1)
             .WillOnce(Return());
     co1->set(1.0);
-    application()->processEvents();
+    processEvents();
 }
 
 TEST_F(ControlObjectScriptTest, CompressingProxyCompareValue1) {
@@ -111,7 +119,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyCompareValue1) {
             .WillOnce(Return());
 
     co1->set(2.0);
-    application()->processEvents();
+    processEvents();
 }
 
 TEST_F(ControlObjectScriptTest, CompressingProxyCompareCount2) {
@@ -124,7 +132,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyCompareCount2) {
             .WillOnce(Return());
     co1->set(3.0);
     co1->set(4.0);
-    application()->processEvents();
+    processEvents();
 }
 
 TEST_F(ControlObjectScriptTest, CompressingProxyCompareValue2) {
@@ -134,7 +142,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyCompareValue2) {
             .WillOnce(Return());
     co1->set(5.0);
     co1->set(6.0);
-    application()->processEvents();
+    processEvents();
 }
 
 TEST_F(ControlObjectScriptTest, QueuedCompareCount2) {
@@ -147,7 +155,7 @@ TEST_F(ControlObjectScriptTest, QueuedCompareCount2) {
             .WillOnce(Return());
     co4->set(53.0);
     co4->set(54.0);
-    application()->processEvents();
+    processEvents();
 }
 
 TEST_F(ControlObjectScriptTest, QueuedCompareValue2) {
@@ -160,7 +168,7 @@ TEST_F(ControlObjectScriptTest, QueuedCompareValue2) {
             .WillOnce(Return());
     co4->set(55.0);
     co4->set(56.0);
-    application()->processEvents();
+    processEvents();
 }
 TEST_F(ControlObjectScriptTest, CompressingProxyCompareCountMulti) {
     // Check that slotValueChanged callback for conn1 and conn2 is called only once (independent of the value)
@@ -171,7 +179,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyCompareCountMulti) {
     co2->set(11.0);
     co1->set(12.0);
     co2->set(13.0);
-    application()->processEvents();
+    processEvents();
 }
 
 TEST_F(ControlObjectScriptTest, CompressingProxyCompareValueMulti) {
@@ -186,7 +194,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyCompareValueMulti) {
     co2->set(21.0);
     co1->set(22.0);
     co2->set(23.0);
-    application()->processEvents();
+    processEvents();
 }
 
 TEST_F(ControlObjectScriptTest, CompressingProxyMultiConnection) {
@@ -203,7 +211,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyMultiConnection) {
     co2->set(31.0);
     co1->set(32.0);
     co2->set(33.0);
-    application()->processEvents();
+    processEvents();
 
     coScript2->removeScriptConnection(conn3);
 }
@@ -230,14 +238,14 @@ TEST_F(ControlObjectScriptTest, QueuedFallbackMultiConnection) {
     co2->set(61.0);
     co1->set(62.0);
     co2->set(63.0);
-    application()->processEvents();
+    processEvents();
     conn3.skipSuperseded = false;
     coScript2->addScriptConnection(conn3);
     co1->set(64.0);
     co2->set(65.0);
     co1->set(66.0);
     co2->set(67.0);
-    application()->processEvents();
+    processEvents();
 
     coScript2->removeScriptConnection(conn3);
     conn3.skipSuperseded = true;
@@ -262,10 +270,10 @@ TEST_F(ControlObjectScriptTest, CompressingProxyManyEvents) {
     co2->set(42);
 
     // Event queue should be cleared
-    application()->processEvents();
+    processEvents();
     EXPECT_CALL(*coScript1, slotValueChanged(_, _))
             .Times(0);
-    application()->processEvents();
+    processEvents();
 
     // Verify that compressing proxy works again after clearing event queue
     EXPECT_CALL(*coScript1, slotValueChanged(2, _))
@@ -273,7 +281,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyManyEvents) {
             .WillOnce(Return());
     co1->set(1);
     co1->set(2);
-    application()->processEvents();
+    processEvents();
 }
 
 } // namespace
