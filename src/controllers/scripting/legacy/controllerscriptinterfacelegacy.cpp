@@ -216,7 +216,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnection(
     return ControllerScriptInterfaceLegacy::makeConnectionInternal(group, name, callback, false);
 }
 
-QJSValue ControllerScriptInterfaceLegacy::makeCompressedConnection(
+QJSValue ControllerScriptInterfaceLegacy::makeUnbufferedConnection(
         const QString& group, const QString& name, const QJSValue& callback) {
     return ControllerScriptInterfaceLegacy::makeConnectionInternal(group, name, callback, true);
 }

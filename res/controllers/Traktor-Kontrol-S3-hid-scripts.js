@@ -1906,8 +1906,8 @@ TraktorS3.Controller.prototype.registerOutputPackets = function() {
     engine.connectControl("[Master]", "maximize_library", TraktorS3.bind(TraktorS3.Controller.prototype.maximizeLibraryOutput, this));
 
     // Master VuMeters
-    this.masterVuMeter["VuMeterL"].connection = engine.makeCompressedConnection("[Master]", "VuMeterL", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
-    this.masterVuMeter["VuMeterR"].connection = engine.makeCompressedConnection("[Master]", "VuMeterR", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
+    this.masterVuMeter["VuMeterL"].connection = engine.makeUnbufferedConnection("[Master]", "VuMeterL", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
+    this.masterVuMeter["VuMeterR"].connection = engine.makeUnbufferedConnection("[Master]", "VuMeterR", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
     this.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS3.bind(TraktorS3.Controller.prototype.peakOutput, this));
     this.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS3.bind(TraktorS3.Controller.prototype.peakOutput, this));
     this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", TraktorS3.bind(TraktorS3.Controller.prototype.guiTickHandler, this));
