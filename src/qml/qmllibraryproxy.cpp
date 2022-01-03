@@ -10,7 +10,7 @@ namespace qml {
 QmlLibraryProxy::QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* parent)
         : QObject(parent),
           m_pLibrary(pLibrary),
-          m_pModel(make_parented<QmlLibraryTrackListModel>(m_pLibrary->trackTableModel(), this)) {
+          m_pModelProperty(new QmlLibraryTrackListModel(m_pLibrary->trackTableModel(), this)) {
 }
 
 } // namespace qml
