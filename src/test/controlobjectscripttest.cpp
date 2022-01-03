@@ -1,8 +1,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <QtDebug>
-
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "test/mixxxtest.h"
