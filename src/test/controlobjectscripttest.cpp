@@ -96,8 +96,7 @@ class ControlObjectScriptTest : public MixxxTest {
 TEST_F(ControlObjectScriptTest, CompressingProxyCompareCount1) {
     // Check that slotValueChanged callback is never called for conn2
     EXPECT_CALL(*coScript2, slotValueChanged(_, _))
-            .Times(0)
-            .WillOnce(Return());
+            .Times(0);
     // Check that slotValueChanged callback is called only once (independent of the value)
     EXPECT_CALL(*coScript1, slotValueChanged(_, _))
             .Times(1)
@@ -118,8 +117,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyCompareValue1) {
 TEST_F(ControlObjectScriptTest, CompressingProxyCompareCount2) {
     // Check that slotValueChanged callback is never called for conn2
     EXPECT_CALL(*coScript2, slotValueChanged(_, _))
-            .Times(0)
-            .WillOnce(Return());
+            .Times(0);
     // Check that slotValueChanged callback for conn1 is called only once (independent of the value)
     EXPECT_CALL(*coScript1, slotValueChanged(_, _))
             .Times(1)
@@ -142,8 +140,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyCompareValue2) {
 TEST_F(ControlObjectScriptTest, QueuedCompareCount2) {
     // Check that slotValueChanged callback is never called for conn4
     EXPECT_CALL(*coScript2, slotValueChanged(_, _))
-            .Times(0)
-            .WillOnce(Return());
+            .Times(0);
     // Check that slotValueChanged callback for conn1 is called only twice (independent of the value), because proxy is disabled
     EXPECT_CALL(*coScript4, slotValueChanged(_, _))
             .Times(2)
@@ -267,8 +264,7 @@ TEST_F(ControlObjectScriptTest, CompressingProxyManyEvents) {
     // Event queue should be cleared
     application()->processEvents();
     EXPECT_CALL(*coScript1, slotValueChanged(_, _))
-            .Times(0)
-            .WillOnce(Return());
+            .Times(0);
     application()->processEvents();
 
     // Verify that compressing proxy works again after clearing event queue
