@@ -36,14 +36,17 @@ void HidIoReport::sendOutputReport(QByteArray data) {
                              << "(Report ID" << m_reportId << ")";
         return; // Same data sent last time
     }
-    m_lastSentOutputReport.clear();
-    m_lastSentOutputReport.append(data);
 
-    // Prepend the Report ID to the beginning of data[] per the API..
-    data.prepend(m_reportId);
+    // hid_write requires the first byte to be the Report ID, followed by the data[] to be send
+    QByteArray outputReport;
+    outputReport.reserve(data.size() + kReportIdSize);
+    outputReport.append(m_reportId);
+    outputReport.append(data);
 
     // hid_write can take several milliseconds, because hidapi synchronizes the asyncron HID communication from the OS
-    int result = hid_write(m_pHidDevice, (unsigned char*)data.constData(), data.size());
+    int result = hid_write(m_pHidDevice,
+            (unsigned char*)outputReport.constData(),
+            outputReport.size());
     if (result == -1) {
         qCWarning(m_logOutput) << "Unable to send data to" << m_deviceInfo.formatName() << ":"
                                << mixxx::convertWCStringToQString(
@@ -55,6 +58,8 @@ void HidIoReport::sendOutputReport(QByteArray data) {
                              << "serial #" << m_deviceInfo.serialNumberRaw()
                              << "(including report ID of" << m_reportId << ") - Needed: "
                              << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
+
+        m_lastSentOutputReport = std::move(data);
     }
 }
 
