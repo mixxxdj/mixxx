@@ -61,9 +61,18 @@ Item {
             anchors.fill: parent
             anchors.margins: 10
             clip: true
+            keyNavigationWraps: true
             highlightMoveDuration: 250
             highlightResizeDuration: 50
             model: Mixxx.Library.model
+            Keys.onPressed: {
+                switch (event.key) {
+                case Qt.Key_Enter:
+                case Qt.Key_Return:
+                    listView.loadSelectedTrackIntoNextAvailableDeck(false);
+                    break;
+                }
+            }
 
             delegate: Item {
                 id: itemDelegate
@@ -110,6 +119,7 @@ Item {
                             dragItem.Drag.imageSource = result.url;
                         });
                     }
+                    onDoubleClicked: listView.loadSelectedTrackIntoNextAvailableDeck(false)
                 }
 
             }
