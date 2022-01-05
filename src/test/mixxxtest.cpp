@@ -16,6 +16,8 @@ QString makeTestConfigFile(const QString& path) {
     return path;
 }
 
+const QString kTempFileWildcardPattern = QStringLiteral("XXXXXX");
+
 } // namespace
 
 // Static initialization
@@ -86,7 +88,15 @@ FileRemover::~FileRemover() {
     }
 }
 
-QString generateTemporaryFileName(const QString& fileNameTemplate) {
+QString generateTemporaryFileName(QString fileNameTemplate) {
+    if (!fileNameTemplate.contains(kTempFileWildcardPattern)) {
+        const int firstSuffixSeparatorPos = fileNameTemplate.indexOf('.');
+        if (firstSuffixSeparatorPos >= 0) {
+            // Insert the wildcard pattern before the first suffix separator
+            // to preserve the complete file extension.
+            fileNameTemplate.insert(firstSuffixSeparatorPos, kTempFileWildcardPattern);
+        }
+    }
     auto tmpFile = QTemporaryFile(fileNameTemplate);
     // The file must be opened to create it and to obtain
     // its file name!

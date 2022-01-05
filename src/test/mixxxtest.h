@@ -58,7 +58,10 @@ namespace mixxxtest {
 /// Returns the full, non-empty file path on success.
 ///
 /// For the format of fileNameTemplate refer to QTemporaryFile.
-QString generateTemporaryFileName(const QString& fileNameTemplate);
+/// If no wildcard pattern is provided then it will be inserted
+/// before the first suffix eparator to preserve the complete
+/// file extension.
+QString generateTemporaryFileName(QString fileNameTemplate);
 
 /// Returns the full, non-empty file path on success.
 ///
