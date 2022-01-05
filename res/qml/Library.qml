@@ -15,6 +15,13 @@ Item {
             onMoveSelection: listView.moveSelection(offset)
             onLoadSelectedTrack: listView.loadSelectedTrack(group, play)
             onLoadSelectedTrackIntoNextAvailableDeck: listView.loadSelectedTrackIntoNextAvailableDeck(play)
+            onFocusWidgetChanged: {
+                switch (focusWidget) {
+                case FocusedWidgetControl.WidgetKind.LibraryView:
+                    listView.forceActiveFocus();
+                    break;
+                }
+            }
         }
 
         ListView {
@@ -54,7 +61,6 @@ Item {
             anchors.fill: parent
             anchors.margins: 10
             clip: true
-            focus: true
             highlightMoveDuration: 250
             highlightResizeDuration: 50
             model: Mixxx.Library.model
@@ -68,7 +74,7 @@ Item {
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     text: artist + " - " + title
-                    color: listView.currentIndex == index ? Theme.blue : Theme.deckTextColor
+                    color: (listView.currentIndex == index && listView.activeFocus) ? Theme.blue : Theme.deckTextColor
 
                     Behavior on color {
                         ColorAnimation {
@@ -98,6 +104,7 @@ Item {
                     anchors.fill: parent
                     drag.target: dragItem
                     onPressed: {
+                        listView.forceActiveFocus();
                         listView.currentIndex = index;
                         parent.grabToImage((result) => {
                             dragItem.Drag.imageSource = result.url;
@@ -108,7 +115,7 @@ Item {
             }
 
             highlight: Rectangle {
-                border.color: Theme.blue
+                border.color: listView.activeFocus ? Theme.blue : Theme.deckTextColor
                 border.width: 1
                 color: "transparent"
             }
