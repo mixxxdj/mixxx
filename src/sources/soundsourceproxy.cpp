@@ -308,7 +308,7 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
 ExportTrackMetadataResult
 SoundSourceProxy::exportTrackMetadataBeforeSaving(
         Track* pTrack,
-        const UserSettingsPointer& pConfig) {
+        const SyncTrackMetadataParams& syncParams) {
     DEBUG_ASSERT(pTrack);
     const auto fileInfo = pTrack->getFileInfo();
     mixxx::SoundSourcePointer pSoundSource;
@@ -342,7 +342,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
                 << fileInfo;
         return ExportTrackMetadataResult::Skipped;
     }
-    return pTrack->exportMetadata(*pSoundSource, pConfig);
+    return pTrack->exportMetadata(*pSoundSource, syncParams);
 }
 
 // Used during tests only

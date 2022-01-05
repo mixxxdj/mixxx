@@ -180,7 +180,7 @@ class SoundSourceProxy {
     friend class TrackCollectionManager;
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
-            const UserSettingsPointer& pConfig);
+            const SyncTrackMetadataParams& syncParams);
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.
