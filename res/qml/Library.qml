@@ -28,9 +28,7 @@ Item {
                 if (rowCount == 0)
                     return ;
 
-                let newIndex = currentIndex = (currentIndex + value) % rowCount;
-                while (newIndex < 0)newIndex += rowCount
-                currentIndex = newIndex;
+                currentIndex = Mixxx.MathUtils.positiveModulo(currentIndex + value, rowCount);
             }
 
             function loadSelectedTrackIntoNextAvailableDeck(play) {
