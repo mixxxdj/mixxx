@@ -13,16 +13,15 @@ class HidIoReport {
   public:
     HidIoReport(const unsigned char& reportId,
             hid_device* device,
-            const mixxx::hid::DeviceInfo&& deviceInfo,
-            const RuntimeLoggingCategory& logOutput);
+            const mixxx::hid::DeviceInfo&& deviceInfo);
     void sendOutputReport(QByteArray data);
 
   private:
     const unsigned char m_reportId;
+    const RuntimeLoggingCategory m_logOutput;
     hid_device* const
             m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
     const mixxx::hid::DeviceInfo m_deviceInfo;
-    const RuntimeLoggingCategory m_logOutput;
     QByteArray m_lastSentOutputReport;
 };
 
@@ -30,10 +29,7 @@ class HidIoThread : public QThread {
     Q_OBJECT
   public:
     HidIoThread(hid_device* device,
-            const mixxx::hid::DeviceInfo&& deviceInfo,
-            const RuntimeLoggingCategory& logBase,
-            const RuntimeLoggingCategory& logInput,
-            const RuntimeLoggingCategory& logOutput);
+            const mixxx::hid::DeviceInfo&& deviceInfo);
 
     void stop();
 

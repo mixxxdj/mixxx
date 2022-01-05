@@ -14,16 +14,19 @@
 namespace {
 constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
+QString loggingCategoryPrefix(const QString& deviceName) {
+    return QStringLiteral("controller.") +
+            RuntimeLoggingCategory::removeInvalidCharsFromCategory(deviceName.toLower());
+}
 } // namespace
 
 HidIoReport::HidIoReport(const unsigned char& reportId,
         hid_device* device,
-        const mixxx::hid::DeviceInfo&& deviceInfo,
-        const RuntimeLoggingCategory& logOutput)
+        const mixxx::hid::DeviceInfo&& deviceInfo)
         : m_reportId(reportId),
+          m_logOutput(loggingCategoryPrefix(deviceInfo.formatName()) + QStringLiteral(".output")),
           m_pHidDevice(device),
           m_deviceInfo(std::move(deviceInfo)),
-          m_logOutput(logOutput),
           m_lastSentOutputReport() {
 }
 
@@ -63,16 +66,16 @@ void HidIoReport::sendOutputReport(QByteArray data) {
     }
 }
 
-HidIoThread::HidIoThread(hid_device* device,
-        const mixxx::hid::DeviceInfo&& deviceInfo,
-        const RuntimeLoggingCategory& logBase,
-        const RuntimeLoggingCategory& logInput,
-        const RuntimeLoggingCategory& logOutput)
+HidIoThread::HidIoThread(
+        hid_device* device, const mixxx::hid::DeviceInfo&& deviceInfo)
         : QThread(),
           m_pollingBufferIndex(0),
-          m_logBase(logBase),
-          m_logInput(logInput),
-          m_logOutput(logOutput),
+          // Defining RuntimeLoggingCategories locally in this thread improves runtime performance significiant
+          m_logBase(loggingCategoryPrefix(deviceInfo.formatName())),
+          m_logInput(loggingCategoryPrefix(deviceInfo.formatName()) +
+                  QStringLiteral(".input")),
+          m_logOutput(loggingCategoryPrefix(deviceInfo.formatName()) +
+                  QStringLiteral(".output")),
           m_pHidDevice(device),
           m_deviceInfo(std::move(deviceInfo)),
           m_HidDeviceMutex(QT_RECURSIVE_MUTEX_INIT),
@@ -188,7 +191,7 @@ void HidIoThread::sendOutputReport(const QByteArray& data, unsigned int reportID
         if (m_outputReports.find(reportID) == m_outputReports.end()) {
             std::unique_ptr<HidIoReport> pNewOutputReport;
             m_outputReports[reportID] = std::make_unique<HidIoReport>(
-                    reportID, m_pHidDevice, std::move(m_deviceInfo), m_logOutput);
+                    reportID, m_pHidDevice, std::move(m_deviceInfo));
         }
         // SendOutputReports executes a hardware operation, which take several milliseconds
         m_outputReports[reportID]->sendOutputReport(data);

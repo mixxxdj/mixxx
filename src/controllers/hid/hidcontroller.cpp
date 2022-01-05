@@ -105,11 +105,7 @@ int HidController::open() {
     if (m_pHidIoThread != nullptr) {
         qWarning() << "HidIoThread already present for" << getName();
     } else {
-        m_pHidIoThread = new HidIoThread(m_pHidDevice,
-                std::move(m_deviceInfo),
-                m_logBase,
-                m_logInput,
-                m_logOutput);
+        m_pHidIoThread = new HidIoThread(m_pHidDevice, std::move(m_deviceInfo));
         m_pHidIoThread->setObjectName(QString("HidIoThread %1").arg(getName()));
 
         connect(m_pHidIoThread,
