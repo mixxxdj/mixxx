@@ -17,5 +17,5 @@ class HidIoReport {
     hid_device* const
             m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
     const mixxx::hid::DeviceInfo m_deviceInfo;
-    QByteArray m_lastSentOutputReport;
+    QByteArray m_lastSentOutputReportData;
 };

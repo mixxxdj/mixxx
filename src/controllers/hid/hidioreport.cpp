@@ -24,12 +24,12 @@ HidIoReport::HidIoReport(const unsigned char& reportId,
           m_logOutput(loggingCategoryPrefix(deviceInfo.formatName()) + QStringLiteral(".output")),
           m_pHidDevice(device),
           m_deviceInfo(std::move(deviceInfo)),
-          m_lastSentOutputReport() {
+          m_lastSentOutputReportData() {
 }
 
 void HidIoReport::sendOutputReport(QByteArray data) {
     auto startOfHidWrite = mixxx::Time::elapsed();
-    if (!m_lastSentOutputReport.compare(data)) {
+    if (!m_lastSentOutputReportData.compare(data)) {
         qCDebug(m_logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
                              << " Skipped identical Output Report for" << m_deviceInfo.formatName()
                              << "serial #" << m_deviceInfo.serialNumberRaw()
@@ -59,6 +59,6 @@ void HidIoReport::sendOutputReport(QByteArray data) {
                              << "(including report ID of" << m_reportId << ") - Needed: "
                              << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
 
-        m_lastSentOutputReport = std::move(data);
+        m_lastSentOutputReportData = std::move(data);
     }
 }
