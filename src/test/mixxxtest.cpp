@@ -77,50 +77,6 @@ void MixxxTest::saveAndReloadConfig() {
 
 namespace mixxxtest {
 
-FileRemover::~FileRemover() {
-    VERIFY_OR_DEBUG_ASSERT(
-            m_fileName.isEmpty() ||
-            QFile::remove(m_fileName) ||
-            !QFile::exists(m_fileName)) {
-        // unexpected
-    }
-}
-
-QString generateTemporaryFileName(const QString& fileNameTemplate) {
-    auto tmpFile = QTemporaryFile(fileNameTemplate);
-    // The file must be opened to create it and to obtain
-    // its file name!
-    VERIFY_OR_DEBUG_ASSERT(tmpFile.open()) {
-        return QString();
-    }
-    const auto tmpFileName = tmpFile.fileName();
-    DEBUG_ASSERT(!tmpFileName.isEmpty());
-    // The empty temporary file will be removed upon returning
-    // from this function
-    return tmpFileName;
-}
-
-QString createEmptyTemporaryFile(const QString& fileNameTemplate) {
-    auto emptyFile = QTemporaryFile(fileNameTemplate);
-    VERIFY_OR_DEBUG_ASSERT(emptyFile.open()) {
-        return QString();
-    }
-
-    // Retrieving the file's name after opening it is required to actually
-    // create a named file on Linux.
-    const auto fileName = emptyFile.fileName();
-    DEBUG_ASSERT(!fileName.isEmpty());
-    VERIFY_OR_DEBUG_ASSERT(emptyFile.exists()) {
-        return QString();
-    }
-    VERIFY_OR_DEBUG_ASSERT(emptyFile.size() == 0) {
-        return QString();
-    }
-
-    emptyFile.setAutoRemove(false);
-    return fileName;
-}
-
 bool copyFile(const QString& srcFileName, const QString& dstFileName) {
     auto srcFile = QFile(srcFileName);
     DEBUG_ASSERT(srcFile.exists());
@@ -133,15 +89,16 @@ bool copyFile(const QString& srcFileName, const QString& dstFileName) {
                 << dstFileName;
         return false;
     }
-    auto dstFileRemover = FileRemover(dstFileName);
     auto dstFile = QFile(dstFileName);
     VERIFY_OR_DEBUG_ASSERT(dstFile.exists()) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(srcFile.size() == dstFile.size()) {
+    if (srcFile.size() != dstFile.size()) {
+        dstFile.remove();
+        DEBUG_ASSERT(!"dstFile size does not match srcFile");
         return false;
     }
-    dstFileRemover.keepFile();
+
     return true;
 }
 
