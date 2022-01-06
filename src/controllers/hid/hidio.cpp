@@ -99,12 +99,12 @@ void HidIoThread::processInputReport(int bytesRead) {
     // Cycle between buffers so the memcmp above does not require deep copying to another buffer.
     m_pollingBufferIndex = (m_pollingBufferIndex + 1) % kNumBuffers;
     m_lastPollSize = bytesRead;
-    auto incomingData = QByteArray::fromRawData(
-            reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
 
-    // Execute callback function in JavaScript mapping
-    // and print to stdout in case of --controllerDebug
-    emit receive(incomingData, mixxx::Time::elapsed());
+    // Convert array of bytes read in a JavaScript compatible return type, this is emitted as deep-copy, for thread safety.
+    // This eexecute callback function in JavaScript mapping and print to stdout in case of --controllerDebug
+    emit receive(QByteArray(reinterpret_cast<const char*>(pCurrentBuffer),
+                         bytesRead),
+            mixxx::Time::elapsed());
 }
 
 QByteArray HidIoThread::getInputReport(unsigned int reportID) {
@@ -135,7 +135,8 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
         return QByteArray();
     }
 
-    // Return deep-copy of the polled data, for thread safety.
+    // Convert array of bytes read in a JavaScript compatible return type, this is returned as deep-copy, for thread safety.
+    // For compatibility with HidController::processInputReport, the reportID prefix is included added here
     return QByteArray(reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]), bytesRead);
 }
 
@@ -224,10 +225,8 @@ QByteArray HidIoThread::getFeatureReport(
                            .formatMicrosWithUnit();
     }
 
-    // Convert array of bytes read in a JavaScript compatible return type
+    // Convert array of bytes read in a JavaScript compatible return type, this is returned as deep-copy, for thread safety.
     // For compatibility with input array HidController::sendFeatureReport, a reportID prefix is not added here
-    QByteArray byteArray;
-    byteArray.reserve(bytesRead - kReportIdSize);
-    const auto* const featureReportStart = reinterpret_cast<const char*>(dataRead + kReportIdSize);
-    return QByteArray(featureReportStart, bytesRead);
+    return QByteArray(reinterpret_cast<const char*>(dataRead + kReportIdSize),
+            bytesRead - kReportIdSize);
 }
