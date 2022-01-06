@@ -740,11 +740,8 @@ TEST_F(SoundSourceProxyTest, getTypeFromFile) {
             tempDir.filePath("file_with_empty_suffix.");
     const QString filePathWithUnknownSuffix =
             tempDir.filePath("file_with.unknown_suffix");
-    // TODO: Currently, our SoundSource::getTypeFromFile() can not detect the
-    // file type of files with a known but wrong file extension properly, so
-    // this test needs to be disabled.
-    //const QString filePathWithWrongSuffix =
-    //        tempDir.filePath("file_with_wrong_suffix.wav");
+    const QString filePathWithWrongSuffix =
+            tempDir.filePath("file_with_wrong_suffix.wav");
     const QString filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix =
             tempDir.filePath("file_with_uppercase_suffix. MP3 ");
 
@@ -753,7 +750,7 @@ TEST_F(SoundSourceProxyTest, getTypeFromFile) {
     mixxxtest::copyFile(validFilePath, filePathWithoutSuffix);
     mixxxtest::copyFile(validFilePath, filePathWithEmptySuffix);
     mixxxtest::copyFile(validFilePath, filePathWithUnknownSuffix);
-    //mixxxtest::copyFile(validFilePath, filePathWithWrongSuffix);
+    mixxxtest::copyFile(validFilePath, filePathWithWrongSuffix);
     mixxxtest::copyFile(validFilePath, filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix);
 
     ASSERT_STREQ(qPrintable("mp3"),
@@ -769,9 +766,9 @@ TEST_F(SoundSourceProxyTest, getTypeFromFile) {
     EXPECT_STREQ(qPrintable("mp3"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
                     QFileInfo(filePathWithUnknownSuffix))));
-    //EXPECT_STREQ(qPrintable("mp3"),
-    //        qPrintable(mixxx::SoundSource::getTypeFromFile(
-    //                QFileInfo(filePathWithWrongSuffix))));
+    EXPECT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    QFileInfo(filePathWithWrongSuffix))));
     EXPECT_STREQ(qPrintable("mp3"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
                     QFileInfo(filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix))));
