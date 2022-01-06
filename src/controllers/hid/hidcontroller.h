@@ -4,7 +4,7 @@
 
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
-#include "controllers/hid/hidio.h"
+#include "controllers/hid/hidiothread.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 #include "util/duration.h"
 

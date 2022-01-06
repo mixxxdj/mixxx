@@ -1,4 +1,4 @@
-#include "controllers/hid/hidio.h"
+#include "controllers/hid/hidiothread.h"
 
 #include <hidapi.h>
 
@@ -6,7 +6,7 @@
 
 #include "controllers/defs_controllers.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
-#include "moc_hidio.cpp"
+#include "moc_hidiothread.cpp"
 #include "util/string.h"
 #include "util/time.h"
 #include "util/trace.h"

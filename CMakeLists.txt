@@ -2775,7 +2775,7 @@ if(HID)
   endif()
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
-    src/controllers/hid/hidio.cpp
+    src/controllers/hid/hidiothread.cpp
     src/controllers/hid/hidioreport.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
