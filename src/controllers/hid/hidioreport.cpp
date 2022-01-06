@@ -23,8 +23,7 @@ HidIoReport::HidIoReport(const unsigned char& reportId,
         : m_reportId(reportId),
           m_logOutput(loggingCategoryPrefix(deviceInfo.formatName()) + QStringLiteral(".output")),
           m_pHidDevice(device),
-          m_deviceInfo(std::move(deviceInfo)),
-          m_lastSentOutputReportData() {
+          m_deviceInfo(std::move(deviceInfo)) {
 }
 
 void HidIoReport::sendOutputReport(QByteArray data) {
