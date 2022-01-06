@@ -14,14 +14,14 @@ class TagLibTest : public testing::Test {
 };
 
 TEST_F(TagLibTest, WriteID3v2Tag) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+
     // Generate a file name for the temporary file
-    const QString tmpFileName = mixxxtest::generateTemporaryFileName("no_id3v1_mp3");
+    const QString tmpFileName = tempDir.filePath("no_id3v1_mp3");
 
     // Create the temporary file by copying an existing file
     mixxxtest::copyFile(kTestDir.absoluteFilePath("empty.mp3"), tmpFileName);
-
-    // Ensure that the temporary file is removed after the test
-    mixxxtest::FileRemover tmpFileRemover(tmpFileName);
 
     // Verify that the file has no tags
     {
