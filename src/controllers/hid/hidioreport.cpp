@@ -51,13 +51,14 @@ void HidIoReport::sendOutputReport(QByteArray data) {
                                << mixxx::convertWCStringToQString(
                                           hid_error(m_pHidDevice),
                                           kMaxHidErrorMessageSize);
-    } else {
-        qCDebug(m_logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit() << " "
-                             << result << "bytes sent to" << m_deviceInfo.formatName()
-                             << "serial #" << m_deviceInfo.serialNumberRaw()
-                             << "(including report ID of" << m_reportId << ") - Needed: "
-                             << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
-
-        m_lastSentOutputReportData = std::move(data);
+        return;
     }
+
+    qCDebug(m_logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit() << " "
+                         << result << "bytes sent to" << m_deviceInfo.formatName()
+                         << "serial #" << m_deviceInfo.serialNumberRaw()
+                         << "(including report ID of" << m_reportId << ") - Needed: "
+                         << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
+
+    m_lastSentOutputReportData = std::move(data);
 }
