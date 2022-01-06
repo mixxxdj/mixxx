@@ -141,15 +141,7 @@ int HidController::close() {
         qWarning() << "HidIoThread not present for" << getName()
                    << "yet the device is open!";
     } else {
-        disconnect(m_pHidIoThread,
-                &HidIoThread::receive,
-                this,
-                &HidController::receive);
-
-        disconnect(this,
-                &HidController::sendOutputReport,
-                m_pHidIoThread,
-                &HidIoThread::sendOutputReport);
+        disconnect(m_pHidIoThread);
 
         m_pHidIoThread->stop();
         hid_set_nonblocking(m_pHidDevice, 1); // Quit blocking
