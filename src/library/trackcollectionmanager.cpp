@@ -1,5 +1,7 @@
 #include "library/trackcollectionmanager.h"
 
+#include <utility>
+
 #include "library/externaltrackcollection.h"
 #include "library/library_prefs.h"
 #include "library/scanner/libraryscanner.h"
@@ -57,7 +59,7 @@ TrackCollectionManager::TrackCollectionManager(
     } else {
         // TODO: Add external collections
     }
-    for (const auto& externalCollection : qAsConst(m_externalCollections)) {
+    for (const auto& externalCollection : std::as_const(m_externalCollections)) {
         kLogger.info()
                 << "Connecting to"
                 << externalCollection->name();
@@ -149,7 +151,7 @@ TrackCollectionManager::~TrackCollectionManager() {
     // components are accessing those files at this point.
     GlobalTrackCacheLocker().deactivateCache();
 
-    for (const auto& externalCollection : qAsConst(m_externalCollections)) {
+    for (const auto& externalCollection : std::as_const(m_externalCollections)) {
         kLogger.info()
                 << "Disconnecting from"
                 << externalCollection->name();
@@ -234,7 +236,7 @@ TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
                     << "from"
                     << m_externalCollections.size()
                     << "external collection(s)";
-            for (const auto& externalTrackCollection : qAsConst(m_externalCollections)) {
+            for (const auto& externalTrackCollection : std::as_const(m_externalCollections)) {
                 externalTrackCollection->purgeTracks(
                         QStringList{pTrack->getLocation()});
             }
@@ -273,7 +275,7 @@ TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
                 << "in"
                 << m_externalCollections.size()
                 << "external collection(s)";
-        for (const auto& externalTrackCollection : qAsConst(m_externalCollections)) {
+        for (const auto& externalTrackCollection : std::as_const(m_externalCollections)) {
             externalTrackCollection->saveTrack(
                     *pTrack,
                     ExternalTrackCollection::ChangeHint::Modified);
