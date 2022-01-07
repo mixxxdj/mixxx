@@ -292,6 +292,7 @@ QStringList SoundSourceProxy::getFileSuffixesForFileType(
     const QString dummyFileName = QStringLiteral("prefix.") + fileType;
     const auto mimeTypes = QMimeDatabase().mimeTypesForFileName(dummyFileName);
     QStringList fileSuffixes;
+    // Reserve some extra space to prevent allocations, assuming 2 suffixes per type on average
     fileSuffixes.reserve(mimeTypes.size() * 2);
     for (const QMimeType& mimeType : mimeTypes) {
         fileSuffixes.append(mimeType.suffixes());
@@ -304,6 +305,7 @@ QStringList SoundSourceProxy::getFileSuffixesForFileType(
 QStringList SoundSourceProxy::getSupportedFileSuffixes() {
     const auto fileTypes = getSupportedFileTypes();
     QStringList fileSuffixes;
+    // Reserve some extra space to prevent allocations, assuming 2 suffixes per type on average
     fileSuffixes.reserve(fileTypes.size() * 2);
     for (const QString& fileType : fileTypes) {
         fileSuffixes.append(getFileSuffixesForFileType(fileType));
