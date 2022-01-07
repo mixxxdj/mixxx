@@ -57,7 +57,7 @@ int HidController::open() {
         qDebug() << "HID device" << getName() << "already open";
         return -1;
     }
-        
+
     if (m_pHidIoThread) {
         qWarning() << "HidIoThread already present for" << getName();
         return -1;
@@ -105,7 +105,6 @@ int HidController::open() {
     }
 
     setOpen(true);
-    startEngine();
 
     m_pHidIoThread = std::make_unique<HidIoThread>(m_pHidDevice, std::move(m_deviceInfo));
     m_pHidIoThread->setObjectName(QString("HidIoThread %1").arg(getName()));
@@ -125,6 +124,10 @@ int HidController::open() {
     // Controller input needs to be prioritized since it can affect the
     // audio directly, like when scratching
     m_pHidIoThread->start(QThread::HighPriority);
+
+    // This executes the init function of the JavaScript mapping
+    startEngine();
+
     m_pHidIoThread->startPollTimer();
 
     return 0;
@@ -143,18 +146,20 @@ int HidController::close() {
         qWarning() << "HidIoThread not present for" << getName()
                    << "yet the device is open!";
     } else {
-        disconnect(m_pHidIoThread.get());
-
         m_pHidIoThread->stopPollTimer();
-        m_pHidIoThread->quit();
-        qDebug() << "Waiting on IO thread to finish";
-        m_pHidIoThread->wait();
     }
 
     // Stop controller engine here to ensure it's done before the device is closed
     // in case it has any final parting messages
+    // This executes the shutdown function of the JavaScript mapping
     stopEngine();
 
+    if (m_pHidIoThread) {
+        disconnect(m_pHidIoThread.get());
+        m_pHidIoThread->quit();
+        qDebug() << "Waiting on IO thread to finish";
+        m_pHidIoThread->wait();
+    }
 
     // Close device
     qCInfo(m_logBase) << "Closing device";
