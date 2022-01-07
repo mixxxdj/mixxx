@@ -52,10 +52,10 @@ void HidIoThread::startPollTimer() {
     }
 }
 
-void HidIoThread::stop() {
-    printf("Stop HidIoThread\n");
+void HidIoThread::stopPollTimer() {
+    qCInfo(m_logBase) << "Stop HidIoThread polling"
+                      << m_deviceInfo.formatName();
     killTimer(mPollTimerId);
-    quit();
 }
 
 void HidIoThread::poll() {

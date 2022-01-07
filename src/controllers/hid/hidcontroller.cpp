@@ -144,8 +144,9 @@ int HidController::close() {
     } else {
         disconnect(m_pHidIoThread.get());
 
-        m_pHidIoThread->stop();
+        m_pHidIoThread->stopPollTimer();
         hid_set_nonblocking(m_pHidDevice, 1); // Quit blocking
+        m_pHidIoThread->quit();
         qDebug() << "Waiting on IO thread to finish";
         m_pHidIoThread->wait();
     }

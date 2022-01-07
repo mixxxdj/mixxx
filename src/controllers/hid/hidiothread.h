@@ -16,12 +16,12 @@ class HidIoThread : public QThread {
     HidIoThread(hid_device* device,
             const mixxx::hid::DeviceInfo&& deviceInfo);
 
-    void stop();
+    void startPollTimer();
+    void stopPollTimer();
 
     QByteArray getInputReport(unsigned int reportID);
     void sendFeatureReport(const QByteArray& reportData, unsigned int reportID);
     QByteArray getFeatureReport(unsigned int reportID);
-    void startPollTimer();
 
   signals:
     /// Signals that a HID InputReport received by Interrupt triggered from HID device
