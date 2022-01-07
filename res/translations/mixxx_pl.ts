@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="pl" sourcelanguage="en" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="pl" sourcelanguage="en">
 <context>
     <name>:</name>
     <message>
@@ -104,144 +104,144 @@
 <context>
     <name>BasePlaylistFeature</name>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="295"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="303"/>
         <source>New Playlist</source>
         <translation>Nowa lista odtwarzania</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="66"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="74"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>Dodaj do kolejki Auto DJ (dół)</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="39"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="292"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="47"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="300"/>
         <source>Create New Playlist</source>
         <translation>Utwórz nową listę odtwarzania</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="71"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="79"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>Dodaj do kolejki Auto DJ (góra)</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="55"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="63"/>
         <source>Remove</source>
         <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="45"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="53"/>
         <source>Rename</source>
         <translation>Zmień nazwę</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="60"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="68"/>
         <source>Lock</source>
         <translation>Zablokuj</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="50"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="58"/>
         <source>Duplicate</source>
         <translation>Duplikuj</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="88"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="93"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="96"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="101"/>
         <source>Import Playlist</source>
         <translation>Importuj listę odtwarzania</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="103"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="111"/>
         <source>Export Track Files</source>
         <translation>Eksportuj pliki utworu</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="82"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="90"/>
         <source>Analyze entire Playlist</source>
         <translation>Analizuj całą listę odtwarzania</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="198"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="206"/>
         <source>Enter new name for playlist:</source>
         <translation>Podaj nową nazwę listy odtwarzania:</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="239"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="247"/>
         <source>Duplicate Playlist</source>
         <translation>Duplikuj listę odtwarzania</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="240"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="293"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="248"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="301"/>
         <source>Enter name for new playlist:</source>
         <translation>Podaj nazwę dla nowej listy odtwarzania:</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="98"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="467"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="106"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="474"/>
         <source>Export Playlist</source>
         <translation>Eksportuj listę odtwarzania</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="76"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="84"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation>Dodaj do kolejki Auto DJ (zamień)</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="197"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="205"/>
         <source>Rename Playlist</source>
         <translation>Zmień nazwę listy odtwarzania</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="211"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="215"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="219"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="223"/>
         <source>Renaming Playlist Failed</source>
         <translation>Zmiana nazwy listy odtwarzania nie powiodła się</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="212"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="255"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="307"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="220"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="263"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="315"/>
         <source>A playlist by that name already exists.</source>
         <translation>Lista odtwarzania o tej nazwie już istnieje.</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="216"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="259"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="311"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="224"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="267"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="319"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Lista odtwarzania nie może mieć pustej nazwy.</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="243"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="251"/>
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a playlist</extracomment>
         <translation>_kopia</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="254"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="258"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="306"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="310"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="323"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="439"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="262"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="266"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="314"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="318"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="331"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="448"/>
         <source>Playlist Creation Failed</source>
         <translation>Tworzenie listy odtwarzania nie powiodło się</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="324"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="440"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="332"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="449"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Wystąpił nieznany błąd podczas tworzenia listy odtwarzania: </translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="464"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="478"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Lista odtwarzania M3U (*.m3u)</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="469"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="476"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Lista odtwarzania M3U (*.m3u);;Lista odtwarzania M3U8 (*.m3u8);;Lista odtwarzania PLS (*.pls);;Tekst CSV (*.csv);;Odczytywalny Tekst (*.txt)</translation>
     </message>
@@ -509,7 +509,7 @@
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="141"/>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="435"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="436"/>
         <source>Computer</source>
         <translation>Komputer</translation>
     </message>
@@ -529,7 +529,7 @@
         <translation>Skanuj</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="436"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="437"/>
         <source>&quot;Computer&quot; lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
         <translation>&quot;Komputer&quot; pozwala Ci nawigować, przeglądać i ładować ścieżki z folderów na dysku twardym komputera oraz na urządzeniach zewnętrznych.</translation>
     </message>
@@ -663,17 +663,17 @@
 <context>
     <name>CachingReaderWorker</name>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="147"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="162"/>
         <source>The file &apos;%1&apos; could not be found.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="163"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="178"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="180"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="195"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
         <translation type="unfinished"/>
     </message>
@@ -3177,123 +3177,128 @@
 <context>
     <name>CrateFeature</name>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="76"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="80"/>
         <source>Remove</source>
         <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="60"/>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="171"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="64"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="175"/>
         <source>Create New Crate</source>
         <translation>Utwórz nową skrzynkę</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="66"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="70"/>
         <source>Rename</source>
         <translation>Zmień nazwę</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="81"/>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="350"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="85"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="354"/>
         <source>Lock</source>
         <translation>Zablokuj</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="115"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="119"/>
         <source>Export Track Files</source>
         <translation>Eksportuj pliki utworu</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="71"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="75"/>
         <source>Duplicate</source>
         <translation>Duplikuj</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="94"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="98"/>
         <source>Analyze entire Crate</source>
         <translation>Analizuj całą Skrzynkę</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="87"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="91"/>
         <source>Auto DJ Track Source</source>
         <translation>Źródło utworów Auto DJ&apos;a</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="406"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="410"/>
         <source>Enter new name for crate:</source>
         <translation>Podaj nową nazwę skrzynki:</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="157"/>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="165"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="161"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="169"/>
         <source>Crates</source>
         <translation>Skrzynki</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="100"/>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="105"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="104"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="109"/>
         <source>Import Crate</source>
         <translation>Importuj skrzynkę</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="110"/>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="690"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="114"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="698"/>
         <source>Export Crate</source>
         <translation>Eksportuj Skrzynkę</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="350"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="354"/>
         <source>Unlock</source>
         <translation>Odblokuj</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="648"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="653"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Podczas tworzenia skrzynki pojawił się nieznany błąd: </translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="405"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="702"/>
+        <source>M3U Playlist (*.m3u)</source>
+        <translation>Lista odtwarzania M3U (*.m3u)</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="409"/>
         <source>Rename Crate</source>
         <translation>Zmień nazwę skrzynki</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="416"/>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="423"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="420"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="427"/>
         <source>Renaming Crate Failed</source>
         <translation>Zmiana nazwy skrzynki nie powiodła się</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="647"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="652"/>
         <source>Crate Creation Failed</source>
         <translation>Tworzenie skrzynki nie powiodło się</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="692"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="700"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Lista odtwarzania M3U (*.m3u);;Lista odtwarzania M3U8 (*.m3u8);;Lista odtwarzania PLS (*.pls);;Tekst CSV (*.csv);;Odczytywalny Tekst (*.txt)</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="166"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="170"/>
         <source>Crates are a great way to help organize the music you want to DJ with.</source>
         <translation>Skrzynki to świetny sposób na organizację muzyki, którą chcesz mixować.</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="167"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="171"/>
         <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.</source>
         <translation>Stwórz skrzynkę na twój następny występ, dla twoich ulubionych utworów electrohouse lub najbardziej pożądanych piosenek.</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="168"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="172"/>
         <source>Crates let you organize your music however you&apos;d like!</source>
         <translation>Skrzynki pozwalają Ci organizować muzyke jak chcesz!</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="417"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="421"/>
         <source>A crate cannot have a blank name.</source>
         <translation>Musisz nazwać skrzynkę.</translation>
     </message>
     <message>
-        <location filename="../../src/library/crate/cratefeature.cpp" line="424"/>
+        <location filename="../../src/library/crate/cratefeature.cpp" line="428"/>
         <source>A crate by that name already exists.</source>
         <translation>Skrzynka o tej nazwie już istnieje.</translation>
     </message>
@@ -5529,37 +5534,37 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
 <context>
     <name>DlgPrefInterface</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="136"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="138"/>
         <source>The minimum size of the selected skin is bigger than your screen resolution.</source>
         <translation>Minimalny rozmiar wybranej skórki jest większy niż dostępna rozdzielczość ekranu.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="200"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="202"/>
         <source>Allow screensaver to run</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="202"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="204"/>
         <source>Prevent screensaver from running</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="204"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="206"/>
         <source>Prevent screensaver while playing</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="248"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="250"/>
         <source>This skin does not support color schemes</source>
         <translation>Ta skórka nie obsługuje schematów kolorów.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="365"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="367"/>
         <source>Information</source>
         <translation>Informacja</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="366"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="368"/>
         <source>Mixxx must be restarted before the new locale setting will take effect.</source>
         <translation type="unfinished"/>
     </message>
@@ -8223,52 +8228,52 @@ Do you really want to overwrite it?</source>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxx.cpp" line="442"/>
+        <location filename="../../src/mixxx.cpp" line="441"/>
         <source>Choose music library directory</source>
         <translation>Wybierz katalog biblioteki utworów.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1052"/>
+        <location filename="../../src/mixxx.cpp" line="1056"/>
         <source>Sound Device Busy</source>
         <translation>Urządzenie dźwiękowe zajęte</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1061"/>
+        <location filename="../../src/mixxx.cpp" line="1065"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Ponów&lt;/b&gt; po zamknięciu innej aplikacji lub podłącz ponownie urządzenie dźwiękowe</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1065"/>
-        <location filename="../../src/mixxx.cpp" line="1092"/>
-        <location filename="../../src/mixxx.cpp" line="1117"/>
+        <location filename="../../src/mixxx.cpp" line="1069"/>
+        <location filename="../../src/mixxx.cpp" line="1096"/>
+        <location filename="../../src/mixxx.cpp" line="1121"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Rekonfiguruj&lt;/b&gt; ustawienia urządzeń dźwiękowych Mixxx&apos;a.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1068"/>
-        <location filename="../../src/mixxx.cpp" line="1095"/>
+        <location filename="../../src/mixxx.cpp" line="1072"/>
+        <location filename="../../src/mixxx.cpp" line="1099"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Otrzymaj &lt;b&gt;Pomoc&lt;/b&gt; na Wiki Mixxx&apos;a.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1071"/>
-        <location filename="../../src/mixxx.cpp" line="1098"/>
-        <location filename="../../src/mixxx.cpp" line="1120"/>
+        <location filename="../../src/mixxx.cpp" line="1075"/>
+        <location filename="../../src/mixxx.cpp" line="1102"/>
+        <location filename="../../src/mixxx.cpp" line="1124"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Wyjdź&lt;b&gt; z Mixxx&apos;a.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1013"/>
+        <location filename="../../src/mixxx.cpp" line="1016"/>
         <source>Retry</source>
         <translation>Ponów</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="919"/>
+        <location filename="../../src/mixxx.cpp" line="922"/>
         <source>Cannot open database</source>
         <translation>Nie mogę otworzyć bazy danych</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="920"/>
+        <location filename="../../src/mixxx.cpp" line="923"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
@@ -8279,142 +8284,142 @@ Mixxx wymaga QT ze wsparciem dla SQLite. Przeczytaj dokumentacje Qt SQL aby zdob
 Kliknij OK aby wyjść.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1015"/>
-        <location filename="../../src/mixxx.cpp" line="1128"/>
+        <location filename="../../src/mixxx.cpp" line="1018"/>
+        <location filename="../../src/mixxx.cpp" line="1132"/>
         <source>Reconfigure</source>
         <translation>Rekonfiguruj</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1017"/>
+        <location filename="../../src/mixxx.cpp" line="1020"/>
         <source>Help</source>
         <translation>Pomoc</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1019"/>
-        <location filename="../../src/mixxx.cpp" line="1130"/>
+        <location filename="../../src/mixxx.cpp" line="1022"/>
+        <location filename="../../src/mixxx.cpp" line="1134"/>
         <source>Exit</source>
         <translation>Wyjdź</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1055"/>
-        <location filename="../../src/mixxx.cpp" line="1084"/>
+        <location filename="../../src/mixxx.cpp" line="1059"/>
+        <location filename="../../src/mixxx.cpp" line="1088"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>W przypadku błędów bazy danych po pomoc skontaktuj się z:</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1081"/>
+        <location filename="../../src/mixxx.cpp" line="1085"/>
         <source>Sound Device Error</source>
         <translation>Błąd urządzenia dźwiękowego</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1089"/>
+        <location filename="../../src/mixxx.cpp" line="1093"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1108"/>
+        <location filename="../../src/mixxx.cpp" line="1112"/>
         <source>No Output Devices</source>
         <translation>Brak urządzeń wyjściowych.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1110"/>
+        <location filename="../../src/mixxx.cpp" line="1114"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx został skonfigurowany bez jakichkolwiek wyjściowych urządzeń dźwiękowych. Przetwarzanie dźwięku będzie wyłączone do czasu skonfigurowania urządzenia wyjściowego.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1114"/>
+        <location filename="../../src/mixxx.cpp" line="1118"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Kontynuuj&lt;/b&gt; bez urządzeń wyjściowych.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1126"/>
+        <location filename="../../src/mixxx.cpp" line="1130"/>
         <source>Continue</source>
         <translation>Dalej</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1338"/>
+        <location filename="../../src/mixxx.cpp" line="1342"/>
         <source>Load track to Deck %1</source>
         <translation>Załaduj utwór do odtwarzacza %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1339"/>
+        <location filename="../../src/mixxx.cpp" line="1343"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>Odtwarzacz %1 aktualnie odtwarza utwór.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1341"/>
+        <location filename="../../src/mixxx.cpp" line="1345"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Czy na pewno chcesz załadować nowy utwór?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1459"/>
+        <location filename="../../src/mixxx.cpp" line="1463"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Nie zostało wybrane urządzenie do tej kontroli winylem.
 Proszę najpierw wybrać urządzenie wejściowe w Urządzeniach Audio.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1473"/>
+        <location filename="../../src/mixxx.cpp" line="1477"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1487"/>
+        <location filename="../../src/mixxx.cpp" line="1491"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1501"/>
+        <location filename="../../src/mixxx.cpp" line="1505"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1573"/>
+        <location filename="../../src/mixxx.cpp" line="1577"/>
         <source>Error in skin file</source>
         <translation>Błąd w pliku skórki.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1574"/>
+        <location filename="../../src/mixxx.cpp" line="1578"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>Wybrana skórka nie może być załadowana.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1667"/>
+        <location filename="../../src/mixxx.cpp" line="1671"/>
         <source>OpenGL Direct Rendering</source>
         <translation>Renderowanie bezpośrednie OpenGL</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1668"/>
+        <location filename="../../src/mixxx.cpp" line="1672"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1702"/>
-        <location filename="../../src/mixxx.cpp" line="1710"/>
-        <location filename="../../src/mixxx.cpp" line="1719"/>
+        <location filename="../../src/mixxx.cpp" line="1706"/>
+        <location filename="../../src/mixxx.cpp" line="1714"/>
+        <location filename="../../src/mixxx.cpp" line="1723"/>
         <source>Confirm Exit</source>
         <translation>Potwierdź zamknięcie</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1703"/>
+        <location filename="../../src/mixxx.cpp" line="1707"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Deck właśnie gra! Wyjść z Mixxx&apos;a?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1711"/>
+        <location filename="../../src/mixxx.cpp" line="1715"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Sampler aktualnie odtwarza. Wyjśc z Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1720"/>
+        <location filename="../../src/mixxx.cpp" line="1724"/>
         <source>The preferences window is still open.</source>
         <translation>Okno właściwości jest nadal otwarte.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1721"/>
+        <location filename="../../src/mixxx.cpp" line="1725"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Porzucić wszystkie zmiany i wyjść z Mixxx?</translation>
     </message>
@@ -10089,42 +10094,32 @@ Fully right: end of the effect period</source>
 <context>
     <name>SamplerBank</name>
     <message>
-        <location filename="../../src/mixer/samplerbank.cpp" line="44"/>
+        <location filename="../../src/mixer/samplerbank.cpp" line="65"/>
         <source>Save Sampler Bank</source>
         <translation>Zapisz Sampler Bank</translation>
     </message>
     <message>
-        <location filename="../../src/mixer/samplerbank.cpp" line="123"/>
-        <source>Mixxx Sampler Banks (*.xml)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/mixer/samplerbank.cpp" line="61"/>
+        <location filename="../../src/mixer/samplerbank.cpp" line="82"/>
         <source>Error Saving Sampler Bank</source>
         <translation>Błąd podczas zapisu Sampler Bank</translation>
     </message>
     <message>
-        <location filename="../../src/mixer/samplerbank.cpp" line="42"/>
-        <source>Mixxx Sampler Banks (*%1)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/mixer/samplerbank.cpp" line="62"/>
+        <location filename="../../src/mixer/samplerbank.cpp" line="83"/>
         <source>Could not write the sampler bank to &apos;%1&apos;.</source>
         <translation>Nie mogę zapisać sampler bank do &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../src/mixer/samplerbank.cpp" line="121"/>
+        <location filename="../../src/mixer/samplerbank.cpp" line="147"/>
         <source>Load Sampler Bank</source>
         <translation>Wczytaj Sampler Bank</translation>
     </message>
     <message>
-        <location filename="../../src/mixer/samplerbank.cpp" line="130"/>
+        <location filename="../../src/mixer/samplerbank.cpp" line="163"/>
         <source>Error Reading Sampler Bank</source>
         <translation>Błąd podczas wczytywania Sampler Bank</translation>
     </message>
     <message>
-        <location filename="../../src/mixer/samplerbank.cpp" line="131"/>
+        <location filename="../../src/mixer/samplerbank.cpp" line="164"/>
         <source>Could not open the sampler bank file &apos;%1&apos;.</source>
         <translation>Nie mogę otworzyć plik sampler bank &apos;%1&apos;.</translation>
     </message>
@@ -10418,23 +10413,23 @@ Fully right: end of the effect period</source>
 <context>
     <name>SoundManager</name>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="523"/>
-        <location filename="../../src/soundio/soundmanager.cpp" line="528"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="526"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="531"/>
         <source>a device</source>
         <translation>urządzenie</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="529"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="532"/>
         <source>An unknown error occurred</source>
         <translation>Wystąpił nieznany błąd</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="537"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="540"/>
         <source>Two outputs cannot share channels on &quot;%1&quot;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="540"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="543"/>
         <source>Error opening &quot;%1&quot;</source>
         <translation>Wystąpił błąd podczas otwierania &quot;%1&quot;</translation>
     </message>
