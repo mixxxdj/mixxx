@@ -35,7 +35,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
     void saveCurrentViewState() override;
-    void restoreCurrentViewState() override;
+    bool restoreCurrentViewState() override;
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);

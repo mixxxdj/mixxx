@@ -205,6 +205,6 @@ void DlgRecording::saveCurrentViewState() {
     m_pTrackTableView->saveCurrentViewState();
 }
 
-void DlgRecording::restoreCurrentViewState() {
-    m_pTrackTableView->restoreCurrentViewState();
+bool DlgRecording::restoreCurrentViewState() {
+    return m_pTrackTableView->restoreCurrentViewState();
 }
