@@ -86,14 +86,20 @@ class AiffFile : public TagLib::RIFF::AIFF::File {
 
 std::pair<MetadataSourceTagLib::ImportResult, QDateTime>
 MetadataSourceTagLib::afterImport(ImportResult importResult) const {
-    return std::make_pair(importResult,
-            MetadataSource::getFileSynchronizedAt(QFileInfo(m_fileName)));
+    const auto sourceSynchronizedAt =
+            MetadataSource::getFileSynchronizedAt(QFileInfo(m_fileName));
+    DEBUG_ASSERT(sourceSynchronizedAt.isValid() ||
+            importResult != ImportResult::Succeeded);
+    return std::make_pair(importResult, sourceSynchronizedAt);
 }
 
 std::pair<MetadataSourceTagLib::ExportResult, QDateTime>
 MetadataSourceTagLib::afterExport(ExportResult exportResult) const {
-    return std::make_pair(exportResult,
-            MetadataSource::getFileSynchronizedAt(QFileInfo(m_fileName)));
+    const auto sourceSynchronizedAt =
+            MetadataSource::getFileSynchronizedAt(QFileInfo(m_fileName));
+    DEBUG_ASSERT(sourceSynchronizedAt.isValid() ||
+            exportResult != ExportResult::Succeeded);
+    return std::make_pair(exportResult, sourceSynchronizedAt);
 }
 
 std::pair<MetadataSource::ImportResult, QDateTime>

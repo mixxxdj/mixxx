@@ -812,3 +812,18 @@ TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {
             qPrintable(mixxx::SoundSource::getTypeFromFile(
                     QFileInfo(aiffFilePathWithShortenedSuffix))));
 }
+
+TEST_F(SoundSourceProxyTest, updateTrackFromSourceFileMissing) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+
+    ASSERT_TRUE(SoundSourceProxy::isFileTypeSupported(QStringLiteral("mp3")));
+
+    const QString missingFilePath =
+            tempDir.filePath(QStringLiteral("missing.mp3"));
+
+    auto pTrack = Track::newTemporary(missingFilePath);
+    ASSERT_FALSE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+}
