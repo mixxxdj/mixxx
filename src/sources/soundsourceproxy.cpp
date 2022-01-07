@@ -245,10 +245,11 @@ bool SoundSourceProxy::registerProviders() {
         s_supportedFileNamePatterns.append(QStringLiteral("*.") + supportedFileSuffix);
     }
 
-    // Build regular expression of supported file types
-    QString supportedFileTypesRegex(
-            RegexUtils::fileExtensionsRegex(supportedFileTypes));
-    s_supportedFileNamesRegex = QRegularExpression(supportedFileTypesRegex,
+    // Build regular expression of supported file suffixes
+    QString supportedFileNamesRegex =
+            RegexUtils::fileExtensionsRegex(supportedFileSuffixes);
+    s_supportedFileNamesRegex = QRegularExpression(
+            supportedFileNamesRegex,
             QRegularExpression::CaseInsensitiveOption);
 
     return true;
