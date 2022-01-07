@@ -102,12 +102,6 @@
       <description>
  <ul>
   <li>
-   Improve robustness of file type detection by considering the actual MIME type of the content.
-   lp:1445885
-   #4356
-   #4357
-  </li>
-  <li>
    Playlist: Enable sorting by color
    #4352
    lp:1945976
@@ -118,7 +112,7 @@
    lp:1955853
   </li>
   <li>
-   Fix writing wetadata on Windows for files that have never been played
+   Fix writing metadata on Windows for files that have never been played
    #4586
    lp:1955331
   </li>
@@ -132,7 +126,9 @@
    #4539
   </li>
   <li>
-   Fix crash, when using an empty directory as resource path using the --resource-path command line option
+   Fix crash when using an empty directory as resource path using the
+   --resource-path
+   command line option
    #4575
    lp1934560
   </li>
