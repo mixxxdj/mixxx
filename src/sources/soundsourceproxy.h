@@ -23,8 +23,8 @@ class SoundSourceProxy {
     /// registered.
     static bool registerProviders();
 
-    static QStringList getSupportedFileExtensions() {
-        return s_soundSourceProviders.getRegisteredFileExtensions();
+    static QStringList getSupportedFileTypes() {
+        return s_soundSourceProviders.getRegisteredFileTypes();
     }
     static const QStringList& getSupportedFileNamePatterns() {
         return s_supportedFileNamePatterns;
@@ -33,19 +33,28 @@ class SoundSourceProxy {
         return s_supportedFileNamesRegex;
     }
 
+    /// Get the list of supported file extensions
+    ///
+    /// A single file type may map to multiple file suffixes, e.g.
+    /// "aiff" to "aif" or "aiff".
+    static QStringList getSupportedFileSuffixes();
+
+    static QStringList getFileSuffixesForFileType(const QString& fileType);
+
     static bool isUrlSupported(const QUrl& url);
     static bool isFileSupported(const mixxx::FileInfo& fileInfo);
     static bool isFileNameSupported(const QString& fileName);
-    static bool isFileExtensionSupported(const QString& fileExtension);
+    static bool isFileTypeSupported(const QString& fileType);
+    static bool isFileSuffixSupported(const QString& fileSuffix);
 
     static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForUrl(
             const QUrl& url);
-    static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForFileExtension(
-            const QString& fileExtension) {
-        return s_soundSourceProviders.getRegistrationsForFileExtension(fileExtension);
+    static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForFileType(
+            const QString& fileType) {
+        return s_soundSourceProviders.getRegistrationsForFileType(fileType);
     }
-    static mixxx::SoundSourceProviderPointer getPrimaryProviderForFileExtension(
-            const QString& fileExtension);
+    static mixxx::SoundSourceProviderPointer getPrimaryProviderForFileType(
+            const QString& fileType);
 
     explicit SoundSourceProxy(TrackPointer pTrack);
 

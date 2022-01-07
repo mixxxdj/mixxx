@@ -1,6 +1,8 @@
 #include "sources/soundsourceproxy.h"
 
 #include <QApplication>
+#include <QMimeDatabase>
+#include <QMimeType>
 #include <QRegularExpression>
 #include <QStandardPaths>
 
@@ -77,19 +79,19 @@ void registerReferenceSoundSourceProvider(
         return;
     }
     // Verify that the provider is the primary provider for all
-    // supported file extensions
-    const QStringList supportedFileExtensions = pProvider->getSupportedFileExtensions();
-    for (const auto& fileExtension : supportedFileExtensions) {
+    // supported file types
+    const QStringList supportedFileTypes = pProvider->getSupportedFileTypes();
+    for (const auto& fileType : supportedFileTypes) {
         const auto pPrimaryProvider =
-                pProviderRegistry->getPrimaryProviderForFileExtension(fileExtension);
+                pProviderRegistry->getPrimaryProviderForFileType(fileType);
         VERIFY_OR_DEBUG_ASSERT(pPrimaryProvider == pProvider) {
             kLogger.warning()
                     << "Using SoundSource provider"
                     << pPrimaryProvider->getDisplayName()
                     << "instead of"
                     << pProvider->getDisplayName()
-                    << "for file extension"
-                    << fileExtension;
+                    << "for file type"
+                    << fileType;
         }
     }
 }
@@ -214,20 +216,19 @@ bool SoundSourceProxy::registerProviders() {
     // providers to verify that their priorities are correct.
     registerReferenceSoundSourceProviders(&s_soundSourceProviders);
 
-    const QStringList supportedFileExtensions(
-            s_soundSourceProviders.getRegisteredFileExtensions());
-    VERIFY_OR_DEBUG_ASSERT(!supportedFileExtensions.isEmpty()) {
+    const QStringList supportedFileTypes = getSupportedFileTypes();
+    VERIFY_OR_DEBUG_ASSERT(!supportedFileTypes.isEmpty()) {
         kLogger.critical()
-                << "No file extensions registered";
+                << "No file types registered";
         return false;
     }
     if (kLogger.infoEnabled()) {
-        for (const auto& supportedFileExtension : supportedFileExtensions) {
-            kLogger.info() << "SoundSource providers for file extension" << supportedFileExtension;
-            const QList<mixxx::SoundSourceProviderRegistration> registrationsForFileExtension(
-                    s_soundSourceProviders.getRegistrationsForFileExtension(
-                            supportedFileExtension));
-            for (const auto& registration : registrationsForFileExtension) {
+        for (const auto& supportedFileType : supportedFileTypes) {
+            kLogger.info() << "SoundSource providers for file type" << supportedFileType;
+            const QList<mixxx::SoundSourceProviderRegistration> registrationsForFileType(
+                    s_soundSourceProviders.getRegistrationsForFileType(
+                            supportedFileType));
+            for (const auto& registration : registrationsForFileType) {
                 kLogger.info()
                         << registration.getProviderPriority()
                         << ":"
@@ -236,16 +237,18 @@ bool SoundSourceProxy::registerProviders() {
         }
     }
 
-    // Turn the file extension list into a [ "*.mp3", "*.wav", ... ] style string list
+    // Turn the file suffix list into a [ "*.mp3", "*.wav", ... ] style string list
+    const auto supportedFileSuffixes = getSupportedFileSuffixes();
     s_supportedFileNamePatterns.clear();
-    for (const auto& supportedFileExtension : supportedFileExtensions) {
-        s_supportedFileNamePatterns += QStringLiteral("*.%1").arg(supportedFileExtension);
+    s_supportedFileNamePatterns.reserve(supportedFileSuffixes.size());
+    for (const auto& supportedFileSuffix : supportedFileSuffixes) {
+        s_supportedFileNamePatterns.append(QStringLiteral("*.") + supportedFileSuffix);
     }
 
-    // Build regular expression of supported file extensions
-    QString supportedFileExtensionsRegex(
-            RegexUtils::fileExtensionsRegex(supportedFileExtensions));
-    s_supportedFileNamesRegex = QRegularExpression(supportedFileExtensionsRegex,
+    // Build regular expression of supported file types
+    QString supportedFileTypesRegex(
+            RegexUtils::fileExtensionsRegex(supportedFileTypes));
+    s_supportedFileNamesRegex = QRegularExpression(supportedFileTypesRegex,
             QRegularExpression::CaseInsensitiveOption);
 
     return true;
@@ -267,14 +270,46 @@ bool SoundSourceProxy::isFileNameSupported(const QString& fileName) {
 }
 
 // static
-bool SoundSourceProxy::isFileExtensionSupported(const QString& fileExtension) {
-    return !s_soundSourceProviders.getRegistrationsForFileExtension(fileExtension).isEmpty();
+bool SoundSourceProxy::isFileTypeSupported(const QString& fileType) {
+    return !s_soundSourceProviders.getRegistrationsForFileType(fileType).isEmpty();
+}
+
+// static
+bool SoundSourceProxy::isFileSuffixSupported(const QString& fileSuffix) {
+    return getSupportedFileSuffixes().contains(fileSuffix);
 }
 
 //static
-mixxx::SoundSourceProviderPointer SoundSourceProxy::getPrimaryProviderForFileExtension(
-        const QString& fileExtension) {
-    return s_soundSourceProviders.getPrimaryProviderForFileExtension(fileExtension);
+mixxx::SoundSourceProviderPointer SoundSourceProxy::getPrimaryProviderForFileType(
+        const QString& fileType) {
+    return s_soundSourceProviders.getPrimaryProviderForFileType(fileType);
+}
+
+//static
+QStringList SoundSourceProxy::getFileSuffixesForFileType(
+        const QString& fileType) {
+    // Each file type is a valid file suffix
+    const QString dummyFileName = QStringLiteral("prefix.") + fileType;
+    const auto mimeTypes = QMimeDatabase().mimeTypesForFileName(dummyFileName);
+    QStringList fileSuffixes;
+    fileSuffixes.reserve(mimeTypes.size() * 2);
+    for (const QMimeType& mimeType : mimeTypes) {
+        fileSuffixes.append(mimeType.suffixes());
+    }
+    fileSuffixes.removeDuplicates();
+    return fileSuffixes;
+}
+
+//static
+QStringList SoundSourceProxy::getSupportedFileSuffixes() {
+    const auto fileTypes = getSupportedFileTypes();
+    QStringList fileSuffixes;
+    fileSuffixes.reserve(fileTypes.size() * 2);
+    for (const QString& fileType : fileTypes) {
+        fileSuffixes.append(getFileSuffixesForFileType(fileType));
+    }
+    fileSuffixes.removeDuplicates();
+    return fileSuffixes;
 }
 
 // static
@@ -294,7 +329,7 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
         return {};
     }
     const auto providerRegistrations =
-            allProviderRegistrationsForFileExtension(
+            allProviderRegistrationsForFileType(
                     fileType);
     if (providerRegistrations.isEmpty()) {
         kLogger.warning()

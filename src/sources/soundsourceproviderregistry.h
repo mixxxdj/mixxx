@@ -39,29 +39,29 @@ class SoundSourceProviderRegistration final {
 /// Registry for SoundSourceProviders
 class SoundSourceProviderRegistry {
   public:
-    /// Register a provider for all supported file extensions
+    /// Register a provider for all supported file types
     /// with their cooperative priority hint.
     ///
-    /// Returns the number of registered file extensions.
+    /// Returns the number of registered file types.
     int registerProvider(
             const SoundSourceProviderPointer& pProvider);
 
-    QStringList getRegisteredFileExtensions() const {
-        return m_registrationListsByFileExtension.keys();
+    QStringList getRegisteredFileTypes() const {
+        return m_registrationListsByFileType.keys();
     }
 
-    /// Returns all registrations for the given file extension.
-    /// If no providers have been registered for this file extension
+    /// Returns all registrations for the given file type.
+    /// If no providers have been registered for this file type
     /// an empty list will be returned.
-    QList<SoundSourceProviderRegistration> getRegistrationsForFileExtension(
-            const QString& fileExtension) const;
+    QList<SoundSourceProviderRegistration> getRegistrationsForFileType(
+            const QString& fileType) const;
 
     /// Returns the primary provider registration for the given file
-    /// extensions if available.
-    std::optional<SoundSourceProviderRegistration> getPrimaryRegistrationForFileExtension(
-            const QString& fileExtension) const {
+    /// types if available.
+    std::optional<SoundSourceProviderRegistration> getPrimaryRegistrationForFileType(
+            const QString& fileType) const {
         const auto registrations =
-                getRegistrationsForFileExtension(fileExtension);
+                getRegistrationsForFileType(fileType);
         if (registrations.isEmpty()) {
             return std::nullopt;
         } else {
@@ -70,11 +70,11 @@ class SoundSourceProviderRegistry {
     }
 
     /// Returns the primary provider for the given file
-    /// extensions if available.
-    SoundSourceProviderPointer getPrimaryProviderForFileExtension(
-            const QString& fileExtension) const {
+    /// types if available.
+    SoundSourceProviderPointer getPrimaryProviderForFileType(
+            const QString& fileType) const {
         const auto optProviderRegistration =
-                getPrimaryRegistrationForFileExtension(fileExtension);
+                getPrimaryRegistrationForFileType(fileType);
         if (optProviderRegistration) {
             return optProviderRegistration->getProvider();
         } else {
@@ -84,8 +84,8 @@ class SoundSourceProviderRegistry {
 
   private:
     typedef QMap<QString, QList<SoundSourceProviderRegistration>>
-            RegistrationListByFileExtensionMap;
-    RegistrationListByFileExtensionMap m_registrationListsByFileExtension;
+            RegistrationListByFileTypeMap;
+    RegistrationListByFileTypeMap m_registrationListsByFileType;
 
     typedef QMap<QString, SoundSourceProviderPointer> ProviderByDisplayNameMap;
     ProviderByDisplayNameMap m_providersByDisplayName;

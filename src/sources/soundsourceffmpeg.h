@@ -197,10 +197,10 @@ class SoundSourceProviderFFmpeg : public SoundSourceProvider {
         return kDisplayName;
     }
 
-    QStringList getSupportedFileExtensions() const override;
+    QStringList getSupportedFileTypes() const override;
 
     SoundSourceProviderPriority getPriorityHint(
-            const QString& supportedFileExtension) const override;
+            const QString& supportedFileType) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceFFmpeg>(url);

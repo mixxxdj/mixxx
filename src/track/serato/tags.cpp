@@ -20,10 +20,10 @@
 namespace {
 
 QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
-    const QString fileExtension =
+    const QString fileType =
             mixxx::SoundSource::getTypeFromFile(QFileInfo(filePath));
     const mixxx::SoundSourceProviderPointer pPrimaryProvider =
-            SoundSourceProxy::getPrimaryProviderForFileExtension(fileExtension);
+            SoundSourceProxy::getPrimaryProviderForFileType(fileType);
     if (pPrimaryProvider) {
         return pPrimaryProvider->getDisplayName();
     } else {

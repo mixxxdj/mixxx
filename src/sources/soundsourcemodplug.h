@@ -58,7 +58,7 @@ class SoundSourceProviderModPlug : public SoundSourceProvider {
         return kDisplayName;
     }
 
-    QStringList getSupportedFileExtensions() const override;
+    QStringList getSupportedFileTypes() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceModPlug>(url);

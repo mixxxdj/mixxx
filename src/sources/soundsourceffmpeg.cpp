@@ -344,7 +344,7 @@ SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
     std::call_once(initFFmpegLibFlag, initFFmpegLib);
 }
 
-QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
+QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
     QStringList list;
     QStringList disabledInputFormats;
 
@@ -453,10 +453,10 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
 }
 
 SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
+        const QString& supportedFileType) const {
+    Q_UNUSED(supportedFileType)
     // TODO: Increase priority to Default or even Higher for all
-    // supported and tested file extension?
+    // supported and tested file types?
     // Currently it is only used as a fallback after all other
     // SoundSources failed to open a file or are otherwise unavailable.
     return SoundSourceProviderPriority::Lowest;

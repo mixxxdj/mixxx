@@ -791,6 +791,10 @@ TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {
     QTemporaryDir tempDir;
     ASSERT_TRUE(tempDir.isValid());
 
+    // Verify that both suffixes are supported
+    ASSERT_TRUE(SoundSourceProxy::isFileSuffixSupported(QStringLiteral("aif")));
+    ASSERT_TRUE(SoundSourceProxy::isFileSuffixSupported(QStringLiteral("aiff")));
+
     const QString aiffFilePath =
             kTestDir.absoluteFilePath(QStringLiteral("cover-test.aiff"));
 

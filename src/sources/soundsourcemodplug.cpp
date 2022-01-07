@@ -16,7 +16,7 @@ namespace {
 
 const Logger kLogger("SoundSourceModPlug");
 
-const QStringList kSupportedFileExtensions = {
+const QStringList kSupportedFileTypes = {
         // ModPlug supports more formats but file name
         // extensions are not always present with modules.
         QStringLiteral("mod"),
@@ -67,8 +67,8 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
 //static
 const QString SoundSourceProviderModPlug::kDisplayName = QStringLiteral("MODPlug");
 
-QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
-    return kSupportedFileExtensions;
+QStringList SoundSourceProviderModPlug::getSupportedFileTypes() const {
+    return kSupportedFileTypes;
 }
 
 SoundSourceModPlug::SoundSourceModPlug(const QUrl& url)
