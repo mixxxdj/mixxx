@@ -278,7 +278,12 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
 }
 
 QStringList SearchQueryParser::splitQueryIntoWords(const QString& query) {
-    QStringList queryWordList = query.split(kSplitIntoWordsRegexp, QString::SkipEmptyParts);
+    QStringList queryWordList = query.split(kSplitIntoWordsRegexp,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            Qt::SkipEmptyParts);
+#else
+            QString::SkipEmptyParts);
+#endif
     return queryWordList;
 }
 
