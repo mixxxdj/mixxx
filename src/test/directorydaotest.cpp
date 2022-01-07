@@ -34,12 +34,12 @@ class DirectoryDAOTest : public LibraryTest {
     }
 
     static QString getSupportedFileSuffix() {
-        const auto defaultFileSuffix = QStringLiteral("mp3");
-        if (SoundSourceProxy::isFileSuffixSupported(defaultFileSuffix)) {
-            return defaultFileSuffix;
-        } else {
-            return SoundSourceProxy::getSupportedFileSuffixes().constFirst();
+        // Return any supported suffix, it doesn't matter which
+        const auto supportedFileSuffixes = SoundSourceProxy::getSupportedFileSuffixes();
+        VERIFY_OR_DEBUG_ASSERT(!supportedFileSuffixes.isEmpty()) {
+            return {};
         }
+        return supportedFileSuffixes.constFirst();
     }
 };
 
