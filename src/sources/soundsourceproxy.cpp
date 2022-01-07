@@ -658,7 +658,8 @@ bool SoundSourceProxy::updateTrackFromSource(
         }
     }
 
-    // Parse the tags stored in the audio file
+    // Parse the tags stored in the audio file and the date and time when the
+    // file has been last modified to detect future changes of the tags.
     auto [metadataImportResult, sourceSynchronizedAt] =
             importTrackMetadataAndCoverImage(
                     &trackMetadata,
