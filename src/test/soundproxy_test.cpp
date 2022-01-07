@@ -827,3 +827,41 @@ TEST_F(SoundSourceProxyTest, updateTrackFromSourceFileMissing) {
             config(),
             SoundSourceProxy::UpdateTrackFromSourceMode::Once));
 }
+
+TEST_F(SoundSourceProxyTest, handleWrongFileSuffix) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+
+    ASSERT_TRUE(SoundSourceProxy::isFileTypeSupported(QStringLiteral("aiff")));
+    ASSERT_TRUE(SoundSourceProxy::isFileTypeSupported(QStringLiteral("mp3")));
+
+    const QString contentFileType = QStringLiteral("mp3");
+    const QString wrongFileType = QStringLiteral("aiff");
+
+    const QString contentFileTypePath =
+            kTestDir.absoluteFilePath(QStringLiteral("cover-test-png.mp3"));
+    const QString wrongFileTypePath =
+            tempDir.filePath(QStringLiteral("cover-test.aiff"));
+    mixxxtest::copyFile(contentFileTypePath, wrongFileTypePath);
+
+    auto pTrack = Track::newTemporary(wrongFileTypePath);
+    ASSERT_TRUE(pTrack->getType().isEmpty());
+
+    ASSERT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+    EXPECT_STREQ(qPrintable(contentFileType), qPrintable(pTrack->getType()));
+
+    // Change the file type back to the wrong file type after the initial import
+    // and update from source once again to verify that the wrong type gets updated
+    // to the correct type.
+    pTrack->setType(wrongFileType);
+    // The re-import of metadata should be skipped with UpdateTrackFromSourceMode::Once
+    // and updateTrackFromSource() is supposed to return false.
+    ASSERT_FALSE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            config(),
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+    // But even though updateTrackFromSource() returned false the wrong file type
+    // should have been fixed.
+    EXPECT_STREQ(qPrintable(contentFileType), qPrintable(pTrack->getType()));
+}
