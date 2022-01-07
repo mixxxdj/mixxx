@@ -865,3 +865,26 @@ TEST_F(SoundSourceProxyTest, handleWrongFileSuffix) {
     // should have been fixed.
     EXPECT_STREQ(qPrintable(contentFileType), qPrintable(pTrack->getType()));
 }
+
+TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
+    const auto fileTypesWithCorrespondingSuffixes = QStringList{
+            QStringLiteral("aac"),
+            QStringLiteral("aiff"),
+            QStringLiteral("flac"),
+            QStringLiteral("m4a"),
+            QStringLiteral("mod"),
+            QStringLiteral("mp3"),
+            QStringLiteral("ogg"),
+            QStringLiteral("opus"),
+            QStringLiteral("wav"),
+            QStringLiteral("wma"),
+            QStringLiteral("wv"),
+    };
+    for (const auto& fileType : fileTypesWithCorrespondingSuffixes) {
+        // We only need to check the actually supported file types.
+        // The result for unsupported file types is undefined.
+        if (SoundSourceProxy::isFileTypeSupported(fileType)) {
+            EXPECT_TRUE(SoundSourceProxy::getFileSuffixesForFileType(fileType).contains(fileType));
+        }
+    }
+}
