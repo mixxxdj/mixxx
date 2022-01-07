@@ -43,7 +43,7 @@ class WTrackTableView : public WLibraryTableView {
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
     TrackId getCurrentTrackId() const;
-    bool setCurrentTrackId(const TrackId& trackId, const int column);
+    bool setCurrentTrackId(const TrackId& trackId, int column = 0);
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
