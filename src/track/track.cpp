@@ -763,11 +763,13 @@ QString Track::getType() const {
     return m_record.getFileType();
 }
 
-void Track::setType(const QString& sType) {
+QString Track::setType(const QString& newType) {
     auto locked = lockMutex(&m_qMutex);
-    if (compareAndSet(m_record.ptrFileType(), sType)) {
+    const QString oldType = m_record.getFileType();
+    if (compareAndSet(m_record.ptrFileType(), newType)) {
         markDirtyAndUnlock(&locked);
     }
+    return oldType;
 }
 
 mixxx::audio::SampleRate Track::getSampleRate() const {

@@ -95,8 +95,12 @@ class Track : public QObject {
         return m_fileAccess.info().location();
     }
 
-    // File/format type
-    void setType(const QString&);
+    /// Set the file type
+    ///
+    /// Returns the old type to allow the caller to report if it has changed.
+    QString setType(const QString& newType);
+
+    /// Get the file type
     QString getType() const;
 
     // Get number of channels

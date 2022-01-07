@@ -600,7 +600,19 @@ bool SoundSourceProxy::updateTrackFromSource(
     }
 
     // The SoundSource provides the actual type of the corresponding file
-    m_pTrack->setType(m_pSoundSource->getType());
+    const QString newType = m_pSoundSource->getType();
+    DEBUG_ASSERT(!newType.isEmpty());
+    const QString oldType = m_pTrack->setType(newType);
+    if (!oldType.isEmpty() && oldType != newType) {
+        // This should only happen for files with a wrong file extension
+        // that have been added by version 2.3 or earlier.
+        kLogger.warning() << "File type updated from"
+                          << oldType
+                          << "to"
+                          << newType
+                          << "for file"
+                          << getUrl().toString();
+    }
 
     // Use the existing track metadata as default values. Otherwise
     // existing values in the library would be overwritten with empty
