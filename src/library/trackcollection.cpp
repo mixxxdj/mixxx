@@ -532,10 +532,10 @@ bool TrackCollection::updateAutoDjCrate(
     return updateCrate(crate);
 }
 
-void TrackCollection::saveTrack(Track* pTrack) const {
+bool TrackCollection::saveTrack(Track* pTrack) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    m_trackDao.saveTrack(pTrack);
+    return m_trackDao.saveTrack(pTrack);
 }
 
 TrackPointer TrackCollection::getTrackById(
