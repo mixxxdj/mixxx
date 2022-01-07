@@ -365,7 +365,6 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                 list.append("aac");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "aiff")) {
-                list.append("aif");
                 list.append("aiff");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mp3")) {

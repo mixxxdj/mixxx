@@ -12,7 +12,6 @@ namespace {
 const Logger kLogger("SoundSourceSndFile");
 
 const QStringList kSupportedFileTypes = {
-        QStringLiteral("aif"),
         QStringLiteral("aiff"),
         // ALAC/CAF has been added in version 1.0.26
         // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
