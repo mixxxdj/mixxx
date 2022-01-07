@@ -100,6 +100,7 @@ int HidController::open() {
     // Set hid controller to non-blocking
     if (hid_set_nonblocking(m_pHidDevice, 1) != 0) {
         qCWarning(m_logBase) << "Unable to set HID device " << getName() << " to non-blocking";
+        hid_close(m_pHidDevice);
         return -1;
     }
 
@@ -145,7 +146,6 @@ int HidController::close() {
         disconnect(m_pHidIoThread.get());
 
         m_pHidIoThread->stopPollTimer();
-        hid_set_nonblocking(m_pHidDevice, 1); // Quit blocking
         m_pHidIoThread->quit();
         qDebug() << "Waiting on IO thread to finish";
         m_pHidIoThread->wait();
