@@ -1,6 +1,5 @@
 #pragma once
 
-#include "preferences/usersettings.h"
 #include "sources/soundsourceproviderregistry.h"
 #include "track/track_decl.h"
 #include "util/sandbox.h"
@@ -152,8 +151,8 @@ class SoundSourceProxy {
     ///
     /// Returns true if the track has been modified and false otherwise.
     bool updateTrackFromSource(
-            const UserSettingsPointer& pConfig,
-            UpdateTrackFromSourceMode mode);
+            UpdateTrackFromSourceMode mode,
+            const SyncTrackMetadataParams& syncParams);
 
     /// Opening the audio source through the proxy will update the
     /// audio properties of the corresponding track object. Returns
@@ -180,7 +179,7 @@ class SoundSourceProxy {
     friend class TrackCollectionManager;
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
-            const UserSettingsPointer& pConfig);
+            const SyncTrackMetadataParams& syncParams);
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.

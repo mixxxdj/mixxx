@@ -222,8 +222,8 @@ TEST_F(SoundSourceProxyTest, readArtist) {
     auto pTrack = Track::newTemporary(kTestDir, "artist.mp3");
     SoundSourceProxy proxy(pTrack);
     EXPECT_TRUE(proxy.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("Test Artist", pTrack->getArtist());
 }
 
@@ -235,15 +235,15 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
             kTestDir, "empty.mp3");
     SoundSourceProxy proxy1(pTrack1);
     EXPECT_TRUE(proxy1.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a reload also works
     pTrack1->setTitle("");
     EXPECT_TRUE(proxy1.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Always));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a file with other metadata but no title
@@ -251,15 +251,15 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
             kTestDir, "cover-test-png.mp3");
     SoundSourceProxy proxy2(pTrack2);
     EXPECT_TRUE(proxy2.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a reload also works
     pTrack2->setTitle("");
     EXPECT_TRUE(proxy2.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Always));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a file with a title
@@ -267,8 +267,8 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
             kTestDir, "cover-test-jpg.mp3");
     SoundSourceProxy proxy3(pTrack3);
     EXPECT_TRUE(proxy3.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("test22kMono", pTrack3->getTitle());
 }
 

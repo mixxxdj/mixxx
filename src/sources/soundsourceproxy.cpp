@@ -4,7 +4,6 @@
 #include <QRegularExpression>
 #include <QStandardPaths>
 
-#include "library/library_prefs.h"
 #include "sources/audiosourcetrackproxy.h"
 
 #ifdef __MAD__
@@ -308,7 +307,7 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
 ExportTrackMetadataResult
 SoundSourceProxy::exportTrackMetadataBeforeSaving(
         Track* pTrack,
-        const UserSettingsPointer& pConfig) {
+        const SyncTrackMetadataParams& syncParams) {
     DEBUG_ASSERT(pTrack);
     const auto fileInfo = pTrack->getFileInfo();
     mixxx::SoundSourcePointer pSoundSource;
@@ -342,7 +341,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
                 << fileInfo;
         return ExportTrackMetadataResult::Skipped;
     }
-    return pTrack->exportMetadata(*pSoundSource, pConfig);
+    return pTrack->exportMetadata(*pSoundSource, syncParams);
 }
 
 // Used during tests only
@@ -524,8 +523,8 @@ SoundSourceProxy::importTrackMetadataAndCoverImage(
 namespace {
 
 inline bool shouldUpdateTrackMetadataFromSource(
-        SoundSourceProxy::UpdateTrackFromSourceMode mode,
-        mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus) {
+        mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus,
+        SoundSourceProxy::UpdateTrackFromSourceMode mode) {
     return mode == SoundSourceProxy::UpdateTrackFromSourceMode::Always ||
             (mode == SoundSourceProxy::UpdateTrackFromSourceMode::Newer &&
                     sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Outdated) ||
@@ -534,8 +533,8 @@ inline bool shouldUpdateTrackMetadataFromSource(
 }
 
 inline bool shouldImportSeratoTagsFromSource(
-        const UserSettingsPointer& pConfig,
-        mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus) {
+        mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus,
+        const SyncTrackMetadataParams& syncParams) {
     // Only reimport track metadata from Serato markers if export of
     // Serato markers is enabled. This should ensure that track color,
     // cue points, and loops do not get lost after they have been
@@ -543,14 +542,14 @@ inline bool shouldImportSeratoTagsFromSource(
     // A reimport of metadata happens if
     // sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Outdated
     return sourceSyncStatus != mixxx::TrackRecord::SourceSyncStatus::Outdated ||
-            pConfig->getValue<bool>(mixxx::library::prefs::kSyncSeratoMetadataConfigKey);
+            syncParams.syncSeratoMetadata;
 }
 
 } // namespace
 
 bool SoundSourceProxy::updateTrackFromSource(
-        const UserSettingsPointer& pConfig,
-        UpdateTrackFromSourceMode mode) {
+        UpdateTrackFromSourceMode mode,
+        const SyncTrackMetadataParams& syncParams) {
     DEBUG_ASSERT(m_pTrack);
 
     if (getUrl().isEmpty()) {
@@ -588,7 +587,7 @@ bool SoundSourceProxy::updateTrackFromSource(
     QImage* pCoverImg = nullptr; // pointer also serves as a flag
 
     const bool updateMetadataFromSource =
-            shouldUpdateTrackMetadataFromSource(mode, sourceSyncStatus);
+            shouldUpdateTrackMetadataFromSource(sourceSyncStatus, mode);
 
     // Decide if cover art needs to be re-imported
     if (updateMetadataFromSource) {
@@ -650,9 +649,7 @@ bool SoundSourceProxy::updateTrackFromSource(
 
     // Full import
     DEBUG_ASSERT(updateMetadataFromSource);
-    if (!shouldImportSeratoTagsFromSource(
-                pConfig,
-                sourceSyncStatus)) {
+    if (!shouldImportSeratoTagsFromSource(sourceSyncStatus, syncParams)) {
         // Reset Serato tags to disable the (re-)import
         trackMetadata.refTrackInfo().refSeratoTags() = {};
     }
