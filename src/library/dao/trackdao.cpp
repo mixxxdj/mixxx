@@ -299,9 +299,9 @@ QString TrackDAO::getTrackLocation(TrackId trackId) const {
     return trackLocation;
 }
 
-void TrackDAO::saveTrack(Track* pTrack) const {
+bool TrackDAO::saveTrack(Track* pTrack) const {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return;
+        return false;
     }
     DEBUG_ASSERT(pTrack->isDirty());
 
@@ -310,14 +310,18 @@ void TrackDAO::saveTrack(Track* pTrack) const {
     qDebug() << "TrackDAO: Saving track"
             << trackId
             << pTrack->getFileInfo();
-    if (updateTrack(*pTrack)) {
-        // BaseTrackCache must be informed separately, because the
-        // track has already been disconnected and TrackDAO does
-        // not receive any signals that are usually forwarded to
-        // BaseTrackCache.
-        pTrack->markClean();
-        emit mixxx::thisAsNonConst(this)->trackClean(trackId);
+    if (!updateTrack(*pTrack)) {
+        return false;
     }
+
+    // BaseTrackCache must be informed separately, because the
+    // track has already been disconnected and TrackDAO does
+    // not receive any signals that are usually forwarded to
+    // BaseTrackCache.
+    pTrack->markClean();
+    emit mixxx::thisAsNonConst(this)->trackClean(trackId);
+
+    return true;
 }
 
 void TrackDAO::slotDatabaseTracksChanged(const QSet<TrackId>& changedTrackIds) {
@@ -862,8 +866,8 @@ TrackPointer TrackDAO::addTracksAddFile(
     // Initially (re-)import the metadata for the newly created track
     // from the file.
     SoundSourceProxy(pTrack).updateTrackFromSource(
-            m_pConfig,
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once);
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
     if (!pTrack->checkSourceSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
@@ -1520,8 +1524,8 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
                     SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
         }
         SoundSourceProxy(pTrack).updateTrackFromSource(
-                m_pConfig,
-                updateTrackFromSourceMode);
+                updateTrackFromSourceMode,
+                SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
         if (kLogger.debugEnabled() && pTrack->isDirty()) {
             kLogger.debug()
                     << "Updated track metadata from file tags:"

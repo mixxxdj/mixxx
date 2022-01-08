@@ -27,7 +27,7 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     void onSearch(const QString& text) override;
     QString currentSearch();
     void saveCurrentViewState() override;
-    void restoreCurrentViewState() override;
+    bool restoreCurrentViewState() override;
 
   public slots:
     void clicked();

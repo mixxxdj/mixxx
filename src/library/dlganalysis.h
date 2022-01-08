@@ -36,7 +36,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
         return m_pAnalysisLibraryTableModel->currentSearch();
     }
     void saveCurrentViewState() override;
-    void restoreCurrentViewState() override;
+    bool restoreCurrentViewState() override;
 
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,

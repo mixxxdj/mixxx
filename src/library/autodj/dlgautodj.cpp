@@ -390,6 +390,6 @@ void DlgAutoDJ::saveCurrentViewState() {
     m_pTrackTableView->saveCurrentViewState();
 }
 
-void DlgAutoDJ::restoreCurrentViewState() {
-    m_pTrackTableView->restoreCurrentViewState();
+bool DlgAutoDJ::restoreCurrentViewState() {
+    return m_pTrackTableView->restoreCurrentViewState();
 }

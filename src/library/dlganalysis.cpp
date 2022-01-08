@@ -234,6 +234,6 @@ void DlgAnalysis::saveCurrentViewState() {
     m_pAnalysisLibraryTableView->saveCurrentViewState();
 }
 
-void DlgAnalysis::restoreCurrentViewState() {
-    m_pAnalysisLibraryTableView->restoreCurrentViewState();
+bool DlgAnalysis::restoreCurrentViewState() {
+    return m_pAnalysisLibraryTableView->restoreCurrentViewState();
 }
