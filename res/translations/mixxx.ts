@@ -10079,6 +10079,11 @@ Fully right: end of the effect period</source>
 <context>
     <name>SamplerBank</name>
     <message>
+        <location filename="../../src/mixer/samplerbank.cpp" line="21"/>
+        <source>Mixxx Sampler Banks (*.xml)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="65"/>
         <source>Save Sampler Bank</source>
         <translation type="unfinished"></translation>
