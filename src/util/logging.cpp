@@ -30,14 +30,23 @@ QFile s_logfile;
 
 QLoggingCategory::CategoryFilter oldCategoryFilter = nullptr;
 
+/// Logging category for messages logged via the JavaScript Console API.
+constexpr char jsLoggingCategory[] = "js";
+
+/// Logging category prefix for messages logged by the controller system.
+constexpr char controllerLoggingCategoryPrefix[] = "controller.";
+
 /// Filters logging categories for the `--controller-debug` command line
 /// argument, so that debug messages are enabled for all categories in the
 /// `controller` namespace, and disabled for all other categories.
 void controllerDebugCategoryFilter(QLoggingCategory* category) {
-    // Configure controller.*.input/output category here, otherwise forward to to default filter.
-    constexpr char controllerPrefix[] = "controller.";
+    // Configure `js` or `controller.*` categories here, otherwise forward to to default filter.
     const char* categoryName = category->categoryName();
-    if (qstrncmp(categoryName, controllerPrefix, sizeof(controllerPrefix) - 1) == 0) {
+    if (qstrncmp(categoryName, jsLoggingCategory, sizeof(jsLoggingCategory)) ==
+                    0 ||
+            qstrncmp(categoryName,
+                    controllerLoggingCategoryPrefix,
+                    sizeof(controllerLoggingCategoryPrefix) - 1) == 0) {
         // If the logging category name starts with `controller.`, show debug messages.
         category->setEnabled(QtDebugMsg, true);
     } else {
