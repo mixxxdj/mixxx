@@ -867,11 +867,12 @@ TEST_F(SoundSourceProxyTest, handleWrongFileSuffix) {
 }
 
 TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
-    const auto fileTypesWithCorrespondingSuffixes = QStringList{
+    const QString fileTypesWithCorrespondingSuffixes[] = {
             QStringLiteral("aac"),
             QStringLiteral("aiff"),
             QStringLiteral("flac"),
             QStringLiteral("m4a"),
+            QStringLiteral("m4v"),
             QStringLiteral("mod"),
             QStringLiteral("mp3"),
             QStringLiteral("ogg"),
@@ -886,5 +887,15 @@ TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
         if (SoundSourceProxy::isFileTypeSupported(fileType)) {
             EXPECT_TRUE(SoundSourceProxy::getFileSuffixesForFileType(fileType).contains(fileType));
         }
+    }
+}
+
+TEST_F(SoundSourceProxyTest, fileSuffixWithDifferingType) {
+    const std::tuple<QString, QString> fileSuffixesWithDifferingTypes[] = {
+            {QStringLiteral("aif"), QStringLiteral("aiff")},
+    };
+    for (const auto& [fileSuffix, fileType] : fileSuffixesWithDifferingTypes) {
+        EXPECT_EQ(SoundSourceProxy::isFileTypeSupported(fileType),
+                SoundSourceProxy::isFileSuffixSupported(fileSuffix));
     }
 }
