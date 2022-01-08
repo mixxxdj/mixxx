@@ -102,15 +102,35 @@
       <description>
  <ul>
   <li>
-   Improve robustness of file type detection by considering the actual MIME type of the content.
-   lp:1445885
-   #4356
-   #4357
-  </li>
-  <li>
    Playlist: Enable sorting by color
    #4352
    lp:1945976
+  </li>
+  <li>
+   Fix crash when using Doubling/Halving/etc. BPM from track's Properties window on tracks without BPM
+   #4587
+   lp:1955853
+  </li>
+  <li>
+   Fix writing metadata on Windows for files that have never been played
+   #4586
+   lp:1955331
+  </li>
+  <li>
+   Preserve file creation time when writing metadata on Windows
+   #4586
+   lp1955314
+  </li>
+  <li>
+   Fix handling of file extension when importing and exporting sampler settings
+   #4539
+  </li>
+  <li>
+   Fix crash when using an empty directory as resource path using the
+   --resource-path
+   command line option
+   #4575
+   lp1934560
   </li>
  </ul>
  <p>

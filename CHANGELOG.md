@@ -2,8 +2,12 @@
 
 ## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (Unreleased)
 
-* Improve robustness of file type detection by considering the actual MIME type of the content. [lp:1445885](https://bugs.launchpad.net/mixxx/+bug/1445885) [#4356](https://github.com/mixxxdj/mixxx/pull/4356) [#4357](https://github.com/mixxxdj/mixxx/pull/4357)
 * Playlist: Enable sorting by color [#4352](https://github.com/mixxxdj/mixxx/pull/4352) [lp:1945976](https://bugs.launchpad.net/mixxx/+bug/1945976)
+* Fix crash when using Doubling/Halving/etc. BPM from track's Properties window on tracks without BPM [#4587](https://github.com/mixxxdj/mixxx/pull/4587) [lp:1955853](https://bugs.launchpad.net/mixxx/+bug/1955853)
+* Fix writing metadata on Windows for files that have never been played [#4586](https://github.com/mixxxdj/mixxx/pull/4586) [lp:1955331](https://bugs.launchpad.net/mixxx/+bug/1955331)
+* Preserve file creation time when writing metadata on Windows [#4586](https://github.com/mixxxdj/mixxx/pull/4586) [lp1955314](https://bugs.launchpad.net/mixxx/+bug/1955314)
+* Fix handling of file extension when importing and exporting sampler settings [#4539](https://github.com/mixxxdj/mixxx/pull/4539)
+* Fix crash when using an empty directory as resource path using the `--resource-path` command line option [#4575](https://github.com/mixxxdj/mixxx/pull/4575) [lp1934560](https://bugs.launchpad.net/mixxx/+bug/1934560)
 
 ### Packaging
 
