@@ -1,17 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
     <info>
-        <name>Reloop Digital Jockey 2 (DJ aK)</name>
+        <name>Reloop Digital Jockey 2 Interface Edition</name>
         <author>DJ aK</author>
-        <description>This is an experimental mapping for a Reloop Digital Jockey 2 Controller rewritten from scratch</description>
-        <forums>na razie nic</forums>
-        <wiki>na razie nic</wiki>
+        <description>Controller mapping for Reloop Digital Jockey 2 Interface Edition</description>
+        <forums>https://mixxx.discourse.group/t/reloop-digital-jockey-2-mapping-by-dj-ak/23971</forums>
+        <wiki></wiki>
     </info>
     <controller id="DIGITALJOCKEY2">
         <scriptfiles>
             <file functionprefix="" filename="lodash.mixxx.js"/>
             <file functionprefix="" filename="midi-components-0.0.js"/>
-            <file functionprefix="RDJ2" filename="Reloop Digital Jockey 2 (DJ aK)-scripts.js"/>
+            <file functionprefix="RDJ2" filename="Reloop-Digital-Jockey-2-IE.scripts.js"/>
         </scriptfiles>
 
         <controls>
