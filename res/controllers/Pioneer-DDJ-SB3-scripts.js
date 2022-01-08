@@ -12,7 +12,7 @@ PioneerDDJSB3.vinylModeOnStartup = false;
 // the beginning of the track and stops playback.
 PioneerDDJSB3.reverseRollOnShiftCue = false;
 
-// Sets the jogwheels sensivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
+// Sets the jogwheels sensitivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
 PioneerDDJSB3.jogwheelSensitivity = 1.0;
 
 // Sets how much more sensitive the jogwheels get when holding shift.
