@@ -83,24 +83,45 @@ inline QString frameToQString(
     return toQString(frame.toString());
 }
 
+bool logWarningIfUnsupportedID3v2Frame(const TagLib::ID3v2::Frame* pFrame) {
+    if (dynamic_cast<const TagLib::ID3v2::UnknownFrame*>(pFrame)) {
+        kLogger.warning()
+                << "ID3v2 frame"
+                << pFrame->frameID().data()
+                << "is not yet supported by TagLib";
+        return true;
+    }
+    // Not an of UnknownFrame, i.e. maybe some other kind of ID3v2 frame
+    return false;
+}
+
+void logWarningAboutUnsupportedOrUnexpectedID3v2Frame(const TagLib::ID3v2::Frame* pFrame) {
+    if (!logWarningIfUnsupportedID3v2Frame(pFrame)) {
+        // Do not crash if the caller unexpectedly passed a nullptr
+        VERIFY_OR_DEBUG_ASSERT(pFrame) {
+            return;
+        }
+        kLogger.warning()
+                << "Unexpected ID3v2 frame"
+                << pFrame->frameID().data();
+    }
+}
+
 // Returns the first frame of an ID3v2 tag as a string.
 QString firstNonEmptyFrameToQString(
         const TagLib::ID3v2::FrameList& frameList) {
     for (const TagLib::ID3v2::Frame* pFrame : frameList) {
-        if (pFrame) {
-            TagLib::String str = pFrame->toString();
-            if (!str.isEmpty()) {
-                return toQString(str);
-            }
-            const auto* pUnknownFrame = dynamic_cast<const TagLib::ID3v2::UnknownFrame*>(pFrame);
-            if (pUnknownFrame) {
-                kLogger.warning()
-                        << "Unsupported ID3v2 frame"
-                        << pUnknownFrame->frameID().data();
-            }
+        VERIFY_OR_DEBUG_ASSERT(pFrame) {
+            continue;
         }
+        TagLib::String str = pFrame->toString();
+        if (!str.isEmpty()) {
+            return toQString(str);
+        }
+        logWarningIfUnsupportedID3v2Frame(pFrame);
+        // Otherwise silently ignore this empty, generic frame and continue
     }
-    return QString();
+    return {};
 }
 
 TagLib::String::Type getStringType(
@@ -148,23 +169,26 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
     for (TagLib::ID3v2::FrameList::ConstIterator it(commentsFrames.begin());
             it != commentsFrames.end();
             ++it) {
-        auto* pFrame =
-                dynamic_cast<TagLib::ID3v2::CommentsFrame*>(*it);
-        if (pFrame) {
-            const QString frameDescription(
-                    toQString(pFrame->description()));
-            if (0 == frameDescription.compare(description, Qt::CaseInsensitive)) {
-                if (preferNotEmpty && pFrame->toString().isEmpty()) {
-                    // we might need the first matching frame later
-                    // even if it is empty
-                    if (!pFirstFrame) {
-                        pFirstFrame = pFrame;
-                    }
-                } else {
-                    // found what we are looking for
-                    return pFrame;
-                }
+        DEBUG_ASSERT(*it);
+        auto* pFrame = dynamic_cast<TagLib::ID3v2::CommentsFrame*>(*it);
+        if (!pFrame) {
+            logWarningAboutUnsupportedOrUnexpectedID3v2Frame(*it);
+            continue;
+        }
+        const auto frameDescription = toQString(pFrame->description());
+        if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
+            // Description mismatch
+            continue;
+        }
+        if (preferNotEmpty && pFrame->toString().isEmpty()) {
+            // we might need the first matching frame later
+            // even if it is empty
+            if (!pFirstFrame) {
+                pFirstFrame = pFrame;
             }
+        } else {
+            // found what we are looking for
+            return pFrame;
         }
     }
     // simply return the first matching frame
@@ -191,22 +215,26 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
     for (TagLib::ID3v2::FrameList::ConstIterator it = textFrames.begin();
             it != textFrames.end();
             ++it) {
-        auto* pFrame =
-                dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
-        if (pFrame) {
-            const QString frameDescription = toQString(pFrame->description());
-            if (0 == frameDescription.compare(description, Qt::CaseInsensitive)) {
-                if (preferNotEmpty && pFrame->toString().isEmpty()) {
-                    // we might need the first matching frame later
-                    // even if it is empty
-                    if (!pFirstFrame) {
-                        pFirstFrame = pFrame;
-                    }
-                } else {
-                    // found what we are looking for
-                    return pFrame;
-                }
+        DEBUG_ASSERT(*it);
+        auto* pFrame = dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
+        if (!pFrame) {
+            logWarningAboutUnsupportedOrUnexpectedID3v2Frame(*it);
+            continue;
+        }
+        const auto frameDescription = toQString(pFrame->description());
+        if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
+            // Description mismatch
+            continue;
+        }
+        if (preferNotEmpty && pFrame->toString().isEmpty()) {
+            // we might need the first matching frame later
+            // even if it is empty
+            if (!pFirstFrame) {
+                pFirstFrame = pFrame;
             }
+        } else {
+            // found what we are looking for
+            return pFrame;
         }
     }
     // simply return the first matching frame
@@ -218,12 +246,11 @@ QString readFirstUserTextIdentificationFrame(
         const QString& description) {
     const TagLib::ID3v2::UserTextIdentificationFrame* pTextFrame =
             findFirstUserTextIdentificationFrame(tag, description);
-    if (pTextFrame && (pTextFrame->fieldList().size() > 1)) {
+    if (pTextFrame && pTextFrame->fieldList().size() > 1) {
         // The actual value is stored in the 2nd field
         return toQString(pTextFrame->fieldList()[1]);
-    } else {
-        return QString();
     }
+    return {};
 }
 
 #if defined(__EXTRA_METADATA__)
@@ -244,20 +271,24 @@ TagLib::ID3v2::UniqueFileIdentifierFrame* findFirstUniqueFileIdentifierFrame(
             ++it) {
         auto pFrame =
                 dynamic_cast<TagLib::ID3v2::UniqueFileIdentifierFrame*>(*it);
-        if (pFrame) {
-            const QString frameOwner = toQString(pFrame->owner());
-            if (0 == frameOwner.compare(owner, Qt::CaseInsensitive)) {
-                if (preferNotEmpty && pFrame->toString().isEmpty()) {
-                    // we might need the first matching frame later
-                    // even if it is empty
-                    if (!pFirstFrame) {
-                        pFirstFrame = pFrame;
-                    }
-                } else {
-                    // found what we are looking for
-                    return pFrame;
-                }
+        if (!pFrame) {
+            logWarningAboutUnsupportedOrUnexpectedID3v2Frame(*it);
+            continue;
+        }
+        const auto frameOwner = toQString(pFrame->owner());
+        if (frameOwner.compare(owner, Qt::CaseInsensitive) != 0) {
+            // Owner mismatch
+            continue;
+        }
+        if (preferNotEmpty && pFrame->toString().isEmpty()) {
+            // we might need the first matching frame later
+            // even if it is empty
+            if (!pFirstFrame) {
+                pFirstFrame = pFrame;
             }
+        } else {
+            // found what we are looking for
+            return pFrame;
         }
     }
     // simply return the first matching frame
@@ -269,11 +300,10 @@ QByteArray readFirstUniqueFileIdentifierFrame(
         const QString& owner) {
     const TagLib::ID3v2::UniqueFileIdentifierFrame* pFrame =
             findFirstUniqueFileIdentifierFrame(tag, owner);
-    if (pFrame) {
-        return QByteArray(pFrame->identifier().data(), pFrame->identifier().size());
-    } else {
-        return QByteArray();
+    if (!pFrame) {
+        return {};
     }
+    return QByteArray(pFrame->identifier().data(), pFrame->identifier().size());
 }
 #endif // __EXTRA_METADATA__
 
@@ -295,25 +325,28 @@ TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjec
             ++it) {
         auto* pFrame =
                 dynamic_cast<TagLib::ID3v2::GeneralEncapsulatedObjectFrame*>(*it);
-        if (pFrame) {
-            const QString frameDescription(
-                    toQString(pFrame->description()));
-            if (0 == frameDescription.compare(description, Qt::CaseInsensitive)) {
-                if (!mimeType.isEmpty() && mimeType != pFrame->mimeType()) {
-                    // MIME type mismatch
-                    continue;
-                }
-                if (preferNotEmpty && pFrame->toString().isEmpty()) {
-                    // we might need the first matching frame later
-                    // even if it is empty
-                    if (!pFirstFrame) {
-                        pFirstFrame = pFrame;
-                    }
-                } else {
-                    // found what we are looking for
-                    return pFrame;
-                }
+        if (!pFrame) {
+            logWarningAboutUnsupportedOrUnexpectedID3v2Frame(*it);
+            continue;
+        }
+        const auto frameDescription = toQString(pFrame->description());
+        if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
+            // Description mismatch
+            continue;
+        }
+        if (!mimeType.isEmpty() && mimeType != pFrame->mimeType()) {
+            // MIME type mismatch
+            continue;
+        }
+        if (preferNotEmpty && pFrame->toString().isEmpty()) {
+            // we might need the first matching frame later
+            // even if it is empty
+            if (!pFirstFrame) {
+                pFirstFrame = pFrame;
             }
+        } else {
+            // found what we are looking for
+            return pFrame;
         }
     }
     // simply return the first matching frame
@@ -326,11 +359,10 @@ inline QByteArray readFirstGeneralEncapsulatedObjectFrame(
         const QString& mimeType = QString()) {
     const TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pGeobFrame =
             findFirstGeneralEncapsulatedObjectFrame(tag, description, toTString(mimeType));
-    if (pGeobFrame) {
-        return toQByteArrayRaw(pGeobFrame->object());
-    } else {
-        return QByteArray();
+    if (!pGeobFrame) {
+        return {};
     }
+    return toQByteArrayRaw(pGeobFrame->object());
 }
 
 void writeTextIdentificationFrame(
