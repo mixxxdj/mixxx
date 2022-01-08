@@ -868,23 +868,47 @@ TEST_F(SoundSourceProxyTest, handleWrongFileSuffix) {
 
 TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
     const QString fileTypesWithCorrespondingSuffixes[] = {
-            QStringLiteral("aac"),
-            QStringLiteral("aiff"),
-            QStringLiteral("flac"),
-            QStringLiteral("m4a"),
-            QStringLiteral("m4v"),
-            QStringLiteral("mod"),
-            QStringLiteral("mp3"),
-            QStringLiteral("ogg"),
-            QStringLiteral("opus"),
-            QStringLiteral("wav"),
-            QStringLiteral("wma"),
-            QStringLiteral("wv"),
+        QStringLiteral("3gp"),
+        QStringLiteral("3g2"),
+        QStringLiteral("aac"),
+        QStringLiteral("ac3"),
+        QStringLiteral("aiff"),
+        // Test fails for file type "caf" supported by SoundSourceSndfile
+        //QStringLiteral("caf"),
+        QStringLiteral("flac"),
+        QStringLiteral("it"),
+        QStringLiteral("m4a"),
+        QStringLiteral("m4v"),
+        QStringLiteral("med"),
+#if !defined(__APPLE__)
+        // Test fails on macOS for file type "mj2" supported by SoundSourceFFmpeg
+        QStringLiteral("mj2"),
+#endif
+        QStringLiteral("med"),
+        QStringLiteral("mod"),
+        QStringLiteral("mov"),
+        QStringLiteral("mp2"),
+        QStringLiteral("mp3"),
+        QStringLiteral("mp4"),
+        QStringLiteral("ogg"),
+        // Test fails for file type "okt" supported by SoundSourceModPlug
+        //QStringLiteral("okt"),
+        QStringLiteral("opus"),
+        QStringLiteral("s3m"),
+        QStringLiteral("stm"),
+        QStringLiteral("wav"),
+        QStringLiteral("wma"),
+        QStringLiteral("wv"),
+        QStringLiteral("xm"),
     };
     for (const auto& fileType : fileTypesWithCorrespondingSuffixes) {
         // We only need to check the actually supported file types.
         // The result for unsupported file types is undefined.
         if (SoundSourceProxy::isFileTypeSupported(fileType)) {
+            qInfo() << "Suffixes for file type"
+                    << fileType
+                    << ':'
+                    << SoundSourceProxy::getFileSuffixesForFileType(fileType);
             EXPECT_TRUE(SoundSourceProxy::getFileSuffixesForFileType(fileType).contains(fileType));
         }
     }
