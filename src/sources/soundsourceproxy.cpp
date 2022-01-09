@@ -50,6 +50,7 @@
 /*static*/ mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
 /*static*/ QStringList SoundSourceProxy::s_supportedFileNamePatterns;
 /*static*/ QRegularExpression SoundSourceProxy::s_supportedFileNamesRegex;
+/*static*/ QHash<QMimeType, QString> SoundSourceProxy::s_fileTypeByMimeType;
 
 namespace {
 
@@ -167,6 +168,11 @@ void registerReferenceSoundSourceProviders(
 #endif
 }
 
+QList<QMimeType> mimeTypesForFileType(const QString& fileType) {
+    const QString dummyFileName = QStringLiteral("prefix.") + fileType;
+    return QMimeDatabase().mimeTypesForFileName(dummyFileName);
+}
+
 } // anonymous namespace
 
 // static
@@ -221,8 +227,13 @@ bool SoundSourceProxy::registerProviders() {
                 << "No file types registered";
         return false;
     }
-    if (kLogger.infoEnabled()) {
-        for (const auto& supportedFileType : supportedFileTypes) {
+
+    for (const auto& supportedFileType : supportedFileTypes) {
+        const auto mimeTypes = mimeTypesForFileType(supportedFileType);
+        for (const QMimeType& mimeType : mimeTypes) {
+            s_fileTypeByMimeType.insert(mimeType, supportedFileType);
+        }
+        if (kLogger.infoEnabled()) {
             kLogger.info() << "SoundSource providers for file type" << supportedFileType;
             const QList<mixxx::SoundSourceProviderRegistration> registrationsForFileType(
                     s_soundSourceProviders.getRegistrationsForFileType(
@@ -289,8 +300,7 @@ mixxx::SoundSourceProviderPointer SoundSourceProxy::getPrimaryProviderForFileTyp
 QStringList SoundSourceProxy::getFileSuffixesForFileType(
         const QString& fileType) {
     // Each file type is a valid file suffix
-    const QString dummyFileName = QStringLiteral("prefix.") + fileType;
-    const auto mimeTypes = QMimeDatabase().mimeTypesForFileName(dummyFileName);
+    const auto mimeTypes = mimeTypesForFileType(fileType);
     QStringList fileSuffixes;
     // Reserve some extra space to prevent allocations, assuming 2 suffixes per type on average
     fileSuffixes.reserve(mimeTypes.size() * 2);

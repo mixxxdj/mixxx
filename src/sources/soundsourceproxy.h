@@ -184,6 +184,7 @@ class SoundSourceProxy {
     static mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
     static QStringList s_supportedFileNamePatterns;
     static QRegularExpression s_supportedFileNamesRegex;
+    static QHash<QMimeType, QString> s_fileTypeByMimeType;
 
     friend class TrackCollectionManager;
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
