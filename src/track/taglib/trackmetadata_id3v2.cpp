@@ -107,6 +107,33 @@ void logWarningAboutUnsupportedOrUnexpectedID3v2Frame(const TagLib::ID3v2::Frame
     }
 }
 
+template<typename T>
+T* downcastFrame(TagLib::ID3v2::Frame* pFrame) {
+    DEBUG_ASSERT(pFrame);
+    // We need to use a safe dynamic_cast at runtime instead of an unsafe
+    // static_cast at compile time to detect unexpected frame subtypes!
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    auto* pDowncastFrame = dynamic_cast<T*>(pFrame);
+    VERIFY_OR_DEBUG_ASSERT(pDowncastFrame) {
+        // This should only happen when reading corrupt or malformed files
+        logWarningAboutUnsupportedOrUnexpectedID3v2Frame(pFrame);
+    }
+    return pDowncastFrame;
+}
+
+template<typename T>
+const T* downcastFrame(const TagLib::ID3v2::Frame* pFrame) {
+    // We need to use a safe dynamic_cast at runtime instead of an unsafe
+    // static_cast at compile time to detect unexpected frame subtypes!
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    const auto* pDowncastFrame = dynamic_cast<const T*>(pFrame);
+    VERIFY_OR_DEBUG_ASSERT(pDowncastFrame) {
+        // This should only happen when reading corrupt or malformed files
+        logWarningAboutUnsupportedOrUnexpectedID3v2Frame(pFrame);
+    }
+    return pDowncastFrame;
+}
+
 // Returns the first frame of an ID3v2 tag as a string.
 QString firstNonEmptyFrameToQString(
         const TagLib::ID3v2::FrameList& frameList) {
@@ -163,32 +190,26 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
         const QString& description,
         bool preferNotEmpty = true) {
     TagLib::ID3v2::CommentsFrame* pFirstFrame = nullptr;
-    // Bind the const-ref result to avoid a local copy
-    const TagLib::ID3v2::FrameList& commentsFrames =
-            tag.frameListMap()["COMM"];
-    for (TagLib::ID3v2::FrameList::ConstIterator it(commentsFrames.begin());
-            it != commentsFrames.end();
-            ++it) {
-        DEBUG_ASSERT(*it);
-        auto* pFrame = dynamic_cast<TagLib::ID3v2::CommentsFrame*>(*it);
-        if (!pFrame) {
-            logWarningAboutUnsupportedOrUnexpectedID3v2Frame(*it);
+    for (TagLib::ID3v2::Frame* pFrame : tag.frameListMap()["COMM"]) {
+        DEBUG_ASSERT(pFrame);
+        auto* pNextFrame = downcastFrame<TagLib::ID3v2::CommentsFrame>(pFrame);
+        if (!pNextFrame) {
             continue;
         }
-        const auto frameDescription = toQString(pFrame->description());
+        const auto frameDescription = toQString(pNextFrame->description());
         if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
             // Description mismatch
             continue;
         }
-        if (preferNotEmpty && pFrame->toString().isEmpty()) {
+        if (preferNotEmpty && pNextFrame->toString().isEmpty()) {
             // we might need the first matching frame later
             // even if it is empty
             if (!pFirstFrame) {
-                pFirstFrame = pFrame;
+                pFirstFrame = pNextFrame;
             }
         } else {
             // found what we are looking for
-            return pFrame;
+            return pNextFrame;
         }
     }
     // simply return the first matching frame
@@ -209,32 +230,26 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
     TagLib::ID3v2::UserTextIdentificationFrame* pFirstFrame = nullptr;
-    // Bind the const-ref result to avoid a local copy
-    const TagLib::ID3v2::FrameList& textFrames =
-            tag.frameListMap()["TXXX"];
-    for (TagLib::ID3v2::FrameList::ConstIterator it = textFrames.begin();
-            it != textFrames.end();
-            ++it) {
-        DEBUG_ASSERT(*it);
-        auto* pFrame = dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
-        if (!pFrame) {
-            logWarningAboutUnsupportedOrUnexpectedID3v2Frame(*it);
+    for (TagLib::ID3v2::Frame* pFrame : tag.frameListMap()["TXXX"]) {
+        DEBUG_ASSERT(pFrame);
+        auto* pNextFrame = downcastFrame<TagLib::ID3v2::UserTextIdentificationFrame>(pFrame);
+        if (!pNextFrame) {
             continue;
         }
-        const auto frameDescription = toQString(pFrame->description());
+        const auto frameDescription = toQString(pNextFrame->description());
         if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
             // Description mismatch
             continue;
         }
-        if (preferNotEmpty && pFrame->toString().isEmpty()) {
+        if (preferNotEmpty && pNextFrame->toString().isEmpty()) {
             // we might need the first matching frame later
             // even if it is empty
             if (!pFirstFrame) {
-                pFirstFrame = pFrame;
+                pFirstFrame = pNextFrame;
             }
         } else {
             // found what we are looking for
-            return pFrame;
+            return pNextFrame;
         }
     }
     // simply return the first matching frame
@@ -263,32 +278,26 @@ TagLib::ID3v2::UniqueFileIdentifierFrame* findFirstUniqueFileIdentifierFrame(
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!owner.isEmpty());
     TagLib::ID3v2::UniqueFileIdentifierFrame* pFirstFrame = nullptr;
-    // Bind the const-ref result to avoid a local copy
-    const TagLib::ID3v2::FrameList& ufidFrames =
-            tag.frameListMap()["UFID"];
-    for (TagLib::ID3v2::FrameList::ConstIterator it = ufidFrames.begin();
-            it != ufidFrames.end();
-            ++it) {
-        auto pFrame =
-                dynamic_cast<TagLib::ID3v2::UniqueFileIdentifierFrame*>(*it);
-        if (!pFrame) {
-            logWarningAboutUnsupportedOrUnexpectedID3v2Frame(*it);
+    for (auto* pFrame : tag.frameListMap()["UFID"]) {
+        DEBUG_ASSERT(pFrame);
+        auto* pNextFrame = downcastFrame<TagLib::ID3v2::UniqueFileIdentifierFrame>(pFrame);
+        if (!pNextFrame) {
             continue;
         }
-        const auto frameOwner = toQString(pFrame->owner());
+        const auto frameOwner = toQString(pNextFrame->owner());
         if (frameOwner.compare(owner, Qt::CaseInsensitive) != 0) {
             // Owner mismatch
             continue;
         }
-        if (preferNotEmpty && pFrame->toString().isEmpty()) {
+        if (preferNotEmpty && pNextFrame->toString().isEmpty()) {
             // we might need the first matching frame later
             // even if it is empty
             if (!pFirstFrame) {
-                pFirstFrame = pFrame;
+                pFirstFrame = pNextFrame;
             }
         } else {
             // found what we are looking for
-            return pFrame;
+            return pNextFrame;
         }
     }
     // simply return the first matching frame
@@ -317,36 +326,30 @@ TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjec
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
     TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFirstFrame = nullptr;
-    // Bind the const-ref result to avoid a local copy
-    const TagLib::ID3v2::FrameList& geobFrames =
-            tag.frameListMap()["GEOB"];
-    for (TagLib::ID3v2::FrameList::ConstIterator it(geobFrames.begin());
-            it != geobFrames.end();
-            ++it) {
-        auto* pFrame =
-                dynamic_cast<TagLib::ID3v2::GeneralEncapsulatedObjectFrame*>(*it);
-        if (!pFrame) {
-            logWarningAboutUnsupportedOrUnexpectedID3v2Frame(*it);
+    for (auto* pFrame : tag.frameListMap()["GEOB"]) {
+        DEBUG_ASSERT(pFrame);
+        auto* pNextFrame = downcastFrame<TagLib::ID3v2::GeneralEncapsulatedObjectFrame>(pFrame);
+        if (!pNextFrame) {
             continue;
         }
-        const auto frameDescription = toQString(pFrame->description());
+        const auto frameDescription = toQString(pNextFrame->description());
         if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
             // Description mismatch
             continue;
         }
-        if (!mimeType.isEmpty() && mimeType != pFrame->mimeType()) {
+        if (!mimeType.isEmpty() && mimeType != pNextFrame->mimeType()) {
             // MIME type mismatch
             continue;
         }
-        if (preferNotEmpty && pFrame->toString().isEmpty()) {
+        if (preferNotEmpty && pNextFrame->toString().isEmpty()) {
             // we might need the first matching frame later
             // even if it is empty
             if (!pFirstFrame) {
-                pFirstFrame = pFrame;
+                pFirstFrame = pNextFrame;
             }
         } else {
             // found what we are looking for
-            return pFrame;
+            return pNextFrame;
         }
     }
     // simply return the first matching frame
@@ -431,32 +434,31 @@ int removeUserTextIdentificationFrames(
     bool repeat;
     do {
         repeat = false;
-        // Bind the const-ref result to avoid a local copy
-        const TagLib::ID3v2::FrameList& textFrames =
-                pTag->frameListMap()["TXXX"];
-        for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
-                it != textFrames.end();
-                ++it) {
-            auto* pFrame =
-                    dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
-            if (pFrame) {
-                const QString frameDescription(
-                        toQString(pFrame->description()));
-                if (0 == frameDescription.compare(description, Qt::CaseInsensitive)) {
-                    if (kLogger.debugEnabled()) {
-                        kLogger.debug()
-                                << "Removing ID3v2 TXXX frame:"
-                                << toQString(pFrame->description());
-                    }
-                    // After removing a frame the result of frameListMap()
-                    // is no longer valid!!
-                    pTag->removeFrame(pFrame, false); // remove an unowned frame
-                    ++count;
-                    // Exit and restart loop
-                    repeat = true;
-                    break;
-                }
+        for (TagLib::ID3v2::Frame* pFrame : std::as_const(pTag->frameListMap())["TXXX"]) {
+            DEBUG_ASSERT(pFrame);
+            const auto* pNextFrame =
+                    downcastFrame<TagLib::ID3v2::UserTextIdentificationFrame>(pFrame);
+            if (!pNextFrame) {
+                continue;
             }
+            const auto frameDescription =
+                    toQString(pNextFrame->description());
+            if (frameDescription.compare(description, Qt::CaseInsensitive) != 0) {
+                // Description mismatch
+                continue;
+            }
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Removing ID3v2 TXXX frame:"
+                        << toQString(pNextFrame->description());
+            }
+            // After removing a frame the result of frameListMap()
+            // is no longer valid!!
+            pTag->removeFrame(pFrame, false); // remove an unowned frame
+            ++count;
+            // Exit and restart loop
+            repeat = true;
+            break;
         }
     } while (repeat);
     return count;
@@ -582,23 +584,6 @@ void writeGeneralEncapsulatedObjectFrame(
     }
 }
 
-template<typename T>
-const T* downcastFrame(TagLib::ID3v2::Frame* frame) {
-    DEBUG_ASSERT(frame);
-    // We need to use a safe dynamic_cast at runtime instead of an unsafe
-    // static_cast at compile time to detect unexpected frame subtypes!
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
-    const T* downcastFrame = dynamic_cast<T*>(frame);
-    VERIFY_OR_DEBUG_ASSERT(downcastFrame) {
-        // This should only happen when reading corrupt or malformed files
-        kLogger.warning()
-                << "Unexpected ID3v2"
-                << frame->frameID().data()
-                << "frame type";
-    }
-    return downcastFrame;
-}
-
 inline QImage loadImageFromPictureFrame(
         const TagLib::ID3v2::AttachedPictureFrame& apicFrame) {
     return loadImageFromByteVector(apicFrame.picture());
@@ -626,7 +611,7 @@ bool importCoverImageFromTag(
     }
 
     const auto iterAPIC = tag.frameListMap().find("APIC");
-    if ((iterAPIC == tag.frameListMap().end()) || iterAPIC->second.isEmpty()) {
+    if (iterAPIC == tag.frameListMap().end() || iterAPIC->second.isEmpty()) {
         if (kLogger.debugEnabled()) {
             kLogger.debug()
                     << "No cover art: None or empty list of ID3v2 APIC frames";
@@ -634,41 +619,46 @@ bool importCoverImageFromTag(
         return false; // abort
     }
 
-    const TagLib::ID3v2::FrameList pFrames = iterAPIC->second;
     for (const auto coverArtType : kPreferredPictureTypes) {
-        for (auto* const pFrame : pFrames) {
-            const auto* pApicFrame =
+        for (const TagLib::ID3v2::Frame* pFrame : iterAPIC->second) {
+            DEBUG_ASSERT(pFrame);
+            const auto* pNextFrame =
                     downcastFrame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
-            if (pApicFrame && (pApicFrame->type() == coverArtType)) {
-                QImage image(loadImageFromPictureFrame(*pApicFrame));
-                if (image.isNull()) {
-                    kLogger.warning()
-                            << "Failed to load image from ID3v2 APIC frame of type"
-                            << pApicFrame->type();
-                    continue;
-                } else {
-                    *pCoverArt = image;
-                    return true; // success
-                }
+            if (!pNextFrame) {
+                continue;
+            }
+            if (pNextFrame->type() != coverArtType) {
+                continue;
+            }
+            QImage image = loadImageFromPictureFrame(*pNextFrame);
+            if (image.isNull()) {
+                kLogger.warning()
+                        << "Failed to load image from ID3v2 APIC frame of type"
+                        << pNextFrame->type();
+                continue;
+            } else {
+                *pCoverArt = std::move(image);
+                return true; // success
             }
         }
     }
 
     // Fallback: No best match -> Simply select the 1st loadable image
-    for (auto* const pFrame : pFrames) {
-        const auto* pApicFrame =
+    for (const auto* pFrame : iterAPIC->second) {
+        const auto* pNextFrame =
                 downcastFrame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
-        if (pApicFrame) {
-            const QImage image(loadImageFromPictureFrame(*pApicFrame));
-            if (image.isNull()) {
-                kLogger.warning()
-                        << "Failed to load image from ID3v2 APIC frame of type"
-                        << pApicFrame->type();
-                continue;
-            } else {
-                *pCoverArt = image;
-                return true; // success
-            }
+        if (!pNextFrame) {
+            continue;
+        }
+        QImage image = loadImageFromPictureFrame(*pNextFrame);
+        if (image.isNull()) {
+            kLogger.warning()
+                    << "Failed to load image from ID3v2 APIC frame of type"
+                    << pNextFrame->type();
+            continue;
+        } else {
+            *pCoverArt = std::move(image);
+            return true; // success
         }
     }
 
