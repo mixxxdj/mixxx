@@ -12,6 +12,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QThread>
+#include <string_view>
 
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
@@ -31,22 +32,23 @@ QFile s_logfile;
 QLoggingCategory::CategoryFilter oldCategoryFilter = nullptr;
 
 /// Logging category for messages logged via the JavaScript Console API.
-constexpr char jsLoggingCategory[] = "js";
+constexpr std::string_view jsLoggingCategory = {"js"};
 
 /// Logging category prefix for messages logged by the controller system.
-constexpr char controllerLoggingCategoryPrefix[] = "controller.";
+constexpr std::string_view controllerLoggingCategoryPrefix = {"controller."};
 
 /// Filters logging categories for the `--controller-debug` command line
 /// argument, so that debug messages are enabled for all categories in the
 /// `controller` namespace, and disabled for all other categories.
 void controllerDebugCategoryFilter(QLoggingCategory* category) {
     // Configure `js` or `controller.*` categories here, otherwise forward to to default filter.
-    const char* categoryName = category->categoryName();
-    if (qstrncmp(categoryName, jsLoggingCategory, sizeof(jsLoggingCategory)) ==
-                    0 ||
-            qstrncmp(categoryName,
-                    controllerLoggingCategoryPrefix,
-                    sizeof(controllerLoggingCategoryPrefix) - 1) == 0) {
+    const std::string_view categoryName{category->categoryName()};
+    // TODO: Use `categoryName.starts_with(controllerLoggingCategoryPrefix)` once we switch to C++20.
+    if (categoryName == jsLoggingCategory ||
+            categoryName.substr(0,
+                    std::min(categoryName.size(),
+                            controllerLoggingCategoryPrefix.size())) ==
+                    controllerLoggingCategoryPrefix) {
         // If the logging category name starts with `controller.`, show debug messages.
         category->setEnabled(QtDebugMsg, true);
     } else {
