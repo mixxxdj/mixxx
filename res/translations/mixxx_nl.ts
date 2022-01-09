@@ -3412,7 +3412,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="715"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>M3U speellijst(*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="185"/>
@@ -5701,17 +5701,17 @@ U kunt de tracks ten allen tijde op het scherm slepen en neerzetten om een deck 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="155"/>
         <source>Rename</source>
-        <translation type="unfinished"/>
+        <translation>Hernoemen</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="169"/>
         <source>Export</source>
-        <translation type="unfinished"/>
+        <translation>Exporteren</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="179"/>
         <source>Delete</source>
-        <translation type="unfinished"/>
+        <translation>Verwijderen</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="202"/>
@@ -8110,12 +8110,12 @@ Dit resulteert vaak in beat-rasters van hogere kwaliteit, maar zal het niet goed
     <message>
         <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="44"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Type</translation>
     </message>
     <message>
         <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="46"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Naam</translation>
     </message>
 </context>
 <context>
@@ -10193,14 +10193,14 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="30"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>Plaats</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="119"/>
         <location filename="../../src/library/parserm3u.cpp" line="129"/>
         <location filename="../../src/library/parserpls.cpp" line="81"/>
         <source>Playlist Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>Afspeellijst exporteren mislukt</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="120"/>
@@ -10208,12 +10208,12 @@ Volledig rechts: einde van de effectperiode</translation>
         <location filename="../../src/library/parserm3u.cpp" line="130"/>
         <location filename="../../src/library/parserpls.cpp" line="82"/>
         <source>Could not create file</source>
-        <translation type="unfinished"/>
+        <translation>Kon bestand niet aanmaken</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="210"/>
         <source>Readable text Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>Export leesbare tekst mislukt</translation>
     </message>
 </context>
 <context>
@@ -10380,6 +10380,11 @@ Volledig rechts: einde van de effectperiode</translation>
 </context>
 <context>
     <name>SamplerBank</name>
+    <message>
+        <location filename="../../src/mixer/samplerbank.cpp" line="21"/>
+        <source>Mixxx Sampler Banks (*.xml)</source>
+        <translation>Mixxx Sampler Banks (*.xml)</translation>
+    </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="65"/>
         <source>Save Sampler Bank</source>
@@ -13375,12 +13380,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
         <location filename="../../src/widget/weffectname.cpp" line="45"/>
         <source>%1: %2</source>
         <extracomment>%1 = effect name; %2 = effect description</extracomment>
-        <translation type="unfinished"/>
+        <translation>%1: %2</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffectname.cpp" line="48"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Geen effect geladen.</translation>
     </message>
 </context>
 <context>
@@ -13388,7 +13393,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/weffectparameternamebase.cpp" line="45"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Geen effect geladen.</translation>
     </message>
 </context>
 <context>
@@ -14458,7 +14463,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1737"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Annuleren</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1740"/>
@@ -14493,7 +14498,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1817"/>
         <source>Close</source>
-        <translation type="unfinished"/>
+        <translation>Sluiten</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1827"/>
@@ -14832,7 +14837,7 @@ Klik op OK om af te sluiten.</translation>
     <message>
         <location filename="../../src/qml/qmlvisibleeffectsmodel.cpp" line="43"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Geen effect geladen.</translation>
     </message>
 </context>
 </TS>
