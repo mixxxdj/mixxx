@@ -489,9 +489,11 @@ RDJ2.JogModeSelector.prototype = new components.Component({
         var scratchValue = this.jogMode === RDJ2.JOGMODES.vinyl ? RDJ2.MIDI_BUTTON_ON : RDJ2.MIDI_BUTTON_OFF;
         var fxDryWetValue = this.jogMode === RDJ2.JOGMODES.fxdrywet ? RDJ2.MIDI_BUTTON_ON : RDJ2.MIDI_BUTTON_OFF;
 
-        midi.sendShortMsg(0x90, this.searchMidiCtrl, searchValue);
-        midi.sendShortMsg(0x90, this.scratchMidiCtrl, scratchValue);
-        midi.sendShortMsg(0x90, this.fxDryWetMidiCtrl, fxDryWetValue);
+        if (midi.sendShortMsg) {
+            midi.sendShortMsg(0x90, this.searchMidiCtrl, searchValue);
+            midi.sendShortMsg(0x90, this.scratchMidiCtrl, scratchValue);
+            midi.sendShortMsg(0x90, this.fxDryWetMidiCtrl, fxDryWetValue);
+        }
     },
     inputNormal: function(channel, control, value) {
         var isButtonPressed = RDJ2.isButtonPressed(value);
@@ -561,9 +563,11 @@ RDJ2.JogModeSelector.prototype = new components.Component({
                 this.jogMode = RDJ2.JOGMODES.trax;
                 this.input = this.inputTrax;
                 //set all LEDs on to indicate trax mode
-                midi.sendShortMsg(0x90, this.searchMidiCtrl, RDJ2.MIDI_BUTTON_ON);
-                midi.sendShortMsg(0x90, this.scratchMidiCtrl, RDJ2.MIDI_BUTTON_ON);
-                midi.sendShortMsg(0x90, this.fxDryWetMidiCtrl, RDJ2.MIDI_BUTTON_ON);
+                if (midi.sendShortMsg) {
+                    midi.sendShortMsg(0x90, this.searchMidiCtrl, RDJ2.MIDI_BUTTON_ON);
+                    midi.sendShortMsg(0x90, this.scratchMidiCtrl, RDJ2.MIDI_BUTTON_ON);
+                    midi.sendShortMsg(0x90, this.fxDryWetMidiCtrl, RDJ2.MIDI_BUTTON_ON);
+                }
             }
         } else {
             this.jogMode = this.lastNonTraxJogMode;
