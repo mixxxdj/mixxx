@@ -10185,6 +10185,11 @@ Tot a la dreta: Al final del període</translation>
 <context>
     <name>SamplerBank</name>
     <message>
+        <location filename="../../src/mixer/samplerbank.cpp" line="21"/>
+        <source>Mixxx Sampler Banks (*.xml)</source>
+        <translation>Bancs de mostres de Mixxx (*.xml)</translation>
+    </message>
+    <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="65"/>
         <source>Save Sampler Bank</source>
         <translation>Desa el banc de mostres</translation>
