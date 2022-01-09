@@ -2174,7 +2174,7 @@
         <options>
           <fourteen-bit-lsb/>
         </options>
-      </control>  
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>PioneerDDJSB3.padForDeck[1].beatJumpDivide</key>
