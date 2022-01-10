@@ -83,7 +83,7 @@ inline QString frameToQString(
     return toQString(frame.toString());
 }
 
-bool logWarningIfUnsupportedID3v2Frame(const TagLib::ID3v2::Frame* pFrame) {
+bool isUnsupportedID3v2FrameThenLogWarning(const TagLib::ID3v2::Frame* pFrame) {
     if (dynamic_cast<const TagLib::ID3v2::UnknownFrame*>(pFrame)) {
         kLogger.warning()
                 << "ID3v2 frame"
@@ -96,7 +96,7 @@ bool logWarningIfUnsupportedID3v2Frame(const TagLib::ID3v2::Frame* pFrame) {
 }
 
 void logWarningAboutUnsupportedOrUnexpectedID3v2Frame(const TagLib::ID3v2::Frame* pFrame) {
-    if (!logWarningIfUnsupportedID3v2Frame(pFrame)) {
+    if (!isUnsupportedID3v2FrameThenLogWarning(pFrame)) {
         // Do not crash if the caller unexpectedly passed a nullptr
         VERIFY_OR_DEBUG_ASSERT(pFrame) {
             return;
@@ -145,7 +145,7 @@ QString firstNonEmptyFrameToQString(
         if (!str.isEmpty()) {
             return toQString(str);
         }
-        logWarningIfUnsupportedID3v2Frame(pFrame);
+        isUnsupportedID3v2FrameThenLogWarning(pFrame);
         // Otherwise silently ignore this empty, generic frame and continue
     }
     return {};
