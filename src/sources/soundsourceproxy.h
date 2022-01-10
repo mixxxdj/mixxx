@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QMimeType>
+
 #include "sources/soundsourceproviderregistry.h"
 #include "track/track_decl.h"
 #include "util/sandbox.h"
@@ -30,6 +32,9 @@ class SoundSourceProxy {
     }
     static const QRegularExpression& getSupportedFileNamesRegex() {
         return s_supportedFileNamesRegex;
+    }
+    static QString getFileTypeByMimeType(const QMimeType& mimeType) {
+        return s_fileTypeByMimeType.value(mimeType);
     }
 
     /// Get the list of supported file extensions
