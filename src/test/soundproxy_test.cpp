@@ -777,14 +777,14 @@ TEST_F(SoundSourceProxyTest, getTypeFromFile) {
 TEST_F(SoundSourceProxyTest, getTypeFromMissingFile) {
     // Also verify that the shortened suffix ".aif" (case-insensitive) is
     // mapped to file type "aiff", independent of whether the file exists or not!
-    const QFileInfo missingFileWithUppercaseSuffixAndLeadingTrailingWhitespaceSuffix(
-            kTestDir.absoluteFilePath(QStringLiteral("missing_file. AIF ")));
+    const QFileInfo missingFileWithUppercaseSuffix(
+            kTestDir.absoluteFilePath(QStringLiteral("missing_file.AIF")));
 
-    ASSERT_FALSE(missingFileWithUppercaseSuffixAndLeadingTrailingWhitespaceSuffix.exists());
+    ASSERT_FALSE(missingFileWithUppercaseSuffix.exists());
 
     EXPECT_STREQ(qPrintable("aiff"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
-                    QFileInfo(missingFileWithUppercaseSuffixAndLeadingTrailingWhitespaceSuffix))));
+                    QFileInfo(missingFileWithUppercaseSuffix))));
 }
 
 TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {

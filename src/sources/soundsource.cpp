@@ -32,7 +32,7 @@ QString SoundSource::getTypeFromUrl(const QUrl& url) {
 
 //static
 QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
-    const QString fileSuffix = fileInfo.suffix();
+    const QString fileSuffix = fileInfo.suffix().toLower().trimmed();
 
     if (fileSuffix == "opus") {
         // opus has mime type "audio/ogg" which will be decoded with the SoundSourceOggVobis()
@@ -40,21 +40,25 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
         return fileSuffix;
     }
 
-    const QMimeType mimeType = QMimeDatabase().mimeTypeForFile(
+    QMimeType mimeType = QMimeDatabase().mimeTypeForFile(
             fileInfo, QMimeDatabase::MatchContent);
     // According to the documentation mimeTypeForFile always returns a valid
     // type, using the generic type application/octet-stream as a fallback.
     // This might also occur for missing files as seen on Qt 5.12.
     if (!mimeType.isValid() || mimeType.isDefault()) {
-        qInfo() << "Unable to detect MIME type for file" << fileInfo.filePath();
-        return fileSuffix;
+        qInfo() << "Unable to detect MIME type from file" << fileInfo.filePath();
+        mimeType = QMimeDatabase().mimeTypeForFile(
+                fileInfo, QMimeDatabase::MatchExtension);
+        if (!mimeType.isValid() || mimeType.isDefault()) {
+            return fileSuffix;
+        }
     }
     const QString fileType = SoundSourceProxy::getFileTypeByMimeType(mimeType);
     if (fileType.isEmpty()) {
         qWarning() << "No file type registered for MIME type" << mimeType;
         return fileSuffix;
     }
-    if (fileType != fileSuffix && mimeType.suffixes().contains(fileSuffix)) {
+    if (fileType != fileSuffix && !mimeType.suffixes().contains(fileSuffix)) {
         qWarning()
                 << "Using type" << fileType
                 << "instead of" << fileSuffix
