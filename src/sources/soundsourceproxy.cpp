@@ -231,7 +231,11 @@ bool SoundSourceProxy::registerProviders() {
     for (const auto& supportedFileType : supportedFileTypes) {
         const auto mimeTypes = mimeTypesForFileType(supportedFileType);
         for (const QMimeType& mimeType : mimeTypes) {
-            s_fileTypeByMimeType.insert(mimeType, supportedFileType);
+            if (!mimeType.isDefault()) {
+                DEBUG_ASSERT(s_fileTypeByMimeType.constFind(mimeType) ==
+                        s_fileTypeByMimeType.constEnd());
+                s_fileTypeByMimeType.insert(mimeType, supportedFileType);
+            }
         }
         if (kLogger.infoEnabled()) {
             kLogger.info() << "SoundSource providers for file type" << supportedFileType;
