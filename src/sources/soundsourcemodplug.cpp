@@ -20,7 +20,6 @@ const QStringList kSupportedFileTypes = {
         // ModPlug supports more formats but file name
         // extensions are not always present with modules.
         QStringLiteral("mod"),
-        QStringLiteral("med"),
         QStringLiteral("okt"),
         QStringLiteral("s3m"),
         QStringLiteral("stm"),
@@ -36,7 +35,7 @@ QString getModPlugTypeFromUrl(const QUrl& url) {
     if (fileType == "mod") {
         return "Protracker";
     } else if (fileType == "med") {
-        return "OctaMed";
+        return "OctaMed"; // audio/x-mod
     } else if (fileType == "okt") {
         return "Oktalyzer";
     } else if (fileType == "s3m") {
