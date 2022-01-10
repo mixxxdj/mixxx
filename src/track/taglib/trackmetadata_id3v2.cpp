@@ -137,7 +137,7 @@ const T* downcastFrame(const TagLib::ID3v2::Frame* pFrame) {
 // Returns the first frame of an ID3v2 tag as a string.
 QString firstNonEmptyFrameToQString(
         const TagLib::ID3v2::FrameList& frameList) {
-    for (const TagLib::ID3v2::Frame* pFrame : frameList) {
+    for (const TagLib::ID3v2::Frame* const pFrame : frameList) {
         VERIFY_OR_DEBUG_ASSERT(pFrame) {
             continue;
         }
@@ -190,9 +190,9 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
         const QString& description,
         bool preferNotEmpty = true) {
     TagLib::ID3v2::CommentsFrame* pFirstFrame = nullptr;
-    for (TagLib::ID3v2::Frame* pFrame : tag.frameListMap()["COMM"]) {
+    for (TagLib::ID3v2::Frame* const pFrame : tag.frameListMap()["COMM"]) {
         DEBUG_ASSERT(pFrame);
-        auto* pNextFrame = downcastFrame<TagLib::ID3v2::CommentsFrame>(pFrame);
+        auto* const pNextFrame = downcastFrame<TagLib::ID3v2::CommentsFrame>(pFrame);
         if (!pNextFrame) {
             continue;
         }
@@ -230,9 +230,9 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
     TagLib::ID3v2::UserTextIdentificationFrame* pFirstFrame = nullptr;
-    for (TagLib::ID3v2::Frame* pFrame : tag.frameListMap()["TXXX"]) {
+    for (TagLib::ID3v2::Frame* const pFrame : tag.frameListMap()["TXXX"]) {
         DEBUG_ASSERT(pFrame);
-        auto* pNextFrame = downcastFrame<TagLib::ID3v2::UserTextIdentificationFrame>(pFrame);
+        auto* const pNextFrame = downcastFrame<TagLib::ID3v2::UserTextIdentificationFrame>(pFrame);
         if (!pNextFrame) {
             continue;
         }
@@ -278,9 +278,9 @@ TagLib::ID3v2::UniqueFileIdentifierFrame* findFirstUniqueFileIdentifierFrame(
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!owner.isEmpty());
     TagLib::ID3v2::UniqueFileIdentifierFrame* pFirstFrame = nullptr;
-    for (auto* pFrame : tag.frameListMap()["UFID"]) {
+    for (TagLib::ID3v2::Frame* const pFrame : tag.frameListMap()["UFID"]) {
         DEBUG_ASSERT(pFrame);
-        auto* pNextFrame = downcastFrame<TagLib::ID3v2::UniqueFileIdentifierFrame>(pFrame);
+        auto* const pNextFrame = downcastFrame<TagLib::ID3v2::UniqueFileIdentifierFrame>(pFrame);
         if (!pNextFrame) {
             continue;
         }
@@ -326,9 +326,10 @@ TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjec
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
     TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFirstFrame = nullptr;
-    for (auto* pFrame : tag.frameListMap()["GEOB"]) {
+    for (auto* const pFrame : tag.frameListMap()["GEOB"]) {
         DEBUG_ASSERT(pFrame);
-        auto* pNextFrame = downcastFrame<TagLib::ID3v2::GeneralEncapsulatedObjectFrame>(pFrame);
+        auto* const pNextFrame =
+                downcastFrame<TagLib::ID3v2::GeneralEncapsulatedObjectFrame>(pFrame);
         if (!pNextFrame) {
             continue;
         }
@@ -434,9 +435,10 @@ int removeUserTextIdentificationFrames(
     bool repeat;
     do {
         repeat = false;
-        for (TagLib::ID3v2::Frame* pFrame : std::as_const(pTag->frameListMap())["TXXX"]) {
+        for (TagLib::ID3v2::Frame* const pFrame :
+                std::as_const(pTag->frameListMap())["TXXX"]) {
             DEBUG_ASSERT(pFrame);
-            const auto* pNextFrame =
+            const auto* const pNextFrame =
                     downcastFrame<TagLib::ID3v2::UserTextIdentificationFrame>(pFrame);
             if (!pNextFrame) {
                 continue;
@@ -456,7 +458,7 @@ int removeUserTextIdentificationFrames(
             // is no longer valid!!
             pTag->removeFrame(pFrame, false); // remove an unowned frame
             ++count;
-            // Exit and restart loop
+            // Abort inner loop and restart outer loop
             repeat = true;
             break;
         }
@@ -620,9 +622,9 @@ bool importCoverImageFromTag(
     }
 
     for (const auto coverArtType : kPreferredPictureTypes) {
-        for (const TagLib::ID3v2::Frame* pFrame : iterAPIC->second) {
+        for (const TagLib::ID3v2::Frame* const pFrame : iterAPIC->second) {
             DEBUG_ASSERT(pFrame);
-            const auto* pNextFrame =
+            const auto* const pNextFrame =
                     downcastFrame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
             if (!pNextFrame) {
                 continue;
@@ -644,8 +646,8 @@ bool importCoverImageFromTag(
     }
 
     // Fallback: No best match -> Simply select the 1st loadable image
-    for (const auto* pFrame : iterAPIC->second) {
-        const auto* pNextFrame =
+    for (const auto* const pFrame : iterAPIC->second) {
+        const auto* const pNextFrame =
                 downcastFrame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
         if (!pNextFrame) {
             continue;
