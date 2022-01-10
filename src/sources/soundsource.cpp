@@ -21,20 +21,6 @@ inline QUrl validateLocalFileUrl(QUrl url) {
     return url;
 }
 
-inline QString fileTypeFromSuffix(const QString& suffix) {
-    const QString fileType = suffix.toLower().trimmed();
-    if (fileType.isEmpty()) {
-        // Always return a default-constructed, null string instead
-        // of an empty string which might either be null or "".
-        return QString{};
-    }
-    // Map shortened suffix "aif" to "aiff" for disambiguation
-    if (fileType == QStringLiteral("aif")) {
-        return QStringLiteral("aiff");
-    }
-    return fileType;
-}
-
 } // anonymous namespace
 
 //static
@@ -53,37 +39,23 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     // According to the documentation mimeTypeForFile always returns a valid
     // type, using the generic type application/octet-stream as a fallback.
     // This might also occur for missing files as seen on Qt 5.12.
-    if (!mimeType.isValid() ||
-            mimeType.name() == QStringLiteral("application/octet-stream")) {
-        qWarning()
-                << "Unknown MIME type for file" << fileInfo.filePath();
-        return fileType;
+    if (!mimeType.isValid() || mimeType.isDefault()) {
+        qInfo() << "Unable to detect MIME type for file" << fileInfo.filePath();
+        return fileSuffix;
     }
-    const QString preferredSuffix = mimeType.preferredSuffix();
-    if (preferredSuffix.isEmpty()) {
-        DEBUG_ASSERT(mimeType.suffixes().isEmpty());
-        qInfo()
-                << "MIME type" << mimeType
-                << "has no preferred suffix";
-        return fileType;
-    }
-    const QString preferredFileType = fileTypeFromSuffix(preferredSuffix);
-    if (fileType == preferredFileType || mimeType.suffixes().contains(fileSuffix)) {
-        return fileType;
-    }
+    const QString fileType = SoundSourceProxy::getFileTypeByMimeType(mimeType);
     if (fileType.isEmpty()) {
+        qWarning() << "No file type registered for MIME type" << mimeType;
+        return fileSuffix;
+    }
+    if (fileType != fileSuffix && mimeType.suffixes().contains(fileSuffix)) {
         qWarning()
-                << "Using type" << preferredFileType
-                << "according to the detected MIME type" << mimeType
-                << "of file" << fileInfo.filePath();
-    } else {
-        qWarning()
-                << "Using type" << preferredFileType
-                << "instead of" << fileType
+                << "Using type" << fileType
+                << "instead of" << fileSuffix
                 << "according to the detected MIME type" << mimeType
                 << "of file" << fileInfo.filePath();
     }
-    return preferredFileType;
+    return fileType;
 }
 
 SoundSource::SoundSource(const QUrl& url, const QString& type)
