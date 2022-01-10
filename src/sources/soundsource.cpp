@@ -3,6 +3,7 @@
 #include <QMimeDatabase>
 #include <QMimeType>
 
+#include "sources/soundsourceproxy.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -32,8 +33,13 @@ QString SoundSource::getTypeFromUrl(const QUrl& url) {
 //static
 QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     const QString fileSuffix = fileInfo.suffix();
-    const QString fileType = fileTypeFromSuffix(fileSuffix);
-    DEBUG_ASSERT(!fileType.isEmpty() || fileType == QString{});
+
+    if (fileSuffix == "opus") {
+        // opus has mime type "audio/ogg" which will be decoded with the SoundSourceOggVobis()
+        // but we want SoundSourceOpus()
+        return fileSuffix;
+    }
+
     const QMimeType mimeType = QMimeDatabase().mimeTypeForFile(
             fileInfo, QMimeDatabase::MatchContent);
     // According to the documentation mimeTypeForFile always returns a valid

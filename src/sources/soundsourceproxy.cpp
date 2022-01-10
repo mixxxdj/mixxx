@@ -169,6 +169,11 @@ void registerReferenceSoundSourceProviders(
 }
 
 QList<QMimeType> mimeTypesForFileType(const QString& fileType) {
+    if (fileType == "opus") {
+        // opus has mime type "audio/ogg" which will be decoded with the SoundSourceOggVobis()
+        // but we want SoundSourceOpus()
+        return {};
+    }
     const QString dummyFileName = QStringLiteral("prefix.") + fileType;
     return QMimeDatabase().mimeTypesForFileName(dummyFileName);
 }
@@ -232,6 +237,7 @@ bool SoundSourceProxy::registerProviders() {
         const auto mimeTypes = mimeTypesForFileType(supportedFileType);
         for (const QMimeType& mimeType : mimeTypes) {
             if (!mimeType.isDefault()) {
+                qDebug() << mimeType << supportedFileType;
                 DEBUG_ASSERT(s_fileTypeByMimeType.constFind(mimeType) ==
                         s_fileTypeByMimeType.constEnd());
                 s_fileTypeByMimeType.insert(mimeType, supportedFileType);
@@ -311,6 +317,7 @@ QStringList SoundSourceProxy::getFileSuffixesForFileType(
     for (const QMimeType& mimeType : mimeTypes) {
         fileSuffixes.append(mimeType.suffixes());
     }
+    fileSuffixes.append(fileType);
     fileSuffixes.removeDuplicates();
     return fileSuffixes;
 }
