@@ -14,7 +14,9 @@ const kLedDimmed = 0x27;
 const kLedVuMeterBrightness = 0x37;
 const kLedBright = 0x7F;
 
-let TraktorZ2 = new function() {
+var TraktorZ2 = {};
+
+TraktorZ2 = new function() {
     this.controller = new HIDController();
 
     this.shiftPressed = false;
