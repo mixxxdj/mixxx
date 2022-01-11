@@ -6,7 +6,7 @@ Item {
 
     property alias focusWidget: focusedWidgetControl.value
 
-    signal moveSelection(int offset)
+    signal moveVertical(int offset)
     signal loadSelectedTrack(string group, bool play)
     signal loadSelectedTrackIntoNextAvailableDeck(bool play)
 
@@ -42,7 +42,7 @@ Item {
         onValueChanged: {
             if (value != 0) {
                 root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
-                root.moveSelection(value);
+                root.moveVertical(value);
             }
         }
     }
@@ -53,7 +53,7 @@ Item {
         onValueChanged: {
             if (value != 0) {
                 root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
-                root.moveSelection(-1);
+                root.moveVertical(-1);
             }
         }
     }
@@ -64,7 +64,7 @@ Item {
         onValueChanged: {
             if (value != 0) {
                 root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
-                root.moveSelection(1);
+                root.moveVertical(1);
             }
         }
     }
@@ -74,7 +74,7 @@ Item {
         key: "MoveVertical"
         onValueChanged: {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
-                root.moveSelection(value);
+                root.moveVertical(value);
 
         }
     }
@@ -84,7 +84,7 @@ Item {
         key: "MoveUp"
         onValueChanged: {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
-                root.moveSelection(-1);
+                root.moveVertical(-1);
 
         }
     }
@@ -94,7 +94,7 @@ Item {
         key: "MoveDown"
         onValueChanged: {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
-                root.moveSelection(1);
+                root.moveVertical(1);
 
         }
     }

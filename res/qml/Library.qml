@@ -12,7 +12,7 @@ Item {
         LibraryControl {
             id: libraryControl
 
-            onMoveSelection: listView.moveSelection(offset)
+            onMoveVertical: listView.moveSelectionVertical(offset)
             onLoadSelectedTrack: listView.loadSelectedTrack(group, play)
             onLoadSelectedTrackIntoNextAvailableDeck: listView.loadSelectedTrackIntoNextAvailableDeck(play)
             onFocusWidgetChanged: {
@@ -27,7 +27,7 @@ Item {
         ListView {
             id: listView
 
-            function moveSelection(value) {
+            function moveSelectionVertical(value) {
                 if (value == 0)
                     return ;
 
