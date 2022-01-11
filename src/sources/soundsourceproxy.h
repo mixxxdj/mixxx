@@ -1,6 +1,5 @@
 #pragma once
 
-#include "preferences/usersettings.h"
 #include "sources/soundsourceproviderregistry.h"
 #include "track/track_decl.h"
 #include "util/sandbox.h"
@@ -47,9 +46,12 @@ class SoundSourceProxy {
     static mixxx::SoundSourceProviderPointer getPrimaryProviderForFileExtension(
             const QString& fileExtension);
 
-    explicit SoundSourceProxy(
+    explicit SoundSourceProxy(TrackPointer pTrack);
+
+    // Only needed for testing all available providers explicitly
+    SoundSourceProxy(
             TrackPointer pTrack,
-            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
+            mixxx::SoundSourceProviderPointer pProvider);
 
     /// The track object that has been passed at construction.
     ///
@@ -149,12 +151,17 @@ class SoundSourceProxy {
     ///
     /// Returns true if the track has been modified and false otherwise.
     bool updateTrackFromSource(
-            const UserSettingsPointer& pConfig,
-            UpdateTrackFromSourceMode mode);
+            UpdateTrackFromSourceMode mode,
+            const SyncTrackMetadataParams& syncParams);
 
     /// Opening the audio source through the proxy will update the
     /// audio properties of the corresponding track object. Returns
     /// a null pointer on failure.
+    ///
+    /// The caller is responsible for invoking AudioSource::close().
+    /// Otherwise the underlying files will remain open until the
+    /// last reference is dropped. One of these references is hold
+    /// by SoundSourceProxy as a member.
     ///
     /// Note: If opening the audio stream fails the selection
     /// process may continue among the available providers and
@@ -164,12 +171,6 @@ class SoundSourceProxy {
     mixxx::AudioSourcePointer openAudioSource(
             const mixxx::AudioSource::OpenParams& params = mixxx::AudioSource::OpenParams());
 
-    /// Explicitly close the AudioSource.
-    ///
-    /// This will happen implicitly when the instance goes out
-    /// of scope, i.e. upon destruction.
-    void closeAudioSource();
-
   private:
     static mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
     static QStringList s_supportedFileNamePatterns;
@@ -178,13 +179,14 @@ class SoundSourceProxy {
     friend class TrackCollectionManager;
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
-            const UserSettingsPointer& pConfig);
+            const SyncTrackMetadataParams& syncParams);
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.
-    explicit SoundSourceProxy(
-            const QUrl& url,
-            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
+    explicit SoundSourceProxy(const QUrl& url);
+
+    bool openSoundSource(
+            const mixxx::AudioSource::OpenParams& params = mixxx::AudioSource::OpenParams());
 
     const TrackPointer m_pTrack;
 
@@ -197,11 +199,12 @@ class SoundSourceProxy {
     // provider and is initialized with -1 if no
     int m_providerRegistrationIndex;
 
-    void initSoundSource(
-            const mixxx::SoundSourceProviderPointer& pProvider);
+    void findProviderAndInitSoundSource();
 
-    mixxx::SoundSourceProviderPointer primaryProvider(
-            const mixxx::SoundSourceProviderPointer& pProvider = nullptr);
+    bool initSoundSourceWithProvider(
+            mixxx::SoundSourceProviderPointer&& pProvider);
+
+    mixxx::SoundSourceProviderPointer primaryProvider();
     mixxx::SoundSourceProviderPointer nextProvider();
     std::pair<mixxx::SoundSourceProviderPointer, mixxx::SoundSource::OpenMode>
             nextProviderWithOpenMode(mixxx::SoundSource::OpenMode);
@@ -214,10 +217,4 @@ class SoundSourceProxy {
     // This pointer must stay in this class together with
     // the corresponding track pointer. Don't pass it around!!
     mixxx::SoundSourcePointer m_pSoundSource;
-
-    // Keeps track of opening and closing the corresponding
-    // SoundSource. This pointer can safely be passed around,
-    // because internally it contains a reference to the TIO
-    // that keeps it alive.
-    mixxx::AudioSourcePointer m_pAudioSource;
 };

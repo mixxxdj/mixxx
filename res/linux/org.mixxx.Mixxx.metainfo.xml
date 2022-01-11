@@ -1104,10 +1104,35 @@
       <description>
  <ul>
   <li>
-   Improve robustness of file type detection by considering the actual MIME type of the content.
-   lp:1445885
-   #4356
-   #4357
+   Playlist: Enable sorting by color
+   #4352
+   lp:1945976
+  </li>
+  <li>
+   Fix crash when using Doubling/Halving/etc. BPM from track's Properties window on tracks without BPM
+   #4587
+   lp:1955853
+  </li>
+  <li>
+   Fix writing metadata on Windows for files that have never been played
+   #4586
+   lp:1955331
+  </li>
+  <li>
+   Preserve file creation time when writing metadata on Windows
+   #4586
+   lp1955314
+  </li>
+  <li>
+   Fix handling of file extension when importing and exporting sampler settings
+   #4539
+  </li>
+  <li>
+   Fix crash when using an empty directory as resource path using the
+   --resource-path
+   command line option
+   #4575
+   lp1934560
   </li>
  </ul>
  <p>
@@ -1119,6 +1144,16 @@
   </li>
   <li>
    The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
+  </li>
+  <li>
+   CMake: Adjust the download directory and name of external dependencies
+   #4511
+  </li>
+  <li>
+   Fix/Improve Appstream metainfo
+   #4344
+   #4346
+   #4349
   </li>
  </ul>
 </description>
@@ -1278,6 +1313,10 @@
    Fix preference option for re-analyzing beatgrids imported from other software
    #4288
   </li>
+  <li>
+   Fix wrong base tag used for deployment and displayed in About dialog
+   #4070
+  </li>
  </ul>
  <p>
   Packaging
@@ -1314,6 +1353,7 @@
    Install multiple sizes of rasterized icons
    #4204
    #4315
+   #4254
   </li>
   <li>
    CMake: Fixed detection of SoundTouch pkgconfig file and version

@@ -55,31 +55,6 @@ class MixxxTest : public testing::Test {
 
 namespace mixxxtest {
 
-/// Returns the full, non-empty file path on success.
-///
-/// For the format of fileNameTemplate refer to QTemporaryFile.
-QString generateTemporaryFileName(const QString& fileNameTemplate);
-
-/// Returns the full, non-empty file path on success.
-///
-/// For the format of fileNameTemplate refer to QTemporaryFile.
-QString createEmptyTemporaryFile(const QString& fileNameTemplate);
-
 bool copyFile(const QString& srcFileName, const QString& dstFileName);
-
-class FileRemover final {
-  public:
-    explicit FileRemover(const QString& fileName)
-            : m_fileName(fileName) {
-    }
-    ~FileRemover();
-
-    void keepFile() {
-        m_fileName = QString();
-    }
-
-  private:
-    QString m_fileName;
-};
 
 } // namespace mixxxtest

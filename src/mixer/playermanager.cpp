@@ -21,7 +21,6 @@
 #include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/logger.h"
-#include "util/sleepableqthread.h"
 
 namespace {
 
@@ -127,7 +126,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
             &PlayerManager::slotChangeNumAuxiliaries, Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
-    m_pSamplerBank = new SamplerBank(this);
+    m_pSamplerBank = new SamplerBank(m_pConfig, this);
 
     m_cloneTimer.start();
 }

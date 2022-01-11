@@ -107,6 +107,23 @@
 
       <WidgetGroup>
         <Layout>vertical</Layout>
+        <Size>55f,</Size>
+        <Children>
+          <EffectChainPresetSelector>
+            <ObjectName>QuickEffectSelectorLeft</ObjectName>
+            <Size>-1min,18f</Size>
+            <EffectUnitGroup>[QuickEffectRack1_<Variable name="group"/>]</EffectUnitGroup>
+          </EffectChainPresetSelector>
+          <WidgetGroup><Size>,4f</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
 

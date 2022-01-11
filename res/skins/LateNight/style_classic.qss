@@ -793,6 +793,10 @@ WLibrary {
     margin-right: 2px;
   }
 
+WEffectChainPresetButton::menu-indicator {
+  image: url(skin:/classic/buttons/btn__fx_settings.svg) no-repeat center center;
+}
+
 #DryWetKnob,
 #SuperKnob {
   margin: 0px 1px;
@@ -1102,6 +1106,8 @@ WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
+WEffectChainPresetButton QMenu,
+WEffectChainPresetButton QMenu QCheckBox,
 WCoverArtMenu,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
@@ -2181,6 +2187,7 @@ WTrackTableViewHeader {
 #LibraryContainer QScrollBar,
 WEffectSelector QAbstractScrollArea QScrollBar,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar,
 WSearchLineEdit QAbstractScrollArea QScrollBar {
   border: 0px solid #585858;
   background: #000;
@@ -2191,6 +2198,7 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
   #LibraryContainer QScrollBar:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
+  WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar:horizontal,
   WSearchLineEdit QAbstractScrollArea QScrollBar:horizontal {
     min-width: 12px;
     height: 15px;
@@ -2201,6 +2209,7 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
   #LibraryContainer QScrollBar:vertical,
   WEffectSelector QAbstractScrollArea QScrollBar:vertical,
   WEffectChainPresetSelector QAbstractScrollArea QScrollBar:vertical,
+  WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar:vertical,
   WSearchLineEdit QAbstractScrollArea QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
@@ -2215,6 +2224,7 @@ WSearchLineEdit QAbstractScrollArea QScrollBar {
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::handle:horizontal,
 WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 25px;
   border-radius: 2px;
@@ -2225,6 +2235,7 @@ WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal {
 #LibraryContainer QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::handle:vertical,
 WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 25px;
   border-radius: 2px;
@@ -2240,6 +2251,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::add-page,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-page,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-page,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::add-page,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::sub-page,
 WSearchLineEdit QAbstractScrollArea QScrollBar::add-page,
 WSearchLineEdit QAbstractScrollArea QScrollBar::sub-page {
   min-width: 15px;
@@ -2254,6 +2267,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::add-line,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-line,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-line,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::add-line,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::sub-line,
 WSearchLineEdit QAbstractScrollArea QScrollBar::add-line,
 WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line {
   width: 0px;
@@ -2265,6 +2280,7 @@ WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line {
 #LibraryContainer QAbstractScrollArea::corner,
 WEffectSelector QAbstractScrollArea QScrollBar::corner,
 WEffectChainPresetSelector QAbstractScrollArea QScrollBar::corner,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar:corner,
 WSearchLineEdit QAbstractScrollArea QScrollBar::corner {
   background-color: #1e1e1e;
 }
@@ -2399,6 +2415,7 @@ WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector QAbstractScrollArea,
+WEffectChainPresetButton QMenu,
 WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   border: 1px solid #888;
@@ -2434,6 +2451,9 @@ WEffectSelector QAbstractScrollArea,
 WEffectSelector::item,
 WEffectChainPresetSelector QAbstractScrollArea,
 WEffectChainPresetSelector::item,
+WEffectChainPresetButton QMenu,
+WEffectChainPresetButton::item,
+WEffectChainPresetButton QMenu QCheckBox,
 WSearchLineEdit QAbstractScrollArea,
 WSearchLineEdit::item,
 #fadeModeCombobox QAbstractScrollArea,
@@ -2463,6 +2483,10 @@ QLineEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
 WEffectSelector::item:selected,
 WEffectChainPresetSelector:item:selected,
+WEffectChainPresetButton QMenu::item:selected,
+WEffectChainPresetButton QMenu QCheckBox:selected,
+WEffectChainPresetButton QMenu QCheckBox:focus,
+WEffectChainPresetButton QMenu QCheckBox:hover,
 #fadeModeCombobox::item:selected,
 WSearchLineEdit::item:selected,
 #SkinSettingsButton[hover="true"],
@@ -2515,6 +2539,7 @@ QLineEdit QMenu::item:disabled {
   WTrackTableViewHeader QMenu::indicator:checked,
   WEffectSelector::indicator:checked,
   WEffectChainPresetSelector::indicator:checked,
+  WEffectChainPresetButton QMenu QCheckBox::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);
     }
@@ -2572,6 +2597,7 @@ QLineEdit QMenu::item:disabled {
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator,
+  WEffectChainPresetButton QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
     border-bottom: 1px solid #222;
@@ -2587,6 +2613,8 @@ WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 WEffectChainPresetSelector::indicator:unchecked,
 WEffectChainPresetSelector::indicator:unchecked:selected,
+WEffectChainPresetButton QMenu QCheckBox::indicator:unchecked,
+WEffectChainPresetButton QMenu QCheckBox::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,
 #fadeModeCombobox::indicator:unchecked:selected,
 WSearchLineEdit::indicator:unchecked,

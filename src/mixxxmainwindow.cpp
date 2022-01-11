@@ -391,9 +391,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     }
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DeveloperToolsDlg";
-    if (m_pDeveloperToolsDlg) {
-        delete m_pDeveloperToolsDlg;
-    }
+    delete m_pDeveloperToolsDlg;
 
 #ifdef __ENGINEPRIME__
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryExporter";

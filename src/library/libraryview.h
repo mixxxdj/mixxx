@@ -35,8 +35,11 @@ class LibraryView {
     }
     virtual void saveCurrentViewState() {
     }
-    virtual void restoreCurrentViewState() {
-    }
+    /// @brief restores current view state.
+    /// @return true if restore succeeded
+    virtual bool restoreCurrentViewState() {
+        return false;
+    };
 
     /// If applicable, requests that the LibraryView load the selected track to
     /// the specified group. Does nothing otherwise.

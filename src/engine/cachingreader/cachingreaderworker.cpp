@@ -127,8 +127,12 @@ void CachingReaderWorker::discardAllPendingRequests() {
 
 void CachingReaderWorker::closeAudioSource() {
     discardAllPendingRequests();
-    // Closes open file handles of the old track.
-    m_pAudioSource.reset();
+
+    if (m_pAudioSource) {
+        // Closes open file handles of the old track.
+        m_pAudioSource->close();
+        m_pAudioSource.reset();
+    }
 
     // This function has to be called with the engine stopped only
     // to avoid collecting new requests for the old track

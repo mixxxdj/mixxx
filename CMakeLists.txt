@@ -898,7 +898,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/semanticversion.cpp
   src/util/screensaver.cpp
   src/util/screensavermanager.cpp
-  src/util/sleepableqthread.cpp
   src/util/stat.cpp
   src/util/statmodel.cpp
   src/util/statsmanager.cpp

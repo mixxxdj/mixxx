@@ -48,7 +48,8 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     const QString fileSuffix = fileInfo.suffix();
     const QString fileType = fileTypeFromSuffix(fileSuffix);
     DEBUG_ASSERT(!fileType.isEmpty() || fileType == QString{});
-    const QMimeType mimeType = QMimeDatabase().mimeTypeForFile(fileInfo);
+    const QMimeType mimeType = QMimeDatabase().mimeTypeForFile(
+            fileInfo, QMimeDatabase::MatchContent);
     // According to the documentation mimeTypeForFile always returns a valid
     // type, using the generic type application/octet-stream as a fallback.
     // This might also occur for missing files as seen on Qt 5.12.

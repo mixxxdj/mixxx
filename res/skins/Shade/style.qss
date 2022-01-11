@@ -16,9 +16,12 @@
 #Mixxx, WWidget,
 WEffectName,
 WKey,
-WLabel, QLabel,
+WLabel,
 WNumber, WNumberPos,
-WPushButton, WLibrary QPushButton, WLibrary QRadioButton,
+WPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QRadioButton,
 WRecordingDuration,
 WTime,
 WTrackText,
@@ -36,6 +39,8 @@ WLibraryTextBrowser QMenu,
 QLineEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
+WCueMenuPopup QLabel,
+WCueMenuPopup QLineEdit,
 WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
@@ -78,9 +83,6 @@ that's why we do it in another way here */
   /* 0px border OTOH makes the spinbox shrink disproportionately
     border: 0px; */
     margin: 0px 0px 2px 1px;
-  }
-WLibrary QPushButton {
-  border: 1px solid #99A0A4;
   }
 
 WBeatSpinBox::up-button,
@@ -233,7 +235,7 @@ WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-WLibrary QPushButton:enabled,
+#LibraryFeatureControls QPushButton:enabled,
 WBeatSpinBox,
 #spinBoxTransition {
   font-size: 13px;
@@ -522,7 +524,7 @@ WTrackTableView {
   #LibraryBPMButton::item {
     color: #cfcfcf;
     }
-    WLibrary QCheckBox {
+    WLibrary > QCheckBox {
       text-align: right;
       alignment: right;
     }
@@ -829,12 +831,9 @@ QSplitter::handle:vertical {
   height: 6px;
 }
 
-WLibrary QPushButton {
-  font-size: 10px;
-  font-family: "Open Sans";
-}
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
-WLibrary QLabel, WLibrary QRadioButton {
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
   font-size: 13px;
   background: transparent;
   color: #C1C1C1;
@@ -843,23 +842,24 @@ WLibrary QLabel, WLibrary QRadioButton {
 
 WLibrary { margin: 2px 3px 0px 0px; }
 
-WLibrary QRadioButton {
+#LibraryFeatureControls QRadioButton {
   margin: 0px 3px 3px 3px;
 }
 /* Center QLabels */
-WLibrary QLabel { margin: 0px 3px 3px 0px; }
+#LibraryFeatureControls QLabel {
+  margin: 0px 3px 3px 0px;
+}
 
-WLibrary QRadioButton::indicator:checked {
+#LibraryFeatureControls QRadioButton::indicator:checked {
   image: url(skin:/btn/btn_lib_radio_button_on_pink.svg) center center;
 }
 
-WLibrary QRadioButton::indicator:unchecked {
+#LibraryFeatureControls QRadioButton::indicator:unchecked {
   image: url(skin:/btn/btn_lib_radio_button_off.svg) center center;
 }
 
 #LibraryFeatureControls QPushButton {
   text-align: center;
-  font-size: 9pt;
   font-weight: normal;
   /* Note(ronso0)
   Interferes with skin scaling, system font size respectively
@@ -874,6 +874,7 @@ WLibrary QRadioButton::indicator:unchecked {
   color: #060613;
   background-color: #99a0a4;
   border: 1px solid #99a0a4;
+  font-size: 10px;
   }
   #DlgAutoDJ > #LibraryFeatureControls QPushButton {
     padding: 0px;

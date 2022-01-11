@@ -11,6 +11,7 @@
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "library/librarytablemodel.h"
+#include "library/searchqueryparser.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
@@ -77,13 +78,6 @@ WTrackTableView::WTrackTableView(QWidget* parent,
             &WTrackTableView::scrollValueChanged,
             this,
             &WTrackTableView::slotScrollValueChanged);
-
-    QShortcut* setFocusShortcut =
-            new QShortcut(QKeySequence(tr("ESC", "Focus")), this);
-    connect(setFocusShortcut,
-            &QShortcut::activated,
-            this,
-            QOverload<>::of(&WTrackTableView::setFocus));
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -489,8 +483,30 @@ void WTrackTableView::onSearch(const QString& text) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel) {
         saveCurrentViewState();
+        bool queryIsLessSpecific = SearchQueryParser::queryIsLessSpecific(
+                trackModel->currentSearch(), text);
+        QList<TrackId> selectedTracks = getSelectedTrackIds();
+        TrackId prevTrack = getCurrentTrackId();
+        int prevColumn = 0;
+        if (currentIndex().isValid()) {
+            prevColumn = currentIndex().column();
+        }
         trackModel->search(text);
-        restoreCurrentViewState();
+        if (queryIsLessSpecific) {
+            // If the user removed query terms, we try to select the same
+            // tracks as before
+            setCurrentTrackId(prevTrack, prevColumn);
+            setSelectedTracks(selectedTracks);
+        } else {
+            // The user created a more specific search query, try to restore a
+            // previous state
+            if (!restoreCurrentViewState()) {
+                // We found no saved state for this query, try to select the
+                // tracks last active, if they are part of the result set
+                setCurrentTrackId(prevTrack, prevColumn);
+                setSelectedTracks(selectedTracks);
+            }
+        }
     }
 }
 
@@ -797,7 +813,9 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
         // Hide tracks if this is the main library table
         response = QMessageBox::question(this,
                 tr("Confirm track hide"),
-                tr("Are you sure you want to hide the selected tracks?"));
+                tr("Are you sure you want to hide the selected tracks?"),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
         if (response == QMessageBox::Yes) {
             pTrackModel->hideTracks(indices);
         }
@@ -814,7 +832,11 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
             return;
         }
 
-        response = QMessageBox::question(this, tr("Confirm track removal"), message);
+        response = QMessageBox::question(this,
+                tr("Confirm track removal"),
+                message,
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
         if (response == QMessageBox::Yes) {
             pTrackModel->removeTracks(indices);
         }
@@ -885,6 +907,26 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     return trackIds;
 }
 
+TrackId WTrackTableView::getCurrentTrackId() const {
+    TrackModel* pTrackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        qWarning() << "No selected tracks available";
+        return {};
+    }
+
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
+        qWarning() << "No selection model available";
+        return {};
+    }
+
+    const QModelIndex current = pSelectionModel->currentIndex();
+    if (current.isValid()) {
+        return pTrackModel->getTrackId(current);
+    }
+    return {};
+}
+
 void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
@@ -906,6 +948,34 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
                     QItemSelectionModel::Select | QItemSelectionModel::Rows);
         }
     }
+}
+
+bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column) {
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
+        qWarning() << "No selected tracks available";
+        return false;
+    }
+
+    TrackModel* pTrackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        qWarning() << "No selected tracks available";
+        return false;
+    }
+    const QVector<int> trackRows = pTrackModel->getTrackRows(trackId);
+    if (trackRows.empty()) {
+        return false;
+    }
+
+    QModelIndex idx = model()->index(trackRows[0], column);
+    // In case the column is not visible pick the left-most one
+    if (isIndexHidden(idx)) {
+        idx = model()->index(idx.row(), columnAt(0));
+    }
+    selectRow(idx.row());
+    pSelectionModel->setCurrentIndex(idx,
+            QItemSelectionModel::SelectCurrent | QItemSelectionModel::Select);
+    return true;
 }
 
 void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
