@@ -79,8 +79,6 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     m_pAutoDJTableModel = m_pAutoDJProcessor->getTableModel();
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
-    // Override some playlist-view properties:
-
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
@@ -163,12 +161,8 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     // work around QLineEdit being protected
     QLineEdit* lineEditTransition(spinBoxTransition->findChild<QLineEdit*>());
     lineEditTransition->setFocusPolicy(Qt::ClickFocus);
-    // Catch any Return keypress to pass focus to tracks table
-    connect(lineEditTransition,
-            &QLineEdit::returnPressed,
-            this,
-            // Move focus to tracks table to immediately allow keyboard shortcuts again.
-            &DlgAutoDJ::setFocus);
+    // Needed to catch Enter, Return and Escape keypresses
+    lineEditTransition->installEventFilter(this);
 
     connect(spinBoxTransition,
             QOverload<int>::of(&QSpinBox::valueChanged),
@@ -384,6 +378,18 @@ bool DlgAutoDJ::hasFocus() const {
 
 void DlgAutoDJ::setFocus() {
     m_pTrackTableView->setFocus();
+}
+
+void DlgAutoDJ::keyPressEvent(QKeyEvent* pEvent) {
+    // Return, Enter and Escape key move focus to the AutoDJ queue to immediately
+    // allow keyboard shortcuts again.
+    if (pEvent->key() == Qt::Key_Return ||
+            pEvent->key() == Qt::Key_Enter ||
+            pEvent->key() == Qt::Key_Escape) {
+        setFocus();
+        return;
+    }
+    return QWidget::keyPressEvent(pEvent);
 }
 
 void DlgAutoDJ::saveCurrentViewState() {
