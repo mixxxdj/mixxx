@@ -572,12 +572,12 @@ void LibraryControl::slotSelectTrack(double v) {
         return;
     }
 
-    int i = (int)v;
-
     LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
     if (!pActiveView) {
         return;
     }
+
+    int i = (int)v;
     pActiveView->moveSelection(i);
 }
 
@@ -594,9 +594,60 @@ void LibraryControl::slotMoveDown(double v) {
 }
 
 void LibraryControl::slotMoveVertical(double v) {
-    const auto key = (v < 0) ? Qt::Key_Up: Qt::Key_Down;
+    if (v == 0) {
+        return;
+    }
+
+    switch (m_pFocusedWidget) {
+    case FocusWidget::Sidebar: {
+        int i = static_cast<int>(v);
+        slotSelectSidebarItem(i);
+        return;
+    }
+    case FocusWidget::TracksTable: {
+        // This wraps around at top/bottom. Doesn't match Up/Down key behaviour
+        // and may not be desired.
+        //int i = static_cast<int>(v);
+        //slotSelectTrack(i);
+        //return;
+        break;
+    }
+    case FocusWidget::Dialog: {
+        // For navigating dialogs map up/down to Tab/Shift+Tab
+        const auto mod = (v > 0) ? Qt::NoModifier : Qt::ShiftModifier;
+        // ToDo Why not static_cast<int> or (int)v ?
+        const auto times = static_cast<unsigned short>(std::abs(v));
+        emitKeyEvent(QKeyEvent{
+                QEvent::KeyPress, Qt::Key_Tab, mod, QString(), false, times});
+        return;
+    }
+    case FocusWidget::ContextMenu: {
+        // To navigate menus (and activate menus that were just opened) send the
+        // keyEvent to focusWindow() (not focusWidget() like emitKeyEvent() does)
+        const auto key = (v < 0) ? Qt::Key_Up : Qt::Key_Down;
+        const auto times = static_cast<unsigned short>(std::abs(v));
+        QKeyEvent event = QKeyEvent{
+                QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times};
+        QApplication::sendEvent(QApplication::focusWindow(), &event);
+        return;
+    }
+    case FocusWidget::Searchbar:
+        // There's also m_pSearchbox->slotMoveSelectedHistory but that wraps around
+        // at top/bottom. Doesn't match Up/Down key behaviour and may not be desired.
+        // Proceed and let emitkeyEvent deal with it.
+        break;
+    case FocusWidget::None:
+    case FocusWidget::Unknown:
+    default:
+        // 'Unknown' uncategorized widget like a QComboBox. Return to not alter
+        // any WBeatSpinBox or WEffectSelector
+        setLibraryFocus(FocusWidget::TracksTable);
+        return;
+    }
+    const auto key = (v < 0) ? Qt::Key_Up : Qt::Key_Down;
     const auto times = static_cast<unsigned short>(std::abs(v));
-    emitKeyEvent(QKeyEvent{QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
+    emitKeyEvent(QKeyEvent{
+            QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
 }
 
 void LibraryControl::slotScrollUp(double v) {
@@ -659,34 +710,12 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
                 << "Don't send key events.";
         return;
     }
-    // Ensure there's a valid library widget that can receive keyboard focus.
-    // QApplication::focusWidget() is not sufficient here because it
-    // would return any focused widget like WOverview, WWaveform, QSpinBox
-    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
-        return;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
-        return;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
-        return;
-    }
 
-    bool keyIsTab = event.key() == Qt::Key_Tab;
-    bool keyIsUpDown = event.key() == Qt::Key_Up || event.key() == Qt::Key_Down;
-
-    // If the main window has focus, any widget can receive Tab.
-    // Other keys should be sent to library widgets only to not
-    // accidentally alter spinboxes etc.
-    // If the searchbox has focus allow only Up/Down to select previous queries.
-    if (!keyIsTab && !m_pSidebarWidget->hasFocus()
-            && !m_pLibraryWidget->getActiveView()->hasFocus()) {
-        if (keyIsUpDown && !m_pSearchbox->hasFocus()) {
-            setLibraryFocus(FocusWidget::TracksTable);
-        }
-    }
-    if (keyIsTab && !QApplication::focusWidget()){
-        setLibraryFocus(FocusWidget::TracksTable);
+    switch (m_pFocusedWidget) {
+    case FocusWidget::None:
+        return setLibraryFocus(FocusWidget::TracksTable);
+    default:
+        break;
     }
 
     // Send the event pointer to the currently focused widget
@@ -715,13 +744,15 @@ FocusWidget LibraryControl::getFocusedWidget() {
         // QComboBoxListView of WEffectSelector, WSearchLineEdit, ...
         return FocusWidget::ContextMenu;
     } else if (focusWindow->type() == Qt::Dialog) {
-        // DlgCoverArtFullSizeWindow
         // DlgPreferencesDlgWindow
         // DlgDeveloperToolsWindow
         // DlgAboutDlgWindow
         // DlgKeywheelWindow
         // QInputDialogClassWindow (file dialogs, rename/create dialogs)
         // error messages and Close Mixxx confirmation dialog
+        // ToDo(ronso0) handle CoverArt:
+        // - refocus tracks view?
+        // DlgCoverArtFullSizeWindow
         return FocusWidget::Dialog;
     }
 
@@ -833,56 +864,49 @@ void LibraryControl::slotGoToItem(double v) {
     if (v <= 0) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
-        return;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
-        return;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
-        return;
-    }
 
-    // Focus the library if this is a leaf node in the tree
-    if (m_pSidebarWidget->hasFocus()) {
+    switch (m_pFocusedWidget) {
+    case FocusWidget::Sidebar:
+        // Focus the library if this is a leaf node in the tree
         // Note that Tracks and AutoDJ always return 'false':
         // expanding those root items via controllers is considered dispensable
         // because the subfeatures' actions can't be accessed by controllers anyway.
         if (m_pSidebarWidget->isLeafNodeSelected()) {
             setLibraryFocus(FocusWidget::TracksTable);
-            return;
         } else {
             // Otherwise toggle the sidebar item expanded state
-            slotToggleSelectedSidebarItem(v);
+            m_pSidebarWidget->toggleSelectedItem();
         }
-    }
-
-    // Load current track if a LibraryView object has focus
-    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-    if (pActiveView && pActiveView->hasFocus()) {
-        pActiveView->loadSelectedTrack();
+        return;
+    case FocusWidget::TracksTable:
+        return m_pLibraryWidget->getActiveView()->loadSelectedTrack();
+    case FocusWidget::Dialog: {
+        // press & release Space (QAbstractButton::clicked() is emitted on release)
+        QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
+        QKeyEvent releaseSpace = QKeyEvent{QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier};
+        QApplication::sendEvent(QApplication::focusWindow(), &pressSpace);
+        QApplication::sendEvent(QApplication::focusWindow(), &releaseSpace);
         return;
     }
-
-    // If searchbox has focus jump to the tracks table
-    if (m_pSearchbox->hasFocus()) {
+    case FocusWidget::ContextMenu:
+    case FocusWidget::Unknown: {
+        // press Return to
+        // * expand submenus or select highlighted menu item
+        // * click Clear button in WSearcLineEdit (Note: even though this QToolButton
+        //   inherits QAbstractButton, clicked is emitted on keypress if Return is used)
+        // * confirm and WBeatSpinBox and move focus to tracks table
+        // * ) and some more.
+        // If Unknown is some other 'untrained' or unresponsive widget
+        // GoToItem is inappropriate and we can't do much about that.
+        QKeyEvent event = QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier};
+        QApplication::sendEvent(QApplication::focusWindow(), &event);
+        return;
+    }
+    case FocusWidget::Searchbar:
+    case FocusWidget::None:
+    default:
         return setLibraryFocus(FocusWidget::TracksTable);
     }
-
-    // Clear the search if the searchbox has focus
-    emit clearSearchIfClearButtonHasFocus();
-
-    // If the focused window is a dialog, press Enter
-    auto* focusWindow = QApplication::focusWindow();
-    if (focusWindow && (focusWindow->type() & (Qt::Dialog | Qt::Popup))) {
-        QKeyEvent event(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
-        QApplication::sendEvent(focusWindow, &event);
-    }
-
-    // TODO(xxx) instead of remote control the widgets individual, we should
-    // translate this into Alt+Return and handle it at each library widget
-    // individual https://bugs.launchpad.net/mixxx/+bug/1758618
-    //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
 }
 
 void LibraryControl::slotSortColumn(double v) {
