@@ -234,7 +234,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     }
     case Qt::Key_Escape:
         // Focus tracks table
-        emit sidebarFocusChange(FocusWidget::TracksTable);
+        emit setLibraryFocus(FocusWidget::TracksTable);
         return;
     default:
         QTreeView::keyPressEvent(event);
@@ -294,16 +294,6 @@ bool WLibrarySidebar::event(QEvent* pEvent) {
         updateTooltip();
     }
     return QTreeView::event(pEvent);
-}
-
-void WLibrarySidebar::focusInEvent(QFocusEvent* event) {
-    QTreeView::focusInEvent(event);
-    emit sidebarFocusChange(FocusWidget::Sidebar);
-}
-
-void WLibrarySidebar::focusOutEvent(QFocusEvent* event) {
-    QTreeView::focusOutEvent(event);
-    emit sidebarFocusChange(FocusWidget::None);
 }
 
 void WLibrarySidebar::slotSetFont(const QFont& font) {

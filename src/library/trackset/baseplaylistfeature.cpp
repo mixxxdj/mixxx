@@ -660,7 +660,6 @@ void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
             this,
             &BasePlaylistFeature::htmlLinkClicked);
     libraryWidget->registerView(m_rootViewName, edit);
-    m_pLibrary->bindFeatureRootView(edit);
 }
 
 void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
