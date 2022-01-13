@@ -75,7 +75,7 @@ TraktorZ2.bind = function(fn, obj) {
 TraktorZ2.fxOnClickHandler = function(field) {
     HIDDebug("TraktorZ2: fxOnClickHandler");
     let numOfLoadedandEnabledEffects = 0;
-    for (let effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effects"); effectIdx++) {
+    for (let effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effectslots"); effectIdx++) {
         if (engine.getValue(field.group.substr(0, field.group.length - 1) + "_Effect" + effectIdx + "]", "loaded") === 1) {
             if (engine.getValue(field.group.substr(0, field.group.length - 1) + "_Effect" + effectIdx + "]", "enabled") === 1) {
                 numOfLoadedandEnabledEffects++;
@@ -85,13 +85,13 @@ TraktorZ2.fxOnClickHandler = function(field) {
 
     if (field.value !== 0) {
         if (numOfLoadedandEnabledEffects === 0) {
-            for (let effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effects"); effectIdx++) {
+            for (let effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effectslots"); effectIdx++) {
                 if (engine.getValue(field.group.substr(0, field.group.length - 1) + "_Effect" + effectIdx + "]", "loaded") === 1) {
                     engine.setValue(field.group.substr(0, field.group.length - 1) + "_Effect" + effectIdx + "]", "enabled", 1);
                 }
             }
         } else {
-            for (let effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effects"); effectIdx++) {
+            for (let effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effectslots"); effectIdx++) {
                 engine.setValue(field.group.substr(0, field.group.length - 1) + "_Effect" + effectIdx + "]", "enabled", 0);
             }
         }
@@ -103,7 +103,7 @@ TraktorZ2.fxOnLedHandler = function() {
     for (let macroFxUnitIdx = 1; macroFxUnitIdx <= 2; macroFxUnitIdx++) {
         let numOfLoadedButDisabledEffects = 0;
         let numOfLoadedandEnabledEffects = 0;
-        for (let effectIdx = 1; effectIdx <= engine.getValue("[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "num_effects"); effectIdx++) {
+        for (let effectIdx = 1; effectIdx <= engine.getValue("[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "num_effectslots"); effectIdx++) {
             if (engine.getValue("[EffectRack1_EffectUnit" + macroFxUnitIdx + "_Effect" + effectIdx + "]", "loaded") === 1) {
                 if (engine.getValue("[EffectRack1_EffectUnit" + macroFxUnitIdx + "_Effect" + effectIdx + "]", "enabled") === 1) {
                     numOfLoadedandEnabledEffects++;
