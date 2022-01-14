@@ -511,7 +511,7 @@ void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
         if (!pActiveView) {
             return;
         }
-        pActiveView->loadSelectedTrack();
+        pActiveView->activateSelectedTrack();
     }
 }
 
@@ -879,7 +879,7 @@ void LibraryControl::slotGoToItem(double v) {
         }
         return;
     case FocusWidget::TracksTable:
-        return m_pLibraryWidget->getActiveView()->loadSelectedTrack();
+        return m_pLibraryWidget->getActiveView()->activateSelectedTrack();
     case FocusWidget::Dialog: {
         // press & release Space (QAbstractButton::clicked() is emitted on release)
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};

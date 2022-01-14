@@ -31,7 +31,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     bool hasFocus() const override;
     void setFocus() override;
     void onSearch(const QString& text) override;
-    void loadSelectedTrack() override;
+    void activateSelectedTrack() override;
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
     void saveCurrentViewState() override;

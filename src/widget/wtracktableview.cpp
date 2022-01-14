@@ -842,7 +842,7 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
     }
 }
 
-void WTrackTableView::loadSelectedTrack() {
+void WTrackTableView::activateSelectedTrack() {
     auto indices = selectionModel()->selectedRows();
     if (indices.isEmpty()) {
         return;
