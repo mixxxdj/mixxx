@@ -44,7 +44,6 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
           m_pNoColorButton(nullptr),
           m_pCustomColorButton(nullptr) {
     QGridLayout* pLayout = new QGridLayout();
-    pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
 
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
