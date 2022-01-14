@@ -13,6 +13,7 @@
 #include "library/libraryview.h"
 #include "mixer/playermanager.h"
 #include "moc_librarycontrol.cpp"
+#include "util/cmdlineargs.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
@@ -75,152 +76,173 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveUp"));
     m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveDown"));
     m_pMoveVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveVertical"), false);
-    connect(m_pMoveUp.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotMoveUp);
-    connect(m_pMoveDown.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotMoveDown);
-    connect(m_pMoveVertical.get(),
-            &ControlEncoder::valueChanged,
-            this,
-            &LibraryControl::slotMoveVertical);
+    if (!CmdlineArgs::Instance().getQml()) {
+        connect(m_pMoveUp.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotMoveUp);
+        connect(m_pMoveDown.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotMoveDown);
+        connect(m_pMoveVertical.get(),
+                &ControlEncoder::valueChanged,
+                this,
+                &LibraryControl::slotMoveVertical);
+    }
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     m_pScrollUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollUp"));
     m_pScrollDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollDown"));
     m_pScrollVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "ScrollVertical"), false);
-    connect(m_pScrollUp.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotScrollUp);
-    connect(m_pScrollDown.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotScrollDown);
-    connect(m_pScrollVertical.get(),
-            &ControlEncoder::valueChanged,
-            this,
-            &LibraryControl::slotScrollVertical);
+    if (!CmdlineArgs::Instance().getQml()) {
+        connect(m_pScrollUp.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotScrollUp);
+        connect(m_pScrollDown.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotScrollDown);
+        connect(m_pScrollVertical.get(),
+                &ControlEncoder::valueChanged,
+                this,
+                &LibraryControl::slotScrollVertical);
+    }
 
     // Controls to navigate horizontally within currently selected item (left/right buttons)
     m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveLeft"));
     m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveRight"));
     m_pMoveHorizontal = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveHorizontal"), false);
-    connect(m_pMoveLeft.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotMoveLeft);
-    connect(m_pMoveRight.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotMoveRight);
-    connect(m_pMoveHorizontal.get(),
-            &ControlEncoder::valueChanged,
-            this,
-            &LibraryControl::slotMoveHorizontal);
+    if (!CmdlineArgs::Instance().getQml()) {
+        connect(m_pMoveLeft.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotMoveLeft);
+        connect(m_pMoveRight.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotMoveRight);
+        connect(m_pMoveHorizontal.get(),
+                &ControlEncoder::valueChanged,
+                this,
+                &LibraryControl::slotMoveHorizontal);
+    }
 
     // Controls to navigate between widgets
     // Relative focus controls (tab/shift+tab button)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
     m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
     m_pMoveFocus = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveFocus"), false);
-    connect(m_pMoveFocusForward.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotMoveFocusForward);
-    connect(m_pMoveFocusBackward.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotMoveFocusBackward);
-    connect(m_pMoveFocus.get(),
-            &ControlEncoder::valueChanged,
-            this,
-            &LibraryControl::slotMoveFocus);
+    if (!CmdlineArgs::Instance().getQml()) {
+        connect(m_pMoveFocusForward.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotMoveFocusForward);
+        connect(m_pMoveFocusBackward.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotMoveFocusBackward);
+        connect(m_pMoveFocus.get(),
+                &ControlEncoder::valueChanged,
+                this,
+                &LibraryControl::slotMoveFocus);
+    }
+
     // Direct focus control, read/write
     m_pLibraryFocusedWidgetCO = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "focused_widget"));
     m_pLibraryFocusedWidgetCO->setStates(static_cast<int>(FocusWidget::Count));
-    m_pLibraryFocusedWidgetCO->connectValueChangeRequest(
-            this,
-            [this](double value) {
-                // Focus can not be removed from a widget just moved to another one.
-                // Thus, to keep the CO and QApplication::focusWidget() in sync we
-                // have to prevent scripts or GUI buttons setting the CO to 'None'.
-                // It's only set to 'None' internally when one of the library widgets
-                // receives a FocusOutEvent(), e.g. when the focus is moved to another
-                // widget, or when the main window loses focus.
-                const int valueInt = static_cast<int>(value);
-                if (valueInt != static_cast<int>(FocusWidget::None) &&
-                        valueInt < static_cast<int>(FocusWidget::Count)) {
-                    setLibraryFocus(static_cast<FocusWidget>(valueInt));
-                }
-            });
+    if (!CmdlineArgs::Instance().getQml()) {
+        m_pLibraryFocusedWidgetCO->connectValueChangeRequest(
+                this,
+                [this](double value) {
+                    // Focus can not be removed from a widget just moved to another one.
+                    // Thus, to keep the CO and QApplication::focusWidget() in sync we
+                    // have to prevent scripts or GUI buttons setting the CO to 'None'.
+                    // It's only set to 'None' internally when one of the library widgets
+                    // receives a FocusOutEvent(), e.g. when the focus is moved to another
+                    // widget, or when the main window loses focus.
+                    const int valueInt = static_cast<int>(value);
+                    if (valueInt != static_cast<int>(FocusWidget::None) &&
+                            valueInt < static_cast<int>(FocusWidget::Count)) {
+                        setLibraryFocus(static_cast<FocusWidget>(valueInt));
+                    }
+                });
+    }
 
     // Control to "goto" the currently selected item in focused widget (context dependent)
     m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
-    connect(m_pGoToItem.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotGoToItem);
+    if (!CmdlineArgs::Instance().getQml()) {
+        connect(m_pGoToItem.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotGoToItem);
+    }
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
-    connect(m_pAutoDjAddTop.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotAutoDjAddTop);
+    if (!CmdlineArgs::Instance().getQml()) {
+        connect(m_pAutoDjAddTop.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotAutoDjAddTop);
+    }
 
     m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddBottom"));
-    connect(m_pAutoDjAddBottom.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotAutoDjAddBottom);
+    if (!CmdlineArgs::Instance().getQml()) {
+        connect(m_pAutoDjAddBottom.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotAutoDjAddBottom);
+    }
 
     m_pAutoDjAddReplace = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "AutoDjAddReplace"));
-    connect(m_pAutoDjAddReplace.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotAutoDjAddReplace);
+    if (!CmdlineArgs::Instance().getQml()) {
+        connect(m_pAutoDjAddReplace.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotAutoDjAddReplace);
+    }
 
     // Sort controls
     m_pSortColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column"));
     m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
     m_pSortOrder->setButtonMode(ControlPushButton::TOGGLE);
     m_pSortColumnToggle = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column_toggle"), false);
-    connect(m_pSortColumn.get(),
-            &ControlEncoder::valueChanged,
-            this,
-            &LibraryControl::slotSortColumn);
-    connect(m_pSortColumnToggle.get(),
-            &ControlEncoder::valueChanged,
-            this,
-            &LibraryControl::slotSortColumnToggle);
+    if (!CmdlineArgs::Instance().getQml()) {
+        connect(m_pSortColumn.get(),
+                &ControlEncoder::valueChanged,
+                this,
+                &LibraryControl::slotSortColumn);
+        connect(m_pSortColumnToggle.get(),
+                &ControlEncoder::valueChanged,
+                this,
+                &LibraryControl::slotSortColumnToggle);
 
-    // Font sizes
-    m_pFontSizeKnob = std::make_unique<ControlObject>(
-            ConfigKey("[Library]", "font_size_knob"), false);
-    connect(m_pFontSizeKnob.get(),
-            &ControlObject::valueChanged,
-            this,
-            &LibraryControl::slotFontSize);
+        // Font sizes
+        m_pFontSizeKnob = std::make_unique<ControlObject>(
+                ConfigKey("[Library]", "font_size_knob"), false);
+        connect(m_pFontSizeKnob.get(),
+                &ControlObject::valueChanged,
+                this,
+                &LibraryControl::slotFontSize);
 
-    m_pFontSizeDecrement = std::make_unique<ControlPushButton>(
-            ConfigKey("[Library]", "font_size_decrement"));
-    connect(m_pFontSizeDecrement.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotDecrementFontSize);
+        m_pFontSizeDecrement = std::make_unique<ControlPushButton>(
+                ConfigKey("[Library]", "font_size_decrement"));
+        connect(m_pFontSizeDecrement.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotDecrementFontSize);
 
-    m_pFontSizeIncrement = std::make_unique<ControlPushButton>(
-            ConfigKey("[Library]", "font_size_increment"));
-    connect(m_pFontSizeIncrement.get(),
-            &ControlPushButton::valueChanged,
-            this,
-            &LibraryControl::slotIncrementFontSize);
+        m_pFontSizeIncrement = std::make_unique<ControlPushButton>(
+                ConfigKey("[Library]", "font_size_increment"));
+        connect(m_pFontSizeIncrement.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotIncrementFontSize);
+    }
 
     // Track Color controls
     m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));

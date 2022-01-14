@@ -962,7 +962,7 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     connect(overviewWidget,
             &WOverview::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(overviewWidget, &WOverview::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -1017,7 +1017,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     connect(viewer,
             &WWaveformViewer::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(viewer, &WWaveformViewer::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -1046,7 +1046,7 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     connect(pTrackText,
             &WTrackText::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(pTrackText, &WTrackText::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
@@ -1083,7 +1083,7 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     connect(pTrackProperty,
             &WTrackProperty::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(pTrackProperty,
             &WTrackProperty::cloneDeck,
             m_pPlayerManager,
@@ -1126,7 +1126,7 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     connect(pGroup,
             &WTrackWidgetGroup::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(pGroup,
             &WTrackWidgetGroup::cloneDeck,
             m_pPlayerManager,
@@ -1282,7 +1282,10 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
             spinny,
             &WSpinny::render);
     connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, spinny, &WSpinny::swap);
-    connect(spinny, &WSpinny::trackDropped, m_pPlayerManager, &PlayerManager::slotLoadToPlayer);
+    connect(spinny,
+            &WSpinny::trackDropped,
+            m_pPlayerManager,
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(spinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     ControlObject* showCoverControl = controlFromConfigNode(node.toElement(), "ShowCoverControl");
@@ -1341,7 +1344,7 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
         connect(pCoverArt,
                 &WCoverArt::trackDropped,
                 m_pPlayerManager,
-                &PlayerManager::slotLoadToPlayer);
+                &PlayerManager::slotLoadLocationToPlayerStopped);
         connect(pCoverArt, &WCoverArt::cloneDeck,
                 m_pPlayerManager, &PlayerManager::slotCloneDeck);
     }
