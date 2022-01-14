@@ -404,7 +404,7 @@ TreeItem* ITunesFeature::importLibrary() {
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
         if (xml.isStartElement()) {
-            if (xml.name() == "key") {
+            if (xml.name() == QLatin1String("key")) {
                 QString key = xml.readElementText();
                 if (key == "Music Folder") {
                     if (isTracksParsed) {
@@ -673,7 +673,7 @@ TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader& xml) {
             continue;
         }
         if (xml.isEndElement()) {
-            if (xml.name() == "array") {
+            if (xml.name() == QLatin1String("array")) {
                 break;
             }
         }
@@ -790,7 +790,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
             }
         }
         if (xml.isEndElement()) {
-            if (xml.name() == "array") {
+            if (xml.name() == QLatin1String("array")) {
                 //qDebug() << "exit playlist";
                 break;
             }
