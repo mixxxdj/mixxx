@@ -435,9 +435,10 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
                     parent->appendChild(name, current_path);
                     // process all the entries within the playlist 'name' having path 'current_path'
-                    parsePlaylistEntries(xml, current_path,
-                                         query_insert_to_playlists,
-                                         query_insert_to_playlist_tracks);
+                    parsePlaylistEntries(xml,
+                            current_path,
+                            std::move(query_insert_to_playlists),
+                            std::move(query_insert_to_playlist_tracks));
                 }
             }
         }
