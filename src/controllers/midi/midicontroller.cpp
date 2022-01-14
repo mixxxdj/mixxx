@@ -1,5 +1,4 @@
 #include "controllers/midi/midicontroller.h"
-#include <QApplication>
 
 #include "control/controlobject.h"
 #include "controllers/defs_controllers.h"
@@ -232,13 +231,7 @@ void MidiController::receivedShortMessage(unsigned char status,
             getName(), status, control, value, channel, opCode, timestamp);
     MidiKey mappingKey(status, control);
 
-	// lp 1956144
-	// dont runt triggerActivity() when platform vnc is ued. There is no screensaver (x11).
-	// resulting in segfault when fired.
-    if("vnc" != QApplication::platformName()) {
-        triggerActivity();
-    }
-	
+    triggerActivity();
     if (isLearning()) {
         emit messageReceived(status, control, value);
 
@@ -496,13 +489,7 @@ void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) 
 
     MidiKey mappingKey(data.at(0), 0xFF);
 
-	// lp 1956144
-	// dont runt triggerActivity() when platform vnc is ued. There is no screensaver (x11).
-	// resulting in segfault when fired.
-    if("vnc" != QApplication::platformName()) {
-        triggerActivity();
-    }
-	
+    triggerActivity();
     // TODO(rryan): Need to review how MIDI learn works with sysex messages. I
     // don't think this actually does anything useful.
     if (isLearning()) {
