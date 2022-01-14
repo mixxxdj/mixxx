@@ -1,5 +1,6 @@
 #include "widget/weffectpushbutton.h"
 
+#include <QActionGroup>
 #include <QtDebug>
 
 #include "moc_weffectpushbutton.cpp"
