@@ -29,7 +29,7 @@ class ParametricEQEffectGroupState final : public EffectState {
 
     // These containers are only appended in the constructor which is called on
     // the main thread, so there is no risk of allocation in the audio thread.
-    std::vector<std::unique_ptr<EngineFilterBiquad1Peaking> > m_bands;
+    std::vector<std::unique_ptr<EngineFilterBiquad1Peaking>> m_bands;
     QList<double> m_oldGain;
     QList<double> m_oldCenter;
     QList<double> m_oldQ;

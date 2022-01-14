@@ -148,6 +148,24 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_PresetButton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MixmodePflContainer</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <EffectChainPresetButton>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Size>22f,22f</Size>
+            <ObjectName>EffectChainSelector</ObjectName>
+          </EffectChainPresetButton>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
     <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
     <Children>
       <WidgetGroup>

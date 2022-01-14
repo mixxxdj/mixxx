@@ -1,9 +1,14 @@
 #include "library/searchqueryparser.h"
 
+#include <QRegularExpression>
+
 #include "track/keyutils.h"
 
 constexpr char kNegatePrefix[] = "-";
 constexpr char kFuzzyPrefix[] = "~";
+// see https://stackoverflow.com/questions/1310473/regex-matching-spaces-but-not-in-strings
+const QRegularExpression kSplitIntoWordsRegexp = QRegularExpression(
+        QStringLiteral(" (?=[^\"]*(\"[^\"]*\"[^\"]*)*$)"));
 
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     : m_pTrackCollection(pTrackCollection) {
@@ -270,4 +275,49 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
     }
 
     return pQuery;
+}
+
+QStringList SearchQueryParser::splitQueryIntoWords(const QString& query) {
+    QStringList queryWordList = query.split(kSplitIntoWordsRegexp,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            Qt::SkipEmptyParts);
+#else
+            QString::SkipEmptyParts);
+#endif
+    return queryWordList;
+}
+
+bool SearchQueryParser::queryIsLessSpecific(const QString& original, const QString& changed) {
+    // separate search query into tokens
+    QStringList oldWordList = SearchQueryParser::splitQueryIntoWords(original);
+    QStringList newWordList = SearchQueryParser::splitQueryIntoWords(changed);
+
+    // we sort the lists for length so the comperator will pop the longest match first
+    std::sort(oldWordList.begin(), oldWordList.end(), [=](const QString& v1, const QString& v2) {
+        return v1.length() > v2.length();
+    });
+    std::sort(newWordList.begin(), newWordList.end(), [=](const QString& v1, const QString& v2) {
+        return v1.length() > v2.length();
+    });
+
+    for (int i = 0; i < oldWordList.length(); i++) {
+        const QString& oldWord = oldWordList.at(i);
+        for (int j = 0; j < newWordList.length(); j++) {
+            const QString& newWord = newWordList.at(j);
+            // Note(ronso0) Look for missing '~' in newWord (fuzzy matching)?
+            if ((oldWord.startsWith("-") && oldWord.startsWith(newWord)) ||
+                    (!newWord.contains(":") && oldWord.contains(newWord)) ||
+                    (newWord.contains(":") && oldWord.startsWith(newWord))) {
+                // we found a match and can remove the search term list
+                newWordList.removeAt(j);
+                break;
+            }
+        }
+    }
+    // if the new search query list contains no more terms, we have a reduced
+    // search term
+    if (newWordList.empty()) {
+        return true;
+    }
+    return false;
 }

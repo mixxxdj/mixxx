@@ -67,6 +67,16 @@ inline mixxx::Bpm getBeatsPointerBpm(
 //static
 const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
 
+//static
+SyncTrackMetadataParams SyncTrackMetadataParams::readFromUserSettings(
+        const UserSettings& userSettings) {
+    const auto syncSeratoMetadata =
+            userSettings.getValue<bool>(mixxx::library::prefs::kSyncSeratoMetadataConfigKey);
+    return SyncTrackMetadataParams{
+            syncSeratoMetadata,
+    };
+}
+
 Track::Track(
         mixxx::FileAccess fileAccess,
         TrackId trackId)
@@ -1446,7 +1456,7 @@ CoverInfo Track::getCoverInfoWithLocation() const {
 
 ExportTrackMetadataResult Track::exportMetadata(
         const mixxx::MetadataSource& metadataSource,
-        const UserSettingsPointer& pConfig) {
+        const SyncTrackMetadataParams& syncParams) {
     // Locking shouldn't be necessary here, because this function will
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
@@ -1470,7 +1480,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Skipped;
     }
 
-    if (pConfig->getValue<bool>(mixxx::library::prefs::kSyncSeratoMetadataConfigKey)) {
+    if (syncParams.syncSeratoMetadata) {
         const auto streamInfo = m_record.getStreamInfoFromSource();
         VERIFY_OR_DEBUG_ASSERT(streamInfo &&
                 streamInfo->getSignalInfo().isValid() &&

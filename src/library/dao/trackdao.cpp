@@ -97,6 +97,10 @@ TrackDAO::TrackDAO(CueDAO& cueDao,
             &PlaylistDAO::tracksRemovedFromPlayedHistory,
             this,
             [this](const QSet<TrackId>& playedTrackIds) {
+                if (playedTrackIds.isEmpty()) {
+                    // Nothing to do
+                    return;
+                }
                 VERIFY_OR_DEBUG_ASSERT(updatePlayCounterFromPlayedHistory(playedTrackIds)) {
                     return;
                 }
@@ -295,9 +299,9 @@ QString TrackDAO::getTrackLocation(TrackId trackId) const {
     return trackLocation;
 }
 
-void TrackDAO::saveTrack(Track* pTrack) const {
+bool TrackDAO::saveTrack(Track* pTrack) const {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return;
+        return false;
     }
     DEBUG_ASSERT(pTrack->isDirty());
 
@@ -306,14 +310,18 @@ void TrackDAO::saveTrack(Track* pTrack) const {
     qDebug() << "TrackDAO: Saving track"
             << trackId
             << pTrack->getFileInfo();
-    if (updateTrack(*pTrack)) {
-        // BaseTrackCache must be informed separately, because the
-        // track has already been disconnected and TrackDAO does
-        // not receive any signals that are usually forwarded to
-        // BaseTrackCache.
-        pTrack->markClean();
-        emit mixxx::thisAsNonConst(this)->trackClean(trackId);
+    if (!updateTrack(*pTrack)) {
+        return false;
     }
+
+    // BaseTrackCache must be informed separately, because the
+    // track has already been disconnected and TrackDAO does
+    // not receive any signals that are usually forwarded to
+    // BaseTrackCache.
+    pTrack->markClean();
+    emit mixxx::thisAsNonConst(this)->trackClean(trackId);
+
+    return true;
 }
 
 void TrackDAO::slotDatabaseTracksChanged(const QSet<TrackId>& changedTrackIds) {
@@ -858,8 +866,8 @@ TrackPointer TrackDAO::addTracksAddFile(
     // Initially (re-)import the metadata for the newly created track
     // from the file.
     SoundSourceProxy(pTrack).updateTrackFromSource(
-            m_pConfig,
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once);
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
     if (!pTrack->checkSourceSynchronized()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
@@ -1241,6 +1249,11 @@ bool setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     QString beatsVersion = record.value(column + 1).toString();
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
+    if (beatsVersion.isEmpty()) {
+        DEBUG_ASSERT(beatsSubVersion.isEmpty());
+        DEBUG_ASSERT(beatsBlob.isEmpty());
+        return false;
+    }
     bool bpmLocked = record.value(column + 4).toBool();
     const mixxx::BeatsPointer pBeats = mixxx::Beats::fromByteArray(
             pTrack->getSampleRate(), beatsVersion, beatsSubVersion, beatsBlob);
@@ -1511,8 +1524,8 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
                     SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
         }
         SoundSourceProxy(pTrack).updateTrackFromSource(
-                m_pConfig,
-                updateTrackFromSourceMode);
+                updateTrackFromSourceMode,
+                SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
         if (kLogger.debugEnabled() && pTrack->isDirty()) {
             kLogger.debug()
                     << "Updated track metadata from file tags:"
@@ -2225,6 +2238,14 @@ mixxx::FileAccess TrackDAO::relocateCachedTrack(
 
 bool TrackDAO::updatePlayCounterFromPlayedHistory(
         const QSet<TrackId>& trackIds) const {
+    // Invoking this function with an empty list is pointless.
+    // All following database queries assume that the list is
+    // not empty. Otherwise the played history of all tracks
+    // might be reset!!!
+    // https://bugs.launchpad.net/mixxx/+bug/1955159
+    VERIFY_OR_DEBUG_ASSERT(!trackIds.isEmpty()) {
+        return false;
+    }
     // Update both timesplay and last_played_at according to the
     // corresponding aggregated properties from the played history,
     // i.e. COUNT for the number of times a track has been played

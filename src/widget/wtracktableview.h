@@ -42,6 +42,8 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
+    TrackId getCurrentTrackId() const;
+    bool setCurrentTrackId(const TrackId& trackId, int column = 0);
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
@@ -68,8 +70,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotSaveCurrentViewState() {
         saveCurrentViewState();
     };
-    void slotRestoreCurrentViewState() {
-        restoreCurrentViewState();
+    bool slotRestoreCurrentViewState() {
+        return restoreCurrentViewState();
     };
 
   protected:

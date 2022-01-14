@@ -461,6 +461,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/control.cpp
   src/control/controlaudiotaperpot.cpp
   src/control/controlbehavior.cpp
+  src/control/controlcompressingproxy.cpp
   src/control/controleffectknob.cpp
   src/control/controlencoder.cpp
   src/control/controlindicator.cpp
@@ -468,6 +469,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controllinpotmeter.cpp
   src/control/controllogpotmeter.cpp
   src/control/controlmodel.cpp
+  src/control/controlsortfiltermodel.cpp
   src/control/controlobject.cpp
   src/control/controlobjectscript.cpp
   src/control/controlpotmeter.cpp
@@ -874,6 +876,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/dnd.cpp
   src/util/duration.cpp
   src/util/experiment.cpp
+  src/util/file.cpp
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/filename.cpp
@@ -895,7 +898,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/semanticversion.cpp
   src/util/screensaver.cpp
   src/util/screensavermanager.cpp
-  src/util/sleepableqthread.cpp
   src/util/stat.cpp
   src/util/statmodel.cpp
   src/util/statsmanager.cpp
@@ -1589,6 +1591,7 @@ add_executable(mixxx-test
   src/test/controller_mapping_validation_test.cpp
   src/test/controllerscriptenginelegacy_test.cpp
   src/test/controlobjecttest.cpp
+  src/test/controlobjectscripttest.cpp
   src/test/coreservicestest.cpp
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp

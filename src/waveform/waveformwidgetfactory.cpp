@@ -646,7 +646,7 @@ void WaveformWidgetFactory::render() {
                 // Don't bother doing the pre-render work if we aren't going to
                 // render this widget.
                 bool shouldRender = shouldRenderWaveform(pWaveformWidget);
-                shouldRenderWaveforms[i] = shouldRender;
+                shouldRenderWaveforms[static_cast<int>(i)] = shouldRender;
                 if (!shouldRender) {
                     continue;
                 }
@@ -662,7 +662,7 @@ void WaveformWidgetFactory::render() {
                     i < m_waveformWidgetHolders.size();
                     i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
-                if (!shouldRenderWaveforms[i]) {
+                if (!shouldRenderWaveforms[static_cast<int>(i)]) {
                     continue;
                 }
                 pWaveformWidget->render();
@@ -1042,7 +1042,7 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
     m_vsyncThread->start(QThread::NormalPriority);
 }
 
-void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {
+void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString>>* pList) {
     m_vsyncThread->getAvailableVSyncTypes(pList);
 }
 

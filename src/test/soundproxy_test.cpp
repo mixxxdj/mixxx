@@ -1,3 +1,4 @@
+#include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QtDebug>
 
@@ -194,13 +195,20 @@ TEST_F(SoundSourceProxyTest, open) {
 
 TEST_F(SoundSourceProxyTest, openEmptyFile) {
     const QStringList fileNameSuffixes = getFileNameSuffixes();
-    for (const auto& fileNameSuffix : fileNameSuffixes) {
-        const auto tmpFileName =
-                mixxxtest::createEmptyTemporaryFile("emptyXXXXXX" + fileNameSuffix);
-        const mixxxtest::FileRemover tmpFileRemover(tmpFileName);
 
-        ASSERT_TRUE(QFile::exists(tmpFileName));
+    for (const auto& fileNameSuffix : fileNameSuffixes) {
+        QTemporaryFile tmpFile("emptyXXXXXX" + fileNameSuffix);
+        ASSERT_FALSE(QFile::exists(tmpFile.fileName()));
+        ASSERT_TRUE(tmpFile.open());
+
+        // Retrieving the file's name after opening it is required to actually
+        // create a named file on Linux.
+        const auto tmpFileName = tmpFile.fileName();
         ASSERT_TRUE(!tmpFileName.isEmpty());
+
+        tmpFile.close();
+        ASSERT_TRUE(QFile::exists(tmpFileName));
+
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(tmpFileName));
         auto pTrack = Track::newTemporary(tmpFileName);
         SoundSourceProxy proxy(pTrack);
@@ -214,8 +222,8 @@ TEST_F(SoundSourceProxyTest, readArtist) {
     auto pTrack = Track::newTemporary(kTestDir, "artist.mp3");
     SoundSourceProxy proxy(pTrack);
     EXPECT_TRUE(proxy.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("Test Artist", pTrack->getArtist());
 }
 
@@ -227,15 +235,15 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
             kTestDir, "empty.mp3");
     SoundSourceProxy proxy1(pTrack1);
     EXPECT_TRUE(proxy1.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a reload also works
     pTrack1->setTitle("");
     EXPECT_TRUE(proxy1.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Always));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a file with other metadata but no title
@@ -243,15 +251,15 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
             kTestDir, "cover-test-png.mp3");
     SoundSourceProxy proxy2(pTrack2);
     EXPECT_TRUE(proxy2.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a reload also works
     pTrack2->setTitle("");
     EXPECT_TRUE(proxy2.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Always));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a file with a title
@@ -259,8 +267,8 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
             kTestDir, "cover-test-jpg.mp3");
     SoundSourceProxy proxy3(pTrack3);
     EXPECT_TRUE(proxy3.updateTrackFromSource(
-            config(),
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            SyncTrackMetadataParams{}));
     EXPECT_EQ("test22kMono", pTrack3->getTitle());
 }
 
@@ -722,17 +730,20 @@ TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
 }
 
 TEST_F(SoundSourceProxyTest, getTypeFromFile) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+
     // Generate file names for the temporary file
     const QString filePathWithoutSuffix =
-            mixxxtest::generateTemporaryFileName("file_with_no_file_suffix");
+            tempDir.filePath("file_with_no_file_suffix");
     const QString filePathWithEmptySuffix =
-            mixxxtest::generateTemporaryFileName("file_with_empty_suffix.");
+            tempDir.filePath("file_with_empty_suffix.");
     const QString filePathWithUnknownSuffix =
-            mixxxtest::generateTemporaryFileName("file_with.unknown_suffix");
+            tempDir.filePath("file_with.unknown_suffix");
     const QString filePathWithWrongSuffix =
-            mixxxtest::generateTemporaryFileName("file_with_wrong_suffix.wav");
+            tempDir.filePath("file_with_wrong_suffix.wav");
     const QString filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix =
-            mixxxtest::generateTemporaryFileName("file_with_uppercase_suffix. MP3 ");
+            tempDir.filePath("file_with_uppercase_suffix. MP3 ");
 
     // Create the temporary files by copying an existing file
     const QString validFilePath = kTestDir.absoluteFilePath(QStringLiteral("empty.mp3"));
@@ -777,6 +788,9 @@ TEST_F(SoundSourceProxyTest, getTypeFromMissingFile) {
 }
 
 TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+
     const QString aiffFilePath =
             kTestDir.absoluteFilePath(QStringLiteral("cover-test.aiff"));
 
@@ -786,7 +800,7 @@ TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {
                     QFileInfo(aiffFilePath))));
 
     const QString aiffFilePathWithShortenedSuffix =
-            mixxxtest::generateTemporaryFileName(QStringLiteral("cover-test.aif"));
+            tempDir.filePath(QStringLiteral("cover-test.aif"));
     mixxxtest::copyFile(aiffFilePath, aiffFilePathWithShortenedSuffix);
     ASSERT_TRUE(QFileInfo::exists(aiffFilePathWithShortenedSuffix));
 

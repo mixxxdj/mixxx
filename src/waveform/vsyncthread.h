@@ -34,7 +34,7 @@ class VSyncThread : public QThread {
     void setSwapWait(int sw);
     int fromTimerToNextSyncMicros(const PerformanceTimer& timer);
     void vsyncSlotFinished();
-    void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
+    void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
     void setupSync(QGLWidget* glw, int index);
     void waitUntilSwap(QGLWidget* glw);
 

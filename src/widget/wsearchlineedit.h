@@ -38,6 +38,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void focusOutEvent(QFocusEvent*) override;
     bool event(QEvent*) override;
     bool eventFilter(QObject* obj, QEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
   signals:
     void search(const QString& text);
@@ -78,8 +79,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     void enableSearch(const QString& text);
     void updateEditBox(const QString& text);
-    void updateClearButton(const QString& text);
-    void updateStyleMetrics();
+    void updateClearAndDropdownButton(const QString& text);
     void deleteSelectedComboboxItem();
     void deleteSelectedListItem();
 
@@ -98,9 +98,7 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     parented_ptr<QToolButton> const m_clearButton;
 
-    int m_frameWidth;
     int m_innerHeight;
-    int m_dropButtonWidth;
 
     QTimer m_debouncingTimer;
     QTimer m_saveTimer;

@@ -147,7 +147,7 @@ class BaseTrackCache : public QObject {
 
     bool m_bIndexBuilt;
     bool m_bIsCaching;
-    QHash<TrackId, QVector<QVariant> > m_trackInfo;
+    QHash<TrackId, QVector<QVariant>> m_trackInfo;
     QSqlDatabase m_database;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);

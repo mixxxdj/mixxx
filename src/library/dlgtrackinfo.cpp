@@ -77,6 +77,7 @@ void DlgTrackInfo::init() {
         btnPrev->hide();
     }
 
+    // QDialog buttons
     connect(btnApply,
             &QPushButton::clicked,
             this,
@@ -92,30 +93,25 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotCancel);
 
-    connect(bpmDouble,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmDouble);
-    connect(bpmHalve,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmHalve);
-    connect(bpmTwoThirds,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmTwoThirds);
-    connect(bpmThreeFourth,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmThreeFourth);
-    connect(bpmFourThirds,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmFourThirds);
-    connect(bpmThreeHalves,
-            &QPushButton::clicked,
-            this,
-            &DlgTrackInfo::slotBpmThreeHalves);
+    // BPM edit buttons
+    connect(bpmDouble, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::Double);
+    });
+    connect(bpmHalve, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::Halve);
+    });
+    connect(bpmTwoThirds, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
+    });
+    connect(bpmThreeFourth, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
+    });
+    connect(bpmFourThirds, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
+    });
+    connect(bpmThreeHalves, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
+    });
     connect(bpmClear,
             &QPushButton::clicked,
             this,
@@ -150,19 +146,22 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refTrackInfo().setTitle(txtTrackName->text().trimmed());
+                m_trackRecord.refMetadata().refTrackInfo().setTitle(
+                        txtTrackName->text().trimmed());
             });
     connect(txtArtist,
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refTrackInfo().setArtist(txtArtist->text().trimmed());
+                m_trackRecord.refMetadata().refTrackInfo().setArtist(
+                        txtArtist->text().trimmed());
             });
     connect(txtAlbum,
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refAlbumInfo().setTitle(txtAlbum->text().trimmed());
+                m_trackRecord.refMetadata().refAlbumInfo().setTitle(
+                        txtAlbum->text().trimmed());
             });
     connect(txtAlbumArtist,
             &QLineEdit::editingFinished,
@@ -196,13 +195,18 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             [this]() {
-                m_trackRecord.refMetadata().refTrackInfo().setYear(txtYear->text().trimmed());
+                m_trackRecord.refMetadata().refTrackInfo().setYear(
+                        txtYear->text().trimmed());
             });
-    connect(txtTrackNumber, &QLineEdit::editingFinished, [this]() {
-        m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
-                txtTrackNumber->text().trimmed());
-    });
+    connect(txtTrackNumber,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
+                        txtTrackNumber->text().trimmed());
+            });
 
+    // Import and file browser buttons
     connect(btnImportMetadataFromFile,
             &QPushButton::clicked,
             this,
@@ -218,6 +222,7 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotOpenInFileBrowser);
 
+    // Cover art
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
         connect(pCache,
@@ -483,6 +488,19 @@ void DlgTrackInfo::saveTrack() {
         return;
     }
 
+    // In case Apply is triggered by hotkey AND a QLineEdit with pending changes
+    // is focused AND the user did not hit Enter to finish editing,
+    // the content of that focused line edit would be reset to the last confirmed state.
+    // This hack makes a focused QLineEdit emit editingFinished() (clearFocus()
+    // implicitly emits a focusOutEvent()
+    if (this == QApplication::activeWindow()) {
+        auto focusWidget = QApplication::focusWidget();
+        if (focusWidget) {
+            focusWidget->clearFocus();
+            focusWidget->setFocus();
+        }
+    }
+
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
     const QSignalBlocker signalBlocker(this);
@@ -524,31 +542,10 @@ void DlgTrackInfo::clear() {
     txtLocation->setText("");
 }
 
-void DlgTrackInfo::slotBpmDouble() {
-    slotBpmScale(mixxx::Beats::BpmScale::Double);
-}
-
-void DlgTrackInfo::slotBpmHalve() {
-    slotBpmScale(mixxx::Beats::BpmScale::Halve);
-}
-
-void DlgTrackInfo::slotBpmTwoThirds() {
-    slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
-}
-
-void DlgTrackInfo::slotBpmThreeFourth() {
-    slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
-}
-
-void DlgTrackInfo::slotBpmFourThirds() {
-    slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
-}
-
-void DlgTrackInfo::slotBpmThreeHalves() {
-    slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
-}
-
 void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
+    if (!m_pBeatsClone) {
+        return;
+    }
     const auto scaledBeats = m_pBeatsClone->tryScale(bpmScale);
     if (scaledBeats) {
         m_pBeatsClone = *scaledBeats;

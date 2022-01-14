@@ -152,7 +152,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     TrackId2Rows m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
-    QVector<QHash<int, QVariant> > m_headerInfo;
+    QVector<QHash<int, QVariant>> m_headerInfo;
     QString m_trackSourceOrderBy;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);

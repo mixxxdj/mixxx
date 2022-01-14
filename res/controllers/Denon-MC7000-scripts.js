@@ -176,10 +176,10 @@ MC7000.init = function() {
     midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 
     // VU meters
-    engine.makeConnection("[Channel1]", "VuMeter", MC7000.VuMeter);
-    engine.makeConnection("[Channel2]", "VuMeter", MC7000.VuMeter);
-    engine.makeConnection("[Channel3]", "VuMeter", MC7000.VuMeter);
-    engine.makeConnection("[Channel4]", "VuMeter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel3]", "VuMeter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel4]", "VuMeter", MC7000.VuMeter);
 
     // Platter Ring LED mode
     midi.sendShortMsg(0x90, 0x64, MC7000.modeSingleLED);
