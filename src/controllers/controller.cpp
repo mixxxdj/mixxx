@@ -120,7 +120,13 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
         //  queued signals flush out
         return;
     }
-    triggerActivity();
+	// lp 1956144
+	// dont runt triggerActivity() when platform vnc is ued. There is no screensaver (x11).
+	// resulting in segfault when fired.
+    if("vnc" != QApplication::platformName()) {
+        triggerActivity();
+    }
+
 
     int length = data.size();
     if (m_logInput().isDebugEnabled()) {
