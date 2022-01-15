@@ -141,7 +141,6 @@ TraktorZ2.Deck = function(deckNumber, group) {
     this.loopKnobEncoderState = 0;
 };
 
-
 TraktorZ2.deckSwitchHandler = function(field) {
     HIDDebug("TraktorZ2: deckSwitchHandler: " + field.group + " " + field.value);
     if (field.value === 1) {
@@ -307,6 +306,7 @@ TraktorZ2.vinylcontrolOutputHandler = function(value, group, key) {
         }
     }
 };
+
 TraktorZ2.vinylcontrolStatusOutputHandler = function(vfalue, group, key) {
     HIDDebug("TraktorZ2: vinylcontrolOutputHandler" + " group:" + group + " key:" + key);
     // Z2 has only one vinylcontrol status LED for both channels -> merge information of both
@@ -321,6 +321,7 @@ TraktorZ2.vinylcontrolStatusOutputHandler = function(vfalue, group, key) {
         TraktorZ2.controller.setOutput("[Master]", "!vinylcontrolstatus", kLedOff, true);
     }
 };
+
 TraktorZ2.Deck.prototype.syncHandler = function(field) {
     HIDDebug("TraktorZ2: syncHandler" + " this.activeChannel:" + this.activeChannel + " field:" + field + "key:" + engine.getValue(this.activeChannel, "key"));
 
@@ -451,8 +452,7 @@ TraktorZ2.Deck.prototype.loadTrackHandler = function(field) {
     }
 };
 
-
-// defineButton and defineLED2 allows us to configure either the right deck or the left deck, depending on which
+// defineButton allows us to configure input buttons for the two main decks of the 2+2 deck mixer layout, depending on which
 // is appropriate.  This avoids extra logic in the function where we define all the magic numbers.
 TraktorZ2.Deck.prototype.defineButton = function(msg, name, deck1Offset, deck1Bitmask, deck2Offset, deck2Bitmask, fn) {
     switch (this.deckNumber) {
@@ -465,6 +465,8 @@ TraktorZ2.Deck.prototype.defineButton = function(msg, name, deck1Offset, deck1Bi
     }
 };
 
+// defineLED2 allows us to configure output LEDs for the two main decks of the 2+2 deck mixer layout, depending on which
+// is appropriate.  This avoids extra logic in the function where we define all the magic numbers.
 TraktorZ2.Deck.prototype.defineLED2 = function(hidReport, name, deck1Offset, deck2Offset) {
     // All LEDs of the Traktor Z2 have 7Bit outputs
     HIDDebug("TraktorZ2: defineLED2 hidReport:" + hidReport + " this.deckNumber" + this.deckNumber + " name:" + name);
@@ -479,6 +481,8 @@ TraktorZ2.Deck.prototype.defineLED2 = function(hidReport, name, deck1Offset, dec
     }
 };
 
+// defineLED2 allows us to configure output LEDs for all 4 decks of the 2+2 deck mixer layout, depending on which
+// is appropriate.  This avoids extra logic in the function where we define all the magic numbers.
 TraktorZ2.Deck.prototype.defineLED4 = function(hidReport, name, deck1Offset, deck2Offset, deck3Offset, deck4Offset) {
     // All LEDs of the Traktor Z2 have 7Bit outputs
     HIDDebug("TraktorZ2: defineLED4 hidReport:" + hidReport + " this.deckNumber" + this.deckNumber + " name:" + name);
@@ -783,7 +787,6 @@ TraktorZ2.Deck.prototype.registerInputs2Decks = function() {
 
 };
 
-
 TraktorZ2.registerInputPackets = function() {
     HIDDebug("TraktorZ2: registerInputPackets");
 
@@ -858,7 +861,6 @@ TraktorZ2.registerInputPackets = function() {
 
     this.controller.registerInputPacket(TraktorZ2.inputReport02);
 };
-
 
 TraktorZ2.enableSoftTakeover = function() {
     // Soft takeovers
@@ -1246,7 +1248,6 @@ TraktorZ2.debugLights = function() {
 
 };
 
-
 // outputHandler drives lights that only have one color.
 TraktorZ2.basicOutputHandler = function(value, group, key) {
     HIDDebug("TraktorZ2: basicOutputHandler" + " group:" + group + " key:" + key + " value:" + value);
@@ -1258,7 +1259,6 @@ TraktorZ2.basicOutputHandler = function(value, group, key) {
         TraktorZ2.controller.setOutput(group, key, kLedBright, true);
     }
 };
-
 
 TraktorZ2.hotcueOutputHandler = function() {
 
@@ -1328,7 +1328,6 @@ TraktorZ2.hotcueOutputHandler = function() {
         }
     }
 };
-
 
 TraktorZ2.beatOutputHandler = function(value, group) {
     if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "play")) {
@@ -1681,7 +1680,6 @@ TraktorZ2.Deck.prototype.registerOutputs2Decks = function() {
 
 };
 
-
 TraktorZ2.Deck.prototype.registerOutputs4Decks = function() {
     HIDDebug("TraktorZ2: Deck.prototype.registerOutputs4Decks  this.activeChannel:" + this.activeChannel);
 
@@ -1771,12 +1769,7 @@ TraktorZ2.registerOutputPackets = function() {
     TraktorZ2.outputReport80.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x18, "B", 0x7F);
     engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", TraktorZ2.basicOutputHandler);
     engine.trigger("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable");
-
-
-
-
-
-
+  
     const ledChannelOffsets = {
         "[Channel1]": 0x35,
         "[Channel2]": 0x4A
@@ -1816,7 +1809,6 @@ TraktorZ2.registerOutputPackets = function() {
     TraktorZ2.outputReport81.addOutput("[Master]", "!crossfaderReverse", 0x28, "B", 0x7F);
 
     this.controller.registerOutputPacket(TraktorZ2.outputReport81);
-
 };
 
 TraktorZ2.displayVuValue = function(value, group, key) {
@@ -2008,9 +2000,9 @@ TraktorZ2.init = function(_id) {
     TraktorZ2.controller.setOutput("[Channel4]", "!deck", kLedOff, false);
 
     TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", kLedVuMeterBrightness, true);
-
+    
     TraktorZ2.controller.setOutput("[Master]", "skin_settings", kLedOff, true);
-
+    
     // Initialize VU-Labels A and B
     TraktorZ2.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
     TraktorZ2.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
