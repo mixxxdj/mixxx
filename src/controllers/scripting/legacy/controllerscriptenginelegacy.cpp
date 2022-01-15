@@ -90,6 +90,15 @@ QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
     return wrappedFunction;
 }
 
+void ControllerScriptEngineLegacy::setScriptFiles(
+        const QList<LegacyControllerMapping::ScriptFileInfo>& scripts) {
+    const QStringList paths = m_fileWatcher.files();
+    if (!paths.isEmpty()) {
+        m_fileWatcher.removePaths(paths);
+    }
+    m_scriptFiles = scripts;
+}
+
 bool ControllerScriptEngineLegacy::initialize() {
     if (!ControllerScriptEngineBase::initialize()) {
         return false;
