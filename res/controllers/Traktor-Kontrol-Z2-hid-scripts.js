@@ -1898,12 +1898,6 @@ TraktorZ2.displayPeakIndicator = function(value, group, key) {
     }
 };
 
-
-TraktorZ2.displayLEDs = function() {
-
-    TraktorZ2.controller.setOutput("[Master]", "skin_settings", kLedOff, true);
-};
-
 TraktorZ2.enableLEDsPerChannel = function() {
     HIDDebug("TraktorZ2: enableLEDsPerChannel");
     // Traktor Z2 can be switched per channel from internal mixing to external mixing
@@ -2015,6 +2009,8 @@ TraktorZ2.init = function(_id) {
 
     TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", kLedVuMeterBrightness, true);
 
+    TraktorZ2.controller.setOutput("[Master]", "skin_settings", kLedOff, true);
+
     // Initialize VU-Labels A and B
     TraktorZ2.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
     TraktorZ2.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
@@ -2025,8 +2021,6 @@ TraktorZ2.init = function(_id) {
     TraktorZ2.enableLEDsPerChannel();
 
     HIDDebug("TraktorZ2: Init done!");
-
-    //engine.beginTimer(20, this.displayLEDs);
 
     engine.beginTimer(50, function() {
         TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", kLedVuMeterBrightness, true);
