@@ -108,6 +108,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
+    container: ${{ matrix.container }}
     outputs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
@@ -213,6 +214,7 @@ jobs:
 
     - name: "Set up build environment"
       id: buildenv
+      if: matrix.buildenv_script != null
       run: ${{ matrix.buildenv_script }} setup
       env:
         BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
