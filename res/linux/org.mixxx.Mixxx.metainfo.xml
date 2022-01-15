@@ -132,6 +132,19 @@
    #4575
    lp1934560
   </li>
+  <li>
+   Pioneer DDJ-SB3: Add controller mapping
+   #3821
+  </li>
+  <li>
+   Don't wipe sound config during startup if configured devices are unavailable
+   #4544
+  </li>
+  <li>
+   Append selected file extension when exporting to playlist files
+   #4531
+   lp1889352
+  </li>
  </ul>
  <p>
   Packaging
