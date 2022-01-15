@@ -8,6 +8,7 @@
 * Preserve file creation time when writing metadata on Windows [#4586](https://github.com/mixxxdj/mixxx/pull/4586) [lp1955314](https://bugs.launchpad.net/mixxx/+bug/1955314)
 * Fix handling of file extension when importing and exporting sampler settings [#4539](https://github.com/mixxxdj/mixxx/pull/4539)
 * Fix crash when using an empty directory as resource path using the `--resource-path` command line option [#4575](https://github.com/mixxxdj/mixxx/pull/4575) [lp1934560](https://bugs.launchpad.net/mixxx/+bug/1934560)
+* Added mapping for Pioneer DDJ SB3 controller [#3821](https://github.com/mixxxdj/mixxx/pull/3821)
 
 ### Packaging
 
