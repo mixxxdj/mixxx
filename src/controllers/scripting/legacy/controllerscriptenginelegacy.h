@@ -27,10 +27,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
 
   public slots:
-    void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts) {
-        m_fileWatcher.removePaths(m_fileWatcher.files());
-        m_scriptFiles = scripts;
-    }
+    void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts);
 
   private:
     bool evaluateScriptFile(const QFileInfo& scriptFile);
