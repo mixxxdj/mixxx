@@ -537,7 +537,7 @@ QByteArray SeratoMarkers2::dumpCommon() const {
         QByteArray entryData = entry->dump();
         stream.writeRawData(entryName.constData(), entryName.length());
         stream << static_cast<quint8>('\x00') // terminating null-byte
-               << entryData.length();
+               << static_cast<quint32>(entryData.length());
         stream.writeRawData(entryData.constData(), entryData.length());
     }
     data.append('\0');
@@ -767,7 +767,7 @@ QByteArray SeratoMarkers2::dumpBase64Encoded() const {
         QByteArray entryData = entry->dump();
         stream.writeRawData(entryName.constData(), entryName.length());
         stream << static_cast<quint8>(0x00) // terminating null-byte
-               << entryData.length();
+               << static_cast<quint32>(entryData.length());
         stream.writeRawData(entryData.constData(), entryData.length());
     }
     innerData.append('\0');
