@@ -44,7 +44,7 @@ void HidIoReport::sendOutputReport(QByteArray data) {
 
     // hid_write can take several milliseconds, because hidapi synchronizes the asyncron HID communication from the OS
     int result = hid_write(m_pHidDevice,
-            (unsigned char*)outputReport.constData(),
+            reinterpret_cast<const unsigned char*>(outputReport.constData()),
             outputReport.size());
     if (result == -1) {
         qCWarning(m_logOutput) << "Unable to send data to" << m_deviceInfo.formatName() << ":"
