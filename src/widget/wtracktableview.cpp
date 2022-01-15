@@ -472,11 +472,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pTrackMenu->loadTrackModelIndices(indices);
 
     //Create the right-click menu
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    m_pTrackMenu->popup(event->globalPosition().toPoint());
-#else
     m_pTrackMenu->popup(event->globalPos());
-#endif
 }
 
 void WTrackTableView::onSearch(const QString& text) {
