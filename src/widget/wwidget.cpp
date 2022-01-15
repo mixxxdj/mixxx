@@ -46,8 +46,12 @@ bool WWidget::event(QEvent* e) {
         case QEvent::TouchEnd:
         {
             QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(e);
-            if (touchEvent == nullptr || touchEvent->device() == nullptr ||
-                    touchEvent->device()->type() !=  QTouchDevice::TouchScreen) {
+            if (touchEvent == nullptr
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                    || touchEvent->device() == nullptr ||
+                    touchEvent->device()->type() != QTouchDevice::TouchScreen
+#endif
+            ) {
                 break;
             }
 
@@ -75,7 +79,12 @@ bool WWidget::event(QEvent* e) {
             }
 
             const QTouchEvent::TouchPoint& touchPoint =
-                    touchEvent->touchPoints().first();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    touchEvent->points()
+#else
+                    touchEvent->touchPoints()
+#endif
+                            .first();
             QMouseEvent mouseEvent(eventType,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     touchPoint.position(),
