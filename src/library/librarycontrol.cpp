@@ -822,24 +822,18 @@ void LibraryControl::updateFocusedWidgetControls() {
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
-    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+    if (!m_pSidebarWidget) {
         return;
     }
-    if (v > 0) {
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyPress,
-            (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyRelease,
-            (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
-    } else if (v < 0) {
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyPress,
-            (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyRelease,
-            (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
+    if (v == 0) {
+        return;
     }
+
+    const auto key = (v < 0) ? Qt::Key_Up : Qt::Key_Down;
+    const auto times = static_cast<unsigned short>(std::abs(v));
+    QKeyEvent event = QKeyEvent{
+            QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times};
+    QApplication::sendEvent(m_pSidebarWidget, &event);
 }
 
 void LibraryControl::slotSelectNextSidebarItem(double v) {
