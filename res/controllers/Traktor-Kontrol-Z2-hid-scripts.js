@@ -1434,76 +1434,86 @@ TraktorZ2.displayLoopCount = function(group, sendMessage) {
 
         if (key === 1) {
             numberToDisplay = 8; // 1d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 2) {
             numberToDisplay = 3; // 8d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 3) {
             numberToDisplay = 10; // 3d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 4) {
             numberToDisplay = 5; // 10d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 5) {
             numberToDisplay = 12; // 5d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 6) {
             numberToDisplay = 7; // 12d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 7) {
             numberToDisplay = 2; // 7d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 8) {
             numberToDisplay = 9; // 2d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 9) {
             numberToDisplay = 4; // 9d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 10) {
             numberToDisplay = 11; // 4d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 11) {
             numberToDisplay = 6; // 11d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 12) {
             numberToDisplay = 1; // 6d
-            majorMinor = 0x0B;
+            majorMinor = "b";
         } else if (key === 13) {
             numberToDisplay = 5; // 10m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 14) {
             numberToDisplay = 12; // 5m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 15) {
             numberToDisplay = 7; // 12m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 16) {
             numberToDisplay = 2; // 7m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 17) {
             numberToDisplay = 9; // 2m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 18) {
             numberToDisplay = 4; // 9m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 19) {
             numberToDisplay = 11; // 4m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 20) {
             numberToDisplay = 6; // 11m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 21) {
             numberToDisplay = 1; // 6m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 22) {
             numberToDisplay = 8; // 1m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 23) {
             numberToDisplay = 3; // 8m
-            majorMinor = 0x0A;
+            majorMinor = "A";
         } else if (key === 24) {
             numberToDisplay = 10; // 3m
-            majorMinor = 0x0A;
+            majorMinor = "A";
+        } else {
+            if (sendMessage === true) {
+                // Display empty string
+                TraktorZ2.displayLoopCountDigit(group + "[Digit1]", -2, displayBrightness, false);
+                TraktorZ2.displayLoopCountDigit(group + "[Digit2]", -2, displayBrightness, false);
+                TraktorZ2.displayLoopCountDigit(group + "[Digit3]", -2, displayBrightness, false);
+
+                TraktorZ2.controller.getOutputField(group + "[Digit1]", "segment_a").packet.send();
+            }
+            return;
         }
 
         TraktorZ2.displayLoopCountDigit(group + "[Digit3]", majorMinor, displayBrightness, false);
@@ -1523,6 +1533,9 @@ TraktorZ2.displayLoopCount = function(group, sendMessage) {
                 TraktorZ2.displayLoopCountDigit(group + digit, leastSignificiantDigit, displayBrightness, sendMessage);
             }
             numberToDisplayRemainder /= 10;
+        }
+        if (sendMessage === true) {
+            TraktorZ2.controller.getOutputField(group + "[Digit1]", "segment_a").packet.send();
         }
         return;
     } else if (TraktorZ2.shiftState & 0x02) {
@@ -1567,61 +1580,50 @@ TraktorZ2.displayLoopCount = function(group, sendMessage) {
             numberToDisplayRemainder /= 10;
         }
     }
+    if (sendMessage === true) {
+        TraktorZ2.controller.getOutputField(group + "[Digit1]", "segment_a").packet.send();
+    }
 };
 
-TraktorZ2.displayLoopCountDigit = function(group, digit, brightness, sendMessage) {
+TraktorZ2.displayLoopCountDigit = function(group, digit, brightness) {
     // @param offset of the first LED (center horizontal bar) of the digit
     // @param digit to display (-2 represents all OFF, -1 represents "1/" )
     // @param brightness may be aninteger value from 0x00 to 0x07
     // HIDDebug("Offset:" + " Digit:" + digit + " Brightness:" + brightness);
 
-    // Segment a (upper horizontal bar)
-    if (digit === 0 || digit === 2 || digit === 3 || digit === 5 || digit === 6 || digit === 7 || digit === 8 || digit === 9 || digit === 0x0A) {
-        TraktorZ2.controller.setOutput(group, "segment_a", brightness, false); // ON
-    } else {
-        TraktorZ2.controller.setOutput(group, "segment_a", kLedOff, false); // OFF
-    }
+    //  -- a --
+    // |       |
+    // f       b
+    // |       |
+    //  -- g --
+    // |       |
+    // e       c
+    // |       |
+    //  -- d --
 
-    // Segment b (upper right vertical bar)
-    if (digit === 0 || digit === 1 || digit === 2 || digit === 3 || digit === 4 || digit === 7 || digit === 8 || digit === 9 || digit === -1 || digit === 0x0A) {
-        TraktorZ2.controller.setOutput(group, "segment_b", brightness, false); // ON
-    } else {
-        TraktorZ2.controller.setOutput(group, "segment_b", kLedOff, false); // OFF
+    const symbolArray = {
+        "-2": [[], ["a", "b", "c", "d", "e", "f", "g"]], // All off
+        "1": [["b", "c"], ["a", "d", "e", "f", "g"]],
+        "2": [["a", "b", "d", "e", "g"], ["c", "f"]],
+        "3": [["a", "b", "c", "d", "g"], ["e", "f"]],
+        "4": [["b", "c", "f", "g"], ["a", "d", "e"]],
+        "5": [["a", "c", "d", "f", "g"], ["b", "e"]],
+        "6": [["a", "c", "d", "e", "f", "g"], ["b"]],
+        "7": [["a", "b", "c"], ["d", "e", "f", "g"]],
+        "8": [["a", "b", "c", "d", "e", "f", "g"], []],
+        "9": [["a", "b", "c", "d", "f", "g"], ["e"]],
+        "0": [["a", "b", "c", "d", "e", "f"], ["g"]],
+        "A": [["a", "b", "c", "e", "f", "g"], ["d"]],
+        "b": [["c", "d", "e", "f", "g"], ["a", "b"]],
+        "-1": [["b", "e", "f"], ["a", "c", "d", "g"]],
+    };
+    // Switch LEDs On
+    for (const segmentOn of symbolArray[digit][0]) {
+        TraktorZ2.controller.setOutput(group, "segment_" + segmentOn, brightness, false);
     }
-
-    // Segment c (lower right vertical bar)
-    if (digit === 0 || digit === 1 || digit === 3 || digit === 4 || digit === 5 || digit === 6 || digit === 7 || digit === 8 || digit === 9 || digit === 0x0A || digit === 0x0B) {
-        TraktorZ2.controller.setOutput(group, "segment_c", brightness, false); // ON
-    } else {
-        TraktorZ2.controller.setOutput(group, "segment_c", kLedOff, false); // OFF
-    }
-
-    // Segment d (lower horizontal bar)
-    if (digit === 0 || digit === 2 || digit === 3 || digit === 5 || digit === 6 || digit === 8 || digit === 9 || digit === 0x0B) {
-        TraktorZ2.controller.setOutput(group, "segment_d", brightness, false); // ON
-    } else {
-        TraktorZ2.controller.setOutput(group, "segment_d", kLedOff, false); // OFF
-    }
-
-    // Segment e (lower left vertical bar)
-    if (digit === 0 || digit === 2 || digit === 6 || digit === 8 || digit === -1 || digit === 0x0A || digit === 0x0B) {
-        TraktorZ2.controller.setOutput(group, "segment_e", brightness, false); // ON
-    } else {
-        TraktorZ2.controller.setOutput(group, "segment_e", kLedOff, false); // OFF
-    }
-
-    // Segment f (upper left vertical bar)
-    if (digit === 0 || digit === 4 || digit === 5 || digit === 6 || digit === 8 || digit === 9 || digit === -1 || digit === 0x0A || digit === 0x0B) {
-        TraktorZ2.controller.setOutput(group, "segment_f", brightness, false); // ON
-    } else {
-        TraktorZ2.controller.setOutput(group, "segment_f", kLedOff, false); // OFF
-    }
-
-    // Segment g (center horizontal bar)
-    if (digit === 2 || digit === 3 || digit === 4 || digit === 5 || digit === 6 || digit === 8 || digit === 9 || digit === 0x0A || digit === 0x0B) {
-        TraktorZ2.controller.setOutput(group, "segment_g", brightness, sendMessage); // ON
-    } else {
-        TraktorZ2.controller.setOutput(group, "segment_g", kLedOff, sendMessage); // OFF
+    // Switch LEDs Off
+    for (const segmentOff of symbolArray[digit][1]) {
+        TraktorZ2.controller.setOutput(group, "segment_" + segmentOff, kLedOff, false);
     }
 };
 
@@ -1769,7 +1771,7 @@ TraktorZ2.registerOutputPackets = function() {
     TraktorZ2.outputReport80.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x18, "B", 0x7F);
     engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", TraktorZ2.basicOutputHandler);
     engine.trigger("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable");
-  
+
     const ledChannelOffsets = {
         "[Channel1]": 0x35,
         "[Channel2]": 0x4A
@@ -2000,9 +2002,9 @@ TraktorZ2.init = function(_id) {
     TraktorZ2.controller.setOutput("[Channel4]", "!deck", kLedOff, false);
 
     TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", kLedVuMeterBrightness, true);
-    
+
     TraktorZ2.controller.setOutput("[Master]", "skin_settings", kLedOff, true);
-    
+
     // Initialize VU-Labels A and B
     TraktorZ2.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
     TraktorZ2.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
