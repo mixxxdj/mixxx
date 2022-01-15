@@ -194,6 +194,7 @@ jobs:
 
     - name: "Set up build environment"
       id: buildenv
+      if: matrix.buildenv_script != null
       run: ${{ matrix.buildenv_script }} setup
       env:
         BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
@@ -283,6 +284,7 @@ jobs:
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
     - name: "Package"
+      if: matrix.cpack_generator != null
       run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: build
 
@@ -326,7 +328,7 @@ jobs:
       # also generates metadata for file artifact and write it to the job
       # output using the artifacts_slug value.
       id: prepare_deploy
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && matrix.artifacts_path != null
       shell: bash
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
@@ -407,6 +409,7 @@ jobs:
         echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
     - name: "Upload GitHub Actions artifacts"
+      if: matrix.artifacts_path != null
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.artifacts_name }}
