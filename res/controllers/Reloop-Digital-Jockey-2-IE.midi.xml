@@ -5,7 +5,7 @@
         <author>DJ aK</author>
         <description>Controller mapping for Reloop Digital Jockey 2 Interface Edition</description>
         <forums>https://mixxx.discourse.group/t/reloop-digital-jockey-2-mapping-by-dj-ak/23971</forums>
-        <wiki></wiki>
+        <manual>reloop_digital_jockey_2_interface_edition</manual>
     </info>
     <controller id="DIGITALJOCKEY2">
         <scriptfiles>
