@@ -26,7 +26,9 @@ QString zeroTerminatedUtf8StringtoQString(QDataStream* stream) {
     quint8 byte = '\xFF';
     while (byte != '\x00') {
         *stream >> byte;
-        data.append(byte);
+        if (byte != '\x00') {
+            data.append(byte);
+        }
         if (stream->status() != QDataStream::Status::Ok) {
             return QString();
         }
