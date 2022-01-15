@@ -69,10 +69,13 @@ class BpmControl : public EngineControl {
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
-    // Calculates contextual information about beats: the previous beat, the
-    // next beat, the current beat length, and the beat ratio (how far dPosition
-    // lies within the current beat). Returns false if a previous or next beat
-    // does not exist. NULL arguments are safe and ignored.
+    /// Calculates contextual information about beats:
+    /// - previous beat
+    /// - next beat
+    /// - current beat length
+    /// - beat ratio (how far dPosition lies within the current beat)
+    /// Returns false if a previous or next beat does not exist.
+    /// NULL arguments are safely ignored.
     static bool getBeatContext(const mixxx::BeatsPointer& pBeats,
             mixxx::audio::FramePos position,
             mixxx::audio::FramePos* pPrevBeatPosition,
@@ -80,17 +83,16 @@ class BpmControl : public EngineControl {
             mixxx::audio::FrameDiff_t* pBeatLengthFrames,
             double* pBeatPercentage);
 
-    // Alternative version that works if the next and previous beat positions
-    // are already known.
+    /// Alternative to #getBeatContext that works
+    /// if the next and previous beat positions are already known.
     static bool getBeatContextNoLookup(mixxx::audio::FramePos position,
             mixxx::audio::FramePos prevBeatPosition,
             mixxx::audio::FramePos nextBeatPosition,
             mixxx::audio::FrameDiff_t* pBeatLengthFrames,
             double* pBeatPercentage);
 
-    // Returns the shortest change in percentage needed to achieve
-    // target_percentage.
-    // Example: shortestPercentageChange(0.99, 0.01) == 0.02
+    /// The shortest change in percentage needed to achieve target_percentage.
+    /// Example: shortestPercentageChange(0.99, 0.01) == 0.02
     static double shortestPercentageChange(const double& current_percentage,
                                            const double& target_percentage);
     double getRateRatio() const;

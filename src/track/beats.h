@@ -22,7 +22,7 @@ namespace mixxx {
 class Beats;
 typedef std::shared_ptr<const Beats> BeatsPointer;
 
-/// A beat marker is denotes the border of a tempo section inside a track.
+/// A beat marker denotes the border of a tempo section inside a track.
 class BeatMarker {
   public:
     BeatMarker(mixxx::audio::FramePos position, int beatsTillNextMarker)
@@ -194,8 +194,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// Returns an iterator pointing to earliest representable beat position
     /// (which is INT_MIN beats before the first beat marker).
     ///
-    /// Warning: Decrementing the iterator returned by this function will
-    /// result in an integer underflow.
+    /// Warning: Decrementing the iterator returned by this function
+    ///  will result in an integer underflow.
     ConstIterator cbegin() const {
         return ConstIterator(this, m_markers.cbegin(), std::numeric_limits<int>::lowest());
     }

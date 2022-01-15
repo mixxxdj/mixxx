@@ -72,8 +72,7 @@ int EngineRecord::updateFromPreferences() {
     return ret;
 }
 
-bool EngineRecord::metaDataHasChanged()
-{
+bool EngineRecord::metaDataHasChanged() {
     //Originally, m_iMetaDataLife was used so that getCurrentPlayingTrack was called
     //less often, because it was calculating it.
     //Nowadays (since Mixxx 1.11), it just accesses a map on a thread safe method.

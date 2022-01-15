@@ -17,7 +17,9 @@ EngineDeck::EngineDeck(
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         bool primaryDeck)
-        : EngineChannel(handleGroup, defaultOrientation, pEffectsManager,
+        : EngineChannel(handleGroup,
+                  defaultOrientation,
+                  pEffectsManager,
                   /*isTalkoverChannel*/ false,
                   primaryDeck),
           m_pConfig(pConfig),

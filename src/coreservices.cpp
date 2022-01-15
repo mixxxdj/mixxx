@@ -286,8 +286,8 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pPlayerManager = std::make_shared<PlayerManager>(
             pConfig,
             m_pSoundManager.get(),
-            m_pEffectsManager.get(),
-            m_pEngine.get());
+            m_pEngine.get(),
+            m_pEffectsManager.get());
     // TODO: connect input not configured error dialog slots
     PlayerInfo::create();
 

@@ -102,25 +102,21 @@ class Track : public QObject {
     // Get number of channels
     int getChannels() const;
 
-    // Get sample rate
     mixxx::audio::SampleRate getSampleRate() const;
 
-    // Sets the bitrate
     void setBitrate(int);
-    // Returns the bitrate
     int getBitrate() const;
-    // Returns the bitrate as a string
     QString getBitrateText() const;
 
     void setDuration(mixxx::Duration duration);
     void setDuration(double duration);
     double getDuration() const;
-    // Returns the duration rounded to seconds
+    /// Return the duration rounded to seconds
     int getDurationSecondsInt() const;
-    // Returns the duration formatted as a string (H:MM:SS or H:MM:SS.cc or H:MM:SS.mmm)
+    /// Return the duration formatted as a string (H:MM:SS or H:MM:SS.cc or H:MM:SS.mmm)
     QString getDurationText(mixxx::Duration::Precision precision) const;
 
-    // Helper functions for Q_PROPERTYs
+    /// Helper functions for Q_PROPERTYs
     QString getDurationTextSeconds() const {
         return getDurationText(mixxx::Duration::Precision::SECONDS);
     }
@@ -131,29 +127,28 @@ class Track : public QObject {
         return getDurationText(mixxx::Duration::Precision::MILLISECONDS);
     }
 
-    // Sets the BPM if not locked.
+    /// Call when analysis is done.
+    void analysisFinished();
+
+    /// Set the BPM if not locked.
     bool trySetBpm(double bpmValue) {
         return trySetBpm(mixxx::Bpm(bpmValue));
     }
     bool trySetBpm(mixxx::Bpm bpm);
 
-    // Returns BPM
     double getBpm() const;
-    // Returns BPM as a string
     QString getBpmText() const {
         return mixxx::Bpm::displayValueText(getBpm());
     }
 
-    // A track with a locked BPM will not be re-analyzed by the beats or bpm
-    // analyzer.
+    /// A track with a locked BPM will not be re-analyzed
+    /// by the beats or bpm analyzer.
     void setBpmLocked(bool bpmLocked);
     bool isBpmLocked() const;
 
-    // Set ReplayGain
     void setReplayGain(const mixxx::ReplayGain&);
-    // Adjust ReplayGain by multiplying the given gain amount.
+    /// Adjust ReplayGain by multiplying the given gain amount.
     void adjustReplayGainFromPregain(double);
-    // Returns ReplayGain
     mixxx::ReplayGain getReplayGain() const;
 
     /// Checks if the internal metadata is in-sync with the
@@ -300,8 +295,6 @@ class Track : public QObject {
     void setMainCuePosition(mixxx::audio::FramePos position);
     /// Shift all cues by a constant offset
     void shiftCuePositionsMillis(mixxx::audio::FrameDiff_t milliseconds);
-    // Call when analysis is done.
-    void analysisFinished();
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue(

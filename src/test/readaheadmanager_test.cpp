@@ -13,13 +13,13 @@
 #include "util/sample.h"
 
 namespace {
-const QString kGroup = "[test]";
-} // namespace
+const QString kChannelGroup = "[test]";
+}
 
 class StubReader : public CachingReader {
   public:
     StubReader()
-            : CachingReader(kGroup, UserSettingsPointer()) {
+            : CachingReader(kChannelGroup, UserSettingsPointer()) {
     }
 
     CachingReader::ReadResult read(SINT startSample, SINT numSamples, bool reverse,
@@ -34,7 +34,7 @@ class StubReader : public CachingReader {
 class StubLoopControl : public LoopingControl {
   public:
     StubLoopControl()
-            : LoopingControl(kGroup, UserSettingsPointer()) {
+            : LoopingControl(kChannelGroup, UserSettingsPointer()) {
     }
 
     void pushTriggerReturnValue(double value) {
@@ -67,13 +67,13 @@ class StubLoopControl : public LoopingControl {
 class ReadAheadManagerTest : public MixxxTest {
   public:
     ReadAheadManagerTest()
-            : m_beatClosestCO(ConfigKey(kGroup, "beat_closest")),
-              m_beatNextCO(ConfigKey(kGroup, "beat_next")),
-              m_beatPrevCO(ConfigKey(kGroup, "beat_prev")),
-              m_playCO(ConfigKey(kGroup, "play")),
-              m_quantizeCO(ConfigKey(kGroup, "quantize")),
-              m_slipEnabledCO(ConfigKey(kGroup, "slip_enabled")),
-              m_trackSamplesCO(ConfigKey(kGroup, "track_samples")),
+            : m_beatClosestCO(ConfigKey(kChannelGroup, "beat_closest")),
+              m_beatNextCO(ConfigKey(kChannelGroup, "beat_next")),
+              m_beatPrevCO(ConfigKey(kChannelGroup, "beat_prev")),
+              m_playCO(ConfigKey(kChannelGroup, "play")),
+              m_quantizeCO(ConfigKey(kChannelGroup, "quantize")),
+              m_slipEnabledCO(ConfigKey(kChannelGroup, "slip_enabled")),
+              m_trackSamplesCO(ConfigKey(kChannelGroup, "track_samples")),
               m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     }
 
