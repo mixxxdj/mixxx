@@ -157,8 +157,9 @@ int HidController::close() {
     if (m_pHidIoThread) {
         disconnect(m_pHidIoThread.get());
         m_pHidIoThread->quit();
-        qDebug() << "Waiting on IO thread to finish";
+        qCInfo(m_logBase) << "Waiting on HID IO thread to finish";
         m_pHidIoThread->wait();
+        m_pHidIoThread.reset();
     }
 
     // Close device
