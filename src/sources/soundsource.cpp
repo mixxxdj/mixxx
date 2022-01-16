@@ -35,8 +35,12 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     const QString fileSuffix = fileInfo.suffix().toLower().trimmed();
 
     if (fileSuffix == "opus") {
-        // opus has mime type "audio/ogg" which will be decoded with the SoundSourceOggVobis()
-        // but we want SoundSourceOpus()
+        // Bypass the not sufficient mime type lookup from content for opus files
+        // Files with "opus" suffix are of mime type "audio/x-opus+ogg" or "audio/opus".
+        // In case of "audio/x-opus+ogg" only the container format "audio/ogg"
+        // is detected, which will be decoded with the SoundSourceOggVobis()
+        // but we want SoundSourceOpus(). "audio/opus" files without ogg
+        // container are detected as "text/plain". They are not yet supported by Mixxx.
         return fileSuffix;
     }
 

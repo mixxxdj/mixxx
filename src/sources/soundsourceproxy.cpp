@@ -169,13 +169,18 @@ void registerReferenceSoundSourceProviders(
 }
 
 QList<QMimeType> mimeTypesForFileType(const QString& fileType) {
-    if (fileType == "opus") {
-        // opus has mime type "audio/ogg" which will be decoded with the SoundSourceOggVobis()
-        // but we want SoundSourceOpus()
-        return {};
-    }
     const QString dummyFileName = QStringLiteral("prefix.") + fileType;
-    return QMimeDatabase().mimeTypesForFileName(dummyFileName);
+    auto mimeTypes = QMimeDatabase().mimeTypesForFileName(dummyFileName);
+    if (fileType == "opus") {
+        // *.opus suffix is registered for QMimeType("audio/ogg") and QMimeType("audio/x-opus+ogg")
+        // the Mixxx fileType "opus" only supports QMimeType("audio/x-opus+ogg");
+        for (auto& mimeType : mimeTypes) {
+            if (mimeType.name() == "audio/x-opus+ogg") {
+                return {mimeType};
+            }
+        }
+    }
+    return mimeTypes;
 }
 
 } // anonymous namespace
