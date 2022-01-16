@@ -65,7 +65,9 @@ Rectangle {
         Mixxx.ControlProxy {
             group: root.group
             key: "play"
-            onValueChanged: spinnyIndicator.indicatorVisible = (value > 0)
+            onValueChanged: (value) => {
+                spinnyIndicator.indicatorVisible = (value > 0);
+            }
         }
 
         MixxxControls.Spinny {

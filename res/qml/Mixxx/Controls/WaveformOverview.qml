@@ -15,7 +15,9 @@ Mixxx.WaveformOverview {
 
         group: root.group
         key: "track_loaded"
-        onValueChanged: markers.visible = value
+        onValueChanged: (value) => {
+            markers.visible = value;
+        }
     }
 
     Mixxx.ControlProxy {
@@ -58,10 +60,10 @@ Mixxx.WaveformOverview {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
-        onPressed: {
+        onPressed: (mouse) => {
             playPositionControl.value = mouse.x / mousearea.width;
         }
-        onPositionChanged: {
+        onPositionChanged: (mouse) => {
             if (containsPress)
                 playPositionControl.value = mouse.x / width;
 

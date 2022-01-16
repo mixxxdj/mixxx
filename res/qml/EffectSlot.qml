@@ -48,7 +48,7 @@ Item {
             anchors.margins: 5
             textRole: "display"
             model: Mixxx.EffectsManager.visibleEffectsModel
-            onActivated: {
+            onActivated: (index) => {
                 const effectId = model.get(index).effectId;
                 if (root.slot.effectId != effectId)
                     root.slot.effectId = effectId;

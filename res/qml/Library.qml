@@ -11,9 +11,15 @@ Item {
         LibraryControl {
             id: libraryControl
 
-            onMoveVertical: listView.moveSelectionVertical(offset)
-            onLoadSelectedTrack: listView.loadSelectedTrack(group, play)
-            onLoadSelectedTrackIntoNextAvailableDeck: listView.loadSelectedTrackIntoNextAvailableDeck(play)
+            onMoveVertical: (offset) => {
+                listView.moveSelectionVertical(offset);
+            }
+            onLoadSelectedTrack: (group, play) => {
+                listView.loadSelectedTrack(group, play);
+            }
+            onLoadSelectedTrackIntoNextAvailableDeck: (play) => {
+                listView.loadSelectedTrackIntoNextAvailableDeck(play);
+            }
             onFocusWidgetChanged: {
                 switch (focusWidget) {
                 case FocusedWidgetControl.WidgetKind.LibraryView:
@@ -64,7 +70,7 @@ Item {
             highlightMoveDuration: 250
             highlightResizeDuration: 50
             model: Mixxx.Library.model
-            Keys.onPressed: {
+            Keys.onPressed: (event) => {
                 switch (event.key) {
                 case Qt.Key_Enter:
                 case Qt.Key_Return:

@@ -127,10 +127,10 @@ Rectangle {
             anchors.fill: progressContainer
             cursorShape: Qt.PointingHandCursor
             hoverEnabled: true
-            onPressed: {
+            onPressed: (mouse) => {
                 playPositionControl.value = mouse.x / width;
             }
-            onPositionChanged: {
+            onPositionChanged: (mouse) => {
                 if (containsPress)
                     playPositionControl.value = mouse.x / width;
 
