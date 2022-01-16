@@ -96,9 +96,9 @@ class TempFileSystem {
 class LibraryFileSyncTest : public LibraryTest {
     void SetUp() override {
         const auto trackRef = TrackRef::fromFileInfo(m_tempFileSystem.fileInfo());
-        ASSERT_FALSE(internalCollection()->getTrackDAO().getTrackByRef(trackRef));
+        ASSERT_FALSE(trackCollectionManager()->getTrackByRef(trackRef));
         const auto pTrack = getOrAddTrackByLocation(trackRef.getLocation());
-        ASSERT_TRUE(internalCollection()->getTrackDAO().getTrackByRef(trackRef));
+        ASSERT_TRUE(trackCollectionManager()->getTrackByRef(trackRef));
         m_trackId = pTrack->getId();
         // Ensure that new modification time stamps will be strictly greater
         // than that of the temporary file!
