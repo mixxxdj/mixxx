@@ -59,6 +59,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void setupActionButton(QPushButton* pButton,
             void (DlgAutoDJ::*pSlot)(bool),
             const QString& fallbackText);
+    void keyPressEvent(QKeyEvent* pEvent) override;
 
     const UserSettingsPointer m_pConfig;
 
