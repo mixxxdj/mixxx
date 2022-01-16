@@ -343,10 +343,41 @@ TraktorS2MK3.padModeHandler = function (field) {
         // Light LEDs for all enabled hotcues
         for (var i = 1; i <= 8; ++i) {
             var active = engine.getValue(field.group, "hotcue_" + i + "_enabled");
-            TraktorS2MK3.outputHandler(active, field.group, "pad_" + i);
+            var color = engine.getValue(field.group, "hotcue_" + i + "_color");
+            if (active) {
+                var colorValue = TraktorS2MK3.PadColorMap.getValueForNearestColor(color)
+                TraktorS2MK3.outputHandler(colorValue, field.group, "pad_" + i);
+            }
         }
     }
 };
+
+TraktorS2MK3.PadColor = {
+    OFF:     0x7C,
+    RED:     0x06,
+    GREEN:   0x1E,
+    CELESTE: 0x26,
+    YELLOW:  0x16,
+    BLUE:    0x2A,
+    PURPLE:  0x32,
+    PINK:    0x3E,
+    WHITE:   0x46,
+    ORANGE:  0x0E,
+
+};
+
+// Mixxx hotcue colors
+TraktorS2MK3.PadColorMap = new ColorMapper({
+    0xC50A08: TraktorS2MK3.PadColor.RED,
+    0x32BE44: TraktorS2MK3.PadColor.GREEN,
+    0x42D4F4: TraktorS2MK3.PadColor.CELESTE,
+    0xF8D200: TraktorS2MK3.PadColor.YELLOW,
+    0x0044FF: TraktorS2MK3.PadColor.BLUE,
+    0xAF00CC: TraktorS2MK3.PadColor.PURPLE,
+    0xFCA6D7: TraktorS2MK3.PadColor.PINK,
+    0xF2F2FF: TraktorS2MK3.PadColor.WHITE,
+    0xFF8000: TraktorS2MK3.PadColor.ORANGE,
+});
 
 TraktorS2MK3.numberButtonHandler = function (field) {
     var padNumber = parseInt(field.id[field.id.length - 1]);
@@ -406,6 +437,7 @@ TraktorS2MK3.loadTrackHandler = function (field) {
         engine.setValue(field.group, "eject", field.value);
     } else {
         engine.setValue(field.group, "LoadSelectedTrack", field.value);
+        engine.setValue(field.group, "pfl", 1);
     }
 };
 
@@ -730,6 +762,8 @@ TraktorS2MK3.registerOutputPackets = function () {
     for (var i = 1; i <= 8; ++i) {
         TraktorS2MK3.controller.linkOutput("[Channel1]", "pad_" + i, "[Channel1]", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
         TraktorS2MK3.controller.linkOutput("[Channel2]", "pad_" + i, "[Channel2]", "hotcue_" + i + "_enabled", this.hotcueOutputHandler);
+        TraktorS2MK3.controller.linkOutput("[Channel1]", "pad_" + i, "[Channel1]", "hotcue_" + i + "_color", this.hotcueColorHandler);
+        TraktorS2MK3.controller.linkOutput("[Channel2]", "pad_" + i, "[Channel2]", "hotcue_" + i + "_color", this.hotcueColorHandler);
     }
 
     this.linkOutput("[Channel1]", "pfl", this.outputHandler);
@@ -786,7 +820,7 @@ TraktorS2MK3.outputHandler = function (value, group, key) {
     // Custom value for multi-colored LEDs
     var ledValue = value;
     if (value === 0 || value === false) {
-        // Off value
+        // Off value (dimmed)
         ledValue = 0x7C;
     } else if (value === 1 || value === true) {
         // On value
@@ -796,12 +830,32 @@ TraktorS2MK3.outputHandler = function (value, group, key) {
     TraktorS2MK3.controller.setOutput(group, key, ledValue, true);
 };
 
+TraktorS2MK3.colorOutputHandler = function (value, group, key) {
+    // Custom value for multi-colored LEDs
+    var colorValue = TraktorS2MK3.PadColorMap.getValueForNearestColor(value)
+    TraktorS2MK3.controller.setOutput(group, key, colorValue, true);
+};
+
 TraktorS2MK3.hotcueOutputHandler = function (value, group, key) {
     // Light button LED only when we are in hotcue mode
     if (TraktorS2MK3.padModeState[group] === 0) {
-        TraktorS2MK3.outputHandler(value, group, key);
+        var colorKey = key.replace("_enabled", "_color");
+        var color = engine.getValue(group, colorKey);
+        if (value > 0) {
+            TraktorS2MK3.colorOutputHandler(color, group, key);
+        }
+        else {
+            TraktorS2MK3.outputHandler(0, group, key);
+        }
     }
 };
+
+TraktorS2MK3.hotcueColorHandler = function (value, group, key) {
+    // Light button LED only when we are in hotcue mode
+    if (TraktorS2MK3.padModeState[group] === 0) {
+        TraktorS2MK3.colorOutputHandler(value, group, key);
+    }
+}
 
 TraktorS2MK3.samplesOutputHandler = function (value, group, key) {
     // Sampler 1-4, 9-12 -> Channel1
@@ -891,10 +945,10 @@ TraktorS2MK3.lightDeck = function (switchOff) {
     TraktorS2MK3.controller.setOutput("[Channel2]", "keylock", current, false);
 
     for (var i = 1; i <= 8; ++i) {
-        current = (!!engine.getValue("[Channel1]", "hotcue_" + i + "_enabled")) ? fullLight : softLight;
-        TraktorS2MK3.controller.setOutput("[Channel1]", "pad_" + i, current, false);
-        current = (!!engine.getValue("[Channel2]", "hotcue_" + i + "_enabled")) ? fullLight : softLight;
-        TraktorS2MK3.controller.setOutput("[Channel2]", "pad_" + i, current, false);
+        current = engine.getValue("[Channel1]", "hotcue_" + i + "_enabled");
+        TraktorS2MK3.hotcueOutputHandler(current, "[Channel1]", "hotcue_" + i + "_enabled");
+        current = engine.getValue("[Channel2]", "hotcue_" + i + "_enabled");
+        TraktorS2MK3.hotcueOutputHandler(current, "[Channel2]", "hotcue_" + i + "_enabled");
     }
 
     current = (!!engine.getValue("[Channel1]", "pfl")) ? fullLight : softLight;
