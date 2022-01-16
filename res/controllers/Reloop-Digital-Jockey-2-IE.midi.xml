@@ -1166,78 +1166,78 @@
 
         <outputs>
         <!-- Left Deck -->
-			<output>    <!-- LOW kill knob -->
+            <output>    <!-- LOW kill knob -->
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-				<key>button_parameter1</key>
-				<status>0x90</status>
-				<midino>0x16</midino>
+                <key>button_parameter1</key>
+                <status>0x90</status>
+                <midino>0x16</midino>
                 <minimum>0.5</minimum>
-			</output>
-			<output>    <!-- MID kill knob -->
+            </output>
+            <output>    <!-- MID kill knob -->
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-				<key>button_parameter2</key>
-				<status>0x90</status>
-				<midino>0x15</midino>
+                <key>button_parameter2</key>
+                <status>0x90</status>
+                <midino>0x15</midino>
                 <minimum>0.5</minimum>
-			</output>
-			<!--<output>     HIGH kill knob (control moved to script)
+            </output>
+            <!--<output>     HIGH kill knob (control moved to script)
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-				<key>button_parameter3</key>
-				<status>0x90</status>
-				<midino>0x14</midino>
+                <key>button_parameter3</key>
+                <status>0x90</status>
+                <midino>0x14</midino>
                 <minimum>0.5</minimum>
-			</output>-->
-			<output>
+            </output>-->
+            <output>
                 <group>[Channel1]</group>
-				<key>keylock</key>
-				<status>0x90</status>
-				<midino>0x02</midino>
+                <key>keylock</key>
+                <status>0x90</status>
+                <midino>0x02</midino>
                 <minimum>0.5</minimum>
-			</output>
-			<output>
+            </output>
+            <output>
                 <group>[Channel1]</group>
-				<key>pfl</key>
-				<status>0x90</status>
-				<midino>0x05</midino>
+                <key>pfl</key>
+                <status>0x90</status>
+                <midino>0x05</midino>
                 <minimum>0.5</minimum>
-			</output>
+            </output>
 
         <!-- Right Deck -->
-			<output>    <!-- LOW kill knob -->
+            <output>    <!-- LOW kill knob -->
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-				<key>button_parameter1</key>
-				<status>0x90</status>
-				<midino>0x52</midino>
+                <key>button_parameter1</key>
+                <status>0x90</status>
+                <midino>0x52</midino>
                 <minimum>0.5</minimum>
-			</output>
-			<output>    <!-- MID kill knob -->
+            </output>
+            <output>    <!-- MID kill knob -->
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-				<key>button_parameter2</key>
-				<status>0x90</status>
-				<midino>0x51</midino>
+                <key>button_parameter2</key>
+                <status>0x90</status>
+                <midino>0x51</midino>
                 <minimum>0.5</minimum>
-			</output>
-			<!--<output>     HIGH kill knob (control moved to script)
+            </output>
+            <!--<output>     HIGH kill knob (control moved to script)
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-				<key>button_parameter3</key>
-				<status>0x90</status>
-				<midino>0x50</midino>
+                <key>button_parameter3</key>
+                <status>0x90</status>
+                <midino>0x50</midino>
                 <minimum>0.5</minimum>
-			</output>-->
+            </output>-->
             <output>
                 <group>[Channel2]</group>
-				<key>keylock</key>
-				<status>0x90</status>
-				<midino>0x3E</midino>
+                <key>keylock</key>
+                <status>0x90</status>
+                <midino>0x3E</midino>
                 <minimum>0.5</minimum>
-			</output>
-			<output>
+            </output>
+            <output>
                 <group>[Channel2]</group>
-				<key>pfl</key>
-				<status>0x90</status>
-				<midino>0x41</midino>
+                <key>pfl</key>
+                <status>0x90</status>
+                <midino>0x41</midino>
                 <minimum>0.5</minimum>
-			</output>
+            </output>
         </outputs>
     </controller>
 </MixxxControllerPreset>

@@ -117,14 +117,14 @@ RDJ2.logError = function(msg) {
 // Buttons                                                            //
 ////////////////////////////////////////////////////////////////////////
 
-RDJ2.MIDI_BUTTON_ON = 0x7F;
-RDJ2.MIDI_BUTTON_OFF = 0x00;
+RDJ2.MIDI_ON = 0x7F;
+RDJ2.MIDI_OFF = 0x00;
 
 RDJ2.isButtonPressed = function(midiValue) {
     switch (midiValue) {
-    case RDJ2.MIDI_BUTTON_ON:
+    case RDJ2.MIDI_ON:
         return true;
-    case RDJ2.MIDI_BUTTON_OFF:
+    case RDJ2.MIDI_OFF:
         return false;
     default:
         RDJ2.logError("Unexpected MIDI button value: " + midiValue);
@@ -485,9 +485,9 @@ RDJ2.JogModeSelector = function(number, searchMidiCtrl, scratchMidiCtrl, fxDryWe
 };
 RDJ2.JogModeSelector.prototype = new components.Component({
     updateControls: function() {
-        var searchValue = this.jogMode === RDJ2.JOGMODES.search ? RDJ2.MIDI_BUTTON_ON : RDJ2.MIDI_BUTTON_OFF;
-        var scratchValue = this.jogMode === RDJ2.JOGMODES.vinyl ? RDJ2.MIDI_BUTTON_ON : RDJ2.MIDI_BUTTON_OFF;
-        var fxDryWetValue = this.jogMode === RDJ2.JOGMODES.fxdrywet ? RDJ2.MIDI_BUTTON_ON : RDJ2.MIDI_BUTTON_OFF;
+        var searchValue = this.jogMode === RDJ2.JOGMODES.search ? RDJ2.MIDI_ON : RDJ2.MIDI_OFF;
+        var scratchValue = this.jogMode === RDJ2.JOGMODES.vinyl ? RDJ2.MIDI_ON : RDJ2.MIDI_OFF;
+        var fxDryWetValue = this.jogMode === RDJ2.JOGMODES.fxdrywet ? RDJ2.MIDI_ON : RDJ2.MIDI_OFF;
 
         if (midi.sendShortMsg) {
             midi.sendShortMsg(0x90, this.searchMidiCtrl, searchValue);
@@ -564,9 +564,9 @@ RDJ2.JogModeSelector.prototype = new components.Component({
                 this.input = this.inputTrax;
                 //set all LEDs on to indicate trax mode
                 if (midi.sendShortMsg) {
-                    midi.sendShortMsg(0x90, this.searchMidiCtrl, RDJ2.MIDI_BUTTON_ON);
-                    midi.sendShortMsg(0x90, this.scratchMidiCtrl, RDJ2.MIDI_BUTTON_ON);
-                    midi.sendShortMsg(0x90, this.fxDryWetMidiCtrl, RDJ2.MIDI_BUTTON_ON);
+                    midi.sendShortMsg(0x90, this.searchMidiCtrl, RDJ2.MIDI_ON);
+                    midi.sendShortMsg(0x90, this.scratchMidiCtrl, RDJ2.MIDI_ON);
+                    midi.sendShortMsg(0x90, this.fxDryWetMidiCtrl, RDJ2.MIDI_ON);
                 }
             }
         } else {
