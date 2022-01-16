@@ -1620,6 +1620,7 @@ add_executable(mixxx-test
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
+  src/test/libraryfilesynctest.cpp
   src/test/libraryscannertest.cpp
   src/test/librarytest.cpp
   src/test/looping_control_test.cpp
