@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QDateTime>
-#include <QFileInfo>
+#include <QFile>
 #include <QImage>
 #include <utility>
 
@@ -20,7 +20,10 @@ class MetadataSource {
   public:
     virtual ~MetadataSource() = default;
 
-    static QDateTime getFileSynchronizedAt(const QFileInfo& fileInfo);
+    /// Get the synchronization time of the given file.
+    ///
+    /// Includes special case handling to detect bogus time stamps.
+    static QDateTime getFileSynchronizedAt(const QFile& file);
 
     enum class ImportResult {
         Succeeded,

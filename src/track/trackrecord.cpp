@@ -155,7 +155,7 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
         return SourceSyncStatus::Unknown;
     }
     const QDateTime fileSourceSynchronizedAt =
-            MetadataSource::getFileSynchronizedAt(fileInfo.asQFileInfo());
+            MetadataSource::getFileSynchronizedAt(fileInfo.toQFile());
     if (!fileSourceSynchronizedAt.isValid()) {
         kLogger.warning()
                 << "Failed to obtain synchronization time stamp for file"
