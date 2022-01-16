@@ -37,6 +37,10 @@ class TempFileSystem {
         return m_fileInfo.toQFile().fileTime(QFileDevice::FileModificationTime);
     }
 
+    bool setFileLastModified(const QDateTime& lastModified) const {
+        return m_fileInfo.toQFile().setFileTime(lastModified, QFileDevice::FileModificationTime);
+    }
+
     bool updateFileLastModified(const QDateTime& newLastModified = QDateTime()) const {
         auto file = m_fileInfo.toQFile();
         const auto oldLastModified = fileLastModified();
@@ -52,8 +56,7 @@ class TempFileSystem {
             return false;
         }
         if (newLastModified.isValid()) {
-            VERIFY_OR_DEBUG_ASSERT(file.setFileTime(
-                    newLastModified, QFileDevice::FileModificationTime)) {
+            VERIFY_OR_DEBUG_ASSERT(setFileLastModified(newLastModified)) {
                 return false;
             }
             VERIFY_OR_DEBUG_ASSERT(fileLastModified() == newLastModified) {
@@ -182,4 +185,60 @@ TEST_F(LibraryFileSyncTest, exportMetadataAfterMigrationWithUndefinedSyncStatus)
     EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, importResult);
     EXPECT_EQ(updatedFileSynchronizedAt, sourceSynchronizedAt);
     EXPECT_EQ(newTitle, trackMetadata.getTrackInfo().getTitle());
+}
+
+TEST_F(LibraryFileSyncTest, reimportOutdatedMetadata) {
+    const auto origFileSynchronizedAt = mixxx::MetadataSource::getFileSynchronizedAt(
+            m_tempFileSystem.fileInfo().toQFile());
+
+    m_pConfig->setValue(
+            mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+            true);
+
+    // Modify both database and file tags (by exporting metadata)
+    auto pTrack = loadTrack();
+    const auto oldTrackRecord = pTrack->getRecord();
+    ASSERT_EQ(mixxx::TrackRecord::SourceSyncStatus::Synchronized,
+            oldTrackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
+    EXPECT_EQ(origFileSynchronizedAt,
+            oldTrackRecord.getSourceSynchronizedAt());
+    // Export modified metadata into the file
+    const QString newTitle = pTrack->getTitle() + QStringLiteral("modified");
+    pTrack->setTitle(newTitle);
+    pTrack.reset();
+    const auto updatedFileSynchronizedAt = mixxx::MetadataSource::getFileSynchronizedAt(
+            m_tempFileSystem.fileInfo().toQFile());
+    ASSERT_TRUE(updatedFileSynchronizedAt > origFileSynchronizedAt);
+
+    m_pConfig->setValue(
+            mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+            false);
+
+    // Restore the previous state in the database
+    pTrack = loadTrack();
+    ASSERT_TRUE(pTrack->replaceRecord(oldTrackRecord));
+    pTrack.reset();
+    // Verify the preconditions
+    pTrack = loadTrack();
+    ASSERT_EQ(oldTrackRecord, pTrack->getRecord());
+    ASSERT_EQ(mixxx::TrackRecord::SourceSyncStatus::Outdated,
+            oldTrackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
+    ASSERT_EQ(origFileSynchronizedAt,
+            oldTrackRecord.getSourceSynchronizedAt());
+    pTrack.reset();
+
+    m_pConfig->setValue(
+            mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+            true);
+
+    // Reload the track from the database and verify that the outdated
+    // metadata has been re-imported implicitly
+    pTrack = loadTrack();
+    EXPECT_EQ(newTitle, pTrack->getTitle());
+    const auto newTrackRecord = pTrack->getRecord();
+    ASSERT_NE(oldTrackRecord, newTrackRecord);
+    EXPECT_EQ(updatedFileSynchronizedAt,
+            newTrackRecord.getSourceSynchronizedAt());
+    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Synchronized,
+            newTrackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
 }
