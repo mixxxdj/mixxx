@@ -20,18 +20,18 @@ QString loggingCategoryPrefix(const QString& deviceName) {
 }
 } // namespace
 
-HidIoThread::HidIoThread(
-        hid_device* device, const mixxx::hid::DeviceInfo&& deviceInfo)
+HidIoThread::HidIoThread(hid_device* device,
+        std::shared_ptr<const mixxx::hid::DeviceInfo> deviceInfo)
         : QThread(),
           m_pollingBufferIndex(0),
           // Defining RuntimeLoggingCategories locally in this thread improves runtime performance significiant
-          m_logBase(loggingCategoryPrefix(deviceInfo.formatName())),
-          m_logInput(loggingCategoryPrefix(deviceInfo.formatName()) +
+          m_logBase(loggingCategoryPrefix(deviceInfo->formatName())),
+          m_logInput(loggingCategoryPrefix(deviceInfo->formatName()) +
                   QStringLiteral(".input")),
-          m_logOutput(loggingCategoryPrefix(deviceInfo.formatName()) +
+          m_logOutput(loggingCategoryPrefix(deviceInfo->formatName()) +
                   QStringLiteral(".output")),
           m_pHidDevice(device),
-          m_deviceInfo(std::move(deviceInfo)),
+          m_pDeviceInfo(deviceInfo),
           m_HidDeviceMutex(QT_RECURSIVE_MUTEX_INIT),
           mPollTimerId(0) {
     // This isn't strictly necessary but is good practice.
@@ -54,7 +54,7 @@ void HidIoThread::startPollTimer() {
 
 void HidIoThread::stopPollTimer() {
     qCInfo(m_logBase) << "Stop HidIoThread polling"
-                      << m_deviceInfo.formatName();
+                      << m_pDeviceInfo->formatName();
     killTimer(mPollTimerId);
     mPollTimerId =
             0; // Zero is the value, that startTimer returns in case of a failed timer start. Therefore zero can never be the ID of a timer.
@@ -119,8 +119,8 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     // https://github.com/libusb/hidapi/issues/259
     bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
     qCDebug(m_logInput) << bytesRead << "bytes received by hid_get_input_report"
-                        << m_deviceInfo.formatName() << "serial #"
-                        << m_deviceInfo.serialNumber()
+                        << m_pDeviceInfo->formatName() << "serial #"
+                        << m_pDeviceInfo->serialNumber()
                         << "(including one byte for the report ID:"
                         << QString::number(static_cast<quint8>(reportID), 16)
                                    .toUpper()
@@ -148,7 +148,7 @@ void HidIoThread::sendOutputReport(const QByteArray& data, unsigned int reportID
         if (m_outputReports.find(reportID) == m_outputReports.end()) {
             std::unique_ptr<HidIoReport> pNewOutputReport;
             m_outputReports[reportID] = std::make_unique<HidIoReport>(
-                    reportID, m_pHidDevice, std::move(m_deviceInfo));
+                    reportID, m_pHidDevice, m_pDeviceInfo);
         }
         // SendOutputReports executes a hardware operation, which take several milliseconds
         m_outputReports[reportID]->sendOutputReport(data);
@@ -177,8 +177,8 @@ void HidIoThread::sendFeatureReport(
     if (result == -1) {
         qCWarning(m_logOutput)
                 << "sendFeatureReport is unable to send data to"
-                << m_deviceInfo.formatName() << "serial #"
-                << m_deviceInfo.serialNumber() << ":"
+                << m_pDeviceInfo->formatName() << "serial #"
+                << m_pDeviceInfo->serialNumber() << ":"
                 << mixxx::convertWCStringToQString(
                            hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         return;
@@ -186,8 +186,8 @@ void HidIoThread::sendFeatureReport(
 
     qCDebug(m_logOutput)
             << result << "bytes sent by sendFeatureReport to"
-            << m_deviceInfo.formatName() << "serial #"
-            << m_deviceInfo.serialNumber() << "(including report ID of"
+            << m_pDeviceInfo->formatName() << "serial #"
+            << m_pDeviceInfo->serialNumber() << "(including report ID of"
             << reportID << ") - Needed: "
             << (mixxx::Time::elapsed() - startOfHidSendFeatureReport)
                        .formatMicrosWithUnit();
@@ -210,8 +210,8 @@ QByteArray HidIoThread::getFeatureReport(
         // the smallest report with data is therefore 2 bytes.
         qCWarning(m_logInput)
                 << "getFeatureReport is unable to get data from"
-                << m_deviceInfo.formatName() << "serial #"
-                << m_deviceInfo.serialNumber() << ":"
+                << m_pDeviceInfo->formatName() << "serial #"
+                << m_pDeviceInfo->serialNumber() << ":"
                 << mixxx::convertWCStringToQString(
                            hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         return QByteArray();
@@ -219,8 +219,8 @@ QByteArray HidIoThread::getFeatureReport(
 
     qCDebug(m_logInput)
             << bytesRead << "bytes received by getFeatureReport from"
-            << m_deviceInfo.formatName() << "serial #"
-            << m_deviceInfo.serialNumber()
+            << m_pDeviceInfo->formatName() << "serial #"
+            << m_pDeviceInfo->serialNumber()
             << "(including one byte for the report ID:"
             << QString::number(static_cast<quint8>(reportID), 16)
                        .toUpper()

@@ -12,9 +12,9 @@
 HidController::HidController(
         mixxx::hid::DeviceInfo&& deviceInfo)
         : Controller(deviceInfo.formatName()),
-          m_deviceInfo(std::move(deviceInfo)),
           m_pHidDevice(nullptr) {
-    setDeviceCategory(mixxx::hid::DeviceCategory::guessFromDeviceInfo(m_deviceInfo));
+    setDeviceCategory(mixxx::hid::DeviceCategory::guessFromDeviceInfo(deviceInfo));
+    m_pDeviceInfo = std::make_shared<const mixxx::hid::DeviceInfo>(deviceInfo);
 
     // All HID devices are full-duplex
     setInputDevice(true);
@@ -45,7 +45,7 @@ std::shared_ptr<LegacyControllerMapping> HidController::cloneMapping() {
 bool HidController::matchMapping(const MappingInfo& mapping) {
     const QList<ProductInfo>& products = mapping.getProducts();
     for (const auto& product : products) {
-        if (m_deviceInfo.matchProductInfo(product)) {
+        if (m_pDeviceInfo->matchProductInfo(product)) {
             return true;
         }
     }
@@ -65,19 +65,19 @@ int HidController::open() {
 
     // Open device by path
     qCInfo(m_logBase) << "Opening HID device" << getName() << "by HID path"
-                      << m_deviceInfo.pathRaw();
+                      << m_pDeviceInfo->pathRaw();
 
-    m_pHidDevice = hid_open_path(m_deviceInfo.pathRaw());
+    m_pHidDevice = hid_open_path(m_pDeviceInfo->pathRaw());
 
     // If that fails, try to open device with vendor/product/serial #
     if (!m_pHidDevice) {
         qCWarning(m_logBase) << "Failed. Trying to open with make, model & serial no:"
-                             << m_deviceInfo.vendorId() << m_deviceInfo.productId()
-                             << m_deviceInfo.serialNumber();
+                             << m_pDeviceInfo->vendorId() << m_pDeviceInfo->productId()
+                             << m_pDeviceInfo->serialNumber();
         m_pHidDevice = hid_open(
-                m_deviceInfo.vendorId(),
-                m_deviceInfo.productId(),
-                m_deviceInfo.serialNumberRaw());
+                m_pDeviceInfo->vendorId(),
+                m_pDeviceInfo->productId(),
+                m_pDeviceInfo->serialNumberRaw());
     }
 
     // If it does fail, try without serial number WARNING: This will only open
@@ -86,8 +86,8 @@ int HidController::open() {
         qCWarning(m_logBase) << "Unable to open specific HID device" << getName()
                              << "Trying now with just make and model."
                              << "(This may only open the first of multiple identical devices.)";
-        m_pHidDevice = hid_open(m_deviceInfo.vendorId(),
-                m_deviceInfo.productId(),
+        m_pHidDevice = hid_open(m_pDeviceInfo->vendorId(),
+                m_pDeviceInfo->productId(),
                 nullptr);
     }
 
@@ -106,7 +106,7 @@ int HidController::open() {
 
     setOpen(true);
 
-    m_pHidIoThread = std::make_unique<HidIoThread>(m_pHidDevice, std::move(m_deviceInfo));
+    m_pHidIoThread = std::make_unique<HidIoThread>(m_pHidDevice, m_pDeviceInfo);
     m_pHidIoThread->setObjectName(QString("HidIoThread %1").arg(getName()));
 
     connect(m_pHidIoThread.get(),

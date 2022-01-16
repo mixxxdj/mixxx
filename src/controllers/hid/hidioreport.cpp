@@ -19,20 +19,21 @@ QString loggingCategoryPrefix(const QString& deviceName) {
 
 HidIoReport::HidIoReport(const unsigned char& reportId,
         hid_device* device,
-        const mixxx::hid::DeviceInfo&& deviceInfo)
+        std::shared_ptr<const mixxx::hid::DeviceInfo> deviceInfo)
         : m_reportId(reportId),
-          m_logOutput(loggingCategoryPrefix(deviceInfo.formatName()) + QStringLiteral(".output")),
+          m_logOutput(loggingCategoryPrefix(deviceInfo->formatName()) + QStringLiteral(".output")),
           m_pHidDevice(device),
-          m_deviceInfo(std::move(deviceInfo)) {
+          m_pDeviceInfo(deviceInfo) {
 }
 
 void HidIoReport::sendOutputReport(QByteArray data) {
     auto startOfHidWrite = mixxx::Time::elapsed();
     if (!m_lastSentOutputReportData.compare(data)) {
         qCDebug(m_logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
-                             << " Skipped identical Output Report for" << m_deviceInfo.formatName()
-                             << "serial #" << m_deviceInfo.serialNumberRaw()
-                             << "(Report ID" << m_reportId << ")";
+                             << " Skipped identical Output Report for"
+                             << m_pDeviceInfo->formatName() << "serial #"
+                             << m_pDeviceInfo->serialNumberRaw() << "(Report ID"
+                             << m_reportId << ")";
         return; // Same data sent last time
     }
 
@@ -47,7 +48,7 @@ void HidIoReport::sendOutputReport(QByteArray data) {
             reinterpret_cast<const unsigned char*>(outputReport.constData()),
             outputReport.size());
     if (result == -1) {
-        qCWarning(m_logOutput) << "Unable to send data to" << m_deviceInfo.formatName() << ":"
+        qCWarning(m_logOutput) << "Unable to send data to" << m_pDeviceInfo->formatName() << ":"
                                << mixxx::convertWCStringToQString(
                                           hid_error(m_pHidDevice),
                                           kMaxHidErrorMessageSize);
@@ -55,8 +56,8 @@ void HidIoReport::sendOutputReport(QByteArray data) {
     }
 
     qCDebug(m_logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit() << " "
-                         << result << "bytes sent to" << m_deviceInfo.formatName()
-                         << "serial #" << m_deviceInfo.serialNumberRaw()
+                         << result << "bytes sent to" << m_pDeviceInfo->formatName()
+                         << "serial #" << m_pDeviceInfo->serialNumberRaw()
                          << "(including report ID of" << m_reportId << ") - Needed: "
                          << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
 

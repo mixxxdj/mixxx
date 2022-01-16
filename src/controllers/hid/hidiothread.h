@@ -14,7 +14,7 @@ class HidIoThread : public QThread {
     Q_OBJECT
   public:
     HidIoThread(hid_device* device,
-            const mixxx::hid::DeviceInfo&& deviceInfo);
+            std::shared_ptr<const mixxx::hid::DeviceInfo> deviceInfo);
 
     void startPollTimer();
     void stopPollTimer();
@@ -47,7 +47,7 @@ class HidIoThread : public QThread {
     void processInputReport(int bytesRead);
     hid_device* const
             m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
-    const mixxx::hid::DeviceInfo m_deviceInfo;
+    std::shared_ptr<const mixxx::hid::DeviceInfo> m_pDeviceInfo;
     std::map<unsigned char, std::unique_ptr<HidIoReport>> m_outputReports;
 
     // Must be locked when using the m_pHidDevice and it's properties, which is not thread-safe for hidapi backends

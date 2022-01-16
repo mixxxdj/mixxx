@@ -48,7 +48,7 @@ class HidController final : public Controller {
     // 0x0.
     void sendBytes(const QByteArray& data) override;
 
-    const mixxx::hid::DeviceInfo m_deviceInfo;
+    std::shared_ptr<const mixxx::hid::DeviceInfo> m_pDeviceInfo;
 
     hid_device* m_pHidDevice;
     std::unique_ptr<HidIoThread> m_pHidIoThread;
