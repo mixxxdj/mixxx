@@ -9,7 +9,7 @@ Item {
     property int hotcueNumber // required
 
     function updatePosition() {
-        let totalSamples = trackSamplesControl.value;
+        const totalSamples = trackSamplesControl.value;
         marker.x = (totalSamples > 0) ? root.width * (positionControl.value / totalSamples) : 0;
     }
 
