@@ -1456,16 +1456,30 @@ CoverInfo Track::getCoverInfoWithLocation() const {
 
 namespace {
 
-bool safeToOverwriteMetadataOnExport(mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus) {
-    return sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Synchronized ||
-            // After the migration the sync status of all existing tracks in the
-            // library is unknown. In this case we assume that exporting metadata
-            // is desired independent of the last modification time of the file.
-            sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Unknown ||
-            // Trying to write into an inaccessible file is safe even though it
-            // might fail subsequently. We need to continue here for avoiding
-            // misleading or wrong error messages about the synchronization status!
-            sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Undefined;
+bool isSafeToOverwriteMetadataOnExport(mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus) {
+    switch (sourceSyncStatus) {
+    case mixxx::TrackRecord::SourceSyncStatus::Void:
+        // TODO: Decide on how to proceed if metadata has not been imported yet
+        // and add appropriate tests for this use case to LibraryFileSyncTest.
+        return false;
+    case mixxx::TrackRecord::SourceSyncStatus::Synchronized:
+        // If the metadata is still synchronized with the source exporting
+        // modified metadata from Mixxx is perfectly safe.
+        return true;
+    case mixxx::TrackRecord::SourceSyncStatus::Unknown:
+        // After the migration the sync status of all existing tracks in the
+        // library is unknown. In this case we assume that exporting metadata
+        // is desired independent of the last modification time of the file.
+        return true;
+    case mixxx::TrackRecord::SourceSyncStatus::Undefined:
+        // Trying to write into an inaccessible file is safe even though it
+        // might fail subsequently. We need to continue here for avoiding
+        // misleading or wrong error messages about the synchronization status!
+        return true;
+    default:
+        DEBUG_ASSERT(!"unreachable");
+        return false;
+    }
 }
 
 } // anonymous namespace
@@ -1478,7 +1492,7 @@ ExportTrackMetadataResult Track::exportMetadata(
     // But it doesn't hurt much, so let's play it safe ;)
     auto locked = lockMutex(&m_qMutex);
     const auto sourceSyncStatus = m_record.checkSourceSyncStatus(m_fileAccess.info());
-    if (!safeToOverwriteMetadataOnExport(sourceSyncStatus)) {
+    if (!isSafeToOverwriteMetadataOnExport(sourceSyncStatus)) {
         if (m_bMarkedForMetadataExport) {
             const auto fileSynchronizedAt =
                     mixxx::MetadataSource::getFileSynchronizedAt(m_fileAccess.info().toQFile());
