@@ -10,7 +10,6 @@ MixxxControls.Slider {
     property alias bg: backgroundImage.source
 
     bar: true
-    barColor: Theme.sliderBarColor
     barMargin: 10
     implicitWidth: backgroundImage.implicitWidth
     implicitHeight: backgroundImage.implicitHeight
