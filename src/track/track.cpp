@@ -1491,7 +1491,7 @@ ExportTrackMetadataResult Track::exportMetadata(
                     << getLocation()
                     << "has last been been modified at"
                     << fileSynchronizedAt
-                    << "after the last synchronization at"
+                    << "after the last library synchronization at"
                     << sourceSynchronizedAt;
         } else {
             // If the metadata has never been imported from file tags it
