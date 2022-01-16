@@ -20,18 +20,18 @@ QString loggingCategoryPrefix(const QString& deviceName) {
 }
 } // namespace
 
-HidIoThread::HidIoThread(hid_device* device,
-        std::shared_ptr<const mixxx::hid::DeviceInfo> deviceInfo)
+HidIoThread::HidIoThread(hid_device* pDevice,
+        std::shared_ptr<const mixxx::hid::DeviceInfo> pDeviceInfo)
         : QThread(),
           m_pollingBufferIndex(0),
           // Defining RuntimeLoggingCategories locally in this thread improves runtime performance significiant
-          m_logBase(loggingCategoryPrefix(deviceInfo->formatName())),
-          m_logInput(loggingCategoryPrefix(deviceInfo->formatName()) +
+          m_logBase(loggingCategoryPrefix(pDeviceInfo->formatName())),
+          m_logInput(loggingCategoryPrefix(pDeviceInfo->formatName()) +
                   QStringLiteral(".input")),
-          m_logOutput(loggingCategoryPrefix(deviceInfo->formatName()) +
+          m_logOutput(loggingCategoryPrefix(pDeviceInfo->formatName()) +
                   QStringLiteral(".output")),
-          m_pHidDevice(device),
-          m_pDeviceInfo(deviceInfo),
+          m_pHidDevice(pDevice),
+          m_pDeviceInfo(pDeviceInfo),
           m_HidDeviceMutex(QT_RECURSIVE_MUTEX_INIT),
           mPollTimerId(0) {
     // This isn't strictly necessary but is good practice.

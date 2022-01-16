@@ -18,12 +18,12 @@ QString loggingCategoryPrefix(const QString& deviceName) {
 } // namespace
 
 HidIoReport::HidIoReport(const unsigned char& reportId,
-        hid_device* device,
-        std::shared_ptr<const mixxx::hid::DeviceInfo> deviceInfo)
+        hid_device* pDevice,
+        std::shared_ptr<const mixxx::hid::DeviceInfo> pDeviceInfo)
         : m_reportId(reportId),
-          m_logOutput(loggingCategoryPrefix(deviceInfo->formatName()) + QStringLiteral(".output")),
-          m_pHidDevice(device),
-          m_pDeviceInfo(deviceInfo) {
+          m_logOutput(loggingCategoryPrefix(pDeviceInfo->formatName()) + QStringLiteral(".output")),
+          m_pHidDevice(pDevice),
+          m_pDeviceInfo(pDeviceInfo) {
 }
 
 void HidIoReport::sendOutputReport(QByteArray data) {
