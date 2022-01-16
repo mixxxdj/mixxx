@@ -1454,6 +1454,22 @@ CoverInfo Track::getCoverInfoWithLocation() const {
     return CoverInfo(m_record.getCoverInfo(), m_fileAccess.info().location());
 }
 
+namespace {
+
+bool safeToOverwriteMetadataOnExport(mixxx::TrackRecord::SourceSyncStatus sourceSyncStatus) {
+    return sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Synchronized ||
+            // After the migration the sync status of all existing tracks in the
+            // library is unknown. In this case we assume that exporting metadata
+            // is desired independent of the last modification time of the file.
+            sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Unknown ||
+            // Trying to write into an inaccessible file is safe even though it
+            // might fail subsequently. We need to continue here for avoiding
+            // misleading or wrong error messages about the synchronization status!
+            sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Undefined;
+}
+
+} // anonymous namespace
+
 ExportTrackMetadataResult Track::exportMetadata(
         const mixxx::MetadataSource& metadataSource,
         const SyncTrackMetadataParams& syncParams) {
@@ -1461,23 +1477,33 @@ ExportTrackMetadataResult Track::exportMetadata(
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
     auto locked = lockMutex(&m_qMutex);
-    // TODO(XXX): Use sourceSynchronizedAt to decide if metadata
-    // should be (re-)imported before exporting it. The file might
-    // have been updated by external applications. Overwriting
-    // this modified metadata is probably not be intended if not
-    // explicitly requested by m_bMarkedForMetadataExport.
-    if (!m_bMarkedForMetadataExport &&
-            m_record.checkSourceSyncStatus(m_fileAccess.info()) !=
-                    mixxx::TrackRecord::SourceSyncStatus::Synchronized) {
-        // If the metadata has never been imported from file tags it
-        // must be exported explicitly once. This ensures that we don't
-        // overwrite existing file tags with completely different
-        // information.
-        kLogger.info()
-                << "Skip exporting of unsynchronized track metadata:"
-                << getLocation();
-        // abort
-        return ExportTrackMetadataResult::Skipped;
+    const auto sourceSyncStatus = m_record.checkSourceSyncStatus(m_fileAccess.info());
+    if (!safeToOverwriteMetadataOnExport(sourceSyncStatus)) {
+        if (m_bMarkedForMetadataExport) {
+            const auto fileSynchronizedAt =
+                    mixxx::MetadataSource::getFileSynchronizedAt(m_fileAccess.info().toQFile());
+            DEBUG_ASSERT(fileSynchronizedAt.isValid());
+            const auto sourceSynchronizedAt = m_record.getSourceSynchronizedAt();
+            DEBUG_ASSERT(sourceSynchronizedAt.isValid());
+            DEBUG_ASSERT(fileSynchronizedAt > sourceSynchronizedAt);
+            kLogger.warning()
+                    << "Exporting metadata as requested even though the file"
+                    << getLocation()
+                    << "has last been been modified at"
+                    << fileSynchronizedAt
+                    << "after the last synchronization at"
+                    << sourceSynchronizedAt;
+        } else {
+            // If the metadata has never been imported from file tags it
+            // must be exported explicitly once. This ensures that we don't
+            // overwrite existing file tags with completely different
+            // information.
+            kLogger.info()
+                    << "Skip exporting of unsynchronized track metadata:"
+                    << getLocation();
+            // abort
+            return ExportTrackMetadataResult::Skipped;
+        }
     }
 
     if (syncParams.syncSeratoMetadata) {

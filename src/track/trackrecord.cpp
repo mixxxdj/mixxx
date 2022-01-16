@@ -150,6 +150,8 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
         return SourceSyncStatus::Void;
     }
     if (!getSourceSynchronizedAt().isValid()) {
+        // Existing tracks that have been imported before database version
+        // 37 don't have a synchronization time stamp.
         return SourceSyncStatus::Unknown;
     }
     const QDateTime fileSourceSynchronizedAt =
@@ -159,11 +161,18 @@ TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
                 << "Failed to obtain synchronization time stamp for file"
                 << mixxx::FileInfo(fileInfo)
                 << ": Is this file missing or inaccessible?";
+        return SourceSyncStatus::Undefined;
     }
     if (getSourceSynchronizedAt() < fileSourceSynchronizedAt) {
         return SourceSyncStatus::Outdated;
     }
-    if (getSourceSynchronizedAt() > fileSourceSynchronizedAt) {
+    // This could actually happen when users replace files with
+    // an older version on the file system. But it should never
+    // happen under normal operation. Otherwise it might indicate
+    // a serious programming error and we should detect it early
+    // before the release. Debug assertions are only enabled in
+    // development and testing versions.
+    VERIFY_OR_DEBUG_ASSERT(getSourceSynchronizedAt() <= fileSourceSynchronizedAt) {
         kLogger.warning()
                 << "Internal source synchronization time stamp"
                 << getSourceSynchronizedAt()
