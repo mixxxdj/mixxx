@@ -29,6 +29,10 @@ HidIoReport::HidIoReport(const unsigned char& reportId,
 void HidIoReport::sendOutputReport(QByteArray data) {
     auto startOfHidWrite = mixxx::Time::elapsed();
     if (!m_lastSentOutputReportData.compare(data)) {
+        // An HID OutputReport can contain only HID OutputItems.
+        // HID OutputItems are defined to represent the state of one or more similar controls or LEDs.
+        // Only HID Feature items may be attributes of other items.
+        // This means there is always a one to one relationship to the state of control(s)/LED(s). And if the state is not changed, there's no need to execute the time consuming hid_write again.
         qCDebug(m_logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
                              << " Skipped identical Output Report for"
                              << m_pDeviceInfo->formatName() << "serial #"
