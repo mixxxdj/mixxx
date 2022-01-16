@@ -13,7 +13,7 @@ Item {
     implicitWidth: 56
     implicitHeight: 26
 
-    Slider {
+    Skin.Slider {
         id: orientationSlider
 
         anchors.fill: parent
