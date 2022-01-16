@@ -56,6 +56,7 @@ void HidIoThread::stopPollTimer() {
     qCInfo(m_logBase) << "Stop HidIoThread polling"
                       << m_deviceInfo.formatName();
     killTimer(mPollTimerId);
+    mPollTimerId = 0; // Zero is the value, that startTimer returns in case of a failed timer start. Therefore zero can never be the ID of a timer.
 }
 
 void HidIoThread::poll() {
@@ -66,7 +67,7 @@ void HidIoThread::poll() {
     // This could stall other low priority tasks.
     // There is no safety net for this because it has not been demonstrated to be
     // a problem in practice.
-    while (true) {
+    while (mPollTimerId) { // When the poll timer is not started or stopped from outside, mPollTimerId is set to zero
         int bytesRead = hid_read(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
         if (bytesRead < 0) {
             // -1 is the only error value according to hidapi documentation.
