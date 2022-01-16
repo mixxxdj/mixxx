@@ -154,10 +154,10 @@ Rectangle {
     Mixxx.ControlProxy {
         id: playControl
 
-        readonly property bool playing: value != 0
+        readonly property bool playing: this.value !== 0
 
         function stop() {
-            value = 0;
+            this.value = 0;
         }
 
         group: root.group
@@ -168,8 +168,8 @@ Rectangle {
         id: ejectControl
 
         function trigger() {
-            value = 1;
-            value = 0;
+            this.value = 1;
+            this.value = 0;
         }
 
         group: root.group

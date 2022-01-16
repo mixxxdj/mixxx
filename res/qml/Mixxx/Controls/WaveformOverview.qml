@@ -55,17 +55,15 @@ Mixxx.WaveformOverview {
     }
 
     MouseArea {
-        id: mousearea
-
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
         onPressed: (mouse) => {
-            playPositionControl.value = mouse.x / mousearea.width;
+            playPositionControl.value = mouse.x / this.width;
         }
         onPositionChanged: (mouse) => {
-            if (containsPress)
-                playPositionControl.value = mouse.x / width;
+            if (this.containsPress)
+                playPositionControl.value = mouse.x / this.width;
 
         }
     }

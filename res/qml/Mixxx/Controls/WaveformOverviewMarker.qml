@@ -45,7 +45,7 @@ Item {
         key: root.key
         onValueChanged: (value) => {
             // Math.round saves tons of CPU by avoiding redrawing for fractional pixel positions.
-            marker.x = Math.round(parent.width * value * Screen.devicePixelRatio) / Screen.devicePixelRatio;
+            marker.x = Math.round(root.width * value * Screen.devicePixelRatio) / Screen.devicePixelRatio;
         }
     }
 

@@ -33,7 +33,7 @@ Popup {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        hotcue.setColor(parent.color);
+                        root.hotcue.setColor(parent.color);
                         root.close();
                     }
                 }
