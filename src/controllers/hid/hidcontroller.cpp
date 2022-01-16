@@ -58,7 +58,7 @@ int HidController::open() {
         return -1;
     }
 
-    if (m_pHidIoThread) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pHidIoThread) {
         qWarning() << "HidIoThread already present for" << getName();
         return -1;
     }
@@ -142,10 +142,11 @@ int HidController::close() {
     qCInfo(m_logBase) << "Shutting down HID device" << getName();
 
     // Stop the InputReport polling
-    if (!m_pHidIoThread) {
+    VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread) {
         qWarning() << "HidIoThread not present for" << getName()
                    << "yet the device is open!";
-    } else {
+    }
+    else {
         m_pHidIoThread->stopPollTimer();
     }
 

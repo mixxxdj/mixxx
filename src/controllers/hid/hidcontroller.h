@@ -82,11 +82,17 @@ class HidControllerJSProxy : public ControllerJSProxy {
     // function of the common-hid-packet-parser.
     Q_INVOKABLE QByteArray getInputReport(
             unsigned int reportID) {
+        VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
+            return {};
+        }
         return m_pHidController->m_pHidIoThread->getInputReport(reportID);
     }
 
     Q_INVOKABLE void sendFeatureReport(
             const QByteArray& reportData, unsigned int reportID) {
+        VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
+            return;
+        }
         m_pHidController->m_pHidIoThread->sendFeatureReport(reportData, reportID);
     }
     // getFeatureReport receives a feature reports on request.
@@ -98,6 +104,9 @@ class HidControllerJSProxy : public ControllerJSProxy {
     // and sent it back to the controller.
     Q_INVOKABLE QByteArray getFeatureReport(
             unsigned int reportID) {
+        VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
+            return {};
+        }
         return m_pHidController->m_pHidIoThread->getFeatureReport(reportID);
     }
 

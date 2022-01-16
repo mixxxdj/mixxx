@@ -56,7 +56,8 @@ void HidIoThread::stopPollTimer() {
     qCInfo(m_logBase) << "Stop HidIoThread polling"
                       << m_deviceInfo.formatName();
     killTimer(mPollTimerId);
-    mPollTimerId = 0; // Zero is the value, that startTimer returns in case of a failed timer start. Therefore zero can never be the ID of a timer.
+    mPollTimerId =
+            0; // Zero is the value, that startTimer returns in case of a failed timer start. Therefore zero can never be the ID of a timer.
 }
 
 void HidIoThread::poll() {
