@@ -107,7 +107,7 @@ int HidController::open() {
     setOpen(true);
 
     m_pHidIoThread = std::make_unique<HidIoThread>(m_pHidDevice, m_pDeviceInfo);
-    m_pHidIoThread->setObjectName(QString("HidIoThread %1").arg(getName()));
+    m_pHidIoThread->setObjectName(QStringLiteral("HidIoThread ") + getName());
 
     connect(m_pHidIoThread.get(),
             &HidIoThread::receive,
