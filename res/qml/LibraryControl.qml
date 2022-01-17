@@ -19,7 +19,7 @@ Item {
     Mixxx.ControlProxy {
         group: "[Library]"
         key: "GoToItem"
-        onValueChanged: {
+        onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.loadSelectedTrackIntoNextAvailableDeck(false);
 
@@ -29,7 +29,7 @@ Item {
     Mixxx.ControlProxy {
         group: "[Playlist]"
         key: "LoadSelectedIntoFirstStopped"
-        onValueChanged: {
+        onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.loadSelectedTrackIntoNextAvailableDeck(false);
 
@@ -39,7 +39,7 @@ Item {
     Mixxx.ControlProxy {
         group: "[Playlist]"
         key: "SelectTrackKnob"
-        onValueChanged: {
+        onValueChanged: (value) => {
             if (value != 0) {
                 root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
                 root.moveVertical(value);
@@ -50,7 +50,7 @@ Item {
     Mixxx.ControlProxy {
         group: "[Playlist]"
         key: "SelectPrevTrack"
-        onValueChanged: {
+        onValueChanged: (value) => {
             if (value != 0) {
                 root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
                 root.moveVertical(-1);
@@ -61,7 +61,7 @@ Item {
     Mixxx.ControlProxy {
         group: "[Playlist]"
         key: "SelectNextTrack"
-        onValueChanged: {
+        onValueChanged: (value) => {
             if (value != 0) {
                 root.focusWidget = FocusedWidgetControl.WidgetKind.LibraryView;
                 root.moveVertical(1);
@@ -72,7 +72,7 @@ Item {
     Mixxx.ControlProxy {
         group: "[Library]"
         key: "MoveVertical"
-        onValueChanged: {
+        onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(value);
 
@@ -82,7 +82,7 @@ Item {
     Mixxx.ControlProxy {
         group: "[Library]"
         key: "MoveUp"
-        onValueChanged: {
+        onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(-1);
 
@@ -92,7 +92,7 @@ Item {
     Mixxx.ControlProxy {
         group: "[Library]"
         key: "MoveDown"
-        onValueChanged: {
+        onValueChanged: (value) => {
             if (value != 0 && root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView)
                 root.moveVertical(1);
 
@@ -112,7 +112,9 @@ Item {
         delegate: LibraryControlLoadSelectedTrackHandler {
             group: "[Channel" + (index + 1) + "]"
             enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
-            onLoadTrackRequested: root.loadSelectedTrack(group, play)
+            onLoadTrackRequested: (play) => {
+                root.loadSelectedTrack(this.group, play);
+            }
         }
 
     }
@@ -130,7 +132,9 @@ Item {
         delegate: LibraryControlLoadSelectedTrackHandler {
             group: "[PreviewDeck" + (index + 1) + "]"
             enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
-            onLoadTrackRequested: root.loadSelectedTrack(group, play)
+            onLoadTrackRequested: (play) => {
+                root.loadSelectedTrack(this.group, play);
+            }
         }
 
     }
@@ -148,7 +152,9 @@ Item {
         delegate: LibraryControlLoadSelectedTrackHandler {
             group: "[Sampler" + (index + 1) + "]"
             enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
-            onLoadTrackRequested: root.loadSelectedTrack(group, play)
+            onLoadTrackRequested: (play) => {
+                root.loadSelectedTrack(this.group, play);
+            }
         }
 
     }

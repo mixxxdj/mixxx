@@ -297,12 +297,15 @@ bool WBeatSpinBox::event(QEvent* pEvent) {
 }
 
 void WBeatSpinBox::keyPressEvent(QKeyEvent* pEvent) {
-    // Return key applies current value and sends a Shift+Tab event in order
-    // to focus a library widget. In official skins this would be the tracks table.
-    if (pEvent->key() == Qt::Key_Return) {
+    // Return & Enter keys apply current value.
+    // Return, Enter and Escape send a Shift+Tab event in order to move focus
+    // to a library widget. In official skins this would be the tracks table.
+    if (pEvent->key() == Qt::Key_Return ||
+            pEvent->key() == Qt::Key_Enter ||
+            pEvent->key() == Qt::Key_Escape) {
         QDoubleSpinBox::keyPressEvent(pEvent);
-        QKeyEvent returnKeyEvent = QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
-        QApplication::sendEvent(this, &returnKeyEvent);
+        QKeyEvent shiftTabKeyEvent = QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
+        QApplication::sendEvent(this, &shiftTabKeyEvent);
         return;
     }
     return QDoubleSpinBox::keyPressEvent(pEvent);

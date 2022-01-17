@@ -28,8 +28,8 @@ Slider {
             strokeColor: "transparent"
             strokeWidth: 2
             fillColor: "transparent"
-            startX: barShape.width * (root.horizontal ? (1 - barStart) : 0.5)
-            startY: barShape.height * (root.vertical ? (1 - barStart) : 0.5)
+            startX: barShape.width * (root.horizontal ? (1 - root.barStart) : 0.5)
+            startY: barShape.height * (root.vertical ? (1 - root.barStart) : 0.5)
 
             PathLine {
                 x: root.horizontal ? (barShape.width * root.value) : barPath.startX

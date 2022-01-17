@@ -42,10 +42,9 @@ ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
 
 ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
     // Stop all timers
-    QMutableHashIterator<int, TimerInfo> i(m_timers);
-    while (i.hasNext()) {
-        i.next();
-        stopTimer(i.key());
+    const auto timerIds = m_timers.keys();
+    for (const int timerId : timerIds) {
+        stopTimer(timerId);
     }
 
     // Prevents leaving decks in an unstable state
