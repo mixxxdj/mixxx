@@ -25,73 +25,7 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
-# Set up vcpkg
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
-    set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
-endif()
-
-if(DEFINED VCPKG_ROOT)
-  set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
-
-  if(NOT DEFINED VCPKG_OVERLAY_PORTS)
-    set(VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/ports")
-    if(APPLE)
-        list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/osx")
-    elseif(WIN32)
-        list(APPEND VCPKG_OVERLAY_PORTS "${VCPKG_ROOT}/overlay/windows")
-    endif()
-  endif()
-
-  if(NOT DEFINED VCPKG_OVERLAY_TRIPLETS)
-    set(VCPKG_OVERLAY_TRIPLETS "${VCPKG_ROOT}/overlay/triplets")
-  endif()
-
-  if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET})
-    set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
-  endif()
-
-  if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-  endif()
-endif()
-
-# Set a default build type if none was specified
-# See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
-set(default_build_type "RelWithDebInfo")
-if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND NOT WIN32)
-  # On Windows, Debug builds are linked to unoptimized libs
-  # generating unusable slow Mixxx builds.
-  set(default_build_type "Debug")
-endif()
-
-if(NOT CMAKE_CONFIGURATION_TYPES)
-  if(NOT CMAKE_BUILD_TYPE)
-    message(STATUS "Setting CMAKE_BUILD_TYPE to '${default_build_type}' as none was specified.")
-    set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
-    # Set the possible values of build type for cmake-gui
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
-  elseif(NOT CMAKE_BUILD_TYPE MATCHES "^(Debug|Release|RelWithDebInfo)$")
-    message(FATAL_ERROR "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} is not supported, use one of Debug, Release or RelWithDebInfo.")
-  endif()
-endif()
-
-option(QT6 "Build with Qt6" OFF)
-
-if(APPLE)
-  if(QT6)
-    # Minimum macOS version supported by Qt 6
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
-  else()
-    # Minimum macOS version supported by Qt 5.12
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
-    # Needed for deployment target < 10.14
-    add_compile_options(-fno-aligned-allocation)
-  endif()
-endif()
-
-project(mixxx VERSION 2.4.0)
-# Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
-set(MIXXX_VERSION_PRERELEASE "alpha-pre") # set to "alpha-pre" "beta" or ""
+project(mixxx VERSION 2.3.0)
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -1768,44 +1702,22 @@ set_target_properties(mixxx PROPERTIES AUTORCC ON)
 target_sources(mixxx-test PRIVATE res/mixxx.qrc)
 set_target_properties(mixxx-test PROPERTIES AUTORCC ON)
 
-if (MIXXX_VERSION_PRERELEASE STREQUAL "")
-   set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}")
-else()
-   set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}-${MIXXX_VERSION_PRERELEASE}")
-endif()
-
-get_target_property(MIXXX_BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
-
-# uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE MIXXX_BUILD_FLAGS
-configure_file(src/version.h.in src/version.h @ONLY)
-
-if(GIT_COMMIT_DATE AND NOT GIT_COMMIT_DATE MATCHES "^[0-9]*-[0-9]*-[0-9]*T[0-9]*\\:[0-9]*\\:[0-9]*[+-][0-9]*\\:[0-9]*$")
-  message(FATAL_ERROR "GIT_COMMIT_DATE requires strict ISO 8601 format %Y-%m-%dT%H:%M:%SZ")
-endif()
-
-add_custom_target(mixxx-gitinfo
-  COMMAND ${CMAKE_COMMAND}
-    -DGIT_DESCRIBE="${GIT_DESCRIBE}"
-    -DGIT_COMMIT_DATE="${GIT_COMMIT_DATE}"
-    -DINPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/src/gitinfo.h.in"
-    -DOUTPUT_FILE="${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
-    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/gitinfo.cmake"
-  COMMENT "Update git version information in gitinfo.h"
-  BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-)
-
-add_library(mixxx-gitinfostore STATIC EXCLUDE_FROM_ALL
-    src/util/gitinfostore.cpp
-)
-target_include_directories(mixxx-gitinfostore PUBLIC src ${CMAKE_BINARY_DIR}/src)
-add_dependencies(mixxx-gitinfostore mixxx-gitinfo)
+file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
+string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
+# a dummy configure to force a reconfigure when the version changes
+configure_file(src/_version.h src/_version.h)
 
 # Windows-only resource file
 if(WIN32)
   string(TIMESTAMP MIXXX_YEAR "%Y")
 
-  set(MIXXX_FILEVERSION "${CMAKE_PROJECT_VERSION_MAJOR},${CMAKE_PROJECT_VERSION_MINOR},${CMAKE_PROJECT_VERSION_PATCH}")
+  # Remove anything after ~ or - in the version number and replace the dots with commas
+  string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
+  string(REPLACE "." "," MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
+    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
+    string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  endif()
   set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
 
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -1814,7 +1726,8 @@ if(WIN32)
     set(MIXXX_DEBUG 0)
   endif()
 
-  if (MIXXX_VERSION_PRERELEASE STREQUAL "")
+  string(FIND "${MIXXX_VERSION}" "pre" MIXXX_PRERELEASE_POSITION)
+  if(MIXXX_PRERELEASE_POSITION EQUAL -1)
     set(MIXXX_PRERELEASE 0)
   else()
     set(MIXXX_PRERELEASE 1)
