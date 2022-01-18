@@ -17,6 +17,14 @@ const auto kTestDir = QDir(QDir::current().absoluteFilePath("src/test/id3-test-d
 
 const QString kTestFileName = QStringLiteral("cover-test-jpg.mp3");
 
+void sleepAfterFileLastModifiedUpdated() {
+    // Ensure that all subsequent modification time stamps
+    // will be strictly greater. This grace period is mandatory
+    // for the CI test runs and might need to be adjusted
+    // depending on the results for different platforms.
+    QThread::msleep(1);
+}
+
 /// A temporary file system with a single audio file.
 class TempFileSystem {
   public:
@@ -52,8 +60,7 @@ class TempFileSystem {
         if (newLastModified.isValid()) {
             setFileLastModified(newLastModified);
             ASSERT_EQ(fileLastModified(), newLastModified);
-            // Ensure that subsequent modification time stamps will be strictly greater.
-            QThread::msleep(1);
+            sleepAfterFileLastModifiedUpdated();
             return;
         }
         QDateTime nowLastModified;
@@ -64,8 +71,7 @@ class TempFileSystem {
             // Loop until the actual modification time has changed
         } while (oldLastModified == fileLastModified());
         ASSERT_EQ(fileLastModified(), nowLastModified);
-        // Ensure that subsequent modification time stamps will be strictly greater.
-        QThread::msleep(1);
+        sleepAfterFileLastModifiedUpdated();
     }
 
     void removeFile() const {
@@ -115,9 +121,7 @@ class LibraryFileSyncTest : public LibraryTest {
         const auto pTrack = getOrAddTrackByLocation(trackRef.getLocation());
         ASSERT_TRUE(trackCollectionManager()->getTrackByRef(trackRef));
         m_trackId = pTrack->getId();
-        // Ensure that new modification time stamps will be strictly greater
-        // than that of the temporary file!
-        QThread::msleep(1);
+        sleepAfterFileLastModifiedUpdated();
     }
 
     void TearDown() override {
@@ -140,6 +144,8 @@ class LibraryFileSyncTest : public LibraryTest {
         ASSERT_TRUE(pTrack->isDirty());
         pTrack.reset();
         ASSERT_EQ(nullptr, GlobalTrackCacheLocker().lookupTrackById(trackId));
+        // The file might have been modified if track metadata has been exported.
+        sleepAfterFileLastModifiedUpdated();
     }
 
     void verifySourceSyncStatusOfTrack(
