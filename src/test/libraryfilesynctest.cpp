@@ -36,6 +36,7 @@ class TempFileSystem {
                 kTestDir.absoluteFilePath(kTestFileName),
                 m_fileInfo.location());
         DEBUG_ASSERT(m_fileInfo.exists());
+        sleepAfterFileLastModifiedUpdated();
     }
 
     const mixxx::FileInfo& fileInfo() const {
