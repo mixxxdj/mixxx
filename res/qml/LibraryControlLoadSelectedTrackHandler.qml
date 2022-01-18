@@ -16,7 +16,7 @@ Item {
     Mixxx.ControlProxy {
         group: root.group
         key: "LoadSelectedTrack"
-        onValueChanged: {
+        onValueChanged: (value) => {
             if (value == 0 || !root.enabled)
                 return ;
 
@@ -27,7 +27,7 @@ Item {
     Mixxx.ControlProxy {
         group: root.group
         key: "LoadSelectedTrackAndPlay"
-        onValueChanged: {
+        onValueChanged: (value) => {
             if (value == 0 || !root.enabled)
                 return ;
 

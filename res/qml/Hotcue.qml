@@ -25,28 +25,28 @@ Item {
         id: hotcueColorControl
 
         group: root.group
-        key: "hotcue_" + hotcueNumber + "_color"
+        key: "hotcue_" + root.hotcueNumber + "_color"
     }
 
     Mixxx.ControlProxy {
         id: hotcueActivateControl
 
         group: root.group
-        key: "hotcue_" + hotcueNumber + "_activate"
+        key: "hotcue_" + root.hotcueNumber + "_activate"
     }
 
     Mixxx.ControlProxy {
         id: hotcueStatusControl
 
         group: root.group
-        key: "hotcue_" + hotcueNumber + "_status"
+        key: "hotcue_" + root.hotcueNumber + "_status"
     }
 
     Mixxx.ControlProxy {
         id: hotcueClearControl
 
         group: root.group
-        key: "hotcue_" + hotcueNumber + "_clear"
+        key: "hotcue_" + root.hotcueNumber + "_clear"
     }
 
 }

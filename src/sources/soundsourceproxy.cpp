@@ -547,20 +547,20 @@ inline bool shouldImportSeratoTagsFromSource(
 
 } // namespace
 
-bool SoundSourceProxy::updateTrackFromSource(
+SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromSource(
         UpdateTrackFromSourceMode mode,
         const SyncTrackMetadataParams& syncParams) {
     DEBUG_ASSERT(m_pTrack);
 
     if (getUrl().isEmpty()) {
         // Silently skip tracks without a corresponding file
-        return false; // abort
+        return UpdateTrackFromSourceResult::NotUpdated;
     }
     if (!m_pSoundSource) {
         kLogger.warning()
                 << "Unable to update track from unsupported file type"
                 << getUrl().toString();
-        return false; // abort
+        return UpdateTrackFromSourceResult::NotUpdated;
     }
 
     // The SoundSource provides the actual type of the corresponding file
@@ -629,7 +629,7 @@ bool SoundSourceProxy::updateTrackFromSource(
             // warning message already identifies the track that is affected.
             kLogger.critical() << "Aborting update of track metadata from source "
                                   "due to unexpected inconsistencies during recovery";
-            return false;
+            return UpdateTrackFromSourceResult::MetadataImportFailed;
         }
     }
 
@@ -640,10 +640,14 @@ bool SoundSourceProxy::updateTrackFromSource(
         // in the database.
         DEBUG_ASSERT(!pCoverImg);
         if (metadataImportedFromSource.first == mixxx::MetadataSource::ImportResult::Succeeded) {
-            return m_pTrack->mergeExtraMetadataFromSource(trackMetadata);
+            if (m_pTrack->mergeExtraMetadataFromSource(trackMetadata)) {
+                return UpdateTrackFromSourceResult::ExtraMetadataImportedAndMerged;
+            } else {
+                return UpdateTrackFromSourceResult::NotUpdated;
+            }
         } else {
             // Nothing to do if no metadata has been imported
-            return false;
+            return UpdateTrackFromSourceResult::NotUpdated;
         }
     }
 
@@ -722,7 +726,7 @@ bool SoundSourceProxy::updateTrackFromSource(
 
     // Do not continue with unknown and maybe invalid metadata!
     if (metadataImportedFromSource.first != mixxx::MetadataSource::ImportResult::Succeeded) {
-        return false;
+        return UpdateTrackFromSourceResult::MetadataImportFailed;
     }
 
     m_pTrack->replaceMetadataFromSource(
@@ -762,7 +766,7 @@ bool SoundSourceProxy::updateTrackFromSource(
         m_pTrack->setCoverInfo(coverInfo);
     }
 
-    return true;
+    return UpdateTrackFromSourceResult::MetadataImportedAndUpdated;
 }
 
 bool SoundSourceProxy::openSoundSource(
