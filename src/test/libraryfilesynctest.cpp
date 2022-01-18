@@ -146,7 +146,30 @@ class LibraryFileSyncTest : public LibraryTest {
 
   protected:
     TrackPointer loadTrack() const {
-        return trackCollectionManager()->getTrackById(m_trackId);
+        const auto pTrack = trackCollectionManager()->getTrackById(m_trackId);
+        DEBUG_ASSERT(pTrack);
+        return pTrack;
+    }
+
+    bool saveModifiedTrack(TrackPointer&& pTrack) const {
+        VERIFY_OR_DEBUG_ASSERT(pTrack) {
+            return false;
+        }
+        VERIFY_OR_DEBUG_ASSERT(pTrack.use_count() == 1) {
+            return false;
+        }
+        const auto trackId = pTrack->getId();
+        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+            return false;
+        }
+        VERIFY_OR_DEBUG_ASSERT(pTrack->isDirty()) {
+            return false;
+        }
+        pTrack.reset();
+        VERIFY_OR_DEBUG_ASSERT(!GlobalTrackCacheLocker().lookupTrackById(trackId)) {
+            return false;
+        }
+        return true;
     }
 
     bool verifySourceSyncStatusOfTrack(
@@ -240,7 +263,10 @@ class LibraryFileSyncTest : public LibraryTest {
             return nullptr;
         }
         // Write the data into the database (without modifying the file)
-        pTrack.reset();
+        VERIFY_OR_DEBUG_ASSERT(saveModifiedTrack(std::move(pTrack))) {
+            return nullptr;
+        }
+        DEBUG_ASSERT(!pTrack);
 
         // Verify that the file has not been modified
         const auto fileLastModifiedAfter = m_pTempFileSystem->fileLastModified();
@@ -295,16 +321,26 @@ class LibraryFileSyncTest : public LibraryTest {
         pTrack->setTitle(newTitle);
 
         // Save the track
-        pTrack.reset();
+        VERIFY_OR_DEBUG_ASSERT(saveModifiedTrack(std::move(pTrack))) {
+            return false;
+        }
+        DEBUG_ASSERT(!pTrack);
 
-        // Disable sync for the final verification
+        // Disable sync temporarily for the final verification to prevent
+        // reimporting metadata from the file unintentionally, i.e. switch
+        // the library into read-only mode.
         syncTrackMetadataConfigScope.setConfig(false);
 
         const auto fileLastModifiedAfter = m_pTempFileSystem->fileLastModified();
+        VERIFY_OR_DEBUG_ASSERT(
+                fileLastModifiedBefore.isValid() ==
+                fileLastModifiedAfter.isValid()) {
+            return false;
+        }
+
         if (syncTrackMetadata) {
             // Verify that the file has been modified upon saving
             VERIFY_OR_DEBUG_ASSERT(
-                    !fileLastModifiedBefore.isValid() ||
                     !fileLastModifiedAfter.isValid() ||
                     fileLastModifiedBefore < fileLastModifiedAfter) {
                 return false;
@@ -376,9 +412,20 @@ class LibraryFileSyncTest : public LibraryTest {
         }
 
         if (syncTrackMetadata) {
-            // Verify that the synchronization time stamp has been updated.
-            VERIFY_OR_DEBUG_ASSERT(trackRecordAfter.getSourceSynchronizedAt() >
-                    trackRecordBefore.getSourceSynchronizedAt()) {
+            // Verify that the synchronization time stamp has been updated
+            // if the file still exists.
+            VERIFY_OR_DEBUG_ASSERT(
+                    !fileLastModifiedAfter.isValid() ||
+                    trackRecordBefore.getSourceSynchronizedAt() <
+                            trackRecordAfter.getSourceSynchronizedAt()) {
+                return false;
+            }
+            // Verify that the synchronization time stamp has not been updated
+            // if the file is inaccessible.
+            VERIFY_OR_DEBUG_ASSERT(
+                    fileLastModifiedAfter.isValid() ||
+                    trackRecordBefore.getSourceSynchronizedAt() ==
+                            trackRecordAfter.getSourceSynchronizedAt()) {
                 return false;
             }
             if (importResult == mixxx::MetadataSource::ImportResult::Succeeded) {
@@ -396,7 +443,8 @@ class LibraryFileSyncTest : public LibraryTest {
             }
         } else {
             // Verify that the synchronization time stamp has not been updated.
-            VERIFY_OR_DEBUG_ASSERT(trackRecordAfter.getSourceSynchronizedAt() ==
+            VERIFY_OR_DEBUG_ASSERT(
+                    trackRecordAfter.getSourceSynchronizedAt() ==
                     trackRecordBefore.getSourceSynchronizedAt()) {
                 return false;
             }
@@ -472,16 +520,13 @@ TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusOutdatedAndSync
             false));
 }
 
-// FIXME: Fix failing test, i.e. modifications don't seem to be saved in the database as expected!
-TEST_F(LibraryFileSyncTest, DISABLED_saveTrackMetadataWithSourceSyncStatusUndefinedAndSyncEnabled) {
+TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusUndefinedAndSyncEnabled) {
     EXPECT_TRUE(modifyAndSaveTrack(
             establishSourceSyncStatusUndefined(),
             true));
 }
 
-// FIXME: Fix failing test, i.e. modifications don't seem to be saved in the database as expected!
-TEST_F(LibraryFileSyncTest,
-        DISABLED_saveTrackMetadataWithSourceSyncStatusUndefinedAndSyncDisabled) {
+TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusUndefinedAndSyncDisabled) {
     EXPECT_TRUE(modifyAndSaveTrack(
             establishSourceSyncStatusUndefined(),
             false));

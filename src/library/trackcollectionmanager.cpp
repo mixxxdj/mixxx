@@ -204,24 +204,11 @@ TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
     }
     DEBUG_ASSERT(pTrack->getDateAdded().isValid());
 
-    // The track might have been marked for metadata export even
-    // if it is not dirty, e.g. when it has already been saved
-    // in the database before to avoid stale data after editing.
-    const auto fileInfo = pTrack->getFileInfo();
-    if (fileInfo.checkFileExists()) {
-        // The metadata must be exported while the cache is locked to
-        // ensure that we have exclusive (write) access on the file
-        // and not reader or writer is accessing the same file
-        // concurrently.
-        exportTrackMetadata(pTrack, mode);
-    } else {
-        // Missing tracks should not be modified until they either
-        // reappear or are purged.
-        kLogger.debug()
-                << "Skip saving of missing track"
-                << fileInfo.location();
-        return SaveTrackResult::Skipped;
-    }
+    // Export track metadata regardless of the track's clean/dirty
+    // status. An unmodified track might have been marked for metadata
+    // export by the user or export of metadata was deferred during a
+    // previous invocation.
+    exportTrackMetadataBeforeSaving(pTrack, mode);
 
     if (!pTrack->getId().isValid()) {
         // Track has been purged from the internal collection/database
@@ -285,10 +272,12 @@ TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
     return SaveTrackResult::Saved;
 }
 
-void TrackCollectionManager::exportTrackMetadata(
+ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSaving(
         Track* pTrack,
         TrackMetadataExportMode mode) const {
-    DEBUG_ASSERT(pTrack);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return ExportTrackMetadataResult::Skipped;
+    }
 
     // Write audio meta data, if explicitly requested by the user
     // for individual tracks or enabled in the preferences for all
@@ -305,12 +294,25 @@ void TrackCollectionManager::exportTrackMetadata(
                                      mixxx::library::prefs::kSyncTrackMetadataConfigKey)
                                     .toInt() == 1)) {
         switch (mode) {
-        case TrackMetadataExportMode::Immediate:
+        case TrackMetadataExportMode::Immediate: {
             // Export track metadata now by saving as file tags.
-            SoundSourceProxy::exportTrackMetadataBeforeSaving(
+            const auto result = SoundSourceProxy::exportTrackMetadataBeforeSaving(
                     pTrack,
                     SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
-            break;
+            if (result == ExportTrackMetadataResult::Failed) {
+                const auto fileInfo = pTrack->getFileInfo();
+                if (fileInfo.checkFileExists()) {
+                    kLogger.warning()
+                            << "Failed to export track metadata"
+                            << fileInfo.location();
+                } else {
+                    kLogger.warning()
+                            << "Failed to export track metadata into missing file"
+                            << fileInfo.location();
+                }
+            }
+            return result;
+        }
         case TrackMetadataExportMode::Deferred:
             // Export track metadata later when the track object goes out
             // of scope and we have exclusive file access. This is required
@@ -321,8 +323,11 @@ void TrackCollectionManager::exportTrackMetadata(
             // always feasible.
             pTrack->markForMetadataExport();
             break;
+        default:
+            DEBUG_ASSERT(!"unreachable");
         }
     }
+    return ExportTrackMetadataResult::Skipped;
 }
 
 bool TrackCollectionManager::addDirectory(const mixxx::FileInfo& newDir) const {
