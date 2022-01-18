@@ -38,57 +38,38 @@ class TempFileSystem {
         return m_fileInfo.toQFile().fileTime(QFileDevice::FileModificationTime);
     }
 
-    bool setFileLastModified(const QDateTime& lastModified) const {
-        return m_fileInfo.toQFile().setFileTime(lastModified, QFileDevice::FileModificationTime);
+    void setFileLastModified(const QDateTime& lastModified) const {
+        ASSERT_TRUE(m_fileInfo.toQFile().setFileTime(
+                lastModified, QFileDevice::FileModificationTime));
     }
 
-    bool updateFileLastModified(const QDateTime& newLastModified = QDateTime()) const {
+    void updateFileLastModified(const QDateTime& newLastModified = QDateTime()) const {
         auto file = m_fileInfo.toQFile();
         const auto oldLastModified = fileLastModified();
-        VERIFY_OR_DEBUG_ASSERT(oldLastModified.isValid()) {
-            return false;
-        }
-        VERIFY_OR_DEBUG_ASSERT(newLastModified != oldLastModified) {
-            // Nothing to do but probably unintended!
-            return true;
-        }
-        VERIFY_OR_DEBUG_ASSERT(file.open(QIODevice::ReadWrite |
-                QIODevice::ExistingOnly | QIODevice::Append)) {
-            return false;
-        }
+        ASSERT_TRUE(oldLastModified.isValid());
+        ASSERT_NE(newLastModified, oldLastModified); // Probably unintended
+        ASSERT_TRUE(file.open(QIODevice::ReadWrite | QIODevice::ExistingOnly | QIODevice::Append));
         if (newLastModified.isValid()) {
-            VERIFY_OR_DEBUG_ASSERT(setFileLastModified(newLastModified)) {
-                return false;
-            }
-            VERIFY_OR_DEBUG_ASSERT(fileLastModified() == newLastModified) {
-                return false;
-            }
+            setFileLastModified(newLastModified);
+            ASSERT_EQ(fileLastModified(), newLastModified);
             // Ensure that subsequent modification time stamps will be strictly greater.
             QThread::msleep(1);
-            return true;
+            return;
         }
         QDateTime nowLastModified;
         do {
             nowLastModified = QDateTime::currentDateTime();
-            VERIFY_OR_DEBUG_ASSERT(nowLastModified >= oldLastModified) {
-                return false;
-            }
-            VERIFY_OR_DEBUG_ASSERT(file.setFileTime(
-                    nowLastModified, QFileDevice::FileModificationTime)) {
-                return false;
-            }
+            ASSERT_GE(nowLastModified, oldLastModified);
+            ASSERT_TRUE(file.setFileTime(nowLastModified, QFileDevice::FileModificationTime));
             // Loop until the actual modification time has changed
         } while (oldLastModified == fileLastModified());
-        VERIFY_OR_DEBUG_ASSERT(fileLastModified() == nowLastModified) {
-            return false;
-        }
+        ASSERT_EQ(fileLastModified(), nowLastModified);
         // Ensure that subsequent modification time stamps will be strictly greater.
         QThread::msleep(1);
-        return true;
     }
 
-    bool removeFile() const {
-        return m_fileInfo.toQFile().remove();
+    void removeFile() const {
+        ASSERT_TRUE(m_fileInfo.toQFile().remove());
     }
 
   private:
@@ -151,76 +132,51 @@ class LibraryFileSyncTest : public LibraryTest {
         return pTrack;
     }
 
-    bool saveModifiedTrack(TrackPointer&& pTrack) const {
-        VERIFY_OR_DEBUG_ASSERT(pTrack) {
-            return false;
-        }
-        VERIFY_OR_DEBUG_ASSERT(pTrack.use_count() == 1) {
-            return false;
-        }
+    void saveModifiedTrack(TrackPointer&& pTrack) const {
+        ASSERT_NE(nullptr, pTrack);
+        ASSERT_EQ(1, pTrack.use_count());
         const auto trackId = pTrack->getId();
-        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
-            return false;
-        }
-        VERIFY_OR_DEBUG_ASSERT(pTrack->isDirty()) {
-            return false;
-        }
+        ASSERT_TRUE(trackId.isValid());
+        ASSERT_TRUE(pTrack->isDirty());
         pTrack.reset();
-        VERIFY_OR_DEBUG_ASSERT(!GlobalTrackCacheLocker().lookupTrackById(trackId)) {
-            return false;
-        }
-        return true;
+        ASSERT_EQ(nullptr, GlobalTrackCacheLocker().lookupTrackById(trackId));
     }
 
-    bool verifySourceSyncStatusOfTrack(
+    void verifySourceSyncStatusOfTrack(
             const Track& track,
             mixxx::TrackRecord::SourceSyncStatus expectedSourceSyncStatus) const {
         const auto trackRecord = track.getRecord();
-        VERIFY_OR_DEBUG_ASSERT(expectedSourceSyncStatus ==
-                trackRecord.checkSourceSyncStatus(track.getFileInfo())) {
-            return false;
-        }
+        EXPECT_EQ(expectedSourceSyncStatus,
+                trackRecord.checkSourceSyncStatus(track.getFileInfo()));
 
         // Verify all time stamps for consistency
         const auto sourceSynchronizedAt = trackRecord.getSourceSynchronizedAt();
         const auto fileLastModified = m_pTempFileSystem->fileLastModified();
         switch (expectedSourceSyncStatus) {
         case mixxx::TrackRecord::SourceSyncStatus::Synchronized:
-            VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt.isValid() &&
-                    fileLastModified.isValid() &&
-                    trackRecord.getSourceSynchronizedAt() ==
-                            m_pTempFileSystem->fileLastModified()) {
-                return false;
-            }
+            EXPECT_TRUE(sourceSynchronizedAt.isValid());
+            EXPECT_TRUE(fileLastModified.isValid());
+            EXPECT_EQ(fileLastModified, trackRecord.getSourceSynchronizedAt());
             break;
         case mixxx::TrackRecord::SourceSyncStatus::Outdated:
-            VERIFY_OR_DEBUG_ASSERT(
-                    sourceSynchronizedAt.isValid() &&
-                    fileLastModified.isValid() &&
-                    trackRecord.getSourceSynchronizedAt() < m_pTempFileSystem->fileLastModified()) {
-                return false;
-            }
+            EXPECT_TRUE(sourceSynchronizedAt.isValid());
+            EXPECT_TRUE(fileLastModified.isValid());
+            EXPECT_GT(fileLastModified, trackRecord.getSourceSynchronizedAt());
             break;
         case mixxx::TrackRecord::SourceSyncStatus::Void:
         case mixxx::TrackRecord::SourceSyncStatus::Unknown:
-            VERIFY_OR_DEBUG_ASSERT(!sourceSynchronizedAt.isValid()) {
-                return false;
-            }
+            EXPECT_FALSE(sourceSynchronizedAt.isValid());
             break;
         case mixxx::TrackRecord::SourceSyncStatus::Undefined:
-            VERIFY_OR_DEBUG_ASSERT(!fileLastModified.isValid()) {
-                return false;
-            }
+            EXPECT_FALSE(fileLastModified.isValid());
             break;
         default:
-            DEBUG_ASSERT(!"unreachable");
-            return false;
+            ASSERT_FALSE("unreachable");
         }
-
-        return true;
     }
 
-    TrackPointer loadTrackFromDatabaseAndVerifySourceSyncStatus(
+    void loadTrackFromDatabaseAndVerifySourceSyncStatus(
+            TrackPointer* pLoadedTrack,
             mixxx::TrackRecord::SourceSyncStatus expectedSourceSyncStatus) const {
         const auto syncTrackMetadataConfigScope =
                 SyncTrackMetadataConfigScope(m_pConfig);
@@ -229,23 +185,20 @@ class LibraryFileSyncTest : public LibraryTest {
         syncTrackMetadataConfigScope.setConfig(false);
 
         const auto pTrack = loadTrack();
-        VERIFY_OR_DEBUG_ASSERT(pTrack) {
-            return nullptr;
-        }
-        VERIFY_OR_DEBUG_ASSERT(
-                verifySourceSyncStatusOfTrack(*pTrack, expectedSourceSyncStatus)) {
-            return nullptr;
-        }
+        ASSERT_NE(nullptr, pTrack);
+        verifySourceSyncStatusOfTrack(*pTrack, expectedSourceSyncStatus);
 
-        return pTrack;
+        if (pLoadedTrack) {
+            *pLoadedTrack = std::move(pTrack);
+        }
     }
 
-    TrackPointer establishSourceSyncStatusUnknown() const {
-        auto pTrack = loadTrackFromDatabaseAndVerifySourceSyncStatus(
+    void establishSourceSyncStatusUnknown(TrackPointer* pLoadedTrack) const {
+        TrackPointer pTrack;
+        loadTrackFromDatabaseAndVerifySourceSyncStatus(
+                &pTrack,
                 mixxx::TrackRecord::SourceSyncStatus::Synchronized);
-        VERIFY_OR_DEBUG_ASSERT(pTrack) {
-            return nullptr;
-        }
+        ASSERT_NE(nullptr, pTrack);
 
         const auto syncTrackMetadataConfigScope =
                 SyncTrackMetadataConfigScope(m_pConfig);
@@ -259,51 +212,42 @@ class LibraryFileSyncTest : public LibraryTest {
         // synchronization time is unknown.
         auto trackRecord = pTrack->getRecord();
         trackRecord.setSourceSynchronizedAt(QDateTime{});
-        VERIFY_OR_DEBUG_ASSERT(pTrack->replaceRecord(std::move(trackRecord))) {
-            return nullptr;
-        }
+        ASSERT_TRUE(pTrack->replaceRecord(std::move(trackRecord)));
         // Write the data into the database (without modifying the file)
-        VERIFY_OR_DEBUG_ASSERT(saveModifiedTrack(std::move(pTrack))) {
-            return nullptr;
-        }
-        DEBUG_ASSERT(!pTrack);
+        saveModifiedTrack(std::move(pTrack));
+        ASSERT_EQ(nullptr, pTrack);
 
         // Verify that the file has not been modified
         const auto fileLastModifiedAfter = m_pTempFileSystem->fileLastModified();
-        VERIFY_OR_DEBUG_ASSERT(fileLastModifiedAfter == fileLastModifiedBefore) {
-            return nullptr;
-        }
+        ASSERT_EQ(fileLastModifiedAfter, fileLastModifiedBefore);
 
-        return loadTrackFromDatabaseAndVerifySourceSyncStatus(
+        loadTrackFromDatabaseAndVerifySourceSyncStatus(
+                pLoadedTrack,
                 mixxx::TrackRecord::SourceSyncStatus::Unknown);
     }
 
-    TrackPointer establishSourceSyncStatusOutdated() const {
+    void establishSourceSyncStatusOutdated(TrackPointer* pLoadedTrack) const {
         // Touch the file's modification time stamp to simulate an external
         // modification by a 3rd party app after the track has been loaded.
-        VERIFY_OR_DEBUG_ASSERT(m_pTempFileSystem->updateFileLastModified()) {
-            return nullptr;
-        }
+        m_pTempFileSystem->updateFileLastModified();
 
-        return loadTrackFromDatabaseAndVerifySourceSyncStatus(
+        loadTrackFromDatabaseAndVerifySourceSyncStatus(
+                pLoadedTrack,
                 mixxx::TrackRecord::SourceSyncStatus::Outdated);
     }
 
-    TrackPointer establishSourceSyncStatusUndefined() const {
+    void establishSourceSyncStatusUndefined(TrackPointer* pLoadedTrack) const {
         // Touch the file's modification time stamp to simulate an external
         // modification by a 3rd party app after the track has been loaded.
-        VERIFY_OR_DEBUG_ASSERT(m_pTempFileSystem->removeFile()) {
-            return nullptr;
-        }
+        m_pTempFileSystem->removeFile();
 
-        return loadTrackFromDatabaseAndVerifySourceSyncStatus(
+        loadTrackFromDatabaseAndVerifySourceSyncStatus(
+                pLoadedTrack,
                 mixxx::TrackRecord::SourceSyncStatus::Undefined);
     }
 
-    bool modifyAndSaveTrack(TrackPointer&& pTrack, bool syncTrackMetadata) {
-        VERIFY_OR_DEBUG_ASSERT(pTrack) {
-            return false;
-        }
+    void modifyAndSaveTrack(TrackPointer&& pTrack, bool syncTrackMetadata) {
+        ASSERT_NE(nullptr, pTrack);
 
         const auto fileLastModifiedBefore = m_pTempFileSystem->fileLastModified();
         /*non-const*/ auto trackRecordBefore = pTrack->getRecord();
@@ -321,10 +265,8 @@ class LibraryFileSyncTest : public LibraryTest {
         pTrack->setTitle(newTitle);
 
         // Save the track
-        VERIFY_OR_DEBUG_ASSERT(saveModifiedTrack(std::move(pTrack))) {
-            return false;
-        }
-        DEBUG_ASSERT(!pTrack);
+        saveModifiedTrack(std::move(pTrack));
+        ASSERT_EQ(nullptr, pTrack);
 
         // Disable sync temporarily for the final verification to prevent
         // reimporting metadata from the file unintentionally, i.e. switch
@@ -332,24 +274,16 @@ class LibraryFileSyncTest : public LibraryTest {
         syncTrackMetadataConfigScope.setConfig(false);
 
         const auto fileLastModifiedAfter = m_pTempFileSystem->fileLastModified();
-        VERIFY_OR_DEBUG_ASSERT(
-                fileLastModifiedBefore.isValid() ==
-                fileLastModifiedAfter.isValid()) {
-            return false;
-        }
+        ASSERT_EQ(fileLastModifiedAfter.isValid(), fileLastModifiedBefore.isValid());
 
         if (syncTrackMetadata) {
             // Verify that the file has been modified upon saving
-            VERIFY_OR_DEBUG_ASSERT(
+            ASSERT_TRUE(
                     !fileLastModifiedAfter.isValid() ||
-                    fileLastModifiedBefore < fileLastModifiedAfter) {
-                return false;
-            }
+                    fileLastModifiedBefore < fileLastModifiedAfter);
         } else {
             // Verify that the file has not been modified upon saving
-            VERIFY_OR_DEBUG_ASSERT(fileLastModifiedBefore == fileLastModifiedAfter) {
-                return false;
-            }
+            ASSERT_EQ(fileLastModifiedAfter, fileLastModifiedBefore);
         }
 
         auto sourceSyncStatusAfter = sourceSyncStatusBefore;
@@ -368,17 +302,13 @@ class LibraryFileSyncTest : public LibraryTest {
         case mixxx::TrackRecord::SourceSyncStatus::Synchronized:
             break;
         default:
-            VERIFY_OR_DEBUG_ASSERT(!"unreachable") {
-                return false;
-            }
+            ASSERT_FALSE("unreachable");
         }
 
         // Verify that the modified metadata is still present after
         // reloading the track from the database
-        pTrack = loadTrackFromDatabaseAndVerifySourceSyncStatus(sourceSyncStatusAfter);
-        VERIFY_OR_DEBUG_ASSERT(pTrack) {
-            return false;
-        }
+        loadTrackFromDatabaseAndVerifySourceSyncStatus(&pTrack, sourceSyncStatusAfter);
+        ASSERT_NE(nullptr, pTrack);
         const auto trackRecordAfter = pTrack->getRecord();
 
         // Reimport metadata from the file
@@ -386,9 +316,7 @@ class LibraryFileSyncTest : public LibraryTest {
         auto [importResult, sourceSynchronizedAt] =
                 SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
                         &importedTrackMetadata, nullptr);
-        VERIFY_OR_DEBUG_ASSERT(expectedImportResult == importResult) {
-            return false;
-        }
+        EXPECT_EQ(expectedImportResult, importResult);
 
         // The stream info properties might be adjusted when exporting track metadata!
         // We have to adjust trackRecordBefore and importedTrackMetadata accordingly
@@ -403,63 +331,39 @@ class LibraryFileSyncTest : public LibraryTest {
         }
 
         // Verify that the metadata in the database has been modified.
-        VERIFY_OR_DEBUG_ASSERT(
-                trackRecordBefore.getMetadata() != trackRecordAfter.getMetadata()) {
-            return false;
-        }
-        VERIFY_OR_DEBUG_ASSERT(newTitle == pTrack->getTitle()) {
-            return false;
-        }
+        EXPECT_NE(trackRecordBefore.getMetadata(), trackRecordAfter.getMetadata());
+        EXPECT_EQ(newTitle, pTrack->getTitle());
 
         if (syncTrackMetadata) {
             // Verify that the synchronization time stamp has been updated
             // if the file still exists.
-            VERIFY_OR_DEBUG_ASSERT(
+            EXPECT_TRUE(
                     !fileLastModifiedAfter.isValid() ||
                     trackRecordBefore.getSourceSynchronizedAt() <
-                            trackRecordAfter.getSourceSynchronizedAt()) {
-                return false;
-            }
+                            trackRecordAfter.getSourceSynchronizedAt());
             // Verify that the synchronization time stamp has not been updated
             // if the file is inaccessible.
-            VERIFY_OR_DEBUG_ASSERT(
+            EXPECT_TRUE(
                     fileLastModifiedAfter.isValid() ||
                     trackRecordBefore.getSourceSynchronizedAt() ==
-                            trackRecordAfter.getSourceSynchronizedAt()) {
-                return false;
-            }
+                            trackRecordAfter.getSourceSynchronizedAt());
             if (importResult == mixxx::MetadataSource::ImportResult::Succeeded) {
                 // Verify that the metadata in the file has been modified.
-                VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt > fileLastModifiedBefore) {
-                    return false;
-                }
-                VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt ==
-                        trackRecordAfter.getSourceSynchronizedAt()) {
-                    return false;
-                }
-                VERIFY_OR_DEBUG_ASSERT(importedTrackMetadata == trackRecordAfter.getMetadata()) {
-                    return false;
-                }
+                EXPECT_LT(fileLastModifiedBefore, sourceSynchronizedAt);
+                EXPECT_EQ(trackRecordAfter.getSourceSynchronizedAt(), sourceSynchronizedAt);
+                EXPECT_EQ(trackRecordAfter.getMetadata(), importedTrackMetadata);
             }
         } else {
             // Verify that the synchronization time stamp has not been updated.
-            VERIFY_OR_DEBUG_ASSERT(
-                    trackRecordAfter.getSourceSynchronizedAt() ==
-                    trackRecordBefore.getSourceSynchronizedAt()) {
-                return false;
-            }
+            EXPECT_EQ(
+                    trackRecordAfter.getSourceSynchronizedAt(),
+                    trackRecordBefore.getSourceSynchronizedAt());
             if (importResult == mixxx::MetadataSource::ImportResult::Succeeded) {
                 // Verify that the metadata in the file has not been modified.
-                VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt == fileLastModifiedBefore) {
-                    return false;
-                }
-                VERIFY_OR_DEBUG_ASSERT(importedTrackMetadata == trackRecordBefore.getMetadata()) {
-                    return false;
-                }
+                EXPECT_EQ(fileLastModifiedBefore, sourceSynchronizedAt);
+                EXPECT_EQ(trackRecordBefore.getMetadata(), importedTrackMetadata);
             }
         }
-
-        return true;
     }
 
     std::unique_ptr<TempFileSystem>
@@ -469,72 +373,78 @@ class LibraryFileSyncTest : public LibraryTest {
 
 TEST_F(LibraryFileSyncTest, checkSourceSyncStatus) {
     const auto pTrack = loadTrack();
-    ASSERT_EQ(mixxx::TrackRecord::SourceSyncStatus::Void,
+    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Void,
             mixxx::TrackRecord{}.checkSourceSyncStatus(pTrack->getFileInfo()));
     const auto trackRecord = pTrack->getRecord();
-    ASSERT_EQ(mixxx::TrackRecord::SourceSyncStatus::Synchronized,
+    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Synchronized,
             trackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
-    ASSERT_TRUE(m_pTempFileSystem->updateFileLastModified());
-    ASSERT_EQ(mixxx::TrackRecord::SourceSyncStatus::Outdated,
+    m_pTempFileSystem->updateFileLastModified();
+    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Outdated,
             trackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
-    ASSERT_TRUE(m_pTempFileSystem->removeFile());
-    ASSERT_EQ(mixxx::TrackRecord::SourceSyncStatus::Undefined,
+    m_pTempFileSystem->removeFile();
+    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Undefined,
             trackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
 }
 
 TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusSynchronizedAndSyncEnabled) {
-    EXPECT_TRUE(modifyAndSaveTrack(
-            loadTrackFromDatabaseAndVerifySourceSyncStatus(
-                    mixxx::TrackRecord::SourceSyncStatus::Synchronized),
-            true));
+    TrackPointer pTrack;
+    loadTrackFromDatabaseAndVerifySourceSyncStatus(
+            &pTrack,
+            mixxx::TrackRecord::SourceSyncStatus::Synchronized);
+    modifyAndSaveTrack(std::move(pTrack), true);
 }
 
 TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusSynchronizedAndSyncDisabled) {
-    EXPECT_TRUE(modifyAndSaveTrack(
-            loadTrackFromDatabaseAndVerifySourceSyncStatus(
-                    mixxx::TrackRecord::SourceSyncStatus::Synchronized),
-            false));
+    TrackPointer pTrack;
+    loadTrackFromDatabaseAndVerifySourceSyncStatus(
+            &pTrack,
+            mixxx::TrackRecord::SourceSyncStatus::Synchronized);
+    modifyAndSaveTrack(std::move(pTrack), false);
 }
 
 TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusUnknownAndSyncEnabled) {
-    EXPECT_TRUE(modifyAndSaveTrack(
-            establishSourceSyncStatusUnknown(),
-            true));
+    TrackPointer pTrack;
+    establishSourceSyncStatusUnknown(&pTrack);
+    modifyAndSaveTrack(std::move(pTrack), true);
 }
 
 TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusUnknownAndSyncDisabled) {
-    EXPECT_TRUE(modifyAndSaveTrack(
-            establishSourceSyncStatusUnknown(),
-            false));
+    TrackPointer pTrack;
+    establishSourceSyncStatusUnknown(&pTrack);
+    modifyAndSaveTrack(std::move(pTrack), false);
 }
 
 TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusOutdatedAndSyncEnabled) {
-    EXPECT_TRUE(modifyAndSaveTrack(
-            establishSourceSyncStatusOutdated(),
-            true));
+    TrackPointer pTrack;
+    establishSourceSyncStatusOutdated(&pTrack);
+    modifyAndSaveTrack(std::move(pTrack), true);
 }
 
 TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusOutdatedAndSyncDisabled) {
-    EXPECT_TRUE(modifyAndSaveTrack(
-            establishSourceSyncStatusOutdated(),
-            false));
+    TrackPointer pTrack;
+    establishSourceSyncStatusOutdated(&pTrack);
+    modifyAndSaveTrack(std::move(pTrack), false);
 }
 
 TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusUndefinedAndSyncEnabled) {
-    EXPECT_TRUE(modifyAndSaveTrack(
-            establishSourceSyncStatusUndefined(),
-            true));
+    TrackPointer pTrack;
+    establishSourceSyncStatusUndefined(&pTrack);
+    modifyAndSaveTrack(std::move(pTrack), true);
 }
 
 TEST_F(LibraryFileSyncTest, saveTrackMetadataWithSourceSyncStatusUndefinedAndSyncDisabled) {
-    EXPECT_TRUE(modifyAndSaveTrack(
-            establishSourceSyncStatusUndefined(),
-            false));
+    TrackPointer pTrack;
+    establishSourceSyncStatusUndefined(&pTrack);
+    modifyAndSaveTrack(std::move(pTrack), false);
 }
 
 TEST_F(LibraryFileSyncTest, reimportOutdatedTrackMetadataWithSyncEnabled) {
-    const auto outdatedTrackRecord =
-            establishSourceSyncStatusOutdated()->getRecord();
+    mixxx::TrackRecord outdatedTrackRecord;
+    {
+        TrackPointer pOutdatedTrack;
+        establishSourceSyncStatusOutdated(&pOutdatedTrack);
+        outdatedTrackRecord = pOutdatedTrack->getRecord();
+    }
 
     const auto syncTrackMetadataConfigScope =
             SyncTrackMetadataConfigScope(m_pConfig);
@@ -545,15 +455,20 @@ TEST_F(LibraryFileSyncTest, reimportOutdatedTrackMetadataWithSyncEnabled) {
     auto pTrack = loadTrack();
     ASSERT_TRUE(pTrack);
     const auto importedTrackRecord = pTrack->getRecord();
-    EXPECT_TRUE(verifySourceSyncStatusOfTrack(
-            *pTrack, mixxx::TrackRecord::SourceSyncStatus::Synchronized));
-    EXPECT_TRUE(outdatedTrackRecord.getSourceSynchronizedAt() <
+    verifySourceSyncStatusOfTrack(
+            *pTrack, mixxx::TrackRecord::SourceSyncStatus::Synchronized);
+    EXPECT_LT(
+            outdatedTrackRecord.getSourceSynchronizedAt(),
             importedTrackRecord.getSourceSynchronizedAt());
 }
 
 TEST_F(LibraryFileSyncTest, doNotReimportOutdatedTrackMetadataWithSyncDisabled) {
-    const auto outdatedTrackRecord =
-            establishSourceSyncStatusOutdated()->getRecord();
+    mixxx::TrackRecord outdatedTrackRecord;
+    {
+        TrackPointer pOutdatedTrack;
+        establishSourceSyncStatusOutdated(&pOutdatedTrack);
+        outdatedTrackRecord = pOutdatedTrack->getRecord();
+    }
 
     const auto syncTrackMetadataConfigScope =
             SyncTrackMetadataConfigScope(m_pConfig);
@@ -564,7 +479,7 @@ TEST_F(LibraryFileSyncTest, doNotReimportOutdatedTrackMetadataWithSyncDisabled) 
     auto pTrack = loadTrack();
     ASSERT_TRUE(pTrack);
     const auto loadedTrackRecord = pTrack->getRecord();
-    EXPECT_TRUE(verifySourceSyncStatusOfTrack(
-            *pTrack, mixxx::TrackRecord::SourceSyncStatus::Outdated));
+    verifySourceSyncStatusOfTrack(
+            *pTrack, mixxx::TrackRecord::SourceSyncStatus::Outdated);
     EXPECT_EQ(outdatedTrackRecord, loadedTrackRecord);
 }
