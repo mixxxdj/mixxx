@@ -360,7 +360,10 @@ class LibraryFileSyncTest : public LibraryTest {
         if (syncTrackMetadata) {
             trackRecordBefore.refMetadata().refStreamInfo() =
                     trackRecordAfter.getMetadata().getStreamInfo();
-            importedTrackMetadata.refStreamInfo() = trackRecordAfter.getMetadata().getStreamInfo();
+            if (importResult == mixxx::MetadataSource::ImportResult::Succeeded) {
+                importedTrackMetadata.refStreamInfo() =
+                        trackRecordAfter.getMetadata().getStreamInfo();
+            }
         }
 
         // Verify that the metadata in the database has been modified.
@@ -378,7 +381,7 @@ class LibraryFileSyncTest : public LibraryTest {
                     trackRecordBefore.getSourceSynchronizedAt()) {
                 return false;
             }
-            if (expectedImportResult == mixxx::MetadataSource::ImportResult::Succeeded) {
+            if (importResult == mixxx::MetadataSource::ImportResult::Succeeded) {
                 // Verify that the metadata in the file has been modified.
                 VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt > fileLastModifiedBefore) {
                     return false;
@@ -397,7 +400,7 @@ class LibraryFileSyncTest : public LibraryTest {
                     trackRecordBefore.getSourceSynchronizedAt()) {
                 return false;
             }
-            if (expectedImportResult == mixxx::MetadataSource::ImportResult::Succeeded) {
+            if (importResult == mixxx::MetadataSource::ImportResult::Succeeded) {
                 // Verify that the metadata in the file has not been modified.
                 VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt == fileLastModifiedBefore) {
                     return false;
