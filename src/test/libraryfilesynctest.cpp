@@ -52,27 +52,21 @@ class TempFileSystem {
                 lastModified, QFileDevice::FileModificationTime));
     }
 
-    void updateFileLastModified(const QDateTime& newLastModified = QDateTime()) const {
+    void updateFileLastModified() const {
         auto file = m_fileInfo.toQFile();
         const auto oldLastModified = fileLastModified();
         ASSERT_TRUE(oldLastModified.isValid());
-        ASSERT_NE(newLastModified, oldLastModified); // Probably unintended
         ASSERT_TRUE(file.open(QIODevice::ReadWrite | QIODevice::ExistingOnly | QIODevice::Append));
-        if (newLastModified.isValid()) {
-            setFileLastModified(newLastModified);
-            ASSERT_EQ(fileLastModified(), newLastModified);
-            sleepAfterFileLastModifiedUpdated();
-            return;
-        }
-        QDateTime nowLastModified;
-        do {
-            nowLastModified = QDateTime::currentDateTime();
+        for (;;) {
+            const auto nowLastModified = QDateTime::currentDateTime();
             ASSERT_GE(nowLastModified, oldLastModified);
             ASSERT_TRUE(file.setFileTime(nowLastModified, QFileDevice::FileModificationTime));
-            // Loop until the actual modification time has changed
-        } while (oldLastModified == fileLastModified());
-        ASSERT_EQ(fileLastModified(), nowLastModified);
-        sleepAfterFileLastModifiedUpdated();
+            const auto newLastModified = fileLastModified();
+            if (newLastModified > oldLastModified) {
+                sleepAfterFileLastModifiedUpdated();
+                return;
+            }
+        }
     }
 
     void removeFile() const {
