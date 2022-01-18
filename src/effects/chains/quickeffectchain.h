@@ -8,6 +8,7 @@
 /// then load it into QuickEffectChain. QuickEffectChain is hardwired to one
 /// input channel with the mix knob fully enabled.
 class QuickEffectChain : public PerGroupEffectChain {
+    Q_OBJECT
   public:
     QuickEffectChain(const QString& group,
             EffectsManager* pEffectsManager,
