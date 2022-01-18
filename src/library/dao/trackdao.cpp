@@ -1395,7 +1395,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"coverart_digest", nullptr},
             {"coverart_hash", nullptr},
     };
-    constexpr int columnsCount = sizeof(columns) / sizeof(columns[0]);
+    constexpr int columnsCount = std::size(columns);
 
     // Accessing the database is a time consuming operation that should not
     // be executed with a lock on the GlobalTrackCache. The GlobalTrackCache
