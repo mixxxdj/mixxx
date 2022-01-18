@@ -28,6 +28,13 @@ HidIoReport::HidIoReport(const unsigned char& reportId,
 
 void HidIoReport::latchOutputReport(QByteArray data) {
     auto lock = lockMutex(&m_OutputReportDataMutex);
+    if (!m_latchedOutputReportData.isEmpty()) {
+        qCDebug(m_logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()
+                             << " Skipped superseded OutputReport"
+                             << m_pDeviceInfo->formatName() << "serial #"
+                             << m_pDeviceInfo->serialNumberRaw() << "(Report ID"
+                             << m_reportId << ")";
+    }
     m_latchedOutputReportData.clear();
     // hid_write requires the first byte to be the Report ID, followed by the data[] to be send
     m_latchedOutputReportData.reserve(data.size() + kReportIdSize);
