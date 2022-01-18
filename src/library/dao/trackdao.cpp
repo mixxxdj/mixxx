@@ -1600,7 +1600,7 @@ TrackPointer TrackDAO::getTrackByRef(
         trackId = getTrackIdByLocation(trackRef.getLocation());
     }
     if (!trackId.isValid()) {
-        qWarning() << "Track not found:" << trackRef;
+        qDebug() << "Track not found:" << trackRef;
         return nullptr;
     }
     return getTrackById(trackId);
