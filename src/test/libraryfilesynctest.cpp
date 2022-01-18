@@ -216,7 +216,7 @@ class LibraryFileSyncTest : public LibraryTest {
 
         // The column contains NULL as the default value, i.e. the last
         // synchronization time is unknown.
-        pTrack->setSourceSynchronizedAt(QDateTime{});
+        pTrack->resetSourceSynchronizedAt();
         // Write the data into the database (without modifying the file)
         saveModifiedTrack(std::move(pTrack));
         ASSERT_EQ(nullptr, pTrack);
@@ -279,24 +279,23 @@ class LibraryFileSyncTest : public LibraryTest {
 
         const auto fileLastModifiedAfter = m_pTempFileSystem->fileLastModified();
         ASSERT_EQ(fileLastModifiedAfter.isValid(), fileLastModifiedBefore.isValid());
-
         if (syncTrackMetadata) {
             // Verify that the file has been modified upon saving
             ASSERT_TRUE(
                     !fileLastModifiedAfter.isValid() ||
-                    fileLastModifiedBefore < fileLastModifiedAfter);
+                    fileLastModifiedAfter > fileLastModifiedBefore);
         } else {
             // Verify that the file has not been modified upon saving
             ASSERT_EQ(fileLastModifiedAfter, fileLastModifiedBefore);
         }
 
-        auto sourceSyncStatusAfter = sourceSyncStatusBefore;
+        auto expectedSourceSyncStatusAfter = sourceSyncStatusBefore;
         auto expectedImportResult = mixxx::MetadataSource::ImportResult::Succeeded;
         switch (sourceSyncStatusBefore) {
         case mixxx::TrackRecord::SourceSyncStatus::Unknown:
         case mixxx::TrackRecord::SourceSyncStatus::Outdated:
             if (syncTrackMetadata) {
-                sourceSyncStatusAfter = mixxx::TrackRecord::SourceSyncStatus::Synchronized;
+                expectedSourceSyncStatusAfter = mixxx::TrackRecord::SourceSyncStatus::Synchronized;
             }
             break;
         case mixxx::TrackRecord::SourceSyncStatus::Void:
@@ -308,10 +307,17 @@ class LibraryFileSyncTest : public LibraryTest {
         default:
             ASSERT_FALSE("unreachable");
         }
+        if (syncTrackMetadata && !fileLastModifiedAfter.isValid()) {
+            // The source sync timestamp should be reset the track
+            // metadata export failed due to an inaccessible file.
+            expectedSourceSyncStatusAfter = mixxx::TrackRecord::SourceSyncStatus::Unknown;
+        }
 
         // Verify that the modified metadata is still present after
         // reloading the track from the database
-        loadTrackFromDatabaseAndVerifySourceSyncStatus(&pTrack, sourceSyncStatusAfter);
+        loadTrackFromDatabaseAndVerifySourceSyncStatus(
+                &pTrack,
+                expectedSourceSyncStatusAfter);
         ASSERT_NE(nullptr, pTrack);
         const auto trackRecordAfter = pTrack->getRecord();
 
@@ -343,14 +349,15 @@ class LibraryFileSyncTest : public LibraryTest {
             // if the file still exists.
             EXPECT_TRUE(
                     !fileLastModifiedAfter.isValid() ||
+                    !trackRecordBefore.getSourceSynchronizedAt().isValid() ||
                     trackRecordBefore.getSourceSynchronizedAt() <
                             trackRecordAfter.getSourceSynchronizedAt());
-            // Verify that the synchronization time stamp has not been updated
-            // if the file is inaccessible.
+            // Verify that the synchronization time stamp has been reset
+            // if the file is inaccessible, i.e. after export of track metadata
+            // has failed.
             EXPECT_TRUE(
                     fileLastModifiedAfter.isValid() ||
-                    trackRecordBefore.getSourceSynchronizedAt() ==
-                            trackRecordAfter.getSourceSynchronizedAt());
+                    !trackRecordAfter.getSourceSynchronizedAt().isValid());
             if (importResult == mixxx::MetadataSource::ImportResult::Succeeded) {
                 // Verify that the metadata in the file has been modified.
                 EXPECT_LT(fileLastModifiedBefore, sourceSynchronizedAt);

@@ -208,7 +208,16 @@ TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
     // status. An unmodified track might have been marked for metadata
     // export by the user or export of metadata was deferred during a
     // previous invocation.
-    exportTrackMetadataBeforeSaving(pTrack, mode);
+    const auto exportTrackMetadataResult =
+            exportTrackMetadataBeforeSaving(pTrack, mode);
+    DEBUG_ASSERT(
+            exportTrackMetadataResult != ExportTrackMetadataResult::Succeeded ||
+            pTrack->getSourceSynchronizedAt().isValid());
+    if (exportTrackMetadataResult == ExportTrackMetadataResult::Failed) {
+        // The metadata in the library could no longer be considered
+        // as synchronized with the source, i.e. with the file tags.
+        pTrack->resetSourceSynchronizedAt();
+    }
 
     if (!pTrack->getId().isValid()) {
         // Track has been purged from the internal collection/database

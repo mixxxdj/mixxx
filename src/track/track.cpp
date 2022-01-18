@@ -1511,12 +1511,12 @@ ExportTrackMetadataResult Track::exportMetadata(
                         << "with unknown synchronization status";
         break;
     case mixxx::TrackRecord::SourceSyncStatus::Undefined:
-        kLogger.warning() << "Skipping export of metadata into missing or inaccessible file"
+        kLogger.warning() << "Failed to export metadata into missing or inaccessible file"
                           << getLocation();
-        return ExportTrackMetadataResult::Skipped;
+        return ExportTrackMetadataResult::Failed;
     default:
         DEBUG_ASSERT(!"unreachable");
-        return ExportTrackMetadataResult::Skipped;
+        return ExportTrackMetadataResult::Failed;
     }
 
     if (syncParams.syncSeratoMetadata) {
