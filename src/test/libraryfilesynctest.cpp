@@ -276,6 +276,17 @@ class LibraryFileSyncTest : public LibraryTest {
         ASSERT_EQ(fileLastModifiedAfter.isValid(), fileLastModifiedBefore.isValid());
         if (syncTrackMetadata) {
             // Verify that the file has been modified upon saving
+            if (fileLastModifiedAfter.isValid() &&
+                    fileLastModifiedAfter <= fileLastModifiedBefore) {
+                // TODO: This redundant check and logging has only been added
+                // for analyzing sporadic CI failures and could be removed
+                // when no longer needed.
+                qWarning() << "Unexpected file modification times: after="
+                           << fileLastModifiedAfter
+                           << "<="
+                           << fileLastModifiedBefore
+                           << "= before";
+            }
             ASSERT_TRUE(
                     !fileLastModifiedAfter.isValid() ||
                     fileLastModifiedAfter > fileLastModifiedBefore);
