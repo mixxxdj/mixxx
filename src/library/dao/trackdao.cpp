@@ -1577,12 +1577,11 @@ TrackId TrackDAO::getTrackIdByRef(
     if (trackRef.getId().isValid()) {
         return trackRef.getId();
     }
-    {
-        GlobalTrackCacheLocker cacheLocker;
-        const auto pTrack = cacheLocker.lookupTrackByRef(trackRef);
-        if (pTrack) {
-            return pTrack->getId();
-        }
+    const auto pTrack = GlobalTrackCacheLocker().lookupTrackByRef(trackRef);
+    if (pTrack) {
+        const auto trackId = pTrack->getId();
+        DEBUG_ASSERT(trackId.isValid());
+        return trackId;
     }
     return getTrackIdByLocation(trackRef.getLocation());
 }
@@ -1592,12 +1591,9 @@ TrackPointer TrackDAO::getTrackByRef(
     if (!trackRef.isValid()) {
         return nullptr;
     }
-    {
-        GlobalTrackCacheLocker cacheLocker;
-        auto pTrack = cacheLocker.lookupTrackByRef(trackRef);
-        if (pTrack) {
-            return pTrack;
-        }
+    const auto pTrack = GlobalTrackCacheLocker().lookupTrackByRef(trackRef);
+    if (pTrack) {
+        return pTrack;
     }
     auto trackId = trackRef.getId();
     if (!trackId.isValid()) {
