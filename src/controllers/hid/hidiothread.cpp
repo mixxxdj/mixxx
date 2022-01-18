@@ -39,11 +39,17 @@ HidIoThread::HidIoThread(hid_device* pDevice,
         memset(m_pPollData[i], 0, kBufferSize);
     }
     m_lastPollSize = 0;
+    m_OutputReportIterator = m_outputReports.begin();
 }
 
 void HidIoThread::timerEvent(QTimerEvent* event) {
     Q_UNUSED(event);
-    poll();
+
+    sendNextOutputReport();
+
+    // Ensure that all InputReports are read from the ring buffer, before the next OutputReport blocks the IO again
+    poll(); // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
+
 }
 
 void HidIoThread::startPollTimer() {
@@ -142,19 +148,29 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     return QByteArray(reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]), bytesRead);
 }
 
-void HidIoThread::sendOutputReport(const QByteArray& data, unsigned int reportID) {
-    {
-        auto lock = lockMutex(&m_HidDeviceMutex);
-        if (m_outputReports.find(reportID) == m_outputReports.end()) {
-            std::unique_ptr<HidIoReport> pNewOutputReport;
-            m_outputReports[reportID] = std::make_unique<HidIoReport>(
-                    reportID, m_pHidDevice, m_pDeviceInfo);
-        }
-        // SendOutputReports executes a hardware operation, which take several milliseconds
-        m_outputReports[reportID]->sendOutputReport(data);
+void HidIoThread::latchOutputReport(const QByteArray& data, unsigned int reportID) {
+    auto lock = lockMutex(&m_outputReportMapMutex);
+    if (m_outputReports.find(reportID) == m_outputReports.end()) {
+        std::unique_ptr<HidIoReport> pNewOutputReport;
+        m_outputReports[reportID] = std::make_unique<HidIoReport>(
+                reportID, m_pHidDevice, m_pDeviceInfo);
     }
-    // Ensure that all InputReports are read from the ring buffer, before the next OutputReport blocks the IO again
-    poll(); // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
+    // SendOutputReports executes a hardware operation, which take several milliseconds
+    m_outputReports[reportID]->latchOutputReport(data);
+}
+
+void HidIoThread::sendNextOutputReport() {
+    auto lock = lockMutex(&m_outputReportMapMutex);
+
+    for (int i = 0; i < m_outputReports.size(); i++) {
+        m_OutputReportIterator++;
+        if (m_OutputReportIterator == m_outputReports.end()) {
+            m_OutputReportIterator = m_outputReports.begin();
+        }
+        if (m_OutputReportIterator->second->sendOutputReport()) {
+            return; // Return after each time consuming sendOutputReport
+        }        
+    }
 }
 
 void HidIoThread::sendFeatureReport(

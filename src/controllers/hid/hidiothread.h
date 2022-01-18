@@ -19,6 +19,7 @@ class HidIoThread : public QThread {
     void startPollTimer();
     void stopPollTimer();
 
+    void latchOutputReport(const QByteArray& reportData, unsigned int reportID);
     QByteArray getInputReport(unsigned int reportID);
     void sendFeatureReport(const QByteArray& reportData, unsigned int reportID);
     QByteArray getFeatureReport(unsigned int reportID);
@@ -26,9 +27,6 @@ class HidIoThread : public QThread {
   signals:
     /// Signals that a HID InputReport received by Interrupt triggered from HID device
     void receive(const QByteArray& data, mixxx::Duration timestamp);
-
-  public slots:
-    void sendOutputReport(const QByteArray& reportData, unsigned int reportID);
 
   protected:
     void timerEvent(QTimerEvent* event) override;
@@ -43,12 +41,17 @@ class HidIoThread : public QThread {
     const RuntimeLoggingCategory m_logInput;
     const RuntimeLoggingCategory m_logOutput;
 
+    void sendNextOutputReport();
+
     void poll();
     void processInputReport(int bytesRead);
     hid_device* const
             m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
     std::shared_ptr<const mixxx::hid::DeviceInfo> m_pDeviceInfo;
     std::map<unsigned char, std::unique_ptr<HidIoReport>> m_outputReports;
+    std::map<unsigned char, std::unique_ptr<HidIoReport>>::iterator m_OutputReportIterator;
+    // Must be locked when operation modify or depend on the size of the m_outputReports map
+    QT_RECURSIVE_MUTEX m_outputReportMapMutex;
 
     // Must be locked when using the m_pHidDevice and it's properties, which is not thread-safe for hidapi backends
     QT_RECURSIVE_MUTEX m_HidDeviceMutex;

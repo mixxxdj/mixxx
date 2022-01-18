@@ -115,12 +115,6 @@ int HidController::open() {
             &HidController::receive,
             Qt::QueuedConnection);
 
-    connect(this,
-            &HidController::sendOutputReport,
-            m_pHidIoThread.get(),
-            &HidIoThread::sendOutputReport,
-            Qt::QueuedConnection);
-
     // Controller input needs to be prioritized since it can affect the
     // audio directly, like when scratching
     m_pHidIoThread->start(QThread::HighPriority);
@@ -178,11 +172,11 @@ void HidController::sendReport(QList<int> data, unsigned int length, unsigned in
     foreach (int datum, data) {
         temp.append(datum);
     }
-    emit sendOutputReport(temp, reportID);
+    m_pHidIoThread->latchOutputReport(temp, reportID);
 }
 
 void HidController::sendBytes(const QByteArray& data) {
-    emit sendOutputReport(data, 0);
+    m_pHidIoThread->latchOutputReport(data, 0);
 }
 
 ControllerJSProxy* HidController::jsProxy() {

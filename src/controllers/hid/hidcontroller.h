@@ -40,10 +40,6 @@ class HidController final : public Controller {
     int close() override;
 
   private:
-  signals:
-    void sendOutputReport(const QByteArray& data, unsigned int reportID);
-
-  private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     void sendBytes(const QByteArray& data) override;

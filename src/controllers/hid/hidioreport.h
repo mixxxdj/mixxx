@@ -2,6 +2,7 @@
 
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
+#include "util/compatibility/qmutex.h"
 #include "util/duration.h"
 
 class HidIoReport {
@@ -9,7 +10,8 @@ class HidIoReport {
     HidIoReport(const unsigned char& reportId,
             hid_device* device,
             std::shared_ptr<const mixxx::hid::DeviceInfo> deviceInfo);
-    void sendOutputReport(QByteArray data);
+    void latchOutputReport(QByteArray data);
+    bool sendOutputReport();
 
   private:
     const unsigned char m_reportId;
@@ -18,4 +20,8 @@ class HidIoReport {
             m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
     std::shared_ptr<const mixxx::hid::DeviceInfo> m_pDeviceInfo;
     QByteArray m_lastSentOutputReportData;
+    QByteArray m_latchedOutputReportData;
+
+    // Must be locked when reading/writing m_lastSentOutputReportData and m_latchedOutputReportData
+    QT_RECURSIVE_MUTEX m_OutputReportDataMutex;
 };
