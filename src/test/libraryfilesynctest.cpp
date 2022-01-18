@@ -210,9 +210,7 @@ class LibraryFileSyncTest : public LibraryTest {
 
         // The column contains NULL as the default value, i.e. the last
         // synchronization time is unknown.
-        auto trackRecord = pTrack->getRecord();
-        trackRecord.setSourceSynchronizedAt(QDateTime{});
-        ASSERT_TRUE(pTrack->replaceRecord(std::move(trackRecord)));
+        pTrack->setSourceSynchronizedAt(QDateTime{});
         // Write the data into the database (without modifying the file)
         saveModifiedTrack(std::move(pTrack));
         ASSERT_EQ(nullptr, pTrack);
