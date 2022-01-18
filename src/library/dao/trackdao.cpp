@@ -1325,8 +1325,6 @@ struct ColumnPopulator {
 
 }  // namespace
 
-#define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
-
 TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     if (!trackId.isValid()) {
         return nullptr;
@@ -1338,15 +1336,8 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         return pTrack;
     }
 
-    // Accessing the database is a time consuming operation that should not
-    // be executed with a lock on the GlobalTrackCache. The GlobalTrackCache
-    // will be locked again after the query has been executed (see below)
-    // and potential race conditions will be resolved.
-    ScopedTimer t("TrackDAO::getTrackById");
-    QSqlQuery query(m_database);
-
-    ColumnPopulator columns[] = {
-            // Location must be first.
+    constexpr ColumnPopulator columns[] = {
+            // Location must be first and is populated manually!
             {"track_locations.location", nullptr},
             {"artist", setTrackArtist},
             {"title", setTrackTitle},
@@ -1404,75 +1395,97 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"coverart_digest", nullptr},
             {"coverart_hash", nullptr},
     };
+    constexpr int columnsCount = sizeof(columns) / sizeof(columns[0]);
 
-    QString columnsStr;
-    int columnsSize = 0;
-    const int columnsCount = ARRAYLENGTH(columns);
-    for (int i = 0; i < columnsCount; ++i) {
-        columnsSize += qstrlen(columns[i].name) + 1;
-    }
-    columnsStr.reserve(columnsSize);
-    for (int i = 0; i < columnsCount; ++i) {
-        if (i > 0) {
-            columnsStr.append(QChar(','));
+    // Accessing the database is a time consuming operation that should not
+    // be executed with a lock on the GlobalTrackCache. The GlobalTrackCache
+    // will be locked again after the query has been executed (see below)
+    // and potential race conditions will be resolved.
+    ScopedTimer t("TrackDAO::getTrackById");
+
+    QSqlRecord queryRecord;
+    {
+        QString columnsStr;
+        int columnsSize = 0;
+        for (int i = 0; i < columnsCount; ++i) {
+            columnsSize += qstrlen(columns[i].name) + 1;
         }
-        columnsStr.append(columns[i].name);
+        columnsStr.reserve(columnsSize);
+        for (int i = 0; i < columnsCount; ++i) {
+            if (i > 0) {
+                columnsStr.append(QChar(','));
+            }
+            columnsStr.append(columns[i].name);
+        }
+
+        QSqlQuery query(m_database);
+        query.prepare(QString(
+                "SELECT %1 FROM Library "
+                "INNER JOIN track_locations ON library.location = track_locations.id "
+                "WHERE library.id = %2")
+                              .arg(columnsStr, trackId.toString()));
+        VERIFY_OR_DEBUG_ASSERT(query.exec()) {
+            LOG_FAILED_QUERY(query)
+                    << QString("getTrack(%1)").arg(trackId.toString());
+            return nullptr;
+        }
+
+        if (!query.next()) {
+            qDebug() << "Track with id =" << trackId << "not found";
+            return nullptr;
+        }
+        queryRecord = query.record();
+        // Only a single record is expected
+        DEBUG_ASSERT(!query.next());
     }
 
-    query.prepare(QString(
-            "SELECT %1 FROM Library "
-            "INNER JOIN track_locations ON library.location = track_locations.id "
-            "WHERE library.id = %2").arg(columnsStr, trackId.toString()));
-
-    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
-        LOG_FAILED_QUERY(query)
-                << QString("getTrack(%1)").arg(trackId.toString());
-        return TrackPointer();
+    {
+        // Location is the first column.
+        DEBUG_ASSERT(queryRecord.count() > 0);
+        const auto trackLocation = queryRecord.value(0).toString();
+        const auto fileInfo = mixxx::FileInfo(trackLocation);
+        const auto fileAccess = mixxx::FileAccess(fileInfo);
+        const auto cacheResolver = GlobalTrackCacheResolver(fileAccess, trackId);
+        pTrack = cacheResolver.getTrack();
+        switch (cacheResolver.getLookupResult()) {
+        case GlobalTrackCacheLookupResult::Hit:
+            // Due to race conditions the track might have been reloaded
+            // from the database in the meantime. In this case we abort
+            // the operation and simply return the already cached Track
+            // object which is up-to-date.
+            DEBUG_ASSERT(pTrack);
+            DEBUG_ASSERT(!trackId.isValid() || trackId == pTrack->getId());
+            DEBUG_ASSERT(fileInfo == pTrack->getFileInfo());
+            return pTrack;
+        case GlobalTrackCacheLookupResult::Miss:
+            // An (almost) empty track object
+            DEBUG_ASSERT(pTrack);
+            DEBUG_ASSERT(fileInfo == pTrack->getFileInfo());
+            DEBUG_ASSERT(!trackId.isValid() || trackId == pTrack->getId());
+            // Continue and populate the (almost) empty track object
+            break;
+        case GlobalTrackCacheLookupResult::ConflictCanonicalLocation:
+            // Reject requests that would otherwise cause a caching caching conflict
+            // by accessing the same, physical file from multiple tracks concurrently.
+            DEBUG_ASSERT(!pTrack);
+            DEBUG_ASSERT(cacheResolver.getTrackRef().hasId());
+            DEBUG_ASSERT(!trackId.isValid() || trackId == cacheResolver.getTrackRef().getId());
+            DEBUG_ASSERT(cacheResolver.getTrackRef().hasCanonicalLocation());
+            DEBUG_ASSERT(cacheResolver.getTrackRef().getCanonicalLocation() ==
+                    fileInfo.canonicalLocation());
+            kLogger.warning()
+                    << "Failed to load track with id"
+                    << trackId
+                    << "that is referencing the same file"
+                    << cacheResolver.getTrackRef().getCanonicalLocation()
+                    << "as the cached track with id"
+                    << cacheResolver.getTrackRef().getId();
+            return nullptr;
+        default:
+            DEBUG_ASSERT(!"unreachable");
+            return nullptr;
+        }
     }
-    if (!query.next()) {
-        qDebug() << "Track with id =" << trackId << "not found";
-        return TrackPointer();
-    }
-
-    QSqlRecord queryRecord = query.record();
-    int recordCount = queryRecord.count();
-    VERIFY_OR_DEBUG_ASSERT(recordCount == columnsCount) {
-        recordCount = math_min(recordCount, columnsCount);
-    }
-
-    // Location is the first column.
-    const QString trackLocation(queryRecord.value(0).toString());
-
-    GlobalTrackCacheResolver cacheResolver(
-            mixxx::FileAccess(mixxx::FileInfo(trackLocation)), trackId);
-    pTrack = cacheResolver.getTrack();
-    if (cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::Hit) {
-        // Due to race conditions the track might have been reloaded
-        // from the database in the meantime. In this case we abort
-        // the operation and simply return the already cached Track
-        // object which is up-to-date.
-        DEBUG_ASSERT(pTrack);
-        return pTrack;
-    }
-    if (cacheResolver.getLookupResult() ==
-            GlobalTrackCacheLookupResult::ConflictCanonicalLocation) {
-        // Reject requests that would otherwise cause a caching caching conflict
-        // by accessing the same, physical file from multiple tracks concurrently.
-        DEBUG_ASSERT(!pTrack);
-        DEBUG_ASSERT(cacheResolver.getTrackRef().hasId());
-        DEBUG_ASSERT(cacheResolver.getTrackRef().hasCanonicalLocation());
-        kLogger.warning()
-                << "Failed to load track with id"
-                << trackId
-                << "that is referencing the same file"
-                << cacheResolver.getTrackRef().getCanonicalLocation()
-                << "as the cached track with id"
-                << cacheResolver.getTrackRef().getId();
-        return pTrack;
-    }
-    DEBUG_ASSERT(cacheResolver.getLookupResult() == GlobalTrackCacheLookupResult::Miss);
-    // The cache will immediately be unlocked to reduce lock contention!
-    cacheResolver.unlockCache();
 
     // NOTE(uklotzde, 2018-02-06):
     // pTrack has only the id set and is otherwise empty. It is registered
@@ -1486,12 +1499,16 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
 
     // For every column run its populator to fill the track in with the data.
     bool shouldDirty = false;
-    for (int i = 0; i < recordCount; ++i) {
-        TrackPopulatorFn populator = columns[i].populator;
-        if (populator != nullptr) {
-            // If any populator says the track should be dirty then we dirty it.
-            if ((*populator)(queryRecord, i, pTrack.get())) {
-                shouldDirty = true;
+    {
+        int recordCount = queryRecord.count();
+        VERIFY_OR_DEBUG_ASSERT(recordCount == columnsCount) {
+            recordCount = math_min(recordCount, columnsCount);
+        }
+        for (int i = 0; i < recordCount; ++i) {
+            TrackPopulatorFn populator = columns[i].populator;
+            if (populator) {
+                // If any populator says the track should be dirty then we dirty it.
+                shouldDirty |= (*populator)(queryRecord, i, pTrack.get());
             }
         }
     }
