@@ -41,14 +41,14 @@ let
     LV2_PATH=${lib.makeSearchPath "lib/lv2" allLv2Plugins} gdb --args ./.mixxx-wrapped --resourcePath res/ "$@"
   '';
 
-  allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then with pkgs; [
+  allLv2Plugins = lv2Plugins ++ (lib.optionals defaultLv2Plugins (with pkgs; [
     artyFX
     infamousPlugins
     mod-distortion
     rkrlv2
     x42-plugins
     zam-plugins
-  ] else []);
+  ]));
 
 in pkgs.mkShell rec {
   buildInputs = with pkgs; [
