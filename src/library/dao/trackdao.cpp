@@ -145,7 +145,7 @@ void TrackDAO::finish() {
 
 TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
     if (location.isEmpty()) {
-        return TrackId();
+        return {};
     }
 
     QSqlQuery query(m_database);
@@ -156,11 +156,11 @@ TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
     query.bindValue(":location", location);
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
-        return TrackId();
+        return {};
     }
     if (!query.next()) {
         qDebug() << "TrackDAO::getTrackId(): Track location not found in library:" << location;
-        return TrackId();
+        return {};
     }
     const auto trackId = TrackId(query.value(query.record().indexOf("id")));
     DEBUG_ASSERT(trackId.isValid());
@@ -826,7 +826,7 @@ TrackPointer TrackDAO::addTracksAddFile(
         qWarning() << "TrackDAO::addTracksAddFile:"
                    << "Unsupported file type"
                    << fileAccess.info().location();
-        return TrackPointer();
+        return nullptr;
     }
 
     GlobalTrackCacheResolver cacheResolver(fileAccess);
@@ -835,7 +835,7 @@ TrackPointer TrackDAO::addTracksAddFile(
         qWarning() << "TrackDAO::addTracksAddFile:"
                    << "File not found"
                    << fileAccess.info().location();
-        return TrackPointer();
+        return nullptr;
     }
     const TrackId oldTrackId = pTrack->getId();
     if (oldTrackId.isValid()) {
@@ -856,7 +856,7 @@ TrackPointer TrackDAO::addTracksAddFile(
                     << trackLocation
                     << "are referencing the same file"
                     << fileAccess.info().canonicalLocation();
-            return TrackPointer();
+            return nullptr;
         }
         return pTrack;
     }
@@ -882,7 +882,7 @@ TrackPointer TrackDAO::addTracksAddFile(
                 << "Failed to add track to database"
                 << pTrack->getFileInfo();
         // GlobalTrackCache will be unlocked implicitly
-        return TrackPointer();
+        return nullptr;
     }
     // The track object has already been initialized with the
     // database id, but the cache is not aware of this yet.
@@ -1329,7 +1329,7 @@ struct ColumnPopulator {
 
 TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     if (!trackId.isValid()) {
-        return TrackPointer();
+        return nullptr;
     }
 
     // The GlobalTrackCache is only locked while executing the following line.
@@ -1590,7 +1590,7 @@ TrackId TrackDAO::getTrackIdByRef(
 TrackPointer TrackDAO::getTrackByRef(
         const TrackRef& trackRef) const {
     if (!trackRef.isValid()) {
-        return TrackPointer();
+        return nullptr;
     }
     {
         GlobalTrackCacheLocker cacheLocker;
@@ -1605,7 +1605,7 @@ TrackPointer TrackDAO::getTrackByRef(
     }
     if (!trackId.isValid()) {
         qWarning() << "Track not found:" << trackRef;
-        return TrackPointer();
+        return nullptr;
     }
     return getTrackById(trackId);
 }
