@@ -1506,9 +1506,9 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         }
         for (int i = 0; i < recordCount; ++i) {
             TrackPopulatorFn populator = columns[i].populator;
-            if (populator) {
+            if (populator && (*populator)(queryRecord, i, pTrack.get())) {
                 // If any populator says the track should be dirty then we dirty it.
-                shouldDirty |= (*populator)(queryRecord, i, pTrack.get());
+                shouldDirty = true;
             }
         }
     }
