@@ -10,14 +10,23 @@
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
 
+enum class HidIoThreadState {
+    Initialized,
+    OutputActive,
+    InputOutputActive,
+    StopWhenAllReportsSent,
+    StopRequested,
+    Stopped,
+};
+
 class HidIoThread : public QThread {
     Q_OBJECT
   public:
     HidIoThread(hid_device* device,
             std::shared_ptr<const mixxx::hid::DeviceInfo> deviceInfo);
 
-    void startPollTimer();
-    void stopPollTimer();
+    void run() override;
+    QAtomicInt m_state;
 
     void latchOutputReport(const QByteArray& reportData, unsigned int reportID);
     QByteArray getInputReport(unsigned int reportID);
@@ -27,9 +36,6 @@ class HidIoThread : public QThread {
   signals:
     /// Signals that a HID InputReport received by Interrupt triggered from HID device
     void receive(const QByteArray& data, mixxx::Duration timestamp);
-
-  protected:
-    void timerEvent(QTimerEvent* event) override;
 
   private:
     static constexpr int kNumBuffers = 2;
@@ -41,7 +47,7 @@ class HidIoThread : public QThread {
     const RuntimeLoggingCategory m_logInput;
     const RuntimeLoggingCategory m_logOutput;
 
-    void sendNextOutputReport();
+    bool sendNextOutputReport();
 
     void poll();
     void processInputReport(int bytesRead);
@@ -55,5 +61,4 @@ class HidIoThread : public QThread {
 
     // Must be locked when using the m_pHidDevice and it's properties, which is not thread-safe for hidapi backends
     QT_RECURSIVE_MUTEX m_HidDeviceMutex;
-    int mPollTimerId;
 };

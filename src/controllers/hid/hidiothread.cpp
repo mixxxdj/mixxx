@@ -32,39 +32,31 @@ HidIoThread::HidIoThread(hid_device* pDevice,
                   QStringLiteral(".output")),
           m_pHidDevice(pDevice),
           m_pDeviceInfo(pDeviceInfo),
-          m_HidDeviceMutex(QT_RECURSIVE_MUTEX_INIT),
-          mPollTimerId(0) {
+          m_HidDeviceMutex(QT_RECURSIVE_MUTEX_INIT) {
     // This isn't strictly necessary but is good practice.
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
     }
     m_lastPollSize = 0;
     m_OutputReportIterator = m_outputReports.begin();
+    atomicStoreRelaxed(m_state, static_cast<int>(HidIoThreadState::Initialized));
 }
 
-void HidIoThread::timerEvent(QTimerEvent* event) {
-    Q_UNUSED(event);
-
-    sendNextOutputReport();
-
-    // Ensure that all InputReports are read from the ring buffer, before the next OutputReport blocks the IO again
-    poll(); // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
-
-}
-
-void HidIoThread::startPollTimer() {
-    if (mPollTimerId == 0) {
-        mPollTimerId = startTimer(1, Qt::PreciseTimer);
+void HidIoThread::run() {
+    while (atomicLoadRelaxed(m_state) != static_cast<int>(HidIoThreadState::StopRequested)) {
+        // Ensure that all InputReports are read from the ring buffer, before the next OutputReport blocks the IO again
+        poll(); // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
+                
+        if (!sendNextOutputReport()) {
+            if (atomicLoadRelaxed(m_state) == static_cast<int>(HidIoThreadState::StopWhenAllReportsSent)) {
+                break;
+            }
+            usleep(250); // Sleep run loop if no OutputReport was send
+        }
     }
+    atomicStoreRelaxed(m_state, static_cast<int>(HidIoThreadState::Stopped));
 }
 
-void HidIoThread::stopPollTimer() {
-    qCInfo(m_logBase) << "Stop HidIoThread polling"
-                      << m_pDeviceInfo->formatName();
-    killTimer(mPollTimerId);
-    mPollTimerId =
-            0; // Zero is the value, that startTimer returns in case of a failed timer start. Therefore zero can never be the ID of a timer.
-}
 
 void HidIoThread::poll() {
     Trace hidRead("HidIoThread poll");
@@ -74,7 +66,7 @@ void HidIoThread::poll() {
     // This could stall other low priority tasks.
     // There is no safety net for this because it has not been demonstrated to be
     // a problem in practice.
-    while (mPollTimerId) { // When the poll timer is not started or stopped from outside, mPollTimerId is set to zero
+    while (atomicLoadRelaxed(m_state) == static_cast<int>(HidIoThreadState::InputOutputActive)) {
         int bytesRead = hid_read(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
         if (bytesRead < 0) {
             // -1 is the only error value according to hidapi documentation.
@@ -159,7 +151,7 @@ void HidIoThread::latchOutputReport(const QByteArray& data, unsigned int reportI
     m_outputReports[reportID]->latchOutputReport(data);
 }
 
-void HidIoThread::sendNextOutputReport() {
+bool HidIoThread::sendNextOutputReport() {
     auto lock = lockMutex(&m_outputReportMapMutex);
 
     for (int i = 0; i < m_outputReports.size(); i++) {
@@ -168,9 +160,10 @@ void HidIoThread::sendNextOutputReport() {
             m_OutputReportIterator = m_outputReports.begin();
         }
         if (m_OutputReportIterator->second->sendOutputReport()) {
-            return; // Return after each time consuming sendOutputReport
+            return true; // Return after each time consuming sendOutputReport
         }        
     }
+    return false;
 }
 
 void HidIoThread::sendFeatureReport(
