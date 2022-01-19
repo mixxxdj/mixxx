@@ -15,9 +15,9 @@ namespace {
 
 const auto kTestDir = QDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 
-const QString kTestFileNameWithMetadata = QStringLiteral("cover-test-jpg.mp3");
+const auto kTestFileWithMetadata = QFileInfo(kTestDir, QStringLiteral("cover-test-jpg.mp3"));
 
-const QString kTestFileNameWithoutMetadata = QStringLiteral("empty.mp3");
+const auto kTestFileWithoutMetadata = QFileInfo(kTestDir, QStringLiteral("empty.mp3"));
 
 enum class FileType {
     WithMetadata,
@@ -36,9 +36,9 @@ void sleepAfterFileLastModifiedUpdated() {
 /// A temporary file system with a single audio file.
 class TempFileSystem {
   public:
-    explicit TempFileSystem(const QString& fileName)
-            : m_fileInfo(m_tempDir.filePath(fileName)) {
-        createFile();
+    explicit TempFileSystem(const QFileInfo& testFile)
+            : m_fileInfo(m_tempDir.filePath(testFile.fileName())) {
+        createFile(testFile);
     }
 
     const mixxx::FileInfo& fileInfo() const {
@@ -75,11 +75,11 @@ class TempFileSystem {
     }
 
   private:
-    void createFile() {
+    void createFile(const QFileInfo& testFile) {
         ASSERT_TRUE(m_tempDir.isValid());
         ASSERT_FALSE(m_fileInfo.exists());
         mixxxtest::copyFile(
-                kTestDir.absoluteFilePath(m_fileInfo.fileName()),
+                testFile.absoluteFilePath(),
                 m_fileInfo.location());
         ASSERT_TRUE(m_fileInfo.exists());
         sleepAfterFileLastModifiedUpdated();
@@ -121,8 +121,8 @@ class SyncTrackMetadataConfigScope final {
 
 class LibraryFileSyncTest : public LibraryTest {
   protected:
-    explicit LibraryFileSyncTest(const QString& fileName)
-            : m_tempFileSystem(fileName) {
+    explicit LibraryFileSyncTest(const QFileInfo& testFile)
+            : m_tempFileSystem(testFile) {
         createTrack();
     }
 
@@ -391,8 +391,8 @@ class LibraryFileSyncTest : public LibraryTest {
 
 class LibraryFileSyncStatusSynchronizedTest : public LibraryFileSyncTest {
   protected:
-    explicit LibraryFileSyncStatusSynchronizedTest(const QString& filename)
-            : LibraryFileSyncTest(filename) {
+    explicit LibraryFileSyncStatusSynchronizedTest(const QFileInfo& testFile)
+            : LibraryFileSyncTest(testFile) {
     }
 
     TrackPointer prepareTestTrack() const override {
@@ -413,7 +413,7 @@ class LibraryFileWithMetadataSyncStatusSynchronizedTest
         : public LibraryFileSyncStatusSynchronizedTest {
   public:
     LibraryFileWithMetadataSyncStatusSynchronizedTest()
-            : LibraryFileSyncStatusSynchronizedTest(kTestFileNameWithMetadata) {
+            : LibraryFileSyncStatusSynchronizedTest(kTestFileWithMetadata) {
     }
 };
 
@@ -433,7 +433,7 @@ class LibraryFileWithoutMetadataSyncStatusSynchronizedTest
         : public LibraryFileSyncStatusSynchronizedTest {
   public:
     LibraryFileWithoutMetadataSyncStatusSynchronizedTest()
-            : LibraryFileSyncStatusSynchronizedTest(kTestFileNameWithoutMetadata) {
+            : LibraryFileSyncStatusSynchronizedTest(kTestFileWithoutMetadata) {
     }
 };
 
@@ -451,8 +451,8 @@ TEST_F(LibraryFileWithoutMetadataSyncStatusSynchronizedTest, saveTrackMetadataWi
 
 class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
   public:
-    explicit LibraryFileSyncStatusOutdatedTest(const QString& fileName)
-            : LibraryFileSyncTest(fileName) {
+    explicit LibraryFileSyncStatusOutdatedTest(const QFileInfo& testFile)
+            : LibraryFileSyncTest(testFile) {
     }
 
   protected:
@@ -482,7 +482,7 @@ class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
 class LibraryFileWithMetadataSyncStatusOutdatedTest : public LibraryFileSyncStatusOutdatedTest {
   public:
     LibraryFileWithMetadataSyncStatusOutdatedTest()
-            : LibraryFileSyncStatusOutdatedTest(kTestFileNameWithMetadata) {
+            : LibraryFileSyncStatusOutdatedTest(kTestFileWithMetadata) {
     }
 };
 
@@ -539,7 +539,7 @@ TEST_F(LibraryFileWithMetadataSyncStatusOutdatedTest, doNotReimportTrackMetadata
 class LibraryFileWithoutMetadataSyncStatusOutdatedTest : public LibraryFileSyncStatusOutdatedTest {
   public:
     LibraryFileWithoutMetadataSyncStatusOutdatedTest()
-            : LibraryFileSyncStatusOutdatedTest(kTestFileNameWithoutMetadata) {
+            : LibraryFileSyncStatusOutdatedTest(kTestFileWithoutMetadata) {
     }
 };
 
@@ -557,8 +557,8 @@ TEST_F(LibraryFileWithoutMetadataSyncStatusOutdatedTest, saveTrackMetadataWithSy
 
 class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
   public:
-    explicit LibraryFileSyncStatusUnknownTest(const QString& fileName)
-            : LibraryFileSyncTest(fileName) {
+    explicit LibraryFileSyncStatusUnknownTest(const QFileInfo& testFile)
+            : LibraryFileSyncTest(testFile) {
     }
 
   protected:
@@ -609,7 +609,7 @@ class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
 class LibraryFileWithMetadataSyncStatusUnknownTest : public LibraryFileSyncStatusUnknownTest {
   public:
     LibraryFileWithMetadataSyncStatusUnknownTest()
-            : LibraryFileSyncStatusUnknownTest(kTestFileNameWithMetadata) {
+            : LibraryFileSyncStatusUnknownTest(kTestFileWithMetadata) {
     }
 };
 
@@ -628,7 +628,7 @@ TEST_F(LibraryFileWithMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyncDi
 class LibraryFileWithoutMetadataSyncStatusUnknownTest : public LibraryFileSyncStatusUnknownTest {
   public:
     LibraryFileWithoutMetadataSyncStatusUnknownTest()
-            : LibraryFileSyncStatusUnknownTest(kTestFileNameWithoutMetadata) {
+            : LibraryFileSyncStatusUnknownTest(kTestFileWithoutMetadata) {
     }
 };
 
@@ -646,8 +646,8 @@ TEST_F(LibraryFileWithoutMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyn
 
 class LibraryFileSyncStatusUndefinedTest : public LibraryFileSyncTest {
   public:
-    explicit LibraryFileSyncStatusUndefinedTest(const QString& fileName)
-            : LibraryFileSyncTest(fileName) {
+    explicit LibraryFileSyncStatusUndefinedTest(const QFileInfo& testFile)
+            : LibraryFileSyncTest(testFile) {
     }
 
   protected:
@@ -675,7 +675,7 @@ class LibraryFileSyncStatusUndefinedTest : public LibraryFileSyncTest {
 class LibraryFileWithMetadataSyncStatusUndefinedTest : public LibraryFileSyncStatusUndefinedTest {
   public:
     LibraryFileWithMetadataSyncStatusUndefinedTest()
-            : LibraryFileSyncStatusUndefinedTest(kTestFileNameWithMetadata) {
+            : LibraryFileSyncStatusUndefinedTest(kTestFileWithMetadata) {
     }
 };
 
@@ -695,7 +695,7 @@ class LibraryFileWithoutMetadataSyncStatusUndefinedTest
         : public LibraryFileSyncStatusUndefinedTest {
   public:
     LibraryFileWithoutMetadataSyncStatusUndefinedTest()
-            : LibraryFileSyncStatusUndefinedTest(kTestFileNameWithoutMetadata) {
+            : LibraryFileSyncStatusUndefinedTest(kTestFileWithoutMetadata) {
     }
 };
 
