@@ -343,8 +343,8 @@ TraktorS2MK3.padModeHandler = function (field) {
         // Light LEDs for all enabled hotcues
         for (var i = 1; i <= 8; ++i) {
             var active = engine.getValue(field.group, "hotcue_" + i + "_enabled");
-            var color = engine.getValue(field.group, "hotcue_" + i + "_color");
             if (active) {
+                        var color = engine.getValue(field.group, "hotcue_" + i + "_color");
                 var colorValue = TraktorS2MK3.PadColorMap.getValueForNearestColor(color)
                 TraktorS2MK3.outputHandler(colorValue, field.group, "pad_" + i);
             }
