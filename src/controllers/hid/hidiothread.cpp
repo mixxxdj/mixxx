@@ -46,9 +46,11 @@ void HidIoThread::run() {
     while (atomicLoadRelaxed(m_state) != static_cast<int>(HidIoThreadState::StopRequested)) {
         // Ensure that all InputReports are read from the ring buffer, before the next OutputReport blocks the IO again
         poll(); // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
-                
+
         if (!sendNextOutputReport()) {
-            if (atomicLoadRelaxed(m_state) == static_cast<int>(HidIoThreadState::StopWhenAllReportsSent)) {
+            if (atomicLoadRelaxed(m_state) ==
+                    static_cast<int>(
+                            HidIoThreadState::StopWhenAllReportsSent)) {
                 break;
             }
             usleep(250); // Sleep run loop if no OutputReport was send
@@ -56,7 +58,6 @@ void HidIoThread::run() {
     }
     atomicStoreRelaxed(m_state, static_cast<int>(HidIoThreadState::Stopped));
 }
-
 
 void HidIoThread::poll() {
     Trace hidRead("HidIoThread poll");
@@ -137,7 +138,9 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
 
     // Convert array of bytes read in a JavaScript compatible return type, this is returned as deep-copy, for thread safety.
     // For compatibility with HidController::processInputReport, the reportID prefix is included added here
-    return QByteArray(reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]), bytesRead);
+    return QByteArray(
+            reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]),
+            bytesRead);
 }
 
 void HidIoThread::latchOutputReport(const QByteArray& data, unsigned int reportID) {
@@ -161,7 +164,7 @@ bool HidIoThread::sendNextOutputReport() {
         }
         if (m_OutputReportIterator->second->sendOutputReport()) {
             return true; // Return after each time consuming sendOutputReport
-        }        
+        }
     }
     return false;
 }
