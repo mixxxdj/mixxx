@@ -26,7 +26,7 @@ HidIoReport::HidIoReport(const unsigned char& reportId,
           m_pDeviceInfo(pDeviceInfo) {
 }
 
-void HidIoReport::latchOutputReport(QByteArray data) {
+void HidIoReport::latchOutputReport(const QByteArray& data) {
     auto lock = lockMutex(&m_OutputReportDataMutex);
     if (!m_latchedOutputReportData.isEmpty()) {
         qCDebug(m_logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()

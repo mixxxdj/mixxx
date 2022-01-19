@@ -157,7 +157,7 @@ void HidIoThread::latchOutputReport(const QByteArray& data, unsigned int reportI
 bool HidIoThread::sendNextOutputReport() {
     auto lock = lockMutex(&m_outputReportMapMutex);
 
-    for (int i = 0; i < m_outputReports.size(); i++) {
+    for (unsigned char i = 0; i < m_outputReports.size(); i++) {
         m_OutputReportIterator++;
         if (m_OutputReportIterator == m_outputReports.end()) {
             m_OutputReportIterator = m_outputReports.begin();

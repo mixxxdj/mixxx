@@ -10,7 +10,7 @@ class HidIoReport {
     HidIoReport(const unsigned char& reportId,
             hid_device* device,
             std::shared_ptr<const mixxx::hid::DeviceInfo> deviceInfo);
-    void latchOutputReport(QByteArray data);
+    void latchOutputReport(const QByteArray& data);
     bool sendOutputReport();
 
   private:
