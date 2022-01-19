@@ -332,6 +332,19 @@ class LibraryFileSyncTest : public LibraryTest {
         m_tempFileSystem.removeFile();
     }
 
+    virtual TrackPointer prepareTestTrack() const = 0;
+
+    void checkTrackRecordSourceSyncStatus(
+            mixxx::TrackRecord::SourceSyncStatus expectedSourceSyncStatus) const {
+        const auto pTrack = prepareTestTrack();
+        const mixxx::TrackRecord emptyTrackRecord;
+        EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Void,
+                emptyTrackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
+        const auto trackRecordOfTestTrack = pTrack->getRecord();
+        EXPECT_EQ(expectedSourceSyncStatus,
+                trackRecordOfTestTrack.checkSourceSyncStatus(pTrack->getFileInfo()));
+    }
+
   private:
     void createTrack() {
         const auto trackRef = TrackRef::fromFileInfo(m_tempFileSystem.fileInfo());
@@ -353,7 +366,7 @@ class LibraryFileSyncStatusSynchronizedTest : public LibraryFileSyncTest {
     }
 
   protected:
-    TrackPointer prepareTestTrack() const {
+    TrackPointer prepareTestTrack() const override {
         TrackPointer pTrack;
         loadTrackFromDatabaseAndVerifySourceSyncStatus(
                 &pTrack,
@@ -363,13 +376,8 @@ class LibraryFileSyncStatusSynchronizedTest : public LibraryFileSyncTest {
 };
 
 TEST_F(LibraryFileSyncStatusSynchronizedTest, checkTrackRecordSourceSyncStatus) {
-    const auto pTrack = prepareTestTrack();
-    const mixxx::TrackRecord emptyTrackRecord;
-    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Void,
-            emptyTrackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
-    const auto trackRecordOfTestTrack = pTrack->getRecord();
-    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Synchronized,
-            trackRecordOfTestTrack.checkSourceSyncStatus(pTrack->getFileInfo()));
+    LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+            mixxx::TrackRecord::SourceSyncStatus::Synchronized);
 }
 
 TEST_F(LibraryFileSyncStatusSynchronizedTest, saveTrackMetadataWithSyncEnabled) {
@@ -387,7 +395,7 @@ class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
     }
 
   protected:
-    TrackPointer prepareTestTrack() const {
+    TrackPointer prepareTestTrack() const override {
         TrackPointer pTrack;
         establishSourceSyncStatus(&pTrack);
         return pTrack;
@@ -427,13 +435,8 @@ class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
 };
 
 TEST_F(LibraryFileSyncStatusUnknownTest, checkTrackRecordSourceSyncStatus) {
-    const auto pTrack = prepareTestTrack();
-    const mixxx::TrackRecord emptyTrackRecord;
-    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Void,
-            emptyTrackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
-    const auto trackRecordOfTestTrack = pTrack->getRecord();
-    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Unknown,
-            trackRecordOfTestTrack.checkSourceSyncStatus(pTrack->getFileInfo()));
+    LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+            mixxx::TrackRecord::SourceSyncStatus::Unknown);
 }
 
 TEST_F(LibraryFileSyncStatusUnknownTest, saveTrackMetadataWithAndSyncEnabled) {
@@ -451,7 +454,7 @@ class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
     }
 
   protected:
-    TrackPointer prepareTestTrack() const {
+    TrackPointer prepareTestTrack() const override {
         TrackPointer pTrack;
         establishSourceSyncStatus(&pTrack);
         return pTrack;
@@ -470,13 +473,8 @@ class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
 };
 
 TEST_F(LibraryFileSyncStatusOutdatedTest, checkTrackRecordSourceSyncStatus) {
-    const auto pTrack = prepareTestTrack();
-    const mixxx::TrackRecord emptyTrackRecord;
-    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Void,
-            emptyTrackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
-    const auto trackRecordOfTestTrack = pTrack->getRecord();
-    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Outdated,
-            trackRecordOfTestTrack.checkSourceSyncStatus(pTrack->getFileInfo()));
+    LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+            mixxx::TrackRecord::SourceSyncStatus::Outdated);
 }
 
 TEST_F(LibraryFileSyncStatusOutdatedTest, saveTrackMetadataWithAndSyncEnabled) {
@@ -532,7 +530,7 @@ class LibraryFileSyncStatusUndefinedTest : public LibraryFileSyncTest {
     }
 
   protected:
-    TrackPointer prepareTestTrack() const {
+    TrackPointer prepareTestTrack() const override {
         TrackPointer pTrack;
         establishSourceSyncStatus(&pTrack);
         return pTrack;
@@ -549,13 +547,8 @@ class LibraryFileSyncStatusUndefinedTest : public LibraryFileSyncTest {
 };
 
 TEST_F(LibraryFileSyncStatusUndefinedTest, checkTrackRecordSourceSyncStatus) {
-    const auto pTrack = prepareTestTrack();
-    const mixxx::TrackRecord emptyTrackRecord;
-    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Void,
-            emptyTrackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
-    const auto trackRecordOfTestTrack = pTrack->getRecord();
-    EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Undefined,
-            trackRecordOfTestTrack.checkSourceSyncStatus(pTrack->getFileInfo()));
+    LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+            mixxx::TrackRecord::SourceSyncStatus::Undefined);
 }
 
 TEST_F(LibraryFileSyncStatusUndefinedTest, saveTrackMetadataWithAndSyncEnabled) {
