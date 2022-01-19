@@ -382,7 +382,6 @@ class LibraryFileSyncTest : public LibraryTest {
         const auto pTrack = getOrAddTrackByLocation(trackRef.getLocation());
         ASSERT_TRUE(trackCollectionManager()->getTrackByRef(trackRef));
         m_trackId = pTrack->getId();
-        sleepAfterFileLastModifiedUpdated();
     }
 
     TempFileSystem m_tempFileSystem;
