@@ -17,8 +17,12 @@ const auto kTestDir = QDir(QDir::current().absoluteFilePath("src/test/id3-test-d
 
 const QString kTestFileNameWithMetadata = QStringLiteral("cover-test-jpg.mp3");
 
-// TODO: Add tests for files without metadata
-//const QString kTestFileNameWithoutMetadata = QStringLiteral("empty.mp3");
+const QString kTestFileNameWithoutMetadata = QStringLiteral("empty.mp3");
+
+enum class FileType {
+    WithMetadata,
+    WithoutMetadata,
+};
 
 void sleepAfterFileLastModifiedUpdated() {
     // Ensure that all subsequent modification time stamps will be
@@ -193,7 +197,10 @@ class LibraryFileSyncTest : public LibraryTest {
         }
     }
 
-    void modifyAndSaveTrack(TrackPointer&& pTrack, bool syncTrackMetadata) {
+    void modifyAndSaveTrack(
+            TrackPointer&& pTrack,
+            FileType fileType,
+            bool syncTrackMetadata) {
         ASSERT_NE(nullptr, pTrack);
 
         const auto fileLastModifiedBefore = m_tempFileSystem.fileLastModified();
@@ -222,7 +229,7 @@ class LibraryFileSyncTest : public LibraryTest {
 
         const auto fileLastModifiedAfter = m_tempFileSystem.fileLastModified();
         ASSERT_EQ(fileLastModifiedAfter.isValid(), fileLastModifiedBefore.isValid());
-        if (syncTrackMetadata) {
+        if (syncTrackMetadata && fileType == FileType::WithMetadata) {
             // Verify that the file has been modified upon saving
             ASSERT_TRUE(
                     !fileLastModifiedAfter.isValid() ||
@@ -232,12 +239,24 @@ class LibraryFileSyncTest : public LibraryTest {
             ASSERT_EQ(fileLastModifiedAfter, fileLastModifiedBefore);
         }
 
+        mixxx::MetadataSource::ImportResult expectedImportResult;
+        switch (fileType) {
+        case FileType::WithMetadata:
+            expectedImportResult = mixxx::MetadataSource::ImportResult::Succeeded;
+            break;
+        case FileType::WithoutMetadata:
+            expectedImportResult = mixxx::MetadataSource::ImportResult::Unavailable;
+            break;
+        default:
+            ASSERT_FALSE("unreachable");
+        }
+
         auto expectedSourceSyncStatusAfter = sourceSyncStatusBefore;
-        auto expectedImportResult = mixxx::MetadataSource::ImportResult::Succeeded;
         switch (sourceSyncStatusBefore) {
         case mixxx::TrackRecord::SourceSyncStatus::Unknown:
         case mixxx::TrackRecord::SourceSyncStatus::Outdated:
-            if (syncTrackMetadata) {
+            if (syncTrackMetadata &&
+                    fileType == FileType::WithMetadata) {
                 expectedSourceSyncStatusAfter = mixxx::TrackRecord::SourceSyncStatus::Synchronized;
             }
             break;
@@ -250,8 +269,10 @@ class LibraryFileSyncTest : public LibraryTest {
         default:
             ASSERT_FALSE("unreachable");
         }
-        if (syncTrackMetadata && !fileLastModifiedAfter.isValid()) {
-            // The source sync timestamp should be reset the track
+
+        if (syncTrackMetadata &&
+                !fileLastModifiedAfter.isValid()) {
+            // The source sync timestamp should be reset if the track
             // metadata export failed due to an inaccessible file.
             expectedSourceSyncStatusAfter = mixxx::TrackRecord::SourceSyncStatus::Unknown;
         }
@@ -271,43 +292,47 @@ class LibraryFileSyncTest : public LibraryTest {
                         &importedTrackMetadata, nullptr);
         EXPECT_EQ(expectedImportResult, importResult);
 
-        // The stream info properties might be adjusted when exporting track metadata!
-        // We have to adjust trackRecordBefore and importedTrackMetadata accordingly
-        // before continuing with the verification.
         if (syncTrackMetadata) {
-            trackRecordBefore.refMetadata().refStreamInfo() =
-                    trackRecordAfter.getMetadata().getStreamInfo();
-            if (importResult == mixxx::MetadataSource::ImportResult::Succeeded) {
-                importedTrackMetadata.refStreamInfo() =
-                        trackRecordAfter.getMetadata().getStreamInfo();
-            }
-        }
-
-        // Verify that the metadata in the database has been modified.
-        EXPECT_NE(trackRecordBefore.getMetadata(), trackRecordAfter.getMetadata());
-        EXPECT_EQ(newTitle, pTrack->getTitle());
-
-        if (syncTrackMetadata) {
-            // Verify that the synchronization time stamp has been updated
-            // if the file still exists.
-            EXPECT_TRUE(
-                    !fileLastModifiedAfter.isValid() ||
-                    !trackRecordBefore.getSourceSynchronizedAt().isValid() ||
-                    trackRecordBefore.getSourceSynchronizedAt() <
-                            trackRecordAfter.getSourceSynchronizedAt());
             // Verify that the synchronization time stamp has been reset
             // if the file is inaccessible, i.e. after export of track metadata
             // has failed.
             EXPECT_TRUE(
                     fileLastModifiedAfter.isValid() ||
                     !trackRecordAfter.getSourceSynchronizedAt().isValid());
-            if (importResult == mixxx::MetadataSource::ImportResult::Succeeded) {
-                // Verify that the metadata in the file has been modified.
-                EXPECT_LT(fileLastModifiedBefore, sourceSynchronizedAt);
-                EXPECT_EQ(trackRecordAfter.getSourceSynchronizedAt(), sourceSynchronizedAt);
-                EXPECT_EQ(trackRecordAfter.getMetadata(), importedTrackMetadata);
+            if (fileType == FileType::WithMetadata) {
+                // The stream info properties might be adjusted when exporting track metadata!
+                // We have to adjust trackRecordBefore and importedTrackMetadata accordingly
+                // before continuing with the verification.
+                trackRecordBefore.refMetadata().refStreamInfo() =
+                        trackRecordAfter.getMetadata().getStreamInfo();
+                if (importResult == mixxx::MetadataSource::ImportResult::Succeeded) {
+                    importedTrackMetadata.refStreamInfo() =
+                            trackRecordAfter.getMetadata().getStreamInfo();
+                    // Verify that the metadata in the file has been modified.
+                    EXPECT_LT(fileLastModifiedBefore, sourceSynchronizedAt);
+                    EXPECT_EQ(trackRecordAfter.getSourceSynchronizedAt(), sourceSynchronizedAt);
+                    EXPECT_EQ(trackRecordAfter.getMetadata(), importedTrackMetadata);
+                }
+                // Verify that the synchronization time stamp has been updated
+                // if the file still exists.
+                EXPECT_TRUE(
+                        !fileLastModifiedAfter.isValid() ||
+                        !trackRecordBefore.getSourceSynchronizedAt().isValid() ||
+                        trackRecordBefore.getSourceSynchronizedAt() <
+                                trackRecordAfter.getSourceSynchronizedAt());
+            } else {
+                // Verify that the file has not been modified upon saving
+                ASSERT_EQ(fileLastModifiedAfter, fileLastModifiedBefore);
+                // Verify that the synchronization time stamp has not been updated
+                // if the file still exists.
+                EXPECT_TRUE(
+                        !fileLastModifiedAfter.isValid() ||
+                        trackRecordBefore.getSourceSynchronizedAt() ==
+                                trackRecordAfter.getSourceSynchronizedAt());
             }
         } else {
+            // Verify that the file has not been modified upon saving
+            ASSERT_EQ(fileLastModifiedAfter, fileLastModifiedBefore);
             // Verify that the synchronization time stamp has not been updated.
             EXPECT_EQ(
                     trackRecordAfter.getSourceSynchronizedAt(),
@@ -318,9 +343,14 @@ class LibraryFileSyncTest : public LibraryTest {
                 EXPECT_EQ(trackRecordBefore.getMetadata(), importedTrackMetadata);
             }
         }
+
+        // Verify that the metadata in the database has been modified.
+        EXPECT_NE(trackRecordBefore.getMetadata(), trackRecordAfter.getMetadata());
+        EXPECT_EQ(newTitle, pTrack->getTitle());
     }
 
-    QDateTime fileLastModified() const {
+    QDateTime
+    fileLastModified() const {
         return m_tempFileSystem.fileLastModified();
     }
 
@@ -360,12 +390,11 @@ class LibraryFileSyncTest : public LibraryTest {
 };
 
 class LibraryFileSyncStatusSynchronizedTest : public LibraryFileSyncTest {
-  public:
-    LibraryFileSyncStatusSynchronizedTest()
-            : LibraryFileSyncTest(kTestFileNameWithMetadata) {
+  protected:
+    explicit LibraryFileSyncStatusSynchronizedTest(const QString& filename)
+            : LibraryFileSyncTest(filename) {
     }
 
-  protected:
     TrackPointer prepareTestTrack() const override {
         TrackPointer pTrack;
         loadTrackFromDatabaseAndVerifySourceSyncStatus(
@@ -373,25 +402,57 @@ class LibraryFileSyncStatusSynchronizedTest : public LibraryFileSyncTest {
                 mixxx::TrackRecord::SourceSyncStatus::Synchronized);
         return pTrack;
     }
+
+    void checkTrackRecordSourceSyncStatus() const {
+        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+                mixxx::TrackRecord::SourceSyncStatus::Synchronized);
+    }
 };
 
-TEST_F(LibraryFileSyncStatusSynchronizedTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
-            mixxx::TrackRecord::SourceSyncStatus::Synchronized);
-}
-
-TEST_F(LibraryFileSyncStatusSynchronizedTest, saveTrackMetadataWithSyncEnabled) {
-    modifyAndSaveTrack(prepareTestTrack(), true);
-}
-
-TEST_F(LibraryFileSyncStatusSynchronizedTest, saveTrackMetadataWithSyncDisabled) {
-    modifyAndSaveTrack(prepareTestTrack(), false);
-}
-
-class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
+class LibraryFileWithMetadataSyncStatusSynchronizedTest
+        : public LibraryFileSyncStatusSynchronizedTest {
   public:
-    LibraryFileSyncStatusUnknownTest()
-            : LibraryFileSyncTest(kTestFileNameWithMetadata) {
+    LibraryFileWithMetadataSyncStatusSynchronizedTest()
+            : LibraryFileSyncStatusSynchronizedTest(kTestFileNameWithMetadata) {
+    }
+};
+
+TEST_F(LibraryFileWithMetadataSyncStatusSynchronizedTest, checkTrackRecordSourceSyncStatus) {
+    LibraryFileSyncStatusSynchronizedTest::checkTrackRecordSourceSyncStatus();
+}
+
+TEST_F(LibraryFileWithMetadataSyncStatusSynchronizedTest, saveTrackMetadataWithSyncEnabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithMetadata, true);
+}
+
+TEST_F(LibraryFileWithMetadataSyncStatusSynchronizedTest, saveTrackMetadataWithSyncDisabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithMetadata, false);
+}
+
+class LibraryFileWithoutMetadataSyncStatusSynchronizedTest
+        : public LibraryFileSyncStatusSynchronizedTest {
+  public:
+    LibraryFileWithoutMetadataSyncStatusSynchronizedTest()
+            : LibraryFileSyncStatusSynchronizedTest(kTestFileNameWithoutMetadata) {
+    }
+};
+
+TEST_F(LibraryFileWithoutMetadataSyncStatusSynchronizedTest, checkTrackRecordSourceSyncStatus) {
+    LibraryFileSyncStatusSynchronizedTest::checkTrackRecordSourceSyncStatus();
+}
+
+TEST_F(LibraryFileWithoutMetadataSyncStatusSynchronizedTest, saveTrackMetadataWithSyncEnabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, true);
+}
+
+TEST_F(LibraryFileWithoutMetadataSyncStatusSynchronizedTest, saveTrackMetadataWithSyncDisabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, false);
+}
+
+class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
+  public:
+    explicit LibraryFileSyncStatusOutdatedTest(const QString& fileName)
+            : LibraryFileSyncTest(fileName) {
     }
 
   protected:
@@ -399,6 +460,117 @@ class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
         TrackPointer pTrack;
         establishSourceSyncStatus(&pTrack);
         return pTrack;
+    }
+
+    void checkTrackRecordSourceSyncStatus() const {
+        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+                mixxx::TrackRecord::SourceSyncStatus::Outdated);
+    }
+
+  private:
+    void establishSourceSyncStatus(TrackPointer* pLoadedTrack) const {
+        // Touch the file's modification time stamp to simulate an external
+        // modification by a 3rd party app after the track has been loaded.
+        updateFileLastModified();
+
+        loadTrackFromDatabaseAndVerifySourceSyncStatus(
+                pLoadedTrack,
+                mixxx::TrackRecord::SourceSyncStatus::Outdated);
+    }
+};
+
+class LibraryFileWithMetadataSyncStatusOutdatedTest : public LibraryFileSyncStatusOutdatedTest {
+  public:
+    LibraryFileWithMetadataSyncStatusOutdatedTest()
+            : LibraryFileSyncStatusOutdatedTest(kTestFileNameWithMetadata) {
+    }
+};
+
+TEST_F(LibraryFileWithMetadataSyncStatusOutdatedTest, checkTrackRecordSourceSyncStatus) {
+    LibraryFileSyncStatusOutdatedTest::checkTrackRecordSourceSyncStatus();
+}
+
+TEST_F(LibraryFileWithMetadataSyncStatusOutdatedTest, saveTrackMetadataWithSyncEnabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithMetadata, true);
+}
+
+TEST_F(LibraryFileWithMetadataSyncStatusOutdatedTest, saveTrackMetadataWithSyncDisabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithMetadata, false);
+}
+
+TEST_F(LibraryFileWithMetadataSyncStatusOutdatedTest, reimportTrackMetadataWithSyncEnabled) {
+    const mixxx::TrackRecord outdatedTrackRecord =
+            prepareTestTrack()->getRecord();
+
+    const auto syncTrackMetadataConfigScope =
+            SyncTrackMetadataConfigScope(m_pConfig);
+
+    // Enable sync
+    syncTrackMetadataConfigScope.setConfig(true);
+
+    auto pTrack = loadTrack();
+    ASSERT_TRUE(pTrack);
+    const auto importedTrackRecord = pTrack->getRecord();
+    verifySourceSyncStatusOfTrack(
+            *pTrack, mixxx::TrackRecord::SourceSyncStatus::Synchronized);
+    EXPECT_LT(
+            outdatedTrackRecord.getSourceSynchronizedAt(),
+            importedTrackRecord.getSourceSynchronizedAt());
+}
+
+TEST_F(LibraryFileWithMetadataSyncStatusOutdatedTest, doNotReimportTrackMetadataWithSyncDisabled) {
+    const mixxx::TrackRecord outdatedTrackRecord =
+            prepareTestTrack()->getRecord();
+
+    const auto syncTrackMetadataConfigScope =
+            SyncTrackMetadataConfigScope(m_pConfig);
+
+    // Disable sync
+    syncTrackMetadataConfigScope.setConfig(false);
+
+    auto pTrack = loadTrack();
+    ASSERT_TRUE(pTrack);
+    const auto loadedTrackRecord = pTrack->getRecord();
+    verifySourceSyncStatusOfTrack(
+            *pTrack, mixxx::TrackRecord::SourceSyncStatus::Outdated);
+    EXPECT_EQ(outdatedTrackRecord, loadedTrackRecord);
+}
+
+class LibraryFileWithoutMetadataSyncStatusOutdatedTest : public LibraryFileSyncStatusOutdatedTest {
+  public:
+    LibraryFileWithoutMetadataSyncStatusOutdatedTest()
+            : LibraryFileSyncStatusOutdatedTest(kTestFileNameWithoutMetadata) {
+    }
+};
+
+TEST_F(LibraryFileWithoutMetadataSyncStatusOutdatedTest, checkTrackRecordSourceSyncStatus) {
+    LibraryFileSyncStatusOutdatedTest::checkTrackRecordSourceSyncStatus();
+}
+
+TEST_F(LibraryFileWithoutMetadataSyncStatusOutdatedTest, saveTrackMetadataWithSyncEnabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, true);
+}
+
+TEST_F(LibraryFileWithoutMetadataSyncStatusOutdatedTest, saveTrackMetadataWithSyncDisabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, false);
+}
+
+class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
+  public:
+    explicit LibraryFileSyncStatusUnknownTest(const QString& fileName)
+            : LibraryFileSyncTest(fileName) {
+    }
+
+  protected:
+    TrackPointer prepareTestTrack() const override {
+        TrackPointer pTrack;
+        establishSourceSyncStatus(&pTrack);
+        return pTrack;
+    }
+
+    void checkTrackRecordSourceSyncStatus() const {
+        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+                mixxx::TrackRecord::SourceSyncStatus::Unknown);
     }
 
   private:
@@ -434,99 +606,48 @@ class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
     }
 };
 
-TEST_F(LibraryFileSyncStatusUnknownTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
-            mixxx::TrackRecord::SourceSyncStatus::Unknown);
-}
-
-TEST_F(LibraryFileSyncStatusUnknownTest, saveTrackMetadataWithAndSyncEnabled) {
-    modifyAndSaveTrack(prepareTestTrack(), true);
-}
-
-TEST_F(LibraryFileSyncStatusUnknownTest, saveTrackMetadataWithAndSyncDisabled) {
-    modifyAndSaveTrack(prepareTestTrack(), false);
-}
-
-class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
+class LibraryFileWithMetadataSyncStatusUnknownTest : public LibraryFileSyncStatusUnknownTest {
   public:
-    LibraryFileSyncStatusOutdatedTest()
-            : LibraryFileSyncTest(kTestFileNameWithMetadata) {
-    }
-
-  protected:
-    TrackPointer prepareTestTrack() const override {
-        TrackPointer pTrack;
-        establishSourceSyncStatus(&pTrack);
-        return pTrack;
-    }
-
-  private:
-    void establishSourceSyncStatus(TrackPointer* pLoadedTrack) const {
-        // Touch the file's modification time stamp to simulate an external
-        // modification by a 3rd party app after the track has been loaded.
-        updateFileLastModified();
-
-        loadTrackFromDatabaseAndVerifySourceSyncStatus(
-                pLoadedTrack,
-                mixxx::TrackRecord::SourceSyncStatus::Outdated);
+    LibraryFileWithMetadataSyncStatusUnknownTest()
+            : LibraryFileSyncStatusUnknownTest(kTestFileNameWithMetadata) {
     }
 };
 
-TEST_F(LibraryFileSyncStatusOutdatedTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
-            mixxx::TrackRecord::SourceSyncStatus::Outdated);
+TEST_F(LibraryFileWithMetadataSyncStatusUnknownTest, checkTrackRecordSourceSyncStatus) {
+    LibraryFileSyncStatusUnknownTest::checkTrackRecordSourceSyncStatus();
 }
 
-TEST_F(LibraryFileSyncStatusOutdatedTest, saveTrackMetadataWithAndSyncEnabled) {
-    modifyAndSaveTrack(prepareTestTrack(), true);
+TEST_F(LibraryFileWithMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyncEnabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithMetadata, true);
 }
 
-TEST_F(LibraryFileSyncStatusOutdatedTest, saveTrackMetadataWithAndSyncDisabled) {
-    modifyAndSaveTrack(prepareTestTrack(), false);
+TEST_F(LibraryFileWithMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyncDisabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithMetadata, false);
 }
 
-TEST_F(LibraryFileSyncStatusOutdatedTest, reimportTrackMetadataWithSyncEnabled) {
-    const mixxx::TrackRecord outdatedTrackRecord =
-            prepareTestTrack()->getRecord();
+class LibraryFileWithoutMetadataSyncStatusUnknownTest : public LibraryFileSyncStatusUnknownTest {
+  public:
+    LibraryFileWithoutMetadataSyncStatusUnknownTest()
+            : LibraryFileSyncStatusUnknownTest(kTestFileNameWithoutMetadata) {
+    }
+};
 
-    const auto syncTrackMetadataConfigScope =
-            SyncTrackMetadataConfigScope(m_pConfig);
-
-    // Enable sync
-    syncTrackMetadataConfigScope.setConfig(true);
-
-    auto pTrack = loadTrack();
-    ASSERT_TRUE(pTrack);
-    const auto importedTrackRecord = pTrack->getRecord();
-    verifySourceSyncStatusOfTrack(
-            *pTrack, mixxx::TrackRecord::SourceSyncStatus::Synchronized);
-    EXPECT_LT(
-            outdatedTrackRecord.getSourceSynchronizedAt(),
-            importedTrackRecord.getSourceSynchronizedAt());
+TEST_F(LibraryFileWithoutMetadataSyncStatusUnknownTest, checkTrackRecordSourceSyncStatus) {
+    LibraryFileSyncStatusUnknownTest::checkTrackRecordSourceSyncStatus();
 }
 
-TEST_F(LibraryFileSyncStatusOutdatedTest, doNotReimportTrackMetadataWithSyncDisabled) {
-    const mixxx::TrackRecord outdatedTrackRecord =
-            prepareTestTrack()->getRecord();
+TEST_F(LibraryFileWithoutMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyncEnabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, true);
+}
 
-    const auto syncTrackMetadataConfigScope =
-            SyncTrackMetadataConfigScope(m_pConfig);
-
-    // Disable sync
-    syncTrackMetadataConfigScope.setConfig(false);
-
-    auto pTrack = loadTrack();
-    ASSERT_TRUE(pTrack);
-    const auto loadedTrackRecord = pTrack->getRecord();
-    verifySourceSyncStatusOfTrack(
-            *pTrack, mixxx::TrackRecord::SourceSyncStatus::Outdated);
-    EXPECT_EQ(outdatedTrackRecord, loadedTrackRecord);
+TEST_F(LibraryFileWithoutMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyncDisabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, false);
 }
 
 class LibraryFileSyncStatusUndefinedTest : public LibraryFileSyncTest {
   public:
-    LibraryFileSyncStatusUndefinedTest()
-            : LibraryFileSyncTest(kTestFileNameWithMetadata) {
+    explicit LibraryFileSyncStatusUndefinedTest(const QString& fileName)
+            : LibraryFileSyncTest(fileName) {
     }
 
   protected:
@@ -534,6 +655,11 @@ class LibraryFileSyncStatusUndefinedTest : public LibraryFileSyncTest {
         TrackPointer pTrack;
         establishSourceSyncStatus(&pTrack);
         return pTrack;
+    }
+
+    void checkTrackRecordSourceSyncStatus() const {
+        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+                mixxx::TrackRecord::SourceSyncStatus::Undefined);
     }
 
   private:
@@ -546,15 +672,41 @@ class LibraryFileSyncStatusUndefinedTest : public LibraryFileSyncTest {
     }
 };
 
-TEST_F(LibraryFileSyncStatusUndefinedTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
-            mixxx::TrackRecord::SourceSyncStatus::Undefined);
+class LibraryFileWithMetadataSyncStatusUndefinedTest : public LibraryFileSyncStatusUndefinedTest {
+  public:
+    LibraryFileWithMetadataSyncStatusUndefinedTest()
+            : LibraryFileSyncStatusUndefinedTest(kTestFileNameWithMetadata) {
+    }
+};
+
+TEST_F(LibraryFileWithMetadataSyncStatusUndefinedTest, checkTrackRecordSourceSyncStatus) {
+    LibraryFileSyncStatusUndefinedTest::checkTrackRecordSourceSyncStatus();
 }
 
-TEST_F(LibraryFileSyncStatusUndefinedTest, saveTrackMetadataWithAndSyncEnabled) {
-    modifyAndSaveTrack(prepareTestTrack(), true);
+TEST_F(LibraryFileWithMetadataSyncStatusUndefinedTest, saveTrackMetadataWithSyncEnabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithMetadata, true);
 }
 
-TEST_F(LibraryFileSyncStatusUndefinedTest, saveTrackMetadataWithAndSyncDisabled) {
-    modifyAndSaveTrack(prepareTestTrack(), false);
+TEST_F(LibraryFileWithMetadataSyncStatusUndefinedTest, saveTrackMetadataWithSyncDisabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithMetadata, false);
+}
+
+class LibraryFileWithoutMetadataSyncStatusUndefinedTest
+        : public LibraryFileSyncStatusUndefinedTest {
+  public:
+    LibraryFileWithoutMetadataSyncStatusUndefinedTest()
+            : LibraryFileSyncStatusUndefinedTest(kTestFileNameWithoutMetadata) {
+    }
+};
+
+TEST_F(LibraryFileWithoutMetadataSyncStatusUndefinedTest, checkTrackRecordSourceSyncStatus) {
+    LibraryFileSyncStatusUndefinedTest::checkTrackRecordSourceSyncStatus();
+}
+
+TEST_F(LibraryFileWithoutMetadataSyncStatusUndefinedTest, saveTrackMetadataWithSyncEnabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, true);
+}
+
+TEST_F(LibraryFileWithoutMetadataSyncStatusUndefinedTest, saveTrackMetadataWithSyncDisabled) {
+    modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, false);
 }
