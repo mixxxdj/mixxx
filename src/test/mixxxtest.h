@@ -55,6 +55,6 @@ class MixxxTest : public testing::Test {
 
 namespace mixxxtest {
 
-bool copyFile(const QString& srcFileName, const QString& dstFileName);
+void copyFile(const QString& srcFileName, const QString& dstFileName);
 
 } // namespace mixxxtest
