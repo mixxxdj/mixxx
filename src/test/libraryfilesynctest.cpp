@@ -17,7 +17,8 @@ const auto kTestDir = QDir(QDir::current().absoluteFilePath("src/test/id3-test-d
 
 const QString kTestFileNameWithMetadata = QStringLiteral("cover-test-jpg.mp3");
 
-const QString kTestFileNameWithoutMetadata = QStringLiteral("empty.mp3");
+// TODO: Add tests for files without metadata
+//const QString kTestFileNameWithoutMetadata = QStringLiteral("empty.mp3");
 
 void sleepAfterFileLastModifiedUpdated() {
     // Ensure that all subsequent modification time stamps will be
@@ -150,21 +151,23 @@ class LibraryFileSyncTest : public LibraryTest {
         const auto sourceSynchronizedAt = trackRecord.getSourceSynchronizedAt();
         const auto fileLastModified = m_tempFileSystem.fileLastModified();
         switch (expectedSourceSyncStatus) {
+        case mixxx::TrackRecord::SourceSyncStatus::Void:
         case mixxx::TrackRecord::SourceSyncStatus::Synchronized:
             EXPECT_TRUE(sourceSynchronizedAt.isValid());
             EXPECT_TRUE(fileLastModified.isValid());
-            EXPECT_EQ(fileLastModified, trackRecord.getSourceSynchronizedAt());
+            EXPECT_EQ(fileLastModified, sourceSynchronizedAt);
             break;
         case mixxx::TrackRecord::SourceSyncStatus::Outdated:
             EXPECT_TRUE(sourceSynchronizedAt.isValid());
             EXPECT_TRUE(fileLastModified.isValid());
-            EXPECT_GT(fileLastModified, trackRecord.getSourceSynchronizedAt());
+            EXPECT_GT(fileLastModified, sourceSynchronizedAt);
             break;
-        case mixxx::TrackRecord::SourceSyncStatus::Void:
         case mixxx::TrackRecord::SourceSyncStatus::Unknown:
             EXPECT_FALSE(sourceSynchronizedAt.isValid());
+            // Independent of if the file is accessible or not
             break;
         case mixxx::TrackRecord::SourceSyncStatus::Undefined:
+            EXPECT_TRUE(sourceSynchronizedAt.isValid());
             EXPECT_FALSE(fileLastModified.isValid());
             break;
         default:
