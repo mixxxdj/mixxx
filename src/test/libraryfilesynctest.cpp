@@ -33,7 +33,12 @@ void sleepBeforeUpdatingFileLastModifiedTime() {
     // This grace period seems to be mandatory at least for the CI
     // test runs and might need to be adjusted depending on the
     // results for different platforms.
-    QThread::msleep(1);
+    //
+    // A sleep time of 1 ms has been reported to cause sporadic failures
+    // on Ubuntu 20.04 and Qt 5.12 because the file modification time has
+    // not been increased as expected when exporting track metadata into
+    // file tags.
+    QThread::msleep(2);
 }
 
 /// A temporary file system with a single audio file.
