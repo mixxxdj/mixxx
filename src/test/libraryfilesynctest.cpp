@@ -19,7 +19,7 @@ const auto kTestFileWithMetadata = QFileInfo(kTestDir, QStringLiteral("cover-tes
 
 const auto kTestFileWithoutMetadata = QFileInfo(kTestDir, QStringLiteral("empty.mp3"));
 
-enum class FakeFileTime {
+enum class AdjustFileTime {
     Earlier,
     Later,
 };
@@ -53,13 +53,13 @@ class TempFileSystem {
         return m_fileInfo.toQFile().fileTime(QFileDevice::FileModificationTime);
     }
 
-    void adjustFileLastModified(FakeFileTime fakeFileTime) const {
+    void adjustFileLastModified(AdjustFileTime adjustFileTime) const {
         const auto oldFileLastModified = fileLastModified();
         EXPECT_TRUE(oldFileLastModified.isValid());
         auto file = m_fileInfo.toQFile();
         EXPECT_TRUE(file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered));
-        switch (fakeFileTime) {
-        case FakeFileTime::Earlier: {
+        switch (adjustFileTime) {
+        case AdjustFileTime::Earlier: {
             // Date back the last file modification 1 hour into the past
             const QDateTime fakeDateTime = oldFileLastModified.addSecs(-kSecondsPerHour);
             EXPECT_TRUE(file.setFileTime(
@@ -67,7 +67,7 @@ class TempFileSystem {
                     QFileDevice::FileModificationTime));
             break;
         }
-        case FakeFileTime::Later: {
+        case AdjustFileTime::Later: {
             // Predate the last file modification 1 hour into the future
             const QDateTime fakeDateTime = oldFileLastModified.addSecs(kSecondsPerHour);
             EXPECT_TRUE(file.setFileTime(
@@ -131,7 +131,7 @@ class LibraryFileSyncTest : public LibraryTest {
         // Date back the file before adding it to the track collection
         // to ensure that all newly generated time stamps are strictly
         // greater than the synchronization time stamp in the library.
-        adjustFileLastModified(FakeFileTime::Earlier);
+        adjustFileLastModified(AdjustFileTime::Earlier);
         const auto trackRef = TrackRef::fromFileInfo(m_tempFileSystem.fileInfo());
         EXPECT_FALSE(trackCollectionManager()->getTrackByRef(trackRef));
         const auto pTrack = getOrAddTrackByLocation(trackRef.getLocation());
@@ -360,8 +360,8 @@ class LibraryFileSyncTest : public LibraryTest {
         return m_tempFileSystem.fileLastModified();
     }
 
-    void adjustFileLastModified(FakeFileTime fakeFileTime) const {
-        m_tempFileSystem.adjustFileLastModified(fakeFileTime);
+    void adjustFileLastModified(AdjustFileTime adjustFileTime) const {
+        m_tempFileSystem.adjustFileLastModified(adjustFileTime);
     }
 
     void removeFile() const {
@@ -447,7 +447,7 @@ class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
   public:
     explicit LibraryFileSyncStatusOutdatedTest(const QFileInfo& testFile)
             : LibraryFileSyncTest(testFile) {
-        adjustFileLastModified(FakeFileTime::Later);
+        adjustFileLastModified(AdjustFileTime::Later);
     }
 
   protected:
