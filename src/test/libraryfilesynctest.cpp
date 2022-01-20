@@ -38,7 +38,14 @@ class TempFileSystem {
   public:
     explicit TempFileSystem(const QFileInfo& testFile)
             : m_fileInfo(m_tempDir.filePath(testFile.fileName())) {
-        createFile(testFile);
+        EXPECT_TRUE(m_tempDir.isValid());
+        EXPECT_FALSE(m_fileInfo.exists());
+        mixxxtest::copyFile(
+                testFile.absoluteFilePath(),
+                m_fileInfo.location());
+        EXPECT_TRUE(m_fileInfo.exists());
+        EXPECT_TRUE(fileLastModified().isValid());
+        sleepAfterFileLastModifiedUpdated();
     }
 
     const mixxx::FileInfo& fileInfo() const {
@@ -123,7 +130,11 @@ class LibraryFileSyncTest : public LibraryTest {
   protected:
     explicit LibraryFileSyncTest(const QFileInfo& testFile)
             : m_tempFileSystem(testFile) {
-        createTrack();
+        const auto trackRef = TrackRef::fromFileInfo(m_tempFileSystem.fileInfo());
+        EXPECT_FALSE(trackCollectionManager()->getTrackByRef(trackRef));
+        const auto pTrack = getOrAddTrackByLocation(trackRef.getLocation());
+        EXPECT_TRUE(trackCollectionManager()->getTrackByRef(trackRef));
+        m_trackId = pTrack->getId();
     }
 
     TrackPointer loadTrack() const {
@@ -179,8 +190,7 @@ class LibraryFileSyncTest : public LibraryTest {
         }
     }
 
-    void loadTrackFromDatabaseAndVerifySourceSyncStatus(
-            TrackPointer* pLoadedTrack,
+    TrackPointer reloadTrackFromDatabaseAndVerifySourceSyncStatus(
             mixxx::TrackRecord::SourceSyncStatus expectedSourceSyncStatus) const {
         const auto syncTrackMetadataConfigScope =
                 SyncTrackMetadataConfigScope(m_pConfig);
@@ -189,12 +199,10 @@ class LibraryFileSyncTest : public LibraryTest {
         syncTrackMetadataConfigScope.setConfig(false);
 
         const auto pTrack = loadTrack();
-        ASSERT_NE(nullptr, pTrack);
+        EXPECT_NE(nullptr, pTrack);
         verifySourceSyncStatusOfTrack(*pTrack, expectedSourceSyncStatus);
 
-        if (pLoadedTrack) {
-            *pLoadedTrack = std::move(pTrack);
-        }
+        return pTrack;
     }
 
     void modifyAndSaveTrack(
@@ -279,8 +287,7 @@ class LibraryFileSyncTest : public LibraryTest {
 
         // Verify that the modified metadata is still present after
         // reloading the track from the database
-        loadTrackFromDatabaseAndVerifySourceSyncStatus(
-                &pTrack,
+        pTrack = reloadTrackFromDatabaseAndVerifySourceSyncStatus(
                 expectedSourceSyncStatusAfter);
         ASSERT_NE(nullptr, pTrack);
         const auto trackRecordAfter = pTrack->getRecord();
@@ -376,14 +383,6 @@ class LibraryFileSyncTest : public LibraryTest {
     }
 
   private:
-    void createTrack() {
-        const auto trackRef = TrackRef::fromFileInfo(m_tempFileSystem.fileInfo());
-        ASSERT_FALSE(trackCollectionManager()->getTrackByRef(trackRef));
-        const auto pTrack = getOrAddTrackByLocation(trackRef.getLocation());
-        ASSERT_TRUE(trackCollectionManager()->getTrackByRef(trackRef));
-        m_trackId = pTrack->getId();
-    }
-
     TempFileSystem m_tempFileSystem;
     TrackId m_trackId;
 };
@@ -395,11 +394,8 @@ class LibraryFileSyncStatusSynchronizedTest : public LibraryFileSyncTest {
     }
 
     TrackPointer prepareTestTrack() const override {
-        TrackPointer pTrack;
-        loadTrackFromDatabaseAndVerifySourceSyncStatus(
-                &pTrack,
+        return reloadTrackFromDatabaseAndVerifySourceSyncStatus(
                 mixxx::TrackRecord::SourceSyncStatus::Synchronized);
-        return pTrack;
     }
 
     void checkTrackRecordSourceSyncStatus() const {
@@ -456,24 +452,16 @@ class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
 
   protected:
     TrackPointer prepareTestTrack() const override {
-        TrackPointer pTrack;
-        establishSourceSyncStatus(&pTrack);
-        return pTrack;
-    }
-
-    void checkTrackRecordSourceSyncStatus() const {
-        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
-                mixxx::TrackRecord::SourceSyncStatus::Outdated);
-    }
-
-  private:
-    void establishSourceSyncStatus(TrackPointer* pLoadedTrack) const {
         // Touch the file's modification time stamp to simulate an external
         // modification by a 3rd party app after the track has been loaded.
         updateFileLastModified();
 
-        loadTrackFromDatabaseAndVerifySourceSyncStatus(
-                pLoadedTrack,
+        return reloadTrackFromDatabaseAndVerifySourceSyncStatus(
+                mixxx::TrackRecord::SourceSyncStatus::Outdated);
+    }
+
+    void checkTrackRecordSourceSyncStatus() const {
+        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
                 mixxx::TrackRecord::SourceSyncStatus::Outdated);
     }
 };
@@ -562,23 +550,10 @@ class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
 
   protected:
     TrackPointer prepareTestTrack() const override {
-        TrackPointer pTrack;
-        establishSourceSyncStatus(&pTrack);
-        return pTrack;
-    }
-
-    void checkTrackRecordSourceSyncStatus() const {
-        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
-                mixxx::TrackRecord::SourceSyncStatus::Unknown);
-    }
-
-  private:
-    void establishSourceSyncStatus(TrackPointer* pLoadedTrack) const {
-        TrackPointer pTrack;
-        loadTrackFromDatabaseAndVerifySourceSyncStatus(
-                &pTrack,
-                mixxx::TrackRecord::SourceSyncStatus::Synchronized);
-        ASSERT_NE(nullptr, pTrack);
+        TrackPointer pTrack =
+                reloadTrackFromDatabaseAndVerifySourceSyncStatus(
+                        mixxx::TrackRecord::SourceSyncStatus::Synchronized);
+        EXPECT_NE(nullptr, pTrack);
 
         const auto syncTrackMetadataConfigScope =
                 SyncTrackMetadataConfigScope(m_pConfig);
@@ -593,14 +568,18 @@ class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
         pTrack->resetSourceSynchronizedAt();
         // Write the data into the database (without modifying the file)
         saveModifiedTrack(std::move(pTrack));
-        ASSERT_EQ(nullptr, pTrack);
+        EXPECT_EQ(nullptr, pTrack);
 
         // Verify that the file has not been modified
         const auto fileLastModifiedAfter = fileLastModified();
-        ASSERT_EQ(fileLastModifiedAfter, fileLastModifiedBefore);
+        EXPECT_EQ(fileLastModifiedAfter, fileLastModifiedBefore);
 
-        loadTrackFromDatabaseAndVerifySourceSyncStatus(
-                pLoadedTrack,
+        return reloadTrackFromDatabaseAndVerifySourceSyncStatus(
+                mixxx::TrackRecord::SourceSyncStatus::Unknown);
+    }
+
+    void checkTrackRecordSourceSyncStatus() const {
+        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
                 mixxx::TrackRecord::SourceSyncStatus::Unknown);
     }
 };
@@ -651,22 +630,14 @@ class LibraryFileSyncStatusUndefinedTest : public LibraryFileSyncTest {
 
   protected:
     TrackPointer prepareTestTrack() const override {
-        TrackPointer pTrack;
-        establishSourceSyncStatus(&pTrack);
-        return pTrack;
+        removeFile();
+
+        return reloadTrackFromDatabaseAndVerifySourceSyncStatus(
+                mixxx::TrackRecord::SourceSyncStatus::Undefined);
     }
 
     void checkTrackRecordSourceSyncStatus() const {
         LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
-                mixxx::TrackRecord::SourceSyncStatus::Undefined);
-    }
-
-  private:
-    void establishSourceSyncStatus(TrackPointer* pLoadedTrack) const {
-        removeFile();
-
-        loadTrackFromDatabaseAndVerifySourceSyncStatus(
-                pLoadedTrack,
                 mixxx::TrackRecord::SourceSyncStatus::Undefined);
     }
 };
