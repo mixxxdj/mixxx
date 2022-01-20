@@ -73,6 +73,7 @@ class TempFileSystem {
         // sequences of time stamps when mixed with the file system
         // time stamps.
         auto newLastModified = oldLastModified;
+        int remainingAttemptsUntilAbort = 10;
         do {
             sleepBeforeUpdatingFileLastModifiedTime();
             ASSERT_TRUE(file.open(
@@ -93,7 +94,7 @@ class TempFileSystem {
             // for Ubuntu 20.04 where the time stamps sometimes do not
             // progress as expected, i.e. the new time stamp might equal
             // the old time stamp even though the file was modified.
-        } while (newLastModified <= oldLastModified);
+        } while (newLastModified <= oldLastModified && --remainingAttemptsUntilAbort > 0);
         // The new modification time must be strictly greater than
         // the old modification time to establish valid preconditions
         // for the tests! Since those time stamps are generated as
