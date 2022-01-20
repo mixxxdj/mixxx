@@ -63,7 +63,7 @@ class TempFileSystem {
         return m_fileInfo.toQFile().fileTime(QFileDevice::FileModificationTime);
     }
 
-    void updateFileLastModified() const {
+    void advanceFileLastModified() const {
         auto file = m_fileInfo.toQFile();
         const auto oldLastModified = fileLastModified();
         ASSERT_TRUE(oldLastModified.isValid());
@@ -372,13 +372,12 @@ class LibraryFileSyncTest : public LibraryTest {
         EXPECT_EQ(newTitle, pTrack->getTitle());
     }
 
-    QDateTime
-    fileLastModified() const {
+    QDateTime fileLastModified() const {
         return m_tempFileSystem.fileLastModified();
     }
 
-    void updateFileLastModified() const {
-        m_tempFileSystem.updateFileLastModified();
+    void advanceFileLastModified() const {
+        m_tempFileSystem.advanceFileLastModified();
     }
 
     void removeFile() const {
@@ -470,7 +469,7 @@ class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
     TrackPointer prepareTestTrack() const override {
         // Touch the file's modification time stamp to simulate an
         // independent file modification by a 3rd party app.
-        updateFileLastModified();
+        advanceFileLastModified();
 
         // The track is loaded directly from the database and will still
         // have the previous synchronization time stamp. It should then
