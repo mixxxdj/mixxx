@@ -49,8 +49,13 @@ HidIoThread::~HidIoThread() {
 void HidIoThread::run() {
     while (atomicLoadRelaxed(m_state) != static_cast<int>(HidIoThreadState::StopRequested)) {
         // Ensure that all InputReports are read from the ring buffer, before the next OutputReport blocks the IO again
-        poll(); // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
+        // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
+        pollBufferedInputReports();
 
+        // Send one OutputReport, if at least one is latched
+        // Sending an OutputReport is time consuming, because HIDAPI waits for the backend/kernel for confirmation of success
+        // Depending on the OS this takes several several milli seconds
+        // This operation doesn't take many CPU cycles, most time HIDAPI is in idle state
         if (!sendNextOutputReport()) {
             if (atomicLoadRelaxed(m_state) ==
                     static_cast<int>(
@@ -63,8 +68,8 @@ void HidIoThread::run() {
     atomicStoreRelaxed(m_state, static_cast<int>(HidIoThreadState::Stopped));
 }
 
-void HidIoThread::poll() {
-    Trace hidRead("HidIoThread poll");
+void HidIoThread::pollBufferedInputReports() {
+    Trace hidRead("HidIoThread pollBufferedInputReports");
     auto lock = lockMutex(&m_HidDeviceMutex);
     // This loop risks becoming a high priority endless loop in case processing
     // the mapping JS code takes longer than the controller polling rate.

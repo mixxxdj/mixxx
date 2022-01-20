@@ -50,7 +50,7 @@ class HidIoThread : public QThread {
 
     bool sendNextOutputReport();
 
-    void poll();
+    void pollBufferedInputReports();
     void processInputReport(int bytesRead);
     hid_device* const
             m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
