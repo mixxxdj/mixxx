@@ -7,19 +7,16 @@
 
 class HidIoReport {
   public:
-    HidIoReport(const unsigned char& reportId,
-            hid_device* device);
+    HidIoReport(const unsigned char& reportId);
     void latchOutputReport(const QByteArray& data,
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput);
-    bool sendOutputReport(
+    bool sendOutputReport(hid_device* pDevice,
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput);
 
   private:
     const unsigned char m_reportId;
-    hid_device* const
-            m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
     QByteArray m_lastSentOutputReportData;
     QByteArray m_latchedOutputReportData;
 

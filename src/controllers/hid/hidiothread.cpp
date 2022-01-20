@@ -21,7 +21,7 @@ QString loggingCategoryPrefix(const QString& deviceName) {
 } // namespace
 
 HidIoThread::HidIoThread(
-        hid_device* pDevice, const mixxx::hid::DeviceInfo& deviceInfo)
+        hid_device* pHidDevice, const mixxx::hid::DeviceInfo& deviceInfo)
         : QThread(),
           m_pollingBufferIndex(0),
           // Defining RuntimeLoggingCategories locally in this thread improves runtime performance significiant
@@ -30,7 +30,7 @@ HidIoThread::HidIoThread(
                   QStringLiteral(".input")),
           m_logOutput(loggingCategoryPrefix(deviceInfo.formatName()) +
                   QStringLiteral(".output")),
-          m_pHidDevice(pDevice),
+          m_pHidDevice(pHidDevice),
           m_deviceInfo(deviceInfo),
           m_HidDeviceMutex(QT_RECURSIVE_MUTEX_INIT) {
     // This isn't strictly necessary but is good practice.
@@ -157,7 +157,7 @@ void HidIoThread::latchOutputReport(const QByteArray& data, unsigned int reportI
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
         std::unique_ptr<HidIoReport> pNewOutputReport;
         m_outputReports[reportID] = std::make_unique<HidIoReport>(
-                reportID, m_pHidDevice);
+                reportID);
     }
     // SendOutputReports executes a hardware operation, which take several milliseconds
     m_outputReports[reportID]->latchOutputReport(data, m_deviceInfo, m_logOutput);
@@ -171,7 +171,8 @@ bool HidIoThread::sendNextOutputReport() {
         if (m_OutputReportIterator == m_outputReports.end()) {
             m_OutputReportIterator = m_outputReports.begin();
         }
-        if (m_OutputReportIterator->second->sendOutputReport(m_deviceInfo, m_logOutput)) {
+        if (m_OutputReportIterator->second->sendOutputReport(
+                    m_pHidDevice, m_deviceInfo, m_logOutput)) {
             return true; // Return after each time consuming sendOutputReport
         }
     }

@@ -13,10 +13,8 @@ constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
 } // namespace
 
-HidIoReport::HidIoReport(const unsigned char& reportId,
-        hid_device* pDevice)
-        : m_reportId(reportId),
-          m_pHidDevice(pDevice) {
+HidIoReport::HidIoReport(const unsigned char& reportId)
+        : m_reportId(reportId) {
 }
 
 void HidIoReport::latchOutputReport(const QByteArray& data,
@@ -37,7 +35,7 @@ void HidIoReport::latchOutputReport(const QByteArray& data,
     m_latchedOutputReportData.append(data);
 }
 
-bool HidIoReport::sendOutputReport(
+bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
@@ -63,13 +61,13 @@ bool HidIoReport::sendOutputReport(
     }
 
     // hid_write can take several milliseconds, because hidapi synchronizes the asyncron HID communication from the OS
-    int result = hid_write(m_pHidDevice,
+    int result = hid_write(pHidDevice,
             reinterpret_cast<const unsigned char*>(m_latchedOutputReportData.constData()),
             m_latchedOutputReportData.size());
     if (result == -1) {
         qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
                              << mixxx::convertWCStringToQString(
-                                        hid_error(m_pHidDevice),
+                                        hid_error(pHidDevice),
                                         kMaxHidErrorMessageSize);
         return false;
     }
