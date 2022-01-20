@@ -174,8 +174,10 @@ void ScreenSaverHelper::triggerUserActivity()
         name=getenv("DISPLAY");
     }
     display=XOpenDisplay(name);
-    XResetScreenSaver(display);
-    XCloseDisplay(display);
+    if (display != nullptr) {
+        XResetScreenSaver(display);
+        XCloseDisplay(display);
+    }
     return;
 }
 // Disabling the method with DBus since it seems to be failing on several systems.

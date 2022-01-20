@@ -40,6 +40,7 @@ class TrackCollectionManager;
 class BaseExternalPlaylistModel;
 
 class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
+    Q_OBJECT
   public:
     RekordboxPlaylistModel(QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,

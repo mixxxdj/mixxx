@@ -8,6 +8,7 @@
 /// linkings. However, the chain enable switch is hidden because it
 /// is redundant with the input routing switches and effect enable switches.
 class StandardEffectChain : public EffectChain {
+    Q_OBJECT
   public:
     StandardEffectChain(unsigned int iChainNumber,
             EffectsManager* pEffectsManager,

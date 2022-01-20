@@ -21,6 +21,7 @@ extern "C" {
 #define QUALITY_RING_SIZE 32
 
 class VinylControlXwax : public VinylControl {
+    Q_OBJECT
   public:
     VinylControlXwax(UserSettingsPointer pConfig, const QString& group);
     virtual ~VinylControlXwax();
