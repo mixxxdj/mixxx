@@ -22,8 +22,9 @@ enum class HidIoThreadState {
 class HidIoThread : public QThread {
     Q_OBJECT
   public:
-    HidIoThread(hid_device* device,
-            std::shared_ptr<const mixxx::hid::DeviceInfo> deviceInfo);
+    HidIoThread(hid_device* pDevice,
+            const mixxx::hid::DeviceInfo deviceInfo);
+    ~HidIoThread() override;
 
     void run() override;
     QAtomicInt m_state;
@@ -53,7 +54,7 @@ class HidIoThread : public QThread {
     void processInputReport(int bytesRead);
     hid_device* const
             m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
-    std::shared_ptr<const mixxx::hid::DeviceInfo> m_pDeviceInfo;
+    const mixxx::hid::DeviceInfo m_deviceInfo;
     std::map<unsigned char, std::unique_ptr<HidIoReport>> m_outputReports;
     std::map<unsigned char, std::unique_ptr<HidIoReport>>::iterator m_OutputReportIterator;
     // Must be locked when operation modify or depend on the size of the m_outputReports map

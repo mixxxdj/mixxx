@@ -11,29 +11,24 @@
 namespace {
 constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
-QString loggingCategoryPrefix(const QString& deviceName) {
-    return QStringLiteral("controller.") +
-            RuntimeLoggingCategory::removeInvalidCharsFromCategory(deviceName.toLower());
-}
 } // namespace
 
 HidIoReport::HidIoReport(const unsigned char& reportId,
-        hid_device* pDevice,
-        std::shared_ptr<const mixxx::hid::DeviceInfo> pDeviceInfo)
+        hid_device* pDevice)
         : m_reportId(reportId),
-          m_logOutput(loggingCategoryPrefix(pDeviceInfo->formatName()) + QStringLiteral(".output")),
-          m_pHidDevice(pDevice),
-          m_pDeviceInfo(pDeviceInfo) {
+          m_pHidDevice(pDevice) {
 }
 
-void HidIoReport::latchOutputReport(const QByteArray& data) {
+void HidIoReport::latchOutputReport(const QByteArray& data,
+        const mixxx::hid::DeviceInfo& deviceInfo,
+        const RuntimeLoggingCategory& logOutput) {
     auto lock = lockMutex(&m_OutputReportDataMutex);
     if (!m_latchedOutputReportData.isEmpty()) {
-        qCDebug(m_logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()
-                             << " Skipped superseded OutputReport"
-                             << m_pDeviceInfo->formatName() << "serial #"
-                             << m_pDeviceInfo->serialNumberRaw() << "(Report ID"
-                             << m_reportId << ")";
+        qCDebug(logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()
+                           << " Skipped superseded OutputReport"
+                           << deviceInfo.formatName() << "serial #"
+                           << deviceInfo.serialNumberRaw() << "(Report ID"
+                           << m_reportId << ")";
     }
     m_latchedOutputReportData.clear();
     // hid_write requires the first byte to be the Report ID, followed by the data[] to be send
@@ -42,7 +37,9 @@ void HidIoReport::latchOutputReport(const QByteArray& data) {
     m_latchedOutputReportData.append(data);
 }
 
-bool HidIoReport::sendOutputReport() {
+bool HidIoReport::sendOutputReport(
+        const mixxx::hid::DeviceInfo& deviceInfo,
+        const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
 
     auto lock = lockMutex(&m_OutputReportDataMutex);
@@ -56,11 +53,11 @@ bool HidIoReport::sendOutputReport() {
         // HID OutputItems are defined to represent the state of one or more similar controls or LEDs.
         // Only HID Feature items may be attributes of other items.
         // This means there is always a one to one relationship to the state of control(s)/LED(s). And if the state is not changed, there's no need to execute the time consuming hid_write again.
-        qCDebug(m_logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
-                             << " Skipped identical Output Report for"
-                             << m_pDeviceInfo->formatName() << "serial #"
-                             << m_pDeviceInfo->serialNumberRaw() << "(Report ID"
-                             << m_reportId << ")";
+        qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
+                           << " Skipped identical Output Report for"
+                           << deviceInfo.formatName() << "serial #"
+                           << deviceInfo.serialNumberRaw() << "(Report ID"
+                           << m_reportId << ")";
         m_latchedOutputReportData.clear();
         return false; // Same data sent last time
     }
@@ -70,18 +67,18 @@ bool HidIoReport::sendOutputReport() {
             reinterpret_cast<const unsigned char*>(m_latchedOutputReportData.constData()),
             m_latchedOutputReportData.size());
     if (result == -1) {
-        qCWarning(m_logOutput) << "Unable to send data to" << m_pDeviceInfo->formatName() << ":"
-                               << mixxx::convertWCStringToQString(
-                                          hid_error(m_pHidDevice),
-                                          kMaxHidErrorMessageSize);
+        qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
+                             << mixxx::convertWCStringToQString(
+                                        hid_error(m_pHidDevice),
+                                        kMaxHidErrorMessageSize);
         return false;
     }
 
-    qCDebug(m_logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit() << " "
-                         << result << "bytes sent to" << m_pDeviceInfo->formatName()
-                         << "serial #" << m_pDeviceInfo->serialNumberRaw()
-                         << "(including report ID of" << m_reportId << ") - Needed: "
-                         << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
+    qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit() << " "
+                       << result << "bytes sent to" << deviceInfo.formatName()
+                       << "serial #" << deviceInfo.serialNumberRaw()
+                       << "(including report ID of" << m_reportId << ") - Needed: "
+                       << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
 
     m_lastSentOutputReportData = std::move(m_latchedOutputReportData);
     m_latchedOutputReportData.clear();
