@@ -24,10 +24,13 @@ enum class FileType {
     WithoutMetadata,
 };
 
-void sleepAfterFileLastModifiedUpdated() {
-    // Ensure that all subsequent modification time stamps will be
-    // strictly greater, i.e. strictly monotonic sequence of time
-    // stamps. This grace period seems to be mandatory for the CI
+void sleepBeforeUpdatingFileLastModifiedTime() {
+    // Ensure that the next file modification time stamp generated
+    // by the file system will be strictly greater than the previous
+    // one. The preconditions of some tests require a strictly monotonic
+    // sequence of time stamps for reliably detecting file modifications.
+    //
+    // This grace period seems to be mandatory at least for the CI
     // test runs and might need to be adjusted depending on the
     // results for different platforms.
     QThread::msleep(1);
@@ -45,7 +48,6 @@ class TempFileSystem {
                 m_fileInfo.location());
         EXPECT_TRUE(m_fileInfo.exists());
         EXPECT_TRUE(fileLastModified().isValid());
-        sleepAfterFileLastModifiedUpdated();
     }
 
     const mixxx::FileInfo& fileInfo() const {
@@ -67,6 +69,7 @@ class TempFileSystem {
         // time stamps.
         auto newLastModified = oldLastModified;
         do {
+            sleepBeforeUpdatingFileLastModifiedTime();
             ASSERT_TRUE(file.open(
                     QIODevice::ReadWrite |
                     QIODevice::ExistingOnly |
@@ -81,7 +84,6 @@ class TempFileSystem {
             newLastModified = fileLastModified();
             ASSERT_TRUE(newLastModified.isValid());
             ASSERT_GE(newLastModified, oldLastModified);
-            sleepAfterFileLastModifiedUpdated();
             // Looping is required to fix spurious CI test failures
             // for Ubuntu 20.04 where the time stamps sometimes do not
             // progress as expected, i.e. the new time stamp might equal
@@ -156,10 +158,12 @@ class LibraryFileSyncTest : public LibraryTest {
         const auto trackId = pTrack->getId();
         ASSERT_TRUE(trackId.isValid());
         ASSERT_TRUE(pTrack->isDirty());
+        // The file might be modified if track metadata is exported.
+        // Ensures that the resulting time stamp will be strictly
+        // greater than the current one.
+        sleepBeforeUpdatingFileLastModifiedTime();
         pTrack.reset();
         ASSERT_EQ(nullptr, GlobalTrackCacheLocker().lookupTrackById(trackId));
-        // The file might have been modified if track metadata has been exported.
-        sleepAfterFileLastModifiedUpdated();
     }
 
     void verifySourceSyncStatusOfTrack(
