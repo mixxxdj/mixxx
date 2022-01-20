@@ -2823,11 +2823,7 @@ if(VINYLCONTROL)
 
   # Internal xwax library
   add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)
-  if(WIN32)
-    target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder_win32.cpp lib/xwax/lut_win32.cpp)
-  else()
-    target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c)
-  endif()
+  target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c)
   target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)
 endif()
