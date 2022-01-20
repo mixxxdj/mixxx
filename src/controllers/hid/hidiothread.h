@@ -23,7 +23,7 @@ class HidIoThread : public QThread {
     Q_OBJECT
   public:
     HidIoThread(hid_device* pDevice,
-            const mixxx::hid::DeviceInfo deviceInfo);
+            const mixxx::hid::DeviceInfo& deviceInfo);
     ~HidIoThread() override;
 
     void run() override;

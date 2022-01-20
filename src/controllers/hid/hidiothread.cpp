@@ -21,7 +21,7 @@ QString loggingCategoryPrefix(const QString& deviceName) {
 } // namespace
 
 HidIoThread::HidIoThread(
-        hid_device* pDevice, const mixxx::hid::DeviceInfo deviceInfo)
+        hid_device* pDevice, const mixxx::hid::DeviceInfo& deviceInfo)
         : QThread(),
           m_pollingBufferIndex(0),
           // Defining RuntimeLoggingCategories locally in this thread improves runtime performance significiant
