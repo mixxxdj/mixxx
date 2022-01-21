@@ -613,12 +613,12 @@ void LibraryControl::slotMoveVertical(double v) {
         break;
     }
     case FocusWidget::Dialog: {
-        // For navigating dialogs map up/down to Tab/Shift+Tab
-        const auto mod = (v > 0) ? Qt::NoModifier : Qt::ShiftModifier;
-        // ToDo Why not static_cast<int> or (int)v ?
+        // For navigating dialogs map up/down to Tab/BackTab
+        // Don't use Shift + Tab! (see moveFocus())
+        const auto key = (v > 0) ? Qt::Key_Tab : Qt::Key_Backtab;
         const auto times = static_cast<unsigned short>(std::abs(v));
         emitKeyEvent(QKeyEvent{
-                QEvent::KeyPress, Qt::Key_Tab, mod, QString(), false, times});
+                QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
         return;
     }
     case FocusWidget::ContextMenu: {
@@ -699,9 +699,15 @@ void LibraryControl::slotMoveFocusBackward(double v) {
 }
 
 void LibraryControl::slotMoveFocus(double v) {
-    const auto shift = (v < 0) ? Qt::ShiftModifier: Qt::NoModifier;
+    // Don't use Key_Tab + ShiftModifier for moving focus backwards!
+    // This would indeed move the focus, though it has a significant side-effect
+    // compared to pressing Shift + Tab on a real keyboard:
+    // Shift would remain 'pressed' in the previously focused widget until it
+    // receives any keyEvent with Qt::NoModifier.
+    const auto key = (v > 0) ? Qt::Key_Tab : Qt::Key_Backtab;
     const auto times = static_cast<unsigned short>(std::abs(v));
-    emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, shift, QString(), false, times});
+    emitKeyEvent(QKeyEvent{
+            QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
 }
 
 void LibraryControl::emitKeyEvent(QKeyEvent&& event) {

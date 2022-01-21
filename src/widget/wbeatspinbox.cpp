@@ -304,8 +304,9 @@ void WBeatSpinBox::keyPressEvent(QKeyEvent* pEvent) {
             pEvent->key() == Qt::Key_Enter ||
             pEvent->key() == Qt::Key_Escape) {
         QDoubleSpinBox::keyPressEvent(pEvent);
-        QKeyEvent shiftTabKeyEvent = QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
-        QApplication::sendEvent(this, &shiftTabKeyEvent);
+        QKeyEvent backwardFocusKeyEvent =
+                QKeyEvent{QEvent::KeyPress, Qt::Key_Backtab, Qt::NoModifier};
+        QApplication::sendEvent(this, &backwardFocusKeyEvent);
         return;
     }
     return QDoubleSpinBox::keyPressEvent(pEvent);
