@@ -944,10 +944,16 @@ TraktorS2MK3.lightDeck = function (switchOff) {
     TraktorS2MK3.controller.setOutput("[Channel2]", "keylock", current, false);
 
     for (var i = 1; i <= 8; ++i) {
-        current = engine.getValue("[Channel1]", "hotcue_" + i + "_enabled");
-        TraktorS2MK3.hotcueOutputHandler(current, "[Channel1]", "hotcue_" + i + "_enabled");
-        current = engine.getValue("[Channel2]", "hotcue_" + i + "_enabled");
-        TraktorS2MK3.hotcueOutputHandler(current, "[Channel2]", "hotcue_" + i + "_enabled");
+        if (switchOff) {
+            // do not dim but turn completely off
+            TraktorS2MK3.outputHandler(0x02, "[Channel1]", "pad_" + i);
+            TraktorS2MK3.outputHandler(0x02, "[Channel2]", "pad_" + i);
+        } else {
+            current = engine.getValue("[Channel1]", "hotcue_" + i + "_enabled") ;
+            TraktorS2MK3.hotcueOutputHandler(current, "[Channel1]", "hotcue_" + i + "_enabled");
+            current = engine.getValue("[Channel2]", "hotcue_" + i + "_enabled");
+            TraktorS2MK3.hotcueOutputHandler(current, "[Channel2]", "hotcue_" + i + "_enabled");
+        }
     }
 
     current = (!!engine.getValue("[Channel1]", "pfl")) ? fullLight : softLight;
