@@ -447,6 +447,8 @@ class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
   public:
     explicit LibraryFileSyncStatusOutdatedTest(const QFileInfo& testFile)
             : LibraryFileSyncTest(testFile) {
+        // Predate the file after it has already been added to the library
+        // in the base class constructor.
         adjustFileLastModified(AdjustFileTime::Later);
     }
 
