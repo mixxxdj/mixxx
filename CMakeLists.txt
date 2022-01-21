@@ -1620,7 +1620,6 @@ add_executable(mixxx-test
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
-  src/test/libraryfilesynctest.cpp
   src/test/libraryscannertest.cpp
   src/test/librarytest.cpp
   src/test/looping_control_test.cpp
@@ -1659,6 +1658,7 @@ add_executable(mixxx-test
   src/test/soundsourceproviderregistrytest.cpp
   src/test/sqliteliketest.cpp
   src/test/synccontroltest.cpp
+  src/test/synctrackmetadatatest.cpp
   src/test/tableview_test.cpp
   src/test/taglibtest.cpp
   src/test/trackdao_test.cpp

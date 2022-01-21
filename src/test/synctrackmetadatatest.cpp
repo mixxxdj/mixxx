@@ -123,9 +123,9 @@ class SyncTrackMetadataConfigScope final {
 
 } // namespace
 
-class LibraryFileSyncTest : public LibraryTest {
+class SyncTrackMetadataTest : public LibraryTest {
   protected:
-    explicit LibraryFileSyncTest(
+    explicit SyncTrackMetadataTest(
             const QFileInfo& testFile)
             : m_tempFileSystem(testFile) {
         // Date back the file before adding it to the track collection
@@ -386,10 +386,10 @@ class LibraryFileSyncTest : public LibraryTest {
     TrackId m_trackId;
 };
 
-class LibraryFileSyncStatusSynchronizedTest : public LibraryFileSyncTest {
+class SyncTrackMetadataStatusSynchronizedTest : public SyncTrackMetadataTest {
   protected:
-    explicit LibraryFileSyncStatusSynchronizedTest(const QFileInfo& testFile)
-            : LibraryFileSyncTest(testFile) {
+    explicit SyncTrackMetadataStatusSynchronizedTest(const QFileInfo& testFile)
+            : SyncTrackMetadataTest(testFile) {
     }
 
     TrackPointer prepareTestTrack() const override {
@@ -398,21 +398,21 @@ class LibraryFileSyncStatusSynchronizedTest : public LibraryFileSyncTest {
     }
 
     void checkTrackRecordSourceSyncStatus() const {
-        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+        SyncTrackMetadataTest::checkTrackRecordSourceSyncStatus(
                 mixxx::TrackRecord::SourceSyncStatus::Synchronized);
     }
 };
 
 class LibraryFileWithMetadataSyncStatusSynchronizedTest
-        : public LibraryFileSyncStatusSynchronizedTest {
+        : public SyncTrackMetadataStatusSynchronizedTest {
   public:
     LibraryFileWithMetadataSyncStatusSynchronizedTest()
-            : LibraryFileSyncStatusSynchronizedTest(kTestFileWithMetadata) {
+            : SyncTrackMetadataStatusSynchronizedTest(kTestFileWithMetadata) {
     }
 };
 
 TEST_F(LibraryFileWithMetadataSyncStatusSynchronizedTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncStatusSynchronizedTest::checkTrackRecordSourceSyncStatus();
+    SyncTrackMetadataStatusSynchronizedTest::checkTrackRecordSourceSyncStatus();
 }
 
 TEST_F(LibraryFileWithMetadataSyncStatusSynchronizedTest, saveTrackMetadataWithSyncEnabled) {
@@ -424,15 +424,15 @@ TEST_F(LibraryFileWithMetadataSyncStatusSynchronizedTest, saveTrackMetadataWithS
 }
 
 class LibraryFileWithoutMetadataSyncStatusSynchronizedTest
-        : public LibraryFileSyncStatusSynchronizedTest {
+        : public SyncTrackMetadataStatusSynchronizedTest {
   public:
     LibraryFileWithoutMetadataSyncStatusSynchronizedTest()
-            : LibraryFileSyncStatusSynchronizedTest(kTestFileWithoutMetadata) {
+            : SyncTrackMetadataStatusSynchronizedTest(kTestFileWithoutMetadata) {
     }
 };
 
 TEST_F(LibraryFileWithoutMetadataSyncStatusSynchronizedTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncStatusSynchronizedTest::checkTrackRecordSourceSyncStatus();
+    SyncTrackMetadataStatusSynchronizedTest::checkTrackRecordSourceSyncStatus();
 }
 
 TEST_F(LibraryFileWithoutMetadataSyncStatusSynchronizedTest, saveTrackMetadataWithSyncEnabled) {
@@ -443,10 +443,10 @@ TEST_F(LibraryFileWithoutMetadataSyncStatusSynchronizedTest, saveTrackMetadataWi
     modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, false);
 }
 
-class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
+class SyncTrackMetadataStatusOutdatedTest : public SyncTrackMetadataTest {
   public:
-    explicit LibraryFileSyncStatusOutdatedTest(const QFileInfo& testFile)
-            : LibraryFileSyncTest(testFile) {
+    explicit SyncTrackMetadataStatusOutdatedTest(const QFileInfo& testFile)
+            : SyncTrackMetadataTest(testFile) {
         // Predate the file after it has already been added to the library
         // in the base class constructor.
         adjustFileLastModified(AdjustFileTime::Later);
@@ -462,20 +462,20 @@ class LibraryFileSyncStatusOutdatedTest : public LibraryFileSyncTest {
     }
 
     void checkTrackRecordSourceSyncStatus() const {
-        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+        SyncTrackMetadataTest::checkTrackRecordSourceSyncStatus(
                 mixxx::TrackRecord::SourceSyncStatus::Outdated);
     }
 };
 
-class LibraryFileWithMetadataSyncStatusOutdatedTest : public LibraryFileSyncStatusOutdatedTest {
+class LibraryFileWithMetadataSyncStatusOutdatedTest : public SyncTrackMetadataStatusOutdatedTest {
   public:
     LibraryFileWithMetadataSyncStatusOutdatedTest()
-            : LibraryFileSyncStatusOutdatedTest(kTestFileWithMetadata) {
+            : SyncTrackMetadataStatusOutdatedTest(kTestFileWithMetadata) {
     }
 };
 
 TEST_F(LibraryFileWithMetadataSyncStatusOutdatedTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncStatusOutdatedTest::checkTrackRecordSourceSyncStatus();
+    SyncTrackMetadataStatusOutdatedTest::checkTrackRecordSourceSyncStatus();
 }
 
 TEST_F(LibraryFileWithMetadataSyncStatusOutdatedTest, saveTrackMetadataWithSyncEnabled) {
@@ -524,15 +524,16 @@ TEST_F(LibraryFileWithMetadataSyncStatusOutdatedTest, doNotReimportTrackMetadata
     EXPECT_EQ(outdatedTrackRecord, loadedTrackRecord);
 }
 
-class LibraryFileWithoutMetadataSyncStatusOutdatedTest : public LibraryFileSyncStatusOutdatedTest {
+class LibraryFileWithoutMetadataSyncStatusOutdatedTest
+        : public SyncTrackMetadataStatusOutdatedTest {
   public:
     LibraryFileWithoutMetadataSyncStatusOutdatedTest()
-            : LibraryFileSyncStatusOutdatedTest(kTestFileWithoutMetadata) {
+            : SyncTrackMetadataStatusOutdatedTest(kTestFileWithoutMetadata) {
     }
 };
 
 TEST_F(LibraryFileWithoutMetadataSyncStatusOutdatedTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncStatusOutdatedTest::checkTrackRecordSourceSyncStatus();
+    SyncTrackMetadataStatusOutdatedTest::checkTrackRecordSourceSyncStatus();
 }
 
 TEST_F(LibraryFileWithoutMetadataSyncStatusOutdatedTest, saveTrackMetadataWithSyncEnabled) {
@@ -543,10 +544,10 @@ TEST_F(LibraryFileWithoutMetadataSyncStatusOutdatedTest, saveTrackMetadataWithSy
     modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, false);
 }
 
-class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
+class SyncTrackMetadataStatusUnknownTest : public SyncTrackMetadataTest {
   public:
-    explicit LibraryFileSyncStatusUnknownTest(const QFileInfo& testFile)
-            : LibraryFileSyncTest(testFile) {
+    explicit SyncTrackMetadataStatusUnknownTest(const QFileInfo& testFile)
+            : SyncTrackMetadataTest(testFile) {
     }
 
   protected:
@@ -580,20 +581,20 @@ class LibraryFileSyncStatusUnknownTest : public LibraryFileSyncTest {
     }
 
     void checkTrackRecordSourceSyncStatus() const {
-        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+        SyncTrackMetadataTest::checkTrackRecordSourceSyncStatus(
                 mixxx::TrackRecord::SourceSyncStatus::Unknown);
     }
 };
 
-class LibraryFileWithMetadataSyncStatusUnknownTest : public LibraryFileSyncStatusUnknownTest {
+class LibraryFileWithMetadataSyncStatusUnknownTest : public SyncTrackMetadataStatusUnknownTest {
   public:
     LibraryFileWithMetadataSyncStatusUnknownTest()
-            : LibraryFileSyncStatusUnknownTest(kTestFileWithMetadata) {
+            : SyncTrackMetadataStatusUnknownTest(kTestFileWithMetadata) {
     }
 };
 
 TEST_F(LibraryFileWithMetadataSyncStatusUnknownTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncStatusUnknownTest::checkTrackRecordSourceSyncStatus();
+    SyncTrackMetadataStatusUnknownTest::checkTrackRecordSourceSyncStatus();
 }
 
 TEST_F(LibraryFileWithMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyncEnabled) {
@@ -604,15 +605,15 @@ TEST_F(LibraryFileWithMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyncDi
     modifyAndSaveTrack(prepareTestTrack(), FileType::WithMetadata, false);
 }
 
-class LibraryFileWithoutMetadataSyncStatusUnknownTest : public LibraryFileSyncStatusUnknownTest {
+class LibraryFileWithoutMetadataSyncStatusUnknownTest : public SyncTrackMetadataStatusUnknownTest {
   public:
     LibraryFileWithoutMetadataSyncStatusUnknownTest()
-            : LibraryFileSyncStatusUnknownTest(kTestFileWithoutMetadata) {
+            : SyncTrackMetadataStatusUnknownTest(kTestFileWithoutMetadata) {
     }
 };
 
 TEST_F(LibraryFileWithoutMetadataSyncStatusUnknownTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncStatusUnknownTest::checkTrackRecordSourceSyncStatus();
+    SyncTrackMetadataStatusUnknownTest::checkTrackRecordSourceSyncStatus();
 }
 
 TEST_F(LibraryFileWithoutMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyncEnabled) {
@@ -623,10 +624,10 @@ TEST_F(LibraryFileWithoutMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyn
     modifyAndSaveTrack(prepareTestTrack(), FileType::WithoutMetadata, false);
 }
 
-class LibraryFileSyncStatusUndefinedTest : public LibraryFileSyncTest {
+class SyncTrackMetadataStatusUndefinedTest : public SyncTrackMetadataTest {
   public:
-    explicit LibraryFileSyncStatusUndefinedTest(const QFileInfo& testFile)
-            : LibraryFileSyncTest(testFile) {
+    explicit SyncTrackMetadataStatusUndefinedTest(const QFileInfo& testFile)
+            : SyncTrackMetadataTest(testFile) {
     }
 
   protected:
@@ -638,20 +639,20 @@ class LibraryFileSyncStatusUndefinedTest : public LibraryFileSyncTest {
     }
 
     void checkTrackRecordSourceSyncStatus() const {
-        LibraryFileSyncTest::checkTrackRecordSourceSyncStatus(
+        SyncTrackMetadataTest::checkTrackRecordSourceSyncStatus(
                 mixxx::TrackRecord::SourceSyncStatus::Undefined);
     }
 };
 
-class LibraryFileWithMetadataSyncStatusUndefinedTest : public LibraryFileSyncStatusUndefinedTest {
+class LibraryFileWithMetadataSyncStatusUndefinedTest : public SyncTrackMetadataStatusUndefinedTest {
   public:
     LibraryFileWithMetadataSyncStatusUndefinedTest()
-            : LibraryFileSyncStatusUndefinedTest(kTestFileWithMetadata) {
+            : SyncTrackMetadataStatusUndefinedTest(kTestFileWithMetadata) {
     }
 };
 
 TEST_F(LibraryFileWithMetadataSyncStatusUndefinedTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncStatusUndefinedTest::checkTrackRecordSourceSyncStatus();
+    SyncTrackMetadataStatusUndefinedTest::checkTrackRecordSourceSyncStatus();
 }
 
 TEST_F(LibraryFileWithMetadataSyncStatusUndefinedTest, saveTrackMetadataWithSyncEnabled) {
@@ -663,15 +664,15 @@ TEST_F(LibraryFileWithMetadataSyncStatusUndefinedTest, saveTrackMetadataWithSync
 }
 
 class LibraryFileWithoutMetadataSyncStatusUndefinedTest
-        : public LibraryFileSyncStatusUndefinedTest {
+        : public SyncTrackMetadataStatusUndefinedTest {
   public:
     LibraryFileWithoutMetadataSyncStatusUndefinedTest()
-            : LibraryFileSyncStatusUndefinedTest(kTestFileWithoutMetadata) {
+            : SyncTrackMetadataStatusUndefinedTest(kTestFileWithoutMetadata) {
     }
 };
 
 TEST_F(LibraryFileWithoutMetadataSyncStatusUndefinedTest, checkTrackRecordSourceSyncStatus) {
-    LibraryFileSyncStatusUndefinedTest::checkTrackRecordSourceSyncStatus();
+    SyncTrackMetadataStatusUndefinedTest::checkTrackRecordSourceSyncStatus();
 }
 
 TEST_F(LibraryFileWithoutMetadataSyncStatusUndefinedTest, saveTrackMetadataWithSyncEnabled) {
