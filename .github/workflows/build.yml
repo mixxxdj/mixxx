@@ -304,6 +304,7 @@ jobs:
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
     - name: "Package"
+      if: matrix.cpack_generator != null
       run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: build
 
@@ -315,7 +316,7 @@ jobs:
 
     - name: "Package for PPA"
       # No need to do the PPA build for both Ubuntu versions
-      if: matrix.os == 'ubuntu-20.04'
+      if: matrix.os == 'ubuntu-20.04' && matrix.container == null
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
@@ -347,7 +348,7 @@ jobs:
       # also generates metadata for file artifact and write it to the job
       # output using the artifacts_slug value.
       id: prepare_deploy
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && matrix.artifacts_path != null
       shell: bash
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
@@ -428,6 +429,7 @@ jobs:
         echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
     - name: "Upload GitHub Actions artifacts"
+      if: matrix.artifacts_path != null
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.artifacts_name }}
