@@ -437,7 +437,6 @@ TraktorS2MK3.loadTrackHandler = function (field) {
         engine.setValue(field.group, "eject", field.value);
     } else {
         engine.setValue(field.group, "LoadSelectedTrack", field.value);
-        engine.setValue(field.group, "pfl", 1);
     }
 };
 
