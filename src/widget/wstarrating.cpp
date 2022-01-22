@@ -106,7 +106,7 @@ void WStarRating::mouseMoveEvent(QMouseEvent *event) {
 
     m_focused = true;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    int star = starAtPosition(event->position().x());
+    int star = starAtPosition(event->position().toPoint().x());
 #else
     int star = starAtPosition(event->x());
 #endif
