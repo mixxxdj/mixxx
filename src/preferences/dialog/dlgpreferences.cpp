@@ -26,7 +26,9 @@
 #include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgprefinterface.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "preferences/dialog/dlgprefwaveform.h"
+#endif
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -140,6 +142,7 @@ DlgPreferences::DlgPreferences(
             tr("Interface"),
             "ic_preferences_interface.svg");
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
     if (pSkinLoader) {
         DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, m_pConfig, pLibrary);
@@ -154,6 +157,7 @@ DlgPreferences::DlgPreferences(
                 &DlgPreferences::reloadUserInterface,
                 Qt::DirectConnection);
     }
+#endif
 
     addPageWidget(PreferencesPage(
                           new DlgPrefColors(this, m_pConfig, pLibrary),

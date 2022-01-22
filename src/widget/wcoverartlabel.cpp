@@ -76,11 +76,7 @@ void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
 
 void WCoverArtLabel::contextMenuEvent(QContextMenuEvent* event) {
     event->accept();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    m_pCoverMenu->popup(event->globalPosition().toPoint());
-#else
     m_pCoverMenu->popup(event->globalPos());
-#endif
 }
 
 void WCoverArtLabel::loadTrack(TrackPointer pTrack) {

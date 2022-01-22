@@ -645,10 +645,20 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
   src/library/autodj/dlgautodj.ui
+  src/library/banshee/bansheedbconnection.cpp
+  src/library/banshee/bansheefeature.cpp
+  src/library/banshee/bansheeplaylistmodel.cpp
+  src/library/baseexternallibraryfeature.cpp
+  src/library/baseexternalplaylistmodel.cpp
+  src/library/baseexternaltrackmodel.cpp
   src/library/basesqltablemodel.cpp
   src/library/basetrackcache.cpp
   src/library/basetracktablemodel.cpp
   src/library/bpmdelegate.cpp
+  src/library/browse/browsefeature.cpp
+  src/library/browse/browsetablemodel.cpp
+  src/library/browse/browsethread.cpp
+  src/library/browse/foldertreemodel.cpp
   src/library/colordelegate.cpp
   src/library/columncache.cpp
   src/library/coverart.cpp
@@ -681,21 +691,31 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/export/trackexportdlg.cpp
   src/library/export/trackexportwizard.cpp
   src/library/export/trackexportworker.cpp
+  src/library/externaltrackcollection.cpp
+  src/library/hiddentablemodel.cpp
+  src/library/itunes/itunesfeature.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
   src/library/librarycontrol.cpp
   src/library/libraryfeature.cpp
   src/library/librarytablemodel.cpp
   src/library/locationdelegate.cpp
+  src/library/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
   src/library/parserpls.cpp
+  src/library/playlisttablemodel.cpp
   src/library/previewbuttondelegate.cpp
   src/library/proxytrackmodel.cpp
+  src/library/recording/dlgrecording.cpp
+  src/library/recording/dlgrecording.ui
+  src/library/recording/recordingfeature.cpp
   src/library/rekordbox/rekordbox_anlz.cpp
   src/library/rekordbox/rekordbox_pdb.cpp
+  src/library/rekordbox/rekordboxfeature.cpp
+  src/library/rhythmbox/rhythmboxfeature.cpp
   src/library/scanner/importfilestask.cpp
   src/library/scanner/libraryscanner.cpp
   src/library/scanner/libraryscannerdlg.cpp
@@ -703,6 +723,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/scanner/scannertask.cpp
   src/library/searchquery.cpp
   src/library/searchqueryparser.cpp
+  src/library/serato/seratofeature.cpp
+  src/library/serato/seratoplaylistmodel.cpp
   src/library/sidebarmodel.cpp
   src/library/stardelegate.cpp
   src/library/stareditor.cpp
@@ -714,9 +736,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackloader.cpp
   src/library/trackmodeliterator.cpp
   src/library/trackprocessing.cpp
+  src/library/trackset/baseplaylistfeature.cpp
   src/library/trackset/basetracksetfeature.cpp
+  src/library/trackset/crate/cratefeature.cpp
+  src/library/trackset/crate/cratefeaturehelper.cpp
   src/library/trackset/crate/cratestorage.cpp
+  src/library/trackset/crate/cratetablemodel.cpp
+  src/library/trackset/playlistfeature.cpp
+  src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp
+  src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
   src/mixer/auxiliary.cpp
@@ -742,6 +771,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/network/jsonwebtask.cpp
   src/network/networktask.cpp
   src/network/webtask.cpp
+  src/preferences/colorpaletteeditor.cpp
+  src/preferences/colorpaletteeditormodel.cpp
+  src/preferences/colorpalettesettings.cpp
   src/preferences/configobject.cpp
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
@@ -800,6 +832,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/qml/qmlplayerproxy.cpp
   src/qml/qmlvisibleeffectsmodel.cpp
   src/qml/qmlwaveformoverview.cpp
+  src/skin/legacy/colorschemeparser.cpp
+  src/skin/legacy/imgcolor.cpp
+  src/skin/legacy/imginvert.cpp
+  src/skin/legacy/imgloader.cpp
+  src/skin/legacy/launchimage.cpp
+  src/skin/legacy/legacyskin.cpp
+  src/skin/legacy/legacyskinparser.cpp
+  src/skin/legacy/pixmapsource.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
   src/skin/skinloader.cpp
@@ -914,49 +954,79 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
+  src/waveform/visualplayposition.cpp
   src/waveform/waveform.cpp
   src/waveform/waveformfactory.cpp
+  src/widget/controlwidgetconnection.cpp
+  src/widget/hexspinbox.cpp
+  src/widget/paintable.cpp
+  src/widget/wanalysislibrarytableview.cpp
+  src/widget/wbasewidget.cpp
+  src/widget/wbattery.cpp
+  src/widget/wbeatspinbox.cpp
+  src/widget/wcolorpicker.cpp
+  src/widget/wcolorpickeraction.cpp
+  src/widget/wcombobox.cpp
+  src/widget/wcoverart.cpp
+  src/widget/wcoverartlabel.cpp
+  src/widget/wcoverartmenu.cpp
+  src/widget/wcuemenupopup.cpp
+  src/widget/wdisplay.cpp
+  src/widget/weffectbuttonparametername.cpp
+  src/widget/weffectchain.cpp
+  src/widget/weffectchainpresetbutton.cpp
+  src/widget/weffectchainpresetselector.cpp
+  src/widget/weffectknobparametername.cpp
+  src/widget/weffectname.cpp
+  src/widget/weffectparameterknob.cpp
+  src/widget/weffectparameterknobcomposed.cpp
+  src/widget/weffectparameternamebase.cpp
+  src/widget/weffectpushbutton.cpp
+  src/widget/weffectselector.cpp
+  src/widget/whotcuebutton.cpp
+  src/widget/wimagestore.cpp
+  src/widget/wkey.cpp
+  src/widget/wknob.cpp
+  src/widget/wknobcomposed.cpp
+  src/widget/wlabel.cpp
+  src/widget/wlibrary.cpp
+  src/widget/wlibrarysidebar.cpp
+  src/widget/wlibrarytableview.cpp
+  src/widget/wlibrarytextbrowser.cpp
+  src/widget/wmainmenubar.cpp
+  src/widget/wnumber.cpp
+  src/widget/wnumberdb.cpp
+  src/widget/wnumberpos.cpp
+  src/widget/wnumberrate.cpp
+  src/widget/wpixmapstore.cpp
+  src/widget/wpushbutton.cpp
+  src/widget/wraterange.cpp
+  src/widget/wrecordingduration.cpp
+  src/widget/wscrollable.cpp
+  src/widget/wsearchlineedit.cpp
+  src/widget/wsearchrelatedtracksmenu.cpp
+  src/widget/wsingletoncontainer.cpp
+  src/widget/wsizeawarestack.cpp
+  src/widget/wskincolor.cpp
+  src/widget/wslidercomposed.cpp
+  src/widget/wsplitter.cpp
+  src/widget/wstarrating.cpp
+  src/widget/wstatuslight.cpp
+  src/widget/wtime.cpp
+  src/widget/wtrackmenu.cpp
+  src/widget/wtrackproperty.cpp
+  src/widget/wtracktableview.cpp
+  src/widget/wtracktableviewheader.cpp
+  src/widget/wtracktext.cpp
+  src/widget/wtrackwidgetgroup.cpp
+  src/widget/wvumeter.cpp
+  src/widget/wwidget.cpp
+  src/widget/wwidgetgroup.cpp
+  src/widget/wwidgetstack.cpp
 )
 if(NOT QT6)
   target_sources(mixxx-lib PRIVATE
-    src/library/banshee/bansheedbconnection.cpp
-    src/library/banshee/bansheefeature.cpp
-    src/library/banshee/bansheeplaylistmodel.cpp
-    src/library/browse/browsefeature.cpp
-    src/library/browse/browsetablemodel.cpp
-    src/library/browse/browsethread.cpp
-    src/library/browse/foldertreemodel.cpp
-    src/library/baseexternallibraryfeature.cpp
-    src/library/baseexternalplaylistmodel.cpp
-    src/library/baseexternaltrackmodel.cpp
-    src/library/externaltrackcollection.cpp
-    src/library/hiddentablemodel.cpp
-    src/library/itunes/itunesfeature.cpp
-    src/library/missingtablemodel.cpp
-    src/library/playlisttablemodel.cpp
-    src/library/recording/dlgrecording.cpp
-    src/library/recording/dlgrecording.ui
-    src/library/recording/recordingfeature.cpp
-    src/library/rekordbox/rekordboxfeature.cpp
-    src/library/rhythmbox/rhythmboxfeature.cpp
-    src/library/serato/seratofeature.cpp
-    src/library/serato/seratoplaylistmodel.cpp
-    src/library/trackset/baseplaylistfeature.cpp
-    src/library/trackset/crate/cratefeature.cpp
-    src/library/trackset/crate/cratefeaturehelper.cpp
-    src/library/trackset/crate/cratetablemodel.cpp
-    src/library/trackset/playlistfeature.cpp
-    src/library/trackset/setlogfeature.cpp
-    src/library/traktor/traktorfeature.cpp
     src/mixxxmainwindow.cpp
-    src/skin/legacy/colorschemeparser.cpp
-    src/skin/legacy/imgcolor.cpp
-    src/skin/legacy/imginvert.cpp
-    src/skin/legacy/imgloader.cpp
-    src/skin/legacy/launchimage.cpp
-    src/skin/legacy/legacyskinparser.cpp
-    src/skin/legacy/pixmapsource.cpp
-    src/skin/legacy/legacyskin.cpp
     src/waveform/guitick.cpp
     src/waveform/renderers/glslwaveformrenderersignal.cpp
     src/waveform/renderers/glvsynctestrenderer.cpp
@@ -983,7 +1053,6 @@ if(NOT QT6)
     src/waveform/renderers/waveformsignalcolors.cpp
     src/waveform/renderers/waveformwidgetrenderer.cpp
     src/waveform/sharedglcontext.cpp
-    src/waveform/visualplayposition.cpp
     src/waveform/visualsmanager.cpp
     src/waveform/vsyncthread.cpp
     src/waveform/waveformmarklabel.cpp
@@ -1003,78 +1072,12 @@ if(NOT QT6)
     src/waveform/widgets/rgbwaveformwidget.cpp
     src/waveform/widgets/softwarewaveformwidget.cpp
     src/waveform/widgets/waveformwidgetabstract.cpp
-    src/widget/controlwidgetconnection.cpp
-    src/widget/hexspinbox.cpp
-    src/widget/paintable.cpp
-    src/widget/wanalysislibrarytableview.cpp
-    src/widget/wbasewidget.cpp
-    src/widget/wbattery.cpp
-    src/widget/wbeatspinbox.cpp
-    src/widget/wcolorpicker.cpp
-    src/widget/wcolorpickeraction.cpp
-    src/widget/wcombobox.cpp
-    src/widget/wcoverart.cpp
-    src/widget/wcoverartlabel.cpp
-    src/widget/wcoverartmenu.cpp
-    src/widget/wcuemenupopup.cpp
-    src/widget/wdisplay.cpp
-    src/widget/weffectbuttonparametername.cpp
-    src/widget/weffectchain.cpp
-    src/widget/weffectchainpresetbutton.cpp
-    src/widget/weffectchainpresetselector.cpp
-    src/widget/weffectknobparametername.cpp
-    src/widget/weffectname.cpp
-    src/widget/weffectparameterknob.cpp
-    src/widget/weffectparameterknobcomposed.cpp
-    src/widget/weffectparameternamebase.cpp
-    src/widget/weffectpushbutton.cpp
-    src/widget/weffectselector.cpp
-    src/widget/whotcuebutton.cpp
-    src/widget/wimagestore.cpp
-    src/widget/wkey.cpp
-    src/widget/wknob.cpp
-    src/widget/wknobcomposed.cpp
-    src/widget/wlabel.cpp
-    src/widget/wlibrary.cpp
-    src/widget/wlibrarysidebar.cpp
-    src/widget/wlibrarytableview.cpp
-    src/widget/wlibrarytextbrowser.cpp
-    src/widget/wmainmenubar.cpp
-    src/widget/wnumber.cpp
-    src/widget/wnumberdb.cpp
-    src/widget/wnumberpos.cpp
-    src/widget/wnumberrate.cpp
     src/widget/woverview.cpp
     src/widget/woverviewhsv.cpp
     src/widget/woverviewlmh.cpp
     src/widget/woverviewrgb.cpp
-    src/widget/wpixmapstore.cpp
-    src/widget/wpushbutton.cpp
-    src/widget/wrecordingduration.cpp
-    src/widget/wscrollable.cpp
-    src/widget/wsearchlineedit.cpp
-    src/widget/wsearchrelatedtracksmenu.cpp
-    src/widget/wsingletoncontainer.cpp
-    src/widget/wsizeawarestack.cpp
-    src/widget/wskincolor.cpp
-    src/widget/wslidercomposed.cpp
     src/widget/wspinny.cpp
-    src/widget/wsplitter.cpp
-    src/widget/wstarrating.cpp
-    src/widget/wstatuslight.cpp
-    src/widget/wtime.cpp
-    src/widget/wtrackmenu.cpp
-    src/widget/wtrackproperty.cpp
-    src/widget/wtracktableview.cpp
-    src/widget/wtracktableviewheader.cpp
-    src/widget/wtracktext.cpp
-    src/widget/wtrackwidgetgroup.cpp
-    src/widget/wvumeter.cpp
     src/widget/wwaveformviewer.cpp
-    src/widget/wwidget.cpp
-    src/widget/wwidgetgroup.cpp
-    src/widget/wwidgetstack.cpp
-    src/widget/wraterange.cpp
   )
 endif()
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
@@ -2824,11 +2827,7 @@ if(VINYLCONTROL)
 
   # Internal xwax library
   add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)
-  if(WIN32)
-    target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder_win32.cpp lib/xwax/lut_win32.cpp)
-  else()
-    target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c)
-  endif()
+  target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c)
   target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)
 endif()
