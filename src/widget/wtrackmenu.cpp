@@ -1721,6 +1721,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         QListWidget* delListWidget = new QListWidget();
         delListWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::MinimumExpanding));
+        delListWidget->setFocusPolicy(Qt::ClickFocus);
         delListWidget->addItems(locations);
         mixxx::widgethelper::growListWidget(*delListWidget, *this);
         // Warning text
@@ -1808,6 +1809,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     notDeletedLabel->setTextFormat(Qt::RichText);
 
     QListWidget* notDeletedListWidget = new QListWidget;
+    notDeletedListWidget->setFocusPolicy(Qt::ClickFocus);
     notDeletedListWidget->addItems(tracksToKeep);
     mixxx::widgethelper::growListWidget(*notDeletedListWidget, *this);
 
