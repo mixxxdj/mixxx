@@ -10,28 +10,28 @@ Column {
 
     spacing: 4
 
-    EqKnob {
+    Skin.EqKnob {
         statusKey: "button_parameter3"
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter3"
         knob.color: Theme.eqHighColor
     }
 
-    EqKnob {
+    Skin.EqKnob {
         statusKey: "button_parameter2"
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter2"
         knob.color: Theme.eqMidColor
     }
 
-    EqKnob {
+    Skin.EqKnob {
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter1"
         statusKey: "button_parameter1"
         knob.color: Theme.eqLowColor
     }
 
-    EqKnob {
+    Skin.EqKnob {
         knob.group: "[QuickEffectRack1_" + root.group + "]"
         knob.key: "super1"
         statusGroup: "[QuickEffectRack1_" + root.group + "_Effect1]"

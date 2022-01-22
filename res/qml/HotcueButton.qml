@@ -13,7 +13,7 @@ Skin.Button {
     activeColor: hotcue.color
     highlight: hotcue.isSet
 
-    Hotcue {
+    Skin.Hotcue {
         id: hotcue
 
         group: root.group
@@ -26,7 +26,7 @@ Skin.Button {
         }
     }
 
-    HotcuePopup {
+    Skin.HotcuePopup {
         id: popup
 
         hotcue: hotcue
