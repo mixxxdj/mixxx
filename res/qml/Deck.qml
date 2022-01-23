@@ -45,6 +45,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         group: root.group
+        rightColumnWidth: rateSlider.width
     }
 
     Skin.ControlSlider {
