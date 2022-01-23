@@ -1661,6 +1661,7 @@ add_executable(mixxx-test
   src/test/soundsourceproviderregistrytest.cpp
   src/test/sqliteliketest.cpp
   src/test/synccontroltest.cpp
+  src/test/synctrackmetadatatest.cpp
   src/test/tableview_test.cpp
   src/test/taglibtest.cpp
   src/test/trackdao_test.cpp

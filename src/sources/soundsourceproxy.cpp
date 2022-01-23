@@ -339,7 +339,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
         kLogger.warning()
                 << "Unable to export track metadata into file"
                 << fileInfo;
-        return ExportTrackMetadataResult::Skipped;
+        return ExportTrackMetadataResult::Failed;
     }
     return pTrack->exportMetadata(*pSoundSource, syncParams);
 }

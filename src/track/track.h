@@ -162,6 +162,9 @@ class Track : public QObject {
 
     // The date/time of the last import or export of metadata
     void setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt);
+    void resetSourceSynchronizedAt() {
+        setSourceSynchronizedAt(QDateTime{});
+    }
     QDateTime getSourceSynchronizedAt() const;
 
     void setDateAdded(const QDateTime& dateAdded);
