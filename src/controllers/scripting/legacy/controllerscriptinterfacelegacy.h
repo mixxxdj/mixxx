@@ -34,7 +34,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
     Q_INVOKABLE QJSValue makeConnection(const QString& group,
             const QString& name,
             const QJSValue& callback);
-    Q_INVOKABLE QJSValue makeCompressedConnection(const QString& group,
+    Q_INVOKABLE QJSValue makeUnbufferedConnection(const QString& group,
             const QString& name,
             const QJSValue& callback);
     // DEPRECATED: Use makeConnection instead.

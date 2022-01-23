@@ -11,6 +11,7 @@ namespace mixxx {
 namespace qml {
 
 class AsyncImageResponse : public QQuickImageResponse, public QRunnable {
+    Q_OBJECT
   public:
     AsyncImageResponse(const QString& id, const QSize& requestedSize);
     QQuickTextureFactory* textureFactory() const override;

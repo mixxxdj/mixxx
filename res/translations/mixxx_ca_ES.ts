@@ -3412,7 +3412,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="715"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>Llista de reproducció M3U (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="185"/>
@@ -5667,7 +5667,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="155"/>
         <source>Rename</source>
-        <translation type="unfinished"/>
+        <translation>Canvia el nom</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="169"/>
@@ -8074,12 +8074,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="44"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Tipus</translation>
     </message>
     <message>
         <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="46"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Nom</translation>
     </message>
 </context>
 <context>
@@ -10152,14 +10152,14 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="30"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>Ubicació</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="119"/>
         <location filename="../../src/library/parserm3u.cpp" line="129"/>
         <location filename="../../src/library/parserpls.cpp" line="81"/>
         <source>Playlist Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>La exportació de la llista de reproducció ha fallat</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="120"/>
@@ -10167,12 +10167,12 @@ Tot a la dreta: Al final del període</translation>
         <location filename="../../src/library/parserm3u.cpp" line="130"/>
         <location filename="../../src/library/parserpls.cpp" line="82"/>
         <source>Could not create file</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;ha pogut crear el fitxer</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="210"/>
         <source>Readable text Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>La exportació a text llegible ha fallat</translation>
     </message>
 </context>
 <context>
@@ -10339,6 +10339,11 @@ Tot a la dreta: Al final del període</translation>
 </context>
 <context>
     <name>SamplerBank</name>
+    <message>
+        <location filename="../../src/mixer/samplerbank.cpp" line="21"/>
+        <source>Mixxx Sampler Banks (*.xml)</source>
+        <translation>Bancs de mostres de Mixxx (*.xml)</translation>
+    </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="65"/>
         <source>Save Sampler Bank</source>
@@ -13334,12 +13339,12 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
         <location filename="../../src/widget/weffectname.cpp" line="45"/>
         <source>%1: %2</source>
         <extracomment>%1 = effect name; %2 = effect description</extracomment>
-        <translation type="unfinished"/>
+        <translation>%1: %2</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffectname.cpp" line="48"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>No hi ha cap efecte carregat.</translation>
     </message>
 </context>
 <context>
@@ -13347,7 +13352,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/weffectparameternamebase.cpp" line="45"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>No hi ha cap efecte carregat.</translation>
     </message>
 </context>
 <context>
@@ -14417,7 +14422,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1737"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Cancel·la</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1740"/>
@@ -14452,7 +14457,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1817"/>
         <source>Close</source>
-        <translation type="unfinished"/>
+        <translation>Tanca</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1827"/>
@@ -14791,7 +14796,7 @@ Feu click a Acceptar per sortir.</translation>
     <message>
         <location filename="../../src/qml/qmlvisibleeffectsmodel.cpp" line="43"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>No hi ha cap efecte carregat.</translation>
     </message>
 </context>
 </TS>

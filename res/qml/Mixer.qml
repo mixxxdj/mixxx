@@ -1,6 +1,5 @@
 import "." as Skin
 import QtQuick 2.12
-import QtQuick.Controls 2.12
 
 Item {
     id: mixer
@@ -23,23 +22,23 @@ Item {
         anchors.centerIn: parent
         anchors.margins: 5
 
-        EqColumn {
+        Skin.EqColumn {
             group: root.leftDeckGroup
         }
 
-        MixerColumn {
+        Skin.MixerColumn {
             width: 56
             height: parent.height
             group: root.leftDeckGroup
         }
 
-        MixerColumn {
+        Skin.MixerColumn {
             width: 56
             height: parent.height
             group: root.rightDeckGroup
         }
 
-        EqColumn {
+        Skin.EqColumn {
             width: 56
             height: parent.height
             group: root.rightDeckGroup

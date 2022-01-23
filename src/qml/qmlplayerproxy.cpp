@@ -41,13 +41,13 @@ QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
     connect(this, &QmlPlayerProxy::trackChanged, this, &QmlPlayerProxy::slotTrackChanged);
 }
 
-void QmlPlayerProxy::loadTrackFromLocation(const QString& trackLocation) {
-    emit loadTrackFromLocationRequested(trackLocation);
+void QmlPlayerProxy::loadTrackFromLocation(const QString& trackLocation, bool play) {
+    emit loadTrackFromLocationRequested(trackLocation, play);
 }
 
-void QmlPlayerProxy::loadTrackFromLocationUrl(const QUrl& trackLocationUrl) {
+void QmlPlayerProxy::loadTrackFromLocationUrl(const QUrl& trackLocationUrl, bool play) {
     if (trackLocationUrl.isLocalFile()) {
-        loadTrackFromLocation(trackLocationUrl.toLocalFile());
+        loadTrackFromLocation(trackLocationUrl.toLocalFile(), play);
     } else {
         qWarning() << "QmlPlayerProxy: URL" << trackLocationUrl << "is not a local file!";
     }

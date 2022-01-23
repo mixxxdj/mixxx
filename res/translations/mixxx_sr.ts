@@ -3444,7 +3444,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="715"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>М3У листа (*.м3у)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="185"/>
@@ -5786,7 +5786,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="155"/>
         <source>Rename</source>
-        <translation type="unfinished"/>
+        <translation>Преименуј</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="169"/>
@@ -5796,7 +5796,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="179"/>
         <source>Delete</source>
-        <translation type="unfinished"/>
+        <translation>Обриши</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="202"/>
@@ -8259,12 +8259,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="44"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Врста</translation>
     </message>
     <message>
         <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="46"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Назив</translation>
     </message>
 </context>
 <context>
@@ -10306,14 +10306,14 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="30"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>Место</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="119"/>
         <location filename="../../src/library/parserm3u.cpp" line="129"/>
         <location filename="../../src/library/parserpls.cpp" line="81"/>
         <source>Playlist Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>Није успео извоз списка нумера</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="120"/>
@@ -10321,12 +10321,12 @@ Fully right: end of the effect period</source>
         <location filename="../../src/library/parserm3u.cpp" line="130"/>
         <location filename="../../src/library/parserpls.cpp" line="82"/>
         <source>Could not create file</source>
-        <translation type="unfinished"/>
+        <translation>Не могу да направим датотеку</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="210"/>
         <source>Readable text Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>Није успео извоз читљивог текста</translation>
     </message>
 </context>
 <context>
@@ -10493,6 +10493,11 @@ Fully right: end of the effect period</source>
 </context>
 <context>
     <name>SamplerBank</name>
+    <message>
+        <location filename="../../src/mixer/samplerbank.cpp" line="21"/>
+        <source>Mixxx Sampler Banks (*.xml)</source>
+        <translation type="unfinished"/>
+    </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="65"/>
         <source>Save Sampler Bank</source>
@@ -14569,7 +14574,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1737"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Откажи</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1740"/>
@@ -14604,7 +14609,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1817"/>
         <source>Close</source>
-        <translation type="unfinished"/>
+        <translation>Затвори</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1827"/>

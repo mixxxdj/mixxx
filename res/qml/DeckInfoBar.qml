@@ -65,7 +65,9 @@ Rectangle {
         Mixxx.ControlProxy {
             group: root.group
             key: "play"
-            onValueChanged: spinnyIndicator.indicatorVisible = (value > 0)
+            onValueChanged: (value) => {
+                spinnyIndicator.indicatorVisible = (value > 0);
+            }
         }
 
         MixxxControls.Spinny {
@@ -109,11 +111,11 @@ Rectangle {
         id: infoBarVSeparator
 
         anchors.left: coverArt.right
-        anchors.right: infoBar.right
-        anchors.verticalCenter: infoBar.verticalCenter
+        anchors.right: root.right
+        anchors.verticalCenter: root.verticalCenter
         anchors.margins: 5
         height: 2
-        color: infoBar.lineColor
+        color: root.lineColor
     }
 
     Skin.EmbeddedText {
@@ -132,13 +134,13 @@ Rectangle {
     Rectangle {
         id: infoBarHSeparator1
 
-        anchors.top: infoBar.top
-        anchors.bottom: infoBar.bottom
+        anchors.top: root.top
+        anchors.bottom: root.bottom
         anchors.right: infoBarKey.left
         anchors.topMargin: 5
         anchors.bottomMargin: 5
         width: 2
-        color: infoBar.lineColor
+        color: root.lineColor
     }
 
     Skin.EmbeddedText {
@@ -154,13 +156,13 @@ Rectangle {
     Rectangle {
         id: infoBarHSeparator2
 
-        anchors.top: infoBar.top
-        anchors.bottom: infoBar.bottom
+        anchors.top: root.top
+        anchors.bottom: root.bottom
         anchors.right: infoBarRateRatio.left
         anchors.topMargin: 5
         anchors.bottomMargin: 5
         width: 2
-        color: infoBar.lineColor
+        color: root.lineColor
     }
 
     Skin.EmbeddedText {
@@ -168,7 +170,7 @@ Rectangle {
 
         anchors.top: infoBarHSeparator2.top
         anchors.bottom: infoBarVSeparator.top
-        anchors.right: infoBar.right
+        anchors.right: root.right
         anchors.rightMargin: 5
         width: rateSlider.width
 
@@ -189,7 +191,7 @@ Rectangle {
         anchors.top: infoBarVSeparator.bottom
         anchors.bottom: infoBarHSeparator1.bottom
         width: rateSlider.width
-        anchors.right: infoBar.right
+        anchors.right: root.right
         anchors.rightMargin: 5
         text: (ratio > 0) ? "+" + ratio.toFixed(2) : ratio.toFixed(2)
 

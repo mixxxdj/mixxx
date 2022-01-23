@@ -160,7 +160,7 @@ Item {
                 height: 40
                 width: height
                 arcStart: Knob.ArcStart.Minimum
-                group: "[EffectRack1_EffectUnit" + unitNumber + "]"
+                group: "[EffectRack1_EffectUnit" + root.unitNumber + "]"
                 key: "super1"
                 color: Theme.effectUnitColor
                 visible: false
@@ -177,7 +177,7 @@ Item {
                 height: 40
                 width: height
                 arcStart: Knob.ArcStart.Minimum
-                group: "[EffectRack1_EffectUnit" + unitNumber + "]"
+                group: "[EffectRack1_EffectUnit" + root.unitNumber + "]"
                 key: "mix"
                 color: Theme.effectUnitColor
                 visible: false

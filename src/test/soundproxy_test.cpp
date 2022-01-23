@@ -221,9 +221,11 @@ TEST_F(SoundSourceProxyTest, openEmptyFile) {
 TEST_F(SoundSourceProxyTest, readArtist) {
     auto pTrack = Track::newTemporary(kTestDir, "artist.mp3");
     SoundSourceProxy proxy(pTrack);
-    EXPECT_TRUE(proxy.updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
-            SyncTrackMetadataParams{}));
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("Test Artist", pTrack->getArtist());
 }
 
@@ -234,41 +236,51 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
     auto pTrack1 = Track::newTemporary(
             kTestDir, "empty.mp3");
     SoundSourceProxy proxy1(pTrack1);
-    EXPECT_TRUE(proxy1.updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
-            SyncTrackMetadataParams{}));
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy1.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a reload also works
     pTrack1->setTitle("");
-    EXPECT_TRUE(proxy1.updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Always,
-            SyncTrackMetadataParams{}));
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy1.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a file with other metadata but no title
     auto pTrack2 = Track::newTemporary(
             kTestDir, "cover-test-png.mp3");
     SoundSourceProxy proxy2(pTrack2);
-    EXPECT_TRUE(proxy2.updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
-            SyncTrackMetadataParams{}));
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy2.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a reload also works
     pTrack2->setTitle("");
-    EXPECT_TRUE(proxy2.updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Always,
-            SyncTrackMetadataParams{}));
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy2.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a file with a title
     auto pTrack3 = Track::newTemporary(
             kTestDir, "cover-test-jpg.mp3");
     SoundSourceProxy proxy3(pTrack3);
-    EXPECT_TRUE(proxy3.updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
-            SyncTrackMetadataParams{}));
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy3.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("test22kMono", pTrack3->getTitle());
 }
 
@@ -823,9 +835,10 @@ TEST_F(SoundSourceProxyTest, updateTrackFromSourceFileMissing) {
             tempDir.filePath(QStringLiteral("missing.mp3"));
 
     auto pTrack = Track::newTemporary(missingFilePath);
-    ASSERT_FALSE(SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
-            SyncTrackMetadataParams{}));
+    ASSERT_EQ(SoundSourceProxy(pTrack).updateTrackFromSource(
+                      SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                      SyncTrackMetadataParams{}),
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportFailed);
 }
 
 TEST_F(SoundSourceProxyTest, handleWrongFileSuffix) {
@@ -847,9 +860,10 @@ TEST_F(SoundSourceProxyTest, handleWrongFileSuffix) {
     auto pTrack = Track::newTemporary(wrongFileTypePath);
     ASSERT_TRUE(pTrack->getType().isEmpty());
 
-    ASSERT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
-            SyncTrackMetadataParams{}));
+    ASSERT_EQ(SoundSourceProxy(pTrack).updateTrackFromSource(
+                      SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                      SyncTrackMetadataParams{}),
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated);
     EXPECT_STREQ(qPrintable(contentFileType), qPrintable(pTrack->getType()));
 
     // Change the file type back to the wrong file type after the initial import
@@ -858,9 +872,10 @@ TEST_F(SoundSourceProxyTest, handleWrongFileSuffix) {
     pTrack->setType(wrongFileType);
     // The re-import of metadata should be skipped with UpdateTrackFromSourceMode::Once
     // and updateTrackFromSource() is supposed to return false.
-    ASSERT_FALSE(SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
-            SyncTrackMetadataParams{}));
+    ASSERT_EQ(SoundSourceProxy(pTrack).updateTrackFromSource(
+                      SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                      SyncTrackMetadataParams{}),
+            SoundSourceProxy::UpdateTrackFromSourceResult::NotUpdated);
     // But even though updateTrackFromSource() returned false the wrong file type
     // should have been fixed.
     EXPECT_STREQ(qPrintable(contentFileType), qPrintable(pTrack->getType()));

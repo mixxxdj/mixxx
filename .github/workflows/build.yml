@@ -31,6 +31,25 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-focal
             qt_qpa_platform: offscreen
+          - name: Arch Linux (Qt6, gcc)
+            os: ubuntu-20.04
+            # The Dockerfile for this container can be found at:
+            # https://github.com/Holzhaus/mixxx-ci-docker
+            container: holzhaus/mixxx-ci:20211016-qt6
+            cmake_args: >-
+              -DWARNINGS_FATAL=ON
+              -DQT6=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+            ctest_args:
+            compiler_cache: ccache
+            compiler_cache_path: ~/.ccache
+            qt_qpa_platform: offscreen
           - name: macOS 10.15
             os: macos-10.15
             cmake_args: >-
@@ -89,6 +108,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
+    container: ${{ matrix.container }}
     outputs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
@@ -194,6 +214,7 @@ jobs:
 
     - name: "Set up build environment"
       id: buildenv
+      if: matrix.buildenv_script != null
       run: ${{ matrix.buildenv_script }} setup
       env:
         BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
@@ -283,6 +304,7 @@ jobs:
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
     - name: "Package"
+      if: matrix.cpack_generator != null
       run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: build
 
@@ -294,7 +316,7 @@ jobs:
 
     - name: "Package for PPA"
       # No need to do the PPA build for both Ubuntu versions
-      if: matrix.os == 'ubuntu-20.04'
+      if: matrix.os == 'ubuntu-20.04' && matrix.container == null
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
@@ -326,7 +348,7 @@ jobs:
       # also generates metadata for file artifact and write it to the job
       # output using the artifacts_slug value.
       id: prepare_deploy
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && matrix.artifacts_path != null
       shell: bash
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
@@ -407,6 +429,7 @@ jobs:
         echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
     - name: "Upload GitHub Actions artifacts"
+      if: matrix.artifacts_path != null
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.artifacts_name }}

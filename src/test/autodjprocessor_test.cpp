@@ -171,9 +171,11 @@ class AutoDJProcessorTest : public LibraryTest {
     TrackPointer newTestTrack(TrackId trackId) const {
         TrackPointer pTrack(
                 Track::newDummy(kTrackLocationTest, trackId));
-        EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
-                SoundSourceProxy::UpdateTrackFromSourceMode::Once,
-                SyncTrackMetadataParams{}));
+        EXPECT_EQ(
+                SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+                SoundSourceProxy(pTrack).updateTrackFromSource(
+                        SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                        SyncTrackMetadataParams{}));
         return pTrack;
     }
 

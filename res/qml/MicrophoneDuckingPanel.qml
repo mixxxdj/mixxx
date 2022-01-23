@@ -36,7 +36,7 @@ Column {
             id: duckingControl
 
             property string duckingModeName: {
-                switch (value) {
+                switch (this.value) {
                 case MicrophoneDuckingPanel.DuckingMode.Auto:
                     return "Auto";
                 case MicrophoneDuckingPanel.DuckingMode.Manual:
@@ -46,11 +46,11 @@ Column {
                 }
             }
             property bool duckingEnabled: {
-                return (value == MicrophoneDuckingPanel.DuckingMode.Auto || value == MicrophoneDuckingPanel.DuckingMode.Manual);
+                return (this.value == MicrophoneDuckingPanel.DuckingMode.Auto || this.value == MicrophoneDuckingPanel.DuckingMode.Manual);
             }
 
             function nextMode() {
-                value = (value + 1) % MicrophoneDuckingPanel.DuckingMode.NumModes;
+                this.value = (this.value + 1) % MicrophoneDuckingPanel.DuckingMode.NumModes;
             }
 
             group: "[Master]"

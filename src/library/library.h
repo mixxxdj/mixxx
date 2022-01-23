@@ -110,7 +110,7 @@ class Library: public QObject {
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
-    void slotLoadLocationToPlayer(const QString& location, const QString& group);
+    void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();

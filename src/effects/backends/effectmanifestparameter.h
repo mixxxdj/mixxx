@@ -7,6 +7,7 @@
 
 #include "effects/defs.h"
 #include "util/assert.h"
+#include "util/compatibility/qhash.h"
 
 class EffectManifestParameter;
 typedef QSharedPointer<EffectManifestParameter> EffectManifestParameterPointer;
@@ -277,6 +278,6 @@ QDebug operator<<(QDebug dbg, const EffectManifestParameter& parameter);
 
 typedef EffectManifestParameter::ParameterType EffectParameterType;
 
-inline uint qHash(const EffectParameterType& parameterType) {
-    return static_cast<uint>(parameterType);
+inline qhash_seed_t qHash(const EffectParameterType& parameterType) {
+    return static_cast<qhash_seed_t>(parameterType);
 }

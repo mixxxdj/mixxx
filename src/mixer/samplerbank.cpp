@@ -18,7 +18,7 @@ const ConfigKey kConfigkeyLastImportExportDirectory(
         "[Samplers]", "last_import_export_directory");
 // This is used in multiple tr() calls below which accepts const char* as a key.
 // lupdate finds the single string here.
-const char kSamplerFileType[] = QT_TR_NOOP("Mixxx Sampler Banks (*.xml)");
+const char kSamplerFileType[] = QT_TRANSLATE_NOOP("SamplerBank", "Mixxx Sampler Banks (*.xml)");
 
 } // anonymous namespace
 
@@ -216,7 +216,7 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                     if (location.isEmpty()) {
                         m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group);
                     } else {
-                        m_pPlayerManager->slotLoadToPlayer(location, group);
+                        m_pPlayerManager->slotLoadLocationToPlayer(location, group);
                     }
                 }
 

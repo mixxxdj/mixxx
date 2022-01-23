@@ -33,7 +33,7 @@ Popup {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        hotcue.setColor(parent.color);
+                        root.hotcue.setColor(parent.color);
                         root.close();
                     }
                 }
@@ -52,7 +52,9 @@ Popup {
         anchors.topMargin: 5
         text: "Clear"
         activeColor: Theme.deckActiveColor
-        onDownChanged: hotcue.clear = down
+        onDownChanged: (down) => {
+            root.hotcue.clear = down;
+        }
     }
 
     enter: Transition {

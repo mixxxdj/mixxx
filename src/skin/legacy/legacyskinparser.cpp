@@ -28,7 +28,9 @@
 #include "util/timer.h"
 #include "util/valuetransformer.h"
 #include "util/xml.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/vsyncthread.h"
+#endif
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
@@ -71,7 +73,9 @@
 #include "widget/wsizeawarestack.h"
 #include "widget/wskincolor.h"
 #include "widget/wslidercomposed.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wspinny.h"
+#endif
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
@@ -528,7 +532,9 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
         WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         WaveformWidgetFactory::instance()->addTimerListener(pVuMeterWidget);
+#endif
         result = wrapWidget(pVuMeterWidget);
     } else if (nodeName == "StatusLight") {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
@@ -940,6 +946,11 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
 }
 
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_UNUSED(node);
+
+    return nullptr;
+#else
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
@@ -962,7 +973,7 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     connect(overviewWidget,
             &WOverview::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(overviewWidget, &WOverview::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -981,9 +992,15 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     overviewWidget->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return overviewWidget;
+#endif
 }
 
 QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_UNUSED(node);
+
+    return nullptr;
+#else
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
@@ -1017,7 +1034,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     connect(viewer,
             &WWaveformViewer::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(viewer, &WWaveformViewer::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -1025,6 +1042,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     viewer->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return viewer;
+#endif
 }
 
 QWidget* LegacySkinParser::parseText(const QDomElement& node) {
@@ -1046,7 +1064,7 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     connect(pTrackText,
             &WTrackText::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(pTrackText, &WTrackText::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
@@ -1083,7 +1101,7 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     connect(pTrackProperty,
             &WTrackProperty::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(pTrackProperty,
             &WTrackProperty::cloneDeck,
             m_pPlayerManager,
@@ -1126,7 +1144,7 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     connect(pGroup,
             &WTrackWidgetGroup::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(pGroup,
             &WTrackWidgetGroup::cloneDeck,
             m_pPlayerManager,
@@ -1251,6 +1269,11 @@ QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_UNUSED(node);
+
+    return nullptr;
+#else
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Mixxx is running in safe mode.
@@ -1282,7 +1305,10 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
             spinny,
             &WSpinny::render);
     connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, spinny, &WSpinny::swap);
-    connect(spinny, &WSpinny::trackDropped, m_pPlayerManager, &PlayerManager::slotLoadToPlayer);
+    connect(spinny,
+            &WSpinny::trackDropped,
+            m_pPlayerManager,
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(spinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     ControlObject* showCoverControl = controlFromConfigNode(node.toElement(), "ShowCoverControl");
@@ -1295,6 +1321,7 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     spinny->Init();
     return spinny;
+#endif
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
@@ -1341,7 +1368,7 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
         connect(pCoverArt,
                 &WCoverArt::trackDropped,
                 m_pPlayerManager,
-                &PlayerManager::slotLoadToPlayer);
+                &PlayerManager::slotLoadLocationToPlayerStopped);
         connect(pCoverArt, &WCoverArt::cloneDeck,
                 m_pPlayerManager, &PlayerManager::slotCloneDeck);
     }

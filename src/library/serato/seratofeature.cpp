@@ -3,6 +3,7 @@
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
+#include <QTextCodec>
 #include <QtDebug>
 
 #include "library/dao/trackschema.h"
@@ -453,7 +454,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     // Serato does not exist on Linux, if it did, it would probably just mirror
     // the way paths are handled on OSX.
     if (databaseRootDir.canonicalPath().startsWith(QDir::homePath())) {
-        databaseRootDir = QDir::root();
+        databaseRootDir.setPath(QDir::rootPath());
     }
 #endif
 

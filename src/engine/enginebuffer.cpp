@@ -36,7 +36,9 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/waveformwidgetfactory.h"
+#endif
 
 #ifdef __VINYLCONTROL__
 #include "engine/controls/vinylcontrolcontrol.h"

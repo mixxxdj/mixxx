@@ -15,9 +15,11 @@ class QmlPlayerManagerProxy : public QObject {
             QObject* parent = nullptr);
 
     Q_INVOKABLE QObject* getPlayer(const QString& deck);
-
-  signals:
-    void loadLocationToPlayer(const QString& location, const QString& group);
+    Q_INVOKABLE void loadLocationIntoNextAvailableDeck(const QString& location, bool play = false);
+    Q_INVOKABLE void loadLocationUrlIntoNextAvailableDeck(
+            const QUrl& locationUrl, bool play = false);
+    Q_INVOKABLE void loadLocationToPlayer(
+            const QString& location, const QString& group, bool play = false);
 
   private:
     const std::shared_ptr<PlayerManager> m_pPlayerManager;

@@ -1,4 +1,3 @@
-import "." as Skin
 import Mixxx 0.1 as Mixxx
 import QtGraphicalEffects 1.12
 import QtQuick 2.12

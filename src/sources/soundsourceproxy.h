@@ -142,6 +142,13 @@ class SoundSourceProxy {
         Always,
     };
 
+    enum class UpdateTrackFromSourceResult {
+        NotUpdated,
+        MetadataImportFailed,
+        MetadataImportedAndUpdated,
+        ExtraMetadataImportedAndMerged,
+    };
+
     /// Updates file type, metadata, and cover image of the track object
     /// from the source file according to the given mode.
     ///
@@ -164,7 +171,7 @@ class SoundSourceProxy {
     /// analysis in case unexpected behavior has been reported.
     ///
     /// Returns true if the track has been modified and false otherwise.
-    bool updateTrackFromSource(
+    UpdateTrackFromSourceResult updateTrackFromSource(
             UpdateTrackFromSourceMode mode,
             const SyncTrackMetadataParams& syncParams);
 

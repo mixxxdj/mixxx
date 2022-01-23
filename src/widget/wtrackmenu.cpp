@@ -180,7 +180,7 @@ void WTrackMenu::createMenus() {
 
 void WTrackMenu::createActions() {
     const auto hideRemoveKeySequence =
-            QKeySequence(kHideRemoveShortcutModifier + kHideRemoveShortcutKey);
+            QKeySequence(kHideRemoveShortcutModifier | kHideRemoveShortcutKey);
 
     if (featureIsEnabled(Feature::AutoDJ)) {
         m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
@@ -245,7 +245,7 @@ void WTrackMenu::createActions() {
         // The keypress is caught in WTrackTableView::keyPressEvent
         if (m_pTrackModel) {
             m_pPropertiesAct->setShortcut(
-                    QKeySequence(kPropertiesShortcutModifier + kPropertiesShortcutKey));
+                    QKeySequence(kPropertiesShortcutModifier | kPropertiesShortcutKey));
         }
         connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTrackInfo);
     }
@@ -1721,6 +1721,7 @@ void WTrackMenu::slotRemoveFromDisk() {
         QListWidget* delListWidget = new QListWidget();
         delListWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::MinimumExpanding));
+        delListWidget->setFocusPolicy(Qt::ClickFocus);
         delListWidget->addItems(locations);
         mixxx::widgethelper::growListWidget(*delListWidget, *this);
         // Warning text
@@ -1795,41 +1796,40 @@ void WTrackMenu::slotRemoveFromDisk() {
     }
 
     const QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
-    if (!tracksToKeep.isEmpty()) {
+    if (tracksToKeep.isEmpty()) {
+        // All selected tracks could be processed. Finish!
         return;
     }
+    // Else show a message with a list of tracks that could not be deleted.
+    QLabel* notDeletedLabel = new QLabel;
+    notDeletedLabel->setText(
+            tr("The following %1 files could not be deleted from disk")
+                    .arg(QString::number(
+                            tracksToKeep.length())));
+    notDeletedLabel->setTextFormat(Qt::RichText);
 
-    {
-        // Else show a message with a list of tracks that could not be deleted.
-        QLabel* notDeletedLabel = new QLabel;
-        notDeletedLabel->setText(
-                tr("The following %1 files could not be deleted from disk")
-                        .arg(QString::number(
-                                tracksToKeep.length())));
-        notDeletedLabel->setTextFormat(Qt::RichText);
+    QListWidget* notDeletedListWidget = new QListWidget;
+    notDeletedListWidget->setFocusPolicy(Qt::ClickFocus);
+    notDeletedListWidget->addItems(tracksToKeep);
+    mixxx::widgethelper::growListWidget(*notDeletedListWidget, *this);
 
-        QListWidget* notDeletedListWidget = new QListWidget;
-        notDeletedListWidget->addItems(tracksToKeep);
-        mixxx::widgethelper::growListWidget(*notDeletedListWidget, *this);
+    QDialogButtonBox* notDeletedButtons = new QDialogButtonBox();
+    QPushButton* closeBtn = notDeletedButtons->addButton(
+            tr("Close"),
+            QDialogButtonBox::AcceptRole);
 
-        QDialogButtonBox* notDeletedButtons = new QDialogButtonBox();
-        QPushButton* closeBtn = notDeletedButtons->addButton(
-                tr("Close"),
-                QDialogButtonBox::AcceptRole);
+    QVBoxLayout* notDeletedLayout = new QVBoxLayout;
+    notDeletedLayout->addWidget(notDeletedLabel);
+    notDeletedLayout->addWidget(notDeletedListWidget);
+    notDeletedLayout->addWidget(notDeletedButtons);
 
-        QVBoxLayout* notDeletedLayout = new QVBoxLayout;
-        notDeletedLayout->addWidget(notDeletedLabel);
-        notDeletedLayout->addWidget(notDeletedListWidget);
-        notDeletedLayout->addWidget(notDeletedButtons);
-
-        QDialog dlgNotDeleted;
-        dlgNotDeleted.setModal(true);
-        dlgNotDeleted.setWindowTitle(tr("Remaining Track Files"));
-        dlgNotDeleted.setLayout(notDeletedLayout);
-        // Required for being able to close the dialog
-        connect(closeBtn, &QPushButton::clicked, &dlgNotDeleted, &QDialog::close);
-        dlgNotDeleted.exec();
-    }
+    QDialog dlgNotDeleted;
+    dlgNotDeleted.setModal(true);
+    dlgNotDeleted.setWindowTitle(tr("Remaining Track Files"));
+    dlgNotDeleted.setLayout(notDeletedLayout);
+    // Required for being able to close the dialog
+    connect(closeBtn, &QPushButton::clicked, &dlgNotDeleted, &QDialog::close);
+    dlgNotDeleted.exec();
 }
 
 void WTrackMenu::slotShowDlgTrackInfo() {

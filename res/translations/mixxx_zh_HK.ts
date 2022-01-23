@@ -5656,7 +5656,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="155"/>
         <source>Rename</source>
-        <translation type="unfinished"/>
+        <translation>重新命名</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="169"/>
@@ -10296,6 +10296,11 @@ Fully right: end of the effect period</source>
 </context>
 <context>
     <name>SamplerBank</name>
+    <message>
+        <location filename="../../src/mixer/samplerbank.cpp" line="21"/>
+        <source>Mixxx Sampler Banks (*.xml)</source>
+        <translation type="unfinished"/>
+    </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="65"/>
         <source>Save Sampler Bank</source>

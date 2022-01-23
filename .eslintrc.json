@@ -62,11 +62,25 @@
     "yoda": "warn"
   },
   "globals": {
-    "console": "writable",
-    "svg": "writable",
-    "HIDController": "writable",
-    "HIDDebug": "writable",
-    "HIDPacket": "writable",
-    "controller": "writable"
-  }
+    "console": "readable"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.mjs"],
+      "parserOptions": {
+        "sourceType": "module"
+      }
+    },
+    {
+      "files": ["res/controllers/*.js"],
+      "globals": {
+        "console": "readable",
+        "svg": "writable",
+        "HIDController": "writable",
+        "HIDDebug": "writable",
+        "HIDPacket": "writable",
+        "controller": "writable"
+      }
+    }
+  ]
 }

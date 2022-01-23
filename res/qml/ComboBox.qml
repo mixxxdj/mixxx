@@ -10,12 +10,14 @@ ComboBox {
     }
 
     delegate: ItemDelegate {
+        id: itemDlgt
+
         width: parent.width
         highlighted: root.highlightedIndex === index
         text: root.textAt(index)
 
         contentItem: Text {
-            text: parent.text
+            text: itemDlgt.text
             color: Theme.deckTextColor
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
@@ -23,7 +25,7 @@ ComboBox {
 
         background: Rectangle {
             radius: 5
-            border.width: highlighted ? 1 : 0
+            border.width: itemDlgt.highlighted ? 1 : 0
             border.color: Theme.deckLineColor
             color: "transparent"
         }

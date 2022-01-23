@@ -9,11 +9,11 @@ Item {
     property int hotcueNumber // required
 
     function updatePosition() {
-        let totalSamples = trackSamplesControl.value;
+        const totalSamples = trackSamplesControl.value;
         marker.x = (totalSamples > 0) ? root.width * (positionControl.value / totalSamples) : 0;
     }
 
-    onWidthChanged: updatePosition()
+    onWidthChanged: this.updatePosition()
 
     Shape {
         id: shape
@@ -60,7 +60,7 @@ Item {
 
         group: root.group
         key: "hotcue_" + root.hotcueNumber + "_position"
-        onValueChanged: updatePosition()
+        onValueChanged: root.updatePosition()
     }
 
     Mixxx.ControlProxy {
@@ -69,12 +69,12 @@ Item {
         property color hotcueColor: updateColor()
 
         function updateColor() {
-            hotcueColor = (value >= 0) ? "#" + value.toString(16) : "transparent";
+            hotcueColor = (this.value >= 0) ? "#" + this.value.toString(16) : "transparent";
         }
 
         group: root.group
         key: "hotcue_" + root.hotcueNumber + "_color"
-        onValueChanged: updateColor()
+        onValueChanged: this.updateColor()
     }
 
 }

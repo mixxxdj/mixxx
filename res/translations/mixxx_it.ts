@@ -3412,7 +3412,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="715"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>Playlist M3U (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="185"/>
@@ -5642,17 +5642,17 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="155"/>
         <source>Rename</source>
-        <translation type="unfinished"/>
+        <translation>Rinomina</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="169"/>
         <source>Export</source>
-        <translation type="unfinished"/>
+        <translation>Esporta</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="179"/>
         <source>Delete</source>
-        <translation type="unfinished"/>
+        <translation>Cancella</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="202"/>
@@ -8046,12 +8046,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="44"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Digita</translation>
     </message>
     <message>
         <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="46"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Nome</translation>
     </message>
 </context>
 <context>
@@ -10098,14 +10098,14 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="30"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>Posizione</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="119"/>
         <location filename="../../src/library/parserm3u.cpp" line="129"/>
         <location filename="../../src/library/parserpls.cpp" line="81"/>
         <source>Playlist Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>Esporatazione scaletta fallita</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="120"/>
@@ -10113,12 +10113,12 @@ Fully right: end of the effect period</source>
         <location filename="../../src/library/parserm3u.cpp" line="130"/>
         <location filename="../../src/library/parserpls.cpp" line="82"/>
         <source>Could not create file</source>
-        <translation type="unfinished"/>
+        <translation>Non è stato possibile creare il file</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="210"/>
         <source>Readable text Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>Export del test leggibile fallito.</translation>
     </message>
 </context>
 <context>
@@ -10285,6 +10285,11 @@ Fully right: end of the effect period</source>
 </context>
 <context>
     <name>SamplerBank</name>
+    <message>
+        <location filename="../../src/mixer/samplerbank.cpp" line="21"/>
+        <source>Mixxx Sampler Banks (*.xml)</source>
+        <translation>Mixxx Banco Sampler (*.xml)</translation>
+    </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="65"/>
         <source>Save Sampler Bank</source>
@@ -13283,7 +13288,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/weffectname.cpp" line="48"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Nessun effetto caricato.</translation>
     </message>
 </context>
 <context>
@@ -13291,7 +13296,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/weffectparameternamebase.cpp" line="45"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Nessun effetto caricato.</translation>
     </message>
 </context>
 <context>
@@ -14361,7 +14366,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1737"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Annulla</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1740"/>
@@ -14396,7 +14401,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1817"/>
         <source>Close</source>
-        <translation type="unfinished"/>
+        <translation>Chiudi</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1827"/>
@@ -14735,7 +14740,7 @@ Clicca su OK per uscire.</translation>
     <message>
         <location filename="../../src/qml/qmlvisibleeffectsmodel.cpp" line="43"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Nessun effetto caricato.</translation>
     </message>
 </context>
 </TS>

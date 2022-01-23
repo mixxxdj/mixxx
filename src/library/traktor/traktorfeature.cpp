@@ -159,8 +159,14 @@ void TraktorFeature::activate() {
     if (!m_isActivated) {
         m_isActivated =  true;
         // Let a worker thread do the XML parsing
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_future = QtConcurrent::run(&TraktorFeature::importLibrary,
+                this,
+                getTraktorMusicDatabase());
+#else
         m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary,
                                      getTraktorMusicDatabase());
+#endif
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
@@ -225,18 +231,19 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
         if (xml.isStartElement()) {
-            if (xml.name() == "COLLECTION") {
+            if (xml.name() == QLatin1String("COLLECTION")) {
                 inCollectionTag = true;
             }
             // Each "ENTRY" tag in <COLLECTION> represents a track
-            if (inCollectionTag && xml.name() == "ENTRY") {
+            if (inCollectionTag && xml.name() == QLatin1String("ENTRY")) {
                 //parse track
                 parseTrack(xml, query);
                 ++nAudioFiles; //increment number of files in the music collection
             }
-            if (xml.name() == "PLAYLISTS") {
+            if (xml.name() == QLatin1String("PLAYLISTS")) {
                 inPlaylistsTag = true;
-            } if (inPlaylistsTag && !isRootFolderParsed && xml.name() == "NODE") {
+            }
+            if (inPlaylistsTag && !isRootFolderParsed && xml.name() == QLatin1String("NODE")) {
                 QXmlStreamAttributes attr = xml.attributes();
                 QString nodetype = attr.value("TYPE").toString();
                 QString name = attr.value("NAME").toString();
@@ -249,10 +256,10 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
             }
         }
         if (xml.isEndElement()) {
-            if (xml.name() == "COLLECTION") {
+            if (xml.name() == QLatin1String("COLLECTION")) {
                 inCollectionTag = false;
             }
-            if (xml.name() == "PLAYLISTS" && inPlaylistsTag) {
+            if (xml.name() == QLatin1String("PLAYLISTS") && inPlaylistsTag) {
                 inPlaylistsTag = false;
             }
         }
@@ -302,13 +309,13 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isStartElement()) {
-            if (xml.name() == "ALBUM") {
+            if (xml.name() == QLatin1String("ALBUM")) {
                 QXmlStreamAttributes attr = xml.attributes ();
                 album = attr.value("TITLE").toString();
                 tracknumber = attr.value("TRACK").toString();
                 continue;
             }
-            if (xml.name() == "LOCATION") {
+            if (xml.name() == QLatin1String("LOCATION")) {
                 QXmlStreamAttributes attr = xml.attributes ();
                 volume = attr.value("VOLUME").toString();
                 path = attr.value("DIR").toString();
@@ -326,7 +333,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 location += filename;
                 continue;
             }
-            if (xml.name() == "INFO") {
+            if (xml.name() == QLatin1String("INFO")) {
                 QXmlStreamAttributes attr = xml.attributes();
                 key = attr.value("KEY").toString();
                 bitrate = attr.value("BITRATE").toString().toInt() / 1000;
@@ -348,14 +355,14 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 }
                 continue;
             }
-            if (xml.name() == "TEMPO") {
+            if (xml.name() == QLatin1String("TEMPO")) {
                 QXmlStreamAttributes attr = xml.attributes ();
                 bpm = attr.value("BPM").toString().toFloat();
                 continue;
             }
         }
         //We leave the infinite loop, if twe have the closing tag "ENTRY"
-        if (xml.name() == "ENTRY" && xml.isEndElement()) {
+        if (xml.name() == QLatin1String("ENTRY") && xml.isEndElement()) {
             break;
         }
     }
@@ -415,7 +422,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
         xml.readNext();
 
         if (xml.isStartElement()) {
-            if (xml.name() == "NODE") {
+            if (xml.name() == QLatin1String("NODE")) {
                 QXmlStreamAttributes attr = xml.attributes();
                 QString name = attr.value("NAME").toString();
                 QString type = attr.value("TYPE").toString();
@@ -435,15 +442,16 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
                     parent->appendChild(name, current_path);
                     // process all the entries within the playlist 'name' having path 'current_path'
-                    parsePlaylistEntries(xml, current_path,
-                                         query_insert_to_playlists,
-                                         query_insert_to_playlist_tracks);
+                    parsePlaylistEntries(xml,
+                            current_path,
+                            std::move(query_insert_to_playlists),
+                            std::move(query_insert_to_playlist_tracks));
                 }
             }
         }
 
         if (xml.isEndElement()) {
-            if (xml.name() == "NODE") {
+            if (xml.name() == QLatin1String("NODE")) {
                 if (map.value(current_path) == "FOLDER") {
                     parent = parent->parent();
                 }
@@ -455,7 +463,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                 current_path.remove(lastSlash, path_length - lastSlash);
             }
             //We leave the infinite loop, if twe have the closing "PLAYLIST" tag
-            if (xml.name() == "PLAYLISTS") {
+            if (xml.name() == QLatin1String("PLAYLISTS")) {
                 break;
             }
         }
@@ -502,7 +510,7 @@ void TraktorFeature::parsePlaylistEntries(
         //read next XML element
         xml.readNext();
         if (xml.isStartElement()) {
-            if (xml.name() == "PRIMARYKEY") {
+            if (xml.name() == QLatin1String("PRIMARYKEY")) {
                 QXmlStreamAttributes attr = xml.attributes();
                 QString key = attr.value("KEY").toString();
                 QString type = attr.value("TYPE").toString();
@@ -540,7 +548,7 @@ void TraktorFeature::parsePlaylistEntries(
         }
         if (xml.isEndElement()) {
             //We leave the infinite loop, if twe have the closing "PLAYLIST" tag
-            if (xml.name() == "PLAYLIST") {
+            if (xml.name() == QLatin1String("PLAYLIST")) {
                 break;
             }
         }

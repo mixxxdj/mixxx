@@ -179,11 +179,15 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
-    void slotLoadToPlayer(const QString& location, const QString& group);
+    void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play = false);
+    void slotLoadLocationToPlayerStopped(const QString& location, const QString& group) {
+        slotLoadLocationToPlayer(location, group, false);
+    };
     void slotCloneDeck(const QString& source_group, const QString& target_group);
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
+    void slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play = false);
     // Loads the location to the deck. deckNumber is 1-indexed
     void slotLoadToDeck(const QString& location, int deckNumber);
 
@@ -207,7 +211,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void onTrackAnalysisFinished();
 
   signals:
-    void loadLocationToPlayer(const QString& location, const QString& group);
+    void loadLocationToPlayer(const QString& location, const QString& group, bool play);
 
     // Emitted when the user tries to enable a microphone talkover control when
     // there is no input configured.

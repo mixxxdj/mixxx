@@ -517,7 +517,12 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     }
 
     // Find the best stream
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(59, 0, 100)
+    // https://github.com/FFmpeg/FFmpeg/blob/dd17c86aa11feae2b86de054dd0679cc5f88ebab/doc/APIchanges#L175
     AVCodec* pDecoder = nullptr;
+#else
+    const AVCodec* pDecoder = nullptr;
+#endif
     const int av_find_best_stream_result = av_find_best_stream(
             m_pavInputFormatContext,
             AVMEDIA_TYPE_AUDIO,

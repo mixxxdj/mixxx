@@ -48,7 +48,7 @@ Item {
             anchors.margins: 5
             textRole: "display"
             model: Mixxx.EffectsManager.visibleEffectsModel
-            onActivated: {
+            onActivated: (index) => {
                 const effectId = model.get(index).effectId;
                 if (root.slot.effectId != effectId)
                     root.slot.effectId = effectId;
@@ -62,7 +62,7 @@ Item {
                     // TODO: Consider using an additional QHash in the
                     // model and provide a more efficient lookup method
                     for (let i = 0; i < rowCount; i++) {
-                        if (effectSelector.model.get(i).effectId === target.effectId) {
+                        if (effectSelector.model.get(i).effectId === root.slot.effectId) {
                             effectSelector.currentIndex = i;
                             break;
                         }

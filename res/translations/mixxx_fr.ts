@@ -3414,7 +3414,7 @@ Ajouter la piste à la file Auto DJ (fin)</translation>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="715"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>Liste de lecture M3U (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="185"/>
@@ -5706,17 +5706,17 @@ Vous pouvez toujours glisser-déposer des pistes sur l&apos;écran pour cloner u
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="155"/>
         <source>Rename</source>
-        <translation type="unfinished"/>
+        <translation>Renommer</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="169"/>
         <source>Export</source>
-        <translation type="unfinished"/>
+        <translation>Exporter</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="179"/>
         <source>Delete</source>
-        <translation type="unfinished"/>
+        <translation>Supprimer</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="202"/>
@@ -8116,12 +8116,12 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
     <message>
         <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="44"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Type</translation>
     </message>
     <message>
         <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="46"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Nom</translation>
     </message>
 </context>
 <context>
@@ -10202,14 +10202,14 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="30"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>Emplacement</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="119"/>
         <location filename="../../src/library/parserm3u.cpp" line="129"/>
         <location filename="../../src/library/parserpls.cpp" line="81"/>
         <source>Playlist Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>Échec de l&apos;exportation de liste de lecture</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="120"/>
@@ -10217,12 +10217,12 @@ Complètement à droite: fin de la période d&apos;effet</translation>
         <location filename="../../src/library/parserm3u.cpp" line="130"/>
         <location filename="../../src/library/parserpls.cpp" line="82"/>
         <source>Could not create file</source>
-        <translation type="unfinished"/>
+        <translation>Impossible de créer le fichier</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="210"/>
         <source>Readable text Export Failed</source>
-        <translation type="unfinished"/>
+        <translation>Échec de l&apos;export au format texte en clair</translation>
     </message>
 </context>
 <context>
@@ -10389,6 +10389,11 @@ Complètement à droite: fin de la période d&apos;effet</translation>
 </context>
 <context>
     <name>SamplerBank</name>
+    <message>
+        <location filename="../../src/mixer/samplerbank.cpp" line="21"/>
+        <source>Mixxx Sampler Banks (*.xml)</source>
+        <translation>Banques d&apos;échantillon Mixxx (*.xml)</translation>
+    </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="65"/>
         <source>Save Sampler Bank</source>
@@ -13384,12 +13389,12 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
         <location filename="../../src/widget/weffectname.cpp" line="45"/>
         <source>%1: %2</source>
         <extracomment>%1 = effect name; %2 = effect description</extracomment>
-        <translation type="unfinished"/>
+        <translation>%1: %2</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffectname.cpp" line="48"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Aucun effet chargé.</translation>
     </message>
 </context>
 <context>
@@ -13397,7 +13402,7 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/widget/weffectparameternamebase.cpp" line="45"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Aucun effet chargé.</translation>
     </message>
 </context>
 <context>
@@ -14467,7 +14472,7 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1737"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Annuler</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1740"/>
@@ -14502,7 +14507,7 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1817"/>
         <source>Close</source>
-        <translation type="unfinished"/>
+        <translation>Fermer</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1827"/>
@@ -14840,7 +14845,7 @@ Cliquez sur OK pour sortir.</translation>
     <message>
         <location filename="../../src/qml/qmlvisibleeffectsmodel.cpp" line="43"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Aucun effet chargé.</translation>
     </message>
 </context>
 </TS>

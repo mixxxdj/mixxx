@@ -6,7 +6,7 @@ DropArea {
     property string group // required
     property var player: Mixxx.PlayerManager.getPlayer(group)
 
-    onDropped: {
+    onDropped: (drop) => {
         if (drop.formats.includes("mixxx/player")) {
             const sourceGroup = drop.getDataAsString("mixxx/player");
             // Prevent dropping a deck onto itself

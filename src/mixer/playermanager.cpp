@@ -661,22 +661,23 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
     m_lastLoadedPlayer = group;
 }
 
-void PlayerManager::slotLoadToPlayer(const QString& location, const QString& group) {
+void PlayerManager::slotLoadLocationToPlayer(
+        const QString& location, const QString& group, bool play) {
     // The library will get the track and then signal back to us to load the
     // track via slotLoadTrackToPlayer.
-    emit loadLocationToPlayer(location, group);
+    emit loadLocationToPlayer(location, group, play);
 }
 
 void PlayerManager::slotLoadToDeck(const QString& location, int deck) {
-    slotLoadToPlayer(location, groupForDeck(deck-1));
+    slotLoadLocationToPlayer(location, groupForDeck(deck - 1));
 }
 
 void PlayerManager::slotLoadToPreviewDeck(const QString& location, int previewDeck) {
-    slotLoadToPlayer(location, groupForPreviewDeck(previewDeck-1));
+    slotLoadLocationToPlayer(location, groupForPreviewDeck(previewDeck - 1));
 }
 
 void PlayerManager::slotLoadToSampler(const QString& location, int sampler) {
-    slotLoadToPlayer(location, groupForSampler(sampler-1));
+    slotLoadLocationToPlayer(location, groupForSampler(sampler - 1));
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
@@ -688,6 +689,17 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
     }
 
     pDeck->slotLoadTrack(pTrack, false);
+}
+
+void PlayerManager::slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play) {
+    auto locker = lockMutex(&m_mutex);
+    BaseTrackPlayer* pDeck = findFirstStoppedPlayerInList(m_decks);
+    if (pDeck == nullptr) {
+        qDebug() << "PlayerManager: No stopped deck found, not loading track!";
+        return;
+    }
+
+    slotLoadLocationToPlayer(location, pDeck->getGroup(), play);
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {

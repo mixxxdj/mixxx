@@ -39,7 +39,7 @@ Skin.Button {
 
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
-        onClicked: {
+        onClicked: (mouse) => {
             if (hotcue.isSet) {
                 popup.x = mouse.x;
                 popup.y = mouse.y;
