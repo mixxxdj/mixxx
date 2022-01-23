@@ -8,8 +8,6 @@ Skin.Button {
     property string group // required
 
     text: hotcueNumber
-    width: playButton.height
-    height: playButton.height
     activeColor: hotcue.color
     highlight: hotcue.isSet
 

@@ -353,6 +353,8 @@ Item {
 
                     hotcueNumber: index + 1
                     group: root.group
+                    width: playButton.height
+                    height: playButton.height
                 }
 
             }
