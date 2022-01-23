@@ -52,9 +52,8 @@ Popup {
         anchors.topMargin: 5
         text: "Clear"
         activeColor: Theme.deckActiveColor
-        onDownChanged: (down) => {
-            root.hotcue.clear = down;
-        }
+        onPressed: root.hotcue.clear = 1
+        onReleased: root.hotcue.clear = 0
     }
 
     enter: Transition {
