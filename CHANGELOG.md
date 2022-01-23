@@ -16,7 +16,7 @@
 ### Packaging
 
 * Downloads of external dependencies are placed in build/downloads
-* The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
+* The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.6.zip instead of build/download/libkeyfinder/v2.2.6.zip
 * CMake: Adjust the download directory and name of external dependencies [#4511](https://github.com/mixxxdj/mixxx/pull/4511)
 * Fix/Improve Appstream metainfo
   [#4344](https://github.com/mixxxdj/mixxx/pull/4344)
