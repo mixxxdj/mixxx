@@ -5,7 +5,7 @@ import "Theme"
 Item {
     id: root
 
-    property string group // required
+    required property string group
 
     Rectangle {
         id: gainKnobFrame

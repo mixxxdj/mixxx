@@ -4,8 +4,8 @@ import QtQuick 2.12
 Skin.Button {
     id: root
 
-    property int hotcueNumber // required
-    property string group // required
+    required property int hotcueNumber
+    required property string group
 
     text: hotcueNumber
     activeColor: hotcue.color

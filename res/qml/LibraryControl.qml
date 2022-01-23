@@ -110,6 +110,8 @@ Item {
         model: numDecksControl.value
 
         delegate: LibraryControlLoadSelectedTrackHandler {
+            required property int index
+
             group: "[Channel" + (index + 1) + "]"
             enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
             onLoadTrackRequested: (play) => {
@@ -130,6 +132,8 @@ Item {
         model: numPreviewDecksControl.value
 
         delegate: LibraryControlLoadSelectedTrackHandler {
+            required property int index
+
             group: "[PreviewDeck" + (index + 1) + "]"
             enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
             onLoadTrackRequested: (play) => {
@@ -150,6 +154,8 @@ Item {
         model: numSamplersControl.value
 
         delegate: LibraryControlLoadSelectedTrackHandler {
+            required property int index
+
             group: "[Sampler" + (index + 1) + "]"
             enabled: root.focusWidget == FocusedWidgetControl.WidgetKind.LibraryView
             onLoadTrackRequested: (play) => {

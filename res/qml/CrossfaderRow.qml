@@ -5,7 +5,7 @@ import "Theme"
 Item {
     id: root
 
-    property real crossfaderWidth // required
+    required property real crossfaderWidth
 
     implicitHeight: crossfader.height
 

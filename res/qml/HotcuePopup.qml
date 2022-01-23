@@ -7,7 +7,7 @@ import "Theme"
 Popup {
     id: root
 
-    property Hotcue hotcue // required
+    required property Hotcue hotcue
 
     dim: false
     modal: true
@@ -26,6 +26,8 @@ Popup {
             model: Mixxx.Config.getHotcueColorPalette()
 
             Rectangle {
+                required property color modelData
+
                 height: 24
                 width: 24
                 color: modelData

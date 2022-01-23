@@ -7,7 +7,7 @@ AbstractButton {
     id: root
 
     property color normalColor: Theme.buttonNormalColor
-    property color activeColor // required
+    required property color activeColor
     property color pressedColor: activeColor
     property bool highlight: false
 

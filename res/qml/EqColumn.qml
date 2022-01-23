@@ -6,7 +6,7 @@ import "Theme"
 Column {
     id: root
 
-    property string group // required
+    required property string group
 
     spacing: 4
 

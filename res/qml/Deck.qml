@@ -6,7 +6,7 @@ import "Theme"
 Item {
     id: root
 
-    property string group // required
+    required property string group
     property bool minimized: false
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
 
@@ -344,15 +344,9 @@ Item {
                 model: 8
 
                 Skin.HotcueButton {
-                    // TODO: Once we require Qt >= 5.14, we're going to re-add
-                    // the `required` keyword. If the component has any
-                    // required properties, we'll stumble over a Qt bug and
-                    // need the following workaround:
-                    //     required property int index
-                    // See this for details:
-                    // https://bugreports.qt.io/browse/QTBUG-86009, and need
+                    required property int index
 
-                    hotcueNumber: index + 1
+                    hotcueNumber: this.index + 1
                     group: root.group
                     width: playButton.height
                     height: playButton.height
