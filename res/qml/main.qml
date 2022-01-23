@@ -2,7 +2,6 @@ import "." as Skin
 import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.11
 import "Theme"
 
 ApplicationWindow {
@@ -118,7 +117,7 @@ ApplicationWindow {
             width: parent.width
             visible: !root.maximizeLibrary
 
-            FadeBehavior on visible {
+            Skin.FadeBehavior on visible {
                 fadeTarget: crossfader
             }
 
@@ -133,37 +132,37 @@ ApplicationWindow {
             minimized: root.maximizeLibrary
             visible: root.show4decks
 
-            FadeBehavior on visible {
+            Skin.FadeBehavior on visible {
                 fadeTarget: decks34
             }
 
         }
 
-        SamplerRow {
+        Skin.SamplerRow {
             id: samplers
 
             width: parent.width
             visible: root.showSamplers
 
-            FadeBehavior on visible {
+            Skin.FadeBehavior on visible {
                 fadeTarget: samplers
             }
 
         }
 
-        EffectRow {
+        Skin.EffectRow {
             id: effects
 
             width: parent.width
             visible: root.showEffects
 
-            FadeBehavior on visible {
+            Skin.FadeBehavior on visible {
                 fadeTarget: effects
             }
 
         }
 
-        Library {
+        Skin.Library {
             width: parent.width
             height: parent.height - y
         }

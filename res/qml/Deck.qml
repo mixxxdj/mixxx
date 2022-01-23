@@ -1,9 +1,6 @@
 import "." as Skin
 import Mixxx 0.1 as Mixxx
-import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.11
 import "Theme"
 
 Item {
@@ -48,6 +45,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         group: root.group
+        rightColumnWidth: rateSlider.width
     }
 
     Skin.ControlSlider {
@@ -356,6 +354,8 @@ Item {
 
                     hotcueNumber: index + 1
                     group: root.group
+                    width: playButton.height
+                    height: playButton.height
                 }
 
             }

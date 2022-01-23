@@ -9,6 +9,7 @@ Rectangle {
     id: root
 
     property string group // required
+    property int rightColumnWidth // required
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
     property color lineColor: Theme.deckLineColor
 
@@ -150,7 +151,7 @@ Rectangle {
         anchors.top: infoBarHSeparator1.top
         anchors.bottom: infoBarVSeparator.top
         anchors.right: infoBarHSeparator2.left
-        width: rateSlider.width
+        width: root.rightColumnWidth
     }
 
     Rectangle {
@@ -172,7 +173,7 @@ Rectangle {
         anchors.bottom: infoBarVSeparator.top
         anchors.right: root.right
         anchors.rightMargin: 5
-        width: rateSlider.width
+        width: root.rightColumnWidth
 
         Mixxx.ControlProxy {
             id: bpmControl
@@ -190,7 +191,7 @@ Rectangle {
 
         anchors.top: infoBarVSeparator.bottom
         anchors.bottom: infoBarHSeparator1.bottom
-        width: rateSlider.width
+        width: root.rightColumnWidth
         anchors.right: root.right
         anchors.rightMargin: 5
         text: (ratio > 0) ? "+" + ratio.toFixed(2) : ratio.toFixed(2)

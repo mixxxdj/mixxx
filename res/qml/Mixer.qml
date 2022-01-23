@@ -2,7 +2,7 @@ import "." as Skin
 import QtQuick 2.12
 
 Item {
-    id: mixer
+    id: root
 
     property string leftDeckGroup // required
     property string rightDeckGroup // required

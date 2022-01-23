@@ -1,8 +1,5 @@
 import "." as Skin
-import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.12
 import "Theme"
 
 Item {
@@ -21,7 +18,7 @@ Item {
         anchors.right: effectUnitControlsFrame.left
         height: 60
 
-        EffectSlot {
+        Skin.EffectSlot {
             id: effect1
 
             anchors.top: parent.top
@@ -32,7 +29,7 @@ Item {
             expanded: false
         }
 
-        EffectSlot {
+        Skin.EffectSlot {
             id: effect2
 
             anchors.top: parent.top
@@ -43,7 +40,7 @@ Item {
             expanded: false
         }
 
-        EffectSlot {
+        Skin.EffectSlot {
             id: effect3
 
             anchors.top: parent.top
