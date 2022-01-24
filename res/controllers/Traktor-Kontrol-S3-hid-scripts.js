@@ -721,10 +721,10 @@ TraktorS3.Deck.prototype.wheelDeltas = function(value) {
 
     if (prevTime > timeval) {
         // We looped around.  Adjust current time so that subtraction works.
-        timeval += 0x100000;
+        timeval += 0x1000000;
     }
     let timeDelta = timeval - prevTime;
-    if (timeDelta === 0) {
+    if (timeDelta <= 0) {
         // Spinning too fast to detect speed!  By not dividing we are guessing it took 1ms.
         // (This is almost certainly not going to happen on this controller.)
         timeDelta = 1;
