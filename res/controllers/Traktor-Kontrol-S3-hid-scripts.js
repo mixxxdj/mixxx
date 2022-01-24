@@ -186,6 +186,7 @@ TraktorS3.Deck = function(controller, deckNumber, group) {
     this.tickReceived = false;
     this.lastTickVal = 0;
     this.lastTickTime = 0;
+    this.lastTickWallClock = 0;
     this.wheelTouchInertiaTimer = 0;
 
     // Knob encoder states (hold values between 0x0 and 0xF)
@@ -711,13 +712,19 @@ TraktorS3.Deck.prototype.wheelDeltas = function(value) {
     // the number of ticks to elapse to get a velocity.
     const tickval = value & 0xFF;
     let timeval = value >>> 8;
-    let prevTick = 0;
-    let prevTime = 0;
 
-    prevTick = this.lastTickVal;
-    prevTime = this.lastTickTime;
+    const prevTick = this.lastTickVal;
+    const prevTime = this.lastTickTime;
+    const prevTickWallClock = this.lastTickWallClock;
     this.lastTickVal = tickval;
     this.lastTickTime = timeval;
+    this.lastTickWallClock = Date.now();
+
+    // The user hasn't touched the jog wheel for a long time, so the internal timer may have looped
+    // around more than once. We have nothing to go by so return 0, 1 (1 to prevent divide by zero).
+    if (this.lastTickWallClock - prevTickWallClock > 20000) {
+        return [0, 1];
+    }
 
     if (prevTime > timeval) {
         // We looped around.  Adjust current time so that subtraction works.
