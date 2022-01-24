@@ -723,13 +723,9 @@ TraktorS3.Deck.prototype.wheelDeltas = function(value) {
         // We looped around.  Adjust current time so that subtraction works.
         timeval += 0x1000000;
     }
-    let timeDelta = timeval - prevTime;
-    if (timeDelta <= 0) {
-        // Spinning too fast to detect speed!  By not dividing we are guessing it took 1ms.
-        // (This is almost certainly not going to happen on this controller.)
-        timeDelta = 1;
-    }
-
+    // Clamp Suspiciously low numbers.  Even flicking the wheel as fast as I can, I can't get it
+    // lower than this value.  Lower values (esp below zero) cause huge jumps / errors in playback.
+    const timeDelta = Math.max(timeval - prevTime, 500);
     let tickDelta = 0;
 
     // Very generous 8bit loop-around detection.
