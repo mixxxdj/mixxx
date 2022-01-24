@@ -34,13 +34,22 @@ QString SoundSource::getTypeFromUrl(const QUrl& url) {
 QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     const QString fileSuffix = fileInfo.suffix().toLower().trimmed();
 
-    if (fileSuffix == "opus") {
-        // Bypass the not sufficient mime type lookup from content for opus files
+    if (fileSuffix == QLatin1String("opus")) {
+        // Bypass the insufficient mime type lookup from content for opus files
         // Files with "opus" suffix are of mime type "audio/x-opus+ogg" or "audio/opus".
         // In case of "audio/x-opus+ogg" only the container format "audio/ogg"
         // is detected, which will be decoded with the SoundSourceOggVobis()
         // but we want SoundSourceOpus(). "audio/opus" files without ogg
         // container are detected as "text/plain". They are not yet supported by Mixxx.
+        return fileSuffix;
+    }
+    if (fileSuffix == QLatin1String("flac")) {
+        // Bypass the insufficient mime type lookup from content for FLAC files.
+        // Legacy FLAC files may contain an ID3 tag (written by ExactAudioCopy and
+        // others) that causes these files to be identified as "audio/mpeg" instead
+        // of "audio/flac". Most decoders and TagLib are able to ignore and skip
+        // the non-standard ID3 data.
+        // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/mimetype.20sometimes.20wrong
         return fileSuffix;
     }
 
