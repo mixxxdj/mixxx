@@ -118,12 +118,12 @@
                 </options>
             </control>
             <control>   <!-- shifted -->
-                <group>[Channel1]</group>
-                <key>RDJ2.leftDeck.bendPlusButton.input</key>
+                <group>[Library]</group>
+                <key>GoToItem</key>
                 <status>0x90</status>
                 <midino>0x22</midino>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -136,12 +136,12 @@
                 </options>
             </control>
             <control>   <!-- shifted -->
-                <group>[Channel1]</group>
-                <key>RDJ2.leftDeck.bendMinusButton.input</key>
+                <group>[Library]</group>
+                <key>GoToItem</key>
                 <status>0x90</status>
                 <midino>0x21</midino>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -434,12 +434,12 @@
                 </options>
             </control>
             <control>      <!-- shifted -->
-                <group>[Channel2]</group>
-                <key>RDJ2.rightDeck.bendPlusButton.input</key>
+                <group>[Library]</group>
+                <key>GoToItem</key>
                 <status>0x90</status>
                 <midino>0x5E</midino>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -452,12 +452,12 @@
                 </options>
             </control>
             <control>      <!-- shifted -->
-                <group>[Channel2]</group>
-                <key>RDJ2.rightDeck.bendMinusButton.input</key>
+                <group>[Library]</group>
+                <key>GoToItem</key>
                 <status>0x90</status>
                 <midino>0x5D</midino>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
             <control>

@@ -430,13 +430,16 @@ RDJ2.BendMinusButton.prototype = new components.Button({
         this.connect();
         this.trigger();
     },
+    /* The shifted action is disabled here as it has been remapped
+       to '[Library]GoToItem' normal binding in the xml file.
+
     shift: function() {
         this.inKey = "rate_temp_down_small";
         this.disconnect();
         this.outKey = "rate_temp_down_small";
         this.connect();
         this.trigger();
-    },
+    },*/
 });
 
 RDJ2.BendPlusButton = function(options) {
