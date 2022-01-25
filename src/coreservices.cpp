@@ -423,6 +423,21 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
 
+    // The following wmainmenubar controls must be created here so that controllers can bind to them
+    // on startup.
+    m_pSkinSettingsControl = std::make_unique<ControlPushButton>(
+            ConfigKey("[Master]", "skin_settings"));
+    m_pShowMicrophoneControl = std::make_unique<ControlPushButton>(
+            ConfigKey("[Microphone]", "show_microphone"));
+    m_pShowVinylControlControl = std::make_unique<ControlPushButton>(
+            ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
+    m_pShowPreviewDeckControl = std::make_unique<ControlPushButton>(
+            ConfigKey("[PreviewDeck]", "show_previewdeck"));
+    m_pShowCoverArtControl = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "show_coverart"));
+    m_pMaximizeLibraryControl = std::make_unique<ControlPushButton>(
+            ConfigKey("[Master]", "maximize_library"));
+
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
     const QList<QString>& musicFiles = m_cmdlineArgs.getMusicFiles();
@@ -596,6 +611,12 @@ void CoreServices::finalize() {
     m_pDbConnectionPool.reset(); // should drop the last reference
 
     m_pTouchShift.reset();
+    m_pSkinSettingsControl.reset();
+    m_pShowMicrophoneControl.reset();
+    m_pShowVinylControlControl.reset();
+    m_pShowPreviewDeckControl.reset();
+    m_pShowCoverArtControl.reset();
+    m_pMaximizeLibraryControl.reset();
 
     m_pControlIndicatorTimer.reset();
 
