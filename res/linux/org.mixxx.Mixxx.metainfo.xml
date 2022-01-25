@@ -383,6 +383,12 @@
    #4386
    #4408
   </li>
+  <li>
+   Improve robustness of file type detection by considering the actual MIME type of the content.
+   lp:1445885
+   #4356
+   #4357
+  </li>
  </ul>
  <p>
   Audio Engine

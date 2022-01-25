@@ -1,6 +1,8 @@
 #include "sources/soundsourceproxy.h"
 
 #include <QApplication>
+#include <QMimeDatabase>
+#include <QMimeType>
 #include <QRegularExpression>
 #include <QStandardPaths>
 
@@ -48,6 +50,7 @@
 /*static*/ mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
 /*static*/ QStringList SoundSourceProxy::s_supportedFileNamePatterns;
 /*static*/ QRegularExpression SoundSourceProxy::s_supportedFileNamesRegex;
+/*static*/ QHash<QMimeType, QString> SoundSourceProxy::s_fileTypeByMimeType;
 
 namespace {
 
@@ -76,19 +79,19 @@ void registerReferenceSoundSourceProvider(
         return;
     }
     // Verify that the provider is the primary provider for all
-    // supported file extensions
-    const QStringList supportedFileExtensions = pProvider->getSupportedFileExtensions();
-    for (const auto& fileExtension : supportedFileExtensions) {
+    // supported file types
+    const QStringList supportedFileTypes = pProvider->getSupportedFileTypes();
+    for (const auto& fileType : supportedFileTypes) {
         const auto pPrimaryProvider =
-                pProviderRegistry->getPrimaryProviderForFileExtension(fileExtension);
+                pProviderRegistry->getPrimaryProviderForFileType(fileType);
         VERIFY_OR_DEBUG_ASSERT(pPrimaryProvider == pProvider) {
             kLogger.warning()
                     << "Using SoundSource provider"
                     << pPrimaryProvider->getDisplayName()
                     << "instead of"
                     << pProvider->getDisplayName()
-                    << "for file extension"
-                    << fileExtension;
+                    << "for file type"
+                    << fileType;
         }
     }
 }
@@ -165,6 +168,21 @@ void registerReferenceSoundSourceProviders(
 #endif
 }
 
+QList<QMimeType> mimeTypesForFileType(const QString& fileType) {
+    const QString dummyFileName = QStringLiteral("prefix.") + fileType;
+    auto mimeTypes = QMimeDatabase().mimeTypesForFileName(dummyFileName);
+    if (fileType == "opus") {
+        // *.opus suffix is registered for QMimeType("audio/ogg") and QMimeType("audio/x-opus+ogg")
+        // the Mixxx fileType "opus" only supports QMimeType("audio/x-opus+ogg");
+        for (auto& mimeType : mimeTypes) {
+            if (mimeType.name() == "audio/x-opus+ogg") {
+                return {mimeType};
+            }
+        }
+    }
+    return mimeTypes;
+}
+
 } // anonymous namespace
 
 // static
@@ -213,20 +231,29 @@ bool SoundSourceProxy::registerProviders() {
     // providers to verify that their priorities are correct.
     registerReferenceSoundSourceProviders(&s_soundSourceProviders);
 
-    const QStringList supportedFileExtensions(
-            s_soundSourceProviders.getRegisteredFileExtensions());
-    VERIFY_OR_DEBUG_ASSERT(!supportedFileExtensions.isEmpty()) {
+    const QStringList supportedFileTypes = getSupportedFileTypes();
+    VERIFY_OR_DEBUG_ASSERT(!supportedFileTypes.isEmpty()) {
         kLogger.critical()
-                << "No file extensions registered";
+                << "No file types registered";
         return false;
     }
-    if (kLogger.infoEnabled()) {
-        for (const auto& supportedFileExtension : supportedFileExtensions) {
-            kLogger.info() << "SoundSource providers for file extension" << supportedFileExtension;
-            const QList<mixxx::SoundSourceProviderRegistration> registrationsForFileExtension(
-                    s_soundSourceProviders.getRegistrationsForFileExtension(
-                            supportedFileExtension));
-            for (const auto& registration : registrationsForFileExtension) {
+
+    for (const auto& supportedFileType : supportedFileTypes) {
+        const auto mimeTypes = mimeTypesForFileType(supportedFileType);
+        for (const QMimeType& mimeType : mimeTypes) {
+            if (!mimeType.isDefault()) {
+                qDebug() << mimeType << supportedFileType;
+                DEBUG_ASSERT(s_fileTypeByMimeType.constFind(mimeType) ==
+                        s_fileTypeByMimeType.constEnd());
+                s_fileTypeByMimeType.insert(mimeType, supportedFileType);
+            }
+        }
+        if (kLogger.infoEnabled()) {
+            kLogger.info() << "SoundSource providers for file type" << supportedFileType;
+            const QList<mixxx::SoundSourceProviderRegistration> registrationsForFileType(
+                    s_soundSourceProviders.getRegistrationsForFileType(
+                            supportedFileType));
+            for (const auto& registration : registrationsForFileType) {
                 kLogger.info()
                         << registration.getProviderPriority()
                         << ":"
@@ -235,16 +262,19 @@ bool SoundSourceProxy::registerProviders() {
         }
     }
 
-    // Turn the file extension list into a [ "*.mp3", "*.wav", ... ] style string list
+    // Turn the file suffix list into a [ "*.mp3", "*.wav", ... ] style string list
+    const auto supportedFileSuffixes = getSupportedFileSuffixes();
     s_supportedFileNamePatterns.clear();
-    for (const auto& supportedFileExtension : supportedFileExtensions) {
-        s_supportedFileNamePatterns += QStringLiteral("*.%1").arg(supportedFileExtension);
+    s_supportedFileNamePatterns.reserve(supportedFileSuffixes.size());
+    for (const auto& supportedFileSuffix : supportedFileSuffixes) {
+        s_supportedFileNamePatterns.append(QStringLiteral("*.") + supportedFileSuffix);
     }
 
-    // Build regular expression of supported file extensions
-    QString supportedFileExtensionsRegex(
-            RegexUtils::fileExtensionsRegex(supportedFileExtensions));
-    s_supportedFileNamesRegex = QRegularExpression(supportedFileExtensionsRegex,
+    // Build regular expression of supported file suffixes
+    QString supportedFileNamesRegex =
+            RegexUtils::fileExtensionsRegex(supportedFileSuffixes);
+    s_supportedFileNamesRegex = QRegularExpression(
+            supportedFileNamesRegex,
             QRegularExpression::CaseInsensitiveOption);
 
     return true;
@@ -266,14 +296,48 @@ bool SoundSourceProxy::isFileNameSupported(const QString& fileName) {
 }
 
 // static
-bool SoundSourceProxy::isFileExtensionSupported(const QString& fileExtension) {
-    return !s_soundSourceProviders.getRegistrationsForFileExtension(fileExtension).isEmpty();
+bool SoundSourceProxy::isFileTypeSupported(const QString& fileType) {
+    return !s_soundSourceProviders.getRegistrationsForFileType(fileType).isEmpty();
+}
+
+// static
+bool SoundSourceProxy::isFileSuffixSupported(const QString& fileSuffix) {
+    return getSupportedFileSuffixes().contains(fileSuffix);
 }
 
 //static
-mixxx::SoundSourceProviderPointer SoundSourceProxy::getPrimaryProviderForFileExtension(
-        const QString& fileExtension) {
-    return s_soundSourceProviders.getPrimaryProviderForFileExtension(fileExtension);
+mixxx::SoundSourceProviderPointer SoundSourceProxy::getPrimaryProviderForFileType(
+        const QString& fileType) {
+    return s_soundSourceProviders.getPrimaryProviderForFileType(fileType);
+}
+
+//static
+QStringList SoundSourceProxy::getFileSuffixesForFileType(
+        const QString& fileType) {
+    // Each file type is a valid file suffix
+    const auto mimeTypes = mimeTypesForFileType(fileType);
+    QStringList fileSuffixes;
+    // Reserve some extra space to prevent allocations, assuming 2 suffixes per type on average
+    fileSuffixes.reserve(mimeTypes.size() * 2);
+    for (const QMimeType& mimeType : mimeTypes) {
+        fileSuffixes.append(mimeType.suffixes());
+    }
+    fileSuffixes.append(fileType);
+    fileSuffixes.removeDuplicates();
+    return fileSuffixes;
+}
+
+//static
+QStringList SoundSourceProxy::getSupportedFileSuffixes() {
+    const auto fileTypes = getSupportedFileTypes();
+    QStringList fileSuffixes;
+    // Reserve some extra space to prevent allocations, assuming 2 suffixes per type on average
+    fileSuffixes.reserve(fileTypes.size() * 2);
+    for (const QString& fileType : fileTypes) {
+        fileSuffixes.append(getFileSuffixesForFileType(fileType));
+    }
+    fileSuffixes.removeDuplicates();
+    return fileSuffixes;
 }
 
 // static
@@ -293,7 +357,7 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
         return {};
     }
     const auto providerRegistrations =
-            allProviderRegistrationsForFileExtension(
+            allProviderRegistrationsForFileType(
                     fileType);
     if (providerRegistrations.isEmpty()) {
         kLogger.warning()
@@ -564,7 +628,19 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
     }
 
     // The SoundSource provides the actual type of the corresponding file
-    m_pTrack->setType(m_pSoundSource->getType());
+    const QString newType = m_pSoundSource->getType();
+    DEBUG_ASSERT(!newType.isEmpty());
+    const QString oldType = m_pTrack->setType(newType);
+    if (!oldType.isEmpty() && oldType != newType) {
+        // This should only happen for files with a wrong file extension
+        // that have been added by version 2.3 or earlier.
+        kLogger.warning() << "File type updated from"
+                          << oldType
+                          << "to"
+                          << newType
+                          << "for file"
+                          << getUrl().toString();
+    }
 
     // Use the existing track metadata as default values. Otherwise
     // existing values in the library would be overwritten with empty
@@ -607,12 +683,13 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
         }
     }
 
-    // Parse the tags stored in the audio file
-    auto metadataImportedFromSource =
+    // Parse the tags stored in the audio file and the date and time when the
+    // file has been last modified to detect future changes of the tags.
+    auto [metadataImportResult, sourceSynchronizedAt] =
             importTrackMetadataAndCoverImage(
                     &trackMetadata,
                     pCoverImg);
-    if (metadataImportedFromSource.first ==
+    if (metadataImportResult ==
             mixxx::MetadataSource::ImportResult::Failed) {
         kLogger.warning()
                 << "Failed to import track metadata"
@@ -639,7 +716,7 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
         // Only import and merge extra metadata that might be missing
         // in the database.
         DEBUG_ASSERT(!pCoverImg);
-        if (metadataImportedFromSource.first == mixxx::MetadataSource::ImportResult::Succeeded) {
+        if (metadataImportResult == mixxx::MetadataSource::ImportResult::Succeeded) {
             if (m_pTrack->mergeExtraMetadataFromSource(trackMetadata)) {
                 return UpdateTrackFromSourceResult::ExtraMetadataImportedAndMerged;
             } else {
@@ -690,7 +767,10 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
     }
 
     // Ensure that all tracks have a title
-    if (trackMetadata.getTrackInfo().getTitle().trimmed().isEmpty()) {
+    // Checking sourceSynchronizedAt.isValid() is required to skip inaccessible
+    // or missing files!
+    if (sourceSynchronizedAt.isValid() &&
+            trackMetadata.getTrackInfo().getTitle().trimmed().isEmpty()) {
         // Only parse artist and title if both fields are empty to avoid
         // inconsistencies. Otherwise the file name (without extension)
         // is used as the title and the artist is unmodified.
@@ -715,23 +795,19 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
         if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(
                     fileInfo.fileName(), splitArtistTitle)) {
             // Pretend that metadata import succeeded
-            metadataImportedFromSource.first = mixxx::MetadataSource::ImportResult::Succeeded;
-            if (metadataImportedFromSource.second.isNull()) {
-                // Since this is also some kind of metadata import, we mark the
-                // track's metadata as synchronized with the time stamp of the file.
-                metadataImportedFromSource.second = fileInfo.lastModified();
-            }
+            metadataImportResult = mixxx::MetadataSource::ImportResult::Succeeded;
         }
     }
 
     // Do not continue with unknown and maybe invalid metadata!
-    if (metadataImportedFromSource.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+    if (metadataImportResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return UpdateTrackFromSourceResult::MetadataImportFailed;
     }
+    DEBUG_ASSERT(sourceSynchronizedAt.isValid());
 
     m_pTrack->replaceMetadataFromSource(
             std::move(trackMetadata),
-            metadataImportedFromSource.second);
+            sourceSynchronizedAt);
 
     const bool pendingBeatsImport =
             m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;

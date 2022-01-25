@@ -166,7 +166,7 @@ bool decodeFrameHeader(
 const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
 
 //static
-const QStringList SoundSourceProviderMp3::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderMp3::kSupportedFileTypes = {
         QStringLiteral("mp3"),
 };
 

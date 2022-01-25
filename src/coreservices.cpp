@@ -399,16 +399,17 @@ void CoreServices::initialize(QApplication* pApp) {
             QSet<QString>::fromList(prev_plugins_list);
 #endif
 
-    const QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
-    QSet<QString> curr_plugins =
+    const QList<QString> supportedFileSuffixes = SoundSourceProxy::getSupportedFileSuffixes();
+    auto curr_plugins =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-            QSet<QString>(curr_plugins_list.begin(), curr_plugins_list.end());
+            QSet<QString>(supportedFileSuffixes.begin(), supportedFileSuffixes.end());
 #else
-            QSet<QString>::fromList(curr_plugins_list);
+            QSet<QString>::fromList(supportedFileSuffixes);
 #endif
 
     rescan = rescan || (prev_plugins != curr_plugins);
-    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"), curr_plugins_list.join(","));
+    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
+            supportedFileSuffixes.join(","));
 
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see Bug #1047435
