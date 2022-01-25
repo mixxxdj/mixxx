@@ -99,7 +99,7 @@ qint64 RecordingManager::getFreeSpace() {
     // returns the free space on the recording location in bytes
     // return -1 if the free space could not be determined
     qint64 rv = -1;
-    QStorageInfo storage(getRecordingDir());
+    QStorageInfo storage(m_recordingDir);
     if (storage.isValid()) {
         rv = storage.bytesAvailable();
     }
