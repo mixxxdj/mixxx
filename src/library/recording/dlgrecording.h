@@ -24,7 +24,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     ~DlgRecording() override;
 
     void onSearch(const QString& text) override;
-    void onShow() override;
+    void onShow() override{};
     bool hasFocus() const override;
     void setFocus() override;
     void loadSelectedTrack() override;

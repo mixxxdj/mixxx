@@ -104,10 +104,6 @@ DlgRecording::DlgRecording(
 DlgRecording::~DlgRecording() {
 }
 
-void DlgRecording::onShow() {
-    refreshBrowseModel();
-}
-
 bool DlgRecording::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
