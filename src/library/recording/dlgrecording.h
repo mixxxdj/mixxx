@@ -55,7 +55,6 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     WTrackTableView* m_pTrackTableView;
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
-    QString m_recordingDir;
 
     void refreshLabels();
     void slotRecButtonClicked(bool checked);

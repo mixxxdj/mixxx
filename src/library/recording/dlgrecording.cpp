@@ -81,12 +81,10 @@ DlgRecording::DlgRecording(
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_recordingDir = m_pRecordingManager->getRecordingDir();
-
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
 
-    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
+    refreshBrowseModel();
     m_pTrackTableView->loadTrackModel(&m_proxyModel);
 
     connect(pushButtonRecording,
@@ -107,8 +105,7 @@ DlgRecording::~DlgRecording() {
 }
 
 void DlgRecording::onShow() {
-    m_recordingDir = m_pRecordingManager->getRecordingDir();
-    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
+    refreshBrowseModel();
 }
 
 bool DlgRecording::hasFocus() const {
@@ -120,7 +117,8 @@ void DlgRecording::setFocus() {
 }
 
 void DlgRecording::refreshBrowseModel() {
-    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
+    QString recordingDir = m_pRecordingManager->getRecordingDir();
+    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(recordingDir)));
 }
 
 void DlgRecording::onSearch(const QString& text) {
@@ -175,7 +173,7 @@ void DlgRecording::slotRecordingStateChanged(bool isRecording) {
         labelRecStatistics->hide();
     }
     //This will update the recorded track table view
-    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(m_recordingDir)));
+    refreshBrowseModel();
 }
 
 // gets number of recorded bytes and update label
