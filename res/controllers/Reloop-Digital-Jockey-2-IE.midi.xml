@@ -92,6 +92,24 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>cue_play</key>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>   <!-- shifted -->
+                <group>[Channel1]</group>
+                <key>cue_gotoandplay</key>
+                <status>0x90</status>
+                <midino>0x35</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>RDJ2.leftDeck.syncButton.input</key>
                 <status>0x90</status>
                 <midino>0x01</midino>
@@ -404,6 +422,24 @@
                 <midino>0x72</midino>
                 <options>
                     <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>cue_play</key>
+                <status>0x90</status>
+                <midino>0x53</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>   <!-- shifted -->
+                <group>[Channel2]</group>
+                <key>cue_gotoandplay</key>
+                <status>0x90</status>
+                <midino>0x71</midino>
+                <options>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -1201,6 +1237,13 @@
                 <midino>0x05</midino>
                 <minimum>0.5</minimum>
             </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>cue_indicator</key>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <minimum>0.5</minimum>
+            </output>
 
         <!-- Right Deck -->
             <output>    <!-- LOW kill knob -->
@@ -1236,6 +1279,13 @@
                 <key>pfl</key>
                 <status>0x90</status>
                 <midino>0x41</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_indicator</key>
+                <status>0x90</status>
+                <midino>0x53</midino>
                 <minimum>0.5</minimum>
             </output>
         </outputs>
