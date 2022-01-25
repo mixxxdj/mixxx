@@ -210,8 +210,8 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 
 void BrowseTableModel::setPath(mixxx::FileAccess path) {
-    if (path.info().hasLocation()) {
-        m_currentDirectory = path.info().locationPath();
+    if (path.info().hasLocation() && path.info().isDir()) {
+        m_currentDirectory = path.info().location();
     } else {
         m_currentDirectory = QString();
     }
