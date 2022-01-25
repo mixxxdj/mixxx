@@ -147,12 +147,10 @@ RDJ2.ShiftButton.prototype = new components.Button({
 
         //call shift()/unshift() for each connected container
         if (this.state) {
-            //RDJ2.logDebug("Shifting containers");
             this.connectedContainers.forEach(function(container) {
                 container.shift();
             });
         } else {
-            //RDJ2.logDebug("Unshifting containers");
             this.connectedContainers.forEach(function(container) {
                 container.unshift();
             });
@@ -518,7 +516,6 @@ RDJ2.JogModeSelector.prototype = new components.Component({
                 engine.scratchDisable(this.number, RDJ2.JOG_SCRATCH_RAMP);
             }
             this.updateControls();
-            RDJ2.logDebug("Current jog mode: " + this.getJogMode());
         }
     },
     inputTrax: function(channel, control, value) {
@@ -773,10 +770,8 @@ RDJ2.TraxButton.prototype = new components.Button({
         this.updateTraxMode(value);
     },
     updateTraxMode: function(mode) {
-        RDJ2.logDebug("Global Trax Mode: " + mode);
-        this.detectedDecks.forEach(function(deck, index) {
+        this.detectedDecks.forEach(function(deck) {
             deck.jogModeSelector.setTraxMode(mode);
-            RDJ2.logDebug("Global Trax Mode updated for deck " + index);
         });
     },
     detectDecks: function(obj) {
