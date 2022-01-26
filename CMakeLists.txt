@@ -2155,6 +2155,39 @@ if(QT6)
   foreach(COMPONENT ${QT6_NEW_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
   endforeach()
+
+  set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
+  set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON)
+  qt_add_qml_module(mixxx-lib
+    URI Mixxx
+    VERSION 0.1
+    RESOURCE_PREFIX /mixxx.org/imports
+    QML_FILES
+      res/qml/Mixxx/MathUtils.mjs
+      res/qml/Mixxx/PlayerDropArea.qml
+  )
+  # FIXME: Currently we need to add these include directories due to
+  # QTBUG-87221. We should figure out a better way to fix this.
+  # See: https://bugreports.qt.io/browse/QTBUG-87221
+  target_include_directories(mixxx-lib PRIVATE src/control src/qml)
+  target_link_libraries(mixxx-lib PRIVATE mixxx-libplugin)
+
+  qt_add_library(mixxx-qml-mixxxcontrols STATIC)
+  set_target_properties(mixxx-qml-mixxxcontrols PROPERTIES AUTOMOC ON)
+  qt_add_qml_module(mixxx-qml-mixxxcontrols
+    URI Mixxx.Controls
+    VERSION 0.1
+    RESOURCE_PREFIX /mixxx.org/imports
+    OPTIONAL_IMPORTS Mixxx
+    QML_FILES
+      res/qml/Mixxx/Controls/Knob.qml
+      res/qml/Mixxx/Controls/Slider.qml
+      res/qml/Mixxx/Controls/Spinny.qml
+      res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
+      res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
+      res/qml/Mixxx/Controls/WaveformOverview.qml
+  )
+  target_link_libraries(mixxx-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
 endif()
 
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
