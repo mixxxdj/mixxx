@@ -179,6 +179,8 @@ QmlApplication::QmlApplication(
 
     loadQml(m_mainFilePath);
 
+    pCoreServices->getControllerManager()->setUpDevices();
+
     connect(&m_fileWatcher,
             &QFileSystemWatcher::fileChanged,
             this,
