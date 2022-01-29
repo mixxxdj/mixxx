@@ -384,6 +384,7 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
 #endif // ENABLE_TRACE_LOG
     QComboBox::focusInEvent(event);
     emit searchbarFocusChange(FocusWidget::Searchbar);
+    updateClearAndDropdownButton(currentText());
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
@@ -534,16 +535,18 @@ void WSearchLineEdit::deleteSelectedComboboxItem() {
 }
 
 void WSearchLineEdit::deleteSelectedListItem() {
-    bool wasEmpty = currentIndex() == -1 ? true : false;
-    QComboBox::removeItem(view()->currentIndex().row());
-    // ToDo Resize the list to new item size
-    // Close the popup if all items were removed
-
-    // When an item is removed the combobox would pick a sibling and trigger a
-    // search. Avoid this if the box was empty when the popup was opened.
-    if (wasEmpty) {
-        QComboBox::setCurrentIndex(-1);
+    // When the active query is removed the combobox would pick a sibling and
+    // trigger a search. Avoid that, just clear the search once.
+    // Also, there is a style update bug when changing the text of the hidden
+    // line edit, see updateClearAndDropdownButton()
+    int currViewindex = view()->currentIndex().row();
+    if (currViewindex == findCurrentTextIndex()) {
+        slotClearSearch();
     }
+    QComboBox::removeItem(currViewindex);
+    // ToDo Resize the list to new item size
+
+    // Close the popup if all items were removed
     if (count() == 0) {
         hidePopup();
     }
@@ -605,6 +608,16 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
             << "updateClearAndDropdownButton"
             << text;
 #endif // ENABLE_TRACE_LOG
+    // If the popup is open there's no need to further adjust the style, this is
+    // invoked by focusInEvent when the popup is closed.
+    // NOTE(ronso0) Also, when changing the text programmatically while the popup
+    // is open this style update would cause the QLineEdit to shrink in height
+    // (looks like a repaint without the padding from external stylesheets,
+    // noticed on Linux. Probably related)
+    if (view()->isVisible()) {
+        return;
+    }
+
     // Hide clear button if the text is empty and while placeholder is shown,
     // see disableSearch()
     m_clearButton->setVisible(!text.isEmpty());
@@ -614,7 +627,7 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
     const int paddingPx = text.isEmpty() ? 0 : m_innerHeight;
     const QString clearPos(layoutDirection() == Qt::RightToLeft ? "left" : "right");
 
-    // Hide the nonfunctional drop-down button if the search is disabled.
+    // 'Hide' the nonfunctional drop-down button if the search is disabled.
     const int dropDownWidth = isEnabled() ? static_cast<int>(m_innerHeight * 0.7) : 0;
 
     const QString styleSheet = QStringLiteral(
