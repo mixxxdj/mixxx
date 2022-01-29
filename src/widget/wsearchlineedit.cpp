@@ -378,6 +378,11 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         emit searchbarFocusChange(FocusWidget::TracksTable);
         return;
     default:
+        // Don't change the query while the popup is open. This would cause the
+        // same weird vertical squeezing like removing the current index.
+        if (view()->isVisible()) {
+            return;
+        }
         break;
     }
 
