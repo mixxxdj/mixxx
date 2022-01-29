@@ -23,6 +23,7 @@ QString loggingCategoryPrefix(const QString& deviceName) {
 HidIoThread::HidIoThread(
         hid_device* pHidDevice, const mixxx::hid::DeviceInfo& deviceInfo)
         : QThread(),
+          m_lastPollSize(0),
           m_pollingBufferIndex(0),
           // Defining RuntimeLoggingCategories locally in this thread improves runtime performance significiant
           m_logBase(loggingCategoryPrefix(deviceInfo.formatName())),
@@ -37,7 +38,6 @@ HidIoThread::HidIoThread(
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
     }
-    m_lastPollSize = 0;
     m_OutputReportIterator = m_outputReports.begin();
     atomicStoreRelaxed(m_state, static_cast<int>(HidIoThreadState::Initialized));
 }
