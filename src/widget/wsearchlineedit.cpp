@@ -1,6 +1,7 @@
 #include "wsearchlineedit.h"
 
 #include <QAbstractItemView>
+#include <QApplication>
 #include <QFont>
 #include <QLineEdit>
 #include <QShortcut>
@@ -364,6 +365,12 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
             } else {
                 showPopup();
             }
+            return;
+        }
+        // Space in popup emulates Return press
+        if (view()->isVisible()) {
+            QKeyEvent returnPress(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+            QApplication::sendEvent(view(), &returnPress);
             return;
         }
         break;
