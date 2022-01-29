@@ -13,7 +13,7 @@ HidController::HidController(
         mixxx::hid::DeviceInfo&& deviceInfo)
         : Controller(deviceInfo.formatName()),
           m_deviceInfo(std::move(deviceInfo)) {
-    setDeviceCategory(mixxx::hid::DeviceCategory::guessFromDeviceInfo(deviceInfo));
+    setDeviceCategory(mixxx::hid::DeviceCategory::guessFromDeviceInfo(m_deviceInfo));
 
     // All HID devices are full-duplex
     setInputDevice(true);
