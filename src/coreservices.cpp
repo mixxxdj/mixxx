@@ -425,7 +425,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     // The following wmainmenubar controls must be created here so that controllers can bind to them
     // on startup.
-    m_pSkinSettingsControl = std::make_unique<ControlPushButton>(
+    m_pSkinSettingsControl = std::make_unique<ControlObject>(
             ConfigKey("[Master]", "skin_settings"));
     m_pShowMicrophoneControl = std::make_unique<ControlPushButton>(
             ConfigKey("[Microphone]", "show_microphone"));
@@ -437,6 +437,14 @@ void CoreServices::initialize(QApplication* pApp) {
             ConfigKey("[Library]", "show_coverart"));
     m_pMaximizeLibraryControl = std::make_unique<ControlPushButton>(
             ConfigKey("[Master]", "maximize_library"));
+    m_pShowSamplersControl = std::make_unique<ControlPushButton>(
+            ConfigKey("[Samplers]", "show_samplers"));
+    m_pShowEffectRackControl = std::make_unique<ControlPushButton>(
+            ConfigKey("[EffectRack1]", "show"));
+    m_pShow4EffectUnitsControl = std::make_unique<ControlPushButton>(
+            ConfigKey("[Skin]", "show_4effectunits"));
+    m_pShowMixerControl = std::make_unique<ControlPushButton>(
+            ConfigKey("[Master]", "show_mixer"));
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -617,6 +625,10 @@ void CoreServices::finalize() {
     m_pShowPreviewDeckControl.reset();
     m_pShowCoverArtControl.reset();
     m_pMaximizeLibraryControl.reset();
+    m_pShowSamplersControl.reset();
+    m_pShowEffectRackControl.reset();
+    m_pShow4EffectUnitsControl.reset();
+    m_pShowMixerControl.reset();
 
     m_pControlIndicatorTimer.reset();
 
