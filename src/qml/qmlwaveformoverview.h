@@ -16,8 +16,8 @@ class QmlPlayerProxy;
 class QmlWaveformOverview : public QQuickPaintedItem {
     Q_OBJECT
     Q_FLAGS(Channels)
-    Q_PROPERTY(mixxx::qml::QmlPlayerProxy* player READ getPlayer
-                    WRITE setPlayer NOTIFY playerChanged)
+    Q_PROPERTY(mixxx::qml::QmlPlayerProxy* player READ getPlayer WRITE setPlayer
+                    NOTIFY playerChanged REQUIRED)
     Q_PROPERTY(Channels channels READ getChannels WRITE setChannels NOTIFY channelsChanged)
     Q_PROPERTY(Renderer renderer MEMBER m_renderer NOTIFY rendererChanged)
     Q_PROPERTY(QColor colorHigh MEMBER m_colorHigh NOTIFY colorHighChanged)

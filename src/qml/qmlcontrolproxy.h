@@ -16,8 +16,8 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     // TODO: The REQUIRED flag only exists in Qt 5.14 and later. Once we
     // require that as minimum dependency, add it to the group and key
     // properties.
-    Q_PROPERTY(QString group READ getGroup WRITE setGroup NOTIFY groupChanged)
-    Q_PROPERTY(QString key READ getKey WRITE setKey NOTIFY keyChanged)
+    Q_PROPERTY(QString group READ getGroup WRITE setGroup NOTIFY groupChanged REQUIRED)
+    Q_PROPERTY(QString key READ getKey WRITE setKey NOTIFY keyChanged REQUIRED)
     Q_PROPERTY(bool keyValid READ isKeyValid NOTIFY keyValidChanged)
     Q_PROPERTY(bool initialized READ isInitialized NOTIFY initializedChanged)
     Q_PROPERTY(double value READ getValue WRITE setValue NOTIFY valueChanged)
