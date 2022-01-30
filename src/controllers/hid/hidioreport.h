@@ -19,7 +19,8 @@ class HidIoReport {
     const unsigned char m_reportId;
     QByteArray m_lastSentOutputReportData;
     QByteArray m_latchedOutputReportData;
+    bool m_unsendDataLatched;
 
-    // Must be locked when reading/writing m_lastSentOutputReportData and m_latchedOutputReportData
+    // Must be locked when reading/writing m_lastSentOutputReportData, m_latchedOutputReportData or m_unsendDataLatched
     QT_RECURSIVE_MUTEX m_OutputReportDataMutex;
 };

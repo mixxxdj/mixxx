@@ -14,25 +14,23 @@ constexpr int kMaxHidErrorMessageSize = 512;
 } // namespace
 
 HidIoReport::HidIoReport(const unsigned char& reportId)
-        : m_reportId(reportId) {
+        : m_reportId(reportId),
+          m_unsendDataLatched(false) {
 }
 
 void HidIoReport::latchOutputReport(const QByteArray& data,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
     auto lock = lockMutex(&m_OutputReportDataMutex);
-    if (!m_latchedOutputReportData.isEmpty()) {
+    if (m_unsendDataLatched) {
         qCDebug(logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()
                            << " Skipped superseded OutputReport"
                            << deviceInfo.formatName() << "serial #"
                            << deviceInfo.serialNumberRaw() << "(Report ID"
                            << m_reportId << ")";
     }
-    m_latchedOutputReportData.clear();
-    // hid_write requires the first byte to be the Report ID, followed by the data[] to be send
-    m_latchedOutputReportData.reserve(data.size() + kReportIdSize);
-    m_latchedOutputReportData.append(m_reportId);
-    m_latchedOutputReportData.append(data);
+    m_latchedOutputReportData.replace(0, data.size(), data);
+    m_unsendDataLatched = true;
 }
 
 bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
@@ -42,7 +40,7 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
 
     auto lock = lockMutex(&m_OutputReportDataMutex);
 
-    if (m_latchedOutputReportData.isEmpty()) {
+    if (m_unsendDataLatched == false) {
         return false;
     }
 
@@ -56,14 +54,21 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
                            << deviceInfo.formatName() << "serial #"
                            << deviceInfo.serialNumberRaw() << "(Report ID"
                            << m_reportId << ")";
-        m_latchedOutputReportData.clear();
-        return false; // Same data sent last time
+        m_unsendDataLatched =
+                false; // Setting m_unsendDataLatched to false prevents, that the byte array compare operation is executed for the same data again
+        return false;  // Same data sent last time
     }
+
+    QByteArray reportToSend;
+    // hid_write requires the first byte to be the Report ID, followed by the data[] to be send
+    reportToSend.reserve(m_latchedOutputReportData.size() + kReportIdSize);
+    reportToSend.append(m_reportId);
+    reportToSend.append(m_latchedOutputReportData);
 
     // hid_write can take several milliseconds, because hidapi synchronizes the asyncron HID communication from the OS
     int result = hid_write(pHidDevice,
-            reinterpret_cast<const unsigned char*>(m_latchedOutputReportData.constData()),
-            m_latchedOutputReportData.size());
+            reinterpret_cast<const unsigned char*>(reportToSend.constData()),
+            kReportIdSize + m_latchedOutputReportData.size());
     if (result == -1) {
         qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
                              << mixxx::convertWCStringToQString(
@@ -78,7 +83,7 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
                        << "(including report ID of" << m_reportId << ") - Needed: "
                        << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
 
-    m_lastSentOutputReportData = std::move(m_latchedOutputReportData);
-    m_latchedOutputReportData.clear();
+    m_lastSentOutputReportData.swap(m_latchedOutputReportData);
+    m_unsendDataLatched = false;
     return true;
 }
