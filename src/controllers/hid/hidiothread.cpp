@@ -32,8 +32,7 @@ HidIoThread::HidIoThread(
           m_logOutput(loggingCategoryPrefix(deviceInfo.formatName()) +
                   QStringLiteral(".output")),
           m_pHidDevice(pHidDevice),
-          m_deviceInfo(deviceInfo),
-          m_hidDeviceMutex(QT_RECURSIVE_MUTEX_INIT) {
+          m_deviceInfo(deviceInfo) {
     // This isn't strictly necessary but is good practice.
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
@@ -124,7 +123,8 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     m_pPollData[m_pollingBufferIndex][0] = reportID;
     // FIXME: implement upstream for hidraw backend on Linux
     // https://github.com/libusb/hidapi/issues/259
-    int bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
+    int bytesRead = hid_get_input_report(
+            m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
     qCDebug(m_logInput) << bytesRead << "bytes received by hid_get_input_report"
                         << m_deviceInfo.formatName() << "serial #"
                         << m_deviceInfo.serialNumber()
