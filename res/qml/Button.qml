@@ -1,4 +1,4 @@
-import QtGraphicalEffects 1.12
+import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import "Theme"
@@ -102,7 +102,6 @@ AbstractButton {
             anchors.fill: parent
             radius: 5
             spread: 0.1
-            samples: 1 + radius * 2
             color: label.color
             source: label
         }

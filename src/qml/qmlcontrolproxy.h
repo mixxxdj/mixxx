@@ -22,6 +22,7 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     Q_PROPERTY(bool initialized READ isInitialized NOTIFY initializedChanged)
     Q_PROPERTY(double value READ getValue WRITE setValue NOTIFY valueChanged)
     Q_PROPERTY(double parameter READ getParameter WRITE setParameter NOTIFY parameterChanged)
+    QML_NAMED_ELEMENT(ControlProxy)
 
   public:
     explicit QmlControlProxy(QObject* parent = nullptr);
