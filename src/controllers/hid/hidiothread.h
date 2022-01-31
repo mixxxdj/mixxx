@@ -57,8 +57,10 @@ class HidIoThread : public QThread {
     hid_device* const
             m_pHidDevice;
     const mixxx::hid::DeviceInfo m_deviceInfo;
-    std::map<unsigned char, std::unique_ptr<HidIoReport>> m_outputReports;
-    std::map<unsigned char, std::unique_ptr<HidIoReport>>::iterator m_OutputReportIterator;
+
+    typedef std::map<unsigned char, std::unique_ptr<HidIoReport>> OutputReportMap;
+    OutputReportMap m_outputReports;
+    OutputReportMap::iterator m_OutputReportIterator;
 
     /// Must be locked when operation modify or depend on the size of the m_outputReports map
     QMutex m_outputReportMapMutex;
