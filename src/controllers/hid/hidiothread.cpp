@@ -120,12 +120,11 @@ void HidIoThread::processInputReport(int bytesRead) {
 QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     auto startOfHidGetInputReport = mixxx::Time::elapsed();
     auto lock = lockMutex(&m_hidDeviceMutex);
-    int bytesRead;
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
     // FIXME: implement upstream for hidraw backend on Linux
     // https://github.com/libusb/hidapi/issues/259
-    bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
+    int bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
     qCDebug(m_logInput) << bytesRead << "bytes received by hid_get_input_report"
                         << m_deviceInfo.formatName() << "serial #"
                         << m_deviceInfo.serialNumber()
@@ -182,7 +181,6 @@ bool HidIoThread::sendNextOutputReport() {
 void HidIoThread::sendFeatureReport(
         const QByteArray& reportData, unsigned int reportID) {
     auto startOfHidSendFeatureReport = mixxx::Time::elapsed();
-    auto lock = lockMutex(&m_hidDeviceMutex);
     QByteArray dataArray;
     dataArray.reserve(kReportIdSize + reportData.size());
 
@@ -193,6 +191,7 @@ void HidIoThread::sendFeatureReport(
         dataArray.append(datum);
     }
 
+    auto lock = lockMutex(&m_hidDeviceMutex);
     int result = hid_send_feature_report(m_pHidDevice,
             reinterpret_cast<const unsigned char*>(dataArray.constData()),
             dataArray.size());
@@ -218,12 +217,11 @@ void HidIoThread::sendFeatureReport(
 QByteArray HidIoThread::getFeatureReport(
         unsigned int reportID) {
     auto startOfHidGetFeatureReport = mixxx::Time::elapsed();
-    auto lock = lockMutex(&m_hidDeviceMutex);
     unsigned char dataRead[kReportIdSize + kBufferSize];
     dataRead[0] = reportID;
 
-    int bytesRead;
-    bytesRead = hid_get_feature_report(m_pHidDevice,
+    auto lock = lockMutex(&m_hidDeviceMutex);
+    int bytesRead = hid_get_feature_report(m_pHidDevice,
             dataRead,
             kReportIdSize + kBufferSize);
     if (bytesRead <= kReportIdSize) {
