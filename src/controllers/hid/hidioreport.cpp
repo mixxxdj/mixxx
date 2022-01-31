@@ -41,7 +41,7 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
     auto lock = lockMutex(&m_outputReportDataMutex);
 
     if (m_unsendDataLatched == false) {
-        return false;
+        return false; // Return with false, to signal the caller, that no time consuming IO operation was necessary
     }
 
     if (!m_lastSentOutputReportData.compare(m_latchedOutputReportData)) {
@@ -56,7 +56,7 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
                            << m_reportId << ")";
         m_unsendDataLatched =
                 false; // Setting m_unsendDataLatched to false prevents, that the byte array compare operation is executed for the same data again
-        return false;  // Same data sent last time
+        return false; // Return with false, to signal the caller, that no time consuming IO operation was necessary
     }
 
     QByteArray reportToSend;
@@ -74,7 +74,7 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
                              << mixxx::convertWCStringToQString(
                                         hid_error(pHidDevice),
                                         kMaxHidErrorMessageSize);
-        return false;
+        return true; // Return with true, to signal the caller, that the time consuming hid_write operation was executed - (Note that the return value isn't an error code)
     }
 
     qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit() << " "
@@ -85,5 +85,5 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
 
     m_lastSentOutputReportData.swap(m_latchedOutputReportData);
     m_unsendDataLatched = false;
-    return true;
+    return true; // Return with true, to signal the caller, that the time consuming hid_write operation was executed
 }

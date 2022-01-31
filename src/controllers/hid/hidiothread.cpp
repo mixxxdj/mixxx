@@ -158,7 +158,6 @@ void HidIoThread::latchOutputReport(const QByteArray& data, unsigned int reportI
         m_outputReports[reportID] = std::make_unique<HidIoReport>(
                 reportID);
     }
-    // SendOutputReports executes a hardware operation, which take several milliseconds
     m_outputReports[reportID]->latchOutputReport(data, m_deviceInfo, m_logOutput);
 }
 
@@ -175,7 +174,7 @@ bool HidIoThread::sendNextOutputReport() {
             return true; // Return after each time consuming sendOutputReport
         }
     }
-    return false;
+    return false; // Returns false if no report required a time consuming sendOutputReport
 }
 
 void HidIoThread::sendFeatureReport(

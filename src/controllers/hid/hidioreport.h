@@ -8,9 +8,14 @@
 class HidIoReport {
   public:
     HidIoReport(const unsigned char& reportId);
+
+    /// Latches new report data, which will later send by the IO thread
     void latchOutputReport(const QByteArray& data,
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput);
+
+    /// Sends the OutputReport to the HID device, when changed data are latched.
+    /// Returns true if a time consuming hid_write operation was executed.
     bool sendOutputReport(hid_device* pDevice,
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput);
