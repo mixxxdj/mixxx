@@ -22,5 +22,5 @@ class HidIoReport {
     bool m_unsendDataLatched;
 
     // Must be locked when reading/writing m_lastSentOutputReportData, m_latchedOutputReportData or m_unsendDataLatched
-    QT_RECURSIVE_MUTEX m_OutputReportDataMutex;
+    QMutex m_OutputReportDataMutex;
 };

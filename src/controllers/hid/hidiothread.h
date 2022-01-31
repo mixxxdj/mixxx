@@ -58,8 +58,8 @@ class HidIoThread : public QThread {
     std::map<unsigned char, std::unique_ptr<HidIoReport>> m_outputReports;
     std::map<unsigned char, std::unique_ptr<HidIoReport>>::iterator m_OutputReportIterator;
     // Must be locked when operation modify or depend on the size of the m_outputReports map
-    QT_RECURSIVE_MUTEX m_outputReportMapMutex;
+    QMutex m_outputReportMapMutex;
 
     // Must be locked when using the m_pHidDevice and it's properties, which is not thread-safe for hidapi backends
-    QT_RECURSIVE_MUTEX m_HidDeviceMutex;
+    QMutex m_HidDeviceMutex;
 };
