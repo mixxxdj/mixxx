@@ -423,28 +423,26 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
 
-    // The following wmainmenubar controls must be created here so that controllers can bind to them
+    // The following UI controls must be created here so that controllers can bind to them
     // on startup.
-    m_pSkinSettingsControl = std::make_unique<ControlObject>(
-            ConfigKey("[Master]", "skin_settings"));
-    m_pShowMicrophoneControl = std::make_unique<ControlPushButton>(
-            ConfigKey("[Microphone]", "show_microphone"));
-    m_pShowVinylControlControl = std::make_unique<ControlPushButton>(
-            ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
-    m_pShowPreviewDeckControl = std::make_unique<ControlPushButton>(
-            ConfigKey("[PreviewDeck]", "show_previewdeck"));
-    m_pShowCoverArtControl = std::make_unique<ControlPushButton>(
-            ConfigKey("[Library]", "show_coverart"));
-    m_pMaximizeLibraryControl = std::make_unique<ControlPushButton>(
-            ConfigKey("[Master]", "maximize_library"));
-    m_pShowSamplersControl = std::make_unique<ControlPushButton>(
-            ConfigKey("[Samplers]", "show_samplers"));
-    m_pShowEffectRackControl = std::make_unique<ControlPushButton>(
-            ConfigKey("[EffectRack1]", "show"));
-    m_pShow4EffectUnitsControl = std::make_unique<ControlPushButton>(
-            ConfigKey("[Skin]", "show_4effectunits"));
-    m_pShowMixerControl = std::make_unique<ControlPushButton>(
-            ConfigKey("[Master]", "show_mixer"));
+    m_uiControls.clear();
+    const std::vector<ConfigKey> uiKeys = {
+            ConfigKey("[Master]", "skin_settings"),
+            ConfigKey("[Microphone]", "show_microphone"),
+            ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"),
+            ConfigKey("[PreviewDeck]", "show_previewdeck"),
+            ConfigKey("[Library]", "show_coverart"),
+            ConfigKey("[Master]", "maximize_library"),
+            ConfigKey("[Samplers]", "show_samplers"),
+            ConfigKey("[EffectRack1]", "show"),
+            ConfigKey("[Skin]", "show_4effectunits"),
+            ConfigKey("[Master]", "show_mixer"),
+    };
+
+    for (const auto& key : uiKeys) {
+        m_uiControls.emplace_back(std::make_unique<ControlPushButton>(key));
+        m_uiControls.back()->setButtonMode(ControlPushButton::TOGGLE);
+    }
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -619,16 +617,8 @@ void CoreServices::finalize() {
     m_pDbConnectionPool.reset(); // should drop the last reference
 
     m_pTouchShift.reset();
-    m_pSkinSettingsControl.reset();
-    m_pShowMicrophoneControl.reset();
-    m_pShowVinylControlControl.reset();
-    m_pShowPreviewDeckControl.reset();
-    m_pShowCoverArtControl.reset();
-    m_pMaximizeLibraryControl.reset();
-    m_pShowSamplersControl.reset();
-    m_pShowEffectRackControl.reset();
-    m_pShow4EffectUnitsControl.reset();
-    m_pShowMixerControl.reset();
+
+    m_uiControls.clear();
 
     m_pControlIndicatorTimer.reset();
 

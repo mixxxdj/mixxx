@@ -151,17 +151,8 @@ class CoreServices : public QObject {
 
     std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
 
+    std::vector<std::unique_ptr<ControlPushButton>> m_uiControls;
     std::unique_ptr<ControlPushButton> m_pTouchShift;
-    std::unique_ptr<ControlObject> m_pSkinSettingsControl;
-    std::unique_ptr<ControlPushButton> m_pShowMicrophoneControl;
-    std::unique_ptr<ControlPushButton> m_pShowVinylControlControl;
-    std::unique_ptr<ControlPushButton> m_pShowPreviewDeckControl;
-    std::unique_ptr<ControlPushButton> m_pShowCoverArtControl;
-    std::unique_ptr<ControlPushButton> m_pMaximizeLibraryControl;
-    std::unique_ptr<ControlPushButton> m_pShowSamplersControl;
-    std::unique_ptr<ControlPushButton> m_pShowEffectRackControl;
-    std::unique_ptr<ControlPushButton> m_pShow4EffectUnitsControl;
-    std::unique_ptr<ControlPushButton> m_pShowMixerControl;
 
     Timer m_runtime_timer;
     const CmdlineArgs& m_cmdlineArgs;
