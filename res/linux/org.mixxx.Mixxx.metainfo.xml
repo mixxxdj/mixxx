@@ -1158,6 +1158,11 @@
    #4635
    lp:1956144
   </li>
+  <li>
+   Traktor S3: Fix timedelta calculation bugs
+   #4646
+   lp:1958925
+  </li>
  </ul>
  <p>
   Packaging
