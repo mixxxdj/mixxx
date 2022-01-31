@@ -21,6 +21,6 @@ class HidIoReport {
     QByteArray m_latchedOutputReportData;
     bool m_unsendDataLatched;
 
-    // Must be locked when reading/writing m_lastSentOutputReportData, m_latchedOutputReportData or m_unsendDataLatched
+    /// Must be locked when reading/writing m_lastSentOutputReportData, m_latchedOutputReportData or m_unsendDataLatched
     QMutex m_outputReportDataMutex;
 };

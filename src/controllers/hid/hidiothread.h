@@ -52,14 +52,18 @@ class HidIoThread : public QThread {
 
     void pollBufferedInputReports();
     void processInputReport(int bytesRead);
+
+    /// const pointer to the C data structure, which hidapi uses for communication between functions
     hid_device* const
-            m_pHidDevice; // const pointer to the C data structure, which hidapi uses for communication between functions
+            m_pHidDevice;
     const mixxx::hid::DeviceInfo m_deviceInfo;
     std::map<unsigned char, std::unique_ptr<HidIoReport>> m_outputReports;
     std::map<unsigned char, std::unique_ptr<HidIoReport>>::iterator m_OutputReportIterator;
-    // Must be locked when operation modify or depend on the size of the m_outputReports map
+
+    /// Must be locked when operation modify or depend on the size of the m_outputReports map
     QMutex m_outputReportMapMutex;
 
-    // Must be locked when using the m_pHidDevice and it's properties, which is not thread-safe for hidapi backends
+    /// Must be locked when using the m_pPollData, m_lastPollSize, m_pollingBufferIndex
+    /// or the m_pHidDevice structure, which is not thread-safe for all hidapi backends.
     QMutex m_hidDeviceMutex;
 };
