@@ -33,7 +33,7 @@ HidIoThread::HidIoThread(
                   QStringLiteral(".output")),
           m_pHidDevice(pHidDevice),
           m_deviceInfo(deviceInfo),
-          m_HidDeviceMutex(QT_RECURSIVE_MUTEX_INIT) {
+          m_hidDeviceMutex(QT_RECURSIVE_MUTEX_INIT) {
     // This isn't strictly necessary but is good practice.
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
@@ -70,7 +70,7 @@ void HidIoThread::run() {
 
 void HidIoThread::pollBufferedInputReports() {
     Trace hidRead("HidIoThread pollBufferedInputReports");
-    auto lock = lockMutex(&m_HidDeviceMutex);
+    auto lock = lockMutex(&m_hidDeviceMutex);
     // This loop risks becoming a high priority endless loop in case processing
     // the mapping JS code takes longer than the controller polling rate.
     // This could stall other low priority tasks.
@@ -119,7 +119,7 @@ void HidIoThread::processInputReport(int bytesRead) {
 
 QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     auto startOfHidGetInputReport = mixxx::Time::elapsed();
-    auto lock = lockMutex(&m_HidDeviceMutex);
+    auto lock = lockMutex(&m_hidDeviceMutex);
     int bytesRead;
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
@@ -182,7 +182,7 @@ bool HidIoThread::sendNextOutputReport() {
 void HidIoThread::sendFeatureReport(
         const QByteArray& reportData, unsigned int reportID) {
     auto startOfHidSendFeatureReport = mixxx::Time::elapsed();
-    auto lock = lockMutex(&m_HidDeviceMutex);
+    auto lock = lockMutex(&m_hidDeviceMutex);
     QByteArray dataArray;
     dataArray.reserve(kReportIdSize + reportData.size());
 
@@ -218,7 +218,7 @@ void HidIoThread::sendFeatureReport(
 QByteArray HidIoThread::getFeatureReport(
         unsigned int reportID) {
     auto startOfHidGetFeatureReport = mixxx::Time::elapsed();
-    auto lock = lockMutex(&m_HidDeviceMutex);
+    auto lock = lockMutex(&m_hidDeviceMutex);
     unsigned char dataRead[kReportIdSize + kBufferSize];
     dataRead[0] = reportID;
 

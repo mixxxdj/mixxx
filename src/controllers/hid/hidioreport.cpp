@@ -21,7 +21,7 @@ HidIoReport::HidIoReport(const unsigned char& reportId)
 void HidIoReport::latchOutputReport(const QByteArray& data,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
-    auto lock = lockMutex(&m_OutputReportDataMutex);
+    auto lock = lockMutex(&m_outputReportDataMutex);
     if (m_unsendDataLatched) {
         qCDebug(logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()
                            << " Skipped superseded OutputReport"
@@ -38,7 +38,7 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
         const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
 
-    auto lock = lockMutex(&m_OutputReportDataMutex);
+    auto lock = lockMutex(&m_outputReportDataMutex);
 
     if (m_unsendDataLatched == false) {
         return false;

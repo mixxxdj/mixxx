@@ -61,5 +61,5 @@ class HidIoThread : public QThread {
     QMutex m_outputReportMapMutex;
 
     // Must be locked when using the m_pHidDevice and it's properties, which is not thread-safe for hidapi backends
-    QMutex m_HidDeviceMutex;
+    QMutex m_hidDeviceMutex;
 };
