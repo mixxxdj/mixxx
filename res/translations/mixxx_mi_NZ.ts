@@ -14215,7 +14215,7 @@ CamelCase arguments are deprecated and will be removed in 2.5</source>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="84"/>
-        <source>Top-level directory where Mixxx should look for settings. Default is: </source>
+        <source>Top-level directory where Mixxx should look for settings. Default is:</source>
         <translation type="unfinished"/>
     </message>
     <message>

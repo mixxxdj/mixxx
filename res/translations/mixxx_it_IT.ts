@@ -702,7 +702,7 @@
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="134"/>
-        <source>Top-level directory where Mixxx should look for settings. Default is: </source>
+        <source>Top-level directory where Mixxx should look for settings. Default is:</source>
         <translation>Directory di primo livello dove Mixxx dovrebbe cercare le impostazioni. L&apos;impostazione predefinita è:</translation>
     </message>
     <message>
