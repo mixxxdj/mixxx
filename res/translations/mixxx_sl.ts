@@ -703,7 +703,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="134"/>
         <source>Top-level directory where Mixxx should look for settings. Default is: </source>
-        <translation>Vrhnji direktorij v kateremu naj Mixxx, poleg privzetih lokaciji, išče nastavitve. Privzeto je: </translation>
+        <translation>Vrhnji direktorij v kateremu naj Mixxx, poleg privzetih lokaciji, išče nastavitve. Privzeto je:</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="148"/>

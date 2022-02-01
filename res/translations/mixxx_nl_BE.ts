@@ -703,7 +703,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="134"/>
         <source>Top-level directory where Mixxx should look for settings. Default is: </source>
-        <translation>Map op het hoogste niveau waar Mixxx naar instellingen moet zoeken. Standaard is: </translation>
+        <translation>Map op het hoogste niveau waar Mixxx naar instellingen moet zoeken. Standaard is:</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="148"/>
