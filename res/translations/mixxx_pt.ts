@@ -700,7 +700,7 @@
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="134"/>
-        <source>Top-level directory where Mixxx should look for settings. Default is:</source>
+        <source>Top-level directory where Mixxx should look for settings. Default is: </source>
         <translation type="unfinished"/>
     </message>
     <message>
