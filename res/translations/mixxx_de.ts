@@ -703,7 +703,7 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="134"/>
         <source>Top-level directory where Mixxx should look for settings. Default is: </source>
-        <translation>Übergeordnetes Verzeichnis, in dem Mixxx nach Einstellungen suchen soll. Standard ist:</translation>
+        <translation>Übergeordnetes Verzeichnis, in dem Mixxx nach Einstellungen suchen soll. Standard ist: </translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="148"/>
