@@ -133,8 +133,8 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Top-level directory where Mixxx should look for settings. "
-                                      "Default is:") +
-                            getSettingsPath()
+                                      "Default is: ") +
+                            QDir::toNativeSeparators(getSettingsPath())
                             : QString(),
             QStringLiteral("path"));
     QCommandLineOption settingsPathDeprecated(
