@@ -30,6 +30,7 @@ QVariant RecordingFeature::title() {
 TreeItemModel* RecordingFeature::sidebarModel() const {
     return m_pSidebarModel;
 }
+
 void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
                                   KeyboardEventFilter *keyboard) {
     //The view will be deleted by LibraryWidget
@@ -66,7 +67,6 @@ void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
             this,
             &RecordingFeature::restoreModelState);
 }
-
 
 void RecordingFeature::activate() {
     emit refreshBrowseModel();
