@@ -466,19 +466,23 @@ void WSearchLineEdit::slotTriggerSearch() {
 
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
+    m_saveTimer.stop();
+    QString cText = currentText().trimmed();
+    int cIndex = findCurrentTextIndex();
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "save search. Index: "
+            << "save search. Text:"
+            << cText
+            << "Index:"
             << cIndex;
 #endif // ENABLE_TRACE_LOG
-    m_saveTimer.stop();
-    if (currentText().isEmpty() || !isEnabled()) {
+    if (cText.isEmpty() || !isEnabled()) {
         return;
     }
-    QString cText = currentText();
-    if (currentIndex() == -1) {
+    if (cIndex == -1) {
         removeItem(-1);
     }
+
     // Check if the text is already listed
     QSet<QString> querySet;
     for (int index = 0; index < count(); index++) {
@@ -486,7 +490,7 @@ void WSearchLineEdit::slotSaveSearch() {
     }
     if (querySet.contains(cText)) {
         // If query exists clear the box and use its index to set the currentIndex
-        int cIndex = findCurrentTextIndex();
+        int cIndex = findData(cText, Qt::DisplayRole);
         setCurrentIndex(cIndex);
         return;
     } else {
