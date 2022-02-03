@@ -305,7 +305,6 @@ PioneerDDJSB3.Deck = function(deckNumber) {
         } else {
             theDeck.unshift();
             PioneerDDJSB3.shiftPressed = false;
-            PioneerDDJSB3.headphoneLevel.unshift();
             for (i = 0; i < PioneerDDJSB3.shiftListeners.length; i++) {
                 PioneerDDJSB3.shiftListeners[i](group, false);
             }
