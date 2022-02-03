@@ -7,8 +7,8 @@ Rectangle {
     id: root
 
     property alias knob: knob
-    property string statusGroup: root.knob.group // required
-    property string statusKey // required
+    property string statusGroup: root.knob.group
+    required property string statusKey
 
     color: Theme.knobBackgroundColor
     width: 56

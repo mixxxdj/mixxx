@@ -8,8 +8,8 @@ import "Theme"
 Rectangle {
     id: root
 
-    property string group // required
-    property int rightColumnWidth // required
+    required property string group
+    required property int rightColumnWidth
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
     property color lineColor: Theme.deckLineColor
 

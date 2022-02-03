@@ -6,8 +6,8 @@ import QtQuick.Window 2.12
 Item {
     id: root
 
-    property string group // required
-    property string key // required
+    required property string group
+    required property string key
     property string color: "white"
 
     Shape {

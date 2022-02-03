@@ -6,7 +6,7 @@ import "Theme"
 Rectangle {
     id: root
 
-    property string group // required
+    required property string group
     property bool minimized: false
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
 
