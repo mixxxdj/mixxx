@@ -644,7 +644,7 @@
   [#4542](https://github.com/mixxxdj/mixxx/pull/4542)
   [#4559](https://github.com/mixxxdj/mixxx/pull/4559)
 
-## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (Unreleased)
+## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (2022-01-31)
 
 * Playlist: Enable sorting by color [#4352](https://github.com/mixxxdj/mixxx/pull/4352) [lp:1945976](https://bugs.launchpad.net/mixxx/+bug/1945976)
 * Fix crash when using Doubling/Halving/etc. BPM from track's Properties window on tracks without BPM [#4587](https://github.com/mixxxdj/mixxx/pull/4587) [lp:1955853](https://bugs.launchpad.net/mixxx/+bug/1955853)
