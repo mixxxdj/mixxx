@@ -426,23 +426,28 @@ void CoreServices::initialize(QApplication* pApp) {
     // The following UI controls must be created here so that controllers can bind to them
     // on startup.
     m_uiControls.clear();
-    const std::vector<ConfigKey> uiKeys = {
-            ConfigKey("[Master]", "skin_settings"),
-            ConfigKey("[Microphone]", "show_microphone"),
-            ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"),
-            ConfigKey("[PreviewDeck]", "show_previewdeck"),
-            ConfigKey("[Library]", "show_coverart"),
-            ConfigKey("[Master]", "maximize_library"),
-            ConfigKey("[Samplers]", "show_samplers"),
-            ConfigKey("[EffectRack1]", "show"),
-            ConfigKey("[Skin]", "show_4effectunits"),
-            ConfigKey("[Master]", "show_mixer"),
-    };
 
-    m_uiControls.reserve(uiKeys.size());
-    for (const auto& key : uiKeys) {
+    struct UIControlConfig {
+        ConfigKey key;
+        bool persist;
+        bool defaultValue;
+    };
+    std::vector<UIControlConfig> uiControls = {
+            {ConfigKey("[Master]", "skin_settings"), false, false},
+            {ConfigKey("[Microphone]", "show_microphone"), true, true},
+            {ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), true, false},
+            {ConfigKey("[PreviewDeck]", "show_previewdeck"), true, true},
+            {ConfigKey("[Library]", "show_coverart"), true, true},
+            {ConfigKey("[Master]", "maximize_library"), true, false},
+            {ConfigKey("[Samplers]", "show_samplers"), true, true},
+            {ConfigKey("[EffectRack1]", "show"), true, true},
+            {ConfigKey("[Skin]", "show_4effectunits"), true, false},
+            {ConfigKey("[Master]", "show_mixer"), true, true},
+    };
+    m_uiControls.reserve(uiControls.size());
+    for (const auto& row : uiControls) {
         m_uiControls.emplace_back(std::make_unique<ControlPushButton>(
-                key, true, pConfig->getValue(key).toDouble()));
+                row.key, row.persist, row.defaultValue));
         m_uiControls.back()->setButtonMode(ControlPushButton::TOGGLE);
     }
 
