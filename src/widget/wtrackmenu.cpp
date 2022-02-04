@@ -1782,12 +1782,8 @@ void WTrackMenu::slotRemoveFromDisk() {
     // If the operation was initiated from a deck's track menu
     // we'll first stop the deck and eject the track.
     if (m_pTrack) {
-        ControlProxy* stopDeckProxy = new ControlProxy(
-                m_deckGroup, "stop", this);
-        stopDeckProxy->set(1.0);
-        ControlProxy* ejectTrackProxy = new ControlProxy(
-                m_deckGroup, "eject", this);
-        ejectTrackProxy->set(1.0);
+        ControlObject::set(ConfigKey(m_deckGroup, "stop"), 1.0);
+        ControlObject::set(ConfigKey(m_deckGroup, "eject"), 1.0);
     }
 
     // Set up and initiate the track batch operation
