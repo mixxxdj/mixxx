@@ -1732,24 +1732,24 @@ void WTrackMenu::slotRemoveFromDisk() {
         delListWidget->setFocusPolicy(Qt::ClickFocus);
         delListWidget->addItems(locations);
         mixxx::widgethelper::growListWidget(*delListWidget, *this);
-        // Warning text
+
         QString delWarningText;
         if (m_pTrackModel) {
             delWarningText = tr("Permanently delete these files from disk?") +
-                    QString("<br><br><b>") +
-                    tr("This can not be undone!") + QString("</b>");
+                    QStringLiteral("<br><br><b>") +
+                    tr("This can not be undone!") + QStringLiteral("</b>");
         } else {
             delWarningText =
                     tr("Stop the deck and permanently delete this track file from disk?") +
-                    QString("<br><br><b>") +
-                    tr("This can not be undone!") + QString("</b>");
+                    QStringLiteral("<br><br><b>") +
+                    tr("This can not be undone!") + QStringLiteral("</b>");
         }
         QLabel* delWarning = new QLabel();
         delWarning->setText(delWarningText);
         delWarning->setTextFormat(Qt::RichText);
         delWarning->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
                 QSizePolicy::Minimum));
-        // Buttons
+
         QDialogButtonBox* delButtons = new QDialogButtonBox();
         QPushButton* cancelBtn = delButtons->addButton(
                 tr("Cancel"),
@@ -1818,7 +1818,7 @@ void WTrackMenu::slotRemoveFromDisk() {
                     tr("%1 track files were deleted from disk and purged "
                        "from the Mixxx database.")
                             .arg(QString::number(tracksToPurge.length())) +
-                    QString("<br><br>") +
+                    QStringLiteral("<br><br>") +
                     tr("Note: if you are in Browse or Recording you need to "
                        "click the current view again to see changes.");
         } else {
