@@ -151,7 +151,6 @@ class CoreServices : public QObject {
 
     std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
 
-    std::vector<std::unique_ptr<ControlPushButton>> m_uiControls;
     std::unique_ptr<ControlPushButton> m_pTouchShift;
 
     Timer m_runtime_timer;
