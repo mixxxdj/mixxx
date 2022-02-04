@@ -432,7 +432,7 @@ void CoreServices::initialize(QApplication* pApp) {
         bool persist;
         bool defaultValue;
     };
-    std::vector<UIControlConfig> uiControls = {
+    const std::vector<UIControlConfig> uiControls = {
             {ConfigKey("[Master]", "skin_settings"), false, false},
             {ConfigKey("[Microphone]", "show_microphone"), true, true},
             {ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), true, false},
