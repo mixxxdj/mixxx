@@ -441,7 +441,8 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_uiControls.reserve(uiKeys.size());
     for (const auto& key : uiKeys) {
-        m_uiControls.emplace_back(std::make_unique<ControlPushButton>(key));
+        m_uiControls.emplace_back(std::make_unique<ControlPushButton>(
+                key, true, pConfig->getValue(key).toDouble()));
         m_uiControls.back()->setButtonMode(ControlPushButton::TOGGLE);
     }
 
