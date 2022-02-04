@@ -1844,11 +1844,11 @@ void WTrackMenu::slotRemoveFromDisk() {
     QString msgText;
     if (m_pTrackModel) {
         msgText =
-                tr("The following %1 files could not be deleted from disk")
+                tr("The following %1 file(s) could not be deleted from disk")
                         .arg(QString::number(
                                 tracksToKeep.length()));
     } else {
-        msgText = tr("Track file could not be deleted from disk.");
+        msgText = tr("This track file could not be deleted from disk");
     }
     notDeletedLabel->setText(msgText);
     notDeletedLabel->setTextFormat(Qt::RichText);
