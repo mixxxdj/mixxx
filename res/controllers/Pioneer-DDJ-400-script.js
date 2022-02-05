@@ -44,7 +44,7 @@
 //        * Keyshift mode
 
 var PioneerDDJ400 = {};
-
+engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", 3);
 PioneerDDJ400.lights = {
     beatFx: {
         status: 0x94,
@@ -160,8 +160,8 @@ PioneerDDJ400.toggleLight = function(midiIn, active) {
 PioneerDDJ400.init = function() {
     engine.setValue("[EffectRack1_EffectUnit1]", "show_focus", 1);
 
-    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", PioneerDDJ400.vuMeterUpdate);
-    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", PioneerDDJ400.vuMeterUpdate);
+    engine.makeConnection("[Channel1]", "VuMeter", PioneerDDJ400.vuMeterUpdate);
+    engine.makeConnection("[Channel2]", "VuMeter", PioneerDDJ400.vuMeterUpdate);
 
     PioneerDDJ400.toggleLight(PioneerDDJ400.lights.deck1.vuMeter, false);
     PioneerDDJ400.toggleLight(PioneerDDJ400.lights.deck2.vuMeter, false);
@@ -233,7 +233,7 @@ PioneerDDJ400.focusedFxGroup = function() {
     return "[EffectRack1_EffectUnit1_Effect" + focusedFx + "]";
 };
 
-PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
+PioneerDDJ400.beatFxLevelDepthRotate = function (_channel, _control, value) {
     if (PioneerDDJ400.shiftButtonDown[0] || PioneerDDJ400.shiftButtonDown[1]) {
         engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "mix");
         engine.setParameter(PioneerDDJ400.focusedFxGroup(), "meta", value / 0x7F);
@@ -242,11 +242,11 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
         engine.setParameter("[EffectRack1_EffectUnit1]", "mix", value / 0x7F);
     }
 };
-
+//Select previous effect
 PioneerDDJ400.beatFxSelectPreviousEffect = function(_channel, _control, value) {
     engine.setValue(PioneerDDJ400.focusedFxGroup(), "prev_effect", value);
 };
-
+//Select next effect
 PioneerDDJ400.beatFxSelectNextEffect = function(_channel, _control, value) {
     engine.setValue(PioneerDDJ400.focusedFxGroup(), "next_effect", value);
 };
@@ -262,7 +262,7 @@ PioneerDDJ400.beatFxRightPressed = function(_channel, _control, value) {
 
     engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", 2);
 };
-
+//Cycle focused effect
 PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
     var focusfx = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect")+1;
@@ -271,7 +271,6 @@ PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value) {
     }
     engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", focusfx);
 };
-
 
 PioneerDDJ400.beatFxOnOffPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
