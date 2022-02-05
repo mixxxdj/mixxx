@@ -423,6 +423,34 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
 
+    // The following UI controls must be created here so that controllers can bind to them
+    // on startup.
+    m_uiControls.clear();
+
+    struct UIControlConfig {
+        ConfigKey key;
+        bool persist;
+        bool defaultValue;
+    };
+    const std::vector<UIControlConfig> uiControls = {
+            {ConfigKey("[Master]", "skin_settings"), false, false},
+            {ConfigKey("[Microphone]", "show_microphone"), true, true},
+            {ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), true, false},
+            {ConfigKey("[PreviewDeck]", "show_previewdeck"), true, true},
+            {ConfigKey("[Library]", "show_coverart"), true, true},
+            {ConfigKey("[Master]", "maximize_library"), true, false},
+            {ConfigKey("[Samplers]", "show_samplers"), true, true},
+            {ConfigKey("[EffectRack1]", "show"), true, true},
+            {ConfigKey("[Skin]", "show_4effectunits"), true, false},
+            {ConfigKey("[Master]", "show_mixer"), true, true},
+    };
+    m_uiControls.reserve(uiControls.size());
+    for (const auto& row : uiControls) {
+        m_uiControls.emplace_back(std::make_unique<ControlPushButton>(
+                row.key, row.persist, row.defaultValue));
+        m_uiControls.back()->setButtonMode(ControlPushButton::TOGGLE);
+    }
+
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
     const QList<QString>& musicFiles = m_cmdlineArgs.getMusicFiles();
@@ -596,6 +624,8 @@ void CoreServices::finalize() {
     m_pDbConnectionPool.reset(); // should drop the last reference
 
     m_pTouchShift.reset();
+
+    m_uiControls.clear();
 
     m_pControlIndicatorTimer.reset();
 
