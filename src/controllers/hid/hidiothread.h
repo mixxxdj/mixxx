@@ -1,12 +1,12 @@
 #pragma once
 
+#include <QAtomicInteger>
 #include <QThread>
 #include <map>
 
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
 #include "controllers/hid/hidioreport.h"
-#include "util/compatibility/qatomic.h"
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
 
@@ -27,7 +27,17 @@ class HidIoThread : public QThread {
     ~HidIoThread() override;
 
     void run() override;
-    QAtomicInt m_state;
+
+    /// Sets the state of the HidIoThread lifecycle.
+    /// Returns immediately with true, if the compared thread state, was equal to the expected state within the timeout.
+    /// Returns immediately with false, if the compared thread state, wasn't equal to the expected state and no timeout is specified
+    /// Returns with false (Debug assert in developer mode), if timeout is reached
+    bool testAndSetThreadState(HidIoThreadState expectedState,
+            HidIoThreadState newState,
+            unsigned int timeoutMillis = 0);
+
+    /// Sets the state of the HidIoThread lifecycle state to StopRequested
+    void forceStopOfThreadRunLoop();
 
     void latchOutputReport(const QByteArray& reportData, unsigned int reportID);
     QByteArray getInputReport(unsigned int reportID);
@@ -69,4 +79,7 @@ class HidIoThread : public QThread {
     /// Must be locked when using the m_pPollData, m_lastPollSize, m_pollingBufferIndex
     /// or the m_pHidDevice structure, which is not thread-safe for all hidapi backends.
     QMutex m_hidDeviceMutex;
+
+    /// State of the HidIoThread lifecycle
+    QAtomicInt m_state;
 };

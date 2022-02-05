@@ -118,13 +118,15 @@ int HidController::open() {
     // audio directly, like when scratching
     m_pHidIoThread->start(QThread::HighPriority);
 
-    atomicStoreRelaxed(m_pHidIoThread->m_state, static_cast<int>(HidIoThreadState::OutputActive));
+    DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
+            HidIoThreadState::Initialized, HidIoThreadState::OutputActive));
 
     // This executes the init function of the JavaScript mapping
     startEngine();
 
-    atomicStoreRelaxed(m_pHidIoThread->m_state,
-            static_cast<int>(HidIoThreadState::InputOutputActive));
+    DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
+            HidIoThreadState::OutputActive,
+            HidIoThreadState::InputOutputActive));
 
     return 0;
 }
@@ -143,8 +145,9 @@ int HidController::close() {
                    << "yet the device is open!";
     }
     else {
-        atomicStoreRelaxed(m_pHidIoThread->m_state,
-                static_cast<int>(HidIoThreadState::OutputActive));
+        m_pHidIoThread->testAndSetThreadState(
+                HidIoThreadState::InputOutputActive,
+                HidIoThreadState::OutputActive);
     }
 
     // Stop controller engine here to ensure it's done before the device is closed
@@ -155,33 +158,23 @@ int HidController::close() {
     if (m_pHidIoThread) {
         disconnect(m_pHidIoThread.get());
 
-        auto shutdownTimer = mixxx::Time::elapsed();
-
         // Request stop after sending the last latched OutputReport
-        atomicStoreRelaxed(m_pHidIoThread->m_state,
-                static_cast<int>(HidIoThreadState::StopWhenAllReportsSent));
+        DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
+                HidIoThreadState::OutputActive,
+                HidIoThreadState::StopWhenAllReportsSent));
 
         qCInfo(m_logBase) << "Waiting on HID IO thread to finish";
-        while (atomicLoadRelaxed(m_pHidIoThread->m_state) !=
-                static_cast<int>(HidIoThreadState::Stopped)) {
-            VERIFY_OR_DEBUG_ASSERT(shutdownTimer.toIntegerMillis() + 50 >
-                    mixxx::Time::elapsed().toIntegerMillis()) {
-                // Timeout: No longer wait for sending the remaining OutputReports -> Request hard stop
-                qWarning() << "Sending the last remaining OutputReports "
-                              "reached timeout!";
-                atomicStoreRelaxed(m_pHidIoThread->m_state,
-                        static_cast<int>(HidIoThreadState::StopRequested));
-                break;
-            }
+        VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
+                HidIoThreadState::Stopped, HidIoThreadState::Stopped, 50)) {
+            qWarning() << "Sending the last remaining OutputReports "
+                          "reached timeout!";
+            m_pHidIoThread->forceStopOfThreadRunLoop();
         }
-        while (atomicLoadRelaxed(m_pHidIoThread->m_state) !=
-                static_cast<int>(HidIoThreadState::Stopped)) {
-            VERIFY_OR_DEBUG_ASSERT(shutdownTimer.toIntegerMillis() + 100 >
-                    mixxx::Time::elapsed().toIntegerMillis()) {
-                // Timeout: No response from thread
-                qWarning() << "Stopping run loop reached timeout!";
-                break;
-            }
+
+        VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
+                HidIoThreadState::Stopped, HidIoThreadState::Stopped, 100)) {
+            // Timeout: No response from thread
+            qWarning() << "Stopping run loop reached timeout!";
         }
 
         // After completion of all HID communication deconstruct m_pHidIoThread

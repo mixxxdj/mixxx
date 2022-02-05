@@ -38,7 +38,7 @@ HidIoThread::HidIoThread(
         memset(m_pPollData[i], 0, kBufferSize);
     }
     m_OutputReportIterator = m_outputReports.begin();
-    atomicStoreRelaxed(m_state, static_cast<int>(HidIoThreadState::Initialized));
+    m_state.storeRelease(static_cast<int>(HidIoThreadState::Initialized));
 }
 
 HidIoThread::~HidIoThread() {
@@ -46,7 +46,7 @@ HidIoThread::~HidIoThread() {
 }
 
 void HidIoThread::run() {
-    while (atomicLoadRelaxed(m_state) != static_cast<int>(HidIoThreadState::StopRequested)) {
+    while (!testAndSetThreadState(HidIoThreadState::StopRequested, HidIoThreadState::Stopped)) {
         // Ensure that all InputReports are read from the ring buffer, before the next OutputReport blocks the IO again
         // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
         pollBufferedInputReports();
@@ -56,15 +56,13 @@ void HidIoThread::run() {
         // Depending on the OS this takes several several milli seconds
         // This operation doesn't take many CPU cycles, most time HIDAPI is in idle state
         if (!sendNextOutputReport()) {
-            if (atomicLoadRelaxed(m_state) ==
-                    static_cast<int>(
-                            HidIoThreadState::StopWhenAllReportsSent)) {
-                break;
+            if (testAndSetThreadState(HidIoThreadState::StopWhenAllReportsSent,
+                        HidIoThreadState::Stopped)) {
+                return;
             }
             usleep(250); // Sleep run loop if no OutputReport was send
         }
     }
-    atomicStoreRelaxed(m_state, static_cast<int>(HidIoThreadState::Stopped));
 }
 
 void HidIoThread::pollBufferedInputReports() {
@@ -75,7 +73,7 @@ void HidIoThread::pollBufferedInputReports() {
     // This could stall other low priority tasks.
     // There is no safety net for this because it has not been demonstrated to be
     // a problem in practice.
-    while (atomicLoadRelaxed(m_state) == static_cast<int>(HidIoThreadState::InputOutputActive)) {
+    while (m_state.loadAcquire() == static_cast<int>(HidIoThreadState::InputOutputActive)) {
         int bytesRead = hid_read(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
         if (bytesRead < 0) {
             // -1 is the only error value according to hidapi documentation.
@@ -257,4 +255,31 @@ QByteArray HidIoThread::getFeatureReport(
     // For compatibility with input array HidController::sendFeatureReport, a reportID prefix is not added here
     return QByteArray(reinterpret_cast<const char*>(dataRead + kReportIdSize),
             bytesRead - kReportIdSize);
+}
+
+bool HidIoThread::testAndSetThreadState(HidIoThreadState expectedState,
+        HidIoThreadState newState,
+        unsigned int timeoutMillis) {
+    auto timeoutStart = mixxx::Time::elapsed();
+    while (true) {
+        if (m_state.testAndSetOrdered(static_cast<int>(expectedState),
+                    static_cast<int>(newState))) {
+            return true;
+        } else if (timeoutMillis == 0) {
+            // No timeout specified
+            return false;
+        }
+
+        VERIFY_OR_DEBUG_ASSERT(timeoutStart.toIntegerMillis() + timeoutMillis >
+                mixxx::Time::elapsed().toIntegerMillis()) {
+            qWarning() << "Reached timeout, while waiting for state:"
+                       << static_cast<int>(expectedState);
+            return false;
+        };
+        usleep(500);
+    }
+}
+
+void HidIoThread::forceStopOfThreadRunLoop() {
+    m_state.storeRelease(static_cast<int>(HidIoThreadState::StopRequested));
 }
