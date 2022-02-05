@@ -101,6 +101,12 @@ repos:
   rev: v0.4.0
   hooks:
   - id: markdownlint-cli2
+- repo: https://github.com/sirosen/check-jsonschema
+  rev: 0.10.2
+  hooks:
+  - id: check-github-actions
+  # TODO: Checking .github/workflows/build.yml fails
+  #- id: check-github-workflows
 - repo: local
   hooks:
   - id: qsscheck
