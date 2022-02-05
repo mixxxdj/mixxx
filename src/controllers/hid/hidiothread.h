@@ -62,7 +62,8 @@ class HidIoThread : public QThread {
     OutputReportMap m_outputReports;
     OutputReportMap::iterator m_OutputReportIterator;
 
-    /// Must be locked when operation modify or depend on the size of the m_outputReports map
+    /// Must be locked when a operation changes the size of the m_outputReports map,
+    /// or when modify the m_OutputReportIterator
     QMutex m_outputReportMapMutex;
 
     /// Must be locked when using the m_pPollData, m_lastPollSize, m_pollingBufferIndex

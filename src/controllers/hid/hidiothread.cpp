@@ -152,22 +152,27 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
 }
 
 void HidIoThread::latchOutputReport(const QByteArray& data, unsigned int reportID) {
-    auto lock = lockMutex(&m_outputReportMapMutex);
-    if (m_outputReports.find(reportID) == m_outputReports.end()) {
-        std::unique_ptr<HidIoReport> pNewOutputReport;
-        m_outputReports[reportID] = std::make_unique<HidIoReport>(
-                reportID);
+    {
+        auto lock = lockMutex(&m_outputReportMapMutex);
+        if (m_outputReports.find(reportID) == m_outputReports.end()) {
+            std::unique_ptr<HidIoReport> pNewOutputReport;
+            m_outputReports[reportID] = std::make_unique<HidIoReport>(
+                    reportID);
+        }
     }
     m_outputReports[reportID]->latchOutputReport(data, m_deviceInfo, m_logOutput);
 }
 
 bool HidIoThread::sendNextOutputReport() {
-    auto lock = lockMutex(&m_outputReportMapMutex);
-
+    // m_outputReports.size() doesn't need mutex protection, because the value of i is not used. It's just a counter to prevent infinite loop execution.
+    // If the map size increases, this loop will execute one iteration more, which only has the effect, that one additional lookup operation for unsend data will be executed.
     for (unsigned char i = 0; i < m_outputReports.size(); i++) {
-        m_OutputReportIterator++;
-        if (m_OutputReportIterator == m_outputReports.end()) {
-            m_OutputReportIterator = m_outputReports.begin();
+        {
+            auto lock = lockMutex(&m_outputReportMapMutex);
+            m_OutputReportIterator++;
+            if (m_OutputReportIterator == m_outputReports.end()) {
+                m_OutputReportIterator = m_outputReports.begin();
+            }
         }
         if (m_OutputReportIterator->second->sendOutputReport(
                     m_pHidDevice, m_deviceInfo, m_logOutput)) {
