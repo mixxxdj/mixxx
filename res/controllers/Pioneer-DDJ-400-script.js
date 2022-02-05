@@ -265,9 +265,13 @@ PioneerDDJ400.beatFxRightPressed = function(_channel, _control, value) {
 
 PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
-
-    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", 3);
+    var focusfx = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect")+1;
+    if (engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect")===3){
+    var focusfx = 1
+    }
+    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", focusfx);
 };
+
 
 PioneerDDJ400.beatFxOnOffPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
