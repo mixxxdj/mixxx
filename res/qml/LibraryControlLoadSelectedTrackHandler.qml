@@ -8,7 +8,7 @@ import QtQuick 2.12
 Item {
     id: root
 
-    property string group // required
+    required property string group
     property bool enabled: true
 
     signal loadTrackRequested(bool play)

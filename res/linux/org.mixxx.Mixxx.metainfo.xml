@@ -383,6 +383,12 @@
    #4386
    #4408
   </li>
+  <li>
+   Improve robustness of file type detection by considering the actual MIME type of the content.
+   lp:1445885
+   #4356
+   #4357
+  </li>
  </ul>
  <p>
   Audio Engine
@@ -1100,7 +1106,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.2" type="development">
+    <release version="2.3.2" type="stable" date="2022-01-31" timestamp="1643587200">
       <description>
  <ul>
   <li>
@@ -1152,6 +1158,11 @@
    #4635
    lp:1956144
   </li>
+  <li>
+   Traktor S3: Fix timedelta calculation bugs
+   #4646
+   lp:1958925
+  </li>
  </ul>
  <p>
   Packaging
@@ -1161,7 +1172,7 @@
    Downloads of external dependencies are placed in build/downloads
   </li>
   <li>
-   The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.5.zip instead of build/download/libkeyfinder/v2.2.5.zip
+   The sources for libkeyfinder are now expected in build/downloads/libkeyfinder-2.2.6.zip instead of build/download/libkeyfinder/v2.2.6.zip
   </li>
   <li>
    CMake: Adjust the download directory and name of external dependencies

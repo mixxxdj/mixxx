@@ -77,173 +77,173 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveUp"));
     m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveDown"));
     m_pMoveVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveVertical"), false);
-    if (!CmdlineArgs::Instance().getQml()) {
-        connect(m_pMoveUp.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotMoveUp);
-        connect(m_pMoveDown.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotMoveDown);
-        connect(m_pMoveVertical.get(),
-                &ControlEncoder::valueChanged,
-                this,
-                &LibraryControl::slotMoveVertical);
-    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(m_pMoveUp.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveUp);
+    connect(m_pMoveDown.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveDown);
+    connect(m_pMoveVertical.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotMoveVertical);
+#endif
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     m_pScrollUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollUp"));
     m_pScrollDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollDown"));
     m_pScrollVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "ScrollVertical"), false);
-    if (!CmdlineArgs::Instance().getQml()) {
-        connect(m_pScrollUp.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotScrollUp);
-        connect(m_pScrollDown.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotScrollDown);
-        connect(m_pScrollVertical.get(),
-                &ControlEncoder::valueChanged,
-                this,
-                &LibraryControl::slotScrollVertical);
-    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(m_pScrollUp.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotScrollUp);
+    connect(m_pScrollDown.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotScrollDown);
+    connect(m_pScrollVertical.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotScrollVertical);
+#endif
 
     // Controls to navigate horizontally within currently selected item (left/right buttons)
     m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveLeft"));
     m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveRight"));
     m_pMoveHorizontal = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveHorizontal"), false);
-    if (!CmdlineArgs::Instance().getQml()) {
-        connect(m_pMoveLeft.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotMoveLeft);
-        connect(m_pMoveRight.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotMoveRight);
-        connect(m_pMoveHorizontal.get(),
-                &ControlEncoder::valueChanged,
-                this,
-                &LibraryControl::slotMoveHorizontal);
-    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(m_pMoveLeft.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveLeft);
+    connect(m_pMoveRight.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveRight);
+    connect(m_pMoveHorizontal.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotMoveHorizontal);
+#endif
 
     // Controls to navigate between widgets
     // Relative focus controls (emulate Tab/Shift+Tab button press)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
     m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
     m_pMoveFocus = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveFocus"), false);
-    if (!CmdlineArgs::Instance().getQml()) {
-        connect(m_pMoveFocusForward.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotMoveFocusForward);
-        connect(m_pMoveFocusBackward.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotMoveFocusBackward);
-        connect(m_pMoveFocus.get(),
-                &ControlEncoder::valueChanged,
-                this,
-                &LibraryControl::slotMoveFocus);
-    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(m_pMoveFocusForward.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveFocusForward);
+    connect(m_pMoveFocusBackward.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotMoveFocusBackward);
+    connect(m_pMoveFocus.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotMoveFocus);
+#endif
 
     // Direct focus control, read/write
     m_pFocusedWidgetCO = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "focused_widget"));
     m_pFocusedWidgetCO->setStates(static_cast<int>(FocusWidget::Count));
-    if (!CmdlineArgs::Instance().getQml()) {
-        m_pFocusedWidgetCO->connectValueChangeRequest(
-                this,
-                [this](double value) {
-                    // Focus can not be removed from a widget just moved to another one.
-                    // Thus, to keep the CO and QApplication::focusWidget() in sync we
-                    // have to prevent scripts or GUI buttons setting the CO to 'None'.
-                    // It's only set to 'None' internally when one of the library widgets
-                    // receives a FocusOutEvent(), e.g. when the focus is moved to another
-                    // widget, or when the main window loses focus.
-                    const int valueInt = static_cast<int>(value);
-                    if (valueInt != static_cast<int>(FocusWidget::None) &&
-                            valueInt < static_cast<int>(FocusWidget::Count)) {
-                        setLibraryFocus(static_cast<FocusWidget>(valueInt));
-                    }
-                });
-    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    m_pFocusedWidgetCO->connectValueChangeRequest(
+            this,
+            [this](double value) {
+                // Focus can not be removed from a widget just moved to another one.
+                // Thus, to keep the CO and QApplication::focusWidget() in sync we
+                // have to prevent scripts or GUI buttons setting the CO to 'None'.
+                // It's only set to 'None' internally when one of the library widgets
+                // receives a FocusOutEvent(), e.g. when the focus is moved to another
+                // widget, or when the main window loses focus.
+                const int valueInt = static_cast<int>(value);
+                if (valueInt != static_cast<int>(FocusWidget::None) &&
+                        valueInt < static_cast<int>(FocusWidget::Count)) {
+                    setLibraryFocus(static_cast<FocusWidget>(valueInt));
+                }
+            });
+#endif
 
     // Control to "goto" the currently selected item in focused widget (context dependent)
     m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
-    if (!CmdlineArgs::Instance().getQml()) {
-        connect(m_pGoToItem.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotGoToItem);
-    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(m_pGoToItem.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotGoToItem);
+#endif
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
-    if (!CmdlineArgs::Instance().getQml()) {
-        connect(m_pAutoDjAddTop.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotAutoDjAddTop);
-    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(m_pAutoDjAddTop.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotAutoDjAddTop);
+#endif
 
     m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddBottom"));
-    if (!CmdlineArgs::Instance().getQml()) {
-        connect(m_pAutoDjAddBottom.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotAutoDjAddBottom);
-    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(m_pAutoDjAddBottom.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotAutoDjAddBottom);
+#endif
 
     m_pAutoDjAddReplace = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "AutoDjAddReplace"));
-    if (!CmdlineArgs::Instance().getQml()) {
-        connect(m_pAutoDjAddReplace.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotAutoDjAddReplace);
-    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(m_pAutoDjAddReplace.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotAutoDjAddReplace);
+#endif
 
     // Sort controls
     m_pSortColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column"));
     m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
     m_pSortOrder->setButtonMode(ControlPushButton::TOGGLE);
     m_pSortColumnToggle = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column_toggle"), false);
-    if (!CmdlineArgs::Instance().getQml()) {
-        connect(m_pSortColumn.get(),
-                &ControlEncoder::valueChanged,
-                this,
-                &LibraryControl::slotSortColumn);
-        connect(m_pSortColumnToggle.get(),
-                &ControlEncoder::valueChanged,
-                this,
-                &LibraryControl::slotSortColumnToggle);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    connect(m_pSortColumn.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotSortColumn);
+    connect(m_pSortColumnToggle.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &LibraryControl::slotSortColumnToggle);
 
-        // Font sizes
-        m_pFontSizeKnob = std::make_unique<ControlObject>(
-                ConfigKey("[Library]", "font_size_knob"), false);
-        connect(m_pFontSizeKnob.get(),
-                &ControlObject::valueChanged,
-                this,
-                &LibraryControl::slotFontSize);
+    // Font sizes
+    m_pFontSizeKnob = std::make_unique<ControlObject>(
+            ConfigKey("[Library]", "font_size_knob"), false);
+    connect(m_pFontSizeKnob.get(),
+            &ControlObject::valueChanged,
+            this,
+            &LibraryControl::slotFontSize);
 
-        m_pFontSizeDecrement = std::make_unique<ControlPushButton>(
-                ConfigKey("[Library]", "font_size_decrement"));
-        connect(m_pFontSizeDecrement.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotDecrementFontSize);
+    m_pFontSizeDecrement = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "font_size_decrement"));
+    connect(m_pFontSizeDecrement.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotDecrementFontSize);
 
-        m_pFontSizeIncrement = std::make_unique<ControlPushButton>(
-                ConfigKey("[Library]", "font_size_increment"));
-        connect(m_pFontSizeIncrement.get(),
-                &ControlPushButton::valueChanged,
-                this,
-                &LibraryControl::slotIncrementFontSize);
-    }
+    m_pFontSizeIncrement = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "font_size_increment"));
+    connect(m_pFontSizeIncrement.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotIncrementFontSize);
+#endif
 
     // Track Color controls
     m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));
@@ -379,24 +379,24 @@ LibraryControl::LibraryControl(Library* pLibrary)
     ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddTop"), ConfigKey("[Library]", "AutoDjAddTop"));
     ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddBottom"), ConfigKey("[Library]", "AutoDjAddBottom"));
 
-    if (!CmdlineArgs::Instance().getQml()) {
-        QApplication* app = qApp;
-        // Update controls if any widget in any Mixxx window gets or loses focus
-        connect(app,
-                &QApplication::focusChanged,
-                this,
-                &LibraryControl::updateFocusedWidgetControls);
-        // Also update controls if the window focus changed.
-        // Even though any new menu window has focus and will receive keypress events
-        // it does NOT have a focused widget before the first click or keypress.
-        // Thus a QMenu popping up is not reported by focusChanged(oldWidget, newWidget).
-        // QApplication::focusWidget() is still that in the previously focused
-        // window (MixxxMainWindow for example).
-        connect(app,
-                &QGuiApplication::focusWindowChanged,
-                this,
-                &LibraryControl::updateFocusedWidgetControls);
-    }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QApplication* app = qApp;
+    // Update controls if any widget in any Mixxx window gets or loses focus
+    connect(app,
+            &QApplication::focusChanged,
+            this,
+            &LibraryControl::updateFocusedWidgetControls);
+    // Also update controls if the window focus changed.
+    // Even though any new menu window has focus and will receive keypress events
+    // it does NOT have a focused widget before the first click or keypress.
+    // Thus a QMenu popping up is not reported by focusChanged(oldWidget, newWidget).
+    // QApplication::focusWidget() is still that in the previously focused
+    // window (MixxxMainWindow for example).
+    connect(app,
+            &QGuiApplication::focusWindowChanged,
+            this,
+            &LibraryControl::updateFocusedWidgetControls);
+#endif
 }
 
 LibraryControl::~LibraryControl() = default;

@@ -1530,9 +1530,9 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         auto updateTrackFromSourceMode =
                 SoundSourceProxy::UpdateTrackFromSourceMode::Once;
         if (m_pConfig &&
-                m_pConfig->getValueString(
-                                 mixxx::library::prefs::kSyncTrackMetadataConfigKey)
-                                .toInt() == 1) {
+                m_pConfig->getValue(
+                        mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+                        false)) {
             // An implicit re-import and update is performed if the
             // user has enabled export of file tags in the preferences.
             // Either they want to keep their file tags synchronized or

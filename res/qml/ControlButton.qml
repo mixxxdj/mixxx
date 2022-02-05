@@ -4,8 +4,8 @@ import Mixxx 0.1 as Mixxx
 Skin.Button {
     id: root
 
-    property string group // required
-    property string key // required
+    required property string group
+    required property string key
     property bool toggleable: false
 
     function toggle() {

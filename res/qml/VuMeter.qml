@@ -1,14 +1,13 @@
 import Mixxx 0.1 as Mixxx
-import QtGraphicalEffects 1.12
+import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import "Theme"
 
 Rectangle {
     id: root
 
-    property string group // required
-    property string key // required
-    property color barColor // required
+    required property string group
+    required property string key
 
     radius: width / 2
     color: "black"

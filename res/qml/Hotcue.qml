@@ -5,8 +5,8 @@ import "Theme"
 Item {
     id: root
 
-    property int hotcueNumber // required
-    property string group // required
+    required property int hotcueNumber
+    required property string group
     property alias activate: hotcueActivateControl.value
     property alias clear: hotcueClearControl.value
     readonly property bool isSet: hotcueStatusControl.value != 0

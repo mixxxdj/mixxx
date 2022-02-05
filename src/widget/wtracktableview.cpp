@@ -471,11 +471,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pTrackMenu->loadTrackModelIndices(indices);
 
     //Create the right-click menu
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    m_pTrackMenu->popup(event->globalPosition().toPoint());
-#else
     m_pTrackMenu->popup(event->globalPos());
-#endif
 }
 
 void WTrackTableView::onSearch(const QString& text) {
@@ -612,9 +608,14 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // (the "drop" position in a drag-and-drop)
     // The user usually drops on the seam between two rows.
     // We take the row below the seam for reference.
-    int dropRow = rowAt(event->pos().y());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QPoint position = event->position().toPoint();
+#else
+    QPoint position = event->pos();
+#endif
+    int dropRow = rowAt(position.y());
     int height = rowHeight(dropRow);
-    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + height / 2);
+    QPoint pointOfRowBelowSeam(position.x(), position.y() + height / 2);
     QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
     //qDebug() << "destIndex.row() is" << destIndex.row();

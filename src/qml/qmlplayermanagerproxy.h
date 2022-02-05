@@ -1,6 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QString>
+#include <QtQml>
 
 #include "mixer/playermanager.h"
 
@@ -9,6 +10,8 @@ namespace qml {
 
 class QmlPlayerManagerProxy : public QObject {
     Q_OBJECT
+    QML_NAMED_ELEMENT(PlayerManager)
+    QML_SINGLETON
   public:
     explicit QmlPlayerManagerProxy(
             std::shared_ptr<PlayerManager> pPlayerManager,
@@ -21,7 +24,11 @@ class QmlPlayerManagerProxy : public QObject {
     Q_INVOKABLE void loadLocationToPlayer(
             const QString& location, const QString& group, bool play = false);
 
+    static QmlPlayerManagerProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
+    static inline QmlPlayerManagerProxy* s_pInstance = nullptr;
+
   private:
+    static inline QJSEngine* s_pJsEngine = nullptr;
     const std::shared_ptr<PlayerManager> m_pPlayerManager;
 };
 

@@ -5,8 +5,8 @@ import QtQuick 2.12
 Item {
     id: root
 
-    property string group // required
-    property string key // required
+    required property string group
+    required property string key
     property alias orientation: orientationSlider.value
     property color color: "white"
 

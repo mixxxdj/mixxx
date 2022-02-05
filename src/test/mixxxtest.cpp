@@ -77,29 +77,13 @@ void MixxxTest::saveAndReloadConfig() {
 
 namespace mixxxtest {
 
-bool copyFile(const QString& srcFileName, const QString& dstFileName) {
+void copyFile(const QString& srcFileName, const QString& dstFileName) {
     auto srcFile = QFile(srcFileName);
-    DEBUG_ASSERT(srcFile.exists());
-    VERIFY_OR_DEBUG_ASSERT(srcFile.copy(dstFileName)) {
-        qWarning()
-                << srcFile.errorString()
-                << "- Failed to copy file"
-                << srcFile.fileName()
-                << "->"
-                << dstFileName;
-        return false;
-    }
+    ASSERT_TRUE(srcFile.exists());
+    ASSERT_TRUE(srcFile.copy(dstFileName));
     auto dstFile = QFile(dstFileName);
-    VERIFY_OR_DEBUG_ASSERT(dstFile.exists()) {
-        return false;
-    }
-    if (srcFile.size() != dstFile.size()) {
-        dstFile.remove();
-        DEBUG_ASSERT(!"dstFile size does not match srcFile");
-        return false;
-    }
-
-    return true;
+    ASSERT_TRUE(dstFile.exists());
+    ASSERT_EQ(dstFile.size(), srcFile.size());
 }
 
 } // namespace mixxxtest

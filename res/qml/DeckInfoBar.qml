@@ -1,14 +1,15 @@
 import "." as Skin
 import Mixxx 0.1 as Mixxx
 import Mixxx.Controls 0.1 as MixxxControls
-import QtGraphicalEffects 1.12
+import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import "Theme"
 
 Rectangle {
     id: root
 
-    property string group // required
+    required property string group
+    required property int rightColumnWidth
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
     property color lineColor: Theme.deckLineColor
 
@@ -150,7 +151,7 @@ Rectangle {
         anchors.top: infoBarHSeparator1.top
         anchors.bottom: infoBarVSeparator.top
         anchors.right: infoBarHSeparator2.left
-        width: rateSlider.width
+        width: root.rightColumnWidth
     }
 
     Rectangle {
@@ -172,7 +173,7 @@ Rectangle {
         anchors.bottom: infoBarVSeparator.top
         anchors.right: root.right
         anchors.rightMargin: 5
-        width: rateSlider.width
+        width: root.rightColumnWidth
 
         Mixxx.ControlProxy {
             id: bpmControl
@@ -190,7 +191,7 @@ Rectangle {
 
         anchors.top: infoBarVSeparator.bottom
         anchors.bottom: infoBarHSeparator1.bottom
-        width: rateSlider.width
+        width: root.rightColumnWidth
         anchors.right: root.right
         anchors.rightMargin: 5
         text: (ratio > 0) ? "+" + ratio.toFixed(2) : ratio.toFixed(2)
