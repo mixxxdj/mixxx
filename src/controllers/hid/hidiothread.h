@@ -73,10 +73,10 @@ class HidIoThread : public QThread {
 
     typedef std::map<unsigned char, std::unique_ptr<HidIoReport>> OutputReportMap;
     OutputReportMap m_outputReports;
-    OutputReportMap::iterator m_OutputReportIterator;
+    OutputReportMap::iterator m_outputReportIterator;
 
     /// Must be locked when a operation changes the size of the m_outputReports map,
-    /// or when modify the m_OutputReportIterator
+    /// or when modify the m_outputReportIterator
     QMutex m_outputReportMapMutex;
 
     /// Must be locked when using the m_pPollData, m_lastPollSize, m_pollingBufferIndex

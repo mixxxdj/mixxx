@@ -37,7 +37,7 @@ HidIoThread::HidIoThread(
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
     }
-    m_OutputReportIterator = m_outputReports.begin();
+    m_outputReportIterator = m_outputReports.begin();
     m_state.storeRelease(static_cast<int>(HidIoThreadState::Initialized));
 }
 
@@ -169,17 +169,17 @@ bool HidIoThread::sendNextOutputReport() {
     for (unsigned char i = 0; i < m_outputReports.size(); i++) {
         {
             auto lock = lockMutex(&m_outputReportMapMutex);
-            m_OutputReportIterator++;
-            if (m_OutputReportIterator == m_outputReports.end()) {
-                m_OutputReportIterator = m_outputReports.begin();
+            m_outputReportIterator++;
+            if (m_outputReportIterator == m_outputReports.end()) {
+                m_outputReportIterator = m_outputReports.begin();
             }
         }
 
         // The only operator used in this class to modify the map container itself,
         // is insert by std::map<Key,T,Compare,Allocator>::operator[]
         // The standard says that "No iterators or references are invalidated." using this operator.
-        // Therefore m_OutputReportIterator doesn't require Mutex protection.
-        if (m_OutputReportIterator->second->sendOutputReport(
+        // Therefore m_outputReportIterator doesn't require Mutex protection.
+        if (m_outputReportIterator->second->sendOutputReport(
                     m_pHidDevice, m_deviceInfo, m_logOutput)) {
             // Return after each time consuming sendOutputReport
             return true;
