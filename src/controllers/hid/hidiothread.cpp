@@ -25,7 +25,7 @@ HidIoThread::HidIoThread(
         : QThread(),
           m_lastPollSize(0),
           m_pollingBufferIndex(0),
-          // Defining RuntimeLoggingCategories locally in this thread improves runtime performance significiant
+          // Defining RuntimeLoggingCategories locally in this thread improves runtime performance significiantly
           m_logBase(loggingCategoryPrefix(deviceInfo.formatName())),
           m_logInput(loggingCategoryPrefix(deviceInfo.formatName()) +
                   QStringLiteral(".input")),
@@ -33,7 +33,7 @@ HidIoThread::HidIoThread(
                   QStringLiteral(".output")),
           m_pHidDevice(pHidDevice),
           m_deviceInfo(deviceInfo) {
-    // This isn't strictly necessary but is good practice.
+    // Initializing isn't strictly necessary but is good practice.
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
     }
