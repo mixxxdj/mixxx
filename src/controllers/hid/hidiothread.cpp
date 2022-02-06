@@ -258,28 +258,32 @@ QByteArray HidIoThread::getFeatureReport(
 }
 
 bool HidIoThread::testAndSetThreadState(HidIoThreadState expectedState,
-        HidIoThreadState newState,
-        unsigned int timeoutMillis) {
-    auto timeoutStart = mixxx::Time::elapsed();
-    while (true) {
-        if (m_state.testAndSetOrdered(static_cast<int>(expectedState),
-                    static_cast<int>(newState))) {
-            return true;
-        } else if (timeoutMillis == 0) {
-            // No timeout specified
-            return false;
-        }
-
-        VERIFY_OR_DEBUG_ASSERT(timeoutStart.toIntegerMillis() + timeoutMillis >
-                mixxx::Time::elapsed().toIntegerMillis()) {
-            qWarning() << "Reached timeout, while waiting for state:"
-                       << static_cast<int>(expectedState);
-            return false;
-        };
-        usleep(500);
+        HidIoThreadState newState) {
+    if (!m_state.testAndSetOrdered(static_cast<int>(expectedState),
+                static_cast<int>(newState))) {
+        // Test result must be handled outside of this function. [[nodiscard]]
+        return false;
     }
+
+    return true;
 }
 
-void HidIoThread::forceStopOfThreadRunLoop() {
-    m_state.storeRelease(static_cast<int>(HidIoThreadState::StopRequested));
+bool HidIoThread::waitForThreadState(HidIoThreadState expectedState,
+        unsigned int timeoutMillis) {
+    DEBUG_ASSERT(timeoutMillis != 0);
+
+    auto timeoutStart = mixxx::Time::elapsed();
+    while (m_state.loadAcquire() != static_cast<int>(expectedState)) {
+        if (timeoutStart.toIntegerMillis() + timeoutMillis <=
+                mixxx::Time::elapsed().toIntegerMillis()) {
+            return false; // Timeout
+        };
+
+        usleep(500);
+    }
+    return true; // Expected state detected
+}
+
+void HidIoThread::setThreadState(HidIoThreadState expectedState) {
+    m_state.storeRelease(static_cast<int>(expectedState));
 }

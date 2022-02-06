@@ -28,16 +28,19 @@ class HidIoThread : public QThread {
 
     void run() override;
 
-    /// Sets the state of the HidIoThread lifecycle.
-    /// Returns immediately with true, if the compared thread state, was equal to the expected state within the timeout.
-    /// Returns immediately with false, if the compared thread state, wasn't equal to the expected state and no timeout is specified
-    /// Returns with false (Debug assert in developer mode), if timeout is reached
-    bool testAndSetThreadState(HidIoThreadState expectedState,
-            HidIoThreadState newState,
-            unsigned int timeoutMillis = 0);
+    /// Sets the state of the HidIoThread lifecycle,
+    /// if the previous state was not the expected,
+    /// it returns with false as result.
+    [[nodiscard]] bool testAndSetThreadState(HidIoThreadState expectedState,
+            HidIoThreadState newState);
 
-    /// Sets the state of the HidIoThread lifecycle state to StopRequested
-    void forceStopOfThreadRunLoop();
+    /// Set the state of the HidIoThread lifecycles unconditional
+    void setThreadState(HidIoThreadState expectedState);
+
+    /// Wait's until the expected thread state, or the specified timeout, is reached.
+    /// Returns immediately with true if the expected state is detected.
+    [[nodiscard]] bool waitForThreadState(
+            HidIoThreadState expectedState, unsigned int timeoutMillis);
 
     void latchOutputReport(const QByteArray& reportData, unsigned int reportID);
     QByteArray getInputReport(unsigned int reportID);

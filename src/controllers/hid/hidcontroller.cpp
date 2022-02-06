@@ -169,20 +169,22 @@ int HidController::close() {
                 HidIoThreadState::OutputActive,
                 HidIoThreadState::StopWhenAllReportsSent)) {
             qWarning() << "HidIoThread wasn't in expected OutputActive state";
+            m_pHidIoThread->setThreadState(HidIoThreadState::StopWhenAllReportsSent);
         }
 
-        qCInfo(m_logBase) << "Waiting on HID IO thread to finish";
-        VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
-                HidIoThreadState::Stopped, HidIoThreadState::Stopped, 50)) {
+        qCInfo(m_logBase) << "Waiting on HID IO thread to send the last remaining OutputReports";
+        VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->waitForThreadState(
+                HidIoThreadState::Stopped, 50)) {
             qWarning() << "Sending the last remaining OutputReports "
                           "reached timeout!";
-            m_pHidIoThread->forceStopOfThreadRunLoop();
-        }
 
-        VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
-                HidIoThreadState::Stopped, HidIoThreadState::Stopped, 100)) {
-            // Timeout: No response from thread
-            qWarning() << "Stopping run loop reached timeout!";
+            qCInfo(m_logBase) << "Enforce stop of HID IO thread run loop!";
+            m_pHidIoThread->setThreadState(HidIoThreadState::StopRequested);
+
+            VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->waitForThreadState(
+                    HidIoThreadState::Stopped, 100)) {
+                qWarning() << "Stopping run loop reached timeout!";
+            }
         }
 
         // After completion of all HID communication deconstruct m_pHidIoThread
