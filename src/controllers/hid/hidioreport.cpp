@@ -41,22 +41,27 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
     auto lock = lockMutex(&m_outputReportDataMutex);
 
     if (m_unsendDataLatched == false) {
-        return false; // Return with false, to signal the caller, that no time consuming IO operation was necessary
+        // Return with false, to signal the caller, that no time consuming IO operation was necessary
+        return false;
     }
 
     if (!m_lastSentOutputReportData.compare(m_latchedOutputReportData)) {
         // An HID OutputReport can contain only HID OutputItems.
         // HID OutputItems are defined to represent the state of one or more similar controls or LEDs.
         // Only HID Feature items may be attributes of other items.
-        // This means there is always a one to one relationship to the state of control(s)/LED(s). And if the state is not changed, there's no need to execute the time consuming hid_write again.
+        // This means there is always a one to one relationship to the state of control(s)/LED(s),
+        // and if the state is not changed, there's no need to execute the time consuming hid_write again.
         qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
                            << " Skipped identical Output Report for"
                            << deviceInfo.formatName() << "serial #"
                            << deviceInfo.serialNumberRaw() << "(Report ID"
                            << m_reportId << ")";
-        m_unsendDataLatched =
-                false; // Setting m_unsendDataLatched to false prevents, that the byte array compare operation is executed for the same data again
-        return false; // Return with false, to signal the caller, that no time consuming IO operation was necessary
+
+        // Setting m_unsendDataLatched to false prevents, that the byte array compare operation is executed for the same data again
+        m_unsendDataLatched = false;
+
+        // Return with false, to signal the caller, that no time consuming IO operation was necessary
+        return false;
     }
 
     QByteArray reportToSend;
@@ -74,7 +79,9 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
                              << mixxx::convertWCStringToQString(
                                         hid_error(pHidDevice),
                                         kMaxHidErrorMessageSize);
-        return true; // Return with true, to signal the caller, that the time consuming hid_write operation was executed - (Note that the return value isn't an error code)
+        // Return with true, to signal the caller, that the time consuming hid_write operation was executed
+        // (Note, that the return value isn't an error code)
+        return true;
     }
 
     qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit() << " "
@@ -85,5 +92,6 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
 
     m_lastSentOutputReportData.swap(m_latchedOutputReportData);
     m_unsendDataLatched = false;
-    return true; // Return with true, to signal the caller, that the time consuming hid_write operation was executed
+    // Return with true, to signal the caller, that the time consuming hid_write operation was executed
+    return true;
 }
