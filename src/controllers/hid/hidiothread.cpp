@@ -174,6 +174,11 @@ bool HidIoThread::sendNextOutputReport() {
                 m_OutputReportIterator = m_outputReports.begin();
             }
         }
+
+        // The only operator used in this class to modify the map container itself,
+        // is insert by std::map<Key,T,Compare,Allocator>::operator[]
+        // The standard says that "No iterators or references are invalidated." using this operator.
+        // Therefore m_OutputReportIterator doesn't require Mutex protection.
         if (m_OutputReportIterator->second->sendOutputReport(
                     m_pHidDevice, m_deviceInfo, m_logOutput)) {
             // Return after each time consuming sendOutputReport
