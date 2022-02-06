@@ -175,6 +175,8 @@ bool HidIoThread::sendNextOutputReport() {
             }
         }
 
+        auto lock = lockMutex(&m_hidDeviceMutex);
+
         // The only operator used in this class to modify the map container itself,
         // is insert by std::map<Key,T,Compare,Allocator>::operator[]
         // The standard says that "No iterators or references are invalidated." using this operator.
