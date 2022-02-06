@@ -118,15 +118,19 @@ int HidController::open() {
     // audio directly, like when scratching
     m_pHidIoThread->start(QThread::HighPriority);
 
-    DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
-            HidIoThreadState::Initialized, HidIoThreadState::OutputActive));
+    VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
+            HidIoThreadState::Initialized, HidIoThreadState::OutputActive)) {
+        qWarning() << "HidIoThread wasn't in expected Initialized state";
+    }
 
     // This executes the init function of the JavaScript mapping
     startEngine();
 
-    DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
+    VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
             HidIoThreadState::OutputActive,
-            HidIoThreadState::InputOutputActive));
+            HidIoThreadState::InputOutputActive)) {
+        qWarning() << "HidIoThread wasn't in expected OutputActive state";
+    }
 
     return 0;
 }
@@ -145,9 +149,11 @@ int HidController::close() {
                    << "yet the device is open!";
     }
     else {
-        m_pHidIoThread->testAndSetThreadState(
+        VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
                 HidIoThreadState::InputOutputActive,
-                HidIoThreadState::OutputActive);
+                HidIoThreadState::OutputActive)) {
+            qWarning() << "HidIoThread wasn't in expected InputOutputActive state";
+        }
     }
 
     // Stop controller engine here to ensure it's done before the device is closed
@@ -159,9 +165,11 @@ int HidController::close() {
         disconnect(m_pHidIoThread.get());
 
         // Request stop after sending the last latched OutputReport
-        DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
+        VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
                 HidIoThreadState::OutputActive,
-                HidIoThreadState::StopWhenAllReportsSent));
+                HidIoThreadState::StopWhenAllReportsSent)) {
+            qWarning() << "HidIoThread wasn't in expected OutputActive state";
+        }
 
         qCInfo(m_logBase) << "Waiting on HID IO thread to finish";
         VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
