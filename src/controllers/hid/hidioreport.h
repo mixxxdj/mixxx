@@ -24,9 +24,9 @@ class HidIoReport {
     const unsigned char m_reportId;
     QByteArray m_lastSentOutputReportData;
 
+    /// Mutex must be locked when reading/writing m_latchedOutputReportData or m_possiblyUnsendDataLatched
+    QMutex m_latchedOutputReportDataMutex;
+
     QByteArray m_latchedOutputReportData;
     bool m_possiblyUnsendDataLatched;
-
-    /// Must be locked when reading/writing m_latchedOutputReportData or m_possiblyUnsendDataLatched
-    QMutex m_latchedOutputReportDataMutex;
 };

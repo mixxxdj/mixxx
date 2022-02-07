@@ -52,36 +52,37 @@ class HidIoThread : public QThread {
     void receive(const QByteArray& data, mixxx::Duration timestamp);
 
   private:
-    static constexpr int kNumBuffers = 2;
-    static constexpr int kBufferSize = 255;
-    unsigned char m_pPollData[kNumBuffers][kBufferSize];
-    int m_lastPollSize;
-    int m_pollingBufferIndex;
-    const RuntimeLoggingCategory m_logBase;
-    const RuntimeLoggingCategory m_logInput;
-    const RuntimeLoggingCategory m_logOutput;
-
     bool sendNextOutputReport();
 
     void pollBufferedInputReports();
     void processInputReport(int bytesRead);
 
+    const mixxx::hid::DeviceInfo m_deviceInfo;
+    const RuntimeLoggingCategory m_logBase;
+    const RuntimeLoggingCategory m_logInput;
+    const RuntimeLoggingCategory m_logOutput;
+
+    /// Mutex must be locked when using the m_pPollData, m_lastPollSize, m_pollingBufferIndex
+    /// or the m_pHidDevice structure, which is not thread-safe for all hidapi backends.
+    QMutex m_hidDeviceMutex;
+
     /// const pointer to the C data structure, which hidapi uses for communication between functions
     hid_device* const
             m_pHidDevice;
-    const mixxx::hid::DeviceInfo m_deviceInfo;
 
-    typedef std::map<unsigned char, std::unique_ptr<HidIoReport>> OutputReportMap;
-    OutputReportMap m_outputReports;
-    OutputReportMap::iterator m_outputReportIterator;
+    static constexpr int kNumBuffers = 2;
+    static constexpr int kBufferSize = 255;
+    unsigned char m_pPollData[kNumBuffers][kBufferSize];
+    int m_lastPollSize;
+    int m_pollingBufferIndex;
 
     /// Must be locked when a operation changes the size of the m_outputReports map,
     /// or when modify the m_outputReportIterator
     QMutex m_outputReportMapMutex;
 
-    /// Must be locked when using the m_pPollData, m_lastPollSize, m_pollingBufferIndex
-    /// or the m_pHidDevice structure, which is not thread-safe for all hidapi backends.
-    QMutex m_hidDeviceMutex;
+    typedef std::map<unsigned char, std::unique_ptr<HidIoReport>> OutputReportMap;
+    OutputReportMap m_outputReports;
+    OutputReportMap::iterator m_outputReportIterator;
 
     /// State of the HidIoThread lifecycle
     QAtomicInt m_state;
