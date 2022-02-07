@@ -1,6 +1,7 @@
 import Mixxx 1.0 as Mixxx
 import Qt.labs.qmlmodels
 import QtQuick
+import QtQuick.Controls 2.15
 import "Theme"
 
 Item {
@@ -29,6 +30,72 @@ Item {
             }
         }
 
+        HorizontalHeaderView {
+            id: horizontalHeader
+
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 5
+            syncView: tableView
+            model: ["Color", "Cover", "Artist", "Album", "Year", "Bpm", "Key", "Filetype", "Bitrate"]
+
+            delegate: Item {
+                id: headerDlgt
+
+                required property int column
+                required property string modelData
+
+                implicitHeight: columnName.contentHeight + 5
+                implicitWidth: columnName.contentWidth + 5
+
+                BorderImage {
+                    anchors.fill: parent
+                    horizontalTileMode: BorderImage.Stretch
+                    verticalTileMode: BorderImage.Stretch
+                    source: Theme.imgPopupBackground
+
+                    border {
+                        top: 10
+                        left: 20
+                        right: 20
+                        bottom: 10
+                    }
+                }
+
+                Text {
+                    id: columnName
+
+                    text: headerDlgt.modelData
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: Theme.fontFamily
+                    font.capitalization: Font.AllUppercase
+                    font.bold: true
+                    font.pixelSize: Theme.buttonFontPixelSize
+                    color: Theme.buttonNormalColor
+                }
+
+                Text {
+                    id: sortIndicator
+
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignRight
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: Theme.fontFamily
+                    font.capitalization: Font.AllUppercase
+                    font.bold: true
+                    font.pixelSize: Theme.buttonFontPixelSize
+                    color: Theme.buttonNormalColor
+                }
+            }
+        }
+
         TableView {
             id: tableView
 
@@ -48,7 +115,10 @@ Item {
                 player.loadTrackFromLocationUrl(urls[0], play);
             }
 
-            anchors.fill: parent
+            anchors.top: horizontalHeader.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
             anchors.margins: 5
             clip: true
             focus: true
