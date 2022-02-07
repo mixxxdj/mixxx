@@ -14,9 +14,11 @@
 namespace {
 constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
-constexpr int kSleepTimeWhenIdleMicros =
-        250; // Sleep time of run loop, when no time consuming operation was executed
+
+// Sleep time of run loop, when no time consuming operation was executed
+constexpr int kSleepTimeWhenIdleMicros = 250;
 constexpr int kWaitForThreadStateIntervalMicros = 500;
+
 QString loggingCategoryPrefix(const QString& deviceName) {
     return QStringLiteral("controller.") +
             RuntimeLoggingCategory::removeInvalidCharsFromCategory(deviceName.toLower());
