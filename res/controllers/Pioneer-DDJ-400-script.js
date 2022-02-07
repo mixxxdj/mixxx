@@ -44,7 +44,7 @@
 //        * Keyshift mode
 
 var PioneerDDJ400 = {};
-engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", 3);
+
 PioneerDDJ400.lights = {
     beatFx: {
         status: 0x94,
