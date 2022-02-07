@@ -81,6 +81,10 @@ class HidIoThread : public QThread {
     QMutex m_outputReportMapMutex;
 
     typedef std::map<unsigned char, std::unique_ptr<HidIoReport>> OutputReportMap;
+    /// m_outputReports is an empty map after class initialization.
+    /// An entry is inserted each time, when an OutputReport is send for the first time.
+    /// Until then, it's not known, which OutputReports a device/mapping has.
+    /// No other modifications to the map are done, until destruction of this class.
     OutputReportMap m_outputReports;
     OutputReportMap::iterator m_outputReportIterator;
 

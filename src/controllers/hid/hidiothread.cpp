@@ -175,8 +175,8 @@ bool HidIoThread::sendNextOutputReport() {
             }
         }
 
-        // The only operator used in this class to modify the map container itself,
-        // is insert by std::map<Key,T,Compare,Allocator>::operator[]
+        // The only mutable operation on m_outputReports is insert
+        // by std::map<Key,T,Compare,Allocator>::operator[]
         // The standard says that "No iterators or references are invalidated." using this operator.
         // Therefore m_outputReportIterator doesn't require Mutex protection.
         if (m_outputReportIterator->second->sendOutputReport(
