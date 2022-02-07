@@ -11,6 +11,7 @@
 namespace {
 constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
+constexpr int kReturnValueNotUsedByHidapi = -99;
 } // namespace
 
 HidIoReport::HidIoReport(const unsigned char& reportId)
@@ -39,8 +40,6 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
         const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
     QByteArray reportToSend;
-
-    auto lock = lockMutex(pHidDeviceMutex);
 
     {
         auto lock = lockMutex(&m_latchedOutputReportDataMutex);
@@ -83,24 +82,30 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
         m_possiblyUnsendDataLatched = false;
     }
 
-    // hid_write can take several milliseconds, because hidapi synchronizes the asyncron HID communication from the OS
-    int result = hid_write(pHidDevice,
-            reinterpret_cast<const unsigned char*>(reportToSend.constData()),
-            reportToSend.size());
-    if (result == -1) {
-        qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
-                             << mixxx::convertWCStringToQString(
-                                        hid_error(pHidDevice),
-                                        kMaxHidErrorMessageSize);
-        {
-            auto lock = lockMutex(&m_latchedOutputReportDataMutex);
-            // Clear the m_lastSentOutputReportData because the last send data are not reliable known.
-            // These error should not occur in normal operation,
-            // therefore the performance impact of additional memory allocation
-            // at the next call of this method is negligible
-            m_lastSentOutputReportData.clear();
-            m_possiblyUnsendDataLatched = true;
+    int result = kReturnValueNotUsedByHidapi;
+    {
+        auto lock = lockMutex(pHidDeviceMutex);
+        // hid_write can take several milliseconds, because hidapi synchronizes the asyncron HID communication from the OS
+        result = hid_write(pHidDevice,
+                reinterpret_cast<const unsigned char*>(reportToSend.constData()),
+                reportToSend.size());
+        if (result == -1) {
+            qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
+                                 << mixxx::convertWCStringToQString(
+                                            hid_error(pHidDevice),
+                                            kMaxHidErrorMessageSize);
         }
+    }
+
+    if (result == -1) {
+        auto lock = lockMutex(&m_latchedOutputReportDataMutex);
+        // Clear the m_lastSentOutputReportData because the last send data are not reliable known.
+        // These error should not occur in normal operation,
+        // therefore the performance impact of additional memory allocation
+        // at the next call of this method is negligible
+        m_lastSentOutputReportData.clear();
+        m_possiblyUnsendDataLatched = true;
+
         // Return with true, to signal the caller, that the time consuming hid_write operation was executed
         // (Note, that the return value isn't an error code)
         return true;
