@@ -1803,13 +1803,14 @@ TraktorS3.Controller.prototype.deckSwitchHandler = function(field) {
     if (this.deckSwitchPressed === "") {
         this.deckSwitchPressed = field.group;
     } else {
-        // If a different deck switch is already pressed, do an instant double.
+        // If a different deck switch is already pressed, do an instant double and do not select the
+        // deck.
         var cloneFrom = this.Channels[this.deckSwitchPressed];
         var cloneFromNum = cloneFrom.parentDeck.deckNumber;
         engine.setValue(field.group, "CloneFromDeck", cloneFromNum);
+        return;
     }
 
-    // Always activated pressed deck switch.
     var channel = this.Channels[field.group];
     var deck = channel.parentDeck;
 
