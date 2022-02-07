@@ -42,7 +42,7 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
     {
         auto lock = lockMutex(&m_latchedOutputReportDataMutex);
 
-        if (m_possiblyUnsendDataLatched == false) {
+        if (!m_possiblyUnsendDataLatched) {
             // Return with false, to signal the caller, that no time consuming IO operation was necessary
             return false;
         }
