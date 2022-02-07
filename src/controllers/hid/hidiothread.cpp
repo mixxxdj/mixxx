@@ -14,6 +14,9 @@
 namespace {
 constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
+constexpr int kSleepTimeWhenIdleMicros =
+        250; // Sleep time of run loop, when no time consuming operation was executed
+constexpr int kWaitForThreadStateIntervalMicros = 500;
 QString loggingCategoryPrefix(const QString& deviceName) {
     return QStringLiteral("controller.") +
             RuntimeLoggingCategory::removeInvalidCharsFromCategory(deviceName.toLower());
@@ -60,7 +63,7 @@ void HidIoThread::run() {
                         HidIoThreadState::Stopped)) {
                 return;
             }
-            usleep(250); // Sleep run loop, if no OutputReport was send
+            usleep(kSleepTimeWhenIdleMicros); // Sleep run loop, if no OutputReport was send
         }
     }
 }
@@ -288,7 +291,7 @@ bool HidIoThread::waitForThreadState(HidIoThreadState expectedState,
             return false; // Timeout
         };
 
-        usleep(500);
+        usleep(kWaitForThreadStateIntervalMicros);
     }
     return true; // Expected state detected
 }
