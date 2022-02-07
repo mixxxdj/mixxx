@@ -33,11 +33,14 @@ void HidIoReport::latchOutputReport(const QByteArray& data,
     m_possiblyUnsendDataLatched = true;
 }
 
-bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
+bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
+        hid_device* pHidDevice,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
     QByteArray reportToSend;
+
+    auto lock = lockMutex(pHidDeviceMutex);
 
     {
         auto lock = lockMutex(&m_latchedOutputReportDataMutex);
@@ -75,7 +78,7 @@ bool HidIoReport::sendOutputReport(hid_device* pHidDevice,
         // to release the mutex during the time consuming hid_write operation.
         // In the unlikely case that hid_write fails, they will be invalidated afterwards
         // This is safe, because these members are only reset in this scope of this method,
-        // and concurrent execution of this method is prevented by locking m_hidDeviceMutex
+        // and concurrent execution of this method is prevented by locking pHidDeviceMutex
         m_lastSentOutputReportData.swap(m_latchedOutputReportData);
         m_possiblyUnsendDataLatched = false;
     }

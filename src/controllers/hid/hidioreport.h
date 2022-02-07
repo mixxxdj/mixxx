@@ -16,7 +16,8 @@ class HidIoReport {
 
     /// Sends the OutputReport to the HID device, when changed data are latched.
     /// Returns true if a time consuming hid_write operation was executed.
-    bool sendOutputReport(hid_device* pHidDevice,
+    bool sendOutputReport(QMutex* pHidDeviceMutex,
+            hid_device* pHidDevice,
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput);
 
