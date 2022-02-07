@@ -179,8 +179,13 @@ int HidController::close() {
                           "reached timeout!";
 
             qCInfo(m_logBase) << "Enforce stop of HID IO thread run loop!";
-            m_pHidIoThread->setThreadState(HidIoThreadState::StopRequested);
 
+            // This operation ensures, that StopRequested is only set, if thread state is not yet Stopped.
+            if (!m_pHidIoThread->testAndSetThreadState(
+                        HidIoThreadState::StopWhenAllReportsSent,
+                        HidIoThreadState::StopRequested)) {
+                // Due to a race condition thread state was already Stopped.
+            }
             VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->waitForThreadState(
                     HidIoThreadState::Stopped, 100)) {
                 qWarning() << "Stopping run loop reached timeout!";
