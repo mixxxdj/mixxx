@@ -33,12 +33,12 @@ inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
 }
 } // namespace
 
-BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
+BaseTrackPlayer::BaseTrackPlayer(PlayerManager* pParent, const QString& group)
         : BasePlayer(pParent, group) {
 }
 
 BaseTrackPlayerImpl::BaseTrackPlayerImpl(
-        QObject* pParent,
+        PlayerManager* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,
@@ -82,6 +82,13 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &EngineBuffer::trackLoadFailed,
             this,
             &BaseTrackPlayerImpl::slotLoadFailed);
+
+    m_pEject = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "eject"));
+    connect(m_pEject.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotEjectTrack,
+            Qt::DirectConnection);
 
     // Get loop point control objects
     m_pLoopInPoint = make_parented<ControlProxy>(
@@ -297,6 +304,26 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
     connectLoadedTrack();
 }
 
+void BaseTrackPlayerImpl::slotEjectTrack(double v) {
+    if (v <= 0) {
+        return;
+    }
+    if (!m_pLoadedTrack) {
+        auto lastEjected = m_pPlayerManager->getLastEjectedTrack();
+        if (lastEjected) {
+            slotLoadTrack(lastEjected, false);
+        }
+        return;
+    }
+
+    // Don't allow rejections while playing a track. We don't need to lock to
+    // call ControlObject::get() so this is fine.
+    if (m_pPlay->get() > 0) {
+        return;
+    }
+    m_pChannel->getEngineBuffer()->ejectTrack();
+}
+
 TrackPointer BaseTrackPlayerImpl::unloadTrack() {
     if (!m_pLoadedTrack) {
         // nothing to do
@@ -344,6 +371,7 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
 
     TrackPointer pUnloadedTrack(std::move(m_pLoadedTrack));
     DEBUG_ASSERT(!m_pLoadedTrack);
+    emit trackUnloaded(pUnloadedTrack);
     return pUnloadedTrack;
 }
 

@@ -123,6 +123,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return numSamplers();
     }
 
+    TrackPointer getLastEjectedTrack() const {
+        return m_pLastEjectedTrack;
+    }
+
     // Get the microphone by its number. Microphones are numbered starting with 1.
     Microphone* getMicrophone(unsigned int microphone) const;
 
@@ -206,6 +210,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   private slots:
     void slotAnalyzeTrack(TrackPointer track);
+    void slotStoreParkedTrack(TrackPointer track);
 
     void onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     void onTrackAnalysisFinished();
@@ -272,6 +277,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     parented_ptr<ControlProxy> m_pAutoDjEnabled;
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
+
+    TrackPointer m_pLastEjectedTrack;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;

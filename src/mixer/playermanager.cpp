@@ -188,12 +188,17 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     // analyzed.
     foreach(Deck* pDeck, m_decks) {
         connect(pDeck, &BaseTrackPlayer::newTrackLoaded, this, &PlayerManager::slotAnalyzeTrack);
+        connect(pDeck, &BaseTrackPlayer::trackUnloaded, this, &PlayerManager::slotStoreParkedTrack);
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
     foreach(Sampler* pSampler, m_samplers) {
         connect(pSampler, &BaseTrackPlayer::newTrackLoaded, this, &PlayerManager::slotAnalyzeTrack);
+        connect(pSampler,
+                &BaseTrackPlayer::trackUnloaded,
+                this,
+                &PlayerManager::slotStoreParkedTrack);
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
@@ -727,6 +732,13 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         // before any signals from the analyzer queue arrive.
         emit trackAnalyzerProgress(track->getId(), kAnalyzerProgressUnknown);
     }
+}
+
+void PlayerManager::slotStoreParkedTrack(TrackPointer track) {
+    VERIFY_OR_DEBUG_ASSERT(track) {
+        return;
+    }
+    m_pLastEjectedTrack = track;
 }
 
 void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
