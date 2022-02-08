@@ -128,6 +128,23 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     // https://github.com/libusb/hidapi/issues/259
     int bytesRead = hid_get_input_report(
             m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
+    if (bytesRead <= kReportIdSize) {
+        // -1 is the only error value according to hidapi documentation.
+        // Otherwise minimum possible value is 1, because 1 byte is for the reportID,
+        // the smallest report with data is therefore 2 bytes
+        qCWarning(m_logInput)
+                << "getInputReport is unable to get data from"
+                << m_deviceInfo.formatName() << "serial #"
+                << m_deviceInfo.serialNumber() << ":"
+                << mixxx::convertWCStringToQString(
+                           hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
+        // Note, that the GetInputReport request is optional, according to the HID specification,
+        // not all devices implement it.
+        return QByteArray();
+    }
+
+    lock.unlock();
+
     qCDebug(m_logInput) << bytesRead << "bytes received by hid_get_input_report"
                         << m_deviceInfo.formatName() << "serial #"
                         << m_deviceInfo.serialNumber()
@@ -138,14 +155,6 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
                         << ") - Needed: "
                         << (mixxx::Time::elapsed() - startOfHidGetInputReport)
                                    .formatMicrosWithUnit();
-
-    if (bytesRead <= kReportIdSize) {
-        // -1 is the only error value according to hidapi documentation.
-        // Otherwise minimum possible value is 1, because 1 byte is for the reportID,
-        // the smallest report with data is therefore 2 bytes.
-        DEBUG_ASSERT(bytesRead <= kReportIdSize);
-        return QByteArray();
-    }
 
     // Convert array of bytes read in a JavaScript compatible return type, this is returned as deep-copy, for thread safety.
     // For compatibility with HidController::processInputReport, the reportID prefix is included added here
@@ -221,6 +230,8 @@ void HidIoThread::sendFeatureReport(
         return;
     }
 
+    lock.unlock();
+
     qCDebug(m_logOutput)
             << result << "bytes sent by sendFeatureReport to"
             << m_deviceInfo.formatName() << "serial #"
@@ -252,6 +263,8 @@ QByteArray HidIoThread::getFeatureReport(
                            hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         return QByteArray();
     }
+
+    lock.unlock();
 
     qCDebug(m_logInput)
             << bytesRead << "bytes received by getFeatureReport from"
