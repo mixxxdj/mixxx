@@ -63,7 +63,7 @@ repos:
     #args: [--ignore-words, .codespellignore, --ignore-regex, "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))"]
     exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v8.7.0
+  rev: v8.8.0
   hooks:
   - id: eslint
     args: [--fix, --report-unused-disable-directives]
@@ -83,7 +83,7 @@ repos:
     language: python
     files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
 - repo: https://github.com/psf/black
-  rev: 21.12b0
+  rev: 22.1.0
   hooks:
   - id: black
     files: ^tools/.*$
@@ -94,7 +94,7 @@ repos:
     files: ^tools/.*$
     types: [text, python]
 - repo: https://github.com/shellcheck-py/shellcheck-py
-  rev: v0.8.0.3
+  rev: v0.8.0.4
   hooks:
   - id: shellcheck
 - repo: https://github.com/DavidAnson/markdownlint-cli2
