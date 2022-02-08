@@ -11,7 +11,6 @@
 namespace {
 constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
-constexpr int kReturnValueNotUsedByHidapi = -99;
 } // namespace
 
 HidIoReport::HidIoReport(const unsigned char& reportId)
@@ -82,7 +81,7 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
         m_possiblyUnsendDataLatched = false;
     }
 
-    int result = kReturnValueNotUsedByHidapi;
+    int result;
     {
         auto lock = lockMutex(pHidDeviceMutex);
         // hid_write can take several milliseconds, because hidapi synchronizes the asyncron HID communication from the OS
