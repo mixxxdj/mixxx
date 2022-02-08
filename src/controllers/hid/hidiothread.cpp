@@ -73,19 +73,31 @@ void HidIoThread::run() {
 void HidIoThread::pollBufferedInputReports() {
     Trace hidRead("HidIoThread pollBufferedInputReports");
     auto lock = lockMutex(&m_hidDeviceMutex);
-    // This loop risks becoming a high priority endless loop in case processing
-    // the mapping JS code takes longer than the controller polling rate.
-    // This could stall other low priority tasks.
-    // There is no safety net for this because it has not been demonstrated to be
-    // a problem in practice.
+    // This function reads the available HID Input Reports using hidapi.
+    // Important to know is, that this reading is not a hardware operation,
+    // instead it reads previously received HID Input Reports from a ring buffer.
+    // Depending on the hidapi backend implementation the ring buffer is either part
+    // of the hidapi implementation or the OS kernel.
+    // The size of the ring buffer also depends on the hidapi backend:
+    // - hidraw(2048 bytes) - Linux Kernel API
+    // - libusb(30 reports) - BSD (alternative Linux userspace implementation)
+    // - mac(30 reports)
+    // - windows(64 reports)
+    // If the interval between two polls is to long, multiple buffered HID InputReports
+    // will be processed at the same time.
     while (m_state.loadAcquire() == static_cast<int>(HidIoThreadState::InputOutputActive)) {
         int bytesRead = hid_read(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
         if (bytesRead < 0) {
             // -1 is the only error value according to hidapi documentation.
+            qCWarning(m_logOutput) << "Unable to read buffered HID InputReports from"
+                                   << m_deviceInfo.formatName() << ":"
+                                   << mixxx::convertWCStringToQString(
+                                              hid_error(m_pHidDevice),
+                                              kMaxHidErrorMessageSize);
             DEBUG_ASSERT(bytesRead == -1);
             break;
         } else if (bytesRead == 0) {
-            // No packet was available to be read
+            // No InputReports left to be read
             break;
         }
         processInputReport(bytesRead);
