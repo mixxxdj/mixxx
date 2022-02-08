@@ -210,7 +210,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   private slots:
     void slotAnalyzeTrack(TrackPointer track);
-    void slotStoreParkedTrack(TrackPointer track);
+    void slotSaveEjectedTrack(TrackPointer track);
 
     void onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     void onTrackAnalysisFinished();

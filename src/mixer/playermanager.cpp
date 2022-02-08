@@ -188,7 +188,7 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     // analyzed.
     foreach(Deck* pDeck, m_decks) {
         connect(pDeck, &BaseTrackPlayer::newTrackLoaded, this, &PlayerManager::slotAnalyzeTrack);
-        connect(pDeck, &BaseTrackPlayer::trackUnloaded, this, &PlayerManager::slotStoreParkedTrack);
+        connect(pDeck, &BaseTrackPlayer::trackUnloaded, this, &PlayerManager::slotSaveEjectedTrack);
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
@@ -198,7 +198,7 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
         connect(pSampler,
                 &BaseTrackPlayer::trackUnloaded,
                 this,
-                &PlayerManager::slotStoreParkedTrack);
+                &PlayerManager::slotSaveEjectedTrack);
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
@@ -734,7 +734,7 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
     }
 }
 
-void PlayerManager::slotStoreParkedTrack(TrackPointer track) {
+void PlayerManager::slotSaveEjectedTrack(TrackPointer track) {
     VERIFY_OR_DEBUG_ASSERT(track) {
         return;
     }
