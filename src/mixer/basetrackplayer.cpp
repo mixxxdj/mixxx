@@ -309,8 +309,8 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
         return;
     }
     if (!m_pLoadedTrack) {
-        auto lastEjected = m_pPlayerManager->getLastEjectedTrack();
-        if (lastEjected) {
+        TrackPointer lastEjected = m_pPlayerManager->getLastEjectedTrack();
+        if (lastEjected && lastEjected->getId().isValid()) {
             slotLoadTrack(lastEjected, false);
         }
         return;
@@ -318,7 +318,7 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
 
     // Don't allow rejections while playing a track. We don't need to lock to
     // call ControlObject::get() so this is fine.
-    if (m_pPlay->get() > 0) {
+    if (m_pPlay->toBool()) {
         return;
     }
     m_pChannel->getEngineBuffer()->ejectTrack();

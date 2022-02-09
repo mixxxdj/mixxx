@@ -6,7 +6,6 @@
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/enginemaster.h"
-#include "library/library.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -163,6 +162,7 @@ PlayerManager::~PlayerManager() {
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
+    m_pLibrary = pLibrary;
     const auto locker = lockMutex(&m_mutex);
     connect(pLibrary, &Library::loadTrackToPlayer, this, &PlayerManager::slotLoadTrackToPlayer);
     connect(pLibrary,
@@ -598,6 +598,13 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
     return m_samplers[sampler - 1];
 }
 
+TrackPointer PlayerManager::getLastEjectedTrack() const {
+    if (m_pLibrary) {
+        return m_pLibrary->trackCollectionManager()->getTrackById(m_pLastEjectedTrackId);
+    }
+    return nullptr;
+}
+
 Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
     const auto locker = lockMutex(&m_mutex);
     if (microphone < 1 || microphone >= static_cast<unsigned int>(m_microphones.size())) {
@@ -741,7 +748,7 @@ void PlayerManager::slotSaveEjectedTrack(TrackPointer track) {
     VERIFY_OR_DEBUG_ASSERT(track) {
         return;
     }
-    m_pLastEjectedTrack = track;
+    m_pLastEjectedTrackId = track->getId();
 }
 
 void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {

@@ -1,11 +1,15 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QList>
 #include <QMap>
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
 #include "engine/channelhandle.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/compatibility/qmutex.h"
@@ -123,9 +127,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return numSamplers();
     }
 
-    TrackPointer getLastEjectedTrack() const {
-        return m_pLastEjectedTrack;
-    }
+    // Returns the track that was last ejected or unloaded. Can return nullptr or
+    // invalid TrackId in case of error.
+    TrackPointer getLastEjectedTrack() const;
 
     // Get the microphone by its number. Microphones are numbered starting with 1.
     Microphone* getMicrophone(unsigned int microphone) const;
@@ -208,9 +212,12 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void slotChangeNumMicrophones(double v);
     void slotChangeNumAuxiliaries(double v);
 
+  protected slots:
+    FRIEND_TEST(PlayerManagerTest, UnEjectInvalidTrackIdTest);
+    void slotSaveEjectedTrack(TrackPointer track);
+
   private slots:
     void slotAnalyzeTrack(TrackPointer track);
-    void slotSaveEjectedTrack(TrackPointer track);
 
     void onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
     void onTrackAnalysisFinished();
@@ -265,6 +272,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QString m_lastLoadedPlayer;
 
     UserSettingsPointer m_pConfig;
+    Library* m_pLibrary;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
     EngineMaster* m_pEngine;
@@ -278,7 +286,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
-    TrackPointer m_pLastEjectedTrack;
+    TrackId m_pLastEjectedTrackId;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
