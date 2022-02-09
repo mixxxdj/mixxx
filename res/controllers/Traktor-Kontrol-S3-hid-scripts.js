@@ -146,6 +146,9 @@ TraktorS3.Controller = function() {
     // If true, channel 4 is in input mode
     this.channel4InputMode = false;
 
+    // Represents the first-pressed deck switch button, used for tracking deck clones.
+    this.deckSwitchPressed = "";
+
     // callbacks
     this.samplerCallbacks = [];
 };
@@ -1791,6 +1794,20 @@ TraktorS3.Controller.prototype.headphoneHandler = function(field) {
 
 TraktorS3.Controller.prototype.deckSwitchHandler = function(field) {
     if (field.value === 0) {
+        if (this.deckSwitchPressed === field.group) {
+            this.deckSwitchPressed = "";
+        }
+        return;
+    }
+
+    if (this.deckSwitchPressed === "") {
+        this.deckSwitchPressed = field.group;
+    } else {
+        // If a different deck switch is already pressed, do an instant double and do not select the
+        // deck.
+        var cloneFrom = this.Channels[this.deckSwitchPressed];
+        var cloneFromNum = cloneFrom.parentDeck.deckNumber;
+        engine.setValue(field.group, "CloneFromDeck", cloneFromNum);
         return;
     }
 
