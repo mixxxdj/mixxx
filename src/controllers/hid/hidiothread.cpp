@@ -155,6 +155,12 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
         return QByteArray();
     }
 
+    // Convert array of bytes read in a JavaScript compatible return type, this is returned as deep-copy, for thread safety.
+    // For compatibility with HidController::processInputReport, the reportID prefix is included added here
+    QByteArray returnArray = QByteArray(
+            reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]),
+            bytesRead);
+
     lock.unlock();
 
     qCDebug(m_logInput) << bytesRead << "bytes received by hid_get_input_report"
@@ -168,11 +174,7 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
                         << (mixxx::Time::elapsed() - startOfHidGetInputReport)
                                    .formatMicrosWithUnit();
 
-    // Convert array of bytes read in a JavaScript compatible return type, this is returned as deep-copy, for thread safety.
-    // For compatibility with HidController::processInputReport, the reportID prefix is included added here
-    return QByteArray(
-            reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]),
-            bytesRead);
+    return returnArray;
 }
 
 void HidIoThread::latchOutputReport(const QByteArray& data, unsigned int reportID) {
@@ -290,7 +292,7 @@ QByteArray HidIoThread::getFeatureReport(
             << (mixxx::Time::elapsed() - startOfHidGetFeatureReport)
                        .formatMicrosWithUnit();
 
-    // Convert array of bytes read in a JavaScript compatible return type, this is returned as deep-copy, for thread safety.
+    // Convert array of bytes read in a JavaScript compatible return type.
     // For compatibility with input array HidController::sendFeatureReport, a reportID prefix is not added here
     return QByteArray(reinterpret_cast<const char*>(dataRead + kReportIdSize),
             bytesRead - kReportIdSize);
