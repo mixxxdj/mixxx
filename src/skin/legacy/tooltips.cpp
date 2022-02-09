@@ -450,12 +450,17 @@ void Tooltips::addStandardTooltips() {
     add("rate_toggle")
         <<tr("Toggle visibility of Rate Control");
 
-    // Used in cue/hotcue/loop tooltips below.
-    QString quantizeSnap = tr("If quantize is enabled, snaps to the nearest beat.");
+    // Used in play tooltips below.
+    QString quantizeDescription = tr("If quantize is enabled, seeks playhead to the nearest beat.");
     add("quantize")
             << tr("Quantize")
-            << tr("Toggles quantization.")
-            << tr("Loops and cues snap to the nearest beat when quantization is enabled.");
+            << tr("Seeks playhead to the nearest beat when pressing play.");
+
+    // Used in cue/hotcue/loop tooltips below.
+    QString snapDescription = tr("If snap is enabled, snaps to the nearest beat.");
+    add("snap")
+            << tr("Snap")
+            << tr("Snap loop and cues to the nearest beat when placing them.");
 
     // Reverse and reverseroll (censor)
     add("reverse")
@@ -485,22 +490,24 @@ void Tooltips::addStandardTooltips() {
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
             << QString("%1 %2: %3").arg(leftClick, whilePreviewing, latchingPlay)
+            << quantizeDescription
             << QString("%1: %2").arg(rightClick, cueSet);
 
     // Currently used for minimal decks
     add("play_cue_default")
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
+            << quantizeDescription
             << QString("%1 %2: %3").arg(rightClick, whilePlaying, cueWhilePlaying)
             << QString("%1 %2: %3").arg(rightClick, whileStopped, cueWhileStopped)
             << cueHint
-            << quantizeSnap;
+            << snapDescription;
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
             << QString("%1 %2: %3").arg(leftClick, whilePlaying, cueWhilePlaying)
             << QString("%1 %2: %3").arg(leftClick, whileStopped, cueWhileStopped)
             << cueHint
-            << quantizeSnap
+            << snapDescription
             << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."))
             << QString("%1 %2: %3").arg(rightClick, whilePreviewing, latchingPlay);
     add("cue_gotoandplay_cue_default")
@@ -509,9 +516,9 @@ void Tooltips::addStandardTooltips() {
             << QString("%1 %2: %3").arg(rightClick, whilePlaying, cueWhilePlaying)
             << QString("%1 %2: %3").arg(rightClick, whileStopped, cueWhileStopped)
             << cueHint
-            << quantizeSnap;
+            << snapDescription;
 
-      add("pfl")
+    add("pfl")
             << tr("Headphone")
             << tr("Sends the selected channel's audio to the headphone output, "
                   "selected in Preferences -> Sound Hardware.");
@@ -615,7 +622,7 @@ void Tooltips::addStandardTooltips() {
                              tr("If hotcue is set, jumps to the hotcue."))
                   << tr("If hotcue is not set, sets the hotcue to the current "
                         "play position.")
-                  << quantizeSnap
+                  << snapDescription
                   << QString("%1: %2").arg(rightClick,
                              tr("Opens a menu to clear hotcues or edit their "
                                 "labels and colors."))
@@ -679,19 +686,19 @@ void Tooltips::addStandardTooltips() {
     add("loop_in")
             << tr("Loop-In Marker")
             << QString("%1: %2").arg(leftClick + " " + loopInactive,
-                      tr("Sets the track Loop-In Marker to the current play position."))
-            << quantizeSnap
+                       tr("Sets the track Loop-In Marker to the current play position."))
+            << snapDescription
             << QString("%1: %2").arg(leftClick + " " + loopActive,
-                      tr("Press and hold to move Loop-In Marker."))
+                       tr("Press and hold to move Loop-In Marker."))
             << QString("%1: %2").arg(rightClick, tr("Jump to Loop-In Marker."));
 
     add("loop_out")
             << tr("Loop-Out Marker")
             << QString("%1: %2").arg(leftClick + " " + loopInactive,
-                      tr("Sets the track Loop-Out Marker to the current play position."))
-            << quantizeSnap
+                       tr("Sets the track Loop-Out Marker to the current play position."))
+            << snapDescription
             << QString("%1: %2").arg(leftClick + " " + loopActive,
-                      tr("Press and hold to move Loop-Out Marker."))
+                       tr("Press and hold to move Loop-Out Marker."))
             << QString("%1: %2").arg(rightClick, tr("Jump to Loop-Out Marker."));
 
     add("loop_halve")
@@ -718,7 +725,7 @@ void Tooltips::addStandardTooltips() {
     add("beatloop_activate")
             << tr("Beatloop")
             << QString("%1: %2").arg(leftClick, tr("Start a loop over the set number of beats."))
-            << quantizeSnap
+            << snapDescription
             << QString("%1: %2").arg(rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
@@ -846,28 +853,28 @@ void Tooltips::addStandardTooltips() {
             << tr("Intro Start Marker")
             << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
             << tr("If marker is not set, sets the marker to the current play position.")
-            << quantizeSnap
+            << snapDescription
             << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
 
     add("intro_end")
             << tr("Intro End Marker")
             << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
             << tr("If marker is not set, sets the marker to the current play position.")
-            << quantizeSnap
+            << snapDescription
             << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
 
     add("outro_start")
             << tr("Outro Start Marker")
             << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
             << tr("If marker is not set, sets the marker to the current play position.")
-            << quantizeSnap
+            << snapDescription
             << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
 
     add("outro_end")
             << tr("Outro End Marker")
             << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
             << tr("If marker is not set, sets the marker to the current play position.")
-            << quantizeSnap
+            << snapDescription
             << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
 
     // Effect Unit Controls

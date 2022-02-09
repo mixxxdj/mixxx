@@ -120,6 +120,15 @@
 
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
+      <Template src="skin:/controls/button_2state.xml">
+        <SetVariable name="TooltipId">snap</SetVariable>
+        <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+        <SetVariable name="Size">50f,20f</SetVariable>
+        <SetVariable name="state_0_text">SNAP</SetVariable>
+        <SetVariable name="state_1_text">SNAP</SetVariable>
+        <SetVariable name="ConfigKey">[Master],snap</SetVariable>
+      </Template>
+
       <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
 
       <StatusLight>

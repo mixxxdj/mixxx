@@ -118,6 +118,7 @@ LoopingControl::LoopingControl(const QString& group,
             this, &LoopingControl::slotLoopEndPos,
             Qt::DirectConnection);
 
+    m_pSnapEnabled = ControlObject::getControl(ConfigKey("[Master]", "snap"));
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
     m_pNextBeat = ControlObject::getControl(ConfigKey(group, "beat_next"));
     m_pPreviousBeat = ControlObject::getControl(ConfigKey(group, "beat_prev"));
@@ -621,25 +622,25 @@ void LoopingControl::setLoopInToCurrentPosition() {
     // set loop-in position
     const mixxx::BeatsPointer pBeats = m_pBeats;
     LoopInfo loopInfo = m_loopInfo.getValue();
-    mixxx::audio::FramePos quantizedBeatPosition;
+    mixxx::audio::FramePos snappedBeatPosition;
     mixxx::audio::FramePos position = m_currentPosition.getValue();
-    if (m_pQuantizeEnabled->toBool() && pBeats) {
+    if (m_pSnapEnabled->toBool() && pBeats) {
         const auto closestBeatPosition =
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         m_pClosestBeat->get());
         if (m_bAdjustingLoopIn) {
             if (closestBeatPosition == m_currentPosition.getValue()) {
-                quantizedBeatPosition = closestBeatPosition;
+                snappedBeatPosition = closestBeatPosition;
             } else {
-                quantizedBeatPosition =
+                snappedBeatPosition =
                         mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                                 m_pPreviousBeat->get());
             }
         } else {
-            quantizedBeatPosition = closestBeatPosition;
+            snappedBeatPosition = closestBeatPosition;
         }
-        if (quantizedBeatPosition.isValid()) {
-            position = quantizedBeatPosition;
+        if (snappedBeatPosition.isValid()) {
+            position = snappedBeatPosition;
         }
     }
 
@@ -655,8 +656,8 @@ void LoopingControl::setLoopInToCurrentPosition() {
     //  pre-defined beatloop size instead (when possible)
     if (loopInfo.endPosition.isValid() &&
             (loopInfo.endPosition - position) < kMinimumAudibleLoopSizeFrames) {
-        if (quantizedBeatPosition.isValid() && pBeats) {
-            position = pBeats->findNthBeat(quantizedBeatPosition, -2);
+        if (snappedBeatPosition.isValid() && pBeats) {
+            position = pBeats->findNthBeat(snappedBeatPosition, -2);
             if (!position.isValid() ||
                     (loopInfo.endPosition - position) <
                             kMinimumAudibleLoopSizeFrames) {
@@ -679,7 +680,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
         loopInfo.seekMode = LoopSeekMode::MovedOut;
     }
 
-    if (m_pQuantizeEnabled->toBool() && loopInfo.startPosition.isValid() &&
+    if (m_pSnapEnabled->toBool() && loopInfo.startPosition.isValid() &&
             loopInfo.endPosition.isValid() &&
             loopInfo.startPosition < loopInfo.endPosition && pBeats) {
         m_pCOBeatLoopSize->setAndConfirm(pBeats->numBeatsInRange(
@@ -738,25 +739,25 @@ void LoopingControl::slotLoopInGoto(double pressed) {
 void LoopingControl::setLoopOutToCurrentPosition() {
     mixxx::BeatsPointer pBeats = m_pBeats;
     LoopInfo loopInfo = m_loopInfo.getValue();
-    mixxx::audio::FramePos quantizedBeatPosition;
+    mixxx::audio::FramePos snappedBeatPosition;
     mixxx::audio::FramePos position = m_currentPosition.getValue();
-    if (m_pQuantizeEnabled->toBool() && pBeats) {
+    if (m_pSnapEnabled->toBool() && pBeats) {
         const auto closestBeatPosition =
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         m_pClosestBeat->get());
         if (m_bAdjustingLoopOut) {
             if (closestBeatPosition == m_currentPosition.getValue()) {
-                quantizedBeatPosition = closestBeatPosition;
+                snappedBeatPosition = closestBeatPosition;
             } else {
-                quantizedBeatPosition =
+                snappedBeatPosition =
                         mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                                 m_pNextBeat->get());
             }
         } else {
-            quantizedBeatPosition = closestBeatPosition;
+            snappedBeatPosition = closestBeatPosition;
         }
-        if (quantizedBeatPosition.isValid()) {
-            position = quantizedBeatPosition;
+        if (snappedBeatPosition.isValid()) {
+            position = snappedBeatPosition;
         }
     }
 
@@ -767,11 +768,11 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     }
 
     // If the loop-in and out points are set so close that the loop would be
-    //  inaudible (which can happen easily with quantize-to-beat enabled,)
+    //  inaudible (which can happen easily with snap-to-beat enabled,)
     //  use the smallest pre-defined beatloop instead (when possible)
     if ((position - loopInfo.startPosition) < kMinimumAudibleLoopSizeFrames) {
-        if (quantizedBeatPosition.isValid() && pBeats) {
-            position = pBeats->findNthBeat(quantizedBeatPosition, 2);
+        if (snappedBeatPosition.isValid() && pBeats) {
+            position = pBeats->findNthBeat(snappedBeatPosition, 2);
             if (!position.isValid() ||
                     (position - loopInfo.startPosition) <
                             kMinimumAudibleLoopSizeFrames) {
@@ -795,7 +796,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
         loopInfo.seekMode = LoopSeekMode::MovedOut;
     }
 
-    if (m_pQuantizeEnabled->toBool() && pBeats) {
+    if (m_pSnapEnabled->toBool() && pBeats) {
         m_pCOBeatLoopSize->setAndConfirm(pBeats->numBeatsInRange(
                 loopInfo.startPosition, loopInfo.endPosition));
         updateBeatLoopingControls();
@@ -1219,7 +1220,7 @@ void LoopingControl::updateBeatLoopingControls() {
     clearActiveBeatLoop();
 }
 
-mixxx::audio::FramePos LoopingControl::findQuantizedBeatloopStart(
+mixxx::audio::FramePos LoopingControl::findSnappedBeatloopStart(
         const mixxx::BeatsPointer& pBeats,
         mixxx::audio::FramePos currentPosition,
         double beats) const {
@@ -1323,12 +1324,12 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             currentPosition = pBeats->findNBeatsFromPosition(currentPosition, -beats);
         }
 
-        if (!m_pQuantizeEnabled->toBool()) {
+        if (!m_pSnapEnabled->toBool()) {
             newloopInfo.startPosition = currentPosition;
         } else {
-            // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
+            // loop_in is set to the closest beat if snap is on and the loop size is >= 1 beat.
             // The closest beat might be ahead of play position and will cause a catching loop.
-            newloopInfo.startPosition = findQuantizedBeatloopStart(pBeats, currentPosition, beats);
+            newloopInfo.startPosition = findSnappedBeatloopStart(pBeats, currentPosition, beats);
         }
     }
 

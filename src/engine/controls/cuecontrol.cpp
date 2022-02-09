@@ -90,9 +90,11 @@ CueControl::CueControl(const QString& group,
 
     m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
 
-    m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
-    connect(m_pQuantizeEnabled, &ControlObject::valueChanged,
-            this, &CueControl::quantizeChanged,
+    m_pSnapEnabled = ControlObject::getControl(ConfigKey("[Master]", "snap"));
+    connect(m_pSnapEnabled,
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::snapChanged,
             Qt::DirectConnection);
 
     m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
@@ -488,9 +490,9 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     }
     case SeekOnLoadMode::MainCue: {
         // Take main cue position from CO instead of cue point list because
-        // value in CO will be quantized if quantization is enabled
-        // while value in cue point list will never be quantized.
-        // This prevents jumps when track analysis finishes while quantization is enabled.
+        // value in CO will be snapped if snapping is enabled
+        // while value in cue point list will never be snapped.
+        // This prevents jumps when track analysis finishes while snapping is enabled.
         const auto mainCuePosition =
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         m_pCuePoint->get());
@@ -602,8 +604,8 @@ void CueControl::loadCuesFromTrack() {
     }
 
     if (pIntroCue) {
-        const auto startPosition = quantizeCuePoint(pIntroCue->getPosition());
-        const auto endPosition = quantizeCuePoint(pIntroCue->getEndPosition());
+        const auto startPosition = snapCuePoint(pIntroCue->getPosition());
+        const auto endPosition = snapCuePoint(pIntroCue->getEndPosition());
 
         m_pIntroStartPosition->set(startPosition.toEngineSamplePosMaybeInvalid());
         m_pIntroStartEnabled->forceSet(startPosition.isValid());
@@ -617,8 +619,8 @@ void CueControl::loadCuesFromTrack() {
     }
 
     if (pOutroCue) {
-        const auto startPosition = quantizeCuePoint(pOutroCue->getPosition());
-        const auto endPosition = quantizeCuePoint(pOutroCue->getEndPosition());
+        const auto startPosition = snapCuePoint(pOutroCue->getPosition());
+        const auto endPosition = snapCuePoint(pOutroCue->getEndPosition());
 
         m_pOutroStartPosition->set(startPosition.toEngineSamplePosMaybeInvalid());
         m_pOutroStartEnabled->forceSet(startPosition.isValid());
@@ -662,8 +664,8 @@ void CueControl::loadCuesFromTrack() {
     }
 
     DEBUG_ASSERT(mainCuePosition.isValid());
-    const auto quantizedMainCuePosition = quantizeCuePoint(mainCuePosition);
-    m_pCuePoint->set(quantizedMainCuePosition.toEngineSamplePosMaybeInvalid());
+    const auto snappedMainCuePosition = snapCuePoint(mainCuePosition);
+    m_pCuePoint->set(snappedMainCuePosition.toEngineSamplePosMaybeInvalid());
 }
 
 void CueControl::trackAnalyzed() {
@@ -709,7 +711,7 @@ void CueControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     loadCuesFromTrack();
 }
 
-void CueControl::quantizeChanged(double v) {
+void CueControl::snapChanged(double v) {
     Q_UNUSED(v);
 
     // check if we were at the cue point before
@@ -769,7 +771,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
     switch (mode) {
     case HotcueSetMode::Cue: {
         // If no loop is enabled, just store regular jump cue
-        cueStartPosition = getQuantizedCurrentPosition();
+        cueStartPosition = getSnappedCurrentPosition();
         cueType = mixxx::CueType::HotCue;
         break;
     }
@@ -785,7 +787,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
         } else {
             // If no loop is enabled, save a loop starting from the current
             // position and with the current beatloop size
-            cueStartPosition = getQuantizedCurrentPosition();
+            cueStartPosition = getSnappedCurrentPosition();
             double beatloopSize = m_pBeatLoopSize->get();
             const mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
             if (beatloopSize <= 0 || !pBeats) {
@@ -848,13 +850,13 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
         setCurrentSavedLoopControlAndActivate(pControl);
     }
 
-    // If quantize is enabled and we are not playing, jump to the cue point
+    // If snap is enabled and we are not playing, jump to the cue point
     // since it's not necessarily where we currently are. TODO(XXX) is this
     // potentially invalid for vinyl control?
     bool playing = m_pPlay->toBool();
-    if (!playing && m_pQuantizeEnabled->toBool()) {
+    if (!playing && m_pSnapEnabled->toBool()) {
         lock.unlock(); // prevent deadlock.
-        // Enginebuffer will quantize more exactly than we can.
+        // Enginebuffer will snap more exactly than we can.
         seekAbs(cueStartPosition);
     }
 }
@@ -1186,14 +1188,15 @@ void CueControl::hintReader(HintVector* pHintList) {
 }
 
 // Moves the cue point to current position or to closest beat in case
-// quantize is enabled
+// snap is enabled
 void CueControl::cueSet(double value) {
     if (value <= 0) {
         return;
     }
 
     auto lock = lockMutex(&m_trackMutex);
-    const mixxx::audio::FramePos position = getQuantizedCurrentPosition();
+
+    const mixxx::audio::FramePos position = getSnappedCurrentPosition();
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
@@ -1339,14 +1342,14 @@ void CueControl::cueCDJ(double value) {
             // Paused not at cue point and not at end position
             cueSet(value);
 
-            // If quantize is enabled, jump to the cue point since it's not
+            // If snap is enabled, jump to the cue point since it's not
             // necessarily where we currently are
-            if (m_pQuantizeEnabled->toBool()) {
+            if (m_pSnapEnabled->toBool()) {
                 // We need to re-get the cue point since it changed.
                 const auto newCuePosition = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         m_pCuePoint->get());
                 if (newCuePosition.isValid()) {
-                    // Enginebuffer will quantize more exactly than we can.
+                    // Enginebuffer will snap more exactly than we can.
                     seekAbs(newCuePosition);
                 }
             }
@@ -1436,13 +1439,13 @@ void CueControl::cuePlay(double value) {
             // Just in case.
             updateCurrentlyPreviewingIndex(Cue::kNoHotCue);
             m_pPlay->set(0.0);
-            // If quantize is enabled, jump to the cue point since it's not
+            // If snap is enabled, jump to the cue point since it's not
             // necessarily where we currently are
-            if (m_pQuantizeEnabled->toBool()) {
+            if (m_pSnapEnabled->toBool()) {
                 const auto newCuePosition = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         m_pCuePoint->get());
                 if (newCuePosition.isValid()) {
-                    // Enginebuffer will quantize more exactly than we can.
+                    // Enginebuffer will snap more exactly than we can.
                     seekAbs(newCuePosition);
                 }
             }
@@ -1501,7 +1504,7 @@ void CueControl::introStartSet(double value) {
 
     auto lock = lockMutex(&m_trackMutex);
 
-    const mixxx::audio::FramePos position = getQuantizedCurrentPosition();
+    const mixxx::audio::FramePos position = getSnappedCurrentPosition();
     if (!position.isValid()) {
         return;
     }
@@ -1601,7 +1604,7 @@ void CueControl::introEndSet(double value) {
 
     auto lock = lockMutex(&m_trackMutex);
 
-    const mixxx::audio::FramePos position = getQuantizedCurrentPosition();
+    const mixxx::audio::FramePos position = getSnappedCurrentPosition();
     if (!position.isValid()) {
         return;
     }
@@ -1704,7 +1707,7 @@ void CueControl::outroStartSet(double value) {
 
     auto lock = lockMutex(&m_trackMutex);
 
-    const mixxx::audio::FramePos position = getQuantizedCurrentPosition();
+    const mixxx::audio::FramePos position = getSnappedCurrentPosition();
     if (!position.isValid()) {
         return;
     }
@@ -1807,7 +1810,7 @@ void CueControl::outroEndSet(double value) {
 
     auto lock = lockMutex(&m_trackMutex);
 
-    const mixxx::audio::FramePos position = getQuantizedCurrentPosition();
+    const mixxx::audio::FramePos position = getSnappedCurrentPosition();
     if (!position.isValid()) {
         return;
     }
@@ -2095,15 +2098,15 @@ CueControl::TrackAt CueControl::getTrackAt() const {
     return TrackAt::ElseWhere;
 }
 
-mixxx::audio::FramePos CueControl::getQuantizedCurrentPosition() {
+mixxx::audio::FramePos CueControl::getSnappedCurrentPosition() {
     FrameInfo info = frameInfo();
 
     // Note: currentPos can be past the end of the track, in the padded
     // silence of the last buffer. This position might be not reachable in
     // a future runs, depending on the buffering.
 
-    // Don't quantize if quantization is disabled.
-    if (!m_pQuantizeEnabled->toBool()) {
+    // Don't snap if snapping is disabled.
+    if (!m_pSnapEnabled->toBool()) {
         return info.currentPosition;
     }
 
@@ -2120,8 +2123,8 @@ mixxx::audio::FramePos CueControl::getQuantizedCurrentPosition() {
     return info.currentPosition;
 }
 
-mixxx::audio::FramePos CueControl::quantizeCuePoint(mixxx::audio::FramePos position) {
-    // Don't quantize unset cues.
+mixxx::audio::FramePos CueControl::snapCuePoint(mixxx::audio::FramePos position) {
+    // Don't try to snap unset cues.
     if (!position.isValid()) {
         return mixxx::audio::kInvalidFramePos;
     }
@@ -2136,8 +2139,8 @@ mixxx::audio::FramePos CueControl::quantizeCuePoint(mixxx::audio::FramePos posit
         return mixxx::audio::kInvalidFramePos;
     }
 
-    // Don't quantize when quantization is disabled.
-    if (!m_pQuantizeEnabled->toBool()) {
+    // Don't snap when snapping is disabled.
+    if (!m_pSnapEnabled->toBool()) {
         return position;
     }
 
@@ -2152,11 +2155,11 @@ mixxx::audio::FramePos CueControl::quantizeCuePoint(mixxx::audio::FramePos posit
         return position;
     }
 
-    const auto quantizedPosition = pBeats->findClosestBeat(position);
+    const auto snappedPosition = pBeats->findClosestBeat(position);
     // The closest beat can be an unreachable interpolated beat past the end of
     // the track.
-    if (quantizedPosition.isValid() && quantizedPosition <= trackEndPosition) {
-        return quantizedPosition;
+    if (snappedPosition.isValid() && snappedPosition <= trackEndPosition) {
+        return snappedPosition;
     }
 
     return position;

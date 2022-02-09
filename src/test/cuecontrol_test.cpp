@@ -6,7 +6,7 @@ class CueControlTest : public BaseSignalPathTest {
     void SetUp() override {
         BaseSignalPathTest::SetUp();
 
-        m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
+        m_pSnapEnabled = std::make_unique<ControlProxy>(m_sMasterGroup, "snap");
         m_pCuePoint = std::make_unique<ControlProxy>(m_sGroup1, "cue_point");
         m_pIntroStartPosition = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_position");
         m_pIntroStartEnabled = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_enabled");
@@ -60,7 +60,7 @@ class CueControlTest : public BaseSignalPathTest {
         ProcessBuffer();
     }
 
-    std::unique_ptr<ControlProxy> m_pQuantizeEnabled;
+    std::unique_ptr<ControlProxy> m_pSnapEnabled;
     std::unique_ptr<ControlProxy> m_pCuePoint;
     std::unique_ptr<ControlProxy> m_pIntroStartPosition;
     std::unique_ptr<ControlProxy> m_pIntroStartEnabled;
@@ -184,8 +184,8 @@ TEST_F(CueControlTest, LoadTrackWithIntroEndAndOutroStart) {
     EXPECT_FALSE(m_pOutroEndEnabled->toBool());
 }
 
-TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
-    m_pQuantizeEnabled->set(1);
+TEST_F(CueControlTest, LoadAutodetectedCues_SnapEnabled) {
+    m_pSnapEnabled->set(1);
 
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
@@ -195,13 +195,13 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
     const double beatLengthFrames = (60.0 * sampleRate / bpm);
 
     const auto kIntroStartPosition = mixxx::audio::FramePos(2.1 * beatLengthFrames);
-    const auto kQuantizedIntroStartPosition = mixxx::audio::FramePos(2.0 * beatLengthFrames);
+    const auto kSnappedIntroStartPosition = mixxx::audio::FramePos(2.0 * beatLengthFrames);
     const auto kIntroEndPosition = mixxx::audio::FramePos(3.7 * beatLengthFrames);
-    const auto kQuantizedIntroEndPosition = mixxx::audio::FramePos(4.0 * beatLengthFrames);
+    const auto kSnappedIntroEndPosition = mixxx::audio::FramePos(4.0 * beatLengthFrames);
     const auto kOutroStartPosition = mixxx::audio::FramePos(11.1 * beatLengthFrames);
-    const auto kQuantizedOutroStartPosition = mixxx::audio::FramePos(11.0 * beatLengthFrames);
+    const auto kSnappedOutroStartPosition = mixxx::audio::FramePos(11.0 * beatLengthFrames);
     const auto kOutroEndPosition = mixxx::audio::FramePos(15.5 * beatLengthFrames);
-    const auto kQuantizedOutroEndPosition = mixxx::audio::FramePos(16.0 * beatLengthFrames);
+    const auto kSnappedOutroEndPosition = mixxx::audio::FramePos(16.0 * beatLengthFrames);
 
     pTrack->setMainCuePosition(mixxx::audio::FramePos(1.9 * beatLengthFrames));
 
@@ -219,15 +219,15 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
 
     loadTrack(pTrack);
 
-    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedIntroStartPosition, m_pCuePoint);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedIntroStartPosition, m_pIntroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedIntroEndPosition, m_pIntroEndPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedOutroStartPosition, m_pOutroStartPosition);
-    EXPECT_FRAMEPOS_EQ_CONTROL(kQuantizedOutroEndPosition, m_pOutroEndPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kSnappedIntroStartPosition, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kSnappedIntroStartPosition, m_pIntroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kSnappedIntroEndPosition, m_pIntroEndPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kSnappedOutroStartPosition, m_pOutroStartPosition);
+    EXPECT_FRAMEPOS_EQ_CONTROL(kSnappedOutroEndPosition, m_pOutroEndPosition);
 }
 
-TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabledNoBeats) {
-    m_pQuantizeEnabled->set(1);
+TEST_F(CueControlTest, LoadAutodetectedCues_SnapEnabledNoBeats) {
+    m_pSnapEnabled->set(1);
 
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(0.0);
@@ -256,8 +256,8 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabledNoBeats) {
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(800.0), m_pOutroEndPosition);
 }
 
-TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
-    m_pQuantizeEnabled->set(0);
+TEST_F(CueControlTest, LoadAutodetectedCues_SnapDisabled) {
+    m_pSnapEnabled->set(0);
 
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
@@ -364,7 +364,7 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos(-200.0), getCurrentFramePos());
 }
 
-TEST_F(CueControlTest, FollowCueOnQuantize) {
+TEST_F(CueControlTest, FollowCueOnSnapEnable) {
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();
@@ -374,7 +374,7 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
     const double bpm = pTrack->getBpm();
     const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / bpm);
     const auto cuePos = mixxx::audio::FramePos(1.8 * beatLengthFrames);
-    const auto quantizedCuePos = mixxx::audio::FramePos(2.0 * beatLengthFrames);
+    const auto snappedCuePos = mixxx::audio::FramePos(2.0 * beatLengthFrames);
     pTrack->setMainCuePosition(cuePos);
 
     loadTrack(pTrack);
@@ -382,23 +382,23 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
     EXPECT_FRAMEPOS_EQ_CONTROL(cuePos, m_pCuePoint);
     EXPECT_FRAMEPOS_EQ(cuePos, getCurrentFramePos());
 
-    // enable quantization and expect current position to follow
-    m_pQuantizeEnabled->set(1);
+    // enable snap and expect current position to follow
+    m_pSnapEnabled->set(1);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(quantizedCuePos, m_pCuePoint);
-    EXPECT_FRAMEPOS_EQ(quantizedCuePos, getCurrentFramePos());
+    EXPECT_FRAMEPOS_EQ_CONTROL(snappedCuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ(snappedCuePos, getCurrentFramePos());
 
     // move current position to track start
-    m_pQuantizeEnabled->set(0);
+    m_pSnapEnabled->set(0);
     ProcessBuffer();
     setCurrentFramePos(mixxx::audio::kStartFramePos);
     ProcessBuffer();
     EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, getCurrentFramePos());
 
-    // enable quantization again and expect play position to stay at track start
-    m_pQuantizeEnabled->set(1);
+    // enable snap again and expect play position to stay at track start
+    m_pSnapEnabled->set(1);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ_CONTROL(quantizedCuePos, m_pCuePoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(snappedCuePos, m_pCuePoint);
     EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, getCurrentFramePos());
 }
 
@@ -406,7 +406,7 @@ TEST_F(CueControlTest, SeekOnSetCueCDJ) {
     // Regression test for https://bugs.launchpad.net/mixxx/+bug/1946415
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
-    m_pQuantizeEnabled->set(1);
+    m_pSnapEnabled->set(1);
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
@@ -436,7 +436,7 @@ TEST_F(CueControlTest, SeekOnSetCuePlay) {
     // Regression test for https://bugs.launchpad.net/mixxx/+bug/1946415
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
-    m_pQuantizeEnabled->set(1);
+    m_pSnapEnabled->set(1);
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 

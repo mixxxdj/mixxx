@@ -134,7 +134,7 @@ class LoopingControl : public EngineControl {
             mixxx::audio::FramePos oldLoopInPosition,
             mixxx::audio::FramePos newLoopInPosition,
             mixxx::audio::FramePos newLoopOutPosition);
-    mixxx::audio::FramePos findQuantizedBeatloopStart(
+    mixxx::audio::FramePos findSnappedBeatloopStart(
             const mixxx::BeatsPointer& pBeats,
             mixxx::audio::FramePos currentPosition,
             double beats) const;
@@ -169,6 +169,7 @@ class LoopingControl : public EngineControl {
     ControlValueAtomic<LoopInfo> m_loopInfo;
     LoopInfo m_oldLoopInfo;
     ControlValueAtomic<mixxx::audio::FramePos> m_currentPosition;
+    ControlObject* m_pSnapEnabled;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
     ControlObject* m_pPreviousBeat;

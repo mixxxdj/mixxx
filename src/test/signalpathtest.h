@@ -76,6 +76,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
+        m_pSnapEnabled = std::make_unique<ControlPushButton>(ConfigKey(m_sMasterGroup, "snap"));
         m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
         m_pEngineMaster = new TestEngineMaster(m_pConfig,
                 m_sMasterGroup,
@@ -242,6 +243,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
+    std::unique_ptr<ControlPushButton> m_pSnapEnabled;
     std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;

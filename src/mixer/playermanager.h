@@ -15,6 +15,7 @@
 class Auxiliary;
 class BaseTrackPlayer;
 class ControlObject;
+class ControlPushButton;
 class Deck;
 class EffectsManager;
 class EngineMaster;
@@ -279,4 +280,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
     QMap<ChannelHandle, BaseTrackPlayer*> m_players;
+
+    ControlPushButton* m_pCOSnapEnabled;
 };
