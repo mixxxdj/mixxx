@@ -48,6 +48,8 @@ tools/debian_buildenv.sh setup` respectively), then run:
 There should now be a `mixxx` executable in the current directory that you can
 run. Alternatively, can generate a package using `cpack`.
 
+*Note: Using Powershell may be problematic. If you are having trouble building the .sln from a Windows environment (i.e. cmake FindChromaprint) try opening CMD and launching the build script `.\tools\windows_buildenv.bat` from the command line.*
+
 More Information can be found on the [wiki]:
 
 - [Compiling on Linux]
