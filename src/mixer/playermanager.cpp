@@ -188,17 +188,12 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     // analyzed.
     foreach(Deck* pDeck, m_decks) {
         connect(pDeck, &BaseTrackPlayer::newTrackLoaded, this, &PlayerManager::slotAnalyzeTrack);
-        connect(pDeck, &BaseTrackPlayer::trackUnloaded, this, &PlayerManager::slotSaveEjectedTrack);
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analyzed.
     foreach(Sampler* pSampler, m_samplers) {
         connect(pSampler, &BaseTrackPlayer::newTrackLoaded, this, &PlayerManager::slotAnalyzeTrack);
-        connect(pSampler,
-                &BaseTrackPlayer::trackUnloaded,
-                this,
-                &PlayerManager::slotSaveEjectedTrack);
     }
 
     // Connect the player to the analyzer queue so that loaded tracks are
@@ -416,6 +411,10 @@ void PlayerManager::addDeckInner() {
             &BaseTrackPlayer::noVinylControlInputConfigured,
             this,
             &PlayerManager::noVinylControlInputConfigured);
+    connect(pDeck,
+            &BaseTrackPlayer::trackUnloaded,
+            this,
+            &PlayerManager::slotSaveEjectedTrack);
 
     if (m_pTrackAnalysisScheduler) {
         connect(pDeck,
@@ -474,6 +473,10 @@ void PlayerManager::addSamplerInner() {
                 this,
                 &PlayerManager::slotAnalyzeTrack);
     }
+    connect(pSampler,
+            &BaseTrackPlayer::trackUnloaded,
+            this,
+            &PlayerManager::slotSaveEjectedTrack);
 
     m_players[handleGroup.handle()] = pSampler;
     m_samplers.append(pSampler);

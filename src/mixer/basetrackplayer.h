@@ -41,6 +41,7 @@ class BaseTrackPlayer : public BasePlayer {
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
+    virtual void slotEjectTrack(double) = 0;
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -77,7 +78,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) final;
-    void slotEjectTrack(double);
+    void slotEjectTrack(double) final;
     void slotCloneFromGroup(const QString& group) final;
     void slotCloneDeck() final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
