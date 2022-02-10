@@ -116,6 +116,8 @@ int HidController::open() {
 
     // Controller input needs to be prioritized since it can affect the
     // audio directly, like when scratching
+    // The effect of the priority parameter is dependent on the operating system's scheduling policy.
+    // In particular, the priority will be ignored on systems that do not support thread priorities (as Linux).
     m_pHidIoThread->start(QThread::HighPriority);
 
     VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
