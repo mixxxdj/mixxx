@@ -146,7 +146,7 @@ int HidController::close() {
     // Stop the InputReport polling, but allow sending OutputReports in JavaScript mapping shutdown procedure
     VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread) {
         qWarning() << "HidIoThread not present for" << getName()
-                   << "yet the device is open!";
+                   << "while closing the device !";
     }
     else {
         VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
@@ -197,8 +197,8 @@ int HidController::close() {
     }
 
     // Close device
-    qCInfo(m_logBase) << "Closing device";
     setOpen(false);
+    qCInfo(m_logBase) << "Device closed";
     return 0;
 }
 
