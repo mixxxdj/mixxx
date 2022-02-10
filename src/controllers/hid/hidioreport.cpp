@@ -54,14 +54,18 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
             // Only HID Feature items may be attributes of other items.
             // This means there is always a one to one relationship to the state of control(s)/LED(s),
             // and if the state is not changed, there's no need to execute the time consuming hid_write again.
+
+            // Setting m_possiblyUnsendDataLatched to false prevents,
+            // that the byte array compare operation is executed for the same data again
+            m_possiblyUnsendDataLatched = false;
+
+            lock.unlock();
+
             qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
                                << " Skipped identical Output Report for"
                                << deviceInfo.formatName() << "serial #"
                                << deviceInfo.serialNumberRaw() << "(Report ID"
                                << m_reportId << ")";
-
-            // Setting m_possiblyUnsendDataLatched to false prevents, that the byte array compare operation is executed for the same data again
-            m_possiblyUnsendDataLatched = false;
 
             // Return with false, to signal the caller, that no time consuming IO operation was necessary
             return false;
