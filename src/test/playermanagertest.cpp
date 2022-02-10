@@ -2,13 +2,16 @@
 
 #include <QTest>
 
+#include "control/controlindicatortimer.h"
 #include "database/mixxxdb.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/deck.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "test/librarytest.h"
+#include "sources/soundsourceproxy.h"
+#include "test/mixxxdbtest.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
 
@@ -17,8 +20,30 @@ const QString kTrackLocationTest1(QDir::currentPath() %
 const QString kTrackLocationTest2(QDir::currentPath() %
         "/src/test/id3-test-data/cover-test-vbr.mp3");
 
-class PlayerManagerTest : public LibraryTest { //, SoundSourceProviderRegistration {
+void deleteTrack(Track* pTrack) {
+    // Delete track objects directly in unit tests with
+    // no main event loop
+    delete pTrack;
+};
+
+// We can't inherit from LibraryTest because that creates a key_notation control object that is also
+// created by the Library object itself. The duplicated CO creation causes a debug assert.
+// Similarly, SoundSourceProviderRegistration doesn't work because it tries to register providers
+// more than once.
+class PlayerManagerTest : public MixxxDbTest {
+  public:
+    PlayerManagerTest()
+            : MixxxDbTest(true) {
+        // SoundSourceProxy does not support tear-down, so we have to test to see if it's already
+        // been run once.
+        if (!SoundSourceProxy::isFileSuffixSupported("wav")) {
+            SoundSourceProxy::registerProviders();
+        }
+    }
+
     void SetUp() override {
+        // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
+        // but it does a lot of local disk / settings setup.
         auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
         m_pEngine = std::make_shared<EngineMaster>(
@@ -28,31 +53,64 @@ class PlayerManagerTest : public LibraryTest { //, SoundSourceProviderRegistrati
                 pChannelHandleFactory,
                 true);
         m_pSoundManager = std::make_shared<SoundManager>(m_pConfig, m_pEngine.get());
+        m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
         m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager.get());
         m_pPlayerManager = std::make_shared<PlayerManager>(m_pConfig,
                 m_pSoundManager.get(),
                 m_pEffectsManager.get(),
                 m_pEngine.get());
 
+        m_pPlayerManager->addConfiguredDecks();
+        m_pPlayerManager->addSampler();
+        PlayerInfo::create();
+
+        const auto dbConnection = mixxx::DbConnectionPooled(dbConnectionPooler());
+        if (!MixxxDb::initDatabaseSchema(dbConnection)) {
+            exit(1);
+        }
+        m_pTrackCollectionManager = std::make_unique<TrackCollectionManager>(
+                nullptr,
+                m_pConfig,
+                dbConnectionPooler(),
+                deleteTrack);
+
         m_pRecordingManager = std::make_shared<RecordingManager>(m_pConfig, m_pEngine.get());
         m_pLibrary = std::make_shared<Library>(
                 nullptr,
                 m_pConfig,
                 dbConnectionPooler(),
-                trackCollectionManager(),
+                m_pTrackCollectionManager.get(),
                 m_pPlayerManager.get(),
                 m_pRecordingManager.get());
 
-        m_pPlayerManager->addConfiguredDecks();
-        m_pPlayerManager->addSampler();
         m_pPlayerManager->bindToLibrary(m_pLibrary.get());
     }
 
+    ~PlayerManagerTest() {
+        m_pSoundManager.reset();
+        m_pPlayerManager.reset();
+        PlayerInfo::destroy();
+        m_pLibrary.reset();
+        m_pRecordingManager.reset();
+        m_pEngine.reset();
+        m_pEffectsManager.reset();
+        m_pTrackCollectionManager.reset();
+        m_pControlIndicatorTimer.reset();
+    }
+
   protected:
+    TrackPointer getOrAddTrackByLocation(
+            const QString& trackLocation) const {
+        return m_pTrackCollectionManager->getOrAddTrack(
+                TrackRef::fromFilePath(trackLocation));
+    }
+
     std::shared_ptr<EffectsManager> m_pEffectsManager;
+    std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EngineMaster> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
+    std::unique_ptr<TrackCollectionManager> m_pTrackCollectionManager;
     std::shared_ptr<RecordingManager> m_pRecordingManager;
     std::shared_ptr<Library> m_pLibrary;
 };
