@@ -63,6 +63,7 @@ class PlayerManagerTest : public MixxxDbTest {
         m_pPlayerManager->addConfiguredDecks();
         m_pPlayerManager->addSampler();
         PlayerInfo::create();
+        m_pEffectsManager->setup();
 
         const auto dbConnection = mixxx::DbConnectionPooled(dbConnectionPooler());
         if (!MixxxDb::initDatabaseSchema(dbConnection)) {
