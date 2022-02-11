@@ -40,17 +40,9 @@ struct EffectsRequest {
               value(0.0) {
         pTargetChain = nullptr;
         pTargetEffect = nullptr;
-#define CLEAR_STRUCT(x) memset(&x, 0, sizeof(x));
-        CLEAR_STRUCT(AddEffectChain);
-        CLEAR_STRUCT(RemoveEffectChain);
-        CLEAR_STRUCT(EnableInputChannelForChain);
-        CLEAR_STRUCT(DisableInputChannelForChain);
-        CLEAR_STRUCT(AddEffectToChain);
-        CLEAR_STRUCT(RemoveEffectFromChain);
-        CLEAR_STRUCT(SetEffectChainParameters);
-        CLEAR_STRUCT(SetEffectParameters);
-        CLEAR_STRUCT(SetParameterParameters);
-#undef CLEAR_STRUCT
+        // zero out the struct with the largest size to ensure the entire union memory is set to
+        // zero.
+        memset(&SetEffectChainParameters, 0, sizeof(SetEffectChainParameters));
     }
 
     // This is called from the main thread by EffectsManager after receiving a
@@ -97,10 +89,10 @@ struct EffectsRequest {
         } RemoveEffectChain;
         struct {
             EffectStatesMapArray* pEffectStatesMapArray;
-            const ChannelHandle* pChannelHandle;
+            ChannelHandle channelHandle;
         } EnableInputChannelForChain;
         struct {
-            const ChannelHandle* pChannelHandle;
+            ChannelHandle channelHandle;
         } DisableInputChannelForChain;
         struct {
             EngineEffect* pEffect;
