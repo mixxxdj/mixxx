@@ -166,7 +166,7 @@ int HidController::close() {
     if (m_pHidIoThread) {
         disconnect(m_pHidIoThread.get());
 
-        // Request stop after sending the last latched OutputReport
+        // Request stop after sending the last cached OutputReport
         VERIFY_OR_DEBUG_ASSERT(m_pHidIoThread->testAndSetThreadState(
                 HidIoThreadState::OutputActive,
                 HidIoThreadState::StopWhenAllReportsSent)) {
@@ -211,11 +211,11 @@ void HidController::sendReport(QList<int> data, unsigned int length, unsigned in
     foreach (int datum, data) {
         temp.append(datum);
     }
-    m_pHidIoThread->latchOutputReport(temp, reportID);
+    m_pHidIoThread->cacheOutputReport(temp, reportID);
 }
 
 void HidController::sendBytes(const QByteArray& data) {
-    m_pHidIoThread->latchOutputReport(data, 0);
+    m_pHidIoThread->cacheOutputReport(data, 0);
 }
 
 ControllerJSProxy* HidController::jsProxy() {

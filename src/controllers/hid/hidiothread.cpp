@@ -56,7 +56,7 @@ void HidIoThread::run() {
         // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
         pollBufferedInputReports();
 
-        // Send one OutputReport, if at least one is latched
+        // Send one OutputReport, if at least one is cached
         // Sending an OutputReport is time consuming, because HIDAPI waits for the backend/kernel for confirmation of success
         // Depending on the OS this takes several several milli seconds
         // This operation doesn't take many CPU cycles, most time HIDAPI is in idle state
@@ -177,7 +177,7 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     return returnArray;
 }
 
-void HidIoThread::latchOutputReport(const QByteArray& data, unsigned int reportID) {
+void HidIoThread::cacheOutputReport(const QByteArray& data, unsigned int reportID) {
     {
         auto lock = lockMutex(&m_outputReportMapMutex);
         if (m_outputReports.find(reportID) == m_outputReports.end()) {
@@ -186,7 +186,7 @@ void HidIoThread::latchOutputReport(const QByteArray& data, unsigned int reportI
                     reportID);
         }
     }
-    m_outputReports[reportID]->latchOutputReport(data, m_deviceInfo, m_logOutput);
+    m_outputReports[reportID]->cacheOutputReport(data, m_deviceInfo, m_logOutput);
 }
 
 bool HidIoThread::sendNextOutputReport() {

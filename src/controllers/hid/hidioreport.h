@@ -9,12 +9,12 @@ class HidIoReport {
   public:
     HidIoReport(const unsigned char& reportId);
 
-    /// Latches new report data, which will later send by the IO thread
-    void latchOutputReport(const QByteArray& data,
+    /// Caches new report data, which will later send by the IO thread
+    void cacheOutputReport(const QByteArray& data,
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput);
 
-    /// Sends the OutputReport to the HID device, when changed data are latched.
+    /// Sends the OutputReport to the HID device, when changed data are cached.
     /// Returns true if a time consuming hid_write operation was executed.
     bool sendOutputReport(QMutex* pHidDeviceMutex,
             hid_device* pHidDevice,
@@ -25,9 +25,9 @@ class HidIoReport {
     const unsigned char m_reportId;
     QByteArray m_lastSentOutputReportData;
 
-    /// Mutex must be locked when reading/writing m_latchedOutputReportData or m_possiblyUnsendDataLatched
-    QMutex m_latchedOutputReportDataMutex;
+    /// Mutex must be locked when reading/writing m_cachedOutputReportData or m_possiblyUnsendDataCached
+    QMutex m_cachedOutputReportDataMutex;
 
-    QByteArray m_latchedOutputReportData;
-    bool m_possiblyUnsendDataLatched;
+    QByteArray m_cachedOutputReportData;
+    bool m_possiblyUnsendDataCached;
 };

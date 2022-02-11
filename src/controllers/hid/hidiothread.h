@@ -42,7 +42,7 @@ class HidIoThread : public QThread {
     [[nodiscard]] bool waitForThreadState(
             HidIoThreadState expectedState, unsigned int timeoutMillis);
 
-    void latchOutputReport(const QByteArray& reportData, unsigned int reportID);
+    void cacheOutputReport(const QByteArray& reportData, unsigned int reportID);
     QByteArray getInputReport(unsigned int reportID);
     void sendFeatureReport(const QByteArray& reportData, unsigned int reportID);
     QByteArray getFeatureReport(unsigned int reportID);
