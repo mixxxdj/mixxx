@@ -7,7 +7,7 @@
 
 class HidIoReport {
   public:
-    HidIoReport(const unsigned char& reportId);
+    HidIoReport(const unsigned char& reportId, const unsigned int& reportDataSize);
 
     /// Caches new report data, which will later send by the IO thread
     void cacheOutputReport(const QByteArray& data,

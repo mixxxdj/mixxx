@@ -14,10 +14,15 @@ constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
 } // namespace
 
-HidIoReport::HidIoReport(const unsigned char& reportId)
+HidIoReport::HidIoReport(const unsigned char& reportId, const unsigned int& reportDataSize)
         : m_reportId(reportId),
           m_possiblyUnsendDataCached(false),
           m_lastCachedDataSize(0) {
+    // First byte must always contain the ReportID - also after swapping, therefore initialize both arrays
+    m_cachedOutputReportData.reserve(kReportIdSize + reportDataSize);
+    m_cachedOutputReportData.append(reportId);
+    m_lastSentOutputReportData.reserve(kReportIdSize + reportDataSize);
+    m_lastSentOutputReportData.append(reportId);
 }
 
 void HidIoReport::cacheOutputReport(const QByteArray& data,
@@ -52,8 +57,9 @@ void HidIoReport::cacheOutputReport(const QByteArray& data,
     }
 
     // Deep copy with reusing the already allocated heap memory
+    // The first byte with the ReportID is not overwritten
     qByteArrayReplaceWithPositionAndSize(&m_cachedOutputReportData,
-            0,
+            kReportIdSize,
             m_cachedOutputReportData.size(),
             data.constData(),
             data.size());
@@ -65,7 +71,6 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
-    QByteArray reportToSend;
 
     {
         auto lock = lockMutex(&m_cachedOutputReportDataMutex);
@@ -98,11 +103,6 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
             return false;
         }
 
-        // hid_write requires the first byte to be the Report ID, followed by the data[] to be send
-        reportToSend.reserve(m_cachedOutputReportData.size() + kReportIdSize);
-        reportToSend.append(m_reportId);
-        reportToSend.append(m_cachedOutputReportData);
-
         // Preemtive set m_lastSentOutputReportData and m_possiblyUnsendDataCached,
         // to release the mutex during the time consuming hid_write operation.
         // In the unlikely case that hid_write fails, they will be invalidated afterwards
@@ -117,8 +117,8 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
         auto lock = lockMutex(pHidDeviceMutex);
         // hid_write can take several milliseconds, because hidapi synchronizes the asyncron HID communication from the OS
         result = hid_write(pHidDevice,
-                reinterpret_cast<const unsigned char*>(reportToSend.constData()),
-                reportToSend.size());
+                reinterpret_cast<const unsigned char*>(m_lastSentOutputReportData.constData()),
+                m_lastSentOutputReportData.size());
         if (result == -1) {
             qCWarning(logOutput) << "Unable to send data to" << deviceInfo.formatName() << ":"
                                  << mixxx::convertWCStringToQString(
@@ -134,6 +134,7 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
         // therefore the performance impact of additional memory allocation
         // at the next call of this method is negligible
         m_lastSentOutputReportData.clear();
+        m_lastSentOutputReportData.append(m_reportId);
         m_possiblyUnsendDataCached = true;
 
         // Return with true, to signal the caller, that the time consuming hid_write operation was executed

@@ -191,7 +191,7 @@ void HidIoThread::cacheOutputReport(const QByteArray& data, unsigned int reportI
         if (m_outputReports.find(reportID) == m_outputReports.end()) {
             std::unique_ptr<HidIoReport> pNewOutputReport;
             m_outputReports[reportID] = std::make_unique<HidIoReport>(
-                    reportID);
+                    reportID, data.size());
         }
     }
     m_outputReports[reportID]->cacheOutputReport(data, m_deviceInfo, m_logOutput);
