@@ -1,16 +1,23 @@
 #include "qml/asyncimageprovider.h"
 
 #include "library/coverartcache.h"
+#include "track/track.h"
 
 namespace {
 const QString kCoverArtPrefix = QStringLiteral("coverart/");
 }
 
 namespace mixxx {
+
 namespace qml {
 
-AsyncImageResponse::AsyncImageResponse(const QString& id, const QSize& requestedSize)
-        : m_id(id), m_requestedSize(requestedSize) {
+AsyncImageResponse::AsyncImageResponse(
+        QString id,
+        QSize requestedSize,
+        std::shared_ptr<TrackCollectionManager> pTrackCollectionManager)
+        : m_id(std::move(id)),
+          m_requestedSize(requestedSize),
+          m_pTrackCollectionManager(std::move(pTrackCollectionManager)) {
     setAutoDelete(false);
 }
 
@@ -19,39 +26,68 @@ QQuickTextureFactory* AsyncImageResponse::textureFactory() const {
 }
 
 void AsyncImageResponse::run() {
-    if (m_id.startsWith(kCoverArtPrefix)) {
-        QString trackLocation = AsyncImageProvider::coverArtUrlIdToTrackLocation(m_id);
-
-        // TODO: This code does not allow to override embedded cover art with
-        // a custom image, which is possible in Mixxx. We need to access the
-        // actual CoverInfo of the track instead of constructing a default
-        // instance on the fly.
-        //
-        // Unfortunately, TrackCollectionManager::getTrackByRef will not work
-        // when called from another thread (like this one). We need a solution
-        // for that.
-        CoverInfo coverInfo(CoverInfoRelative(), trackLocation);
-        coverInfo.type = CoverInfoRelative::METADATA;
-        CoverInfo::LoadedImage loadedImage = coverInfo.loadImage();
-        if (loadedImage.result != CoverInfo::LoadedImage::Result::Ok) {
-            coverInfo.type = CoverInfoRelative::FILE;
-            loadedImage = coverInfo.loadImage();
-        }
-        m_image = loadedImage.image;
-    } else {
-        qWarning() << "ImageProvider: Unknown ID " << m_id;
+    if (!m_id.startsWith(kCoverArtPrefix)) {
+        qWarning() << "ImageProvider: Unsupported ID" << m_id;
+        emit finished();
+        return;
     }
+    const QString trackLocation = AsyncImageProvider::coverArtUrlIdToTrackLocation(m_id);
+    const auto trackRef = TrackRef::fromFilePath(trackLocation);
 
-    if (!m_image.isNull() && m_requestedSize.isValid()) {
-        m_image = m_image.scaled(m_requestedSize);
+    // TODO: Only load CoverInfo from TrackCollectionManager
+    // instead of the entire, stateful track object.
+    TrackPointer pTrack;
+    if (QThread::currentThread() != m_pTrackCollectionManager->thread()) {
+        QMetaObject::invokeMethod(
+                m_pTrackCollectionManager.get(),
+                [this, trackRef] {
+                    return m_pTrackCollectionManager->getTrackByRef(trackRef);
+                },
+                // This invocation will block the current thread!
+                Qt::BlockingQueuedConnection,
+                &pTrack);
+    } else {
+        pTrack = m_pTrackCollectionManager->getTrackByRef(trackRef);
+    }
+    if (!pTrack) {
+        qWarning() << "ImageProvider: Failed to load track" << trackRef;
+        emit finished();
+        return;
+    }
+    const auto coverInfo = CoverInfo(pTrack->getCoverInfo(), trackLocation);
+    // Release the track reference asap, i.e. before loading the image
+    pTrack.reset();
+
+    const CoverInfo::LoadedImage loadedImage = coverInfo.loadImage();
+    switch (loadedImage.result) {
+    case CoverInfo::LoadedImage::Result::NoImage:
+        break;
+    case CoverInfo::LoadedImage::Result::Ok:
+        DEBUG_ASSERT(!loadedImage.image.isNull());
+        if (m_requestedSize.isValid()) {
+            m_image = loadedImage.image.scaled(m_requestedSize);
+        } else {
+            m_image = loadedImage.image;
+        }
+        break;
+    default:
+        qWarning() << "ImageProvider: Failed to load cover art" << trackRef;
+        break;
     }
 
     emit finished();
 }
 
+AsyncImageProvider::AsyncImageProvider(
+        std::shared_ptr<TrackCollectionManager> pTrackCollectionManager)
+        : QQuickAsyncImageProvider(),
+          m_pTrackCollectionManager(pTrackCollectionManager) {
+}
+
 QQuickImageResponse* AsyncImageProvider::requestImageResponse(
         const QString& id, const QSize& requestedSize) {
-    AsyncImageResponse* response = new AsyncImageResponse(id, requestedSize);
+    AsyncImageResponse* response = new AsyncImageResponse(
+            id, requestedSize, m_pTrackCollectionManager);
     pool.start(response);
     return response;
 }
