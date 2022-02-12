@@ -118,10 +118,15 @@
         </Connection>
       </WidgetGroup><!-- GUI toggles with maximized library -->
 
+      <WidgetGroup><Size>50,min</Size></WidgetGroup>
+
+      <Label>
+        <ObjectName>ToolbarLogo</ObjectName>
+        <Size>74f,24f</Size>
+      </Label>
+
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
-
-      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
-
+            
       <StatusLight>
         <TooltipId>autodj_status</TooltipId>
         <ObjectName>AutoDjStatus</ObjectName>
@@ -150,13 +155,6 @@
           </Time>
         </Children>
       </WidgetGroup>
-
-      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
-
-      <Label>
-        <ObjectName>ToolbarLogo</ObjectName>
-        <Size>74f,24f</Size>
-      </Label>
 
       <WidgetGroup><Size>7f,min</Size></WidgetGroup>
 
