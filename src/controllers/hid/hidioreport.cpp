@@ -29,7 +29,8 @@ void HidIoReport::cacheOutputReport(const QByteArray& data,
                            << deviceInfo.serialNumberRaw() << "(Report ID"
                            << m_reportId << ")";
     }
-    m_cachedOutputReportData.replace(0, data.size(), data);
+    // Deep copy with reusing the already allocated heap memory
+    m_cachedOutputReportData.replace(0, m_cachedOutputReportData.size(), data, data.size());
     m_possiblyUnsendDataCached = true;
 }
 
