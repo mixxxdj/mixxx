@@ -4,6 +4,7 @@
 
 #include "controllers/defs_controllers.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
+#include "util/compatibility/qbytearray.h"
 #include "util/string.h"
 #include "util/time.h"
 #include "util/trace.h"
@@ -30,7 +31,11 @@ void HidIoReport::cacheOutputReport(const QByteArray& data,
                            << m_reportId << ")";
     }
     // Deep copy with reusing the already allocated heap memory
-    m_cachedOutputReportData.replace(0, m_cachedOutputReportData.size(), data, data.size());
+    qByteArrayReplaceWithPositionAndSize(&m_cachedOutputReportData,
+            0,
+            m_cachedOutputReportData.size(),
+            data.constData(),
+            data.size());
     m_possiblyUnsendDataCached = true;
 }
 
