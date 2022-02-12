@@ -15,7 +15,13 @@ namespace {
 constexpr int kReportIdSize = 1;
 constexpr int kMaxHidErrorMessageSize = 512;
 
-// Sleep time of run loop, when no time consuming operation was executed
+// Sleep time of run loop, in idle case, when no time consuming operation was executed before
+// The lower the time the more even the CPU load is spread over time
+// High values block the IO of this device and reduce response time and also the bandwidth.
+// Note, that this value has no influence on the amount of data to process,
+// the rate of InputReports is defined by the HID device itself.
+// This time should be below the rate of the HID device, which is ~1kHz for typical DJ controllers
+// the fastest possible rate of HID devices with USB HighSpeed or USB SuperSpeed interface is 8kHz
 constexpr int kSleepTimeWhenIdleMicros = 250;
 constexpr int kWaitForThreadStateIntervalMicros = 500;
 
@@ -65,7 +71,9 @@ void HidIoThread::run() {
                         HidIoThreadState::Stopped)) {
                 return;
             }
-            usleep(kSleepTimeWhenIdleMicros); // Sleep run loop, if no OutputReport was send
+            // Sleep run loop, if no OutputReport was send
+            // Tests on Windows and Linux showed that the thread schedulers handle usleep wait times reliable under CPU load
+            usleep(kSleepTimeWhenIdleMicros);
         }
     }
 }
