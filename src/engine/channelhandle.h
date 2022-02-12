@@ -30,6 +30,10 @@ constexpr int kMaxExpectedChannelGroups = 256;
 ///
 /// A helper class, ChannelHandleFactory, keeps a running count of handles that
 /// have been assigned.
+///
+/// Channel handles are passed as pointers to permanent memory addresses and
+/// can neither be copied nor moved!!! This is required to pass them from/to
+/// the real-time thread, e.g. for managing effect configurations.
 class ChannelHandle final {
   public:
     bool valid() const {
@@ -133,12 +137,7 @@ class ChannelHandleFactory {
   public:
     ChannelHandleFactory() = default;
 
-    /// Obtain a reference to a channel handle for a group
-    ///
-    /// The returned reference must be stable during a session and references
-    /// an entry from an internal map. Thus it is safe to get the address of
-    /// this reference. This is REQUIRED for passing ChannelHandle to
-    /// EffectChainManager by a pointer!!!
+    /// Obtain a a channel handle for a group
     const ChannelHandle* getOrCreateHandle(const QString& group) {
         auto groupToHandleIter = m_groupToHandle.find(group);
         if (groupToHandleIter == m_groupToHandle.end()) {
