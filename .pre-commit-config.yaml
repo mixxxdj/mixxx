@@ -104,9 +104,7 @@ repos:
 - repo: https://github.com/sirosen/check-jsonschema
   rev: 0.10.2
   hooks:
-  - id: check-github-actions
-  # TODO: Checking .github/workflows/build.yml fails
-  #- id: check-github-workflows
+  - id: check-github-workflows
 - repo: local
   hooks:
   - id: qsscheck
