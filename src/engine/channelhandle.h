@@ -133,7 +133,7 @@ inline qhash_seed_t qHash(
 // objects are not compatible and will produce incorrect results when compared,
 // stored in the same container, etc. In practice we only use one instance in
 // EngineMaster.
-class ChannelHandleFactory {
+class ChannelHandleFactory final {
   public:
     ChannelHandleFactory() = default;
 
@@ -180,6 +180,11 @@ class ChannelHandleFactory {
     }
 
   private:
+    ChannelHandleFactory(ChannelHandleFactory&&) = delete;
+    ChannelHandleFactory(const ChannelHandleFactory&) = delete;
+    ChannelHandleFactory& operator=(ChannelHandleFactory&&) = delete;
+    ChannelHandleFactory& operator=(const ChannelHandleFactory&) = delete;
+
     ChannelHandle m_groupHandles[kMaxExpectedChannelGroups];
     QHash<QString, int> m_groupToHandle;
     QHash<int, QString> m_handleToGroup;
