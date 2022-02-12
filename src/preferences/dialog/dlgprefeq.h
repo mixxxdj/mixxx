@@ -23,24 +23,17 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QString getQuickEffectGroupForDeck(int deck) const;
 
   public slots:
-    void slotEqEffectChangedOnDeck(int effectIndex);
-    void slotQuickEffectChangedOnDeck(int effectIndex);
     void slotNumDecksChanged(double numDecks);
     void slotSingleEqChecked(int checked);
-    // Slot for toggling between advanced and basic views
     void slotPopulateDeckEffectSelectors();
-    // Update Hi EQ
     void slotUpdateHiEQ();
-    // Update Lo EQ
     void slotUpdateLoEQ();
-    // Apply changes to widget
     void slotApply() override;
     void slotUpdate() override;
     void slotResetToDefaults() override;
     void slotUpdateEqAutoReset(int);
     void slotUpdateGainAutoReset(int);
     void slotBypass(int state);
-    // Update the Master EQ
     void slotUpdateMasterEQParameter(int value);
     void slotMasterEQToDefault();
     void setMasterEQParameter(int i, double value);
@@ -76,8 +69,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QList<bool> m_filterWaveformEffectLoaded;
     QList<ControlObject*> m_filterWaveformEnableCOs;
     ControlProxy* m_pNumDecks;
-
-    bool m_inSlotPopulateDeckEffectSelectors;
 
     // Members needed for the Master EQ
     QList<QSlider*> m_masterEQSliders;
