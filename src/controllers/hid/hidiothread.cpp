@@ -23,7 +23,6 @@ constexpr int kMaxHidErrorMessageSize = 512;
 // This time should be below the rate of the HID device, which is ~1kHz for typical DJ controllers
 // the fastest possible rate of HID devices with USB HighSpeed or USB SuperSpeed interface is 8kHz
 constexpr int kSleepTimeWhenIdleMicros = 250;
-constexpr int kWaitForThreadStateIntervalMicros = 500;
 
 QString loggingCategoryPrefix(const QString& deviceName) {
     return QStringLiteral("controller.") +
@@ -43,7 +42,8 @@ HidIoThread::HidIoThread(
                   QStringLiteral(".output")),
           m_pHidDevice(pHidDevice),
           m_lastPollSize(0),
-          m_pollingBufferIndex(0) {
+          m_pollingBufferIndex(0),
+          m_runLoopSemaphore(1) {
     // Initializing isn't strictly necessary but is good practice.
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
@@ -57,6 +57,7 @@ HidIoThread::~HidIoThread() {
 }
 
 void HidIoThread::run() {
+    m_runLoopSemaphore.acquire();
     while (!testAndSetThreadState(HidIoThreadState::StopRequested, HidIoThreadState::Stopped)) {
         // Ensure that all InputReports are read from the ring buffer, before the next OutputReport blocks the IO again
         // Polling available Input-Reports is a cheap software only operation, which takes insignificiant time
@@ -69,13 +70,14 @@ void HidIoThread::run() {
         if (!sendNextOutputReport()) {
             if (testAndSetThreadState(HidIoThreadState::StopWhenAllReportsSent,
                         HidIoThreadState::Stopped)) {
-                return;
+                break;
             }
             // Sleep run loop, if no OutputReport was send
             // Tests on Windows and Linux showed that the thread schedulers handle usleep wait times reliable under CPU load
             usleep(kSleepTimeWhenIdleMicros);
         }
     }
+    m_runLoopSemaphore.release();
 }
 
 void HidIoThread::pollBufferedInputReports() {
@@ -317,20 +319,10 @@ bool HidIoThread::testAndSetThreadState(HidIoThreadState expectedState,
     return true;
 }
 
-bool HidIoThread::waitForThreadState(HidIoThreadState expectedState,
-        unsigned int timeoutMillis) {
+bool HidIoThread::waitUntilRunLoopIsStopped(unsigned int timeoutMillis) {
     DEBUG_ASSERT(timeoutMillis != 0);
 
-    auto timeoutStart = mixxx::Time::elapsed();
-    while (m_state.loadAcquire() != static_cast<int>(expectedState)) {
-        if (timeoutStart.toIntegerMillis() + timeoutMillis <=
-                mixxx::Time::elapsed().toIntegerMillis()) {
-            return false; // Timeout
-        };
-
-        usleep(kWaitForThreadStateIntervalMicros);
-    }
-    return true; // Expected state detected
+    return m_runLoopSemaphore.tryAcquire(1, timeoutMillis);
 }
 
 void HidIoThread::setThreadState(HidIoThreadState expectedState) {

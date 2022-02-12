@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAtomicInteger>
+#include <QSemaphore>
 #include <QThread>
 #include <map>
 
@@ -37,10 +38,9 @@ class HidIoThread : public QThread {
     /// Set the state of the HidIoThread lifecycles unconditional
     void setThreadState(HidIoThreadState expectedState);
 
-    /// Wait's until the expected thread state, or the specified timeout, is reached.
-    /// Returns immediately with true if the expected state is detected.
-    [[nodiscard]] bool waitForThreadState(
-            HidIoThreadState expectedState, unsigned int timeoutMillis);
+    /// Wait's until the run loop stopped, or the specified timeout, is reached.
+    /// Returns immediately with true if the run loop is stopped.
+    [[nodiscard]] bool waitUntilRunLoopIsStopped(unsigned int timeoutMillis);
 
     void cacheOutputReport(const QByteArray& reportData, unsigned int reportID);
     QByteArray getInputReport(unsigned int reportID);
@@ -90,4 +90,7 @@ class HidIoThread : public QThread {
 
     /// State of the HidIoThread lifecycle
     QAtomicInt m_state;
+
+    /// Semaphore with capacity 1, which is left acquired, as long as the run loop of the thread runs
+    QSemaphore m_runLoopSemaphore;
 };
