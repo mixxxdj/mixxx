@@ -36,8 +36,9 @@ class EngineEffectChain final : public EffectsRequestHandler {
             EffectsResponsePipe* pResponsePipe) override;
 
     /// called from audio thread
-    bool process(const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle,
+    bool process(
+            const ChannelHandle* pInputHandle,
+            const ChannelHandle* pOutputHandle,
             CSAMPLE* pIn,
             CSAMPLE* pOut,
             const unsigned int numSamples,
@@ -64,14 +65,15 @@ class EngineEffectChain final : public EffectsRequestHandler {
     bool updateParameters(const EffectsRequest& message);
     bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect, int iIndex);
-    bool enableForInputChannel(const ChannelHandle* inputHandle,
+    bool enableForInputChannel(const ChannelHandle* pInputHandle,
             EffectStatesMapArray* statesForEffectsInChain);
-    bool disableForInputChannel(const ChannelHandle* inputHandle);
+    bool disableForInputChannel(const ChannelHandle* pInputHandle);
 
     // Gets or creates a ChannelStatus entry in m_channelStatus for the provided
     // handle.
-    ChannelStatus& getChannelStatus(const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle);
+    ChannelStatus& getChannelStatus(
+            const ChannelHandle* pInputHandle,
+            const ChannelHandle* pOutputHandle);
 
     QString m_group;
     EffectEnableState m_enableState;

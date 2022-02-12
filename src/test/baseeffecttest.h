@@ -42,8 +42,8 @@ class MockEffectProcessor : public EffectProcessor {
                     const EffectStatesMap* pStatesMap));
     MOCK_METHOD1(deleteStatesForInputChannel, void(const ChannelHandle* inputChannel));
     MOCK_METHOD7(process,
-            void(const ChannelHandle& inputHandle,
-                    const ChannelHandle& outputHandle,
+            void(const ChannelHandle* pInputHandle,
+                    const ChannelHandle* pOutputHandle,
                     const CSAMPLE* pInput,
                     CSAMPLE* pOutput,
                     const mixxx::EngineParameters& engineParameters,

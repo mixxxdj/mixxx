@@ -39,7 +39,7 @@ void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& engi
     QSet<ChannelHandleAndGroup> activeInputChannels;
 
     QString channel1_group = QString("[Channel1]");
-    ChannelHandle channel1 = factory.getOrCreateHandle(channel1_group);
+    const ChannelHandle* channel1 = factory.getOrCreateHandle(channel1_group);
     ChannelHandleAndGroup handle_and_group(channel1, channel1_group);
     pEffectsManager->registerInputChannel(handle_and_group);
     pEffectsManager->registerOutputChannel(handle_and_group);

@@ -109,18 +109,14 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE_GAIN getMasterGain(int channelIndex) const;
 
     struct ChannelInfo {
-        ChannelInfo(int index)
-                : m_pChannel(NULL),
-                  m_pBuffer(NULL),
-                  m_pVolumeControl(NULL),
-                  m_pMuteControl(NULL),
-                  m_index(index) {
+        explicit ChannelInfo(int index)
+                : m_index(index) {
         }
-        ChannelHandle m_handle;
-        EngineChannel* m_pChannel;
-        CSAMPLE* m_pBuffer;
-        ControlObject* m_pVolumeControl;
-        ControlPushButton* m_pMuteControl;
+        const ChannelHandle* m_pHandle{};
+        EngineChannel* m_pChannel{};
+        CSAMPLE* m_pBuffer{};
+        ControlObject* m_pVolumeControl{};
+        ControlPushButton* m_pMuteControl{};
         GroupFeatureState m_features;
         int m_index;
     };

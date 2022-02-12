@@ -8,7 +8,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         const QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>& activeChannels,
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
         CSAMPLE* pOutput,
-        const ChannelHandle& outputHandle,
+        const ChannelHandle* pOutputHandle,
         unsigned int iBufferSize,
         unsigned int iSampleRate,
         EngineEffectsManager* pEngineEffectsManager) {
@@ -34,8 +34,10 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
             newGain = gainCalculator.getGain(pChannelInfo);
         }
         gainCache.m_gain = newGain;
-        pEngineEffectsManager->processPostFaderAndMix(pChannelInfo->m_handle,
-                outputHandle,
+        DEBUG_ASSERT(pChannelInfo->m_pHandle);
+        pEngineEffectsManager->processPostFaderAndMix(
+                pChannelInfo->m_pHandle,
+                pOutputHandle,
                 pChannelInfo->m_pBuffer,
                 pOutput,
                 iBufferSize,
@@ -53,7 +55,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
         QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>*
                 channelGainCache,
         CSAMPLE* pOutput,
-        const ChannelHandle& outputHandle,
+        const ChannelHandle* pOutputHandle,
         unsigned int iBufferSize,
         unsigned int iSampleRate,
         EngineEffectsManager* pEngineEffectsManager) {
@@ -76,8 +78,10 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
             newGain = gainCalculator.getGain(pChannelInfo);
         }
         gainCache.m_gain = newGain;
-        pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle,
-                outputHandle,
+        DEBUG_ASSERT(pChannelInfo->m_pHandle);
+        pEngineEffectsManager->processPostFaderInPlace(
+                pChannelInfo->m_pHandle,
+                pOutputHandle,
                 pChannelInfo->m_pBuffer,
                 iBufferSize,
                 iSampleRate,

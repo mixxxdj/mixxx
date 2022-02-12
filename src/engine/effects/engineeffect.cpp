@@ -53,17 +53,17 @@ EffectState* EngineEffect::createState(const mixxx::EngineParameters& enginePara
     return m_pProcessor->createState(engineParameters);
 }
 
-void EngineEffect::loadStatesForInputChannel(const ChannelHandle* inputChannel,
+void EngineEffect::loadStatesForInputChannel(const ChannelHandle* pInputChannel,
         EffectStatesMap* pStatesMap) {
     if (kEffectDebugOutput) {
         qDebug() << "EngineEffect::loadStatesForInputChannel" << this
-                 << "loading states for input" << *inputChannel;
+                 << "loading states for input" << *pInputChannel;
     }
-    m_pProcessor->loadStatesForInputChannel(inputChannel, pStatesMap);
+    m_pProcessor->loadStatesForInputChannel(pInputChannel, pStatesMap);
 }
 
-void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* inputChannel) {
-    m_pProcessor->deleteStatesForInputChannel(inputChannel);
+void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* pInputChannel) {
+    m_pProcessor->deleteStatesForInputChannel(pInputChannel);
 }
 
 bool EngineEffect::processEffectsRequest(EffectsRequest& message,
@@ -123,8 +123,9 @@ bool EngineEffect::processEffectsRequest(EffectsRequest& message,
     return false;
 }
 
-bool EngineEffect::process(const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+bool EngineEffect::process(
+        const ChannelHandle* pInputHandle,
+        const ChannelHandle* pOutputHandle,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const unsigned int numSamples,
@@ -148,7 +149,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     // internal buffer for the channel when it gets the intermediate disabling signal.
 
     EffectEnableState effectiveEffectEnableState =
-            m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
+            m_effectEnableStateForChannelMatrix[pInputHandle][pOutputHandle];
 
     // If the EngineEffect is fully disabled, do not let
     // intermediate enabling/disabing signals from the chain override
@@ -182,8 +183,8 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
                 mixxx::audio::SampleRate(sampleRate),
                 numSamples / mixxx::kEngineChannelCount);
 
-        m_pProcessor->process(inputHandle,
-                outputHandle,
+        m_pProcessor->process(pInputHandle,
+                pOutputHandle,
                 pInput,
                 pOutput,
                 engineParameters,
@@ -214,7 +215,8 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
 
     // Now that the EffectProcessor has been sent the intermediate enabling/disabling
     // signal, set the channel state to fully enabled/disabled for the next engine callback.
-    EffectEnableState& effectOnChannelState = m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
+    EffectEnableState& effectOnChannelState =
+            m_effectEnableStateForChannelMatrix[pInputHandle][pOutputHandle];
     if (effectOnChannelState == EffectEnableState::Disabling) {
         effectOnChannelState = EffectEnableState::Disabled;
     } else if (effectOnChannelState == EffectEnableState::Enabling) {

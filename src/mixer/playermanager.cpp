@@ -552,11 +552,11 @@ BaseTrackPlayer* PlayerManager::getPlayer(const QString& group) const {
     return getPlayer(m_pEngine->registerChannelGroup(group).handle());
 }
 
-BaseTrackPlayer* PlayerManager::getPlayer(const ChannelHandle& handle) const {
+BaseTrackPlayer* PlayerManager::getPlayer(const ChannelHandle* pHandle) const {
     const auto locker = lockMutex(&m_mutex);
 
-    if (m_players.contains(handle)) {
-        return m_players[handle];
+    if (m_players.contains(pHandle)) {
+        return m_players[pHandle];
     }
     return nullptr;
 }

@@ -9,6 +9,8 @@
 #include "util/assert.h"
 #include "util/compatibility/qhash.h"
 
+constexpr int kMaxExpectedChannelGroups = 256;
+
 // ChannelHandle defines a unique identifier for channels of audio in the engine
 // (e.g. headphone output, master output, deck 1, microphone 3). Previously we
 // used the group string of the channel in the engine to uniquely identify it
@@ -28,27 +30,27 @@
 ///
 /// A helper class, ChannelHandleFactory, keeps a running count of handles that
 /// have been assigned.
-class ChannelHandle {
+class ChannelHandle final {
   public:
-    ChannelHandle() : m_iHandle(-1) {
-    }
-
-    inline bool valid() const {
+    bool valid() const {
         return m_iHandle >= 0;
     }
 
-    inline int handle() const {
+    int handle() const {
+        DEBUG_ASSERT(valid());
         return m_iHandle;
     }
 
   private:
-    ChannelHandle(int iHandle)
-            : m_iHandle(iHandle) {
+    ChannelHandle()
+            : m_iHandle(-1) {
     }
-
-    void setHandle(int iHandle) {
-        m_iHandle = iHandle;
-    }
+    // Channel handles are pinned at a fixed memory address and must
+    // neither be copied nor moved!!!
+    ChannelHandle(ChannelHandle&&) = delete;
+    ChannelHandle(const ChannelHandle&) = delete;
+    ChannelHandle& operator=(ChannelHandle&&) = delete;
+    ChannelHandle& operator=(const ChannelHandle&) = delete;
 
     int m_iHandle;
 
@@ -86,20 +88,20 @@ inline qhash_seed_t qHash(
 // custom equality and hash methods that save the cost of touching the QString.
 class ChannelHandleAndGroup {
   public:
-    ChannelHandleAndGroup(const ChannelHandle& handle, const QString& name)
-            : m_handle(handle),
+    ChannelHandleAndGroup(const ChannelHandle* pHandle, const QString& name)
+            : m_pHandle(pHandle),
               m_name(name) {
     }
 
-    inline const QString& name() const {
+    const QString& name() const {
         return m_name;
     }
 
-    inline const ChannelHandle& handle() const {
-        return m_handle;
+    const ChannelHandle* handle() const {
+        return m_pHandle;
     }
 
-    const ChannelHandle m_handle;
+    const ChannelHandle* m_pHandle;
     const QString m_name;
 };
 
@@ -129,76 +131,105 @@ inline qhash_seed_t qHash(
 // EngineMaster.
 class ChannelHandleFactory {
   public:
-    ChannelHandleFactory() : m_iNextHandle(0) {
-    }
+    ChannelHandleFactory() = default;
 
-    ChannelHandle getOrCreateHandle(const QString& group) {
-        ChannelHandle& handle = m_groupToHandle[group];
-        if (!handle.valid()) {
-            handle.setHandle(m_iNextHandle++);
-            DEBUG_ASSERT(handle.valid());
-            DEBUG_ASSERT(!m_handleToGroup.contains(handle));
-            m_handleToGroup.insert(handle, group);
+    /// Obtain a reference to a channel handle for a group
+    ///
+    /// The returned reference must be stable during a session and references
+    /// an entry from an internal map. Thus it is safe to get the address of
+    /// this reference. This is REQUIRED for passing ChannelHandle to
+    /// EffectChainManager by a pointer!!!
+    const ChannelHandle* getOrCreateHandle(const QString& group) {
+        auto groupToHandleIter = m_groupToHandle.find(group);
+        if (groupToHandleIter == m_groupToHandle.end()) {
+            groupToHandleIter = m_groupToHandle.insert(group, m_groupToHandle.size());
+            DEBUG_ASSERT(!m_handleToGroup.contains(groupToHandleIter.value()));
+            m_handleToGroup.insert(groupToHandleIter.value(), group);
         }
-        return handle;
+        DEBUG_ASSERT(groupToHandleIter != m_groupToHandle.end());
+        // Return reference from the map that is pinned to a fixed
+        // memory address!!!
+        const auto handleIndex = groupToHandleIter.value();
+        DEBUG_ASSERT(handleIndex >= 0);
+        DEBUG_ASSERT(handleIndex < static_cast<int>(std::size(m_groupHandles)));
+        if (!m_groupHandles[handleIndex].valid()) {
+            m_groupHandles[handleIndex].m_iHandle = handleIndex;
+            qInfo() << "Created" << m_groupHandles[handleIndex] << "for group" << group;
+        }
+        DEBUG_ASSERT(m_groupHandles[handleIndex].m_iHandle == handleIndex);
+        return &m_groupHandles[handleIndex];
     }
 
-    ChannelHandle handleForGroup(const QString& group) const {
-        return m_groupToHandle.value(group, ChannelHandle());
+    const ChannelHandle* handleForGroup(const QString& group) const {
+        auto groupToHandleIter = m_groupToHandle.find(group);
+        if (groupToHandleIter == m_groupToHandle.end()) {
+            return nullptr;
+        }
+        // Return reference from the map that is pinned to a fixed
+        // memory address!!!
+        const auto handleIndex = groupToHandleIter.value();
+        DEBUG_ASSERT(handleIndex >= 0);
+        DEBUG_ASSERT(handleIndex < static_cast<int>(std::size(m_groupHandles)));
+        return &m_groupHandles[handleIndex];
     }
 
-    QString groupForHandle(const ChannelHandle& handle) const {
-        return m_handleToGroup.value(handle, QString());
+    QString groupForHandle(const ChannelHandle* pHandle) const {
+        VERIFY_OR_DEBUG_ASSERT(pHandle) {
+            return {};
+        }
+        return m_handleToGroup.value(pHandle->handle());
     }
 
   private:
-    int m_iNextHandle;
-    QHash<QString, ChannelHandle> m_groupToHandle;
-    QHash<ChannelHandle, QString> m_handleToGroup;
+    ChannelHandle m_groupHandles[kMaxExpectedChannelGroups];
+    QHash<QString, int> m_groupToHandle;
+    QHash<int, QString> m_handleToGroup;
 };
 
 typedef std::shared_ptr<ChannelHandleFactory> ChannelHandleFactoryPointer;
 
 // An associative container mapping ChannelHandle to a template type T. Backed
-// by a QVarLengthArray with ChannelHandleMap::kMaxExpectedGroups pre-allocated
-// entries. Insertions are amortized O(1) time (if less than kMaxExpectedGroups
+// by a QVarLengthArray with ChannelHandleMap::kMaxExpectedChannelGroups pre-allocated
+// entries. Insertions are amortized O(1) time (if less than kMaxExpectedChannelGroups
 // exist then no allocation will occur -- insertion is a mere copy). Lookups are
 // O(1) and quite fast -- a simple index into an array using the handle's
 // integer value.
 template <class T>
 class ChannelHandleMap {
-    static constexpr int kMaxExpectedGroups = 256;
-    typedef QVarLengthArray<T, kMaxExpectedGroups> container_type;
+    typedef QVarLengthArray<T, kMaxExpectedChannelGroups> container_type;
+
   public:
-    typedef typename QVarLengthArray<T, kMaxExpectedGroups>::const_iterator const_iterator;
-    typedef typename QVarLengthArray<T, kMaxExpectedGroups>::iterator iterator;
+    typedef typename QVarLengthArray<T, kMaxExpectedChannelGroups>::const_iterator const_iterator;
+    typedef typename QVarLengthArray<T, kMaxExpectedChannelGroups>::iterator iterator;
 
     ChannelHandleMap()
             : m_dummy{} {
     }
 
-    const T& at(const ChannelHandle& handle) const {
-        if (!handle.valid()) {
+    const T& at(const ChannelHandle* pHandle) const {
+        if (!pHandle) {
             return m_dummy;
         }
-        return m_data.at(handle.handle());
+        DEBUG_ASSERT(pHandle->valid());
+        return m_data.at(pHandle->handle());
     }
 
-    void insert(const ChannelHandle& handle, const T& value) {
-        if (!handle.valid()) {
+    void insert(const ChannelHandle* pHandle, const T& value) {
+        if (!pHandle) {
             return;
         }
-
-        int iHandle = handle.handle();
+        DEBUG_ASSERT(pHandle->valid());
+        int iHandle = pHandle->handle();
         maybeExpand(iHandle + 1);
         m_data[iHandle] = value;
     }
 
-    T& operator[](const ChannelHandle& handle) {
-        if (!handle.valid()) {
+    T& operator[](const ChannelHandle* pHandle) {
+        if (!pHandle) {
             return m_dummy;
         }
-        int iHandle = handle.handle();
+        DEBUG_ASSERT(pHandle->valid());
+        int iHandle = pHandle->handle();
         maybeExpand(iHandle + 1);
         return m_data[iHandle];
     }

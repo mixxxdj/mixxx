@@ -94,8 +94,9 @@ void EngineEffectsManager::onCallbackStart() {
     }
 }
 
-void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+void EngineEffectsManager::processPreFaderInPlace(
+        const ChannelHandle* pInputHandle,
+        const ChannelHandle* pOutputHandle,
         CSAMPLE* pInOut,
         const unsigned int numSamples,
         const unsigned int sampleRate) {
@@ -103,8 +104,8 @@ void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHand
     // This is okay because the equalizer effects do not make use of it.
     GroupFeatureState featureState;
     processInner(SignalProcessingStage::Prefader,
-            inputHandle,
-            outputHandle,
+            pInputHandle,
+            pOutputHandle,
             pInOut,
             pInOut,
             numSamples,
@@ -113,8 +114,8 @@ void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHand
 }
 
 void EngineEffectsManager::processPostFaderInPlace(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+        const ChannelHandle* pInputHandle,
+        const ChannelHandle* pOutputHandle,
         CSAMPLE* pInOut,
         const unsigned int numSamples,
         const unsigned int sampleRate,
@@ -122,8 +123,8 @@ void EngineEffectsManager::processPostFaderInPlace(
         const CSAMPLE_GAIN oldGain,
         const CSAMPLE_GAIN newGain) {
     processInner(SignalProcessingStage::Postfader,
-            inputHandle,
-            outputHandle,
+            pInputHandle,
+            pOutputHandle,
             pInOut,
             pInOut,
             numSamples,
@@ -134,8 +135,8 @@ void EngineEffectsManager::processPostFaderInPlace(
 }
 
 void EngineEffectsManager::processPostFaderAndMix(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+        const ChannelHandle* pInputHandle,
+        const ChannelHandle* pOutputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
         const unsigned int numSamples,
@@ -144,8 +145,8 @@ void EngineEffectsManager::processPostFaderAndMix(
         const CSAMPLE_GAIN oldGain,
         const CSAMPLE_GAIN newGain) {
     processInner(SignalProcessingStage::Postfader,
-            inputHandle,
-            outputHandle,
+            pInputHandle,
+            pOutputHandle,
             pIn,
             pOut,
             numSamples,
@@ -157,8 +158,8 @@ void EngineEffectsManager::processPostFaderAndMix(
 
 void EngineEffectsManager::processInner(
         const SignalProcessingStage stage,
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+        const ChannelHandle* pInputHandle,
+        const ChannelHandle* pOutputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
         const unsigned int numSamples,
@@ -174,8 +175,9 @@ void EngineEffectsManager::processInner(
         SampleUtil::applyRampingGain(pIn, oldGain, newGain, numSamples);
         for (EngineEffectChain* pChain : chains) {
             if (pChain) {
-                if (pChain->process(inputHandle,
-                            outputHandle,
+                if (pChain->process(
+                            pInputHandle,
+                            pOutputHandle,
                             pIn,
                             pOut,
                             numSamples,
@@ -211,8 +213,8 @@ void EngineEffectsManager::processInner(
                     pIntermediateOutput = m_buffer1.data();
                 }
 
-                if (pChain->process(inputHandle,
-                            outputHandle,
+                if (pChain->process(pInputHandle,
+                            pOutputHandle,
                             pIntermediateInput,
                             pIntermediateOutput,
                             numSamples,

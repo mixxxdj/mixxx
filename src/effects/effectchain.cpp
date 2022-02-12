@@ -394,7 +394,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
     request->pTargetChain = m_pEngineEffectChain;
-    request->EnableInputChannelForChain.pChannelHandle = &handleGroup.handle();
+    request->EnableInputChannelForChain.pChannelHandle = handleGroup.handle();
 
     // Allocate EffectStates here in the main thread to avoid allocating
     // memory in the realtime audio callback thread. Pointers to the
@@ -428,7 +428,7 @@ void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handleGrou
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
     request->pTargetChain = m_pEngineEffectChain;
-    request->DisableInputChannelForChain.pChannelHandle = &handleGroup.handle();
+    request->DisableInputChannelForChain.pChannelHandle = handleGroup.handle();
     m_pMessenger->writeRequest(request);
 }
 

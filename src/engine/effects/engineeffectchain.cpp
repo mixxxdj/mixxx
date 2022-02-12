@@ -146,12 +146,13 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
     return true;
 }
 
-bool EngineEffectChain::enableForInputChannel(const ChannelHandle* inputHandle,
+bool EngineEffectChain::enableForInputChannel(
+        const ChannelHandle* pInputHandle,
         EffectStatesMapArray* statesForEffectsInChain) {
     if (kEffectDebugOutput) {
-        qDebug() << "EngineEffectChain::enableForInputChannel" << this << inputHandle;
+        qDebug() << "EngineEffectChain::enableForInputChannel" << this << *pInputHandle;
     }
-    auto& outputMap = m_chainStatusForChannelMatrix[*inputHandle];
+    auto& outputMap = m_chainStatusForChannelMatrix[pInputHandle];
     for (auto&& outputChannelStatus : outputMap) {
         VERIFY_OR_DEBUG_ASSERT(outputChannelStatus.enableState !=
                 EffectEnableState::Enabled) {
@@ -174,14 +175,14 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle* inputHandle,
             VERIFY_OR_DEBUG_ASSERT(pStatesMap) {
                 return false;
             }
-            m_effects[i]->loadStatesForInputChannel(inputHandle, pStatesMap);
+            m_effects[i]->loadStatesForInputChannel(pInputHandle, pStatesMap);
         }
     }
     return true;
 }
 
-bool EngineEffectChain::disableForInputChannel(const ChannelHandle* inputHandle) {
-    auto& outputMap = m_chainStatusForChannelMatrix[*inputHandle];
+bool EngineEffectChain::disableForInputChannel(const ChannelHandle* pInputHandle) {
+    auto& outputMap = m_chainStatusForChannelMatrix[pInputHandle];
     for (auto&& outputChannelStatus : outputMap) {
         if (outputChannelStatus.enableState != EffectEnableState::Disabled) {
             outputChannelStatus.enableState = EffectEnableState::Disabling;
@@ -195,7 +196,7 @@ bool EngineEffectChain::disableForInputChannel(const ChannelHandle* inputHandle)
 }
 
 // Called from the main thread for garbage collection after an input channel is disabled
-void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle* inputChannel) {
+void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle* pInputHandle) {
     // If an output channel is not presently being processed, for example when
     // PFL is not active, then process() cannot be relied upon to set this
     // chain's EffectEnableState from Disabling to Disabled. This must be done
@@ -209,26 +210,27 @@ void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle* inputCh
     // QMap. So it is okay that m_chainStatusForChannelMatrix may be
     // accessed concurrently in the audio engine thread in process(),
     // enableForInputChannel(), or disableForInputChannel().
-    auto& outputMap = m_chainStatusForChannelMatrix[*inputChannel];
+    auto& outputMap = m_chainStatusForChannelMatrix[pInputHandle];
     for (auto&& outputChannelStatus : outputMap) {
         outputChannelStatus.enableState = EffectEnableState::Disabled;
     }
     for (EngineEffect* pEffect : qAsConst(m_effects)) {
         if (pEffect != nullptr) {
-            pEffect->deleteStatesForInputChannel(inputChannel);
+            pEffect->deleteStatesForInputChannel(pInputHandle);
         }
     }
 }
 
 EngineEffectChain::ChannelStatus& EngineEffectChain::getChannelStatus(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle) {
-    ChannelStatus& status = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
+        const ChannelHandle* pInputHandle,
+        const ChannelHandle* pOutputHandle) {
+    ChannelStatus& status = m_chainStatusForChannelMatrix[pInputHandle][pOutputHandle];
     return status;
 }
 
-bool EngineEffectChain::process(const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle,
+bool EngineEffectChain::process(
+        const ChannelHandle* pInputHandle,
+        const ChannelHandle* pOutputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
         const unsigned int numSamples,
@@ -242,7 +244,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     // appropriately, for example the Echo effect clears its internal buffer for the channel
     // when it gets the intermediate disabling signal.
 
-    ChannelStatus& channelStatus = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
+    ChannelStatus& channelStatus = m_chainStatusForChannelMatrix[pInputHandle][pOutputHandle];
     EffectEnableState effectiveChainEnableState = channelStatus.enableState;
 
     // If the channel is fully disabled, do not let intermediate
@@ -276,8 +278,8 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                     pIntermediateOutput = m_buffer1.data();
                 }
 
-                if (pEffect->process(inputHandle,
-                            outputHandle,
+                if (pEffect->process(pInputHandle,
+                            pOutputHandle,
                             pIntermediateInput,
                             pIntermediateOutput,
                             numSamples,
