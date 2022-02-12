@@ -16,20 +16,41 @@ constexpr int kMaxHidErrorMessageSize = 512;
 
 HidIoReport::HidIoReport(const unsigned char& reportId)
         : m_reportId(reportId),
-          m_possiblyUnsendDataCached(false) {
+          m_possiblyUnsendDataCached(false),
+          m_lastCachedDataSize(0) {
 }
 
 void HidIoReport::cacheOutputReport(const QByteArray& data,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
     auto lock = lockMutex(&m_cachedOutputReportDataMutex);
-    if (m_possiblyUnsendDataCached) {
-        qCDebug(logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()
-                           << " Skipped superseded OutputReport"
-                           << deviceInfo.formatName() << "serial #"
-                           << deviceInfo.serialNumberRaw() << "(Report ID"
-                           << m_reportId << ")";
+
+    if (!m_lastCachedDataSize) {
+        // First call cacheOutputReport for this report
+        m_lastCachedDataSize = data.size();
+
+    } else {
+        if (m_possiblyUnsendDataCached) {
+            qCDebug(logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()
+                               << "Skipped superseded OutputReport"
+                               << deviceInfo.formatName() << "serial #"
+                               << deviceInfo.serialNumber() << "(Report ID"
+                               << m_reportId << ")";
+        }
+
+        // The size of an HID report is defined in a HID device and can't vary at runtime
+        if (m_lastCachedDataSize != data.size()) {
+            qCWarning(logOutput) << "Size of report (with Report ID"
+                                 << m_reportId << ") changed from"
+                                 << m_lastCachedDataSize
+                                 << "to" << data.size() << "for"
+                                 << deviceInfo.formatName() << "serial #"
+                                 << deviceInfo.serialNumber()
+                                 << "- This indicates a bug in the mapping code!";
+            m_lastCachedDataSize = data.size();
+        }
     }
+
     // Deep copy with reusing the already allocated heap memory
     qByteArrayReplaceWithPositionAndSize(&m_cachedOutputReportData,
             0,
@@ -70,7 +91,7 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
             qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
                                << " Skipped identical Output Report for"
                                << deviceInfo.formatName() << "serial #"
-                               << deviceInfo.serialNumberRaw() << "(Report ID"
+                               << deviceInfo.serialNumber() << "(Report ID"
                                << m_reportId << ")";
 
             // Return with false, to signal the caller, that no time consuming IO operation was necessary
@@ -122,7 +143,7 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
 
     qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit() << " "
                        << result << "bytes sent to" << deviceInfo.formatName()
-                       << "serial #" << deviceInfo.serialNumberRaw()
+                       << "serial #" << deviceInfo.serialNumber()
                        << "(including report ID of" << m_reportId << ") - Needed: "
                        << (mixxx::Time::elapsed() - startOfHidWrite).formatMicrosWithUnit();
 

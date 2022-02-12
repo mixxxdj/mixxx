@@ -30,4 +30,5 @@ class HidIoReport {
 
     QByteArray m_cachedOutputReportData;
     bool m_possiblyUnsendDataCached;
+    int m_lastCachedDataSize; // Due to swapping of the QbyteArrays, we need to store this information independent of the QBytearray size
 };
