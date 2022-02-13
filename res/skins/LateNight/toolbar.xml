@@ -118,15 +118,8 @@
         </Connection>
       </WidgetGroup><!-- GUI toggles with maximized library -->
 
-      <WidgetGroup><Size>50,min</Size></WidgetGroup>
-
-      <Label>
-        <ObjectName>ToolbarLogo</ObjectName>
-        <Size>74f,24f</Size>
-      </Label>
-
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
-            
+
       <StatusLight>
         <TooltipId>autodj_status</TooltipId>
         <ObjectName>AutoDjStatus</ObjectName>
@@ -156,7 +149,7 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>7f,min</Size></WidgetGroup>
+      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>LatencyBatteryContainer</ObjectName>
@@ -325,6 +318,15 @@
           <ConfigKey>[Master],skin_settings</ConfigKey>
         </Connection>
       </PushButton>
+
+      <WidgetGroup><Size>7f,min</Size></WidgetGroup>
+
+      <Label>
+        <ObjectName>ToolbarLogo</ObjectName>
+        <Size>74f,24f</Size>
+      </Label>
+
+      <WidgetGroup><Size>2f,min</Size></WidgetGroup>
 
     </Children>
     <Connection>
