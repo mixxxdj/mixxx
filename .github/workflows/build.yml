@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
 name: Build
 
 on:
@@ -22,7 +24,7 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args:
+            ctest_args: []
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
@@ -43,7 +45,7 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args:
+            ctest_args: []
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
