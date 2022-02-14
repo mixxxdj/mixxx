@@ -35,10 +35,10 @@ class EngineEffect final : public EffectsRequestHandler {
     EffectState* createState(const mixxx::EngineParameters& engineParameters);
 
     /// Called in audio thread to load EffectStates received from the main thread
-    void loadStatesForInputChannel(const ChannelHandle* inputChannel,
+    void loadStatesForInputChannel(ChannelHandle inputChannel,
             EffectStatesMap* pStatesMap);
     /// Called from the main thread for garbage collection after an input channel is disabled
-    void deleteStatesForInputChannel(const ChannelHandle* inputChannel);
+    void deleteStatesForInputChannel(ChannelHandle inputChannel);
 
     /// Called in audio thread
     bool processEffectsRequest(

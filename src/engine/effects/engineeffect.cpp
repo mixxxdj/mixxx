@@ -53,16 +53,16 @@ EffectState* EngineEffect::createState(const mixxx::EngineParameters& enginePara
     return m_pProcessor->createState(engineParameters);
 }
 
-void EngineEffect::loadStatesForInputChannel(const ChannelHandle* inputChannel,
+void EngineEffect::loadStatesForInputChannel(ChannelHandle inputChannel,
         EffectStatesMap* pStatesMap) {
     if (kEffectDebugOutput) {
         qDebug() << "EngineEffect::loadStatesForInputChannel" << this
-                 << "loading states for input" << *inputChannel;
+                 << "loading states for input" << inputChannel;
     }
     m_pProcessor->loadStatesForInputChannel(inputChannel, pStatesMap);
 }
 
-void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* inputChannel) {
+void EngineEffect::deleteStatesForInputChannel(ChannelHandle inputChannel) {
     m_pProcessor->deleteStatesForInputChannel(inputChannel);
 }
 
