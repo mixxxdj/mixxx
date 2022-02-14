@@ -115,7 +115,8 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
     int result;
     {
         auto lock = lockMutex(pHidDeviceMutex);
-        // hid_write can take several milliseconds, because hidapi synchronizes the asyncron HID communication from the OS
+        // hid_write can take several milliseconds, because hidapi synchronizes
+        // the asyncron HID communication from the OS
         result = hid_write(pHidDevice,
                 reinterpret_cast<const unsigned char*>(m_lastSentOutputReportData.constData()),
                 m_lastSentOutputReportData.size());

@@ -64,7 +64,8 @@ void HidIoThread::run() {
         pollBufferedInputReports();
 
         // Send one OutputReport, if at least one is cached
-        // Sending an OutputReport is time consuming, because HIDAPI waits for the backend/kernel for confirmation of success
+        // Sending an OutputReport is time consuming, because HIDAPI waits
+        // for the backend/kernel for confirmation of success
         // Depending on the OS this takes several several milli seconds
         // This operation doesn't take many CPU cycles, most time HIDAPI is in idle state
         if (!sendNextOutputReport()) {
@@ -73,7 +74,8 @@ void HidIoThread::run() {
                 break;
             }
             // Sleep run loop, if no OutputReport was send
-            // Tests on Windows and Linux showed that the thread schedulers handle usleep wait times reliable under CPU load
+            // Tests on Windows and Linux showed that the thread schedulers
+            // handle usleep wait times reliable under CPU load
             usleep(kSleepTimeWhenIdleMicros);
         }
     }
