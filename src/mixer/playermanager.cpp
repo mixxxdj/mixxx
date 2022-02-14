@@ -600,7 +600,7 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
 
 TrackPointer PlayerManager::getLastEjectedTrack() const {
     if (m_pLibrary) {
-        return m_pLibrary->trackCollectionManager()->getTrackById(m_pLastEjectedTrackId);
+        return m_pLibrary->trackCollectionManager()->getTrackById(m_lastEjectedTrackId);
     }
     return nullptr;
 }
@@ -748,7 +748,7 @@ void PlayerManager::slotSaveEjectedTrack(TrackPointer track) {
     VERIFY_OR_DEBUG_ASSERT(track) {
         return;
     }
-    m_pLastEjectedTrackId = track->getId();
+    m_lastEjectedTrackId = track->getId();
 }
 
 void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {

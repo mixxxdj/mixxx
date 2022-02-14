@@ -310,7 +310,7 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
     }
     if (!m_pLoadedTrack) {
         TrackPointer lastEjected = m_pPlayerManager->getLastEjectedTrack();
-        if (lastEjected && lastEjected->getId().isValid()) {
+        if (lastEjected) {
             slotLoadTrack(lastEjected, false);
         }
         return;

@@ -286,7 +286,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
-    TrackId m_pLastEjectedTrackId;
+    TrackId m_lastEjectedTrackId;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
