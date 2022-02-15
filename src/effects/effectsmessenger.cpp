@@ -93,10 +93,10 @@ void EffectsMessenger::collectGarbage(const EffectsRequest* pRequest) {
     } else if (pRequest->type == EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
         if (kEffectDebugOutput) {
             qDebug() << debugString() << "deleting states for input channel"
-                     << pRequest->DisableInputChannelForChain.pChannelHandle
+                     << pRequest->DisableInputChannelForChain.channelHandle
                      << "for EngineEffectChain" << pRequest->pTargetChain;
         }
         pRequest->pTargetChain->deleteStatesForInputChannel(
-                pRequest->DisableInputChannelForChain.pChannelHandle);
+                pRequest->DisableInputChannelForChain.channelHandle);
     }
 }
