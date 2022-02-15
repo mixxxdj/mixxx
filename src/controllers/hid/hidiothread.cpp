@@ -57,6 +57,7 @@ HidIoThread::~HidIoThread() {
 }
 
 void HidIoThread::run() {
+    const QSemaphoreReleaser releaser(m_runLoopSemaphore);
     m_runLoopSemaphore.acquire();
     while (!testAndSetThreadState(HidIoThreadState::StopRequested, HidIoThreadState::Stopped)) {
         // Ensure that all InputReports are read from the ring buffer, before the next OutputReport blocks the IO again
@@ -79,7 +80,6 @@ void HidIoThread::run() {
             usleep(kSleepTimeWhenIdleMicros);
         }
     }
-    m_runLoopSemaphore.release();
 }
 
 void HidIoThread::pollBufferedInputReports() {
@@ -205,7 +205,7 @@ bool HidIoThread::sendNextOutputReport() {
     // m_outputReports.size() doesn't need mutex protection, because the value of i is not used.
     // i is just a counter to prevent infinite loop execution.
     // If the map size increases, this loop will execute one iteration more,
-    // which only has the effect, that one additional lookup operation for unsent data will be executed.
+    // which only has the effect, that one additional lookup operation for unsend data will be executed.
     for (unsigned char i = 0; i < m_outputReports.size(); i++) {
         {
             auto lock = lockMutex(&m_outputReportMapMutex);
