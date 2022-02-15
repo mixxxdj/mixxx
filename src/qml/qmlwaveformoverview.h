@@ -40,6 +40,8 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     Q_ENUM(Renderer)
 
     QmlWaveformOverview(QQuickItem* parent = nullptr);
+    ~QmlWaveformOverview() override = default;
+
     void paint(QPainter* painter);
 
     void setPlayer(QmlPlayerProxy* player);
