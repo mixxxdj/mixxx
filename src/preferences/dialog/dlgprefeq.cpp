@@ -391,14 +391,17 @@ void DlgPrefEQ::applySelections() {
         if (need_load) {
             EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
             m_pEQEffectRack->loadEffectToGroup(group, pEffect);
-            m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
-                    ConfigValue(effectId));
-            m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
-
-            // This is required to remove a previous selected effect that does not
-            // fit to the current ShowAllEffects checkbox
-            slotPopulateDeckEffectSelectors();
         }
+        // Always update config
+        m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
+                ConfigValue(effectId));
+        m_filterWaveformEnableCOs[deck]->set(
+                !CheckBoxBypass->isChecked() && m_pEffectsManager->isEQ(effectId));
+        // Toggle EQ processing for this deck by setting
+        // "[EqualizerRack1_[ChannelN]_Effect1]", "enabled"
+        QString eqEffectGroup = getEQEffectGroupForDeck(deck);
+        ControlObject::set(ConfigKey(eqEffectGroup, "enabled"),
+                CheckBoxBypass->isChecked() ? 0 : 1);
         ++deck;
     }
 
@@ -435,14 +438,10 @@ void DlgPrefEQ::applySelections() {
         if (need_load) {
             EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
             m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
-
-            m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
-                    ConfigValue(effectId));
-
-            // This is required to remove a previous selected effect that does not
-            // fit to the current ShowAllEffects checkbox
-            slotPopulateDeckEffectSelectors();
         }
+        // Always update config
+        m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
+                ConfigValue(effectId));
         ++deck;
     }
 }
