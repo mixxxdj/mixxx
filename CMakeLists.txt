@@ -1258,6 +1258,8 @@ endif()
 # The mixxx executable
 if(QT6 AND CMAKE_VERSION VERSION_LESS "3.21")
   find_package(Qt6 REQUIRED COMPONENTS Core) # For Qt Core cmake functions
+  # qt_add_executable() is the recommended initial call for qt_finalize_target()
+  # below that takes care of the correct object order in the resulting binary
   qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
 else()
   add_executable(mixxx WIN32 src/main.cpp)
