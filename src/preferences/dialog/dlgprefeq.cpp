@@ -112,7 +112,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
 
         if (deckNo == 1) {
             m_firstSelectorLabel = label;
-            if (CheckBoxEqOnly->isChecked()) {
+            if (CheckBoxSingleEqEffect->isChecked()) {
                 m_firstSelectorLabel->clear();
             }
         }
