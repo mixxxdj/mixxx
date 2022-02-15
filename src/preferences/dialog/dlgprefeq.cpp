@@ -241,10 +241,6 @@ QUrl DlgPrefEQ::helpUrl() const {
 
 // Load settings from config, except combobxes, update GUI
 void DlgPrefEQ::loadSettings() {
-    QString highEqCourse = m_pConfig->getValueString(ConfigKey(kConfigKey, "HiEQFrequency"));
-    QString highEqPrecise = m_pConfig->getValueString(ConfigKey(kConfigKey, "HiEQFrequencyPrecise"));
-    QString lowEqCourse = m_pConfig->getValueString(ConfigKey(kConfigKey, "LoEQFrequency"));
-    QString lowEqPrecise = m_pConfig->getValueString(ConfigKey(kConfigKey, "LoEQFrequencyPrecise"));
     CheckBoxEqAutoReset->setChecked(static_cast<bool>(
             m_pConfig->getValueString(ConfigKey(kConfigKey, "EqAutoReset"))
                     .toInt()));
@@ -262,6 +258,14 @@ void DlgPrefEQ::loadSettings() {
     slotBypass(CheckBoxBypass->isChecked());
     slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 
+    QString highEqCourse = m_pConfig->getValueString(
+            ConfigKey(kConfigKey, "HiEQFrequency"));
+    QString highEqPrecise = m_pConfig->getValueString(
+            ConfigKey(kConfigKey, "HiEQFrequencyPrecise"));
+    QString lowEqCourse = m_pConfig->getValueString(
+            ConfigKey(kConfigKey, "LoEQFrequency"));
+    QString lowEqPrecise = m_pConfig->getValueString(
+            ConfigKey(kConfigKey, "LoEQFrequencyPrecise"));
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
 
