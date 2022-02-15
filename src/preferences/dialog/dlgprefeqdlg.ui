@@ -306,6 +306,52 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="EQMiscOptions">
+     <property name="title">
+      <string>Miscellaneous</string>
+     </property>
+      <layout class="QVBoxLayout" name="miscOptionsLayout" stretch="0,0,0,0">
+       <item>
+        <widget class="QCheckBox" name="CheckBoxEqAutoReset">
+         <property name="toolTip">
+          <string>Resets the equalizers to their default values when loading a track.</string>
+         </property>
+         <property name="text">
+          <string>Reset equalizers on track load</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="CheckBoxGainAutoReset">
+         <property name="toolTip">
+          <string>Resets the deck gain to unity when loading a track.</string>
+         </property>
+         <property name="text">
+          <string>Reset gain on track load</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="CheckBoxBypass">
+         <property name="text">
+          <string>Bypass EQ effect processing</string>
+         </property>
+         <property name="toolTip">
+          <string>When checked, EQs are not processed, improving performance on slower computers.</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="MasterMasterEQ">
      <property name="title">
       <string>Master EQ</string>
@@ -362,45 +408,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="EQMiscOptions">
-     <property name="title">
-      <string>Miscellaneous</string>
-     </property>
-      <layout class="QVBoxLayout" name="miscOptionsLayout" stretch="0,0,0,0">
-       <item>
-        <widget class="QCheckBox" name="CheckBoxEqAutoReset">
-         <property name="toolTip">
-          <string>Resets the equalizers to their default values when loading a track.</string>
-         </property>
-         <property name="text">
-          <string>Reset equalizers on track load</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="CheckBoxGainAutoReset">
-         <property name="toolTip">
-          <string>Resets the deck gain to unity when loading a track.</string>
-         </property>
-         <property name="text">
-          <string>Reset gain on track load</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="CheckBoxBypass">
-         <property name="text">
-          <string>Bypass EQ effect processing</string>
-         </property>
-         <property name="toolTip">
-          <string>When checked, EQs are not processed, improving performance on slower computers.</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-    </widget>
-   </item>
-   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -419,17 +426,13 @@
  <tabstops>
   <tabstop>CheckBoxEqOnly</tabstop>
   <tabstop>CheckBoxSingleEqEffect</tabstop>
-  <!-- TODO(ronso0)
-      Dynamically add Eq / Quick Effect comboboxes -->
   <tabstop>SliderHiEQ</tabstop>
   <tabstop>SliderLoEQ</tabstop>
-  <tabstop>comboBoxMasterEq</tabstop>
-  <tabstop>pbResetMasterEq</tabstop>
-  <!-- TODO(ronso0)
-      Dynamically add Master EQ sliders -->
   <tabstop>CheckBoxEqAutoReset</tabstop>
   <tabstop>CheckBoxGainAutoReset</tabstop>
   <tabstop>CheckBoxBypass</tabstop>
+  <tabstop>comboBoxMasterEq</tabstop>
+  <tabstop>pbResetMasterEq</tabstop>
  </tabstops>
  <resources/>
  <connections/>
