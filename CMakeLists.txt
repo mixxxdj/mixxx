@@ -2162,6 +2162,7 @@ if(QT6)
     URI Mixxx
     VERSION 0.1
     RESOURCE_PREFIX /mixxx.org/imports
+    IMPORTS QtQuick
     QML_FILES
       res/qml/Mixxx/MathUtils.mjs
       res/qml/Mixxx/PlayerDropArea.qml
@@ -2178,7 +2179,7 @@ if(QT6)
     URI Mixxx.Controls
     VERSION 0.1
     RESOURCE_PREFIX /mixxx.org/imports
-    OPTIONAL_IMPORTS Mixxx
+    IMPORTS Mixxx
     QML_FILES
       res/qml/Mixxx/Controls/Knob.qml
       res/qml/Mixxx/Controls/Slider.qml
