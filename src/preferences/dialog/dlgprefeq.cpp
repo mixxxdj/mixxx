@@ -36,7 +36,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager, UserSett
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager),
           m_firstSelectorLabel(nullptr),
-          m_pNumDecks(nullptr) {
+          m_pNumDecks(nullptr),
+          m_numDecks(0) {
     m_pEQEffectRack = m_pEffectsManager->getEqualizerRack(0);
     m_pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
     m_pOutputEffectRack = m_pEffectsManager->getOutputsEffectRack();
@@ -88,7 +89,8 @@ DlgPrefEQ::~DlgPrefEQ() {
 // Add drop down lists for new decks, restore selection from config
 void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
     int oldDecks = m_deckEqEffectSelectors.size();
-    while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
+    m_numDecks = static_cast<int>(numDecks);
+    while (m_deckEqEffectSelectors.size() < m_numDecks) {
         int deckNo = m_deckEqEffectSelectors.size() + 1;
 
         QLabel* label = new QLabel(QObject::tr("Deck %1").arg(deckNo), this);
@@ -124,34 +126,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
                 deckNo, 3, 1, 1);
     }
     slotPopulateDeckEffectSelectors();
-    for (int i = oldDecks; i < static_cast<int>(numDecks); ++i) {
-        // Set the configured effect for box and simpleBox or Bessel8 LV-Mix EQ
-        // if none is configured
-        QString group = PlayerManager::groupForDeck(i);
-        QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
-                "EffectForGroup_" + group), kDefaultEqId);
-        int selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(configuredEffect);
-        if (selectedEffectIndex < 0) {
-            selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(kDefaultEqId);
-            configuredEffect = kDefaultEqId;
-        }
-        m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
-        m_filterWaveformEffectLoaded[i] = m_pEffectsManager->isEQ(configuredEffect);
-        m_filterWaveformEnableCOs[i]->set(
-                m_filterWaveformEffectLoaded[i] &&
-                !CheckBoxBypass->checkState());
-
-        QString configuredQuickEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
-                "QuickEffectForGroup_" + group), kDefaultQuickEffectId);
-        int selectedQuickEffectIndex =
-                m_deckQuickEffectSelectors[i]->findData(configuredQuickEffect);
-        if (selectedQuickEffectIndex < 0) {
-            selectedQuickEffectIndex =
-                    m_deckEqEffectSelectors[i]->findData(kDefaultQuickEffectId);
-            configuredEffect = kDefaultQuickEffectId;
-        }
-        m_deckQuickEffectSelectors[i]->setCurrentIndex(selectedQuickEffectIndex);
-    }
+    loadEffectSelection(oldDecks);
     applySelections();
     // This is only required to update the widgets if numDecks changed
     // while the preferences are open (slotUpdate() not called)
@@ -326,6 +301,39 @@ void DlgPrefEQ::loadSettings() {
             getSliderPosition(m_lowEqFreq,
                     SliderLoEQ->minimum(),
                     SliderLoEQ->maximum()));
+}
+
+// Load EQ and QuickEffect selection from config, update GUI
+void DlgPrefEQ::loadEffectSelection(int oldDeckCount) {
+    VERIFY_OR_DEBUG_ASSERT(oldDeckCount >= 0) {
+        return;
+    }
+    for (int i = oldDeckCount; i < m_numDecks; ++i) {
+        QString group = PlayerManager::groupForDeck(i);
+
+        // EQ
+        QString configuredEffect = m_pConfig->getValue(
+                ConfigKey(kConfigKey, "EffectForGroup_" + group), kDefaultEqId);
+        int selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(configuredEffect);
+        if (selectedEffectIndex < 0) {
+            selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(kDefaultEqId);
+            configuredEffect = kDefaultEqId;
+        }
+        m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
+        m_filterWaveformEffectLoaded[i] = m_pEffectsManager->isEQ(configuredEffect);
+
+        // QuickEffect
+        QString configuredQuickEffect = m_pConfig->getValue(
+                ConfigKey(kConfigKey, "QuickEffectForGroup_" + group), kDefaultQuickEffectId);
+        int selectedQuickEffectIndex =
+                m_deckQuickEffectSelectors[i]->findData(configuredQuickEffect);
+        if (selectedQuickEffectIndex < 0) {
+            selectedQuickEffectIndex =
+                    m_deckQuickEffectSelectors[i]->findData(kDefaultQuickEffectId);
+            configuredEffect = kDefaultQuickEffectId;
+        }
+        m_deckQuickEffectSelectors[i]->setCurrentIndex(selectedQuickEffectIndex);
+    }
 }
 
 void DlgPrefEQ::setDefaultShelves() {
@@ -543,6 +551,7 @@ void DlgPrefEQ::slotApply() {
 // Reload settings and effect selection from config, update GUI
 void DlgPrefEQ::slotUpdate() {
     loadSettings();
+    loadEffectSelection(0);
 }
 
 // De/activate EQ controls when Bypass checkbox is toggled

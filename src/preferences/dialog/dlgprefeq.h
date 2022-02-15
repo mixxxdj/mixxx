@@ -43,6 +43,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   private:
     void loadSettings();
+    void loadEffectSelection(int oldDeckCount);
     void setDefaultShelves();
     double getEqFreq(int value, int minimum, int maximum);
     int getSliderPosition(double eqFreq, int minimum, int maximum);
@@ -67,6 +68,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QList<bool> m_filterWaveformEffectLoaded;
     QList<ControlObject*> m_filterWaveformEnableCOs;
     ControlProxy* m_pNumDecks;
+    int m_numDecks;
 
     // Members needed for the Master EQ
     QList<QSlider*> m_masterEQSliders;
