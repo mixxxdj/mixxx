@@ -31,8 +31,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotApply() override;
     void slotUpdate() override;
     void slotResetToDefaults() override;
-    void slotUpdateEqAutoReset(int);
-    void slotUpdateGainAutoReset(int);
     void slotBypass(int state);
     void slotUpdateMasterEQParameter(int value);
     void slotMasterEQToDefault();
@@ -75,7 +73,4 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QList<QLabel*> m_masterEQValues;
     QList<QLabel*> m_masterEQLabels;
     QWeakPointer<Effect> m_pEffectMasterEQ;
-
-    bool m_bEqAutoReset;
-    bool m_bGainAutoReset;
 };

@@ -36,9 +36,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager, UserSett
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager),
           m_firstSelectorLabel(nullptr),
-          m_pNumDecks(nullptr),
-          m_bEqAutoReset(false),
-          m_bGainAutoReset(false) {
+          m_pNumDecks(nullptr) {
     m_pEQEffectRack = m_pEffectsManager->getEqualizerRack(0);
     m_pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
     m_pOutputEffectRack = m_pEffectsManager->getOutputsEffectRack();
@@ -287,12 +285,12 @@ void DlgPrefEQ::loadSettings() {
     QString highEqPrecise = m_pConfig->getValueString(ConfigKey(kConfigKey, "HiEQFrequencyPrecise"));
     QString lowEqCourse = m_pConfig->getValueString(ConfigKey(kConfigKey, "LoEQFrequency"));
     QString lowEqPrecise = m_pConfig->getValueString(ConfigKey(kConfigKey, "LoEQFrequencyPrecise"));
-    m_bEqAutoReset = static_cast<bool>(m_pConfig->getValueString(
-            ConfigKey(kConfigKey, "EqAutoReset")).toInt());
-    CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
-    m_bGainAutoReset = static_cast<bool>(m_pConfig->getValueString(
-            ConfigKey(kConfigKey, "GainAutoReset")).toInt());
-    CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
+    CheckBoxEqAutoReset->setChecked(static_cast<bool>(
+            m_pConfig->getValueString(ConfigKey(kConfigKey, "EqAutoReset"))
+                    .toInt()));
+    CheckBoxGainAutoReset->setChecked(static_cast<bool>(
+            m_pConfig->getValueString(ConfigKey(kConfigKey, "GainAutoReset"))
+                    .toInt()));
     CheckBoxBypass->setChecked(m_pConfig->getValue(
             ConfigKey(kConfigKey, kEnableEqs), QString("yes")) == "no");
     CheckBoxEqOnly->setChecked(m_pConfig->getValue(
@@ -350,9 +348,7 @@ void DlgPrefEQ::slotResetToDefaults() {
     CheckBoxEqOnly->setChecked(true);
 
     CheckBoxSingleEqEffect->setChecked(true);
-    m_bEqAutoReset = false;
     CheckBoxEqAutoReset->setChecked(false);
-    m_bGainAutoReset = false;
     CheckBoxGainAutoReset->setChecked(false);
     CheckBoxBypass->setChecked(false);
     slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
@@ -536,9 +532,9 @@ void DlgPrefEQ::slotApply() {
             ConfigValue(QString::number(m_lowEqFreq, 'f')));
 
     m_pConfig->set(ConfigKey(kConfigKey, "EqAutoReset"),
-            ConfigValue(m_bEqAutoReset ? 1 : 0));
+            ConfigValue(CheckBoxEqAutoReset->isChecked() ? 1 : 0));
     m_pConfig->set(ConfigKey(kConfigKey, "GainAutoReset"),
-            ConfigValue(m_bGainAutoReset ? 1 : 0));
+            ConfigValue(CheckBoxGainAutoReset->isChecked() ? 1 : 0));
     // Note the inversion: GUI label is "Bypass EQs", config key is "EnableEQs"
     m_pConfig->set(ConfigKey(kConfigKey, kEnableEqs),
             CheckBoxBypass->isChecked() ? QString("no") : QString("yes"));
@@ -547,15 +543,6 @@ void DlgPrefEQ::slotApply() {
 // Reload settings and effect selection from config, update GUI
 void DlgPrefEQ::slotUpdate() {
     loadSettings();
-}
-
-
-void DlgPrefEQ::slotUpdateEqAutoReset(int i) {
-    m_bEqAutoReset = static_cast<bool>(i);
-}
-
-void DlgPrefEQ::slotUpdateGainAutoReset(int i) {
-    m_bGainAutoReset = static_cast<bool>(i);
 }
 
 // De/activate EQ controls when Bypass checkbox is toggled
