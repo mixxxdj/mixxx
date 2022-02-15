@@ -25,6 +25,14 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
+# propagate interface link properties
+if(POLICY CMP0099)
+  # this avoids a warning when qt deals with it see
+  # https://github.com/qt/qtbase/commit/e3e1007f9778d8fc629a06f7d3d216bb7f81351b
+  cmake_policy(SET CMP0099 NEW)
+endif()
+
+
 # Set up vcpkg
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
     set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
