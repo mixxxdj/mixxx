@@ -165,7 +165,6 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     for (QComboBox* box : qAsConst(m_deckEqEffectSelectors)) {
         // Save current selection
         QString selectedEffectId = box->itemData(box->currentIndex()).toString();
-        QString selectedEffectName = box->itemText(box->currentIndex());
         box->clear();
         int currentIndex = -1; // Nothing selected
 
@@ -180,15 +179,9 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
                 currentIndex = i + 1;
             }
         }
-
-        if (selectedEffectId.isEmpty()) {
-            // Configured effect has no id, clear selection
+        // Select 'None' if the previous EQ was not found in the updated list
+        if (currentIndex < 0) {
             currentIndex = 0;
-        } else if (currentIndex < 0 && !selectedEffectName.isEmpty() ) {
-            // current selection is not part of the new list
-            // So we need to add it
-            box->addItem(selectedEffectName, QVariant(selectedEffectId));
-            currentIndex = i + 1;
         }
         box->setCurrentIndex(currentIndex);
     }
@@ -196,13 +189,11 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     for (QComboBox* box : qAsConst(m_deckQuickEffectSelectors)) {
         // Save current selection
         QString selectedEffectId = box->itemData(box->currentIndex()).toString();
-        QString selectedEffectName = box->itemText(box->currentIndex());
         box->clear();
         int currentIndex = -1;// Nothing selected
 
         // Add empty item at the top: no Quick Effect
         box->addItem(EffectsManager::kNoEffectString);
-
         int i;
         // Select the previous QuickEffect if it's available in the updated list
         for (i = 0; i < availableQuickEffects.size(); ++i) {
@@ -212,15 +203,9 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
                 currentIndex = i + 1;
             }
         }
-
-        if (selectedEffectId.isEmpty()) {
-            // Configured effect has no id, clear selection
+        // Select 'None' if the previous effect was not found in the updated list
+        if (currentIndex < 0) {
             currentIndex = 0;
-        } else if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
-            // current selection is not part of the new list
-            // So we need to add it
-            box->addItem(selectedEffectName, QVariant(selectedEffectId));
-            currentIndex = i + 1;
         }
         box->setCurrentIndex(currentIndex);
     }
@@ -345,13 +330,13 @@ void DlgPrefEQ::slotResetToDefaults() {
     slotMasterEQToDefault();
 
     setDefaultShelves();
-    foreach(QComboBox* pCombo, m_deckEqEffectSelectors) {
-        pCombo->setCurrentIndex(
-               pCombo->findData(kDefaultEqId));
+
+    slotPopulateDeckEffectSelectors();
+    for (QComboBox* box : qAsConst(m_deckEqEffectSelectors)) {
+        box->setCurrentIndex(box->findData(kDefaultEqId));
     }
-    foreach(QComboBox* pCombo, m_deckQuickEffectSelectors) {
-        pCombo->setCurrentIndex(
-               pCombo->findData(kDefaultQuickEffectId));
+    for (QComboBox* box : qAsConst(m_deckQuickEffectSelectors)) {
+        box->setCurrentIndex(box->findData(kDefaultQuickEffectId));
     }
     CheckBoxEqOnly->setChecked(true);
 
