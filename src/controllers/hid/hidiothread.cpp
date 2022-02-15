@@ -190,14 +190,15 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
 }
 
 void HidIoThread::cacheOutputReport(const QByteArray& data, unsigned int reportID) {
-    {
-        auto lock = lockMutex(&m_outputReportMapMutex);
-        if (m_outputReports.find(reportID) == m_outputReports.end()) {
-            std::unique_ptr<HidIoReport> pNewOutputReport;
-            m_outputReports[reportID] = std::make_unique<HidIoReport>(
-                    reportID, data.size());
-        }
+    auto lock = lockMutex(&m_outputReportMapMutex);
+    if (m_outputReports.find(reportID) == m_outputReports.end()) {
+        std::unique_ptr<HidIoReport> pNewOutputReport;
+        m_outputReports[reportID] = std::make_unique<HidIoReport>(
+                reportID, data.size());
     }
+
+    lock.unlock();
+
     m_outputReports[reportID]->cacheOutputReport(data, m_deviceInfo, m_logOutput);
 }
 
