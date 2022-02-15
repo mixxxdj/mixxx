@@ -1256,7 +1256,12 @@ elseif(UNIX)
 endif()
 
 # The mixxx executable
-add_executable(mixxx WIN32 src/main.cpp)
+if(QT6 AND CMAKE_VERSION VERSION_LESS "3.21")
+  find_package(Qt6 REQUIRED COMPONENTS Core) # For Qt Core cmake functions
+  qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
+else()
+  add_executable(mixxx WIN32 src/main.cpp)
+endif()
 # ugly hack to get #include "preferences/dialog/ui_dlgpreferencesdlg.h" to work in
 # src/qmldlgpreferencesproxy.h, which is #included from src/qmlapplication.h.
 target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/mixxx-lib_autogen/include")
@@ -2189,6 +2194,12 @@ if(QT6)
       res/qml/Mixxx/Controls/WaveformOverview.qml
   )
   target_link_libraries(mixxx-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
+
+  if(CMAKE_VERSION VERSION_LESS "3.21")
+    # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
+    # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
+    qt_finalize_target(mixxx)
+  endif()
 endif()
 
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
