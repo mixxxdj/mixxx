@@ -16,10 +16,16 @@
 #include "moc_dlgprefeq.cpp"
 #include "util/math.h"
 
-const QString kConfigKey = "[Mixer Profile]";
-const QString kEnableEqs = "EnableEQs";
-const QString kEqsOnly = "EQsOnly";
-const QString kSingleEq = "SingleEQEffect";
+const QString kConfigKey = QStringLiteral("[Mixer Profile]");
+const QString kEnableEqs = QStringLiteral("EnableEQs");
+const QString kEqsOnly = QStringLiteral("EQsOnly");
+const QString kSingleEq = QStringLiteral("SingleEQEffect");
+const QString kEqAutoReset = QStringLiteral("EqAutoReset");
+const QString kGainAutoReset = QStringLiteral("GainAutoReset");
+const QString kLoEqFrequency = QStringLiteral("LoEQFrequency");
+const QString kLoEqFrequencyPrecise = QStringLiteral("LoEQFrequencyPrecise");
+const QString kHiEqFrequency = QStringLiteral("HiEQFrequency");
+const QString kHiEqFrequencyPrecise = QStringLiteral("HiEQFrequencyPrecise");
 const QString kDefaultEqId = BiquadFullKillEQEffect::getId();
 const QString kDefaultMasterEqId = QString();
 const QString kDefaultQuickEffectId = FilterEffect::getId();
@@ -29,8 +35,8 @@ const int kFrequencyLowerLimit = 16;
 
 DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager, UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
-          m_COLoFreq(kConfigKey, "LoEQFrequency"),
-          m_COHiFreq(kConfigKey, "HiEQFrequency"),
+          m_COLoFreq(kConfigKey, kLoEqFrequency),
+          m_COHiFreq(kConfigKey, kHiEqFrequency),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
@@ -242,10 +248,10 @@ QUrl DlgPrefEQ::helpUrl() const {
 // Load settings from config, except combobxes, update GUI
 void DlgPrefEQ::loadSettings() {
     CheckBoxEqAutoReset->setChecked(static_cast<bool>(
-            m_pConfig->getValueString(ConfigKey(kConfigKey, "EqAutoReset"))
+            m_pConfig->getValueString(ConfigKey(kConfigKey, kEqAutoReset))
                     .toInt()));
     CheckBoxGainAutoReset->setChecked(static_cast<bool>(
-            m_pConfig->getValueString(ConfigKey(kConfigKey, "GainAutoReset"))
+            m_pConfig->getValueString(ConfigKey(kConfigKey, kGainAutoReset))
                     .toInt()));
     CheckBoxBypass->setChecked(m_pConfig->getValue(
             ConfigKey(kConfigKey, kEnableEqs), QString("yes")) == "no");
@@ -259,13 +265,13 @@ void DlgPrefEQ::loadSettings() {
     slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 
     QString highEqCourse = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, "HiEQFrequency"));
+            ConfigKey(kConfigKey, kHiEqFrequency));
     QString highEqPrecise = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, "HiEQFrequencyPrecise"));
+            ConfigKey(kConfigKey, kHiEqFrequencyPrecise));
     QString lowEqCourse = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, "LoEQFrequency"));
+            ConfigKey(kConfigKey, kLoEqFrequency));
     QString lowEqPrecise = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, "LoEQFrequencyPrecise"));
+            ConfigKey(kConfigKey, kLoEqFrequencyPrecise));
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
 
@@ -518,18 +524,18 @@ void DlgPrefEQ::slotApply() {
 
     m_COLoFreq.set(m_lowEqFreq);
     m_COHiFreq.set(m_highEqFreq);
-    m_pConfig->set(ConfigKey(kConfigKey, "HiEQFrequency"),
+    m_pConfig->set(ConfigKey(kConfigKey, kHiEqFrequency),
             ConfigValue(QString::number(static_cast<int>(m_highEqFreq))));
-    m_pConfig->set(ConfigKey(kConfigKey, "HiEQFrequencyPrecise"),
+    m_pConfig->set(ConfigKey(kConfigKey, kHiEqFrequencyPrecise),
             ConfigValue(QString::number(m_highEqFreq, 'f')));
-    m_pConfig->set(ConfigKey(kConfigKey, "LoEQFrequency"),
+    m_pConfig->set(ConfigKey(kConfigKey, kLoEqFrequency),
             ConfigValue(QString::number(static_cast<int>(m_lowEqFreq))));
-    m_pConfig->set(ConfigKey(kConfigKey, "LoEQFrequencyPrecise"),
+    m_pConfig->set(ConfigKey(kConfigKey, kLoEqFrequencyPrecise),
             ConfigValue(QString::number(m_lowEqFreq, 'f')));
 
-    m_pConfig->set(ConfigKey(kConfigKey, "EqAutoReset"),
+    m_pConfig->set(ConfigKey(kConfigKey, kEqAutoReset),
             ConfigValue(CheckBoxEqAutoReset->isChecked() ? 1 : 0));
-    m_pConfig->set(ConfigKey(kConfigKey, "GainAutoReset"),
+    m_pConfig->set(ConfigKey(kConfigKey, kGainAutoReset),
             ConfigValue(CheckBoxGainAutoReset->isChecked() ? 1 : 0));
     // Note the inversion: GUI label is "Bypass EQs", config key is "EnableEQs"
     m_pConfig->set(ConfigKey(kConfigKey, kEnableEqs),
