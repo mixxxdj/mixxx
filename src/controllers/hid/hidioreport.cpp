@@ -16,7 +16,7 @@ constexpr int kMaxHidErrorMessageSize = 512;
 
 HidIoReport::HidIoReport(const unsigned char& reportId, const unsigned int& reportDataSize)
         : m_reportId(reportId),
-          m_possiblyUnsendDataCached(false),
+          m_possiblyUnsentDataCached(false),
           m_lastCachedDataSize(0) {
     // First byte must always contain the ReportID - also after swapping, therefore initialize both arrays
     m_cachedOutputReportData.reserve(kReportIdSize + reportDataSize);
@@ -35,7 +35,7 @@ void HidIoReport::cacheOutputReport(const QByteArray& data,
         m_lastCachedDataSize = data.size();
 
     } else {
-        if (m_possiblyUnsendDataCached) {
+        if (m_possiblyUnsentDataCached) {
             qCDebug(logOutput) << "t:" << mixxx::Time::elapsed().formatMillisWithUnit()
                                << "Skipped superseded OutputReport"
                                << deviceInfo.formatName() << "serial #"
@@ -63,7 +63,7 @@ void HidIoReport::cacheOutputReport(const QByteArray& data,
             m_cachedOutputReportData.size(),
             data.constData(),
             data.size());
-    m_possiblyUnsendDataCached = true;
+    m_possiblyUnsentDataCached = true;
 }
 
 bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
@@ -74,7 +74,7 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
 
     auto reportCacheLock = lockMutex(&m_cachedOutputReportDataMutex);
 
-    if (!m_possiblyUnsendDataCached) {
+    if (!m_possiblyUnsentDataCached) {
         // Return with false, to signal the caller, that no time consuming IO operation was necessary
         return false;
     }
@@ -86,9 +86,9 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
         // This means there is always a one to one relationship to the state of control(s)/LED(s),
         // and if the state is not changed, there's no need to execute the time consuming hid_write again.
 
-        // Setting m_possiblyUnsendDataCached to false prevents,
+        // Setting m_possiblyUnsentDataCached to false prevents,
         // that the byte array compare operation is executed for the same data again
-        m_possiblyUnsendDataCached = false;
+        m_possiblyUnsentDataCached = false;
 
         reportCacheLock.unlock();
 
@@ -102,13 +102,13 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
         return false;
     }
 
-    // Preemtive set m_lastSentOutputReportData and m_possiblyUnsendDataCached,
+    // Preemtive set m_lastSentOutputReportData and m_possiblyUnsentDataCached,
     // to release the mutex during the time consuming hid_write operation.
     // In the unlikely case that hid_write fails, they will be invalidated afterwards
     // This is safe, because these members are only reset in this scope of this method,
     // and concurrent execution of this method is prevented by locking pHidDeviceMutex
     m_lastSentOutputReportData.swap(m_cachedOutputReportData);
-    m_possiblyUnsendDataCached = false;
+    m_possiblyUnsentDataCached = false;
 
     reportCacheLock.unlock();
 
@@ -136,7 +136,7 @@ bool HidIoReport::sendOutputReport(QMutex* pHidDeviceMutex,
         // at the next call of this method is negligible
         m_lastSentOutputReportData.clear();
         m_lastSentOutputReportData.append(m_reportId);
-        m_possiblyUnsendDataCached = true;
+        m_possiblyUnsentDataCached = true;
 
         // Return with true, to signal the caller, that the time consuming hid_write operation was executed
         // (Note, that the return value isn't an error code)

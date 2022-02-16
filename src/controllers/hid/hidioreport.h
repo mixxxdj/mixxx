@@ -26,11 +26,11 @@ class HidIoReport {
     QByteArray m_lastSentOutputReportData;
 
     /// Mutex must be locked when reading/writing m_cachedOutputReportData
-    /// or m_possiblyUnsendDataCached
+    /// or m_possiblyUnsentDataCached
     QMutex m_cachedOutputReportDataMutex;
 
     QByteArray m_cachedOutputReportData;
-    bool m_possiblyUnsendDataCached;
+    bool m_possiblyUnsentDataCached;
 
     /// Due to swapping of the QbyteArrays, we need to store
     /// this information independent of the QBytearray size

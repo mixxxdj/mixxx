@@ -206,7 +206,7 @@ bool HidIoThread::sendNextOutputReport() {
     // m_outputReports.size() doesn't need mutex protection, because the value of i is not used.
     // i is just a counter to prevent infinite loop execution.
     // If the map size increases, this loop will execute one iteration more,
-    // which only has the effect, that one additional lookup operation for unsend data will be executed.
+    // which only has the effect, that one additional lookup operation for unsent data will be executed.
     for (unsigned char i = 0; i < m_outputReports.size(); i++) {
         {
             auto lock = lockMutex(&m_outputReportMapMutex);
