@@ -244,10 +244,7 @@ void HidIoThread::sendFeatureReport(
 
     // Append the Report ID to the beginning of dataArray[] per the API..
     dataArray.append(reportID);
-
-    for (const int datum : reportData) {
-        dataArray.append(datum);
-    }
+    dataArray.append(reportData);
 
     auto lock = lockMutex(&m_hidDeviceMutex);
     int result = hid_send_feature_report(m_pHidDevice,
