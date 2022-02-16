@@ -2165,7 +2165,20 @@ if(QT6)
     QML_FILES
       res/qml/Mixxx/MathUtils.mjs
       res/qml/Mixxx/PlayerDropArea.qml
+    NO_GENERATE_QMLDIR
   )
+
+  # Generation of the `qmldir` file has been disabled (via `NO_GENERATE_QMLDIR`
+  # above) due to QTBUG-100326, which breaks JavaScript module imports:
+  # https://bugreports.qt.io/browse/QTBUG-100326
+  # Instead, a handwritten `qmldir` file that works around the issue needs to
+  # be added to the resources here.
+  set_source_files_properties("res/qml/Mixxx/qmldir" PROPERTIES QT_RESOURCE_ALIAS "qmldir")
+  qt_add_resources(mixxx-libplugin qmldir
+    FILES "res/qml/Mixxx/qmldir"
+    PREFIX "/mixxx.org/imports/Mixxx"
+  )
+
   # FIXME: Currently we need to add these include directories due to
   # QTBUG-87221. We should figure out a better way to fix this.
   # See: https://bugreports.qt.io/browse/QTBUG-87221
