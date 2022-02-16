@@ -25,9 +25,10 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
-# propagate interface link properties
+# Propagate interface link properties
 if(POLICY CMP0099)
-  # this avoids a warning when qt deals with it see
+  # This avoids a warning when qt deals with different behaviours controlled by this policy
+  # in its cmake functions. See
   # https://github.com/qt/qtbase/commit/e3e1007f9778d8fc629a06f7d3d216bb7f81351b
   cmake_policy(SET CMP0099 NEW)
 endif()
@@ -1268,6 +1269,8 @@ if(QT6 AND CMAKE_VERSION VERSION_LESS "3.21")
   find_package(Qt6 REQUIRED COMPONENTS Core) # For Qt Core cmake functions
   # qt_add_executable() is the recommended initial call for qt_finalize_target()
   # below that takes care of the correct object order in the resulting binary
+  # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
+  # builds with Qt < 3.21
   qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
 else()
   add_executable(mixxx WIN32 src/main.cpp)
