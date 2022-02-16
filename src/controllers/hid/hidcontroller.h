@@ -33,7 +33,7 @@ class HidController final : public Controller {
     bool matchMapping(const MappingInfo& mapping) override;
 
   protected:
-    void sendReport(QList<int> data, unsigned int length, unsigned int reportID);
+    void sendReport(const QList<int>& data, unsigned int length, unsigned int reportID);
 
   private slots:
     int open() override;
