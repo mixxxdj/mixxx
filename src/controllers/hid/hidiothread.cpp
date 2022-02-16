@@ -164,7 +164,7 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
                            hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
         // Note, that the GetInputReport request is optional, according to the HID specification,
         // not all devices implement it.
-        return QByteArray();
+        return {};
     }
 
     // Convert array of bytes read in a JavaScript compatible return type, this is returned as deep-copy, for thread safety.
@@ -291,7 +291,7 @@ QByteArray HidIoThread::getFeatureReport(
                 << m_deviceInfo.serialNumber() << ":"
                 << mixxx::convertWCStringToQString(
                            hid_error(m_pHidDevice), kMaxHidErrorMessageSize);
-        return QByteArray();
+        return {};
     }
 
     lock.unlock();
