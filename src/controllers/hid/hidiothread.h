@@ -7,7 +7,7 @@
 
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
-#include "controllers/hid/hidioreport.h"
+#include "controllers/hid/hidiooutputreport.h"
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
 
@@ -42,7 +42,7 @@ class HidIoThread : public QThread {
     /// Returns immediately with true if the run loop is stopped.
     [[nodiscard]] bool waitUntilRunLoopIsStopped(unsigned int timeoutMillis);
 
-    void cacheOutputReport(const QByteArray& reportData, unsigned int reportID);
+    void updateCachedOutputReportData(const QByteArray& reportData, unsigned int reportID);
     QByteArray getInputReport(unsigned int reportID);
     void sendFeatureReport(const QByteArray& reportData, unsigned int reportID);
     QByteArray getFeatureReport(unsigned int reportID);
@@ -52,7 +52,7 @@ class HidIoThread : public QThread {
     void receive(const QByteArray& data, mixxx::Duration timestamp);
 
   private:
-    bool sendNextOutputReport();
+    bool sendNextCachedOutputReport();
 
     void pollBufferedInputReports();
     void processInputReport(int bytesRead);
@@ -80,7 +80,7 @@ class HidIoThread : public QThread {
     /// or when modify the m_outputReportIterator
     QMutex m_outputReportMapMutex;
 
-    typedef std::map<unsigned char, std::unique_ptr<HidIoReport>> OutputReportMap;
+    typedef std::map<unsigned char, std::unique_ptr<HidIoOutputReport>> OutputReportMap;
     /// m_outputReports is an empty map after class initialization.
     /// An entry is inserted each time, when an OutputReport is send for the first time.
     /// Until then, it's not known, which OutputReports a device/mapping has.

@@ -69,7 +69,7 @@ void HidIoThread::run() {
         // for the backend/kernel for confirmation of success
         // Depending on the OS this takes several several milli seconds
         // This operation doesn't take many CPU cycles, most time HIDAPI is in idle state
-        if (!sendNextOutputReport()) {
+        if (!sendNextCachedOutputReport()) {
             if (testAndSetThreadState(HidIoThreadState::StopWhenAllReportsSent,
                         HidIoThreadState::Stopped)) {
                 break;
@@ -189,11 +189,11 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     return returnArray;
 }
 
-void HidIoThread::cacheOutputReport(const QByteArray& data, unsigned int reportID) {
+void HidIoThread::updateCachedOutputReportData(const QByteArray& data, unsigned int reportID) {
     auto lock = lockMutex(&m_outputReportMapMutex);
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
-        std::unique_ptr<HidIoReport> pNewOutputReport;
-        m_outputReports[reportID] = std::make_unique<HidIoReport>(
+        std::unique_ptr<HidIoOutputReport> pNewOutputReport;
+        m_outputReports[reportID] = std::make_unique<HidIoOutputReport>(
                 reportID, data.size());
     }
 
@@ -205,10 +205,10 @@ void HidIoThread::cacheOutputReport(const QByteArray& data, unsigned int reportI
 
     lock.unlock();
 
-    actualOutputReportIterator->second->cacheOutputReport(data, m_deviceInfo, m_logOutput);
+    actualOutputReportIterator->second->updateCachedData(data, m_deviceInfo, m_logOutput);
 }
 
-bool HidIoThread::sendNextOutputReport() {
+bool HidIoThread::sendNextCachedOutputReport() {
     // m_outputReports.size() doesn't need mutex protection, because the value of i is not used.
     // i is just a counter to prevent infinite loop execution.
     // If the map size increases, this loop will execute one iteration more,
@@ -226,13 +226,13 @@ bool HidIoThread::sendNextOutputReport() {
         // by std::map<Key,T,Compare,Allocator>::operator[]
         // The standard says that "No iterators or references are invalidated." using this operator.
         // Therefore m_outputReportIterator doesn't require Mutex protection.
-        if (m_outputReportIterator->second->sendOutputReport(
+        if (m_outputReportIterator->second->sendCachedData(
                     &m_hidDeviceMutex, m_pHidDevice, m_deviceInfo, m_logOutput)) {
-            // Return after each time consuming sendOutputReport
+            // Return after each time consuming sendCachedData
             return true;
         }
     }
-    // Returns false if no report required a time consuming sendOutputReport
+    // Returns false if no report required a time consuming sendCachedData
     return false;
 }
 

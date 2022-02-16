@@ -204,11 +204,11 @@ void HidController::sendReport(QList<int> data, unsigned int length, unsigned in
     foreach (int datum, data) {
         temp.append(datum);
     }
-    m_pHidIoThread->cacheOutputReport(temp, reportID);
+    m_pHidIoThread->updateCachedOutputReportData(temp, reportID);
 }
 
 void HidController::sendBytes(const QByteArray& data) {
-    m_pHidIoThread->cacheOutputReport(data, 0);
+    m_pHidIoThread->updateCachedOutputReportData(data, 0);
 }
 
 ControllerJSProxy* HidController::jsProxy() {

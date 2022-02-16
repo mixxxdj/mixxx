@@ -5,31 +5,31 @@
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
 
-class HidIoReport {
+class HidIoOutputReport {
   public:
-    HidIoReport(const unsigned char& reportId, const unsigned int& reportDataSize);
+    HidIoOutputReport(const unsigned char& reportId, const unsigned int& reportDataSize);
 
     /// Caches new report data, which will later send by the IO thread
-    void cacheOutputReport(const QByteArray& data,
+    void updateCachedData(const QByteArray& data,
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput);
 
     /// Sends the OutputReport to the HID device, when changed data are cached.
     /// Returns true if a time consuming hid_write operation was executed.
-    bool sendOutputReport(QMutex* pHidDeviceMutex,
+    bool sendCachedData(QMutex* pHidDeviceMutex,
             hid_device* pHidDevice,
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput);
 
   private:
     const unsigned char m_reportId;
-    QByteArray m_lastSentOutputReportData;
+    QByteArray m_lastSentData;
 
-    /// Mutex must be locked when reading/writing m_cachedOutputReportData
+    /// Mutex must be locked when reading/writing m_cachedData
     /// or m_possiblyUnsentDataCached
-    QMutex m_cachedOutputReportDataMutex;
+    QMutex m_cachedDataMutex;
 
-    QByteArray m_cachedOutputReportData;
+    QByteArray m_cachedData;
     bool m_possiblyUnsentDataCached;
 
     /// Due to swapping of the QbyteArrays, we need to store
