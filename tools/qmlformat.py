@@ -8,6 +8,7 @@ import subprocess
 import pathlib
 import sys
 import re
+import os
 
 QMLFORMAT_MISSING_MESSAGE = """
 qmlformat is not installed or not in your $PATH, please install.
@@ -28,7 +29,12 @@ def find_qt_version():
 
 
 def main(argv=None):
-    qmlformat_executable = shutil.which("qmlformat")
+    # First look up at the most common location for QT6 which is not in PATH
+    qmlformat_executable = shutil.which(
+        "qmlformat", os.F_OK, "/usr/lib/qt6/bin"
+    )
+    if not qmlformat_executable:
+        qmlformat_executable = shutil.which("qmlformat")
     if not qmlformat_executable:
         qt_version = find_qt_version()
         if qt_version is None or qt_version < (5, 15):
