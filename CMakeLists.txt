@@ -1265,7 +1265,7 @@ elseif(UNIX)
 endif()
 
 # The mixxx executable
-if(QT6 AND CMAKE_VERSION VERSION_LESS "3.21")
+if(QT6)
   find_package(Qt6 REQUIRED COMPONENTS Core) # For Qt Core cmake functions
   # qt_add_executable() is the recommended initial call for qt_finalize_target()
   # below that takes care of the correct object order in the resulting binary
@@ -2221,11 +2221,9 @@ if(QT6)
   )
   target_link_libraries(mixxx-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
 
-  if(CMAKE_VERSION VERSION_LESS "3.21")
-    # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
-    # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
-    qt_finalize_target(mixxx)
-  endif()
+  # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
+  # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
+  qt_finalize_target(mixxx)
 endif()
 
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
