@@ -103,7 +103,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceMutex,
         return false;
     }
 
-    // Preemtive set m_lastSentData and m_possiblyUnsentDataCached,
+    // Preemptively set m_lastSentData and m_possiblyUnsentDataCached,
     // to release the mutex during the time consuming hid_write operation.
     // In the unlikely case that hid_write fails, they will be invalidated afterwards
     // This is safe, because these members are only reset in this scope of this method,
