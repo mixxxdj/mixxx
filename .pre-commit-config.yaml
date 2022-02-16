@@ -144,14 +144,6 @@ repos:
         language: system
         types: [text]
         files: ^.*\.qml$
-      - id: qmllint
-        name: qmllint
-        entry: qmllint
-        pass_filenames: true
-        require_serial: true
-        language: system
-        types: [text]
-        files: ^.*\.qml$
       - id: metainfo
         name: metainfo
         description: Update AppStream metainfo releases from CHANGELOG.md.
