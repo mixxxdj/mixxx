@@ -2197,6 +2197,8 @@ if(QT6)
     FILES "res/qml/Mixxx/qmldir"
     PREFIX "/mixxx.org/imports/Mixxx"
   )
+  # to make also qmllint happy
+  configure_file(res/qml/Mixxx/qmldir qml/Mixxx/qmldir COPYONLY)
 
   # FIXME: Currently we need to add these include directories due to
   # QTBUG-87221. We should figure out a better way to fix this.
