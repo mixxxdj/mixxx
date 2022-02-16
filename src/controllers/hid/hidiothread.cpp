@@ -197,9 +197,15 @@ void HidIoThread::cacheOutputReport(const QByteArray& data, unsigned int reportI
                 reportID, data.size());
     }
 
+    // The only mutable operation on m_outputReports is insert
+    // by std::map<Key,T,Compare,Allocator>::operator[]
+    // The standard says that "No iterators or references are invalidated." using this operator.
+    // Therefore actualOutputReportIterator doesn't require Mutex protection.
+    auto actualOutputReportIterator = m_outputReports.find(reportID);
+
     lock.unlock();
 
-    m_outputReports[reportID]->cacheOutputReport(data, m_deviceInfo, m_logOutput);
+    actualOutputReportIterator->second->cacheOutputReport(data, m_deviceInfo, m_logOutput);
 }
 
 bool HidIoThread::sendNextOutputReport() {
