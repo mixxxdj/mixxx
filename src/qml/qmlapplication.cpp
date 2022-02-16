@@ -18,6 +18,7 @@
 #include "qml/qmlvisibleeffectsmodel.h"
 #include "qml/qmlwaveformoverview.h"
 #include "soundio/soundmanager.h"
+Q_IMPORT_QML_PLUGIN(MixxxPlugin)
 Q_IMPORT_QML_PLUGIN(Mixxx_ControlsPlugin)
 
 namespace {
