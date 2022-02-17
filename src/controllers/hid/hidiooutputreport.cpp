@@ -29,7 +29,7 @@ HidIoOutputReport::HidIoOutputReport(
 void HidIoOutputReport::updateCachedData(const QByteArray& data,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
-    auto lock = lockMutex(&m_cachedDataMutex);
+    auto cacheLock = lockMutex(&m_cachedDataMutex);
 
     if (!m_lastCachedDataSize) {
         // First call updateCachedData for this report
@@ -73,7 +73,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceMutex,
         const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
 
-    auto reportCacheLock = lockMutex(&m_cachedDataMutex);
+    auto cacheLock = lockMutex(&m_cachedDataMutex);
 
     if (!m_possiblyUnsentDataCached) {
         // Return with false, to signal the caller, that no time consuming IO operation was necessary
@@ -91,7 +91,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceMutex,
         // that the byte array compare operation is executed for the same data again
         m_possiblyUnsentDataCached = false;
 
-        reportCacheLock.unlock();
+        cacheLock.unlock();
 
         qCDebug(logOutput) << "t:" << startOfHidWrite.formatMillisWithUnit()
                            << " Skipped identical Output Report for"
@@ -111,7 +111,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceMutex,
     m_lastSentData.swap(m_cachedData);
     m_possiblyUnsentDataCached = false;
 
-    reportCacheLock.unlock();
+    cacheLock.unlock();
 
     auto hidDeviceLock = lockMutex(pHidDeviceMutex);
 
@@ -130,7 +130,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceMutex,
     hidDeviceLock.unlock();
 
     if (result == -1) {
-        reportCacheLock.relock();
+        cacheLock.relock();
         // Clear the m_lastSentData because the last send data are not reliable known.
         // These error should not occur in normal operation,
         // therefore the performance impact of additional memory allocation

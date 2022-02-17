@@ -84,7 +84,7 @@ void HidIoThread::run() {
 
 void HidIoThread::pollBufferedInputReports() {
     Trace hidRead("HidIoThread pollBufferedInputReports");
-    auto lock = lockMutex(&m_hidDeviceMutex);
+    auto hidDeviceLock = lockMutex(&m_hidDeviceMutex);
     // This function reads the available HID Input Reports using hidapi.
     // Important to know is, that this reading is not a hardware operation,
     // instead it reads previously received HID Input Reports from a ring buffer.
@@ -145,7 +145,7 @@ void HidIoThread::processInputReport(int bytesRead) {
 
 QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     auto startOfHidGetInputReport = mixxx::Time::elapsed();
-    auto lock = lockMutex(&m_hidDeviceMutex);
+    auto hidDeviceLock = lockMutex(&m_hidDeviceMutex);
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
     // FIXME: implement upstream for hidraw backend on Linux
@@ -173,7 +173,7 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
             reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]),
             bytesRead);
 
-    lock.unlock();
+    hidDeviceLock.unlock();
 
     qCDebug(m_logInput) << bytesRead << "bytes received by hid_get_input_report"
                         << m_deviceInfo.formatName() << "serial #"
@@ -190,7 +190,7 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
 }
 
 void HidIoThread::updateCachedOutputReportData(const QByteArray& data, unsigned int reportID) {
-    auto lock = lockMutex(&m_outputReportMapMutex);
+    auto mapLock = lockMutex(&m_outputReportMapMutex);
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
         std::unique_ptr<HidIoOutputReport> pNewOutputReport;
         m_outputReports[reportID] = std::make_unique<HidIoOutputReport>(
@@ -203,7 +203,7 @@ void HidIoThread::updateCachedOutputReportData(const QByteArray& data, unsigned 
     // Therefore actualOutputReportIterator doesn't require Mutex protection.
     auto actualOutputReportIterator = m_outputReports.find(reportID);
 
-    lock.unlock();
+    mapLock.unlock();
 
     actualOutputReportIterator->second->updateCachedData(data, m_deviceInfo, m_logOutput);
 }
@@ -214,13 +214,12 @@ bool HidIoThread::sendNextCachedOutputReport() {
     // If the map size increases, this loop will execute one iteration more,
     // which only has the effect, that one additional lookup operation for unsent data will be executed.
     for (unsigned char i = 0; i < m_outputReports.size(); i++) {
-        {
-            auto lock = lockMutex(&m_outputReportMapMutex);
-            m_outputReportIterator++;
-            if (m_outputReportIterator == m_outputReports.end()) {
-                m_outputReportIterator = m_outputReports.begin();
-            }
+        auto mapLock = lockMutex(&m_outputReportMapMutex);
+        m_outputReportIterator++;
+        if (m_outputReportIterator == m_outputReports.end()) {
+            m_outputReportIterator = m_outputReports.begin();
         }
+        mapLock.unlock();
 
         // The only mutable operation on m_outputReports is insert
         // by std::map<Key,T,Compare,Allocator>::operator[]
@@ -246,7 +245,7 @@ void HidIoThread::sendFeatureReport(
     dataArray.append(reportID);
     dataArray.append(reportData);
 
-    auto lock = lockMutex(&m_hidDeviceMutex);
+    auto hidDeviceLock = lockMutex(&m_hidDeviceMutex);
     int result = hid_send_feature_report(m_pHidDevice,
             reinterpret_cast<const unsigned char*>(dataArray.constData()),
             dataArray.size());
@@ -260,7 +259,7 @@ void HidIoThread::sendFeatureReport(
         return;
     }
 
-    lock.unlock();
+    hidDeviceLock.unlock();
 
     qCDebug(m_logOutput)
             << result << "bytes sent by sendFeatureReport to"
@@ -277,7 +276,7 @@ QByteArray HidIoThread::getFeatureReport(
     unsigned char dataRead[kReportIdSize + kBufferSize];
     dataRead[0] = reportID;
 
-    auto lock = lockMutex(&m_hidDeviceMutex);
+    auto hidDeviceLock = lockMutex(&m_hidDeviceMutex);
     int bytesRead = hid_get_feature_report(m_pHidDevice,
             dataRead,
             kReportIdSize + kBufferSize);
@@ -294,7 +293,7 @@ QByteArray HidIoThread::getFeatureReport(
         return {};
     }
 
-    lock.unlock();
+    hidDeviceLock.unlock();
 
     qCDebug(m_logInput)
             << bytesRead << "bytes received by getFeatureReport from"
