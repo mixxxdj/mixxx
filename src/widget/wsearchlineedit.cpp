@@ -126,15 +126,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             this,
             &WSearchLineEdit::slotIndexChanged);
 
-    // When you hit enter, it will trigger or clear the search.
-    connect(this->lineEdit(),
-            &QLineEdit::returnPressed,
-            this,
-            [this] {
-                if (!slotClearSearchIfClearButtonHasFocus()) {
-                    slotTriggerSearch();
-                }
-            });
     loadQueriesFromConfig();
 
     refreshState();
@@ -352,6 +343,10 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         }
         break;
     case Qt::Key_Enter:
+    case Qt::Key_Return:
+        if (slotClearSearchIfClearButtonHasFocus()) {
+            return;
+        }
         if (findCurrentTextIndex() == -1) {
             slotSaveSearch();
         }
