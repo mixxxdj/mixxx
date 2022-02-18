@@ -5,7 +5,7 @@
 class Sampler : public BaseTrackPlayerImpl {
     Q_OBJECT
   public:
-    Sampler(QObject* pParent,
+    Sampler(PlayerManager* pParent,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,

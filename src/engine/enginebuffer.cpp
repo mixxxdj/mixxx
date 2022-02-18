@@ -185,11 +185,6 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
-    connect(m_pEject, &ControlObject::valueChanged,
-            this, &EngineBuffer::slotEjectTrack,
-            Qt::DirectConnection);
-
     m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
     m_pTrackLoaded->setReadOnly();
 
@@ -325,7 +320,6 @@ EngineBuffer::~EngineBuffer() {
     delete m_pScaleRB;
 
     delete m_pKeylock;
-    delete m_pEject;
 
     SampleUtil::free(m_pCrossfadeBuffer);
 
@@ -1440,17 +1434,6 @@ bool EngineBuffer::isTrackLoaded() const {
 
 TrackPointer EngineBuffer::getLoadedTrack() const {
     return m_pCurrentTrack;
-}
-
-void EngineBuffer::slotEjectTrack(double v) {
-    if (v > 0) {
-        // Don't allow rejections while playing a track. We don't need to lock to
-        // call ControlObject::get() so this is fine.
-        if (m_playButton->get() > 0) {
-            return;
-        }
-        ejectTrack();
-    }
 }
 
 mixxx::audio::FramePos EngineBuffer::getExactPlayPos() const {

@@ -93,6 +93,12 @@ class FakeDeck : public BaseTrackPlayer {
         play.set(bPlay);
     }
 
+    void slotEjectTrack(double val) override {
+        if (val > 0) {
+            loadedTrack = nullptr;
+        }
+    }
+
     MOCK_METHOD1(slotCloneFromGroup, void(const QString& group));
     MOCK_METHOD0(slotCloneDeck, void());
 

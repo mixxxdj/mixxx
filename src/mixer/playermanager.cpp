@@ -6,7 +6,6 @@
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/enginemaster.h"
-#include "library/library.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -163,6 +162,7 @@ PlayerManager::~PlayerManager() {
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
+    m_pLibrary = pLibrary;
     const auto locker = lockMutex(&m_mutex);
     connect(pLibrary, &Library::loadTrackToPlayer, this, &PlayerManager::slotLoadTrackToPlayer);
     connect(pLibrary,
@@ -411,6 +411,10 @@ void PlayerManager::addDeckInner() {
             &BaseTrackPlayer::noVinylControlInputConfigured,
             this,
             &PlayerManager::noVinylControlInputConfigured);
+    connect(pDeck,
+            &BaseTrackPlayer::trackUnloaded,
+            this,
+            &PlayerManager::slotSaveEjectedTrack);
 
     if (m_pTrackAnalysisScheduler) {
         connect(pDeck,
@@ -469,6 +473,10 @@ void PlayerManager::addSamplerInner() {
                 this,
                 &PlayerManager::slotAnalyzeTrack);
     }
+    connect(pSampler,
+            &BaseTrackPlayer::trackUnloaded,
+            this,
+            &PlayerManager::slotSaveEjectedTrack);
 
     m_players[handleGroup.handle()] = pSampler;
     m_samplers.append(pSampler);
@@ -588,6 +596,13 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
         return nullptr;
     }
     return m_samplers[sampler - 1];
+}
+
+TrackPointer PlayerManager::getLastEjectedTrack() const {
+    if (m_pLibrary) {
+        return m_pLibrary->trackCollectionManager()->getTrackById(m_lastEjectedTrackId);
+    }
+    return nullptr;
 }
 
 Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
@@ -727,6 +742,13 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         // before any signals from the analyzer queue arrive.
         emit trackAnalyzerProgress(track->getId(), kAnalyzerProgressUnknown);
     }
+}
+
+void PlayerManager::slotSaveEjectedTrack(TrackPointer track) {
+    VERIFY_OR_DEBUG_ASSERT(track) {
+        return;
+    }
+    m_lastEjectedTrackId = track->getId();
 }
 
 void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {

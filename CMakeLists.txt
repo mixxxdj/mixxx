@@ -1658,6 +1658,7 @@ add_executable(mixxx-test
   src/test/nativeeffects_test.cpp
   src/test/performancetimer_test.cpp
   src/test/playcountertest.cpp
+  src/test/playermanagertest.cpp
   src/test/playlisttest.cpp
   src/test/portmidicontroller_test.cpp
   src/test/portmidienumeratortest.cpp
