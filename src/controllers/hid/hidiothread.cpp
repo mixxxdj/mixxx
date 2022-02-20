@@ -84,7 +84,7 @@ void HidIoThread::run() {
 
 void HidIoThread::pollBufferedInputReports() {
     Trace hidRead("HidIoThread pollBufferedInputReports");
-    auto hidDeviceLock = lockMutex(&m_hidDeviceMutex);
+    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
     // This function reads the available HID Input Reports using hidapi.
     // Important to know is, that this reading is not a hardware operation,
     // instead it reads previously received HID Input Reports from a ring buffer.
@@ -145,7 +145,7 @@ void HidIoThread::processInputReport(int bytesRead) {
 
 QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     auto startOfHidGetInputReport = mixxx::Time::elapsed();
-    auto hidDeviceLock = lockMutex(&m_hidDeviceMutex);
+    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
     // FIXME: implement upstream for hidraw backend on Linux
@@ -226,7 +226,7 @@ bool HidIoThread::sendNextCachedOutputReport() {
         // The standard says that "No iterators or references are invalidated." using this operator.
         // Therefore m_outputReportIterator doesn't require Mutex protection.
         if (m_outputReportIterator->second->sendCachedData(
-                    &m_hidDeviceMutex, m_pHidDevice, m_deviceInfo, m_logOutput)) {
+                    &m_hidDeviceAndPollMutex, m_pHidDevice, m_deviceInfo, m_logOutput)) {
             // Return after each time consuming sendCachedData
             return true;
         }
@@ -245,7 +245,7 @@ void HidIoThread::sendFeatureReport(
     dataArray.append(reportID);
     dataArray.append(reportData);
 
-    auto hidDeviceLock = lockMutex(&m_hidDeviceMutex);
+    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
     int result = hid_send_feature_report(m_pHidDevice,
             reinterpret_cast<const unsigned char*>(dataArray.constData()),
             dataArray.size());
@@ -276,7 +276,7 @@ QByteArray HidIoThread::getFeatureReport(
     unsigned char dataRead[kReportIdSize + kBufferSize];
     dataRead[0] = reportID;
 
-    auto hidDeviceLock = lockMutex(&m_hidDeviceMutex);
+    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
     int bytesRead = hid_get_feature_report(m_pHidDevice,
             dataRead,
             kReportIdSize + kBufferSize);

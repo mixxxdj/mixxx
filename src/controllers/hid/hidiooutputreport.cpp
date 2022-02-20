@@ -67,7 +67,7 @@ void HidIoOutputReport::updateCachedData(const QByteArray& data,
     m_possiblyUnsentDataCached = true;
 }
 
-bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceMutex,
+bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
         hid_device* pHidDevice,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
@@ -113,7 +113,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceMutex,
 
     cacheLock.unlock();
 
-    auto hidDeviceLock = lockMutex(pHidDeviceMutex);
+    auto hidDeviceLock = lockMutex(pHidDeviceAndPollMutex);
 
     // hid_write can take several milliseconds, because hidapi synchronizes
     // the asyncron HID communication from the OS

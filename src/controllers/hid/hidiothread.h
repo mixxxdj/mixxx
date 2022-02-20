@@ -62,9 +62,11 @@ class HidIoThread : public QThread {
     const RuntimeLoggingCategory m_logInput;
     const RuntimeLoggingCategory m_logOutput;
 
-    /// Mutex must be locked when using the m_pPollData, m_lastPollSize, m_pollingBufferIndex
-    /// or the m_pHidDevice structure, which is not thread-safe for all hidapi backends.
-    QMutex m_hidDeviceMutex;
+    /// This mutex must be locked for any hid device operation using the m_pHidDevice structure.
+    /// If the hid_error functions is called after the hid device operation to get the error message,
+    /// this mutex must not be unlocked before hid_error.
+    /// This mutex must be locked also, for access to m_pPollData, m_lastPollSize, m_pollingBufferIndex.
+    QMutex m_hidDeviceAndPollMutex;
 
     /// const pointer to the C data structure, which hidapi uses for communication between functions
     hid_device* const
