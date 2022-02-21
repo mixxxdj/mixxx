@@ -39,7 +39,7 @@ Mixxx.WaveformOverview {
                 required property int index
 
                 anchors.fill: parent
-                group: root.group
+                group: root.group // qmllint disable unqualified
                 hotcueNumber: this.index + 1
             }
 
