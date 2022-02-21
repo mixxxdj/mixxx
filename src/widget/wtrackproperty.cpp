@@ -18,6 +18,7 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Reset |
         WTrackMenu::Feature::BPM |
         WTrackMenu::Feature::Color |
+        WTrackMenu::Feature::RemoveFromDisk |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties |
         WTrackMenu::Feature::UpdateReplayGain;
@@ -94,6 +95,7 @@ void WTrackProperty::mouseMoveEvent(QMouseEvent* event) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
     }
 }
+
 void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
     if (m_pCurrentTrack) {
