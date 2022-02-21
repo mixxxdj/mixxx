@@ -26,7 +26,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void onShow() override;
     bool hasFocus() const override;
     void setFocus() override;
-    void loadSelectedTrack() override;
+    void activateSelectedTrack() override;
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;

@@ -46,6 +46,7 @@ class LibraryControl : public QObject {
     void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
     // Give the keyboard focus to one of the library widgets
     void setLibraryFocus(FocusWidget newFocusWidget);
+    FocusWidget getFocusedWidget();
 
   signals:
     void clearSearchIfClearButtonHasFocus();
@@ -58,6 +59,9 @@ class LibraryControl : public QObject {
     void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
     void searchboxWidgetDeleted();
+
+    // Update m_pFocusedWidget and m_pFocusedWidgetCO
+    void updateFocusedWidgetControls();
 
     void slotMoveUp(double);
     void slotMoveDown(double);
@@ -83,6 +87,7 @@ class LibraryControl : public QObject {
     void slotSelectSidebarItem(double v);
     void slotSelectNextSidebarItem(double v);
     void slotSelectPrevSidebarItem(double v);
+
     void slotToggleSelectedSidebarItem(double v);
     void slotLoadSelectedIntoFirstStopped(double v);
     void slotAutoDjAddTop(double v);
@@ -126,7 +131,8 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pMoveFocusForward;
     std::unique_ptr<ControlPushButton> m_pMoveFocusBackward;
     std::unique_ptr<ControlEncoder> m_pMoveFocus;
-    std::unique_ptr<ControlPushButton> m_pLibraryFocusedWidgetCO;
+    std::unique_ptr<ControlPushButton> m_pFocusedWidgetCO;
+    FocusWidget m_pFocusedWidget;
 
     // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pGoToItem;

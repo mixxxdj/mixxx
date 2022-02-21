@@ -59,7 +59,6 @@ WTrackTableView::WTrackTableView(QWidget* parent,
           m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
-    qRegisterMetaType<FocusWidget>("FocusWidget");
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
@@ -844,7 +843,7 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
     }
 }
 
-void WTrackTableView::loadSelectedTrack() {
+void WTrackTableView::activateSelectedTrack() {
     auto indices = selectionModel()->selectedRows();
     if (indices.isEmpty()) {
         return;
@@ -1145,16 +1144,6 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
     if (sortingChanged) {
         applySortingIfVisible();
     }
-}
-
-void WTrackTableView::focusInEvent(QFocusEvent* event) {
-    QWidget::focusInEvent(event);
-    emit trackTableFocusChange(FocusWidget::TracksTable);
-}
-
-void WTrackTableView::focusOutEvent(QFocusEvent* event) {
-    QWidget::focusOutEvent(event);
-    emit trackTableFocusChange(FocusWidget::None);
 }
 
 bool WTrackTableView::hasFocus() const {

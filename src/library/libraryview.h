@@ -24,7 +24,7 @@ class LibraryView {
 
     /// If applicable, requests that the LibraryView load the selected
     /// track. Does nothing otherwise.
-    virtual void loadSelectedTrack() {
+    virtual void activateSelectedTrack() {
     }
 
     virtual void slotAddToAutoDJBottom() {

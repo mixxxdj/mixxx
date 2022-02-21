@@ -1420,7 +1420,6 @@ void RekordboxFeature::bindLibraryWidget(WLibrary* libraryWidget,
     edit->setOpenLinks(false);
     connect(edit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
     libraryWidget->registerView("REKORDBOXHOME", edit);
-    m_pLibrary->bindFeatureRootView(edit);
 }
 
 void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
