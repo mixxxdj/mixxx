@@ -316,7 +316,7 @@ void RateControl::slotRateRatioChanged(double v) {
     }
     */
 
-    // never change rate slider programatically
+    // never change rate slider programmatically
     double newRateUltra =
             (((v - 1) * m_pRateDir->get()) -
                     (m_pRateRange->get() * m_pRateSlider->get())) /
