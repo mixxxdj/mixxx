@@ -26,7 +26,7 @@ compile_commands.json
 /CMakeSettings*.json
 
 # Build and distribution directories for various build configurations
-/build
+/build*
 /install
 
 # Exclude unneeded files from GoogleTest library when updating our bundled

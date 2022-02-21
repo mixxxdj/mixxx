@@ -42,6 +42,7 @@ class WSliderComposed : public WWidget  {
     void mouseMoveEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
     void drawBar(QPainter* pPainter);
     void wheelEvent(QWheelEvent* e) override;

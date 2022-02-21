@@ -11,6 +11,7 @@
 #include <QStringList>
 #include <QUrl>
 
+#include "defs_urls.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -110,10 +111,23 @@ DlgPrefLibrary::DlgPrefLibrary(
 #endif
     builtInFormats->setText(builtInFormatsStr);
 
-    connect(checkBox_SyncTrackMetadataExport,
+    // Create text color manual links
+    createLinkColor();
+    // Add link to the manual where configuration files are explained in detail
+    label_settingsManualLink->setText(coloredLinkString(
+            m_pLinkColor,
+            tr("See the manual for details"),
+            MIXXX_MANUAL_SETTINGS_DIRECTORY_URL));
+    connect(label_settingsManualLink,
+            &QLabel::linkActivated,
+            [](const QString& url) {
+                QDesktopServices::openUrl(url);
+            });
+
+    connect(checkBox_SyncTrackMetadata,
             &QCheckBox::toggled,
             this,
-            &DlgPrefLibrary::slotSyncTrackMetadataExportToggled);
+            &DlgPrefLibrary::slotSyncTrackMetadataToggled);
 
     // Initialize the controls after all slots have been connected
     slotUpdate();
@@ -177,7 +191,7 @@ void DlgPrefLibrary::initializeDirList() {
 
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
-    checkBox_SyncTrackMetadataExport->setChecked(false);
+    checkBox_SyncTrackMetadata->setChecked(false);
     checkBox_SeratoMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_show_rhythmbox->setChecked(true);
@@ -191,16 +205,18 @@ void DlgPrefLibrary::slotResetToDefaults() {
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
     setLibraryFont(QApplication::font());
+    searchDebouncingTimeoutSpinBox->setValue(
+            WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
 }
 
 void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","RescanOnStartup"), false));
-    checkBox_SyncTrackMetadataExport->setChecked(
-            m_pConfig->getValue(kSyncTrackMetadataExportConfigKey, false));
+    checkBox_SyncTrackMetadata->setChecked(
+            m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
     checkBox_SeratoMetadataExport->setChecked(
-            m_pConfig->getValue(kSeratoMetadataExportConfigKey, false));
+            m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
@@ -243,6 +259,11 @@ void DlgPrefLibrary::slotUpdate() {
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBoxRowHeight->setValue(m_iOriginalTrackTableRowHeight);
     setLibraryFont(m_originalTrackTableFont);
+    const auto searchDebouncingTimeoutMillis =
+            m_pConfig->getValue(
+                    kSearchDebouncingTimeoutMillisConfigKey,
+                    WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
+    searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -365,10 +386,10 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pConfig->set(
-            kSyncTrackMetadataExportConfigKey,
-            ConfigValue{checkBox_SyncTrackMetadataExport->isChecked()});
+            kSyncTrackMetadataConfigKey,
+            ConfigValue{checkBox_SyncTrackMetadata->isChecked()});
     m_pConfig->set(
-            kSeratoMetadataExportConfigKey,
+            kSyncSeratoMetadataConfigKey,
             ConfigValue{checkBox_SeratoMetadataExport->isChecked()});
     m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
@@ -453,8 +474,8 @@ void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebounci
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 }
 
-void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {
-    if (isVisible() && checkBox_SyncTrackMetadataExport->isChecked()) {
+void DlgPrefLibrary::slotSyncTrackMetadataToggled() {
+    if (isVisible() && checkBox_SyncTrackMetadata->isChecked()) {
         mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
     }
 }

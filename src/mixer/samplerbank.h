@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QObject>
+
+#include "preferences/usersettings.h"
 #include "util/memory.h"
 
 class ControlObject;
@@ -13,7 +15,8 @@ class PlayerManager;
 class SamplerBank : public QObject {
     Q_OBJECT
   public:
-    SamplerBank(PlayerManager* pPlayerManager);
+    SamplerBank(UserSettingsPointer pConfig,
+            PlayerManager* pPlayerManager);
     ~SamplerBank() override;
 
     bool saveSamplerBankToPath(const QString& samplerBankPath);
@@ -24,6 +27,7 @@ class SamplerBank : public QObject {
     void slotLoadSamplerBank(double v);
 
   private:
+    UserSettingsPointer m_pConfig;
     PlayerManager* m_pPlayerManager;
     std::unique_ptr<ControlObject> m_pCOLoadBank;
     std::unique_ptr<ControlObject> m_pCOSaveBank;

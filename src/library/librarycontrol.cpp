@@ -13,6 +13,7 @@
 #include "library/libraryview.h"
 #include "mixer/playermanager.h"
 #include "moc_librarycontrol.cpp"
+#include "util/cmdlineargs.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
@@ -62,6 +63,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_numDecks("[Master]", "num_decks", this),
           m_numSamplers("[Master]", "num_samplers", this),
           m_numPreviewDecks("[Master]", "num_preview_decks", this) {
+    qRegisterMetaType<FocusWidget>("FocusWidget");
 
     slotNumDecksChanged(m_numDecks.get());
     slotNumSamplersChanged(m_numSamplers.get());
@@ -74,6 +76,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveUp"));
     m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveDown"));
     m_pMoveVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveVertical"), false);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pMoveUp.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -86,11 +89,13 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlEncoder::valueChanged,
             this,
             &LibraryControl::slotMoveVertical);
+#endif
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     m_pScrollUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollUp"));
     m_pScrollDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollDown"));
     m_pScrollVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "ScrollVertical"), false);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pScrollUp.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -103,11 +108,13 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlEncoder::valueChanged,
             this,
             &LibraryControl::slotScrollVertical);
+#endif
 
     // Controls to navigate horizontally within currently selected item (left/right buttons)
     m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveLeft"));
     m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveRight"));
     m_pMoveHorizontal = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveHorizontal"), false);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pMoveLeft.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -120,11 +127,14 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlEncoder::valueChanged,
             this,
             &LibraryControl::slotMoveHorizontal);
+#endif
 
-    // Control to navigate between widgets (tab/shit+tab button)
+    // Controls to navigate between widgets
+    // Relative focus controls (tab/shift+tab button)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
     m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
     m_pMoveFocus = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveFocus"), false);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pMoveFocusForward.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -137,39 +147,71 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlEncoder::valueChanged,
             this,
             &LibraryControl::slotMoveFocus);
+#endif
+
+    // Direct focus control, read/write
+    m_pLibraryFocusedWidgetCO = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "focused_widget"));
+    m_pLibraryFocusedWidgetCO->setStates(static_cast<int>(FocusWidget::Count));
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    m_pLibraryFocusedWidgetCO->connectValueChangeRequest(
+            this,
+            [this](double value) {
+                // Focus can not be removed from a widget just moved to another one.
+                // Thus, to keep the CO and QApplication::focusWidget() in sync we
+                // have to prevent scripts or GUI buttons setting the CO to 'None'.
+                // It's only set to 'None' internally when one of the library widgets
+                // receives a FocusOutEvent(), e.g. when the focus is moved to another
+                // widget, or when the main window loses focus.
+                const int valueInt = static_cast<int>(value);
+                if (valueInt != static_cast<int>(FocusWidget::None) &&
+                        valueInt < static_cast<int>(FocusWidget::Count)) {
+                    setLibraryFocus(static_cast<FocusWidget>(valueInt));
+                }
+            });
+#endif
 
     // Control to "goto" the currently selected item in focused widget (context dependent)
     m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pGoToItem.get(),
             &ControlPushButton::valueChanged,
             this,
             &LibraryControl::slotGoToItem);
+#endif
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pAutoDjAddTop.get(),
             &ControlPushButton::valueChanged,
             this,
             &LibraryControl::slotAutoDjAddTop);
+#endif
 
     m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddBottom"));
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pAutoDjAddBottom.get(),
             &ControlPushButton::valueChanged,
             this,
             &LibraryControl::slotAutoDjAddBottom);
+#endif
 
     m_pAutoDjAddReplace = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "AutoDjAddReplace"));
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pAutoDjAddReplace.get(),
             &ControlPushButton::valueChanged,
             this,
             &LibraryControl::slotAutoDjAddReplace);
+#endif
 
     // Sort controls
     m_pSortColumn = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column"));
     m_pSortOrder = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "sort_order"));
     m_pSortOrder->setButtonMode(ControlPushButton::TOGGLE);
     m_pSortColumnToggle = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "sort_column_toggle"), false);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pSortColumn.get(),
             &ControlEncoder::valueChanged,
             this,
@@ -200,6 +242,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlPushButton::valueChanged,
             this,
             &LibraryControl::slotIncrementFontSize);
+#endif
 
     // Track Color controls
     m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));
@@ -213,13 +256,9 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotTrackColorNext);
 
-    // Control to navigate between widgets (tab/shit+tab button)
+    // Controls to select saved searchbox queries and to clear the searchbox
     m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "search_history_next"));
-    m_pSelectHistoryPrev = std::make_unique<ControlPushButton>(
-            ConfigKey("[Library]", "search_history_prev"));
-    m_pSelectHistorySelect = std::make_unique<ControlEncoder>(
-            ConfigKey("[Library]", "search_history_selector"), false);
     connect(m_pSelectHistoryNext.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -227,10 +266,12 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     return;
                 }
-                if (value >= 1.0) {
+                if (value > 0.0) {
                     m_pSearchbox->slotMoveSelectedHistory(1);
                 }
             });
+    m_pSelectHistoryPrev = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "search_history_prev"));
     connect(m_pSelectHistoryPrev.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -238,10 +279,12 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     return;
                 }
-                if (value >= 1.0) {
+                if (value > 0.0) {
                     m_pSearchbox->slotMoveSelectedHistory(-1);
                 }
             });
+    m_pSelectHistorySelect = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "search_history_selector"), false);
     connect(m_pSelectHistorySelect.get(),
             &ControlEncoder::valueChanged,
             this,
@@ -249,8 +292,35 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
                     return;
                 }
-                if (steps >= 1.0 || steps <= -1.0) {
+                int iSteps = static_cast<int>(steps);
+                if (iSteps) {
                     m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(steps));
+                }
+            });
+    m_pClearSearch = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "clear_search"));
+    connect(m_pClearSearch.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value > 0.0) {
+                    m_pSearchbox->slotClearSearch();
+                }
+            });
+    m_pDeleteSearchQuery = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "delete_search_query"));
+    connect(m_pDeleteSearchQuery.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value > 0.0) {
+                    m_pSearchbox->slotDeleteCurrentItem();
                 }
             });
 
@@ -341,7 +411,6 @@ void LibraryControl::slotNumSamplersChanged(double v) {
     }
 }
 
-
 void LibraryControl::slotNumPreviewDecksChanged(double v) {
     int iNumPreviewDecks = static_cast<int>(v);
 
@@ -391,8 +460,6 @@ void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
             this,
             &LibraryControl::searchboxWidgetDeleted);
 }
-
-
 
 void LibraryControl::libraryWidgetDeleted() {
     m_pLibraryWidget = nullptr;
@@ -598,11 +665,11 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     if (!keyIsTab && !m_pSidebarWidget->hasFocus()
             && !m_pLibraryWidget->getActiveView()->hasFocus()) {
         if (keyIsUpDown && !m_pSearchbox->hasFocus()) {
-            setLibraryFocus();
+            setLibraryFocus(FocusWidget::TracksTable);
         }
     }
     if (keyIsTab && !QApplication::focusWidget()){
-        setLibraryFocus();
+        setLibraryFocus(FocusWidget::TracksTable);
     }
 
     // Send the event pointer to the currently focused widget
@@ -614,24 +681,44 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     }
 }
 
-void LibraryControl::setLibraryFocus() {
-    // TODO: Set the focus of the library panel directly instead of sending tab from sidebar
-    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
+    // ignore no-op
+    if (static_cast<double>(newFocusWidget) == m_pLibraryFocusedWidgetCO->get()) {
         return;
     }
-    // Try to focus the sidebar.
-    m_pSidebarWidget->setFocus();
-
-    // This may have failed, for example when a Cover window still has focus,
-    // so make sure the sidebar is focused or we'll crash.
-    if (!m_pSidebarWidget->hasFocus()) {
-        return;
+    bool confirmed = false;
+    switch (newFocusWidget) {
+    case FocusWidget::Searchbar:
+        VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+            return;
+        }
+        m_pSearchbox->setFocus();
+        confirmed = m_pSearchbox->hasFocus();
+        break;
+    case FocusWidget::Sidebar:
+        VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+            return;
+        }
+        m_pSidebarWidget->setFocus();
+        confirmed = m_pSidebarWidget->hasFocus();
+        break;
+    case FocusWidget::TracksTable:
+        VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
+            return;
+        }
+        m_pLibraryWidget->getActiveView()->setFocus();
+        confirmed = m_pLibraryWidget->getActiveView()->hasFocus();
+        break;
+    case FocusWidget::None:
+        confirmed = true;
+        break;
+    default:
+        DEBUG_ASSERT(!"Invalid focus widget change request");
+        break;
     }
-    // Send Tab to move focus to the Tracks table.
-    // Obviously only works as desired if the skin widgets are arranged
-    // accordingly.
-    QKeyEvent event(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
-    QApplication::sendEvent(m_pSidebarWidget, &event);
+    if (confirmed) {
+        m_pLibraryFocusedWidgetCO->setAndConfirm(static_cast<double>(newFocusWidget));
+    }
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
@@ -693,7 +780,7 @@ void LibraryControl::slotGoToItem(double v) {
         // expanding those root items via controllers is considered dispensable
         // because the subfeatures' actions can't be accessed by controllers anyway.
         if (m_pSidebarWidget->isLeafNodeSelected()) {
-            setLibraryFocus();
+            setLibraryFocus(FocusWidget::TracksTable);
             return;
         } else {
             // Otherwise toggle the sidebar item expanded state
@@ -710,7 +797,7 @@ void LibraryControl::slotGoToItem(double v) {
 
     // If searchbox has focus jump to the tracks table
     if (m_pSearchbox->hasFocus()) {
-        return setLibraryFocus();
+        return setLibraryFocus(FocusWidget::TracksTable);
     }
 
     // Clear the search if the searchbox has focus

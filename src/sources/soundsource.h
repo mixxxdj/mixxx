@@ -1,10 +1,9 @@
 #pragma once
 
-#include <QDebug>
+#include <QFileInfo>
 
 #include "sources/audiosource.h"
 #include "sources/metadatasourcetaglib.h"
-
 #include "util/assert.h"
 
 namespace mixxx {
@@ -15,8 +14,17 @@ class SoundSource
         : public AudioSource,
           public MetadataSourceTagLib {
   public:
-    static QString getFileExtensionFromUrl(const QUrl& url);
+    /// Determine the type from an URL.
+    ///
+    /// Only local file URLs are supported.
+    static QString getTypeFromUrl(const QUrl& url);
 
+    /// Determine the type from a (local) file.
+    static QString getTypeFromFile(const QFileInfo& fileInfo);
+
+    /// The type of the source.
+    ///
+    /// The type equals the preferred suffix of the content's MIME type.
     QString getType() const {
         return m_type;
     }
@@ -25,7 +33,7 @@ class SoundSource
     // If no type is provided the file extension of the file referred
     // by the URL will be used as the type of the SoundSource.
     explicit SoundSource(const QUrl& url)
-            : SoundSource(url, getFileExtensionFromUrl(url)) {
+            : SoundSource(url, getTypeFromUrl(url)) {
     }
     SoundSource(const QUrl& url, const QString& type);
 

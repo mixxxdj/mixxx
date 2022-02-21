@@ -21,7 +21,7 @@ constexpr int kChannels = 2;
 } // namespace
 
 // Sample threshold below which we consider there to be no signal.
-const double kMinSignal = 75.0 / SAMPLE_MAXIMUM;
+constexpr double kMinSignal = 75.0 / SAMPLE_MAXIMUM;
 
 bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
@@ -29,10 +29,12 @@ QMutex VinylControlXwax::s_xwaxLUTMutex;
 VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& group)
         : VinylControl(pConfig, group),
           m_dVinylPositionOld(0.0),
-          m_pWorkBuffer(new short[MAX_BUFFER_LEN]),
+          m_pWorkBuffer(MAX_BUFFER_LEN),
           m_workBufferSize(MAX_BUFFER_LEN),
-          m_iQualPos(0),
-          m_iQualFilled(0),
+          m_iQualityRingIndex(0),
+          m_iQualityRingFilled(0),
+          m_iQualityLastPosition(-1),
+          m_dQualityLastPitch(0.0),
           m_iPosition(-1),
           m_bAtRecordEnd(false),
           m_bForceResync(false),
@@ -42,7 +44,6 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_dOldDuration(0.0),
           m_dOldDurationInaccurate(-1.0),
           m_bWasReversed(false),
-          m_pPitchRing(nullptr),
           m_iPitchRingSize(0),
           m_iPitchRingPos(0),
           m_iPitchRingFilled(0),
@@ -71,28 +72,33 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
 
     // libxwax indexes by C-strings so we pass libxwax string literals so we
     // don't have to deal with freeing the strings later
-    char* timecode = nullptr;
+    const char* timecode = nullptr;
 
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
-        timecode = (char*)"serato_2a";
-    }
-    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
-        timecode = (char*)"serato_2b";
+        timecode = MIXXX_VINYL_SERATOCV02VINYLSIDEA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
+        timecode = MIXXX_VINYL_SERATOCV02VINYLSIDEB_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_SERATOCD) {
-        timecode = (char*)"serato_cd";
+        timecode = MIXXX_VINYL_SERATOCD_XWAX_NAME;
         m_bCDControl = true;
         // Set up very sensitive steady monitors for CDJs.
         m_pSteadySubtle = new SteadyPitch(0.06, true);
         m_pSteadyGross = new SteadyPitch(0.25, true);
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
-        timecode = (char*)"traktor_a";
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEA_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
-        timecode = (char*)"traktor_b";
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEB_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_MIXVIBESDVS) {
-        timecode = (char*)"mixvibes_v2";
+        timecode = MIXXX_VINYL_MIXVIBESDVS_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_MIXVIBES7INCH) {
+        timecode = MIXXX_VINYL_MIXVIBES7INCH_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_PIONEERA) {
+        timecode = MIXXX_VINYL_PIONEERA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_PIONEERB) {
+        timecode = MIXXX_VINYL_PIONEERB_XWAX_NAME;
     } else {
-        qDebug() << "Unknown vinyl type, defaulting to serato_2a";
-        timecode = (char*)"serato_2a";
+        qDebug() << "Unknown vinyl type, defaulting to" << MIXXX_VINYL_DEFAULT_XWAX_NAME;
+        timecode = MIXXX_VINYL_DEFAULT_XWAX_NAME;
     }
 
     // If we didn't set up the steady monitors already (not CDJ), do it now.
@@ -105,8 +111,9 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
 
     timecode_def* tc_def = timecoder_find_definition(timecode);
     if (tc_def == nullptr) {
-        qDebug() << "Error finding timecode definition for " << timecode << ", defaulting to serato_2a";
-        timecode = (char*)"serato_2a";
+        qDebug() << "Error finding timecode definition for " << timecode
+                 << ", defaulting to" << MIXXX_VINYL_DEFAULT_XWAX_NAME;
+        timecode = MIXXX_VINYL_DEFAULT_XWAX_NAME;
         tc_def = timecoder_find_definition(timecode);
     }
 
@@ -130,7 +137,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
     // Set pitch ring size to 1/4 of one revolution -- a full revolution adds
     // too much stickiness to the pitch.
     m_iPitchRingSize = static_cast<int>(60000 / (rpm * latency * 4));
-    m_pPitchRing = new double[m_iPitchRingSize];
+    m_pPitchRing.resize(m_iPitchRingSize);
 
     qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables for" << strVinylType << "with speed" << strVinylSpeed;
@@ -154,8 +161,6 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
 VinylControlXwax::~VinylControlXwax() {
     delete m_pSteadySubtle;
     delete m_pSteadyGross;
-    delete [] m_pPitchRing;
-    delete [] m_pWorkBuffer;
 
     // Cleanup xwax nicely
     timecoder_monitor_clear(&timecoder);
@@ -202,8 +207,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     size_t samplesSize = nFrames * kChannels;
 
     if (samplesSize > m_workBufferSize) {
-        delete [] m_pWorkBuffer;
-        m_pWorkBuffer = new short[samplesSize];
+        m_pWorkBuffer.resize(samplesSize);
         m_workBufferSize = samplesSize;
     }
 
@@ -222,7 +226,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     // Submit the samples to the xwax timecode processor. The size argument is
     // in stereo frames.
-    timecoder_submit(&timecoder, m_pWorkBuffer, nFrames);
+    timecoder_submit(&timecoder, m_pWorkBuffer.data(), nFrames);
 
     bool bHaveSignal = fabs(pSamples[0]) + fabs(pSamples[1]) > kMinSignal;
     //qDebug() << "signal?" << bHaveSignal;
@@ -234,19 +238,19 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     // Check if vinyl control is enabled...
     m_bIsEnabled = enabled && checkEnabled(m_bIsEnabled, enabled->toBool());
 
+    double dVinylPitch = timecoder_get_pitch(&timecoder);
+
     if(bHaveSignal) {
         // Always analyze the input samples
         m_iPosition = timecoder_get_position(&timecoder, nullptr);
         //Notify the UI if the timecode quality is good
-        establishQuality(m_iPosition != -1);
+        establishQuality(dVinylPitch);
     }
 
     //are we even playing and enabled at all?
     if (!m_bIsEnabled) {
         return;
     }
-
-    double dVinylPitch = timecoder_get_pitch(&timecoder);
 
     // Has a new track been loaded? Currently we use track duration which is
     // integer seconds in the song. However, for calculations we need the
@@ -630,10 +634,10 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             //resetSteadyPitch(dVinylPitch, filePosition);
             // Notify the UI that the timecode quality is garbage/missing.
             m_fTimecodeQuality = 0.0f;
-            m_iPitchRingPos = 0;
-            m_iPitchRingFilled = 0;
-            m_iQualPos = 0;
-            m_iQualFilled = 0;
+            m_dQualityLastPitch = 0.0;
+            m_iQualityLastPosition = -1;
+            m_iQualityRingIndex = 0;
+            m_iQualityRingFilled = 0;
             m_bForceResync = true;
             vinylStatus->set(VINYL_STATUS_OK);
         }
@@ -685,8 +689,8 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
     //track will be selected when the needle is moved back to play area
     //track selection can be cancelled by loading a track manually
 
-    const int SELECT_INTERVAL = 150;
-    const double NOPOS_SPEED = 0.50;
+    constexpr int SELECT_INTERVAL = 150;
+    constexpr double NOPOS_SPEED = 0.50;
 
     if (m_pControlTrackSelector == nullptr) {
         // this isn't done in the constructor because this object
@@ -793,22 +797,75 @@ bool VinylControlXwax::uiUpdateTime(double now) {
     return false;
 }
 
-void VinylControlXwax::establishQuality(bool quality_sample) {
-    m_bQualityRing[m_iQualPos] = quality_sample;
-    if (m_iQualFilled < QUALITY_RING_SIZE) {
-        m_iQualFilled++;
+int VinylControlXwax::getPositionQuality() {
+    int positionQualityPercent;
+
+    if (m_iPosition == -1) {
+        // No position code - happens when control vinyl is spinning slow (or during scratching) or the setup is incorrect
+        positionQualityPercent = 0;
+    } else if ((m_iPosition <= m_iQualityLastPosition - 5) ||
+            (m_iPosition >= m_iQualityLastPosition + 5)) {
+        // Position code changed not by more than 5. This indicates a normal spinning control vinyl.
+        positionQualityPercent = 100;
+    } else {
+        // Position code changed by more than 5. This indicates a fast spinning control vinyl, a jumping needle or a false signal.
+        // This covers also the case of m_iQualityLastPosition == -1
+        positionQualityPercent = 50;
     }
 
-    int quality = 0;
-    for (int i = 0; i < m_iQualFilled; ++i) {
-        if (m_bQualityRing[i]) {
-            quality++;
+    m_iQualityLastPosition = m_iPosition;
+
+    return positionQualityPercent;
+}
+
+int VinylControlXwax::getPitchQuality(double& pitch) {
+    int pitchQualityPercent;
+
+    if (m_iQualityRingFilled == 0) {
+        m_dQualityLastPitch = pitch;
+        pitchQualityPercent = 0;
+        return pitchQualityPercent; // First value - but at least two values needed for calculation
+    }
+
+    double pitchDifference = pitch - m_dQualityLastPitch;
+    m_dQualityLastPitch = pitch;
+
+    if (pitchDifference != 0) {
+        double pitchStability = std::fabs(pitch / pitchDifference);
+
+        if (pitchStability < 3.0) {
+            // Unlikely that this pitch difference is from a proper set up control vinyl
+            pitchQualityPercent = 0;
+        } else if (pitchStability > 6.0) {
+            // Typical pitch difference for normal spinning control vinyl
+            pitchQualityPercent = 100;
+        } else {
+            // Weak pitch difference for a control vinyl slow spinning ,or for scratching
+            pitchQualityPercent = 75;
         }
+    } else {
+        // Unlikely case of two identical float values for pitch
+        pitchQualityPercent = 0;
+    }
+    return pitchQualityPercent;
+}
+
+void VinylControlXwax::establishQuality(double& pitch) {
+    m_iQualityRing[m_iQualityRingIndex] = getPositionQuality() + getPitchQuality(pitch);
+    m_fTimecodeQuality = std::max<float>(0.0,
+            std::min<float>(1.0,
+                    static_cast<float>(std::accumulate(m_iQualityRing,
+                            m_iQualityRing + m_iQualityRingFilled,
+                            0)) /
+                            2.0f / 100.0f /
+                            static_cast<float>(
+                                    m_iQualityRingFilled))); // Two information in percent per datapoint
+
+    if (m_iQualityRingFilled < QUALITY_RING_SIZE) {
+        m_iQualityRingFilled++;
     }
 
-    m_fTimecodeQuality = static_cast<float>(quality) /
-            static_cast<float>(m_iQualFilled);
-    m_iQualPos = (m_iQualPos + 1) % QUALITY_RING_SIZE;
+    m_iQualityRingIndex = (m_iQualityRingIndex + 1) % QUALITY_RING_SIZE;
 }
 
 float VinylControlXwax::getAngle() {

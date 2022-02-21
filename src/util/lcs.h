@@ -10,7 +10,7 @@ inline QString LCS(const QString& a, const QString& b) {
     const int rows = m + 1;
     const int cols = n + 1;
 
-    QVector<QVector<int> > M(rows);
+    QVector<QVector<int>> M(rows);
     int longest = 0;
     int longest_loc = 0;
 

@@ -30,7 +30,7 @@ default_language_version:
   python: python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.0.1
+  rev: v4.1.0
   hooks:
   - id: fix-byte-order-marker
     exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
@@ -51,6 +51,8 @@ repos:
     - commit
     - manual
   - id: no-commit-to-branch
+    # protect main and any branch that has a semver-like name
+    args: [-b, main, -p, '^\d+\.\d+(?:\.\d+)?$']
 - repo: https://github.com/codespell-project/codespell
   rev: v2.1.0
   hooks:
@@ -61,13 +63,18 @@ repos:
     #args: [--ignore-words, .codespellignore, --ignore-regex, "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))"]
     exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|ts|wxl))$
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v7.32.0
+  rev: v8.8.0
   hooks:
   - id: eslint
     args: [--fix, --report-unused-disable-directives]
+    files: \.m?js$
+    types: [file]
     stages:
     - commit
     - manual
+    additional_dependencies:
+    - eslint@^v8.6.0
+    - eslint-plugin-jsdoc@^v37.5.0
 - repo: local
   hooks:
   - id: clang-format
@@ -81,7 +88,7 @@ repos:
     language: python
     files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
 - repo: https://github.com/psf/black
-  rev: 21.7b0
+  rev: 22.1.0
   hooks:
   - id: black
     files: ^tools/.*$
@@ -92,13 +99,17 @@ repos:
     files: ^tools/.*$
     types: [text, python]
 - repo: https://github.com/shellcheck-py/shellcheck-py
-  rev: v0.7.2.1
+  rev: v0.8.0.4
   hooks:
   - id: shellcheck
 - repo: https://github.com/DavidAnson/markdownlint-cli2
-  rev: v0.2.0
+  rev: v0.4.0
   hooks:
   - id: markdownlint-cli2
+- repo: https://github.com/sirosen/check-jsonschema
+  rev: 0.10.2
+  hooks:
+  - id: check-github-workflows
 - repo: local
   hooks:
   - id: qsscheck

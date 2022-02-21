@@ -8,7 +8,7 @@
 #include "util/timer.h"
 
 namespace {
-const double kReplayGain2ReferenceLUFS = -18;
+constexpr double kReplayGain2ReferenceLUFS = -18;
 } // anonymous namespace
 
 AnalyzerEbur128::AnalyzerEbur128(UserSettingsPointer pConfig)

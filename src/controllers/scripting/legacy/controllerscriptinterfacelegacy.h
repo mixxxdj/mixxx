@@ -5,6 +5,7 @@
 
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"
+#include "util/runtimeloggingcategory.h"
 
 class ControllerScriptEngineLegacy;
 class ControlObjectScript;
@@ -16,7 +17,8 @@ class ConfigKey;
 class ControllerScriptInterfaceLegacy : public QObject {
     Q_OBJECT
   public:
-    ControllerScriptInterfaceLegacy(ControllerScriptEngineLegacy* m_pEngine);
+    ControllerScriptInterfaceLegacy(ControllerScriptEngineLegacy* m_pEngine,
+            const RuntimeLoggingCategory& logger);
 
     virtual ~ControllerScriptInterfaceLegacy();
 
@@ -29,8 +31,12 @@ class ControllerScriptInterfaceLegacy : public QObject {
     Q_INVOKABLE void reset(const QString& group, const QString& name);
     Q_INVOKABLE double getDefaultValue(const QString& group, const QString& name);
     Q_INVOKABLE double getDefaultParameter(const QString& group, const QString& name);
-    Q_INVOKABLE QJSValue makeConnection(
-            const QString& group, const QString& name, const QJSValue& callback);
+    Q_INVOKABLE QJSValue makeConnection(const QString& group,
+            const QString& name,
+            const QJSValue& callback);
+    Q_INVOKABLE QJSValue makeUnbufferedConnection(const QString& group,
+            const QString& name,
+            const QJSValue& callback);
     // DEPRECATED: Use makeConnection instead.
     Q_INVOKABLE QJSValue connectControl(const QString& group,
             const QString& name,
@@ -64,6 +70,10 @@ class ControllerScriptInterfaceLegacy : public QObject {
     virtual void timerEvent(QTimerEvent* event);
 
   private:
+    QJSValue makeConnectionInternal(const QString& group,
+            const QString& name,
+            const QJSValue& callback,
+            bool skipSuperseded = false);
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
 
@@ -87,4 +97,5 @@ class ControllerScriptInterfaceLegacy : public QObject {
     double getDeckRate(const QString& group);
 
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
+    const RuntimeLoggingCategory m_logger;
 };

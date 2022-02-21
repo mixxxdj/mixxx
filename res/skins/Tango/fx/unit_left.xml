@@ -232,10 +232,16 @@ Variables:
                 <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+              <EffectChainPresetButton>
+                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+                <Size>30f,18f</Size>
+                <ObjectName>EffectChainSelector</ObjectName>
+              </EffectChainPresetButton>
+
+              <WidgetGroup><Size>1min,2me</Size></WidgetGroup>
 
               <WidgetGroup><!-- Super Knob, if enabled -->
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
                   <Template src="skin:../Tango/controls/knob_textless.xml">
@@ -246,15 +252,8 @@ Variables:
                     <SetVariable name="ConfigKey">super1</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
                   </Template>
+                  <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
                 </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
-                <SizePolicy>min,me</SizePolicy>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
                   <BindProperty>visible</BindProperty>

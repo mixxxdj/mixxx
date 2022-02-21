@@ -10,7 +10,7 @@
 #include "track/track.h"
 #include "util/event.h"
 
-const int kMetaDataLifeTimeout = 16;
+constexpr int kMetaDataLifeTimeout = 16;
 
 EngineRecord::EngineRecord(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),

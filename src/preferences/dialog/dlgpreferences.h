@@ -37,9 +37,6 @@ class DlgPrefRecord;
 class DlgPrefBeats;
 class DlgPrefKey;
 class DlgPrefReplayGain;
-#ifdef __LILV__
-class DlgPrefLV2;
-#endif // __LILV__
 class LV2Backend;
 class ControllerManager;
 class EffectsManager;
@@ -75,10 +72,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
             std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
             std::shared_ptr<SoundManager> pSoundManager,
-            std::shared_ptr<PlayerManager> pPlayerManager,
             std::shared_ptr<ControllerManager> pControllerManager,
             std::shared_ptr<VinylControlManager> pVCManager,
-            LV2Backend* pLV2Backend,
             std::shared_ptr<EffectsManager> pEffectsManager,
             std::shared_ptr<SettingsManager> pSettingsManager,
             std::shared_ptr<Library> pLibrary);

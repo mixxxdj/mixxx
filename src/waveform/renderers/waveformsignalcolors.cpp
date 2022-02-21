@@ -132,7 +132,7 @@ void WaveformSignalColors::fallBackFromSignalColor() {
     qreal h, s, l, a;
     m_signalColor.getHslF(&h,&s,&l,&a);
 
-    const double analogousAngle = 1.0/12.0;
+    constexpr double analogousAngle = 1.0 / 12.0;
 
     if (s < 0.1) { // gray
         const qreal sMax = 1.0 - h;

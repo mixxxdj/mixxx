@@ -19,11 +19,12 @@
 
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
-          m_midiDebug(false),
+          m_controllerDebug(false),
           m_developer(false),
           m_safeMode(false),
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
+          m_scaleFactor(1.0),
           m_useColors(false),
           m_parseForUserFeedbackRequired(false),
           m_logLevel(mixxx::kLogLevelDefault),
@@ -132,8 +133,8 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Top-level directory where Mixxx should look for settings. "
-                                      "Default is:") +
-                            getSettingsPath()
+                                      "Default is: ") +
+                            QDir::toNativeSeparators(getSettingsPath())
                             : QString(),
             QStringLiteral("path"));
     QCommandLineOption settingsPathDeprecated(
@@ -318,7 +319,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_timelinePath = parser.value(timelinePathDeprecated);
     }
 
-    m_midiDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
+    m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
     m_developer = parser.isSet(developer);
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
     m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);

@@ -10,7 +10,7 @@
 #include "moc_loopingcontrol.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/math.h"
 #include "util/sample.h"
 
@@ -166,6 +166,18 @@ LoopingControl::LoopingControl(const QString& group,
             this, &LoopingControl::slotBeatJump, Qt::DirectConnection);
     m_pCOBeatJumpSize = new ControlObject(ConfigKey(group, "beatjump_size"),
                                           true, false, false, 4.0);
+
+    m_pCOBeatJumpSizeHalve = new ControlPushButton(ConfigKey(group, "beatjump_size_halve"));
+    connect(m_pCOBeatJumpSizeHalve,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotBeatJumpSizeHalve);
+    m_pCOBeatJumpSizeDouble = new ControlPushButton(ConfigKey(group, "beatjump_size_double"));
+    connect(m_pCOBeatJumpSizeDouble,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotBeatJumpSizeDouble);
+
     m_pCOBeatJumpForward = new ControlPushButton(ConfigKey(group, "beatjump_forward"));
     connect(m_pCOBeatJumpForward, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatJumpForward);
@@ -211,6 +223,7 @@ LoopingControl::LoopingControl(const QString& group,
 }
 
 LoopingControl::~LoopingControl() {
+    // TODO Use unique_ptr to manage lifetime
     delete m_pLoopOutButton;
     delete m_pLoopOutGotoButton;
     delete m_pLoopInButton;
@@ -236,6 +249,8 @@ LoopingControl::~LoopingControl() {
 
     delete m_pCOBeatJump;
     delete m_pCOBeatJumpSize;
+    delete m_pCOBeatJumpSizeHalve;
+    delete m_pCOBeatJumpSizeDouble;
     delete m_pCOBeatJumpForward;
     delete m_pCOBeatJumpBackward;
     while (!m_beatJumps.isEmpty()) {
@@ -1109,7 +1124,11 @@ void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
     pBeatLoopControl->deactivate();
     const double size = pBeatLoopControl->getSize();
-    auto* i = m_activeLoopRolls.begin();
+    // clang-tidy wants auto to be auto* because QStack inherits from QVector
+    // and QVector::iterator is a pointer type in Qt5, but QStack inherits
+    // from QList in Qt6 so QStack::iterator is not a pointer type in Qt6.
+    // NOLINTNEXTLINE(readability-qualified-auto)
+    auto i = m_activeLoopRolls.begin();
     while (i != m_activeLoopRolls.end()) {
         if (size == *i) {
             i = m_activeLoopRolls.erase(i);
@@ -1200,6 +1219,48 @@ void LoopingControl::updateBeatLoopingControls() {
     clearActiveBeatLoop();
 }
 
+mixxx::audio::FramePos LoopingControl::findQuantizedBeatloopStart(
+        const mixxx::BeatsPointer& pBeats,
+        mixxx::audio::FramePos currentPosition,
+        double beats) const {
+    // The closest beat might be ahead of play position and will cause a catching loop.
+    mixxx::audio::FramePos prevBeatPosition;
+    mixxx::audio::FramePos nextBeatPosition;
+    if (!pBeats->findPrevNextBeats(currentPosition, &prevBeatPosition, &nextBeatPosition, false)) {
+        return currentPosition;
+    }
+
+    const mixxx::audio::FrameDiff_t beatLength = nextBeatPosition - prevBeatPosition;
+    double loopLength = beatLength * beats;
+    if (beats >= 1.0) {
+        const mixxx::audio::FramePos closestBeatPosition =
+                (nextBeatPosition - currentPosition >
+                        currentPosition - prevBeatPosition)
+                ? prevBeatPosition
+                : nextBeatPosition;
+        return closestBeatPosition;
+    }
+
+    // In case of beat length less then 1 beat:
+    // (| - beats, ^ - current track's position):
+    //
+    // ...|...................^........|...
+    //
+    // If we press 1/2 beatloop we want loop from 50% to 100%,
+    // If I press 1/4 beatloop, we want loop from 50% to 75% etc
+    const mixxx::audio::FrameDiff_t framesSinceLastBeat =
+            currentPosition - prevBeatPosition;
+    // find the previous beat fraction and check if the current position is closer to this or the next one
+    // place the new loop start to the closer one
+    const mixxx::audio::FramePos previousFractionBeatPosition =
+            prevBeatPosition + floor(framesSinceLastBeat / loopLength) * loopLength;
+    double framesSinceLastFractionBeatPosition = currentPosition - previousFractionBeatPosition;
+    if (framesSinceLastFractionBeatPosition <= (loopLength / 2.0)) {
+        return previousFractionBeatPosition;
+    }
+    return previousFractionBeatPosition + loopLength;
+}
+
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
     // If this is a "new" loop, stop tracking saved loop changes
     if (!keepStartPoint) {
@@ -1241,7 +1302,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             mixxx::audio::kInvalidFramePos,
             LoopSeekMode::MovedOut};
     LoopInfo loopInfo = m_loopInfo.getValue();
-    const auto currentPosition = m_currentPosition.getValue();
+    mixxx::audio::FramePos currentPosition = m_currentPosition.getValue();
 
     // Start from the current position/closest beat and
     // create the loop around X beats from there.
@@ -1252,58 +1313,22 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             newloopInfo.startPosition = currentPosition;
         }
     } else {
-        // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
-        // The closest beat might be ahead of play position and will cause a catching loop.
-        mixxx::audio::FramePos prevBeatPosition;
-        mixxx::audio::FramePos nextBeatPosition;
-        pBeats->findPrevNextBeats(currentPosition, &prevBeatPosition, &nextBeatPosition, true);
+        // If running reverse, move the loop one loop size to the left.
+        // Thus, the loops end will be closest to the current position
+        bool reverse = false;
+        if (m_pRateControl != nullptr) {
+            reverse = m_pRateControl->isReverseButtonPressed();
+        }
+        if (reverse) {
+            currentPosition = pBeats->findNBeatsFromPosition(currentPosition, -beats);
+        }
 
-        if (m_pQuantizeEnabled->toBool() && prevBeatPosition.isValid() &&
-                nextBeatPosition.isValid()) {
-            const mixxx::audio::FrameDiff_t beatLength = nextBeatPosition - prevBeatPosition;
-            double loopLength = beatLength * beats;
-
-            const mixxx::audio::FramePos closestBeatPosition =
-                    pBeats->findClosestBeat(currentPosition);
-            if (beats >= 1.0) {
-                newloopInfo.startPosition = closestBeatPosition;
-            } else {
-                // In case of beat length less then 1 beat:
-                // (| - beats, ^ - current track's position):
-                //
-                // ...|...................^........|...
-                //
-                // If we press 1/2 beatloop we want loop from 50% to 100%,
-                // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-                const mixxx::audio::FrameDiff_t framesSinceLastBeat =
-                        currentPosition - prevBeatPosition;
-
-                // find the previous beat fraction and check if the current position is closer to this or the next one
-                // place the new loop start to the closer one
-                const mixxx::audio::FramePos previousFractionBeatPosition =
-                        prevBeatPosition +
-                        floor(framesSinceLastBeat / loopLength) * loopLength;
-                double framesSinceLastFractionBeatPosition =
-                        currentPosition - previousFractionBeatPosition;
-
-                if (framesSinceLastFractionBeatPosition <= (loopLength / 2.0)) {
-                    newloopInfo.startPosition = previousFractionBeatPosition;
-                } else {
-                    newloopInfo.startPosition = previousFractionBeatPosition + loopLength;
-                }
-            }
-
-            // If running reverse, move the loop one loop size to the left.
-            // Thus, the loops end will be closest to the current position
-            bool reverse = false;
-            if (m_pRateControl != nullptr) {
-                reverse = m_pRateControl->isReverseButtonPressed();
-            }
-            if (reverse) {
-                newloopInfo.startPosition -= loopLength;
-            }
-        } else {
+        if (!m_pQuantizeEnabled->toBool()) {
             newloopInfo.startPosition = currentPosition;
+        } else {
+            // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
+            // The closest beat might be ahead of play position and will cause a catching loop.
+            newloopInfo.startPosition = findQuantizedBeatloopStart(pBeats, currentPosition, beats);
         }
     }
 
@@ -1376,7 +1401,13 @@ void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
 
 void LoopingControl::slotBeatLoopToggle(double pressed) {
     if (pressed > 0) {
-        slotBeatLoop(m_pCOBeatLoopSize->get());
+        if (m_bLoopingEnabled) {
+            // Deactivate the loop if we're already looping
+            setLoopingEnabled(false);
+        } else {
+            // Create a loop at current position
+            slotBeatLoop(m_pCOBeatLoopSize->get());
+        }
     }
 }
 
@@ -1431,14 +1462,26 @@ void LoopingControl::slotBeatJump(double beats) {
     }
 }
 
+void LoopingControl::slotBeatJumpSizeHalve(double pressed) {
+    if (pressed > 0) {
+        m_pCOBeatJumpSize->set(m_pCOBeatJumpSize->get() / 2);
+    }
+}
+
+void LoopingControl::slotBeatJumpSizeDouble(double pressed) {
+    if (pressed > 0) {
+        m_pCOBeatJumpSize->set(m_pCOBeatJumpSize->get() * 2);
+    }
+}
+
 void LoopingControl::slotBeatJumpForward(double pressed) {
-    if (pressed != 0) {
+    if (pressed > 0) {
         slotBeatJump(m_pCOBeatJumpSize->get());
     }
 }
 
 void LoopingControl::slotBeatJumpBackward(double pressed) {
-    if (pressed != 0) {
+    if (pressed > 0) {
         slotBeatJump(-1.0 * m_pCOBeatJumpSize->get());
     }
 }
@@ -1508,24 +1551,33 @@ mixxx::audio::FramePos LoopingControl::seekInsideAdjustedLoop(
     const mixxx::audio::FrameDiff_t newLoopSize = newLoopEndPosition - newLoopStartPosition;
     DEBUG_ASSERT(newLoopSize > 0);
     mixxx::audio::FramePos adjustedPosition = currentPosition;
-    while (adjustedPosition > newLoopEndPosition) {
-        adjustedPosition -= newLoopSize;
+    if (adjustedPosition > newLoopEndPosition) {
+        // In case play head has already passed the new out position, seek in whole
+        // loop size steps back, as if playback has been looped within the boundaries
+        double adjustSteps =
+                ceil((adjustedPosition.value() - newLoopEndPosition.value()) /
+                        newLoopSize);
+        adjustedPosition -= adjustSteps * newLoopSize;
+        DEBUG_ASSERT(adjustedPosition <= newLoopEndPosition);
         VERIFY_OR_DEBUG_ASSERT(adjustedPosition > newLoopStartPosition) {
             // I'm not even sure this is possible.  The new loop would have to be bigger than the
             // old loop, and the playhead was somehow outside the old loop.
             qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjustedPosition = newLoopStartPosition;
-            break;
         }
-    }
-    while (adjustedPosition < newLoopStartPosition) {
-        adjustedPosition += newLoopSize;
+    } else if (adjustedPosition < newLoopStartPosition) {
+        // In case play head has already been looped back to the old loop in position,
+        // seek in whole loop size steps forward until we are in the new loop boundaries
+        double adjustSteps =
+                ceil((newLoopStartPosition.value() - adjustedPosition.value()) /
+                        newLoopSize);
+        adjustedPosition += adjustSteps * newLoopSize;
+        DEBUG_ASSERT(adjustedPosition >= newLoopStartPosition);
         VERIFY_OR_DEBUG_ASSERT(adjustedPosition < newLoopEndPosition) {
             qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjustedPosition = newLoopStartPosition;
-            break;
         }
     }
     if (adjustedPosition != currentPosition) {

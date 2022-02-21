@@ -59,9 +59,13 @@ class BpmControl : public EngineControl {
     void updateInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
     mixxx::Bpm updateLocalBpm();
-    /// updateBeatDistance is adjusted to include the user offset so
-    /// it's transparent to other decks.
+    /// Updates the beat distance based on the current play position.
+    /// This override is called on every engine callback to update the
+    /// beatposition based on the new current playposition.
     double updateBeatDistance();
+    /// Updates the beat distance based on the provided play position. This
+    /// override is used for seeks.
+    double updateBeatDistance(mixxx::audio::FramePos playpos);
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
@@ -92,15 +96,13 @@ class BpmControl : public EngineControl {
     double getRateRatio() const;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+    void notifySeek(mixxx::audio::FramePos position) override;
 
   private slots:
     void slotAdjustBeatsFaster(double);
     void slotAdjustBeatsSlower(double);
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
-    void slotControlBeatSync(double);
-    void slotControlBeatSyncPhase(double);
-    void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
     void slotUpdateRateSlider(double v = 0.0);
@@ -115,7 +117,6 @@ class BpmControl : public EngineControl {
     inline bool isSynchronized() const {
         return toSynchronized(getSyncMode());
     }
-    bool syncTempo();
     double calcSyncAdjustment(bool userTweakingSync);
     void adjustBeatsBpm(double deltaBpm);
 
@@ -150,11 +151,6 @@ class BpmControl : public EngineControl {
     // Used for bpm tapping from GUI and MIDI
     ControlPushButton* m_pButtonTap;
 
-    // Button for sync'ing with the other EngineBuffer
-    ControlPushButton* m_pButtonSync;
-    ControlPushButton* m_pButtonSyncPhase;
-    ControlPushButton* m_pButtonSyncTempo;
-
     // Button that translates the beats so the nearest beat is on the current
     // playposition.
     ControlPushButton* m_pTranslateBeats;
@@ -169,6 +165,7 @@ class BpmControl : public EngineControl {
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
     ControlProxy* m_pSyncMode;
+    ControlProxy* m_pSyncEnabled;
 
     TapFilter m_tapFilter; // threadsafe
 

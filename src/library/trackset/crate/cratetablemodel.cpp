@@ -10,10 +10,19 @@
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
 
+namespace {
+
+const QString kModelName = "crate";
+
+} // anonymous namespace
+
 CrateTableModel::CrateTableModel(
         QObject* pParent,
         TrackCollectionManager* pTrackCollectionManager)
-        : TrackSetTableModel(pParent, pTrackCollectionManager, "mixxx.db.model.crate") {
+        : TrackSetTableModel(
+                  pParent,
+                  pTrackCollectionManager,
+                  "mixxx.db.model.crate") {
 }
 
 void CrateTableModel::selectCrate(CrateId crateId) {
@@ -109,7 +118,8 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
             Capability::LoadToSampler |
             Capability::LoadToPreviewDeck |
             Capability::RemoveCrate |
-            Capability::ResetPlayed;
+            Capability::ResetPlayed |
+            Capability::RemoveFromDisk;
 
     if (m_selectedCrate.isValid()) {
         Crate crate;
@@ -177,4 +187,23 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     select();
+}
+
+QString CrateTableModel::modelKey(bool noSearch) const {
+    if (m_selectedCrate.isValid()) {
+        if (noSearch) {
+            return kModelName + QStringLiteral(":") +
+                    QString::number(m_selectedCrate.value());
+        }
+        return kModelName + QStringLiteral(":") +
+                QString::number(m_selectedCrate.value()) +
+                QStringLiteral("#") +
+                currentSearch();
+    } else {
+        if (noSearch) {
+            return kModelName;
+        }
+        return kModelName + QStringLiteral("#") +
+                currentSearch();
+    }
 }

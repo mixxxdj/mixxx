@@ -17,7 +17,6 @@
 #include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -29,7 +28,7 @@ const QString kViewName = QStringLiteral("Auto DJ");
 } // namespace
 
 namespace {
-    const int kMaxRetrieveAttempts = 3;
+constexpr int kMaxRetrieveAttempts = 3;
 
     int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
         int playlistId = playlistDAO.getPlaylistIdFromName(AUTODJ_TABLE);

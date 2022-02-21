@@ -32,9 +32,6 @@ public:
   static const int kDefaultAudioBufferSizeIndex;
   static const int kDefaultSyncBuffers;
 
-  SoundManagerConfig();
-  ~SoundManagerConfig();
-
   bool readFromDisk();
   bool writeToDisk() const;
   QString getAPI() const;

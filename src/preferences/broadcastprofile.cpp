@@ -1,13 +1,17 @@
 #include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
-#include <QTextStream>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QString>
 #include <QStringList>
+#include <QTextStream>
 
 #ifdef __QTKEYCHAIN__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <qt6keychain/keychain.h>
+#else
 #include <qt5keychain/keychain.h>
+#endif
 using namespace QKeychain;
 #endif // __QTKEYCHAIN__
 
@@ -16,7 +20,7 @@ using namespace QKeychain;
 #include "defs_urls.h"
 #include "moc_broadcastprofile.cpp"
 #include "recording/defs_recording.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 #include "util/memory.h"
 #include "util/xml.h"
@@ -79,9 +83,10 @@ const QString kDefaultStreamDesc =
 const QString kDefaultStreamGenre = QObject::tr("Live Mix");
 constexpr bool kDefaultStreamPublic = false;
 
-const QRegExp kForbiddenChars =
-        QRegExp("[<>:\"\\/|?*\\\\]|(\\.\\.)"
-                "|CON|AUX|PRN|COM(\\d+)|LPT(\\d+)|NUL");
+const QRegularExpression kForbiddenChars =
+        QRegularExpression(QStringLiteral(
+                "[<>:\"\\/|?*\\\\]|(\\.\\.)"
+                "|CON|AUX|PRN|COM(\\d+)|LPT(\\d+)|NUL"));
 
 const mixxx::Logger kLogger("BroadcastProfile");
 } // anonymous namespace

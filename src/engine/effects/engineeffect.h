@@ -1,56 +1,66 @@
 #pragma once
 
-#include <QMap>
-#include <QString>
 #include <QList>
-#include <QVector>
+#include <QMap>
 #include <QSet>
+#include <QString>
+#include <QVector>
 #include <QtDebug>
 
+#include "effects/backends/effectmanifest.h"
+#include "effects/backends/effectprocessor.h"
 #include "effects/effectsmanager.h"
-#include "effects/effectmanifest.h"
-#include "effects/effectprocessor.h"
-#include "effects/effectinstantiator.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/effects/message.h"
+#include "util/memory.h"
 
-class EngineEffect : public EffectsRequestHandler {
+/// EngineEffect is a generic wrapper around an EffectProcessor which intermediates
+/// between an EffectSlot and the EffectProcessor. It implements the logic to handle
+/// changes of state (enable switch, chain routing switches, parameters' state) so
+/// so EffectProcessor subclasses only need to implement their specific DSP logic.
+class EngineEffect final : public EffectsRequestHandler {
   public:
+    /// Called in main thread by EffectSlot
     EngineEffect(EffectManifestPointer pManifest,
-                 const QSet<ChannelHandleAndGroup>& activeInputChannels,
-                 EffectsManager* pEffectsManager,
-                 EffectInstantiatorPointer pInstantiator);
-    virtual ~EngineEffect();
+            EffectsBackendManagerPointer pBackendManager,
+            const QSet<ChannelHandleAndGroup>& activeInputChannels,
+            const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+            const QSet<ChannelHandleAndGroup>& registeredOutputChannels);
+    /// Called in main thread by EffectSlot
+    ~EngineEffect();
 
-    const QString& name() const {
-        return m_pManifest->name();
-    }
+    /// Called in main thread to allocate an EffectState
+    EffectState* createState(const mixxx::EngineParameters& engineParameters);
 
-    EngineEffectParameter* getParameterById(const QString& id) {
-        return m_parametersById.value(id, NULL);
-    }
+    /// Called in audio thread to load EffectStates received from the main thread
+    void loadStatesForInputChannel(ChannelHandle inputChannel,
+            EffectStatesMap* pStatesMap);
+    /// Called from the main thread for garbage collection after an input channel is disabled
+    void deleteStatesForInputChannel(ChannelHandle inputChannel);
 
-    EffectState* createState(const mixxx::EngineParameters& bufferParameters);
-
-    void loadStatesForInputChannel(const ChannelHandle* inputChannel,
-      EffectStatesMap* pStatesMap);
-    void deleteStatesForInputChannel(const ChannelHandle* inputChannel);
-
+    /// Called in audio thread
     bool processEffectsRequest(
-        EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe);
+            EffectsRequest& message,
+            EffectsResponsePipe* pResponsePipe) override;
 
-    bool process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
-                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                 const unsigned int numSamples,
-                 const unsigned int sampleRate,
-                 const EffectEnableState chainEnableState,
-                 const GroupFeatureState& groupFeatures);
+    /// Called in audio thread
+    bool process(const ChannelHandle& inputHandle,
+            const ChannelHandle& outputHandle,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            const unsigned int numSamples,
+            const unsigned int sampleRate,
+            const EffectEnableState chainEnableState,
+            const GroupFeatureState& groupFeatures);
 
     const EffectManifestPointer getManifest() const {
         return m_pManifest;
+    }
+
+    const QString& name() const {
+        return m_pManifest->name();
     }
 
   private:
@@ -59,14 +69,12 @@ class EngineEffect : public EffectsRequestHandler {
     }
 
     EffectManifestPointer m_pManifest;
-    EffectProcessor* m_pProcessor;
+    std::unique_ptr<EffectProcessor> m_pProcessor;
     ChannelHandleMap<ChannelHandleMap<EffectEnableState>> m_effectEnableStateForChannelMatrix;
     bool m_effectRampsFromDry;
     // Must not be modified after construction.
-    QVector<EngineEffectParameter*> m_parameters;
-    QMap<QString, EngineEffectParameter*> m_parametersById;
-
-    const EffectsManager* m_pEffectsManager;
+    QVector<EngineEffectParameterPointer> m_parameters;
+    QMap<QString, EngineEffectParameterPointer> m_parametersById;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffect);
 };

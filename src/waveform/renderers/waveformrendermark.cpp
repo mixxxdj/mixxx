@@ -17,8 +17,8 @@
 #include "widget/wwidget.h"
 
 namespace {
-    const int kMaxCueLabelLength = 23;
-    } // namespace
+constexpr int kMaxCueLabelLength = 23;
+} // namespace
 
 WaveformRenderMark::WaveformRenderMark(
         WaveformWidgetRenderer* waveformWidgetRenderer) :
@@ -270,8 +270,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
 
     //fixed margin ...
     QRect wordRect = metrics.tightBoundingRect(label);
-    const int marginX = 1;
-    const int marginY = 1;
+    constexpr int marginX = 1;
+    constexpr int marginY = 1;
     wordRect.moveTop(marginX + 1);
     wordRect.moveLeft(marginY + 1);
     wordRect.setHeight(wordRect.height() + (wordRect.height() % 2));

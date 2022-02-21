@@ -93,6 +93,12 @@ class FakeDeck : public BaseTrackPlayer {
         play.set(bPlay);
     }
 
+    void slotEjectTrack(double val) override {
+        if (val > 0) {
+            loadedTrack = nullptr;
+        }
+    }
+
     MOCK_METHOD1(slotCloneFromGroup, void(const QString& group));
     MOCK_METHOD0(slotCloneDeck, void());
 
@@ -167,10 +173,15 @@ class AutoDJProcessorTest : public LibraryTest {
     static TrackId nextTrackId(TrackId trackId) {
         return TrackId(trackId.value() + 1);
     }
-    static TrackPointer newTestTrack(TrackId trackId) {
+
+    TrackPointer newTestTrack(TrackId trackId) const {
         TrackPointer pTrack(
                 Track::newDummy(kTrackLocationTest, trackId));
-        EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource());
+        EXPECT_EQ(
+                SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+                SoundSourceProxy(pTrack).updateTrackFromSource(
+                        SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                        SyncTrackMetadataParams{}));
         return pTrack;
     }
 

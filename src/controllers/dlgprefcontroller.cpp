@@ -519,7 +519,7 @@ void DlgPrefController::slotApply() {
 
     QString mappingPath = mappingPathFromIndex(m_ui.comboBoxMapping->currentIndex());
     m_pMapping = LegacyControllerMappingFileHandler::loadMapping(
-            mappingPath, QDir(resourceMappingsPath(m_pConfig)));
+            QFileInfo(mappingPath), QDir(resourceMappingsPath(m_pConfig)));
 
     // Load the resulting mapping (which has been mutated by the input/output
     // table models). The controller clones the mapping so we aren't touching
@@ -581,7 +581,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
 
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
-                    mappingPath, QDir(resourceMappingsPath(m_pConfig)));
+                    QFileInfo(mappingPath), QDir(resourceMappingsPath(m_pConfig)));
 
     if (pMapping) {
         DEBUG_ASSERT(!pMapping->isDirty());
@@ -681,7 +681,8 @@ QString DlgPrefController::askForMappingName(const QString& prefilledName) const
                "special characters.");
     QString fileExistsLabel = tr("A mapping file with that name already exists.");
     // Only allow the name to contain letters, numbers, whitespaces and _-+()/
-    const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
+    const QRegularExpression rxRemove = QRegularExpression(
+            QStringLiteral("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]"));
 
     // Choose a new file (base) name
     bool validMappingName = false;

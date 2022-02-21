@@ -220,7 +220,7 @@ void EncoderOpus::pushHeaderPacket() {
     // - Mapping family: 1 byte
     // - Channel mapping table: ignored
     // Total: 19 bytes
-    const int frameSize = 19;
+    constexpr int frameSize = 19;
     QByteArray frame;
 
     // Magic signature (8 bytes)

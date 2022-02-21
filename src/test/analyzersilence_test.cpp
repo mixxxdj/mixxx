@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include <vector>
+
 #include "engine/engine.h"
 #include "test/mixxxtest.h"
 #include "track/track.h"
@@ -27,16 +29,15 @@ class AnalyzerSilenceTest : public MixxxTest {
                 mixxx::Duration::fromSeconds(kTrackLengthFrames / 44100.0));
 
         nTrackSampleDataLength = kChannelCount * kTrackLengthFrames;
-        pTrackSampleData = new CSAMPLE[nTrackSampleDataLength];
+        pTrackSampleData.resize(nTrackSampleDataLength);
     }
 
     void TearDown() override {
-        delete[] pTrackSampleData;
     }
 
     void analyzeTrack() {
         analyzerSilence.initialize(pTrack, pTrack->getSampleRate(), nTrackSampleDataLength);
-        analyzerSilence.processSamples(pTrackSampleData, nTrackSampleDataLength);
+        analyzerSilence.processSamples(pTrackSampleData.data(), nTrackSampleDataLength);
         analyzerSilence.storeResults(pTrack);
         analyzerSilence.cleanup();
     }
@@ -44,7 +45,7 @@ class AnalyzerSilenceTest : public MixxxTest {
   protected:
     AnalyzerSilence analyzerSilence;
     TrackPointer pTrack;
-    CSAMPLE* pTrackSampleData;
+    std::vector<CSAMPLE> pTrackSampleData;
     int nTrackSampleDataLength; // in samples
 };
 

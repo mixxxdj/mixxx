@@ -4,10 +4,10 @@
 #include "util/defs.h"
 #include "util/sample.h"
 
-EngineEffectChain::EngineEffectChain(const QString& id,
-                                     const QSet<ChannelHandleAndGroup>& registeredInputChannels,
-                                     const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
-        : m_id(id),
+EngineEffectChain::EngineEffectChain(const QString& group,
+        const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+        const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
+        : m_group(group),
           m_enableState(EffectEnableState::Enabled),
           m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dMix(0),
@@ -46,7 +46,7 @@ bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
     }
 
     while (iIndex >= m_effects.size()) {
-        m_effects.append(NULL);
+        m_effects.append(nullptr);
     }
     m_effects.replace(iIndex, pEffect);
     return true;
@@ -69,7 +69,7 @@ bool EngineEffectChain::removeEffect(EngineEffect* pEffect, int iIndex) {
         return false;
     }
 
-    m_effects.replace(iIndex, NULL);
+    m_effects.replace(iIndex, nullptr);
     return true;
 }
 
@@ -88,69 +88,70 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
 }
 
 bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
-                                              EffectsResponsePipe* pResponsePipe) {
+        EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
-        case EffectsRequest::ADD_EFFECT_TO_CHAIN:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << this << "ADD_EFFECT_TO_CHAIN"
-                         << message.AddEffectToChain.pEffect
-                         << message.AddEffectToChain.iIndex;
-            }
-            response.success = addEffect(message.AddEffectToChain.pEffect,
-                                         message.AddEffectToChain.iIndex);
-            break;
-        case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << this << "REMOVE_EFFECT_FROM_CHAIN"
-                         << message.RemoveEffectFromChain.pEffect
-                         << message.RemoveEffectFromChain.iIndex;
-            }
-            response.success = removeEffect(message.RemoveEffectFromChain.pEffect,
-                                            message.RemoveEffectFromChain.iIndex);
-            break;
-        case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << this << "SET_EFFECT_CHAIN_PARAMETERS"
-                         << "enabled" << message.SetEffectChainParameters.enabled
-                         << "mix" << message.SetEffectChainParameters.mix;
-            }
-            response.success = updateParameters(message);
-            break;
-        case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << this
-                         << "ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL"
-                         << message.pTargetChain
-                         << *message.EnableInputChannelForChain.pChannelHandle;
-            }
-            response.success = enableForInputChannel(
-                  message.EnableInputChannelForChain.pChannelHandle,
-                  message.EnableInputChannelForChain.pEffectStatesMapArray);
-            break;
-        case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << this
-                         << "DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL"
-                         << message.pTargetChain
-                         << *message.DisableInputChannelForChain.pChannelHandle;
-            }
-            response.success = disableForInputChannel(
-                    message.DisableInputChannelForChain.pChannelHandle);
-            break;
-        default:
-            return false;
+    case EffectsRequest::ADD_EFFECT_TO_CHAIN:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << this << "ADD_EFFECT_TO_CHAIN"
+                     << message.AddEffectToChain.pEffect
+                     << message.AddEffectToChain.iIndex;
+        }
+        response.success = addEffect(message.AddEffectToChain.pEffect,
+                message.AddEffectToChain.iIndex);
+        break;
+    case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << this << "REMOVE_EFFECT_FROM_CHAIN"
+                     << message.RemoveEffectFromChain.pEffect
+                     << message.RemoveEffectFromChain.iIndex;
+        }
+        response.success = removeEffect(message.RemoveEffectFromChain.pEffect,
+                message.RemoveEffectFromChain.iIndex);
+        break;
+    case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << this << "SET_EFFECT_CHAIN_PARAMETERS"
+                     << "enabled" << message.SetEffectChainParameters.enabled
+                     << "mix" << message.SetEffectChainParameters.mix
+                     << "mix_mode" << static_cast<int>(message.SetEffectChainParameters.mix_mode);
+        }
+        response.success = updateParameters(message);
+        break;
+    case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << this
+                     << "ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL"
+                     << message.pTargetChain
+                     << message.EnableInputChannelForChain.channelHandle;
+        }
+        response.success = enableForInputChannel(
+                message.EnableInputChannelForChain.channelHandle,
+                message.EnableInputChannelForChain.pEffectStatesMapArray);
+        break;
+    case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << this
+                     << "DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL"
+                     << message.pTargetChain
+                     << message.DisableInputChannelForChain.channelHandle;
+        }
+        response.success = disableForInputChannel(
+                message.DisableInputChannelForChain.channelHandle);
+        break;
+    default:
+        return false;
     }
     pResponsePipe->writeMessage(response);
     return true;
 }
 
-bool EngineEffectChain::enableForInputChannel(const ChannelHandle* inputHandle,
+bool EngineEffectChain::enableForInputChannel(ChannelHandle inputHandle,
         EffectStatesMapArray* statesForEffectsInChain) {
     if (kEffectDebugOutput) {
         qDebug() << "EngineEffectChain::enableForInputChannel" << this << inputHandle;
     }
-    auto& outputMap = m_chainStatusForChannelMatrix[*inputHandle];
+    auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
         VERIFY_OR_DEBUG_ASSERT(outputChannelStatus.enableState !=
                 EffectEnableState::Enabled) {
@@ -179,8 +180,8 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle* inputHandle,
     return true;
 }
 
-bool EngineEffectChain::disableForInputChannel(const ChannelHandle* inputHandle) {
-    auto& outputMap = m_chainStatusForChannelMatrix[*inputHandle];
+bool EngineEffectChain::disableForInputChannel(ChannelHandle inputHandle) {
+    auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
         if (outputChannelStatus.enableState != EffectEnableState::Disabled) {
             outputChannelStatus.enableState = EffectEnableState::Disabling;
@@ -194,7 +195,7 @@ bool EngineEffectChain::disableForInputChannel(const ChannelHandle* inputHandle)
 }
 
 // Called from the main thread for garbage collection after an input channel is disabled
-void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle* inputChannel) {
+void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle inputChannel) {
     // If an output channel is not presently being processed, for example when
     // PFL is not active, then process() cannot be relied upon to set this
     // chain's EffectEnableState from Disabling to Disabled. This must be done
@@ -208,7 +209,7 @@ void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle* inputCh
     // QMap. So it is okay that m_chainStatusForChannelMatrix may be
     // accessed concurrently in the audio engine thread in process(),
     // enableForInputChannel(), or disableForInputChannel().
-    auto& outputMap = m_chainStatusForChannelMatrix[*inputChannel];
+    auto& outputMap = m_chainStatusForChannelMatrix[inputChannel];
     for (auto&& outputChannelStatus : outputMap) {
         outputChannelStatus.enableState = EffectEnableState::Disabled;
     }
@@ -227,11 +228,12 @@ EngineEffectChain::ChannelStatus& EngineEffectChain::getChannelStatus(
 }
 
 bool EngineEffectChain::process(const ChannelHandle& inputHandle,
-                                const ChannelHandle& outputHandle,
-                                CSAMPLE* pIn, CSAMPLE* pOut,
-                                const unsigned int numSamples,
-                                const unsigned int sampleRate,
-                                const GroupFeatureState& groupFeatures) {
+        const ChannelHandle& outputHandle,
+        CSAMPLE* pIn,
+        CSAMPLE* pOut,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const GroupFeatureState& groupFeatures) {
     // Compute the effective enable state from the channel input routing switch and
     // the chain's enable state. When either of these are turned on/off, send the
     // effects the intermediate enabling/disabling signal.
@@ -274,10 +276,14 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                     pIntermediateOutput = m_buffer1.data();
                 }
 
-                if (pEffect->process(inputHandle, outputHandle,
-                                     pIntermediateInput, pIntermediateOutput,
-                                     numSamples, sampleRate,
-                                     effectiveChainEnableState, groupFeatures)) {
+                if (pEffect->process(inputHandle,
+                            outputHandle,
+                            pIntermediateInput,
+                            pIntermediateOutput,
+                            numSamples,
+                            sampleRate,
+                            effectiveChainEnableState,
+                            groupFeatures)) {
                     if (pEffect->getManifest()->addDryToWet()) {
                         // Skip adding the dry signal to the effect's wet output
                         // when it is the first addDryToWet type effect in
@@ -289,8 +295,8 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                         // with the input to Echo. The dry signal that entered
                         // the first effect in the chain will be mixed back in
                         // below after all effects in the chain have been processed.
-                        bool skipAddingDry = !firstAddDryToWetEffectProcessed
-                                && m_mixMode == EffectChainMixMode::DryPlusWet;
+                        bool skipAddingDry = !firstAddDryToWetEffectProcessed &&
+                                m_mixMode == EffectChainMixMode::DryPlusWet;
 
                         if (!skipAddingDry) {
                             for (SINT i = 0; i <= static_cast<SINT>(numSamples); ++i) {

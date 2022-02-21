@@ -115,7 +115,7 @@ class TrackCollectionManager: public QObject,
     SaveTrackResult saveTrack(
             Track* pTrack,
             TrackMetadataExportMode mode) const;
-    void exportTrackMetadata(
+    ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
             TrackMetadataExportMode mode) const;
 

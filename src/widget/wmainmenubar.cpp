@@ -1,6 +1,5 @@
 #include "widget/wmainmenubar.h"
 
-#include <QDesktopServices>
 #include <QUrl>
 
 #include "config.h"
@@ -14,7 +13,7 @@
 
 namespace {
 
-const int kMaxLoadToDeckActions = 4;
+constexpr int kMaxLoadToDeckActions = 4;
 
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;

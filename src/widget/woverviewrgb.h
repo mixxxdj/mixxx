@@ -3,6 +3,7 @@
 #include "widget/woverview.h"
 
 class WOverviewRGB : public WOverview {
+    Q_OBJECT
   public:
     WOverviewRGB(
             const QString& group,

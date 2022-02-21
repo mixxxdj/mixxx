@@ -108,7 +108,7 @@ class BaseTrackCache : public QObject {
             const QVariant& val1,
             const QVariant& val2) const;
     bool trackMatches(const TrackPointer& pTrack,
-                      const QRegExp& matcher) const;
+            const QRegularExpression& matcher) const;
     bool trackMatchesNumeric(const TrackPointer& pTrack,
                              const QStringList& numberMatchers) const;
     bool trackMatchesNamedString(const TrackPointer& pTrack,
@@ -147,7 +147,7 @@ class BaseTrackCache : public QObject {
 
     bool m_bIndexBuilt;
     bool m_bIsCaching;
-    QHash<TrackId, QVector<QVariant> > m_trackInfo;
+    QHash<TrackId, QVector<QVariant>> m_trackInfo;
     QSqlDatabase m_database;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);

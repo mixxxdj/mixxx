@@ -30,13 +30,15 @@
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/logger.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/waveformwidgetfactory.h"
+#endif
 
 #ifdef __VINYLCONTROL__
 #include "engine/controls/vinylcontrolcontrol.h"
@@ -95,7 +97,6 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_iSeekPhaseQueued(0),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(static_cast<int>(SyncMode::Invalid)),
-          m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
           m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_bCrossfadeReady(false),
@@ -183,11 +184,6 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
-
-    m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
-    connect(m_pEject, &ControlObject::valueChanged,
-            this, &EngineBuffer::slotEjectTrack,
-            Qt::DirectConnection);
 
     m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
     m_pTrackLoaded->setReadOnly();
@@ -324,7 +320,6 @@ EngineBuffer::~EngineBuffer() {
     delete m_pScaleRB;
 
     delete m_pKeylock;
-    delete m_pEject;
 
     SampleUtil::free(m_pCrossfadeBuffer);
 
@@ -949,18 +944,6 @@ void EngineBuffer::processTrackLocked(
     // If pitch ratio and tempo ratio are equal, a linear scaler is used,
     // otherwise tempo and pitch are processed individual
 
-    // If we were scratching, and scratching is over, and we're a follower,
-    // and we're quantized, and not paused,
-    // we need to sync phase or we'll be totally out of whack and the sync
-    // adjuster will kick in and push the track back in to sync with the
-    // master.
-    if (m_scratching_old && !is_scratching && m_pQuantize->toBool() &&
-            isFollower(m_pSyncControl->getSyncMode()) && !paused) {
-        // TODO() The resulting seek is processed in the following callback
-        // That is to late
-        requestSyncPhase();
-    }
-
     double rate = 0;
     // If the baserate, speed, or pitch has changed, we need to update the
     // scaler. Also, if we have changed scalers then we need to update the
@@ -1137,7 +1120,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     m_pScaleST->setSampleRate(m_sampleRate);
     m_pScaleRB->setSampleRate(m_sampleRate);
 
-    bool bTrackLoading = atomicLoadRelaxed(m_iTrackLoading) != 0;
+    bool bTrackLoading = m_iTrackLoading.loadAcquire() != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         processTrackLocked(pOutput, iBufferSize, m_sampleRate);
         // release the pauselock
@@ -1172,11 +1155,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     }
 #endif
 
-    if (isLeader(m_pSyncControl->getSyncMode())) {
-        // Report our speed to SyncControl immediately instead of waiting
-        // for postProcess so we can broadcast this update to followers.
-        m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
-    }
+    m_pSyncControl->updateAudible();
 
     m_iLastBufferSize = iBufferSize;
     m_bCrossfadeReady = false;
@@ -1317,7 +1296,9 @@ void EngineBuffer::processSeek(bool paused) {
 void EngineBuffer::postProcess(const int iBufferSize) {
     // The order of events here is very delicate.  It's necessary to update
     // some values before others, because the later updates may require
-    // values from the first update.
+    // values from the first update. Do not make calls here that could affect
+    // which Syncable is leader or could cause Syncables to try to match
+    // beat distances. During these calls those values are inconsistent.
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "EngineBuffer::postProcess";
     }
@@ -1329,13 +1310,11 @@ void EngineBuffer::postProcess(const int iBufferSize) {
         newLocalBpm = localBpm;
     }
     m_pSyncControl->setLocalBpm(newLocalBpm);
-    m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
+    m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
     if (isLeader(mode)) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beatDistance);
     } else if (isFollower(mode)) {
-        // Report our speed to SyncControl.  If we are leader, we already did this.
-        m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
         m_pSyncControl->updateTargetBeatDistance();
     }
 
@@ -1455,17 +1434,6 @@ bool EngineBuffer::isTrackLoaded() const {
 
 TrackPointer EngineBuffer::getLoadedTrack() const {
     return m_pCurrentTrack;
-}
-
-void EngineBuffer::slotEjectTrack(double v) {
-    if (v > 0) {
-        // Don't allow rejections while playing a track. We don't need to lock to
-        // call ControlObject::get() so this is fine.
-        if (m_playButton->get() > 0) {
-            return;
-        }
-        ejectTrack();
-    }
 }
 
 mixxx::audio::FramePos EngineBuffer::getExactPlayPos() const {

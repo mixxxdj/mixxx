@@ -10,7 +10,6 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/math.h"
 
@@ -967,7 +966,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
 
     QHash<int, TrackId> trackPositionIds = allIds;
     QList<int> newPositions = positions;
-    const int searchDistance = math_max(trackPositionIds.count() / 4, 1);
+    const int searchDistance = math_max(static_cast<int>(trackPositionIds.count()) / 4, 1);
 
     qDebug() << "Shuffling Tracks";
     qDebug() << "*** Search Distance: " << searchDistance;

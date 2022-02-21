@@ -9,7 +9,6 @@
 #include "musicbrainz/musicbrainzxml.h"
 #include "network/httpstatuscode.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
 #include "util/versionstore.h"
@@ -50,7 +49,7 @@ QNetworkRequest createNetworkRequest(
     DEBUG_ASSERT(kBaseUrl.isValid());
     DEBUG_ASSERT(!recordingId.isNull());
     QUrl url = kBaseUrl;
-    url.setPath(kRequestPath + uuidToStringWithoutBraces(recordingId));
+    url.setPath(kRequestPath + recordingId.toString(QUuid::WithoutBraces));
     url.setQuery(createUrlQuery());
     DEBUG_ASSERT(url.isValid());
     QNetworkRequest networkRequest(url);

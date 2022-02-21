@@ -37,6 +37,6 @@ class ControllerMappingTableModel : public QAbstractTableModel {
     // m_pHidMapping points to the HID mapping.
     virtual void onMappingLoaded() = 0;
 
-    QVector<QHash<int, QVariant> > m_headerInfo;
+    QVector<QHash<int, QVariant>> m_headerInfo;
     std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;
 };

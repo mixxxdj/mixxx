@@ -6,7 +6,6 @@
 #include <QUrl>
 #include <QtDebug>
 
-#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
@@ -14,9 +13,6 @@
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferences.h"
-#ifdef __LILV__
-#include "effects/lv2/lv2backend.h"
-#endif
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
@@ -140,11 +136,21 @@ void MixxxMainWindow::initialize() {
     // This allows us to turn off tooltips.
     installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
 
-    DEBUG_ASSERT(m_pCoreServices->getPlayerManager());
-    const QStringList visualGroups = m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
+    auto pPlayerManager = m_pCoreServices->getPlayerManager();
+    DEBUG_ASSERT(pPlayerManager);
+    const QStringList visualGroups = pPlayerManager->getVisualPlayerGroups();
     for (const QString& group : visualGroups) {
         m_pVisualsManager->addDeck(group);
     }
+    connect(pPlayerManager.get(),
+            &PlayerManager::numberOfDecksChanged,
+            this,
+            [this](int decks) {
+                for (int i = 0; i < decks; ++i) {
+                    QString group = PlayerManager::groupForDeck(i);
+                    m_pVisualsManager->addDeckIfNotExist(group);
+                }
+            });
 
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
@@ -195,10 +201,8 @@ void MixxxMainWindow::initialize() {
             m_pCoreServices->getScreensaverManager(),
             m_pSkinLoader,
             m_pCoreServices->getSoundManager(),
-            m_pCoreServices->getPlayerManager(),
             m_pCoreServices->getControllerManager(),
             m_pCoreServices->getVinylControlManager(),
-            m_pCoreServices->getLV2Backend(),
             m_pCoreServices->getEffectsManager(),
             m_pCoreServices->getSettingsManager(),
             m_pCoreServices->getLibrary());
@@ -244,7 +248,9 @@ void MixxxMainWindow::initialize() {
         checkDirectRendering();
     }
 
-    // Try open player device If that fails, the preference panel is opened.
+    // Sound hardware setup
+    // Try to open configured devices. If that fails, display dialogs
+    // that allow to either retry, reconfigure devices or exit.
     bool retryClicked;
     do {
         retryClicked = false;
@@ -262,11 +268,10 @@ void MixxxMainWindow::initialize() {
         }
     } while (retryClicked);
 
-    // test for at least one out device, if none, display another dlg that
-    // says "mixxx will barely work with no outs"
-    // In case persisting errors, the user has already received a message
-    // box from the preferences dialog above. So we can watch here just the
-    // output count.
+    // Test for at least one output device. If none, display another dialog
+    // that says "mixxx will barely work with no outs".
+    // In case of persisting errors, the user has already received a message
+    // above. So we can just check the output count here.
     while (m_pCoreServices->getSoundManager()->getConfig().getOutputs().count() == 0) {
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if result != OK
@@ -278,6 +283,10 @@ void MixxxMainWindow::initialize() {
             break;
         }
     }
+
+    // The user has either reconfigured devices or accepted no outputs,
+    // so it's now safe to write the new config to disk.
+    m_pCoreServices->getSoundManager()->getConfig().writeToDisk();
 
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
@@ -292,19 +301,19 @@ void MixxxMainWindow::initialize() {
     // pointer to it.
     m_pLaunchImage = nullptr;
 
-    connect(m_pCoreServices->getPlayerManager().get(),
+    connect(pPlayerManager.get(),
             &PlayerManager::noMicrophoneInputConfigured,
             this,
             &MixxxMainWindow::slotNoMicrophoneInputConfigured);
-    connect(m_pCoreServices->getPlayerManager().get(),
+    connect(pPlayerManager.get(),
             &PlayerManager::noAuxiliaryInputConfigured,
             this,
             &MixxxMainWindow::slotNoAuxiliaryInputConfigured);
-    connect(m_pCoreServices->getPlayerManager().get(),
+    connect(pPlayerManager.get(),
             &PlayerManager::noDeckPassthroughInputConfigured,
             this,
             &MixxxMainWindow::slotNoDeckPassthroughInputConfigured);
-    connect(m_pCoreServices->getPlayerManager().get(),
+    connect(pPlayerManager.get(),
             &PlayerManager::noVinylControlInputConfigured,
             this,
             &MixxxMainWindow::slotNoVinylControlInputConfigured);
@@ -382,9 +391,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     }
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DeveloperToolsDlg";
-    if (m_pDeveloperToolsDlg) {
-        delete m_pDeveloperToolsDlg;
-    }
+    delete m_pDeveloperToolsDlg;
 
 #ifdef __ENGINEPRIME__
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryExporter";
@@ -463,6 +470,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
             m_pCoreServices->getSoundManager()->clearAndQueryDevices();
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
+            // Open preferences, sound hardware page is selected (default on first call)
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
                 return QDialog::Accepted;
@@ -728,13 +736,14 @@ void MixxxMainWindow::connectMenuBar() {
     }
 #endif
 
-    if (m_pCoreServices->getPlayerManager()) {
-        connect(m_pCoreServices->getPlayerManager().get(),
+    auto pPlayerManager = m_pCoreServices->getPlayerManager();
+    if (pPlayerManager) {
+        connect(pPlayerManager.get(),
                 &PlayerManager::numberOfDecksChanged,
                 m_pMenuBar,
                 &WMainMenuBar::onNumberOfDecksChanged,
                 Qt::UniqueConnection);
-        m_pMenuBar->onNumberOfDecksChanged(m_pCoreServices->getPlayerManager()->numberOfDecks());
+        m_pMenuBar->onNumberOfDecksChanged(pPlayerManager->numberOfDecks());
     }
 
     if (m_pCoreServices->getTrackCollectionManager()) {
@@ -779,7 +788,7 @@ void MixxxMainWindow::connectMenuBar() {
 }
 
 void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
-    QString group = m_pCoreServices->getPlayerManager()->groupForDeck(deck - 1);
+    QString group = PlayerManager::groupForDeck(deck - 1);
 
     QString loadTrackText = tr("Load track to Deck %1").arg(QString::number(deck));
     QString deckWarningMessage = tr("Deck %1 is currently playing a track.")
@@ -1115,8 +1124,9 @@ void MixxxMainWindow::checkDirectRendering() {
 bool MixxxMainWindow::confirmExit() {
     bool playing(false);
     bool playingSampler(false);
-    unsigned int deckCount = m_pCoreServices->getPlayerManager()->numDecks();
-    unsigned int samplerCount = m_pCoreServices->getPlayerManager()->numSamplers();
+    auto pPlayerManager = m_pCoreServices->getPlayerManager();
+    unsigned int deckCount = pPlayerManager->numDecks();
+    unsigned int samplerCount = pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
         if (ControlObject::toBool(
                     ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
