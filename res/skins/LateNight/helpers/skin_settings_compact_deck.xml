@@ -9,8 +9,6 @@ Description:
     <Layout>vertical</Layout>
     <Children>
 
-      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
-
       <!-- Loop/Jump Controls in compact decks-->
       <Template src="skin:/helpers/skin_settings_button_2state.xml">
         <SetVariable name="TooltipId"></SetVariable>
@@ -56,8 +54,6 @@ Description:
         <SetVariable name="Text">Vinyl Control</SetVariable>
         <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
       </Template>
-
-      <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
 
       <!-- Level meters -->
       <Template src="skin:/helpers/skin_settings_button_2state.xml">
