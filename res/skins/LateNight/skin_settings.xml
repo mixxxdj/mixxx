@@ -25,6 +25,32 @@ Description:
         <Size>240f,1me</Size>
         <Children>
 
+          <!-- Toolbar -->
+          <Label>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Toolbar</Text>
+            <Size>180min,23f</Size>
+          </Label>
+
+          <WidgetGroup>
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <!-- Show Seconds -->
+              <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                <!-- <SetVariable name="TooltipId">show_seconds</SetVariable> --><!-- global tooltip at "src/skin/legacy/tooltips.cpp"? -->
+                <SetVariable name="Text">Show Seconds</SetVariable>
+                <SetVariable name="Setting">[Skin],show_seconds</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Toolbar -->
+
+          <WidgetGroup>
+            <ObjectName>SkinSettingsSeparator</ObjectName>
+            <Size>1min,12f</Size>
+          </WidgetGroup>
+
           <!-- Decks -->
           <WidgetGroup>
             <Layout>horizontal</Layout>

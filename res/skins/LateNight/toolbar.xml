@@ -137,6 +137,8 @@
         </Connection>
       </StatusLight>
 
+      <!-- Clock widgets -->
+      <!-- Standard clock widget -->
       <WidgetGroup>
         <ObjectName>ClockWidget</ObjectName>
         <Layout>horizontal</Layout>
@@ -147,7 +149,29 @@
             <CustomFormat>hh:mm</CustomFormat>
           </Time>
         </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_seconds</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
       </WidgetGroup>
+
+      <!-- Clock widget with seconds -->
+      <WidgetGroup>
+        <ObjectName>ClockWidget</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Time>
+            <TooltipId>time</TooltipId>
+            <CustomFormat>hh:mm:ss</CustomFormat>
+          </Time>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_seconds</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Clock widgets -->
 
       <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
 
