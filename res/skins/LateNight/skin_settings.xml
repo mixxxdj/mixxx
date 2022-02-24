@@ -29,7 +29,7 @@ Description:
           <Label>
             <ObjectName>CategoryLabel</ObjectName>
             <Text>Toolbar</Text>
-            <Size>180min,23f</Size>
+            <Size>me,min</Size>
           </Label>
 
           <WidgetGroup>
@@ -45,6 +45,61 @@ Description:
               </Template>
             </Children>
           </WidgetGroup><!-- /Toolbar -->
+
+          <WidgetGroup>
+            <ObjectName>SkinSettingsSeparator</ObjectName>
+            <Size>1min,min</Size>
+          </WidgetGroup>
+
+          <!--  Waveforms -->
+          <WidgetGroup>
+            <SizePolicy>me,f</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+              <!-- translucent cover when Library is not maximized -->
+              <Template src="skin:/helpers/skin_settings_cover.xml">
+                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:/helpers/skin_settings_labelbutton_2state.xml">
+                    <SetVariable name="Text">Waveforms</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
+                    <SetVariable name="TooltipId">show_waveforms</SetVariable>
+                    <SetVariable name="Width">190me</SetVariable>
+                  </Template>
+
+                  <!-- Cue shift buttons in beatgrid editing section -->
+                  <WidgetGroup>
+                    <ObjectName>SkinSettingsCategory</ObjectName>
+                    <SizePolicy>me,f</SizePolicy>
+                    <Layout>stacked</Layout>
+                    <Children>
+                      <!-- translucent cover when waveforms are hidden -->
+                      <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                        <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
+                      </Template>
+
+                      <!-- translucent cover when beatgrid controls are hidden -->
+                      <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                        <SetVariable name="Setting">[Skin],show_beatgrid_controls</SetVariable>
+                      </Template>
+
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                        <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
+                        <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
+                      </Template>
+
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- Waveforms -->
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
@@ -174,7 +229,6 @@ Description:
           </WidgetGroup><!-- DeckSizeSettings -->
 <!-- Deck size selectors -->
 
-
 <!-- Deck Options FULL / Compact / mini -->
           <WidgetGroup>
             <SizePolicy>me,f</SizePolicy>
@@ -239,64 +293,6 @@ Description:
             </Children>
           </WidgetGroup>
 <!-- Deck Options FULL / Compact / mini -->
-
-
-
-<!-- Other skin options -->
-          <WidgetGroup>
-            <ObjectName>SkinSettingsSeparator</ObjectName>
-            <Size>1min,12f</Size>
-          </WidgetGroup>
-
-          <!--  Waveforms -->
-          <WidgetGroup>
-            <SizePolicy>me,f</SizePolicy>
-            <Layout>stacked</Layout>
-            <Children>
-              <!-- translucent cover when Library is not maximized -->
-              <Template src="skin:/helpers/skin_settings_cover.xml">
-                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
-              </Template>
-
-              <WidgetGroup>
-                <SizePolicy>me,min</SizePolicy>
-                <Layout>vertical</Layout>
-                <Children>
-                  <Template src="skin:/helpers/skin_settings_labelbutton_2state.xml">
-                    <SetVariable name="Text">Waveforms</SetVariable>
-                    <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
-                    <SetVariable name="TooltipId">show_waveforms</SetVariable>
-                    <SetVariable name="Width">190me</SetVariable>
-                  </Template>
-
-                  <!-- Cue shift buttons in beatgrid editing section -->
-                  <WidgetGroup>
-                    <ObjectName>SkinSettingsCategory</ObjectName>
-                    <SizePolicy>me,f</SizePolicy>
-                    <Layout>stacked</Layout>
-                    <Children>
-                      <!-- translucent cover when waveforms are hidden -->
-                      <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
-                        <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
-                      </Template>
-
-                      <!-- translucent cover when beatgrid controls are hidden -->
-                      <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
-                        <SetVariable name="Setting">[Skin],show_beatgrid_controls</SetVariable>
-                      </Template>
-
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
-                        <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
-                        <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
-                      </Template>
-
-                    </Children>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- Waveforms -->
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
