@@ -81,12 +81,25 @@ MC7000.scratchParams = {
     beta: (1.0/10)/32
 };
 
-// Sensitivity factor of the jog wheel (also depends on audio latency)
-// 0.5 for half, 2 for double sensitivity - Recommendation:
-// set to 0.5 with audio buffer set to 50ms
-// set to 1 with audio buffer set to 25ms
-// set to 3 with audio buffer set to 5ms
-MC7000.jogSensitivity = 1;
+// Jog wheel parameters
+MC7000.jogParams = {
+    // Sensitivity factor of the jog wheel (also depends on audio latency)
+    // 0.5 for half, 2 for double sensitivity - Recommendation:
+    // set to 0.5 with audio buffer set to 50ms
+    // set to 1 with audio buffer set to 25ms
+    // set to 3 with audio buffer set to 5ms
+    sensitivity: 1,
+    // Acceleration settings for the jog wheel in vinyl mode
+    // (exponent: 0 and coefficient: 1 = no acceleration)
+    acceleration: {
+        // Toggles acceleration entirely.
+        enabled: false,
+        // Acceleration function exponent
+        exponent: 0.8,
+        // Acceleration function scaling factor
+        coefficient: 1
+    }
+};
 
 /*/////////////////////////////////
 //      USER VARIABLES END       //
@@ -680,7 +693,8 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
 
     // A: For a control that centers on 0:
     var numTicks = (value < 0x64) ? value : (value - 128);
-    var adjustedSpeed = numTicks * MC7000.jogSensitivity / 10;
+    var baseSpeed = numTicks * MC7000.jogParams.sensitivity;
+    var adjustedSpeed = baseSpeed / 10;
     var deckNumber = script.deckFromGroup(group);
     var deckOffset = deckNumber - 1;
     var libraryMaximized = engine.getValue("[Master]", "maximize_library");
@@ -689,8 +703,14 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
     } else if (libraryMaximized === 1 && numTicks < 0) {
         engine.setValue("[Library]", "MoveUp", 1);
     } else if (engine.isScratching(deckNumber)) {
-    // Scratch!
-        engine.scratchTick(deckNumber, numTicks * MC7000.jogSensitivity);
+        // Scratch!
+        var scratchSpeed = baseSpeed;
+        var acceleration = MC7000.jogParams.acceleration;
+        if (acceleration && acceleration.enabled) {
+            var accelerationFactor = Math.pow(Math.abs(baseSpeed), acceleration.exponent) * acceleration.coefficient;
+            scratchSpeed *= accelerationFactor;
+        }
+        engine.scratchTick(deckNumber, scratchSpeed);
     } else {
         if (MC7000.shift[deckOffset]) {
             // While Shift Button pressed -> Search through track
