@@ -189,7 +189,7 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     return returnArray;
 }
 
-void HidIoThread::updateCachedOutputReportData(const QByteArray& data, unsigned int reportID) {
+void HidIoThread::updateCachedOutputReportData(const QByteArray& data, unsigned int reportID, bool skipIdenticalReports) {
     auto mapLock = lockMutex(&m_outputReportMapMutex);
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
         std::unique_ptr<HidIoOutputReport> pNewOutputReport;

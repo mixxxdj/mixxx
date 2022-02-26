@@ -32,9 +32,6 @@ class HidController final : public Controller {
 
     bool matchMapping(const MappingInfo& mapping) override;
 
-  protected:
-    void sendReport(const QList<int>& data, unsigned int length, unsigned int reportID);
-
   private slots:
     int open() override;
     int close() override;
@@ -59,13 +56,35 @@ class HidControllerJSProxy : public ControllerJSProxy {
             : ControllerJSProxy(m_pController),
               m_pHidController(m_pController) {
     }
+        
+    Q_INVOKABLE void sendOutputReport(const QList<int>& dataList, unsigned int reportID, bool skipIdenticalReports = true) {
+        QByteArray dataArray;
+        dataArray.reserve(dataList.size());
+        for (int datum : dataList) {
+            dataArray.append(datum);
+        }
+        VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
+            return;
+        }
+        m_pHidController->m_pHidIoThread->updateCachedOutputReportData(dataArray, reportID, skipIdenticalReports);
+    }
 
+    Q_INVOKABLE void sendOutputReport(const QByteArray& dataArray, unsigned int reportID, bool skipIdenticalReports = true) {
+        VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
+            return;
+        }
+        m_pHidController->m_pHidIoThread->updateCachedOutputReportData(dataArray, reportID, skipIdenticalReports);
+    }
+
+    // 
     Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0) override {
-        m_pHidController->send(data, length);
+        Q_UNUSED(length);
+        this->sendOutputReport(data, 0);
     }
 
     Q_INVOKABLE void send(const QList<int>& data, unsigned int length, unsigned int reportID) {
-        m_pHidController->sendReport(data, length, reportID);
+        Q_UNUSED(length);
+        this->sendOutputReport(data, reportID);
     }
 
     // getInputReport receives an input report on request.

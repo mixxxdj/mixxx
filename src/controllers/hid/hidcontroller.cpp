@@ -197,18 +197,8 @@ int HidController::close() {
     return 0;
 }
 
-void HidController::sendReport(const QList<int>& data, unsigned int length, unsigned int reportID) {
-    Q_UNUSED(length);
-    QByteArray temp;
-    temp.reserve(data.size());
-    for (int datum : data) {
-        temp.append(datum);
-    }
-    m_pHidIoThread->updateCachedOutputReportData(temp, reportID);
-}
-
 void HidController::sendBytes(const QByteArray& data) {
-    m_pHidIoThread->updateCachedOutputReportData(data, 0);
+    m_pHidIoThread->updateCachedOutputReportData(data, 0, false);
 }
 
 ControllerJSProxy* HidController::jsProxy() {
