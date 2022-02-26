@@ -25,6 +25,10 @@ void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& co
     m_iChainNumber = EffectWidgetUtils::getEffectUnitNumberFromNode(node, context);
     m_pChain = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
+    connect(m_pChain.get(),
+            &EffectChain::chainPresetChanged,
+            this,
+            &WEffectChainPresetButton::populateMenu);
     for (const auto& pEffectSlot : m_pChain->getEffectSlots()) {
         connect(pEffectSlot.data(),
                 &EffectSlot::effectChanged,
