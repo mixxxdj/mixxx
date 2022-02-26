@@ -407,6 +407,35 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     savePresetXml(pPreset);
 }
 
+void EffectChainPresetManager::updatePreset(EffectChainPointer pChainSlot) {
+    auto pPreset = EffectChainPresetPointer::create(pChainSlot.data());
+    updatePreset(pPreset);
+}
+
+void EffectChainPresetManager::updatePreset(EffectChainPresetPointer pPreset) {
+    const QString name = pPreset->name();
+    if (name.isEmpty()) {
+        return;
+    }
+
+    auto existing = m_effectChainPresets.find(name);
+    VERIFY_OR_DEBUG_ASSERT(existing != m_effectChainPresets.end()) {
+        return;
+    }
+
+    const int index = m_effectChainPresetsSorted.indexOf(*existing);
+    VERIFY_OR_DEBUG_ASSERT(index != -1) {
+        return;
+    }
+    m_effectChainPresetsSorted.removeAt(index);
+    m_effectChainPresetsSorted.insert(index, pPreset);
+    m_effectChainPresets.insert(name, pPreset);
+    emit effectChainPresetListUpdated();
+    emit quickEffectChainPresetListUpdated();
+
+    savePresetXml(pPreset);
+}
+
 void EffectChainPresetManager::importUserPresets() {
     QString savedPresetsPath(
             m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
