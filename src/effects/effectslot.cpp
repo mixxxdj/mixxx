@@ -259,22 +259,21 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
 
 void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
     if (!pPreset || pPreset->isEmpty()) {
-        loadEffectInner(nullptr, nullptr, true);
+        loadEffectInner(nullptr, nullptr);
         return;
     }
     EffectManifestPointer pManifest = m_pBackendManager->getManifest(
             pPreset->id(), pPreset->backendType());
-    loadEffectInner(pManifest, pPreset, true);
+    loadEffectInner(pManifest, pPreset);
 }
 
 void EffectSlot::loadEffectWithDefaults(const EffectManifestPointer pManifest) {
     EffectPresetPointer pPreset = m_pPresetManager->getDefaultPreset(pManifest);
-    loadEffectInner(pManifest, pPreset, false);
+    loadEffectInner(pManifest, pPreset);
 }
 
 void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
-        EffectPresetPointer pEffectPreset,
-        bool adoptMetaknobFromPreset) {
+        EffectPresetPointer pEffectPreset) {
     if (kEffectDebugOutput) {
         if (pManifest) {
             qDebug() << this << m_group << "loading effect" << pManifest->id();
@@ -349,14 +348,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
     m_pControlLoaded->forceSet(1.0);
 
     if (m_pEffectsManager->isAdoptMetaknobSettingEnabled()) {
-        if (adoptMetaknobFromPreset) {
-            // Update the ControlObject value, but do not sync the parameters
-            // with slotEffectMetaParameter. This allows presets to intentionally
-            // save parameters in a state inconsistent with the metaknob.
-            m_pControlMetaParameter->set(pEffectPreset->metaParameter());
-        } else {
-            slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
-        }
+        slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
     } else {
         m_pControlMetaParameter->set(pEffectPreset->metaParameter());
         slotEffectMetaParameter(pEffectPreset->metaParameter(), true);

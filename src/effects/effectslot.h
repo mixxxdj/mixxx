@@ -159,8 +159,7 @@ class EffectSlot : public QObject {
 
     /// Call with nullptr for pManifest and pPreset to unload an effect
     void loadEffectInner(const EffectManifestPointer pManifest,
-            EffectPresetPointer pPreset,
-            bool adoptMetaknobFromPreset = false);
+            EffectPresetPointer pPreset);
 
     void loadParameters();
     void unloadEffect();
