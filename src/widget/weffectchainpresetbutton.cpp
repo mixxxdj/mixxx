@@ -47,19 +47,23 @@ void WEffectChainPresetButton::populateMenu() {
 
     // Chain preset items
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
-        m_pMenu->addAction(pChainPreset->name(), this, [this, pChainPreset]() {
+        QString title = pChainPreset->name();
+        if (title == m_pChain->presetName()) {
+            title = "\u2713 " + title;
+        }
+        m_pMenu->addAction(title, this, [this, pChainPreset]() {
             m_pChain->loadChainPreset(pChainPreset);
         });
     }
     m_pMenu->addSeparator();
-    m_pMenu->addAction(tr("Save as new preset"), this, [this]() {
-        m_pChainPresetManager->savePreset(m_pChain);
-    });
     if (!m_pChain->presetName().isEmpty()) {
-        m_pMenu->addAction(tr("Update preset: ") + m_pChain->presetName(), this, [this]() {
+        m_pMenu->addAction(tr("Save Preset"), this, [this]() {
             m_pChainPresetManager->updatePreset(m_pChain);
         });
     }
+    m_pMenu->addAction(tr("Create New Preset"), this, [this]() {
+        m_pChainPresetManager->savePreset(m_pChain);
+    });
 
     m_pMenu->addSeparator();
 
