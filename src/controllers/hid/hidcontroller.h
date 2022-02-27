@@ -79,7 +79,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
         for (int datum : dataList) {
             dataArray.append(datum);
         }
-        this->sendOutputReport(dataArray, reportID);
+        this->sendOutputReport(dataArray, reportID, skipIdenticalReports);
     }
 
     /// @brief Sends an OutputReport to HID device
