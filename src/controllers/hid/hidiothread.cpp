@@ -205,7 +205,7 @@ void HidIoThread::updateCachedOutputReportData(const QByteArray& data, unsigned 
 
     mapLock.unlock();
 
-    actualOutputReportIterator->second->updateCachedData(data, m_deviceInfo, m_logOutput);
+    actualOutputReportIterator->second->updateCachedData(data, m_deviceInfo, m_logOutput, skipIdenticalReports);
 }
 
 bool HidIoThread::sendNextCachedOutputReport() {
