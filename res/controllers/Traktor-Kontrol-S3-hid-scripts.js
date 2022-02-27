@@ -1393,16 +1393,13 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
     case this.STATE_FILTER:
         // If any fxEnable button is pressed, we are loading an fx preset
         if (this.anyEnablePressed()) {
-            HIDDebug("enable pressed");
             for (const key in this.enablePressed) {
                 if (this.enablePressed[key]) {
-                    this.selectPressed = true;
                     if (fxNumber === 0) {
                         const fxGroup = "[QuickEffectRack1_" + key + "_Effect1]";
                         const fxKey = "enabled";
                         script.toggleControl(fxGroup, fxKey);
                     } else {
-                        HIDDebug("ok this one");
                         const channelNumber = this.channelNumber(key);
                         if (this.getLoadedPreset(channelNumber) !== fxNumber) {
                             this.loadEffectPreset(channelNumber, fxNumber);
@@ -1424,8 +1421,6 @@ TraktorS3.FXControl.prototype.fxSelectHandler = function(field) {
     case this.STATE_EFFECT_INIT:
         // Fallthrough intended
     case this.STATE_EFFECT:
-        //  This is all messed up because now we have different effect units for each deck --
-        // which one does the user mean to edit?
         if (fxNumber === 0) {
             this.changeState(this.STATE_FILTER);
         } else if (fxNumber !== this.activeFX) {
@@ -1451,7 +1446,6 @@ TraktorS3.FXControl.prototype.fxEnableHandler = function(field) {
 
     if (!field.value) {
         this.lightFX();
-        this.chainLoaded = false;
         return;
     }
 
