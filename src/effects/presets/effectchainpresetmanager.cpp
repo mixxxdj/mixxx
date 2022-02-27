@@ -287,14 +287,12 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
 
     int index = m_effectChainPresetsSorted.indexOf(pPreset);
     if (index != -1) {
-        m_effectChainPresetsSorted.removeAt(index);
-        m_effectChainPresetsSorted.insert(index, pPreset);
+        m_effectChainPresetsSorted.replace(index, pPreset);
         emit effectChainPresetListUpdated();
     }
     index = m_quickEffectChainPresetsSorted.indexOf(pPreset);
     if (index != -1) {
-        m_quickEffectChainPresetsSorted.removeAt(index);
-        m_quickEffectChainPresetsSorted.insert(index, pPreset);
+        m_quickEffectChainPresetsSorted.replace(index, pPreset);
         emit quickEffectChainPresetListUpdated();
     }
 }
