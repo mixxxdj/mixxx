@@ -427,8 +427,7 @@ void EffectChainPresetManager::updatePreset(EffectChainPointer pChainSlot) {
     // replace the existing entries in the two lists. Calling reset or swap on the iterator
     // also doesn't work.
     auto pPreset = EffectChainPresetPointer::create(pChainSlot.data());
-    m_effectChainPresetsSorted.removeAt(index);
-    m_effectChainPresetsSorted.insert(index, pPreset);
+    m_effectChainPresetsSorted.replace(index, pPreset);
     m_effectChainPresets.insert(name, pPreset);
     savePresetXml(pPreset);
 }
