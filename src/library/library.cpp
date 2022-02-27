@@ -400,6 +400,7 @@ void Library::bindLibraryWidget(
             &Library::restoreModelState,
             pTrackTableView,
             &WTrackTableView::slotRestoreCurrentViewState);
+    connect(this, &Library::selectTrack, pTrackTableView, &WTrackTableView::slotSelectTrack);
     connect(pTrackTableView,
             &WTrackTableView::trackSelected,
             this,

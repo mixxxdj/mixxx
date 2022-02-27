@@ -21,7 +21,8 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::RemoveFromDisk |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties |
-        WTrackMenu::Feature::UpdateReplayGain;
+        WTrackMenu::Feature::UpdateReplayGain |
+        WTrackMenu::Feature::SelectInLibrary;
 } // namespace
 
 WTrackProperty::WTrackProperty(
