@@ -263,6 +263,11 @@ void WTrackMenu::createActions() {
         connect(m_pFileBrowserAct, &QAction::triggered, this, &WTrackMenu::slotOpenInFileBrowser);
     }
 
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        m_pSelectInLibraryAct = new QAction(tr("Select in Library"), this);
+        connect(m_pSelectInLibraryAct, &QAction::triggered, this, &WTrackMenu::slotSelectInLibrary);
+    }
+
     if (featureIsEnabled(Feature::Metadata)) {
         m_pImportMetadataFromFileAct =
                 new QAction(tr("Import From File Tags"), m_pMetadataMenu);
@@ -560,6 +565,10 @@ void WTrackMenu::setupActions() {
 
     if (featureIsEnabled(Feature::FileBrowser)) {
         addAction(m_pFileBrowserAct);
+    }
+
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        addAction(m_pSelectInLibraryAct);
     }
 
     if (featureIsEnabled(Feature::Properties)) {
@@ -968,6 +977,12 @@ void WTrackMenu::slotOpenInFileBrowser() {
         locations << trackRef.getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
+}
+
+void WTrackMenu::slotSelectInLibrary() {
+    if (m_pTrack) {
+        m_pLibrary->selectTrack(m_pTrack->getId());
+    }
 }
 
 namespace {
@@ -2134,6 +2149,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
+    case Feature::SelectInLibrary:
+        return m_pTrack != nullptr;
     default:
         DEBUG_ASSERT(!"unreachable");
         return false;

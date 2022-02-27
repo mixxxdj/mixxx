@@ -127,6 +127,7 @@ class Library: public QObject {
     void disableSearch();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
+    void selectTrack(const TrackId&);
     void trackSelected(TrackPointer pTrack);
 #ifdef __ENGINEPRIME__
     void exportLibrary();
