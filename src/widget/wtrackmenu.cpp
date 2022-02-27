@@ -981,7 +981,7 @@ void WTrackMenu::slotOpenInFileBrowser() {
 
 void WTrackMenu::slotSelectInLibrary() {
     if (m_pTrack) {
-        m_pLibrary->selectTrack(m_pTrack->getId());
+        emit m_pLibrary->selectTrack(m_pTrack->getId());
     }
 }
 
