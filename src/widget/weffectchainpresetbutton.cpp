@@ -63,7 +63,7 @@ void WEffectChainPresetButton::populateMenu() {
             m_pChainPresetManager->updatePreset(m_pChain);
         });
     }
-    m_pMenu->addAction(tr("Create New Preset"), this, [this]() {
+    m_pMenu->addAction(tr("Create New Preset..."), this, [this]() {
         m_pChainPresetManager->savePreset(m_pChain);
     });
 
