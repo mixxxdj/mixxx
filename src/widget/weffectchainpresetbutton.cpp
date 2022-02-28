@@ -59,11 +59,11 @@ void WEffectChainPresetButton::populateMenu() {
     }
     m_pMenu->addSeparator();
     if (chainIsPreset) {
-        m_pMenu->addAction(tr("Save Preset"), this, [this]() {
+        m_pMenu->addAction(tr("Update Preset"), this, [this]() {
             m_pChainPresetManager->updatePreset(m_pChain);
         });
     }
-    m_pMenu->addAction(tr("Create New Preset..."), this, [this]() {
+    m_pMenu->addAction(tr("Save As New Preset..."), this, [this]() {
         m_pChainPresetManager->savePreset(m_pChain);
     });
 
