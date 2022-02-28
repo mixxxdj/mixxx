@@ -6,6 +6,7 @@
 #include <QMessageBox>
 
 #include "effects/backends/builtin/filtereffect.h"
+#include "effects/effectchain.h"
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectxmlelements.h"
 #include "util/filename.h"
@@ -286,14 +287,12 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
 
     int index = m_effectChainPresetsSorted.indexOf(pPreset);
     if (index != -1) {
-        m_effectChainPresetsSorted.removeAt(index);
-        m_effectChainPresetsSorted.insert(index, pPreset);
+        m_effectChainPresetsSorted.replace(index, pPreset);
         emit effectChainPresetListUpdated();
     }
     index = m_quickEffectChainPresetsSorted.indexOf(pPreset);
     if (index != -1) {
-        m_quickEffectChainPresetsSorted.removeAt(index);
-        m_quickEffectChainPresetsSorted.insert(index, pPreset);
+        m_quickEffectChainPresetsSorted.replace(index, pPreset);
         emit quickEffectChainPresetListUpdated();
     }
 }
@@ -404,6 +403,30 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     emit effectChainPresetListUpdated();
     emit quickEffectChainPresetListUpdated();
 
+    savePresetXml(pPreset);
+}
+
+void EffectChainPresetManager::updatePreset(EffectChainPointer pChainSlot) {
+    const QString name = pChainSlot->presetName();
+    if (name.isEmpty()) {
+        return;
+    }
+
+    auto it = m_effectChainPresets.find(name);
+    VERIFY_OR_DEBUG_ASSERT(it != m_effectChainPresets.end()) {
+        return;
+    }
+
+    const int index = m_effectChainPresetsSorted.indexOf(*it);
+    VERIFY_OR_DEBUG_ASSERT(index != -1) {
+        return;
+    }
+    // Effect Chain Presets don't have a copy constructor, so we have to create a new one and
+    // replace the existing entries in the two lists. Calling reset or swap on the iterator
+    // also doesn't work.
+    auto pPreset = EffectChainPresetPointer::create(pChainSlot.data());
+    m_effectChainPresetsSorted.replace(index, pPreset);
+    m_effectChainPresets.insert(name, pPreset);
     savePresetXml(pPreset);
 }
 
