@@ -554,8 +554,10 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         const QDomDocument& doc, const QStringList& deckStrings) {
     EffectManifestPointer pDefaultQuickEffectManifest = m_pBackendManager->getManifest(
             FilterEffect::getId(), EffectBackendType::BuiltIn);
-    auto defaultQuickEffectChainPreset = EffectChainPresetPointer(
-            new EffectChainPreset(pDefaultQuickEffectManifest));
+    auto defaultQuickEffectChainPreset =
+            EffectChainPresetPointer(pDefaultQuickEffectManifest
+                            ? new EffectChainPreset(pDefaultQuickEffectManifest)
+                            : new EffectChainPreset());
 
     QList<EffectChainPresetPointer> standardEffectChainPresets;
     QHash<QString, EffectChainPresetPointer> quickEffectPresets;

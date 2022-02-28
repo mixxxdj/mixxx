@@ -70,9 +70,7 @@ bool LV2Backend::canInstantiateEffect(const QString& effectId) const {
 }
 
 EffectManifestPointer LV2Backend::getManifest(const QString& effectId) const {
-    VERIFY_OR_DEBUG_ASSERT(m_registeredEffects.contains(effectId)) {
-        return EffectManifestPointer();
-    }
+    // This may return a null pointer in case a previously stored effect is no longer available
     return m_registeredEffects.value(effectId);
 }
 
