@@ -88,7 +88,6 @@ const QList<QString> BuiltInBackend::getEffectIds() const {
 }
 
 EffectManifestPointer BuiltInBackend::getManifest(const QString& effectId) const {
-    // This may return a null pointer in case a previously stored effect is no longer available
     return m_registeredEffects.value(effectId).pManifest;
 }
 

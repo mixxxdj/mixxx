@@ -16,6 +16,8 @@ class EffectsBackendManager {
     };
     const QList<EffectManifestPointer> getManifestsForBackend(EffectBackendType backendType) const;
     EffectManifestPointer getManifestFromUniqueId(const QString& uid) const;
+    /// returns a pointer to the manifest or a null pointer in case a
+    /// the previously stored backend or effect is no longer available
     EffectManifestPointer getManifest(const QString& id, EffectBackendType backendType) const;
     const QString getDisplayNameForEffectPreset(EffectPresetPointer pPreset) const;
 
