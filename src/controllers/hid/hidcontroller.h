@@ -72,7 +72,10 @@ class HidControllerJSProxy : public ControllerJSProxy {
     /// @param length Unused but mandatory argument
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
     /// @param skipIdenticalReports If set, the sending of the report is inhibited, when the data didn't changed
-    Q_INVOKABLE void send(const QList<int>& dataList, unsigned int length, unsigned int reportID, bool skipIdenticalReports = true) {
+    Q_INVOKABLE void send(const QList<int>& dataList,
+            unsigned int length,
+            unsigned int reportID,
+            bool skipIdenticalReports = true) {
         Q_UNUSED(length);
         QByteArray dataArray;
         dataArray.reserve(dataList.size());
@@ -86,11 +89,14 @@ class HidControllerJSProxy : public ControllerJSProxy {
     /// @param dataArray Data to send as byte array (Javascript type Uint8Array)
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
     /// @param skipIdenticalReports If set, the sending of the report is inhibited, when the data didn't changed
-    Q_INVOKABLE void sendOutputReport(const QByteArray& dataArray, unsigned int reportID, bool skipIdenticalReports = true) {
+    Q_INVOKABLE void sendOutputReport(const QByteArray& dataArray,
+            unsigned int reportID,
+            bool skipIdenticalReports = true) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return;
         }
-        m_pHidController->m_pHidIoThread->updateCachedOutputReportData(dataArray, reportID, skipIdenticalReports);
+        m_pHidController->m_pHidIoThread->updateCachedOutputReportData(
+                dataArray, reportID, skipIdenticalReports);
     }
 
     /// @brief getInputReport receives an InputReport from the HID device on request.
@@ -102,7 +108,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
     ///          function of the common-hid-packet-parser.
     ///          This is an optional command in the HID standard - not all devices support it.
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
-    /// @return 
+    /// @return Returns report data with ReportID byte as prefix
     Q_INVOKABLE QByteArray getInputReport(
             unsigned int reportID) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
@@ -122,7 +128,6 @@ class HidControllerJSProxy : public ControllerJSProxy {
         m_pHidController->m_pHidIoThread->sendFeatureReport(reportData, reportID);
     }
 
-    
     /// @brief getFeatureReport receives a FeatureReport from the HID device on request.
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
     /// @return The returned array matches the input format of sendFeatureReport (Javascript type Uint8Array),

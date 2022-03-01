@@ -13,7 +13,8 @@ class HidIoOutputReport {
     void updateCachedData(const QByteArray& data,
 
             const mixxx::hid::DeviceInfo& deviceInfo,
-            const RuntimeLoggingCategory& logOutput, bool skipIdenticalReports);
+            const RuntimeLoggingCategory& logOutput,
+            bool skipIdenticalReports);
 
     /// Sends the OutputReport to the HID device, when changed data are cached.
     /// Returns true if a time consuming hid_write operation was executed.
