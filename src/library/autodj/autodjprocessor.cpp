@@ -957,26 +957,29 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
         return;
     }
 
-    if (playing && !otherDeck->isPlaying()) {
-        // In case both decks were stopped and now this one just started, make
-        // this deck the "from deck".
-        calculateTransition(thisDeck, getOtherDeck(thisDeck), false);
-    }
-
-    // If the user manually pressed play on the "to deck" before fading, for
-    // example to adjust the intro/outro cues, and lets the deck play until the
-    // end, seek back to the start point instead of keeping the deck stopped at
-    // the end.
-    if (!playing && thisDeck->playPosition() >= 1.0 && !thisDeck->isFromDeck) {
-        // toDeck has stopped at the end. Recalculate the transition, because
-        // it has been done from a now irrelevant previous position.
-        // This forces the other deck to be the fromDeck.
-        thisDeck->startPos = kKeepPosition;
-        calculateTransition(otherDeck, thisDeck, true);
-        if (thisDeck->startPos != kKeepPosition) {
-            // Note: this seek will trigger the playerPositionChanged slot
-            // which may calls the calculateTransition() again without seek = true;
-            thisDeck->setPlayPosition(thisDeck->startPos);
+    if (playing) {
+        if (!otherDeck->isPlaying()) {
+            // In case both decks were stopped and now this one just started, make
+            // this deck the "from deck".
+            calculateTransition(thisDeck, getOtherDeck(thisDeck), false);
+        }
+    } else {
+        // Deck paused    
+        // This may happen if the user has previously pressed play on the "to deck" 
+        // before fading, for example to adjust the intro/outro cues, and lets the 
+        // deck play until the end, seek back to the start point instead of keeping 
+        // the deck stopped at the end.
+        if (thisDeck->playPosition() >= 1.0 && !thisDeck->isFromDeck) {
+            // toDeck has stopped at the end. Recalculate the transition, because
+            // it has been done from a now irrelevant previous position.
+            // This forces the other deck to be the fromDeck.
+            thisDeck->startPos = kKeepPosition;
+            calculateTransition(otherDeck, thisDeck, true);
+            if (thisDeck->startPos != kKeepPosition) {
+                // Note: this seek will trigger the playerPositionChanged slot
+                // which may calls the calculateTransition() again without seek = true;
+                thisDeck->setPlayPosition(thisDeck->startPos);
+            }
         }
     }
 }
