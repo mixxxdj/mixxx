@@ -1236,6 +1236,12 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     }
 
     double introLength = introEnd - introStart;
+        
+    if (sDebug) {
+        qDebug() << this << "calculateTransition"
+                 << "introLength" << introLength
+                 << "outroLength" << outroLength;
+    }
 
     switch (m_transitionMode) {
     case TransitionMode::FullIntroOutro: {
