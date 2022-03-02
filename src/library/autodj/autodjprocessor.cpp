@@ -692,6 +692,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             } else {
                 // At least right deck is playing
                 // Set crossfade thresholds for right deck.
+                if (sDebug) {
+                    qDebug() << this << "playerPositionChanged"
+                             << "right deck playing";
+                }
                 calculateTransition(rightDeck, leftDeck, false);
             }
             emitAutoDJStateChanged(m_eState);
@@ -738,6 +742,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // recalculated here.
             // Don't adjust transition when reaching the end. In this case it is
             // always stopped.
+            if (sDebug) {
+                qDebug() << this << "playerPositionChanged"
+                         << "cueing seek";
+            }
             calculateTransition(otherDeck, thisDeck, false);
         } else if (thisDeck->isRepeat()) {
             // repeat pauses auto DJ
@@ -964,11 +972,10 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
             calculateTransition(thisDeck, getOtherDeck(thisDeck), false);
         }
     } else {
-        // Deck paused    
-        // This may happen if the user has previously pressed play on the "to deck" 
-        // before fading, for example to adjust the intro/outro cues, and lets the 
-        // deck play until the end, seek back to the start point instead of keeping 
-        // the deck stopped at the end.
+        // Deck paused
+        // This may happen if the user has previously pressed play on the "to deck"
+        // before fading, for example to adjust the intro/outro cues, and lets the
+        // deck play until the end, seek back to the start point instead of keeping
         if (thisDeck->playPosition() >= 1.0 && !thisDeck->isFromDeck) {
             // toDeck has stopped at the end. Recalculate the transition, because
             // it has been done from a now irrelevant previous position.
