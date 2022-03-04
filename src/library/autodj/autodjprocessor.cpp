@@ -1163,8 +1163,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         return;
     }
 
-    qDebug() << "player" << pFromDeck->group << "calculateTransition()";
-
     const double fromDeckEndPosition = getEndSecond(pFromDeck);
     const double toDeckEndPosition = getEndSecond(pToDeck);
     // Since the end position is measured in seconds from 0:00 it is also
@@ -1227,16 +1225,15 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         introStart = toDeckPositionSeconds;
     }
 
-    double introEnd = getIntroEndSecond(pToDeck);
-    if (introEnd < introStart) {
-        // introEnd is invalid. Assume a zero length intro.
-        // The introStart is automatically placed by AnalyzerSilence, so use
-        // that as a fallback if the user has not placed introEnd.
-        introEnd = introStart;
+    double introLength = 0;
+    const double introEndSample = pToDeck->introEndPosition();
+    if (introEndSample != Cue::kNoPosition) {
+        const double introEnd = samplePositionToSeconds(introEndSample, pToDeck);
+        if (introStart < introEnd) {
+            introLength = introEnd - introStart;
+        }
     }
 
-    double introLength = introEnd - introStart;
-        
     if (sDebug) {
         qDebug() << this << "calculateTransition"
                  << "introLength" << introLength
