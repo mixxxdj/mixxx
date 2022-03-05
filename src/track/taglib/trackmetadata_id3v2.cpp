@@ -1225,20 +1225,11 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             uuidToNullableStringWithoutBraces(
                     trackMetadata.getTrackInfo().getMusicBrainzArtistId()),
             false);
-    {
-        QByteArray identifier = trackMetadata.getTrackInfo().getMusicBrainzRecordingId().toByteArray();
-        if (identifier.size() == 38) {
-            // Strip leading/trailing curly braces
-            DEBUG_ASSERT(identifier.startsWith('{'));
-            DEBUG_ASSERT(identifier.endsWith('}'));
-            identifier = identifier.mid(1, 36);
-        }
-        DEBUG_ASSERT(identifier.size() == 36);
-        writeUniqueFileIdentifierFrame(
-                pTag,
-                kMusicBrainzOwner,
-                identifier);
-    }
+    writeUniqueFileIdentifierFrame(
+            pTag,
+            kMusicBrainzOwner,
+            uuidToCompactAsciiHexDigits(
+                    trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
     writeUserTextIdentificationFrame(
             pTag,
             "MusicBrainz Release Track Id",
