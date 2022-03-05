@@ -66,10 +66,7 @@ const QString kFormatTYER = QStringLiteral("yyyy");
 const QString kFormatTDAT = QStringLiteral("ddMM");
 
 // Owners of ID3v2 UFID frames.
-// NOTE(uklotzde, 2019-09-28): This is the owner string for MusicBrainz
-// as written by MusicBrainz Picard 2.1.3 although the mapping table
-// doesn't mention any "http://" prefix.
-// See also: https://picard.musicbrainz.org/docs/mappings
+// https://picard-docs.musicbrainz.org/en/appendices/tag_mapping.html#id21
 const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
 // Serato frames
