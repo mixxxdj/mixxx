@@ -146,11 +146,12 @@ void TaskMonitor::abortAllTasks() {
 
 void TaskMonitor::closeProgressDialog() {
     DEBUG_ASSERT(m_taskInfos.isEmpty());
-    auto* const pProgressDlg = m_pProgressDlg.release();
     // Deleting the progress dialog immediately might cause
     // segmentation faults due to pending signals! The deletion
     // has to be deferred until re-entering the event loop.
+    auto* const pProgressDlg = m_pProgressDlg.release();
     if (pProgressDlg) {
+        pProgressDlg->setVisible(false);
         pProgressDlg->deleteLater();
     }
 }
