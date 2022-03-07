@@ -259,21 +259,22 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
 
 void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
     if (!pPreset || pPreset->isEmpty()) {
-        loadEffectInner(nullptr, nullptr);
+        loadEffectInner(nullptr, nullptr, true);
         return;
     }
     EffectManifestPointer pManifest = m_pBackendManager->getManifest(
             pPreset->id(), pPreset->backendType());
-    loadEffectInner(pManifest, pPreset);
+    loadEffectInner(pManifest, pPreset, true);
 }
 
 void EffectSlot::loadEffectWithDefaults(const EffectManifestPointer pManifest) {
     EffectPresetPointer pPreset = m_pPresetManager->getDefaultPreset(pManifest);
-    loadEffectInner(pManifest, pPreset);
+    loadEffectInner(pManifest, pPreset, false);
 }
 
 void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
-        EffectPresetPointer pEffectPreset) {
+        EffectPresetPointer pEffectPreset,
+        bool loadingFromPreset) {
     if (kEffectDebugOutput) {
         if (pManifest) {
             qDebug() << this << m_group << "loading effect" << pManifest->id();
@@ -347,9 +348,21 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
     m_pControlLoaded->forceSet(1.0);
 
-    if (m_pEffectsManager->isAdoptMetaknobSettingEnabled()) {
+    switch (m_pEffectsManager->adoptMetaknobSetting()) {
+    case AdoptMetaknobValue::KEEP_ALL:
         slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
-    } else {
+        break;
+    case AdoptMetaknobValue::KEEP_TOP:
+        if (loadingFromPreset) {
+            // Update the ControlObject value, but do not sync the parameters
+            // with slotEffectMetaParameter. This allows presets to intentionally
+            // save parameters in a state inconsistent with the metaknob.
+            m_pControlMetaParameter->set(pEffectPreset->metaParameter());
+        } else {
+            slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
+        }
+        break;
+    case AdoptMetaknobValue::LOAD_DEFAULT:
         m_pControlMetaParameter->set(pEffectPreset->metaParameter());
         slotEffectMetaParameter(pEffectPreset->metaParameter(), true);
     }
