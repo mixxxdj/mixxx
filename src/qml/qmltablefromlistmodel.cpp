@@ -51,6 +51,81 @@ void QmlTableFromListModel::setSourceModel(QAbstractItemModel* pSourceModel) {
                             index(sourceBottomRight.row(), columnCount());
                     emit dataChanged(topLeft, bottomRight);
                 });
+        connect(pSourceModel,
+                &QAbstractListModel::rowsAboutToBeInserted,
+                this,
+                [this](const QModelIndex& parent,
+                        int start,
+                        int end) {
+                    DEBUG_ASSERT(!parent.isValid());
+                    beginInsertRows(QModelIndex(), start, end);
+                });
+        connect(pSourceModel,
+                &QAbstractListModel::rowsInserted,
+                this,
+                [this](const QModelIndex& parent,
+                        int start,
+                        int end) {
+                    qWarning() << "inserted" << start << end;
+                    DEBUG_ASSERT(!parent.isValid());
+                    Q_UNUSED(parent);
+                    Q_UNUSED(start);
+                    Q_UNUSED(end);
+                    endInsertRows();
+                });
+        connect(pSourceModel,
+                &QAbstractListModel::rowsAboutToBeMoved,
+                this,
+                [this](const QModelIndex& sourceParent,
+                        int sourceStart,
+                        int sourceEnd,
+                        const QModelIndex& destinationParent,
+                        int destinationChild) {
+                    DEBUG_ASSERT(!sourceParent.isValid());
+                    DEBUG_ASSERT(!destinationParent.isValid());
+                    beginMoveRows(QModelIndex(),
+                            sourceStart,
+                            sourceEnd,
+                            destinationParent,
+                            destinationChild);
+                });
+        connect(pSourceModel,
+                &QAbstractListModel::rowsMoved,
+                this,
+                [this](const QModelIndex& sourceParent,
+                        int sourceStart,
+                        int sourceEnd,
+                        const QModelIndex& destinationParent,
+                        int destinationChild) {
+                    DEBUG_ASSERT(!sourceParent.isValid());
+                    Q_UNUSED(sourceParent);
+                    Q_UNUSED(sourceStart);
+                    Q_UNUSED(sourceEnd);
+                    Q_UNUSED(destinationParent);
+                    Q_UNUSED(destinationChild);
+                    endMoveRows();
+                });
+        connect(pSourceModel,
+                &QAbstractListModel::rowsAboutToBeRemoved,
+                this,
+                [this](const QModelIndex& parent,
+                        int start,
+                        int end) {
+                    DEBUG_ASSERT(!parent.isValid());
+                    beginRemoveRows(QModelIndex(), start, end);
+                });
+        connect(pSourceModel,
+                &QAbstractListModel::rowsRemoved,
+                this,
+                [this](const QModelIndex& parent,
+                        int start,
+                        int end) {
+                    DEBUG_ASSERT(!parent.isValid());
+                    Q_UNUSED(parent);
+                    Q_UNUSED(start);
+                    Q_UNUSED(end);
+                    endRemoveRows();
+                });
     }
     emit sourceModelChanged();
     endResetModel();
