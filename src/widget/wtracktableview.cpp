@@ -1034,6 +1034,11 @@ void WTrackTableView::slotAddToAutoDJReplace() {
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
 }
 
+void WTrackTableView::slotSelectTrack(const TrackId& trackId) {
+    setCurrentTrackId(trackId);
+    setSelectedTracks({trackId});
+}
+
 void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder) {
     TrackModel* trackModel = getTrackModel();
     QAbstractItemModel* itemModel = model();

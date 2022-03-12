@@ -73,10 +73,7 @@ class WTrackTableView : public WLibraryTableView {
     bool slotRestoreCurrentViewState() {
         return restoreCurrentViewState();
     };
-    void slotSelectTrack(const TrackId& trackId) {
-        setCurrentTrackId(trackId);
-        setSelectedTracks({trackId});
-    }
+    void slotSelectTrack(const TrackId&);
 
   private slots:
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
