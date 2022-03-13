@@ -19,7 +19,7 @@ const double kKeepPosition = -1.0;
 
 const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 
-static const bool sDebug = false;
+constexpr bool sDebug = false;
 } // anonymous namespace
 
 DeckAttributes::DeckAttributes(int index,
@@ -692,7 +692,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             } else {
                 // At least right deck is playing
                 // Set crossfade thresholds for right deck.
-                if (sDebug) {
+                if constexpr (sDebug) {
                     qDebug() << this << "playerPositionChanged"
                              << "right deck playing";
                 }
@@ -742,7 +742,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // recalculated here.
             // Don't adjust transition when reaching the end. In this case it is
             // always stopped.
-            if (sDebug) {
+            if constexpr (sDebug) {
                 qDebug() << this << "playerPositionChanged"
                          << "cueing seek";
             }
@@ -782,7 +782,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // Note: This is a DB call and takes long.
                 removeLoadedTrackFromTopOfQueue(*otherDeck);
             } else {
-                if (sDebug) {
+                if constexpr (sDebug) {
                     qDebug() << this << "playerPositionChanged()"
                              << pAttributes->group << thisPlayPosition
                              << "but not playing";
@@ -944,7 +944,7 @@ void AutoDJProcessor::maybeFillRandomTracks() {
 }
 
 void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) {
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "playerPlayChanged" << thisDeck->group << playing;
     }
 
@@ -992,7 +992,7 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
 }
 
 void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes, double position) {
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "playerIntroStartChanged" << pAttributes->group << position;
     }
     // nothing to do, because we want not to re-cue the toDeck and the from
@@ -1000,7 +1000,7 @@ void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes, doubl
 }
 
 void AutoDJProcessor::playerIntroEndChanged(DeckAttributes* pAttributes, double position) {
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "playerIntroEndChanged" << pAttributes->group << position;
     }
 
@@ -1021,7 +1021,7 @@ void AutoDJProcessor::playerIntroEndChanged(DeckAttributes* pAttributes, double 
 }
 
 void AutoDJProcessor::playerOutroStartChanged(DeckAttributes* pAttributes, double position) {
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "playerOutroStartChanged" << pAttributes->group << position;
     }
 
@@ -1038,7 +1038,7 @@ void AutoDJProcessor::playerOutroStartChanged(DeckAttributes* pAttributes, doubl
 }
 
 void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double position) {
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "playerOutroEndChanged" << pAttributes->group << position;
     }
 
@@ -1234,7 +1234,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         }
     }
 
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "calculateTransition"
                  << "introLength" << introLength
                  << "outroLength" << outroLength;
@@ -1384,7 +1384,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         pFromDeck->fadeBeginPos = 1;
     }
 
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "calculateTransition" << pFromDeck->group
                  << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
                  << pToDeck->startPos;
@@ -1435,7 +1435,7 @@ void AutoDJProcessor::useFixedFadeTime(
 }
 
 void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "playerTrackLoaded" << pDeck->group
                  << (pTrack ? pTrack->getLocation() : "(null)");
     }
@@ -1474,7 +1474,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
                     playerPositionChanged(fromDeck, 1.0);
                 }
             } else {
-                if (sDebug) {
+                if constexpr (sDebug) {
                     qDebug() << this << "playerTrackLoaded()" << pDeck->group << "but not a toDeck";
                 }
             }
@@ -1484,7 +1484,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
 
 void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
         TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "playerLoadingTrack" << pDeck->group
                  << "new:" << (pNewTrack ? pNewTrack->getLocation() : "(null)")
                  << "old:" << (pOldTrack ? pOldTrack->getLocation() : "(null)");
@@ -1513,7 +1513,7 @@ void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
 }
 
 void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "playerEmpty()" << pDeck->group;
     }
 
@@ -1530,7 +1530,7 @@ void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
 }
 
 void AutoDJProcessor::playerRateChanged(DeckAttributes* pAttributes) {
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "playerRateChanged" << pAttributes->group;
     }
 
@@ -1547,7 +1547,7 @@ void AutoDJProcessor::playerRateChanged(DeckAttributes* pAttributes) {
 }
 
 void AutoDJProcessor::setTransitionTime(int time) {
-    if (sDebug) {
+    if constexpr (sDebug) {
         qDebug() << this << "setTransitionTime" << time;
     }
 
