@@ -1151,7 +1151,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     VERIFY_OR_DEBUG_ASSERT(pFromDeck && pToDeck) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(!pFromDeck->loading && !pToDeck->loading) {
+    if (pFromDeck->loading || pToDeck->loading) {
         // don't use halve new halve old data during
         // changing of tracks
         return;
