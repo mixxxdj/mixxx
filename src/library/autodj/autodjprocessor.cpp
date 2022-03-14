@@ -1471,6 +1471,16 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
             // repeat a probably missed update
             playerPositionChanged(fromDeck, 1.0);
         }
+    } else if (m_eState == ADJ_LEFT_FADING) {
+        if (pDeck == getRightDeck()) {
+            // restore the play state lost during loading
+            pDeck->play();
+        }
+    } else if (m_eState == ADJ_RIGHT_FADING) {
+        if (pDeck == getLeftDeck()) {
+            // restore the play state lost during loading
+            pDeck->play();
+        }
     }
 }
 
