@@ -39,7 +39,7 @@ class FakeMaster {
 
 class FakeDeck : public BaseTrackPlayer {
   public:
-    FakeDeck(const QString& group)
+    FakeDeck(const QString& group, EngineChannel::ChannelOrientation orient)
             : BaseTrackPlayer(NULL, group),
               trackSamples(ConfigKey(group, "track_samples")),
               samplerate(ConfigKey(group, "track_samplerate")),
@@ -50,11 +50,13 @@ class FakeDeck : public BaseTrackPlayer {
               introStartPos(ConfigKey(group, "intro_start_position")),
               introEndPos(ConfigKey(group, "intro_end_position")),
               outroStartPos(ConfigKey(group, "outro_start_position")),
-              outroEndPos(ConfigKey(group, "outro_end_position")) {
+              outroEndPos(ConfigKey(group, "outro_end_position")),
+              orientation(ConfigKey(group, "orientation")) {
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
         outroStartPos.set(Cue::kNoPosition);
         outroEndPos.set(Cue::kNoPosition);
+        orientation.set(orient);
     }
 
     void fakeTrackLoadedEvent(TrackPointer pTrack) {
@@ -107,6 +109,7 @@ class FakeDeck : public BaseTrackPlayer {
     ControlObject introEndPos;
     ControlObject outroStartPos;
     ControlObject outroEndPos;
+    ControlObject orientation;
 };
 
 class MockPlayerManager : public PlayerManagerInterface {
@@ -174,10 +177,10 @@ class AutoDJProcessorTest : public LibraryTest {
     }
 
     AutoDJProcessorTest()
-            :  deck1("[Channel1]"),
-               deck2("[Channel2]"),
-               deck3("[Channel3]"),
-               deck4("[Channel4]") {
+            : deck1("[Channel1]", EngineChannel::LEFT),
+              deck2("[Channel2]", EngineChannel::RIGHT),
+              deck3("[Channel3]", EngineChannel::LEFT),
+              deck4("[Channel4]", EngineChannel::RIGHT) {
         qRegisterMetaType<TrackPointer>("TrackPointer");
 
         PlaylistDAO& playlistDao = internalCollection()->getPlaylistDAO();

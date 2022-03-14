@@ -23,8 +23,7 @@ constexpr bool sDebug = false;
 } // anonymous namespace
 
 DeckAttributes::DeckAttributes(int index,
-        BaseTrackPlayer* pPlayer,
-        EngineChannel::ChannelOrientation orientation)
+        BaseTrackPlayer* pPlayer)
         : index(index),
           group(pPlayer->getGroup()),
           startPos(kKeepPosition),
@@ -32,7 +31,7 @@ DeckAttributes::DeckAttributes(int index,
           fadeEndPos(1.0),
           isFromDeck(false),
           loading(false),
-          m_orientation(orientation),
+          m_orientation(group, "orientation"),
           m_playPos(group, "playposition"),
           m_play(group, "play"),
           m_repeat(group, "repeat"),
@@ -153,13 +152,10 @@ AutoDJProcessor::AutoDJProcessor(
         QString group = PlayerManager::groupForDeck(i);
         BaseTrackPlayer* pPlayer = pPlayerManager->getPlayer(group);
         // Shouldn't be possible.
-        if (pPlayer == nullptr) {
-            qWarning() << "PROGRAMMING ERROR deck does not exist" << i;
+        VERIFY_OR_DEBUG_ASSERT(pPlayer) {
             continue;
         }
-        EngineChannel::ChannelOrientation orientation =
-                (i % 2 == 0) ? EngineChannel::LEFT : EngineChannel::RIGHT;
-        m_decks.append(new DeckAttributes(i, pPlayer, orientation));
+        m_decks.append(new DeckAttributes(i, pPlayer));
     }
     // Auto-DJ needs at least two decks
     DEBUG_ASSERT(m_decks.length() > 1);
