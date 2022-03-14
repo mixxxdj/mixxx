@@ -757,7 +757,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     // - transition into fading mode, play the other deck and fade to it.
     // - check if fading is done and stop the deck
     // - update the crossfader
-    if (thisPlayPosition >= thisDeck->fadeBeginPos && thisDeck->isFromDeck) {
+    if (thisPlayPosition >= thisDeck->fadeBeginPos && thisDeck->isFromDeck && !otherDeck->loading) {
         if (m_eState == ADJ_IDLE) {
             if (thisDeckPlaying || thisPlayPosition >= 1.0) {
                 // Set the state as FADING.
