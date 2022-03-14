@@ -1608,26 +1608,33 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     }
 }
 
+DeckAttributes* AutoDJProcessor::getLeftDeck() {
+    // find first left deck
+    foreach (DeckAttributes* pDeck, m_decks) {
+        if (pDeck->isLeft()) {
+            return pDeck;
+        }
+    }
+    return nullptr;
+}
+
+DeckAttributes* AutoDJProcessor::getRightDeck() {
+    // find first right deck
+    foreach (DeckAttributes* pDeck, m_decks) {
+        if (pDeck->isRight()) {
+            return pDeck;
+        }
+    }
+    return nullptr;
+}
+
 DeckAttributes* AutoDJProcessor::getOtherDeck(
         const DeckAttributes* pThisDeck) {
     if (pThisDeck->isLeft()) {
-        // find first right deck
-        foreach(DeckAttributes* pDeck, m_decks) {
-            if (pDeck->isRight()) {
-                return pDeck;
-            }
-        }
-        return nullptr;
+        return getRightDeck();
     }
-
     if (pThisDeck->isRight()) {
-        // find first left deck
-        foreach(DeckAttributes* pDeck, m_decks) {
-            if (pDeck->isLeft()) {
-                return pDeck;
-            }
-        }
-        return nullptr;
+        return getLeftDeck();
     }
     return nullptr;
 }

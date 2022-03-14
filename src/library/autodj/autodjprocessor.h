@@ -264,6 +264,8 @@ class AutoDJProcessor : public QObject {
             double fromDeckSecond,
             double fadeEndSecond,
             double toDeckStartSecond);
+    DeckAttributes* getLeftDeck();
+    DeckAttributes* getRightDeck();
     DeckAttributes* getOtherDeck(const DeckAttributes* pThisDeck);
     DeckAttributes* getFromDeck();
 
