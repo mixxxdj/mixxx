@@ -342,11 +342,10 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     // enabling/disabling state, set the channel state or chain state
     // to the fully enabled/disabled state for the next engine callback.
 
-    EffectEnableState& chainOnChannelEnableState = channelStatus.enableState;
-    if (chainOnChannelEnableState == EffectEnableState::Disabling) {
-        chainOnChannelEnableState = EffectEnableState::Disabled;
-    } else if (chainOnChannelEnableState == EffectEnableState::Enabling) {
-        chainOnChannelEnableState = EffectEnableState::Enabled;
+    if (channelStatus.enableState == EffectEnableState::Disabling) {
+        channelStatus.enableState = EffectEnableState::Disabled;
+    } else if (channelStatus.enableState == EffectEnableState::Enabling) {
+        channelStatus.enableState = EffectEnableState::Enabled;
     }
 
     if (m_enableState == EffectEnableState::Disabling) {
