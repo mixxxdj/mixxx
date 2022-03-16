@@ -66,10 +66,7 @@ const QString kFormatTYER = QStringLiteral("yyyy");
 const QString kFormatTDAT = QStringLiteral("ddMM");
 
 // Owners of ID3v2 UFID frames.
-// NOTE(uklotzde, 2019-09-28): This is the owner string for MusicBrainz
-// as written by MusicBrainz Picard 2.1.3 although the mapping table
-// doesn't mention any "http://" prefix.
-// See also: https://picard.musicbrainz.org/docs/mappings
+// https://picard-docs.musicbrainz.org/en/appendices/tag_mapping.html#id21
 const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
 // Serato frames
@@ -1225,20 +1222,11 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             uuidToNullableStringWithoutBraces(
                     trackMetadata.getTrackInfo().getMusicBrainzArtistId()),
             false);
-    {
-        QByteArray identifier = trackMetadata.getTrackInfo().getMusicBrainzRecordingId().toByteArray();
-        if (identifier.size() == 38) {
-            // Strip leading/trailing curly braces
-            DEBUG_ASSERT(identifier.startsWith('{'));
-            DEBUG_ASSERT(identifier.endsWith('}'));
-            identifier = identifier.mid(1, 36);
-        }
-        DEBUG_ASSERT(identifier.size() == 36);
-        writeUniqueFileIdentifierFrame(
-                pTag,
-                kMusicBrainzOwner,
-                identifier);
-    }
+    writeUniqueFileIdentifierFrame(
+            pTag,
+            kMusicBrainzOwner,
+            uuidToCompactAsciiHexDigits(
+                    trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
     writeUserTextIdentificationFrame(
             pTag,
             "MusicBrainz Release Track Id",
