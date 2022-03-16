@@ -53,12 +53,16 @@ class WTrackTableView : public WLibraryTableView {
         return m_pFocusBorderColor;
     }
 
+  signals:
+    void trackMenuVisible(bool visible);
+
   public slots:
     void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
     void slotDeleteTracksFromDisk();
+    void slotShowHideTrackMenu(bool show);
 
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;

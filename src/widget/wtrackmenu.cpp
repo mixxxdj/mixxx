@@ -89,11 +89,19 @@ int WTrackMenu::getTrackCount() const {
     }
 }
 
+void WTrackMenu::closeEvent(QCloseEvent* event) {
+    // Actually the event is accepted by default. doing it explicitly doesn't hurt.
+    // If it's not accepted the menu remains open and entire GUI will be blocked!
+    event->accept();
+    emit trackMenuVisible(false);
+}
+
 void WTrackMenu::popup(const QPoint& pos, QAction* at) {
     if (isEmpty()) {
         return;
     }
     QMenu::popup(pos, at);
+    emit trackMenuVisible(true);
 }
 
 void WTrackMenu::createMenus() {
