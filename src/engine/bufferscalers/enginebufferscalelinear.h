@@ -8,6 +8,7 @@ constexpr int kiLinearScaleReadAheadLength = 10240;
 
 
 class EngineBufferScaleLinear : public EngineBufferScale  {
+    Q_OBJECT
   public:
     explicit EngineBufferScaleLinear(
             ReadAheadManager *pReadAheadManager);

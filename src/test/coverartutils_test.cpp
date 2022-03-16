@@ -14,10 +14,6 @@ const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
 const QString kReferencePNGLocationTest(kTestDir.absoluteFilePath("reference_cover.png"));
 const QString kReferenceJPGLocationTest(kTestDir.absoluteFilePath("cover_test.jpg"));
 
-bool isSupportedFileExtension(const QString& fileExtension) {
-    return 0 < SoundSourceProxy::getSupportedFileExtensions().count(fileExtension);
-}
-
 void extractEmbeddedCover(
         const QString& trackLocation,
         const QImage& expectedImage) {
@@ -40,17 +36,17 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     QImage referencePNGImage = QImage(kReferencePNGLocationTest);
     QImage referenceJPGImage = QImage(kReferenceJPGLocationTest);
 
-    if (isSupportedFileExtension("aiff")) {
+    if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("aiff"))) {
         extractEmbeddedCover(
                 kTestDir.absoluteFilePath("cover-test.aiff"), referencePNGImage);
     }
 
-    if (isSupportedFileExtension("flac")) {
+    if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("flac"))) {
         extractEmbeddedCover(
                 kTestDir.absoluteFilePath("cover-test.flac"), referencePNGImage);
     }
 
-    if (isSupportedFileExtension("m4a")) {
+    if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("m4a"))) {
         extractEmbeddedCover(
                 kTestDir.absoluteFilePath("cover-test-itunes-12.3.0-aac.m4a"), referencePNGImage);
         extractEmbeddedCover(
@@ -59,12 +55,12 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
                 kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-alac.m4a"), referencePNGImage);
     }
 
-    if (isSupportedFileExtension("m4v")) {
+    if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("m4v"))) {
         extractEmbeddedCover(
                 kTestDir.absoluteFilePath("cover-test.m4v"), referencePNGImage);
     }
 
-    if (isSupportedFileExtension("mp3")) {
+    if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("mp3"))) {
         // PNG
         extractEmbeddedCover(
                 kTestDir.absoluteFilePath("cover-test-png.mp3"), referencePNGImage);
@@ -73,23 +69,23 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
                 kTestDir.absoluteFilePath("cover-test-jpg.mp3"), referenceJPGImage);
     }
 
-    if (isSupportedFileExtension("ogg")) {
+    if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("ogg"))) {
         extractEmbeddedCover(
                 kTestDir.absoluteFilePath("cover-test.ogg"), referencePNGImage);
     }
 
-    if (isSupportedFileExtension("opus")) {
+    if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("opus"))) {
         // opus
         extractEmbeddedCover(
                 kTestDir.absoluteFilePath("cover-test.opus"), referencePNGImage);
     }
 
-    if (isSupportedFileExtension("wav")) {
+    if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("wav"))) {
         extractEmbeddedCover(
                 kTestDir.absoluteFilePath("cover-test.wav"), referencePNGImage);
     }
 
-    if (isSupportedFileExtension("wv")) {
+    if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("wv"))) {
         extractEmbeddedCover(
                 kTestDir.absoluteFilePath("cover-test.wv"), referencePNGImage);
     }
@@ -114,9 +110,11 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // Looking for a track with embedded cover.
     pTrack = Track::newTemporary(kTrackLocationTest);
-    EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
-            SyncTrackMetadataParams{}));
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            SoundSourceProxy(pTrack).updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
     CoverInfo result = pTrack->getCoverInfoWithLocation();
     EXPECT_EQ(result.type, CoverInfo::METADATA);
     EXPECT_EQ(result.source, CoverInfo::GUESSED);

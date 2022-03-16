@@ -20,8 +20,8 @@ enum class EffectBackendType {
     Unknown
 };
 
-inline uint qHash(const EffectBackendType& backendType) {
-    return static_cast<uint>(backendType);
+inline qhash_seed_t qHash(const EffectBackendType& backendType) {
+    return static_cast<qhash_seed_t>(backendType);
 }
 
 enum class SignalProcessingStage {

@@ -2,7 +2,7 @@
 
 #include "moc_previewdeck.cpp"
 
-PreviewDeck::PreviewDeck(QObject* pParent,
+PreviewDeck::PreviewDeck(PlayerManager* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,

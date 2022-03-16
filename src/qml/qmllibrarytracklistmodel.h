@@ -1,5 +1,6 @@
 #pragma once
 #include <QIdentityProxyModel>
+#include <QtQml>
 
 class LibraryTableModel;
 
@@ -8,6 +9,9 @@ namespace qml {
 
 class QmlLibraryTrackListModel : public QIdentityProxyModel {
     Q_OBJECT
+    QML_NAMED_ELEMENT(LibraryTrackListModel)
+    QML_UNCREATABLE("Only accessible via Mixxx.Library.model")
+
   public:
     enum Roles {
         TitleRole = Qt::UserRole,

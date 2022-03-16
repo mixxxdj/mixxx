@@ -1,5 +1,4 @@
 import Mixxx 0.1 as Mixxx
-import QtQml.Models 2.12
 import QtQuick 2.12
 import "Theme"
 
@@ -80,15 +79,20 @@ Item {
             }
 
             delegate: Item {
-                id: itemDelegate
+                id: itemDlgt
+
+                required property int index
+                required property url fileUrl
+                required property string artist
+                required property string title
 
                 implicitWidth: listView.width
                 implicitHeight: 30
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: artist + " - " + title
-                    color: (listView.currentIndex == index && listView.activeFocus) ? Theme.blue : Theme.deckTextColor
+                    text: itemDlgt.artist + " - " + itemDlgt.title
+                    color: (listView.currentIndex == itemDlgt.index && listView.activeFocus) ? Theme.blue : Theme.deckTextColor
 
                     Behavior on color {
                         ColorAnimation {
@@ -106,8 +110,8 @@ Item {
                     Drag.dragType: Drag.Automatic
                     Drag.supportedActions: Qt.CopyAction
                     Drag.mimeData: {
-                        "text/uri-list": fileUrl,
-                        "text/plain": fileUrl
+                        "text/uri-list": itemDlgt.fileUrl,
+                        "text/plain": itemDlgt.fileUrl
                     }
                     anchors.fill: parent
                 }
@@ -119,7 +123,7 @@ Item {
                     drag.target: dragItem
                     onPressed: {
                         listView.forceActiveFocus();
-                        listView.currentIndex = index;
+                        listView.currentIndex = itemDlgt.index;
                         parent.grabToImage((result) => {
                             dragItem.Drag.imageSource = result.url;
                         });

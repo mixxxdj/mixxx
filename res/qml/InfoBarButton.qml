@@ -1,5 +1,5 @@
 import Mixxx 0.1 as Mixxx
-import QtGraphicalEffects 1.12
+import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import "Theme"
@@ -7,11 +7,11 @@ import "Theme"
 AbstractButton {
     id: root
 
-    property string group // required
-    property string key // required
+    required property string group
+    required property string key
     property alias foreground: foreground.data
     property color normalColor: Theme.buttonNormalColor
-    property color activeColor // required
+    required property color activeColor
     property color pressedColor: activeColor
     property alias highlight: control.value
 

@@ -34,9 +34,14 @@ Window {
             syncView: tableView
 
             delegate: Item {
+                id: headerDlgt
+
+                required property int column
+                required property string display
+
                 implicitHeight: columnName.contentHeight + 5
                 implicitWidth: columnName.contentWidth + 5
-                visible: column < tableView.columnWidths.length
+                visible: this.column < tableView.columnWidths.length
 
                 BorderImage {
                     anchors.fill: parent
@@ -56,7 +61,7 @@ Window {
                 Text {
                     id: columnName
 
-                    text: display
+                    text: headerDlgt.display
                     anchors.fill: parent
                     anchors.margins: 5
                     elide: Text.ElideRight
@@ -73,7 +78,7 @@ Window {
                     id: sortIndicator
 
                     text: controlModel.sortDescending ? "▲" : "▼"
-                    visible: controlModel.sortColumn == column
+                    visible: controlModel.sortColumn == headerDlgt.column
                     anchors.fill: parent
                     anchors.margins: 5
                     elide: Text.ElideRight
@@ -87,7 +92,7 @@ Window {
                 }
 
                 TapHandler {
-                    onTapped: controlModel.toggleSortColumn(column)
+                    onTapped: controlModel.toggleSortColumn(headerDlgt.column)
                 }
 
             }
@@ -127,7 +132,12 @@ Window {
                     column: 0
 
                     delegate: Rectangle {
-                        implicitWidth: (root.width - 10) * tableView.columnWidths[column]
+                        id: groupDelegate
+
+                        required property int column
+                        required property string display
+
+                        implicitWidth: (root.width - 10) * tableView.columnWidths[groupDelegate.column]
                         implicitHeight: groupName.contentHeight
                         color: root.color
 
@@ -135,7 +145,7 @@ Window {
                             id: groupName
 
                             anchors.fill: parent
-                            text: display
+                            text: groupDelegate.display
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight
                             color: Theme.deckTextColor
@@ -149,7 +159,12 @@ Window {
                     column: 1
 
                     delegate: Rectangle {
-                        implicitWidth: (root.width - 10) * tableView.columnWidths[column]
+                        id: keyDelegate
+
+                        required property int column
+                        required property string display
+
+                        implicitWidth: (root.width - 10) * tableView.columnWidths[keyDelegate.column]
                         implicitHeight: keyName.contentHeight
                         color: root.color
 
@@ -157,7 +172,7 @@ Window {
                             id: keyName
 
                             anchors.fill: parent
-                            text: display
+                            text: keyDelegate.display
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight
                             color: Theme.deckTextColor
@@ -171,7 +186,13 @@ Window {
                     column: 2
 
                     delegate: Rectangle {
-                        implicitWidth: (root.width - 10) * tableView.columnWidths[column]
+                        id: valueDelegate
+
+                        required property int row
+                        required property int column
+                        required property string display
+
+                        implicitWidth: (root.width - 10) * tableView.columnWidths[valueDelegate.column]
                         implicitHeight: valueField.implicitHeight
                         color: root.color
 
@@ -179,10 +200,10 @@ Window {
                             id: valueField
 
                             anchors.fill: parent
-                            text: display
+                            text: valueDelegate.display
                             inputMethodHints: Qt.ImhFormattedNumbersOnly
                             onEditingFinished: {
-                                const idx = controlModel.index(row, column);
+                                const idx = controlModel.index(valueDelegate.row, valueDelegate.column);
                                 controlModel.setData(idx, parseFloat(text));
                             }
                             color: Theme.textColor
@@ -206,7 +227,13 @@ Window {
                     column: 3
 
                     delegate: Rectangle {
-                        implicitWidth: (root.width - 10) * tableView.columnWidths[column]
+                        id: parameterDelegate
+
+                        required property int row
+                        required property int column
+                        required property string display
+
+                        implicitWidth: (root.width - 10) * tableView.columnWidths[parameterDelegate.column]
                         implicitHeight: valueField.implicitHeight
                         color: root.color
 
@@ -214,10 +241,10 @@ Window {
                             id: valueField
 
                             anchors.fill: parent
-                            text: display
+                            text: parameterDelegate.display
                             inputMethodHints: Qt.ImhFormattedNumbersOnly
                             onEditingFinished: {
-                                const idx = controlModel.index(row, column);
+                                const idx = controlModel.index(parameterDelegate.row, parameterDelegate.column);
                                 controlModel.setData(idx, parseFloat(text));
                             }
                             color: Theme.textColor

@@ -12,6 +12,7 @@ class ControlObject;
 // including user pregain adjustment, ReplayGain value, and vinyl-like
 // adjustments in volume relative to playback speed.
 class EnginePregain : public EngineObject {
+    Q_OBJECT
   public:
     EnginePregain(const QString& group);
     ~EnginePregain() override;

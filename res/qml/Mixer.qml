@@ -2,10 +2,10 @@ import "." as Skin
 import QtQuick 2.12
 
 Item {
-    id: mixer
+    id: root
 
-    property string leftDeckGroup // required
-    property string rightDeckGroup // required
+    required property string leftDeckGroup
+    required property string rightDeckGroup
     property bool show4decks: false
 
     implicitWidth: content.width + 10

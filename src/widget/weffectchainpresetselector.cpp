@@ -92,7 +92,7 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
     // keyboard-focusable widget (tracks table in official skins) in order
     // to immediately allow keyboard shortcuts again.
     QKeyEvent backwardFocusKeyEvent =
-            QKeyEvent{QEvent::KeyPress, Qt::Key_Tab, Qt::ShiftModifier};
+            QKeyEvent{QEvent::KeyPress, Qt::Key_Backtab, Qt::NoModifier};
     QApplication::sendEvent(this, &backwardFocusKeyEvent);
 }
 

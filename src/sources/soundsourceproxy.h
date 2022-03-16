@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QMimeType>
+
 #include "sources/soundsourceproviderregistry.h"
 #include "track/track_decl.h"
 #include "util/sandbox.h"
@@ -22,8 +24,8 @@ class SoundSourceProxy {
     /// registered.
     static bool registerProviders();
 
-    static QStringList getSupportedFileExtensions() {
-        return s_soundSourceProviders.getRegisteredFileExtensions();
+    static QStringList getSupportedFileTypes() {
+        return s_soundSourceProviders.getRegisteredFileTypes();
     }
     static const QStringList& getSupportedFileNamePatterns() {
         return s_supportedFileNamePatterns;
@@ -31,20 +33,32 @@ class SoundSourceProxy {
     static const QRegularExpression& getSupportedFileNamesRegex() {
         return s_supportedFileNamesRegex;
     }
+    static QString getFileTypeByMimeType(const QMimeType& mimeType) {
+        return s_fileTypeByMimeType.value(mimeType);
+    }
+
+    /// Get the list of supported file extensions
+    ///
+    /// A single file type may map to multiple file suffixes, e.g.
+    /// "aiff" to "aif" or "aiff".
+    static QStringList getSupportedFileSuffixes();
+
+    static QStringList getFileSuffixesForFileType(const QString& fileType);
 
     static bool isUrlSupported(const QUrl& url);
     static bool isFileSupported(const mixxx::FileInfo& fileInfo);
     static bool isFileNameSupported(const QString& fileName);
-    static bool isFileExtensionSupported(const QString& fileExtension);
+    static bool isFileTypeSupported(const QString& fileType);
+    static bool isFileSuffixSupported(const QString& fileSuffix);
 
     static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForUrl(
             const QUrl& url);
-    static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForFileExtension(
-            const QString& fileExtension) {
-        return s_soundSourceProviders.getRegistrationsForFileExtension(fileExtension);
+    static QList<mixxx::SoundSourceProviderRegistration> allProviderRegistrationsForFileType(
+            const QString& fileType) {
+        return s_soundSourceProviders.getRegistrationsForFileType(fileType);
     }
-    static mixxx::SoundSourceProviderPointer getPrimaryProviderForFileExtension(
-            const QString& fileExtension);
+    static mixxx::SoundSourceProviderPointer getPrimaryProviderForFileType(
+            const QString& fileType);
 
     explicit SoundSourceProxy(TrackPointer pTrack);
 
@@ -128,6 +142,13 @@ class SoundSourceProxy {
         Always,
     };
 
+    enum class UpdateTrackFromSourceResult {
+        NotUpdated,
+        MetadataImportFailed,
+        MetadataImportedAndUpdated,
+        ExtraMetadataImportedAndMerged,
+    };
+
     /// Updates file type, metadata, and cover image of the track object
     /// from the source file according to the given mode.
     ///
@@ -150,7 +171,7 @@ class SoundSourceProxy {
     /// analysis in case unexpected behavior has been reported.
     ///
     /// Returns true if the track has been modified and false otherwise.
-    bool updateTrackFromSource(
+    UpdateTrackFromSourceResult updateTrackFromSource(
             UpdateTrackFromSourceMode mode,
             const SyncTrackMetadataParams& syncParams);
 
@@ -175,6 +196,7 @@ class SoundSourceProxy {
     static mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
     static QStringList s_supportedFileNamePatterns;
     static QRegularExpression s_supportedFileNamesRegex;
+    static QHash<QMimeType, QString> s_fileTypeByMimeType;
 
     friend class TrackCollectionManager;
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(

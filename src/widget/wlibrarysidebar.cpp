@@ -61,7 +61,11 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     // Start a timer to auto-expand sections the user hovers on.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QPoint pos = event->position().toPoint();
+#else
     QPoint pos = event->pos();
+#endif
     QModelIndex index = indexAt(pos);
     if (m_hoverIndex != index) {
         m_expandTimer.stop();
@@ -84,7 +88,12 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             if (sidebarModel) {
                 accepted = false;
                 for (const QUrl& url : urls) {
-                    QModelIndex destIndex = indexAt(event->pos());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    QPoint pos = event->position().toPoint();
+#else
+                    QPoint pos = event->pos();
+#endif
+                    QModelIndex destIndex = indexAt(pos);
                     if (sidebarModel->dragMoveAccept(destIndex, url)) {
                         // We only need one URL to be valid for us
                         // to accept the whole drag...
@@ -138,7 +147,13 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             //eg. dragging a track from Windows Explorer onto the sidebar
             SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
             if (sidebarModel) {
-                QModelIndex destIndex = indexAt(event->pos());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                QPoint pos = event->position().toPoint();
+#else
+                QPoint pos = event->pos();
+#endif
+
+                QModelIndex destIndex = indexAt(pos);
                 // event->source() will return NULL if something is dropped from
                 // a different application
                 const QList<QUrl> urls = event->mimeData()->urls();
@@ -234,7 +249,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     }
     case Qt::Key_Escape:
         // Focus tracks table
-        emit sidebarFocusChange(FocusWidget::TracksTable);
+        emit setLibraryFocus(FocusWidget::TracksTable);
         return;
     default:
         QTreeView::keyPressEvent(event);
@@ -294,16 +309,6 @@ bool WLibrarySidebar::event(QEvent* pEvent) {
         updateTooltip();
     }
     return QTreeView::event(pEvent);
-}
-
-void WLibrarySidebar::focusInEvent(QFocusEvent* event) {
-    QTreeView::focusInEvent(event);
-    emit sidebarFocusChange(FocusWidget::Sidebar);
-}
-
-void WLibrarySidebar::focusOutEvent(QFocusEvent* event) {
-    QTreeView::focusOutEvent(event);
-    emit sidebarFocusChange(FocusWidget::None);
 }
 
 void WLibrarySidebar::slotSetFont(const QFont& font) {

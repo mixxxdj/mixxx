@@ -241,8 +241,8 @@ void DlgAutoDJ::onSearch(const QString& text) {
     Q_UNUSED(text);
 }
 
-void DlgAutoDJ::loadSelectedTrack() {
-    m_pTrackTableView->loadSelectedTrack();
+void DlgAutoDJ::activateSelectedTrack() {
+    m_pTrackTableView->activateSelectedTrack();
 }
 
 void DlgAutoDJ::loadSelectedTrackToGroup(const QString& group, bool play) {

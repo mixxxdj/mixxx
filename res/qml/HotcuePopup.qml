@@ -7,7 +7,7 @@ import "Theme"
 Popup {
     id: root
 
-    property Hotcue hotcue // required
+    required property Hotcue hotcue
 
     dim: false
     modal: true
@@ -26,6 +26,8 @@ Popup {
             model: Mixxx.Config.getHotcueColorPalette()
 
             Rectangle {
+                required property color modelData
+
                 height: 24
                 width: 24
                 color: modelData
@@ -52,9 +54,8 @@ Popup {
         anchors.topMargin: 5
         text: "Clear"
         activeColor: Theme.deckActiveColor
-        onDownChanged: (down) => {
-            root.hotcue.clear = down;
-        }
+        onPressed: root.hotcue.clear = 1
+        onReleased: root.hotcue.clear = 0
     }
 
     enter: Transition {

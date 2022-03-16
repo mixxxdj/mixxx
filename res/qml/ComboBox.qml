@@ -12,9 +12,11 @@ ComboBox {
     delegate: ItemDelegate {
         id: itemDlgt
 
+        required property int index
+
         width: parent.width
-        highlighted: root.highlightedIndex === index
-        text: root.textAt(index)
+        highlighted: root.highlightedIndex === this.index
+        text: root.textAt(this.index)
 
         contentItem: Text {
             text: itemDlgt.text

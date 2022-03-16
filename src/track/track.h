@@ -92,11 +92,18 @@ class Track : public QObject {
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const {
+        if (!m_fileAccess.info().hasLocation()) {
+            return {};
+        }
         return m_fileAccess.info().location();
     }
 
-    // File/format type
-    void setType(const QString&);
+    /// Set the file type
+    ///
+    /// Returns the old type to allow the caller to report if it has changed.
+    QString setType(const QString& newType);
+
+    /// Get the file type
     QString getType() const;
 
     // Get number of channels
@@ -162,6 +169,9 @@ class Track : public QObject {
 
     // The date/time of the last import or export of metadata
     void setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt);
+    void resetSourceSynchronizedAt() {
+        setSourceSynchronizedAt(QDateTime{});
+    }
     QDateTime getSourceSynchronizedAt() const;
 
     void setDateAdded(const QDateTime& dateAdded);

@@ -1,15 +1,12 @@
 import "." as Skin
 import Mixxx 0.1 as Mixxx
-import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.11
 import "Theme"
 
 Item {
     id: root
 
-    property string group // required
+    required property string group
     property bool minimized: false
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
 
@@ -48,6 +45,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         group: root.group
+        rightColumnWidth: rateSlider.width
     }
 
     Skin.ControlSlider {
@@ -346,16 +344,12 @@ Item {
                 model: 8
 
                 Skin.HotcueButton {
-                    // TODO: Once we require Qt >= 5.14, we're going to re-add
-                    // the `required` keyword. If the component has any
-                    // required properties, we'll stumble over a Qt bug and
-                    // need the following workaround:
-                    //     required property int index
-                    // See this for details:
-                    // https://bugreports.qt.io/browse/QTBUG-86009, and need
+                    required property int index
 
-                    hotcueNumber: index + 1
+                    hotcueNumber: this.index + 1
                     group: root.group
+                    width: playButton.height
+                    height: playButton.height
                 }
 
             }

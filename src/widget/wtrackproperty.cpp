@@ -18,6 +18,7 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Reset |
         WTrackMenu::Feature::BPM |
         WTrackMenu::Feature::Color |
+        WTrackMenu::Feature::RemoveFromDisk |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties |
         WTrackMenu::Feature::UpdateReplayGain;
@@ -94,6 +95,7 @@ void WTrackProperty::mouseMoveEvent(QMouseEvent* event) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
     }
 }
+
 void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
     if (m_pCurrentTrack) {
@@ -115,10 +117,6 @@ void WTrackProperty::contextMenuEvent(QContextMenuEvent* event) {
     if (m_pCurrentTrack) {
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Create the right-click menu
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        m_pTrackMenu->popup(event->globalPosition().toPoint());
-#else
         m_pTrackMenu->popup(event->globalPos());
-#endif
     }
 }

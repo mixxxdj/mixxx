@@ -12,7 +12,7 @@ Skin.Button {
         ExplicitLeader
     }
 
-    property string group // required
+    required property string group
     property alias mode: modeControl.value
 
     function toggleSync() {

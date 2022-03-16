@@ -25,6 +25,10 @@ void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& co
     m_iChainNumber = EffectWidgetUtils::getEffectUnitNumberFromNode(node, context);
     m_pChain = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
+    connect(m_pChain.get(),
+            &EffectChain::chainPresetChanged,
+            this,
+            &WEffectChainPresetButton::populateMenu);
     for (const auto& pEffectSlot : m_pChain->getEffectSlots()) {
         connect(pEffectSlot.data(),
                 &EffectSlot::effectChanged,
@@ -42,13 +46,24 @@ void WEffectChainPresetButton::populateMenu() {
     m_pMenu->clear();
 
     // Chain preset items
+    bool chainIsPreset = false;
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
-        m_pMenu->addAction(pChainPreset->name(), this, [this, pChainPreset]() {
+        QString title = pChainPreset->name();
+        if (title == m_pChain->presetName()) {
+            title = "\u2713 " + title;
+            chainIsPreset = true;
+        }
+        m_pMenu->addAction(title, this, [this, pChainPreset]() {
             m_pChain->loadChainPreset(pChainPreset);
         });
     }
     m_pMenu->addSeparator();
-    m_pMenu->addAction(tr("Save as new preset"), this, [this]() {
+    if (chainIsPreset) {
+        m_pMenu->addAction(tr("Update Preset"), this, [this]() {
+            m_pChainPresetManager->updatePreset(m_pChain);
+        });
+    }
+    m_pMenu->addAction(tr("Save As New Preset..."), this, [this]() {
         m_pChainPresetManager->savePreset(m_pChain);
     });
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <QAbstractListModel>
+#include <QtQml>
 #include <memory>
 
 #include "effects/effectsmanager.h"
@@ -9,6 +10,8 @@ namespace qml {
 
 class QmlEffectManifestParametersModel : public QAbstractListModel {
     Q_OBJECT
+    QML_NAMED_ELEMENT(EffectManifestParametersModel)
+    QML_UNCREATABLE("Only accessible via Mixxx.EffectSlot.parametersModel")
   public:
     enum Roles {
         IdRole = Qt::UserRole + 1,

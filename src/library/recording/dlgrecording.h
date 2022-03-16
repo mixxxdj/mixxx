@@ -24,10 +24,10 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     ~DlgRecording() override;
 
     void onSearch(const QString& text) override;
-    void onShow() override;
+    void onShow() override{};
     bool hasFocus() const override;
     void setFocus() override;
-    void loadSelectedTrack() override;
+    void activateSelectedTrack() override;
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;
@@ -55,7 +55,6 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     WTrackTableView* m_pTrackTableView;
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
-    QString m_recordingDir;
 
     void refreshLabels();
     void slotRecButtonClicked(bool checked);

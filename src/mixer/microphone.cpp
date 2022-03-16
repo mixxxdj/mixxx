@@ -7,9 +7,12 @@
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 
-Microphone::Microphone(QObject* pParent, const QString& group, int index,
-                       SoundManager* pSoundManager, EngineMaster* pEngine,
-                       EffectsManager* pEffectsManager)
+Microphone::Microphone(PlayerManager* pParent,
+        const QString& group,
+        int index,
+        SoundManager* pSoundManager,
+        EngineMaster* pEngine,
+        EffectsManager* pEffectsManager)
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
     EngineMicrophone* pMicrophone =

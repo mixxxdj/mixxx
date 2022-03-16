@@ -16,13 +16,14 @@ class QmlPlayerProxy;
 class QmlWaveformOverview : public QQuickPaintedItem {
     Q_OBJECT
     Q_FLAGS(Channels)
-    Q_PROPERTY(mixxx::qml::QmlPlayerProxy* player READ getPlayer
-                    WRITE setPlayer NOTIFY playerChanged)
+    Q_PROPERTY(mixxx::qml::QmlPlayerProxy* player READ getPlayer WRITE setPlayer
+                    NOTIFY playerChanged REQUIRED)
     Q_PROPERTY(Channels channels READ getChannels WRITE setChannels NOTIFY channelsChanged)
     Q_PROPERTY(Renderer renderer MEMBER m_renderer NOTIFY rendererChanged)
     Q_PROPERTY(QColor colorHigh MEMBER m_colorHigh NOTIFY colorHighChanged)
     Q_PROPERTY(QColor colorMid MEMBER m_colorMid NOTIFY colorMidChanged)
     Q_PROPERTY(QColor colorLow MEMBER m_colorLow NOTIFY colorLowChanged)
+    QML_NAMED_ELEMENT(WaveformOverview)
 
   public:
     enum class ChannelFlag : int {
@@ -39,6 +40,8 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     Q_ENUM(Renderer)
 
     QmlWaveformOverview(QQuickItem* parent = nullptr);
+    ~QmlWaveformOverview() override = default;
+
     void paint(QPainter* painter);
 
     void setPlayer(QmlPlayerProxy* player);

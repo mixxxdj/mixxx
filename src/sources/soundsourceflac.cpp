@@ -75,13 +75,13 @@ constexpr SINT kBitsPerSampleDefault = 0;
 const QString SoundSourceProviderFLAC::kDisplayName = QStringLiteral("Xiph.org libFLAC");
 
 //static
-const QStringList SoundSourceProviderFLAC::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderFLAC::kSupportedFileTypes = {
         QStringLiteral("flac"),
 };
 
 SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
+        const QString& supportedFileType) const {
+    Q_UNUSED(supportedFileType)
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::Higher;

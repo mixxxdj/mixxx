@@ -454,7 +454,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     // Serato does not exist on Linux, if it did, it would probably just mirror
     // the way paths are handled on OSX.
     if (databaseRootDir.canonicalPath().startsWith(QDir::homePath())) {
-        databaseRootDir = QDir::root();
+        databaseRootDir.setPath(QDir::rootPath());
     }
 #endif
 
@@ -937,7 +937,6 @@ void SeratoFeature::bindLibraryWidget(WLibrary* libraryWidget,
     edit->setOpenLinks(false);
     connect(edit, &WLibraryTextBrowser::anchorClicked, this, &SeratoFeature::htmlLinkClicked);
     libraryWidget->registerView("SERATOHOME", edit);
-    m_pLibrary->bindFeatureRootView(edit);
 }
 
 void SeratoFeature::htmlLinkClicked(const QUrl& link) {

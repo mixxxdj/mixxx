@@ -1,21 +1,17 @@
 import "." as Skin
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import "Theme"
 
 Skin.Button {
     id: root
 
-    property int hotcueNumber // required
-    property string group // required
+    required property int hotcueNumber
+    required property string group
 
     text: hotcueNumber
-    width: playButton.height
-    height: playButton.height
     activeColor: hotcue.color
     highlight: hotcue.isSet
 
-    Hotcue {
+    Skin.Hotcue {
         id: hotcue
 
         group: root.group
@@ -28,7 +24,7 @@ Skin.Button {
         }
     }
 
-    HotcuePopup {
+    Skin.HotcuePopup {
         id: popup
 
         hotcue: hotcue
