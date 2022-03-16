@@ -220,13 +220,6 @@ void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle inputCha
     }
 }
 
-EngineEffectChain::ChannelStatus& EngineEffectChain::getChannelStatus(
-        const ChannelHandle& inputHandle,
-        const ChannelHandle& outputHandle) {
-    ChannelStatus& status = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
-    return status;
-}
-
 bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         CSAMPLE* pIn,

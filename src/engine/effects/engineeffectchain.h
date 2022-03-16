@@ -68,11 +68,6 @@ class EngineEffectChain final : public EffectsRequestHandler {
             EffectStatesMapArray* statesForEffectsInChain);
     bool disableForInputChannel(ChannelHandle inputHandle);
 
-    // Gets or creates a ChannelStatus entry in m_channelStatus for the provided
-    // handle.
-    ChannelStatus& getChannelStatus(const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle);
-
     QString m_group;
     EffectEnableState m_enableState;
     EffectChainMixMode::Type m_mixMode;
