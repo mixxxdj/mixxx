@@ -207,6 +207,10 @@ class ChannelHandleMap {
         m_data.clear();
     }
 
+    bool isEmpty() {
+        return m_data.isEmpty();
+    }
+
     typename container_type::iterator begin() {
         return m_data.begin();
     }
