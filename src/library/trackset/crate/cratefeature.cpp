@@ -407,8 +407,17 @@ void CrateFeature::slotDeleteCrate() {
         // Store sibling id to restore selection after crate was deleted
         // to avoid the scroll position being reset to Crate root item.
         storePrevSiblingCrateId(crateId);
-        if (m_pTrackCollection->deleteCrate(crateId)) {
-            qDebug() << "Deleted crate" << crate;
+        QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+                tr("Confirm Deletion"),
+                tr("Do you really want to delete this crate?"),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+        if (btn == QMessageBox::Yes) {
+            if (m_pTrackCollection->deleteCrate(crateId)) {
+                qDebug() << "Deleted crate" << crate;
+                return;
+            }
+        } else {
             return;
         }
     }
