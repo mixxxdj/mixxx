@@ -368,7 +368,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         }
         break;
     case Qt::Key_Escape:
-        emit searchbarFocusChange(FocusWidget::TracksTable);
+        emit setLibraryFocus(FocusWidget::TracksTable);
         return;
     default:
         break;
@@ -383,7 +383,6 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
             << "focusInEvent";
 #endif // ENABLE_TRACE_LOG
     QComboBox::focusInEvent(event);
-    emit searchbarFocusChange(FocusWidget::Searchbar);
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
@@ -393,7 +392,6 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
 #endif // ENABLE_TRACE_LOG
     slotSaveSearch();
     QComboBox::focusOutEvent(event);
-    emit searchbarFocusChange(FocusWidget::None);
     if (m_debouncingTimer.isActive()) {
         // Trigger a pending search before leaving the edit box.
         // Otherwise the entered text might be ignored and get lost

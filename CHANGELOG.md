@@ -644,7 +644,7 @@
   [#4542](https://github.com/mixxxdj/mixxx/pull/4542)
   [#4559](https://github.com/mixxxdj/mixxx/pull/4559)
 
-## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (Unreleased)
+## [2.3.2](https://launchpad.net/mixxx/+milestone/2.3.2) (2022-01-31)
 
 * Playlist: Enable sorting by color [#4352](https://github.com/mixxxdj/mixxx/pull/4352) [lp:1945976](https://bugs.launchpad.net/mixxx/+bug/1945976)
 * Fix crash when using Doubling/Halving/etc. BPM from track's Properties window on tracks without BPM [#4587](https://github.com/mixxxdj/mixxx/pull/4587) [lp:1955853](https://bugs.launchpad.net/mixxx/+bug/1955853)
@@ -656,6 +656,7 @@
 * Don't wipe sound config during startup if configured devices are unavailable [#4544](https://github.com/mixxxdj/mixxx/pull/4544)
 * Append selected file extension when exporting to playlist files [#4531](https://github.com/mixxxdj/mixxx/pull/4531) [lp:1889352](https://bugs.launchpad.net/mixxx/+bug/1889352)
 * Fix crash when using midi.sendShortMsg and platform vnc [#4635](https://github.com/mixxxdj/mixxx/pull/4635) [lp:1956144](https://bugs.launchpad.net/mixxx/+bug/1956144)
+* Traktor S3: Fix timedelta calculation bugs [#4646](https://github.com/mixxxdj/mixxx/pull/4646) [lp:1958925](https://bugs.launchpad.net/mixxx/+bug/1958925)
 
 ### Packaging
 

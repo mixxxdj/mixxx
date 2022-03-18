@@ -296,12 +296,13 @@ void BrowseThread::populateModel() {
         if (row % 10 == 0) {
             // this is a blocking operation
             emit rowsAppended(rows, thisModelObserver);
-            qDebug() << "Append " << rows.count() << " from " << fileAccess.info();
+            qDebug() << "Append" << rows.count() << "tracks from "
+                     << thisPath.info().locationPath();
             rows.clear();
         }
-        // Sleep additionally for 10ms which prevents us from GUI freezes
+        // Sleep additionally for 20ms which prevents us from GUI freezes
         msleep(20);
     }
     emit rowsAppended(rows, thisModelObserver);
-    qDebug() << "Append last " << rows.count();
+    qDebug() << "Append last" << rows.count() << "tracks from" << thisPath.info().locationPath();
 }

@@ -13,6 +13,9 @@ enum class FocusWidget {
     Searchbar,
     Sidebar,
     TracksTable, // or a feature root view (WLibraryTextBrowser)
-    Count        // used for setting the number of PushButton states of
-                 // m_pLibraryFocusedWidgetCO in librarycontrol.cpp
+    ContextMenu, // See LibraryControl::getFocusedWidget() for detailed
+    Dialog,      // descriptions
+    Unknown,     // Unknown skin widget or unknown window
+    Count        // Used for setting the number of PushButton states of
+                 // m_pFocusedWidget in librarycontrol.cpp
 };

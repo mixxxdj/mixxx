@@ -5,7 +5,7 @@ import "Theme"
 Item {
     id: root
 
-    property int unitNumber // required
+    required property int unitNumber
 
     implicitHeight: effectContainer.height
 

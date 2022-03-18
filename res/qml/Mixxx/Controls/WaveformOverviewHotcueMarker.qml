@@ -5,8 +5,8 @@ import QtQuick.Shapes 1.12
 Item {
     id: root
 
-    property string group // required
-    property int hotcueNumber // required
+    required property string group
+    required property int hotcueNumber
 
     function updatePosition() {
         const totalSamples = trackSamplesControl.value;

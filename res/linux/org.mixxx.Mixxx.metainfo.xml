@@ -1106,7 +1106,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.2" type="development">
+    <release version="2.3.2" type="stable" date="2022-01-31" timestamp="1643587200">
       <description>
  <ul>
   <li>
@@ -1157,6 +1157,11 @@
    Fix crash when using midi.sendShortMsg and platform vnc
    #4635
    lp:1956144
+  </li>
+  <li>
+   Traktor S3: Fix timedelta calculation bugs
+   #4646
+   lp:1958925
   </li>
  </ul>
  <p>

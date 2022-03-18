@@ -2,7 +2,7 @@
 
 #include "moc_deck.cpp"
 
-Deck::Deck(QObject* pParent,
+Deck::Deck(PlayerManager* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,

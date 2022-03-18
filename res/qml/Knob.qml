@@ -5,7 +5,7 @@ import "Theme"
 MixxxControls.Knob {
     id: root
 
-    property color color // required
+    required property color color
     property url shadowSource: Theme.imgKnobShadow
     property url backgroundSource: Theme.imgKnob
 

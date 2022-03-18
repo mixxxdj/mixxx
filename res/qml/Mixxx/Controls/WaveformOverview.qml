@@ -5,7 +5,7 @@ import QtQuick 2.12
 Mixxx.WaveformOverview {
     id: root
 
-    property string group // required
+    required property string group
 
     player: Mixxx.PlayerManager.getPlayer(root.group)
 
@@ -36,9 +36,11 @@ Mixxx.WaveformOverview {
             model: 8
 
             MixxxControls.WaveformOverviewHotcueMarker {
+                required property int index
+
                 anchors.fill: parent
-                group: root.group
-                hotcueNumber: index + 1
+                group: root.group // qmllint disable unqualified
+                hotcueNumber: this.index + 1
             }
 
         }

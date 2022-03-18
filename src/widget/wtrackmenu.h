@@ -83,6 +83,7 @@ class WTrackMenu : public QMenu {
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    void trackMenuVisible(bool visible);
 
   private slots:
     // File
@@ -138,6 +139,7 @@ class WTrackMenu : public QMenu {
     void slotPurge();
 
   private:
+    void closeEvent(QCloseEvent* event) override;
     // This getter verifies that m_pTrackModel is set when
     // invoked.
     const QModelIndexList& getTrackIndices() const;

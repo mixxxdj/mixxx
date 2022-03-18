@@ -5,7 +5,7 @@ import "Theme"
 Row {
     id: root
 
-    property int unitNumber // required
+    required property int unitNumber
     property string group: "[Auxiliary" + unitNumber + "]"
 
     spacing: 5

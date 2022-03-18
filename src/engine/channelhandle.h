@@ -95,7 +95,7 @@ class ChannelHandleAndGroup {
         return m_name;
     }
 
-    inline const ChannelHandle& handle() const {
+    inline ChannelHandle handle() const {
         return m_handle;
     }
 

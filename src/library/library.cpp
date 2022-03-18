@@ -43,7 +43,6 @@
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
-#include "widget/wlibrarytextbrowser.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
 
@@ -318,7 +317,7 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
     emit setTrackTableFont(m_trackTableFont);
     m_pLibraryControl->bindSearchboxWidget(pSearchboxWidget);
     connect(pSearchboxWidget,
-            &WSearchLineEdit::searchbarFocusChange,
+            &WSearchLineEdit::setLibraryFocus,
             m_pLibraryControl,
             &LibraryControl::setLibraryFocus);
 }
@@ -352,7 +351,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &SidebarModel::rightClicked);
 
     connect(pSidebarWidget,
-            &WLibrarySidebar::sidebarFocusChange,
+            &WLibrarySidebar::setLibraryFocus,
             m_pLibraryControl,
             &LibraryControl::setLibraryFocus);
 
@@ -420,10 +419,15 @@ void Library::bindLibraryWidget(
             &WTrackTableView::setSelectedClick);
 
     m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
+
+    connect(m_pLibraryControl,
+            &LibraryControl::showHideTrackMenu,
+            pTrackTableView,
+            &WTrackTableView::slotShowHideTrackMenu);
     connect(pTrackTableView,
-            &WTrackTableView::trackTableFocusChange,
+            &WTrackTableView::trackMenuVisible,
             m_pLibraryControl,
-            &LibraryControl::setLibraryFocus);
+            &LibraryControl::slotUpdateTrackMenuControl);
 
     for (const auto& feature : qAsConst(m_features)) {
         feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
@@ -434,13 +438,6 @@ void Library::bindLibraryWidget(
     emit setTrackTableFont(m_trackTableFont);
     emit setTrackTableRowHeight(m_iTrackTableRowHeight);
     emit setSelectedClick(m_editMetadataSelectedClick);
-}
-
-void Library::bindFeatureRootView(WLibraryTextBrowser* pTextBrowser) {
-    connect(pTextBrowser,
-            &WLibraryTextBrowser::textBrowserFocusChange,
-            m_pLibraryControl,
-            &LibraryControl::setLibraryFocus);
 }
 
 void Library::addFeature(LibraryFeature* feature) {

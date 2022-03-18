@@ -210,8 +210,8 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 
 void BrowseTableModel::setPath(mixxx::FileAccess path) {
-    if (path.info().hasLocation()) {
-        m_currentDirectory = path.info().locationPath();
+    if (path.info().hasLocation() && path.info().isDir()) {
+        m_currentDirectory = path.info().location();
     } else {
         m_currentDirectory = QString();
     }
@@ -364,8 +364,8 @@ void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*>>& rows,
         for (int i = 0; i < rows.size(); ++i) {
             appendRow(rows.at(i));
         }
+        emit restoreModelState();
     }
-    emit restoreModelState();
 }
 
 TrackModel::Capabilities BrowseTableModel::getCapabilities() const {

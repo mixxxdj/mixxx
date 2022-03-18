@@ -133,8 +133,8 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
                                       "Top-level directory where Mixxx should look for settings. "
-                                      "Default is:") +
-                            getSettingsPath()
+                                      "Default is: ") +
+                            QDir::toNativeSeparators(getSettingsPath())
                             : QString(),
             QStringLiteral("path"));
     QCommandLineOption settingsPathDeprecated(
@@ -188,12 +188,6 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "performance, and a Developer tools menu.")
                             : QString());
     parser.addOption(developer);
-
-    const QCommandLineOption qml(QStringLiteral("qml"),
-            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
-                                      "Loads experimental QML GUI instead of legacy QWidget skin")
-                            : QString());
-    parser.addOption(qml);
 
     const QCommandLineOption safeMode(QStringLiteral("safe-mode"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -327,7 +321,6 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
 
     m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
     m_developer = parser.isSet(developer);
-    m_qml = parser.isSet(qml);
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
     m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);
 
