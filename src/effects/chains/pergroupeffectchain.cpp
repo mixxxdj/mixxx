@@ -18,5 +18,4 @@ PerGroupEffectChain::PerGroupEffectChain(
 
     // Register this channel alone with the chain slot.
     registerInputChannel(handleAndGroup);
-    enableForInputChannel(handleAndGroup);
 }

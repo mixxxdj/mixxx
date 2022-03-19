@@ -17,6 +17,7 @@ QuickEffectChain::QuickEffectChain(
         addEffectSlot(formatEffectSlotGroup(handleAndGroup.name(), i));
         m_effectSlots.at(i)->setEnabled(true);
     }
+    enableForInputChannel(handleAndGroup);
     // The base EffectChain class constructor connects to the signal for the list of StandardEffectChain presets,
     // but QuickEffectChain has a separate list, so disconnect the signal which is inappropriate for this subclass.
     disconnect(m_pChainPresetManager.data(),

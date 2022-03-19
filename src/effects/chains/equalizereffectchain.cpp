@@ -16,6 +16,7 @@ EqualizerEffectChain::EqualizerEffectChain(
                   new ControlObject(ConfigKey(handleAndGroup.name(), "filterWaveformEnable"))) {
     // Add a single effect slot
     addEffectSlot(formatEffectSlotGroup(handleAndGroup.name()));
+    enableForInputChannel(handleAndGroup);
     m_effectSlots[0]->setEnabled(true);
     // DlgPrefEq loads the Effect with loadEffectToGroup
 
