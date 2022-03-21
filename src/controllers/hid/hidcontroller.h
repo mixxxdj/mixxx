@@ -71,32 +71,32 @@ class HidControllerJSProxy : public ControllerJSProxy {
     /// @param dataList Data to send as list of bytes
     /// @param length Unused but mandatory argument
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
-    /// @param skipIdenticalReports If set, the sending of the report is inhibited, when the data didn't changed
+    /// @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending
     Q_INVOKABLE void send(const QList<int>& dataList,
             unsigned int length,
             unsigned int reportID,
-            bool skipIdenticalReports = true) {
+            bool resendUnchangedReport = false) {
         Q_UNUSED(length);
         QByteArray dataArray;
         dataArray.reserve(dataList.size());
         for (int datum : dataList) {
             dataArray.append(datum);
         }
-        this->sendOutputReport(dataArray, reportID, skipIdenticalReports);
+        this->sendOutputReport(dataArray, reportID, resendUnchangedReport);
     }
 
     /// @brief Sends an OutputReport to HID device
     /// @param dataArray Data to send as byte array (Javascript type Uint8Array)
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
-    /// @param skipIdenticalReports If set, the sending of the report is inhibited, when the data didn't changed
+    /// @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending
     Q_INVOKABLE void sendOutputReport(const QByteArray& dataArray,
             unsigned int reportID,
-            bool skipIdenticalReports = true) {
+            bool resendUnchangedReport = false) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return;
         }
         m_pHidController->m_pHidIoThread->updateCachedOutputReportData(
-                dataArray, reportID, skipIdenticalReports);
+                dataArray, reportID, resendUnchangedReport);
     }
 
     /// @brief getInputReport receives an InputReport from the HID device on request.

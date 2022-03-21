@@ -14,7 +14,7 @@ class HidIoOutputReport {
 
             const mixxx::hid::DeviceInfo& deviceInfo,
             const RuntimeLoggingCategory& logOutput,
-            bool skipIdenticalReports);
+            bool resendUnchangedReport);
 
     /// Sends the OutputReport to the HID device, when changed data are cached.
     /// Returns true if a time consuming hid_write operation was executed.
@@ -28,12 +28,12 @@ class HidIoOutputReport {
     QByteArray m_lastSentData;
 
     /// Mutex must be locked when reading/writing m_cachedData
-    /// or m_possiblyUnsentDataCached, m_skipIdenticalReports
+    /// or m_possiblyUnsentDataCached, m_resendUnchangedReport
     QMutex m_cachedDataMutex;
 
     QByteArray m_cachedData;
     bool m_possiblyUnsentDataCached;
-    bool m_skipIdenticalReports;
+    bool m_resendUnchangedReport;
 
     /// Due to swapping of the QbyteArrays, we need to store
     /// this information independent of the QBytearray size

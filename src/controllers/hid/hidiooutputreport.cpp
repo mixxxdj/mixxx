@@ -29,7 +29,7 @@ HidIoOutputReport::HidIoOutputReport(
 void HidIoOutputReport::updateCachedData(const QByteArray& data,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput,
-        bool skipIdenticalReports) {
+        bool resendUnchangedReport) {
     auto cacheLock = lockMutex(&m_cachedDataMutex);
 
     if (!m_lastCachedDataSize) {
@@ -66,7 +66,7 @@ void HidIoOutputReport::updateCachedData(const QByteArray& data,
             data.constData(),
             data.size());
     m_possiblyUnsentDataCached = true;
-    m_skipIdenticalReports = skipIdenticalReports;
+    m_resendUnchangedReport = resendUnchangedReport;
 }
 
 bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
@@ -82,7 +82,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
         return false;
     }
 
-    if (!m_skipIdenticalReports && !m_lastSentData.compare(m_cachedData)) {
+    if (m_resendUnchangedReport && !m_lastSentData.compare(m_cachedData)) {
         // An HID OutputReport can contain only HID OutputItems.
         // HID OutputItems are defined to represent the state of one or more similar controls or LEDs.
         // Only HID Feature items may be attributes of other items.
