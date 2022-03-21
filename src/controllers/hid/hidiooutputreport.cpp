@@ -82,7 +82,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
         return false;
     }
 
-    if (m_resendUnchangedReport && !m_lastSentData.compare(m_cachedData)) {
+    if (!(m_resendUnchangedReport || m_lastSentData.compare(m_cachedData))) {
         // An HID OutputReport can contain only HID OutputItems.
         // HID OutputItems are defined to represent the state of one or more similar controls or LEDs.
         // Only HID Feature items may be attributes of other items.
