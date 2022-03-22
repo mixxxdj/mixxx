@@ -225,7 +225,7 @@ void WSearchLineEdit::loadQueriesFromConfig() {
             m_pConfig->getKeysWithGroup(kSavedQueriesConfigGroup);
     QSet<QString> queryStrings;
     for (const auto& queryKey : queryKeys) {
-        const auto& queryString = m_pConfig->getValueString(queryKey).trimmed();
+        QString queryString = m_pConfig->getValueString(queryKey).trimmed();
         if (queryString.isEmpty() || queryStrings.contains(queryString)) {
             // Don't add duplicate and remove it from the config immediately
             m_pConfig->remove(queryKey);
