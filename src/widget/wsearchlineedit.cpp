@@ -636,7 +636,7 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
     const int paddingPx = text.isEmpty() ? 0 : m_innerHeight;
     const QString clearPos(layoutDirection() == Qt::RightToLeft ? "left" : "right");
 
-    // 'Hide' the nonfunctional drop-down button if the search is disabled.
+    // Hide the nonfunctional drop-down button (set width to 0) if the search is disabled.
     const int dropDownWidth = isEnabled() ? static_cast<int>(m_innerHeight * 0.7) : 0;
 
     const QString styleSheet = QStringLiteral(
