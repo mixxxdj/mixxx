@@ -3,7 +3,6 @@
 #include <QDir>
 #include <QGridLayout>
 #include <QLabel>
-#include <QMutexLocker>
 #include <QSplitter>
 #include <QStackedWidget>
 #include <QVBoxLayout>
@@ -17,6 +16,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "effects/effectsmanager.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_legacyskinparser.cpp"
@@ -28,7 +28,9 @@
 #include "util/timer.h"
 #include "util/valuetransformer.h"
 #include "util/xml.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/vsyncthread.h"
+#endif
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
@@ -37,11 +39,12 @@
 #include "widget/wcombobox.h"
 #include "widget/wcoverart.h"
 #include "widget/wdisplay.h"
-#include "widget/weffect.h"
-#include "widget/weffectbuttonparameter.h"
+#include "widget/weffectbuttonparametername.h"
 #include "widget/weffectchain.h"
-#include "widget/weffectparameter.h"
-#include "widget/weffectparameterbase.h"
+#include "widget/weffectchainpresetbutton.h"
+#include "widget/weffectchainpresetselector.h"
+#include "widget/weffectknobparametername.h"
+#include "widget/weffectname.h"
 #include "widget/weffectparameterknob.h"
 #include "widget/weffectparameterknobcomposed.h"
 #include "widget/weffectpushbutton.h"
@@ -70,7 +73,9 @@
 #include "widget/wsizeawarestack.h"
 #include "widget/wskincolor.h"
 #include "widget/wslidercomposed.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wspinny.h"
+#endif
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
@@ -110,9 +115,8 @@ ControlObject* LegacySkinParser::controlFromConfigKey(
 
     // TODO(rryan): Make this configurable by the skin.
     if (CmdlineArgs::Instance().getDeveloper()) {
-        qWarning() << "Requested control does not exist:"
-                   << QString("%1,%2").arg(key.group, key.item)
-                   << "Creating it.";
+        qInfo() << "Creating skin control object:"
+                << QString("%1,%2").arg(key.group, key.item);
     }
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
@@ -528,7 +532,9 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStarRating(node));
     } else if (nodeName == "VuMeter") {
         WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         WaveformWidgetFactory::instance()->addTimerListener(pVuMeterWidget);
+#endif
         result = wrapWidget(pVuMeterWidget);
     } else if (nodeName == "StatusLight") {
         result = wrapWidget(parseStandardWidget<WStatusLight>(node));
@@ -569,6 +575,10 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseSizeAwareStack(node));
     } else if (nodeName == "EffectChainName") {
         result = wrapWidget(parseEffectChainName(node));
+    } else if (nodeName == "EffectChainPresetButton") {
+        result = wrapWidget(parseEffectChainPresetButton(node));
+    } else if (nodeName == "EffectChainPresetSelector") {
+        result = wrapWidget(parseEffectChainPresetSelector(node));
     } else if (nodeName == "EffectName") {
         result = wrapWidget(parseEffectName(node));
     } else if (nodeName == "EffectSelector") {
@@ -936,6 +946,11 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
 }
 
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_UNUSED(node);
+
+    return nullptr;
+#else
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
@@ -958,7 +973,7 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     connect(overviewWidget,
             &WOverview::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(overviewWidget, &WOverview::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -977,9 +992,15 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     overviewWidget->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return overviewWidget;
+#endif
 }
 
 QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_UNUSED(node);
+
+    return nullptr;
+#else
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
@@ -1013,7 +1034,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     connect(viewer,
             &WWaveformViewer::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(viewer, &WWaveformViewer::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -1021,6 +1042,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     viewer->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return viewer;
+#endif
 }
 
 QWidget* LegacySkinParser::parseText(const QDomElement& node) {
@@ -1033,7 +1055,7 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
 
     WTrackText* pTrackText = new WTrackText(m_pParent,
             m_pConfig,
-            m_pLibrary->trackCollections(),
+            m_pLibrary,
             group);
     setupLabelWidget(node, pTrackText);
 
@@ -1042,7 +1064,7 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     connect(pTrackText,
             &WTrackText::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(pTrackText, &WTrackText::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
@@ -1064,7 +1086,7 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     WTrackProperty* pTrackProperty = new WTrackProperty(
             m_pParent,
             m_pConfig,
-            m_pLibrary->trackCollections(),
+            m_pLibrary,
             group);
     setupLabelWidget(node, pTrackProperty);
 
@@ -1079,7 +1101,7 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     connect(pTrackProperty,
             &WTrackProperty::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(pTrackProperty,
             &WTrackProperty::cloneDeck,
             m_pPlayerManager,
@@ -1104,7 +1126,7 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     WTrackWidgetGroup* pGroup = new WTrackWidgetGroup(
             m_pParent,
             m_pConfig,
-            m_pLibrary->trackCollections(),
+            m_pLibrary,
             group);
     commonWidgetSetup(node, pGroup);
     pGroup->setup(node, *m_pContext);
@@ -1122,7 +1144,7 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     connect(pGroup,
             &WTrackWidgetGroup::trackDropped,
             m_pPlayerManager,
-            &PlayerManager::slotLoadToPlayer);
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(pGroup,
             &WTrackWidgetGroup::cloneDeck,
             m_pPlayerManager,
@@ -1247,6 +1269,11 @@ QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_UNUSED(node);
+
+    return nullptr;
+#else
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Mixxx is running in safe mode.
@@ -1278,14 +1305,23 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
             spinny,
             &WSpinny::render);
     connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, spinny, &WSpinny::swap);
-    connect(spinny, &WSpinny::trackDropped, m_pPlayerManager, &PlayerManager::slotLoadToPlayer);
+    connect(spinny,
+            &WSpinny::trackDropped,
+            m_pPlayerManager,
+            &PlayerManager::slotLoadLocationToPlayerStopped);
     connect(spinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
-    spinny->setup(node, *m_pContext);
+    ControlObject* showCoverControl = controlFromConfigNode(node.toElement(), "ShowCoverControl");
+    ConfigKey configKey;
+    if (showCoverControl) {
+        configKey = showCoverControl->getKey();
+    }
+    spinny->setup(node, *m_pContext, configKey);
     spinny->installEventFilter(m_pKeyboard);
     spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     spinny->Init();
     return spinny;
+#endif
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
@@ -1295,11 +1331,11 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     // to changes in the configuration.
     const auto searchDebouncingTimeoutMillis =
             m_pConfig->getValue(
-                    ConfigKey("[Library]","SearchDebouncingTimeoutMillis"),
+                    mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey,
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 
-    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
+    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent, m_pConfig);
     commonWidgetSetup(node, pLineEditSearch, false);
     pLineEditSearch->setup(node, *m_pContext);
 
@@ -1332,7 +1368,7 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
         connect(pCoverArt,
                 &WCoverArt::trackDropped,
                 m_pPlayerManager,
-                &PlayerManager::slotLoadToPlayer);
+                &PlayerManager::slotLoadLocationToPlayerStopped);
         connect(pCoverArt, &WCoverArt::cloneDeck,
                 m_pPlayerManager, &PlayerManager::slotCloneDeck);
     }
@@ -1665,8 +1701,23 @@ QWidget* LegacySkinParser::parseEffectChainName(const QDomElement& node) {
     return pEffectChain;
 }
 
+QWidget* LegacySkinParser::parseEffectChainPresetButton(const QDomElement& node) {
+    WEffectChainPresetButton* pButton = new WEffectChainPresetButton(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pButton);
+    pButton->setup(node, *m_pContext);
+    return pButton;
+}
+
+QWidget* LegacySkinParser::parseEffectChainPresetSelector(const QDomElement& node) {
+    WEffectChainPresetSelector* pSelector = new WEffectChainPresetSelector(
+            m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pSelector);
+    pSelector->setup(node, *m_pContext);
+    return pSelector;
+}
+
 QWidget* LegacySkinParser::parseEffectName(const QDomElement& node) {
-    WEffect* pEffect = new WEffect(m_pParent, m_pEffectsManager);
+    WEffectName* pEffect = new WEffectName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffect);
     return pEffect;
 }
@@ -1691,14 +1742,6 @@ QWidget* LegacySkinParser::parseEffectParameterKnob(const QDomElement& node) {
     pParameterKnob->installEventFilter(
         m_pControllerManager->getControllerLearningEventFilter());
     pParameterKnob->Init();
-    const QList<ControlParameterWidgetConnection*> connections =
-            pParameterKnob->connections();
-    if (!connections.isEmpty()) {
-        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
-    } else {
-        SKIN_WARNING(node, *m_pContext)
-                << "EffectParameterKnob node could not attach to effect parameter.";
-    }
     return pParameterKnob;
 }
 
@@ -1711,14 +1754,6 @@ QWidget* LegacySkinParser::parseEffectParameterKnobComposed(const QDomElement& n
     pParameterKnob->installEventFilter(
         m_pControllerManager->getControllerLearningEventFilter());
     pParameterKnob->Init();
-    const QList<ControlParameterWidgetConnection*> connections =
-            pParameterKnob->connections();
-    if (!connections.isEmpty()) {
-        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
-    } else {
-        SKIN_WARNING(node, *m_pContext)
-                << "EffectParameterKnobComposed node could not attach to effect parameter.";
-    }
     return pParameterKnob;
 }
 
@@ -1730,25 +1765,20 @@ QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {
     pWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
     pWidget->Init();
-    const QList<ControlParameterWidgetConnection*> connections =
-            pWidget->leftConnections();
-    if (!connections.isEmpty()) {
-        pWidget->setupEffectParameterSlot(connections.at(0)->getKey());
-    } else {
-        SKIN_WARNING(element, *m_pContext)
-                << "EffectPushButton node could not attach to effect parameter.";
-    }
     return pWidget;
 }
 
 QWidget* LegacySkinParser::parseEffectParameterName(const QDomElement& node) {
-    WEffectParameterBase* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
+    WEffectParameterNameBase* pEffectParameter =
+            new WEffectKnobParameterName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectParameter);
     return pEffectParameter;
 }
 
-QWidget* LegacySkinParser::parseEffectButtonParameterName(const QDomElement& node) {
-    WEffectParameterBase* pEffectButtonParameter = new WEffectButtonParameter(m_pParent, m_pEffectsManager);
+QWidget* LegacySkinParser::parseEffectButtonParameterName(
+        const QDomElement& node) {
+    WEffectParameterNameBase* pEffectButtonParameter =
+            new WEffectButtonParameterName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectButtonParameter);
     return pEffectButtonParameter;
 }

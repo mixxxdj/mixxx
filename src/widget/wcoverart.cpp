@@ -14,7 +14,6 @@
 #include "library/dlgcoverartfullsize.h"
 #include "moc_wcoverart.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/math.h"
 #include "widget/wskincolor.h"
@@ -100,7 +99,9 @@ void WCoverArt::slotReloadCoverArt() {
     if (!m_loadedTrack) {
         return;
     }
-    guessTrackCoverInfoConcurrently(m_loadedTrack);
+    const auto future = guessTrackCoverInfoConcurrently(m_loadedTrack);
+    // Don't wait for the result and keep running in the background
+    Q_UNUSED(future)
 }
 
 void WCoverArt::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -151,9 +152,9 @@ void WCoverArt::slotCoverFound(
         const QObject* pRequestor,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
-        quint16 requestedHash,
+        mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
-    Q_UNUSED(requestedHash);
+    Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated);
     if (!m_bEnable) {
         return;
@@ -199,9 +200,10 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
         return QPixmap();
     }
     QPixmap scaled;
-    scaled = normal.scaled(size() * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    scaled.setDevicePixelRatio(getDevicePixelRatioF(this));
+    scaled = normal.scaled(size() * devicePixelRatioF(),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(devicePixelRatioF());
     return scaled;
 }
 

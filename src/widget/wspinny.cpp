@@ -13,7 +13,6 @@
 #include "library/coverartutils.h"
 #include "moc_wspinny.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/fpclassify.h"
 #include "vinylcontrol/vinylcontrol.h"
@@ -147,7 +146,9 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 #endif
 }
 
-void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
+void WSpinny::setup(const QDomNode& node,
+        const SkinContext& context,
+        const ConfigKey& showCoverConfigKey) {
     // Set images
     QDomElement backPathElement = context.selectElement(node, "PathBackground");
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(backPathElement),
@@ -177,7 +178,19 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
                 size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
 
-    m_bShowCover = context.selectBool(node, "ShowCover", false);
+    // Dynamic skin option, set in WSpinny's <ShowCoverControl> node.
+    if (showCoverConfigKey.isValid()) {
+        m_pShowCoverProxy = new ControlProxy(
+                showCoverConfigKey, this);
+        m_pShowCoverProxy->connectValueChanged(
+                this,
+                [this](double v) {
+                    m_bShowCover = v > 0.0;
+                });
+        m_bShowCover = m_pShowCoverProxy->get() > 0.0;
+    } else {
+        m_bShowCover = context.selectBool(node, "ShowCover", false);
+    }
 
 #ifdef __VINYLCONTROL__
     // Find the vinyl input we should listen to reports about.
@@ -281,9 +294,9 @@ void WSpinny::slotCoverFound(
         const QObject* pRequestor,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
-        quint16 requestedHash,
+        mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
-    Q_UNUSED(requestedHash);
+    Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated);
     if (pRequestor == this &&
             m_loadedTrack &&
@@ -305,7 +318,9 @@ void WSpinny::slotReloadCoverArt() {
     if (!m_loadedTrack) {
         return;
     }
-    guessTrackCoverInfoConcurrently(m_loadedTrack);
+    const auto future = guessTrackCoverInfoConcurrently(m_loadedTrack);
+    // Don't wait for the result and keep running in the background
+    Q_UNUSED(future)
 }
 
 void WSpinny::paintEvent(QPaintEvent *e) {
@@ -329,7 +344,7 @@ void WSpinny::render(VSyncThread* vSyncThread) {
                 &m_dGhostAngleCurrentPlaypos);
     }
 
-    double scaleFactor = getDevicePixelRatioF(this);
+    double scaleFactor = devicePixelRatioF();
 
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
@@ -413,14 +428,14 @@ void WSpinny::swap() {
     swapBuffers();
 }
 
-
 QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    QPixmap scaled = normal.scaled(size() * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    scaled.setDevicePixelRatio(getDevicePixelRatioF(this));
+    QPixmap scaled = normal.scaled(size() * devicePixelRatioF(),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(devicePixelRatioF());
     return scaled;
 }
 
@@ -558,8 +573,13 @@ void WSpinny::updateSlipEnabled(double enabled) {
 }
 
 void WSpinny::mouseMoveEvent(QMouseEvent * e) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    int y = e->position().y();
+    int x = e->position().x();
+#else
     int y = e->y();
     int x = e->x();
+#endif
 
     // Keeping these around in case we want to switch to control relative
     // to the original mouse position.
@@ -651,7 +671,11 @@ void WSpinny::mousePressEvent(QMouseEvent * e) {
         if (!m_loadedCover.isNull()) {
             m_pDlgCoverArt->init(m_loadedTrack);
         } else if (!m_pDlgCoverArt->isVisible() && m_bShowCover) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_pCoverMenu->popup(e->globalPosition().toPoint());
+#else
             m_pCoverMenu->popup(e->globalPos());
+#endif
         }
     }
 }

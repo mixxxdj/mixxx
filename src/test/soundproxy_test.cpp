@@ -5,6 +5,7 @@
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
+#include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "track/trackmetadata.h"
 #include "util/samplebuffer.h"
@@ -36,7 +37,7 @@ const CSAMPLE kMaxDecodingError = 0.01f;
 
 } // anonymous namespace
 
-class SoundSourceProxyTest : public MixxxTest {
+class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     static QStringList getFileNameSuffixes() {
         QStringList availableFileNameSuffixes;
@@ -218,10 +219,13 @@ TEST_F(SoundSourceProxyTest, openEmptyFile) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    auto pTrack = Track::newTemporary(TrackFile(
-            kTestDir, "artist.mp3"));
+    auto pTrack = Track::newTemporary(kTestDir, "artist.mp3");
     SoundSourceProxy proxy(pTrack);
-    proxy.updateTrackFromSource();
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("Test Artist", pTrack->getArtist());
 }
 
@@ -229,43 +233,63 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
     // We need to verify every track has at least a title to not have empty lines in the library
 
     // Test a file with no metadata
-    auto pTrack1 = Track::newTemporary(TrackFile(
-            kTestDir, "empty.mp3"));
+    auto pTrack1 = Track::newTemporary(
+            kTestDir, "empty.mp3");
     SoundSourceProxy proxy1(pTrack1);
-    proxy1.updateTrackFromSource();
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy1.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a reload also works
     pTrack1->setTitle("");
-    proxy1.updateTrackFromSource(SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy1.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a file with other metadata but no title
-    auto pTrack2 = Track::newTemporary(TrackFile(
-            kTestDir, "cover-test-png.mp3"));
+    auto pTrack2 = Track::newTemporary(
+            kTestDir, "cover-test-png.mp3");
     SoundSourceProxy proxy2(pTrack2);
-    proxy2.updateTrackFromSource();
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy2.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a reload also works
     pTrack2->setTitle("");
-    proxy2.updateTrackFromSource(SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy2.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a file with a title
-    auto pTrack3 = Track::newTemporary(TrackFile(
-            kTestDir, "cover-test-jpg.mp3"));
+    auto pTrack3 = Track::newTemporary(
+            kTestDir, "cover-test-jpg.mp3");
     SoundSourceProxy proxy3(pTrack3);
-    proxy3.updateTrackFromSource();
+    EXPECT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            proxy3.updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
     EXPECT_EQ("test22kMono", pTrack3->getTitle());
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    auto pTrack = Track::newTemporary(TrackFile(
-            kTestDir, "TOAL_TPE2.mp3"));
+    auto pTrack = Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));
+    EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded,
+            proxy.importTrackMetadataAndCoverImage(&trackMetadata, nullptr).first);
     EXPECT_EQ("TITLE2", trackMetadata.getTrackInfo().getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbumInfo().getTitle());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumInfo().getArtist());
@@ -274,7 +298,7 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
 }
 
 TEST_F(SoundSourceProxyTest, seekForwardBackward) {
-    const SINT kReadFrameCount = 10000;
+    constexpr SINT kReadFrameCount = 10000;
 
     const QStringList filePaths = getFilePaths();
     for (const auto& filePath : filePaths) {
@@ -484,7 +508,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
 }
 
 TEST_F(SoundSourceProxyTest, seekBoundaries) {
-    const SINT kReadFrameCount = 1000;
+    constexpr SINT kReadFrameCount = 1000;
     const QStringList filePaths = getFilePaths();
     for (const auto& filePath : filePaths) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
@@ -597,7 +621,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
 }
 
 TEST_F(SoundSourceProxyTest, readBeyondEnd) {
-    const SINT kReadFrameCount = 1000;
+    constexpr SINT kReadFrameCount = 1000;
     const QStringList filePaths = getFilePaths();
     for (const auto& filePath : filePaths) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
@@ -728,11 +752,8 @@ TEST_F(SoundSourceProxyTest, getTypeFromFile) {
             tempDir.filePath("file_with_empty_suffix.");
     const QString filePathWithUnknownSuffix =
             tempDir.filePath("file_with.unknown_suffix");
-    // TODO: Currently, our SoundSource::getTypeFromFile() can not detect the
-    // file type of files with a known but wrong file extension properly, so
-    // this test needs to be disabled.
-    //const QString filePathWithWrongSuffix =
-    //        tempDir.filePath("file_with_wrong_suffix.wav");
+    const QString filePathWithWrongSuffix =
+            tempDir.filePath("file_with_wrong_suffix.wav");
     const QString filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix =
             tempDir.filePath("file_with_uppercase_suffix. MP3 ");
 
@@ -741,35 +762,179 @@ TEST_F(SoundSourceProxyTest, getTypeFromFile) {
     mixxxtest::copyFile(validFilePath, filePathWithoutSuffix);
     mixxxtest::copyFile(validFilePath, filePathWithEmptySuffix);
     mixxxtest::copyFile(validFilePath, filePathWithUnknownSuffix);
-    //mixxxtest::copyFile(validFilePath, filePathWithWrongSuffix);
+    mixxxtest::copyFile(validFilePath, filePathWithWrongSuffix);
     mixxxtest::copyFile(validFilePath, filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix);
 
-    ASSERT_STREQ(qPrintable("mp3"), qPrintable(mixxx::SoundSource::getTypeFromFile(validFilePath)));
+    ASSERT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    QFileInfo(validFilePath))));
 
     EXPECT_STREQ(qPrintable("mp3"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
-                    filePathWithoutSuffix)));
+                    QFileInfo(filePathWithoutSuffix))));
     EXPECT_STREQ(qPrintable("mp3"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
-                    filePathWithEmptySuffix)));
+                    QFileInfo(filePathWithEmptySuffix))));
     EXPECT_STREQ(qPrintable("mp3"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
-                    filePathWithUnknownSuffix)));
-    //EXPECT_STREQ(qPrintable("mp3"),
-    //        qPrintable(mixxx::SoundSource::getTypeFromFile(
-    //                filePathWithWrongSuffix)));
+                    QFileInfo(filePathWithUnknownSuffix))));
     EXPECT_STREQ(qPrintable("mp3"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
-                    filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix)));
+                    QFileInfo(filePathWithWrongSuffix))));
+    EXPECT_STREQ(qPrintable("mp3"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    QFileInfo(filePathWithUppercaseAndLeadingTrailingWhitespaceSuffix))));
 }
 
 TEST_F(SoundSourceProxyTest, getTypeFromMissingFile) {
-    const QFileInfo missingFileWithUppercaseSuffixAndLeadingTrailingWhitespaceSuffix =
-            kTestDir.absoluteFilePath(QStringLiteral("missing_file. AIFF "));
+    // Also verify that the shortened suffix ".aif" (case-insensitive) is
+    // mapped to file type "aiff", independent of whether the file exists or not!
+    const QFileInfo missingFileWithUppercaseSuffix(
+            kTestDir.absoluteFilePath(QStringLiteral("missing_file.AIF")));
 
-    ASSERT_FALSE(missingFileWithUppercaseSuffixAndLeadingTrailingWhitespaceSuffix.exists());
+    ASSERT_FALSE(missingFileWithUppercaseSuffix.exists());
 
     EXPECT_STREQ(qPrintable("aiff"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
-                    missingFileWithUppercaseSuffixAndLeadingTrailingWhitespaceSuffix)));
+                    QFileInfo(missingFileWithUppercaseSuffix))));
+}
+
+TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+
+    // Verify that both suffixes are supported
+    ASSERT_TRUE(SoundSourceProxy::isFileSuffixSupported(QStringLiteral("aif")));
+    ASSERT_TRUE(SoundSourceProxy::isFileSuffixSupported(QStringLiteral("aiff")));
+
+    const QString aiffFilePath =
+            kTestDir.absoluteFilePath(QStringLiteral("cover-test.aiff"));
+
+    ASSERT_TRUE(QFileInfo::exists(aiffFilePath));
+    ASSERT_STREQ(qPrintable("aiff"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    QFileInfo(aiffFilePath))));
+
+    const QString aiffFilePathWithShortenedSuffix =
+            tempDir.filePath(QStringLiteral("cover-test.aif"));
+    mixxxtest::copyFile(aiffFilePath, aiffFilePathWithShortenedSuffix);
+    ASSERT_TRUE(QFileInfo::exists(aiffFilePathWithShortenedSuffix));
+
+    EXPECT_STREQ(qPrintable("aiff"),
+            qPrintable(mixxx::SoundSource::getTypeFromFile(
+                    QFileInfo(aiffFilePathWithShortenedSuffix))));
+}
+
+TEST_F(SoundSourceProxyTest, updateTrackFromSourceFileMissing) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+
+    ASSERT_TRUE(SoundSourceProxy::isFileTypeSupported(QStringLiteral("mp3")));
+
+    const QString missingFilePath =
+            tempDir.filePath(QStringLiteral("missing.mp3"));
+
+    auto pTrack = Track::newTemporary(missingFilePath);
+    ASSERT_EQ(SoundSourceProxy(pTrack).updateTrackFromSource(
+                      SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                      SyncTrackMetadataParams{}),
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportFailed);
+}
+
+TEST_F(SoundSourceProxyTest, handleWrongFileSuffix) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+
+    ASSERT_TRUE(SoundSourceProxy::isFileTypeSupported(QStringLiteral("aiff")));
+    ASSERT_TRUE(SoundSourceProxy::isFileTypeSupported(QStringLiteral("mp3")));
+
+    const QString contentFileType = QStringLiteral("mp3");
+    const QString wrongFileType = QStringLiteral("aiff");
+
+    const QString contentFileTypePath =
+            kTestDir.absoluteFilePath(QStringLiteral("cover-test-png.mp3"));
+    const QString wrongFileTypePath =
+            tempDir.filePath(QStringLiteral("cover-test.aiff"));
+    mixxxtest::copyFile(contentFileTypePath, wrongFileTypePath);
+
+    auto pTrack = Track::newTemporary(wrongFileTypePath);
+    ASSERT_TRUE(pTrack->getType().isEmpty());
+
+    ASSERT_EQ(SoundSourceProxy(pTrack).updateTrackFromSource(
+                      SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                      SyncTrackMetadataParams{}),
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated);
+    EXPECT_STREQ(qPrintable(contentFileType), qPrintable(pTrack->getType()));
+
+    // Change the file type back to the wrong file type after the initial import
+    // and update from source once again to verify that the wrong type gets updated
+    // to the correct type.
+    pTrack->setType(wrongFileType);
+    // The re-import of metadata should be skipped with UpdateTrackFromSourceMode::Once
+    // and updateTrackFromSource() is supposed to return false.
+    ASSERT_EQ(SoundSourceProxy(pTrack).updateTrackFromSource(
+                      SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                      SyncTrackMetadataParams{}),
+            SoundSourceProxy::UpdateTrackFromSourceResult::NotUpdated);
+    // But even though updateTrackFromSource() returned false the wrong file type
+    // should have been fixed.
+    EXPECT_STREQ(qPrintable(contentFileType), qPrintable(pTrack->getType()));
+}
+
+TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
+    const QString fileTypesWithCorrespondingSuffixes[] = {
+        QStringLiteral("3gp"),
+        QStringLiteral("3g2"),
+        QStringLiteral("aac"),
+        QStringLiteral("ac3"),
+        QStringLiteral("aiff"),
+        // Test fails for file type "caf" supported by SoundSourceSndfile
+        //QStringLiteral("caf"),
+        QStringLiteral("flac"),
+        QStringLiteral("it"),
+        QStringLiteral("m4a"),
+        QStringLiteral("m4v"),
+        QStringLiteral("med"),
+#if !defined(__APPLE__)
+        // Test fails on macOS for file type "mj2" supported by SoundSourceFFmpeg
+        QStringLiteral("mj2"),
+#endif
+        QStringLiteral("med"),
+        QStringLiteral("mod"),
+        QStringLiteral("mov"),
+        QStringLiteral("mp2"),
+        QStringLiteral("mp3"),
+        QStringLiteral("mp4"),
+        QStringLiteral("ogg"),
+        // Test fails for file type "okt" supported by SoundSourceModPlug
+        //QStringLiteral("okt"),
+        QStringLiteral("opus"),
+        QStringLiteral("s3m"),
+        QStringLiteral("stm"),
+        QStringLiteral("wav"),
+        QStringLiteral("wma"),
+        QStringLiteral("wv"),
+        QStringLiteral("xm"),
+    };
+    for (const auto& fileType : fileTypesWithCorrespondingSuffixes) {
+        // We only need to check the actually supported file types.
+        // The result for unsupported file types is undefined.
+        if (SoundSourceProxy::isFileTypeSupported(fileType)) {
+            qInfo() << "Suffixes for file type"
+                    << fileType
+                    << ':'
+                    << SoundSourceProxy::getFileSuffixesForFileType(fileType);
+            EXPECT_TRUE(SoundSourceProxy::getFileSuffixesForFileType(fileType).contains(fileType));
+        }
+    }
+}
+
+TEST_F(SoundSourceProxyTest, fileSuffixWithDifferingType) {
+    const std::tuple<QString, QString> fileSuffixesWithDifferingTypes[] = {
+            {QStringLiteral("aif"), QStringLiteral("aiff")},
+    };
+    for (const auto& [fileSuffix, fileType] : fileSuffixesWithDifferingTypes) {
+        EXPECT_EQ(SoundSourceProxy::isFileTypeSupported(fileType),
+                SoundSourceProxy::isFileSuffixSupported(fileSuffix));
+    }
 }

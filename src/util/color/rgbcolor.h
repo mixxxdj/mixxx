@@ -182,7 +182,7 @@ class RgbColor {
         if (varCode.isNull()) {
             return defaultColor;
         }
-        VERIFY_OR_DEBUG_ASSERT(varCode.canConvert(QMetaType::UInt)) {
+        VERIFY_OR_DEBUG_ASSERT(varCode.canConvert<uint>()) {
             return defaultColor;
         }
         const auto value = varCode.value<code_t>();
@@ -195,7 +195,7 @@ class RgbColor {
         if (varColor.isNull()) {
             return defaultColor;
         }
-        VERIFY_OR_DEBUG_ASSERT(varColor.canConvert(QMetaType::QColor)) {
+        VERIFY_OR_DEBUG_ASSERT(varColor.canConvert<QColor>()) {
             return defaultColor;
         }
         const auto value = varColor.value<QColor>();
@@ -208,7 +208,7 @@ class RgbColor {
         if (varString.isNull()) {
             return defaultColor;
         }
-        VERIFY_OR_DEBUG_ASSERT(varString.canConvert(QMetaType::QString)) {
+        VERIFY_OR_DEBUG_ASSERT(varString.canConvert<QString>()) {
             return defaultColor;
         }
         const auto value = varString.value<QString>();
@@ -232,7 +232,7 @@ inline QDebug operator<<(QDebug dbg, RgbColor color) {
     return dbg << RgbColor::toQString(color).toLatin1().constData();
 }
 
-inline QDebug operator<<(QDebug dbg, RgbColor::optional_t optionalColor) {
+inline QDebug operator<<(QDebug dbg, const RgbColor::optional_t& optionalColor) {
     return dbg << RgbColor::toQString(optionalColor).toLatin1().constData();
 }
 

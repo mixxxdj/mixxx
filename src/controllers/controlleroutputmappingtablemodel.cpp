@@ -16,23 +16,23 @@ ControllerOutputMappingTableModel::~ControllerOutputMappingTableModel() {
 }
 
 void ControllerOutputMappingTableModel::apply() {
-    if (m_pMidiPreset != nullptr) {
+    if (m_pMidiMapping != nullptr) {
         // Clear existing output mappings and insert all the output mappings in
-        // the table into the preset.
+        // the table into the mapping.
         QMultiHash<ConfigKey, MidiOutputMapping> mappings;
         for (const MidiOutputMapping& mapping : qAsConst(m_midiOutputMappings)) {
             // There can be multiple output mappings for the same output
             // control, so we need to use a QMultiHash here.
             mappings.insert(mapping.controlKey, mapping);
         }
-        m_pMidiPreset->setOutputMappings(mappings);
+        m_pMidiMapping->setOutputMappings(mappings);
     }
 }
 
-void ControllerOutputMappingTableModel::onPresetLoaded() {
+void ControllerOutputMappingTableModel::onMappingLoaded() {
     clear();
 
-    if (m_pMidiPreset != nullptr) {
+    if (m_pMidiMapping != nullptr) {
         // TODO(rryan): Tooltips
         setHeaderData(MIDI_COLUMN_CHANNEL, Qt::Horizontal, tr("Channel"));
         setHeaderData(MIDI_COLUMN_OPCODE, Qt::Horizontal, tr("Opcode"));
@@ -44,16 +44,16 @@ void ControllerOutputMappingTableModel::onPresetLoaded() {
         setHeaderData(MIDI_COLUMN_MAX, Qt::Horizontal, tr("On Range Max"));
         setHeaderData(MIDI_COLUMN_COMMENT, Qt::Horizontal, tr("Comment"));
 
-        if (!m_pMidiPreset->getOutputMappings().isEmpty()) {
-            beginInsertRows(QModelIndex(), 0, m_pMidiPreset->getOutputMappings().size() - 1);
-            m_midiOutputMappings = m_pMidiPreset->getOutputMappings().values();
+        if (!m_pMidiMapping->getOutputMappings().isEmpty()) {
+            beginInsertRows(QModelIndex(), 0, m_pMidiMapping->getOutputMappings().size() - 1);
+            m_midiOutputMappings = m_pMidiMapping->getOutputMappings().values();
             endInsertRows();
         }
     }
 }
 
 void ControllerOutputMappingTableModel::clear() {
-    if (m_pMidiPreset != nullptr) {
+    if (m_pMidiMapping != nullptr) {
         if (!m_midiOutputMappings.isEmpty()) {
             beginRemoveRows(QModelIndex(), 0, m_midiOutputMappings.size() - 1);
             m_midiOutputMappings.clear();
@@ -63,7 +63,7 @@ void ControllerOutputMappingTableModel::clear() {
 }
 
 void ControllerOutputMappingTableModel::addEmptyMapping() {
-    if (m_pMidiPreset != nullptr) {
+    if (m_pMidiMapping != nullptr) {
         beginInsertRows(QModelIndex(), m_midiOutputMappings.size(),
                         m_midiOutputMappings.size());
         m_midiOutputMappings.append(MidiOutputMapping());
@@ -95,7 +95,7 @@ void ControllerOutputMappingTableModel::removeMappings(QModelIndexList indices) 
 
 QAbstractItemDelegate* ControllerOutputMappingTableModel::delegateForColumn(
         int column, QWidget* pParent) {
-    if (m_pMidiPreset != nullptr) {
+    if (m_pMidiMapping != nullptr) {
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 return new MidiChannelDelegate(pParent);
@@ -116,7 +116,7 @@ int ControllerOutputMappingTableModel::rowCount(const QModelIndex& parent) const
     if (parent.isValid()) {
         return 0;
     }
-    if (m_pMidiPreset != nullptr) {
+    if (m_pMidiMapping != nullptr) {
         return m_midiOutputMappings.size();
     }
     return 0;
@@ -127,8 +127,8 @@ int ControllerOutputMappingTableModel::columnCount(const QModelIndex& parent) co
         return 0;
     }
     // Control and description
-    const int kBaseColumns = 2;
-    if (m_pMidiPreset != nullptr) {
+    constexpr int kBaseColumns = 2;
+    if (m_pMidiMapping != nullptr) {
         // Channel, Opcode, Control, On, Off, Min, Max
         return kBaseColumns + 7;
     }
@@ -147,7 +147,7 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
     int row = index.row();
     int column = index.column();
 
-    if (m_pMidiPreset != nullptr) {
+    if (m_pMidiMapping != nullptr) {
         if (row < 0 || row >= m_midiOutputMappings.size()) {
             return QVariant();
         }
@@ -157,7 +157,7 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.output.status);
             case MIDI_COLUMN_OPCODE:
-                return MidiUtils::opCodeFromStatus(mapping.output.status);
+                return MidiUtils::opCodeValue(MidiUtils::opCodeFromStatus(mapping.output.status));
             case MIDI_COLUMN_CONTROL:
                 return mapping.output.control;
             case MIDI_COLUMN_ON:
@@ -193,7 +193,7 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
     int row = index.row();
     int column = index.column();
 
-    if (m_pMidiPreset != nullptr) {
+    if (m_pMidiMapping != nullptr) {
         if (row < 0 || row >= m_midiOutputMappings.size()) {
             return false;
         }

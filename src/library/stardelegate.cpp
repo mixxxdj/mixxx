@@ -75,7 +75,7 @@ void StarDelegate::cellEntered(const QModelIndex& index) {
     // This slot is called if the mouse pointer enters ANY cell on the
     // QTableView but the code should only be executed on a column with a
     // StarRating.
-    if (index.data().canConvert(qMetaTypeId<StarRating>())) {
+    if (index.data().canConvert<StarRating>()) {
         if (m_isOneCellInEditMode) {
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         }

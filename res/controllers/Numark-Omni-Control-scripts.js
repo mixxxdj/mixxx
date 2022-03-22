@@ -480,4 +480,3 @@ NumarkTotalControl.toggleQuantize = function(channel, control, value, status, gr
 		engine.setValue("[Channel2]", "quantize", newValue);
 	}
 }
-

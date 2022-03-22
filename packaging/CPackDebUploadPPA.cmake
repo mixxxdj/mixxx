@@ -43,10 +43,12 @@ if(NOT CPACK_DEBIAN_GPG_RET EQUAL "0")
 endif()
 
 # hack to advance the version from the legacy version like this:
-# dpkg --compare-versions 2.3.0~beta~git8163 lt 2.3.0~beta1~2345~gffffff && echo true
-# dpkg --compare-versions 2.3.0~beta1~2345~gffffff lt 2.3.0 && echo true
-if(DEB_UPLOAD_PPA MATCHES "mixxxbetas")
-  string(REPLACE "2.3~beta~" "2.3.0~beta1~" CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_DEBIAN_PACKAGE_VERSION}")
+# dpkg --compare-versions 2.4.0~alpha~pre1~git7859  lt 2.4.0~alpha2~5463~gf2da9e619d && echo true
+# and from changing to --first-parent
+# dpkg --compare-versions 2.4.0~alpha1~6372~g0244af2e04-1~impish lt 2.4.0~alpha2~805~g4f13bc1d5d-1~impish && echo true
+# dpkg --compare-versions 2.4.0~alpha2~5463~gf2da9e619d lt 2.4.0 && echo true
+if(DEB_UPLOAD_PPA MATCHES "nightlies")
+  string(REPLACE "2.4~alpha~" "2.4.0~alpha2~" CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_DEBIAN_PACKAGE_VERSION}")
 endif()
 
 message(NOTICE "Creating mixxx_${CPACK_DEBIAN_PACKAGE_VERSION}.orig.tar.gz")
@@ -117,7 +119,7 @@ foreach(RELEASE ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
          WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
          RESULT_VARIABLE CPACK_DEBIAN_DEBUILD_RET)
     if(NOT CPACK_DEBIAN_DEBUILD_RET EQUAL "0")
-      message(FATAL_ERROR "${CPACK_DEBIAN_DEBUILD} retuned exit code ${CPACK_DEBIAN_DEBUILD_RET}")
+      message(FATAL_ERROR "${CPACK_DEBIAN_DEBUILD} returned exit code ${CPACK_DEBIAN_DEBUILD_RET}")
     endif()
   endif()
   if (BUILD_MACHINE_RELEASE STREQUAL RELEASE AND DEB_BUILD)

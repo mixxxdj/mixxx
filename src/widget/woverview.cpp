@@ -29,7 +29,6 @@
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
 #include "util/color/color.h"
-#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 #include "util/math.h"
@@ -165,6 +164,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {
             pMark->connectSamplePositionChanged(this,
+                    &WOverview::onMarkChanged);
+            pMark->connectSampleEndPositionChanged(this,
                     &WOverview::onMarkChanged);
         }
         if (pMark->hasVisible()) {
@@ -397,7 +398,9 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
             }
 
             int hotcueNumber = currentCue->getHotCue();
-            if (currentCue->getType() == mixxx::CueType::HotCue && hotcueNumber != Cue::kNoHotCue) {
+            if ((currentCue->getType() == mixxx::CueType::HotCue ||
+                        currentCue->getType() == mixxx::CueType::Loop) &&
+                    hotcueNumber != Cue::kNoHotCue) {
                 // Prepend the hotcue number to hotcues' labels
                 QString newLabel = currentCue->getLabel();
                 if (newLabel.isEmpty()) {
@@ -433,9 +436,17 @@ void WOverview::receiveCuesUpdated() {
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
         if (m_orientation == Qt::Horizontal) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+#else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
+#endif
         } else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+#else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
+#endif
         }
     }
 
@@ -497,9 +508,17 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     }
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+#else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
+#endif
         } else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+#else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
+#endif
         }
 
         if (m_pHoveredMark != nullptr) {
@@ -541,7 +560,11 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     return;
                 } else {
                     m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    m_pCueMenuPopup->popup(e->globalPosition().toPoint());
+#else
                     m_pCueMenuPopup->popup(e->globalPos());
+#endif
                 }
             }
         }
@@ -812,8 +835,9 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         WaveformMarkPointer pMark = m_marksToRender.at(i);
         PainterScope painterScope(pPainter);
 
+        double samplePosition = m_marksToRender.at(i)->getSamplePosition();
         const float markPosition = math_clamp(
-                offset + static_cast<float>(m_marksToRender.at(i)->getSamplePosition()) * gain,
+                offset + static_cast<float>(samplePosition) * gain,
                 0.0f,
                 static_cast<float>(width()));
         pMark->m_linePosition = markPosition;
@@ -828,11 +852,32 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             bgLine.setLine(0.0, markPosition - 1.0, width(), markPosition - 1.0);
         }
 
+        QRectF rect;
+        double sampleEndPosition = m_marksToRender.at(i)->getSampleEndPosition();
+        if (sampleEndPosition > 0) {
+            const float markEndPosition = math_clamp(
+                    offset + static_cast<float>(sampleEndPosition) * gain,
+                    0.0f,
+                    static_cast<float>(width()));
+
+            if (m_orientation == Qt::Horizontal) {
+                rect.setCoords(markPosition, 0, markEndPosition, height());
+            } else {
+                rect.setCoords(0, markPosition, width(), markEndPosition);
+            }
+        }
+
         pPainter->setPen(pMark->borderColor());
         pPainter->drawLine(bgLine);
 
         pPainter->setPen(pMark->fillColor());
         pPainter->drawLine(line);
+
+        if (rect.isValid()) {
+            QColor loopColor = pMark->fillColor();
+            loopColor.setAlphaF(0.5);
+            pPainter->fillRect(rect, loopColor);
+        }
 
         if (!pMark->m_text.isEmpty()) {
             Qt::Alignment halign = pMark->m_align & Qt::AlignHorizontal_Mask;
@@ -913,7 +958,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatioF());
         }
 
         // Show cue position when hovered
@@ -961,7 +1006,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatioF());
 
             QPointF timeDistancePoint(positionTextPoint.x(),
                     (fontMetrics.height() + height()) / 2);
@@ -973,7 +1018,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatioF());
             markHovered = true;
         }
     }
@@ -1068,7 +1113,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
                 m_labelTextColor,
                 m_labelBackgroundColor,
                 width(),
-                getDevicePixelRatioF(this));
+                devicePixelRatioF());
         m_timeRulerPositionLabel.draw(pPainter);
 
         QString timeDistanceText = mixxx::Duration::formatTime(fabs(timeDistance));
@@ -1084,7 +1129,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
                 m_labelTextColor,
                 m_labelBackgroundColor,
                 width(),
-                getDevicePixelRatioF(this));
+                devicePixelRatioF());
         m_timeRulerDistanceLabel.draw(pPainter);
     } else {
         m_timeRulerPositionLabel.clear();
@@ -1156,7 +1201,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                     m_labelTextColor,
                     m_labelBackgroundColor,
                     width(),
-                    getDevicePixelRatioF(this));
+                    devicePixelRatioF());
 
             if (!(markRange.m_durationLabel.intersects(m_cuePositionLabel) || markRange.m_durationLabel.intersects(m_cueTimeDistanceLabel) || markRange.m_durationLabel.intersects(m_timeRulerPositionLabel) || markRange.m_durationLabel.intersects(m_timeRulerDistanceLabel))) {
                 markRange.m_durationLabel.draw(pPainter);
@@ -1181,17 +1226,7 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
     QFont font = pPainter->font();
     QFontMetrics fm(font);
 
-    // TODO: The following use of QFontMetrics::width(const QString&, int) const
-    // is deprecated and should be replaced with
-    // QFontMetrics::horizontalAdvance(const QString&, int) const. However, the
-    // proposed alternative has just been introduced in Qt 5.11.
-    // Until the minimum required Qt version of Mixxx is increased, we need a
-    // version check here.
-    #if (QT_VERSION < QT_VERSION_CHECK(5, 11, 0))
-    int textWidth = fm.width(text);
-    #else
     int textWidth = fm.horizontalAdvance(text);
-    #endif
 
     if (textWidth > length()) {
         qreal pointSize = font.pointSizeF();
@@ -1219,8 +1254,8 @@ void WOverview::resizeEvent(QResizeEvent* pEvent) {
     Q_UNUSED(pEvent);
     // Play-position potmeters range from 0 to 1 but they allow out-of-range
     // sets. This is to give VC access to the pre-roll area.
-    const double kMaxPlayposRange = 1.0;
-    const double kMinPlayposRange = 0.0;
+    constexpr double kMaxPlayposRange = 1.0;
+    constexpr double kMinPlayposRange = 0.0;
 
     // Values of zero and one in normalized space.
     const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
@@ -1231,7 +1266,7 @@ void WOverview::resizeEvent(QResizeEvent* pEvent) {
     m_a = (length() - 1) / (one - zero);
     m_b = zero * m_a;
 
-    m_devicePixelRatio = getDevicePixelRatioF(this);
+    m_devicePixelRatio = devicePixelRatioF();
 
     m_waveformImageScaled = QImage();
     m_diffGain = 0;

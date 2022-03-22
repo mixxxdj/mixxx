@@ -27,6 +27,9 @@
                 <ArcColor><Variable name="ArcColorEq"/></ArcColor>
                 <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
                 <KnobCenterYOffset>1.998</KnobCenterYOffset>
+                <EffectUnitGroup><Variable name="EqFxUnit"/></EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectParameter><Variable name="EqParameter"/></EffectParameter>
                 <Connection>
                   <ConfigKey><Variable name="EqEffect"/>,parameter<Variable name="EqParameter"/></ConfigKey>
                 </Connection>
@@ -70,6 +73,9 @@
                 <ObjectName>EQKillButton_<Variable name="EqRange"/></ObjectName>
                 <Size>18f,18f</Size>
                 <NumberStates>2</NumberStates>
+                <EffectUnitGroup><Variable name="EqFxUnit"/></EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectButtonParameter><Variable name="EqParameter"/></EffectButtonParameter>
                 <State>
                   <Number>0</Number>
                   <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>

@@ -916,5 +916,3 @@ HerculesRMX.rateChange = function (value, group) {
 //      }
 //   }
 //};
-
-

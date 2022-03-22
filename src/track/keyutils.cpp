@@ -1,10 +1,11 @@
-#include <QtDebug>
-#include <QMap>
-#include <QMutexLocker>
-#include <QPair>
-#include <QRegExp>
-
 #include "track/keyutils.h"
+
+#include <QMap>
+#include <QPair>
+#include <QRegularExpression>
+#include <QtDebug>
+
+#include "util/compatibility/qmutex.h"
 #include "util/math.h"
 
 #define MUSIC_FLAT_UTF8  "\xe299ad"
@@ -13,19 +14,28 @@
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
+// All of these regular expressions need exact matching.
+// QRegularExpression::anchoredPattern cannot be used because Mixxx supports Qt < 5.15, so
+// instead do what QRegularExpression::anchoredPattern by wrapping each regex in \\A(?: ... )\\z
+
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
-static const QString s_openKeyPattern("^\\s*(1[0-2]|[1-9])([dm])\\s*$");
+static const QRegularExpression s_openKeyRegex(QStringLiteral(
+                                                       "\\A(?:^\\s*(1[0-2]|[1-9])([dm])\\s*$)\\z"),
+        QRegularExpression::CaseInsensitiveOption);
 
 // Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
-static const QString s_lancelotKeyPattern("^\\s*(1[0-2]|[1-9])([ab])\\s*$");
+static const QRegularExpression s_lancelotKeyRegex(
+        QStringLiteral("\\A(?:^\\s*(1[0-2]|[1-9])([ab])\\s*$)\\z"),
+        QRegularExpression::CaseInsensitiveOption);
 
 // a-g followed by any number of sharps or flats, optionally followed by
 // a scale spec (m = minor, min, maj)
 // anchor the pattern so we don't get accidental sub-string matches
 // (?:or)? allows unabbreviated major|minor without capturing
-static const QString s_keyPattern = QString::fromUtf8(
-        "^\\s*([a-g])([#♯b♭]*)"
-        "(min(?:or)?|maj(?:or)?|m)?\\s*$");
+static const QRegularExpression s_keyRegex(QString::fromUtf8(
+                                                   "\\A(?:^\\s*([a-g])([#♯b♭]*)"
+                                                   "(min(?:or)?|maj(?:or)?|m)?\\s*$)\\z"),
+        QRegularExpression::CaseInsensitiveOption);
 
 static const QString s_sharpSymbol = QString::fromUtf8("♯");
 //static const QString s_flatSymbol = QString::fromUtf8("♭");
@@ -182,7 +192,7 @@ QString KeyUtils::keyDebugName(ChromaticKey key) {
 
 // static
 void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
-    QMutexLocker locker(&s_notationMutex);
+    const auto locker = lockMutex(&s_notationMutex);
     s_notation = notation;
     s_reverseNotation.clear();
 
@@ -206,7 +216,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
     if (notation == KeyNotation::Custom) {
         // The default value for notation is KeyUtils::KeyNotation::Custom, so this executes when the function is
         // called without a notation specified after KeyUtils::setNotation has set up s_notation.
-        QMutexLocker locker(&s_notationMutex);
+        const auto locker = lockMutex(&s_notationMutex);
         auto it = s_notation.constFind(key);
         if (it != s_notation.constEnd()) {
             return it.value();
@@ -255,33 +265,33 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
     // Try using the user's custom notation.
     {
-        QMutexLocker locker(&s_notationMutex);
+        const auto locker = lockMutex(&s_notationMutex);
         auto it = s_reverseNotation.constFind(text);
         if (it != s_reverseNotation.constEnd()) {
             return it.value();
         }
     }
 
-    QRegExp openKeyMatcher(s_openKeyPattern, Qt::CaseInsensitive);
-    if (openKeyMatcher.exactMatch(trimmed)) {
+    QRegularExpressionMatch openKeyMatch = s_openKeyRegex.match(trimmed);
+    if (openKeyMatch.hasMatch()) {
         bool ok = false;
-        int openKeyNumber = openKeyMatcher.cap(1).toInt(&ok);
+        int openKeyNumber = openKeyMatch.captured(1).toInt(&ok);
 
         // Regex should mean this never happens.
         if (!ok || openKeyNumber < 1 || openKeyNumber > 12) {
             return mixxx::track::io::key::INVALID;
         }
 
-        bool major = openKeyMatcher.cap(2)
-                .compare("d", Qt::CaseInsensitive) == 0;
+        bool major = openKeyMatch.captured(2)
+                             .compare("d", Qt::CaseInsensitive) == 0;
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
 
-    QRegExp lancelotKeyMatcher(s_lancelotKeyPattern, Qt::CaseInsensitive);
-    if (lancelotKeyMatcher.exactMatch(trimmed)) {
+    QRegularExpressionMatch lancelotMatch = s_lancelotKeyRegex.match(trimmed);
+    if (lancelotMatch.hasMatch()) {
         bool ok = false;
-        int lancelotNumber = lancelotKeyMatcher.cap(1).toInt(&ok);
+        int lancelotNumber = lancelotMatch.captured(1).toInt(&ok);
 
         // Regex should mean this never happens.
         if (!ok || lancelotNumber < 1 || lancelotNumber > 12) {
@@ -290,24 +300,24 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
         int openKeyNumber = lancelotNumberToOpenKeyNumber(lancelotNumber);
 
-        bool major = lancelotKeyMatcher.cap(2)
-                .compare("b", Qt::CaseInsensitive) == 0;
+        bool major = lancelotMatch.captured(2)
+                             .compare("b", Qt::CaseInsensitive) == 0;
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
 
-    QRegExp keyMatcher(s_keyPattern, Qt::CaseInsensitive);
-    if (keyMatcher.exactMatch(trimmed)) {
+    QRegularExpressionMatch keyMatch = s_keyRegex.match(trimmed);
+    if (keyMatch.hasMatch()) {
         // Take the first letter, lowercase it and subtract 'a' and we get a
         // number between 0-6. Look up the major key associated with that letter
         // from s_letterToMajorKey. Upper-case means major, lower-case means
         // minor. Then apply the sharps or flats to the key.
-        QChar letter = keyMatcher.cap(1).at(0);
+        QChar letter = keyMatch.captured(1).at(0);
         int letterIndex = letter.toLower().toLatin1() - 'a';
         bool major = letter.isUpper();
 
         // Now apply sharps and flats to the letter key.
-        QString adjustments = keyMatcher.cap(2);
+        QString adjustments = keyMatch.captured(2);
         int steps = 0;
         for (const auto* it = adjustments.constBegin();
                 it != adjustments.constEnd();
@@ -315,7 +325,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
             steps += (*it == '#' || *it == s_sharpSymbol[0]) ? 1 : -1;
         }
 
-        QString scale = keyMatcher.cap(3);
+        QString scale = keyMatch.captured(3);
         // we override major if a scale definition exists
         if (! scale.isEmpty()) {
             if (scale.compare("m", Qt::CaseInsensitive) == 0) {

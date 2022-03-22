@@ -2,19 +2,20 @@
 
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
-#include "mixxx.h"
+#include "mixxxmainwindow.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
 #include "util/db/dbconnectionpooled.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
 
-DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                                 UserSettingsPointer pConfig, Library* pLibrary)
+DlgPrefWaveform::DlgPrefWaveform(
+        QWidget* pParent,
+        UserSettingsPointer pConfig,
+        std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
-          m_pMixxx(pMixxx) {
+          m_pLibrary(pLibrary) {
     setupUi(this);
 
     // Waveform overview init
@@ -254,7 +255,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
 
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
     m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
-    m_pMixxx->rebootMixxxView();
+    emit reloadUserInterface();
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {

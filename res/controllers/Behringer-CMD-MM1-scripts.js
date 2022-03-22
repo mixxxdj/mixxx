@@ -536,10 +536,10 @@ CMDMM.init = function () {
       this.speed=navEncoderScale;
     },
   });
-  CMDMM.VuMeterL = engine.makeConnection("[Master]","VuMeterL",function (value) {
+  CMDMM.VuMeterL = engine.makeUnbufferedConnection("[Master]","VuMeterL",function (value) {
     midi.sendShortMsg(MIDI.CC, 0x50, (value * 15) + 48);
   });
-  CMDMM.VuMeterR = engine.makeConnection("[Master]","VuMeterR",function (value) {
+  CMDMM.VuMeterR = engine.makeUnbufferedConnection("[Master]","VuMeterR",function (value) {
     midi.sendShortMsg(MIDI.CC, 0x51, (value * 15) + 48);
   });
   CMDMM.layer(1);

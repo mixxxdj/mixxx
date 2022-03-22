@@ -189,14 +189,14 @@ inline bool startsWithADTSHeader(
 const QString SoundSourceProviderM4A::kDisplayName = QStringLiteral("Nero FAAD2");
 
 //static
-const QStringList SoundSourceProviderM4A::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderM4A::kSupportedFileTypes = {
         QStringLiteral("m4a"),
         QStringLiteral("mp4"),
 };
 
-QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
+QStringList SoundSourceProviderM4A::getSupportedFileTypes() const {
     if (faad2::LibLoader::Instance()->isLoaded()) {
-        return kSupportedFileExtensions;
+        return kSupportedFileTypes;
     } else {
         return QStringList(); // none available
     }
@@ -747,7 +747,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                 // Either abort or retry by exiting the inner loop
                 break;
             } else {
-                // Reset the retry flag after succesfully decoding a block
+                // Reset the retry flag after successfully decoding a block
                 retryAfterReopeningDecoder = false;
             }
             // Upon a pending retry the inner loop is exited immediately and

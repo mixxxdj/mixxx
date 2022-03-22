@@ -18,19 +18,25 @@
 GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(
         const QString& group,
         QWidget* parent)
-        : GLSLWaveformWidget(group, parent, false) {
+        : GLSLWaveformWidget(group, parent, GLSLWaveformWidget::GlslType::Filtered) {
 }
 
 GLSLRGBWaveformWidget::GLSLRGBWaveformWidget(
         const QString& group,
         QWidget* parent)
-        : GLSLWaveformWidget(group, parent, true) {
+        : GLSLWaveformWidget(group, parent, GLSLWaveformWidget::GlslType::RGB) {
+}
+
+GLSLRGBStackedWaveformWidget::GLSLRGBStackedWaveformWidget(
+        const QString& group,
+        QWidget* parent)
+        : GLSLWaveformWidget(group, parent, GLSLWaveformWidget::GlslType::RGBStacked) {
 }
 
 GLSLWaveformWidget::GLSLWaveformWidget(
         const QString& group,
         QWidget* parent,
-        bool rgbRenderer)
+        GlslType type)
         : GLWaveformWidgetAbstract(group, parent) {
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
@@ -44,13 +50,15 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    if (rgbRenderer) {
-        m_pGlRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
-    } else {
+    if (type == GlslType::Filtered) {
         m_pGlRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
+    } else if (type == GlslType::RGB) {
+        m_pGlRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
+    } else if (type == GlslType::RGBStacked) {
+        m_pGlRenderer = addRenderer<GLSLWaveformRendererStackedSignal>();
     }
 #else
-    Q_UNUSED(rgbRenderer);
+    Q_UNUSED(type);
 #endif // QT_NO_OPENGL && !QT_OPENGL_ES_2
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();

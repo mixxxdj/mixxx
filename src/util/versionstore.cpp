@@ -212,8 +212,8 @@ void VersionStore::logBuildDetails() {
 
     qDebug() << "QStandardPaths::writableLocation(HomeLocation):"
              << QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    qDebug() << "QStandardPaths::writableLocation(DataLocation):"
-             << QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    qDebug() << "QStandardPaths::writableLocation(AppDataLocation):"
+             << QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     qDebug() << "QCoreApplication::applicationDirPath()"
              << QCoreApplication::applicationDirPath();
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCoreApplication>
 #include <QDesktopServices>
 #include <QDir>
 #include <QList>
@@ -20,14 +21,24 @@ class CmdlineArgs final {
         return cla;
     }
 
-    bool Parse(int &argc, char **argv);
-    void printUsage();
+    //! The original parser that provides the parsed values to Mixxx
+    //! This can be called before anything else is initialized
+    bool parse(int argc, char** argv);
+
+    //! The optional second run, that provides translated user feedback
+    //! This requires an initialized QCoreApplication
+    void parseForUserFeedback();
 
     const QList<QString>& getMusicFiles() const { return m_musicFiles; }
     bool getStartInFullscreen() const { return m_startInFullscreen; }
-    bool getMidiDebug() const { return m_midiDebug; }
+    bool getControllerDebug() const {
+        return m_controllerDebug;
+    }
     bool getDeveloper() const { return m_developer; }
     bool getSafeMode() const { return m_safeMode; }
+    bool useColors() const {
+        return m_useColors;
+    }
     bool getDebugAssertBreak() const { return m_debugAssertBreak; }
     bool getSettingsPathSet() const { return m_settingsPathSet; }
     mixxx::LogLevel getLogLevel() const { return m_logLevel; }
@@ -41,14 +52,31 @@ class CmdlineArgs final {
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
 
+    void setScaleFactor(double scaleFactor) {
+        m_scaleFactor = scaleFactor;
+    }
+    double getScaleFactor() const {
+        return m_scaleFactor;
+    }
+
   private:
+    enum class ParseMode {
+        Initial,
+        ForUserFeedback
+    };
+
+    bool parse(const QStringList& arguments, ParseMode mode);
+
     QList<QString> m_musicFiles;    // List of files to load into players at startup
     bool m_startInFullscreen;       // Start in fullscreen mode
-    bool m_midiDebug;
+    bool m_controllerDebug;
     bool m_developer; // Developer Mode
     bool m_safeMode;
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
+    double m_scaleFactor;
+    bool m_useColors;       // should colors be used
+    bool m_parseForUserFeedbackRequired;
     mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing
     QString m_locale;

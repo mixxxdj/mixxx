@@ -29,11 +29,25 @@ class LibraryFeature : public QObject {
   public:
     LibraryFeature(
             Library* pLibrary,
-            UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig,
+            const QString& iconName);
     ~LibraryFeature() override = default;
 
     virtual QVariant title() = 0;
-    virtual QIcon getIcon() = 0;
+
+    /// Returns the icon name.
+    ///
+    /// This is useful for QML skins that need to build a URL anyway and may use their own icon theme.
+    QString iconName() const {
+        return m_iconName;
+    }
+
+    /// Returns the icon.
+    ///
+    /// This is used by legacy QWidget skins that display a QIcon directly.
+    QIcon icon() const {
+        return m_icon;
+    }
 
     virtual bool dropAccept(const QList<QUrl>& urls, QObject* pSource) {
         Q_UNUSED(urls);
@@ -62,7 +76,7 @@ class LibraryFeature : public QObject {
     virtual void bindLibraryWidget(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}
     virtual void bindSidebarWidget(WLibrarySidebar* /* sidebar widget */) {}
-    virtual TreeItemModel* getChildModel() = 0;
+    virtual TreeItemModel* sidebarModel() const = 0;
 
     virtual bool hasTrackTable() {
         return false;
@@ -107,10 +121,14 @@ class LibraryFeature : public QObject {
         Q_UNUSED(index);
     }
   signals:
-    void showTrackModel(QAbstractItemModel* model);
+    void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    /// saves the scroll, selection and current state of the library model
+    void saveModelState();
+    /// restores the scroll, selection and current state of the library model
+    void restoreModelState();
     void restoreSearch(const QString&);
     void disableSearch();
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
@@ -134,4 +152,7 @@ class LibraryFeature : public QObject {
 
   private:
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
+
+    QString m_iconName;
+    QIcon m_icon;
 };

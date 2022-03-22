@@ -1,8 +1,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 
-#include "library/library.h"
-#include "library/trackcollection.h"
 #include "moc_trackanalysisscheduler.cpp"
+#include "track/track.h"
 #include "util/logger.h"
 
 namespace {
@@ -31,29 +30,33 @@ TrackAnalysisScheduler::NullPointer::NullPointer()
 
 //static
 TrackAnalysisScheduler::Pointer TrackAnalysisScheduler::createInstance(
-        Library* library,
+        std::unique_ptr<const TrackAnalysisSchedulerEnvironment> pEnvironment,
         int numWorkerThreads,
+        const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
         const UserSettingsPointer& pConfig,
         AnalyzerModeFlags modeFlags) {
     return Pointer(new TrackAnalysisScheduler(
-            library,
-            numWorkerThreads,
-            pConfig,
-            modeFlags),
+                           std::move(pEnvironment),
+                           numWorkerThreads,
+                           pDbConnectionPool,
+                           pConfig,
+                           modeFlags),
             deleteTrackAnalysisScheduler);
 }
 
 TrackAnalysisScheduler::TrackAnalysisScheduler(
-        Library* library,
+        std::unique_ptr<const TrackAnalysisSchedulerEnvironment> pEnvironment,
         int numWorkerThreads,
+        const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
         const UserSettingsPointer& pConfig,
         AnalyzerModeFlags modeFlags)
-        : m_library(library),
+        : m_pEnvironment(std::move(pEnvironment)),
           m_currentTrackProgress(kAnalyzerProgressUnknown),
           m_currentTrackNumber(0),
           m_dequeuedTracksCount(0),
           // The first signal should always be emitted
           m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
+    DEBUG_ASSERT(m_pEnvironment);
     VERIFY_OR_DEBUG_ASSERT(numWorkerThreads > 0) {
             kLogger.warning()
                     << "Invalid number of worker threads:"
@@ -70,11 +73,13 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
     for (int threadId = 0; threadId < numWorkerThreads; ++threadId) {
         m_workers.emplace_back(AnalyzerThread::createInstance(
                 threadId,
-                library->dbConnectionPool(),
+                pDbConnectionPool,
                 pConfig,
                 modeFlags));
-        connect(m_workers.back().thread(), &AnalyzerThread::progress,
-            this, &TrackAnalysisScheduler::onWorkerThreadProgress);
+        connect(m_workers.back().thread(),
+                &AnalyzerThread::progress,
+                this,
+                &TrackAnalysisScheduler::onWorkerThreadProgress);
     }
     // 2nd pass: Start worker threads in a suspended state
     for (const auto& worker: m_workers) {
@@ -275,7 +280,7 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
         DEBUG_ASSERT(nextTrackId.isValid());
         if (nextTrackId.isValid()) {
             TrackPointer nextTrack =
-                    m_library->trackCollection().getTrackById(nextTrackId);
+                    m_pEnvironment->loadTrackById(nextTrackId);
             if (nextTrack) {
                 if (m_pendingTrackIds.insert(nextTrackId).second) {
                     if (worker->submitNextTrack(std::move(nextTrack))) {
@@ -326,19 +331,4 @@ void TrackAnalysisScheduler::stop() {
     m_queuedTrackIds.clear();
     m_pendingTrackIds.clear();
     DEBUG_ASSERT((allTracksFinished()));
-}
-
-QList<TrackId> TrackAnalysisScheduler::stopAndCollectScheduledTrackIds() {
-    QList<TrackId> scheduledTrackIds;
-    scheduledTrackIds.reserve(static_cast<int>(m_queuedTrackIds.size() + m_pendingTrackIds.size()));
-    for (auto queuedTrackId: m_queuedTrackIds) {
-        scheduledTrackIds.append(std::move(queuedTrackId));
-    }
-    for (auto pendingTrackId: m_pendingTrackIds) {
-        scheduledTrackIds.append(std::move(pendingTrackId));
-    }
-    // Stopping the scheduler will clear all queued and pending tracks,
-    // so we need to do this after we have collected all scheduled tracks!
-    stop();
-    return scheduledTrackIds;
 }

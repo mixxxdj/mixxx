@@ -21,7 +21,7 @@ Variables:
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/controls/button_2state_right.xml">
+          <Template src="skin:../Tango/controls/button_2state_right_display.xml">
             <SetVariable name="TooltipId">beatloop_activate</SetVariable>
             <SetVariable name="ObjectName">LoopActivateButton</SetVariable>
             <SetVariable name="Size">30f,22f</SetVariable>
@@ -29,6 +29,7 @@ Variables:
             <SetVariable name="state_1_icon">loop_on.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_activate</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
           </Template>
 
           <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
@@ -52,7 +53,7 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>f,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/controls/button_2state_right_display.xml">
+              <Template src="skin:../Tango/controls/button_2state_right.xml">
                 <SetVariable name="TooltipId">reloop_toggle</SetVariable>
                 <SetVariable name="ObjectName">ReloopButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
@@ -60,7 +61,6 @@ Variables:
                 <SetVariable name="state_1_icon">reloop_on.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
-                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
               </Template>
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>

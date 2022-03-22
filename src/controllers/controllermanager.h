@@ -1,11 +1,13 @@
 #pragma once
 
+#include <QMutex>
 #include <QSharedPointer>
+#include <QTimer>
 
 #include "controllers/controllerenumerator.h"
-#include "controllers/controllerpreset.h"
-#include "controllers/controllerpresetinfo.h"
-#include "controllers/controllerpresetinfoenumerator.h"
+#include "controllers/controllermappinginfo.h"
+#include "controllers/controllermappinginfoenumerator.h"
+#include "controllers/legacycontrollermapping.h"
 #include "preferences/usersettings.h"
 
 // Forward declaration(s)
@@ -27,18 +29,18 @@ class ControllerManager : public QObject {
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
-    QSharedPointer<PresetInfoEnumerator> getMainThreadUserPresetEnumerator() {
-        return m_pMainThreadUserPresetEnumerator;
+    QSharedPointer<MappingInfoEnumerator> getMainThreadUserMappingEnumerator() {
+        return m_pMainThreadUserMappingEnumerator;
     }
-    QSharedPointer<PresetInfoEnumerator> getMainThreadSystemPresetEnumerator() {
-        return m_pMainThreadSystemPresetEnumerator;
+    QSharedPointer<MappingInfoEnumerator> getMainThreadSystemMappingEnumerator() {
+        return m_pMainThreadSystemMappingEnumerator;
     }
-    QString getConfiguredPresetFileForDevice(const QString& name);
+    QString getConfiguredMappingFileForDevice(const QString& name);
 
     /// Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() { emit requestSetUpDevices(); };
 
-    static QList<QString> getPresetPaths(UserSettingsPointer pConfig);
+    static QList<QString> getMappingPaths(UserSettingsPointer pConfig);
 
   signals:
     void devicesChanged();
@@ -49,7 +51,9 @@ class ControllerManager : public QObject {
   public slots:
     void updateControllerList();
 
-    void slotApplyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
+    void slotApplyMapping(Controller* pController,
+            std::shared_ptr<LegacyControllerMapping> pMapping,
+            bool bEnabled);
     void openController(Controller* pController);
     void closeController(Controller* pController);
 
@@ -66,7 +70,7 @@ class ControllerManager : public QObject {
     void pollDevices();
     void startPolling();
     void stopPolling();
-    void maybeStartOrStopPolling();
+    void pollIfAnyControllersOpen();
 
   private:
     UserSettingsPointer m_pConfig;
@@ -76,7 +80,7 @@ class ControllerManager : public QObject {
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
     QThread* m_pThread;
-    QSharedPointer<PresetInfoEnumerator> m_pMainThreadUserPresetEnumerator;
-    QSharedPointer<PresetInfoEnumerator> m_pMainThreadSystemPresetEnumerator;
+    QSharedPointer<MappingInfoEnumerator> m_pMainThreadUserMappingEnumerator;
+    QSharedPointer<MappingInfoEnumerator> m_pMainThreadSystemMappingEnumerator;
     bool m_skipPoll;
 };

@@ -63,22 +63,29 @@ void WStarRating::slotTrackLoaded(TrackPointer pTrack) {
                     &WStarRating::slotTrackChanged);
             m_pCurrentTrack = pTrack;
         }
-        updateRating();
+        updateRatingFromTrack();
     }
 }
 
-void WStarRating::updateRating() {
-    if (m_pCurrentTrack) {
-        m_starRating.setStarCount(m_pCurrentTrack->getRating());
-    } else {
-        m_starRating.setStarCount(0);
-    }
+void WStarRating::setRating(int rating) {
+    // Check consistency with the connected track
+    DEBUG_ASSERT(!m_pCurrentTrack ||
+            m_pCurrentTrack->getRating() == rating);
+    m_starRating.setStarCount(rating);
     update();
+}
+
+void WStarRating::updateRatingFromTrack() {
+    if (m_pCurrentTrack) {
+        setRating(m_pCurrentTrack->getRating());
+    } else {
+        setRating(0);
+    }
 }
 
 void WStarRating::slotTrackChanged(TrackId trackId) {
     Q_UNUSED(trackId);
-    updateRating();
+    updateRatingFromTrack();
 }
 
 void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
@@ -98,7 +105,11 @@ void WStarRating::mouseMoveEvent(QMouseEvent *event) {
     }
 
     m_focused = true;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    int star = starAtPosition(event->position().toPoint().x());
+#else
     int star = starAtPosition(event->x());
+#endif
 
     if (star != m_starRating.starCount() && star != -1) {
         m_starRating.setStarCount(star);
@@ -132,7 +143,7 @@ void WStarRating::slotStarsDown(double v) {
 
 void WStarRating::leaveEvent(QEvent* /*unused*/) {
     m_focused = false;
-    updateRating();
+    updateRatingFromTrack();
 }
 
 // The method uses basic linear algebra to find out which star is under the cursor.

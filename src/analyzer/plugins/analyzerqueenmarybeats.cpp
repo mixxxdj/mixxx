@@ -22,12 +22,12 @@ constexpr float kStepSecs = 0.01161f;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximumBinSizeHz = 50; // Hz
 
-DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
+DFConfig makeDetectionFunctionConfig(int stepSizeFrames, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
     // 2.0.
     DFConfig config;
     config.DFType = DF_COMPLEXSD;
-    config.stepSize = stepSize;
+    config.stepSize = stepSizeFrames;
     config.frameLength = windowSize;
     config.dbRise = 3;
     config.adaptiveWhitening = false;
@@ -39,25 +39,24 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
 } // namespace
 
 AnalyzerQueenMaryBeats::AnalyzerQueenMaryBeats()
-        : m_iSampleRate(0),
-          m_windowSize(0),
-          m_stepSize(0) {
+        : m_windowSize(0),
+          m_stepSizeFrames(0) {
 }
 
 AnalyzerQueenMaryBeats::~AnalyzerQueenMaryBeats() {
 }
 
-bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
+bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
     m_detectionResults.clear();
-    m_iSampleRate = samplerate;
-    m_stepSize = static_cast<int>(m_iSampleRate * kStepSecs);
-    m_windowSize = MathUtilities::nextPowerOfTwo(m_iSampleRate / kMaximumBinSizeHz);
+    m_sampleRate = sampleRate;
+    m_stepSizeFrames = static_cast<int>(m_sampleRate * kStepSecs);
+    m_windowSize = MathUtilities::nextPowerOfTwo(m_sampleRate / kMaximumBinSizeHz);
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
-            makeDetectionFunctionConfig(m_stepSize, m_windowSize));
-    qDebug() << "input sample rate is " << m_iSampleRate << ", step size is " << m_stepSize;
+            makeDetectionFunctionConfig(m_stepSizeFrames, m_windowSize));
+    qDebug() << "input sample rate is " << m_sampleRate << ", step size is " << m_stepSizeFrames;
 
     m_helper.initialize(
-            m_windowSize, m_stepSize, [this](double* pWindow, size_t) {
+            m_windowSize, m_stepSizeFrames, [this](double* pWindow, size_t) {
                 // TODO(rryan) reserve?
                 m_detectionResults.push_back(
                         m_pDetectionFunction->processTimeDomain(pWindow));
@@ -97,7 +96,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
         beatPeriod.push_back(0.0);
     }
 
-    TempoTrackV2 tt(m_iSampleRate, m_stepSize);
+    TempoTrackV2 tt(m_sampleRate, m_stepSizeFrames);
     tt.calculateBeatPeriod(df, beatPeriod, tempi);
 
     std::vector<double> beats;
@@ -105,9 +104,10 @@ bool AnalyzerQueenMaryBeats::finalize() {
 
     m_resultBeats.reserve(static_cast<int>(beats.size()));
     for (size_t i = 0; i < beats.size(); ++i) {
-        // we add the halve m_stepSize here, because the beat
+        // we add the halve m_stepSizeFrames here, because the beat
         // is detected between the two samples.
-        double result = (beats.at(i) * m_stepSize) + m_stepSize / 2;
+        const auto result = mixxx::audio::FramePos(
+                (beats.at(i) * m_stepSizeFrames) + m_stepSizeFrames / 2);
         m_resultBeats.push_back(result);
     }
 

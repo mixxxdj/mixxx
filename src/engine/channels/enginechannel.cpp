@@ -4,12 +4,12 @@
 #include "control/controlpushbutton.h"
 #include "moc_enginechannel.cpp"
 
-EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
+EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
         EngineChannel::ChannelOrientation defaultOrientation,
         EffectsManager* pEffectsManager,
         bool isTalkoverChannel,
         bool isPrimaryDeck)
-        : m_group(handle_group),
+        : m_group(handleGroup),
           m_pEffectsManager(pEffectsManager),
           m_vuMeter(getGroup()),
           m_pSampleRate(new ControlProxy("[Master]", "samplerate")),
@@ -38,7 +38,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
     m_pTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
 
     if (m_pEffectsManager != nullptr) {
-        m_pEffectsManager->registerInputChannel(handle_group);
+        m_pEffectsManager->registerInputChannel(handleGroup);
     }
 }
 

@@ -18,9 +18,10 @@ const mixxx::Logger kLogger("BaseExternalLibraryFeature");
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()) {
+        UserSettingsPointer pConfig,
+        const QString& iconName)
+        : LibraryFeature(pLibrary, pConfig, iconName),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()) {
     m_pAddToAutoDJAction = make_parented<QAction>(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,
             &QAction::triggered,
@@ -116,7 +117,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
         playlistDao.appendTracksToPlaylist(trackIds, playlistId);
     } else {
         // Do not change strings here without also changing strings in
-        // src/library/baseplaylistfeature.cpp
+        // src/library/trackset/baseplaylistfeature.cpp
         QMessageBox::warning(nullptr,
                 tr("Playlist Creation Failed"),
                 tr("An unknown error occurred while creating playlist: ") + playlist);
@@ -156,7 +157,7 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         if (!trackId.isValid()) {
             kLogger.warning()
                     << "Failed to add track"
-                    << pPlaylistModelToAdd->getTrackLocation(index)
+                    << pPlaylistModelToAdd->getTrackUrl(index)
                     << "to playlist"
                     << *pPlaylist;
             continue;
@@ -164,7 +165,7 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "Adding track"
-                    << pPlaylistModelToAdd->getTrackLocation(index)
+                    << pPlaylistModelToAdd->getTrackUrl(index)
                     << "to playlist"
                     << *pPlaylist;
         }

@@ -1,26 +1,21 @@
-// AutoDJfeature.h
-// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+#pragma once
 
-#ifndef AUTODJFEATURE_H
-#define AUTODJFEATURE_H
-
-#include <QObject>
-#include <QStringListModel>
-#include <QVariant>
-#include <QIcon>
-#include <QUrl>
+#include <QAction>
 #include <QList>
 #include <QModelIndex>
+#include <QObject>
 #include <QPoint>
-#include <QAction>
 #include <QPointer>
+#include <QStringListModel>
+#include <QUrl>
+#include <QVariant>
 
-#include "library/libraryfeature.h"
-#include "preferences/usersettings.h"
-#include "library/treeitemmodel.h"
-#include "library/crate/crate.h"
 #include "library/dao/autodjcratesdao.h"
+#include "library/libraryfeature.h"
+#include "library/trackset/crate/crate.h"
+#include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class DlgAutoDJ;
 class Library;
@@ -39,7 +34,6 @@ class AutoDJFeature : public LibraryFeature {
     virtual ~AutoDJFeature();
 
     QVariant title() override;
-    QIcon getIcon() override;
 
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
@@ -48,7 +42,7 @@ class AutoDJFeature : public LibraryFeature {
                     KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
     bool hasTrackTable() override {
         return true;
@@ -67,7 +61,7 @@ class AutoDJFeature : public LibraryFeature {
     // The id of the AutoDJ playlist.
     int m_iAutoDJPlaylistId;
     AutoDJProcessor* m_pAutoDJProcessor;
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAutoDJ* m_pAutoDJView;
 
     // Initialize the list of crates loaded into the auto-DJ queue.
@@ -88,7 +82,6 @@ class AutoDJFeature : public LibraryFeature {
     // auto-DJ list.
     QAction *m_pRemoveCrateFromAutoDj;
 
-    QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
   private slots:
@@ -107,6 +100,3 @@ class AutoDJFeature : public LibraryFeature {
     // of tracks in the playlist
     void slotRandomQueue(int numTracksToAdd);
 };
-
-
-#endif /* AUTODJFEATURE_H */

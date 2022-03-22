@@ -7,7 +7,7 @@
 #include "moc_cachingreader.cpp"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/counter.h"
 #include "util/logger.h"
 #include "util/math.h"
@@ -20,7 +20,7 @@ mixxx::Logger kLogger("CachingReader");
 // This is the default hint frameCount that is adopted in case of Hint::kFrameCountForward and
 // Hint::kFrameCountBackward count is provided. It matches 23 ms @ 44.1 kHz
 // TODO() Do we suffer cache misses if we use an audio buffer of above 23 ms?
-const SINT kDefaultHintFrames = 1024;
+constexpr SINT kDefaultHintFrames = 1024;
 
 // With CachingReaderChunk::kFrames = 8192 each chunk consumes
 // 8192 frames * 2 channels/frame * 4-bytes per sample = 65 kB.
@@ -37,7 +37,7 @@ const SINT kDefaultHintFrames = 1024;
 // (kNumberOfCachedChunksInMemory = 1, 2, 3, ...) for testing purposes
 // to verify that the MRU/LRU cache works as expected. Even though
 // massive drop outs are expected to occur Mixxx should run reliably!
-const SINT kNumberOfCachedChunksInMemory = 80;
+constexpr SINT kNumberOfCachedChunksInMemory = 80;
 
 } // anonymous namespace
 
@@ -528,6 +528,9 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         	hintFrameCount = kDefaultHintFrames;
             if (hintFrame < 0) {
             	hintFrameCount += hintFrame;
+                if (hintFrameCount <= 0) {
+                    continue;
+                }
                 hintFrame = 0;
             }
         }

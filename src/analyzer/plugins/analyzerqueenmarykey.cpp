@@ -27,7 +27,7 @@ AnalyzerQueenMaryKey::AnalyzerQueenMaryKey()
 AnalyzerQueenMaryKey::~AnalyzerQueenMaryKey() {
 }
 
-bool AnalyzerQueenMaryKey::initialize(int samplerate) {
+bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
     m_prevKey = mixxx::track::io::key::INVALID;
     m_resultKeys.clear();
     m_currentFrame = 0;
@@ -42,17 +42,17 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
                                 // 8 = normal chroma overlap
         int decimationFactor;
 
-        Config(double _sampleRate, float _tuningFrequency) :
-            sampleRate(_sampleRate),
-            tuningFrequency(_tuningFrequency),
-            hpcpAverage(10),
-            medianAverage(10),
-            frameOverlapFactor(1),
-            decimationFactor(8) {
+        Config(mixxx::audio::SampleRate _sampleRate, float _tuningFrequency)
+                : sampleRate(_sampleRate.toDouble()),
+                  tuningFrequency(_tuningFrequency),
+                  hpcpAverage(10),
+                  medianAverage(10),
+                  frameOverlapFactor(1),
+                  decimationFactor(8) {
         }
     };
 
-    GetKeyMode::Config config(samplerate, kTuningFrequencyHertz);
+    GetKeyMode::Config config(sampleRate, kTuningFrequencyHertz);
     m_pKeyMode = std::make_unique<GetKeyMode>(config);
     size_t windowSize = m_pKeyMode->getBlockSize();
     size_t stepSize = m_pKeyMode->getHopSize();

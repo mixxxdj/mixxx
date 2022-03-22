@@ -1,9 +1,6 @@
-#ifndef MIXXX_DBCONNECTIONPOOLER_H
-#define MIXXX_DBCONNECTIONPOOLER_H
-
+#pragma once
 
 #include "util/db/dbconnectionpool.h"
-
 
 namespace mixxx {
 
@@ -47,6 +44,3 @@ class DbConnectionPooler final {
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_DBCONNECTIONPOOLER_H

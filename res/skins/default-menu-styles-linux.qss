@@ -12,7 +12,7 @@
                  but we now have space for the checkbox */
   margin: 0em 0em 0em 1.3em;
   }
-  /* Checkbox preceeding menu items */
+  /* Checkbox preceding menu items */
   #MainMenu QMenu::indicator {
     /*width: 1em;*/
     /*height: 1em;*/

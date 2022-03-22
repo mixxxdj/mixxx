@@ -1,12 +1,11 @@
 #pragma once
 
-#include <limits>
-
 #include <QAtomicInt>
 #include <QObject>
+#include <limits>
 
 #include "util/assert.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer

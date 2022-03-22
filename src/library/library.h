@@ -6,7 +6,11 @@
 #include <QObject>
 #include <QPointer>
 
-#include "analyzer/analyzerprogress.h"
+#include "analyzer/trackanalysisscheduler.h"
+#include "library/library_decl.h"
+#ifdef __ENGINEPRIME__
+#include "library/trackset/crate/crateid.h"
+#endif
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
@@ -32,6 +36,13 @@ class TrackModel;
 class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
+class WLibraryTextBrowser;
+
+#ifdef __ENGINEPRIME__
+namespace mixxx {
+class LibraryExporter;
+} // namespace mixxx
+#endif
 
 // A Library class is a container for all the model-side aspects of the library.
 // A library widget can be attached to the Library object by calling bindLibraryWidget.
@@ -39,8 +50,6 @@ class Library: public QObject {
     Q_OBJECT
 
   public:
-    static const QString kConfigGroup;
-
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
@@ -55,18 +64,22 @@ class Library: public QObject {
         return m_pDbConnectionPool;
     }
 
-    TrackCollectionManager* trackCollections() const;
+    TrackCollectionManager* trackCollectionManager() const;
 
-    // Deprecated: Obtain directly from TrackCollectionManager
-    TrackCollection& trackCollection();
+    TrackAnalysisScheduler::Pointer createTrackAnalysisScheduler(
+            int numWorkerThreads,
+            AnalyzerModeFlags modeFlags) const;
 
     void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* pKeyboard);
+    void bindFeatureRootView(WLibraryTextBrowser* pTextBrowser);
 
     void addFeature(LibraryFeature* feature);
-    QStringList getDirs();
+
+    /// Needed for exposing models to QML
+    LibraryTableModel* trackTableModel() const;
 
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
@@ -78,34 +91,36 @@ class Library: public QObject {
 
     //static Library* buildDefaultLibrary();
 
-    enum class RemovalType {
-        KeepTracks,
-        HideTracks,
-        PurgeTracks
-    };
-
     static const int kDefaultRowHeightPx;
 
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
 
+    /// Triggers a new search in the internal track collection
+    /// and shows the results by switching the view.
+    void searchTracksInCollection(const QString& query);
+
+#ifdef __ENGINEPRIME__
+    std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
+#endif
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
-    void slotLoadLocationToPlayer(const QString& location, const QString& group);
+    void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
     void slotRequestAddDir(const QString& directory);
-    void slotRequestRemoveDir(const QString& directory, Library::RemovalType removalType);
+    void slotRequestRemoveDir(const QString& directory, LibraryRemovalType removalType);
     void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
 
   signals:
-    void showTrackModel(QAbstractItemModel* model);
+    void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
@@ -115,6 +130,12 @@ class Library: public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
+#ifdef __ENGINEPRIME__
+    void exportLibrary();
+    void exportCrate(CrateId crateId);
+#endif
+    void saveModelState();
+    void restoreModelState();
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);

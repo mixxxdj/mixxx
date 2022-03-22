@@ -62,9 +62,6 @@ class CoverArtDelegate : public TableItemDelegate {
     TrackPointer loadTrackByLocation(
             const QString& trackLocation) const;
 
-    CoverInfo coverInfoForIndex(
-            const QModelIndex& index) const;
-
     CoverArtCache* const m_pCache;
     bool m_inhibitLazyLoading;
 

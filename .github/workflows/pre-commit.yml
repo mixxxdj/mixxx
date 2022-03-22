@@ -10,17 +10,14 @@ jobs:
   pre-commit:
     name: Detecting code style issues
     runs-on: ubuntu-latest
+    # The Dockerfile for this container can be found at:
+    # https://github.com/Holzhaus/mixxx-ci-docker
+    container: holzhaus/mixxx-ci:20210923
     steps:
     - name: "Check out repository"
       uses: actions/checkout@v2
       with:
         fetch-depth: 2
-
-    - name: "Set up Python"
-      uses: actions/setup-python@v2
-
-    - name: Install clang-format
-      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-format-10
 
     - name: "Detect code style issues (push)"
       uses: pre-commit/action@v2.0.3
@@ -29,7 +26,7 @@ jobs:
       # disable these checks for now when pushing directly (but still run these
       # on Pull Requests!).
       env:
-        SKIP: end-of-file-fixer,trailing-whitespace,clang-format,eslint,no-commit-to-branch
+        SKIP: clang-format,eslint,no-commit-to-branch
 
     - name: "Detect code style issues (pull_request)"
       uses: pre-commit/action@v2.0.3
@@ -55,9 +52,6 @@ jobs:
       with:
         name: ${{ env.UPLOAD_PATCH_FILE }}
         path: ${{ env.UPLOAD_PATCH_FILE }}
-
-    - name: "Install appstreamcli"
-      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends appstream
 
     # AppStream metadata has been generated/updated by a pre-commit hook
     - name: "Validate AppStream metadata"

@@ -1,5 +1,6 @@
 #include "track/trackrecord.h"
 
+#include "sources/metadatasource.h"
 #include "track/keyfactory.h"
 #include "util/logger.h"
 
@@ -15,9 +16,10 @@ const Logger kLogger("TrackRecord");
 
 TrackRecord::TrackRecord(TrackId id)
         : m_id(std::move(id)),
-          m_metadataSynchronized(false),
+          m_mainCuePosition(mixxx::audio::kStartFramePos),
           m_rating(0),
-          m_bpmLocked(false) {
+          m_bpmLocked(false),
+          m_headerParsed(false) {
 }
 
 void TrackRecord::setKeys(const Keys& keys) {
@@ -40,19 +42,18 @@ bool TrackRecord::updateGlobalKey(
     return false;
 }
 
-bool TrackRecord::updateGlobalKeyText(
+UpdateResult TrackRecord::updateGlobalKeyText(
         const QString& keyText,
         track::io::key::Source keySource) {
     Keys keys = KeyFactory::makeBasicKeysFromText(keyText, keySource);
     if (keys.getGlobalKey() == track::io::key::INVALID) {
-        return false;
-    } else {
-        if (m_keys.getGlobalKey() != keys.getGlobalKey()) {
-            setKeys(keys);
-            return true;
-        }
+        return UpdateResult::Rejected;
     }
-    return false;
+    if (m_keys.getGlobalKey() == keys.getGlobalKey()) {
+        return UpdateResult::Unchanged;
+    }
+    setKeys(keys);
+    return UpdateResult::Updated;
 }
 
 namespace {
@@ -108,11 +109,110 @@ bool copyIfNotEmpty(
 
 } // anonymous namespace
 
-bool TrackRecord::mergeImportedMetadata(
-        const TrackMetadata& importedFromFile) {
+bool TrackRecord::updateSourceSynchronizedAt(
+        const QDateTime& sourceSynchronizedAt) {
+    VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt.isValid()) {
+        // Cannot be reset after it has been set at least once.
+        // This is required to prevent unintended and repeated
+        // reimporting of metadata from file tags.
+        return false;
+    }
+    if (getSourceSynchronizedAt() == sourceSynchronizedAt) {
+        return false; // unchanged
+    }
+    if (getSourceSynchronizedAt().isValid() &&
+            getSourceSynchronizedAt() > sourceSynchronizedAt) {
+        kLogger.warning()
+                << "Backdating source synchronization time from"
+                << getSourceSynchronizedAt()
+                << "to"
+                << sourceSynchronizedAt;
+    }
+    setSourceSynchronizedAt(sourceSynchronizedAt);
+    m_headerParsed = sourceSynchronizedAt.isValid();
+    return true;
+}
+
+TrackRecord::SourceSyncStatus TrackRecord::checkSourceSyncStatus(
+        const FileInfo& fileInfo) const {
+    // This method cannot be used to update m_headerParsed after modifying
+    // m_sourceSynchronizedAt during a short moment of inconsistency.
+    // Otherwise the debug assertion triggers!
+    DEBUG_ASSERT(m_headerParsed ||
+            !getSourceSynchronizedAt().isValid());
+    // Legacy fallback: The property sourceSynchronizedAt has been added later.
+    // Files that have been added before that time and that have never been
+    // re-imported will only have that legacy flag set while sourceSynchronizedAt
+    // is still invalid.
+    if (!m_headerParsed) {
+        // Enforce initial import of metadata if it hasn't succeeded
+        // at least once yet.
+        return SourceSyncStatus::Void;
+    }
+    if (!getSourceSynchronizedAt().isValid()) {
+        // Existing tracks that have been imported before database version
+        // 37 don't have a synchronization time stamp.
+        return SourceSyncStatus::Unknown;
+    }
+    const QDateTime fileSourceSynchronizedAt =
+            MetadataSource::getFileSynchronizedAt(fileInfo.toQFile());
+    if (!fileSourceSynchronizedAt.isValid()) {
+        kLogger.warning()
+                << "Failed to obtain synchronization time stamp for file"
+                << mixxx::FileInfo(fileInfo)
+                << ": Is this file missing or inaccessible?";
+        return SourceSyncStatus::Undefined;
+    }
+    if (getSourceSynchronizedAt() < fileSourceSynchronizedAt) {
+        return SourceSyncStatus::Outdated;
+    }
+    // This could actually happen when users replace files with
+    // an older version on the file system. But it should never
+    // happen under normal operation. Otherwise it might indicate
+    // a serious programming error and we should detect it early
+    // before the release. Debug assertions are only enabled in
+    // development and testing versions.
+    VERIFY_OR_DEBUG_ASSERT(getSourceSynchronizedAt() <= fileSourceSynchronizedAt) {
+        kLogger.warning()
+                << "Internal source synchronization time stamp"
+                << getSourceSynchronizedAt()
+                << "is ahead of"
+                << fileSourceSynchronizedAt
+                << "for file"
+                << mixxx::FileInfo(fileInfo)
+                << ": Has this file been replaced with an older version?";
+    }
+    return SourceSyncStatus::Synchronized;
+}
+
+bool TrackRecord::replaceMetadataFromSource(
+        TrackMetadata&& importedMetadata,
+        const QDateTime& sourceSynchronizedAt) {
+    VERIFY_OR_DEBUG_ASSERT(sourceSynchronizedAt.isValid()) {
+        return false;
+    }
+    DEBUG_ASSERT(sourceSynchronizedAt.timeSpec() == Qt::UTC);
+    if (m_streamInfoFromSource) {
+        // Preserve precise stream info if available, i.e. discard the
+        // audio properties that are also stored as track metadata.
+        importedMetadata.updateStreamInfoFromSource(*m_streamInfoFromSource);
+    }
+    bool modified = false;
+    if (getMetadata() != importedMetadata) {
+        setMetadata(std::move(importedMetadata));
+        modified = true;
+    }
+    if (updateSourceSynchronizedAt(sourceSynchronizedAt)) {
+        modified = true;
+    }
+    return modified;
+}
+
+bool TrackRecord::mergeExtraMetadataFromSource(
+        const TrackMetadata& importedMetadata) {
     bool modified = false;
     TrackInfo* pMergedTrackInfo = m_metadata.ptrTrackInfo();
-    const TrackInfo& importedTrackInfo = importedFromFile.getTrackInfo();
+    const TrackInfo& importedTrackInfo = importedMetadata.getTrackInfo();
     if (pMergedTrackInfo->getTrackTotal() == kTrackTotalPlaceholder) {
         pMergedTrackInfo->setTrackTotal(importedTrackInfo.getTrackTotal());
         // Also set the track number if it is still empty due
@@ -180,7 +280,7 @@ bool TrackRecord::mergeImportedMetadata(
             pMergedTrackInfo->ptrWork(),
             importedTrackInfo.getWork());
     AlbumInfo* pMergedAlbumInfo = refMetadata().ptrAlbumInfo();
-    const AlbumInfo& importedAlbumInfo = importedFromFile.getAlbumInfo();
+    const AlbumInfo& importedAlbumInfo = importedMetadata.getAlbumInfo();
     modified |= mergeReplayGainMetadataProperty(
             pMergedAlbumInfo->ptrReplayGain(),
             importedAlbumInfo.getReplayGain());
@@ -251,16 +351,17 @@ bool operator==(const TrackRecord& lhs, const TrackRecord& rhs) {
     return lhs.getMetadata() == rhs.getMetadata() &&
             lhs.getCoverInfo() == rhs.getCoverInfo() &&
             lhs.getId() == rhs.getId() &&
-            lhs.getMetadataSynchronized() == rhs.getMetadataSynchronized() &&
+            lhs.getSourceSynchronizedAt() == rhs.getSourceSynchronizedAt() &&
             lhs.getDateAdded() == rhs.getDateAdded() &&
             lhs.getFileType() == rhs.getFileType() &&
             lhs.getUrl() == rhs.getUrl() &&
             lhs.getPlayCounter() == rhs.getPlayCounter() &&
             lhs.getColor() == rhs.getColor() &&
-            lhs.getCuePoint() == rhs.getCuePoint() &&
+            lhs.getMainCuePosition() == rhs.getMainCuePosition() &&
             lhs.getBpmLocked() == rhs.getBpmLocked() &&
             lhs.getKeys() == rhs.getKeys() &&
-            lhs.getRating() == rhs.getRating();
+            lhs.getRating() == rhs.getRating() &&
+            lhs.m_headerParsed == rhs.m_headerParsed;
 }
 
 } // namespace mixxx

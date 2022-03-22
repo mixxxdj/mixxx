@@ -23,7 +23,7 @@ if(NOT CPACK_DEBIAN_DEBCHANGE)
 endif()
 
 # We create a temporary debian folder that the debhelper below run as usual.
-# The final debian folder is created indipendently by cpack
+# The final debian folder is created independently by cpack
 message( NOTICE "Creating temporary debian folder for debhelper" )
 file(COPY ${CPACK_DEBIAN_SOURCE_DIR}/packaging/debian
     DESTINATION ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME})
@@ -69,7 +69,7 @@ function(run_dh DH_COMMAND)
         WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
         RESULT_VARIABLE CPACK_DEBIAN_DH_RET)
     if(NOT CPACK_DEBIAN_DH_RET EQUAL "0")
-        message(FATAL_ERROR "${DH_COMMAND} retuned exit code ${CPACK_DEBIAN_DH_RET}")
+        message(FATAL_ERROR "${DH_COMMAND} returned exit code ${CPACK_DEBIAN_DH_RET}")
     endif()
 endfunction()
 

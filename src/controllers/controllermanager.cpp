@@ -1,12 +1,14 @@
 #include "controllers/controllermanager.h"
 
 #include <QSet>
+#include <QThread>
 
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/portmidienumerator.h"
 #include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
+#include "util/compatibility/qmutex.h"
 #include "util/time.h"
 #include "util/trace.h"
 #ifdef __HSS1394__
@@ -39,7 +41,7 @@ QString sanitizeDeviceName(QString name) {
     return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
 }
 
-QFileInfo findPresetFile(const QString& pathOrFilename, const QStringList& paths) {
+QFileInfo findMappingFile(const QString& pathOrFilename, const QStringList& paths) {
     QFileInfo fileInfo(pathOrFilename);
     if (fileInfo.isAbsolute()) {
         return fileInfo;
@@ -54,6 +56,10 @@ QFileInfo findPresetFile(const QString& pathOrFilename, const QStringList& paths
 
     return QFileInfo();
 }
+
+// Legacy code referred to mappings as "presets", so "[ControllerPreset]" must be
+// kept for backwards compatibility.
+const QString kSettingsGroup = QLatin1String("[ControllerPreset]");
 
 } // anonymous namespace
 
@@ -82,13 +88,14 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
           m_pollTimer(this),
           m_skipPoll(false) {
-    qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
+    qRegisterMetaType<std::shared_ptr<LegacyControllerMapping>>(
+            "std::shared_ptr<LegacyControllerMapping>");
 
     // Create controller mapping paths in the user's home directory.
-    QString userPresets = userPresetsPath(m_pConfig);
-    if (!QDir(userPresets).exists()) {
-        qDebug() << "Creating user controller presets directory:" << userPresets;
-        QDir().mkpath(userPresets);
+    QString userMappings = userMappingsPath(m_pConfig);
+    if (!QDir(userMappings).exists()) {
+        qDebug() << "Creating user controller mappings directory:" << userMappings;
+        QDir().mkpath(userMappings);
     }
 
     m_pollTimer.setInterval(kPollInterval.toIntegerMillis());
@@ -130,16 +137,16 @@ ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilt
 void ControllerManager::slotInitialize() {
     qDebug() << "ControllerManager:slotInitialize";
 
-    // Initialize preset info parsers. This object is only for use in the main
+    // Initialize mapping info parsers. This object is only for use in the main
     // thread. Do not touch it from within ControllerManager.
-    m_pMainThreadUserPresetEnumerator = QSharedPointer<PresetInfoEnumerator>(
-            new PresetInfoEnumerator(userPresetsPath(m_pConfig)));
-    m_pMainThreadSystemPresetEnumerator = QSharedPointer<PresetInfoEnumerator>(
-            new PresetInfoEnumerator(resourcePresetsPath(m_pConfig)));
+    m_pMainThreadUserMappingEnumerator = QSharedPointer<MappingInfoEnumerator>(
+            new MappingInfoEnumerator(userMappingsPath(m_pConfig)));
+    m_pMainThreadSystemMappingEnumerator = QSharedPointer<MappingInfoEnumerator>(
+            new MappingInfoEnumerator(resourceMappingsPath(m_pConfig)));
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
-    m_enumerators.append(new PortMidiEnumerator(m_pConfig));
+    m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator(m_pConfig));
 #endif
@@ -147,7 +154,7 @@ void ControllerManager::slotInitialize() {
     m_enumerators.append(new BulkEnumerator(m_pConfig));
 #endif
 #ifdef __HID__
-    m_enumerators.append(new HidEnumerator(m_pConfig));
+    m_enumerators.append(new HidEnumerator());
 #endif
 }
 
@@ -156,7 +163,7 @@ void ControllerManager::slotShutdown() {
 
     // Clear m_enumerators before deleting the enumerators to prevent other code
     // paths from accessing them.
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     QList<ControllerEnumerator*> enumerators = m_enumerators;
     m_enumerators.clear();
     locker.unlock();
@@ -171,7 +178,10 @@ void ControllerManager::slotShutdown() {
 }
 
 void ControllerManager::updateControllerList() {
-    QMutexLocker locker(&m_mutex);
+    // NOTE: Currently this function is only called on startup. If hotplug is added, changes to the
+    // controller list must be synchronized with dlgprefcontrollers to avoid dangling connections
+    // and possible crashes.
+    auto locker = lockMutex(&m_mutex);
     if (m_enumerators.isEmpty()) {
         qWarning() << "updateControllerList called but no enumerators have been added!";
         return;
@@ -193,14 +203,14 @@ void ControllerManager::updateControllerList() {
 }
 
 QList<Controller*> ControllerManager::getControllers() const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     return m_controllers;
 }
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
     qDebug() << "ControllerManager::getControllerList";
 
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
 
@@ -217,8 +227,8 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
-QString ControllerManager::getConfiguredPresetFileForDevice(const QString& name) {
-    return m_pConfig->getValueString(ConfigKey("[ControllerPreset]", sanitizeDeviceName(name)));
+QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name) {
+    return m_pConfig->getValueString(ConfigKey(kSettingsGroup, sanitizeDeviceName(name)));
 }
 
 void ControllerManager::slotSetUpDevices() {
@@ -226,7 +236,7 @@ void ControllerManager::slotSetUpDevices() {
 
     updateControllerList();
     QList<Controller*> deviceList = getControllerList(false, true);
-    QStringList presetPaths(getPresetPaths(m_pConfig));
+    QStringList mappingPaths(getMappingPaths(m_pConfig));
 
     for (Controller* pController : deviceList) {
         QString name = pController->getName();
@@ -243,28 +253,30 @@ void ControllerManager::slotSetUpDevices() {
             continue;
         }
 
-        // Check if device has a configured preset
-        QString presetFilePath = getConfiguredPresetFileForDevice(deviceName);
-        if (presetFilePath.isEmpty()) {
+        // Check if device has a configured mapping
+        QString mappingFilePath = getConfiguredMappingFileForDevice(deviceName);
+        if (mappingFilePath.isEmpty()) {
             continue;
         }
 
-        qDebug() << "Searching for controller preset" << presetFilePath
-                 << "in paths:" << presetPaths.join(",");
-        QFileInfo presetFile = findPresetFile(presetFilePath, presetPaths);
-        if (!presetFile.exists()) {
-            qDebug() << "Could not find" << presetFilePath << "in any preset path.";
+        qDebug() << "Searching for controller mapping" << mappingFilePath
+                 << "in paths:" << mappingPaths.join(",");
+        QFileInfo mappingFile = findMappingFile(mappingFilePath, mappingPaths);
+        if (!mappingFile.exists()) {
+            qDebug() << "Could not find" << mappingFilePath << "in any mapping path.";
             continue;
         }
 
-        ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
-                presetFile, resourcePresetsPath(m_pConfig));
+        std::shared_ptr<LegacyControllerMapping> pMapping =
+                LegacyControllerMappingFileHandler::loadMapping(
+                        mappingFile, resourceMappingsPath(m_pConfig));
 
-        if (!pPreset) {
+        if (!pMapping) {
             continue;
         }
 
-        pController->setPreset(*pPreset);
+        // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
+        pController->setMapping(pMapping->clone());
 
         // If we are in safe mode, skip opening controllers.
         if (CmdlineArgs::Instance().getSafeMode()) {
@@ -279,14 +291,14 @@ void ControllerManager::slotSetUpDevices() {
             qWarning() << "There was a problem opening" << name;
             continue;
         }
-        pController->applyPreset();
+        pController->applyMapping();
     }
 
-    maybeStartOrStopPolling();
+    pollIfAnyControllersOpen();
 }
 
-void ControllerManager::maybeStartOrStopPolling() {
-    QMutexLocker locker(&m_mutex);
+void ControllerManager::pollIfAnyControllersOpen() {
+    auto locker = lockMutex(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
 
@@ -366,12 +378,12 @@ void ControllerManager::openController(Controller* pController) {
         pController->close();
     }
     int result = pController->open();
-    maybeStartOrStopPolling();
+    pollIfAnyControllersOpen();
 
-    // If successfully opened the device, apply the preset and save the
+    // If successfully opened the device, apply the mapping and save the
     // preference setting.
     if (result == 0) {
-        pController->applyPreset();
+        pController->applyMapping();
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->setValue(
@@ -384,37 +396,39 @@ void ControllerManager::closeController(Controller* pController) {
         return;
     }
     pController->close();
-    maybeStartOrStopPolling();
+    pollIfAnyControllersOpen();
     // Update configuration to reflect controller is disabled.
     m_pConfig->setValue(
             ConfigKey("[Controller]", sanitizeDeviceName(pController->getName())), 0);
 }
 
-void ControllerManager::slotApplyPreset(Controller* pController,
-        ControllerPresetPointer pPreset,
+void ControllerManager::slotApplyMapping(Controller* pController,
+        std::shared_ptr<LegacyControllerMapping> pMapping,
         bool bEnabled) {
     VERIFY_OR_DEBUG_ASSERT(pController) {
-        qWarning() << "slotApplyPreset got invalid controller!";
+        qWarning() << "slotApplyMapping got invalid controller!";
         return;
     }
 
-    ConfigKey key("[ControllerPreset]", sanitizeDeviceName(pController->getName()));
-    if (!pPreset) {
+    ConfigKey key(kSettingsGroup, sanitizeDeviceName(pController->getName()));
+    if (!pMapping) {
         closeController(pController);
-        // Unset the controller preset for this controller
+        // Unset the controller mapping for this controller
         m_pConfig->remove(key);
         return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(!pPreset->isDirty()) {
-        qWarning() << "Preset is dirty, changes might be lost on restart!";
+    VERIFY_OR_DEBUG_ASSERT(!pMapping->isDirty()) {
+        qWarning() << "Mapping is dirty, changes might be lost on restart!";
     }
 
-    pController->setPreset(*pPreset);
 
     // Save the file path/name in the config so it can be auto-loaded at
     // startup next time
-    m_pConfig->set(key, pPreset->filePath());
+    m_pConfig->set(key, pMapping->filePath());
+
+    // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
+    pController->setMapping(pMapping->clone());
 
     if (bEnabled) {
         openController(pController);
@@ -424,9 +438,9 @@ void ControllerManager::slotApplyPreset(Controller* pController,
 }
 
 // static
-QList<QString> ControllerManager::getPresetPaths(UserSettingsPointer pConfig) {
+QList<QString> ControllerManager::getMappingPaths(UserSettingsPointer pConfig) {
     QList<QString> scriptPaths;
-    scriptPaths.append(userPresetsPath(pConfig));
-    scriptPaths.append(resourcePresetsPath(pConfig));
+    scriptPaths.append(userMappingsPath(pConfig));
+    scriptPaths.append(resourceMappingsPath(pConfig));
     return scriptPaths;
 }

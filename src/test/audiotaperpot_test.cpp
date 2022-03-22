@@ -11,9 +11,9 @@ class AudioTaperPotTest : public MixxxTest {};
 
 TEST_F(AudioTaperPotTest, ScaleTest) {
     {
-        const double minDB = -6;
-        const double maxDB = 6;
-        const double neutralParameter = 0.5;
+        constexpr double minDB = -6;
+        constexpr double maxDB = 6;
+        constexpr double neutralParameter = 0.5;
         ControlAudioTaperPotBehavior catpb(minDB, maxDB, neutralParameter);
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_DOUBLE_EQ(0.0, catpb.parameterToValue(0));
@@ -32,9 +32,9 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
     }
 
     {
-        const double minDB = 0;
-        const double maxDB = 6;
-        const double neutralParameter = 0.5;
+        constexpr double minDB = 0;
+        constexpr double maxDB = 6;
+        constexpr double neutralParameter = 0.5;
         ControlAudioTaperPotBehavior catpb(minDB, maxDB, neutralParameter);
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_DOUBLE_EQ(0.0, catpb.parameterToValue(0));
@@ -53,9 +53,9 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
     }
 
     {
-        const double minDB = -6;
-        const double maxDB = 0;
-        const double neutralParameter = 1;
+        constexpr double minDB = -6;
+        constexpr double maxDB = 0;
+        constexpr double neutralParameter = 1;
         ControlAudioTaperPotBehavior catpb(minDB, maxDB, neutralParameter);
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_DOUBLE_EQ(0.0, catpb.parameterToValue(0));

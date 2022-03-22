@@ -384,7 +384,7 @@
 			<!--Sync-->
 			<control>
 				<group>[Channel1]</group>
-				<key>sync_master</key>
+				<key>sync_leader</key>
 				<description>SHIFT + Sync: Sync Master</description>
 				<status>0x94</status>
 				<midino>0x05</midino>
@@ -463,7 +463,7 @@
 			<!--Sync-->
 			<control>
 				<group>[Channel2]</group>
-				<key>sync_master</key>
+				<key>sync_leader</key>
 				<description>SHIFT + Sync: Sync Master</description>
 				<status>0x95</status>
 				<midino>0x05</midino>
@@ -2050,7 +2050,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>sync_master</key>
+				<key>sync_leader</key>
 				<description>SYNC LED Deck A(SHIFT mode)</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
@@ -2116,7 +2116,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>sync_master</key>
+				<key>sync_leader</key>
 				<description>SYNC LED Deck B(SHIFT mode)</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>

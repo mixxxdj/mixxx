@@ -62,7 +62,7 @@ TEST_F(TrackMetadataTest, parseArtistTitleFromFileName) {
     }
 }
 
-TEST_F(TrackMetadataTest, mergeImportedMetadata) {
+TEST_F(TrackMetadataTest, mergeExtraMetadataFromSource) {
     // Existing track metadata (stored in the database) without extra properties
     mixxx::TrackRecord oldTrackRecord;
     mixxx::TrackMetadata* pOldTrackMetadata = oldTrackRecord.ptrMetadata();
@@ -156,7 +156,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     mixxx::TrackRecord mergedTrackRecord = oldTrackRecord;
     ASSERT_EQ(mergedTrackRecord.getMetadata(), oldTrackRecord.getMetadata());
     ASSERT_NE(newTrackMetadata, *pOldTrackMetadata);
-    mergedTrackRecord.mergeImportedMetadata(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
 
     mixxx::TrackMetadata* pMergedTrackMetadata = mergedTrackRecord.ptrMetadata();
     EXPECT_EQ(pOldTrackMetadata->getStreamInfo(), pMergedTrackMetadata->getStreamInfo());
@@ -225,7 +225,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     pMergedTrackInfo->setTitle(QString());
     pMergedAlbumInfo->setArtist("");
     pMergedAlbumInfo->setTitle(QString());
-    mergedTrackRecord.mergeImportedMetadata(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
     EXPECT_EQ(QString(""), pMergedTrackInfo->getArtist());
     EXPECT_EQ(QString(), pMergedTrackInfo->getTitle());
     EXPECT_EQ(QString(""), pMergedAlbumInfo->getArtist());
@@ -234,11 +234,11 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     // Check that the placeholder for track total is replaced with the actual property
     ASSERT_NE(mixxx::TrackRecord::kTrackTotalPlaceholder, pNewTrackInfo->getTrackTotal());
     pMergedTrackInfo->setTrackTotal(mixxx::TrackRecord::kTrackTotalPlaceholder);
-    mergedTrackRecord.mergeImportedMetadata(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
     EXPECT_EQ(pNewTrackInfo->getTrackTotal(), pMergedTrackInfo->getTrackTotal());
     // ...but if track total is missing entirely it should be preserved
     ASSERT_NE(QString(), pNewTrackInfo->getTrackTotal());
     pMergedTrackInfo->setTrackTotal(QString());
-    mergedTrackRecord.mergeImportedMetadata(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
     EXPECT_EQ(QString(), pMergedTrackInfo->getTrackTotal());
 }

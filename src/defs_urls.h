@@ -28,7 +28,7 @@
     MIXXX_WIKI_URL "/Hardware-Compatibility"
 #define MIXXX_WIKI_AUDIO_LATENCY_URL \
     MIXXX_WIKI_URL "/Adjusting-Audio-Latency"
-#define MIXXX_WIKI_CONTROLLER_PRESET_FORMAT_URL \
+#define MIXXX_WIKI_CONTROLLER_MAPPING_FORMAT_URL \
     MIXXX_WIKI_URL "/Midi-Controller-Mapping-File-Format"
 #define MIXXX_WIKI_MIDI_SCRIPTING_URL \
     MIXXX_WIKI_URL "/Midi-Scripting"
@@ -65,5 +65,7 @@
     MIXXX_MANUAL_URL "/chapters/vinyl_control.html#configuring-vinyl-control"
 #define MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL \
     MIXXX_MANUAL_URL "/chapters/vinyl_control.html#troubleshooting"
+#define MIXXX_MANUAL_SETTINGS_DIRECTORY_URL \
+    MIXXX_MANUAL_URL "/chapters/appendix.html#settings-directory"
 #define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
 #define MIXXX_KBD_SHORTCUTS_FILENAME "Mixxx-Keyboard-Shortcuts.pdf"

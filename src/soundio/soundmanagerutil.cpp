@@ -27,16 +27,6 @@ unsigned char ChannelGroup::getChannelCount() const {
 }
 
 /**
- * Defines equality between two ChannelGroups.
- * @return true if the two ChannelGroups share a common base channel
- *          and channel count, otherwise false.
- */
-bool ChannelGroup::operator==(const ChannelGroup &other) const {
-    return m_channelBase == other.m_channelBase
-        && m_channels == other.m_channels;
-}
-
-/**
  * Checks if another ChannelGroup shares channels with this one.
  * @param other the other ChannelGroup to check for a clash with.
  * @return true if the other and this ChannelGroup share any channels,
@@ -55,22 +45,14 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
 }
 
 /**
- * Generates a hash of this ChannelGroup, so it can act as a key in a QHash.
- * @return a hash for this ChannelGroup
- */
-unsigned int ChannelGroup::getHash() const {
-    return 0 | (m_channels << 8) | m_channelBase;
-}
-
-/**
  * Constructs an AudioPath object (must be called by a child class's
  * constructor, AudioPath is abstract).
  * @param channelBase the first channel on a sound device used by this AudioPath.
  * @param channels the number of channels used.
  */
 AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
-    : m_type(INVALID),
-      m_channelGroup(channelBase, channels),
+    : m_channelGroup(channelBase, channels),
+      m_type(INVALID),
       m_index(0) {
 }
 
@@ -93,23 +75,6 @@ ChannelGroup AudioPath::getChannelGroup() const {
  */
 unsigned char AudioPath::getIndex() const {
     return m_index;
-}
-
-/**
- * Defines equality for AudioPath objects.
- * @return true of this and other share a common type and index.
- */
-bool AudioPath::operator==(const AudioPath &other) const {
-    return m_type == other.m_type
-        && m_index == other.m_index;
-}
-
-/**
- * Generates a hash of this AudioPath, so it can act as a key in a QHash.
- * @return a hash for this AudioPath
- */
-unsigned int AudioPath::getHash() const {
-    return 0 | (m_type << 8) | m_index;
 }
 
 /**
@@ -139,6 +104,9 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         // handle this -- bkgood
         return QStringLiteral("Invalid");
     case MASTER:
+        // This was renamed to "Main" in the GUI, but keep "Master" here to avoid
+        // making users reconfigure the output when upgrading.
+        // https://mixxx.org/news/2020-06-29-black-lives-matter/
         return QStringLiteral("Master");
     case BOOTH:
         return QStringLiteral("Booth");
@@ -171,7 +139,7 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         // handle this -- bkgood
         return QObject::tr("Invalid");
     case MASTER:
-        return QObject::tr("Master");
+        return QObject::tr("Main");
     case BOOTH:
         return QObject::tr("Booth");
     case HEADPHONES:
@@ -449,25 +417,4 @@ QString SoundDeviceId::debugName() const {
     } else {
         return name + QStringLiteral(", ") + alsaHwDevice + QStringLiteral(", ") + QString::number(portAudioIndex);
     }
-}
-
-/**
- * Defined for QHash, so ChannelGroup can be used as a QHash key.
- */
-unsigned int qHash(const ChannelGroup &group) {
-    return group.getHash();
-}
-
-/**
- * Defined for QHash, so AudioOutput can be used as a QHash key.
- */
-unsigned int qHash(const AudioOutput &output) {
-    return output.getHash();
-}
-
-/**
- * Defined for QHash, so AudioInput can be used as a QHash key.
- */
-unsigned int qHash(const AudioInput &input) {
-    return input.getHash();
 }

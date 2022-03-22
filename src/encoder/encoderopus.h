@@ -23,7 +23,7 @@ class EncoderOpus: public Encoder {
     explicit EncoderOpus(EncoderCallback* pCallback = nullptr);
     ~EncoderOpus() override;
 
-    int initEncoder(int samplerate, QString* pUserErrorMessage) override;
+    int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
@@ -39,7 +39,7 @@ class EncoderOpus: public Encoder {
     int m_bitrate;
     int m_bitrateMode;
     int m_channels;
-    int m_samplerate;
+    mixxx::audio::SampleRate m_sampleRate;
     int m_readRequired;
     EncoderCallback* m_pCallback;
     FIFO<CSAMPLE> m_fifoBuffer;

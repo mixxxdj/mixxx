@@ -4,6 +4,7 @@
 
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hiddenylist.h"
+#include "controllers/hid/hiddevice.h"
 
 namespace {
 
@@ -11,9 +12,9 @@ bool recognizeDevice(const hid_device_info& device_info) {
     // Skip mice and keyboards. Users can accidentally disable their mouse
     // and/or keyboard by enabling them as HID controllers in Mixxx.
     // https://bugs.launchpad.net/mixxx/+bug/1940599
-    if (device_info.usage_page == kGenericDesktopUsagePage &&
-            (device_info.usage == kGenericDesktopMouseUsage ||
-                    device_info.usage == kGenericDesktopKeyboardUsage)) {
+    if (device_info.usage_page == mixxx::hid::kGenericDesktopUsagePage &&
+            (device_info.usage == mixxx::hid::kGenericDesktopMouseUsage ||
+                    device_info.usage == mixxx::hid::kGenericDesktopKeyboardUsage)) {
         return false;
     }
 
@@ -23,7 +24,8 @@ bool recognizeDevice(const hid_device_info& device_info) {
     // these devices in future computers and none of these devices are DJ controllers,
     // so skip all Apple HID devices rather than maintaining a list of specific devices
     // to skip.
-    if (device_info.vendor_id == kAppleVendorId || device_info.vendor_id == kAppleIncVendorId) {
+    if (device_info.vendor_id == mixxx::hid::kAppleVendorId
+          || device_info.vendor_id == mixxx::hid::kAppleIncVendorId) {
         return false;
     }
 
@@ -74,10 +76,6 @@ bool recognizeDevice(const hid_device_info& device_info) {
 
 } // namespace
 
-HidEnumerator::HidEnumerator(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig) {
-}
-
 HidEnumerator::~HidEnumerator() {
     qDebug() << "Deleting HID devices...";
     while (m_devices.size() > 0) {
@@ -87,54 +85,42 @@ HidEnumerator::~HidEnumerator() {
 }
 
 QList<Controller*> HidEnumerator::queryDevices() {
-    qDebug() << "Scanning HID devices:";
+    qInfo() << "Scanning USB HID devices";
 
-    struct hid_device_info *devs, *cur_dev;
-    devs = hid_enumerate(0x0, 0x0);
+    QStringList enumeratedDevices;
+    hid_device_info* device_info_list = hid_enumerate(0x0, 0x0);
+    for (const auto* device_info = device_info_list;
+            device_info;
+            device_info = device_info->next) {
+        auto deviceInfo = mixxx::hid::DeviceInfo(*device_info);
+        // The hidraw backend of hidapi on Linux returns many duplicate hid_device_info's from hid_enumerate,
+        // so filter them out.
+        // https://github.com/libusb/hidapi/issues/298
+        if (enumeratedDevices.contains(deviceInfo.pathRaw())) {
+            qInfo() << "Duplicate HID device, excluding" << deviceInfo;
+            continue;
+        }
+        enumeratedDevices.append(QString(deviceInfo.pathRaw()));
 
-    for (cur_dev = devs; cur_dev; cur_dev = cur_dev->next) {
-        if (!recognizeDevice(*cur_dev)) {
-            // OS/X and windows use usage_page/usage not interface_number
-            qDebug()
-                    << "Skipping"
-                    << HidController::safeDecodeWideString(
-                               cur_dev->manufacturer_string, 512)
-                    << HidController::safeDecodeWideString(
-                               cur_dev->product_string, 512)
-                    << QString("r%1").arg(cur_dev->release_number) << "S/N"
-                    << HidController::safeDecodeWideString(
-                               cur_dev->serial_number, 512)
-                    << (cur_dev->interface_number == -1
-                                       ? QString("Usage Page %1 Usage %2")
-                                                 .arg(QString::number(
-                                                              cur_dev->usage_page),
-                                                         QString::number(
-                                                                 cur_dev->usage))
-                                       : QString("Interface %1")
-                                                 .arg(cur_dev->interface_number));
+        if (!recognizeDevice(*device_info)) {
+            qInfo()
+                    << "Excluding HID device"
+                    << deviceInfo;
+            continue;
+        }
+        qInfo() << "Found HID device:"
+                << deviceInfo;
+
+        if (!deviceInfo.isValid()) {
+            qWarning() << "HID device permissions problem or device error."
+                       << "Your account needs write access to HID controllers.";
             continue;
         }
 
-        // OS/X and windows use usage_page/usage not interface_number
-        qDebug() << "Found"
-                 << HidController::safeDecodeWideString(cur_dev->manufacturer_string, 512)
-                 << HidController::safeDecodeWideString(cur_dev->product_string, 512)
-                 << QString("r%1").arg(cur_dev->release_number)
-                 << "S/N" << HidController::safeDecodeWideString(cur_dev->serial_number, 512)
-                 << (cur_dev->interface_number == -1 ? QString("Usage Page %1 Usage %2").arg(
-                     QString::number(cur_dev->usage_page),
-                     QString::number(cur_dev->usage)) :
-                     QString("Interface %1").arg(cur_dev->interface_number));
-
-        if (!cur_dev->serial_number && !cur_dev->product_string) {
-            qWarning() << "USB permissions problem (or device error.) Your account needs write access to USB HID controllers.";
-            continue;
-        }
-
-        HidController* currentDevice = new HidController(*cur_dev, m_pConfig);
-        m_devices.push_back(currentDevice);
+        HidController* newDevice = new HidController(std::move(deviceInfo));
+        m_devices.push_back(newDevice);
     }
-    hid_free_enumeration(devs);
+    hid_free_enumeration(device_info_list);
 
     return m_devices;
 }

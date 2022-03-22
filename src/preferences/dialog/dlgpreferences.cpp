@@ -1,5 +1,6 @@
 #include "preferences/dialog/dlgpreferences.h"
 
+#include <QDesktopServices>
 #include <QDialog>
 #include <QEvent>
 #include <QMoveEvent>
@@ -18,25 +19,24 @@
 #include "preferences/dialog/dlgprefvinyl.h"
 #endif // __VINYLCONTROL__
 
+#include "preferences/dialog/dlgprefautodj.h"
 #include "preferences/dialog/dlgprefcolors.h"
 #include "preferences/dialog/dlgprefcrossfader.h"
 #include "preferences/dialog/dlgprefdeck.h"
+#include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgprefinterface.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "preferences/dialog/dlgprefwaveform.h"
-#ifdef __LILV__
-#include "preferences/dialog/dlgpreflv2.h"
-#endif // __LILV__
-#include "preferences/dialog/dlgprefeffects.h"
-#include "preferences/dialog/dlgprefautodj.h"
+#endif
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
 #endif // __BROADCAST__
 
-#include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefbeats.h"
 #include "preferences/dialog/dlgprefkey.h"
+#include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefreplaygain.h"
 
 #ifdef __MODPLUG__
@@ -46,30 +46,22 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "mixxx.h"
 #include "skin/skinloader.h"
 #include "util/color/color.h"
 #include "util/widgethelper.h"
 
 DlgPreferences::DlgPreferences(
-        MixxxMainWindow* pMixxx,
-        SkinLoader* pSkinLoader,
-        SoundManager* pSoundManager,
-        PlayerManager* pPlayerManager,
-        ControllerManager* pControllerManager,
-        VinylControlManager* pVCManager,
-        LV2Backend* pLV2Backend,
-        EffectsManager* pEffectsManager,
-        SettingsManager* pSettingsManager,
-        Library* pLibrary)
-        : m_pConfig(pSettingsManager->settings()), m_pageSizeHint(QSize(0, 0)) {
-#ifndef __VINYLCONTROL__
-    Q_UNUSED(pVCManager);
-#endif // __VINYLCONTROL__
-#ifndef __LILV__
-    Q_UNUSED(pLV2Backend);
-#endif // __LILV__
-    Q_UNUSED(pPlayerManager);
+        std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
+        std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
+        std::shared_ptr<SoundManager> pSoundManager,
+        std::shared_ptr<ControllerManager> pControllerManager,
+        std::shared_ptr<VinylControlManager> pVCManager,
+        std::shared_ptr<EffectsManager> pEffectsManager,
+        std::shared_ptr<SettingsManager> pSettingsManager,
+        std::shared_ptr<Library> pLibrary)
+        : m_allPages(),
+          m_pConfig(pSettingsManager->settings()),
+          m_pageSizeHint(QSize(0, 0)) {
     setupUi(this);
     contentsTreeWidget->setHeaderHidden(true);
 
@@ -78,172 +70,188 @@ DlgPreferences::DlgPreferences(
             this,
             &DlgPreferences::slotButtonPressed);
 
+    connect(contentsTreeWidget,
+            &QTreeWidget::currentItemChanged,
+            this,
+            &DlgPreferences::changePage);
+
     while (pagesWidget->count() > 0) {
         pagesWidget->removeWidget(pagesWidget->currentWidget());
     }
 
-    // Construct widgets for use in tabs:
-    // * check the text color of the palette for whether to use dark or light icons
-    // * create the tree view button first (important for 'Controllers' page!)
-    // * instantiate preferences page
+    // Check the text color of the palette for whether to use dark or light icons
     if (!Color::isDimColor(palette().text().color())) {
         m_iconsPath.setPath(":/images/preferences/light/");
     } else {
         m_iconsPath.setPath(":/images/preferences/dark/");
     }
 
-    m_pSoundButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_soundPage = new DlgPrefSound(this, pSoundManager, m_pConfig);
+    // Construct widgets for use in tabs.
+    m_soundPage = PreferencesPage(
+            new DlgPrefSound(this, pSoundManager, m_pConfig),
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type));
     addPageWidget(m_soundPage,
-            m_pSoundButton,
             tr("Sound Hardware"),
             "ic_preferences_soundhardware.svg");
 
-    m_pLibraryButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
-    addPageWidget(m_libraryPage,
-            m_pLibraryButton,
+    DlgPrefLibrary* plibraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
+    connect(plibraryPage,
+            &DlgPrefLibrary::scanLibrary,
+            pLibrary->trackCollectionManager(),
+            &TrackCollectionManager::startLibraryScan);
+    addPageWidget(PreferencesPage(plibraryPage,
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Library"),
             "ic_preferences_library.svg");
-    connect(m_libraryPage,
-            &DlgPrefLibrary::scanLibrary,
-            pLibrary->trackCollections(),
-            &TrackCollectionManager::startLibraryScan);
 
-    m_pControllersRootButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_controllersPage = new DlgPrefControllers(
-            this, m_pConfig, pControllerManager, m_pControllersRootButton);
-    addPageWidget(m_controllersPage,
-            m_pControllersRootButton,
+    QTreeWidgetItem* pControllerRootItem =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pControllersDlg = new DlgPrefControllers(
+            this, m_pConfig, pControllerManager, pControllerRootItem);
+    addPageWidget(PreferencesPage(m_pControllersDlg,
+                          pControllerRootItem),
             tr("Controllers"),
             "ic_preferences_controllers.svg");
 
 #ifdef __VINYLCONTROL__
     // It's important for this to be before the connect for wsound.
     // TODO(rryan) determine why/if this is still true
-    m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_vinylControlPage = new DlgPrefVinyl(this, pVCManager, m_pConfig);
-    addPageWidget(m_vinylControlPage,
-            m_pVinylControlButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefVinyl(this, pVCManager, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Vinyl Control"),
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
-    m_pInterfaceButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_interfacePage = new DlgPrefInterface(this, pMixxx, pSkinLoader, m_pConfig);
-    addPageWidget(m_interfacePage,
-            m_pInterfaceButton,
+    DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
+            pScreensaverManager,
+            pSkinLoader,
+            m_pConfig);
+    connect(pInterfacePage,
+            &DlgPrefInterface::tooltipModeChanged,
+            this,
+            &DlgPreferences::tooltipModeChanged);
+    connect(pInterfacePage,
+            &DlgPrefInterface::reloadUserInterface,
+            this,
+            &DlgPreferences::reloadUserInterface,
+            Qt::DirectConnection);
+    addPageWidget(PreferencesPage(pInterfacePage,
+                          new QTreeWidgetItem(
+                                  contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Interface"),
             "ic_preferences_interface.svg");
 
-    m_pWaveformButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_waveformPage = new DlgPrefWaveform(this, pMixxx, m_pConfig, pLibrary);
-    addPageWidget(m_waveformPage,
-            m_pWaveformButton,
-            tr("Waveforms"),
-            "ic_preferences_waveforms.svg");
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
+    if (pSkinLoader) {
+        DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, m_pConfig, pLibrary);
+        addPageWidget(PreferencesPage(
+                              pWaveformPage,
+                              new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+                tr("Waveforms"),
+                "ic_preferences_waveforms.svg");
+        connect(pWaveformPage,
+                &DlgPrefWaveform::reloadUserInterface,
+                this,
+                &DlgPreferences::reloadUserInterface,
+                Qt::DirectConnection);
+    }
+#endif
 
-    m_pDecksButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_deckPage = new DlgPrefDeck(this, m_pConfig);
-    addPageWidget(m_deckPage,
-            m_pDecksButton,
-            tr("Decks"),
-            "ic_preferences_decks.svg");
-
-    m_pColorsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_colorsPage = new DlgPrefColors(this, m_pConfig, pLibrary);
-    addPageWidget(m_colorsPage,
-            m_pColorsButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefColors(this, m_pConfig, pLibrary),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Colors"),
             "ic_preferences_colors.svg");
 
-    m_pEqButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_equalizerPage = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
-    addPageWidget(m_equalizerPage,
-            m_pEqButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefDeck(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("Decks"),
+            "ic_preferences_decks.svg");
+
+    addPageWidget(PreferencesPage(
+                          new DlgPrefEQ(this, pEffectsManager, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Equalizers"),
             "ic_preferences_equalizers.svg");
 
-    m_pCrossfaderButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_crossfaderPage = new DlgPrefCrossfader(this, m_pConfig);
-    addPageWidget(m_crossfaderPage,
-            m_pCrossfaderButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefCrossfader(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Crossfader"),
             "ic_preferences_crossfader.svg");
 
-    m_pEffectsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_effectsPage = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
-    addPageWidget(m_effectsPage,
-            m_pEffectsButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefEffects(this, m_pConfig, pEffectsManager),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Effects"),
             "ic_preferences_effects.svg");
 
-#ifdef __LILV__
-    m_pLV2Button = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_lv2Page = new DlgPrefLV2(this, pLV2Backend, m_pConfig, pEffectsManager);
-    addPageWidget(m_lv2Page,
-            m_pLV2Button,
-            tr("LV2 Plugins"),
-            "ic_preferences_lv2.svg");
-#endif // __LILV__
-
-    m_pAutoDJButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_autoDjPage = new DlgPrefAutoDJ(this, m_pConfig);
-    addPageWidget(m_autoDjPage,
-            m_pAutoDJButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefAutoDJ(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Auto DJ"),
             "ic_preferences_autodj.svg");
 
 #ifdef __BROADCAST__
-    m_pBroadcastButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_broadcastingPage = new DlgPrefBroadcast(this, pSettingsManager->broadcastSettings());
-    addPageWidget(m_broadcastingPage,
-            m_pBroadcastButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefBroadcast(this, pSettingsManager->broadcastSettings()),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Live Broadcasting"),
             "ic_preferences_broadcast.svg");
 #endif // __BROADCAST__
 
-    m_pRecordingButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_recordingPage = new DlgPrefRecord(this, m_pConfig);
-    addPageWidget(m_recordingPage,
-            m_pRecordingButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefRecord(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Recording"),
             "ic_preferences_recording.svg");
 
-    m_pBeatDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_beatgridPage = new DlgPrefBeats(this, m_pConfig);
-    addPageWidget(m_beatgridPage,
-            m_pBeatDetectionButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefBeats(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Beat Detection"),
             "ic_preferences_bpmdetect.svg");
 
-    m_pKeyDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_musicalKeyPage = new DlgPrefKey(this, m_pConfig);
-    addPageWidget(m_musicalKeyPage,
-            m_pKeyDetectionButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefKey(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Key Detection"),
             "ic_preferences_keydetect.svg");
-
-    m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_replayGainPage = new DlgPrefReplayGain(this, m_pConfig);
-    addPageWidget(m_replayGainPage,
-            m_pReplayGainButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefReplayGain(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Normalization"),
             "ic_preferences_replaygain.svg");
 
 #ifdef __MODPLUG__
-    m_pModplugButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_modplugPage = new DlgPrefModplug(this, m_pConfig);
-    addPageWidget(m_modplugPage,
-            m_pModplugButton,
+    addPageWidget(PreferencesPage(
+                          new DlgPrefModplug(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Modplug Decoder"),
             "ic_preferences_modplug.svg");
 #endif // __MODPLUG__
 
-    connect(contentsTreeWidget,
-            &QTreeWidget::currentItemChanged,
-            this,
-            &DlgPreferences::changePage);
+    // Find accept and apply buttons
+    const auto buttons = buttonBox->buttons();
+    for (QAbstractButton* button : buttons) {
+        QDialogButtonBox::ButtonRole role = buttonBox->buttonRole(button);
+        if (role == QDialogButtonBox::ButtonRole::ApplyRole) {
+            m_pApplyButton = button;
+        } else if (role == QDialogButtonBox::ButtonRole::AcceptRole) {
+            m_pAcceptButton = button;
+        }
+    }
+
+    labelWarning->hide();
+    labelWarningIcon->hide();
+    labelWarning->setText(tr(
+            "<font color='#BB0000'><b>Some preferences pages have errors. "
+            "To apply the changes please first fix the issues.</b></font>"));
+    QIcon icon = style()->standardIcon(QStyle::SP_MessageBoxWarning);
+    labelWarningIcon->setPixmap(icon.pixmap(16));
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
@@ -256,15 +264,21 @@ DlgPreferences::DlgPreferences(
 DlgPreferences::~DlgPreferences() {
     // store last geometry in mixxx.cfg
     if (m_geometry.size() == 4) {
-        m_pConfig->set(ConfigKey("[Preferences]","geometry"),
-                       m_geometry.join(","));
+        m_pConfig->set(ConfigKey("[Preferences]", "geometry"),
+                m_geometry.join(","));
     }
 
+    // When DlgPrefControllers is deleted it manually deletes the controller tree items,
+    // which makes QTreeWidgetItem trigger this signal. If we don't disconnect,
+    // &DlgPreferences::changePage iterates on the PreferencesPage instances in m_allPages,
+    // but the pDlg objects of the controller items are already destroyed by DlgPrefControllers,
+    // which causes a crash when accessed.
+    disconnect(contentsTreeWidget, &QTreeWidget::currentItemChanged, this, &DlgPreferences::changePage);
     // Need to explicitly delete rather than relying on child auto-deletion
     // because otherwise the QStackedWidget will delete the controller
     // preference pages (and DlgPrefControllers dynamically generates and
     // deletes them).
-    delete m_controllersPage;
+    delete m_pControllersDlg;
 }
 
 void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious) {
@@ -272,58 +286,22 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
         pCurrent = pPrevious;
     }
 
-    if (pCurrent == m_pSoundButton) {
-        switchToPage(m_soundPage);
-    } else if (pCurrent == m_pLibraryButton) {
-        switchToPage(m_libraryPage);
-    } else if (m_controllersPage->handleTreeItemClick(pCurrent)) {
+    if (m_pControllersDlg->handleTreeItemClick(pCurrent)) {
         // Do nothing. m_controllersPage handled this click.
-#ifdef __VINYLCONTROL__
-    } else if (pCurrent == m_pVinylControlButton) {
-        switchToPage(m_vinylControlPage);
-#endif // __VINYLCONTROL__
-    } else if (pCurrent == m_pInterfaceButton) {
-        switchToPage(m_interfacePage);
-    } else if (pCurrent == m_pWaveformButton) {
-        switchToPage(m_waveformPage);
-    } else if (pCurrent == m_pDecksButton) {
-        switchToPage(m_deckPage);
-    } else if (pCurrent == m_pColorsButton) {
-        switchToPage(m_colorsPage);
-    } else if (pCurrent == m_pEqButton) {
-        switchToPage(m_equalizerPage);
-    } else if (pCurrent == m_pCrossfaderButton) {
-        switchToPage(m_crossfaderPage);
-    } else if (pCurrent == m_pEffectsButton) {
-        switchToPage(m_effectsPage);
-#ifdef __LILV__
-    } else if (pCurrent == m_pLV2Button) {
-        switchToPage(m_lv2Page);
-#endif // __LILV__
-    } else if (pCurrent == m_pAutoDJButton) {
-        switchToPage(m_autoDjPage);
-#ifdef __BROADCAST__
-    } else if (pCurrent == m_pBroadcastButton) {
-        switchToPage(m_broadcastingPage);
-#endif // __BROADCAST__
-    } else if (pCurrent == m_pRecordingButton) {
-        switchToPage(m_recordingPage);
-    } else if (pCurrent == m_pBeatDetectionButton) {
-        switchToPage(m_beatgridPage);
-    } else if (pCurrent == m_pKeyDetectionButton) {
-        switchToPage(m_musicalKeyPage);
-    } else if (pCurrent == m_pReplayGainButton) {
-        switchToPage(m_replayGainPage);
-#ifdef __MODPLUG__
-    } else if (pCurrent == m_pModplugButton) {
-        switchToPage(m_modplugPage);
-#endif // __MODPLUG__
+        return;
+    }
+
+    for (PreferencesPage page : qAsConst(m_allPages)) {
+        if (pCurrent == page.pTreeItem) {
+            switchToPage(page.pDlg);
+            break;
+        }
     }
 }
 
 void DlgPreferences::showSoundHardwarePage() {
-    switchToPage(m_soundPage);
-    contentsTreeWidget->setCurrentItem(m_pSoundButton);
+    switchToPage(m_soundPage.pDlg);
+    contentsTreeWidget->setCurrentItem(m_soundPage.pTreeItem);
 }
 
 bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
@@ -337,7 +315,7 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     }
 
     // Standard event processing
-    return QWidget::eventFilter(o,e);
+    return QWidget::eventFilter(o, e);
 }
 
 void DlgPreferences::onHide() {
@@ -350,7 +328,8 @@ void DlgPreferences::onShow() {
     if (m_geometry.length() < 4) {
         // load default values (optimum size)
         m_geometry = m_pConfig->getValue(
-                    ConfigKey("[Preferences]", "geometry")).split(",");
+                                      ConfigKey("[Preferences]", "geometry"))
+                             .split(",");
         if (m_geometry.length() < 4) {
             // Warning! geometry does NOT include the frame/title.
             QRect defaultGeometry = getDefaultGeometry();
@@ -407,67 +386,69 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     QDialogButtonBox::ButtonRole role = buttonBox->buttonRole(pButton);
     DlgPreferencePage* pCurrentPage = currentPage();
     switch (role) {
-        case QDialogButtonBox::ResetRole:
-            // Only reset to defaults on the current page.
-            if (pCurrentPage) {
-                pCurrentPage->slotResetToDefaults();
-            }
-            break;
-        case QDialogButtonBox::ApplyRole:
-            // Only apply settings on the current page.
-            if (pCurrentPage) {
-                pCurrentPage->slotApply();
-            }
-            break;
-        case QDialogButtonBox::AcceptRole:
-            emit applyPreferences();
-            accept();
-            break;
-        case QDialogButtonBox::RejectRole:
-            emit cancelPreferences();
-            reject();
-            break;
-        case QDialogButtonBox::HelpRole:
-            if (pCurrentPage) {
-                QUrl helpUrl = pCurrentPage->helpUrl();
-                DEBUG_ASSERT(helpUrl.isValid());
-                QDesktopServices::openUrl(helpUrl);
-            }
-            break;
-        default:
-            break;
+    case QDialogButtonBox::ResetRole:
+        // Only reset to defaults on the current page.
+        if (pCurrentPage) {
+            pCurrentPage->slotResetToDefaults();
+        }
+        break;
+    case QDialogButtonBox::ApplyRole:
+        // Only apply settings on the current page.
+        if (pCurrentPage) {
+            pCurrentPage->slotApply();
+        }
+        break;
+    case QDialogButtonBox::AcceptRole:
+        emit applyPreferences();
+        accept();
+        break;
+    case QDialogButtonBox::RejectRole:
+        emit cancelPreferences();
+        reject();
+        break;
+    case QDialogButtonBox::HelpRole:
+        if (pCurrentPage) {
+            QUrl helpUrl = pCurrentPage->helpUrl();
+            DEBUG_ASSERT(helpUrl.isValid());
+            QDesktopServices::openUrl(helpUrl);
+        }
+        break;
+    default:
+        break;
     }
 }
 
-void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget,
-        QTreeWidgetItem* pTreeItem,
+void DlgPreferences::addPageWidget(PreferencesPage page,
         const QString& pageTitle,
         const QString& iconFile) {
     // Configure the tree button linked to the page
-    pTreeItem->setIcon(0, QIcon(m_iconsPath.filePath(iconFile)));
-    pTreeItem->setText(0, pageTitle);
-    pTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    pTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    page.pTreeItem->setIcon(0, QIcon(m_iconsPath.filePath(iconFile)));
+    page.pTreeItem->setText(0, pageTitle);
+    page.pTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    page.pTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    connect(this, &DlgPreferences::showDlg, pWidget, &DlgPreferencePage::slotShow);
-    connect(this, &DlgPreferences::closeDlg, pWidget, &DlgPreferencePage::slotHide);
-    connect(this, &DlgPreferences::showDlg, pWidget, &DlgPreferencePage::slotUpdate);
-    connect(this, &DlgPreferences::applyPreferences, pWidget, &DlgPreferencePage::slotApply);
-    connect(this, &DlgPreferences::cancelPreferences, pWidget, &DlgPreferencePage::slotCancel);
+    connect(this, &DlgPreferences::showDlg, page.pDlg, &DlgPreferencePage::slotShow);
+    connect(this, &DlgPreferences::closeDlg, page.pDlg, &DlgPreferencePage::slotHide);
+    connect(this, &DlgPreferences::showDlg, page.pDlg, &DlgPreferencePage::slotUpdate);
+
+    connect(this, &DlgPreferences::applyPreferences, page.pDlg, &DlgPreferencePage::slotApply);
+    connect(this, &DlgPreferences::cancelPreferences, page.pDlg, &DlgPreferencePage::slotCancel);
     connect(this,
             &DlgPreferences::resetToDefaults,
-            pWidget,
+            page.pDlg,
             &DlgPreferencePage::slotResetToDefaults);
 
     // Add a new scroll area to the stacked pages widget containing the page
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
-    sa->setWidget(pWidget);
+
+    sa->setWidget(page.pDlg);
     pagesWidget->addWidget(sa);
+    m_allPages.append(page);
 
     int iframe = 2 * sa->frameWidth();
     m_pageSizeHint = m_pageSizeHint.expandedTo(
-            pWidget->sizeHint()+QSize(iframe, iframe));
+            page.pDlg->sizeHint() + QSize(iframe, iframe));
 }
 
 DlgPreferencePage* DlgPreferences::currentPage() {
@@ -511,7 +492,7 @@ void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
 void DlgPreferences::moveEvent(QMoveEvent* e) {
     if (m_geometry.length() == 4) {
 #ifdef __WINDOWS__
-    Q_UNUSED(e);
+        Q_UNUSED(e);
         m_geometry[0] = QString::number(frameGeometry().left());
         m_geometry[1] = QString::number(frameGeometry().top());
 #else
@@ -542,7 +523,7 @@ QRect DlgPreferences::getDefaultGeometry() {
     if (frameSize() == size()) {
         // This code is reached in Gnome 2.3
         qDebug() << "guess the size of the window decoration";
-        optimumSize -= QSize(2,30);
+        optimumSize -= QSize(2, 30);
     } else {
         optimumSize -= (frameSize() - size());
     }

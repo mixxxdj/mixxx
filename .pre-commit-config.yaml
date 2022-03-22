@@ -67,9 +67,14 @@ repos:
   hooks:
   - id: eslint
     args: [--fix, --report-unused-disable-directives]
+    files: \.m?js$
+    types: [file]
     stages:
     - commit
     - manual
+    additional_dependencies:
+    - eslint@^v8.6.0
+    - eslint-plugin-jsdoc@^v37.5.0
 - repo: local
   hooks:
   - id: clang-format
@@ -128,6 +133,21 @@ repos:
     language: python
     types: [text]
     files: ^CHANGELOG.md$
+  - id: qmlformat
+    name: qmlformat
+    entry: tools/qmlformat.py
+    pass_filenames: true
+    language: system
+    types: [text]
+    files: ^.*\.qml$
+  - id: qmllint
+    name: qmllint
+    entry: qmllint
+    pass_filenames: true
+    require_serial: true
+    language: system
+    types: [text]
+    files: ^.*\.qml$
   - id: metainfo
     name: metainfo
     description: Update AppStream metainfo releases from CHANGELOG.md.

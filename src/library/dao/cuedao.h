@@ -21,6 +21,6 @@ class CueDAO : public DAO {
     bool deleteCuesForTracks(const QList<TrackId>& trackIds) const;
 
   private:
-    bool saveCue(Cue* pCue) const;
+    bool saveCue(TrackId trackId, Cue* pCue) const;
     bool deleteCue(Cue* pCue) const;
 };

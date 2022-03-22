@@ -1,28 +1,26 @@
 /*
- * Copyright (C) 2013 Mark Hills <mark@xwax.org>
+ * Copyright (C) 2021 Mark Hills <mark@xwax.org>
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2, as published by the Free Software Foundation.
+ * This file is part of "xwax".
  *
- * This program is distributed in the hope that it will be useful, but
+ * "xwax" is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License, version 3 as
+ * published by the Free Software Foundation.
+ *
+ * "xwax" is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License version 2 for more details.
+ * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * version 2 along with this program; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * along with this program; if not, see <https://www.gnu.org/licenses/>.
  *
  */
 
 #ifndef TIMECODER_H
 #define TIMECODER_H
 
-#ifndef _MSC_VER
 #include <stdbool.h>
-#endif
 
 #include "lut.h"
 #include "pitch.h"
@@ -36,7 +34,7 @@ extern "C" {
 typedef unsigned int bits_t;
 
 struct timecode_def {
-    char *name, *desc;
+    const char *name, *desc;
     int bits, /* number of bits in string */
         resolution, /* wave cycles per second */
         flags;

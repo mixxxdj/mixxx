@@ -1,13 +1,14 @@
 #pragma once
 
-#include <QFile>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
-#include <QSharedPointer>
 #include <QHash>
-#include <QMutex>
+#include <QSharedPointer>
 
 #include "preferences/configobject.h"
+#include "util/compatibility/qmutex.h"
+#include "util/fileinfo.h"
 
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CFURL.h>
@@ -42,32 +43,21 @@ class Sandbox {
     }
 
     // Prompt the user to give us access to the path with an open-file dialog.
-    static bool askForAccess(const QString& path);
+    static bool askForAccess(mixxx::FileInfo* pFileInfo);
 
-    static bool canAccessFile(const QFileInfo& file) {
-        SecurityTokenPointer pToken = openSecurityToken(file, true);
-        return file.isReadable();
-    }
+    static bool canAccess(mixxx::FileInfo* pFileInfo);
+    static bool canAccessDir(const QDir& dir);
 
-    static bool canAccessFile(const QDir& dir) {
-        SecurityTokenPointer pToken = openSecurityToken(dir, true);
-        QFileInfo info(dir.canonicalPath());
-        return info.isReadable();
-    }
-
-    static bool createSecurityToken(const QFileInfo& info) {
-        return createSecurityToken(info.canonicalFilePath(), info.isDir());
-    }
-
-    static bool createSecurityToken(const QDir& dir) {
+    static bool createSecurityToken(mixxx::FileInfo* pFileInfo);
+    static bool createSecurityTokenForDir(const QDir& dir) {
         return createSecurityToken(dir.canonicalPath(), true);
     }
 
-    static SecurityTokenPointer openSecurityToken(const QFileInfo& info, bool create);
-    static SecurityTokenPointer openSecurityToken(const QDir& dir, bool create);
+    static SecurityTokenPointer openSecurityToken(mixxx::FileInfo* pFileInfo, bool create);
+    static SecurityTokenPointer openSecurityTokenForDir(const QDir& dir, bool create);
 
   private:
-    Sandbox() {}
+    Sandbox() = delete;
 
     static ConfigKey keyForCanonicalPath(const QString& canonicalPath);
 
@@ -78,11 +68,7 @@ class Sandbox {
     // Creates a security token. s_mutex is not needed for this method.
     static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    static QRecursiveMutex s_mutex;
-#else
-    static QMutex s_mutex;
-#endif
+    static QT_RECURSIVE_MUTEX s_mutex;
     static bool s_bInSandbox;
     static QSharedPointer<ConfigObject<ConfigValue>> s_pSandboxPermissions;
     static QHash<QString, SecurityTokenWeakPointer> s_activeTokens;

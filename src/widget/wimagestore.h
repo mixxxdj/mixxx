@@ -24,6 +24,6 @@ class WImageStore {
     static void deleteImage(QImage* p);
 
     // Dictionary of Images already instantiated
-    static QHash<QString, std::weak_ptr<QImage> > m_dictionary;
+    static QHash<QString, std::weak_ptr<QImage>> m_dictionary;
     static QSharedPointer<ImgSource> m_loader;
 };

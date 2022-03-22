@@ -18,7 +18,7 @@ DlgMissing::DlgMissing(
                   new WTrackTableView(
                           this,
                           pConfig,
-                          pLibrary->trackCollections(),
+                          pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           true)) {
     setupUi(this);
@@ -33,7 +33,7 @@ DlgMissing::DlgMissing(
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pMissingTableModel = new MissingTableModel(this, pLibrary->trackCollections());
+    m_pMissingTableModel = new MissingTableModel(this, pLibrary->trackCollectionManager());
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
     connect(btnPurge, &QPushButton::clicked, m_pTrackTableView, &WTrackTableView::slotPurge);
@@ -91,4 +91,16 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
 
 bool DlgMissing::hasFocus() const {
     return m_pTrackTableView->hasFocus();
+}
+
+void DlgMissing::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+};
+
+bool DlgMissing::restoreCurrentViewState() {
+    return m_pTrackTableView->restoreCurrentViewState();
+};
+
+void DlgMissing::setFocus() {
+    m_pTrackTableView->setFocus();
 }

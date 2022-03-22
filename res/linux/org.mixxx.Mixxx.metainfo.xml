@@ -6,8 +6,6 @@
   <project_license>GPL-2.0</project_license>
   <name>Mixxx DJ Software</name>
   <summary>Everything you need to perform live DJ mixes</summary>
-  <!-- Must be explicitly specified as not requiring any content rating. -->
-  <content_rating type="oars-1.1"/>
   <description>
     <p>
       Mixxx is free DJ software that gives you everything you need to perform
@@ -59,31 +57,31 @@
   </provides>
   <screenshots>
     <screenshot type="default">
-      <image>https://mixxx.org/theme/images/2.3/screenshots/latenight-palemoon-1600x1200.png</image>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/latenight-palemoon-3840x2160.png</image>
       <caption>Mixxx with the default LateNight PaleMoon skin</caption>
     </screenshot>
     <screenshot>
-      <image>https://mixxx.org/theme/images/2.3/screenshots/latenight-classic-1600x1200.png</image>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/latenight-classic-3840x2160.png</image>
       <caption>Mixxx with the LateNight Classic skin</caption>
     </screenshot>
     <screenshot>
-      <image>https://mixxx.org/theme/images/2.3/screenshots/deere-1600x1200.png</image>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/deere-3840x2160.png</image>
       <caption>Mixxx with the Deere skin</caption>
     </screenshot>
     <screenshot>
-      <image>https://mixxx.org/theme/images/2.3/screenshots/shade-classic-1600x1200.png</image>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/shade-classic-3840x2160.png</image>
       <caption>Mixxx with the Shade Classic skin</caption>
     </screenshot>
     <screenshot>
-      <image>https://mixxx.org/theme/images/2.3/screenshots/shade-dark-1600x1200.png</image>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/shade-dark-3840x2160.png</image>
       <caption>Mixxx with the Shade Dark skin</caption>
     </screenshot>
     <screenshot>
-      <image>https://mixxx.org/theme/images/2.3/screenshots/shade-summersunset-1600x1200.png</image>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/shade-summersunset-3840x2160.png</image>
       <caption>Mixxx with the Shade Summer Sunset skin</caption>
     </screenshot>
     <screenshot>
-      <image>https://mixxx.org/theme/images/2.3/screenshots/tango-1600x1200.png</image>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/tango-3840x2160.png</image>
       <caption>Mixxx with the Tango skin</caption>
     </screenshot>
   </screenshots>
@@ -98,6 +96,1016 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.4.0" type="development">
+      <description>
+ <p>
+  Cover Art
+ </p>
+ <ul>
+  <li>
+   Prevent wrong cover art display due to hash conflicts
+   #2524
+  </li>
+  <li>
+   Add background color for quick cover art preview
+   #2524
+  </li>
+ </ul>
+ <p>
+  Music Library
+ </p>
+ <ul>
+  <li>
+   Ensure that tracks with an invalid BPM are re-analyzed
+   #2776
+  </li>
+  <li>
+   Add support for exporting crates, playlists and the library to Engine Prime and Denon standalone controllers
+   #2753
+   #2932
+   #3102
+   #3155
+   #3621
+   #3776
+   #3787
+   #3797
+   #3798
+   #4025
+   #4087
+   #4102
+   #4143
+   #4463
+  </li>
+  <li>
+   Rekordbox: Save all loops and correct AAC timing offset for CoreAudio
+   #2779
+  </li>
+  <li>
+   Improve log messages during schema migration
+   #2979
+  </li>
+  <li>
+   Search related tracks in collection
+   #3181
+   #3213
+   #2796
+   #4207
+  </li>
+  <li>
+   Add recent searches to a drop down menu of the search box
+   #3171
+   #3262
+  </li>
+  <li>
+   Search: Save queries across restarts
+   #4458
+   lp:1943084
+   lp:1947479
+  </li>
+  <li>
+   Browse/Recording: Disable the non-working search box
+   #4382
+  </li>
+  <li>
+   Search: Update Clear button when search is disabled
+   #4447
+  </li>
+  <li>
+   Fix reset to default of search timeout in preferences
+   #4504
+   lp:1948690
+  </li>
+  <li>
+   Search: Ctrl+F in focused search box selects the entire search string
+   #4515
+  </li>
+  <li>
+   Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers
+   #3076
+  </li>
+  <li>
+   Add new library column that shows the last time a track was played
+   #3140
+   #3457
+   #3494
+   #3596
+   #3740
+  </li>
+  <li>
+   Improve presentation of the history library tree
+   #2996
+   #4298
+   lp:1944029
+  </li>
+  <li>
+   Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags
+   #3811
+  </li>
+  <li>
+   Code improvements and minor bug fixes when importing track metadata
+   #3851
+   #3858
+   #3860
+   #3866
+   #3871
+   #3870
+   #3924
+   #4368
+   #3906
+   #3998
+  </li>
+  <li>
+   Update library schema to 37 for synchronizing file modified time with track source on metadata import/export
+   #3978
+   #4012
+  </li>
+  <li>
+   Logging: Suppress expected and harmless schema migration errors
+   #4248
+  </li>
+  <li>
+   Only show the date in Date Added / Last Played columns. Move the time of day to tooltips
+   #3945
+  </li>
+  <li>
+   Fix handling of undefined BPM values
+   #4062
+   #4063
+   #4100
+   #4154
+   #4165
+   #4168
+  </li>
+  <li>
+   Add support for m4v files
+   #4088
+  </li>
+  <li>
+   Adjust ReplayGain: Allow user to update the replaygain value based on a deck pregain value
+   #4031
+  </li>
+  <li>
+   Automatic analyze and optimize database
+   #4199
+  </li>
+  <li>
+   Re-import and update metadata after files have been modified when loading tracks
+   #4218
+  </li>
+  <li>
+   Fix playlists sidebar navigation/activation
+   #4193
+   lp:1939082
+  </li>
+  <li>
+   Sidebar: Map Left Arrow Key to jump to parent node and activates it
+   #4253
+  </li>
+  <li>
+   Fix assertion when navigating history playlists
+   #4297
+   lp:1943643
+  </li>
+  <li>
+   Library: Add keyboard shortcut Ctrl+Enter to open track properties
+   #4347
+  </li>
+  <li>
+   Re-enable shortcuts after editing controls
+   #4360
+   lp:1902125
+   lp:1943325
+  </li>
+  <li>
+   History: Fix sidebar context menu actions
+   #4384
+  </li>
+  <li>
+   Allow to remove tracks from the library by pressing the Delete key
+   #4330
+   lp:1227676
+   lp:1851457
+   lp:1856402
+   lp:1944565
+  </li>
+  <li>
+   Remember track selection when switching library features, save model state
+   #4177
+  </li>
+  <li>
+   Allow to remove a track form the disk
+   #3212
+  </li>
+  <li>
+   Refactoring of library code
+   #2756
+   #2717
+   #2715
+   #2810
+   #2900
+   #2906
+   #2925
+   #3017
+   #3475
+   #4164
+   #4152
+   #4162
+   #4101
+   #4214
+   #4280
+   #4429
+   #4477
+   #4475
+   #4480
+  </li>
+ </ul>
+ <p>
+  Sync
+ </p>
+ <ul>
+  <li>
+   Add support for setting an explicit leader for sync lock
+   #2768
+   #3099
+   #3695
+   #3734
+   #3698
+   #3864
+   #3867
+   #3921
+   #4119
+   #4135
+   #4149
+   #4276
+   #3944
+  </li>
+  <li>
+   Fix issue with half/double BPM calculation when using sync
+   #3899
+   #3706
+  </li>
+  <li>
+   Sync Lock: Don't seek phase when disabling sync
+   #4169
+  </li>
+  <li>
+   Sync Lock: Fix issues with single-playing syncables
+   #4155
+   #4389
+  </li>
+  <li>
+   Re-sync to leader after scratching
+   #4005
+  </li>
+  <li>
+   Fix audio artifacts when fading from or to zero
+   #4363
+  </li>
+ </ul>
+ <p>
+  Audio Codecs
+ </p>
+ <ul>
+  <li>
+   Fix recovering from FAAD2 decoding issues
+   #2850
+  </li>
+  <li>
+   SoundSourceMP3: Log recoverable errors as info instead of warning
+   #4365
+  </li>
+  <li>
+   Fix type detection of AIFF files
+   #4364
+  </li>
+  <li>
+   AAC encoder: Fixed a memory leak
+   #4386
+   #4408
+  </li>
+  <li>
+   Improve robustness of file type detection by considering the actual MIME type of the content.
+   lp:1445885
+   #4356
+   #4357
+  </li>
+ </ul>
+ <p>
+  Audio Engine
+ </p>
+ <ul>
+  <li>
+   Add support for Saved loops
+   #2194
+   #3267
+   #3202
+   #4265
+   lp:1367159
+  </li>
+  <li>
+   Fix an issue when pressing multiple cue buttons at the same time
+   #3382
+  </li>
+  <li>
+   Fix synchronization of main cue point/position
+   #4137
+   lp1937074
+   #4153
+  </li>
+  <li>
+   Add halve/double controls for beatjump size
+   #4269
+  </li>
+  <li>
+   Fix possible segfault when ejecting track
+   #4362
+   lp:1940589
+  </li>
+  <li>
+   Fixed an assertion when loop is before track start
+   #4383
+   lp:1946759
+  </li>
+  <li>
+   Fix/Improve snapping to beats in various situations
+   #4366
+   lp:1945238
+  </li>
+  <li>
+   Allow to cancel active loops via beatloop_activate
+   #4328
+   lp:1876003
+  </li>
+  <li>
+   Don't wipe inapplicable sound config immediately
+   #4544
+  </li>
+  <li>
+   Refactoring of beatgrid/beatmap code
+   #4044
+   #4048
+   #4045
+   #4049
+   #4092
+   #4094
+   #4104
+   #4103
+   #4127
+   #4099
+   #4071
+   #4184
+   #4234
+   #4233
+   #4258
+   #4259
+   #4263
+   #4272
+   #4268
+   #4270
+   #4342
+   #4336
+   #4409
+   #4361
+   #4255
+   #4488
+   #4411
+   #4498
+   #4500
+   #4499
+   #4510
+  </li>
+  <li>
+   Refactoring of audio engine code
+   #2762
+   #2801
+   #2885
+   #2997
+   #3266
+   #4064
+   #4065
+   #4066
+   #4069
+   #4074
+   #4075
+   #4076
+   #4078
+   #4082
+   #4077
+   #4080
+   #4086
+   #4089
+   #4090
+   #4079
+   #4091
+   #4083
+   #4095
+   #4081
+   #4061
+   #4105
+   #4183
+   #4186
+   #4189
+   #4216
+   #4221
+   #4219
+   #4191
+   #4232
+   #4231
+   #4229
+   #4257
+   #4266
+   #4217
+   #1966
+   #4535
+  </li>
+ </ul>
+ <p>
+  Controllers
+ </p>
+ <ul>
+  <li>
+   Never raise a fatal error if a controller mapping tries access a non-existent control object
+   #2947
+  </li>
+  <li>
+   Update Novation Launchpad controller scripts
+   #2600
+  </li>
+  <li>
+   Add generic USB HID "Set Reports (Feature)" functionality
+   #3051
+  </li>
+  <li>
+   Add support for reading the status of an HID controller (like MIDI SYSEX)
+   #3317
+  </li>
+  <li>
+   Use hidapi's hidraw backend instead of libusb on Linux
+   #4054
+  </li>
+  <li>
+   Consistently use "mapping" instead of "preset" to refer to controller mappings
+   #3472
+  </li>
+  <li>
+   Introduce new control objects
+   [Master],indicator_250millis
+   and
+   [Master],indicator_500millis
+   #4157
+  </li>
+  <li>
+   Introduce new control object
+   [Library],clear_search
+   #4331
+  </li>
+  <li>
+   Introduce new control object
+   [Library],focused_widget
+   to focus library directly
+   #4369
+   #4490
+  </li>
+  <li>
+   Don't automatically enable controller if it was disabled before
+   #4244
+   lp:1941042
+  </li>
+  <li>
+   Enable Qt logging categories for controller logging
+   #4523
+  </li>
+  <li>
+   Fix segfault during Mixxx shutdown due to a stale controller connection
+   #4476
+   lp:1946581
+  </li>
+  <li>
+   Components JS: Fix syncbutton
+   #4329
+  </li>
+  <li>
+   Roland DJ-505: Make blinking lights blink in sync and other improvements
+   #4159
+   #4517
+  </li>
+  <li>
+   Behringer DDM4000 mixer: Update controller mapping
+   #4262
+  </li>
+  <li>
+   Numark DJ2GO2 Touch: Fix sampler, hotcue, beatloop buttons
+   #4287
+  </li>
+  <li>
+   Denon MC6000MK2: Improve mapping code
+   #4385
+  </li>
+  <li>
+   Yaeltex MiniMixxx: Add controller mapping
+   #4350
+  </li>
+  <li>
+   Prepare code for upcoming ES6 based controller mapping system with module support
+   #2682
+   #2868
+   #2875
+   #2936
+   #2946
+  </li>
+  <li>
+   Other refactorings of controller code
+   #2904
+   #3308
+   #3463
+   #3634
+   #3635
+   #3636
+   #3676
+   #3880
+   #4085
+   #4524
+   #4533
+   #4521
+  </li>
+ </ul>
+ <p>
+  Skins
+ </p>
+ <ul>
+  <li>
+   Add experimental QML user interface
+   #3345
+   #3446
+   #3854
+   #3891
+   #2874
+   #3915
+   #3894
+   #3920
+   #3907
+   #3925
+   #3928
+   #3932
+   #3911
+   #3937
+   #3940
+   #3913
+   #3950
+   #3919
+   #3955
+   #3957
+   #3961
+   #3952
+   #3963
+   #3971
+   #3959
+   #3972
+   #3992
+   #4003
+   #4004
+   #3999
+   #4000
+   #4067
+   #4068
+   #4060
+   #4037
+   #4414
+   #3934
+   #4117
+   #4327
+   #4339
+  </li>
+  <li>
+   Add new "RGB Stacked" waveform
+   #3153
+  </li>
+  <li>
+   Add harmonic keywheel window
+   #1695
+   #3622
+   #3624
+  </li>
+  <li>
+   Make beat indicator control behaviour more natural
+   #3608
+  </li>
+  <li>
+   Allow skin scaling from preferences
+   #3960
+  </li>
+  <li>
+   Invert scroll wheel waveform zoom direction to mach other applications
+   #4195
+  </li>
+  <li>
+   Fix crash if no skin is available
+   #3918
+   #3939
+  </li>
+  <li>
+   Fix leaked controls
+   #4213
+   lp:1912129
+  </li>
+  <li>
+   Shade: remove initial setting of now accessible effect controls
+   #4398
+   lp:1946811
+  </li>
+  <li>
+   Fix switching from Shade to other skins
+   #4421
+   lp:1946812
+  </li>
+  <li>
+   Use double click to reset knobs and sliders
+   #4509
+   lp:1875999
+  </li>
+  <li>
+   Use info not warning for skin COs
+   #4525
+  </li>
+ </ul>
+ <p>
+  Effects
+ </p>
+ <ul>
+  <li>
+   Add a Noise effect
+   #2921
+  </li>
+  <li>
+   Use '---' instead of 'None' for empty slots to spot them easier
+   #4469
+  </li>
+  <li>
+   Effect refactoring: Effect chain saving/loading, parameter hiding/rearrangement, effect preferences overhaul
+   #4467
+   #4431
+   #4426
+   #4457
+   #4456
+   #4459
+   #4462
+   #4466
+   #4468
+   #4472
+   #4470
+   #4471
+   #4483
+   #4482
+   #4484
+   #4486
+   #4502
+   #4501
+   #4518
+   #4532
+   #4461
+   #4548
+   #4503
+  </li>
+ </ul>
+ <p>
+  Other
+ </p>
+ <ul>
+  <li>
+   Improve/fix the CMake build system
+   #2943
+   #3046
+   #3114
+   #3471
+   #3765
+   #3849
+   #3876
+   #4098
+   #4113
+   #4166
+   #4185
+   #4187
+   #4351
+   #4423
+   #4422
+   #4497
+   #4514
+   #3550
+  </li>
+  <li>
+   Improve GitHub workflow continuous integration
+   #2937
+   #3041
+   #3300
+   #4007
+   #4084
+   #4250
+   #4274
+   #4313
+   #4226
+   #4452
+  </li>
+  <li>
+   Improve pre-commit hook
+   #2796
+   #3923
+   #3948
+   #3929
+   #4192
+   #4282
+   #4278
+   #4314
+   #4321
+   #4374
+   #4494
+   #4512
+   #4558
+  </li>
+  <li>
+   Improve Lauchpad PPA builds
+   #4277
+   #4285
+   #4425
+  </li>
+  <li>
+   Drop Ubuntu Bionic support, require Qt 5.12
+   #3687
+   #3735
+   #3736
+   #3985
+  </li>
+  <li>
+   Drop Ubuntu Groovy support because of EOL
+   #4283
+  </li>
+  <li>
+   Add NixOS support
+   #2820
+   #2828
+   #2836
+   #2827
+   #2827
+   #2828
+   #3113
+   #3089
+   #3545
+  </li>
+  <li>
+   Update vcpkg build environment for Windows and macOS
+   #4163
+   #4225
+   #4338
+  </li>
+  <li>
+   Devendor libraries from the mixxx lib directory
+   #4201
+   #4202
+  </li>
+  <li>
+   Update Google Benchmark library to v1.6.0
+   #4540
+  </li>
+  <li>
+   Migration to Qt6 (work in progress)
+   #4052
+   #4295
+   #4293
+   #4294
+   #4291
+   #4290
+   #4300
+   #4302
+   #4289
+   #4292
+   #4299
+   #4051
+   #4303
+   #4305
+   #4304
+   #4306
+   #4308
+   #4309
+   #4322
+   #4373
+   #4371
+   #4375
+   #4378
+   #4381
+   #4380
+   #4376
+   #4379
+   #4372
+   #4377
+   #4387
+   #4391
+   #4392
+   #4395
+   #4397
+   #4396
+   #4402
+   #4405
+   #4394
+   #4404
+   #4401
+   #4400
+   #4403
+   #4407
+   #4399
+   #4406
+   #4420
+   #4415
+   #4417
+   #4419
+   #4416
+   #4418
+   #4433
+   #4434
+   #4441
+   #4445
+   #4446
+   #4444
+   #4436
+   #4437
+   #4440
+   #4430
+   #4435
+   #4443
+   #4439
+   #4442
+   #4438
+   #4449
+   #4451
+   #4453
+   #4478
+   #4479
+   #4506
+   #4556
+   #4554
+   #4555
+   #4552
+   #4549
+  </li>
+  <li>
+   Disable QWidget based library with Qt6, support only QML skins
+   #4393
+  </li>
+  <li>
+   Made use of inclusive language
+   #2894
+   #3868
+  </li>
+  <li>
+   Improve the unit tests
+   #2938
+   #2980
+   #3006
+   #4345
+  </li>
+  <li>
+   Logging: Add support for
+   QT_MESSAGE_PATTERN
+   environment variable
+   #3204
+   #3518
+  </li>
+  <li>
+   Colored logging console output
+   #3197
+  </li>
+  <li>
+   Improve command line argument parser
+   #3640
+   #3962
+   #4022
+   #4036
+   #4170
+   #4057
+  </li>
+  <li>
+   Improve message when dealing with macOS sandbox
+   #4018
+   lp:1921541
+  </li>
+  <li>
+   Moved contribution guidelines into our git repository
+   #2699
+  </li>
+  <li>
+   Automate deployment of CHANGELOG to the manual
+   #4180
+   #4256
+   #4208
+   #4228
+   #4222
+  </li>
+  <li>
+   Always show tooltips in preferences
+   #4198
+   lp:1840493
+  </li>
+  <li>
+   Allow to build Mixxx on Linux without ALSA, working around a Pipewire bug
+   #4242
+  </li>
+  <li>
+   Fix possible crash with opus files with embedded cover arts and require TagLib 1.11 or newer
+   #4251
+   #4252
+   lp:1940777
+  </li>
+  <li>
+   DlgTrackInfo: Fixed a SIGSEGV after a debug assertion
+   #4316
+  </li>
+  <li>
+   Library Preferences: Added link to settings files info in the manual
+   #4367
+  </li>
+  <li>
+   Use rounded Mixxx Icon for MacOS to follow Apples style guide
+   #4545
+  </li>
+  <li>
+   Misc. refactorings
+   #3154
+   #2870
+   #2872
+   #2978
+   #2969
+   #3016
+   #3320
+   #3356
+   #3453
+   #3487
+   #3558
+   #3685
+   #3741
+   #3744
+   #3753
+   #3761
+   #3834
+   #3842
+   #3853
+   #3874
+   #3883
+   #3922
+   #3947
+   #3974
+   #4024
+   #4026
+   #4034
+   #4038
+   #4039
+   #4043
+   #4053
+   #4072
+   #4097
+   #4096
+   #4118
+   #4130
+   #4129
+   #4109
+   #4106
+   #4131
+   #4140
+   #3032
+   #4110
+   #4173
+   #4178
+   #4194
+   #4197
+   #4190
+   #4212
+   #4223
+   #4238
+   #4236
+   #4320
+   #4325
+   #4203
+   #3861
+   #3514
+   #3274
+   #3182
+   #4343
+   #4358
+   #4388
+   #4427
+   #4341
+   #4473
+   #4464
+   #4481
+   #4527
+   #4534
+   #4537
+   #4541
+   #4543
+   #4546
+   #4542
+   #4559
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.3.2" type="stable" date="2022-01-31" timestamp="1643587200">
       <description>
  <ul>

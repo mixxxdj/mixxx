@@ -1,17 +1,3 @@
-//
-// C++ Implementation: parsercsv
-//
-// Description: module to parse Comma-Separated Values (CSV) formatted playlists (rfc4180)
-//
-//
-// Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
-// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
-// Author: Daniel Schürmann daschuer@gmx.de, (C) 2011
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-
 #include "library/parsercsv.h"
 
 #include <QDir>
@@ -19,65 +5,63 @@
 #include <QTextStream>
 #include <QtDebug>
 
-#include "moc_parsercsv.cpp"
+#include "library/parser.h"
 
-ParserCsv::ParserCsv() : Parser() {
+// static
+bool ParserCsv::isPlaylistFilenameSupported(const QString& playlistFile) {
+    return playlistFile.endsWith(".csv", Qt::CaseInsensitive);
 }
 
-ParserCsv::~ParserCsv() {
-}
+// static
+QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
+    QFile file(playlistFile);
 
-QList<QString> ParserCsv::parse(const QString& sFilename) {
-    QFile file(sFilename);
-    QString basepath = sFilename.section('/', 0, -2);
-
-    clearLocations();
+    QList<QString> locations;
     //qDebug() << "ParserCsv: Starting to parse.";
     if (file.open(QIODevice::ReadOnly)) {
-        QByteArray ba = file.readAll();
+        QByteArray bytes = file.readAll();
 
-        QList<QList<QString> > tokens = tokenize(ba, ',');
+        QList<QList<QString>> tokens = tokenize(bytes, ',');
 
         // detect Location column
-        int loc_coll = 0x7fffffff;
+        int locationColumnIndex = -1;
         if (tokens.size()) {
             for (int i = 0; i < tokens[0].size(); ++i) {
-                if (tokens[0][i] == tr("Location")) {
-                    loc_coll = i;
+                if (tokens[0][i] == QObject::tr("Location")) {
+                    locationColumnIndex = i;
                     break;
                 }
             }
-            for (int i = 1; i < tokens.size(); ++i) {
-                if (loc_coll < tokens[i].size()) {
-                    // Todo: check if path is relative
-                    QFileInfo fi = tokens[i][loc_coll];
-                    if (fi.isRelative()) {
-                        // add base path
-                        qDebug() << "is relative" << basepath << fi.filePath();
-                        fi.setFile(basepath,fi.filePath());
+            if (locationColumnIndex < 0 && tokens.size() > 1) {
+                // Last resort, find column with path separators
+                // This happens in case of csv files in a different language
+                for (int i = 0; i < tokens[1].size(); ++i) {
+                    if (tokens[1][i].contains(QDir::separator())) {
+                        locationColumnIndex = i;
+                        break;
                     }
-                    m_sLocations.append(fi.filePath());
                 }
             }
+            if (locationColumnIndex >= 0) {
+                for (int row = 1; row < tokens.size(); ++row) {
+                    if (locationColumnIndex < tokens[row].size()) {
+                        locations.append(tokens[row][locationColumnIndex]);
+                    }
+                }
+            } else {
+                qInfo() << "No location column found in"
+                        << playlistFile;
+            }
         }
-
         file.close();
-
-        if (m_sLocations.count() != 0) {
-            return m_sLocations;
-        } else {
-            return QList<QString>(); // NULL pointer returned when no locations were found
-        }
     }
-
-    file.close();
-    return QList<QString>(); //if we get here something went wrong
+    return locations;
 }
 
 // Code was posted at http://www.qtcentre.org/threads/35511-Parsing-CSV-data
 // by "adzajac" and adapted to use QT Classes
-QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter) {
-    QList<QList<QString> > tokens;
+QList<QList<QString>> ParserCsv::tokenize(const QByteArray& str, char delimiter) {
+    QList<QList<QString>> tokens;
 
     unsigned int row = 0;
     bool quotes = false;
@@ -90,21 +74,23 @@ QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter
         if (!quotes && c == '"') {
             quotes = true;
         } else if (quotes && c== '"' ) {
-            if (pos + 1 < str.length() && str[pos+1]== '"') {
+            if (pos + 1 < str.length() && str[pos + 1] == '"') {
                 field.append(c);
                 pos++;
             } else {
                 quotes = false;
             }
         } else if (!quotes && c == delimiter) {
-            if (isUtf8(field.constData())) {
+            if (Parser::isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
             } else {
                 tokens[row].append(QString::fromLatin1(field));
             }
             field.clear();
+        } else if (!quotes && c == '\r' && str[pos + 1] == '\n') {
+            // skip \r in \r\n
         } else if (!quotes && (c == '\r' || c == '\n')) {
-            if (isUtf8(field.constData())) {
+            if (Parser::isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
             } else {
                 tokens[row].append(QString::fromLatin1(field));
@@ -130,8 +116,8 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
-                tr("Playlist Export Failed"),
-                tr("Could not create file") + " " + file_str);
+                QObject::tr("Playlist Export Failed"),
+                QObject::tr("Could not create file") + " " + file_str);
         return false;
     }
     //Base folder of file
@@ -140,9 +126,14 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
 
     qDebug() << "Basepath: " << base;
     QTextStream out(&file);
-    out.setCodec("UTF-8"); // rfc4180: Common usage of CSV is US-ASCII ...
-                           // Using UTF-8 to get around codepage issues
-                           // and it's the default encoding in Ooo Calc
+    // rfc4180: Common usage of CSV is US-ASCII ...
+    // Using UTF-8 to get around codepage issues
+    // and it's the default encoding in Ooo Calc
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    DEBUG_ASSERT(out.encoding() == QStringConverter::Utf8);
+#else
+    out.setCodec("UTF-8");
+#endif
 
     // writing header section
     bool first = true;
@@ -216,8 +207,8 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
-                tr("Readable text Export Failed"),
-                tr("Could not create file") + " " + file_str);
+                QObject::tr("Readable text Export Failed"),
+                QObject::tr("Could not create file") + " " + file_str);
         return false;
     }
 

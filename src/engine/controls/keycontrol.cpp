@@ -12,8 +12,8 @@
 #include "track/keyutils.h"
 
 //static const double kLockOriginalKey = 0;
-static const double kLockCurrentKey = 1;
-static const double kKeepUnlockedKey = 1;
+static constexpr double kLockCurrentKey = 1;
+static constexpr double kKeepUnlockedKey = 1;
 
 KeyControl::KeyControl(const QString& group,
         UserSettingsPointer pConfig)

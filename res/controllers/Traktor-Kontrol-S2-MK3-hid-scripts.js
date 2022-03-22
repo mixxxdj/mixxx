@@ -187,7 +187,7 @@ TraktorS2MK3.registerInputPackets = function () {
     this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x05, 0xFFFF, this.parameterHandler);
     /*
     do NOT map the "master" button because it also drives the analog output gain.
-    Disabling this mapping is the only way to have independant controls for the
+    Disabling this mapping is the only way to have independent controls for the
     digital master gain and the output level - the latter usually needs to be set
     at 100%.
     */
@@ -741,8 +741,8 @@ TraktorS2MK3.registerOutputPackets = function () {
     this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
     // VuMeter
-    this.vuLeftConnection = engine.makeConnection("[Channel1]", "VuMeter", this.vuMeterHandler);
-    this.vuRightConnection = engine.makeConnection("[Channel2]", "VuMeter", this.vuMeterHandler);
+    this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "VuMeter", this.vuMeterHandler);
+    this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "VuMeter", this.vuMeterHandler);
     this.clipLeftConnection = engine.makeConnection("[Channel1]", "PeakIndicator", this.peakOutputHandler);
     this.clipRightConnection = engine.makeConnection("[Channel2]", "PeakIndicator", this.peakOutputHandler);
 

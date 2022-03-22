@@ -1000,11 +1000,11 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>bpmTap</tabstop>
   <tabstop>bpmDouble</tabstop>
   <tabstop>bpmHalve</tabstop>
-  <tabstop>bpmClear</tabstop>
   <tabstop>bpmTwoThirds</tabstop>
   <tabstop>bpmThreeFourth</tabstop>
   <tabstop>bpmThreeHalves</tabstop>
   <tabstop>bpmFourThirds</tabstop>
+  <tabstop>bpmClear</tabstop>
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>
   <tabstop>btnCancel</tabstop>

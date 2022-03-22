@@ -5,8 +5,8 @@
 
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "library/library_prefs.h"
 #include "moc_dlgprefkey.cpp"
-#include "util/compatibility.h"
 #include "util/xml.h"
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
@@ -45,10 +45,10 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
 
     m_availablePlugins = AnalyzerKey::availablePlugins();
     for (const auto& info : qAsConst(m_availablePlugins)) {
-        plugincombo->addItem(info.name, info.id);
+        plugincombo->addItem(info.name(), info.id());
     }
 
-    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
+    m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
 
     loadSettings();
 
@@ -145,7 +145,7 @@ void DlgPrefKey::slotResetToDefaults() {
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysisDefault();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChangeDefault();
     if (m_availablePlugins.size() > 0) {
-        m_selectedAnalyzerId = m_availablePlugins[0].id;
+        m_selectedAnalyzerId = m_availablePlugins[0].id();
     }
 
     KeyUtils::KeyNotation notation_type;
@@ -172,7 +172,7 @@ void DlgPrefKey::pluginSelected(int i) {
     if (i == -1) {
         return;
     }
-    m_selectedAnalyzerId = m_availablePlugins[i].id;
+    m_selectedAnalyzerId = m_availablePlugins[i].id();
     slotUpdate();
 }
 
@@ -255,7 +255,7 @@ void DlgPrefKey::slotUpdate() {
         bool found = false;
         for (int i = 0; i < m_availablePlugins.size(); ++i) {
             const auto& info = m_availablePlugins.at(i);
-            if (info.id == m_selectedAnalyzerId) {
+            if (info.id() == m_selectedAnalyzerId) {
                 plugincombo->setCurrentIndex(i);
                 found = true;
                 break;
@@ -263,7 +263,7 @@ void DlgPrefKey::slotUpdate() {
         }
         if (!found) {
             plugincombo->setCurrentIndex(0);
-            m_selectedAnalyzerId = m_availablePlugins[0].id;
+            m_selectedAnalyzerId = m_availablePlugins[0].id();
         }
     }
 }

@@ -16,7 +16,10 @@ class Library;
 class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     Q_OBJECT
   public:
-    DlgPrefColors(QWidget* parent, UserSettingsPointer pConfig, Library* pLibrary);
+    DlgPrefColors(
+            QWidget* parent,
+            UserSettingsPointer pConfig,
+            std::shared_ptr<Library> pLibrary);
     virtual ~DlgPrefColors();
 
   public slots:
@@ -50,7 +53,8 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void restoreComboBoxes(
             const QString& hotcueColors,
             const QString& trackColors,
-            int defaultColor);
+            int defaultHotcueColor,
+            int defaultLoopColor);
 
     const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;

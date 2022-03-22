@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
+
 #include <QDir>
 #include <QtDebug>
-
-#include "test/mixxxtest.h"
+#include <vector>
 
 #include "analyzer/analyzerwaveform.h"
 #include "library/dao/analysisdao.h"
+#include "test/mixxxtest.h"
 #include "track/track.h"
 
 #define BIGBUF_SIZE (1024 * 1024) //Megabyte
@@ -18,9 +19,7 @@ namespace {
 class AnalyzerWaveformTest : public MixxxTest {
   protected:
     AnalyzerWaveformTest()
-            : aw(config(), QSqlDatabase()),
-              bigbuf(nullptr),
-              canaryBigBuf(nullptr) {
+            : aw(config(), QSqlDatabase()) {
     }
 
     void SetUp() override {
@@ -31,14 +30,14 @@ class AnalyzerWaveformTest : public MixxxTest {
                 mixxx::audio::Bitrate(),
                 mixxx::Duration::fromMillis(1000));
 
-        bigbuf = new CSAMPLE[BIGBUF_SIZE];
+        bigbuf.resize(BIGBUF_SIZE);
         for (int i = 0; i < BIGBUF_SIZE; i++)
             bigbuf[i] = MAGIC_FLOAT;
 
         //Memory layout for canaryBigBuf looks like
         //  [ canary | big buf | canary ]
 
-        canaryBigBuf = new CSAMPLE[BIGBUF_SIZE + 2 * CANARY_SIZE];
+        canaryBigBuf.resize(BIGBUF_SIZE + 2 * CANARY_SIZE);
         for (int i = 0; i < CANARY_SIZE; i++)
             canaryBigBuf[i] = CANARY_FLOAT;
         for (int i = CANARY_SIZE; i < CANARY_SIZE + BIGBUF_SIZE; i++)
@@ -48,21 +47,19 @@ class AnalyzerWaveformTest : public MixxxTest {
     }
 
     void TearDown() override {
-        delete[] bigbuf;
-        delete[] canaryBigBuf;
     }
 
   protected:
     AnalyzerWaveform aw;
     TrackPointer tio;
-    CSAMPLE* bigbuf;
-    CSAMPLE* canaryBigBuf;
+    std::vector<CSAMPLE> bigbuf;
+    std::vector<CSAMPLE> canaryBigBuf;
 };
 
 //Test to make sure we don't modify the source buffer.
 TEST_F(AnalyzerWaveformTest, simpleAnalyze) {
     aw.initialize(tio, tio->getSampleRate(), BIGBUF_SIZE);
-    aw.processSamples(bigbuf, BIGBUF_SIZE);
+    aw.processSamples(bigbuf.data(), BIGBUF_SIZE);
     aw.storeResults(tio);
     aw.cleanup();
     for (int i = 0; i < BIGBUF_SIZE; i++) {

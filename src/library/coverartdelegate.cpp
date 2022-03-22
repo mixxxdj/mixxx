@@ -9,7 +9,6 @@
 #include "moc_coverartdelegate.cpp"
 #include "track/track.h"
 #include "util/logger.h"
-#include "widget/wlibrarytableview.h"
 
 namespace {
 
@@ -108,7 +107,7 @@ TrackPointer CoverArtDelegate::loadTrackByLocation(
         return TrackPointer();
     }
     return m_pTrackModel->getTrackByRef(
-            TrackRef::fromFileInfo(trackLocation));
+            TrackRef::fromFilePath(trackLocation));
 }
 
 void CoverArtDelegate::paintItem(
@@ -121,12 +120,12 @@ void CoverArtDelegate::paintItem(
     VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
-    if (CoverImageUtils::isValidHash(coverInfo.hash)) {
+    bool drewPixmap = false;
+    if (coverInfo.hasImage()) {
         VERIFY_OR_DEBUG_ASSERT(m_pCache) {
             return;
         }
-        const double scaleFactor =
-                getDevicePixelRatioF(qobject_cast<QWidget*>(parent()));
+        const double scaleFactor = qobject_cast<QWidget*>(parent())->devicePixelRatioF();
         QPixmap pixmap = m_pCache->tryLoadCover(this,
                 coverInfo,
                 static_cast<int>(option.rect.width() * scaleFactor),
@@ -142,13 +141,24 @@ void CoverArtDelegate::paintItem(
             } else {
                 // If we asked for a non-cache image and got a null pixmap,
                 // then our request was queued.
-                m_pendingCacheRows.insert(coverInfo.hash, index.row());
+                m_pendingCacheRows.insert(coverInfo.cacheKey(), index.row());
             }
         } else {
             // Cache hit
             pixmap.setDevicePixelRatio(scaleFactor);
             painter->drawPixmap(option.rect.topLeft(), pixmap);
+            drewPixmap = true;
         }
+    }
+    // Fallback: Use the (background) color as a placeholder:
+    //  - while the cover art is loaded asynchronously in the background
+    //  - if the audio file with embedded cover art is missing
+    //  - if the external image file with custom cover art is missing
+    // Since the background color is calculated from the cover art image
+    // it is optional and may not always be available. The background
+    // color may even be set manually without having a cover image.
+    if (!drewPixmap && coverInfo.color) {
+        painter->fillRect(option.rect, mixxx::RgbColor::toQColor(coverInfo.color));
     }
 
     // Draw a border if the cover art cell has focus

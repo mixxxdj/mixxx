@@ -20,10 +20,10 @@
 namespace {
 
 QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
-    const QString fileExtension =
-            mixxx::SoundSource::getTypeFromFile(filePath);
+    const QString fileType =
+            mixxx::SoundSource::getTypeFromFile(QFileInfo(filePath));
     const mixxx::SoundSourceProviderPointer pPrimaryProvider =
-            SoundSourceProxy::getPrimaryProviderForFileExtension(fileExtension);
+            SoundSourceProxy::getPrimaryProviderForFileType(fileType);
     if (pPrimaryProvider) {
         return pPrimaryProvider->getDisplayName();
     } else {
@@ -442,7 +442,7 @@ RgbColor::optional_t SeratoTags::getTrackColor() const {
     return color;
 }
 
-void SeratoTags::setTrackColor(RgbColor::optional_t color) {
+void SeratoTags::setTrackColor(const RgbColor::optional_t& color) {
     mixxx::RgbColor rgbColor = SeratoTags::displayedToStoredTrackColor(color);
     m_seratoMarkers.setTrackColor(rgbColor);
     m_seratoMarkers2.setTrackColor(rgbColor);

@@ -223,4 +223,3 @@ BehringerBCD3000.keykey = function (channel, control, value, status, group) {
 //        midi.sendShortMsg(0xB0, 0x07, 0x00);
 //    }
 //};
-

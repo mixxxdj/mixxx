@@ -95,7 +95,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
         // This means that a ReplayGain value has been calculated after the
         // track has been loaded
-        const float kFadeSeconds = 1.0;
+        constexpr float kFadeSeconds = 1.0;
 
         if (m_bSmoothFade) {
             float seconds = static_cast<float>(m_timer.elapsed().toDoubleSeconds());

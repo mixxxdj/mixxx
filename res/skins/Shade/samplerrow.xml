@@ -24,7 +24,7 @@
 						<ObjectName>EffectLeftBorder</ObjectName>
 						<Size>5f,40f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-					</WidgetGroup>	
+					</WidgetGroup>
 					<WidgetGroup>
 						<Size>0e,40f</Size>
 						<BackPath>style/style_bg_looping.png</BackPath>
@@ -54,13 +54,13 @@
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>5f,40f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-					</WidgetGroup>	
+					</WidgetGroup>
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>3f,40f</Size>
-					</WidgetGroup>	
-				</Children>		
-			</WidgetGroup>	
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
 		    <Template src="skin:samplersmall.xml">
 		      <SetVariable name="samplernum"><Variable name="samplernum1"/></SetVariable>
 		    </Template>
@@ -81,7 +81,7 @@
 						<ObjectName>EffectLeftBorder</ObjectName>
 						<Size>5f,40f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-					</WidgetGroup>	
+					</WidgetGroup>
 					<WidgetGroup>
 						<Size>0e,40f</Size>
 						<BackPath>style/style_bg_looping.png</BackPath>
@@ -118,13 +118,13 @@
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>5f,40f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-					</WidgetGroup>	
+					</WidgetGroup>
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>3f,40f</Size>
-					</WidgetGroup>	
-				</Children>		
-			</WidgetGroup>	
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
 		  </Children>
 		  <Connection>
 		    <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
@@ -181,13 +181,13 @@
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>5f,92f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-					</WidgetGroup>	
+					</WidgetGroup>
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>3f,40f</Size>
-					</WidgetGroup>	
-				</Children>		
-			</WidgetGroup>	
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
 		    <Template src="skin:sampler.xml">
 		      <SetVariable name="samplernum"><Variable name="samplernum1"/></SetVariable>
 		    </Template>
@@ -247,13 +247,13 @@
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>5f,92f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
-					</WidgetGroup>	
+					</WidgetGroup>
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
 						<Size>3f,40f</Size>
-					</WidgetGroup>	
-				</Children>		
-			</WidgetGroup>	
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
 		  </Children>
 		  <Connection>
 		    <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>

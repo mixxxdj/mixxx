@@ -21,6 +21,7 @@ class WaveformWidgetType {
         QtVSyncTest,             // 13 VSync Qt
         QtHSVWaveform,           // 14 HSV Qt
         QtRGBWaveform,           // 15 RGB Qt
-        Count_WaveformwidgetType // 16 Also used as invalid value
+        GLSLRGBStackedWaveform,  // 16 RGB Stacked
+        Count_WaveformwidgetType // 17 Also used as invalid value
     };
 };

@@ -15,17 +15,17 @@ CueInfo::CueInfo()
 
 CueInfo::CueInfo(
         CueType type,
-        std::optional<double> startPositionMillis,
-        std::optional<double> endPositionMillis,
-        std::optional<int> hotCueIndex,
-        const QString& label,
-        mixxx::RgbColor::optional_t color,
+        const std::optional<double>& startPositionMillis,
+        const std::optional<double>& endPositionMillis,
+        const std::optional<int>& hotCueIndex,
+        QString label,
+        const mixxx::RgbColor::optional_t& color,
         CueFlags flags)
         : m_type(type),
           m_startPositionMillis(startPositionMillis),
           m_endPositionMillis(endPositionMillis),
           m_hotCueIndex(hotCueIndex),
-          m_label(label),
+          m_label(std::move(label)),
           m_color(color),
           m_flags(flags) {
 }
@@ -38,7 +38,7 @@ void CueInfo::setType(CueType type) {
     m_type = type;
 }
 
-void CueInfo::setStartPositionMillis(std::optional<double> positionMillis) {
+void CueInfo::setStartPositionMillis(const std::optional<double>& positionMillis) {
     m_startPositionMillis = positionMillis;
 }
 
@@ -46,7 +46,7 @@ std::optional<double> CueInfo::getStartPositionMillis() const {
     return m_startPositionMillis;
 }
 
-void CueInfo::setEndPositionMillis(std::optional<double> positionMillis) {
+void CueInfo::setEndPositionMillis(const std::optional<double>& positionMillis) {
     m_endPositionMillis = positionMillis;
 }
 
@@ -58,7 +58,7 @@ std::optional<int> CueInfo::getHotCueIndex() const {
     return m_hotCueIndex;
 }
 
-void CueInfo::setHotCueIndex(const std::optional<int> hotCueIndex) {
+void CueInfo::setHotCueIndex(const std::optional<int>& hotCueIndex) {
     DEBUG_ASSERT(!hotCueIndex || *hotCueIndex >= kFirstHotCueIndex);
     m_hotCueIndex = hotCueIndex;
 }
@@ -75,7 +75,7 @@ RgbColor::optional_t CueInfo::getColor() const {
     return m_color;
 }
 
-void CueInfo::setColor(RgbColor::optional_t color) {
+void CueInfo::setColor(const RgbColor::optional_t& color) {
     m_color = color;
 }
 

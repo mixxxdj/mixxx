@@ -43,6 +43,7 @@ Description:
                 <!-- minSize so that 8 Preview HotCues fit nicely, 23+1px each -->
                 <Size>159min,74me</Size>
                 <Children>
+
                   <Template src="skin:../Tango/decks/preview_deck.xml"/>
 
                   <WidgetGroup>
@@ -61,6 +62,7 @@ Description:
                     <Orientation>vertical</Orientation>
                     <Collapsible>0,0</Collapsible>
                     <Children>
+
                       <WidgetGroup><!-- Preview Deck, Search, Tree View -->
                         <Layout>vertical</Layout>
                         <SizePolicy>me,min</SizePolicy>

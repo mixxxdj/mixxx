@@ -4,6 +4,7 @@
 #include <QPair>
 #include <list>
 
+#include "audio/frame.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "util/math.h"
 #include "util/types.h"
@@ -46,6 +47,9 @@ class ReadAheadManager {
     }
 
     virtual void notifySeek(double seekPosition);
+    virtual void notifySeek(mixxx::audio::FramePos position) {
+        notifySeek(position.toEngineSamplePos());
+    }
 
     /// hintReader allows the ReadAheadManager to provide hints to the reader to
     /// indicate that the given portion of a song is about to be read.
@@ -54,6 +58,9 @@ class ReadAheadManager {
     virtual double getFilePlaypositionFromLog(
             double currentFilePlayposition,
             double numConsumedSamples);
+    mixxx::audio::FramePos getFilePlaypositionFromLog(
+            mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FrameDiff_t numConsumedFrames);
 
   private:
     /// An entry in the read log indicates the virtual playposition the read

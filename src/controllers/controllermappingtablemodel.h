@@ -1,27 +1,23 @@
 #pragma once
 
+#include <QAbstractItemDelegate>
 #include <QAbstractTableModel>
-#include <QVariant>
-#include <QVector>
 #include <QHash>
 #include <QModelIndex>
-#include <QAbstractItemDelegate>
+#include <QVariant>
+#include <QVector>
 
-#include "controllers/controllerpreset.h"
-#include "controllers/controllerpresetvisitor.h"
-#include "controllers/midi/midicontrollerpreset.h"
-#include "controllers/hid/hidcontrollerpreset.h"
+#include "controllers/hid/legacyhidcontrollermapping.h"
+#include "controllers/legacycontrollermapping.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 
-class ControllerMappingTableModel : public QAbstractTableModel,
-                                    public ControllerPresetVisitor {
+class ControllerMappingTableModel : public QAbstractTableModel {
     Q_OBJECT
   public:
     ControllerMappingTableModel(QObject* pParent);
     ~ControllerMappingTableModel() override;
 
-    void setPreset(ControllerPresetPointer pPreset);
-    void visit(HidControllerPreset* pHidPreset) override;
-    void visit(MidiControllerPreset* pMidiPreset) override;
+    void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping);
 
     // Revert changes made since the last apply.
     virtual void cancel();
@@ -36,13 +32,11 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   protected:
-    // Called after a preset is loaded. If the preset is a MIDI preset,
-    // m_pMidiPreset points to the MIDI preset. If the preset is an HID preset,
-    // m_pHidPreset points to the HID preset.
-    virtual void onPresetLoaded() = 0;
+    // Called after a mapping is loaded. If the mapping is a MIDI mapping,
+    // m_pMidiMapping points to the MIDI mapping. If the mapping is an HID mapping,
+    // m_pHidMapping points to the HID mapping.
+    virtual void onMappingLoaded() = 0;
 
-    QVector<QHash<int, QVariant> > m_headerInfo;
-    ControllerPresetPointer m_pPreset;
-    MidiControllerPreset* m_pMidiPreset;
-    HidControllerPreset* m_pHidPreset;
+    QVector<QHash<int, QVariant>> m_headerInfo;
+    std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;
 };

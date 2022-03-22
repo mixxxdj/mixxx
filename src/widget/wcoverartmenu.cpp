@@ -5,7 +5,7 @@
 
 #include "library/coverartutils.h"
 #include "moc_wcoverartmenu.cpp"
-#include "util/sandbox.h"
+#include "util/fileaccess.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget *parent)
         : QMenu(parent) {
@@ -72,9 +72,7 @@ void WCoverArtMenu::slotChange() {
 
     CoverInfoRelative coverInfo;
     // Create a security token for the file.
-    QFileInfo selectedCover(selectedCoverPath);
-    SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-        selectedCover, true);
+    auto selectedCover = mixxx::FileAccess(mixxx::FileInfo(selectedCoverPath));
     QImage image(selectedCoverPath);
     if (image.isNull()) {
         // TODO(rryan): feedback
@@ -83,8 +81,7 @@ void WCoverArtMenu::slotChange() {
     coverInfo.type = CoverInfo::FILE;
     coverInfo.source = CoverInfo::USER_SELECTED;
     coverInfo.coverLocation = selectedCoverPath;
-    // TODO() here we may introduce a duplicate hash code
-    coverInfo.hash = CoverImageUtils::calculateHash(image);
+    coverInfo.setImage(image);
     qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
     emit coverInfoSelected(coverInfo);
 }
@@ -93,6 +90,7 @@ void WCoverArtMenu::slotUnset() {
     CoverInfo coverInfo;
     coverInfo.type = CoverInfo::NONE;
     coverInfo.source = CoverInfo::USER_SELECTED;
+    coverInfo.setImage();
     qDebug() << "WCoverArtMenu::slotUnset emit" << coverInfo;
     emit coverInfoSelected(coverInfo);
 }

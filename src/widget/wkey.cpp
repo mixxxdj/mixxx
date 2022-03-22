@@ -1,5 +1,6 @@
 #include "widget/wkey.h"
 
+#include "library/library_prefs.h"
 #include "moc_wkey.cpp"
 #include "track/keys.h"
 #include "track/keyutils.h"
@@ -7,7 +8,7 @@
 WKey::WKey(const QString& group, QWidget* pParent)
         : WLabel(pParent),
           m_dOldValue(0),
-          m_keyNotation("[Library]", "key_notation", this),
+          m_keyNotation(mixxx::library::prefs::kKeyNotationConfigKey, this),
           m_engineKeyDistance(group,
                   "visual_key_distance",
                   this,

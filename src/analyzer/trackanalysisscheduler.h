@@ -1,18 +1,25 @@
 #pragma once
 
 #include <QList>
-
 #include <deque>
+#include <memory>
 #include <set>
 #include <vector>
 
 #include "analyzer/analyzerthread.h"
+#include "util/db/dbconnectionpool.h"
 
-#include "util/memory.h"
+/// Callbacks for triggering side-effects in the outer context of
+/// TrackAnalysisScheduler.
+///
+/// All functions will only be called from the host thread of
+/// TrackAnalysisScheduler, not from worker threads.
+class TrackAnalysisSchedulerEnvironment {
+  public:
+    virtual ~TrackAnalysisSchedulerEnvironment() = default;
 
-
-// forward declaration(s)
-class Library;
+    virtual TrackPointer loadTrackById(TrackId trackId) const = 0;
+};
 
 class TrackAnalysisScheduler : public QObject {
     Q_OBJECT
@@ -26,15 +33,17 @@ class TrackAnalysisScheduler : public QObject {
     };
 
     static Pointer createInstance(
-            Library* library,
+            std::unique_ptr<const TrackAnalysisSchedulerEnvironment> pEnvironment,
             int numWorkerThreads,
+            const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
             const UserSettingsPointer& pConfig,
             AnalyzerModeFlags modeFlags);
 
     /*private*/ TrackAnalysisScheduler(
-            Library* library,
+            std::unique_ptr<const TrackAnalysisSchedulerEnvironment> pEnvironment,
             int numWorkerThreads,
-            const UserSettingsPointer& pConfig,
+            const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
+            const UserSettingsPointer& pUserSettings,
             AnalyzerModeFlags modeFlags);
     ~TrackAnalysisScheduler() override;
 
@@ -42,14 +51,6 @@ class TrackAnalysisScheduler : public QObject {
     // the caller must invoke resume() once.
     bool scheduleTrackById(TrackId trackId);
     int scheduleTracksById(const QList<TrackId>& trackIds);
-
-    // Returns the scheduled tracks that have not yet been analyzed.
-    // Includes both queued tracks as well as pending tracks that are
-    // currently being analyzed. The result may contain duplicates.
-    // TODO(XXX): Use this function for implementing the feature
-    // "Suspend and resume batch analysis"
-    // https://bugs.launchpad.net/mixxx/+bug/1443181
-    QList<TrackId> stopAndCollectScheduledTrackIds();
 
   public slots:
     void suspend();
@@ -146,7 +147,7 @@ class TrackAnalysisScheduler : public QObject {
                 m_pendingTrackIds.empty();
     }
 
-    Library* m_library;
+    const std::unique_ptr<const TrackAnalysisSchedulerEnvironment> m_pEnvironment;
 
     std::vector<Worker> m_workers;
 

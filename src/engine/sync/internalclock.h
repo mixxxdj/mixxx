@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QObject>
-#include <QString>
 #include <QScopedPointer>
+#include <QString>
 
+#include "audio/types.h"
 #include "engine/sync/clock.h"
 #include "engine/sync/syncable.h"
 
@@ -13,11 +14,11 @@ class ControlPushButton;
 class EngineSync;
 class EngineChannel;
 
-/// Internal Clock is a Master Sync object that provides a source of constant
+/// Internal Clock is a Sync Lock object that provides a source of constant
 /// tempo when needed.  The EngineSync will decide when to make the Internal
-/// Clock master.  The Internal Clock should not be given any new sources of
+/// Clock leader.  The Internal Clock should not be given any new sources of
 /// bpm clock.  If someone wants to write a Midi Clock source, it should be
-/// a separate Syncable object that can become master.
+/// a separate Syncable object that can become ledaer.
 class InternalClock : public QObject, public Clock, public Syncable {
     Q_OBJECT
   public:
@@ -32,7 +33,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
     }
 
     void setSyncMode(SyncMode mode) override;
-    void notifyOnlyPlayingSyncable() override;
+    void notifyUniquePlaying() override;
     void requestSync() override;
     SyncMode getSyncMode() const override {
         return m_mode;
@@ -46,41 +47,45 @@ class InternalClock : public QObject, public Clock, public Syncable {
     bool isAudible() const override {
         return false;
     }
+    bool isQuantized() const override {
+        return true;
+    }
 
     double getBeatDistance() const override;
-    void setMasterBeatDistance(double beatDistance) override;
+    void updateLeaderBeatDistance(double beatDistance) override;
 
-    double getBaseBpm() const override;
-    void setMasterBpm(double bpm) override;
-    double getBpm() const override;
-    void setInstantaneousBpm(double bpm) override;
-    void setMasterParams(double beatDistance, double baseBpm, double bpm) override;
+    mixxx::Bpm getBaseBpm() const override;
+    void updateLeaderBpm(mixxx::Bpm bpm) override;
+    void notifyLeaderParamSource() override;
+    mixxx::Bpm getBpm() const override;
+    void updateInstantaneousBpm(mixxx::Bpm bpm) override;
+    void reinitLeaderParams(double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) override;
 
-    void onCallbackStart(int sampleRate, int bufferSize);
-    void onCallbackEnd(int sampleRate, int bufferSize);
+    void onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize);
+    void onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize);
 
   private slots:
     void slotBpmChanged(double bpm);
-    void slotBeatDistanceChanged(double beat_distance);
-    void slotSyncMasterEnabledChangeRequest(double state);
+    void slotBeatDistanceChanged(double beatDistance);
+    void slotSyncLeaderEnabledChangeRequest(double state);
 
   private:
-    void updateBeatLength(int sampleRate, double bpm);
+    void updateBeatLength(mixxx::audio::SampleRate sampleRate, mixxx::Bpm bpm);
 
     const QString m_group;
     SyncableListener* m_pEngineSync;
     QScopedPointer<ControlLinPotmeter> m_pClockBpm;
     QScopedPointer<ControlObject> m_pClockBeatDistance;
-    QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
+    QScopedPointer<ControlPushButton> m_pSyncLeaderEnabled;
     SyncMode m_mode;
 
-    int m_iOldSampleRate;
-    double m_dOldBpm;
+    mixxx::audio::SampleRate m_oldSampleRate;
+    mixxx::Bpm m_oldBpm;
 
     // This is the BPM value at unity adopted when sync is enabled.
     // It is used to relate the followers and must not change when
     // the bpm is adjusted to avoid sudden double/half rate changes.
-    double m_dBaseBpm;
+    mixxx::Bpm m_baseBpm;
 
     // The internal clock rate is stored in terms of samples per beat.
     // Fractional values are allowed.

@@ -102,18 +102,18 @@ void Tooltips::addStandardTooltips() {
             << clippingHelp;
 
     add("master_PeakIndicator")
-            << tr("Master Peak Indicator")
-            << tr("Indicates when the signal on the master output is clipping,")
+            << tr("Main Output Peak Indicator")
+            << tr("Indicates when the signal on the main output is clipping,")
             << clippingHelp;
 
     add("master_PeakIndicatorL")
-            << tr("Master L Peak Indicator")
-            << tr("Indicates when the left signal on the master output is clipping,")
+            << tr("Main Output L Peak Indicator")
+            << tr("Indicates when the left signal on the main output is clipping,")
             << clippingHelp;
 
     add("master_PeakIndicatorR")
-            << tr("Master R Peak Indicator")
-            << tr("Indicates when the right signal on the master output is clipping,")
+            << tr("Main Output R Peak Indicator")
+            << tr("Indicates when the right signal on the main output is clipping,")
             << clippingHelp;
 
     add("channel_VuMeter")
@@ -165,12 +165,12 @@ void Tooltips::addStandardTooltips() {
             << clippingHelp;
 
     add("master_VuMeterL")
-            << tr("Master Channel L Volume Meter")
-            << tr("Shows the current master volume for the left channel.");
+            << tr("Main Channel L Volume Meter")
+            << tr("Shows the current volume for the left channel of the main output.");
 
     add("master_VuMeterR")
             << tr("Master Channel R Volume Meter")
-            << tr("Shows the current master volume for the right channel.");
+            << tr("Shows the current volume for the right channel of the main output.");
 
     add("channel_volume")
             << tr("Volume Control")
@@ -179,13 +179,13 @@ void Tooltips::addStandardTooltips() {
 
     // Legacy control.
     add("master_volume")
-            << tr("Master Volume")
-            << tr("Adjusts the master output volume.")
+            << tr("Main Output Gain")
+            << tr("Adjusts the main output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("master_gain")
-            << tr("Master Gain")
-            << tr("Adjusts the master output gain.")
+            << tr("Main Output Gain")
+            << tr("Adjusts the main output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("booth_gain")
@@ -195,13 +195,13 @@ void Tooltips::addStandardTooltips() {
 
     add("crossfader")
             << tr("Crossfader")
-            << tr("Determines the master output by fading between the left and right channels.")
+            << tr("Determines the main output by fading between the left and right channels.")
             << QString("%1: %2").arg(rightClick, resetToDefault)
             << tr("Change the crossfader curve in Preferences -> Crossfader");
 
     add("balance")
             << tr("Balance")
-            << tr("Adjusts the left/right channel balance on the master output.")
+            << tr("Adjusts the left/right channel balance on the main output.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     // Legacy control.
@@ -217,12 +217,12 @@ void Tooltips::addStandardTooltips() {
 
     add("headMix")
             << tr("Headphone Mix")
-            << tr("Crossfades the headphone output between the master mix and cueing (PFL or Pre-Fader Listening) signal.")
+            << tr("Crossfades the headphone output between the main mix and cueing (PFL or Pre-Fader Listening) signal.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("headSplit")
             << tr("Headphone Split Cue")
-            << tr("If activated, the master signal plays in the right channel, while the cueing signal "
+            << tr("If activated, the main mix signal plays in the right channel, while the cueing signal "
                   "plays in the left channel.")
             << tr("Adjust the Headphone Mix so in the left channel is not the pure cueing signal.");
 
@@ -304,7 +304,7 @@ void Tooltips::addStandardTooltips() {
     add("microphone_talkover")
             << tr("Microphone Talk-Over")
             << tr("Hold-to-talk or short click for latching to")
-            << tr("mix microphone input into the master output.");
+            << tr("mix microphone input into the main output.");
 
     add("talkover_duck_mode")
             << tr("Microphone Talkover Mode")
@@ -518,12 +518,12 @@ void Tooltips::addStandardTooltips() {
 
     add("mute")
             << tr("Mute")
-            << tr("Mutes the selected channel's audio in the master output.");
+            << tr("Mutes the selected channel's audio in the main output.");
 
     add("master_enable")
-            << tr("Master enable")
+            << tr("Main mix enable")
             << tr("Hold or short click for latching to "
-                  "mix this input into the master output.");
+                  "mix this input into the main output.");
 
     add("back_start")
             << tr("Fast Rewind")
@@ -538,7 +538,7 @@ void Tooltips::addStandardTooltips() {
     // Ghetto-Sync (TM)
     add("beatsync_beatsync_tempo")
             << tr("Old Synchronize")
-            << tr("(This skin should be updated to use Master Sync!)")
+            << tr("(This skin should be updated to use Sync Lock!)")
             << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "
                                                    "if BPM is detected on both."))
             << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track, "
@@ -549,8 +549,8 @@ void Tooltips::addStandardTooltips() {
 
     // Awesome-Sync (TM)
     add("sync_enabled")
-            << tr("Enable Master Sync")
-            << tr("Tap to sync the tempo to other playing tracks or the master clock.")
+            << tr("Enable Sync Lock")
+            << tr("Tap to sync the tempo to other playing tracks or the sync leader.")
             << tr("Hold for at least a second to enable sync lock for this deck.")
             << tr("Decks with sync locked will all play at the same tempo, and decks that also have "
                   "quantize enabled will always have their beats lined up.");
@@ -562,9 +562,9 @@ void Tooltips::addStandardTooltips() {
                                                    "from the other track. Requires a detected key on both involved decks."))
             << QString("%1: %2").arg(rightClick, tr("Resets the key to the original track key."));
 
-    add("sync_master")
-            << tr("Enable Sync Clock Master")
-            << tr("When enabled, this device will serve as the master clock for all other decks.");
+    add("sync_leader")
+            << tr("Enable Sync Leader")
+            << tr("When enabled, this device will serve as the sync leader for all other decks.");
 
     add("rate")
             << tr("Speed Control")
@@ -926,7 +926,7 @@ void Tooltips::addStandardTooltips() {
 
     add("EffectUnit_master_enabled")
             << tr("Assign Effect Unit")
-            << tr("Route the master mix through this effect unit.")
+            << tr("Route the main mix through this effect unit.")
             << effectsWithinUnit;
 
     add("EffectUnit_BusLeft_enabled")

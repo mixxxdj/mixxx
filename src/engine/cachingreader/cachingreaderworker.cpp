@@ -2,14 +2,13 @@
 
 #include <QAtomicInt>
 #include <QFileInfo>
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "control/controlobject.h"
 #include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qmutex.h"
 #include "util/event.h"
 #include "util/logger.h"
 
@@ -77,7 +76,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 // WARNING: Always called from a different thread (GUI)
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
     {
-        QMutexLocker locker(&m_newTrackMutex);
+        const auto locker = lockMutex(&m_newTrackMutex);
         m_pNewTrack = pTrack;
         m_newTrackAvailable.storeRelease(1);
     }
@@ -98,7 +97,7 @@ void CachingReaderWorker::run() {
         if (m_newTrackAvailable.loadAcquire()) {
             TrackPointer pLoadTrack;
             { // locking scope
-                QMutexLocker locker(&m_newTrackMutex);
+                const auto locker = lockMutex(&m_newTrackMutex);
                 pLoadTrack = m_pNewTrack;
                 m_pNewTrack.reset();
                 m_newTrackAvailable.storeRelease(0);
@@ -132,8 +131,12 @@ void CachingReaderWorker::discardAllPendingRequests() {
 
 void CachingReaderWorker::closeAudioSource() {
     discardAllPendingRequests();
-    // Closes open file handles of the old track.
-    m_pAudioSource.reset();
+
+    if (m_pAudioSource) {
+        // Closes open file handles of the old track.
+        m_pAudioSource->close();
+        m_pAudioSource.reset();
+    }
 
     // This function has to be called with the engine stopped only
     // to avoid collecting new requests for the old track
@@ -154,17 +157,16 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
 
     closeAudioSource();
 
-    const QString trackLocation = pTrack->getLocation();
-    if (trackLocation.isEmpty() || !pTrack->checkFileExists()) {
+    if (!pTrack->getFileInfo().checkFileExists()) {
         kLogger.warning()
                 << m_group
                 << "File not found"
-                << trackLocation;
+                << pTrack->getFileInfo();
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit trackLoadFailed(pTrack,
                 tr("The file '%1' could not be found.")
-                        .arg(QDir::toNativeSeparators(trackLocation)));
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
         return;
     }
 
@@ -175,12 +177,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         kLogger.warning()
                 << m_group
                 << "Failed to open file"
-                << trackLocation;
+                << pTrack->getFileInfo();
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit trackLoadFailed(pTrack,
                 tr("The file '%1' could not be loaded.")
-                        .arg(QDir::toNativeSeparators(trackLocation)));
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
         return;
     }
 
@@ -192,12 +194,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         kLogger.warning()
                 << m_group
                 << "Failed to open empty file"
-                << trackLocation;
+                << pTrack->getFileInfo();
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit trackLoadFailed(pTrack,
                 tr("The file '%1' is empty and could not be loaded.")
-                        .arg(QDir::toNativeSeparators(trackLocation)));
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
         return;
     }
 

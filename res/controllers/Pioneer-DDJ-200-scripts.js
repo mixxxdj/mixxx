@@ -31,7 +31,7 @@ DDJ200.init = function() {
             DDJ200.switchPlayLED(d, ch);
         });
 
-        // run switchSyncLED after sync toogle to set LEDs accordingly
+        // run switchSyncLED after sync toggle to set LEDs accordingly
         engine.makeConnection(vgroup, "sync_enabled", function(ch, vgroup) {
             var vDeckNo = script.deckFromGroup(vgroup);
             var d = (vDeckNo % 2) ? 0 : 1;

@@ -5,7 +5,6 @@
 #include "moc_dlgprefsounditem.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
-#include "util/compatibility.h"
 
 /**
  * Constructs a new preferences sound item, representing an AudioPath and SoundDevice
@@ -168,10 +167,8 @@ void DlgPrefSoundItem::channelChanged() {
  */
 void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
     if (m_isInput) {
-        QMultiHash<SoundDeviceId, AudioInput> inputs(config.getInputs());
-        QHashIterator<SoundDeviceId, AudioInput> it(inputs);
-        while (it.hasNext()) {
-            it.next();
+        const auto inputDeviceMap = config.getInputs();
+        for (auto it = inputDeviceMap.cbegin(); it != inputDeviceMap.cend(); ++it) {
             if (it.value().getType() == m_type && it.value().getIndex() == m_index) {
                 setDevice(it.key());
                 setChannel(it.value().getChannelGroup().getChannelBase(),
@@ -180,10 +177,8 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
             }
         }
     } else {
-        QMultiHash<SoundDeviceId, AudioOutput> outputs(config.getOutputs());
-        QHashIterator<SoundDeviceId, AudioOutput> it(outputs);
-        while (it.hasNext()) {
-            it.next();
+        const auto ouputDeviceMap = config.getOutputs();
+        for (auto it = ouputDeviceMap.cbegin(); it != ouputDeviceMap.cend(); ++it) {
             if (it.value().getType() == m_type && it.value().getIndex() == m_index) {
                 setDevice(it.key());
                 setChannel(it.value().getChannelGroup().getChannelBase(),

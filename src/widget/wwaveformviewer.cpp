@@ -83,20 +83,24 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
         double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
         m_pScratchPosition->set(targetPosition);
-        m_pScratchPositionEnable->slotSet(1.0);
+        m_pScratchPositionEnable->set(1.0);
     } else if (event->button() == Qt::RightButton) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
         if (!isPlaying() && m_pHoveredMark) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                m_pCueMenuPopup->popup(event->globalPosition().toPoint());
+#else
                 m_pCueMenuPopup->popup(event->globalPos());
+#endif
             }
         } else {
             // If we are scratching then disable and reset because the two shouldn't
             // be used at once.
             if (m_bScratching) {
-                m_pScratchPositionEnable->slotSet(0.0);
+                m_pScratchPositionEnable->set(0.0);
                 m_bScratching = false;
             }
             m_pWheel->setParameter(0.5);
@@ -175,12 +179,12 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
     setCursor(Qt::ArrowCursor);
 }
 
-void WWaveformViewer::wheelEvent(QWheelEvent *event) {
+void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     if (m_waveformWidget) {
         if (event->angleDelta().y() > 0) {
-            onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
-        } else {
             onZoomChange(m_waveformWidget->getZoomFactor() / 1.05);
+        } else {
+            onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
         }
     }
 }

@@ -8,10 +8,10 @@
 #include "track/track.h"
 
 BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
-                                               TrackCollectionManager* pTrackCollectionManager,
-                                               const char* settingsNamespace,
-                                               const QString& trackTable,
-                                               QSharedPointer<BaseTrackCache> trackSource)
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* settingsNamespace,
+        const QString& trackTable,
+        QSharedPointer<BaseTrackCache> trackSource)
         : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace) {
     QString viewTable = trackTable + "_view";
     QStringList columns;
@@ -21,16 +21,15 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
     QSqlQuery query(m_database);
     FieldEscaper f(m_database);
     QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM %3")
-            .arg(f.escapeString(viewTable),
-                 columns.join(","),
-                 f.escapeString(trackTable));
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+            "SELECT %2 FROM %3")
+                                  .arg(f.escapeString(viewTable),
+                                          columns.join(","),
+                                          f.escapeString(trackTable));
     query.prepare(queryString);
 
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) <<
-                "Error creating temporary view for" << trackTable;
+        LOG_FAILED_QUERY(query) << "Error creating temporary view for" << trackTable;
         return;
     }
 
@@ -60,7 +59,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &track_already_in_library);
 
     if (pTrack) {
@@ -73,7 +72,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
             pTrack->setTitle(title);
             pTrack->setAlbum(album);
             pTrack->setYear(year);
-            pTrack->setGenre(genre);
+            updateTrackGenre(pTrack.get(), genre);
             pTrack->trySetBpm(bpm);
         }
     } else {
@@ -107,26 +106,19 @@ TrackId BaseExternalTrackModel::doGetTrackId(const TrackPointer& pTrack) const {
 }
 
 bool BaseExternalTrackModel::isColumnInternal(int column) {
-    // Used for preview deck widgets.
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+    return column == fieldIndex(LIBRARYTABLE_ID) ||
             (PlayerManager::numPreviewDecks() == 0 &&
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
-        return true;
-    }
-    return false;
+                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW));
 }
 
-Qt::ItemFlags BaseExternalTrackModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags BaseExternalTrackModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 
-TrackModel::CapabilitiesFlags BaseExternalTrackModel::getCapabilities() const {
-    // See src/library/trackmodel.h for the list of TRACKMODELCAPS
-    return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
-            | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOPREVIEWDECK
-            | TRACKMODELCAPS_LOADTOSAMPLER;
+TrackModel::Capabilities BaseExternalTrackModel::getCapabilities() const {
+    return Capability::AddToTrackSet |
+            Capability::AddToAutoDJ |
+            Capability::LoadToDeck |
+            Capability::LoadToPreviewDeck |
+            Capability::LoadToSampler;
 }

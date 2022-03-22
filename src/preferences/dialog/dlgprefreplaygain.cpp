@@ -9,7 +9,7 @@ const char* kConfigKey = "[ReplayGain]";
 const char* kReplayGainBoost = "ReplayGainBoost";
 const char* kDefaultBoost = "DefaultBoost";
 const char* kReplayGainEnabled = "ReplayGainEnabled";
-const int kReplayGainReferenceLUFS = -18;
+constexpr int kReplayGainReferenceLUFS = -18;
 } // anonymous namespace
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfig)

@@ -1,13 +1,13 @@
 #include "errordialoghandler.h"
 
 #include <QCoreApplication>
-#include <QMutexLocker>
 #include <QScopedPointer>
 #include <QThread>
 #include <QtDebug>
 
 #include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
+#include "util/compatibility/qmutex.h"
 #include "util/versionstore.h"
 
 ErrorDialogProperties::ErrorDialogProperties()
@@ -115,7 +115,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
     }
 
     // Skip if a dialog with the same key is already displayed
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     bool keyExists = m_dialogKeys.contains(props->getKey());
     locker.unlock();
     if (keyExists) {
@@ -162,8 +162,12 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // This deletes the msgBox automatically, avoiding a memory leak
     pMsgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+    // Without this, QApplication would close Mixxx when closing this
+    // dialog and using the QML GUI because QApplication only takes
+    // into account QWidget windows.
+    pMsgBox->setAttribute(Qt::WA_QuitOnClose, false);
 
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     // To avoid duplicate dialogs on the same error
     m_dialogKeys.append(props->m_key);
 
@@ -201,7 +205,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 }
 
 void ErrorDialogHandler::boxClosed(const QString& key, QMessageBox* msgBox) {
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
     locker.unlock();
 
     QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
@@ -215,7 +219,7 @@ void ErrorDialogHandler::boxClosed(const QString& key, QMessageBox* msgBox) {
         return;
     }
 
-    QMutexLocker locker2(&m_mutex);
+    const auto locker2 = lockMutex(&m_mutex);
     if (m_dialogKeys.contains(key)) {
         if (!m_dialogKeys.removeOne(key)) {
             qWarning() << "Error dialog key removal from list failed!";

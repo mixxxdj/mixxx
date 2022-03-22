@@ -79,7 +79,7 @@ void TagFetcher::slotFingerprintReady() {
     m_pAcoustIdTask = make_parented<mixxx::AcoustIdLookupTask>(
             &m_network,
             fingerprint,
-            m_pTrack->getDurationInt(),
+            m_pTrack->getDurationSecondsInt(),
             this);
     connect(m_pAcoustIdTask,
             &mixxx::AcoustIdLookupTask::succeeded,

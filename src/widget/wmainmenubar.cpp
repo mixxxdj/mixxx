@@ -1,6 +1,5 @@
 #include "widget/wmainmenubar.h"
 
-#include <QDesktopServices>
 #include <QUrl>
 
 #include "config.h"
@@ -14,7 +13,7 @@
 
 namespace {
 
-const int kMaxLoadToDeckActions = 4;
+constexpr int kMaxLoadToDeckActions = 4;
 
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;
@@ -141,6 +140,17 @@ void WMainMenuBar::initialize() {
     // Disable the action when a scan is active.
     connect(this, &WMainMenuBar::internalLibraryScanActive, pLibraryRescan, &QAction::setDisabled);
     pLibraryMenu->addAction(pLibraryRescan);
+
+#ifdef __ENGINEPRIME__
+    QString exportTitle = tr("E&xport Library to Engine Prime");
+    QString exportText = tr("Export the library to the Engine Prime format");
+    auto pLibraryExport = new QAction(exportTitle, this);
+    pLibraryExport->setStatusTip(exportText);
+    pLibraryExport->setWhatsThis(buildWhatsThis(exportTitle, exportText));
+    pLibraryExport->setCheckable(false);
+    connect(pLibraryExport, &QAction::triggered, this, &WMainMenuBar::exportLibrary);
+    pLibraryMenu->addAction(pLibraryExport);
+#endif
 
     pLibraryMenu->addSeparator();
 
@@ -274,9 +284,7 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
-
     pViewMenu->addSeparator();
-
 
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
@@ -545,6 +553,22 @@ void WMainMenuBar::initialize() {
     externalLinkSuffix = QChar(' ') + QChar(0x2197); // north-east arrow
 #endif
 
+    //: menu title
+    QString keywheelTitle = tr("Show Keywheel");
+    //: tooltip text
+    QString keywheelText = tr("Show keywheel");
+    m_pViewKeywheel = new QAction(keywheelTitle, this);
+    m_pViewKeywheel->setCheckable(true);
+    m_pViewKeywheel->setShortcut(
+            QKeySequence(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
+                    tr("F12", "Menubar|View|Show Keywheel"))));
+    m_pViewKeywheel->setShortcutContext(Qt::ApplicationShortcut);
+    m_pViewKeywheel->setStatusTip(keywheelText);
+    m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
+    connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
+    pHelpMenu->addAction(m_pViewKeywheel);
+
     // Community Support
     QString supportTitle = tr("&Community Support") + externalLinkSuffix;
     QString supportText = tr("Get help with Mixxx");
@@ -613,6 +637,11 @@ void WMainMenuBar::initialize() {
 
     pHelpMenu->addAction(pHelpAboutApp);
     addMenu(pHelpMenu);
+}
+
+void WMainMenuBar::onKeywheelChange(int state) {
+    Q_UNUSED(state);
+    m_pViewKeywheel->setChecked(false);
 }
 
 void WMainMenuBar::onLibraryScanStarted() {

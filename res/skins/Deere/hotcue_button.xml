@@ -17,13 +17,17 @@
     <Group><Variable name="group"/></Group>
     <Hotcue><Variable name="hotcue"/></Hotcue>
     <Hover>true</Hover>
-    <NumberStates>2</NumberStates>
+    <NumberStates>3</NumberStates>
     <State>
       <Number>0</Number>
       <Text><Variable name="hotcue"/></Text>
     </State>
     <State>
       <Number>1</Number>
+      <Text><Variable name="hotcue"/></Text>
+    </State>
+    <State>
+      <Number>2</Number>
       <Text><Variable name="hotcue"/></Text>
     </State>
   </HotcueButton>

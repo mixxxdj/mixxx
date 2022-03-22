@@ -48,6 +48,27 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     }
     m_rgbHighColor = WSkinColor::getCorrectColor(m_rgbHighColor).toRgb();
 
+    // filtered colors
+    m_rgbLowFilteredColor.setNamedColor(context.selectString(node, "SignalRGBLowFilteredColor"));
+    if (!m_rgbLowFilteredColor.isValid()) {
+        m_rgbLowFilteredColor = m_rgbLowColor.darker(300);
+    }
+    m_rgbLowFilteredColor = WSkinColor::getCorrectColor(m_rgbLowFilteredColor).toRgb();
+
+    m_rgbMidFilteredColor.setNamedColor(context.selectString(node, "SignalRGBMidFilteredColor"));
+    if (!m_rgbMidFilteredColor.isValid()) {
+        m_rgbMidFilteredColor = m_rgbMidColor.darker(300);
+        ;
+    }
+    m_rgbMidFilteredColor = WSkinColor::getCorrectColor(m_rgbMidFilteredColor).toRgb();
+
+    m_rgbHighFilteredColor.setNamedColor(context.selectString(node, "SignalRGBHighFilteredColor"));
+    if (!m_rgbHighFilteredColor.isValid()) {
+        m_rgbHighFilteredColor = m_rgbHighColor.darker(300);
+        ;
+    }
+    m_rgbHighFilteredColor = WSkinColor::getCorrectColor(m_rgbHighFilteredColor).toRgb();
+
     m_axesColor = context.selectColor(node, "AxesColor");
     if (!m_axesColor.isValid()) {
         m_axesColor = QColor(245,245,245);
@@ -111,7 +132,7 @@ void WaveformSignalColors::fallBackFromSignalColor() {
     qreal h, s, l, a;
     m_signalColor.getHslF(&h,&s,&l,&a);
 
-    const double analogousAngle = 1.0/12.0;
+    constexpr double analogousAngle = 1.0 / 12.0;
 
     if (s < 0.1) { // gray
         const qreal sMax = 1.0 - h;

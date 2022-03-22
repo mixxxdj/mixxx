@@ -17,9 +17,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
   public:
     explicit BaseTrackTableModel(
-            const char* settingsNamespace,
+            QObject* parent,
             TrackCollectionManager* const pTrackCollectionManager,
-            QObject* parent);
+            const char* settingsNamespace);
     ~BaseTrackTableModel() override = default;
 
     ///////////////////////////////////////////////////////
@@ -87,6 +87,15 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const override;
+
+    bool updateTrackGenre(
+            Track* pTrack,
+            const QString& genre) const override;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMood(
+            Track* pTrack,
+            const QString& mood) const override;
+#endif // __EXTRA_METADATA__
 
   protected:
     static constexpr int defaultColumnWidth() {
@@ -195,6 +204,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// COLUMN_LIBRARYTABLE_COVERART_COLOR: mixxx::RgbColor::code_t (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_DIGEST: QByteArray (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_HASH: quint16 (pass-through)
+    /// COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: QDateTime
     /// COLUMN_PLAYLISTTABLE_DATETIMEADDED: QDateTime
     virtual QVariant rawValue(
             const QModelIndex& index) const;

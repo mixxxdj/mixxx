@@ -39,6 +39,8 @@
         <file>images/skin_preview_placeholder.png</file>
         <file>images/ic_checkmark.svg</file>
         <file>images/ic_delete.svg</file>
+      <!-- keywheel dialog image -->
+        <file>images/keywheel/keywheel.svg</file>
       <!-- dark icon set for preferences -->
         <file>images/preferences/dark/ic_preferences_autodj.svg</file>
         <file>images/preferences/dark/ic_preferences_bpmdetect.svg</file>
@@ -85,11 +87,13 @@
         <file>images/preferences/light/ic_custom.svg</file>
         <file>images/preferences/light/ic_mixxx_symbolic.svg</file>
         <file>images/preferences/light/ic_none.svg</file>
+        <!-- skin oversize warning -->
         <file>images/preferences/ic_preferences_warning.svg</file>
         <file>schema.xml</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
         <file>shaders/rgbsignal.frag</file>
+        <file>shaders/stackedsignal.frag</file>
         <file>skins/default.qss</file>
     </qresource>
 </RCC>

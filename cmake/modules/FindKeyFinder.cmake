@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_KeyFinder QUIET libKeyFinder>=2.0)
@@ -82,5 +84,12 @@ if(KeyFinder_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_KeyFinder_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${KeyFinder_INCLUDE_DIR}"
     )
+    is_static_library(KeyFinder_IS_STATIC KeyFinder::KeyFinder)
+    if(KeyFinder_IS_STATIC)
+      find_package(FFTW REQUIRED)
+      set_property(TARGET KeyFinder::KeyFinder APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        FFTW::FFTW
+      )
+    endif()
   endif()
 endif()

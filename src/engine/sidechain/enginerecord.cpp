@@ -10,7 +10,7 @@
 #include "track/track.h"
 #include "util/event.h"
 
-const int kMetaDataLifeTimeout = 16;
+constexpr int kMetaDataLifeTimeout = 16;
 
 EngineRecord::EngineRecord(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
@@ -132,7 +132,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (updateFromPreferences() < 0) {
             // Maybe the encoder could not be initialized
             qDebug() << "Setting record flag to: OFF";
-            m_pRecReady->slotSet(RECORD_OFF);
+            m_pRecReady->set(RECORD_OFF);
             // Just report that we don't record
             // There was already a message Box
             emit isRecording(false, false);
@@ -157,7 +157,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         } else {
             qDebug() << "Could not open" << m_fileName << "for writing.";
             qDebug("Setting record flag to: OFF");
-            m_pRecReady->slotSet(RECORD_OFF);
+            m_pRecReady->set(RECORD_OFF);
             // An error occurred.
             emit isRecording(false, true);
         }
@@ -191,7 +191,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             qDebug() << "Could not open" << m_fileName << "for writing.";
             Event::end(tag);
             qDebug("Setting record flag to: OFF");
-            m_pRecReady->slotSet(RECORD_OFF);
+            m_pRecReady->set(RECORD_OFF);
             // An error occurred.
             emit isRecording(false, true);
         }

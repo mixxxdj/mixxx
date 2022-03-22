@@ -18,7 +18,7 @@ DlgHidden::DlgHidden(
                   new WTrackTableView(
                           this,
                           pConfig,
-                          pLibrary->trackCollections(),
+                          pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           true)) {
     setupUi(this);
@@ -33,9 +33,10 @@ DlgHidden::DlgHidden(
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pHiddenTableModel = new HiddenTableModel(this, pLibrary->trackCollections());
+    m_pHiddenTableModel = new HiddenTableModel(this, pLibrary->trackCollectionManager());
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
+    // set up button connections
     connect(btnUnhide,
             &QPushButton::clicked,
             m_pTrackTableView,
@@ -52,10 +53,19 @@ DlgHidden::DlgHidden(
             &QPushButton::clicked,
             this,
             &DlgHidden::clicked);
+    connect(btnDelete,
+            &QPushButton::clicked,
+            m_pTrackTableView,
+            &WTrackTableView::slotDeleteTracksFromDisk);
+    connect(btnDelete,
+            &QPushButton::clicked,
+            this,
+            &DlgHidden::clicked);
     connect(btnSelect,
             &QPushButton::clicked,
             this,
             &DlgHidden::selectAll);
+    // set up common track table view connections
     connect(m_pTrackTableView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
@@ -110,8 +120,9 @@ void DlgHidden::selectAll() {
 }
 
 void DlgHidden::activateButtons(bool enable) {
-    btnPurge->setEnabled(enable);
     btnUnhide->setEnabled(enable);
+    btnPurge->setEnabled(enable);
+    btnDelete->setEnabled(enable);
 }
 
 void DlgHidden::selectionChanged(const QItemSelection &selected,
@@ -122,4 +133,16 @@ void DlgHidden::selectionChanged(const QItemSelection &selected,
 
 bool DlgHidden::hasFocus() const {
     return m_pTrackTableView->hasFocus();
+}
+
+void DlgHidden::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+}
+
+bool DlgHidden::restoreCurrentViewState() {
+    return m_pTrackTableView->restoreCurrentViewState();
+}
+
+void DlgHidden::setFocus() {
+    m_pTrackTableView->setFocus();
 }

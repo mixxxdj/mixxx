@@ -64,6 +64,10 @@ class TrackInfo final {
     TrackInfo& operator=(TrackInfo&&) = default;
     TrackInfo& operator=(const TrackInfo&) = default;
 
+    QString getBpmText() const {
+        return getBpm().displayText();
+    }
+
     // Returns true if modified
     bool parseArtistTitleFromFileName(
             QString fileName,

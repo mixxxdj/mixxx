@@ -2,7 +2,7 @@
 
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <MaximumSize>,208</MaximumSize>
+    <MaximumSize>,230</MaximumSize>
     <Children>
 
       <Template src="skin:/decks/deck_singletons.xml">

@@ -147,18 +147,6 @@ QAbstractScrollArea::corner {
     margin-top: 1px;
   }
 
-#LibraryContainer {}
-
-  #LibraryContainer QScrollBar::handle:horizontal,
-  #LibraryContainer QScrollBar::handle:vertical,
-  WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
-  WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical {
-    background-color: #333338;
-    }
-    QAbstractScrollArea::corner {
-      border: 0px;
-    }
-
 /* recessed regions */
 #WaveformBox1,
 #WaveformBox2,
@@ -267,7 +255,7 @@ WSearchLineEdit {
   border-right: 0px;
   border-left: 0px;
   border-radius: 0px;
-  padding: 0px 2px 2px 2px;
+  padding: 0px 2px 2px 4px;
 }
 
 #SidebarBox {
@@ -351,7 +339,7 @@ WSearchLineEdit {
   border-radius: 1px;
 }
 
-/* Disbled for now since the hover effect is stuck as soon as the
+/* Disabled for now since the hover effect is stuck as soon as the
   track menu is opened.
 #TitleText[highlight="1"]:hover, #TitleTextSmall[highlight="1"]:hover,
 #ArtistText[highlight="1"]:hover, #ArtistTextSmall[highlight="1"]:hover {
@@ -634,7 +622,7 @@ WSearchLineEdit {
   }
 
 #SyncBox {
-  margin: 2px 1px 1px 0px;
+  margin: 2px 1px 1px 2px;
 }
 
 #RateControls {
@@ -655,24 +643,18 @@ WBeatSpinBox,
     selection-background-color: #d2d2d2;
   }
 WBeatSpinBox {
+  margin: 1px 0px 1px 1px;
+  padding: 0px -17px 2px 1px;
   border-width: 3px 19px 2px 3px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_spinbox.svg) 3 19 2 3;
 }
-#spinBoxTransition {
-  border-width: 3px 19px 2px 3px;
-  border-image: url(skin:/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
-}
-
-WBeatSpinBox {
-  margin: 1px 0px 1px 1px;
-  padding: 0px -17px 2px 1px;
-}
-
 #spinBoxTransition {
   width: 24px;
   height: 19px;
   padding: 0px -15px 0px 0px;
   margin: 0px 2px 3px 5px;
+  border-width: 3px 19px 2px 3px;
+  border-image: url(skin:/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
   }
   WBeatSpinBox:focus,
   #spinBoxTransition:focus {
@@ -838,6 +820,10 @@ WBeatSpinBox::down-button,
     border-top-left-radius: 0px;
   }
 
+WEffectChainPresetButton::menu-indicator {
+  image: url(skin:/palemoon/buttons/btn__fx_settings.svg) no-repeat center center;
+}
+
 #FxSlotsCollapsed {
   padding: 0px 0px 0px 0px;
   border-right: 0px;
@@ -899,29 +885,21 @@ WEffectSelector:!editable:on {
   max-height: 17px;
   padding: 2px 0px 0px 5px;
   margin: 4px 1px 4px 1px;
-}
+  }
   /* selected item */
   WEffectSelector::checked,
+  WEffectChainPresetSelector::checked,
   #fadeModeCombobox::checked {
     /* not applied
     padding-left: 5px;  */
     padding: 0px;
     margin: 0px;
-    color: #eee;
-  }
-  /* hovered items */
-  WEffectSelector::item:selected,
-  #fadeModeCombobox::item:selected {
-    background-color: #333;
-  /* Already of those two destroys font config and puts tick mark behind text:
-    margin: 0px;
-    padding: 0px; */
-  /* This moves the tick mark behind item text,
-    text sits at left border now
-    border: 0; */
   }
   WEffectSelector::down-arrow,
-  #fadeModeCombobox::down-arrow {
+  WEffectChainPresetSelector::down-arrow,
+  #fadeModeCombobox::down-arrow,
+  /* Arrow size is set in C++ to match the library font size */
+  WSearchLineEdit::down-arrow {
     image: url(skin:/palemoon/buttons/btn__fx_selector_down.svg);
   }
 
@@ -1165,6 +1143,7 @@ WLabel#FxUnitLabel,
 WLabel#MicAuxLabel,
 WLabel#MicAuxLabelUnconfigured,
 WEffectSelector,
+WEffectChainPresetSelector,
 #fadeModeCombobox {
   font-weight: 500;
 }
@@ -1199,7 +1178,8 @@ WEffectSelector,
 #MainMenu QMenu,
 #MainMenu QMenu::item,
 #MainMenu QMenu QCheckBox,
-WSearchLineEdit, WTime,
+WSearchLineEdit,
+WTime,
 #PreviewDeckTextBox, #PreviewTitle, #PreviewBPM,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
@@ -1218,6 +1198,8 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
+WEffectChainPresetButton QMenu,
+WEffectChainPresetButton QMenu QCheckBox,
 QLineEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
@@ -1241,12 +1223,19 @@ WCoverArtMenu {
   }
 WEffectSelector:!editable,
 WEffectSelector:!editable:on,
+WEffectChainPresetSelector:!editable,
+WEffectChainPresetSelector:!editable:on,
 #fadeModeCombobox:!editable,
 #fadeModeCombobox:!editable:on {
   color: #918273;
-  /* use slightly larger labels than in Classic */
-  font-size: 14px;
-}
+  }
+  WEffectSelector:!editable,
+  WEffectSelector:!editable:on,
+  #fadeModeCombobox:!editable,
+  #fadeModeCombobox:!editable:on {
+    /* use slightly larger labels than in Classic */
+    font-size: 14px;
+  }
   /* dim² ivory */
   #SamplerBpm, #SamplerBpmMini,
   WTrackTableViewHeader {
@@ -1330,6 +1319,7 @@ WEffectSelector:!editable:on,
 #MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"],
 #PreviewLabel,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 #GuiToggleButton[displayValue="0"],
 #RecDuration[highlight="0"],
@@ -1416,6 +1406,7 @@ WOverview #PassthroughLabel {
 #VinylModeButton,
 #VinylCueButton[displayValue="0"],
 #PassthroughButton[displayValue="0"],
+#SyncLeader[value="0"],
 #FxAssignButtons WPushButton[displayValue="0"] {
   outline: none;
   border-width: 2px 2px 2px 1px;
@@ -1425,6 +1416,8 @@ WOverview #PassthroughLabel {
   #VinylCueButton[displayValue="1"],
   #VinylCueButton[displayValue="2"],
   #PassthroughButton[displayValue="1"],
+  #SyncLeader[value="1"],
+  #SyncLeader[value="2"],
   #FxAssignButtons WPushButton[displayValue="1"] {
     outline: none;
     border-width: 2px 2px 2px 1px;
@@ -1437,6 +1430,7 @@ WOverview #PassthroughLabel {
 #SkinSettingsToggle[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 WPushButton#VinylButton[displayValue="0"],
+#SyncDeck[displayValue="0"],
 WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
 #fadeModeCombobox:!editable,
@@ -1449,6 +1443,7 @@ WEffectSelector:!editable,
   /*
   WPushButton#BpmTap[displayValue="1"], */
   WPushButton#VinylButton[displayValue="1"],
+  #SyncDeck[displayValue="1"],
   WPushButton#FxAssignButton1[displayValue="1"],
   #KeyMatchReset[pressed="true"],
   #GuiToggleButton[displayValue="1"],
@@ -1522,7 +1517,7 @@ WPushButton#CueDeck,
 #PlayCueMini WPushButton,
 WPushButton#LoopActivate,
 WPushButton#RateControls WPushButton,
-WPushButton#SyncDeck, WPushButton#SyncSampler,
+WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
 #Sampler WPushButton,
@@ -1540,6 +1535,8 @@ WPushButton#SamplerExpand,
 #FxAssignButtons WPushButton,
 #VinylControls WPushButton,
 #KeyControls WPushButton,
+WPushButton#SyncDeck,
+WPushButton#SyncLeader,
 #SamplerSettings WPushButton,
 #SamplerSettingsMini WPushButton,
 WPushButton#CrossfaderButton,
@@ -1575,6 +1572,7 @@ WBeatSpinBox::down-button {
   #LoopControls WPushButton[displayValue="0"],
   #BeatjumpControls WPushButton[displayValue="0"],
   WPushButton#SyncDeck[value="0"],
+  WPushButton#SyncLeader[value="0"],
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
@@ -1596,6 +1594,7 @@ WBeatSpinBox::down-button {
   WPushButton#MixModeButton[displayValue="0"],
   WPushButton#MixModeButton[displayValue="1"],
   WEffectSelector,
+  WEffectChainPresetSelector,
   #fadeModeCombobox,
   #SamplerContainer WPushButton#SyncSampler[displayValue="0"],
   #SamplerContainer WPushButton#PflButton[displayValue="0"],
@@ -1603,7 +1602,7 @@ WBeatSpinBox::down-button {
   WPushButton#MicAuxAdd {
     background-color: #1e1e20;
   }
-  /* brigth buttons in dimmed containers
+  /* bright buttons in dimmed containers
   #BeatgridControls WPushButton[displayValue="0"], */
   #CueDeleteButton,
   #SplitCue[displayValue="0"],
@@ -1633,6 +1632,8 @@ WPushButton#Reverse[pressed="true"],
 #LoopActivate[value="1"],
 #Reloop[value="1"],
 #SyncSampler[displayValue="1"],
+#SyncDeck[value="1"],
+#SyncLeader[value="2"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"],
 #MicDucking[value="2"],
@@ -1652,7 +1653,7 @@ QPushButton#pushButtonAnalyze:checked {
   }
 /* dim orange for momentary controls */
 #KeyControls WPushButton[pressed="true"],
-#SyncDeck[value="1"],
+#SyncLeader[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
 #BeatjumpControls WPushButton[value="1"],
@@ -1871,81 +1872,145 @@ WPushButton#PlayDeck[value="0"] {
 #Hotcue1 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__1.svg) no-repeat center center;
   }
-  #Hotcue1 WPushButton[displayValue="1"][dark="false"] {
+  #Hotcue1 WPushButton[displayValue="1"],
+  #Hotcue1 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__1_active.svg) no-repeat center center;
   }
-  #Hotcue1 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue1 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue1 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__1_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
   }
 
 #Hotcue2 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__2.svg) no-repeat center center;
   }
-  #Hotcue2 WPushButton[displayValue="1"] {
+  #Hotcue2 WPushButton[displayValue="1"],
+  #Hotcue2 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__2_active.svg) no-repeat center center;
   }
-  #Hotcue2 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue2 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue2 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__2_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
   }
 
 #Hotcue3 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__3.svg) no-repeat center center;
   }
-  #Hotcue3 WPushButton[displayValue="1"] {
+  #Hotcue3 WPushButton[displayValue="1"],
+  #Hotcue3 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__3_active.svg) no-repeat center center;
   }
-  #Hotcue3 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue3 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue3 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__3_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
   }
 
 #Hotcue4 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__4.svg) no-repeat center center;
   }
-  #Hotcue4 WPushButton[displayValue="1"] {
+  #Hotcue4 WPushButton[displayValue="1"],
+  #Hotcue4 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__4_active.svg) no-repeat center center;
   }
-  #Hotcue4 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue4 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue4 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__4_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
   }
 
 #Hotcue5 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__5.svg) no-repeat center center;
   }
-  #Hotcue5 WPushButton[displayValue="1"] {
+  #Hotcue5 WPushButton[displayValue="1"],
+  #Hotcue5 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__5_active.svg) no-repeat center center;
   }
-  #Hotcue5 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue5 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue5 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__5_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
   }
 
 #Hotcue6 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__6.svg) no-repeat center center;
   }
-  #Hotcue6 WPushButton[displayValue="1"] {
+  #Hotcue6 WPushButton[displayValue="1"],
+  #Hotcue6 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__6_active.svg) no-repeat center center;
   }
-  #Hotcue6 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue6 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue6 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__6_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
   }
 
 #Hotcue7 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__7.svg) no-repeat center center;
   }
-  #Hotcue7 WPushButton[displayValue="1"] {
+  #Hotcue7 WPushButton[displayValue="1"],
+  #Hotcue7 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__7_active.svg) no-repeat center center;
   }
-  #Hotcue7 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue7 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue7 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__7_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
   }
 
 #Hotcue8 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__8.svg) no-repeat center center;
   }
-  #Hotcue8 WPushButton[displayValue="1"] {
+  #Hotcue8 WPushButton[displayValue="1"],
+  #Hotcue8 WPushButton[displayValue="2"] {
     image: url(skin:/palemoon/buttons/btn__8_active.svg) no-repeat center center;
   }
-  #Hotcue8 WPushButton[displayValue="1"][dark="true"] {
+  #Hotcue8 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue8 WPushButton[displayValue="2"][dark="true"] {
     image: url(skin:/palemoon/buttons/btn__8_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
   }
 
 #SpecialCueButton_intro_start WPushButton[displayValue="0"] {
@@ -2040,6 +2105,16 @@ WPushButton#PlayDeck[value="0"] {
   }
   #SyncDeck[displayValue="1"] {
     image: url(skin:/palemoon/buttons/btn__sync_deck_active.svg) no-repeat center center;
+  }
+
+#SyncLeader[value="0"] {
+  image: url(skin:/palemoon/buttons/btn__sync_leader.svg) no-repeat center center;
+  }
+  #SyncLeader[value="1"] {
+    image: url(skin:/palemoon/buttons/btn__sync_leader_implicit.svg) no-repeat center center;
+  }
+  #SyncLeader[value="2"] {
+    image: url(skin:/palemoon/buttons/btn__sync_leader_explicit.svg) no-repeat center center;
   }
 
   #SyncSampler {
@@ -2339,6 +2414,7 @@ WPushButton#PlayDeck[value="0"] {
   image: url(skin:/palemoon/style/mixxx_logo_small.svg) no-repeat center center;
 }
 
+/* Search bar Clear button */
 WSearchLineEdit QToolButton:!focus {
   image: url(skin:/palemoon/buttons/btn__lib_clear_search.svg);
   }
@@ -2372,7 +2448,7 @@ QPushButton#pushButtonShuffle:enabled {
   image: url(skin:/palemoon/buttons/btn__autodj_shuffle.svg) no-repeat center center;
 }
 
-QPushButton#pushButtonAddRandom:enabled {
+QPushButton#pushButtonAddRandomTrack:enabled {
   image: url(skin:/palemoon/buttons/btn__autodj_addrandom.svg) no-repeat center center;
 }
 
@@ -2566,7 +2642,10 @@ WTrackTableViewHeader {
 
 /*********** scrollbars *********************************/
 #LibraryContainer QScrollBar,
-WEffectSelector QAbstractScrollArea QScrollBar {
+WEffectSelector QAbstractScrollArea QScrollBar,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar,
+WSearchLineEdit QAbstractScrollArea QScrollBar {
   border: 0px solid #585858;
   background: #000;
   border-radius: 2px;
@@ -2574,7 +2653,10 @@ WEffectSelector QAbstractScrollArea QScrollBar {
   color: #999;
   }
   #LibraryContainer QScrollBar:horizontal,
-  WEffectSelector QAbstractScrollArea QScrollBar:horizontal {
+  WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
+  WSearchLineEdit QAbstractScrollArea QScrollBar:horizontal {
     min-width: 12px;
     height: 15px;
     border-top-left-radius: 0px;
@@ -2582,7 +2664,10 @@ WEffectSelector QAbstractScrollArea QScrollBar {
     background-color: #000;
   }
   #LibraryContainer QScrollBar:vertical,
-  WEffectSelector QAbstractScrollArea QScrollBar:vertical {
+  WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar:vertical,
+  WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar:vertical,
+  WSearchLineEdit QAbstractScrollArea QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
     border-top-left-radius: 0px;
@@ -2597,11 +2682,19 @@ WEffectSelector QAbstractScrollArea QScrollBar {
   WLibrarySidebar:focus QScrollBar:vertical {
   }*/
   #LibraryContainer QScrollBar::handle:horizontal,
-  WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal {
+  WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+  WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::handle:horizontal,
+  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal {
+    background-color: #333338;
     min-width: 25px;
   }
   #LibraryContainer QScrollBar::handle:vertical,
-  WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical {
+  WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+  WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical,
+  WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::handle:vertical,
+  WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical {
+    background-color: #333338;
     min-height: 25px;
   }
 
@@ -2609,7 +2702,13 @@ WEffectSelector QAbstractScrollArea QScrollBar {
 #LibraryContainer QScrollBar::add-page,
 #LibraryContainer QScrollBar::sub-page,
 WEffectSelector QAbstractScrollArea QScrollBar::add-page,
-WEffectSelector QAbstractScrollArea QScrollBar::sub-page {
+WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-page,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-page,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::add-page,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::sub-page,
+WSearchLineEdit QAbstractScrollArea QScrollBar::add-page,
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-page {
   min-width: 15px;
   min-height: 15px;
   background-color: #000;
@@ -2619,7 +2718,13 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-page {
 #LibraryContainer QScrollBar::add-line,
 #LibraryContainer QScrollBar::sub-line,
 WEffectSelector QAbstractScrollArea QScrollBar::add-line,
-WEffectSelector QAbstractScrollArea QScrollBar::sub-line {
+WEffectSelector QAbstractScrollArea QScrollBar::sub-line,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-line,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::add-line,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::sub-line,
+WSearchLineEdit QAbstractScrollArea QScrollBar::add-line,
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line {
   width: 0px;
   height: 0px;
   border: 0px;
@@ -2627,7 +2732,12 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-line {
 
 /* Corner in between two scrollbars */
 #LibraryContainer QAbstractScrollArea::corner,
-WEffectSelector QAbstractScrollArea QScrollBar::corner {
+WEffectSelector QAbstractScrollArea QScrollBar::corner,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::corner,
+WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::corner,
+WSearchLineEdit QAbstractScrollArea QScrollBar::corner {
+  border: 0px;
+  border: 0px;
   background-color: #1e1e1e;
 }
 /*********** scrollbars *********************************/
@@ -2644,12 +2754,9 @@ WSearchLineEdit {
     border: 2px solid #257b82;
     border-radius: 0px;
   }
-  /* Dunno when this is true */
-  WSearchLineEdit[active="false"] {
-    color: #999;
-  }
   WSearchLineEdit:disabled {
     background-color: #161617;
+    /* hide '---' placeholder text */
     color: #161617;
   }
 
@@ -2699,15 +2806,16 @@ WSearchLineEdit {
 
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in
    Linux with Gnome */
-WLibrary QLabel, WLibrary QRadioButton {
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
   background: transparent;
 }
 
-WLibrary QRadioButton::indicator:checked {
+#LibraryFeatureControls QRadioButton::indicator:checked {
   image: url(skin:/palemoon/buttons/btn__lib_radio_button_on_blue.svg) center center;
 }
 
-WLibrary QRadioButton::indicator:unchecked {
+#LibraryFeatureControls QRadioButton::indicator:unchecked {
   image: url(skin:/palemoon/buttons/btn__lib_radio_button_off.svg) center center;
 }
 
@@ -2790,6 +2898,9 @@ QLineEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetButton QMenu,
+WEffectChainPresetSelector QAbstractScrollArea,
+WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   border: 1px solid #333;
   border-radius: 1px;
@@ -2820,8 +2931,15 @@ WCueMenuPopup,
 WCueMenuPopup QLabel,
 WEffectSelector QAbstractScrollArea,
 WEffectSelector::item,
+WEffectChainPresetSelector QAbstractScrollArea,
+WEffectChainPresetSelector::item,
+WEffectChainPresetButton QMenu,
+WEffectChainPresetButton::item,
+WEffectChainPresetButton QMenu QCheckBox,
 #fadeModeCombobox QAbstractScrollArea,
-#fadeModeCombobox::item {
+#fadeModeCombobox::item,
+WSearchLineEdit QAbstractScrollArea,
+WSearchLineEdit::item {
   background-color: #151517;
 }
 /* hovered items */
@@ -2841,8 +2959,14 @@ WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
-#fadeModeCombobox::item:selected,
 WEffectSelector::item:selected,
+WEffectChainPresetSelector::item:selected,
+WEffectChainPresetButton QMenu::item:selected,
+WEffectChainPresetButton QMenu QCheckBox:selected,
+WEffectChainPresetButton QMenu QCheckBox:focus,
+WEffectChainPresetButton QMenu QCheckBox:hover,
+#fadeModeCombobox::item:selected,
+WSearchLineEdit::item:selected,
 #SkinSettingsButton[hover="true"],
 #SkinSettingsNumToggle[hover="true"],
 #SkinSettingsNumToggleHeader[hover="true"],
@@ -2854,8 +2978,16 @@ WEffectSelector::item:selected,
   /* remove OS focus indicator */
   outline: none;
   }
-  /* hover over checked effect */
+  /* checked item */
+  WEffectSelector::item:checked,
+  WEffectChainPresetSelector::item:checked,
+  WSearchLineEdit::item:checked,
+  #fadeModeCombobox::item:checked {
+    color: #fff;
+  }
+  /* hover over checked item */
   WEffectSelector::item:checked:selected,
+  WEffectChainPresetSelector::item:checked:selected,
   WSearchLineEdit::item:checked:selected,
   #fadeModeCombobox::item:checked:selected {
     background-color: #2f2f2f;
@@ -2885,6 +3017,7 @@ QLineEdit QMenu::item:disabled {
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator,
+  WEffectChainPresetButton QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
     border-bottom: 1px solid #222;
@@ -2892,12 +3025,14 @@ QLineEdit QMenu::item:disabled {
 
   #MainMenu QMenu::right-arrow,
   WTrackMenu::right-arrow,
-  WTrackMenu QMenu::right-arrow {
+  WTrackMenu QMenu::right-arrow,
+  WEffectChainPresetButton QMenu::right-arrow {
     image: url(skin:/palemoon/style/menu_arrow_ivory.svg);
     }
   #MainMenu QMenu::right-arrow:selected,
   WTrackMenu::right-arrow:selected,
-  WTrackMenu QMenu::right-arrow:selected {
+  WTrackMenu QMenu::right-arrow:selected,
+  WEffectChainPresetButton QMenu::right-arrow:selected {
     image: url(skin:/palemoon/style/menu_arrow_white.svg);
   }
 
@@ -2918,15 +3053,17 @@ QLineEdit QMenu::item:disabled {
   WLibrarySidebar QMenu::indicator:checked,
   WTrackTableViewHeader QMenu::indicator:checked,
   WTrackTableView::indicator:checked,
-  WTrackMenu QMenu QCheckBox::indicator:checked {
+  WTrackMenu QMenu QCheckBox::indicator:checked,
+  WEffectChainPresetButton QMenu QCheckBox::indicator:checked {
     image: url(skin:/palemoon/buttons/btn__lib_checkmark_blue.svg);
   }
   WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     image: url(skin:/palemoon/buttons/btn__effect_selected.svg);
     width: 13px;
     height: 13px;
-    margin-left: 4px;
+    margin-left: 6px;
   }
   /* disabled menu item and checkbox */
   WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
@@ -2956,8 +3093,14 @@ WTrackTableViewHeader QMenu::indicator:unchecked,
 WTrackTableViewHeader QMenu::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
+WEffectChainPresetSelector::indicator:unchecked,
+WEffectChainPresetSelector::indicator:unchecked:selected,
+WEffectChainPresetButton QMenu QCheckBox::indicator:unchecked,
+WEffectChainPresetButton QMenu QCheckBox::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,
-#fadeModeCombobox::indicator:unchecked:selected {
+#fadeModeCombobox::indicator:unchecked:selected,
+WSearchLineEdit::indicator:unchecked,
+WSearchLineEdit::indicator:unchecked:selected {
   image: none;
 }
 /************** common styles for WEffectSelector ******************************

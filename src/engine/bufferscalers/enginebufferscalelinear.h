@@ -4,10 +4,11 @@
 #include "engine/readaheadmanager.h"
 
 /** Number of samples to read ahead */
-const int kiLinearScaleReadAheadLength = 10240;
+constexpr int kiLinearScaleReadAheadLength = 10240;
 
 
 class EngineBufferScaleLinear : public EngineBufferScale  {
+    Q_OBJECT
   public:
     explicit EngineBufferScaleLinear(
             ReadAheadManager *pReadAheadManager);

@@ -1,5 +1,6 @@
 #include "test/librarytest.h"
 
+#include "library/library_prefs.h"
 #include "track/track.h"
 
 namespace {
@@ -29,14 +30,13 @@ std::unique_ptr<TrackCollectionManager> newTrackCollectionManager(
 } // namespace
 
 LibraryTest::LibraryTest()
-        : m_mixxxDb(config(), kInMemoryDbConnection),
-          m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-          m_pTrackCollectionManager(newTrackCollectionManager(config(), m_dbConnectionPooler)),
-          m_keyNotationCO(ConfigKey("[Library]", "key_notation")) {
+        : MixxxDbTest(kInMemoryDbConnection),
+          m_pTrackCollectionManager(newTrackCollectionManager(config(), dbConnectionPooler())),
+          m_keyNotationCO(mixxx::library::prefs::kKeyNotationConfigKey) {
 }
 
 TrackPointer LibraryTest::getOrAddTrackByLocation(
         const QString& trackLocation) const {
     return m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(trackLocation));
+            TrackRef::fromFilePath(trackLocation));
 }

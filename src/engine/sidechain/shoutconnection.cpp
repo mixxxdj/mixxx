@@ -28,15 +28,19 @@
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
+#include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 
 namespace {
 
-const int kConnectRetries = 30;
-const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
+constexpr int kConnectRetries = 30;
+constexpr int kMaxNetworkCache = 491520; // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
-const int kMaxShoutFailures = 3;
+constexpr int kMaxShoutFailures = 3;
+
+const QRegularExpression kArtistOrTitleRegex(QStringLiteral("\\$artist|\\$title"));
+const QRegularExpression kArtistRegex(QStringLiteral("\\$artist"));
 
 const mixxx::Logger kLogger("ShoutConnection");
 
@@ -461,7 +465,7 @@ void ShoutConnection::updateFromPreferences() {
     QString userErrorMsg;
     int ret = -1;
     if (m_encoder) {
-        ret = m_encoder->initEncoder(static_cast<int>(masterSamplerate), &userErrorMsg);
+        ret = m_encoder->initEncoder(masterSamplerate, &userErrorMsg);
     }
 
     // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
@@ -842,13 +846,12 @@ void ShoutConnection::updateMetaData() {
                 do {
                     // find the next occurrence
                     replaceIndex = metadataFinal.indexOf(
-                                      QRegExp("\\$artist|\\$title"),
-                                      replaceIndex);
+                            kArtistOrTitleRegex,
+                            replaceIndex);
 
                     if (replaceIndex != -1) {
                         if (metadataFinal.indexOf(
-                                          QRegExp("\\$artist"), replaceIndex)
-                                          == replaceIndex) {
+                                    kArtistRegex, replaceIndex) == replaceIndex) {
                             metadataFinal.replace(replaceIndex, 7, artist);
                             // skip to the end of the replacement
                             replaceIndex += artist.length();

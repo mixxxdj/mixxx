@@ -786,4 +786,3 @@ EksOtus.circleLEDs = function(position) {
     controller.setOutput("jog","wheel_"+(led_index),led_color);
     EksOtus.updateLEDs();
 }
-

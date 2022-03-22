@@ -1,9 +1,13 @@
 {
-  "extends": "eslint:recommended",
+  "extends": ["eslint:recommended", "plugin:jsdoc/recommended"],
   "parserOptions": {
-    "ecmaVersion": 5,
+    "ecmaVersion": 7,
     "sourceType": "script"
   },
+  "env": {
+    "es6": true
+  },
+  "plugins": ["jsdoc"],
   "rules": {
     "array-bracket-spacing" : "warn",
     "block-spacing": "warn",
@@ -40,11 +44,13 @@
     "no-unused-vars": ["error", {
         "argsIgnorePattern": "^_"
     }],
+    "no-var": "warn",
     "object-curly-newline" : ["warn", {
         "consistent": true,
         "multiline": true
     }],
     "object-curly-spacing" : "warn",
+    "prefer-const": "warn",
     "prefer-regex-literals": "warn",
     "quotes": ["warn", "double"],
     "require-atomic-updates": "error",
@@ -56,12 +62,25 @@
     "yoda": "warn"
   },
   "globals": {
-    "console": "writable",
-    "svg": "writable",
-    "print": "readonly",
-    "HIDController": "writable",
-    "HIDDebug": "writable",
-    "HIDPacket": "writable",
-    "controller": "writable"
-  }
+    "console": "readable"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.mjs"],
+      "parserOptions": {
+        "sourceType": "module"
+      }
+    },
+    {
+      "files": ["res/controllers/*.js"],
+      "globals": {
+        "console": "readable",
+        "svg": "writable",
+        "HIDController": "writable",
+        "HIDDebug": "writable",
+        "HIDPacket": "writable",
+        "controller": "writable"
+      }
+    }
+  ]
 }

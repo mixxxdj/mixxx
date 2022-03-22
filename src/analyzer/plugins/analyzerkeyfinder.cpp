@@ -80,8 +80,8 @@ AnalyzerPluginInfo AnalyzerKeyFinder::pluginInfo() {
     return AnalyzerPluginInfo(pluginId, pluginAuthor, pluginName, false);
 }
 
-bool AnalyzerKeyFinder::initialize(int samplerate) {
-    m_audioData.setFrameRate(samplerate);
+bool AnalyzerKeyFinder::initialize(mixxx::audio::SampleRate sampleRate) {
+    m_audioData.setFrameRate(sampleRate);
     m_audioData.setChannels(kAnalysisChannels);
     return true;
 }

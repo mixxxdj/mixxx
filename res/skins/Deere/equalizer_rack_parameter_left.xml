@@ -24,6 +24,9 @@
         <Size>15f,20f</Size>
         <ObjectName>EQKillButton</ObjectName>
         <NumberStates>2</NumberStates>
+        <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+        <Effect><Variable name="EffectNumber"/></Effect>
+        <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
         <State>
           <Number>0</Number>
         </State>
@@ -63,6 +66,9 @@
             <MinAngle>-135</MinAngle>
             <MaxAngle>135</MaxAngle>
             <KnobCenterYOffset>1.602</KnobCenterYOffset>
+            <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="EffectNumber"/></Effect>
+            <EffectParameter><Variable name="parameter"/></EffectParameter>
             <Connection>
               <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
             </Connection>

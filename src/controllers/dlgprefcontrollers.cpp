@@ -11,7 +11,7 @@
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
         UserSettingsPointer pConfig,
-        ControllerManager* pControllerManager,
+        std::shared_ptr<ControllerManager> pControllerManager,
         QTreeWidgetItem* pControllersRootItem)
         : DlgPreferencePage(pPreferences),
           m_pDlgPreferences(pPreferences),
@@ -23,21 +23,20 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     createLinkColor();
     setupControllerWidgets();
 
-    const QString presetsPath = userPresetsPath(m_pConfig);
-    connect(btnOpenUserPresets,
-            &QPushButton::clicked,
-            this,
-            [this, presetsPath] { slotOpenLocalFile(presetsPath); });
+    connect(btnOpenUserMappings, &QPushButton::clicked, [=]() {
+        QString mappingsPath = userMappingsPath(m_pConfig);
+        openLocalFile(mappingsPath);
+    });
 
     // Connections
-    connect(m_pControllerManager,
+    connect(m_pControllerManager.get(),
             &ControllerManager::devicesChanged,
             this,
             &DlgPrefControllers::rescanControllers);
 
     // Setting the description text here instead of in the ui file allows to paste
     // a formatted link (text color is a more readable blend of text color and original link color).
-    txtPresetsOverview->setText(tr(
+    txtMappingsOverview->setText(tr(
             "Mixxx uses \"mappings\" to connect messages from your controller to "
             "controls in Mixxx. If you do not see a mapping for your controller "
             "in the \"Load Mapping\" menu when you click on your controller on the "
@@ -46,10 +45,10 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             "Folder\" then restart Mixxx. If you download a mapping in a ZIP file, "
             "extract the XML and Javascript file(s) from the ZIP file to your "
             "\"User Mapping Folder\" then restart Mixxx.")
-                                        .arg(coloredLinkString(
-                                                m_pLinkColor,
-                                                QStringLiteral("Mixxx Controller Forums"),
-                                                MIXXX_CONTROLLER_FORUMS_URL)));
+                                         .arg(coloredLinkString(
+                                                 m_pLinkColor,
+                                                 QStringLiteral("Mixxx Controller Forums"),
+                                                 MIXXX_CONTROLLER_FORUMS_URL)));
 
     txtHardwareCompatibility->setText(coloredLinkString(
             m_pLinkColor,
@@ -58,13 +57,13 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
 
     txtControllerForums->setText(coloredLinkString(
             m_pLinkColor,
-            tr("MIDI Mapping File Format"),
-            MIXXX_WIKI_CONTROLLER_PRESET_FORMAT_URL));
-
-    txtControllerPresetFormat->setText(coloredLinkString(
-            m_pLinkColor,
             QStringLiteral("Mixxx Controller Forums"),
             MIXXX_CONTROLLER_FORUMS_URL));
+
+    txtControllerMappingFormat->setText(coloredLinkString(
+            m_pLinkColor,
+            tr("MIDI Mapping File Format"),
+            MIXXX_WIKI_CONTROLLER_MAPPING_FORMAT_URL));
 
     txtControllerScripting->setText(coloredLinkString(
             m_pLinkColor,
@@ -76,7 +75,7 @@ DlgPrefControllers::~DlgPrefControllers() {
     destroyControllerWidgets();
 }
 
-void DlgPrefControllers::slotOpenLocalFile(const QString& file) {
+void DlgPrefControllers::openLocalFile(const QString& file) {
     QDesktopServices::openUrl(QUrl::fromLocalFile(file));
 }
 
@@ -131,6 +130,14 @@ void DlgPrefControllers::rescanControllers() {
 }
 
 void DlgPrefControllers::destroyControllerWidgets() {
+    // NOTE: this assumes that the list of controllers does not change during the lifetime of Mixxx.
+    // This is currently true, but once we support hotplug, we will need better lifecycle management
+    // to keep this dialog and the controllermanager consistent.
+    QList<Controller*> controllerList =
+            m_pControllerManager->getControllerList(false, true);
+    for (auto controller : controllerList) {
+        controller->disconnect(this);
+    }
     while (!m_controllerPages.isEmpty()) {
         DlgPrefController* pControllerDlg = m_controllerPages.takeLast();
         m_pDlgPreferences->removePageWidget(pControllerDlg);
@@ -154,11 +161,11 @@ void DlgPrefControllers::setupControllerWidgets() {
         txtNoControllersAvailable->setVisible(true);
         return;
     }
-
     txtNoControllersAvailable->setVisible(false);
+
     std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
-    foreach (Controller* pController, controllerList) {
+    for (auto* pController : controllerList) {
         DlgPrefController* pControllerDlg = new DlgPrefController(
                 this, pController, m_pControllerManager, m_pConfig);
         connect(pControllerDlg,
@@ -174,14 +181,15 @@ void DlgPrefControllers::setupControllerWidgets() {
 
         connect(pController,
                 &Controller::openChanged,
+                this,
                 [this, pControllerDlg](bool bOpen) {
                     slotHighlightDevice(pControllerDlg, bOpen);
                 });
 
         QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
                 QTreeWidgetItem::Type);
-        m_pDlgPreferences->addPageWidget(pControllerDlg,
-                pControllerTreeItem,
+        m_pDlgPreferences->addPageWidget(
+                DlgPreferences::PreferencesPage(pControllerDlg, pControllerTreeItem),
                 pController->getName(),
                 "ic_preferences_controllers.svg");
 

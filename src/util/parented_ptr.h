@@ -28,7 +28,7 @@ class parented_ptr final {
     }
 
     ~parented_ptr() noexcept {
-        DEBUG_ASSERT(!m_ptr || m_ptr->parent());
+        DEBUG_ASSERT(!m_ptr || static_cast<const QObject*>(m_ptr)->parent());
     }
 
     // Delete copy constructor and copy assignment operator

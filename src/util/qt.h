@@ -39,7 +39,7 @@ inline QString escapeTextPropertyWithoutShortcuts(QString text) {
 /// Prevents directly dereferencing the internal pointer. The internal
 /// pointer in QPointer might be reset and become a nullptr at any time
 /// when the referenced QObject lives in a different thread. This
-/// behavior could cause spurious crahses due to race conditions.
+/// behavior could cause spurious crashes due to race conditions.
 template<typename T>
 class SafeQPointer final {
   public:

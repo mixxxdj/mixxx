@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QCoreApplication>
+#include <QLibraryInfo>
 #include <QLocale>
-#include <QTranslator>
 #include <QString>
+#include <QTranslator>
 #include <QtDebug>
 
 #include "preferences/usersettings.h"
@@ -72,7 +73,11 @@ class Translations {
         installTranslations(pApp,
                 locale,
                 QStringLiteral("qt"),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                QLibraryInfo::path(QLibraryInfo::TranslationsPath),
+#else
                 QLibraryInfo::location(QLibraryInfo::TranslationsPath),
+#endif
                 true);
 
         // Load Qt translations for this locale from the Mixxx translations

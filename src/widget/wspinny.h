@@ -16,6 +16,7 @@
 #include "widget/wcoverartmenu.h"
 #include "widget/wwidget.h"
 
+class ConfigKey;
 class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
@@ -33,7 +34,9 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) override;
 
-    void setup(const QDomNode& node, const SkinContext& context);
+    void setup(const QDomNode& node,
+            const SkinContext& context,
+            const ConfigKey& showCoverConfigKey);
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
 
@@ -52,7 +55,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
             const QObject* pRequestor,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap,
-            quint16 requestedHash,
+            mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
@@ -98,6 +101,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pSignalEnabled;
     ControlProxy* m_pSlipEnabled;
+    ControlProxy* m_pShowCoverProxy;
 
     TrackPointer m_loadedTrack;
     QPixmap m_loadedCover;

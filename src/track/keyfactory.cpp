@@ -89,7 +89,7 @@ Keys KeyFactory::makePreferredKeys(
 
     if (version == KEY_MAP_VERSION) {
         KeyMap key_map;
-        for (const auto* it = key_changes.constBegin();
+        for (auto it = key_changes.constBegin();
                 it != key_changes.constEnd();
                 ++it) {
             // Key position is in frames. Do not accept fractional frames.
