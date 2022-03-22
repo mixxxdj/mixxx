@@ -995,9 +995,9 @@ TEST_F(EngineSyncTest, EnableOneDeckInitializesLeader) {
 
 TEST_F(EngineSyncTest, LoadTrackInitializesLeader) {
     // First eject the fake tracks that come with the testing framework.
-    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
-    m_pChannel2->getEngineBuffer()->slotEjectTrack(1.0);
-    m_pChannel3->getEngineBuffer()->slotEjectTrack(1.0);
+    m_pChannel1->getEngineBuffer()->ejectTrack();
+    m_pChannel2->getEngineBuffer()->ejectTrack();
+    m_pChannel3->getEngineBuffer()->ejectTrack();
 
     auto pButtonSyncEnabled1 =
             std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
@@ -1020,7 +1020,7 @@ TEST_F(EngineSyncTest, LoadTrackInitializesLeader) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
 
     // Ejecting the track has no effect on leader status
-    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+    m_pChannel1->getEngineBuffer()->ejectTrack();
     EXPECT_TRUE(isFollower(m_sGroup1));
     // no relevant tempo available so internal clock is following
     EXPECT_TRUE(isFollower(m_sInternalClockGroup));

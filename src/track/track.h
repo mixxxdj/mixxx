@@ -92,6 +92,9 @@ class Track : public QObject {
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const {
+        if (!m_fileAccess.info().hasLocation()) {
+            return {};
+        }
         return m_fileAccess.info().location();
     }
 

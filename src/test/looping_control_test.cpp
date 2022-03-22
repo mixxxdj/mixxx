@@ -651,7 +651,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_SetAndToggle) {
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetWithoutTrackLoaded) {
     // Eject the track that is automatically loaded by the testing framework
-    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+    m_pChannel1->getEngineBuffer()->ejectTrack();
     m_pBeatLoopSize->set(5.0);
     EXPECT_EQ(5.0, m_pBeatLoopSize->get());
 }

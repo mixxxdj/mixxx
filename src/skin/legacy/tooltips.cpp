@@ -444,11 +444,15 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggling keylock during playback may result in a momentary audio glitch.");
 
     add("hotcue_toggle")
-        <<tr("Changes the number of hotcue buttons displayed in the deck");
+            << tr("Changes the number of hotcue buttons displayed in the deck");
 
     // Show Rate Control
     add("rate_toggle")
-        <<tr("Toggle visibility of Rate Control");
+            << tr("Toggle visibility of Rate Control");
+
+    // Show Key Controls
+    add("show_key_controls")
+            << tr("Toggle visibility of Key Controls");
 
     // Used in cue/hotcue/loop tooltips below.
     QString quantizeSnap = tr("If quantize is enabled, snaps to the nearest beat.");

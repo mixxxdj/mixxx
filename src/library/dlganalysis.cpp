@@ -119,8 +119,8 @@ void DlgAnalysis::onSearch(const QString& text) {
     m_pAnalysisLibraryTableModel->search(text);
 }
 
-void DlgAnalysis::loadSelectedTrack() {
-    m_pAnalysisLibraryTableView->loadSelectedTrack();
+void DlgAnalysis::activateSelectedTrack() {
+    m_pAnalysisLibraryTableView->activateSelectedTrack();
 }
 
 void DlgAnalysis::loadSelectedTrackToGroup(const QString& group, bool play) {

@@ -185,11 +185,6 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
-    connect(m_pEject, &ControlObject::valueChanged,
-            this, &EngineBuffer::slotEjectTrack,
-            Qt::DirectConnection);
-
     m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
     m_pTrackLoaded->setReadOnly();
 
@@ -325,7 +320,6 @@ EngineBuffer::~EngineBuffer() {
     delete m_pScaleRB;
 
     delete m_pKeylock;
-    delete m_pEject;
 
     SampleUtil::free(m_pCrossfadeBuffer);
 
@@ -1310,18 +1304,22 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     }
     const mixxx::Bpm localBpm = m_pBpmControl->updateLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
-    // FIXME: Double check if calling setLocalBpm with an invalid value is correct and intended.
-    mixxx::Bpm newLocalBpm;
+    const SyncMode mode = m_pSyncControl->getSyncMode();
     if (localBpm.isValid()) {
-        newLocalBpm = localBpm;
-    }
-    m_pSyncControl->setLocalBpm(newLocalBpm);
-    SyncMode mode = m_pSyncControl->getSyncMode();
-    m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
-    if (isLeader(mode)) {
-        m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beatDistance);
-    } else if (isFollower(mode)) {
-        m_pSyncControl->updateTargetBeatDistance();
+        m_pSyncControl->setLocalBpm(localBpm);
+        m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
+        if (isLeader(mode)) {
+            m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beatDistance);
+        } else if (isFollower(mode)) {
+            m_pSyncControl->updateTargetBeatDistance();
+        }
+    } else if (mode == SyncMode::LeaderSoft) {
+        // If this channel has been automatically chosen to be the leader but
+        // no BPM is available, another channel may take over leadership and
+        // this channel becomes a follower. This may happen if the track is
+        // analyzed upon load and avoids sudden tempo jumps on the other deck
+        // while the analysis is still running.
+        requestSyncMode(SyncMode::Follower);
     }
 
     // Update all the indicators that EngineBuffer publishes to allow
@@ -1440,17 +1438,6 @@ bool EngineBuffer::isTrackLoaded() const {
 
 TrackPointer EngineBuffer::getLoadedTrack() const {
     return m_pCurrentTrack;
-}
-
-void EngineBuffer::slotEjectTrack(double v) {
-    if (v > 0) {
-        // Don't allow rejections while playing a track. We don't need to lock to
-        // call ControlObject::get() so this is fine.
-        if (m_playButton->get() > 0) {
-            return;
-        }
-        ejectTrack();
-    }
 }
 
 mixxx::audio::FramePos EngineBuffer::getExactPlayPos() const {

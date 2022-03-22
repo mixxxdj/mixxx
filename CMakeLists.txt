@@ -25,6 +25,15 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
+# Propagate interface link properties
+if(POLICY CMP0099)
+  # This avoids a warning when qt deals with different behaviours controlled by this policy
+  # in its cmake functions. See
+  # https://github.com/qt/qtbase/commit/e3e1007f9778d8fc629a06f7d3d216bb7f81351b
+  cmake_policy(SET CMP0099 NEW)
+endif()
+
+
 # Set up vcpkg
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED VCPKG_ROOT)
     set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
@@ -1256,7 +1265,16 @@ elseif(UNIX)
 endif()
 
 # The mixxx executable
-add_executable(mixxx WIN32 src/main.cpp)
+if(QT6)
+  find_package(Qt6 REQUIRED COMPONENTS Core) # For Qt Core cmake functions
+  # qt_add_executable() is the recommended initial call for qt_finalize_target()
+  # below that takes care of the correct object order in the resulting binary
+  # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
+  # builds with Qt < 3.21
+  qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
+else()
+  add_executable(mixxx WIN32 src/main.cpp)
+endif()
 # ugly hack to get #include "preferences/dialog/ui_dlgpreferencesdlg.h" to work in
 # src/qmldlgpreferencesproxy.h, which is #included from src/qmlapplication.h.
 target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/mixxx-lib_autogen/include")
@@ -1640,6 +1658,7 @@ add_executable(mixxx-test
   src/test/nativeeffects_test.cpp
   src/test/performancetimer_test.cpp
   src/test/playcountertest.cpp
+  src/test/playermanagertest.cpp
   src/test/playlisttest.cpp
   src/test/portmidicontroller_test.cpp
   src/test/portmidienumeratortest.cpp
@@ -1726,6 +1745,8 @@ add_dependencies(mixxx-benchmark mixxx-test)
 if(UNIX AND USE_SYMLINKS)
   add_custom_target(mixxx-testdata
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/res/controllers"
+    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res/controllers/common-controller-scripts.js" "${CMAKE_CURRENT_BINARY_DIR}/res/controllers/common-controller-scripts.js"
     COMMENT "Symlinking test data to build directory..."
   )
 elseif(WIN32)
@@ -1733,11 +1754,13 @@ elseif(WIN32)
   file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/src/test/" CMAKE_CURRENT_BINARY_TESTDATA_DIR_NATIVE)
   add_custom_target(mixxx-testdata
     COMMAND xcopy ${CMAKE_CURRENT_SOURCE_TESTDATA_DIR_NATIVE} ${CMAKE_CURRENT_BINARY_TESTDATA_DIR_NATIVE} /s /d /q /y
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/res/controllers/common-controller-scripts.js" "${CMAKE_CURRENT_BINARY_DIR}/res/controllers/common-controller-scripts.js"
     COMMENT "Copying missing or modified test data files to build directory..."
   )
 else()
   add_custom_target(mixxx-testdata
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/res/controllers/common-controller-scripts.js" "${CMAKE_CURRENT_BINARY_DIR}/res/controllers/common-controller-scripts.js"
     COMMENT "Copying all test data files to build directory..."
   )
 endif()
@@ -2162,6 +2185,7 @@ if(QT6)
     URI Mixxx
     VERSION 0.1
     RESOURCE_PREFIX /mixxx.org/imports
+    IMPORTS QtQuick
     QML_FILES
       res/qml/Mixxx/MathUtils.mjs
       res/qml/Mixxx/PlayerDropArea.qml
@@ -2178,6 +2202,8 @@ if(QT6)
     FILES "res/qml/Mixxx/qmldir"
     PREFIX "/mixxx.org/imports/Mixxx"
   )
+  # to make also qmllint happy
+  configure_file(res/qml/Mixxx/qmldir qml/Mixxx/qmldir COPYONLY)
 
   # FIXME: Currently we need to add these include directories due to
   # QTBUG-87221. We should figure out a better way to fix this.
@@ -2201,6 +2227,10 @@ if(QT6)
       res/qml/Mixxx/Controls/WaveformOverview.qml
   )
   target_link_libraries(mixxx-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
+
+  # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
+  # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
+  qt_finalize_target(mixxx)
 endif()
 
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
@@ -2827,6 +2857,8 @@ if(HID)
   endif()
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
+    src/controllers/hid/hidiothread.cpp
+    src/controllers/hid/hidiooutputreport.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
     src/controllers/hid/legacyhidcontrollermapping.cpp

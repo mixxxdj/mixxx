@@ -18,6 +18,7 @@
 #include "qml/qmlvisibleeffectsmodel.h"
 #include "qml/qmlwaveformoverview.h"
 #include "soundio/soundmanager.h"
+Q_IMPORT_QML_PLUGIN(MixxxPlugin)
 Q_IMPORT_QML_PLUGIN(Mixxx_ControlsPlugin)
 
 namespace {
@@ -100,7 +101,8 @@ void QmlApplication::loadQml(const QString& path) {
     m_pAppEngine->addImportPath(QStringLiteral(":/mixxx.org/imports"));
 
     // No memory leak here, the QQmlEngine takes ownership of the provider
-    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider();
+    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
+            m_pCoreServices->getTrackCollectionManager());
     m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
 
     m_pAppEngine->load(path);
