@@ -204,6 +204,10 @@ void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
+    if (!selected.isValid()) {
+        return;
+    }
+
     QString chainPresetName = selected.model()->data(selected).toString();
     EffectChainPresetPointer pChainPreset = m_pChainPresetManager->getPreset(chainPresetName);
     if (pChainPreset == nullptr || pChainPreset->isEmpty()) {
@@ -297,14 +301,26 @@ void DlgPrefEffects::slotDeletePreset() {
     saveChainPresetLists();
 }
 
-bool DlgPrefEffects::eventFilter(QObject* pChainList, QEvent* event) {
+bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
     if (event->type() == QEvent::FocusIn) {
-        auto pListView = dynamic_cast<QListView*>(pChainList);
-        if (!pListView) {
+        // Allow selection only in either of the effects/chains lists at a time
+        // to clarify which effect/chain the info below refers to.
+        auto pChainList = dynamic_cast<QListView*>(object);
+        if (pChainList) {
+            m_pFocusedChainList = pChainList;
+            unfocusedChainList()->selectionModel()->clearSelection();
+            QModelIndex currIndex = m_pFocusedChainList->selectionModel()->currentIndex();
+            if (!currIndex.isValid()) {
+                currIndex = m_pFocusedChainList->model()->index(0, 0);
+            }
+            m_pFocusedChainList->selectionModel()->clearCurrentIndex();
+            m_pFocusedChainList->selectionModel()->setCurrentIndex(
+                    currIndex,
+                    QItemSelectionModel::ClearAndSelect);
+            return true;
+        } else {
             return false;
         }
-        m_pFocusedChainList = pListView;
-        unfocusedChainList()->selectionModel()->reset();
     }
     return false;
 }
