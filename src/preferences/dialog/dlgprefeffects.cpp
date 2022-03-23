@@ -78,6 +78,7 @@ void DlgPrefEffects::setupManifestTableView(QTableView* pTableView) {
     pTableView->setDragDropMode(QAbstractItemView::DragDrop);
     // QTableView won't remove dragged items without this??
     pTableView->setDragDropOverwriteMode(false);
+    pTableView->setTabKeyNavigation(false);
     pTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     pTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     connect(pTableView->selectionModel(),
