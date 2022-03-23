@@ -45,7 +45,6 @@ void EngineEffectsManager::onCallbackStart() {
                 response.status = EffectsResponse::NO_SUCH_CHAIN;
                 break;
             }
-        }
             processed = request->pTargetChain->processEffectsRequest(
                     *request, m_pResponsePipe.data());
             if (processed) {
@@ -64,6 +63,7 @@ void EngineEffectsManager::onCallbackStart() {
                 response.status = EffectsResponse::INVALID_REQUEST;
             }
             break;
+        }
         case EffectsRequest::SET_EFFECT_PARAMETERS:
         case EffectsRequest::SET_PARAMETER_PARAMETERS:
             VERIFY_OR_DEBUG_ASSERT(m_effects.contains(request->pTargetEffect)) {
