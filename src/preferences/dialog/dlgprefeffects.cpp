@@ -92,7 +92,7 @@ void DlgPrefEffects::setupChainListView(QListView* pListView) {
 }
 
 void DlgPrefEffects::slotUpdate() {
-    clear();
+    clearEffectInfo();
 
     // Prevent emission of dataChanged() when clearing the effects lists to not
     // call effectsTableItemSelected() with a selection that has no model.
@@ -109,13 +109,7 @@ void DlgPrefEffects::slotUpdate() {
     m_pHiddenEffectsModel->setList(hiddenEffects);
 
     // No chain preset is selected when the preferences are opened
-    for (int i = 0; i < m_effectsLabels.size(); ++i) {
-        m_effectsLabels[i]->setText(QString::number(i + 1) + ": ");
-    }
-
-    chainPresetExportButton->setEnabled(false);
-    chainPresetRenameButton->setEnabled(false);
-    chainPresetDeleteButton->setEnabled(false);
+    clearChainInfoDisableButtons();
 
     loadChainPresetLists();
 
@@ -148,12 +142,21 @@ void DlgPrefEffects::slotResetToDefaults() {
     slotUpdate();
 }
 
-void DlgPrefEffects::clear() {
+void DlgPrefEffects::clearEffectInfo() {
     effectName->clear();
     effectAuthor->clear();
     effectDescription->clear();
     effectVersion->clear();
     effectType->clear();
+}
+
+void DlgPrefEffects::clearChainInfoDisableButtons() {
+    for (int i = 0; i < m_effectsLabels.size(); ++i) {
+        m_effectsLabels[i]->setText(QString::number(i + 1) + ": ");
+    }
+    chainPresetExportButton->setEnabled(false);
+    chainPresetRenameButton->setEnabled(false);
+    chainPresetDeleteButton->setEnabled(false);
 }
 
 void DlgPrefEffects::loadChainPresetLists() {
@@ -173,7 +176,10 @@ void DlgPrefEffects::loadChainPresetLists() {
 }
 
 void DlgPrefEffects::effectsTableItemSelected(const QModelIndex& selected) {
+    // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
+    // in eventFilter()
     if (!selected.isValid()) {
+        clearEffectInfo();
         return;
     }
     auto pModel = static_cast<const EffectManifestTableModel*>(selected.model());
@@ -196,7 +202,10 @@ void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
+    // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
+    // in eventFilter()
     if (!selected.isValid()) {
+        clearChainInfoDisableButtons();
         return;
     }
 

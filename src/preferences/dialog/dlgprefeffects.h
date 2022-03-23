@@ -34,7 +34,8 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     void setupManifestTableView(QTableView* pTableView);
     void setupChainListView(QListView* pListView);
 
-    void clear();
+    void clearEffectInfo();
+    void clearChainInfoDisableButtons();
     void loadChainPresetLists();
     void saveChainPresetLists();
 
