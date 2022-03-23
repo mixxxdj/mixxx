@@ -15,6 +15,7 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pFocusedChainList(nullptr),
+          m_pFocusedEffectList(nullptr),
           m_pConfig(pConfig),
           m_pVisibleEffectsList(pEffectsManager->getVisibleEffectsList()),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
@@ -30,19 +31,6 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
             hiddenEffectsTableView, m_pBackendManager);
     hiddenEffectsTableView->setModel(m_pHiddenEffectsModel);
     setupManifestTableView(hiddenEffectsTableView);
-
-    // Allow selection only in either of the effects lists at a time to clarify
-    // which effect/chain the info below refers to.
-    // Upon selection change, deselect items in the adjacent list (reset doesn't
-    // emit dataChanged() signal.
-    connect(visibleEffectsTableView->selectionModel(),
-            &QItemSelectionModel::currentRowChanged,
-            hiddenEffectsTableView->selectionModel(),
-            &QItemSelectionModel::reset);
-    connect(hiddenEffectsTableView->selectionModel(),
-            &QItemSelectionModel::currentRowChanged,
-            visibleEffectsTableView->selectionModel(),
-            &QItemSelectionModel::reset);
 
     setupChainListView(chainListView);
     setupChainListView(quickEffectListView);
@@ -85,6 +73,7 @@ void DlgPrefEffects::setupManifestTableView(QTableView* pTableView) {
             &QItemSelectionModel::currentRowChanged,
             this,
             &DlgPrefEffects::effectsTableItemSelected);
+    pTableView->installEventFilter(this);
 }
 
 void DlgPrefEffects::setupChainListView(QListView* pListView) {
@@ -184,6 +173,9 @@ void DlgPrefEffects::loadChainPresetLists() {
 }
 
 void DlgPrefEffects::effectsTableItemSelected(const QModelIndex& selected) {
+    if (!selected.isValid()) {
+        return;
+    }
     auto pModel = static_cast<const EffectManifestTableModel*>(selected.model());
     VERIFY_OR_DEBUG_ASSERT(pModel) {
         return;
@@ -305,7 +297,14 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
     if (event->type() == QEvent::FocusIn) {
         // Allow selection only in either of the effects/chains lists at a time
         // to clarify which effect/chain the info below refers to.
+        // The method to update the info box for the new selection is the same
+        // for both the Chains and Effects tab:
+        // * clear selection in adjacent view
+        // * restore previous selection (select first item if none was selected)
+        //   which updates the info box via 'currentRowChanged' signals
         auto pChainList = dynamic_cast<QListView*>(object);
+        auto pEffectList = dynamic_cast<QTableView*>(object);
+
         if (pChainList) {
             m_pFocusedChainList = pChainList;
             unfocusedChainList()->selectionModel()->clearSelection();
@@ -317,6 +316,16 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
             m_pFocusedChainList->selectionModel()->setCurrentIndex(
                     currIndex,
                     QItemSelectionModel::ClearAndSelect);
+            return true;
+        } else if (pEffectList) {
+            m_pFocusedEffectList = pEffectList;
+            unfocusedEffectList()->selectionModel()->clearSelection();
+            QModelIndex currIndex = m_pFocusedEffectList->currentIndex();
+            if (!currIndex.isValid()) {
+                currIndex = pEffectList->model()->index(0, 0);
+            }
+            pEffectList->selectionModel()->clearCurrentIndex();
+            pEffectList->selectRow(currIndex.row());
             return true;
         } else {
             return false;
@@ -330,5 +339,13 @@ QListView* DlgPrefEffects::unfocusedChainList() {
         return quickEffectListView;
     } else {
         return chainListView;
+    }
+}
+
+QTableView* DlgPrefEffects::unfocusedEffectList() {
+    if (m_pFocusedEffectList == visibleEffectsTableView) {
+        return hiddenEffectsTableView;
+    } else {
+        return visibleEffectsTableView;
     }
 }

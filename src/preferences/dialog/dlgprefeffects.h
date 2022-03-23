@@ -41,6 +41,8 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     bool eventFilter(QObject* pChainList, QEvent* event) override;
     QListView* m_pFocusedChainList;
     QListView* unfocusedChainList();
+    QTableView* m_pFocusedEffectList;
+    QTableView* unfocusedEffectList();
 
     QList<QLabel*> m_effectsLabels;
 
