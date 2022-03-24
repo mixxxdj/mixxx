@@ -446,6 +446,14 @@ void Tooltips::addStandardTooltips() {
     add("hotcue_toggle")
             << tr("Changes the number of hotcue buttons displayed in the deck");
 
+    // Show Loop Controls
+    add("show_loop_controls")
+            << tr("Toggle visibility of Loop Controls");
+
+    // Show Beatjump Controls
+    add("show_beatjump_controls")
+            << tr("Toggle visibility of Beatjump Controls");
+
     // Show Rate Control
     add("rate_toggle")
             << tr("Toggle visibility of Rate Control");
