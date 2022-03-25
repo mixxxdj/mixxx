@@ -22,27 +22,6 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     return plugins;
 }
 
-template<typename T1>
-//static
-QString AnalyzerBeats::matchAndSetPluginId(
-        const T1& analyzer_with_plugin_ids, const QString& pluginIdToMatch) {
-    if (const auto plugins = availablePlugins(); !plugins.isEmpty()) {
-        const auto pred = [&](const auto& info) {
-            return info.id() == pluginIdToMatch;
-        };
-        return std::any_of(std::begin(plugins), std::end(plugins), pred)
-                ? pluginIdToMatch // configured Plug-In available;
-                : defaultPlugin().id();
-    }
-    return analyzer_with_plugin_ids.m_pluginId;
-}
-
-// static
-mixxx::AnalyzerPluginInfo AnalyzerBeats::defaultPlugin() {
-    const auto plugins = availablePlugins();
-    DEBUG_ASSERT(!plugins.isEmpty());
-    return plugins.at(0);
-}
 
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetection)
         : m_bpmSettings(pConfig),
@@ -81,7 +60,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
 
-    m_pluginId = matchAndSetPluginId(*this, m_bpmSettings.getBeatPluginId());
+    m_pluginId = matchAndSetPluginId(availablePlugins(), m_bpmSettings.getBeatPluginId());
 
     qDebug() << "AnalyzerBeats preference settings:"
              << "\nPlugin:" << m_pluginId
@@ -141,7 +120,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
 
     QString pluginID = m_bpmSettings.getBeatPluginId();
     if (pluginID.isEmpty()) {
-        pluginID = defaultPlugin().id();
+        pluginID = defaultPlugin(availablePlugins()).id();
     }
 
     // If the track already has a Beats object then we need to decide whether to
@@ -252,15 +231,4 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     }
 
     pTrack->trySetBeats(pBeats);
-}
-
-// static
-QHash<QString, QString> AnalyzerBeats::getExtraVersionInfo(
-        const QString& pluginId, bool bPreferencesFastAnalysis) {
-    QHash<QString, QString> extraVersionInfo;
-    extraVersionInfo["vamp_plugin_id"] = pluginId;
-    if (bPreferencesFastAnalysis) {
-        extraVersionInfo["fast_analysis"] = "1";
-    }
-    return extraVersionInfo;
 }
