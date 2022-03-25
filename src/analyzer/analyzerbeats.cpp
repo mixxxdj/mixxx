@@ -66,15 +66,14 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
 
-    const auto plugins = availablePlugins();
-    if (!plugins.isEmpty()) {
+    if (const auto plugins = availablePlugins(); !plugins.isEmpty()) {
         m_pluginId = defaultPlugin().id();
-        QString pluginId = m_bpmSettings.getBeatPluginId();
-        for (const auto& info : plugins) {
-            if (info.id() == pluginId) {
-                m_pluginId = pluginId; // configured Plug-In available
-                break;
-            }
+        const auto pluginId = m_bpmSettings.getBeatPluginId();
+        const auto pred = [&](const auto& info) {
+            return info.id() == pluginId;
+        };
+        if (std::any_of(std::begin(plugins), std::end(plugins), pred)) {
+            m_pluginId = pluginId; // configured Plug-In available;
         }
     }
 

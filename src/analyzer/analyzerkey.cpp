@@ -57,15 +57,14 @@ bool AnalyzerKey::initialize(TrackPointer tio,
     m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    const auto plugins = availablePlugins();
-    if (!plugins.isEmpty()) {
+    if (const auto plugins = availablePlugins(); !plugins.isEmpty()) {
         m_pluginId = defaultPlugin().id();
-        QString pluginId = m_keySettings.getKeyPluginId();
-        for (const auto& info : plugins) {
-            if (info.id() == pluginId) {
-                m_pluginId = pluginId; // configured Plug-In available
-                break;
-            }
+        const auto pluginId = m_keySettings.getKeyPluginId();
+        const auto pred = [&](const auto& info) {
+            return info.id() == pluginId;
+        };
+        if (std::any_of(std::begin(plugins), std::end(plugins), pred)) {
+            m_pluginId = pluginId; // configured Plug-In available;
         }
     }
 
