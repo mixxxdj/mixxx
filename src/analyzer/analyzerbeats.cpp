@@ -22,6 +22,21 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     return plugins;
 }
 
+template<typename T1>
+//static
+QString AnalyzerBeats::matchAndSetPluginId(
+        const T1& analyzer_with_plugin_ids, const QString& pluginIdToMatch) {
+    if (const auto plugins = availablePlugins(); !plugins.isEmpty()) {
+        const auto pred = [&](const auto& info) {
+            return info.id() == pluginIdToMatch;
+        };
+        return std::any_of(std::begin(plugins), std::end(plugins), pred)
+                ? pluginIdToMatch // configured Plug-In available;
+                : defaultPlugin().id();
+    }
+    return analyzer_with_plugin_ids.m_pluginId;
+}
+
 // static
 mixxx::AnalyzerPluginInfo AnalyzerBeats::defaultPlugin() {
     const auto plugins = availablePlugins();
@@ -66,16 +81,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
 
-    if (const auto plugins = availablePlugins(); !plugins.isEmpty()) {
-        m_pluginId = defaultPlugin().id();
-        const auto pluginId = m_bpmSettings.getBeatPluginId();
-        const auto pred = [&](const auto& info) {
-            return info.id() == pluginId;
-        };
-        if (std::any_of(std::begin(plugins), std::end(plugins), pred)) {
-            m_pluginId = pluginId; // configured Plug-In available;
-        }
-    }
+    m_pluginId = matchAndSetPluginId(*this, m_bpmSettings.getBeatPluginId());
 
     qDebug() << "AnalyzerBeats preference settings:"
              << "\nPlugin:" << m_pluginId

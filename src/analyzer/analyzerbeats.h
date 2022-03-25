@@ -24,6 +24,9 @@ class AnalyzerBeats : public Analyzer {
     ~AnalyzerBeats() override = default;
 
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
+    template<typename T1>
+    static QString matchAndSetPluginId(
+            const T1& analyzer_with_plugin_ids, const QString& pluginIdToMatch);
     static mixxx::AnalyzerPluginInfo defaultPlugin();
 
     bool initialize(TrackPointer pTrack,

@@ -23,6 +23,21 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
     return analyzers;
 }
 
+template<typename T1>
+//static
+QString AnalyzerKey::matchAndSetPluginId(
+        const T1& analyzer_with_plugin_ids, const QString& pluginIdToMatch) {
+    if (const auto plugins = availablePlugins(); !plugins.isEmpty()) {
+        const auto pred = [&](const auto& info) {
+            return info.id() == pluginIdToMatch;
+        };
+        return std::any_of(std::begin(plugins), std::end(plugins), pred)
+                ? pluginIdToMatch // configured Plug-In available;
+                : defaultPlugin().id();
+    }
+    return analyzer_with_plugin_ids.m_pluginId;
+}
+
 // static
 mixxx::AnalyzerPluginInfo AnalyzerKey::defaultPlugin() {
     const auto plugins = availablePlugins();
@@ -57,16 +72,7 @@ bool AnalyzerKey::initialize(TrackPointer tio,
     m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    if (const auto plugins = availablePlugins(); !plugins.isEmpty()) {
-        m_pluginId = defaultPlugin().id();
-        const auto pluginId = m_keySettings.getKeyPluginId();
-        const auto pred = [&](const auto& info) {
-            return info.id() == pluginId;
-        };
-        if (std::any_of(std::begin(plugins), std::end(plugins), pred)) {
-            m_pluginId = pluginId; // configured Plug-In available;
-        }
-    }
+    m_pluginId = matchAndSetPluginId(*this, m_keySettings.getKeyPluginId());
 
     qDebug() << "AnalyzerKey preference settings:"
              << "\nPlugin:" << m_pluginId
