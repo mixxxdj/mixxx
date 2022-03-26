@@ -428,6 +428,7 @@ void ControllerScriptInterfaceLegacy::log(const QString& message) {
     qCDebug(m_logger) << "engine.log is deprecated. Use console.log instead.";
     qCDebug(m_logger) << message;
 }
+
 int ControllerScriptInterfaceLegacy::beginTimer(
         int intervalMillis, QJSValue timerCallback, bool oneShot) {
     if (timerCallback.isString()) {
@@ -777,50 +778,53 @@ void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double fact
 
     // used in scratchProcess for the different timer behavior we need
     m_brakeActive[deck] = activate;
+    if (!activate) {
+        return;
+    }
+
     double initRate = rate;
 
-    if (activate) {
-        // store the new values for this spinback/brake effect
-        if (initRate == 1.0) { // then rate is really 1.0 or was set to default
-            // in /res/common-controller-scripts.js so check for real value,
-            // taking pitch into account
-            initRate = getDeckRate(group);
-        }
-        // stop ramping at a rate which doesn't produce any audible output anymore
-        m_rampTo[deck] = 0.01;
-        // if we are currently softStart()ing, stop it
-        if (m_softStartActive[deck]) {
-            m_softStartActive[deck] = false;
-            AlphaBetaFilter* filter = m_scratchFilters[deck];
-            if (filter != nullptr) {
-                initRate = filter->predictedVelocity();
-            }
-        }
+    // store the new values for this spinback/brake effect
+    if (initRate == 1.0) { // then rate is really 1.0 or was set to default
+        // in /res/common-controller-scripts.js so check for real value,
+        // taking pitch into account
+        initRate = getDeckRate(group);
+    }
 
-        // setup timer and set scratch2
-        timerId = startTimer(kScratchTimerMs);
-        m_scratchTimers[timerId] = deck;
-
-        ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
-        if (pScratch2 != nullptr) {
-            pScratch2->set(initRate);
-        }
-
-        // setup the filter with default alpha and beta*factor
-        double alphaBrake = 1.0 / 512;
-        // avoid decimals for fine adjusting
-        if (factor > 1) {
-            factor = ((factor - 1) / 10) + 1;
-        }
-        double betaBrake = ((1.0 / 512) / 1024) * factor; // default*factor
+    // stop ramping at a rate which doesn't produce any audible output anymore
+    m_rampTo[deck] = 0.01;
+    // if we are currently softStart()ing, stop it
+    if (m_softStartActive[deck]) {
+        m_softStartActive[deck] = false;
         AlphaBetaFilter* filter = m_scratchFilters[deck];
         if (filter != nullptr) {
-            filter->init(kAlphaBetaDt, initRate, alphaBrake, betaBrake);
+            initRate = filter->predictedVelocity();
         }
-
-        // activate the ramping in scratchProcess()
-        m_ramp[deck] = true;
     }
+
+    // setup timer and set scratch2
+    timerId = startTimer(kScratchTimerMs);
+    m_scratchTimers[timerId] = deck;
+
+    ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
+    if (pScratch2 != nullptr) {
+        pScratch2->set(initRate);
+    }
+
+    // setup the filter with default alpha and beta*factor
+    double alphaBrake = 1.0 / 512;
+    // avoid decimals for fine adjusting
+    if (factor > 1) {
+        factor = ((factor - 1) / 10) + 1;
+    }
+    double betaBrake = ((1.0 / 512) / 1024) * factor; // default*factor
+    AlphaBetaFilter* filter = m_scratchFilters[deck];
+    if (filter != nullptr) {
+        filter->init(kAlphaBetaDt, initRate, alphaBrake, betaBrake);
+    }
+
+    // activate the ramping in scratchProcess()
+    m_ramp[deck] = true;
 }
 
 void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double factor) {
