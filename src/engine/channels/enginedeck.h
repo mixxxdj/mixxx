@@ -38,7 +38,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
 
-    virtual bool isActive();
+    EngineChannel::ActiveState updateActiveState() override;
 
     // This is called by SoundManager whenever there are new samples from the
     // configured input to be processed. This is run in the callback thread of
@@ -77,5 +77,4 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     ControlPushButton* m_pPassing;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
-    bool m_wasActive;
 };

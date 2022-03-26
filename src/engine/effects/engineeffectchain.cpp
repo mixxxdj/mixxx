@@ -183,7 +183,14 @@ bool EngineEffectChain::enableForInputChannel(ChannelHandle inputHandle,
 bool EngineEffectChain::disableForInputChannel(ChannelHandle inputHandle) {
     auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
-        if (outputChannelStatus.enableState != EffectEnableState::Disabled) {
+        qDebug() << "EngineEffectChain::disableForInputChannel" << inputHandle
+                 << &outputChannelStatus
+                 << (int)outputChannelStatus.enableState;
+        if (outputChannelStatus.enableState == EffectEnableState::Enabling) {
+            // Channel has never been processed and can be disabled immediately
+            outputChannelStatus.enableState = EffectEnableState::Disabled;
+        } else if (outputChannelStatus.enableState == EffectEnableState::Enabled) {
+            // Channel was enabled, fade effect out via Disabling state
             outputChannelStatus.enableState = EffectEnableState::Disabling;
         }
     }
@@ -211,7 +218,10 @@ void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle inputCha
     // enableForInputChannel(), or disableForInputChannel().
     auto& outputMap = m_chainStatusForChannelMatrix[inputChannel];
     for (auto&& outputChannelStatus : outputMap) {
-        outputChannelStatus.enableState = EffectEnableState::Disabled;
+        qDebug() << "EngineEffectChain::deleteStatesForInputChannel"
+                 << inputChannel << &outputChannelStatus
+                 << (int)outputChannelStatus.enableState;
+        //DEBUG_ASSERT(outputChannelStatus.enableState == EffectEnableState::Disabled);
     }
     for (EngineEffect* pEffect : qAsConst(m_effects)) {
         if (pEffect != nullptr) {

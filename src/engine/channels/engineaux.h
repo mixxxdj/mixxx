@@ -18,7 +18,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
     EngineAux(const ChannelHandleAndGroup& handleGroup, EffectsManager* pEffectsManager);
     virtual ~EngineAux();
 
-    bool isActive();
+    ActiveState updateActiveState() override;
 
     /// Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
@@ -45,5 +45,4 @@ class EngineAux : public EngineChannel, public AudioDestination {
   private:
     QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
-    bool m_wasActive;
 };

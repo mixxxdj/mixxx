@@ -22,7 +22,7 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
             EffectsManager* pEffectsManager);
     virtual ~EngineMicrophone();
 
-    bool isActive();
+    ActiveState updateActiveState();
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
@@ -52,6 +52,4 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
   private:
     QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
-
-    bool m_wasActive;
 };

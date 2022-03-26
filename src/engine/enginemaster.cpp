@@ -291,7 +291,17 @@ void EngineMaster::processChannels(int iBufferSize) {
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
 
         // Skip inactive channels.
-        if (!pChannel || !pChannel->isActive()) {
+        VERIFY_OR_DEBUG_ASSERT(pChannel) {
+            continue;
+        }
+
+        EngineChannel::ActiveState activeState = pChannel->updateActiveState();
+        if (activeState == EngineChannel::ActiveState::Inactive) {
+            continue;
+        }
+
+        if (activeState == EngineChannel::ActiveState::WasActive) {
+            // TODO() Clean up effect buffers.
             continue;
         }
 

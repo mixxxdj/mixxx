@@ -21,6 +21,12 @@ class EngineChannel : public EngineObject {
         RIGHT,
     };
 
+    enum class ActiveState {
+        Inactive = 0,
+        Active,
+        WasActive
+    };
+
     EngineChannel(const ChannelHandleAndGroup& handleGroup,
             ChannelOrientation defaultOrientation,
             EffectsManager* pEffectsManager,
@@ -38,7 +44,11 @@ class EngineChannel : public EngineObject {
         return m_group.name();
     }
 
-    virtual bool isActive() = 0;
+    virtual ActiveState updateActiveState() = 0;
+    bool isActive() {
+        return m_active;
+    }
+
     void setPfl(bool enabled);
     virtual bool isPflEnabled() const;
     void setMaster(bool enabled);
@@ -76,6 +86,7 @@ class EngineChannel : public EngineObject {
     // If set to true, this engine channel represents one of the primary playback decks.
     // It is used to check for valid bpm targets by the sync code.
     const bool m_bIsPrimaryDeck;
+    bool m_active;
 
   private slots:
     void slotOrientationLeft(double v);

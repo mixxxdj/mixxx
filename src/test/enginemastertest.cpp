@@ -30,6 +30,7 @@ class EngineChannelMock : public EngineChannel {
         Q_UNUSED(iBufferSize);
     }
 
+    MOCK_METHOD0(updateActiveState, ActiveState());
     MOCK_METHOD0(isActive, bool());
     MOCK_CONST_METHOD0(isMasterEnabled, bool());
     MOCK_CONST_METHOD0(isPflEnabled, bool());
@@ -64,9 +65,9 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     SampleUtil::fill(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
     // Instruct the mock to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel, isActive())
+    EXPECT_CALL(*pChannel, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -101,9 +102,9 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     SampleUtil::fill(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
     // Instruct the mock to claim it is active, not master and PFL
-    EXPECT_CALL(*pChannel, isActive())
+    EXPECT_CALL(*pChannel, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(false));
@@ -144,9 +145,9 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     SampleUtil::fill(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel1, isActive())
+    EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -155,9 +156,9 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
             .WillOnce(Return(false));
 
     // Instruct channel 2 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel2, isActive())
+    EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -201,9 +202,9 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     SampleUtil::fill(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and PFL.
-    EXPECT_CALL(*pChannel1, isActive())
+    EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -212,9 +213,9 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
             .WillOnce(Return(true));
 
     // Instruct channel 2 to claim it is active, master and PFL.
-    EXPECT_CALL(*pChannel2, isActive())
+    EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -263,9 +264,9 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     SampleUtil::fill(pChannel3Buffer, 0.3f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel1, isActive())
+    EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -274,9 +275,9 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
             .WillOnce(Return(false));
 
     // Instruct channel 2 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel2, isActive())
+    EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -285,9 +286,9 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
             .WillOnce(Return(false));
 
     // Instruct channel 3 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel3, isActive())
+    EXPECT_CALL(*pChannel3, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel3, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -339,9 +340,9 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     SampleUtil::fill(pChannel3Buffer, 0.3f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel1, isActive())
+    EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -350,9 +351,9 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
             .WillOnce(Return(true));
 
     // Instruct channel 2 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel2, isActive())
+    EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -361,9 +362,9 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
             .WillOnce(Return(true));
 
     // Instruct channel 3 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel3, isActive())
+    EXPECT_CALL(*pChannel3, updateActiveState())
             .Times(1)
-            .WillOnce(Return(true));
+            .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel3, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
