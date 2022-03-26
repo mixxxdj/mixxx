@@ -906,6 +906,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Controls the Meta Knob of all effects in this unit together.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
+    add("EffectUnit_chain_preset_menu")
+            << tr("Effect Chain Preset Settings")
+            << tr("Show the effect chain settings menu for this unit.");
+
     add("EffectUnit_next_chain")
             << tr("Next Chain")
             << tr("Load next effect chain preset into this effect unit.");
