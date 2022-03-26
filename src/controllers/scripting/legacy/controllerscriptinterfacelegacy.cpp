@@ -16,6 +16,8 @@ constexpr int kDecks = 16;
 // timer.
 constexpr int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
+// stop ramping at a rate which doesn't produce any audible output anymore
+const double kBrakeRampToRate = 0.01;
 } // anonymous namespace
 
 ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
@@ -553,12 +555,24 @@ bool ControllerScriptInterfaceLegacy::isDeckPlaying(const QString& group) {
     ControlObjectScript* pPlay = getControlObjectScript(group, "play");
 
     if (pPlay == nullptr) {
-        QString error = QString("Could not getControlObjectScript()");
+        QString error = QString("Could not getControlObjectScript( %1, play )").arg(group);
         m_pScriptEngineLegacy->scriptErrorDialog(error, error);
         return false;
     }
 
     return pPlay->get() > 0.0;
+}
+
+void ControllerScriptInterfaceLegacy::stopDeck(const QString& group) {
+    ControlObjectScript* pPlay = getControlObjectScript(group, "play");
+
+    if (pPlay == nullptr) {
+        QString error = QString("Could not getControlObjectScript( %1, play )").arg(group);
+        m_pScriptEngineLegacy->scriptErrorDialog(error, error);
+        return;
+    }
+
+    pPlay->set(0.0);
 }
 
 void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
@@ -701,10 +715,7 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
         if (m_brakeActive[deck]) {
             // If in brake mode, set scratch2 rate to 0 and turn off the play button.
             pScratch2->set(0.0);
-            ControlObjectScript* pPlay = getControlObjectScript(group, "play");
-            if (pPlay != nullptr) {
-                pPlay->set(0.0);
-            }
+            stopDeck(group);
         }
 
         // Clear scratch2_enable to end scratching.
@@ -791,8 +802,14 @@ void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double fact
         initRate = getDeckRate(group);
     }
 
+    // don't init brake if deck is already slower than the desired final rate
+    if (initRate <= kBrakeRampToRate) {
+        stopDeck(group);
+        return;
+    }
+
     // stop ramping at a rate which doesn't produce any audible output anymore
-    m_rampTo[deck] = 0.01;
+    m_rampTo[deck] = kBrakeRampToRate;
     // if we are currently softStart()ing, stop it
     if (m_softStartActive[deck]) {
         m_softStartActive[deck] = false;

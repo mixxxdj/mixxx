@@ -94,6 +94,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
     /// Applies the accumulated movement to the track speed
     void scratchProcess(int timerId);
     bool isDeckPlaying(const QString& group);
+    void stopDeck(const QString& group);
     double getDeckRate(const QString& group);
 
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
