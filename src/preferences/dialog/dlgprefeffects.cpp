@@ -82,7 +82,7 @@ void DlgPrefEffects::setupChainListView(QListView* pListView) {
     pListView->setModel(pModel);
     pListView->setDropIndicatorShown(true);
     pListView->setDragDropMode(QAbstractItemView::DragDrop);
-    pListView->setSelectionMode(QAbstractItemView::SingleSelection);
+    pListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     //TODO: prevent drops of duplicate items
     pListView->setDefaultDropAction(Qt::CopyAction);
     connect(pListView->selectionModel(),
@@ -205,7 +205,8 @@ void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
     }
     // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
     // in eventFilter()
-    if (!selected.isValid()) {
+    if (!selected.isValid() ||
+            m_pFocusedChainList->selectionModel()->selectedRows(0).count() > 1) {
         clearChainInfoDisableButtons();
         return;
     }
