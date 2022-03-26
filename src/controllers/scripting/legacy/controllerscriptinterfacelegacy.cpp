@@ -666,10 +666,7 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
         return;
     }
 
-    const double oldRate = filter->predictedVelocity();
-
     // Give the filter a data point:
-
     // If we're ramping to end scratching and the wheel hasn't been turned very
     // recently (spinback after lift-off,) feed fixed data
     if (m_ramp[deck] && !m_softStartActive[deck] &&
@@ -701,14 +698,11 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
 
     // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
-            // or if we brake or softStart and have crossed over the desired value,
-            ((m_brakeActive[deck] || m_softStartActive[deck]) &&
-                    ((oldRate > m_rampTo[deck] && newRate < m_rampTo[deck]) ||
-                            (oldRate < m_rampTo[deck] &&
-                                    newRate > m_rampTo[deck]))) ||
+            // or if we have crossed over the desired value during brake or softStart
+            (m_brakeActive[deck] && newRate < m_rampTo[deck]) ||
+            (m_softStartActive[deck] && newRate > m_rampTo[deck]) ||
             // or if the deck was stopped manually during brake or softStart
-            ((m_brakeActive[deck] || m_softStartActive[deck]) &&
-                    (!isDeckPlaying(group)))) {
+            ((m_brakeActive[deck] || m_softStartActive[deck]) && !isDeckPlaying(group))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
