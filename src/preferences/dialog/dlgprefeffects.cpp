@@ -61,6 +61,7 @@ DlgPrefEffects::~DlgPrefEffects() {
 }
 
 void DlgPrefEffects::setupManifestTableView(QTableView* pTableView) {
+    pTableView->verticalHeader()->hide();
     pTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     pTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     pTableView->setDragDropMode(QAbstractItemView::DragDrop);
