@@ -74,7 +74,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
     /// @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending
     Q_INVOKABLE void send(const QList<int>& dataList,
             unsigned int length,
-            unsigned int reportID,
+            const quint8& reportID,
             bool resendUnchangedReport = false) {
         Q_UNUSED(length);
         QByteArray dataArray;
@@ -89,7 +89,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
     /// @param dataArray Data to send as byte array (Javascript type Uint8Array)
     /// @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending
-    Q_INVOKABLE void sendOutputReport(unsigned int reportID,
+    Q_INVOKABLE void sendOutputReport(const quint8& reportID,
             const QByteArray& dataArray,
             bool resendUnchangedReport = false) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
@@ -110,7 +110,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
     /// @return Returns report data with ReportID byte as prefix
     Q_INVOKABLE QByteArray getInputReport(
-            unsigned int reportID) {
+            const quint8& reportID) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return {};
         }
@@ -121,7 +121,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
     /// @param reportData Data to send as byte array (Javascript type Uint8Array)
     Q_INVOKABLE void sendFeatureReport(
-            unsigned int reportID, const QByteArray& reportData) {
+            const quint8& reportID, const QByteArray& reportData) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return;
         }
@@ -133,7 +133,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
     /// @return The returned array matches the input format of sendFeatureReport (Javascript type Uint8Array),
     ///         allowing it to be read, modified and sent it back to the controller.
     Q_INVOKABLE QByteArray getFeatureReport(
-            unsigned int reportID) {
+            const quint8& reportID) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return {};
         }
