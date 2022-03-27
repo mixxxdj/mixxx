@@ -82,15 +82,15 @@ class HidControllerJSProxy : public ControllerJSProxy {
         for (int datum : dataList) {
             dataArray.append(datum);
         }
-        this->sendOutputReport(dataArray, reportID, resendUnchangedReport);
+        this->sendOutputReport(reportID, dataArray, resendUnchangedReport);
     }
 
     /// @brief Sends an OutputReport to HID device
-    /// @param dataArray Data to send as byte array (Javascript type Uint8Array)
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
+    /// @param dataArray Data to send as byte array (Javascript type Uint8Array)
     /// @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending
-    Q_INVOKABLE void sendOutputReport(const QByteArray& dataArray,
-            unsigned int reportID,
+    Q_INVOKABLE void sendOutputReport(unsigned int reportID,
+            const QByteArray& dataArray,
             bool resendUnchangedReport = false) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return;
@@ -118,10 +118,10 @@ class HidControllerJSProxy : public ControllerJSProxy {
     }
 
     /// @brief Sends a FeatureReport to HID device
-    /// @param reportData Data to send as byte array (Javascript type Uint8Array)
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
+    /// @param reportData Data to send as byte array (Javascript type Uint8Array)
     Q_INVOKABLE void sendFeatureReport(
-            const QByteArray& reportData, unsigned int reportID) {
+            unsigned int reportID, const QByteArray& reportData) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return;
         }
