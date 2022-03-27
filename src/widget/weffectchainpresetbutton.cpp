@@ -137,3 +137,11 @@ void WEffectChainPresetButton::populateMenu() {
         m_pMenu->addMenu(pEffectMenu);
     }
 }
+
+bool WEffectChainPresetButton::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+
+    return QPushButton::event(pEvent);
+}
