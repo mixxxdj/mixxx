@@ -1349,15 +1349,19 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     // If we're ramping to end scratching and the wheel hasn't been turned very
     // recently (spinback after lift-off,) feed fixed data
+    qDebug() << ".";
     if (m_ramp[deck] && !m_softStartActive[deck] &&
         ((mixxx::Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
+        qDebug() << "       ramp && !softStart";
         filter->observation(m_rampTo[deck] * m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
     } else if (m_softStartActive[deck]) {
+        qDebug() << "       softStart";
         // pretend we have moved by (desired rate*default distance)
-        filter->observation(m_rampTo[deck]*kAlphaBetaDt);
+        filter->observation(m_rampTo[deck] * kAlphaBetaDt);
     } else {
+        qDebug() << "       else";
         // This will (and should) be 0 if no net ticks have been accumulated
         // (i.e. the wheel is stopped)
         filter->observation(m_dx[deck] * m_intervalAccumulator[deck]);
@@ -1375,6 +1379,10 @@ void ControllerEngine::scratchProcess(int timerId) {
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
 
+    qDebug() << "   old " << oldRate;
+    qDebug() << "   new " << newRate;
+    qDebug() << "   fabs" << fabs(trunc((m_rampTo[deck] - newRate) * 100000) / 100000);
+    qDebug() << ".";
     // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
         // or if we brake or softStart and have crossed over the desired value,
@@ -1410,6 +1418,8 @@ void ControllerEngine::scratchProcess(int timerId) {
         m_dx[deck] = 0.0;
         m_brakeActive[deck] = false;
         m_softStartActive[deck] = false;
+        qDebug() << "   DONE scratching";
+        qDebug() << ".";
     }
 }
 
@@ -1514,6 +1524,7 @@ void ControllerEngine::spinback(int deck, bool activate, double factor, double r
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::brake(int deck, bool activate, double factor, double rate) {
+    qDebug() << "   init brake";
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 
@@ -1582,6 +1593,7 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::softStart(int deck, bool activate, double factor) {
+    qDebug() << "   init softStart";
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 
