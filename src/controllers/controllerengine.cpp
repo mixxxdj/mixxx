@@ -1541,50 +1541,52 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
 
     // used in scratchProcess for the different timer behavior we need
     m_brakeActive[deck] = activate;
+
+    if (!activate) {
+        return;
+    }
+
     double initRate = rate;
-
-    if (activate) {
-        // store the new values for this spinback/brake effect
-        if (initRate == 1.0) {// then rate is really 1.0 or was set to default
-            // in /res/common-controller-scripts.js so check for real value,
-            // taking pitch into account
-            initRate = getDeckRate(group);
-        }
-        // stop ramping at a rate which doesn't produce any audible output anymore
-        m_rampTo[deck] = 0.01;
-        // if we are currently softStart()ing, stop it
-        if (m_softStartActive[deck]) {
-            m_softStartActive[deck] = false;
-            AlphaBetaFilter* filter = m_scratchFilters[deck];
-            if (filter != nullptr) {
-                initRate = filter->predictedVelocity();
-            }
-        }
-
-        // setup timer and set scratch2
-        timerId = startTimer(kScratchTimerMs);
-        m_scratchTimers[timerId] = deck;
-
-        ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
-        if (pScratch2 != nullptr) {
-            pScratch2->slotSet(initRate);
-        }
-
-        // setup the filter with default alpha and beta*factor
-        double alphaBrake = 1.0/512;
-        // avoid decimals for fine adjusting
-        if (factor>1) {
-            factor = ((factor-1)/10)+1;
-        }
-        double betaBrake = ((1.0/512)/1024)*factor; // default*factor
+    // store the new values for this spinback/brake effect
+    if (initRate == 1.0) { // then rate is really 1.0 or was set to default
+        // in /res/common-controller-scripts.js so check for real value,
+        // taking pitch into account
+        initRate = getDeckRate(group);
+    }
+    // stop ramping at a rate which doesn't produce any audible output anymore
+    m_rampTo[deck] = 0.01;
+    // if we are currently softStart()ing, stop it
+    if (m_softStartActive[deck]) {
+        m_softStartActive[deck] = false;
         AlphaBetaFilter* filter = m_scratchFilters[deck];
         if (filter != nullptr) {
-            filter->init(kAlphaBetaDt, initRate, alphaBrake, betaBrake);
+            initRate = filter->predictedVelocity();
         }
-
-        // activate the ramping in scratchProcess()
-        m_ramp[deck] = true;
     }
+
+    // setup timer and set scratch2
+    timerId = startTimer(kScratchTimerMs);
+    m_scratchTimers[timerId] = deck;
+
+    ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
+    if (pScratch2 != nullptr) {
+        pScratch2->slotSet(initRate);
+    }
+
+    // setup the filter with default alpha and beta*factor
+    double alphaBrake = 1.0 / 512;
+    // avoid decimals for fine adjusting
+    if (factor > 1) {
+        factor = ((factor - 1) / 10) + 1;
+    }
+    double betaBrake = ((1.0 / 512) / 1024) * factor; // default*factor
+    AlphaBetaFilter* filter = m_scratchFilters[deck];
+    if (filter != nullptr) {
+        filter->init(kAlphaBetaDt, initRate, alphaBrake, betaBrake);
+    }
+
+    // activate the ramping in scratchProcess()
+    m_ramp[deck] = true;
 }
 
 /*  -------- ------------------------------------------------------
@@ -1610,49 +1612,51 @@ void ControllerEngine::softStart(int deck, bool activate, double factor) {
 
     // used in scratchProcess for the different timer behavior we need
     m_softStartActive[deck] = activate;
-    double initRate = 0.0;
 
-    if (activate) {
-        // acquire deck rate
-        m_rampTo[deck] = getDeckRate(group);
-
-        // if brake()ing, get current rate from filter
-        if (m_brakeActive[deck]) {
-            m_brakeActive[deck] = false;
-
-            AlphaBetaFilter* filter = m_scratchFilters[deck];
-            if (filter != nullptr) {
-                initRate = filter->predictedVelocity();
-            }
-        }
-
-        // setup timer, start playing and set scratch2
-        timerId = startTimer(kScratchTimerMs);
-        m_scratchTimers[timerId] = deck;
-
-        ControlObjectScript* pPlay = getControlObjectScript(group, "play");
-        if (pPlay != nullptr) {
-            pPlay->slotSet(1.0);
-        }
-
-        ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
-        if (pScratch2 != nullptr) {
-            pScratch2->slotSet(initRate);
-        }
-
-        // setup the filter like in brake(), with default alpha and beta*factor
-        double alphaSoft = 1.0/512;
-        // avoid decimals for fine adjusting
-        if (factor>1) {
-            factor = ((factor-1)/10)+1;
-        }
-        double betaSoft = ((1.0/512)/1024)*factor; // default: (1.0/512)/1024
-        AlphaBetaFilter* filter = m_scratchFilters[deck];
-        if (filter != nullptr) { // kAlphaBetaDt = 1/1000 seconds
-            filter->init(kAlphaBetaDt, initRate, alphaSoft, betaSoft);
-        }
-
-        // activate the ramping in scratchProcess()
-        m_ramp[deck] = true;
+    if (!activate) {
+        return;
     }
+
+    double initRate = 0.0;
+    // acquire deck rate
+    m_rampTo[deck] = getDeckRate(group);
+
+    // if brake()ing, get current rate from filter
+    if (m_brakeActive[deck]) {
+        m_brakeActive[deck] = false;
+
+        AlphaBetaFilter* filter = m_scratchFilters[deck];
+        if (filter != nullptr) {
+            initRate = filter->predictedVelocity();
+        }
+    }
+
+    // setup timer, start playing and set scratch2
+    timerId = startTimer(kScratchTimerMs);
+    m_scratchTimers[timerId] = deck;
+
+    ControlObjectScript* pPlay = getControlObjectScript(group, "play");
+    if (pPlay != nullptr) {
+        pPlay->slotSet(1.0);
+    }
+
+    ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
+    if (pScratch2 != nullptr) {
+        pScratch2->slotSet(initRate);
+    }
+
+    // setup the filter like in brake(), with default alpha and beta*factor
+    double alphaSoft = 1.0 / 512;
+    // avoid decimals for fine adjusting
+    if (factor > 1) {
+        factor = ((factor - 1) / 10) + 1;
+    }
+    double betaSoft = ((1.0 / 512) / 1024) * factor; // default: (1.0/512)/1024
+    AlphaBetaFilter* filter = m_scratchFilters[deck];
+    if (filter != nullptr) { // kAlphaBetaDt = 1/1000 seconds
+        filter->init(kAlphaBetaDt, initRate, alphaSoft, betaSoft);
+    }
+
+    // activate the ramping in scratchProcess()
+    m_ramp[deck] = true;
 }
