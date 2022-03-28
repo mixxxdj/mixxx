@@ -42,7 +42,8 @@ class EngineEffectChain final : public EffectsRequestHandler {
             CSAMPLE* pOut,
             const unsigned int numSamples,
             const unsigned int sampleRate,
-            const GroupFeatureState& groupFeatures);
+            const GroupFeatureState& groupFeatures,
+            bool fadeout);
 
     /// called from main thread
     void deleteStatesForInputChannel(const ChannelHandle channel);

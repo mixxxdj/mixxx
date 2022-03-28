@@ -68,6 +68,9 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     EXPECT_CALL(*pChannel, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
     EXPECT_CALL(*pChannel, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -105,6 +108,9 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
     EXPECT_CALL(*pChannel, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(false));
@@ -148,6 +154,9 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel1, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -159,6 +168,9 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel2, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -205,6 +217,9 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel1, isActive())
+            .Times(2)
+            .WillRepeatedly(Return(true));
     EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -216,6 +231,9 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel2, isActive())
+            .Times(2)
+            .WillRepeatedly(Return(true));
     EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -267,6 +285,9 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel1, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -278,6 +299,9 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel2, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -289,6 +313,9 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel3, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel3, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
     EXPECT_CALL(*pChannel3, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -343,6 +370,9 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel1, isActive())
+            .Times(2)
+            .WillRepeatedly(Return(true));
     EXPECT_CALL(*pChannel1, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -354,6 +384,9 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel2, isActive())
+            .Times(2)
+            .WillRepeatedly(Return(true));
     EXPECT_CALL(*pChannel2, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
@@ -365,6 +398,9 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel3, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel3, isActive())
+            .Times(2)
+            .WillRepeatedly(Return(true));
     EXPECT_CALL(*pChannel3, isMasterEnabled())
             .Times(1)
             .WillOnce(Return(true));
