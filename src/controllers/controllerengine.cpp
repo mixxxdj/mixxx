@@ -1503,8 +1503,8 @@ void ControllerEngine::softTakeoverIgnoreNextValue(
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::spinback(int deck, bool activate, double factor, double rate) {
-    // defaults for args set in header file
-    brake(deck, activate, factor, rate);
+    qDebug() << "   init spinback";
+    brake(deck, activate, -factor, rate);
 }
 
 /*  -------- ------------------------------------------------------
