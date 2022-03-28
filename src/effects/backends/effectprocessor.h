@@ -194,9 +194,11 @@ class EffectProcessorImpl : public EffectProcessor {
                 outputChannelMap.insert(outputChannel.handle(),
                         createSpecificState(engineParameters));
                 if (kEffectDebugOutput) {
-                    qDebug() << this << "EffectProcessorImpl::initialize "
-                                        "registering output"
-                             << outputChannel << outputChannelMap[outputChannel.handle()];
+                    qDebug() << this
+                             << "EffectProcessorImpl::initialize "
+                                "registering output"
+                             << outputChannel << outputChannel.handle()
+                             << outputChannelMap[outputChannel.handle()];
                 }
             }
             m_channelStateMatrix.insert(inputChannel.handle(), outputChannelMap);
@@ -286,7 +288,7 @@ class EffectProcessorImpl : public EffectProcessor {
             }
             if (kEffectDebugOutput) {
                 qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
-                         << this << "deleting state" << pState;
+                         << inputChannel << this << "deleting state" << pState;
             }
             delete pState;
         }

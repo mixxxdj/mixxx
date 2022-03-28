@@ -487,7 +487,10 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pTalkover,
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                busFeatures);
+                busFeatures,
+                CSAMPLE_GAIN_ONE,
+                CSAMPLE_GAIN_ONE,
+                false);
     }
 
     switch (m_pTalkoverDucking->getMode()) {
@@ -542,21 +545,30 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pOutputBusBuffers[EngineChannel::LEFT],
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                busFeatures);
+                busFeatures,
+                CSAMPLE_GAIN_ONE,
+                CSAMPLE_GAIN_ONE,
+                false);
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderCenterHandle.handle(),
                 m_masterHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::CENTER],
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                busFeatures);
+                busFeatures,
+                CSAMPLE_GAIN_ONE,
+                CSAMPLE_GAIN_ONE,
+                false);
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderRightHandle.handle(),
                 m_masterHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::RIGHT],
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                busFeatures);
+                busFeatures,
+                CSAMPLE_GAIN_ONE,
+                CSAMPLE_GAIN_ONE,
+                false);
     }
 
     if (masterEnabled) {
@@ -787,7 +799,10 @@ void EngineMaster::applyMasterEffects() {
                 m_pMaster,
                 m_iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                masterFeatures);
+                masterFeatures,
+                CSAMPLE_GAIN_ONE,
+                CSAMPLE_GAIN_ONE,
+                false);
     }
 }
 
