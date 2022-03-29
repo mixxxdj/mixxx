@@ -1242,12 +1242,24 @@ bool ControllerEngine::isDeckPlaying(const QString& group) {
     ControlObjectScript* pPlay = getControlObjectScript(group, "play");
 
     if (pPlay == nullptr) {
-      QString error = QString("Could not getControlObjectScript()");
-      scriptErrorDialog(error, error);
-      return false;
+        QString error = QString("Could not get ControlObjectScript(%1, play)").arg(group);
+        scriptErrorDialog(error, error);
+        return false;
     }
 
-    return pPlay->get() > 0.0;
+    return pPlay->toBool();
+}
+
+void ControllerEngine::stopDeck(const QString& group) {
+    ControlObjectScript* pPlay = getControlObjectScript(group, "play");
+
+    if (pPlay == nullptr) {
+        QString error = QString("Could not get ControlObjectScript(%1, play)").arg(group);
+        scriptErrorDialog(error, error);
+        return;
+    }
+
+    pPlay->set(0.0);
 }
 
 /* -------- ------------------------------------------------------
@@ -1410,10 +1422,7 @@ void ControllerEngine::scratchProcess(int timerId) {
         if (m_brakeActive[deck] || m_spinbackActive[deck]) {
             // If in brake mode, set scratch2 rate to 0 and stop the deck.
             pScratch2->slotSet(0.0);
-            ControlObjectScript* pPlay = getControlObjectScript(group, "play");
-            if (pPlay != nullptr) {
-                pPlay->slotSet(0.0);
-            }
+            stopDeck(group);
         }
 
         // Clear scratch2_enable to end scratching.
@@ -1589,7 +1598,7 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
         m_brakeActive[deck] = false;
         m_spinbackActive[deck] = false;
         stopScratchTimer(timerId);
-        // TODO(ronso0) Stop deck as if we were braking to halt
+        stopDeck(group);
         return;
     }
     stopScratchTimer(timerId);

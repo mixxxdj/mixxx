@@ -196,6 +196,7 @@ class ControllerEngine : public QObject {
     void stopScratchTimer(const int timerId);
 
     bool isDeckPlaying(const QString& group);
+    void stopDeck(const QString& group);
     double getDeckRate(const QString& group);
 
     Controller* m_pController;
