@@ -76,12 +76,7 @@ class EffectProcessor {
             const mixxx::EngineParameters& engineParameters) = 0;
     virtual void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) = 0;
-    virtual EffectState* createState(const mixxx::EngineParameters& engineParameters) = 0;
-    virtual void deleteStatesForInputChannel(ChannelHandle inputChannel) = 0;
-
-    // Called from the audio thread
-    virtual bool loadStatesForInputChannel(ChannelHandle inputChannel,
-            const EffectStatesMap* pStatesMap) = 0;
+    virtual bool hasStatesForInputChannel(ChannelHandle inputChannel) const = 0;
 
     /// Called from the audio thread
     /// This method takes a buffer of audio samples as pInput, processes the buffer
@@ -160,11 +155,6 @@ class EffectProcessorImpl : public EffectProcessor {
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) final {
         EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
-        // TODO: The state can be null if we are in the deleteStatesForInputChannel() loop.
-        // A protection against this is missing. Since it can happen the assertion is incorrect
-        // The memory will be leaked.
-        // Idea: Skip the processing here?
-        // Probably related: https://bugs.launchpad.net/mixxx/+bug/1775497
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
             if (kEffectDebugOutput) {
                 qWarning() << "EffectProcessorImpl::process could not retrieve"
@@ -213,95 +203,16 @@ class EffectProcessorImpl : public EffectProcessor {
         m_channelStateMatrix.insert(inputChannel, outputChannelMap);
     };
 
-    EffectState* createState(const mixxx::EngineParameters& engineParameters) final {
-        return createSpecificState(engineParameters);
-    };
-
-    bool loadStatesForInputChannel(ChannelHandle inputChannel,
-            const EffectStatesMap* pStatesMap) final {
-        if (kEffectDebugOutput) {
-            qDebug() << "EffectProcessorImpl::loadStatesForInputChannel" << this
-                     << "input" << inputChannel;
-        }
-
-        // NOTE: ChannelHandleMap is like a map in that it associates an
-        // object with a ChannelHandle key, but it is actually backed by a
-        // QVarLengthArray, not a QMap. So it is okay that
-        // m_channelStateMatrix may be accessed concurrently in the main
-        // thread in deleteStatesForInputChannel.
-
-        // Can't directly cast a ChannelHandleMap from containing the base
-        // EffectState* type to EffectSpecificState* type, so iterate through
-        // pStatesMap to build a new ChannelHandleMap with
-        // dynamic_cast'ed states.
-        ChannelHandleMap<EffectSpecificState*>& effectSpecificStatesMap =
-                m_channelStateMatrix[inputChannel];
-
-        // deleteStatesForInputChannel should have been called before a new
-        // map of EffectStates was sent to this function, or this is the first
-        // time states are being loaded for this input channel, so
-        // effectSpecificStatesMap should be empty and this loop should
-        // not go through any iterations.
-        for (EffectSpecificState* pState : effectSpecificStatesMap) {
-            VERIFY_OR_DEBUG_ASSERT(pState == nullptr) {
-                delete pState;
+    bool hasStatesForInputChannel(ChannelHandle inputChannel) const {
+        if (inputChannel.handle() < m_channelStateMatrix.size()) {
+            for (EffectSpecificState* pState : m_channelStateMatrix.at(inputChannel)) {
+                if (pState) {
+                    return true;
+                }
             }
         }
-
-        QSet<ChannelHandleAndGroup> receivedOutputChannels = m_registeredOutputChannels;
-        for (const ChannelHandleAndGroup& outputChannel :
-                std::as_const(m_registeredOutputChannels)) {
-            if (kEffectDebugOutput) {
-                qDebug() << "EffectProcessorImpl::loadStatesForInputChannel"
-                         << this << "output" << outputChannel;
-            }
-
-            auto pState = dynamic_cast<EffectSpecificState*>(
-                    pStatesMap->at(outputChannel.handle()));
-            VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
-                return false;
-            }
-            effectSpecificStatesMap.insert(outputChannel.handle(), pState);
-            receivedOutputChannels.insert(outputChannel);
-        }
-        // Output channels are hardcoded in EngineMaster and should not
-        // be registered after Mixxx initializes.
-        DEBUG_ASSERT(receivedOutputChannels == m_registeredOutputChannels);
-        return true;
-    };
-
-    /// Called from main thread for garbage collection after an input channel is disabled
-    void deleteStatesForInputChannel(ChannelHandle inputChannel) final {
-        if (kEffectDebugOutput) {
-            qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
-                     << this << inputChannel;
-        }
-
-        // NOTE: ChannelHandleMap is like a map in that it associates an
-        // object with a ChannelHandle key, but it is actually backed by a
-        // QVarLengthArray, not a QMap. So it is okay that
-        // m_channelStateMatrix may be accessed concurrently in the audio
-        // engine thread in loadStatesForInputChannel.
-
-        // TODO: How is ensure that the statMap is not accessed during this loop?
-        // This is called in responds to DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL
-        // and it looks like that the objects pointed by m_channelStateMatrix
-        // may be still in use.
-        // Probably related: https://bugs.launchpad.net/mixxx/+bug/1775497
-        ChannelHandleMap<EffectSpecificState*>& stateMap =
-                m_channelStateMatrix[inputChannel];
-        for (EffectSpecificState* pState : stateMap) {
-            VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
-                continue;
-            }
-            if (kEffectDebugOutput) {
-                qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
-                         << inputChannel << this << "deleting state" << pState;
-            }
-            delete pState;
-        }
-        stateMap.clear();
-    };
+        return false;
+    }
 
   protected:
     /// Subclasses for external effects plugins may reimplement this, but

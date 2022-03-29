@@ -44,20 +44,6 @@ struct EffectsRequest {
         pTargetEffect = nullptr;
     }
 
-    // This is called from the main thread by EffectsManager after receiving a
-    // response from EngineEffectsManager in the audio engine thread.
-    ~EffectsRequest() {
-        if (type == ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
-            VERIFY_OR_DEBUG_ASSERT(EnableInputChannelForChain.pEffectStatesMapArray != nullptr) {
-                return;
-            }
-            // This only deletes the container used to passed the EffectStates
-            // to EffectProcessorImpl. The EffectStates are managed by
-            // EffectProcessorImpl.
-            delete EnableInputChannelForChain.pEffectStatesMapArray;
-        }
-    }
-
     MessageType type;
     qint64 request_id;
 
@@ -86,7 +72,6 @@ struct EffectsRequest {
             SignalProcessingStage signalProcessingStage;
         } RemoveEffectChain;
         struct {
-            EffectStatesMapArray* pEffectStatesMapArray;
             ChannelHandle channelHandle;
         } EnableInputChannelForChain;
         struct {
