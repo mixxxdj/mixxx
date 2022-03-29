@@ -197,6 +197,7 @@ class ControllerEngine : public QObject {
 
     bool isDeckPlaying(const QString& group);
     void stopDeck(const QString& group);
+    bool isTrackLoaded(const QString& group);
     double getDeckRate(const QString& group);
 
     Controller* m_pController;

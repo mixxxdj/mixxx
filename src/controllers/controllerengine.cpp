@@ -1262,6 +1262,18 @@ void ControllerEngine::stopDeck(const QString& group) {
     pPlay->set(0.0);
 }
 
+bool ControllerEngine::isTrackLoaded(const QString& group) {
+    ControlObjectScript* pTrackLoaded = getControlObjectScript(group, "track_loaded");
+
+    if (pTrackLoaded == nullptr) {
+        QString error = QString("Could not get ControlObjectScript(%1, track_loaded)").arg(group);
+        scriptErrorDialog(error, error);
+        return false;
+    }
+
+    return pTrackLoaded->toBool();
+}
+
 /* -------- ------------------------------------------------------
     Purpose: Enables scratching for relative controls
     Input:   Virtual deck to scratch,
@@ -1359,7 +1371,6 @@ void ControllerEngine::scratchTick(int deck, int interval) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchProcess(int timerId) {
-    // TODO(ronso0) Refuse scratching if no track is loaded
     int deck = m_scratchTimers[timerId];
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
@@ -1415,7 +1426,9 @@ void ControllerEngine::scratchProcess(int timerId) {
             (m_brakeActive[deck] && newRate < m_rampTo[deck]) ||
             ((m_spinbackActive[deck] || m_softStartActive[deck]) && newRate > m_rampTo[deck]) ||
             // or if the deck was stopped manually during brake or softStart
-            ((m_brakeActive[deck] || m_softStartActive[deck]) && (!isDeckPlaying(group)))) {
+            ((m_brakeActive[deck] || m_softStartActive[deck]) && (!isDeckPlaying(group))) ||
+            // or if there is no track loaded (anymore)
+            !isTrackLoaded(group)) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
