@@ -53,6 +53,7 @@ ControllerEngine::ControllerEngine(
     m_scratchFilters.resize(kDecks);
     m_rampFactor.resize(kDecks);
     m_brakeActive.resize(kDecks);
+    m_spinbackActive.resize(kDecks);
     m_softStartActive.resize(kDecks);
     // Initialize arrays used for testing and pointers
     for (int i = 0; i < kDecks; ++i) {
@@ -1162,7 +1163,7 @@ int ControllerEngine::beginTimer(int interval, const QScriptValue& timerCallback
    Input:   ID of timer to stop
    Output:  -
    -------- ------------------------------------------------------ */
-void ControllerEngine::stopTimer(int timerId) {
+void ControllerEngine::stopTimer(const int timerId) {
     if (!m_timers.contains(timerId)) {
         qWarning() << "Killing timer" << timerId << ": That timer does not exist!";
         return;
@@ -1170,6 +1171,16 @@ void ControllerEngine::stopTimer(int timerId) {
     controllerDebug("Killing timer:" << timerId);
     killTimer(timerId);
     m_timers.remove(timerId);
+}
+
+void ControllerEngine::stopScratchTimer(const int timerId) {
+    if (!m_scratchTimers.contains(timerId)) {
+        qWarning() << "Killing scratch timer" << timerId << ": That timer does not exist!";
+        return;
+    }
+    controllerDebug("Killing scratch timer:" << timerId);
+    killTimer(timerId);
+    m_scratchTimers.remove(timerId);
 }
 
 void ControllerEngine::stopAllTimers() {
@@ -1336,6 +1347,7 @@ void ControllerEngine::scratchTick(int deck, int interval) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchProcess(int timerId) {
+    // TODO(ronso0) Refuse scratching if no track is loaded
     int deck = m_scratchTimers[timerId];
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
@@ -1387,17 +1399,16 @@ void ControllerEngine::scratchProcess(int timerId) {
     qDebug() << ".";
     // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
-        // or if we brake or softStart and have crossed over the desired value,
-        ((m_brakeActive[deck] || m_softStartActive[deck]) && (
-            (oldRate > m_rampTo[deck] && newRate < m_rampTo[deck]) ||
-            (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck]))) ||
-        // or if the deck was stopped manually during brake or softStart
-        ((m_brakeActive[deck] || m_softStartActive[deck]) && (!isDeckPlaying(group)))) {
+            // or if we brake, spin back or softstart and have crossed over the desired value,
+            (m_brakeActive[deck] && newRate < m_rampTo[deck]) ||
+            ((m_spinbackActive[deck] || m_softStartActive[deck]) && newRate > m_rampTo[deck]) ||
+            // or if the deck was stopped manually during brake or softStart
+            ((m_brakeActive[deck] || m_softStartActive[deck]) && (!isDeckPlaying(group)))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
-        if (m_brakeActive[deck]) {
-            // If in brake mode, set scratch2 rate to 0 and turn off the play button.
+        if (m_brakeActive[deck] || m_spinbackActive[deck]) {
+            // If in brake mode, set scratch2 rate to 0 and stop the deck.
             pScratch2->slotSet(0.0);
             ControlObjectScript* pPlay = getControlObjectScript(group, "play");
             if (pPlay != nullptr) {
@@ -1413,12 +1424,11 @@ void ControllerEngine::scratchProcess(int timerId) {
         }
         pScratch2Enable->slotSet(0);
 
-        // Remove timer
-        killTimer(timerId);
-        m_scratchTimers.remove(timerId);
+        stopScratchTimer(timerId);
 
         m_dx[deck] = 0.0;
         m_brakeActive[deck] = false;
+        m_spinbackActive[deck] = false;
         m_softStartActive[deck] = false;
         qDebug() << "   DONE scratching";
         qDebug() << ".";
@@ -1529,44 +1539,62 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
     qDebug() << "   init brake";
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
-
-    // kill timer when both enabling or disabling
-    int timerId = m_scratchTimers.key(deck);
-    killTimer(timerId);
-    m_scratchTimers.remove(timerId);
-
     // enable/disable scratch2 mode
     ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
     if (pScratch2Enable != nullptr) {
         pScratch2Enable->slotSet(activate ? 1 : 0);
     }
 
-    // used in scratchProcess for the different timer behavior we need
-    m_brakeActive[deck] = activate;
+    // Used for killing the current timer when both enabling or disabling
+    // Don't kill timer yet! This may be a brake init while currently spinning back
+    // and we don't want to interrupt that.
+    int timerId = m_scratchTimers.key(deck);
 
     if (!activate) {
+        m_brakeActive[deck] = false;
+        m_spinbackActive[deck] = false;
+        stopScratchTimer(timerId);
         return;
     }
-
-    double initRate = rate;
-    // store the new values for this spinback/brake effect
-    if (initRate == 1.0) { // then rate is really 1.0 or was set to default
-        // in /res/common-controller-scripts.js so check for real value,
-        // taking pitch into account
+    // Distinguish spinback and brake. Both ramp to a very low rate to avoid a long,
+    // inaudible run out. For spinback that rate is negative so we don't cross 0.
+    // Spinback and brake also require different handling in scratchProcess.
+    double initRate;
+    if (rate < -kBrakeRampToRate) { // spinback
+        m_spinbackActive[deck] = true;
+        m_brakeActive[deck] = false;
+        m_rampTo[deck] = -kBrakeRampToRate;
+        initRate = rate;
+    } else if (rate > kBrakeRampToRate) { // brake
+        // It just doesn't make sense to allow brake to interrupt spinback or an
+        // already running brake process
+        if (m_spinbackActive[deck] || m_brakeActive[deck]) {
+            return;
+        }
+        m_brakeActive[deck] = true;
+        m_spinbackActive[deck] = false;
+        m_rampTo[deck] = kBrakeRampToRate;
+        // Let's fetch the current rate to create a seamless brake process
         initRate = getDeckRate(group);
+        // If we are currently softStart'ing adopt the current scratch rate
+        if (m_softStartActive[deck]) {
+            m_softStartActive[deck] = false;
+            AlphaBetaFilter* filter = m_scratchFilters[deck];
+            if (filter != nullptr) {
+                initRate = filter->predictedVelocity();
+            }
+        }
+    } else { // -kBrakeRampToRate <= rate <= kBrakeRampToRate
+        // This filters stopped deck and rare case of very low initial rates
+        m_brakeActive[deck] = false;
+        m_spinbackActive[deck] = false;
+        stopScratchTimer(timerId);
+        // TODO(ronso0) Stop deck as if we were braking to halt
+        return;
     }
-    // stop ramping at a rate which doesn't produce any audible output anymore
-    m_rampTo[deck] = 0.01;
-    m_rampTo[deck] = kBrakeRampToRate;
+    stopScratchTimer(timerId);
 
     // If we want to brake or spin back and are currently softStart'ing, stop it.
-    if (m_softStartActive[deck]) {
-        m_softStartActive[deck] = false;
-        AlphaBetaFilter* filter = m_scratchFilters[deck];
-        if (filter != nullptr) {
-            initRate = filter->predictedVelocity();
-        }
-    }
 
     // setup timer and set scratch2
     timerId = startTimer(kScratchTimerMs);
@@ -1605,8 +1633,7 @@ void ControllerEngine::softStart(int deck, bool activate, double factor) {
 
     // kill timer when both enabling or disabling
     int timerId = m_scratchTimers.key(deck);
-    killTimer(timerId);
-    m_scratchTimers.remove(timerId);
+    stopScratchTimer(timerId);
 
     // enable/disable scratch2 mode
     ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
@@ -1625,9 +1652,10 @@ void ControllerEngine::softStart(int deck, bool activate, double factor) {
     // acquire deck rate
     m_rampTo[deck] = getDeckRate(group);
 
-    // if brake()ing, get current rate from filter
-    if (m_brakeActive[deck]) {
+    // if braking or spinning back, get current rate from filter
+    if (m_brakeActive[deck] || m_spinbackActive[deck]) {
         m_brakeActive[deck] = false;
+        m_spinbackActive[deck] = false;
 
         AlphaBetaFilter* filter = m_scratchFilters[deck];
         if (filter != nullptr) {

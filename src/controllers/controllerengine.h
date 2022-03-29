@@ -193,6 +193,7 @@ class ControllerEngine : public QObject {
 
     // Scratching functions & variables
     void scratchProcess(int timerId);
+    void stopScratchTimer(const int timerId);
 
     bool isDeckPlaying(const QString& group);
     double getDeckRate(const QString& group);
@@ -216,7 +217,7 @@ class ControllerEngine : public QObject {
     QVarLengthArray<int> m_intervalAccumulator;
     QVarLengthArray<mixxx::Duration> m_lastMovement;
     QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
-    QVarLengthArray<bool> m_ramp, m_brakeActive, m_softStartActive;
+    QVarLengthArray<bool> m_ramp, m_brakeActive, m_spinbackActive, m_softStartActive;
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
     QHash<int, int> m_scratchTimers;
     QHash<QString, QScriptValue> m_scriptWrappedFunctionCache;
