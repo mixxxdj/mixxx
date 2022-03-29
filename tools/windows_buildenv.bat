@@ -224,7 +224,8 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "True"
     SET variableElementTermination=
     CALL :AddCMakeVar2CMakeSettings_JSON "WAVPACK"                            "BOOL"   "True"
-    >>%CMakeSettings% echo       ]
+    >>%CMakeSettings% echo       ],
+    >>%CMakeSettings% echo       "cmakeToolchain": "!VCPKG_ROOT:\=\\!\\scripts\\buildsystems\\vcpkg.cmake"
     >>%CMakeSettings% echo     }!configElementTermination!
   GOTO :EOF
 
