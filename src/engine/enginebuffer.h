@@ -112,7 +112,7 @@ class EngineBuffer : public EngineObject {
     void requestClonePosition(EngineChannel* pChannel);
 
     // The process methods all run in the audio callback.
-    void process(CSAMPLE* pOut, const int iBufferSize);
+    void process(CSAMPLE* pOut, const int iBufferSize) override;
     void processSlip(int iBufferSize);
     void postProcess(const int iBufferSize);
 
@@ -132,7 +132,7 @@ class EngineBuffer : public EngineObject {
 
     double getRateRatio() const;
 
-    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+    void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
 
     // For dependency injection of scalers.
     void setScalerForTest(
