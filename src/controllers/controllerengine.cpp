@@ -30,6 +30,8 @@ constexpr int kDecks = 16;
 // timer.
 constexpr int kScratchTimerMs = 1;
 constexpr double kAlphaBetaDt = kScratchTimerMs / 1000.0;
+// stop ramping at a rate which doesn't produce any audible output anymore
+constexpr double kBrakeRampToRate = 0.01;
 } // namespace
 
 ControllerEngine::ControllerEngine(
@@ -1555,7 +1557,9 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
     }
     // stop ramping at a rate which doesn't produce any audible output anymore
     m_rampTo[deck] = 0.01;
-    // if we are currently softStart()ing, stop it
+    m_rampTo[deck] = kBrakeRampToRate;
+
+    // If we want to brake or spin back and are currently softStart'ing, stop it.
     if (m_softStartActive[deck]) {
         m_softStartActive[deck] = false;
         AlphaBetaFilter* filter = m_scratchFilters[deck];
