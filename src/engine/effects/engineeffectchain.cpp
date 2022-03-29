@@ -126,8 +126,7 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
                      << message.EnableInputChannelForChain.channelHandle;
         }
         response.success = enableForInputChannel(
-                message.EnableInputChannelForChain.channelHandle,
-                message.EnableInputChannelForChain.pEffectStatesMapArray);
+                message.EnableInputChannelForChain.channelHandle);
         break;
     case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
         if (kEffectDebugOutput) {
@@ -146,36 +145,14 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
     return true;
 }
 
-bool EngineEffectChain::enableForInputChannel(ChannelHandle inputHandle,
-        EffectStatesMapArray* statesForEffectsInChain) {
+bool EngineEffectChain::enableForInputChannel(ChannelHandle inputHandle) {
     if (kEffectDebugOutput) {
         qDebug() << "EngineEffectChain::enableForInputChannel" << this << inputHandle;
     }
     auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
-        VERIFY_OR_DEBUG_ASSERT(outputChannelStatus.enableState !=
-                EffectEnableState::Enabled) {
-            for (auto&& pStatesMap : *statesForEffectsInChain) {
-                for (auto&& pState : pStatesMap) {
-                    delete pState;
-                }
-            }
-            return false;
-        }
+        DEBUG_ASSERT(outputChannelStatus.enableState != EffectEnableState::Enabled);
         outputChannelStatus.enableState = EffectEnableState::Enabling;
-    }
-    for (int i = 0; i < m_effects.size(); ++i) {
-        if (m_effects[i] != nullptr) {
-            if (kEffectDebugOutput) {
-                qDebug() << "EngineEffectChain::enableForInputChannel" << this
-                         << "loading states for effect" << i;
-            }
-            EffectStatesMap* pStatesMap = &(*statesForEffectsInChain)[i];
-            VERIFY_OR_DEBUG_ASSERT(pStatesMap) {
-                return false;
-            }
-            m_effects[i]->loadStatesForInputChannel(inputHandle, pStatesMap);
-        }
     }
     return true;
 }
@@ -183,9 +160,6 @@ bool EngineEffectChain::enableForInputChannel(ChannelHandle inputHandle,
 bool EngineEffectChain::disableForInputChannel(ChannelHandle inputHandle) {
     auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
-        qDebug() << "EngineEffectChain::disableForInputChannel" << inputHandle
-                 << &outputChannelStatus
-                 << (int)outputChannelStatus.enableState;
         if (outputChannelStatus.enableState == EffectEnableState::Enabling) {
             // Channel has never been processed and can be disabled immediately
             outputChannelStatus.enableState = EffectEnableState::Disabled;
@@ -194,40 +168,7 @@ bool EngineEffectChain::disableForInputChannel(ChannelHandle inputHandle) {
             outputChannelStatus.enableState = EffectEnableState::Disabling;
         }
     }
-    // Do not call deleteStatesForInputChannel here because the EngineEffects'
-    // process() method needs to run one last time before deleting the states.
-    // deleteStatesForInputChannel needs to be called from the main thread after
-    // the successful EffectsResponse is returned by the MessagePipe FIFO.
     return true;
-}
-
-// Called from the main thread for garbage collection after an input channel is disabled
-void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle inputChannel) {
-    // If an output channel is not presently being processed, for example when
-    // PFL is not active, then process() cannot be relied upon to set this
-    // chain's EffectEnableState from Disabling to Disabled. This must be done
-    // before the next time process() is called for that output channel,
-    // otherwise, if any EngineEffects are Enabled,
-    // EffectProcessorImpl::processChannel will try to run
-    // with an EffectState that has already been deleted and cause a crash.
-    // Refer to https://bugs.launchpad.net/mixxx/+bug/1741213
-    // NOTE: ChannelHandleMap is like a map in that it associates an object with
-    // a ChannelHandle key, but it actually backed by a QVarLengthArray, not a
-    // QMap. So it is okay that m_chainStatusForChannelMatrix may be
-    // accessed concurrently in the audio engine thread in process(),
-    // enableForInputChannel(), or disableForInputChannel().
-    auto& outputMap = m_chainStatusForChannelMatrix[inputChannel];
-    for (auto&& outputChannelStatus : outputMap) {
-        qDebug() << "EngineEffectChain::deleteStatesForInputChannel"
-                 << inputChannel << &outputChannelStatus
-                 << (int)outputChannelStatus.enableState;
-        //DEBUG_ASSERT(outputChannelStatus.enableState == EffectEnableState::Disabled);
-    }
-    for (EngineEffect* pEffect : qAsConst(m_effects)) {
-        if (pEffect != nullptr) {
-            pEffect->deleteStatesForInputChannel(inputChannel);
-        }
-    }
 }
 
 bool EngineEffectChain::process(const ChannelHandle& inputHandle,

@@ -46,24 +46,16 @@ EngineEffect::~EngineEffect() {
     m_parameters.clear();
 }
 
-EffectState* EngineEffect::createState(const mixxx::EngineParameters& engineParameters) {
-    VERIFY_OR_DEBUG_ASSERT(m_pProcessor) {
-        return new EffectState(engineParameters);
+void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
+    if (m_pProcessor->hasStatesForInputChannel(inputChannel)) {
+        // already initialized for this input channel
     }
-    return m_pProcessor->createState(engineParameters);
-}
 
-void EngineEffect::loadStatesForInputChannel(ChannelHandle inputChannel,
-        EffectStatesMap* pStatesMap) {
-    if (kEffectDebugOutput) {
-        qDebug() << "EngineEffect::loadStatesForInputChannel" << this
-                 << "loading states for input" << inputChannel;
-    }
-    m_pProcessor->loadStatesForInputChannel(inputChannel, pStatesMap);
-}
-
-void EngineEffect::deleteStatesForInputChannel(ChannelHandle inputChannel) {
-    m_pProcessor->deleteStatesForInputChannel(inputChannel);
+    //TODO: get actual configuration of engine
+    const mixxx::EngineParameters engineParameters(
+            mixxx::audio::SampleRate(96000),
+            MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
+    m_pProcessor->initializeInputChannel(inputChannel, engineParameters);
 }
 
 bool EngineEffect::processEffectsRequest(EffectsRequest& message,

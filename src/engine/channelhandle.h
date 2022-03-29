@@ -207,6 +207,10 @@ class ChannelHandleMap {
         m_data.clear();
     }
 
+    int size() const {
+        return m_data.size();
+    }
+
     bool isEmpty() {
         return m_data.isEmpty();
     }
