@@ -132,9 +132,15 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(const QString& group, const QString& name, bool set);
     Q_INVOKABLE void softTakeoverIgnoreNextValue(const QString& group, const QString& name);
-    Q_INVOKABLE void brake(int deck, bool activate, double factor=1.0, double rate=1.0);
-    Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
-    Q_INVOKABLE void softStart(int deck, bool activate, double factor=1.0);
+    Q_INVOKABLE void brake(const int deck,
+            bool activate,
+            double factor = 1.0,
+            const double rate = 1.0);
+    Q_INVOKABLE void spinback(const int deck,
+            bool activate,
+            double factor = 1.8,
+            const double rate = -10.0);
+    Q_INVOKABLE void softStart(const int deck, bool activate, double factor = 1.0);
 
     // Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent *event);
@@ -192,7 +198,7 @@ class ControllerEngine : public QObject {
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
 
     // Scratching functions & variables
-    void scratchProcess(int timerId);
+    void scratchProcess(const int timerId);
     void stopScratchTimer(const int timerId);
 
     bool isDeckPlaying(const QString& group);

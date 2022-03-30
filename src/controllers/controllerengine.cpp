@@ -1370,10 +1370,10 @@ void ControllerEngine::scratchTick(int deck, int interval) {
     Input:   ID of timer for this deck
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::scratchProcess(int timerId) {
-    int deck = m_scratchTimers[timerId];
+void ControllerEngine::scratchProcess(const int timerId) {
+    const int deck = m_scratchTimers[timerId];
     // PlayerManager::groupForDeck is 0-indexed.
-    QString group = PlayerManager::groupForDeck(deck - 1);
+    const QString group = PlayerManager::groupForDeck(deck - 1);
     AlphaBetaFilter* filter = m_scratchFilters[deck];
     if (!filter) {
         qWarning() << "Scratch filter pointer is null on deck" << deck;
@@ -1546,7 +1546,8 @@ void ControllerEngine::softTakeoverIgnoreNextValue(
              rate (optional)
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::spinback(int deck, bool activate, double factor, double rate) {
+void ControllerEngine::spinback(
+        const int deck, bool activate, const double factor, const double rate) {
     qDebug() << "   init spinback";
     brake(deck, activate, -factor, rate);
 }
@@ -1557,10 +1558,10 @@ void ControllerEngine::spinback(int deck, bool activate, double factor, double r
              rate (optional, necessary for spinback)
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::brake(int deck, bool activate, double factor, double rate) {
+void ControllerEngine::brake(const int deck, bool activate, double factor, const double rate) {
     qDebug() << "   init brake";
     // PlayerManager::groupForDeck is 0-indexed.
-    QString group = PlayerManager::groupForDeck(deck - 1);
+    const QString group = PlayerManager::groupForDeck(deck - 1);
     // enable/disable scratch2 mode
     ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
     if (pScratch2Enable != nullptr) {
@@ -1648,10 +1649,10 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
     Input:   deck, activate/deactivate, factor (optional)
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::softStart(int deck, bool activate, double factor) {
+void ControllerEngine::softStart(const int deck, bool activate, double factor) {
     qDebug() << "   init softStart";
     // PlayerManager::groupForDeck is 0-indexed.
-    QString group = PlayerManager::groupForDeck(deck - 1);
+    const QString group = PlayerManager::groupForDeck(deck - 1);
 
     // kill timer when both enabling or disabling
     int timerId = m_scratchTimers.key(deck);
