@@ -12,12 +12,12 @@
 #include "track/track_decl.h"
 #include "util/memory.h"
 
-class AnalyzerKey : protected AnalyzerPluginSupportInfo, public Analyzer {
+QList<mixxx::AnalyzerPluginInfo> defaultAvailableKeyPlugins();
+
+class AnalyzerKey : private AnalyzerPluginSupportInfo, public Analyzer {
   public:
     explicit AnalyzerKey(const KeyDetectionSettings& keySettings);
     ~AnalyzerKey() override = default;
-
-    static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
 
     bool initialize(TrackPointer tio,
             mixxx::audio::SampleRate sampleRate,
@@ -27,6 +27,7 @@ class AnalyzerKey : protected AnalyzerPluginSupportInfo, public Analyzer {
     void cleanup() override;
 
   private:
+    QList<mixxx::AnalyzerPluginInfo> availablePlugins() const override;
     bool shouldAnalyze(TrackPointer tio) const;
 
     KeyDetectionSettings m_keySettings;

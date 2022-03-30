@@ -12,8 +12,7 @@
 #include "track/keyfactory.h"
 #include "track/track.h"
 
-// static
-QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
+QList<mixxx::AnalyzerPluginInfo> defaultAvailableKeyPlugins() {
     QList<mixxx::AnalyzerPluginInfo> analyzers;
     // First one below is the default
     analyzers.push_back(mixxx::AnalyzerQueenMaryKey::pluginInfo());
@@ -21,6 +20,10 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
     analyzers.push_back(mixxx::AnalyzerKeyFinder::pluginInfo());
 #endif
     return analyzers;
+}
+
+QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() const {
+    return defaultAvailableKeyPlugins();
 }
 
 AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
@@ -50,7 +53,7 @@ bool AnalyzerKey::initialize(TrackPointer tio,
     m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    m_pluginId = matchAndSetPluginId(availablePlugins(), m_keySettings.getKeyPluginId());
+    m_pluginId = matchAndSetPluginId(m_keySettings.getKeyPluginId());
 
     qDebug() << "AnalyzerKey preference settings:"
              << "\nPlugin:" << m_pluginId
@@ -104,7 +107,7 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     QString pluginID = m_keySettings.getKeyPluginId();
     if (pluginID.isEmpty()) {
-        pluginID = defaultPlugin(availablePlugins()).id();
+        pluginID = defaultPlugin();
     }
 
     const Keys keys(tio->getKeys());

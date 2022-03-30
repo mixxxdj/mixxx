@@ -1,23 +1,19 @@
 #include "analyzer/plugins/analyzerpluginsupport.h"
 
-QString AnalyzerPluginSupportInfo::matchAndSetPluginId(
-        const QList<mixxx::AnalyzerPluginInfo>& availablePlugins,
-        const QString& pluginIdToMatch) {
-    if (const auto plugins = availablePlugins; !plugins.isEmpty()) {
+QString AnalyzerPluginSupportInfo::matchAndSetPluginId(const QString& pluginIdToMatch) {
+    if (const auto plugins = availablePlugins(); !plugins.isEmpty()) {
         return std::any_of(std::begin(plugins), std::end(plugins), [&](const auto& info) {
             return info.id() == pluginIdToMatch;
         })
                 ? pluginIdToMatch // configured Plug-In available;
-                : defaultPlugin(availablePlugins).id();
+                : defaultPlugin();
     }
     return m_pluginId;
 }
 
-mixxx::AnalyzerPluginInfo AnalyzerPluginSupportInfo::defaultPlugin(
-        const QList<mixxx::AnalyzerPluginInfo>& availablePlugins) const {
-    const auto plugins = availablePlugins;
-    DEBUG_ASSERT(!plugins.isEmpty());
-    return plugins.at(0);
+QString AnalyzerPluginSupportInfo::defaultPlugin() const {
+    DEBUG_ASSERT(!availablePlugins().isEmpty());
+    return availablePlugins().at(0).id();
 }
 
 QHash<QString, QString> AnalyzerPluginSupportInfo::getExtraVersionInfo(

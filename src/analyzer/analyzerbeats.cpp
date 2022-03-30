@@ -13,8 +13,7 @@
 #include "track/beatutils.h"
 #include "track/track.h"
 
-// static
-QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
+QList<mixxx::AnalyzerPluginInfo> defaultAvailableBeatsPlugins() {
     QList<mixxx::AnalyzerPluginInfo> plugins;
     // First one below is the default
     plugins.append(mixxx::AnalyzerQueenMaryBeats::pluginInfo());
@@ -22,6 +21,9 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     return plugins;
 }
 
+QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() const {
+    return defaultAvailableBeatsPlugins();
+}
 
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetection)
         : m_bpmSettings(pConfig),
@@ -60,7 +62,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
 
-    m_pluginId = matchAndSetPluginId(availablePlugins(), m_bpmSettings.getBeatPluginId());
+    m_pluginId = matchAndSetPluginId(m_bpmSettings.getBeatPluginId());
 
     qDebug() << "AnalyzerBeats preference settings:"
              << "\nPlugin:" << m_pluginId
@@ -120,7 +122,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
 
     QString pluginID = m_bpmSettings.getBeatPluginId();
     if (pluginID.isEmpty()) {
-        pluginID = defaultPlugin(availablePlugins()).id();
+        pluginID = defaultPlugin();
     }
 
     // If the track already has a Beats object then we need to decide whether to

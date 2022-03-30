@@ -17,14 +17,14 @@
 #include "preferences/usersettings.h"
 #include "util/memory.h"
 
-class AnalyzerBeats : protected AnalyzerPluginSupportInfo, public Analyzer {
+QList<mixxx::AnalyzerPluginInfo> defaultAvailableBeatsPlugins();
+
+class AnalyzerBeats : private AnalyzerPluginSupportInfo, public Analyzer {
   public:
     explicit AnalyzerBeats(
             UserSettingsPointer pConfig,
             bool enforceBpmDetection = false);
     ~AnalyzerBeats() override = default;
-
-    static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
 
     bool initialize(TrackPointer pTrack,
             mixxx::audio::SampleRate sampleRate,
@@ -34,6 +34,7 @@ class AnalyzerBeats : protected AnalyzerPluginSupportInfo, public Analyzer {
     void cleanup() override;
 
   private:
+    QList<mixxx::AnalyzerPluginInfo> availablePlugins() const override;
     bool shouldAnalyze(TrackPointer pTrack) const;
 
     BeatDetectionSettings m_bpmSettings;
