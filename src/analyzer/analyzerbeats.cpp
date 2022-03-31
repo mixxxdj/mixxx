@@ -62,7 +62,7 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack,
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
 
-    m_pluginId = matchAndSetPluginId(m_bpmSettings.getBeatPluginId());
+    m_pluginId = matchOrGetDefaultPluginId(m_bpmSettings.getBeatPluginId());
 
     qDebug() << "AnalyzerBeats preference settings:"
              << "\nPlugin:" << m_pluginId

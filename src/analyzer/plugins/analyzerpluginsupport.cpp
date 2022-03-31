@@ -1,12 +1,14 @@
 #include "analyzer/plugins/analyzerpluginsupport.h"
 
-QString AnalyzerPluginSupportInfo::matchAndSetPluginId(const QString& pluginIdToMatch) {
+QString AnalyzerPluginSupportInfo::matchOrGetDefaultPluginId(const QString& pluginIdToMatch) const {
     if (const auto plugins = availablePlugins(); !plugins.isEmpty()) {
-        return std::any_of(std::begin(plugins), std::end(plugins), [&](const auto& info) {
-            return info.id() == pluginIdToMatch;
-        })
-                ? pluginIdToMatch // configured Plug-In available;
-                : defaultPlugin();
+        if (std::any_of(std::begin(plugins), std::end(plugins), [&](const auto& info) {
+                return info.id() == pluginIdToMatch;
+            })) {
+            return pluginIdToMatch; // configured Plug-In available;
+        } else {
+            return defaultPlugin();
+        }
     }
     return m_pluginId;
 }

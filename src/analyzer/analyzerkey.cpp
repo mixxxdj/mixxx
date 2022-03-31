@@ -53,7 +53,7 @@ bool AnalyzerKey::initialize(TrackPointer tio,
     m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    m_pluginId = matchAndSetPluginId(m_keySettings.getKeyPluginId());
+    m_pluginId = matchOrGetDefaultPluginId(m_keySettings.getKeyPluginId());
 
     qDebug() << "AnalyzerKey preference settings:"
              << "\nPlugin:" << m_pluginId
