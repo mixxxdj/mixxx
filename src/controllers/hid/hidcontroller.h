@@ -102,10 +102,6 @@ class HidControllerJSProxy : public ControllerJSProxy {
     /// @brief getInputReport receives an InputReport from the HID device on request.
     /// @details This can be used on startup to initialize the knob positions in Mixxx
     ///          to the physical position of the hardware knobs on the controller.
-    ///          The returned data structure for the input reports is the same
-    ///          as in the polling functionality (including ReportID in first byte).
-    ///          The returned list can be used to call the incomingData
-    ///          function of the common-hid-packet-parser.
     ///          This is an optional command in the HID standard - not all devices support it.
     /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
     /// @return Returns report data with ReportID byte as prefix

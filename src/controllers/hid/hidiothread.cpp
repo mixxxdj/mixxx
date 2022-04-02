@@ -168,10 +168,9 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
     }
 
     // Convert array of bytes read in a JavaScript compatible return type, this is returned as deep-copy, for thread safety.
-    // For compatibility with HidController::processInputReport, the reportID prefix is included added here
     QByteArray returnArray = QByteArray(
-            reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex]),
-            bytesRead);
+            reinterpret_cast<char*>(m_pPollData[m_pollingBufferIndex] + kReportIdSize),
+            bytesRead - kReportIdSize);
 
     hidDeviceLock.unlock();
 
