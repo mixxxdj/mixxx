@@ -75,7 +75,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
     Q_INVOKABLE void send(const QList<int>& dataList,
             unsigned int length,
             const quint8& reportID,
-            bool resendUnchangedReport = false) {
+            const bool& resendUnchangedReport = false) {
         Q_UNUSED(length);
         QByteArray dataArray;
         dataArray.reserve(dataList.size());
@@ -91,7 +91,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
     /// @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending
     Q_INVOKABLE void sendOutputReport(const quint8& reportID,
             const QByteArray& dataArray,
-            bool resendUnchangedReport = false) {
+            const bool& resendUnchangedReport = false) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return;
         }

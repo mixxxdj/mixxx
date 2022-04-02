@@ -29,7 +29,7 @@ HidIoOutputReport::HidIoOutputReport(
 void HidIoOutputReport::updateCachedData(const QByteArray& data,
         const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput,
-        bool resendUnchangedReport) {
+        const bool& resendUnchangedReport) {
     auto cacheLock = lockMutex(&m_cachedDataMutex);
 
     if (!m_lastCachedDataSize) {
