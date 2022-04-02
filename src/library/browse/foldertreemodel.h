@@ -2,6 +2,7 @@
 
 #include <QAbstractItemModel>
 #include <QFileSystemWatcher>
+#include <QFuture>
 #include <QHash>
 #include <QList>
 #include <QModelIndex>
@@ -68,6 +69,7 @@ class FolderTreeModel : public TreeItemModel {
     mutable FolderQueue m_folderQueue;
     mutable std::mutex m_queueLock;
     std::atomic<bool> m_isRunning;
+    QFuture<void> m_folderProcess;
 };
 Q_DECLARE_METATYPE(FolderTreeModel::TreeItemList);
 Q_DECLARE_OPAQUE_POINTER(FolderTreeModel::TreeItemList);

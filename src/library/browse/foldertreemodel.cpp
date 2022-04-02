@@ -40,7 +40,7 @@ FolderTreeModel::FolderTreeModel(QObject* parent)
             &FolderTreeModel::onHasSubDirectory);
 
     m_pool.setMaxThreadCount(4);
-    QtConcurrent::run(&m_pool, [&]() {
+    m_folderProcess = QtConcurrent::run(&m_pool, [&]() {
         while (m_isRunning.load(std::memory_order_consume)) {
             if (!m_folderQueue.isEmpty()) {
                 m_queueLock.lock();
@@ -93,6 +93,7 @@ FolderTreeModel::FolderTreeModel(QObject* parent)
 
 FolderTreeModel::~FolderTreeModel() {
     m_isRunning.store(false, std::memory_order_release);
+    m_folderProcess.waitForFinished();
 }
 
 /* A tree model of the filesystem should be initialized lazy.
@@ -232,8 +233,9 @@ void FolderTreeModel::addChildren(
 }
 
 void FolderTreeModel::onHasSubDirectory(const QString& path) {
-    QtConcurrent::run(&m_pool, [this, path]() {
+    auto r = QtConcurrent::run(&m_pool, [this, path]() {
         MWriteLocker lock(&m_cacheLock);
         directoryHasChildren(path);
     });
+    r.waitForFinished();
 }
