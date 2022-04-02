@@ -10,6 +10,7 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
 #include "engine/engine.h"
+#include "util/sample.h"
 #include "util/types.h"
 
 /// Effects are implemented as two separate classes, an EffectState subclass and
@@ -110,28 +111,9 @@ class EffectProcessorImpl : public EffectProcessor {
     /// Subclasses should not implement their own destructor. All state should
     /// be stored in the EffectState subclass, not the EffectProcessorImpl subclass.
     ~EffectProcessorImpl() {
-        if (kEffectDebugOutput) {
-            qDebug() << "~EffectProcessorImpl" << this;
-        }
-        int inputChannelHandleNumber = 0;
-        for (ChannelHandleMap<EffectSpecificState*>& outputsMap : m_channelStateMatrix) {
-            int outputChannelHandleNumber = 0;
-            for (EffectSpecificState* pState : outputsMap) {
-                VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
-                    continue;
-                }
-                if (kEffectDebugOutput) {
-                    qDebug() << "~EffectProcessorImpl deleting EffectState" << pState
-                             << "for input ChannelHandle(" << inputChannelHandleNumber << ")"
-                             << "and output ChannelHandle(" << outputChannelHandleNumber << ")";
-                }
-                delete pState;
-                outputChannelHandleNumber++;
-            }
-            outputsMap.clear();
-            inputChannelHandleNumber++;
-        }
-        m_channelStateMatrix.clear();
+        //if (kEffectDebugOutput) {
+        qDebug() << "~EffectProcessorImpl" << this;
+        //}
     };
 
     /// NOTE: Subclasses for Built-In effects must implement the following static methods for
@@ -154,7 +136,8 @@ class EffectProcessorImpl : public EffectProcessor {
             const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) final {
-        EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
+        EffectSpecificState* pState =
+                m_channelStateMatrix[inputHandle][outputHandle.handle()].get();
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
             if (kEffectDebugOutput) {
                 qWarning() << "EffectProcessorImpl::process could not retrieve"
@@ -164,8 +147,7 @@ class EffectProcessorImpl : public EffectProcessor {
                            << "EffectState should have been preallocated in the"
                               "main thread.";
             }
-            pState = createSpecificState(engineParameters);
-            m_channelStateMatrix[inputHandle][outputHandle] = pState;
+            SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
         }
         processChannel(pState, pInput, pOutput, engineParameters, enableState, groupFeatures);
     }
@@ -187,25 +169,43 @@ class EffectProcessorImpl : public EffectProcessor {
                                 "EffectStates for input"
                      << inputChannel;
         }
-        ChannelHandleMap<EffectSpecificState*> outputChannelMap;
+
+        int requiredVectorSize = 0;
+        // For fast lookups we use a vector with index = handle;
+        // gaps are filled with nullptr
         for (const ChannelHandleAndGroup& outputChannel :
                 std::as_const(m_registeredOutputChannels)) {
-            outputChannelMap.insert(outputChannel.handle(),
+            int vectorIndex = outputChannel.handle().handle();
+            if (requiredVectorSize <= vectorIndex) {
+                requiredVectorSize = vectorIndex + 1;
+            }
+        }
+
+        DEBUG_ASSERT(requiredVectorSize > 0);
+        auto& outputChannelStates = m_channelStateMatrix[inputChannel];
+        DEBUG_ASSERT(outputChannelStates.size() == 0);
+        outputChannelStates.reserve(requiredVectorSize);
+        outputChannelStates.clear();
+        for (int i = 0; i < requiredVectorSize; ++i) {
+            outputChannelStates.push_back(std::unique_ptr<EffectSpecificState>());
+        }
+        for (const ChannelHandleAndGroup& outputChannel :
+                std::as_const(m_registeredOutputChannels)) {
+            outputChannelStates[outputChannel.handle().handle()].reset(
                     createSpecificState(engineParameters));
             if (kEffectDebugOutput) {
                 qDebug() << this
                          << "EffectProcessorImpl::initialize "
                             "registering output"
                          << outputChannel << outputChannel.handle()
-                         << outputChannelMap[outputChannel.handle()];
+                         << outputChannelStates[outputChannel.handle().handle()].get();
             }
         }
-        m_channelStateMatrix.insert(inputChannel, outputChannelMap);
     };
 
     bool hasStatesForInputChannel(ChannelHandle inputChannel) const {
         if (inputChannel.handle() < m_channelStateMatrix.size()) {
-            for (EffectSpecificState* pState : m_channelStateMatrix.at(inputChannel)) {
+            for (const auto& pState : m_channelStateMatrix.at(inputChannel)) {
                 if (pState) {
                     return true;
                 }
@@ -228,5 +228,5 @@ class EffectProcessorImpl : public EffectProcessor {
 
   private:
     QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
-    ChannelHandleMap<ChannelHandleMap<EffectSpecificState*>> m_channelStateMatrix;
+    ChannelHandleMap<std::vector<std::unique_ptr<EffectSpecificState>>> m_channelStateMatrix;
 };
