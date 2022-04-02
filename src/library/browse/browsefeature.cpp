@@ -1,7 +1,6 @@
 #include "library/browse/browsefeature.h"
 
 #include <QAction>
-#include <QtConcurrent>
 #include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
