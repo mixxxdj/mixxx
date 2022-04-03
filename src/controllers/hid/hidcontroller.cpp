@@ -203,7 +203,7 @@ int HidController::close() {
 void HidController::sendBytes(const QByteArray& data) {
     // Some HIDAPI backends will fail if the device uses ReportIDs (as practical all DJ controllers),
     // because 0 is no valid ReportID for these devices.
-    m_pHidIoThread->updateCachedOutputReportData(data, 0, false);
+    m_pHidIoThread->updateCachedOutputReportData(0, data, false);
 }
 
 ControllerJSProxy* HidController::jsProxy() {

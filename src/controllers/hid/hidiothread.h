@@ -42,11 +42,11 @@ class HidIoThread : public QThread {
     /// Returns immediately with true if the run loop is stopped.
     [[nodiscard]] bool waitUntilRunLoopIsStopped(unsigned int timeoutMillis);
 
-    void updateCachedOutputReportData(const QByteArray& reportData,
-            quint8 reportID,
+    void updateCachedOutputReportData(quint8 reportID,
+            const QByteArray& reportData,
             bool resendUnchangedReport);
     QByteArray getInputReport(quint8 reportID);
-    void sendFeatureReport(const QByteArray& reportData, quint8 reportID);
+    void sendFeatureReport(quint8 reportID, const QByteArray& reportData);
     QByteArray getFeatureReport(quint8 reportID);
 
   signals:

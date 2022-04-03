@@ -188,8 +188,8 @@ QByteArray HidIoThread::getInputReport(quint8 reportID) {
     return returnArray;
 }
 
-void HidIoThread::updateCachedOutputReportData(const QByteArray& data,
-        quint8 reportID,
+void HidIoThread::updateCachedOutputReportData(quint8 reportID,
+        const QByteArray& data,
         bool resendUnchangedReport) {
     auto mapLock = lockMutex(&m_outputReportMapMutex);
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
@@ -238,7 +238,7 @@ bool HidIoThread::sendNextCachedOutputReport() {
 }
 
 void HidIoThread::sendFeatureReport(
-        const QByteArray& reportData, quint8 reportID) {
+        quint8 reportID, const QByteArray& reportData) {
     auto startOfHidSendFeatureReport = mixxx::Time::elapsed();
     QByteArray dataArray;
     dataArray.reserve(kReportIdSize + reportData.size());

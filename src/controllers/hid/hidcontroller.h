@@ -96,7 +96,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
             return;
         }
         m_pHidController->m_pHidIoThread->updateCachedOutputReportData(
-                dataArray, reportID, resendUnchangedReport);
+                reportID, dataArray, resendUnchangedReport);
     }
 
     /// @brief getInputReport receives an InputReport from the HID device on request.
@@ -121,7 +121,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return;
         }
-        m_pHidController->m_pHidIoThread->sendFeatureReport(reportData, reportID);
+        m_pHidController->m_pHidIoThread->sendFeatureReport(reportID, reportData);
     }
 
     /// @brief getFeatureReport receives a FeatureReport from the HID device on request.
