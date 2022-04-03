@@ -95,6 +95,9 @@ KeyControl::KeyControl(const QString& group,
     m_pKeylock = new ControlProxy(group, "keylock", this);
     m_pKeylock->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
+    // m_pitchRateInfo members are initialized with default values, only keylock
+    // is persistent and needs to be updated from config
+    m_pitchRateInfo.keylock = m_pKeylock->toBool();
 }
 
 KeyControl::~KeyControl() {
