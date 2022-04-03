@@ -43,11 +43,11 @@ class HidIoThread : public QThread {
     [[nodiscard]] bool waitUntilRunLoopIsStopped(unsigned int timeoutMillis);
 
     void updateCachedOutputReportData(const QByteArray& reportData,
-            unsigned int reportID,
+            quint8 reportID,
             bool resendUnchangedReport);
-    QByteArray getInputReport(unsigned int reportID);
-    void sendFeatureReport(const QByteArray& reportData, unsigned int reportID);
-    QByteArray getFeatureReport(unsigned int reportID);
+    QByteArray getInputReport(quint8 reportID);
+    void sendFeatureReport(const QByteArray& reportData, quint8 reportID);
+    QByteArray getFeatureReport(quint8 reportID);
 
   signals:
     /// Signals that a HID InputReport received by Interrupt triggered from HID device

@@ -15,7 +15,7 @@ constexpr int kMaxHidErrorMessageSize = 512;
 } // namespace
 
 HidIoOutputReport::HidIoOutputReport(
-        const unsigned char& reportId, const unsigned int& reportDataSize)
+        const quint8& reportId, const unsigned int& reportDataSize)
         : m_reportId(reportId),
           m_possiblyUnsentDataCached(false),
           m_lastCachedDataSize(0) {

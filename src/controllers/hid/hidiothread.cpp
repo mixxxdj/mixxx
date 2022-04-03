@@ -143,7 +143,7 @@ void HidIoThread::processInputReport(int bytesRead) {
             mixxx::Time::elapsed());
 }
 
-QByteArray HidIoThread::getInputReport(unsigned int reportID) {
+QByteArray HidIoThread::getInputReport(quint8 reportID) {
     auto startOfHidGetInputReport = mixxx::Time::elapsed();
     auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
 
@@ -189,7 +189,7 @@ QByteArray HidIoThread::getInputReport(unsigned int reportID) {
 }
 
 void HidIoThread::updateCachedOutputReportData(const QByteArray& data,
-        unsigned int reportID,
+        quint8 reportID,
         bool resendUnchangedReport) {
     auto mapLock = lockMutex(&m_outputReportMapMutex);
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
@@ -238,7 +238,7 @@ bool HidIoThread::sendNextCachedOutputReport() {
 }
 
 void HidIoThread::sendFeatureReport(
-        const QByteArray& reportData, unsigned int reportID) {
+        const QByteArray& reportData, quint8 reportID) {
     auto startOfHidSendFeatureReport = mixxx::Time::elapsed();
     QByteArray dataArray;
     dataArray.reserve(kReportIdSize + reportData.size());
@@ -273,7 +273,7 @@ void HidIoThread::sendFeatureReport(
 }
 
 QByteArray HidIoThread::getFeatureReport(
-        unsigned int reportID) {
+        quint8 reportID) {
     auto startOfHidGetFeatureReport = mixxx::Time::elapsed();
     unsigned char dataRead[kReportIdSize + kBufferSize];
     dataRead[0] = reportID;

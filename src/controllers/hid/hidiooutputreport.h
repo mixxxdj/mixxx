@@ -7,7 +7,7 @@
 
 class HidIoOutputReport {
   public:
-    HidIoOutputReport(const unsigned char& reportId, const unsigned int& reportDataSize);
+    HidIoOutputReport(const quint8& reportId, const unsigned int& reportDataSize);
 
     /// Caches new report data, which will later send by the IO thread
     void updateCachedData(const QByteArray& data,
@@ -24,7 +24,7 @@ class HidIoOutputReport {
             const RuntimeLoggingCategory& logOutput);
 
   private:
-    const unsigned char m_reportId;
+    const quint8 m_reportId;
     QByteArray m_lastSentData;
 
     /// Mutex must be locked when reading/writing m_cachedData
