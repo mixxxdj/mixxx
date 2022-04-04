@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="2.3.1" schemaVersion="1">
     <info>
-    	<name>Denon MC7000_loop_inverted</name>
+    	<name>Denon MC7000</name>
     	<author>OsZ/JL</author>
     	<description>A professional 4-channel DJ controller featuring 2 separate audio interfaces. Please refer to the Mixxx user manual to get the audio interfaces working on Linux.</description>
     	<forums>https://mixxx.discourse.group/t/denon-mc7000-mapping/18235</forums>

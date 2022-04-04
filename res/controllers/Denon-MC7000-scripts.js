@@ -1,5 +1,5 @@
 /**
- * Denon DJ MC7000 DJ controller script for Mixxx 2.3.2
+ * Denon DJ MC7000 DJ controller script for Mixxx 2.3.1
  *
  * Started in Dec. 2019 by OsZ
  *
