@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="2.3.1" schemaVersion="1">
     <info>
-    	<name>Denon MC7000</name>
-    	<author>OsZ</author>
+    	<name>Denon MC7000_loop_inverted</name>
+    	<author>OsZ/JL</author>
     	<description>A professional 4-channel DJ controller featuring 2 separate audio interfaces. Please refer to the Mixxx user manual to get the audio interfaces working on Linux.</description>
     	<forums>https://mixxx.discourse.group/t/denon-mc7000-mapping/18235</forums>
     	<wiki>https://github.com/mixxxdj/mixxx/wiki/Denon-MC7000</wiki>
@@ -1314,42 +1314,42 @@
 <!--  PLAY / CUE / SYNC  -->
 			<control>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch1</description>
                 <status>0x90</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch2</description>
                 <status>0x91</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch3</description>
                 <status>0x92</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch4</description>
                 <status>0x93</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1688,7 +1688,7 @@
                 <key>loop_halve</key>
                 <description>X1/2 Ch1</description>
                 <status>0x94</status>
-                <midino>0x34</midino>
+                <midino>0x38</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1698,7 +1698,7 @@
                 <key>loop_halve</key>
                 <description>X1/2 Ch2</description>
                 <status>0x95</status>
-                <midino>0x34</midino>
+                <midino>0x38</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1708,7 +1708,7 @@
                 <key>loop_halve</key>
                 <description>X1/2 Ch3</description>
                 <status>0x96</status>
-                <midino>0x34</midino>
+                <midino>0x38</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1718,7 +1718,7 @@
                 <key>loop_halve</key>
                 <description>X1/2 Ch4</description>
                 <status>0x97</status>
-                <midino>0x34</midino>
+                <midino>0x38</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1728,7 +1728,7 @@
                 <key>loop_double</key>
                 <description>X2 Ch1</description>
                 <status>0x94</status>
-                <midino>0x35</midino>
+                <midino>0x39</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1738,7 +1738,7 @@
                 <key>loop_double</key>
                 <description>X2 Ch2</description>
                 <status>0x95</status>
-                <midino>0x35</midino>
+                <midino>0x39</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1748,7 +1748,7 @@
                 <key>loop_double</key>
                 <description>X2 Ch3</description>
                 <status>0x96</status>
-                <midino>0x35</midino>
+                <midino>0x39</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1758,7 +1758,7 @@
                 <key>loop_double</key>
                 <description>X2 Ch4</description>
                 <status>0x97</status>
-                <midino>0x35</midino>
+                <midino>0x39</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1768,7 +1768,7 @@
                 <key>loop_in</key>
                 <description>Loop in Ch1</description>
                 <status>0x94</status>
-                <midino>0x38</midino>
+                <midino>0x34</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1778,7 +1778,7 @@
                 <key>loop_in</key>
                 <description>Loop in Ch2</description>
                 <status>0x95</status>
-                <midino>0x38</midino>
+                <midino>0x34</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1788,7 +1788,7 @@
                 <key>loop_in</key>
                 <description>Loop in Ch3</description>
                 <status>0x96</status>
-                <midino>0x38</midino>
+                <midino>0x34</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1798,7 +1798,7 @@
                 <key>loop_in</key>
                 <description>Loop in Ch4</description>
                 <status>0x97</status>
-                <midino>0x38</midino>
+                <midino>0x34</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1808,7 +1808,7 @@
                 <key>loop_out</key>
                 <description>Loop out Ch1</description>
                 <status>0x94</status>
-                <midino>0x39</midino>
+                <midino>0x35</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1818,7 +1818,7 @@
                 <key>loop_out</key>
                 <description>Loop out Ch2</description>
                 <status>0x95</status>
-                <midino>0x39</midino>
+                <midino>0x35</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1828,7 +1828,7 @@
                 <key>loop_out</key>
                 <description>Loop out Ch3</description>
                 <status>0x96</status>
-                <midino>0x39</midino>
+                <midino>0x35</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1838,7 +1838,7 @@
                 <key>loop_out</key>
                 <description>Loop out Ch4</description>
                 <status>0x97</status>
-                <midino>0x39</midino>
+                <midino>0x35</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1886,22 +1886,22 @@
 <!-- PARAMETER BUTTONS -->
 			<control>
                 <group>[Channel1]</group>
-                <key>stars_down</key>
+                <key>MC7000.stars_down</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>stars_up</key>
+                <key>MC7000.stars_up</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1926,22 +1926,22 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>stars_down</key>
+                <key>MC7000.stars_down</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>stars_up</key>
+                <key>MC7000.stars_up</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1966,22 +1966,22 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>stars_down</key>
+                <key>MC7000.stars_down</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>stars_up</key>
+                <key>MC7000.stars_up</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2006,22 +2006,22 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>stars_down</key>
+                <key>MC7000.stars_down</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>stars_up</key>
+                <key>MC7000.stars_up</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
