@@ -64,7 +64,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
     Q_INVOKABLE void send(const QList<int>& dataList, unsigned int length = 0) override {
         // This function is only for class compatibility with the (midi)controller
         Q_UNUSED(length);
-        this->send(dataList, 0, 0);
+        send(dataList, 0, 0);
     }
 
     /// @brief Sends HID OutputReport to HID device
@@ -82,7 +82,7 @@ class HidControllerJSProxy : public ControllerJSProxy {
         for (int datum : dataList) {
             dataArray.append(datum);
         }
-        this->sendOutputReport(reportID, dataArray, resendUnchangedReport);
+        sendOutputReport(reportID, dataArray, resendUnchangedReport);
     }
 
     /// @brief Sends an OutputReport to HID device
