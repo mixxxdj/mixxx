@@ -273,6 +273,21 @@ void KeyControl::updateRate() {
         qDebug() << "   .";
     }
 
+    // If we just unlocked the original key with speed != +-1.0 we may encounter wrong
+    // decimals (e.g. 1 - 1.73123e-09) after pitchRatio calculation round-trip.
+    // Round to 1.0 to avoid false positive pitch offset (pitchOctaves != 0).
+    double pitchRatioDiffTo1 = fabs(1.0 - m_pitchRateInfo.pitchRatio);
+    if (0.0 < pitchRatioDiffTo1 && pitchRatioDiffTo1 < pow(10, -9)) { // 0.000000001
+        m_pitchRateInfo.pitchRatio = 1.0;
+        // recalculating doesn't make sense here, the rounding offset will
+        // occur again after updatePitch request from enginebuffer
+        if constexpr (kEnableDebugOutput) {
+            qDebug() << "   0.0 < pitchRatioDiffTo1 < 0.000000001";
+            qDebug() << "   reset pitchRatio to 1.0";
+            qDebug() << "   .";
+        }
+    }
+
     double pitchOctaves = KeyUtils::powerOf2ToOctaveChange(m_pitchRateInfo.pitchRatio);
     double dFileKey = m_pFileKey->get();
     updateKeyCOs(dFileKey, pitchOctaves);
