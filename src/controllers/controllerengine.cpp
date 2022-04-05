@@ -23,6 +23,8 @@
 // (closure compatible version of connectControl)
 #include <QUuid>
 
+#define SCRATCH_DEBUG_OUTPUT false
+
 namespace {
 constexpr int kDecks = 16;
 
@@ -1371,6 +1373,10 @@ void ControllerEngine::scratchTick(int deck, int interval) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchProcess(const int timerId) {
+#if SCRATCH_DEBUG_OUTPUT
+    qDebug() << "   .";
+    qDebug() << "   ControllerEngine::scratchProcess";
+#endif
     const int deck = m_scratchTimers[timerId];
     // PlayerManager::groupForDeck is 0-indexed.
     const QString group = PlayerManager::groupForDeck(deck - 1);
@@ -1380,7 +1386,9 @@ void ControllerEngine::scratchProcess(const int timerId) {
         return;
     }
 
+#if SCRATCH_DEBUG_OUTPUT
     const double oldRate = filter->predictedVelocity();
+#endif
 
     // Give the filter a data point:
 
@@ -1389,16 +1397,22 @@ void ControllerEngine::scratchProcess(const int timerId) {
     qDebug() << ".";
     if (m_ramp[deck] && !m_softStartActive[deck] &&
         ((mixxx::Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
-        qDebug() << "       ramp && !softStart";
+#if SCRATCH_DEBUG_OUTPUT
+        qDebug() << "   ramp && !softStart";
+#endif
         filter->observation(m_rampTo[deck] * m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
     } else if (m_softStartActive[deck]) {
-        qDebug() << "       softStart";
+#if SCRATCH_DEBUG_OUTPUT
+        qDebug() << "   softStart";
+#endif
         // pretend we have moved by (desired rate*default distance)
         filter->observation(m_rampTo[deck] * kAlphaBetaDt);
     } else {
-        qDebug() << "       else";
+#if SCRATCH_DEBUG_OUTPUT
+        qDebug() << "   else";
+#endif
         // This will (and should) be 0 if no net ticks have been accumulated
         // (i.e. the wheel is stopped)
         filter->observation(m_dx[deck] * m_intervalAccumulator[deck]);
@@ -1416,10 +1430,13 @@ void ControllerEngine::scratchProcess(const int timerId) {
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
 
-    qDebug() << "   old " << oldRate;
-    qDebug() << "   new " << newRate;
-    qDebug() << "   fabs" << fabs(trunc((m_rampTo[deck] - newRate) * 100000) / 100000);
+#if SCRATCH_DEBUG_OUTPUT
     qDebug() << ".";
+    qDebug() << "   oldRate " << oldRate;
+    qDebug() << "   newRate " << newRate;
+    qDebug() << "   fabs    " << fabs(trunc((m_rampTo[deck] - newRate) * 100000) / 100000);
+    qDebug() << ".";
+#endif
     // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
             // or if we brake, spin back or softstart and have crossed over the desired value,
@@ -1433,6 +1450,9 @@ void ControllerEngine::scratchProcess(const int timerId) {
         m_ramp[deck] = false;
 
         if (m_brakeActive[deck] || m_spinbackActive[deck]) {
+#if SCRATCH_DEBUG_OUTPUT
+            qDebug() << "   brake || spinback, stop scratching, stop deck";
+#endif
             // If in brake mode, set scratch2 rate to 0 and stop the deck.
             pScratch2->slotSet(0.0);
             stopDeck(group);
@@ -1452,8 +1472,10 @@ void ControllerEngine::scratchProcess(const int timerId) {
         m_brakeActive[deck] = false;
         m_spinbackActive[deck] = false;
         m_softStartActive[deck] = false;
+#if SCRATCH_DEBUG_OUTPUT
         qDebug() << "   DONE scratching";
-        qDebug() << ".";
+        qDebug() << "   .";
+#endif
     }
 }
 
@@ -1548,7 +1570,8 @@ void ControllerEngine::softTakeoverIgnoreNextValue(
     -------- ------------------------------------------------------ */
 void ControllerEngine::spinback(
         const int deck, bool activate, const double factor, const double rate) {
-    qDebug() << "   init spinback";
+    qDebug() << "ControllerEngine::spinback(deck:" << deck << ", activate:" << activate
+             << ", factor:" << factor << ", rate:" << rate;
     brake(deck, activate, -factor, rate);
 }
 
@@ -1559,7 +1582,8 @@ void ControllerEngine::spinback(
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::brake(const int deck, bool activate, double factor, const double rate) {
-    qDebug() << "   init brake";
+    qDebug() << "ControllerEngine::brake(deck:" << deck << ", activate:" << activate
+             << ", factor:" << factor << ", rate:" << rate;
     // PlayerManager::groupForDeck is 0-indexed.
     const QString group = PlayerManager::groupForDeck(deck - 1);
     // enable/disable scratch2 mode
@@ -1650,7 +1674,8 @@ void ControllerEngine::brake(const int deck, bool activate, double factor, const
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::softStart(const int deck, bool activate, double factor) {
-    qDebug() << "   init softStart";
+    qDebug() << "ControllerEngine::softStart(deck:" << deck << ", activate:" << activate
+             << ", factor:" << factor;
     // PlayerManager::groupForDeck is 0-indexed.
     const QString group = PlayerManager::groupForDeck(deck - 1);
 
