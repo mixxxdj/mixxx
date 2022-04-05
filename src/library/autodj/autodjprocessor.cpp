@@ -1451,10 +1451,9 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         DeckAttributes* fromDeck = getOtherDeck(pDeck);
         // check if this deck has suitable alignment
         if (fromDeck && getOtherDeck(fromDeck) != pDeck) {
-            //if constexpr (sDebug) {
-            qDebug() << this << "playerTrackLoaded()" << pDeck->group << "but not a toDeck";
-            qDebug() << this << "playerTrackLoaded()" << fromDeck->group << "but not a toDeck";
-            //}
+            if constexpr (sDebug) {
+                qDebug() << this << "playerTrackLoaded()" << pDeck->group << "but not a toDeck";
+            }
             // User has changed the orientation, disable Auto DJ
             toggleAutoDJ(false);
             return;
