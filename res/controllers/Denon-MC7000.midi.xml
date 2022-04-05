@@ -1886,7 +1886,7 @@
 <!-- PARAMETER BUTTONS -->
 			<control>
                 <group>[Channel1]</group>
-                <key>MC7000.stars_down</key>
+                <key>MC7000.StarsDown</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x28</midino>
@@ -1896,7 +1896,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MC7000.stars_up</key>
+                <key>MC7000.StarsUp</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x29</midino>
@@ -1926,7 +1926,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MC7000.stars_down</key>
+                <key>MC7000.StarsDown</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x28</midino>
@@ -1936,7 +1936,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MC7000.stars_up</key>
+                <key>MC7000.StarsUp</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x29</midino>
@@ -1966,7 +1966,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MC7000.stars_down</key>
+                <key>MC7000.StarsDown</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x28</midino>
@@ -1976,7 +1976,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MC7000.stars_up</key>
+                <key>MC7000.StarsUp</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x29</midino>
@@ -2006,7 +2006,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MC7000.stars_down</key>
+                <key>MC7000.StarsDown</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x28</midino>
@@ -2016,7 +2016,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MC7000.stars_up</key>
+                <key>MC7000.StarsUp</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x29</midino>
