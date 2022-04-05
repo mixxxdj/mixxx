@@ -371,7 +371,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         // TODO: This is a total bandaid for making Auto DJ work with decks 3
         // and 4.  We should design a nicer way to handle this.
         for (int i = 2; i < m_decks.length(); ++i) {
-            if (m_decks[i] != NULL && m_decks[i]->isPlaying()) {
+            if (m_decks[i] && m_decks[i]->isPlaying()) {
                 return ADJ_DECKS_3_4_PLAYING;
             }
         }
@@ -547,7 +547,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &ControlProxy::valueChanged,
                 this,
                 &AutoDJProcessor::crossfaderChanged);
-        foreach (DeckAttributes* pDeck, m_decks) {
+        for (const auto& pDeck : std::as_const(m_decks)) {
             pDeck->disconnect(this);
         }
         m_pCOCrossfader->set(0);
@@ -1614,7 +1614,7 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
 
 DeckAttributes* AutoDJProcessor::getLeftDeck() {
     // find first left deck
-    foreach (DeckAttributes* pDeck, m_decks) {
+    for (const auto& pDeck : std::as_const(m_decks)) {
         if (pDeck->isLeft()) {
             return pDeck;
         }
@@ -1624,7 +1624,7 @@ DeckAttributes* AutoDJProcessor::getLeftDeck() {
 
 DeckAttributes* AutoDJProcessor::getRightDeck() {
     // find first right deck
-    foreach (DeckAttributes* pDeck, m_decks) {
+    for (const auto& pDeck : std::as_const(m_decks)) {
         if (pDeck->isRight()) {
             return pDeck;
         }
@@ -1644,7 +1644,7 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(
 }
 
 DeckAttributes* AutoDJProcessor::getFromDeck() {
-    for (const auto& pDeck : qAsConst(m_decks)) {
+    for (const auto& pDeck : std::as_const(m_decks)) {
         if (pDeck->isFromDeck) {
             return pDeck;
         }
