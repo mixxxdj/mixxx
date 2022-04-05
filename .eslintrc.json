@@ -72,7 +72,15 @@
       }
     },
     {
+      "files": ["res/controllers/common-hid-packet-parser.js"],
+      "globals": {
+        "console": "readable",
+        "print": "writable"
+      }
+    },
+    {
       "files": ["res/controllers/*.js"],
+      "excludedFiles": "res/controllers/common-hid-packet-parser.js",
       "globals": {
         "console": "readable",
         "svg": "writable",
