@@ -355,6 +355,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         DeckAttributes* pLeftDeck = getLeftDeck();
         DeckAttributes* pRightDeck = getRightDeck();
         if (!pLeftDeck || !pRightDeck) {
+            // Keep the current state.
+            emitAutoDJStateChanged(m_eState);
             return ADJ_NOT_TWO_DECKS;
         }
 
@@ -372,6 +374,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         // and 4.  We should design a nicer way to handle this.
         for (int i = 2; i < m_decks.length(); ++i) {
             if (m_decks[i] && m_decks[i]->isPlaying()) {
+                // Keep the current state.
                 return ADJ_DECKS_3_4_PLAYING;
             }
         }
