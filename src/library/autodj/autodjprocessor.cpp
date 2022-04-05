@@ -322,7 +322,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     // Load the next song from the queue.
     DeckAttributes* pLeftDeck = getLeftDeck();
     DeckAttributes* pRightDeck = getRightDeck();
-    if (!pLeftDeck && !pRightDeck) {
+    if (!pLeftDeck || !pRightDeck) {
         // User has changed the orientation, disable Auto DJ
         toggleAutoDJ(false);
         return ADJ_NOT_TWO_DECKS;
@@ -1562,6 +1562,8 @@ void AutoDJProcessor::setTransitionTime(int time) {
         DeckAttributes* pLeftDeck = getLeftDeck();
         DeckAttributes* pRightDeck = getRightDeck();
         if (!pLeftDeck || !pRightDeck) {
+            // User has changed the orientation, disable Auto DJ
+            toggleAutoDJ(false);
             return;
         }
         if (pLeftDeck->isPlaying()) {
@@ -1588,6 +1590,8 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     DeckAttributes* pRightDeck = getRightDeck();
 
     if (!pLeftDeck || !pRightDeck) {
+        // User has changed the orientation, disable Auto DJ
+        toggleAutoDJ(false);
         return;
     }
 
@@ -1659,7 +1663,7 @@ bool AutoDJProcessor::nextTrackLoaded() {
 
     DeckAttributes* pLeftDeck = getLeftDeck();
     DeckAttributes* pRightDeck = getRightDeck();
-    VERIFY_OR_DEBUG_ASSERT(pLeftDeck && pRightDeck) {
+    if (!pLeftDeck || !pRightDeck) {
         return false;
     }
 
