@@ -32,9 +32,6 @@ class HidController final : public Controller {
 
     bool matchMapping(const MappingInfo& mapping) override;
 
-  protected:
-    void sendReport(const QList<int>& data, unsigned int length, unsigned int reportID);
-
   private slots:
     int open() override;
     int close() override;
@@ -60,45 +57,79 @@ class HidControllerJSProxy : public ControllerJSProxy {
               m_pHidController(m_pController) {
     }
 
-    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0) override {
-        m_pHidController->send(data, length);
+    /// @brief Sends HID OutputReport with hard coded ReportID 0 to HID device
+    ///        This function only works with HID devices, which don't use ReportIDs
+    /// @param dataList Data to send as list of bytes
+    /// @param length Unused optional argument
+    Q_INVOKABLE void send(const QList<int>& dataList, unsigned int length = 0) override {
+        // This function is only for class compatibility with the (midi)controller
+        Q_UNUSED(length);
+        send(dataList, 0, 0);
     }
 
-    Q_INVOKABLE void send(const QList<int>& data, unsigned int length, unsigned int reportID) {
-        m_pHidController->sendReport(data, length, reportID);
+    /// @brief Sends HID OutputReport to HID device
+    /// @param dataList Data to send as list of bytes
+    /// @param length Unused but mandatory argument
+    /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
+    /// @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending
+    Q_INVOKABLE void send(const QList<int>& dataList,
+            unsigned int length,
+            quint8 reportID,
+            bool resendUnchangedReport = false) {
+        Q_UNUSED(length);
+        QByteArray dataArray;
+        dataArray.reserve(dataList.size());
+        for (int datum : dataList) {
+            dataArray.append(datum);
+        }
+        sendOutputReport(reportID, dataArray, resendUnchangedReport);
     }
 
-    // getInputReport receives an input report on request.
-    // This can be used on startup to initialize the knob positions in Mixxx
-    // to the physical position of the hardware knobs on the controller.
-    // The returned data structure for the input reports is the same
-    // as in the polling functionality (including ReportID in first byte).
-    // The returned list can be used to call the incomingData
-    // function of the common-hid-packet-parser.
+    /// @brief Sends an OutputReport to HID device
+    /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use ReportIDs
+    /// @param dataArray Data to send as byte array (Javascript type Uint8Array)
+    /// @param resendUnchangedReport If set, the report will also be send, if the data are unchanged since last sending
+    Q_INVOKABLE void sendOutputReport(quint8 reportID,
+            const QByteArray& dataArray,
+            bool resendUnchangedReport = false) {
+        VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
+            return;
+        }
+        m_pHidController->m_pHidIoThread->updateCachedOutputReportData(
+                reportID, dataArray, resendUnchangedReport);
+    }
+
+    /// @brief getInputReport receives an InputReport from the HID device on request.
+    /// @details This can be used on startup to initialize the knob positions in Mixxx
+    ///          to the physical position of the hardware knobs on the controller.
+    ///          This is an optional command in the HID standard - not all devices support it.
+    /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
+    /// @return Returns report data with ReportID byte as prefix
     Q_INVOKABLE QByteArray getInputReport(
-            unsigned int reportID) {
+            quint8 reportID) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return {};
         }
         return m_pHidController->m_pHidIoThread->getInputReport(reportID);
     }
 
+    /// @brief Sends a FeatureReport to HID device
+    /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
+    /// @param reportData Data to send as byte array (Javascript type Uint8Array)
     Q_INVOKABLE void sendFeatureReport(
-            const QByteArray& reportData, unsigned int reportID) {
+            quint8 reportID, const QByteArray& reportData) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return;
         }
-        m_pHidController->m_pHidIoThread->sendFeatureReport(reportData, reportID);
+        m_pHidController->m_pHidIoThread->sendFeatureReport(reportID, reportData);
     }
-    // getFeatureReport receives a feature reports on request.
-    // HID doesn't support polling feature reports, therefore this is the
-    // only method to get this information.
-    // Usually, single bits in a feature report need to be set without
-    // changing the other bits. The returned list matches the input
-    // format of sendFeatureReport, allowing it to be read, modified
-    // and sent it back to the controller.
+
+    /// @brief getFeatureReport receives a FeatureReport from the HID device on request.
+    /// @param reportID 1...255 for HID devices that uses ReportIDs - or 0 for devices, which don't use
+    /// @return The returned array matches the input format of sendFeatureReport (Javascript type Uint8Array),
+    ///         allowing it to be read, modified and sent it back to the controller.
     Q_INVOKABLE QByteArray getFeatureReport(
-            unsigned int reportID) {
+            quint8 reportID) {
         VERIFY_OR_DEBUG_ASSERT(m_pHidController->m_pHidIoThread) {
             return {};
         }
