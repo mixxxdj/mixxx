@@ -1376,6 +1376,7 @@ void ControllerEngine::scratchProcess(const int timerId) {
 #if SCRATCH_DEBUG_OUTPUT
     qDebug() << "   .";
     qDebug() << "   ControllerEngine::scratchProcess";
+    qDebug() << "   .";
 #endif
     const int deck = m_scratchTimers[timerId];
     // PlayerManager::groupForDeck is 0-indexed.
@@ -1394,24 +1395,23 @@ void ControllerEngine::scratchProcess(const int timerId) {
 
     // If we're ramping to end scratching and the wheel hasn't been turned very
     // recently (spinback after lift-off,) feed fixed data
-    qDebug() << ".";
     if (m_ramp[deck] && !m_softStartActive[deck] &&
         ((mixxx::Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
 #if SCRATCH_DEBUG_OUTPUT
-        qDebug() << "   ramp && !softStart";
+        qDebug() << "     ramp && !softStart";
 #endif
         filter->observation(m_rampTo[deck] * m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
     } else if (m_softStartActive[deck]) {
 #if SCRATCH_DEBUG_OUTPUT
-        qDebug() << "   softStart";
+        qDebug() << "     softStart";
 #endif
         // pretend we have moved by (desired rate*default distance)
         filter->observation(m_rampTo[deck] * kAlphaBetaDt);
     } else {
 #if SCRATCH_DEBUG_OUTPUT
-        qDebug() << "   else";
+        qDebug() << "     else";
 #endif
         // This will (and should) be 0 if no net ticks have been accumulated
         // (i.e. the wheel is stopped)
@@ -1431,11 +1431,11 @@ void ControllerEngine::scratchProcess(const int timerId) {
     m_intervalAccumulator[deck] = 0;
 
 #if SCRATCH_DEBUG_OUTPUT
-    qDebug() << ".";
-    qDebug() << "   oldRate " << oldRate;
-    qDebug() << "   newRate " << newRate;
-    qDebug() << "   fabs    " << fabs(trunc((m_rampTo[deck] - newRate) * 100000) / 100000);
-    qDebug() << ".";
+    qDebug() << "     .";
+    qDebug() << "     oldRate " << oldRate;
+    qDebug() << "     newRate " << newRate;
+    qDebug() << "     fabs    " << fabs(trunc((m_rampTo[deck] - newRate) * 100000) / 100000);
+    qDebug() << "     .";
 #endif
     // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
