@@ -16,6 +16,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_traktorfeature.cpp"
+#include "track/keyutils.h"
 #include "util/sandbox.h"
 #include "util/semanticversion.h"
 
@@ -358,6 +359,15 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
             if (xml.name() == QLatin1String("TEMPO")) {
                 QXmlStreamAttributes attr = xml.attributes ();
                 bpm = attr.value("BPM").toString().toFloat();
+                continue;
+            }
+            if (xml.name() == QLatin1String("MUSICAL_KEY")) {
+                QXmlStreamAttributes attr = xml.attributes();
+                // Traktor happens to use the same key numbering
+                key = KeyUtils::keyToString(
+                        KeyUtils::keyFromNumericValue(
+                                attr.value("VALUE").toInt()),
+                        KeyUtils::KeyNotation::Custom);
                 continue;
             }
         }
