@@ -366,7 +366,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 // Traktor happens to use the same key numbering
                 key = KeyUtils::keyToString(
                         KeyUtils::keyFromNumericValue(
-                                attr.value("VALUE").toString().toInt()),
+                                attr.value("VALUE").toInt()),
                         KeyUtils::KeyNotation::Custom);
                 continue;
             }
