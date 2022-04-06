@@ -687,7 +687,7 @@ TraktorZ2.microphoneButtonHandler = function(field) {
                 TraktorZ2.dataF1[1] |= 0x40;
             }
             HIDDebug(TraktorZ2.dataF1[1]);
-            controller.sendFeatureReport(TraktorZ2.dataF1, 0xF1);
+            controller.sendFeatureReport(0xF1, TraktorZ2.dataF1);
         }
         TraktorZ2.microphoneButtonOutputHandler();
     }
@@ -1095,7 +1095,7 @@ TraktorZ2.shutdown = function() {
 
     // Switch software mixing mode of and given LED control to mixer hardware
     TraktorZ2.dataF1[0] = 0x00;
-    controller.sendFeatureReport(TraktorZ2.dataF1, 0xF1);
+    controller.sendFeatureReport(0xF1, TraktorZ2.dataF1);
 
     HIDDebug("TraktorZ2: Shutdown done!");
 };
@@ -1910,12 +1910,12 @@ TraktorZ2.enableLEDsPerChannel = function() {
     // 0xF1 nn xx  -> Any other bit of xx set means  Booth depends on Master level, otherwise both regulators are independent from each other
     const data = new Uint8Array(controller.getFeatureReport(0xF1));
     data[0] = 0xBF;
-    controller.sendFeatureReport(data.buffer, 0xF1);
+    controller.sendFeatureReport(0xF1, data.buffer);
 
     TraktorZ2.dataF1 = controller.getFeatureReport(0xF1);/*
     TraktorZ2.dataF1[0] = 0x9F;
     TraktorZ2.dataF1 = [0xFF, 0x40];
-    controller.sendFeatureReport(TraktorZ2.dataF1, 0xF1);*/
+    controller.sendFeatureReport(0xF1, TraktorZ2.dataF1);*/
 
     HIDDebug(controller.getFeatureReport(0xF1));  // 2x8Bit Logical 0...255
 };
@@ -1939,9 +1939,9 @@ TraktorZ2.init = function(_id) {
 
 
     const featureRptF1 = new Uint8Array([0x20, 0x80]);
-    controller.sendFeatureReport(featureRptF1.buffer, 0xF1);
+    controller.sendFeatureReport(0xF1, featureRptF1.buffer);
     const featureRptF3 = new Uint8Array([0x55, 0x7F]);
-    controller.sendFeatureReport(featureRptF3.buffer, 0xF3);
+    controller.sendFeatureReport(0xF3, featureRptF3.buffer);
     //TraktorZ2.debugLights();
 
     TraktorZ2.registerOutputPackets();
@@ -1956,37 +1956,39 @@ TraktorZ2.init = function(_id) {
     // This is done, because the common-hid-packet-parser only triggers
     // the callback functions in case of a delta to the previous data.
     for (let inputReportIdx = 0x01; inputReportIdx <= 0x02; ++inputReportIdx) {
-        const data = new Uint8Array(controller.getInputReport(inputReportIdx));
-        const dataInverted = new Uint8Array(data);
-        for (let byteIdx = 1; byteIdx < data.byteLength; ++byteIdx) {
-            dataInverted[byteIdx] = ~data[byteIdx];
+        const reportId = new Uint8Array([inputReportIdx]);
+        const reportData = new Uint8Array(controller.getInputReport(inputReportIdx));
+
+        const report = new Uint8Array(reportId.byteLength + reportData.byteLength);
+        report.set(reportId);
+        report.set(reportData, reportId.byteLength);
+
+        const reportWithInvertedData = new Uint8Array(report);
+        for (let byteIdx = reportId.byteLength; byteIdx < report.byteLength; byteIdx++) {
+            reportWithInvertedData[byteIdx] = ~report[byteIdx];
         }
-        TraktorZ2.incomingData(dataInverted);
-        TraktorZ2.incomingData(data);
+
+        TraktorZ2.incomingData(reportWithInvertedData, reportWithInvertedData.byteLength);
+        TraktorZ2.incomingData(report, report.byteLength);
     }
 
 
     const inputRpt01 = new Uint8Array(controller.getInputReport(0x01));
-    HIDDebug("inputRpt01" + inputRpt01 + "   " + inputRpt01[9]);
-    if ((inputRpt01[9] & 0x02) !== 0) {
+    HIDDebug("inputRpt01" + inputRpt01 + "   " + inputRpt01[8]);
+    if ((inputRpt01[8] & 0x02) !== 0) {
         engine.setValue("[Channel1]", "pfl", 1);
-        HIDDebug("11");
+        HIDDebug("PFL 11");
     } else {
         engine.setValue("[Channel1]", "pfl", 0);
-        HIDDebug("10");
+        HIDDebug("PFL 10");
     }
-    if ((inputRpt01[9] & 0x04) !== 0) {
+    if ((inputRpt01[8] & 0x04) !== 0) {
         engine.setValue("[Channel2]", "pfl", 1);
-        HIDDebug("21");
+        HIDDebug("PFL 21");
     } else {
         engine.setValue("[Channel2]", "pfl", 0);
-        HIDDebug("20");
+        HIDDebug("PFL 20");
     }
-
-    // Now read the status of both InputReports
-    // -> The normal callback function incomingData is executed direct here
-    TraktorZ2.incomingData(controller.getInputReport(0x01));
-    TraktorZ2.incomingData(controller.getInputReport(0x02));
 
     TraktorZ2.enableSoftTakeover();
 
