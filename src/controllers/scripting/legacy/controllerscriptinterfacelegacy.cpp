@@ -885,8 +885,6 @@ void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double fact
     }
     stopScratchTimer(timerId);
 
-    // If we want to brake or spin back and are currently softStart'ing, stop it.
-
     // setup timer and set scratch2
     timerId = startTimer(kScratchTimerMs);
     m_scratchTimers[timerId] = deck;
