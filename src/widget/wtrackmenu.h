@@ -289,14 +289,15 @@ class WTrackMenu : public QMenu {
     struct UpdateExternalTrackCollection {
         QPointer<ExternalTrackCollection> externalTrackCollection;
         QAction* action{};
-        };
-        QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
-
-        bool m_bPlaylistMenuLoaded;
-        bool m_bCrateMenuLoaded;
-
-        Features m_eActiveFeatures;
-        const Features m_eTrackModelFeatures;
     };
+
+    QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
+
+    bool m_bPlaylistMenuLoaded;
+    bool m_bCrateMenuLoaded;
+
+    Features m_eActiveFeatures;
+    const Features m_eTrackModelFeatures;
+};
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Features)
