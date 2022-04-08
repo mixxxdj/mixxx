@@ -384,7 +384,10 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotClearBeats);
     }
 
-    if (featureIsEnabled(Feature::UpdateReplayGain)) {
+    // This action is only usable when m_deckGroup is set. That is true only
+    // for WTrackmenu instantiated by WTrackProperty and other deck widgets, thus
+    // don't create it if a track model is set.
+    if (!m_pTrackModel && featureIsEnabled(Feature::UpdateReplayGain)) {
         m_pUpdateReplayGain =
                 new QAction(tr("Update ReplayGain from Deck Gain"), m_pClearMetadataMenu);
         connect(m_pUpdateReplayGain,
@@ -526,7 +529,9 @@ void WTrackMenu::setupActions() {
         addMenu(m_pClearMetadataMenu);
     }
 
-    if (featureIsEnabled(Feature::UpdateReplayGain)) {
+    // This action is created only for menus instantiated by deck widgets (e.g.
+    // WTrackProperty) and if UpdateReplayGain is supported.
+    if (m_pUpdateReplayGain) {
         addAction(m_pUpdateReplayGain);
     }
 
@@ -763,7 +768,10 @@ void WTrackMenu::updateMenus() {
         }
     }
 
-    if (featureIsEnabled(Feature::UpdateReplayGain)) {
+    // This action is created only for menus instantiated by deck widgets (e.g.
+    // WTrackProperty) and if UpdateReplayGain is supported.
+    // Disable it if no deck group was set.
+    if (m_pUpdateReplayGain) {
         m_pUpdateReplayGain->setEnabled(!m_deckGroup.isEmpty());
     }
 
