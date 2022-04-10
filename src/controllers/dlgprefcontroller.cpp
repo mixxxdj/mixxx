@@ -8,7 +8,6 @@
 #include <QStandardPaths>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <QtDebug>
 
 #include "controllers/controller.h"
 #include "controllers/controllerlearningeventfilter.h"
