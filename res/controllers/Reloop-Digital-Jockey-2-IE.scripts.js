@@ -174,7 +174,7 @@ RDJ2.LoopInButton = function(options) {
 };
 RDJ2.LoopInButton.prototype = new components.Button({
     outKey: "loop_start_position",
-    outValueScale: function(value) { return (value >= 0) * this.max; },
+    outValueScale: function(value) { return value >= 0 ? this.on : this.off; },
     unshift: function() {
         this.inKey = "loop_in";
         this.input = components.Button.prototype.input;
@@ -195,7 +195,7 @@ RDJ2.LoopOutButton = function(options) {
 };
 RDJ2.LoopOutButton.prototype = new components.Button({
     outKey: "loop_end_position",
-    outValueScale: function(value) { return (value >= 0) * this.max; },
+    outValueScale: function(value) { return value >= 0 ? this.on : this.off; },
     unshift: function() {
         this.inKey = "loop_out";
         this.input = components.Button.prototype.input;
@@ -247,19 +247,6 @@ RDJ2.MIDI_KNOB_DEC = 0x3F;
 RDJ2.MIDI_KNOB_DELTA_BIAS = 0x40; // center value of relative movements
 //RDJ2.MIDI_KNOB_STEPS = 20;  // 20 is full knob's rotation (360deg)
 RDJ2.MIDI_KNOB_STEPS = 16;    // 16 is more like volume knobs
-
-//currently RDJ2.getKnobDeltaOld is not used
-RDJ2.getKnobDeltaOld = function(midiValue) {
-    switch (midiValue) {
-    case RDJ2.MIDI_KNOB_INC:
-        return 1;
-    case RDJ2.MIDI_KNOB_DEC:
-        return -1;
-    default:
-        RDJ2.logError("Unexpected MIDI knob value: " + midiValue);
-        return 0;
-    }
-};
 
 RDJ2.getKnobDelta = function(midiValue) {
     return midiValue - RDJ2.MIDI_KNOB_DELTA_BIAS;
@@ -411,6 +398,7 @@ RDJ2.BendMinusButton = function(options) {
     components.Button.call(this, options);
 };
 RDJ2.BendMinusButton.prototype = new components.Button({
+    key: "rate_temp_down",
     input: function(channel, control, value, status) {
         var isPlaying = engine.getValue(this.group, "play");
         if (isPlaying) {
@@ -420,30 +408,13 @@ RDJ2.BendMinusButton.prototype = new components.Button({
             engine.setValue(this.group, "back", this.isPress(channel, control, value, status));
         }
     },
-    unshift: function() {
-        this.inSetValue(false);     // bug? inKey was not reset by default on unshift()
-        this.inKey = "rate_temp_down";
-        this.disconnect();
-        this.outKey = "rate_temp_down";
-        this.connect();
-        this.trigger();
-    },
-    /* The shifted action is disabled here as it has been remapped
-       to '[Library]GoToItem' normal binding in the xml file.
-
-    shift: function() {
-        this.inKey = "rate_temp_down_small";
-        this.disconnect();
-        this.outKey = "rate_temp_down_small";
-        this.connect();
-        this.trigger();
-    },*/
 });
 
 RDJ2.BendPlusButton = function(options) {
     components.Button.call(this, options);
 };
 RDJ2.BendPlusButton.prototype = new components.Button({
+    key: "rate_temp_up",
     input: function(channel, control, value, status) {
         var isPlaying = engine.getValue(this.group, "play");
         if (isPlaying) {
@@ -452,21 +423,6 @@ RDJ2.BendPlusButton.prototype = new components.Button({
         } else {
             engine.setValue(this.group, "fwd", this.isPress(channel, control, value, status));
         }
-    },
-    unshift: function() {
-        this.inSetValue(false);     // bug? inKey was not reset by default on unshift()
-        this.inKey = "rate_temp_up";
-        this.disconnect();
-        this.outKey = "rate_temp_up";
-        this.connect();
-        this.trigger();
-    },
-    shift: function() {
-        this.inKey = "rate_temp_up_small";
-        this.disconnect();
-        this.outKey = "rate_temp_up_small";
-        this.connect();
-        this.trigger();
     },
 });
 
@@ -553,9 +509,6 @@ RDJ2.JogModeSelector.prototype = new components.Component({
             }
         }
     },
-    getJogMode: function() {
-        return this.jogMode;
-    },
     setTraxMode: function(isTraxModeEnabled) {
         if (isTraxModeEnabled) {
             if (this.jogMode !== RDJ2.JOGMODES.trax) {
@@ -592,7 +545,7 @@ RDJ2.JogModeSelector.prototype = new components.Component({
 /* Jog Wheel */
 
 RDJ2.Deck.prototype.onJogTouch = function(channel, control, value) {
-    var currentJogMode =  this.jogModeSelector.getJogMode();
+    var currentJogMode =  this.jogModeSelector.jogMode;
     this.jogTouchState = RDJ2.isButtonPressed(value);
 
     if (currentJogMode === RDJ2.JOGMODES.vinyl && this.jogTouchState) {
@@ -608,7 +561,7 @@ RDJ2.Deck.prototype.onJogTouch = function(channel, control, value) {
 };
 
 RDJ2.Deck.prototype.onJogSpin = function(channel, control, value) {
-    var currentJogMode =  this.jogModeSelector.getJogMode();
+    var currentJogMode =  this.jogModeSelector.jogMode;
     var jogDelta = RDJ2.getJogDeltaValue(value);
 
     if (currentJogMode === RDJ2.JOGMODES.vinyl) {
@@ -777,8 +730,7 @@ RDJ2.TraxButton.prototype = new components.Button({
     detectDecks: function(obj) {
         // find decks in the passed object and store them in the array
         for (var memberName in obj) {
-            // eslint-disable-next-line no-prototype-builtins -- TODO analyze the cause
-            if (obj.hasOwnProperty(memberName) && obj[memberName] instanceof components.Deck) {
+            if (Object.prototype.hasOwnProperty.call(obj, memberName) && obj[memberName] instanceof components.Deck) {
                 RDJ2.logDebug("Detected " + memberName);
                 this.detectedDecks.push(obj[memberName]);
             }
