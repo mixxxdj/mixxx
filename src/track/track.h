@@ -206,6 +206,10 @@ class Track : public QObject {
     QString getComment() const;
     // Sets the user commnet
     void setComment(const QString&);
+    // Clear comment
+    void clearComment() {
+        setComment(QString());
+    }
     // Return composer
     QString getComposer() const;
     // Set composer

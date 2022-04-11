@@ -96,6 +96,7 @@ class WTrackMenu : public QMenu {
     void slotClearBeats();
     void slotClearPlayCount();
     void slotClearRating();
+    void slotClearComment();
     void slotClearMainCue();
     void slotClearHotCues();
     void slotClearIntroCue();
@@ -276,6 +277,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pClearOutroCueAction{};
     QAction* m_pClearLoopAction{};
     QAction* m_pClearWaveformAction{};
+    QAction* m_pClearCommentAction{};
     QAction* m_pClearKeyAction{};
     QAction* m_pClearReplayGainAction{};
     QAction* m_pClearAllMetadataAction{};

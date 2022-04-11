@@ -340,6 +340,9 @@ void WTrackMenu::createActions() {
         m_pClearWaveformAction = new QAction(tr("Waveform"), m_pClearMetadataMenu);
         connect(m_pClearWaveformAction, &QAction::triggered, this, &WTrackMenu::slotClearWaveform);
 
+        m_pClearCommentAction = new QAction(tr("Comment"), m_pClearMetadataMenu);
+        connect(m_pClearCommentAction, &QAction::triggered, this, &WTrackMenu::slotClearComment);
+
         m_pClearAllMetadataAction = new QAction(tr("All"), m_pClearMetadataMenu);
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
     }
@@ -512,11 +515,12 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addAction(m_pClearBeatsAction);
         m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
         m_pClearMetadataMenu->addAction(m_pClearRatingAction);
-        // FIXME: Why is clearing the loop not working?
+        m_pClearMetadataMenu->addAction(m_pClearCommentAction);
         m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
         m_pClearMetadataMenu->addAction(m_pClearIntroCueAction);
         m_pClearMetadataMenu->addAction(m_pClearOutroCueAction);
+        // FIXME: Why is clearing the loop not working?
         //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
         m_pClearMetadataMenu->addAction(m_pClearKeyAction);
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
@@ -531,6 +535,7 @@ void WTrackMenu::setupActions() {
     }
 
     addSeparator();
+
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
             addAction(m_pHideAct);
@@ -1459,6 +1464,29 @@ void WTrackMenu::slotClearRating() {
             tr("Clearing rating of %n track(s)", "", getTrackCount());
     const auto trackOperator =
             ResetRatingTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+namespace {
+
+class ClearCommentTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->clearComment();
+    }
+};
+
+} // anonymous namespace
+
+//slot for clearing the comment field of one or more tracks
+void WTrackMenu::slotClearComment() {
+    const auto progressLabelText =
+            tr("Clearing comment of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ClearCommentTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
