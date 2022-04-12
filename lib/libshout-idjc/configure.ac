@@ -3,7 +3,7 @@
 
 m4_define(libshout_major, 2)
 m4_define(libshout_minor, 4)
-m4_define(libshout_micro, 5)
+m4_define(libshout_micro, 6)
 m4_define(libshout_version, libshout_major.libshout_minor.libshout_micro)
 
 AC_INIT([libshout-idjc], libshout_version, [www.sourceforge.net/projects/idjc])
@@ -100,6 +100,11 @@ AC_ARG_ENABLE([examples],
   AS_HELP_STRING([--disable-examples],[Do not build example code]))
 AM_CONDITIONAL([HAVE_EXAMPLES],[test "${enable_examples}" != "no"])
 
+dnl Allow tools not to be build
+AC_ARG_ENABLE([tools],
+  AS_HELP_STRING([--disable-tools],[Do not build tools]))
+AM_CONDITIONAL([HAVE_TOOLS],[test "${enable_tools}" != "no"])
+
 dnl Module checks
 XIPH_NET
 
@@ -126,21 +131,31 @@ fi
 
 PKG_CHECK_MODULES([OGG], [ogg], [
     HAVE_OGG="yes"
-    SHOUT_REQUIRES="$SHOUT_REQUIRES, ogg"
+    SHOUT_REQUIRES="ogg"
   ], [
     XIPH_PATH_OGG(, [AC_MSG_ERROR([required Ogg library not found])])
   ])
 OGG_LIBS="$OGG_LDFLAGS $OGG_LIBS"
 XIPH_CFLAGS="$XIPH_CFLAGS $OGG_CFLAGS"
 
+AC_ARG_ENABLE([vorbis],
+  AS_HELP_STRING([--disable-vorbis],[do not build with Vorbis support]))
+
+if test "x$enable_vorbis" != "xno"; then
 PKG_CHECK_MODULES(VORBIS, vorbis, [
     HAVE_VORBIS="yes"
     SHOUT_REQUIRES="$SHOUT_REQUIRES, vorbis"
   ], [
-    XIPH_PATH_VORBIS(, [AC_MSG_ERROR([required Ogg Vorbis library not found])])
+    XIPH_PATH_VORBIS(, [AC_MSG_WARN([Vorbis library not found, disabling])])
   ])
-VORBIS_LIBS="$VORBIS_LDFLAGS $VORBIS_LIBS"
-XIPH_CFLAGS="$XIPH_CFLAGS $VORBIS_CFLAGS"
+fi
+XIPH_VAR_APPEND([XIPH_CPPFLAGS],[$VORBIS_CFLAGS])
+XIPH_VAR_PREPEND([XIPH_LIBS],[$VORBIS_LDFLAGS $VORBIS_LIBS])
+AM_CONDITIONAL([HAVE_VORBIS], [test -n "$VORBIS_LIBS"])
+if test -n "$VORBIS_LIBS"
+then
+  AC_DEFINE([HAVE_VORBIS], 1, [Define if you want Vorbis streams supported])
+fi
 
 AC_ARG_ENABLE([theora],
   AS_HELP_STRING([--disable-theora],[do not build with Theora support]))

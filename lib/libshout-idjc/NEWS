@@ -1,3 +1,21 @@
+libshout 2.4.6 (20220410)
+
+* Fixed pkg-config file (#2329)
+* Made vorbis an optional codec
+* Do not pass to small headers to libspeex
+  (see also the same mirror-patch in Icecast)
+* Updated documentation, mostly in regard of making it clearer
+  which functions are now obsoleted
+* General code cleanup
+* Added compiler warnings about obsoleted functions and
+  ignored return values
+* Replaced old shout_set_metadata() with new shout_set_metadata_utf8()
+* Added support for plain text streaming
+* Fixed shout_set_metadata*() sometimes returning SHOUTERR_RETRY (#2328)
+* Workaround old clients by emulating SHOUTERR_RETRY with SHOUTERR_BUSY (#2316)
+* Remove our re-implementation of X509_check_host()
+* Allow to disable building tools (#2331)
+
 libshout 2.4.5 (20201219)
 
 * Improved shout.h for reading, and understanding.

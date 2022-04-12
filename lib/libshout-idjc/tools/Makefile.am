@@ -7,5 +7,5 @@ AM_CFLAGS = @XIPH_CFLAGS@ -I$(top_builddir)/include -Wall -Wextra
 
 man1_MANS = shoutidjc.1
 
-shoutidjc_SOURCES = shoutidjc.c
+shoutidjc_SOURCES = shout.c
 shoutidjc_LDADD = $(top_builddir)/src/libshout-idjc.la

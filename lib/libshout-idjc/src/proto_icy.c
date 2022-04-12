@@ -51,9 +51,9 @@ static int shout_create_icy_request_real(shout_t *self, shout_connection_t *conn
     do {
 		if (shout_queue_printf(connection, "%s\n", self->password))
             break;
-        if (shout_queue_printf(self, "content-type:%s\n", shout_get_mimetype_from_self(self)))
+        if (shout_queue_printf(connection, "content-type:%s\n", shout_get_mimetype_from_self(self)))
             break;
-		if (shout_queue_printf(self, "icy-name:%s\n", shout_get_meta(self, "name")))
+		if (shout_queue_printf(connection, "icy-name:%s\n", shout_get_meta(self, "name")))
             break;
         val = shout_get_meta(self, "url");
 		if (shout_queue_printf(connection, "icy-url:%s\n", val ? val : "http://www.icecast.org/"))

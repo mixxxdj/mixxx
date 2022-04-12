@@ -3,7 +3,7 @@
  *  API for libshout, the streaming library for icecast
  *
  *  Copyright (C) 2002-2003 the Icecast team <team@icecast.org>,
- *  Copyright (C) 2012-2015 Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
+ *  Copyright (C) 2012-2022 Philipp Schafft <lion@lion.leolix.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -29,9 +29,30 @@
 
 #include <stdarg.h>
 
+/* ----------------[ Attributes ]---------------- */
+
+/* Attributes depend on used compiler */
+#if (defined(__clang__) && __clang_major__ >= 4)
+#define SHOUT_ATTR_F_WARN_UNUSED_RESULT __attribute__ ((warn_unused_result))
+#elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)
+#define SHOUT_ATTR_F_DEPRECATED(msg) __attribute__ ((deprecated (msg)))
+#define SHOUT_ATTR_F_WARN_UNUSED_RESULT __attribute__ ((warn_unused_result))
+#endif
+
+#ifndef SHOUT_ATTR_F_DEPRECATED
+#define SHOUT_ATTR_F_DEPRECATED(msg)
+#endif
+
+#ifndef SHOUT_ATTR_F_WARN_UNUSED_RESULT
+#define SHOUT_ATTR_F_WARN_UNUSED_RESULT
+#endif
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* ----------------[ Constants ]---------------- */
 
 #define SHOUTERR_SUCCESS            (  0) /* No error */
 #define SHOUTERR_INSANE             ( -1) /* Nonsensical arguments e.g. self being NULL */ 
@@ -43,16 +64,17 @@ extern "C" {
 #define SHOUTERR_CONNECTED          ( -7) /* Cannot set parameter while connected */
 #define SHOUTERR_UNCONNECTED        ( -8) /* Not connected */
 #define SHOUTERR_UNSUPPORTED        ( -9) /* This libshout doesn't support the requested option */
-#define SHOUTERR_BUSY               (-10) /* Socket is busy */
+#define SHOUTERR_BUSY               (-10) /* Resource is busy, try again (later) */
 #define SHOUTERR_NOTLS              (-11) /* TLS requested but not supported by peer */
 #define SHOUTERR_TLSBADCERT         (-12) /* TLS connection can not be established because of bad certificate */
 #define SHOUTERR_RETRY              (-13) /* Retry last operation. */
 
-#define SHOUT_FORMAT_OGG            (  0) /* application/ogg */
-#define SHOUT_FORMAT_MP3            (  1) /* audio/mpeg */
-#define SHOUT_FORMAT_WEBM           (  2) /* video/webm */
-#define SHOUT_FORMAT_WEBMAUDIO      (  3) /* audio/webm audio only */
+#define SHOUT_FORMAT_OGG            (  0) /* Ogg */
+#define SHOUT_FORMAT_MP3            (  1) /* MP3 */
+#define SHOUT_FORMAT_WEBM           (  2) /* WebM */
+#define SHOUT_FORMAT_WEBMAUDIO      (  3) /* WebM, audio only, obsolete. Only used by shout_set_format() */
 #define SHOUT_FORMAT_MATROSKA       (  4) /* Matroska */
+#define SHOUT_FORMAT_TEXT           (  5) /* Text, must be in UTF-8, usage must be SHOUT_USAGE_TEXT. */
 #define SHOUT_FORMAT_AAC            ( 10) /* audio/aac */
 #define SHOUT_FORMAT_AACPLUS        ( 11) /* audio/aacp */
 
@@ -141,20 +163,20 @@ const char *shout_version(int *major, int *minor, int *patch);
 
 /* Allocates and sets up a new shout_t.  Returns NULL if it can't get enough
  * memory.  The returns shout_t must be disposed of with shout_free. */
-shout_t *shout_new(void);
+shout_t *shout_new(void) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Free all memory allocated by a shout_t */
 void shout_free(shout_t *self);
 
 /* Returns a statically allocated string describing the last shout error
  * to occur.  Only valid until the next libshout call on this shout_t */
-const char *shout_get_error(shout_t *self);
+const char *shout_get_error(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Return the error code (e.g. SHOUTERR_SOCKET) for this shout instance */
-int shout_get_errno(shout_t *self);
+int shout_get_errno(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* returns SHOUTERR_CONNECTED or SHOUTERR_UNCONNECTED */
-int shout_get_connected(shout_t *self);
+int shout_get_connected(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 
 /* ----------------[ Configuration ]---------------- */
@@ -164,27 +186,27 @@ int shout_get_connected(shout_t *self);
 
 /* Connection parameters */
 int shout_set_host(shout_t *self, const char *host);
-const char *shout_get_host(shout_t *self);
+const char *shout_get_host(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 int shout_set_port(shout_t *self, unsigned short port);
-unsigned short shout_get_port(shout_t *self);
+unsigned short shout_get_port(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 int shout_set_agent(shout_t *self, const char *agent);
-const char *shout_get_agent(shout_t *self);
+const char *shout_get_agent(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* See SHOUT_TLS_* above */
 int shout_set_tls(shout_t *self, int mode);
-int shout_get_tls(shout_t *self);
+int shout_get_tls(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Set the directory for CA certs. Default: operating system's default */
 int shout_set_ca_directory(shout_t *self, const char *directory);
-const char *shout_get_ca_directory(shout_t *self);
+const char *shout_get_ca_directory(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Set a CA cert file for checking. If you use a self signed server cert
  * you can pass this cert using this function for verification.
  * Default: operating system's default */
 int shout_set_ca_file(shout_t *self, const char *file);
-const char *shout_get_ca_file(shout_t *self);
+const char *shout_get_ca_file(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Set list of allowed ciphers.
  * This function should only be used in case of using an old libshout
@@ -194,36 +216,36 @@ const char *shout_get_ca_file(shout_t *self);
  * EXPOSE IT TO THE USER. OTHERWISE YOU WILL HARM SECURITY.
  * Default: internal list of secure ciphers. */
 int shout_set_allowed_ciphers(shout_t *self, const char *ciphers);
-const char *shout_get_allowed_ciphers(shout_t *self);
+const char *shout_get_allowed_ciphers(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Authentication parameters */
 int shout_set_user(shout_t *self, const char *username);
-const char *shout_get_user(shout_t *self);
+const char *shout_get_user(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 int shout_set_password(shout_t *, const char *password);
-const char *shout_get_password(shout_t *self);
+const char *shout_get_password(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Set a client certificate for TLS connections.
  * This must be in PEM format with both cert and private key in the same file.
  * Default: none. */
 int shout_set_client_certificate(shout_t *self, const char *certificate);
-const char *shout_get_client_certificate(shout_t *self);
+const char *shout_get_client_certificate(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Mount parameters */
 int shout_set_mount(shout_t *self, const char *mount);
-const char *shout_get_mount(shout_t *self);
+const char *shout_get_mount(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Other parameters */
 /* takes a SHOUT_AI_xxxx argument */
 int shout_set_audio_info(shout_t *self, const char *name, const char *value);
-const char *shout_get_audio_info(shout_t *self, const char *name);
+const char *shout_get_audio_info(shout_t *self, const char *name) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* takes a SHOUT_META_xxxx argument */
 int shout_set_meta(shout_t *self, const char *name, const char *value);
-const char *shout_get_meta(shout_t *self, const char *name);
+const char *shout_get_meta(shout_t *self, const char *name) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 int shout_set_public(shout_t *self, unsigned int make_public);
-unsigned int shout_get_public(shout_t *self);
+unsigned int shout_get_public(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Set the content language.
  * Values as per RFC5646 Section 2.1.
@@ -238,7 +260,7 @@ unsigned int shout_get_public(shout_t *self);
  *  A station with content in Portuguese, and Klingon should set this to "pt, tlh".
  */
 int shout_set_content_language(shout_t *self, const char *content_language);
-const char *shout_get_content_language(shout_t *self);
+const char *shout_get_content_language(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Set the format of the content to send.
  * * format is one of SHOUT_FORMAT_xxxx.
@@ -250,59 +272,63 @@ int shout_get_content_format(shout_t *self, unsigned int *format, unsigned int *
 
 /* takes a SHOUT_PROTOCOL_xxxxx argument */
 int shout_set_protocol(shout_t *self, unsigned int protocol);
-unsigned int shout_get_protocol(shout_t *self);
+unsigned int shout_get_protocol(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
+
+/* Explicitly sets the mimetype. Set to NULL to revert back to the default.
+   The default value is dependent on the format setting. */
+int shout_set_mimetype(shout_t *self, const char *mimetype);
+
+const char *shout_get_mimetype_from_self(shout_t *self);
 
 /* Instructs libshout to use nonblocking I/O. Must be called before
  * shout_open (no switching back and forth midstream at the moment).
  * nonblocking is one of SHOUT_BLOCKING_xxx. */
 int shout_set_nonblocking(shout_t* self, unsigned int nonblocking);
-unsigned int shout_get_nonblocking(shout_t *self);
+unsigned int shout_get_nonblocking(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 
 /* ----------------[ Actions ]---------------- */
 
 /* Opens a connection to the server.  All parameters must already be set */
-int shout_open(shout_t *self);
+int shout_open(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Closes a connection to the server */
 int shout_close(shout_t *self);
 
 /* Send data to the server, parsing it for format specific timing info */
-int shout_send(shout_t *self, const unsigned char *data, size_t len);
+int shout_send(shout_t *self, const unsigned char *data, size_t len) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Send unparsed data to the server.  Do not use this unless you know
  * what you are doing. 
  * Returns the number of bytes written, or < 0 on error.
  */
-ssize_t shout_send_raw(shout_t *self, const unsigned char *data, size_t len);
+ssize_t shout_send_raw(shout_t *self, const unsigned char *data, size_t len) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* return the number of bytes currently on the write queue (only makes sense in
  * nonblocking mode). */
-ssize_t shout_queuelen(shout_t *self);
+ssize_t shout_queuelen(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
   
 /* Puts caller to sleep until it is time to send more data to the server */
 void shout_sync(shout_t *self);
 
 /* Amount of time in ms caller should wait before sending again */
-int shout_delay(shout_t *self);
+int shout_delay(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 
 /* ----------------[ MP3/AAC ONLY ]---------------- */
 /* Functions in this block are for use with MP3, and AAC streams only */
 
 /* Sets MP3 metadata.
- * Returns:
- *   SHOUTERR_SUCCESS
- *   SHOUTERR_UNSUPPORTED if format isn't MP3
- *   SHOUTERR_MALLOC
- *   SHOUTERR_INSANE
- *   SHOUTERR_NOCONNECT
- *   SHOUTERR_SOCKET
+ * Returns one of SHOUTERR_XXX.
+ *
+ * Note: This function is for MP3 streams only.
+ *
+ * The metadata passed must have been added as UTF-8 using shout_metadata_add().
  */
-int shout_set_metadata(shout_t *self, shout_metadata_t *metadata);
+int shout_set_metadata_utf8(shout_t *self, shout_metadata_t *metadata) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Allocates a new metadata structure.  Must be freed by shout_metadata_free. */
-shout_metadata_t *shout_metadata_new(void);
+shout_metadata_t *shout_metadata_new(void) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 /* Free resources allocated by shout_metadata_t */
 void shout_metadata_free(shout_metadata_t *self);
@@ -312,13 +338,13 @@ void shout_metadata_free(shout_metadata_t *self);
  *   SHOUTERR_SUCCESS on success
  *   SHOUTERR_INSANE if self isn't a valid shout_metadata_t* or name is null
  *   SHOUTERR_MALLOC if memory can't be allocated */
-int shout_metadata_add(shout_metadata_t *self, const char *name, const char *value);
+int shout_metadata_add(shout_metadata_t *self, const char *name, const char *value) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 
 
 /* ----------------[ Advanced ]---------------- */
 /* Advanced. Do not use. */
 
-int shout_control(shout_t *self, shout_control_t control, ...);
+int shout_control(shout_t *self, shout_control_t control, ...) SHOUT_ATTR_F_WARN_UNUSED_RESULT;
 int shout_set_callback(shout_t *self, shout_callback_t callback, void *userdata);
 
 
@@ -327,24 +353,26 @@ int shout_set_callback(shout_t *self, shout_callback_t callback, void *userdata)
  * They may be removed with any future version.
  */
 
-int shout_set_name(shout_t *self, const char *name); // obsolete
-const char *shout_get_name(shout_t *self); // obsolete
+int shout_set_name(shout_t *self, const char *name) SHOUT_ATTR_F_DEPRECATED("use shout_set_meta() with SHOUT_META_NAME"); // obsolete
+const char *shout_get_name(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT SHOUT_ATTR_F_DEPRECATED("use shout_get_meta() with SHOUT_META_NAME"); // obsolete
 
-int shout_set_url(shout_t *self, const char *url); // obsolete
-const char *shout_get_url(shout_t *self); // obsolete
+int shout_set_url(shout_t *self, const char *url) SHOUT_ATTR_F_DEPRECATED("use shout_set_meta() with SHOUT_META_URL"); // obsolete
+const char *shout_get_url(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT SHOUT_ATTR_F_DEPRECATED("use shout_get_meta() with SHOUT_META_URL"); // obsolete
 
-int shout_set_genre(shout_t *self, const char *genre); // obsolete
-const char *shout_get_genre(shout_t *self); // obsolete
+int shout_set_genre(shout_t *self, const char *genre) SHOUT_ATTR_F_DEPRECATED("use shout_set_meta() with SHOUT_META_GENRE"); // obsolete
+const char *shout_get_genre(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT SHOUT_ATTR_F_DEPRECATED("use shout_get_meta() with SHOUT_META_GENRE"); // obsolete
 
-int shout_set_description(shout_t *self, const char *description); // obsolete
-const char *shout_get_description(shout_t *self); // obsolete
+int shout_set_description(shout_t *self, const char *description) SHOUT_ATTR_F_DEPRECATED("use shout_set_meta() with SHOUT_META_DESCRIPTION"); // obsolete
+const char *shout_get_description(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT SHOUT_ATTR_F_DEPRECATED("use shout_get_meta() with SHOUT_META_DESCRIPTION"); // obsolete
 
 /* takes a SHOUT_FORMAT_xxxx argument */
-int shout_set_format(shout_t *self, unsigned int format); // obsolete
-unsigned int shout_get_format(shout_t *self); // obsolete
+int shout_set_format(shout_t *self, unsigned int format) SHOUT_ATTR_F_DEPRECATED("Use shout_set_content_format()"); // obsolete
+unsigned int shout_get_format(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT SHOUT_ATTR_F_DEPRECATED("use shout_get_content_format()"); // obsolete
 
-int shout_set_dumpfile(shout_t *self, const char *dumpfile); // obsolete
-const char *shout_get_dumpfile(shout_t *self); // obsolete
+int shout_set_dumpfile(shout_t *self, const char *dumpfile) SHOUT_ATTR_F_DEPRECATED("Only useful with SHOUT_PROTOCOL_XAUDIOCAST which is deprecated."); // obsolete
+const char *shout_get_dumpfile(shout_t *self) SHOUT_ATTR_F_WARN_UNUSED_RESULT SHOUT_ATTR_F_DEPRECATED("Only useful with SHOUT_PROTOCOL_XAUDIOCAST which is deprecated."); // obsolete
+
+int shout_set_metadata(shout_t *self, shout_metadata_t *metadata) SHOUT_ATTR_F_WARN_UNUSED_RESULT SHOUT_ATTR_F_DEPRECATED("Use shout_set_metadata_utf8()");
 
 #ifdef __cplusplus
 }
