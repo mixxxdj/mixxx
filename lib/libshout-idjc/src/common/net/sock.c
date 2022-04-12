@@ -519,7 +519,9 @@ sock_t sock_connect_non_blocking (const char *hostname, unsigned port)
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
-    snprintf (service, sizeof (service), "%u", port);
+    int len = snprintf (service, sizeof (service), "%u", port);
+    if (len < 1 || (size_t)len >= sizeof (service))
+    	return SOCK_ERROR;
 
     if (getaddrinfo (hostname, service, &hints, &head))
         return SOCK_ERROR;
@@ -560,7 +562,9 @@ sock_t sock_connect_wto_bind (const char *hostname, int port, const char *bnd, i
     memset (&hints, 0, sizeof (hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
-    snprintf (service, sizeof (service), "%u", port);
+    int len = snprintf (service, sizeof (service), "%u", port);
+    if (len < 1 || (size_t)len >= sizeof (service))
+    	return SOCK_ERROR;
 
     if (getaddrinfo (hostname, service, &hints, &head))
         return SOCK_ERROR;
@@ -643,7 +647,9 @@ sock_t sock_get_server_socket (int port, const char *sinterface, bool prefer_ine
     hints.ai_family   = AF_UNSPEC;
     hints.ai_flags    = AI_PASSIVE | AI_ADDRCONFIG | AI_NUMERICSERV | AI_NUMERICHOST;
     hints.ai_socktype = SOCK_STREAM;
-    snprintf(service, sizeof(service), "%d", port);
+    int len = snprintf(service, sizeof(service), "%d", port);
+    if (len < 1 || (size_t)len >= sizeof (service))
+    	return SOCK_ERROR;
 
     if (getaddrinfo(sinterface, service, &hints, &res))
         return SOCK_ERROR;
