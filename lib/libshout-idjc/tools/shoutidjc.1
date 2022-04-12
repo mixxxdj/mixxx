@@ -1,10 +1,10 @@
 .Dd $Mdocdate: Dec 16 2020$
-.Dt SHOUTIDJC 1
+.Dt SHOUT 1
 .Os
 .\"
 .Sh NAME
 .\"
-.Nm shoutidjc
+.Nm shout
 .Nd Icecast source client
 .\"
 .Sh SYNOPSIS
@@ -22,7 +22,7 @@ reads data from standard input and streams it to Icecast.
 .Bl -tag -width 4n
 .\"
 .It Fl \-format Ar format
-Set stream format. This can be "ogg", "mp3", "aac", "aacp", or "webm". Default is "ogg".
+Set stream format. This can be "ogg", "mp3", or "webm". Default is "ogg".
 .\"
 .It Fl H Ar host
 See
@@ -76,7 +76,7 @@ Set stream URL.
 .It Fl \-tls-mode Ar tls-mode
 Set TLS mode. This can be "disabled", "auto", "auto_no_plain", "rfc2818", or "rfc2817". Default is "auto".
 
-When libshout-idjc is build without TLS support only "disabled", and "auto" are supported.
+When libshout is build without TLS support only "disabled", and "auto" are supported.
 .\"
 .It Fl \-usage Ar usage{,usage}
 Set stream usages. This can be:

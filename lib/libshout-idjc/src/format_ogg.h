@@ -45,7 +45,9 @@ typedef struct _ogg_codec_tag {
 } ogg_codec_t;
 
 /* codec hooks */
+#ifdef HAVE_VORBIS
 int _shout_open_vorbis(ogg_codec_t *codec, ogg_page *page);
+#endif
 
 #ifdef HAVE_THEORA
 int _shout_open_theora(ogg_codec_t *codec, ogg_page *page);

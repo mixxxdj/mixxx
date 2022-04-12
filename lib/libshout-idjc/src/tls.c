@@ -24,13 +24,11 @@
 #endif
 
 #include <string.h>
+
+#include <openssl/x509v3.h>
+
 #include <shoutidjc/shout.h>
 #include "shout_private.h"
-
-#ifndef XXX_HAVE_X509_check_host
-#   include <ctype.h>
-#endif
-
 
 struct _shout_tls {
     SSL_CTX     *ssl_ctx;
@@ -155,68 +153,13 @@ error:
     return SHOUTERR_UNSUPPORTED;
 }
 
-#ifndef XXX_HAVE_X509_check_host
-static inline int tls_check_pattern(const char *key, const char *pattern)
-{
-    for (; *key && *pattern; key++) {
-        if (*pattern == '*') {
-            for (; *pattern == '*'; pattern++) ;
-            for (; *key && *key != '.'; key++) ;
-            if (!*pattern && !*key)
-                return 1;
-            if (!*pattern || !*key)
-                return 0;
-        }
-
-        if (tolower(*key) != tolower(*pattern))
-            return 0;
-        pattern++;
-    }
-    return *key == 0 && *pattern == 0;
-}
-
-static inline int tls_check_host(X509 *cert, const char *hostname)
-{
-    char common_name[256] = "";
-    X509_NAME *xname = X509_get_subject_name(cert);
-    X509_NAME_ENTRY *xentry;
-    ASN1_STRING *sdata;
-    int i, j;
-    int ret;
-
-    ret = X509_NAME_get_text_by_NID(xname, NID_commonName, common_name, sizeof(common_name));
-    if (ret < 1 || (size_t)ret >= (sizeof(common_name)-1))
-        return SHOUTERR_TLSBADCERT;
-
-    if (!tls_check_pattern(hostname, common_name))
-        return SHOUTERR_TLSBADCERT;
-
-    /* check for inlined \0, 
-     * see https://www.blackhat.com/html/bh-usa-09/bh-usa-09-archives.html#Marlinspike 
-     */
-    for (i = -1; ; i = j) {
-        j = X509_NAME_get_index_by_NID(xname, NID_commonName, i);
-        if (j == -1)
-            break;
-    }
-
-    xentry = X509_NAME_get_entry(xname, i);
-    sdata = X509_NAME_ENTRY_get_data(xentry);
-
-    if ((size_t)ASN1_STRING_length(sdata) != strlen(common_name))
-        return SHOUTERR_TLSBADCERT;
-
-    return SHOUTERR_SUCCESS;
-}
-#endif
-
 static inline int tls_check_cert(shout_tls_t *tls)
 {
     X509 *cert = SSL_get_peer_certificate(tls->ssl);
     int cert_ok = 0;
     int ret;
 
-    if (tls->cert_error != SHOUTERR_RETRY)
+    if (tls->cert_error != SHOUTERR_RETRY && tls->cert_error != SHOUTERR_BUSY)
         return tls->cert_error;
 
     if (!cert)
@@ -230,13 +173,8 @@ static inline int tls_check_cert(shout_tls_t *tls)
         if (SSL_get_verify_result(tls->ssl) != X509_V_OK)
             break;
 
-#ifdef XXX_HAVE_X509_check_host
         if (X509_check_host(cert, tls->host, 0, 0, NULL) != 1)
             break;
-#else
-        if (tls_check_host(cert, tls->host) != SHOUTERR_SUCCESS)
-            break;
-#endif
 
         /* ok, all test passed... */
         cert_ok = 1;

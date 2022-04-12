@@ -8,6 +8,8 @@ project(shout_mixxx LANGUAGES C VERSION 2.4.1)
 add_library(${PROJECT_NAME} STATIC
     src/codec_opus.c
     src/codec_vorbis.c
+    #src/codec_speex.c
+    #src/codec_theora.c
     src/common/avl/avl.c
     src/common/net/sock.c
     src/common/net/resolver.c
@@ -18,7 +20,10 @@ add_library(${PROJECT_NAME} STATIC
     src/connection.c
     src/format_mpeg.c
     src/format_ogg.c
+    src/format_text.c
     src/format_webm.c
+    src/icy.c
+    src/legacy.c
     src/proto_http.c
     src/proto_icy.c
     src/proto_roaraudio.c

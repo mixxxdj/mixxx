@@ -96,6 +96,7 @@ static shout_connection_return_state_t shout_create_http_request_source(shout_t 
         shout_connection_set_error(connection, SHOUTERR_INSANE);
         return SHOUT_RS_ERROR;
     }
+
     /* this is lazy code that relies on the only error from queue_* being
      * SHOUTERR_MALLOC
      */

@@ -3,9 +3,12 @@
 AUTOMAKE_OPTIONS = 1.6 foreign
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = include src doc win32 tools
+SUBDIRS = include src doc win32
 if HAVE_EXAMPLES
 SUBDIRS += examples
+endif
+if HAVE_TOOLS
+SUBDIRS += tools
 endif
 
 EXTRA_DIST = INSTALL m4/acx_pthread.m4 \
