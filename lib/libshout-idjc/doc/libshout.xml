@@ -414,7 +414,7 @@
                     </funcprototype>
                 </funcsynopsis>
                 <para>
-                    Sets non-blocking mode. The default is <constant>0</constant>.
+                    Sets non-blocking mode. The default is <constant>SHOUT_BLOCKING_FULL</constant>.
                 </para>
 
                 <funcsynopsis id="shout_get_nonblocking">
@@ -424,7 +424,7 @@
                     </funcprototype>
                 </funcsynopsis>
                 <para>
-                    Returns non-blocking mode or <constant>0</constant> in case of error.
+                    Returns non-blocking mode or <constant>SHOUT_BLOCKING_FULL</constant> in case of error.
                 </para>
 
                 <funcsynopsis id="shout_set_host">
@@ -537,35 +537,6 @@
                     Returns the protocol used to connect to the server.
                 </para>
 
-                <funcsynopsis id="shout_set_format">
-                    <funcprototype>
-                        <funcdef>int <function>shout_set_format</function></funcdef>
-                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-                        <paramdef>int <parameter>format</parameter></paramdef>
-                    </funcprototype>
-                </funcsynopsis>
-                <para>
-                    Sets the audio format of this stream. The currently supported formats
-                    are listed in <link linkend="format_constants">Format Constants</link>.
-                    The default is <constant>SHOUT_FORMAT_OGG</constant>.
-                </para>
-                <warning>This function has been obsoleted and may not be included in future versions of the library.
-                    Please use <link linkend="shout_set_content_format"><function>shout_set_content_format</function></link>
-                </warning>
-
-                <funcsynopsis id="shout_get_format">
-                    <funcprototype>
-                        <funcdef>int <function>shout_get_format</function></funcdef>
-                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-                    </funcprototype>
-                </funcsynopsis>
-                <para>
-                    Returns the audio format used by this stream.
-                </para>
-                <warning>This function has been obsoleted and may not be included in future versions of the library.
-                    Please use <link linkend="shout_get_content_format"><function>shout_get_content_format</function></link>
-                </warning>
-
 
                 <funcsynopsis id="shout_set_content_format">
                     <funcprototype>
@@ -632,29 +603,6 @@
                 </funcsynopsis>
                 <para>
                     Returns the stream mount point.
-                </para>
-
-                <funcsynopsis id="shout_set_dumpfile">
-                    <funcprototype>
-                        <funcdef>int <function>shout_set_dumpfile</function></funcdef>
-                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-                        <paramdef>const char *<parameter>dumpfile</parameter></paramdef>
-                    </funcprototype>
-                </funcsynopsis>
-                <para>
-                    If the server supports it, you can request that your stream be archived
-                    on the server under the name <varname>dumpfile</varname>. This can quickly
-                    eat a lot of disk space, so think twice before setting it.
-                </para>
-
-                <funcsynopsis id="shout_get_dumpfile">
-                    <funcprototype>
-                        <funcdef>const char *<function>shout_get_dumpfile</function></funcdef>
-                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-                    </funcprototype>
-                </funcsynopsis>
-                <para>
-                    Returns the dump file, if specified.
                 </para>
 
                 <funcsynopsis id="shout_set_agent">
@@ -889,11 +837,12 @@
 
             </section>
 
-            <section><title>Metadata</title>
+            <section><title>ICY Metadata</title>
                 <para>
-                    These functions currently only make sense for MP3 streams. Vorbis streams are expected
-                    to embed metadata as vorbis comments in the audio stream.
+                    These functions are only valid for MP3 streams. All other formats are expected
+                    to embed metadata inline according to their own specification.
                 </para>
+                <warning>The functions in this section are only valid for MP3 streams.</warning>
 
                 <funcsynopsis id="shout_metadata_new">
                     <funcprototype>
@@ -950,18 +899,18 @@
                     </varlistentry>
                 </variablelist>
 
-                <funcsynopsis id="shout_set_metadata">
+                <funcsynopsis id="shout_set_metadata_utf8">
                     <funcprototype>
-                        <funcdef>int <function>shout_set_metadata</function></funcdef>
+                        <funcdef>int <function>shout_set_metadata_utf8</function></funcdef>
                         <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
                         <paramdef><type>shout_metadata_t</type> *<parameter>metadata</parameter></paramdef>
                     </funcprototype>
                 </funcsynopsis>
                 <para>
                     Sets metadata on the connection <varname>self</varname> to <varname>metadata</varname>.
-                    Only MP3 streams support this type of metadata update. You may use this function
-                    on defined but closed connections (this is useful if you simply want to set the
-                    metadata for a stream provided by another process).
+                    Only MP3 streams support this type of metadata update.
+                    The data as added via <link linkend="shout_metadata_add"><function>shout_metadata_add</function></link>
+                    must be encoded in utf-8.
                 </para>
 
                 <variablelist><title>Return Values</title>
@@ -1003,7 +952,7 @@
 
             </section>
 
-            <section><title>Obsolate metadata Interface</title>
+            <section><title>Obsolate Interface</title>
                 <warning>
                     All those functions have been replaced by <function>shout_set_meta</function> and
                     <function>shout_get_meta</function>. They may be removed by newer versions of this library.
@@ -1094,6 +1043,70 @@
                     Returns the stream description.
                 </para>
 
+                <funcsynopsis id="shout_set_dumpfile">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_dumpfile</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>dumpfile</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    If the server supports it, you can request that your stream be archived
+                    on the server under the name <varname>dumpfile</varname>. This can quickly
+                    eat a lot of disk space, so think twice before setting it.
+                </para>
+
+                <funcsynopsis id="shout_get_dumpfile">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_dumpfile</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the dump file, if specified.
+                </para>
+
+                <funcsynopsis id="shout_set_format">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_format</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>int <parameter>format</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the audio format of this stream. The currently supported formats
+                    are listed in <link linkend="format_constants">Format Constants</link>.
+                    The default is <constant>SHOUT_FORMAT_OGG</constant>.
+                </para>
+                <warning>This function has been obsoleted and may not be included in future versions of the library.
+                    Please use <link linkend="shout_set_content_format"><function>shout_set_content_format</function></link>
+                </warning>
+
+                <funcsynopsis id="shout_get_format">
+                    <funcprototype>
+                        <funcdef>int <function>shout_get_format</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the audio format used by this stream.
+                </para>
+                <warning>This function has been obsoleted and may not be included in future versions of the library.
+                    Please use <link linkend="shout_get_content_format"><function>shout_get_content_format</function></link>
+                </warning>
+
+                <funcsynopsis id="shout_set_metadata">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_metadata</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef><type>shout_metadata_t</type> *<parameter>metadata</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets metadata on the connection <varname>self</varname> to <varname>metadata</varname>.
+                    Only MP3 streams support this type of metadata update.
+                    Please use <link linkend="shout_set_metadata_utf8"><function>shout_set_metadata_utf8</function></link>
+                </para>
             </section>
 
         </section>
@@ -1197,6 +1210,23 @@
                 <varlistentry>
                     <term><constant>SHOUTERR_RETRY</constant></term>
                     <listitem>The caller should retry this call later.</listitem>
+                </varlistentry>
+            </variablelist>
+
+            <variablelist id="blocking_constants"><title>Blocking</title>
+                <varlistentry>
+                    <term><constant>SHOUT_BLOCKING_DEFAULT</constant></term>
+                    <listitem>Selects the default blocking mode.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_BLOCKING_FULL</constant></term>
+                    <listitem>The API is in full blocking mode.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_BLOCKING_NONE</constant></term>
+                    <listitem>The API will not block.</listitem>
                 </varlistentry>
             </variablelist>
 

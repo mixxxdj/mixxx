@@ -103,10 +103,6 @@ static inline int string2format(const char *name, unsigned int *format)
         *format = SHOUT_FORMAT_MP3;
     } else if (strcmp(name, "webm") == 0) {
         *format = SHOUT_FORMAT_WEBM;
-    } else if (strcmp(name, "aac") == 0) {
-        *format = SHOUT_FORMAT_AAC;
-    } else if (strcmp(name, "aacp") == 0) {
-        *format = SHOUT_FORMAT_AACPLUS;
     } else {
         return -1;
     }
@@ -236,7 +232,7 @@ void usage_shout(const char *progname)
         "\n"
         "OPTIONS:\n"
         "General options:\n"
-        "  --format <format>                    set format {ogg|mp3|webm|aac|aacp}\n"
+        "  --format <format>                    set format {ogg|mp3|webm}\n"
         "  -H <host>, --host <host>             set host\n"
         "  -h, --help                           show this help\n"
         "  --mount <mountpoint>                 set mountpoint (e.g. \"/example.ogg\")\n"

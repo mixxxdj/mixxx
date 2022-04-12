@@ -187,7 +187,9 @@ static shout_connection_return_state_t shout_connection_iter__socket(shout_conne
         break;
         case SHOUT_SOCKSTATE_TLS_CONNECTING:
         case SHOUT_SOCKSTATE_TLS_CONNECTED:
-            rc = shout_tls_try_connect(con->tls);
+            do {
+                rc = shout_tls_try_connect(con->tls);
+            } while (rc == SHOUTERR_RETRY);
             if (rc == SHOUTERR_SUCCESS) {
                 con->current_socket_state = SHOUT_SOCKSTATE_TLS_VERIFIED;
                 return SHOUT_RS_DONE;
