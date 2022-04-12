@@ -559,7 +559,6 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &AutoDJProcessor::crossfaderChanged);
         deck1->disconnect(this);
         deck2->disconnect(this);
-        m_pCOCrossfader->set(0);
         emitAutoDJStateChanged(m_eState);
     }
     return ADJ_OK;
