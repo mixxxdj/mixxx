@@ -574,7 +574,7 @@ void CrateFeature::slotImportPlaylist() {
 
     // Update the import/export crate directory
     QString fileDirectory(playlistFile);
-    fileDirectory.truncate(playlistFile.lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(playlistFile.lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
             ConfigValue(fileDirectory));
 
@@ -614,7 +614,7 @@ void CrateFeature::slotCreateImportCrate() {
 
     // Set last import directory
     QString fileDirectory(playlistFiles.first());
-    fileDirectory.truncate(playlistFiles.first().lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(playlistFiles.first().lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
             ConfigValue(fileDirectory));
 
@@ -706,7 +706,7 @@ void CrateFeature::slotExportPlaylist() {
     }
     // Update the import/export crate directory
     QString fileDirectory(fileLocation);
-    fileDirectory.truncate(fileLocation.lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(fileLocation.lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportCrateDirectoryKey,
             ConfigValue(fileDirectory));
 
