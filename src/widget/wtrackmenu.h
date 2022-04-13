@@ -49,11 +49,11 @@ class WTrackMenu : public QMenu {
         FileBrowser = 1 << 11,
         Properties = 1 << 12,
         SearchRelated = 1 << 13,
-        UpdateReplayGain = 1 << 14,
+        UpdateReplayGainFromPregain = 1 << 14,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
-                Properties | SearchRelated | UpdateReplayGain
+                Properties | SearchRelated | UpdateReplayGainFromPregain
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
