@@ -220,7 +220,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pRemoveFromDiskMenu{};
 
     // Update ReplayGain from Track
-    QAction* m_pUpdateReplayGain{};
+    QAction* m_pUpdateReplayGainAct{};
 
     // Reload Track Metadata Action:
     QAction* m_pImportMetadataFromFileAct{};

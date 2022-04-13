@@ -388,9 +388,9 @@ void WTrackMenu::createActions() {
     // for WTrackmenu instantiated by WTrackProperty and other deck widgets, thus
     // don't create it if a track model is set.
     if (!m_pTrackModel && featureIsEnabled(Feature::UpdateReplayGain)) {
-        m_pUpdateReplayGain =
+        m_pUpdateReplayGainAct =
                 new QAction(tr("Update ReplayGain from Deck Gain"), m_pClearMetadataMenu);
-        connect(m_pUpdateReplayGain,
+        connect(m_pUpdateReplayGainAct,
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotUpdateReplayGainFromPregain);
@@ -531,8 +531,8 @@ void WTrackMenu::setupActions() {
 
     // This action is created only for menus instantiated by deck widgets (e.g.
     // WTrackProperty) and if UpdateReplayGain is supported.
-    if (m_pUpdateReplayGain) {
-        addAction(m_pUpdateReplayGain);
+    if (m_pUpdateReplayGainAct) {
+        addAction(m_pUpdateReplayGainAct);
     }
 
     addSeparator();
@@ -771,8 +771,8 @@ void WTrackMenu::updateMenus() {
     // This action is created only for menus instantiated by deck widgets (e.g.
     // WTrackProperty) and if UpdateReplayGain is supported.
     // Disable it if no deck group was set.
-    if (m_pUpdateReplayGain) {
-        m_pUpdateReplayGain->setEnabled(!m_deckGroup.isEmpty());
+    if (m_pUpdateReplayGainAct) {
+        m_pUpdateReplayGainAct->setEnabled(!m_deckGroup.isEmpty());
     }
 
     if (featureIsEnabled(Feature::Color)) {
