@@ -1020,7 +1020,7 @@ MixtrackPlatinum.HeadGain.prototype = new components.Pot({
         // control only if the control was moved when focus was switched. This
         // is to avoid a phantom triggering of soft takeover that can happen if
         // ignoreNextValue() is called un-conditionally when the control target
-        // is changed (like in shfit()/unshift()).
+        // is changed (like in shift()/unshift()).
         if (this.ignore_next == "sampler" && !this.shifted) {
             this.sampler.forEachComponent(function(component) {
                 engine.softTakeoverIgnoreNextValue(component.group, 'volume');

@@ -46,7 +46,7 @@
       -->
     <key>com.apple.security.cs.allow-jit</key>
     <true/>
-    <!-- Allow unsigend executable memory
+    <!-- Allow unsigned executable memory
          This is necessary for controller mappings that use Qt's JavaScript JIT compiler.
       -->
     <key>com.apple.security.cs.allow-unsigned-executable-memory</key>

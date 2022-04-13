@@ -199,7 +199,7 @@
               <Children>
 
                 <!-- Waveforms & spinnies are shown here as stack or
-                  separatley in each deck -->
+                  separately in each deck -->
                 <Template src="skin:../Deere/parallel_waveforms.xml"/>
 
                 <WidgetGroup><!-- Main section -->
