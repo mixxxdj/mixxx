@@ -705,7 +705,7 @@ Hercules4Mx.onKillOrSourceChange4 = function(value, group, control) {
 //Any of the shift buttons for effects has been pressed. This button simply changes
 //the controller internal state, but we can use it for other reasons while the user maintains it pressed.
 Hercules4Mx.pressEffectShift = function(midichan, control, value, status, group) {
-    // I don't diferentiate between decks. I don't expect two shift buttons being pressed at the same time.
+    // I don't differentiate between decks. I don't expect two shift buttons being pressed at the same time.
     Hercules4Mx.shiftStatus.pressed = (value) ? true : false;
 };
 //Indicator of the shift effect state change. This happens always after shift is released
