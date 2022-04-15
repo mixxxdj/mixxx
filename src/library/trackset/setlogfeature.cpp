@@ -6,6 +6,7 @@
 
 #include "control/controlobject.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
@@ -22,6 +23,8 @@
 namespace {
 constexpr int kNumToplevelHistoryEntries = 5;
 }
+
+using namespace mixxx::library::prefs;
 
 SetlogFeature::SetlogFeature(
         Library* pLibrary,
@@ -93,9 +96,9 @@ void SetlogFeature::deleteAllPlaylistsWithFewerTracks() {
                                           ->internalCollection()
                                           ->database());
     int minTrackCount = m_pConfig->getValue(
-            ConfigKey("[Library]", "history_cleanup_min_tracks"), 1);
+            kHistoryCleanupMinTracksConfigKey, 1);
     bool keepLockedPlaylists = m_pConfig->getValue(
-            ConfigKey("[Library]", "history_cleanup_keep_locked"), false);
+            kHistoryCleanupKeepLockedConfigKey, false);
     m_playlistDao.deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG,
             minTrackCount,
             keepLockedPlaylists);

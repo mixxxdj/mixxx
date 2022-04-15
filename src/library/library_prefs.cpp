@@ -13,15 +13,35 @@ const ConfigKey mixxx::library::prefs::kLegacyDirectoryConfigKey =
 const QString mixxx::library::prefs::kConfigGroup =
         QStringLiteral("[Library]");
 
+const ConfigKey mixxx::library::prefs::kRescanOnStartupConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("RescanOnStartup")};
+
 const ConfigKey mixxx::library::prefs::kKeyNotationConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("key_notation")};
 
+const ConfigKey mixxx::library::prefs::kTrackDoubleClickActionConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("TrackLoadAction")};
+
 const ConfigKey mixxx::library::prefs::kEditMetadataSelectedClickConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("EditMetadataSelectedClick")};
+
+const ConfigKey mixxx::library::prefs::kHistoryCleanupMinTracksConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("history_cleanup_min_tracks")};
+
+const ConfigKey mixxx::library::prefs::kHistoryCleanupKeepLockedConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("history_cleanup_keep_locked")};
 
 const ConfigKey mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey =
         ConfigKey{
@@ -39,3 +59,8 @@ const ConfigKey mixxx::library::prefs::kSyncSeratoMetadataConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SeratoMetadataExport")};
+
+const ConfigKey mixxx::library::prefs::kUseRelativePathOnExportConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("UseRelativePathOnExport")};

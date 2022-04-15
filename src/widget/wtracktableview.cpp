@@ -352,9 +352,9 @@ void WTrackTableView::initTrackMenu() {
 
 // slot
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
-    // Read the current TrackLoadAction settings
+    // Read the current TrackDoubleClickAction setting
     int doubleClickActionConfigValue =
-            m_pConfig->getValue(ConfigKey("[Library]", "TrackLoadAction"),
+            m_pConfig->getValue(mixxx::library::prefs::kTrackDoubleClickActionConfigKey,
                     static_cast<int>(DlgPrefLibrary::TrackDoubleClickAction::LoadToDeck));
     DlgPrefLibrary::TrackDoubleClickAction doubleClickAction =
             static_cast<DlgPrefLibrary::TrackDoubleClickAction>(

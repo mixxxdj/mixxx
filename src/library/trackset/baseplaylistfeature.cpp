@@ -7,6 +7,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
 #include "library/parserm3u.h"
@@ -30,6 +31,8 @@ const ConfigKey kConfigKeyLastImportExportPlaylistDirectory(
         "[Library]", "LastImportExportPlaylistDirectory");
 
 } // anonymous namespace
+
+using namespace mixxx::library::prefs;
 
 BasePlaylistFeature::BasePlaylistFeature(
         Library* pLibrary,
@@ -568,7 +571,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
     // check config if relative paths are desired
     bool useRelativePath = m_pConfig->getValue<bool>(
-            ConfigKey("[Library]", "UseRelativePathOnExport"));
+            kUseRelativePathOnExportConfigKey);
 
     if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
         ParserCsv::writeCSVFile(fileLocation, pPlaylistTableModel.data(), useRelativePath);
