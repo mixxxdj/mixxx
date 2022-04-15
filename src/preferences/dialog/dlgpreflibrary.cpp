@@ -191,6 +191,7 @@ void DlgPrefLibrary::initializeDirList() {
 
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
+    spinbox_min_history_tracks->setValue(1);
     checkBox_SyncTrackMetadata->setChecked(false);
     checkBox_SeratoMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
@@ -213,12 +214,17 @@ void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","RescanOnStartup"), false));
+
+    spinbox_min_history_tracks->setValue(m_pConfig->getValue(
+            ConfigKey("[Library]", "history_cleanup_min_tracks"), 1));
+
     checkBox_SyncTrackMetadata->setChecked(
             m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
     checkBox_SeratoMetadataExport->setChecked(
             m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
+
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowRhythmboxLibrary"), true));
     checkBox_show_banshee->setChecked(m_pConfig->getValue(
@@ -245,8 +251,8 @@ void DlgPrefLibrary::slotUpdate() {
         radioButton_dbclick_ignore->setChecked(true);
         break;
     default:
-            radioButton_dbclick_deck->setChecked(true);
-            break;
+        radioButton_dbclick_deck->setChecked(true);
+        break;
     }
 
     bool editMetadataSelectedClick = m_pConfig->getValue(
@@ -385,6 +391,10 @@ void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
 void DlgPrefLibrary::slotApply() {
     m_pConfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
+
+    m_pConfig->set(ConfigKey("[Library]", "history_cleanup_min_tracks"),
+            ConfigValue(spinbox_min_history_tracks->value()));
+
     m_pConfig->set(
             kSyncTrackMetadataConfigKey,
             ConfigValue{checkBox_SyncTrackMetadata->isChecked()});
