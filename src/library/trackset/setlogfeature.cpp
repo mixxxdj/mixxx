@@ -385,8 +385,10 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         m_recentTracks.push_front(currentPlayingTrackId);
 
         // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
-        constexpr int kRecentTrackWindow = 6;
-        while (m_recentTracks.size() > kRecentTrackWindow) {
+        const unsigned int recentTrackWindow = m_pConfig->getValue(
+                kHistoryRecentlyPlayedThresholdConfigKey,
+                kHistoryRecentlyPlayedThresholdDefault);
+        while (m_recentTracks.size() > recentTrackWindow) {
             m_recentTracks.pop_back();
         }
     }

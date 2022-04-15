@@ -191,6 +191,8 @@ void DlgPrefLibrary::initializeDirList() {
 
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
+    spinbox_history_recently_played_threshold->setValue(
+            kHistoryRecentlyPlayedThresholdDefault);
     spinbox_min_history_tracks->setValue(1);
     checkBox_history_cleanup_keep_locked->setChecked(false);
     checkBox_SyncTrackMetadata->setChecked(false);
@@ -201,8 +203,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
-    radioButton_dbclick_bottom->setChecked(false);
     checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
+    radioButton_dbclick_bottom->setChecked(false);
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
@@ -216,6 +218,9 @@ void DlgPrefLibrary::slotUpdate() {
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             kRescanOnStartupConfigKey, false));
 
+    spinbox_history_recently_played_threshold->setValue(m_pConfig->getValue(
+            kHistoryRecentlyPlayedThresholdConfigKey,
+            kHistoryRecentlyPlayedThresholdDefault));
     spinbox_min_history_tracks->setValue(m_pConfig->getValue(
             kHistoryCleanupMinTracksConfigKey, 1));
     checkBox_history_cleanup_keep_locked->setChecked(m_pConfig->getValue(
@@ -395,6 +400,8 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(kRescanOnStartupConfigKey,
             ConfigValue((int)checkBox_library_scan->isChecked()));
 
+    m_pConfig->set(kHistoryRecentlyPlayedThresholdConfigKey,
+            ConfigValue(spinbox_history_recently_played_threshold->value()));
     m_pConfig->set(kHistoryCleanupMinTracksConfigKey,
             ConfigValue(spinbox_min_history_tracks->value()));
     m_pConfig->set(kHistoryCleanupKeepLockedConfigKey,
