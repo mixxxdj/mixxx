@@ -36,13 +36,11 @@ SetlogFeature::SetlogFeature(
                           /*keep deleted tracks*/ true),
                   QStringLiteral("SETLOGHOME"),
                   QStringLiteral("history")),
-          m_playlistId(kInvalidPlaylistId) {
-    // clear old empty entries
-    ScopedTransaction transaction(pLibrary->trackCollectionManager()
-                                          ->internalCollection()
-                                          ->database());
-    m_playlistDao.deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG, 1);
-    transaction.commit();
+          m_playlistId(kInvalidPlaylistId),
+          m_pLibrary(pLibrary),
+          m_pConfig(pConfig) {
+    // remove unneeded entries
+    deleteAllPlaylistsWithFewerTracks();
 
     //construct child model
     m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
@@ -72,6 +70,8 @@ SetlogFeature::~SetlogFeature() {
             m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
         m_playlistDao.deletePlaylist(m_playlistId);
     }
+    // Also clean history up when shutting down in case the track threshold changed
+    deleteAllPlaylistsWithFewerTracks();
 }
 
 QVariant SetlogFeature::title() {
@@ -86,6 +86,17 @@ void SetlogFeature::bindLibraryWidget(
             this,
             &SetlogFeature::slotPlayingTrackChanged);
     m_libraryWidget = QPointer(libraryWidget);
+}
+
+void SetlogFeature::deleteAllPlaylistsWithFewerTracks() {
+    ScopedTransaction transaction(m_pLibrary->trackCollectionManager()
+                                          ->internalCollection()
+                                          ->database());
+    int minTrackCount = m_pConfig->getValue(
+            ConfigKey("[Library]", "history_cleanup_min_tracks"), 1);
+    m_playlistDao.deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG,
+            minTrackCount);
+    transaction.commit();
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
