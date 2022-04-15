@@ -228,17 +228,26 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
 }
 
 int PlaylistDAO::deleteAllPlaylistsWithFewerTracks(
-        PlaylistDAO::HiddenType type, int minNumberOfTracks) {
+        PlaylistDAO::HiddenType type, int minNumberOfTracks, bool keepLockedPlaylists) {
     VERIFY_OR_DEBUG_ASSERT(minNumberOfTracks > 0) {
         return 0; // nothing to do, probably unintended invocation
     }
 
     QSqlQuery query(m_database);
-    query.prepare(QStringLiteral(
-            "SELECT id FROM Playlists  "
-            "WHERE (SELECT count(playlist_id) FROM PlaylistTracks WHERE "
-            "Playlists.ID = PlaylistTracks.playlist_id) < :length AND "
-            "Playlists.hidden = :hidden"));
+    if (keepLockedPlaylists) { // delete only unlocked playlists
+        query.prepare(QStringLiteral(
+                "SELECT id FROM Playlists  "
+                "WHERE (SELECT count(playlist_id) FROM PlaylistTracks WHERE "
+                "Playlists.ID = PlaylistTracks.playlist_id) < :length AND "
+                "Playlists.hidden = :hidden AND Playlists.locked = :locked"));
+        query.bindValue(":locked", 0);
+    } else { // delete ALL playlists
+        query.prepare(QStringLiteral(
+                "SELECT id FROM Playlists  "
+                "WHERE (SELECT count(playlist_id) FROM PlaylistTracks WHERE "
+                "Playlists.ID = PlaylistTracks.playlist_id) < :length AND "
+                "Playlists.hidden = :hidden"));
+    }
     query.bindValue(":hidden", static_cast<int>(type));
     query.bindValue(":length", minNumberOfTracks);
     if (!query.exec()) {

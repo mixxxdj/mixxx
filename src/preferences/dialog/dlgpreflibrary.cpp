@@ -192,6 +192,7 @@ void DlgPrefLibrary::initializeDirList() {
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
     spinbox_min_history_tracks->setValue(1);
+    checkBox_history_cleanup_keep_locked->setChecked(false);
     checkBox_SyncTrackMetadata->setChecked(false);
     checkBox_SeratoMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
@@ -217,6 +218,8 @@ void DlgPrefLibrary::slotUpdate() {
 
     spinbox_min_history_tracks->setValue(m_pConfig->getValue(
             ConfigKey("[Library]", "history_cleanup_min_tracks"), 1));
+    checkBox_history_cleanup_keep_locked->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "history_cleanup_keep_locked"), false));
 
     checkBox_SyncTrackMetadata->setChecked(
             m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
@@ -394,6 +397,8 @@ void DlgPrefLibrary::slotApply() {
 
     m_pConfig->set(ConfigKey("[Library]", "history_cleanup_min_tracks"),
             ConfigValue(spinbox_min_history_tracks->value()));
+    m_pConfig->set(ConfigKey("[Library]", "history_cleanup_keep_locked"),
+            ConfigValue((int)checkBox_history_cleanup_keep_locked->isChecked()));
 
     m_pConfig->set(
             kSyncTrackMetadataConfigKey,
@@ -401,6 +406,7 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(
             kSyncSeratoMetadataConfigKey,
             ConfigValue{checkBox_SeratoMetadataExport->isChecked()});
+
     m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
@@ -415,6 +421,7 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
+
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
         dbclick_status = static_cast<int>(TrackDoubleClickAction::AddToAutoDJBottom);

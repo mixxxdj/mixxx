@@ -94,8 +94,11 @@ void SetlogFeature::deleteAllPlaylistsWithFewerTracks() {
                                           ->database());
     int minTrackCount = m_pConfig->getValue(
             ConfigKey("[Library]", "history_cleanup_min_tracks"), 1);
+    bool keepLockedPlaylists = m_pConfig->getValue(
+            ConfigKey("[Library]", "history_cleanup_keep_locked"), false);
     m_playlistDao.deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG,
-            minTrackCount);
+            minTrackCount,
+            keepLockedPlaylists);
     transaction.commit();
 }
 
