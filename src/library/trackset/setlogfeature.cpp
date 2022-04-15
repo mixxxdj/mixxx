@@ -296,6 +296,8 @@ void SetlogFeature::slotGetNewPlaylist() {
         qDebug() << "Setlog playlist Creation Failed";
         qDebug() << "An unknown error occurred while creating playlist: "
                  << set_log_name;
+    } else {
+        m_recentTracks.clear();
     }
 
     reloadChildModel(m_playlistId); // For moving selection
