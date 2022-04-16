@@ -53,3 +53,9 @@ src/mixxx.rc.include
 src/mixxx.res
 src/test/**/*.actual
 res/qrc_mixxx.cc
+.vs/CMake Overview
+.vs/mixxx/v16/.suo
+.vs/mixxx/v16/Browse.VC.db
+.vs/ProjectSettings.json
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json

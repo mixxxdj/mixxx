@@ -433,9 +433,42 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         }
     }
 
-    if (configVersion.startsWith("1.12") ||
-        configVersion.startsWith("2.0") ||
-        configVersion.startsWith("2.1.0")) {
+    if (configVersion.startsWith("1.12")) {
+        qDebug() << "Upgrading from v1.12.x...";
+        // Upgrade tasks go here
+        // Nothing to change, really
+        configVersion = "2.0.0";
+        config->set(ConfigKey("[Config]","Version"), ConfigValue("2.0.0"));
+    }
+
+    if (configVersion.startsWith("2.0")) {
+        qDebug() << "Upgrading from v2.0.x...";
+        // Upgrade tasks go here
+        // Nothing to change, really
+        configVersion = "2.1.0";
+        config->set(ConfigKey("[Config]","Version"), ConfigValue("2.1.0"));
+    }
+
+    if (configVersion.startsWith("2.1")) {
+        qDebug() << "Upgrading from v2.1.x...";
+        // Upgrade tasks go here
+        // Nothing to change, really
+        configVersion = "2.2.0";
+        config->set(ConfigKey("[Config]","Version"), ConfigValue("2.2.0"));
+    }
+
+    if (configVersion.startsWith("2.2")) {
+        qDebug() << "Upgrading from v2.2.x...";
+        // Upgrade tasks go here
+        // Nothing to change, really
+        configVersion = "2.3.0";
+        config->set(ConfigKey("[Config]","Version"), ConfigValue("2.3.0"));
+    }
+
+
+    if (configVersion.startsWith("2.3") ||
+        configVersion.startsWith("2.3.1") ||
+        configVersion.startsWith("2.2.2")) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
         config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
