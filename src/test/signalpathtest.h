@@ -163,9 +163,13 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
         // Wait for the track to load.
         ProcessBuffer();
-        while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
-            QTest::qSleep(1); // millis
+        for (int i = 0; i < 2000; ++i) {
+            if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+                break;
+            }
+            QTest::qSleep(1); // sleep 1 ms for waiting 2 s at max
         }
+        DEBUG_ASSERT(pEngineDeck->getEngineBuffer()->isTrackLoaded());
     }
 
     // Asserts that the contents of the output buffer matches a reference
