@@ -69,7 +69,8 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
 };
 
 TEST_F(ControllerScriptEngineLegacyTest, commonScriptHasNoErrors) {
-    QFileInfo commonScript("./res/controllers/common-controller-scripts.js");
+    QFileInfo commonScript(config()->getResourcePath() +
+            QStringLiteral("/controllers/common-controller-scripts.js"));
     EXPECT_TRUE(evaluateScriptFile(commonScript));
 }
 
