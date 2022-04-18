@@ -20,6 +20,7 @@ QString makeTestConfigFile(const QString& path) {
 
 // Static initialization
 QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
+QString MixxxTest::s_TestPath;
 
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     CmdlineArgs args;
