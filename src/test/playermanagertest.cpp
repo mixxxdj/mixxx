@@ -118,6 +118,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
 
     // Load a track and eject it
     TrackPointer pTrack1 = getOrAddTrackByLocation(kTrackLocationTest1);
+    ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
     deck1->slotLoadTrack(pTrack1, false);
@@ -131,6 +132,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
 
     // Load another track.
     TrackPointer pTrack2 = getOrAddTrackByLocation(kTrackLocationTest2);
+    ASSERT_NE(nullptr, pTrack2);
     deck1->slotLoadTrack(pTrack2, false);
 
     // Ejecting in an empty deck loads the last-ejected track.
@@ -147,6 +149,7 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     auto deck1 = m_pPlayerManager->getDeck(1);
     // Load a track and the load another one
     TrackPointer pTrack1 = getOrAddTrackByLocation(kTrackLocationTest1);
+    ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
     deck1->slotLoadTrack(pTrack1, false);
@@ -159,6 +162,7 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
 
     // Load another track, replacing the first, causing it to be unloaded.
     TrackPointer pTrack2 = getOrAddTrackByLocation(kTrackLocationTest2);
+    ASSERT_NE(nullptr, pTrack2);
     deck1->slotLoadTrack(pTrack2, false);
     m_pEngine->process(1024);
     while (!deck1->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
@@ -176,6 +180,7 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
 TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
     // Save an invalid trackid in playermanager.
     auto pTrack = Track::newDummy(kTrackLocationTest1, TrackId(10));
+    ASSERT_NE(nullptr, pTrack);
     m_pPlayerManager->slotSaveEjectedTrack(pTrack);
     auto deck1 = m_pPlayerManager->getDeck(1);
     // Does nothing -- no crash.

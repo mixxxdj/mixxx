@@ -373,6 +373,7 @@ class SyncTrackMetadataTest : public LibraryTest {
     void checkTrackRecordSourceSyncStatus(
             mixxx::TrackRecord::SourceSyncStatus expectedSourceSyncStatus) const {
         const auto pTrack = prepareTestTrack();
+        ASSERT_NE(nullptr, pTrack);
         const mixxx::TrackRecord emptyTrackRecord;
         EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Void,
                 emptyTrackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
