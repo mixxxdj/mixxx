@@ -22,8 +22,7 @@ using ::testing::Return;
 
 static int kDefaultTransitionTime = 10;
 const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
-const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test-png.mp3");
+const QString kTrackLocationTest = QStringLiteral("/id3-test-data/cover-test-png.mp3");
 
 class FakeMaster {
   public:
@@ -176,7 +175,7 @@ class AutoDJProcessorTest : public LibraryTest {
 
     TrackPointer newTestTrack(TrackId trackId) const {
         TrackPointer pTrack(
-                Track::newDummy(kTrackLocationTest, trackId));
+                Track::newDummy(getTestPath() + kTrackLocationTest, trackId));
         EXPECT_EQ(
                 SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
                 SoundSourceProxy(pTrack).updateTrackFromSource(
@@ -232,7 +231,7 @@ class AutoDJProcessorTest : public LibraryTest {
 
     TrackId addTrackToCollection(const QString& trackLocation) {
         TrackPointer pTrack =
-                getOrAddTrackByLocation(trackLocation);
+                getOrAddTrackByLocation(getTestPath() + trackLocation);
         return pTrack ? pTrack->getId() : TrackId();
     }
 

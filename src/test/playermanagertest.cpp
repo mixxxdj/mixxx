@@ -16,16 +16,18 @@
 #include "track/track.h"
 #include "util/cmdlineargs.h"
 
-const QString kTrackLocationTest1(QDir::currentPath() %
-        "/src/test/id3-test-data/cover-test-png.mp3");
-const QString kTrackLocationTest2(QDir::currentPath() %
-        "/src/test/id3-test-data/cover-test-vbr.mp3");
+namespace {
+
+const QString kTrackLocationTest1 = QStringLiteral("/id3-test-data/cover-test-png.mp3");
+const QString kTrackLocationTest2 = QStringLiteral("/id3-test-data/cover-test-vbr.mp3");
 
 void deleteTrack(Track* pTrack) {
     // Delete track objects directly in unit tests with
     // no main event loop
     delete pTrack;
 };
+
+} // namespace
 
 // We can't inherit from LibraryTest because that creates a key_notation control object that is also
 // created by the Library object itself. The duplicated CO creation causes a debug assert.
@@ -117,7 +119,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     ASSERT_EQ(nullptr, deck1->getLoadedTrack());
 
     // Load a track and eject it
-    TrackPointer pTrack1 = getOrAddTrackByLocation(kTrackLocationTest1);
+    TrackPointer pTrack1 = getOrAddTrackByLocation(getTestPath() + kTrackLocationTest1);
     ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
@@ -131,7 +133,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     deck1->slotEjectTrack(1.0);
 
     // Load another track.
-    TrackPointer pTrack2 = getOrAddTrackByLocation(kTrackLocationTest2);
+    TrackPointer pTrack2 = getOrAddTrackByLocation(getTestPath() + kTrackLocationTest2);
     ASSERT_NE(nullptr, pTrack2);
     deck1->slotLoadTrack(pTrack2, false);
 
@@ -148,7 +150,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
 TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     auto deck1 = m_pPlayerManager->getDeck(1);
     // Load a track and the load another one
-    TrackPointer pTrack1 = getOrAddTrackByLocation(kTrackLocationTest1);
+    TrackPointer pTrack1 = getOrAddTrackByLocation(getTestPath() + kTrackLocationTest1);
     ASSERT_NE(nullptr, pTrack1);
     TrackId testId1 = pTrack1->getId();
     ASSERT_TRUE(testId1.isValid());
@@ -161,7 +163,7 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     }
 
     // Load another track, replacing the first, causing it to be unloaded.
-    TrackPointer pTrack2 = getOrAddTrackByLocation(kTrackLocationTest2);
+    TrackPointer pTrack2 = getOrAddTrackByLocation(getTestPath() + kTrackLocationTest2);
     ASSERT_NE(nullptr, pTrack2);
     deck1->slotLoadTrack(pTrack2, false);
     m_pEngine->process(1024);
@@ -179,7 +181,7 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
 
 TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
     // Save an invalid trackid in playermanager.
-    auto pTrack = Track::newDummy(kTrackLocationTest1, TrackId(10));
+    auto pTrack = Track::newDummy(getTestPath() + kTrackLocationTest1, TrackId(10));
     ASSERT_NE(nullptr, pTrack);
     m_pPlayerManager->slotSaveEjectedTrack(pTrack);
     auto deck1 = m_pPlayerManager->getDeck(1);

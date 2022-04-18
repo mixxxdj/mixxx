@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QtDebug>
 
+#include "test/mixxxtest.h"
 #include "track/beats.h"
 #include "track/serato/beatgrid.h"
 #include "track/serato/beatsimporter.h"
@@ -84,7 +85,7 @@ class SeratoBeatGridTest : public testing::Test {
 };
 
 TEST_F(SeratoBeatGridTest, ParseBeatGridDataMP3) {
-    parseBeatGridDataInDirectory(QDir("src/test/serato/data/mp3/beatgrid"),
+    parseBeatGridDataInDirectory(QDir(MixxxTest::testPath() + "/serato/data/mp3/beatgrid"),
             mixxx::taglib::FileType::MP3);
 }
 
@@ -93,7 +94,7 @@ TEST_F(SeratoBeatGridTest, ParseEmptyDataMP3) {
 }
 
 TEST_F(SeratoBeatGridTest, ParseBeatGridDataMP4) {
-    parseBeatGridDataInDirectory(QDir("src/test/serato/data/mp4/beatgrid"),
+    parseBeatGridDataInDirectory(QDir(MixxxTest::testPath() + "/serato/data/mp4/beatgrid"),
             mixxx::taglib::FileType::MP4);
 }
 
@@ -102,7 +103,7 @@ TEST_F(SeratoBeatGridTest, ParseEmptyDataMP4) {
 }
 
 TEST_F(SeratoBeatGridTest, ParseBeatGridDataFLAC) {
-    parseBeatGridDataInDirectory(QDir("src/test/serato/data/flac/beatgrid"),
+    parseBeatGridDataInDirectory(QDir(MixxxTest::testPath() + "/serato/data/flac/beatgrid"),
             mixxx::taglib::FileType::FLAC);
 }
 
