@@ -485,3 +485,8 @@ template<>
 QString ConfigObject<ConfigValue>::computeResourcePath() {
     return computeResourcePathImpl();
 }
+
+template<>
+QString ConfigObject<ConfigValueKbd>::computeResourcePath() {
+    return computeResourcePathImpl();
+}
