@@ -272,17 +272,6 @@
        </widget>
       </item>
 
-      <item row="3" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_history_cleanup_keep_locked">
-        <property name="toolTip">
-         <string>Locked history playlist will not be deleted no matter how many tracks they contain.&lt;br/&gt;&lt;br/&gt;Note: the cleanup will be performed during startup and shutdown of Mixxx.</string>
-        </property>
-        <property name="text">
-         <string>Keep locked history playlists</string>
-        </property>
-       </widget>
-      </item>
-
      </layout>
     </widget>
    </item><!-- History -->
@@ -546,7 +535,6 @@
   <tabstop>radioButton_dbclick_ignore</tabstop>
   <tabstop>spinbox_history_recently_played_threshold</tabstop>
   <tabstop>spinbox_min_history_tracks</tabstop>
-  <tabstop>checkBox_history_cleanup_keep_locked</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
   <tabstop>spinBoxRowHeight</tabstop>
   <tabstop>libraryFont</tabstop>

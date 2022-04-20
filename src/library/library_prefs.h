@@ -24,8 +24,6 @@ extern const ConfigKey kEditMetadataSelectedClickConfigKey;
 
 extern const ConfigKey kHistoryCleanupMinTracksConfigKey;
 
-extern const ConfigKey kHistoryCleanupKeepLockedConfigKey;
-
 extern const ConfigKey kHistoryRecentlyPlayedThresholdConfigKey;
 
 const int kHistoryRecentlyPlayedThresholdDefault = 6;

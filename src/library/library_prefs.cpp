@@ -38,11 +38,6 @@ const ConfigKey mixxx::library::prefs::kHistoryCleanupMinTracksConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("history_cleanup_min_tracks")};
 
-const ConfigKey mixxx::library::prefs::kHistoryCleanupKeepLockedConfigKey =
-        ConfigKey{
-                mixxx::library::prefs::kConfigGroup,
-                QStringLiteral("history_cleanup_keep_locked")};
-
 const ConfigKey mixxx::library::prefs::kHistoryRecentlyPlayedThresholdConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,

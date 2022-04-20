@@ -194,7 +194,6 @@ void DlgPrefLibrary::slotResetToDefaults() {
     spinbox_history_recently_played_threshold->setValue(
             kHistoryRecentlyPlayedThresholdDefault);
     spinbox_min_history_tracks->setValue(1);
-    checkBox_history_cleanup_keep_locked->setChecked(false);
     checkBox_SyncTrackMetadata->setChecked(false);
     checkBox_SeratoMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
@@ -223,8 +222,6 @@ void DlgPrefLibrary::slotUpdate() {
             kHistoryRecentlyPlayedThresholdDefault));
     spinbox_min_history_tracks->setValue(m_pConfig->getValue(
             kHistoryCleanupMinTracksConfigKey, 1));
-    checkBox_history_cleanup_keep_locked->setChecked(m_pConfig->getValue(
-            kHistoryCleanupKeepLockedConfigKey, false));
 
     checkBox_SyncTrackMetadata->setChecked(
             m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
@@ -404,8 +401,6 @@ void DlgPrefLibrary::slotApply() {
             ConfigValue(spinbox_history_recently_played_threshold->value()));
     m_pConfig->set(kHistoryCleanupMinTracksConfigKey,
             ConfigValue(spinbox_min_history_tracks->value()));
-    m_pConfig->set(kHistoryCleanupKeepLockedConfigKey,
-            ConfigValue((int)checkBox_history_cleanup_keep_locked->isChecked()));
 
     m_pConfig->set(
             kSyncTrackMetadataConfigKey,
