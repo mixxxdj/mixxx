@@ -33,8 +33,7 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
 
     // Write metadata -> only an ID3v2 tag should be added
     mixxx::TrackMetadata trackMetadata;
-    trackMetadata.refTrackInfo().setTitle(
-            MixxxTest::testPath() + QStringLiteral("/id3-test-data/title"));
+    trackMetadata.refTrackInfo().setTitle(QStringLiteral("title"));
     const auto exported =
             mixxx::MetadataSourceTagLib(
                     tmpFileName, mixxx::taglib::FileType::MP3)
@@ -54,8 +53,7 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
     qDebug() << "Updating track title";
 
     // Write metadata again -> only the ID3v2 tag should be modified
-    trackMetadata.refTrackInfo().setTitle(
-            MixxxTest::testPath() + QStringLiteral("/id3-test-data/title2"));
+    trackMetadata.refTrackInfo().setTitle(QStringLiteral("title2"));
     const auto exported2 =
             mixxx::MetadataSourceTagLib(
                     tmpFileName, mixxx::taglib::FileType::MP3)
