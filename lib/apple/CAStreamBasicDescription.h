@@ -64,12 +64,7 @@
 extern char *CAStringForOSType (OSType t, char *writeLocation, size_t bufsize);
 
 // define Leopard specific symbols for backward compatibility if applicable
-#if COREAUDIOTYPES_VERSION < 1050
-typedef Float32 AudioSampleType;
-enum { kAudioFormatFlagsCanonical = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked };
-#endif
 #if COREAUDIOTYPES_VERSION < 1051
-typedef Float32 AudioUnitSampleType;
 enum {
 	kLinearPCMFormatFlagsSampleFractionShift    = 7,
 	kLinearPCMFormatFlagsSampleFractionMask     = (0x3F << kLinearPCMFormatFlagsSampleFractionShift),
@@ -290,8 +285,8 @@ public:
 				// note: leaves sample rate untouched
 	{
 		mFormatID = kAudioFormatLinearPCM;
-		UInt32 sampleSize = SizeOf32(AudioSampleType);
-		mFormatFlags = kAudioFormatFlagsCanonical;
+		UInt32 sampleSize = SizeOf32(Float32);
+		mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 		mBitsPerChannel = 8 * sampleSize;
 		mChannelsPerFrame = nChannels;
 		mFramesPerPacket = 1;
@@ -309,8 +304,8 @@ public:
 		UInt32 reqFormatFlags;
 		UInt32 flagsMask = (kLinearPCMFormatFlagIsFloat | kLinearPCMFormatFlagIsBigEndian | kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked | kLinearPCMFormatFlagsSampleFractionMask);
 		bool interleaved = (mFormatFlags & kAudioFormatFlagIsNonInterleaved) == 0;
-		unsigned sampleSize = SizeOf32(AudioSampleType);
-		reqFormatFlags = kAudioFormatFlagsCanonical;
+		unsigned sampleSize = SizeOf32(Float32);
+		reqFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 		UInt32 reqFrameSize = interleaved ? (mChannelsPerFrame * sampleSize) : sampleSize;
 
 		return ((mFormatFlags & flagsMask) == reqFormatFlags
@@ -324,17 +319,17 @@ public:
 	{
 		mFormatID = kAudioFormatLinearPCM;
 #if CA_PREFER_FIXED_POINT
-		mFormatFlags = kAudioFormatFlagsCanonical | (kAudioUnitSampleFractionBits << kLinearPCMFormatFlagsSampleFractionShift);
+		mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked | (kAudioUnitSampleFractionBits << kLinearPCMFormatFlagsSampleFractionShift);
 #else
-		mFormatFlags = kAudioFormatFlagsCanonical;
+		mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
 #endif
 		mChannelsPerFrame = nChannels;
 		mFramesPerPacket = 1;
-		mBitsPerChannel = 8 * SizeOf32(AudioUnitSampleType);
+		mBitsPerChannel = 8 * SizeOf32(Float32);
 		if (interleaved)
-			mBytesPerPacket = mBytesPerFrame = nChannels * SizeOf32(AudioUnitSampleType);
+			mBytesPerPacket = mBytesPerFrame = nChannels * SizeOf32(Float32);
 		else {
-			mBytesPerPacket = mBytesPerFrame = SizeOf32(AudioUnitSampleType);
+			mBytesPerPacket = mBytesPerFrame = SizeOf32(Float32);
 			mFormatFlags |= kAudioFormatFlagIsNonInterleaved;
 		}
 	}

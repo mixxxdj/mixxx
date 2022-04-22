@@ -238,11 +238,11 @@ void	CAStreamBasicDescription::NormalizeLinearPCMFormat(AudioStreamBasicDescript
 	if((ioDescription.mFormatID == kAudioFormatLinearPCM) && ((ioDescription.mFormatFlags & kIsNonMixableFlag) == 0))
 	{
 		//  the canonical linear PCM format
-		ioDescription.mFormatFlags = kAudioFormatFlagsCanonical;
-		ioDescription.mBytesPerPacket = SizeOf32(AudioSampleType) * ioDescription.mChannelsPerFrame;
+		ioDescription.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
+		ioDescription.mBytesPerPacket = SizeOf32(Float32) * ioDescription.mChannelsPerFrame;
 		ioDescription.mFramesPerPacket = 1;
-		ioDescription.mBytesPerFrame = SizeOf32(AudioSampleType) * ioDescription.mChannelsPerFrame;
-		ioDescription.mBitsPerChannel = 8 * SizeOf32(AudioSampleType);
+		ioDescription.mBytesPerFrame = SizeOf32(Float32) * ioDescription.mChannelsPerFrame;
+		ioDescription.mBitsPerChannel = 8 * SizeOf32(Float32);
 	}
 }
 
@@ -265,10 +265,10 @@ void	CAStreamBasicDescription::NormalizeLinearPCMFormat(bool inNativeEndian, Aud
 			ioDescription.mFormatFlags |= kAudioFormatFlagIsBigEndian;
 #endif
 		}
-		ioDescription.mBytesPerPacket = SizeOf32(AudioSampleType) * ioDescription.mChannelsPerFrame;
+		ioDescription.mBytesPerPacket = SizeOf32(Float32) * ioDescription.mChannelsPerFrame;
 		ioDescription.mFramesPerPacket = 1;
-		ioDescription.mBytesPerFrame = SizeOf32(AudioSampleType) * ioDescription.mChannelsPerFrame;
-		ioDescription.mBitsPerChannel = 8 * SizeOf32(AudioSampleType);
+		ioDescription.mBytesPerFrame = SizeOf32(Float32) * ioDescription.mChannelsPerFrame;
+		ioDescription.mBitsPerChannel = 8 * SizeOf32(Float32);
 	}
 }
 
