@@ -71,7 +71,7 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
         // 16-byte aligned. We record a pointer to the true start of the buffer
         // in the slack space as well so that we can free it correctly.
         const size_t alignment = kAlignment;
-        const size_t unaligned_size = sizeof(CSAMPLE[size]) + alignment;
+        const size_t unaligned_size = sizeof(CSAMPLE) * size + alignment;
         void* pUnaligned = std::malloc(unaligned_size);
         if (pUnaligned == NULL) {
             return NULL;
@@ -85,7 +85,7 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
 #endif
     } else {
         // Our platform already produces aligned pointers (or is an exotic target)
-        return new CSAMPLE[size];
+        return static_cast<CSAMPLE*>(std::malloc(sizeof(CSAMPLE) * size));
     }
 }
 
