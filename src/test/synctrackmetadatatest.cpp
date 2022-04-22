@@ -13,8 +13,8 @@
 
 namespace {
 
-const QString kTestFileWithMetadata = QStringLiteral("/id3-test-data/cover-test-jpg.mp3");
-const QString kTestFileWithoutMetadata = QStringLiteral("/id3-test-data/empty.mp3");
+const QString kTestFileWithMetadata = QStringLiteral("id3-test-data/cover-test-jpg.mp3");
+const QString kTestFileWithoutMetadata = QStringLiteral("id3-test-data/empty.mp3");
 
 enum class AdjustFileTime {
     Earlier,
@@ -124,7 +124,7 @@ class SyncTrackMetadataTest : public LibraryTest {
   protected:
     explicit SyncTrackMetadataTest(
             const QString& testFile)
-            : m_tempFileSystem(QFileInfo(getTestPath() + testFile)) {
+            : m_tempFileSystem(QFileInfo(getTestDir().filePath(testFile))) {
         // Date back the file before adding it to the track collection
         // to ensure that all newly generated time stamps are strictly
         // greater than the synchronization time stamp in the library.

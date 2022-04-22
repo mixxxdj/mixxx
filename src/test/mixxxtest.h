@@ -15,7 +15,7 @@
 namespace {
 
 // We assume that the test folder is a sibling to the res folder
-const QString kTestPath = QStringLiteral("/../src/test");
+const QString kTestPath = QStringLiteral("../src/test");
 
 } // namespace
 
@@ -35,11 +35,12 @@ class MixxxTest : public testing::Test {
     };
     friend class ApplicationScope;
 
-    static const QString& testPath() {
-        if (s_TestPath.isEmpty()) {
-            s_TestPath = ConfigObject<ConfigValue>::computeResourcePath() + kTestPath;
+    static const QDir& testDir() {
+        if (s_TestDir.path() == ".") {
+            s_TestDir.setPath(ConfigObject<ConfigValue>::computeResourcePath() +
+                    QChar('/') + kTestPath);
         }
-        return s_TestPath;
+        return s_TestDir;
     }
 
   protected:
@@ -58,16 +59,16 @@ class MixxxTest : public testing::Test {
         return m_testDataDir.path();
     }
 
-    const QString& getTestPath() const {
-        if (s_TestPath.isEmpty()) {
-            s_TestPath = m_pConfig->getResourcePath() + kTestPath;
+    const QDir& getTestDir() const {
+        if (s_TestDir.path() == ".") {
+            s_TestDir.setPath(m_pConfig->getResourcePath() + QChar('/') + kTestPath);
         }
-        return s_TestPath;
+        return s_TestDir;
     }
 
   private:
     static QScopedPointer<MixxxApplication> s_pApplication;
-    static QString s_TestPath;
+    static QDir s_TestDir;
     const QTemporaryDir m_testDataDir;
 
   protected:

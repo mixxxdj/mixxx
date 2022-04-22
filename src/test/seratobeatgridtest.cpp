@@ -85,7 +85,9 @@ class SeratoBeatGridTest : public testing::Test {
 };
 
 TEST_F(SeratoBeatGridTest, ParseBeatGridDataMP3) {
-    parseBeatGridDataInDirectory(QDir(MixxxTest::testPath() + "/serato/data/mp3/beatgrid"),
+    parseBeatGridDataInDirectory(
+            QDir(MixxxTest::testDir().filePath(
+                    QStringLiteral("serato/data/mp3/beatgrid"))),
             mixxx::taglib::FileType::MP3);
 }
 
@@ -94,7 +96,9 @@ TEST_F(SeratoBeatGridTest, ParseEmptyDataMP3) {
 }
 
 TEST_F(SeratoBeatGridTest, ParseBeatGridDataMP4) {
-    parseBeatGridDataInDirectory(QDir(MixxxTest::testPath() + "/serato/data/mp4/beatgrid"),
+    parseBeatGridDataInDirectory(
+            QDir(MixxxTest::testDir().filePath(
+                    QStringLiteral("serato/data/mp4/beatgrid"))),
             mixxx::taglib::FileType::MP4);
 }
 
@@ -103,7 +107,7 @@ TEST_F(SeratoBeatGridTest, ParseEmptyDataMP4) {
 }
 
 TEST_F(SeratoBeatGridTest, ParseBeatGridDataFLAC) {
-    parseBeatGridDataInDirectory(QDir(MixxxTest::testPath() + "/serato/data/flac/beatgrid"),
+    parseBeatGridDataInDirectory(QDir(MixxxTest::testDir().filePath("serato/data/flac/beatgrid")),
             mixxx::taglib::FileType::FLAC);
 }
 

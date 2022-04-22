@@ -400,29 +400,25 @@ TEST_F(SeratoMarkers2Test, ParseLoopEntry) {
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2DataMP3) {
     parseMarkers2DataInDirectory(
-            QDir(MixxxTest::testPath() +
-                    QStringLiteral("/serato/data/mp3/markers2")),
+            QDir(MixxxTest::testDir().filePath(QStringLiteral("serato/data/mp3/markers2"))),
             mixxx::taglib::FileType::MP3);
 }
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2DataMP4) {
     parseMarkers2DataInDirectory(
-            QDir(MixxxTest::testPath() +
-                    QStringLiteral("/serato/data/mp4/markers2")),
+            QDir(MixxxTest::testDir().filePath(QStringLiteral("serato/data/mp4/markers2"))),
             mixxx::taglib::FileType::MP4);
 }
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2DataFLAC) {
     parseMarkers2DataInDirectory(
-            QDir(MixxxTest::testPath() +
-                    QStringLiteral("/serato/data/flac/markers2")),
+            QDir(MixxxTest::testDir().filePath(QStringLiteral("serato/data/flac/markers2"))),
             mixxx::taglib::FileType::FLAC);
 }
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2DataOGG) {
     parseMarkers2DataInDirectory(
-            QDir(MixxxTest::testPath() +
-                    QStringLiteral("/serato/data/ogg/markers2")),
+            QDir(MixxxTest::testDir().filePath(QStringLiteral("serato/data/ogg/markers2"))),
             mixxx::taglib::FileType::OGG);
 }
 
