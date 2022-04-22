@@ -26,7 +26,7 @@
  * Newer Kernels will provide native audio support for this controller.
  */
 
-// eslint-disable-next-line no-var
+
 var MC7000 = {};
 
 /*///////////////////////////////////
@@ -600,7 +600,7 @@ MC7000.padModePitch = function(channel, control, value, status, group) {
     } else if (deckNumber === 4) {
         MC7000.halftoneToPadMap4 = [4, 5, 6, 7, 0, 1, 2, 3];
     }
-    
+
     MC7000.PADModeCue[deckNumber] = false;
     MC7000.PADModeCueLoop[deckNumber] = false;
     MC7000.PADModeFlip[deckNumber] = false;
