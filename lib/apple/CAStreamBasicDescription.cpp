@@ -44,6 +44,11 @@
  Copyright (C) 2014 Apple Inc. All Rights Reserved.
 
 */
+
+#define DEBUG 0 
+#define CoreAudio_Debug 0
+#define CA_PREFER_FIXED_POINT 0
+
 #include "CAStreamBasicDescription.h"
 #include "CAMath.h"
 
