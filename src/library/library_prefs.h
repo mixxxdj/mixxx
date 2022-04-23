@@ -22,7 +22,9 @@ extern const ConfigKey kSearchDebouncingTimeoutMillisConfigKey;
 
 extern const ConfigKey kEditMetadataSelectedClickConfigKey;
 
-extern const ConfigKey kHistoryCleanupMinTracksConfigKey;
+extern const ConfigKey kHistoryMinTracksToKeepConfigKey;
+
+const int kHistoryMinTracksToKeepDefault = 1;
 
 extern const ConfigKey kHistoryTrackDuplicateDistanceConfigKey;
 

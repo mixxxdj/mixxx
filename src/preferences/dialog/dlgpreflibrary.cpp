@@ -193,7 +193,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
     spinbox_history_track_duplicate_distance->setValue(
             kHistoryTrackDuplicateDistanceDefault);
-    spinbox_min_history_tracks->setValue(1);
+    spinbox_history_min_tracks_to_keep->setValue(1);
     checkBox_SyncTrackMetadata->setChecked(false);
     checkBox_SeratoMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
@@ -220,8 +220,9 @@ void DlgPrefLibrary::slotUpdate() {
     spinbox_history_track_duplicate_distance->setValue(m_pConfig->getValue(
             kHistoryTrackDuplicateDistanceConfigKey,
             kHistoryTrackDuplicateDistanceDefault));
-    spinbox_min_history_tracks->setValue(m_pConfig->getValue(
-            kHistoryCleanupMinTracksConfigKey, 1));
+    spinbox_history_min_tracks_to_keep->setValue(m_pConfig->getValue(
+            kHistoryMinTracksToKeepConfigKey,
+            kHistoryMinTracksToKeepDefault));
 
     checkBox_SyncTrackMetadata->setChecked(
             m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
@@ -399,8 +400,8 @@ void DlgPrefLibrary::slotApply() {
 
     m_pConfig->set(kHistoryTrackDuplicateDistanceConfigKey,
             ConfigValue(spinbox_history_track_duplicate_distance->value()));
-    m_pConfig->set(kHistoryCleanupMinTracksConfigKey,
-            ConfigValue(spinbox_min_history_tracks->value()));
+    m_pConfig->set(kHistoryMinTracksToKeepConfigKey,
+            ConfigValue(spinbox_history_min_tracks_to_keep->value()));
 
     m_pConfig->set(
             kSyncTrackMetadataConfigKey,

@@ -96,7 +96,8 @@ void SetlogFeature::deleteAllUnlockedPlaylistsWithFewerTracks() {
                                           ->internalCollection()
                                           ->database());
     int minTrackCount = m_pConfig->getValue(
-            kHistoryCleanupMinTracksConfigKey, 1);
+            kHistoryMinTracksToKeepConfigKey,
+            kHistoryMinTracksToKeepDefault);
     m_playlistDao.deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG,
             minTrackCount);
     transaction.commit();

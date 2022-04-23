@@ -33,10 +33,10 @@ const ConfigKey mixxx::library::prefs::kEditMetadataSelectedClickConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("EditMetadataSelectedClick")};
 
-const ConfigKey mixxx::library::prefs::kHistoryCleanupMinTracksConfigKey =
+const ConfigKey mixxx::library::prefs::kHistoryMinTracksToKeepConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
-                QStringLiteral("history_cleanup_min_tracks")};
+                QStringLiteral("history_min_tracks_to_keep")};
 
 const ConfigKey mixxx::library::prefs::kHistoryTrackDuplicateDistanceConfigKey =
         ConfigKey{

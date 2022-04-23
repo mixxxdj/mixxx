@@ -259,7 +259,7 @@
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QSpinBox" name="spinbox_min_history_tracks">
+       <widget class="QSpinBox" name="spinbox_history_min_tracks_to_keep">
         <property name="minimum">
          <number>1</number>
         </property>
@@ -534,7 +534,7 @@
   <tabstop>radioButton_dbclick_top</tabstop>
   <tabstop>radioButton_dbclick_ignore</tabstop>
   <tabstop>spinbox_history_track_duplicate_distance</tabstop>
-  <tabstop>spinbox_min_history_tracks</tabstop>
+  <tabstop>spinbox_history_min_tracks_to_keep</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
   <tabstop>spinBoxRowHeight</tabstop>
   <tabstop>libraryFont</tabstop>
