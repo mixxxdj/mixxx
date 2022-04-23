@@ -81,9 +81,6 @@ void DlgPrefControllers::slotOpenLocalFile(const QString& file) {
 }
 
 void DlgPrefControllers::slotUpdate() {
-    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
-        pControllerDlg->slotUpdate();
-    }
 }
 
 void DlgPrefControllers::slotCancel() {

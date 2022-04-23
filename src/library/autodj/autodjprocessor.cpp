@@ -553,7 +553,6 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         for (const auto& pDeck : std::as_const(m_decks)) {
             pDeck->disconnect(this);
         }
-        m_pCOCrossfader->set(0);
         emitAutoDJStateChanged(m_eState);
     }
     return ADJ_OK;

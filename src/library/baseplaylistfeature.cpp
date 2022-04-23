@@ -365,7 +365,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
 
     // Update the import/export playlist directory
     QString fileDirectory(playlistFile);
-    fileDirectory.truncate(playlistFile.lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(playlistFile.lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
             ConfigValue(fileDirectory));
 
@@ -412,7 +412,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
 
     // Set last import directory
     QString fileDirectory(playlistFiles.first());
-    fileDirectory.truncate(playlistFiles.first().lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(playlistFiles.first().lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
             ConfigValue(fileDirectory));
 
@@ -483,7 +483,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
     // Update the import/export playlist directory
     QString fileDirectory(fileLocation);
-    fileDirectory.truncate(fileLocation.lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(fileLocation.lastIndexOf("/"));
     m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
             ConfigValue(fileDirectory));
 
