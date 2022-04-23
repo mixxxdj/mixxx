@@ -50,10 +50,12 @@ class LibraryControl : public QObject {
 
   signals:
     void clearSearchIfClearButtonHasFocus();
+    void showHideTrackMenu(bool show);
 
   public slots:
     // Deprecated navigation slots
     void slotLoadSelectedTrackToGroup(const QString& group, bool play);
+    void slotUpdateTrackMenuControl(bool visible);
 
   private slots:
     void libraryWidgetDeleted();
@@ -150,6 +152,9 @@ class LibraryControl : public QObject {
     // Controls to change track color
     std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
     std::unique_ptr<ControlPushButton> m_pTrackColorNext;
+
+    // Control to show/hide the track menu
+    std::unique_ptr<ControlPushButton> m_pShowTrackMenu;
 
     // Controls to navigate search history
     std::unique_ptr<ControlPushButton> m_pSelectHistoryNext;

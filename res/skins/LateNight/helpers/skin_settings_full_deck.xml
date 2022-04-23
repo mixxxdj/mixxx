@@ -1,6 +1,6 @@
 <!--
 Description:
-  Optons for the full deck
+  Options for the full deck
 -->
 <Template>
   <WidgetGroup>
@@ -93,7 +93,7 @@ Description:
 
       <!-- Key Control -->
       <Template src="skin:/helpers/skin_settings_button_2state.xml">
-        <SetVariable name="TooltipId">rate_toggle</SetVariable>
+        <SetVariable name="TooltipId">show_key_controls</SetVariable>
         <SetVariable name="Text">Key Controls</SetVariable>
         <SetVariable name="Setting">[Skin],show_key_controls</SetVariable>
       </Template>

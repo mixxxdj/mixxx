@@ -84,6 +84,7 @@ class WTrackMenu : public QMenu {
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    void trackMenuVisible(bool visible);
 
   private slots:
     // File
@@ -97,6 +98,7 @@ class WTrackMenu : public QMenu {
     void slotClearBeats();
     void slotClearPlayCount();
     void slotClearRating();
+    void slotClearComment();
     void slotClearMainCue();
     void slotClearHotCues();
     void slotClearIntroCue();
@@ -140,6 +142,7 @@ class WTrackMenu : public QMenu {
     void slotPurge();
 
   private:
+    void closeEvent(QCloseEvent* event) override;
     // This getter verifies that m_pTrackModel is set when
     // invoked.
     const QModelIndexList& getTrackIndices() const;
@@ -279,6 +282,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pClearOutroCueAction{};
     QAction* m_pClearLoopAction{};
     QAction* m_pClearWaveformAction{};
+    QAction* m_pClearCommentAction{};
     QAction* m_pClearKeyAction{};
     QAction* m_pClearReplayGainAction{};
     QAction* m_pClearAllMetadataAction{};

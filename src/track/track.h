@@ -92,6 +92,9 @@ class Track : public QObject {
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const {
+        if (!m_fileAccess.info().hasLocation()) {
+            return {};
+        }
         return m_fileAccess.info().location();
     }
 
@@ -203,6 +206,10 @@ class Track : public QObject {
     QString getComment() const;
     // Sets the user commnet
     void setComment(const QString&);
+    // Clear comment
+    void clearComment() {
+        setComment(QString());
+    }
     // Return composer
     QString getComposer() const;
     // Set composer

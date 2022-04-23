@@ -48,7 +48,7 @@ BehringerCMDStudio4a.vuMeterUpdate = function (value, group, control){
 }
 
 BehringerCMDStudio4a.initLEDs = function () {
-    // (re)Initialise any LEDs that are direcctly controlled by this script.
+    // (re)Initialise any LEDs that are directly controlled by this script.
     // DEL buttons (one for each virtual deck).
     midi.sendShortMsg(0x90, 0x2A, 0x00);
     midi.sendShortMsg(0x91, 0x4A, 0x00);

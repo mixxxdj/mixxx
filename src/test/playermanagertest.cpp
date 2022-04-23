@@ -12,6 +12,7 @@
 #include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxdbtest.h"
+#include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
 
@@ -28,17 +29,10 @@ void deleteTrack(Track* pTrack) {
 
 // We can't inherit from LibraryTest because that creates a key_notation control object that is also
 // created by the Library object itself. The duplicated CO creation causes a debug assert.
-// Similarly, SoundSourceProviderRegistration doesn't work because it tries to register providers
-// more than once.
-class PlayerManagerTest : public MixxxDbTest {
+class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
   public:
     PlayerManagerTest()
             : MixxxDbTest(true) {
-        // SoundSourceProxy does not support tear-down, so we have to test to see if it's already
-        // been run once.
-        if (!SoundSourceProxy::isFileSuffixSupported("wav")) {
-            SoundSourceProxy::registerProviders();
-        }
     }
 
     void SetUp() override {

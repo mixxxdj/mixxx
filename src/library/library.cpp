@@ -421,6 +421,15 @@ void Library::bindLibraryWidget(
 
     m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
 
+    connect(m_pLibraryControl,
+            &LibraryControl::showHideTrackMenu,
+            pTrackTableView,
+            &WTrackTableView::slotShowHideTrackMenu);
+    connect(pTrackTableView,
+            &WTrackTableView::trackMenuVisible,
+            m_pLibraryControl,
+            &LibraryControl::slotUpdateTrackMenuControl);
+
     for (const auto& feature : qAsConst(m_features)) {
         feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
     }

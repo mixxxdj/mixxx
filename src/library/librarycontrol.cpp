@@ -325,7 +325,23 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 }
             });
 
-    /// Deprecated controls
+    // Show the track context menu for selected tracks, or hide it
+    // if it is the current active window
+    // The control is updated in slotUpdateTrackMenuControl with the actual state
+    // sent from WTrackMenu via WTrackTableView
+    m_pShowTrackMenu = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "show_track_menu"));
+    m_pShowTrackMenu->setStates(2);
+    m_pShowTrackMenu->connectValueChangeRequest(this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
+                    return;
+                }
+                bool show = static_cast<bool>(value);
+                emit showHideTrackMenu(show);
+            });
+
+    // Deprecated controls
     m_pSelectNextTrack = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectNextTrack"));
     connect(m_pSelectNextTrack.get(),
             &ControlPushButton::valueChanged,
@@ -487,6 +503,10 @@ void LibraryControl::sidebarWidgetDeleted() {
 
 void LibraryControl::searchboxWidgetDeleted() {
     m_pSearchbox = nullptr;
+}
+
+void LibraryControl::slotUpdateTrackMenuControl(bool visible) {
+    m_pShowTrackMenu->setAndConfirm(visible ? 1.0 : 0.0);
 }
 
 void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
