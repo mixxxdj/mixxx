@@ -973,7 +973,7 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     }
 }
 
-bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column) {
+bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column, bool scrollToTrack) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
         qWarning() << "No selected tracks available";
@@ -998,6 +998,11 @@ bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column) {
     selectRow(idx.row());
     pSelectionModel->setCurrentIndex(idx,
             QItemSelectionModel::SelectCurrent | QItemSelectionModel::Select);
+
+    if (scrollToTrack) {
+        scrollTo(idx);
+    }
+
     return true;
 }
 
@@ -1035,7 +1040,7 @@ void WTrackTableView::slotAddToAutoDJReplace() {
 }
 
 void WTrackTableView::slotSelectTrack(const TrackId& trackId) {
-    setCurrentTrackId(trackId);
+    setCurrentTrackId(trackId, 0, true);
     setSelectedTracks({trackId});
 }
 
