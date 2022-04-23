@@ -191,8 +191,8 @@ void DlgPrefLibrary::initializeDirList() {
 
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
-    spinbox_history_recently_played_threshold->setValue(
-            kHistoryRecentlyPlayedThresholdDefault);
+    spinbox_history_track_duplicate_distance->setValue(
+            kHistoryTrackDuplicateDistanceDefault);
     spinbox_min_history_tracks->setValue(1);
     checkBox_SyncTrackMetadata->setChecked(false);
     checkBox_SeratoMetadataExport->setChecked(false);
@@ -217,9 +217,9 @@ void DlgPrefLibrary::slotUpdate() {
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             kRescanOnStartupConfigKey, false));
 
-    spinbox_history_recently_played_threshold->setValue(m_pConfig->getValue(
-            kHistoryRecentlyPlayedThresholdConfigKey,
-            kHistoryRecentlyPlayedThresholdDefault));
+    spinbox_history_track_duplicate_distance->setValue(m_pConfig->getValue(
+            kHistoryTrackDuplicateDistanceConfigKey,
+            kHistoryTrackDuplicateDistanceDefault));
     spinbox_min_history_tracks->setValue(m_pConfig->getValue(
             kHistoryCleanupMinTracksConfigKey, 1));
 
@@ -397,8 +397,8 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(kRescanOnStartupConfigKey,
             ConfigValue((int)checkBox_library_scan->isChecked()));
 
-    m_pConfig->set(kHistoryRecentlyPlayedThresholdConfigKey,
-            ConfigValue(spinbox_history_recently_played_threshold->value()));
+    m_pConfig->set(kHistoryTrackDuplicateDistanceConfigKey,
+            ConfigValue(spinbox_history_track_duplicate_distance->value()));
     m_pConfig->set(kHistoryCleanupMinTracksConfigKey,
             ConfigValue(spinbox_min_history_tracks->value()));
 

@@ -38,10 +38,10 @@ const ConfigKey mixxx::library::prefs::kHistoryCleanupMinTracksConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("history_cleanup_min_tracks")};
 
-const ConfigKey mixxx::library::prefs::kHistoryRecentlyPlayedThresholdConfigKey =
+const ConfigKey mixxx::library::prefs::kHistoryTrackDuplicateDistanceConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
-                QStringLiteral("history_recently_played_threshold")};
+                QStringLiteral("history_track_duplicate_distance")};
 
 const ConfigKey mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey =
         ConfigKey{

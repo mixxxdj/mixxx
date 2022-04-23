@@ -216,9 +216,9 @@
      <layout class="QGridLayout" name="gridLayout_history">
 
       <item row="1" column="0" colspan="2">
-       <widget class="QLabel" name="label_history_recently_played_threshold">
+       <widget class="QLabel" name="label_history_track_duplicate_distance">
         <property name="text">
-         <string>'Recently played' threshold</string>
+         <string>Track duplicate distance</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -229,7 +229,7 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QSpinBox" name="spinbox_history_recently_played_threshold">
+       <widget class="QSpinBox" name="spinbox_history_track_duplicate_distance">
         <property name="toolTip">
          <string>When playing a track again log it to the session history only if more than N other tracks have been played in the meantime</string>
         </property>
@@ -533,7 +533,7 @@
   <tabstop>radioButton_dbclick_bottom</tabstop>
   <tabstop>radioButton_dbclick_top</tabstop>
   <tabstop>radioButton_dbclick_ignore</tabstop>
-  <tabstop>spinbox_history_recently_played_threshold</tabstop>
+  <tabstop>spinbox_history_track_duplicate_distance</tabstop>
   <tabstop>spinbox_min_history_tracks</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
   <tabstop>spinBoxRowHeight</tabstop>
