@@ -594,35 +594,40 @@ void AutoDJProcessor::crossfaderChanged(double value) {
         // The user is changing the crossfader manually. If the user has
         // moved it all the way to the other side, make the deck faded away
         // from the new "to deck" by loading the next track into it.
-        DeckAttributes* fromDeck = getFromDeck();
-        VERIFY_OR_DEBUG_ASSERT(fromDeck) {
+        DeckAttributes* pFromDeck = getFromDeck();
+        VERIFY_OR_DEBUG_ASSERT(pFromDeck) {
             // we have always a from deck in case of state IDLE
             return;
         }
 
-        DeckAttributes* toDeck = getOtherDeck(fromDeck);
-        VERIFY_OR_DEBUG_ASSERT(toDeck) {
+        DeckAttributes* pToDeck = getOtherDeck(pFromDeck);
+        if (!pToDeck) {
             // we have always a from deck in case of state IDLE
+            // if the user has not changed the deck orientation
             return;
         }
 
         double crossfaderPosition = value * (m_pCOCrossfaderReverse->toBool() ? -1 : 1);
-
-        if ((crossfaderPosition == 1.0 && fromDeck->isLeft()) ||       // crossfader right
-                (crossfaderPosition == -1.0 && fromDeck->isRight())) { // crossfader left
-            if (!toDeck->isPlaying()) {
-                // Re-cue the track if the user has seeked it to the very end
-                if (toDeck->playPosition() >= toDeck->fadeBeginPos) {
-                    toDeck->setPlayPosition(toDeck->startPos);
+        if ((crossfaderPosition == 1.0 && pFromDeck->isLeft()) ||       // crossfader right
+                (crossfaderPosition == -1.0 && pFromDeck->isRight())) { // crossfader left
+            if (!pToDeck->isPlaying()) {
+                if (getEndSecond(pToDeck) >= kMinimumTrackDurationSec) {
+                    // Re-cue the track if the user has seeked it to the very end
+                    if (pToDeck->playPosition() >= pToDeck->fadeBeginPos) {
+                        pToDeck->setPlayPosition(pToDeck->startPos);
+                    }
+                    pToDeck->play();
+                } else {
+                    toggleAutoDJ(false);
+                    return;
                 }
-                toDeck->play();
             }
-            fromDeck->stop();
+            pFromDeck->stop();
 
             // Now that we have started the other deck playing, remove the track
             // that was "on deck" from the top of the queue.
-            removeLoadedTrackFromTopOfQueue(*toDeck);
-            loadNextTrackFromQueue(*fromDeck);
+            removeLoadedTrackFromTopOfQueue(*pToDeck);
+            loadNextTrackFromQueue(*pFromDeck);
         }
     }
 }
