@@ -20,7 +20,7 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties |
-        WTrackMenu::Feature::UpdateReplayGain;
+        WTrackMenu::Feature::UpdateReplayGainFromPregain;
 } // namespace
 
 WTrackText::WTrackText(QWidget* pParent,
