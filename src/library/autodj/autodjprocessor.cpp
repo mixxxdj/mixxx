@@ -267,6 +267,12 @@ void AutoDJProcessor::fadeNow() {
     const double fromDeckCurrentSecond = fromDeckDuration * pFromDeck->playPosition();
     const double toDeckCurrentSecond = toDeckDuration * pToDeck->playPosition();
 
+    if (toDeckDuration - toDeckCurrentSecond < kMinimumTrackDurationSec) {
+        // Remaining Track time is too short, user has has seeked near the end
+        // Re-cue the track
+        pToDeck->setPlayPosition(pToDeck->startPos);
+    }
+
     pFromDeck->fadeBeginPos = fromDeckCurrentSecond;
     // Do not seek to a calculated start point; start the to deck from wherever
     // it is if the user has seeked since loading the track.
@@ -310,8 +316,10 @@ void AutoDJProcessor::fadeNow() {
         fadeTime = spinboxTime;
     }
 
-    double timeUntilEndOfFromTrack = fromDeckEndSecond - fromDeckCurrentSecond;
-    fadeTime = math_min(fadeTime, timeUntilEndOfFromTrack);
+    fadeTime = math_min(fadeTime, fromDeckEndSecond - fromDeckCurrentSecond);
+    fadeTime = math_min(fadeTime,
+            (toDeckEndSecond - toDeckCurrentSecond) / 2); // for fade in and out
+
     pFromDeck->fadeEndPos = fromDeckCurrentSecond + fadeTime;
 
     // These are expected to be a fraction of the track length.
