@@ -16,6 +16,8 @@ const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 const double kTransitionPreferenceDefault = 10.0;
 const double kKeepPosition = -1.0;
+const double kMinimumTrackDurationSec =
+        0.2; // A track needs to be longer than two callbacks to not stop AutoDJ
 
 const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 
@@ -254,6 +256,13 @@ void AutoDJProcessor::fadeNow() {
     // the track duration. Use this alias for better readability.
     const double fromDeckDuration = fromDeckEndSecond;
     const double toDeckDuration = toDeckEndSecond;
+    if (toDeckDuration < kMinimumTrackDurationSec) {
+        // Deck is empty or track too short, disable AutoDJ
+        // This happens only if the user has changed deck orientation to such deck.
+        toggleAutoDJ(false);
+        return;
+    }
+
     // playPosition() is in the range of 0..1
     const double fromDeckCurrentSecond = fromDeckDuration * pFromDeck->playPosition();
     const double toDeckCurrentSecond = toDeckDuration * pToDeck->playPosition();
@@ -1439,7 +1448,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     // Since the end position is measured in seconds from 0:00 it is also
     // the track duration.
     double duration = getEndSecond(pDeck);
-    if (duration < 0.2) {
+    if (duration < kMinimumTrackDurationSec) {
         qWarning() << "Skip track with" << duration << "Duration"
                    << pTrack->getLocation();
         // Remove Tack with duration smaller than two callbacks
