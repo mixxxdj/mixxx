@@ -966,7 +966,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
 
     QHash<int, TrackId> trackPositionIds = allIds;
     QList<int> newPositions = positions;
-    const int searchDistance = math_max(static_cast<int>(trackPositionIds.count()) / 4, 1);
+    const int searchDistance = math_min(math_max(static_cast<int>(trackPositionIds.count()) / 4, 1), 50);
 
     qDebug() << "Shuffling Tracks";
     qDebug() << "*** Search Distance: " << searchDistance;
@@ -980,17 +980,19 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
     //
     // Loop through the set of tracks to be shuffled:
     //     1) Set Track A as the current point in the shuffle set
-    //     2) Repeat a maximum of 10 times or until a good place (1/4 of the
-    //        playlist away from a conflict) is reached:
+    //     2) Set a search distance of 50 items or 1/4 of the playlist, 
+    //        whichever is smaller
+    //     3) Repeat a maximum of 10 times or until a good place (outside the 
+    //        search distance) is reached:
     //         a) Pick a random track within the shuffle set (Track B)
-    //         b) Check 1/4 of the playlist up and down (wrapped at the
-    //            beginning and end) from Track B's position for Track A
-    //         c) Check 1/4 of the playlist up and down (wrapped at the
-    //            beginning and end) from Track A's position for Track B
+    //         b) Check the search distance for conflicts before and after 
+    //            Track B's position for Track A
+    //         c) Check the search distance for conflicts before and after
+    //            Track A's position for Track B
     //         d) If there was a conflict, store the position if it was better
     //            than the already stored best position. The position is deemed
     //            "better" if the distance (square of the difference) of
-    //            the closest conflict (Track B near Track A's position and vv)
+    //            the closest conflict (Track B near Track A's position)
     //            is larger than previous iterations.
     //     3) If no good place was found, use the stored best position
     //     4) Swap Track A and Track B
@@ -1019,6 +1021,13 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
 
             //qDebug() << "    Trying new Track B:";
             //qDebug() << "        Position: " << trackBPosition << " | Id: " <<trackBId;
+
+            // define the search ranges
+            // TrackAPosition +/-
+            // TrackBPosition +/-
+            // 0 trim
+            // playlistEnd trim
+
 
             // Search around Track B for Track A
             searchForDuplicateTrack(
