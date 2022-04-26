@@ -1231,8 +1231,13 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     // This is used to check if it will be possible or a re-cue is required.
     // here it is done for FullIntroOutro and FadeAtOutroStart.
     // It is adjusted below for the other modes.
-    pToDeck->fadeBeginPos = getOutroStartSecond(pToDeck);
     pToDeck->fadeEndPos = getOutroEndSecond(pToDeck);
+    double toDeckOutroStartSecond = getOutroStartSecond(pToDeck);
+    if (pToDeck->fadeEndPos == toDeckOutroStartSecond) {
+        // outro not defined, use transition time.
+        toDeckOutroStartSecond -= m_transitionTime;
+    }
+    pToDeck->fadeBeginPos = toDeckOutroStartSecond;
 
     double introStart;
     if (seekToStartPoint || toDeckPositionSeconds >= pToDeck->fadeBeginPos) {
