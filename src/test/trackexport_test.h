@@ -65,7 +65,8 @@ class FakeOverwriteAnswerer : public QObject {
 class TrackExporterTest : public testing::Test {
   public:
     TrackExporterTest()
-            : m_testDataDir(MixxxTest::testDir().filePath(QStringLiteral("id3-test-data"))) {
+            : m_testDataDir(MixxxTest::getOrInitTestDir().filePath(
+                      QStringLiteral("id3-test-data"))) {
     }
 
     void SetUp() override {

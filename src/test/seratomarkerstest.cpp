@@ -179,14 +179,14 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
 
 TEST_F(SeratoMarkersTest, ParseMarkersDataMP3) {
     parseMarkersDataInDirectory(
-            QDir(MixxxTest::testDir().filePath(
+            QDir(MixxxTest::getOrInitTestDir().filePath(
                     QStringLiteral("serato/data/mp3/markers_"))),
             mixxx::taglib::FileType::MP3);
 }
 
 TEST_F(SeratoMarkersTest, ParseMarkersDataMP4) {
     parseMarkersDataInDirectory(
-            QDir(MixxxTest::testDir().filePath(
+            QDir(MixxxTest::getOrInitTestDir().filePath(
                     QStringLiteral("serato/data/mp4/markers_"))),
             mixxx::taglib::FileType::MP4);
 }

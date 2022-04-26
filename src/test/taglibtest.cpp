@@ -17,7 +17,7 @@ TEST_F(TagLibTest, WriteID3v2Tag) {
 
     // Create the temporary file by copying an existing file
     mixxxtest::copyFile(
-            MixxxTest::testDir().filePath(QStringLiteral("id3-test-data/empty.mp3")),
+            MixxxTest::getOrInitTestDir().filePath(QStringLiteral("id3-test-data/empty.mp3")),
             tmpFileName);
 
     // Verify that the file has no tags

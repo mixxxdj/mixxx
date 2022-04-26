@@ -19,7 +19,7 @@ class TrackUpdateTest : public MixxxTest, SoundSourceProviderRegistration {
 
     static TrackPointer newTestTrack() {
         return Track::newTemporary(
-                QDir(MixxxTest::testDir().filePath(QStringLiteral("id3-test-data"))),
+                QDir(MixxxTest::getOrInitTestDir().filePath(QStringLiteral("id3-test-data"))),
                 "TOAL_TPE2.mp3");
     }
 

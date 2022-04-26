@@ -35,9 +35,12 @@ class MixxxTest : public testing::Test {
     };
     friend class ApplicationScope;
 
-    static const QDir& testDir() {
+    static const QDir& getOrInitTestDir(const QString& resourcePath = QString()) {
         if (s_TestDir.path() == ".") {
-            s_TestDir.setPath(ConfigObject<ConfigValue>::computeResourcePath() +
+            s_TestDir.setPath(
+                    (resourcePath.isEmpty() ? ConfigObject<ConfigValue>::
+                                                      computeResourcePath()
+                                            : resourcePath) +
                     QChar('/') + kTestPath);
         }
         return s_TestDir;
@@ -60,10 +63,7 @@ class MixxxTest : public testing::Test {
     }
 
     const QDir& getTestDir() const {
-        if (s_TestDir.path() == ".") {
-            s_TestDir.setPath(m_pConfig->getResourcePath() + QChar('/') + kTestPath);
-        }
-        return s_TestDir;
+        return getOrInitTestDir(m_pConfig->getResourcePath());
     }
 
   private:
