@@ -1426,18 +1426,18 @@ void AutoDJProcessor::useFixedFadeTime(
             // no outro defined, the toDeck will also use the transition time
             toDeckOutroStart -= m_transitionTime;
         }
-        if (toDeckOutroStart <= toDeckStartSecond) {
+        if (toDeckOutroStart <= toDeckStartSecond + kMinimumTrackDurationSec) {
             // we have already passed the outro start
             // Check OutroEnd as alternative, which is for all transition mode
             // better than directly default to duration()
             double end = getOutroEndSecond(pToDeck);
-            if (end <= toDeckStartSecond) {
+            if (end <= toDeckStartSecond + kMinimumTrackDurationSec) {
                 // we have also passed the outro end
                 end = getEndSecond(pToDeck);
-                VERIFY_OR_DEBUG_ASSERT(end > toDeckStartSecond) {
+                VERIFY_OR_DEBUG_ASSERT(end > toDeckStartSecond + kMinimumTrackDurationSec) {
                     // as last resort move start point
                     // The caller makes sure that this never happens
-                    toDeckStartSecond = end - 1;
+                    toDeckStartSecond = end - kMinimumTrackDurationSec;
                 }
             }
             // use the remaining time for fading
@@ -1445,7 +1445,11 @@ void AutoDJProcessor::useFixedFadeTime(
         }
         double transitionTime = math_min(toDeckOutroStart - toDeckStartSecond,
                 m_transitionTime);
-
+        VERIFY_OR_DEBUG_ASSERT(transitionTime >= kMinimumTrackDurationSec / 2) {
+            transitionTime = kMinimumTrackDurationSec / 2;
+        }
+        // Note: pFromDeck->fadeBeginPos >= pFromDeck->fadeEndPos is handled in
+        // playerPositionChanged() causing a jump cut.
         pFromDeck->fadeBeginPos = math_max(fadeEndSecond - transitionTime, fromDeckSecond);
         pFromDeck->fadeEndPos = fadeEndSecond;
         pToDeck->startPos = toDeckStartSecond;
