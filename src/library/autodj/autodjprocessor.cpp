@@ -16,8 +16,8 @@ const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 const double kTransitionPreferenceDefault = 10.0;
 const double kKeepPosition = -1.0;
-const double kMinimumTrackDurationSec =
-        0.2; // A track needs to be longer than two callbacks to not stop AutoDJ
+// A track needs to be longer than two callbacks to not stop AutoDJ
+const double kMinimumTrackDurationSec = 0.2;
 
 const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 
@@ -782,7 +782,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 emitAutoDJStateChanged(m_eState);
 
                 if (!otherDeckPlaying) {
-                    // Re-cue the track if the user has seeked it to the very end
+                    // Re-cue the track if the user has seeked past the fadeBeginPos
                     if (otherDeck->playPosition() >= otherDeck->fadeBeginPos) {
                         otherDeck->setPlayPosition(otherDeck->startPos);
                     }
@@ -1356,18 +1356,23 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         }
     } break;
     case TransitionMode::FixedSkipSilence: {
-        double startPoint;
+        double toDeckStartSecond;
         pToDeck->fadeBeginPos = getLastSoundSecond(pToDeck);
         if (seekToStartPoint || toDeckPositionSeconds >= pToDeck->fadeBeginPos) {
             // toDeckPosition >= pToDeck->fadeBeginPos happens when the
             // user has seeked or played the to track behind fadeBeginPos of
             // the fade after the next.
             // In this case we recue the track just before the transition.
-            startPoint = getFirstSoundSecond(pToDeck);
+            toDeckStartSecond = getFirstSoundSecond(pToDeck);
         } else {
-            startPoint = toDeckPositionSeconds;
+            toDeckStartSecond = toDeckPositionSeconds;
         }
-        useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, getLastSoundSecond(pFromDeck), startPoint);
+        useFixedFadeTime(
+                pFromDeck,
+                pToDeck,
+                fromDeckPosition,
+                getLastSoundSecond(pFromDeck),
+                toDeckStartSecond);
     } break;
     case TransitionMode::FixedFullTrack:
     default: {
@@ -1422,11 +1427,12 @@ void AutoDJProcessor::useFixedFadeTime(
             toDeckOutroStart -= m_transitionTime;
         }
         if (toDeckOutroStart <= toDeckStartSecond) {
-            // we are already too late
+            // we have already passed the outro start
             // Check OutroEnd as alternative, which is for all transition mode
             // better than directly default to duration()
             double end = getOutroEndSecond(pToDeck);
             if (end <= toDeckStartSecond) {
+                // we have also passed the outro end
                 end = getEndSecond(pToDeck);
                 VERIFY_OR_DEBUG_ASSERT(end > toDeckStartSecond) {
                     // as last resort move start point
