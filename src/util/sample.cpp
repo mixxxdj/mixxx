@@ -1,7 +1,8 @@
-#include <cstdlib>
-#include <cstddef>
-
 #include "util/sample.h"
+
+#include <cstddef>
+#include <cstdlib>
+
 #include "util/math.h"
 
 #ifdef __WINDOWS__
@@ -104,7 +105,7 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
         std::free(*((void**)((void*)pBuffer) - 1));
 #endif
     } else {
-        delete[] pBuffer;
+        std::free(pBuffer);
     }
 }
 
