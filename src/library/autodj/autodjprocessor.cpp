@@ -1190,16 +1190,21 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     const double fromDeckDuration = fromDeckEndPosition;
     const double toDeckDuration = toDeckEndPosition;
 
-    VERIFY_OR_DEBUG_ASSERT(fromDeckDuration > 0) {
-        // Playing Track has no duration. This should not happen, because short
+    VERIFY_OR_DEBUG_ASSERT(fromDeckDuration >= kMinimumTrackDurationSec) {
+        // Track has no duration or too short. This should not happen, because short
         // tracks are skipped after load. Play ToDeck immediately.
         pFromDeck->fadeBeginPos = 0;
         pFromDeck->fadeEndPos = 0;
         pToDeck->startPos = kKeepPosition;
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(toDeckDuration > 0) {
-        // Playing Track has no duration. This should not happen, because short
+    if (toDeckDuration == 0) {
+        // This is a seek call to zero after ejecting the track
+        // this signal is received before the track pointer becomes null
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(toDeckDuration >= kMinimumTrackDurationSec) {
+        // Track has no duration or too short. This should not happen, because short
         // tracks are skipped after load.
         loadNextTrackFromQueue(*pToDeck, false);
         return;
