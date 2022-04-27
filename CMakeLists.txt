@@ -847,7 +847,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/performancetimer.cpp
   src/util/rangelist.cpp
   src/util/readaheadsamplebuffer.cpp
-  src/util/rlimit.cpp
   src/util/rotary.cpp
   src/util/sample.cpp
   src/util/samplebuffer.cpp
@@ -992,6 +991,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)
+  target_sources(mixxx-lib PRIVATE src/util/rlimit.cpp)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
 endif()
 
