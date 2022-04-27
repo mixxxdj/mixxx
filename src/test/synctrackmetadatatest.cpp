@@ -13,11 +13,8 @@
 
 namespace {
 
-const auto kTestDir = QDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
-
-const auto kTestFileWithMetadata = QFileInfo(kTestDir, QStringLiteral("cover-test-jpg.mp3"));
-
-const auto kTestFileWithoutMetadata = QFileInfo(kTestDir, QStringLiteral("empty.mp3"));
+const QString kTestFileWithMetadata = QStringLiteral("id3-test-data/cover-test-jpg.mp3");
+const QString kTestFileWithoutMetadata = QStringLiteral("id3-test-data/empty.mp3");
 
 enum class AdjustFileTime {
     Earlier,
@@ -126,8 +123,8 @@ class SyncTrackMetadataConfigScope final {
 class SyncTrackMetadataTest : public LibraryTest {
   protected:
     explicit SyncTrackMetadataTest(
-            const QFileInfo& testFile)
-            : m_tempFileSystem(testFile) {
+            const QString& testFile)
+            : m_tempFileSystem(QFileInfo(getTestDir().filePath(testFile))) {
         // Date back the file before adding it to the track collection
         // to ensure that all newly generated time stamps are strictly
         // greater than the synchronization time stamp in the library.
@@ -373,6 +370,7 @@ class SyncTrackMetadataTest : public LibraryTest {
     void checkTrackRecordSourceSyncStatus(
             mixxx::TrackRecord::SourceSyncStatus expectedSourceSyncStatus) const {
         const auto pTrack = prepareTestTrack();
+        ASSERT_NE(nullptr, pTrack);
         const mixxx::TrackRecord emptyTrackRecord;
         EXPECT_EQ(mixxx::TrackRecord::SourceSyncStatus::Void,
                 emptyTrackRecord.checkSourceSyncStatus(pTrack->getFileInfo()));
@@ -388,7 +386,7 @@ class SyncTrackMetadataTest : public LibraryTest {
 
 class SyncTrackMetadataStatusSynchronizedTest : public SyncTrackMetadataTest {
   protected:
-    explicit SyncTrackMetadataStatusSynchronizedTest(const QFileInfo& testFile)
+    explicit SyncTrackMetadataStatusSynchronizedTest(const QString& testFile)
             : SyncTrackMetadataTest(testFile) {
     }
 
@@ -445,7 +443,7 @@ TEST_F(LibraryFileWithoutMetadataSyncStatusSynchronizedTest, saveTrackMetadataWi
 
 class SyncTrackMetadataStatusOutdatedTest : public SyncTrackMetadataTest {
   public:
-    explicit SyncTrackMetadataStatusOutdatedTest(const QFileInfo& testFile)
+    explicit SyncTrackMetadataStatusOutdatedTest(const QString& testFile)
             : SyncTrackMetadataTest(testFile) {
         // Predate the file after it has already been added to the library
         // in the base class constructor.
@@ -546,7 +544,7 @@ TEST_F(LibraryFileWithoutMetadataSyncStatusOutdatedTest, saveTrackMetadataWithSy
 
 class SyncTrackMetadataStatusUnknownTest : public SyncTrackMetadataTest {
   public:
-    explicit SyncTrackMetadataStatusUnknownTest(const QFileInfo& testFile)
+    explicit SyncTrackMetadataStatusUnknownTest(const QString& testFile)
             : SyncTrackMetadataTest(testFile) {
     }
 
@@ -626,7 +624,7 @@ TEST_F(LibraryFileWithoutMetadataSyncStatusUnknownTest, saveTrackMetadataWithSyn
 
 class SyncTrackMetadataStatusUndefinedTest : public SyncTrackMetadataTest {
   public:
-    explicit SyncTrackMetadataStatusUndefinedTest(const QFileInfo& testFile)
+    explicit SyncTrackMetadataStatusUndefinedTest(const QString& testFile)
             : SyncTrackMetadataTest(testFile) {
     }
 
