@@ -73,7 +73,7 @@ void SamplerBank::slotSaveSamplerBank(double v) {
 
     // Update the import/export directory
     QString fileDirectory(samplerBankPath);
-    fileDirectory.truncate(samplerBankPath.lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(samplerBankPath.lastIndexOf("/"));
     m_pConfig->set(kConfigkeyLastImportExportDirectory,
             ConfigValue(fileDirectory));
 
@@ -154,7 +154,7 @@ void SamplerBank::slotLoadSamplerBank(double v) {
 
     // Update the import/export directory
     QString fileDirectory(samplerBankPath);
-    fileDirectory.truncate(samplerBankPath.lastIndexOf(QDir::separator()));
+    fileDirectory.truncate(samplerBankPath.lastIndexOf("/"));
     m_pConfig->set(kConfigkeyLastImportExportDirectory,
             ConfigValue(fileDirectory));
 
