@@ -64,12 +64,13 @@ class BaseTrackCache : public QObject {
     QString columnSortForFieldIndex(int index) const;
     int fieldIndex(ColumnCache::Column column) const;
     virtual void filterAndSort(const QSet<TrackId>& trackIds,
-                               const QString& query,
-                               const QString& extraFilter,
-                               const QString& orderByClause,
-                               const QList<SortColumn>& sortColumns,
-                               const int columnOffset,
-                               QHash<TrackId, int>* trackToIndex);
+            const QString& query,
+            const QString& extraFilter,
+            const QString& orderByClause,
+            const QList<SortColumn>& sortColumns,
+            const int columnOffset,
+            QHash<TrackId, int>* sortedIndexes,
+            QHash<TrackId, int>* trackToIndex);
     virtual bool isCached(TrackId trackId) const;
     virtual void ensureCached(TrackId trackId);
     virtual void ensureCached(const QSet<TrackId>& trackIds);
