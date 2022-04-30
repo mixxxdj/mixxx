@@ -5,10 +5,33 @@
  *
  * @param {string} message Message to be printed on controller debug console output
  */
+
 var HIDDebug = function(message) {
     print("HID " + message);
 };
-
+/**
+ * Callback function to call when, the packet represents an HID InputReport, and new data for this InputReport are received.
+ * If a packet callback is defined and the data for the InputReport are received, the complete report data are sent to the callback function after field values are parsed, without calling any packet field parsing functions.
+ *
+ * @callback packetCallback
+ * @param {HIDPacket} packet The packet that represents the InputReport
+ * @param {number[]} changed_data The data received from the device
+ */
+/**
+ * Callback function to call when, data for specified filed in the packet is updated.
+ *
+ * @callback controlCallback
+ * @param {packetField} field Object that describes a field inside of a packet, which can often mapped to a Mixxx control.
+ */
+/**
+ * In almost every case, a HID controller sends data values with input fields which are not directly suitable for Mixxx control values. To solve this issue, HIDController contains function to scale the input value to suitable range automatically before calling any field processing functions. Scalers can be registered with HIDController.registerScalingFunction(group,name,callback) in HIDController.
+ *
+ * @callback scalingCallback
+ * @param {string} group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
+ * @param {string} name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
+ * @param {number} value Value to be scaled
+ * @returns {number} Scaled value
+ */
 /**
  * @typedef packetField
  * @type {object}
@@ -26,8 +49,15 @@ var HIDDebug = function(message) {
  * @property {controlCallback} callback
  * @property {boolean} soft_takeover
  * @property {boolean} ignored
- * @property {boolean} auto_repeat
+ * @property {controlCallback} auto_repeat
  * @property {number} auto_repeat_interval
+ * @property {number} min
+ * @property {number} max
+ * @property {string} type
+ * @property {HIDBitVector|boolean|number} value
+ * @property {number} delta
+ * @property {number} mindelta
+ * @property {number} toggle
  */
 
 /**
@@ -57,7 +87,7 @@ class HIDBitVector {
     /**
      * Add a control bitmask to the HIDBitVector
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code. Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code
+     * @param {string} group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control without any additional code. Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code
      * @param {string} name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are considered.
      */
@@ -80,9 +110,9 @@ class HIDBitVector {
         this.bits[bit.id] = bit;
     }
     /**
-     * Add a Output control bitmask to the HIDBitVector
+     * Add an output control bitmask to the HIDBitVector
      *
-     * @param {string} group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
+     * @param {string} group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to an output without any additional code.
      * @param {string} name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are considered.
      */
@@ -134,7 +164,7 @@ class HIDModifierList {
      * Set modifier value
      *
      * @param {string} name Name of modifier
-     * @param {number} value Value to be set
+     * @param {number|boolean} value Value to be set
      */
     set(name, value) {
         if (!(name in this.modifiers)) {
@@ -151,7 +181,7 @@ class HIDModifierList {
      * Get modifier value
      *
      * @param {string} name Name of modifier
-     * @returns {number} Value of modifier
+     * @returns {number|boolean} Value of modifier
      */
     get(name) {
         if (!(name in this.modifiers)) {
@@ -161,18 +191,10 @@ class HIDModifierList {
         return this.modifiers[name];
     }
     /**
-     * Callback function to call when, the packet represents an HID InputReport, and new data for this InputReport are received.
-     * If a packet callback is defined and the data for the InputReport are received, the complete report data are sent to the callback function after field values are parsed, without calling any packet field parsing functions.
-     *
-     * @callback packetCallback
-     * @param {HIDPacket} packet The packet that represents the InputReport
-     * @param {number[]} changed_data The data received from the device
-     */
-    /**
-     * Set modifier callback (update function after modifier state changes)
+     * Set modifier callback function
      *
      * @param {string} name Name of reference in HIDModifierList
-     * @param {packetCallback} callback Function to be called when value changed
+     * @param {packetCallback} callback Function to be called after modifier value changes
      */
     setCallback(name, callback) {
         if (!(name in this.modifiers)) {
@@ -194,8 +216,7 @@ this.HIDModifierList = HIDModifierList;
  * Each HIDPacket must be registered to HIDController.
  *
  * @param {string} name Name of packet (it makes sense to refer the HID report type and HID Report-ID here e.g. 'InputReport_0x02' or 'OutputReport_0x81')
- * @param {number} reportId report ID of the packet. If the device only uses
- *          one report type, this must be 0.
+ * @param {number} reportId ReportID of the packet. If the device does not use ReportIDs this must be 0.
  * @param {packetCallback} callback function to call when the packet type represents an InputReport an a new report is received. If packet callback is set, the
  *          packet is not parsed by delta functions.
  *          callback is not meaningful for output packets
@@ -225,7 +246,7 @@ class HIDPacket {
      * Pack a field value to the packet.
      * Can only pack bits and byte values, patches welcome.
      *
-     * @param {number} data Data received as InputReport from the device
+     * @param {number[]} data Data received as InputReport from the device
      * @param {packetField} field Object that describes a field inside of a packet, which can often mapped to a Mixxx control.
      */
     pack(data, field) {
@@ -282,7 +303,7 @@ class HIDPacket {
      *  - i       signed integer
      *  - I       unsigned integer
      *
-     * @param {number} data Data received as InputReport from the device
+     * @param {number[]} data Data received as InputReport from the device
      * @param {packetField} field Object that describes a field inside of a packet, which can often mapped to a Mixxx control.
      * @returns {number} Value for the field in data, represented according the fields packing type
      */
@@ -312,8 +333,8 @@ class HIDPacket {
      * Create group if create is true
      *
      * @param {string} name Name of the group
-     * @param {boolean} create If true, group will be created
-       @returns {string} Group Returns group or undefined, when group is not existing and create is set to false
+     * @param {boolean} [create=false] If true, group will be created
+       @returns {any} Group Returns group or undefined, when group is not existing and create is set to false
      */
     getGroup(name, create) {
         if (this.groups === undefined) { this.groups = {}; }
@@ -402,7 +423,7 @@ class HIDPacket {
      *
      * @param {string} group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
      * @param {string} name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
-     * @returns {HIDBitVector} Reference to a bit in a bitvector field
+     * @returns {packetField} Reference to a bit in a bitvector field
      */
     lookupBit(group, name) {
         const field = this.getField(group, name);
@@ -432,12 +453,6 @@ class HIDPacket {
         }
         delete control_group[name];
     }
-    /**
-     * Callback function to call when, data for specified filed in the packet is updated.
-     *
-     * @callback controlCallback
-     * @param {packetField} field Object that describes a field inside of a packet, which can often mapped to a Mixxx control.
-     */
     /**
      * Register a numeric value to parse from input packet
      *
@@ -571,6 +586,7 @@ class HIDPacket {
      */
     addOutput(group, name, offset, pack, bitmask, callback) {
         const control_group = this.getGroup(group, true);
+        /** @type {packetField} */
         let field;
         let bitvector = undefined;
         const field_id = group + "." + name;
@@ -737,7 +753,7 @@ class HIDPacket {
      * Data is expected to be a Packet() received from HID device.
      * BitVectors are returned as bits you can iterate separately.
      *
-     * @param {number} data Data received as InputReport from the device
+     * @param {number[]} data Data received as InputReport from the device
      * @returns List of changed fields with new value.
      */
     parse(data) {
@@ -869,6 +885,9 @@ this.HIDPacket = HIDPacket;
  * @property {number} scratchBeta              Beta value for scratch_enable
  * @property {boolean} scratchRampOnEnable     UNUSED If 'ramp' is used when enabling scratch
  * @property {boolean} scratchRampOnDisable    UNUSED If 'ramp' is used when disabling scratch
+ * @property {boolean} rampedScratchEnable
+ * @property {boolean} rampedScratchDisable
+ * @property {any} enableScratchCallback
  */
 class HIDController {
     constructor() {
@@ -1052,7 +1071,7 @@ class HIDController {
     /**
      * Set input packet callback afterwards
      *
-     * @param {HIDPacket} packet The input packet
+     * @param {string} packet The name of the input packet e.g. 'InputReport_0x02'
      * @param {packetCallback} callback Callback function for the control
      */
     setPacketCallback(packet, callback) {
@@ -1064,7 +1083,7 @@ class HIDController {
      * If packet has callback, it is still parsed but no field processing is done,
      * callback is called directly after unpacking fields from packet.
      *
-     * @param {HIDPacket} packet The input packet
+     * @param {string} packet The name of the input packet e.g. 'InputReport_0x02'
      * @param {string} group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
      * @param {string} name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
      * @param {controlCallback} callback Callback function for the control
@@ -1077,15 +1096,6 @@ class HIDController {
         }
         input_packet.setCallback(group, name, callback);
     }
-    /**
-     * In almost every case, a HID controller sends data values with input fields which are not directly suitable for Mixxx control values. To solve this issue, HIDController contains function to scale the input value to suitable range automatically before calling any field processing functions. Scalers can be registered with HIDController.registerScalingFunction(group,name,callback) in HIDController.
-     *
-     * @callback scalingCallback
-     * @param {string} group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
-     * @param {string} name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
-     * @param {number} value Value to be scaled
-     * @returns {number} Scaled value
-     */
     /**
      * Register scaling function for a control name
      * This does not check if given control name is valid
@@ -1113,7 +1123,7 @@ class HIDController {
      *
      * @param {string} group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
      * @param {string} name Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
-     * @param modifier
+     * @param {any} modifier
      */
     linkModifier(group, name, modifier) {
         const packet = this.getInputPacket(this.defaultPacket);
@@ -1566,7 +1576,7 @@ class HIDController {
     /**
      * Stops the specified auto repeat timer
      *
-     * @param {number} timer_id Reference of the timer to stop
+     * @param {string} timer_id Reference of the timer to stop
      */
     stopAutoRepeatTimer(timer_id) {
         if (this.timers[timer_id]) {
@@ -1756,7 +1766,7 @@ class HIDController {
      * @param {string} group Defines the group name for the field. The group can be any string, but if it matches a valid Mixxx control group name, it is possible to map a field to a control or output without any additional code.
      * @param {string} name  Is the name of the control for the field. The name can be any string, but if it matches a valid Mixxx control name in the group defined for field, the system attempts to attach it directly to the correct field. Together group and name form the ID of the field (group.name)
      * @param {number} value Value to set as new output state of the control
-     * @param {boolean} send_packet If true, the packet (an HID OutputReport) is send immediately
+     * @param {boolean} [send_packet=false] If true, the packet (an HID OutputReport) is send immediately
      */
     setOutput(group, name, value, send_packet) {
         const field = this.getOutputField(group, name);
