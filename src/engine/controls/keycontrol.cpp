@@ -353,7 +353,7 @@ void KeyControl::slotPitchChanged(double pitch) {
 }
 
 void KeyControl::updatePitch() {
-    double pitch = m_pPitch->get();
+    const double pitch = m_pPitch->get();
 
     if constexpr (kEnableDebugOutput) {
         qDebug() << "   .";
@@ -364,17 +364,17 @@ void KeyControl::updatePitch() {
         qDebug() << "   | m_pPitchAdjust  " << m_pPitchAdjust->get();
     }
 
-    double speedSliderPitchRatio =
-            m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
     // speedSliderPitchRatio must be unchanged
-    double pitchKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitch);
-    m_pitchRateInfo.pitchRatio = pitchKnobRatio;
-    m_pitchRateInfo.pitchTweakRatio = pitchKnobRatio / speedSliderPitchRatio;
+    const double speedSliderPitchRatio =
+            m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
+    m_pitchRateInfo.pitchRatio = KeyUtils::semitoneChangeToPowerOf2(pitch);
+    m_pitchRateInfo.pitchTweakRatio =
+            m_pitchRateInfo.pitchRatio / speedSliderPitchRatio;
 
-    double dFileKey = m_pFileKey->get();
+    const double dFileKey = m_pFileKey->get();
     m_pPitchAdjust->set(
             KeyUtils::powerOf2ToSemitoneChange(m_pitchRateInfo.pitchTweakRatio));
-    updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(pitchKnobRatio));
+    updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(m_pitchRateInfo.pitchRatio));
 
     if constexpr (kEnableDebugOutput) {
         qDebug() << "   --after KeyControl::updatePitch";
@@ -392,7 +392,7 @@ void KeyControl::slotPitchAdjustChanged(double pitchAdjust) {
 }
 
 void KeyControl::updatePitchAdjust() {
-    double pitchAdjust = m_pPitchAdjust->get();
+    const double pitchAdjust = m_pPitchAdjust->get();
 
     if constexpr (kEnableDebugOutput) {
         qDebug() << "   .";
@@ -403,16 +403,16 @@ void KeyControl::updatePitchAdjust() {
         qDebug() << "   | m_pPitch        " << m_pPitch->get();
     }
 
-    double speedSliderPitchRatio = m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
     // speedSliderPitchRatio must be unchanged
-    double pitchAdjustKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitchAdjust);
+    const double speedSliderPitchRatio =
+            m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
+    m_pitchRateInfo.pitchTweakRatio = KeyUtils::semitoneChangeToPowerOf2(pitchAdjust);
 
     // pitch_adjust is an offset to the pitch set by the speed controls
     // calc absolute pitch
-    m_pitchRateInfo.pitchTweakRatio = pitchAdjustKnobRatio;
-    m_pitchRateInfo.pitchRatio = pitchAdjustKnobRatio * speedSliderPitchRatio;
+    m_pitchRateInfo.pitchRatio = m_pitchRateInfo.pitchTweakRatio * speedSliderPitchRatio;
 
-    double dFileKey = m_pFileKey->get();
+    const double dFileKey = m_pFileKey->get();
     updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(m_pitchRateInfo.pitchRatio));
 
     if constexpr (kEnableDebugOutput) {
