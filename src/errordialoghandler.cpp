@@ -2,6 +2,7 @@
 
 #include <QCoreApplication>
 #include <QScopedPointer>
+#include <QScreen>
 #include <QThread>
 #include <QtDebug>
 
@@ -9,6 +10,15 @@
 #include "util/assert.h"
 #include "util/compatibility/qmutex.h"
 #include "util/versionstore.h"
+#include "util/widgethelper.h"
+
+namespace {
+// Gross estimated dimensions for the size of the error dialog,
+// with Show Details expanded.
+constexpr int kEstimatedShowDetailedDialogWidth = 1000; // px
+constexpr int kEstimatedShowDetailedDialogHeight = 500; // px
+constexpr int kEstimatedDialogBorders = 50;             // px
+} // namespace
 
 ErrorDialogProperties::ErrorDialogProperties()
         : m_title(VersionStore::applicationName()),
@@ -149,7 +159,21 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     if (!props->m_details.isEmpty()) {
         pMsgBox->setDetailedText(props->m_details);
         if (props->m_detailsUseMonospaceFont) {
-            pMsgBox->setStyleSheet("QTextEdit { font-family: monospace; }");
+            // There is no event to repond on the Show Details button of QMessagBox.
+            // Therefore we must consider the expanded size for positioning the dialog initially.
+            const auto* const pScreen =
+                    mixxx::widgethelper::getScreen(*pMsgBox);
+            pMsgBox->setGeometry(QStyle::alignedRect(
+                    Qt::LeftToRight,
+                    Qt::AlignCenter,
+                    QSize(kEstimatedShowDetailedDialogWidth, kEstimatedShowDetailedDialogHeight),
+                    pScreen->geometry()));
+            pMsgBox->setStyleSheet("QTextEdit { min-width: " +
+                    QString::number(kEstimatedShowDetailedDialogWidth -
+                            kEstimatedDialogBorders) +
+                    "px ; max-height: " +
+                    QString::number(kEstimatedShowDetailedDialogHeight) +
+                    "px; font-family: monospace;}");
         }
     }
 
