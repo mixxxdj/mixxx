@@ -66,7 +66,7 @@ void ControlDoublePrivate::initialize(double defaultValue) {
         if (pConfig) {
             value = pConfig->getValue(m_key, defaultValue);
         } else {
-            DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null")
+            DEBUG_ASSERT(!"Can't load persistent value s_pUserConfig is null");
         }
     }
     m_defaultValue.setValue(defaultValue);
