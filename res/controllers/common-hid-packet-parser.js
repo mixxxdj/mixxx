@@ -3,7 +3,7 @@
 /**
  * Common HID script debugging function. Just to get logging with 'HID' prefix.
  *
- * @param {string} message Message to be printed on controller debug console output
+ * @param {any} message Message to be printed on controller debug console output
  */
 
 var HIDDebug = function(message) {
@@ -582,7 +582,7 @@ class HIDPacket {
      *                        - For HID devices which use ReportIDs to enumerate the reports, the data bytes starts at position 1
      * @param pack control packing format for pack(), one of b/B, h/H, i/I
      * @param {number} bitmask A bitwise mask of up to 32 bit. All bits set to'1' in this mask are considered.
-     * @param {controlCallback} callback Callback function for the control
+     * @param {controlCallback} [callback=undefined] Callback function for the control
      */
     addOutput(group, name, offset, pack, bitmask, callback) {
         const control_group = this.getGroup(group, true);
