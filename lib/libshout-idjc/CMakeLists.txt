@@ -37,7 +37,20 @@ target_compile_definitions(${PROJECT_NAME}
         LIBSHOUT_MICRO=${PROJECT_VERSION_PATCH}
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
+option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
+if(MSVC)
+  if(WARNINGS_PEDANTIC)
+    target_compile_options(${PROJECT_NAME} PUBLIC /W4)
+  else()
+    target_compile_options(${PROJECT_NAME} PUBLIC /W3)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
+  endif()
+else()
+  target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion -Werror=return-type)
+  if(WARNINGS_PEDANTIC)
+    target_compile_options(${PROJECT_NAME} PUBLIC -pedantic)
+  endif()
+endif()
 
 cmake_push_check_state()
 
