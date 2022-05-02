@@ -175,11 +175,6 @@ endif()
 check_include_file(time.h HAVE_TIME_H)
 if(HAVE_TIME_H)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_TIME_H)
-    check_struct_has_member( "struct timespec" "tv_sec" "time.h" HAVE_STRUCT_TIMESPEC )
-    # HAVE_STRUCT_TIMESPEC must be defined for windows pthreads on newer MSVC
-    if(HAVE_STRUCT_TIMESPEC)
-        target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_STRUCT_TIMESPEC)
-    endif(HAVE_STRUCT_TIMESPEC)
 endif()
 
 if(HAVE_SYS_TIME_H AND HAVE_TIME_H)
