@@ -37,8 +37,8 @@ bool WLibrary::registerView(const QString& name, QWidget* view) {
         return false;
     }
     if (dynamic_cast<LibraryView*>(view) == nullptr) {
-        qDebug() << "WARNING: Attempted to register a view with WLibrary "
-                 << "that does not implement the LibraryView interface. "
+        qDebug() << "WARNING: Attempted to register view" << name << "with WLibrary "
+                 << "which does not implement the LibraryView interface. "
                  << "Ignoring.";
         return false;
     }
@@ -58,8 +58,8 @@ void WLibrary::switchToView(const QString& name) {
     if (widget != nullptr) {
         LibraryView * lview = dynamic_cast<LibraryView*>(widget);
         if (lview == nullptr) {
-            qDebug() << "WARNING: Attempted to register a view with WLibrary "
-                     << "that does not implement the LibraryView interface. "
+            qDebug() << "WARNING: Attempted to switch to view" << name << "with WLibrary "
+                     << "which does not implement the LibraryView interface. "
                      << "Ignoring.";
             return;
         }
@@ -80,8 +80,8 @@ void WLibrary::search(const QString& name) {
     QWidget* current = currentWidget();
     LibraryView* view = dynamic_cast<LibraryView*>(current);
     if (view == nullptr) {
-        qDebug() << "WARNING: Attempted to register a view with WLibrary "
-          << "that does not implement the LibraryView interface. Ignoring.";
+        qDebug() << "WARNING: Attempted to search in view" << name << "with WLibrary "
+                 << "which does not implement the LibraryView interface. Ignoring.";
         return;
     }
     lock.unlock();
