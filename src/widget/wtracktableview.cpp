@@ -950,6 +950,16 @@ TrackId WTrackTableView::getCurrentTrackId() const {
     return {};
 }
 
+bool WTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
+    TrackModel* pTrackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        qWarning() << "No track model";
+        return false;
+    }
+    const QVector<int> trackRows = pTrackModel->getTrackRows(trackId);
+    return !trackRows.empty();
+}
+
 void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
@@ -1040,8 +1050,9 @@ void WTrackTableView::slotAddToAutoDJReplace() {
 }
 
 void WTrackTableView::slotSelectTrack(const TrackId& trackId) {
-    setCurrentTrackId(trackId, 0, true);
-    setSelectedTracks({trackId});
+    if (setCurrentTrackId(trackId, 0, true)) {
+        setSelectedTracks({trackId});
+    }
 }
 
 void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder) {

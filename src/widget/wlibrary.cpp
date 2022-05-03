@@ -92,6 +92,17 @@ LibraryView* WLibrary::getActiveView() const {
     return dynamic_cast<LibraryView*>(currentWidget());
 }
 
+bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
+    //qDebug() << "WLibrary::isTrackInCurrentView" << trackId;
+    QWidget* current = currentWidget();
+    WTrackTableView* tracksView = qobject_cast<WTrackTableView*>(current);
+    if (tracksView) {
+        return tracksView->isTrackInCurrentView(trackId);
+    } else {
+        return false;
+    }
+}
+
 bool WLibrary::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
