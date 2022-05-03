@@ -127,6 +127,7 @@ void AnalysisFeature::activate() {
     if (m_pAnalysisView) {
         emit restoreSearch(m_pAnalysisView->currentSearch());
     }
+    emit showTrackModel(m_pAnalysisView->getTableModel());
     emit enableCoverArtDisplay(true);
 }
 

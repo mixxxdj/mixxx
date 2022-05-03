@@ -10,6 +10,7 @@
 #include "library/proxytrackmodel.h"
 
 class RecordingManager;
+class DlgRecording;
 
 class RecordingFeature final : public LibraryFeature {
     Q_OBJECT
@@ -38,4 +39,5 @@ class RecordingFeature final : public LibraryFeature {
     RecordingManager* const m_pRecordingManager;
 
     FolderTreeModel* m_pSidebarModel;
+    DlgRecording* m_pRecordingView;
 };

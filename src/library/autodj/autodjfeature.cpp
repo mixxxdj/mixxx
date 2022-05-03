@@ -162,6 +162,7 @@ void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
     emit switchToView(kViewName);
     emit disableSearch();
+    emit showTrackModel(m_pAutoDJProcessor->getTableModel());
     emit enableCoverArtDisplay(true);
 }
 

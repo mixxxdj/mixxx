@@ -32,6 +32,9 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;
     void moveSelection(int delta) override;
+    AnalysisLibraryTableModel* getTableModel() const {
+        return m_pAnalysisLibraryTableModel;
+    }
     inline const QString currentSearch() {
         return m_pAnalysisLibraryTableModel->currentSearch();
     }

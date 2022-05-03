@@ -33,6 +33,9 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void slotAddToAutoDJReplace() override;
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
+    ProxyTrackModel* getTableModel() {
+        return &m_proxyModel;
+    }
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
     void saveCurrentViewState() override;
     bool restoreCurrentViewState() override;
