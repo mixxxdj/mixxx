@@ -159,7 +159,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     if (!props->m_details.isEmpty()) {
         pMsgBox->setDetailedText(props->m_details);
         if (props->m_detailsUseMonospaceFont) {
-            // There is no event to repond on the Show Details button of QMessagBox.
+            // There is no event to respond on the Show Details button of QMessagBox.
             // Therefore we must consider the expanded size for positioning the dialog initially.
             const auto* const pScreen =
                     mixxx::widgethelper::getScreen(*pMsgBox);
