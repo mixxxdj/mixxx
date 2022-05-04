@@ -163,16 +163,25 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
             // Therefore we must consider the expanded size for positioning the dialog initially.
             const auto* const pScreen =
                     mixxx::widgethelper::getScreen(*pMsgBox);
+            int dialogWidth = kEstimatedShowDetailedDialogWidth;
+            int dialogHeight = kEstimatedShowDetailedDialogHeight;
+            // Limit dialog size to screen size, for the case of devices with very small display - like Raspberry Pi.
+            if (dialogWidth > pScreen->geometry().width()) {
+                dialogWidth = pScreen->geometry().width();
+            }
+            if (dialogHeight > pScreen->geometry().height()) {
+                dialogHeight = pScreen->geometry().height();
+            }
             pMsgBox->setGeometry(QStyle::alignedRect(
                     Qt::LeftToRight,
                     Qt::AlignCenter,
-                    QSize(kEstimatedShowDetailedDialogWidth, kEstimatedShowDetailedDialogHeight),
+                    QSize(dialogWidth, dialogHeight),
                     pScreen->geometry()));
             pMsgBox->setStyleSheet("QTextEdit { min-width: " +
-                    QString::number(kEstimatedShowDetailedDialogWidth -
+                    QString::number(dialogWidth -
                             kEstimatedDialogBorders) +
                     "px ; max-height: " +
-                    QString::number(kEstimatedShowDetailedDialogHeight) +
+                    QString::number(dialogHeight) +
                     "px; font-family: monospace;}");
         }
     }
