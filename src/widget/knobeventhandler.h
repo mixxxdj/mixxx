@@ -21,8 +21,9 @@ class KnobEventHandler {
     }
 
     double valueFromMouseEvent(T* pWidget, QMouseEvent* e) {
-        QPoint cur(e->globalPos());
-        QPoint diff(cur - m_prevPos);
+        QPoint cur = e->globalPos();
+        QPoint diff = cur - m_prevPos;
+        m_prevPos = cur;
         double dist = sqrt(static_cast<double>(diff.x() * diff.x() + diff.y() * diff.y()));
         bool y_dominant = abs(diff.y()) > abs(diff.x());
 
@@ -47,7 +48,6 @@ class KnobEventHandler {
             double value = valueFromMouseEvent(pWidget, e);
             pWidget->setControlParameterDown(value);
             pWidget->inputActivity();
-            m_prevPos = e->globalPos();
         }
     }
 
