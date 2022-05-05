@@ -122,7 +122,7 @@ jobs:
     # https://github.com/mozilla/sccache/issues/950
     - name: "[Windows] Set up cargo cache"
       if: runner.os == 'Windows'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: sccache-build-cache
       with:
         path: C:\Users\runneradmin\.cargo
@@ -138,7 +138,7 @@ jobs:
       run: cargo install --git https://github.com/mozilla/sccache.git --rev "${SCCACHE_COMMIT}"
 
     - name: "Check out repository"
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         # This is necessary for making `git describe` work.
         fetch-depth: 0
@@ -170,7 +170,7 @@ jobs:
 
     - name: "[macOS/Windows] Set up build environment cache"
       if: runner.os != 'Linux'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ matrix.buildenv_basepath }}
         key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
@@ -223,7 +223,7 @@ jobs:
       if: runner.os != 'windows'
 
     - name: "Set up compiler cache"
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ matrix.compiler_cache_path }}
         key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
@@ -433,7 +433,7 @@ jobs:
     needs: build
     steps:
     - name: "Check out repository"
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
