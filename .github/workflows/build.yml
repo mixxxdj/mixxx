@@ -105,6 +105,7 @@ jobs:
             qt_qpa_platform: windows
 
     env:
+      SCCACHE_VERSION: "0.3.0"
       # macOS codesigning
       APPLE_CODESIGN_IDENTITY: 2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870
       MACOS_CODESIGN_OPENSSL_PASSWORD: ${{ secrets.MACOS_CODESIGN_OPENSSL_PASSWORD }}
@@ -123,14 +124,14 @@ jobs:
       id: sccache-build-cache
       with:
         path: C:\Users\runneradmin\.cargo
-        key: sccache
+        key: sccache-${{ env.SCCACHE_VERSION }}
 
     # This needs to be done first because something later messes with $PATH in a way that breaks cargo
     # by causing it to find link.exe from Git for Windows instead of MSVC.
     - name: "[Windows] Build and install sccache"
       shell: bash
       if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
-      run: cargo install sccache
+      run: cargo install --version "${{ env.SCCACHE_VERSION }}" sccache
 
     - name: "Check out repository"
       uses: actions/checkout@v2
