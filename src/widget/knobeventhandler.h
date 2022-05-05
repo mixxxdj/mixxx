@@ -4,7 +4,6 @@
 #include <QWheelEvent>
 #include <QColor>
 #include <QCursor>
-#include <QApplication>
 #include <QPoint>
 #include <QPixmap>
 
@@ -63,7 +62,7 @@ class KnobEventHandler {
                 m_prevPos = m_startPos;
                 // Somehow using Qt::BlankCursor does not work on Windows
                 // https://mixxx.org/forums/viewtopic.php?p=40298#p40298
-                QApplication::setOverrideCursor(m_blankCursor);
+                pWidget->setCursor(m_blankCursor);
                 break;
             default:
                 break;
@@ -76,7 +75,7 @@ class KnobEventHandler {
             case Qt::LeftButton:
             case Qt::MiddleButton:
                 QCursor::setPos(m_startPos);
-                QApplication::restoreOverrideCursor();
+                pWidget->unsetCursor();
                 value = valueFromMouseEvent(pWidget, e);
                 pWidget->setControlParameterUp(value);
                 pWidget->inputActivity();
