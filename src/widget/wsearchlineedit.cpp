@@ -1,6 +1,7 @@
 #include "wsearchlineedit.h"
 
 #include <QAbstractItemView>
+#include <QApplication>
 #include <QFont>
 #include <QLineEdit>
 #include <QShortcut>
@@ -125,15 +126,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             this,
             &WSearchLineEdit::slotIndexChanged);
 
-    // When you hit enter, it will trigger or clear the search.
-    connect(this->lineEdit(),
-            &QLineEdit::returnPressed,
-            this,
-            [this] {
-                if (!slotClearSearchIfClearButtonHasFocus()) {
-                    slotTriggerSearch();
-                }
-            });
     loadQueriesFromConfig();
 
     refreshState();
@@ -233,7 +225,7 @@ void WSearchLineEdit::loadQueriesFromConfig() {
             m_pConfig->getKeysWithGroup(kSavedQueriesConfigGroup);
     QSet<QString> queryStrings;
     for (const auto& queryKey : queryKeys) {
-        const auto& queryString = m_pConfig->getValueString(queryKey);
+        QString queryString = m_pConfig->getValueString(queryKey).trimmed();
         if (queryString.isEmpty() || queryStrings.contains(queryString)) {
             // Don't add duplicate and remove it from the config immediately
             m_pConfig->remove(queryKey);
@@ -259,7 +251,7 @@ void WSearchLineEdit::saveQueriesInConfig() {
     for (int index = 0; index < count(); index++) {
         m_pConfig->setValue(
                 ConfigKey(kSavedQueriesConfigGroup, QString::number(index)),
-                itemText(index));
+                itemText(index).trimmed());
     }
 }
 
@@ -351,6 +343,10 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         }
         break;
     case Qt::Key_Enter:
+    case Qt::Key_Return:
+        if (slotClearSearchIfClearButtonHasFocus()) {
+            return;
+        }
         if (findCurrentTextIndex() == -1) {
             slotSaveSearch();
         }
@@ -366,11 +362,22 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
             }
             return;
         }
+        // Space in popup emulates Return press
+        if (view()->isVisible()) {
+            QKeyEvent returnPress(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+            QApplication::sendEvent(view(), &returnPress);
+            return;
+        }
         break;
     case Qt::Key_Escape:
         emit setLibraryFocus(FocusWidget::TracksTable);
         return;
     default:
+        // Don't change the query while the popup is open. This would cause the
+        // same weird vertical squeezing like removing the current index.
+        if (view()->isVisible()) {
+            return;
+        }
         break;
     }
 
@@ -383,6 +390,7 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
             << "focusInEvent";
 #endif // ENABLE_TRACE_LOG
     QComboBox::focusInEvent(event);
+    updateClearAndDropdownButton(currentText());
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
@@ -463,19 +471,23 @@ void WSearchLineEdit::slotTriggerSearch() {
 
 /// saves the current query as selection
 void WSearchLineEdit::slotSaveSearch() {
+    m_saveTimer.stop();
+    QString cText = currentText().trimmed();
+    int cIndex = findCurrentTextIndex();
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "save search. Index: "
+            << "save search. Text:"
+            << cText
+            << "Index:"
             << cIndex;
 #endif // ENABLE_TRACE_LOG
-    m_saveTimer.stop();
-    if (currentText().isEmpty() || !isEnabled()) {
+    if (cText.isEmpty() || !isEnabled()) {
         return;
     }
-    QString cText = currentText();
-    if (currentIndex() == -1) {
+    if (cIndex == -1) {
         removeItem(-1);
     }
+
     // Check if the text is already listed
     QSet<QString> querySet;
     for (int index = 0; index < count(); index++) {
@@ -483,7 +495,7 @@ void WSearchLineEdit::slotSaveSearch() {
     }
     if (querySet.contains(cText)) {
         // If query exists clear the box and use its index to set the currentIndex
-        int cIndex = findCurrentTextIndex();
+        int cIndex = findData(cText, Qt::DisplayRole);
         setCurrentIndex(cIndex);
         return;
     } else {
@@ -532,16 +544,18 @@ void WSearchLineEdit::deleteSelectedComboboxItem() {
 }
 
 void WSearchLineEdit::deleteSelectedListItem() {
-    bool wasEmpty = currentIndex() == -1 ? true : false;
-    QComboBox::removeItem(view()->currentIndex().row());
-    // ToDo Resize the list to new item size
-    // Close the popup if all items were removed
-
-    // When an item is removed the combobox would pick a sibling and trigger a
-    // search. Avoid this if the box was empty when the popup was opened.
-    if (wasEmpty) {
-        QComboBox::setCurrentIndex(-1);
+    // When the active query is removed the combobox would pick a sibling and
+    // trigger a search. Avoid that, just clear the search once.
+    // Also, there is a style update bug when changing the text of the hidden
+    // line edit, see updateClearAndDropdownButton()
+    int currViewindex = view()->currentIndex().row();
+    if (currViewindex == findCurrentTextIndex()) {
+        slotClearSearch();
     }
+    QComboBox::removeItem(currViewindex);
+    // ToDo Resize the list to new item size
+
+    // Close the popup if all items were removed
     if (count() == 0) {
         hidePopup();
     }
@@ -603,6 +617,16 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
             << "updateClearAndDropdownButton"
             << text;
 #endif // ENABLE_TRACE_LOG
+    // If the popup is open there's no need to further adjust the style, this is
+    // invoked by focusInEvent when the popup is closed.
+    // NOTE(ronso0) Also, when changing the text programmatically while the popup
+    // is open this style update would cause the QLineEdit to shrink in height
+    // (looks like a repaint without the padding from external stylesheets,
+    // noticed on Linux. Probably related)
+    if (view()->isVisible()) {
+        return;
+    }
+
     // Hide clear button if the text is empty and while placeholder is shown,
     // see disableSearch()
     m_clearButton->setVisible(!text.isEmpty());
@@ -612,7 +636,7 @@ void WSearchLineEdit::updateClearAndDropdownButton(const QString& text) {
     const int paddingPx = text.isEmpty() ? 0 : m_innerHeight;
     const QString clearPos(layoutDirection() == Qt::RightToLeft ? "left" : "right");
 
-    // Hide the nonfunctional drop-down button if the search is disabled.
+    // Hide the nonfunctional drop-down button (set width to 0) if the search is disabled.
     const int dropDownWidth = isEnabled() ? static_cast<int>(m_innerHeight * 0.7) : 0;
 
     const QString styleSheet = QStringLiteral(
