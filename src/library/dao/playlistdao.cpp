@@ -843,6 +843,10 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds) {
                 ++it) {
             if (it.key() == trackId) {
                 const auto playlistId = it.value();
+                // keep tracks in history playlists
+                if (getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
+                    continue;
+                }
                 removeTracksFromPlaylistByIdInner(playlistId, trackId);
                 playlistIds.insert(playlistId);
             }

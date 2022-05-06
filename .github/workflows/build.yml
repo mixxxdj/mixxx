@@ -102,7 +102,7 @@ jobs:
             qt_qpa_platform: windows
 
     env:
-      SCCACHE_COMMIT: 3f318a8675e4c3de4f5e8ab2d086189f2ae5f5cf
+      SCCACHE_VERSION: "0.3.0"
       # macOS codesigning
       APPLE_CODESIGN_IDENTITY: 2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870
       MACOS_CODESIGN_OPENSSL_PASSWORD: ${{ secrets.MACOS_CODESIGN_OPENSSL_PASSWORD }}
@@ -116,27 +116,23 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
 
-    # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
-    # https://github.com/mozilla/sccache/issues/950
-    - name: "[Windows] Set up cargo cache"
+    - name: "[Windows] Set up Cargo cache"
       if: runner.os == 'Windows'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: sccache-build-cache
       with:
         path: C:\Users\runneradmin\.cargo
-        # hash of commit to build
-        key: sccache-${{ env.SCCACHE_COMMIT }}
+        key: sccache-${{ env.SCCACHE_VERSION }}
 
     # This needs to be done first because something later messes with $PATH in a way that breaks cargo
     # by causing it to find link.exe from Git for Windows instead of MSVC.
-    - name: "[Windows] Build fixed sccache"
+    - name: "[Windows] Build and install sccache"
       shell: bash
       if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
-      # TODO: change this to simply `cargo install sccache` after 0.2.16 has been released
-      run: cargo install --git https://github.com/mozilla/sccache.git --rev "${SCCACHE_COMMIT}"
+      run: cargo install --version "${{ env.SCCACHE_VERSION }}" sccache
 
     - name: "Check out repository"
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         # This is necessary for making `git describe` work.
         fetch-depth: 0
@@ -173,7 +169,7 @@ jobs:
 
     - name: "[macOS/Windows] Set up build environment cache"
       if: runner.os != 'Linux'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ matrix.buildenv_basepath }}
         key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
@@ -231,7 +227,7 @@ jobs:
       if: runner.os != 'windows'
 
     - name: "Set up compiler cache"
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ matrix.compiler_cache_path }}
         key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
@@ -443,7 +439,7 @@ jobs:
     needs: build
     steps:
     - name: "Check out repository"
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
