@@ -189,11 +189,14 @@ void KeyControl::updateRate() {
                              << speedSliderPitchRatio;
                     qDebug() << "   |";
                 }
-            } else { // Lock at original track pitch
+            } else { // Lock at original track pitch, reset pitch_adjust
                 speedSliderPitchRatio = 1.0;
+                m_pitchRateInfo.pitchTweakRatio = 1.0;
+                m_pPitchAdjust->set(0);
                 if constexpr (kEnableDebugOutput) {
-                    qDebug() << "   LOCK original key";
-                    qDebug() << "   | speedSliderPitchRatio = 1.0";
+                    qDebug() << "   LOCK original key, reset pitch_adjust";
+                    qDebug() << "   | speedSliderPitchRatio =" << speedSliderPitchRatio;
+                    qDebug() << "   | pitchTweakRatio       =" << m_pitchRateInfo.pitchTweakRatio;
                     qDebug() << "   |";
                 }
             }
@@ -221,7 +224,7 @@ void KeyControl::updateRate() {
                     qDebug() << "   |   / pitchTweakRatio" << m_pitchRateInfo.pitchTweakRatio;
                     qDebug() << "   | =" << qSetRealNumberPrecision(18) << speedSliderPitchRatio;
                     qDebug() << "   |";
-                    qDebug() << "   : pitchTweakRatio *=";
+                    qDebug() << "   | pitchTweakRatio *=";
                     qDebug() << "   |   speedSliderPitchRatio" << speedSliderPitchRatio;
                     qDebug() << "   |   / tempoRatio        " << m_pitchRateInfo.tempoRatio;
                     qDebug() << "   | =" << qSetRealNumberPrecision(18)
@@ -265,7 +268,7 @@ void KeyControl::updateRate() {
 
     m_pitchRateInfo.pitchRatio = m_pitchRateInfo.pitchTweakRatio * speedSliderPitchRatio;
     if constexpr (kEnableDebugOutput) {
-        qDebug() << "   : pitchRatio =";
+        qDebug() << "   | pitchRatio =";
         qDebug() << "   | pitchTweakRatio        " << m_pitchRateInfo.pitchTweakRatio;
         qDebug() << "   | * speedSliderPitchRatio" << speedSliderPitchRatio;
         qDebug() << "   | =" << qSetRealNumberPrecision(18) << m_pitchRateInfo.pitchRatio;
