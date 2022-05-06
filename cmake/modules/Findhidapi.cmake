@@ -64,10 +64,10 @@ mark_as_advanced(hidapi_LIBRARY)
 
 
 # Version detection
-if(DEFINED PC_hidapi_VERSION)
+if(DEFINED PC_hidapi_VERSION AND NOT PC_hidapi_VERSION STREQUAL "")
   set(hidapi_VERSION "${PC_hidapi_VERSION}")
 else()
-  if (EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
+  if (EXISTS "${hidapi_LIBRARY}" AND EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
       file(READ "${hidapi_INCLUDE_DIR}/hidapi.h" hidapi_H_CONTENTS)
       string(REGEX MATCH "#define HID_API_VERSION_MAJOR ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
       set(hidapi_VERSION_MAJOR "${CMAKE_MATCH_1}")
@@ -81,7 +81,10 @@ else()
         NOT hidapi_VERSION_MINOR STREQUAL "" AND
         NOT hidapi_VERSION_PATCH STREQUAL "")
         set(hidapi_VERSION "${hidapi_VERSION_MAJOR}.${hidapi_VERSION_MINOR}.${hidapi_VERSION_PATCH}")
-      endif()
+    else()
+        # take what we have found, likely "" to fail the version check.
+        set(hidapi_VERSION "${hidapi_VERSION_MAJOR}")
+    endif()
   endif()
 endif ()
 
