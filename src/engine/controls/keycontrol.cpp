@@ -237,15 +237,8 @@ void KeyControl::updateRate() {
                 m_pPitchAdjust->set(
                         KeyUtils::powerOf2ToSemitoneChange(m_pitchRateInfo.pitchTweakRatio));
             } else { // Unlock and reset to linear pitch (orig. key + pitch fader offset)
-                // If 'current' aka 'not original' key was locked
-                // TODO(ronso0) Why does it depend on keylock mode?
-                if (m_keylockMode->get() == kLockCurrentKey) {
-                    // reset to linear pitch
-                    m_pitchRateInfo.pitchTweakRatio = 1.0;
-                    // was missing?
-                    // m_pPitchAdjust->set(
-                    //        KeyUtils::powerOf2ToSemitoneChange(m_pitchRateInfo.pitchTweakRatio));
-                }
+                m_pitchRateInfo.pitchTweakRatio = 1.0;
+                m_pPitchAdjust->set(0);
                 if constexpr (kEnableDebugOutput) {
                     qDebug() << "   UNLOCKING reset to linear pitch";
                     qDebug() << "   : pitchTweakRatio = 1.0";
