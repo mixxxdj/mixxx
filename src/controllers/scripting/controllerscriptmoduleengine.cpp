@@ -2,8 +2,9 @@
 
 #include "moc_controllerscriptmoduleengine.cpp"
 
-ControllerScriptModuleEngine::ControllerScriptModuleEngine(Controller* controller)
-        : ControllerScriptEngineBase(controller) {
+ControllerScriptModuleEngine::ControllerScriptModuleEngine(
+        Controller* controller, const RuntimeLoggingCategory& logger)
+        : ControllerScriptEngineBase(controller, logger) {
     connect(&m_fileWatcher,
             &QFileSystemWatcher::fileChanged,
             this,
@@ -16,7 +17,6 @@ ControllerScriptModuleEngine::~ControllerScriptModuleEngine() {
 
 bool ControllerScriptModuleEngine::initialize() {
     ControllerScriptEngineBase::initialize();
-    m_pJSEngine->installExtensions(QJSEngine::ConsoleExtension);
     // TODO: Add new ControlObject JS API to scripting environment.
 
     QJSValue mod =
@@ -28,7 +28,7 @@ bool ControllerScriptModuleEngine::initialize() {
     }
 
     if (!m_fileWatcher.addPath(m_moduleFileInfo.absoluteFilePath())) {
-        qWarning() << "Failed to watch script file" << m_moduleFileInfo.absoluteFilePath();
+        qCWarning(m_logger) << "Failed to watch script file" << m_moduleFileInfo.absoluteFilePath();
     }
 
     QJSValue initFunction = mod.property("init");
@@ -41,7 +41,7 @@ bool ControllerScriptModuleEngine::initialize() {
     if (shutdownFunction.isCallable()) {
         m_shutdownFunction = shutdownFunction;
     } else {
-        qDebug() << "Module exports no shutdown function.";
+        qCDebug(m_logger) << "Module exports no shutdown function.";
     }
     return true;
 }

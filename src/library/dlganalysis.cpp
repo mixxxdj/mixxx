@@ -111,12 +111,16 @@ bool DlgAnalysis::hasFocus() const {
     return m_pAnalysisLibraryTableView->hasFocus();
 }
 
+void DlgAnalysis::setFocus() {
+    m_pAnalysisLibraryTableView->setFocus();
+}
+
 void DlgAnalysis::onSearch(const QString& text) {
     m_pAnalysisLibraryTableModel->search(text);
 }
 
-void DlgAnalysis::loadSelectedTrack() {
-    m_pAnalysisLibraryTableView->loadSelectedTrack();
+void DlgAnalysis::activateSelectedTrack() {
+    m_pAnalysisLibraryTableView->activateSelectedTrack();
 }
 
 void DlgAnalysis::loadSelectedTrackToGroup(const QString& group, bool play) {
@@ -224,4 +228,12 @@ void DlgAnalysis::showAllSongs() {
 void DlgAnalysis::installEventFilter(QObject* pFilter) {
     QWidget::installEventFilter(pFilter);
     m_pAnalysisLibraryTableView->installEventFilter(pFilter);
+}
+
+void DlgAnalysis::saveCurrentViewState() {
+    m_pAnalysisLibraryTableView->saveCurrentViewState();
+}
+
+bool DlgAnalysis::restoreCurrentViewState() {
+    return m_pAnalysisLibraryTableView->restoreCurrentViewState();
 }

@@ -61,28 +61,28 @@ class DeckAttributes : public QObject {
         m_repeat.set(enabled ? 1.0 : 0.0);
     }
 
-    double introStartPosition() const {
-        return m_introStartPos.get();
+    mixxx::audio::FramePos introStartPosition() const {
+        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_introStartPos.get());
     }
 
-    double introEndPosition() const {
-        return m_introEndPos.get();
+    mixxx::audio::FramePos introEndPosition() const {
+        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_introEndPos.get());
     }
 
-    double outroStartPosition() const {
-        return m_outroStartPos.get();
+    mixxx::audio::FramePos outroStartPosition() const {
+        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_outroStartPos.get());
     }
 
-    double outroEndPosition() const {
-        return m_outroEndPos.get();
+    mixxx::audio::FramePos outroEndPosition() const {
+        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_outroEndPos.get());
     }
 
     mixxx::audio::SampleRate sampleRate() const {
         return mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
     }
 
-    double trackSamples() const {
-        return m_trackSamples.get();
+    mixxx::audio::FramePos trackEndPosition() const {
+        return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_trackSamples.get());
     }
 
     double rateRatio() const {
@@ -252,7 +252,7 @@ class AutoDJProcessor : public QObject {
     double getFirstSoundSecond(DeckAttributes* pDeck);
     double getLastSoundSecond(DeckAttributes* pDeck);
     double getEndSecond(DeckAttributes* pDeck);
-    double samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck);
+    double framePositionToSeconds(mixxx::audio::FramePos position, DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);

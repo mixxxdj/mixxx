@@ -10,6 +10,8 @@
 #include "track/trackmetadata.h"
 #include "util/color/rgbcolor.h"
 
+// Forward declaration for accessing m_headerParsed
+class TrackDAO;
 
 namespace mixxx {
 
@@ -52,7 +54,7 @@ class TrackRecord final {
     MIXXX_DECL_PROPERTY(QString, url, Url)
     MIXXX_DECL_PROPERTY(PlayCounter, playCounter, PlayCounter)
     MIXXX_DECL_PROPERTY(RgbColor::optional_t, color, Color)
-    MIXXX_DECL_PROPERTY(CuePosition, cuePoint, CuePoint)
+    MIXXX_DECL_PROPERTY(mixxx::audio::FramePos, mainCuePosition, MainCuePosition)
     MIXXX_DECL_PROPERTY(int, rating, Rating)
     MIXXX_DECL_PROPERTY(bool, bpmLocked, BpmLocked)
 
@@ -109,7 +111,27 @@ class TrackRecord final {
             const QString& keyText,
             track::io::key::Source keySource);
 
-    bool isSourceSynchronized() const;
+    enum class SourceSyncStatus {
+        /// The metadata has not been imported yet.
+        Void,
+
+        /// The metadata has been imported once, but until Mixxx 2.4 no
+        /// synchronization time stamps have been stored in the database
+        /// that allow to monitor the modification time of the file.
+        Unknown,
+
+        /// The metadata in Mixxx is up-to-date.
+        Synchronized,
+
+        /// The metadata in Mixxx is older than the metadata stored in file tags.
+        Outdated,
+
+        /// The status could not be determined for whatever reason,
+        /// e.g. inaccessible file, ...
+        Undefined,
+    };
+    SourceSyncStatus checkSourceSyncStatus(
+            const FileInfo& fileInfo) const;
     bool replaceMetadataFromSource(
             TrackMetadata&& importedMetadata,
             const QDateTime& sourceSynchronizedAt);
@@ -154,7 +176,7 @@ class TrackRecord final {
     // TODO: Use TrackMetadata as single source of truth and do not
     // store this information redundantly.
     //
-    // PROPOSAL (as implememted by https://gitlab.com/uklotzde/aoide-rs):
+    // PROPOSAL (as implemented by https://gitlab.com/uklotzde/aoide-rs):
     // This redesign requires to track the status of some or all track
     // metadata (which includes the stream info properties) by a set of
     // bitflags:
@@ -173,6 +195,7 @@ class TrackRecord final {
     //    Stale metadata should be re-imported depending on the other flags.
     std::optional<audio::StreamInfo> m_streamInfoFromSource;
 
+    friend class ::TrackDAO;
     bool m_headerParsed; // deprecated, replaced by sourceSynchronizedAt
 
     /// Equality comparison

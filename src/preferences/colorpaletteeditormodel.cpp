@@ -187,11 +187,9 @@ QVariant HotcueIndexListItem::data(int role) const {
     case Qt::DisplayRole:
     case Qt::EditRole: {
         return QVariant(mixxx::stringifyRangeList(m_hotcueIndexList));
-        break;
     }
     default:
         return QStandardItem::data(role);
-        break;
     }
 }
 

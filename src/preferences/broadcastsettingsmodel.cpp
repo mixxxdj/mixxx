@@ -5,9 +5,9 @@
 #include "moc_broadcastsettingsmodel.cpp"
 
 namespace {
-const int kColumnEnabled = 0;
-const int kColumnName = 1;
-const int kColumnStatus = 2;
+constexpr int kColumnEnabled = 0;
+constexpr int kColumnName = 1;
+constexpr int kColumnStatus = 2;
 } // namespace
 
 BroadcastSettingsModel::BroadcastSettingsModel() {
@@ -104,7 +104,7 @@ QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const 
         return QVariant();
     }
 
-    auto it = m_profiles.constBegin() + rowIndex;
+    auto it = std::next(m_profiles.constBegin(), rowIndex);
     if (it != m_profiles.constEnd()) {
         BroadcastProfilePtr profile = it.value();
         int column = index.column();
@@ -165,7 +165,7 @@ Qt::ItemFlags BroadcastSettingsModel::flags(const QModelIndex& index) const {
 
 bool BroadcastSettingsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
     if (index.isValid()) {
-        auto it = m_profiles.constBegin() + index.row();
+        auto it = std::next(m_profiles.constBegin(), index.row());
         if (it != m_profiles.constEnd()) {
             BroadcastProfilePtr profile = it.value();
             if (index.column() == kColumnEnabled && role == Qt::CheckStateRole) {

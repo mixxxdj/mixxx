@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
 name: Build
 
 on:
@@ -21,7 +23,7 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args:
+            ctest_args: []
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
@@ -30,6 +32,25 @@ jobs:
             artifacts_name: Ubuntu 20.04 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-focal
+            qt_qpa_platform: offscreen
+          - name: Arch Linux (Qt6, gcc)
+            os: ubuntu-20.04
+            # The Dockerfile for this container can be found at:
+            # https://github.com/Holzhaus/mixxx-ci-docker
+            container: holzhaus/mixxx-ci:20220128-qt6
+            cmake_args: >-
+              -DWARNINGS_FATAL=ON
+              -DQT6=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+            ctest_args: []
+            compiler_cache: ccache
+            compiler_cache_path: ~/.ccache
             qt_qpa_platform: offscreen
           - name: macOS 10.15
             os: macos-10.15
@@ -53,7 +74,7 @@ jobs:
             qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
-            # TODO: Reenable FFmpeg after licensing issues have been clarified
+            # TODO: Re-enable FFmpeg after licensing issues have been clarified
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
@@ -81,7 +102,7 @@ jobs:
             qt_qpa_platform: windows
 
     env:
-      SCCACHE_COMMIT: 3f318a8675e4c3de4f5e8ab2d086189f2ae5f5cf
+      SCCACHE_VERSION: "0.3.0"
       # macOS codesigning
       APPLE_CODESIGN_IDENTITY: 2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870
       MACOS_CODESIGN_OPENSSL_PASSWORD: ${{ secrets.MACOS_CODESIGN_OPENSSL_PASSWORD }}
@@ -89,61 +110,29 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
+    container: ${{ matrix.container }}
     outputs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
 
-    - name: "[Windows] Install rsync and openssh"
+    - name: "[Windows] Set up Cargo cache"
       if: runner.os == 'Windows'
-      run: |
-        $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
-        pacman -S --noconfirm coreutils bash rsync openssh
-        # Unfortunately, mixing executables from msys64 and mingw (i.e. Git
-        # Bash) does not work properly and leads to errors like these:
-        #
-        #     0 [main] python3 (5248) C:\msys64\usr\bin\python3.exe: *** fatal error - cygheap base mismatch detected - 0x180347408/0x180352408.
-        #
-        # Even when prepending the MSYS2 binary directory to %PATH%, GitHub
-        # Actions will still pick the Git Bash executable over the MSYS2 one
-        # when using `shell: bash`. Since it's not feasible to set `shell` to
-        # an absolute path in a cross-platform build workflow, we overwrite the
-        # git bash executable with the MSYS2 one.
-        #
-        # Also see related issue:
-        # https://github.com/actions/virtual-environments/issues/594
-        Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
-        # By default, MSYS2 uses an
-        # /etc/profile file that changes
-        # the current working directory
-        # when bash is started. We don't
-        # want this behavior,so we just
-        # delete it.
-        Remove-Item -Path "C:\msys64\etc\profile"
-        # Add MSYS2's tools to %PATH%.
-        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
-
-    # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
-    # https://github.com/mozilla/sccache/issues/950
-    - name: "[Windows] Set up cargo cache"
-      if: runner.os == 'Windows'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: sccache-build-cache
       with:
         path: C:\Users\runneradmin\.cargo
-        # hash of commit to build
-        key: sccache-${{ env.SCCACHE_COMMIT }}
+        key: sccache-${{ env.SCCACHE_VERSION }}
 
     # This needs to be done first because something later messes with $PATH in a way that breaks cargo
     # by causing it to find link.exe from Git for Windows instead of MSVC.
-    - name: "[Windows] Build fixed sccache"
+    - name: "[Windows] Build and install sccache"
       shell: bash
       if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
-      # TODO: change this to simply `cargo install sccache` after 0.2.16 has been released
-      run: cargo install --git https://github.com/mozilla/sccache.git --rev "${SCCACHE_COMMIT}"
+      run: cargo install --version "${{ env.SCCACHE_VERSION }}" sccache
 
     - name: "Check out repository"
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         # This is necessary for making `git describe` work.
         fetch-depth: 0
@@ -160,13 +149,18 @@ jobs:
       # Studio on Windows comes with its own CMake version anyway.
       if: runner.os == 'macOS'
       with:
-        # This should always match the mininum required version in
+        # This should always match the minimum required version in
         # our CMakeLists.txt
         cmake-version: '3.16.x'
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
       uses: seanmiddleditch/gha-setup-vsdevenv@v3
+
+    - name: "[macOS] install ccache and make"
+      if: runner.os == 'macOS'
+      run: |
+        brew install ccache ninja
 
     - name: "[macOS/Windows] Get build environment name"
       if: runner.os != 'Linux'
@@ -175,7 +169,7 @@ jobs:
 
     - name: "[macOS/Windows] Set up build environment cache"
       if: runner.os != 'Linux'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ matrix.buildenv_basepath }}
         key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
@@ -218,17 +212,22 @@ jobs:
 
     - name: "Set up build environment"
       id: buildenv
+      if: matrix.buildenv_script != null
       run: ${{ matrix.buildenv_script }} setup
       env:
         BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
     - name: "[Ubuntu/macOS] Set compiler cache size limit"
-      # Set size to 2 GiB
-      run: ${{ matrix.compiler_cache }}  -M 2097152
+      # A full build without a cache fills the cache with about 300 MB.
+      # GitHub Actions gives us 5 GB of cache for free.
+      # 3 operating systems * 2 conditions (Qt5 & Qt6) * 512 MB = 3 GB
+      # We use a new cache key for every job, so we would run out of
+      # space frequently if the cache was much bigger.
+      run: ${{ matrix.compiler_cache }} -M 524288
       if: runner.os != 'windows'
 
     - name: "Set up compiler cache"
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ matrix.compiler_cache_path }}
         key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
@@ -303,6 +302,7 @@ jobs:
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
     - name: "Package"
+      if: matrix.cpack_generator != null
       run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: build
 
@@ -314,7 +314,7 @@ jobs:
 
     - name: "Package for PPA"
       # No need to do the PPA build for both Ubuntu versions
-      if: matrix.os == 'ubuntu-20.04'
+      if: matrix.os == 'ubuntu-20.04' && matrix.container == null
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
@@ -346,12 +346,12 @@ jobs:
       # also generates metadata for file artifact and write it to the job
       # output using the artifacts_slug value.
       id: prepare_deploy
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && matrix.artifacts_path != null
       shell: bash
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
-          export DEPLOY_PATH='releases/mixxx-{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
+          export DEPLOY_PATH='releases/{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
         else
           export DEPLOY_PATH='snapshots/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
         fi;
@@ -361,6 +361,39 @@ jobs:
         --dest-path "${DEPLOY_PATH}"
         --dest-url 'https://downloads.mixxx.org'
         ${{ matrix.artifacts_path }}
+
+    # Warning: do not move this step before restoring caches or it will break caching due to
+    # https://github.com/actions/cache/issues/531
+    - name: "[Windows] Install rsync and openssh"
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+      if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
+      run: |
+        $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
+        pacman -S --noconfirm coreutils bash rsync openssh
+        # Unfortunately, mixing executables from msys64 and mingw (i.e. Git
+        # Bash) does not work properly and leads to errors like these:
+        #
+        #     0 [main] python3 (5248) C:\msys64\usr\bin\python3.exe: *** fatal error - cygheap base mismatch detected - 0x180347408/0x180352408.
+        #
+        # Even when prepending the MSYS2 binary directory to %PATH%, GitHub
+        # Actions will still pick the Git Bash executable over the MSYS2 one
+        # when using `shell: bash`. Since it's not feasible to set `shell` to
+        # an absolute path in a cross-platform build workflow, we overwrite the
+        # git bash executable with the MSYS2 one.
+        #
+        # Also see related issue:
+        # https://github.com/actions/virtual-environments/issues/594
+        Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
+        # By default, MSYS2 uses an
+        # /etc/profile file that changes
+        # the current working directory
+        # when bash is started. We don't
+        # want this behavior,so we just
+        # delete it.
+        Remove-Item -Path "C:\msys64\etc\profile"
+        # Add MSYS2's tools to %PATH%.
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
     - name: "Set up SSH Agent"
       if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
@@ -394,6 +427,7 @@ jobs:
         echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
     - name: "Upload GitHub Actions artifacts"
+      if: matrix.artifacts_path != null
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.artifacts_name }}
@@ -405,7 +439,7 @@ jobs:
     needs: build
     steps:
     - name: "Check out repository"
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -422,7 +456,7 @@ jobs:
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
-          export DEPLOY_PATH='releases/mixxx-{git_describe}/manifest.json';
+          export DEPLOY_PATH='releases/{git_describe}/manifest.json';
         else
           export DEPLOY_PATH='snapshots/{git_branch}/manifest.json';
         fi;

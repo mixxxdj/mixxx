@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QListWidget>
 #include <QPoint>
 #include <QSize>
 #include <QWidget>
@@ -48,6 +49,9 @@ inline QScreen* getScreen(
     return pWindow->screen();
 #endif
 }
+
+/// QSize for stretching a list widget attempting to show entire column
+void growListWidget(QListWidget& listWidget, const QWidget& parent);
 
 } // namespace widgethelper
 

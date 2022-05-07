@@ -13,6 +13,7 @@
 // TrackModel search calls will not be delivered to the composed TrackModel
 // because filtering is handled by the QSortFilterProxyModel.
 class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
+    Q_OBJECT
   public:
     // Construct a new ProxyTrackModel with pTrackModel as the TrackModel it
     // composes. If bHandleSearches is true, then search signals will not be
@@ -25,6 +26,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     Capabilities getCapabilities() const final;
     TrackPointer getTrack(const QModelIndex& index) const final;
     TrackPointer getTrackByRef(const TrackRef& trackRef) const final;
+    QUrl getTrackUrl(const QModelIndex& index) const final;
     QString getTrackLocation(const QModelIndex& index) const final;
     TrackId getTrackId(const QModelIndex& index) const final;
     CoverInfo getCoverInfo(const QModelIndex& index) const final;
@@ -40,12 +42,21 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     bool setModelSetting(const QString& name, const QVariant& value) final;
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) const override;
     int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
+    bool updateTrackGenre(
+            Track* pTrack,
+            const QString& genre) const override;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMood(
+            Track* pTrack,
+            const QString& mood) const override;
+#endif // __EXTRA_METADATA__
 
     // Inherited from QSortFilterProxyModel
     bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const final;
 
     // Inherited from QAbstractItemModel
     void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) final;
+    QString modelKey(bool noSearch) const override;
 
   private:
     TrackModel* m_pTrackModel;

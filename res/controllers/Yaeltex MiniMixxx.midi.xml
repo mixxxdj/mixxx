@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxMIDIPreset mixxxVersion="2.3.0" schemaVersion="1">
+  <info>
+    <name>Yaeltex MiniMixxx</name>
+    <author>Owen Williams</author>
+    <description>A compact DJ controller specifically designed for Mixxx.</description>
+    <!-- <wiki></wiki>
+    <forums></forums> -->
+  </info>
+  <controller id="MiniMixxx">
+    <scriptfiles>
+      <file filename="Yaeltex-MiniMixxx-scripts.js" functionprefix="MiniMixxx" />
+    </scriptfiles>
+    <controls>
+      <control>
+        <group>[Channel1]</group>
+        <key>play</key>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <options>
+          <Button />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>play</key>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <options>
+          <Button />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_default</key>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <options>
+          <Button />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_default</key>
+        <status>0x90</status>
+        <midino>0x07</midino>
+        <options>
+          <Button />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>volume</key>
+        <status>0xB0</status>
+        <midino>0x09</midino>
+        <options />
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>volume</key>
+        <status>0xB0</status>
+        <midino>0x0A</midino>
+        <options />
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.pitchSliderHandler</key>
+        <status>0xB0</status>
+        <midino>0x08</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.pitchSliderHandler</key>
+        <status>0xB0</status>
+        <midino>0x0B</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>filterLow</key>
+        <status>0xB0</status>
+        <midino>0x06</midino>
+        <options />
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>filterLow</key>
+        <status>0xB0</status>
+        <midino>0x0E</midino>
+        <options />
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>filterMid</key>
+        <status>0xB0</status>
+        <midino>0x05</midino>
+        <options />
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>filterMid</key>
+        <status>0xB0</status>
+        <midino>0x0D</midino>
+        <options />
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>filterHigh</key>
+        <status>0xB0</status>
+        <midino>0x04</midino>
+        <options />
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>filterHigh</key>
+        <status>0xB0</status>
+        <midino>0x0C</midino>
+        <options />
+      </control>
+
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>super1</key>
+        <status>0xB0</status>
+        <midino>0x07</midino>
+        <options />
+      </control>
+
+      <control>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>super1</key>
+        <status>0xB0</status>
+        <midino>0x0F</midino>
+        <options />
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.encoderHandler</key>
+        <status>0xB0</status>
+        <midino>0x00</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.encoderHandler</key>
+        <status>0xB0</status>
+        <midino>0x01</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.encoderHandler</key>
+        <status>0xB0</status>
+        <midino>0x02</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.encoderHandler</key>
+        <status>0xB0</status>
+        <midino>0x03</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.encoderButtonHandler</key>
+        <status>0x90</status>
+        <midino>0x00</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.encoderButtonHandler</key>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.encoderButtonHandler</key>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.encoderButtonHandler</key>
+        <status>0x90</status>
+        <midino>0x03</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.encoderButtonHandler</key>
+        <status>0x80</status>
+        <midino>0x00</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.encoderButtonHandler</key>
+        <status>0x80</status>
+        <midino>0x01</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.encoderButtonHandler</key>
+        <status>0x80</status>
+        <midino>0x02</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.encoderButtonHandler</key>
+        <status>0x80</status>
+        <midino>0x03</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <!-- Buttons -->
+
+      <!-- Button 5 is Cue1 -->
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x05</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <!-- Button 7 is Cue2 -->
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x08</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x0A</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <!-- Button C is Cue1 -->
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x0D</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x0E</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <!-- Button F is Play2 -->
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MiniMixxx.buttonHandler</key>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <options>
+          <Script-Binding />
+        </options>
+      </control>
+
+    </controls>
+    <outputs>
+      <output>
+        <group>[Channel1]</group>
+        <key>play_indicator</key>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <on>0x7f</on>
+        <minimum>0.1</minimum>
+      </output>
+
+      <output>
+        <group>[Channel2]</group>
+        <key>play_indicator</key>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <on>0x7f</on>
+        <minimum>0.1</minimum>
+      </output>
+
+      <output>
+        <group>[Channel1]</group>
+        <key>cue_indicator</key>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <on>0x7f</on>
+        <minimum>0.1</minimum>
+      </output>
+
+      <output>
+        <group>[Channel2]</group>
+        <key>cue_indicator</key>
+        <status>0x90</status>
+        <midino>0x07</midino>
+        <on>0x7f</on>
+        <minimum>0.1</minimum>
+      </output>
+
+    </outputs>
+  </controller>
+</MixxxMIDIPreset>

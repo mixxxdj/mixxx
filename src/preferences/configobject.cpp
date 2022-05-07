@@ -17,7 +17,7 @@ const QString kTempFilenameExtension = QStringLiteral(".tmp");
 const QString kCMakeCacheFile = QStringLiteral("CMakeCache.txt");
 const QLatin1String kSourceDirLine = QLatin1String("mixxx_SOURCE_DIR:STATIC=");
 
-QString computeResourcePath() {
+QString computeResourcePathImpl() {
     // Try to read in the resource directory from the command line
     QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
@@ -105,9 +105,19 @@ ConfigValueKbd::ConfigValueKbd(const QKeySequence& keys)
     QTextStream(&value) << m_keys.toString();
 }
 
-template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QString& file)
-        : m_resourcePath(computeResourcePath()),
-          m_settingsPath(computeSettingsPath(file)) {
+template<class ValueType>
+ConfigObject<ValueType>::ConfigObject(const QString& file)
+        : ConfigObject(file, computeResourcePathImpl(), computeSettingsPath(file)) {
+    reopen(file);
+}
+
+template<class ValueType>
+ConfigObject<ValueType>::ConfigObject(
+        const QString& file,
+        const QString& resourcePath,
+        const QString& settingsPath)
+        : m_resourcePath(resourcePath),
+          m_settingsPath(settingsPath) {
     reopen(file);
 }
 
@@ -156,7 +166,11 @@ template <class ValueType> bool ConfigObject<ValueType>::parse() {
         int group = 0;
         QString groupStr, line;
         QTextStream text(&configfile);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        DEBUG_ASSERT(text.encoding() == QStringConverter::Utf8);
+#else
         text.setCodec("UTF-8");
+#endif
 
         while (!text.atEnd()) {
             line = text.readLine().trimmed();
@@ -203,7 +217,12 @@ bool ConfigObject<ValueType>::save() {
         return false;
     }
     QTextStream stream(&tmpFile);
+    // UTF-8 is the default in Qt6.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    DEBUG_ASSERT(stream.encoding() == QStringConverter::Utf8);
+#else
     stream.setCodec("UTF-8");
+#endif
 
     QString group = "";
 
@@ -460,4 +479,14 @@ QString ConfigObject<ConfigValueKbd>::getValue(
         return default_value;
     }
     return value.value;
+}
+
+template<>
+QString ConfigObject<ConfigValue>::computeResourcePath() {
+    return computeResourcePathImpl();
+}
+
+template<>
+QString ConfigObject<ConfigValueKbd>::computeResourcePath() {
+    return computeResourcePathImpl();
 }

@@ -1,20 +1,19 @@
 #pragma once
 
-#include <memory>
-
-#include <QHash>
-#include <QString>
-#include <QDomNode>
-#include <QDomElement>
 #include <QDir>
+#include <QDomElement>
+#include <QDomNode>
+#include <QHash>
+#include <QRegularExpression>
+#include <QString>
 #include <QtDebug>
-#include <QRegExp>
+#include <memory>
 
 #include "preferences/usersettings.h"
 #include "skin/legacy/pixmapsource.h"
 #include "util/color/color.h"
-#include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wsingletoncontainer.h"
 
 #define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
 
@@ -53,7 +52,7 @@ class SkinContext {
     void setSkinBasePath(const QString& skinBasePath) {
         QStringList skinPaths(skinBasePath);
         QDir::setSearchPaths("skin", skinPaths);
-        m_skinBasePath = skinBasePath;
+        m_skinBasePath = skinBasePath + "/";
     }
 
     // Sets the base path used by getSkinPath.
@@ -236,7 +235,7 @@ class SkinContext {
         return m_pSharedState->singletons.getSingletonWidget(objectName);
     }
 
-    const QRegExp& getHookRegex() const {
+    const QRegularExpression& getHookRegex() const {
         return m_hookRx;
     }
 
@@ -281,7 +280,7 @@ class SkinContext {
     std::shared_ptr<SharedState> m_pSharedState;
 
     QHash<QString, QString> m_variables;
-    QRegExp m_hookRx;
+    QRegularExpression m_hookRx;
 
     double m_scaleFactor;
 };

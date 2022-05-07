@@ -18,8 +18,9 @@ const mixxx::Logger kLogger("BaseExternalLibraryFeature");
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
+        UserSettingsPointer pConfig,
+        const QString& iconName)
+        : LibraryFeature(pLibrary, pConfig, iconName),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()) {
     m_pAddToAutoDJAction = make_parented<QAction>(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,
@@ -156,7 +157,7 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         if (!trackId.isValid()) {
             kLogger.warning()
                     << "Failed to add track"
-                    << pPlaylistModelToAdd->getTrackLocation(index)
+                    << pPlaylistModelToAdd->getTrackUrl(index)
                     << "to playlist"
                     << *pPlaylist;
             continue;
@@ -164,7 +165,7 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "Adding track"
-                    << pPlaylistModelToAdd->getTrackLocation(index)
+                    << pPlaylistModelToAdd->getTrackUrl(index)
                     << "to playlist"
                     << *pPlaylist;
         }

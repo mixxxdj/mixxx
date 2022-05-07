@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QList>
-#include <QMutex>
-#include <QMutexLocker>
 #include <QObject>
 #include <QUrl>
 
@@ -13,6 +11,7 @@
 #include "track/cueinfoimporter.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
+#include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/memory.h"
 #include "waveform/waveform.h"
@@ -52,7 +51,10 @@ class Track : public QObject {
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
     Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist
                     NOTIFY albumArtistChanged)
-    Q_PROPERTY(QString genre READ getGenre WRITE setGenre NOTIFY genreChanged)
+    Q_PROPERTY(QString genre READ getGenre STORED false NOTIFY genreChanged)
+#if defined(__EXTRA_METADATA__)
+    Q_PROPERTY(QString mood READ getMood STORED false NOTIFY moodChanged)
+#endif // __EXTRA_METADATA__
     Q_PROPERTY(QString composer READ getComposer WRITE setComposer NOTIFY composerChanged)
     Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping NOTIFY groupingChanged)
     Q_PROPERTY(QString year READ getYear WRITE setYear NOTIFY yearChanged)
@@ -65,7 +67,8 @@ class Track : public QObject {
     Q_PROPERTY(QString bpmText READ getBpmText STORED false NOTIFY bpmChanged)
     Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyChanged)
     Q_PROPERTY(double duration READ getDuration NOTIFY durationChanged)
-    Q_PROPERTY(QString durationText READ getDurationTextSeconds STORED false NOTIFY durationChanged)
+    Q_PROPERTY(QString durationTextSeconds READ getDurationTextSeconds
+                    STORED false NOTIFY durationChanged)
     Q_PROPERTY(QString durationTextCentiseconds READ getDurationTextCentiseconds
                     STORED false NOTIFY durationChanged)
     Q_PROPERTY(QString durationTextMilliseconds READ getDurationTextMilliseconds
@@ -89,11 +92,18 @@ class Track : public QObject {
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const {
+        if (!m_fileAccess.info().hasLocation()) {
+            return {};
+        }
         return m_fileAccess.info().location();
     }
 
-    // File/format type
-    void setType(const QString&);
+    /// Set the file type
+    ///
+    /// Returns the old type to allow the caller to report if it has changed.
+    QString setType(const QString& newType);
+
+    /// Get the file type
     QString getType() const;
 
     // Get number of channels
@@ -129,7 +139,10 @@ class Track : public QObject {
     }
 
     // Sets the BPM if not locked.
-    bool trySetBpm(double bpm);
+    bool trySetBpm(double bpmValue) {
+        return trySetBpm(mixxx::Bpm(bpmValue));
+    }
+    bool trySetBpm(mixxx::Bpm bpm);
 
     // Returns BPM
     double getBpm() const;
@@ -145,21 +158,20 @@ class Track : public QObject {
 
     // Set ReplayGain
     void setReplayGain(const mixxx::ReplayGain&);
+    // Adjust ReplayGain by multiplying the given gain amount.
+    void adjustReplayGainFromPregain(double);
     // Returns ReplayGain
     mixxx::ReplayGain getReplayGain() const;
 
-    // Indicates if the metadata has been parsed from file tags.
-    bool isSourceSynchronized() const;
-
-    void setHeaderParsedFromTrackDAO(bool headerParsed) {
-        // Always operating on a newly created, exclusive instance! No need
-        // to lock the mutex.
-        DEBUG_ASSERT(!m_record.m_headerParsed);
-        m_record.m_headerParsed = headerParsed;
-    }
+    /// Checks if the internal metadata is in-sync with the
+    /// metadata stored in file tags.
+    bool checkSourceSynchronized() const;
 
     // The date/time of the last import or export of metadata
     void setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt);
+    void resetSourceSynchronizedAt() {
+        setSourceSynchronizedAt(QDateTime{});
+    }
     QDateTime getSourceSynchronizedAt() const;
 
     void setDateAdded(const QDateTime& dateAdded);
@@ -186,10 +198,6 @@ class Track : public QObject {
     QString getYear() const;
     // Set year
     void setYear(const QString&);
-    // Return genre
-    QString getGenre() const;
-    // Set genre
-    void setGenre(const QString&);
     // Returns the track color
     mixxx::RgbColor::optional_t getColor() const;
     // Sets the track color
@@ -198,6 +206,10 @@ class Track : public QObject {
     QString getComment() const;
     // Sets the user commnet
     void setComment(const QString&);
+    // Clear comment
+    void clearComment() {
+        setComment(QString());
+    }
     // Return composer
     QString getComposer() const;
     // Set composer
@@ -212,6 +224,40 @@ class Track : public QObject {
     // Set track number/total
     void setTrackNumber(const QString&);
     void setTrackTotal(const QString&);
+
+    /// Return the genre as text
+    QString getGenre() const;
+
+    /// Update the genre text.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    ///
+    /// TODO: Update the corresponding custom tags by splitting
+    /// the text according to the given tag mapping configuration.
+    /// All existing custom genre tags with their associated score
+    /// will be replaced.
+    bool updateGenre(
+            /*TODO: const mixxx::TaggingConfig& config,*/
+            const QString& genre);
+
+#if defined(__EXTRA_METADATA__)
+    /// Return the mood as text
+    QString getMood() const;
+
+    /// Update the mood text.
+    ///
+    /// Returns true if track metadata has been updated and false
+    /// otherwise.
+    ///
+    /// TODO: Update the corresponding custom tags by splitting
+    /// the text according to the given tag mapping configuration.
+    /// All existing custom mood tags with their associated score
+    /// will be replaced.
+    bool updateMood(
+            /*TODO: const mixxx::TaggingConfig& config,*/
+            const QString& mood);
+#endif // __EXTRA_METADATA__
 
     PlayCounter getPlayCounter() const;
     void setPlayCounter(const PlayCounter& playCounter);
@@ -262,12 +308,12 @@ class Track : public QObject {
     ConstWaveformPointer getWaveformSummary() const;
     void setWaveformSummary(ConstWaveformPointer pWaveform);
 
-    // Get the track's main cue point
-    CuePosition getCuePoint() const;
+    /// Get the track's main cue point
+    mixxx::audio::FramePos getMainCuePosition() const;
     // Set the track's main cue point
-    void setCuePoint(CuePosition cue);
+    void setMainCuePosition(mixxx::audio::FramePos position);
     /// Shift all cues by a constant offset
-    void shiftCuePositionsMillis(double milliseconds);
+    void shiftCuePositionsMillis(mixxx::audio::FrameDiff_t milliseconds);
     // Call when analysis is done.
     void analysisFinished();
 
@@ -275,8 +321,20 @@ class Track : public QObject {
     CuePointer createAndAddCue(
             mixxx::CueType type,
             int hotCueIndex,
-            double sampleStartPosition,
-            double sampleEndPosition);
+            mixxx::audio::FramePos startPosition,
+            mixxx::audio::FramePos endPosition);
+    CuePointer createAndAddCue(
+            mixxx::CueType type,
+            int hotCueIndex,
+            double startPositionSamples,
+            double endPositionSamples) {
+        return createAndAddCue(type,
+                hotCueIndex,
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        startPositionSamples),
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        endPositionSamples));
+    }
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;
     void removeCue(const CuePointer& pCue);
@@ -301,7 +359,7 @@ class Track : public QObject {
             mixxx::CueInfoImporterPointer pCueInfoImporter);
     ImportStatus getCueImportStatus() const;
 
-    bool isDirty();
+    bool isDirty() const;
 
     // Get the track's Beats list
     mixxx::BeatsPointer getBeats() const;
@@ -349,7 +407,8 @@ class Track : public QObject {
             const QDateTime& sourceSynchronizedAt);
 
     mixxx::TrackMetadata getMetadata(
-            bool* pHeaderParsed = nullptr) const;
+            mixxx::TrackRecord::SourceSyncStatus*
+                    pSourceSyncStatus = nullptr) const;
 
     mixxx::TrackRecord getRecord(
             bool* pDirty = nullptr) const;
@@ -382,6 +441,9 @@ class Track : public QObject {
     void albumChanged(const QString&);
     void albumArtistChanged(const QString&);
     void genreChanged(const QString&);
+#if defined(__EXTRA_METADATA__)
+    void moodChanged(const QString&);
+#endif // __EXTRA_METADATA__
     void composerChanged(const QString&);
     void groupingChanged(const QString&);
     void yearChanged(const QString&);
@@ -399,6 +461,9 @@ class Track : public QObject {
     void coverArtUpdated();
     void beatsUpdated();
     void replayGainUpdated(mixxx::ReplayGain replayGain);
+    // This signal indicates that ReplayGain is being adjusted, and pregains should be
+    // adjusted in the opposite direction to compensate (no audible change).
+    void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
     void analyzed();
@@ -423,14 +488,14 @@ class Track : public QObject {
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
     // while the TIO is locked.
-    void markDirtyAndUnlock(QMutexLocker* pLock) {
+    void markDirtyAndUnlock(QT_RECURSIVE_MUTEX_LOCKER* pLock) {
         setDirtyAndUnlock(pLock, true);
     }
-    void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
+    void setDirtyAndUnlock(QT_RECURSIVE_MUTEX_LOCKER* pLock, bool bDirty);
 
-    void afterKeysUpdated(QMutexLocker* pLock);
+    void afterKeysUpdated(QT_RECURSIVE_MUTEX_LOCKER* pLock);
 
-    void afterBeatsAndBpmUpdated(QMutexLocker* pLock);
+    void afterBeatsAndBpmUpdated(QT_RECURSIVE_MUTEX_LOCKER* pLock);
     void emitBeatsAndBpmUpdated();
 
     /// Emits a changed signal for each Q_PROPERTY
@@ -455,24 +520,24 @@ class Track : public QObject {
     bool importPendingCueInfosWhileLocked();
 
     mixxx::Bpm getBpmWhileLocked() const;
-    bool trySetBpmWhileLocked(double bpmValue);
+    bool trySetBpmWhileLocked(mixxx::Bpm bpm);
     bool trySetBeatsWhileLocked(
             mixxx::BeatsPointer pBeats,
             bool lockBpmAfterSet = false);
 
     bool trySetBeatsMarkDirtyAndUnlock(
-            QMutexLocker* pLock,
+            QT_RECURSIVE_MUTEX_LOCKER* pLock,
             mixxx::BeatsPointer pBeats,
             bool lockBpmAfterSet);
     bool tryImportPendingBeatsMarkDirtyAndUnlock(
-            QMutexLocker* pLock,
+            QT_RECURSIVE_MUTEX_LOCKER* pLock,
             bool lockBpmAfterSet);
 
     void setCuePointsMarkDirtyAndUnlock(
-            QMutexLocker* pLock,
+            QT_RECURSIVE_MUTEX_LOCKER* pLock,
             const QList<CuePointer>& cuePoints);
     void importPendingCueInfosMarkDirtyAndUnlock(
-            QMutexLocker* pLock);
+            QT_RECURSIVE_MUTEX_LOCKER* pLock);
 
     /// Merge additional metadata that is not (yet) stored in the database
     /// and only available from file tags.
@@ -483,7 +548,7 @@ class Track : public QObject {
 
     ExportTrackMetadataResult exportMetadata(
             const mixxx::MetadataSource& metadataSource,
-            const UserSettingsPointer& pConfig);
+            const SyncTrackMetadataParams& syncParams);
 
     // Information about the actual properties of the
     // audio stream is only available after opening the
@@ -491,18 +556,14 @@ class Track : public QObject {
     // stream info of the track need to be updated to reflect
     // these values.
     bool hasStreamInfoFromSource() const {
-        QMutexLocker lock(&m_qMutex);
+        const auto locked = lockMutex(&m_qMutex);
         return m_record.hasStreamInfoFromSource();
     }
     void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
 
     // Mutex protecting access to object
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    mutable QRecursiveMutex m_qMutex;
-#else
-    mutable QMutex m_qMutex;
-#endif
+    mutable QT_RECURSIVE_MUTEX m_qMutex;
 
     // The file
     mixxx::FileAccess m_fileAccess;
@@ -531,6 +592,18 @@ class Track : public QObject {
     mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
     friend class TrackDAO;
+    void setHeaderParsedFromTrackDAO(bool headerParsed) {
+        // Always operating on a newly created, exclusive instance! No need
+        // to lock the mutex.
+        DEBUG_ASSERT(!m_record.m_headerParsed);
+        m_record.m_headerParsed = headerParsed;
+    }
+    /// Set the genre text WITHOUT updating the corresponding custom tags.
+    ///
+    /// TODO: Remove and populate TrackRecord from the database instead.
+    void setGenreFromTrackDAO(
+            const QString& genre);
+
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;

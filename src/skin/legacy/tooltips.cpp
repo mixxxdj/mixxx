@@ -444,11 +444,15 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggling keylock during playback may result in a momentary audio glitch.");
 
     add("hotcue_toggle")
-        <<tr("Changes the number of hotcue buttons displayed in the deck");
+            << tr("Changes the number of hotcue buttons displayed in the deck");
 
     // Show Rate Control
     add("rate_toggle")
-        <<tr("Toggle visibility of Rate Control");
+            << tr("Toggle visibility of Rate Control");
+
+    // Show Key Controls
+    add("show_key_controls")
+            << tr("Toggle visibility of Key Controls");
 
     // Used in cue/hotcue/loop tooltips below.
     QString quantizeSnap = tr("If quantize is enabled, snaps to the nearest beat.");
@@ -538,7 +542,7 @@ void Tooltips::addStandardTooltips() {
     // Ghetto-Sync (TM)
     add("beatsync_beatsync_tempo")
             << tr("Old Synchronize")
-            << tr("(This skin should be updated to use Master Sync!)")
+            << tr("(This skin should be updated to use Sync Lock!)")
             << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "
                                                    "if BPM is detected on both."))
             << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track, "
@@ -549,8 +553,8 @@ void Tooltips::addStandardTooltips() {
 
     // Awesome-Sync (TM)
     add("sync_enabled")
-            << tr("Enable Master Sync")
-            << tr("Tap to sync the tempo to other playing tracks or the master clock.")
+            << tr("Enable Sync Lock")
+            << tr("Tap to sync the tempo to other playing tracks or the sync leader.")
             << tr("Hold for at least a second to enable sync lock for this deck.")
             << tr("Decks with sync locked will all play at the same tempo, and decks that also have "
                   "quantize enabled will always have their beats lined up.");
@@ -562,9 +566,9 @@ void Tooltips::addStandardTooltips() {
                                                    "from the other track. Requires a detected key on both involved decks."))
             << QString("%1: %2").arg(rightClick, tr("Resets the key to the original track key."));
 
-    add("sync_master")
-            << tr("Enable Sync Clock Master")
-            << tr("When enabled, this device will serve as the master clock for all other decks.");
+    add("sync_leader")
+            << tr("Enable Sync Leader")
+            << tr("When enabled, this device will serve as the sync leader for all other decks.");
 
     add("rate")
             << tr("Speed Control")
@@ -901,6 +905,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Super Knob")
             << tr("Controls the Meta Knob of all effects in this unit together.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("EffectUnit_chain_preset_menu")
+            << tr("Effect Chain Preset Settings")
+            << tr("Show the effect chain settings menu for this unit.");
 
     add("EffectUnit_next_chain")
             << tr("Next Chain")

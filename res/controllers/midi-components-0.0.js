@@ -258,7 +258,7 @@
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
                             engine.setValue(this.group, "sync_enabled", 1);
                             this.longPressTimer = 0;
-                        }, true);
+                        }.bind(this), true);
                     } else {
                         engine.setValue(this.group, "sync_enabled", 0);
                     }

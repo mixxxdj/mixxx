@@ -38,6 +38,8 @@ case "$1" in
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
             cmake \
+            clazy \
+            clang-tidy \
             debhelper \
             devscripts \
             docbook-to-man \
@@ -45,6 +47,7 @@ case "$1" in
             fonts-open-sans \
             fonts-ubuntu \
             g++ \
+            lcov \
             libchromaprint-dev \
             libdistro-info-perl \
             libebur128-dev \
@@ -72,6 +75,7 @@ case "$1" in
             libsqlite3-dev \
             libssl-dev \
             libtag1-dev \
+            libudev-dev \
             libupower-glib-dev \
             libusb-1.0-0-dev \
             libwavpack-dev \
@@ -91,7 +95,7 @@ case "$1" in
         echo ""
         echo "options:"
         echo "   help       Displays this help."
-        echo "   name       Displays the name of the required build envirnment."
-        echo "   setup      Installes the build environment."
+        echo "   name       Displays the name of the required build environment."
+        echo "   setup      Installs the build environment."
         ;;
 esac

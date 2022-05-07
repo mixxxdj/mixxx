@@ -22,8 +22,7 @@ using ::testing::Return;
 
 static int kDefaultTransitionTime = 10;
 const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
-const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test-png.mp3");
+const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-png.mp3");
 
 class FakeMaster {
   public:
@@ -91,6 +90,12 @@ class FakeDeck : public BaseTrackPlayer {
         loadedTrack = pTrack;
         samplerate.set(pTrack->getSampleRate());
         play.set(bPlay);
+    }
+
+    void slotEjectTrack(double val) override {
+        if (val > 0) {
+            loadedTrack = nullptr;
+        }
     }
 
     MOCK_METHOD1(slotCloneFromGroup, void(const QString& group));
@@ -167,10 +172,15 @@ class AutoDJProcessorTest : public LibraryTest {
     static TrackId nextTrackId(TrackId trackId) {
         return TrackId(trackId.value() + 1);
     }
-    static TrackPointer newTestTrack(TrackId trackId) {
+
+    TrackPointer newTestTrack(TrackId trackId) const {
         TrackPointer pTrack(
-                Track::newDummy(kTrackLocationTest, trackId));
-        EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource());
+                Track::newDummy(getTestDir().filePath(kTrackLocationTest), trackId));
+        EXPECT_EQ(
+                SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+                SoundSourceProxy(pTrack).updateTrackFromSource(
+                        SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                        SyncTrackMetadataParams{}));
         return pTrack;
     }
 
@@ -221,7 +231,7 @@ class AutoDJProcessorTest : public LibraryTest {
 
     TrackId addTrackToCollection(const QString& trackLocation) {
         TrackPointer pTrack =
-                getOrAddTrackByLocation(trackLocation);
+                getOrAddTrackByLocation(getTestDir().filePath(trackLocation));
         return pTrack ? pTrack->getId() : TrackId();
     }
 
@@ -713,7 +723,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     // Need three tracks -- one to be loaded in the left deck (succeeding), one
-    // to load in the righ deck (failing) and one to load in the right deck
+    // to load in the right deck (failing) and one to load in the right deck
     // (succeeding).
     pAutoDJTableModel->appendTrack(testId);
     pAutoDJTableModel->appendTrack(testId);

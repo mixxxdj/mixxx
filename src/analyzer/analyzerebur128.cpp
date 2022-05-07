@@ -8,7 +8,7 @@
 #include "util/timer.h"
 
 namespace {
-const double kReplayGain2ReferenceLUFS = -18;
+constexpr double kReplayGain2ReferenceLUFS = -18;
 } // anonymous namespace
 
 AnalyzerEbur128::AnalyzerEbur128(UserSettingsPointer pConfig)
@@ -21,7 +21,7 @@ AnalyzerEbur128::~AnalyzerEbur128() {
 }
 
 bool AnalyzerEbur128::initialize(TrackPointer tio,
-        int sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         int totalSamples) {
     if (m_rgSettings.isAnalyzerDisabled(2, tio) || totalSamples == 0) {
         qDebug() << "Skipping AnalyzerEbur128";

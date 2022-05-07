@@ -6,7 +6,8 @@
 class ControllerScriptModuleEngine : public ControllerScriptEngineBase {
     Q_OBJECT
   public:
-    explicit ControllerScriptModuleEngine(Controller* controller);
+    explicit ControllerScriptModuleEngine(
+            Controller* controller, const RuntimeLoggingCategory& logger);
     ~ControllerScriptModuleEngine() override;
 
     bool initialize() override;

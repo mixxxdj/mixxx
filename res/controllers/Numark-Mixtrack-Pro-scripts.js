@@ -34,7 +34,7 @@
 // 	Stutter: Adjust BeatGrid in the correct place (useful to sync well).
 //		 LED Blink at each Beat of the grid.
 //
-//	Sync:	If the other deck is stopped, only sync tempo (not fase).
+//	Sync:	If the other deck is stopped, only sync tempo (not phase).
 //		LED Blink at Clip Gain (Peak indicator).
 //
 // 	Pitch: 	Up, Up; Down, Down. Pitch slide are inverted, to match with the screen (otherwise is very confusing).

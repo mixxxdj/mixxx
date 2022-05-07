@@ -17,8 +17,8 @@
 #include "widget/wwidget.h"
 
 namespace {
-    const int kMaxCueLabelLength = 23;
-    } // namespace
+constexpr int kMaxCueLabelLength = 23;
+} // namespace
 
 WaveformRenderMark::WaveformRenderMark(
         WaveformWidgetRenderer* waveformWidgetRenderer) :
@@ -66,7 +66,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             const double sampleEndPosition = pMark->getSampleEndPosition();
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // Pixmaps are expected to have the mark stroke at the center,
-                // and preferrably have an odd width in order to have the stroke
+                // and preferably have an odd width in order to have the stroke
                 // exactly at the sample position.
                 const int markHalfWidth =
                         static_cast<int>(pMark->m_image.width() / 2.0 /
@@ -226,7 +226,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
                     image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
             //WImageStore::correctImageColors(&pMark->m_image);
             // Set the pixel/device ratio AFTER loading the image in order to get
-            // a truely scaled source image.
+            // a truly scaled source image.
             // See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
             // Also, without this some Qt-internal issue results in an offset
             // image when calculating the center line of pixmaps in draw().
@@ -270,8 +270,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
 
     //fixed margin ...
     QRect wordRect = metrics.tightBoundingRect(label);
-    const int marginX = 1;
-    const int marginY = 1;
+    constexpr int marginX = 1;
+    constexpr int marginY = 1;
     wordRect.moveTop(marginX + 1);
     wordRect.moveLeft(marginY + 1);
     wordRect.setHeight(wordRect.height() + (wordRect.height() % 2));

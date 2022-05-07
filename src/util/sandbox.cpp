@@ -2,7 +2,6 @@
 
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QMutexLocker>
 #include <QObject>
 #include <QtDebug>
 
@@ -47,14 +46,14 @@ void Sandbox::checkSandboxed() {
 }
 
 void Sandbox::setPermissionsFilePath(const QString& permissionsFile) {
-    QMutexLocker locker(&s_mutex);
+    const auto locker = lockMutex(&s_mutex);
     s_pSandboxPermissions = QSharedPointer<ConfigObject<ConfigValue>>(
             new ConfigObject<ConfigValue>(permissionsFile));
 }
 
 // static
 void Sandbox::shutdown() {
-    QMutexLocker locker(&s_mutex);
+    const auto locker = lockMutex(&s_mutex);
     QSharedPointer<ConfigObject<ConfigValue>> pSandboxPermissions = s_pSandboxPermissions;
     s_pSandboxPermissions.clear();
     if (pSandboxPermissions) {
@@ -173,7 +172,7 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
     if (!enabled()) {
         return false;
     }
-    QMutexLocker locker(&s_mutex);
+    const auto locker = lockMutex(&s_mutex);
     if (s_pSandboxPermissions == nullptr) {
         return false;
     }
@@ -238,7 +237,7 @@ SecurityTokenPointer Sandbox::openSecurityToken(mixxx::FileInfo* pFileInfo, bool
         return nullptr;
     }
 
-    QMutexLocker locker(&s_mutex);
+    const auto locker = lockMutex(&s_mutex);
     if (!s_pSandboxPermissions) {
         return nullptr;
     }
@@ -303,7 +302,7 @@ SecurityTokenPointer Sandbox::openSecurityTokenForDir(const QDir& dir, bool crea
         return nullptr;
     }
 
-    QMutexLocker locker(&s_mutex);
+    const auto locker = lockMutex(&s_mutex);
     if (!s_pSandboxPermissions) {
         return nullptr;
     }

@@ -51,12 +51,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void trackUpdated();
 
-    void slotBpmDouble();
-    void slotBpmHalve();
-    void slotBpmTwoThirds();
-    void slotBpmThreeFourth();
-    void slotBpmFourThirds();
-    void slotBpmThreeHalves();
+    void slotBpmScale(mixxx::Beats::BpmScale bpmScale);
     void slotBpmClear();
     void slotBpmConstChanged(int state);
     void slotBpmTap(double averageLength, int numSamples);
@@ -103,6 +98,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     }
 
     void updateTrackMetadataFields();
+    void updateSpinBpmFromBeats();
+
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
@@ -115,7 +112,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     bool m_trackHasBeatMap;
 
     TapFilter m_tapFilter;
-    double m_dLastTapedBpm;
+    mixxx::Bpm m_lastTapedBpm;
 
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
     parented_ptr<WStarRating> m_pWStarRating;

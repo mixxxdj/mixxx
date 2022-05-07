@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QEvent>
-#include <QMutex>
 #include <QObject>
 
 #include "control/control.h"

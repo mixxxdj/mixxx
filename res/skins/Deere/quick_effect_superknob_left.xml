@@ -54,9 +54,5 @@
       </Template>
 
     </Children>
-    <Connection>
-      <ConfigKey><Variable name="QuickEffectEffectGroup"/>,loaded</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

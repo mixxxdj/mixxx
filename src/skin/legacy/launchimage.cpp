@@ -55,9 +55,6 @@ LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
     hbox->addStretch();
 }
 
-LaunchImage::~LaunchImage() {
-}
-
 void LaunchImage::progress(int value, const QString& serviceName) {
     m_pProgressBar->setValue(value);
     // TODO: show serviceName
@@ -67,7 +64,7 @@ void LaunchImage::progress(int value, const QString& serviceName) {
 void LaunchImage::paintEvent(QPaintEvent *)
 {
     QStyleOption opt;
-    opt.init(this);
+    opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }

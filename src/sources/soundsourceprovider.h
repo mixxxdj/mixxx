@@ -37,7 +37,7 @@ class SoundSourceProvider {
     virtual QString getDisplayName() const = 0;
 
     /// A list of supported file extensions in any order.
-    virtual QStringList getSupportedFileExtensions() const = 0;
+    virtual QStringList getSupportedFileTypes() const = 0;
 
     /// The default cooperative priority of this provider compared to
     /// others supporting the same file extension(s). Please note that
@@ -47,15 +47,15 @@ class SoundSourceProvider {
     /// The priority may vary with the file type that is currently
     /// represented by the file extension.
     virtual SoundSourceProviderPriority getPriorityHint(
-            const QString& supportedFileExtension) const {
-        Q_UNUSED(supportedFileExtension)
+            const QString& supportedFileType) const {
+        Q_UNUSED(supportedFileType)
         return SoundSourceProviderPriority::Default;
     }
 
     /// Creates a new SoundSource for the file referenced by the URL.
     /// This function should return a nullptr pointer if it is already
     /// able to decide that the file is not supported even though it
-    /// has one of the supported file extensions.
+    /// has one of the supported file types.
     virtual SoundSourcePointer newSoundSource(const QUrl& url) = 0;
 };
 

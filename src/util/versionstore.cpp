@@ -77,6 +77,11 @@ QString VersionStore::platform() {
     QString base = QStringLiteral("Linux");
 #elif defined(__WINDOWS__)
     QString base = QStringLiteral("Windows");
+// Mixxx's CMakeLists.txt does not define this, but FreeBSD's ports system does.
+#elif defined(__FREEBSD__)
+    QString base = QStringLiteral("FreeBSD");
+#elif defined(__BSD__)
+    QString base = QStringLiteral("BSD");
 #else
     QString base = QStringLiteral("Unknown OS");
 #endif
@@ -207,8 +212,8 @@ void VersionStore::logBuildDetails() {
 
     qDebug() << "QStandardPaths::writableLocation(HomeLocation):"
              << QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    qDebug() << "QStandardPaths::writableLocation(DataLocation):"
-             << QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    qDebug() << "QStandardPaths::writableLocation(AppDataLocation):"
+             << QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     qDebug() << "QCoreApplication::applicationDirPath()"
              << QCoreApplication::applicationDirPath();
 }

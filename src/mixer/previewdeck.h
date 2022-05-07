@@ -5,7 +5,7 @@
 class PreviewDeck : public BaseTrackPlayerImpl {
     Q_OBJECT
   public:
-    PreviewDeck(QObject* pParent,
+    PreviewDeck(PlayerManager* pParent,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,

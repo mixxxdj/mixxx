@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QAction>
-#include <QIcon>
 #include <QList>
 #include <QModelIndex>
 #include <QPoint>
@@ -14,7 +13,7 @@
 #include "library/trackset/crate/cratetablemodel.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
-#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/parented_ptr.h"
 
 // forward declaration(s)
@@ -30,7 +29,6 @@ class CrateFeature : public BaseTrackSetFeature {
     ~CrateFeature() override = default;
 
     QVariant title() override;
-    QIcon getIcon() override;
 
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
@@ -41,7 +39,7 @@ class CrateFeature : public BaseTrackSetFeature {
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activateChild(const QModelIndex& index) override;
@@ -71,7 +69,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotCrateTableChanged(CrateId crateId);
     void slotCrateContentChanged(CrateId crateId);
     void htmlLinkClicked(const QUrl& link);
-    void slotTrackSelected(TrackPointer pTrack);
+    void slotTrackSelected(TrackId trackId);
     void slotResetSelectedTrack();
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
 
@@ -98,15 +96,19 @@ class CrateFeature : public BaseTrackSetFeature {
 
     QString formatRootViewHtml() const;
 
-    const QIcon m_cratesIcon;
     const QIcon m_lockedCrateIcon;
 
     TrackCollection* const m_pTrackCollection;
 
     CrateTableModel m_crateTableModel;
 
+    // Stores the id of a crate in the sidebar that is adjacent to the crate(crateId).
+    void storePrevSiblingCrateId(CrateId crateId);
+    // Can be used to restore a similar selection after the sidebar model was rebuilt.
+    CrateId m_prevSiblingCrate;
+
     QModelIndex m_lastRightClickedIndex;
-    TrackPointer m_pSelectedTrack;
+    TrackId m_selectedTrackId;
 
     parented_ptr<QAction> m_pCreateCrateAction;
     parented_ptr<QAction> m_pDeleteCrateAction;

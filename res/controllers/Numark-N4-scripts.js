@@ -24,7 +24,7 @@ NumarkN4.cueReverseRoll=true; // enables the ability to do a reverse roll while 
 NumarkN4.hotcuePageIndexBehavior=true;
 
 // possible ranges (0.0..3.0 where 0.06=6%)
-NumarkN4.rateRanges = [0,   // default (gets set via script later; don't modifify)
+NumarkN4.rateRanges = [0,   // default (gets set via script later; don't modify)
     0.06, // one semitone
     0.24, // for maximum freedom
 ];
@@ -205,7 +205,7 @@ NumarkN4.topContainer = function(channel) {
             if (displayFeedback === undefined) {
                 displayFeedback = true;
             }
-            // when the layer becommes negative, the (layer+4) will force a positive/valid page indexOf
+            // when the layer becomes negative, the (layer+4) will force a positive/valid page indexOf
             layer = NumarkN4.hotcuePageIndexBehavior ? (layer+4)%4 : Math.max(Math.min(layer, 3), 0); // clamp layer value to [0;3] range
             this.hotCuePage = layer;
             if (this.timer !== 0) {
@@ -349,7 +349,7 @@ NumarkN4.MixerTemplate = function() {
             this.inKey="MoveVertical";
         },
         input: function(_midiChannel, _control, value, _status, _group) {
-            this.inSetValue(value===0x01?this.stepsize:-this.stepsize); // value "rescaling"; possibly ineffiecent.
+            this.inSetValue(value===0x01?this.stepsize:-this.stepsize); // value "rescaling"; possibly inefficient.
         },
     });
     this.navigationEncoderButton = new components.Button({

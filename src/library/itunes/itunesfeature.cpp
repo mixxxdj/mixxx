@@ -5,7 +5,6 @@
 #include <QFileInfo>
 #include <QMenu>
 #include <QMessageBox>
-#include <QStandardPaths>
 #include <QUrl>
 #include <QXmlStreamReader>
 #include <QtDebug>
@@ -63,9 +62,9 @@ QString localhost_token() {
 } // anonymous namespace
 
 ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_cancelImport(false),
-          m_icon(":/images/library/ic_library_itunes.svg") {
+        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("itunes")),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
+          m_cancelImport(false) {
     QString tableName = "itunes_library";
     QString idColumn = "id";
     QStringList columns;
@@ -152,10 +151,6 @@ QVariant ITunesFeature::title() {
     return m_title;
 }
 
-QIcon ITunesFeature::getIcon() {
-    return m_icon;
-}
-
 void ITunesFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     // store the sidebar widget pointer for later use in onRightClick()
     m_pSidebarWidget = pSidebarWidget;
@@ -217,7 +212,11 @@ void ITunesFeature::activate(bool forceReload) {
         }
         m_isActivated =  true;
         // Let a worker thread do the XML parsing
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_future = QtConcurrent::run(&ITunesFeature::importLibrary, this);
+#else
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
+#endif
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) iTunes");
         // calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
@@ -237,8 +236,8 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     emit enableCoverArtDisplay(false);
 }
 
-TreeItemModel* ITunesFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* ITunesFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
@@ -405,7 +404,7 @@ TreeItem* ITunesFeature::importLibrary() {
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
         if (xml.isStartElement()) {
-            if (xml.name() == "key") {
+            if (xml.name() == QLatin1String("key")) {
                 QString key = xml.readElementText();
                 if (key == "Music Folder") {
                     if (isTracksParsed) {
@@ -674,7 +673,7 @@ TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader& xml) {
             continue;
         }
         if (xml.isEndElement()) {
-            if (xml.name() == "array") {
+            if (xml.name() == QLatin1String("array")) {
                 break;
             }
         }
@@ -791,7 +790,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
             }
         }
         if (xml.isEndElement()) {
-            if (xml.name() == "array") {
+            if (xml.name() == QLatin1String("array")) {
                 //qDebug() << "exit playlist";
                 break;
             }
@@ -820,7 +819,7 @@ void ITunesFeature::clearTable(const QString& table_name) {
 void ITunesFeature::onTrackCollectionLoaded() {
     std::unique_ptr<TreeItem> root(m_future.result());
     if (root) {
-        m_childModel.setRootItem(std::move(root));
+        m_pSidebarModel->setRootItem(std::move(root));
 
         // Tell the rhythmbox track source that it should re-build its index.
         m_trackSource->buildIndex();

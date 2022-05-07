@@ -1,12 +1,13 @@
 #include <gtest/gtest.h>
+#include <taglib/textidentificationframe.h>
+#include <taglib/tstring.h>
 
+#include <QDir>
+#include <QtDebug>
+
+#include "test/mixxxtest.h"
 #include "track/serato/markers2.h"
 #include "util/memory.h"
-
-#include <taglib/tstring.h>
-#include <taglib/textidentificationframe.h>
-#include <QtDebug>
-#include <QDir>
 
 namespace {
 
@@ -398,22 +399,30 @@ TEST_F(SeratoMarkers2Test, ParseLoopEntry) {
 }
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2DataMP3) {
-    parseMarkers2DataInDirectory(QDir("src/test/serato/data/mp3/markers2"),
+    parseMarkers2DataInDirectory(
+            QDir(MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("serato/data/mp3/markers2"))),
             mixxx::taglib::FileType::MP3);
 }
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2DataMP4) {
-    parseMarkers2DataInDirectory(QDir("src/test/serato/data/mp4/markers2"),
+    parseMarkers2DataInDirectory(
+            QDir(MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("serato/data/mp4/markers2"))),
             mixxx::taglib::FileType::MP4);
 }
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2DataFLAC) {
-    parseMarkers2DataInDirectory(QDir("src/test/serato/data/flac/markers2"),
+    parseMarkers2DataInDirectory(
+            QDir(MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("serato/data/flac/markers2"))),
             mixxx::taglib::FileType::FLAC);
 }
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2DataOGG) {
-    parseMarkers2DataInDirectory(QDir("src/test/serato/data/ogg/markers2"),
+    parseMarkers2DataInDirectory(
+            QDir(MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("serato/data/ogg/markers2"))),
             mixxx::taglib::FileType::OGG);
 }
 

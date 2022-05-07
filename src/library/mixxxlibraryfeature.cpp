@@ -69,12 +69,12 @@ const QStringList DEFAULT_COLUMNS = {
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
-          m_icon(":/images/library/ic_library_tracks.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_pLibraryTableModel(nullptr),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
     QStringList columns = DEFAULT_COLUMNS;
@@ -110,7 +110,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     pRootItem->appendChild(kMissingTitle);
     pRootItem->appendChild(kHiddenTitle);
 
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
 
 #ifdef __ENGINEPRIME__
     m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
@@ -144,12 +144,8 @@ QVariant MixxxLibraryFeature::title() {
     return tr("Tracks");
 }
 
-QIcon MixxxLibraryFeature::getIcon() {
-    return m_icon;
-}
-
-TreeItemModel* MixxxLibraryFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* MixxxLibraryFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {
@@ -180,12 +176,15 @@ void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 #endif
 
 void MixxxLibraryFeature::activate() {
+    //qDebug() << "MixxxLibraryFeature::activate()";
+    emit saveModelState();
     emit showTrackModel(m_pLibraryTableModel);
     emit enableCoverArtDisplay(true);
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
+    emit saveModelState();
     emit switchToView(itemName);
     if (m_pMissingView && itemName == kMissingTitle) {
         emit restoreSearch(m_pMissingView->currentSearch());

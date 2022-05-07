@@ -203,8 +203,8 @@ void DlgLibraryExport::exportRequested() {
 
     // Construct a request to export the library/crates.
     auto pRequest = QSharedPointer<EnginePrimeExportRequest>::create();
-    pRequest->engineLibraryDbDir = QDir{databaseDirectory};
-    pRequest->musicFilesDir = QDir{musicDirectory};
+    pRequest->engineLibraryDbDir.setPath(databaseDirectory);
+    pRequest->musicFilesDir.setPath(musicDirectory);
     pRequest->exportVersion = exportVersion;
     if (m_pCratesList->isEnabled()) {
         const auto selectedItems = m_pCratesList->selectedItems();
@@ -273,6 +273,7 @@ void DlgLibraryExport::checkExistingDatabase() {
         }
 
     } catch (std::exception& e) {
+        Q_UNUSED(e);
         m_pExistingDatabaseLabel->setText(
                 tr("A database already exists in the chosen directory, "
                    "but there was a problem loading it. Export is not "

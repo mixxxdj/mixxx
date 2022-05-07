@@ -1,5 +1,6 @@
 #include "library/autodj/dlgautodj.h"
 
+#include <QApplication>
 #include <QMessageBox>
 
 #include "library/playlisttablemodel.h"
@@ -7,7 +8,6 @@
 #include "moc_dlgautodj.cpp"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 #include "util/duration.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -78,8 +78,6 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     // We do _NOT_ take ownership of this from AutoDJProcessor.
     m_pAutoDJTableModel = m_pAutoDJProcessor->getTableModel();
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
-
-    // Override some playlist-view properties:
 
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
@@ -161,7 +159,10 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     fadeModeCombobox->setFocusPolicy(Qt::ClickFocus);
     spinBoxTransition->setFocusPolicy(Qt::ClickFocus);
     // work around QLineEdit being protected
-    spinBoxTransition->findChild<QLineEdit*>()->setFocusPolicy(Qt::ClickFocus);
+    QLineEdit* lineEditTransition(spinBoxTransition->findChild<QLineEdit*>());
+    lineEditTransition->setFocusPolicy(Qt::ClickFocus);
+    // Needed to catch Enter, Return and Escape keypresses
+    lineEditTransition->installEventFilter(this);
 
     connect(spinBoxTransition,
             QOverload<int>::of(&QSpinBox::valueChanged),
@@ -179,7 +180,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     fadeModeCombobox->setCurrentIndex(
             fadeModeCombobox->findData(static_cast<int>(m_pAutoDJProcessor->getTransitionMode())));
     connect(fadeModeCombobox,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            QOverload<int>::of(&QComboBox::activated),
             this,
             &DlgAutoDJ::slotTransitionModeChanged);
 
@@ -240,8 +241,8 @@ void DlgAutoDJ::onSearch(const QString& text) {
     Q_UNUSED(text);
 }
 
-void DlgAutoDJ::loadSelectedTrack() {
-    m_pTrackTableView->loadSelectedTrack();
+void DlgAutoDJ::activateSelectedTrack() {
+    m_pTrackTableView->activateSelectedTrack();
 }
 
 void DlgAutoDJ::loadSelectedTrackToGroup(const QString& group, bool play) {
@@ -331,9 +332,12 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
     }
 }
 
-void DlgAutoDJ::slotTransitionModeChanged(int comboboxIndex) {
-    m_pAutoDJProcessor->setTransitionMode(static_cast<AutoDJProcessor::TransitionMode>(
-            fadeModeCombobox->itemData(comboboxIndex).toInt()));
+void DlgAutoDJ::slotTransitionModeChanged(int newIndex) {
+    m_pAutoDJProcessor->setTransitionMode(
+            static_cast<AutoDJProcessor::TransitionMode>(
+                    fadeModeCombobox->itemData(newIndex).toInt()));
+    // Move focus to tracks table to immediately allow keyboard shortcuts again.
+    setFocus();
 }
 
 void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
@@ -370,4 +374,28 @@ void DlgAutoDJ::updateSelectionInfo() {
 
 bool DlgAutoDJ::hasFocus() const {
     return m_pTrackTableView->hasFocus();
+}
+
+void DlgAutoDJ::setFocus() {
+    m_pTrackTableView->setFocus();
+}
+
+void DlgAutoDJ::keyPressEvent(QKeyEvent* pEvent) {
+    // Return, Enter and Escape key move focus to the AutoDJ queue to immediately
+    // allow keyboard shortcuts again.
+    if (pEvent->key() == Qt::Key_Return ||
+            pEvent->key() == Qt::Key_Enter ||
+            pEvent->key() == Qt::Key_Escape) {
+        setFocus();
+        return;
+    }
+    return QWidget::keyPressEvent(pEvent);
+}
+
+void DlgAutoDJ::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+}
+
+bool DlgAutoDJ::restoreCurrentViewState() {
+    return m_pTrackTableView->restoreCurrentViewState();
 }

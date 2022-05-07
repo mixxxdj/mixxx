@@ -159,7 +159,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
         // Otherwise nothing would happen...
         if (!dir.exists()) {
             // it ensures a valid dir for any OS (Windows)
-            dir = QDir::home();
+            dir.setPath(QDir::homePath());
         }
         // not open the same dir twice
         dirPath = dir.absolutePath();

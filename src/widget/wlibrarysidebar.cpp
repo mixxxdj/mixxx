@@ -10,11 +10,12 @@
 #include "moc_wlibrarysidebar.cpp"
 #include "util/dnd.h"
 
-const int expand_time = 250;
+constexpr int expand_time = 250;
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this) {
+    qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
@@ -60,7 +61,11 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     // Start a timer to auto-expand sections the user hovers on.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QPoint pos = event->position().toPoint();
+#else
     QPoint pos = event->pos();
+#endif
     QModelIndex index = indexAt(pos);
     if (m_hoverIndex != index) {
         m_expandTimer.stop();
@@ -83,7 +88,12 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             if (sidebarModel) {
                 accepted = false;
                 for (const QUrl& url : urls) {
-                    QModelIndex destIndex = indexAt(event->pos());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    QPoint pos = event->position().toPoint();
+#else
+                    QPoint pos = event->pos();
+#endif
+                    QModelIndex destIndex = indexAt(pos);
                     if (sidebarModel->dragMoveAccept(destIndex, url)) {
                         // We only need one URL to be valid for us
                         // to accept the whole drag...
@@ -137,7 +147,13 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             //eg. dragging a track from Windows Explorer onto the sidebar
             SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
             if (sidebarModel) {
-                QModelIndex destIndex = indexAt(event->pos());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                QPoint pos = event->position().toPoint();
+#else
+                QPoint pos = event->pos();
+#endif
+
+                QModelIndex destIndex = indexAt(pos);
                 // event->source() will return NULL if something is dropped from
                 // a different application
                 const QList<QUrl> urls = event->mimeData()->urls();
@@ -154,7 +170,6 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
         event->ignore();
     }
 }
-
 
 void WLibrarySidebar::toggleSelectedItem() {
     QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
@@ -183,44 +198,79 @@ bool WLibrarySidebar::isLeafNodeSelected() {
 }
 
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Return) {
+    switch (event->key()) {
+    case Qt::Key_Return:
         toggleSelectedItem();
         return;
-    } else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up) {
+    case Qt::Key_Down:
+    case Qt::Key_Up:
+    case Qt::Key_PageDown:
+    case Qt::Key_PageUp:
+    case Qt::Key_End:
+    case Qt::Key_Home: {
         // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
-
-        // But force the index to be activated/clicked after the selection
-        // changes. (Saves you from having to push "enter" after changing the
-        // selection.)
-        QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
-
-        //Note: have to get the selected indices _after_ QTreeView::keyPressEvent()
-        if (selectedIndices.size() > 0) {
-            QModelIndex index = selectedIndices.at(0);
-            emit pressed(index);
+        // After the selection changed force-activate (click) the newly selected
+        // item to save us from having to push "Enter".
+        QModelIndexList selectedIndices = selectionModel()->selectedRows();
+        if (selectedIndices.isEmpty()) {
+            return;
+        }
+        QModelIndex selIndex = selectedIndices.first();
+        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
+            qDebug() << "invalid sidebar index";
+            return;
+        }
+        emit pressed(selIndex);
+        return;
+    }
+    case Qt::Key_Left: {
+        QModelIndexList selectedIndices = selectionModel()->selectedRows();
+        if (selectedIndices.isEmpty()) {
+            return;
+        }
+        // If an expanded item is selected let QTreeView collapse it
+        QModelIndex selIndex = selectedIndices.first();
+        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
+            qDebug() << "invalid sidebar index";
+            return;
+        }
+        if (isExpanded(selIndex)) {
+            QTreeView::keyPressEvent(event);
+            return;
+        }
+        // Else jump to its parent and activate it
+        QModelIndex parentIndex = selIndex.parent();
+        if (parentIndex.isValid()) {
+            selectIndex(parentIndex);
+            emit pressed(parentIndex);
         }
         return;
-    //} else if (event->key() == Qt::Key_Enter && (event->modifiers() & Qt::AltModifier)) {
-    //    // encoder click via "GoToItem"
-    //    qDebug() << "GoToItem";
-    //    TODO(xxx) decide what todo here instead of in librarycontrol
     }
-
-    // Fall through to default handler.
-    QTreeView::keyPressEvent(event);
+    case Qt::Key_Escape:
+        // Focus tracks table
+        emit setLibraryFocus(FocusWidget::TracksTable);
+        return;
+    default:
+        QTreeView::keyPressEvent(event);
+    }
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
+    //qDebug() << "WLibrarySidebar::selectIndex" << index;
+    if (!index.isValid()) {
+        return;
+    }
     auto* pModel = new QItemSelectionModel(model());
     pModel->select(index, QItemSelectionModel::Select);
     if (selectionModel()) {
         selectionModel()->deleteLater();
     }
-    setSelectionModel(pModel);
     if (index.parent().isValid()) {
         expand(index.parent());
     }
+    setSelectionModel(pModel);
+    setCurrentIndex(index);
     scrollTo(index);
 }
 
@@ -232,6 +282,9 @@ void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem
         return;
     }
     QModelIndex translated = sidebarModel->translateChildIndex(index);
+    if (!translated.isValid()) {
+        return;
+    }
 
     if (selectItem) {
         auto* pModel = new QItemSelectionModel(sidebarModel);
@@ -240,6 +293,7 @@ void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem
             selectionModel()->deleteLater();
         }
         setSelectionModel(pModel);
+        setCurrentIndex(translated);
     }
 
     QModelIndex parentIndex = translated.parent();

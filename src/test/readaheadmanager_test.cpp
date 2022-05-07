@@ -38,41 +38,30 @@ class StubLoopControl : public LoopingControl {
     }
 
     void pushTriggerReturnValue(double value) {
-        m_triggerReturnValues.push_back(value);
+        m_triggerReturnValues.push_back(
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(value));
     }
 
     void pushTargetReturnValue(double value) {
-        m_targetReturnValues.push_back(value);
+        m_targetReturnValues.push_back(
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(value));
     }
 
-    double nextTrigger(bool reverse,
-                       const double currentSample,
-                       double* pTarget) override {
+    mixxx::audio::FramePos nextTrigger(bool reverse,
+            mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos* pTargetPosition) override {
         Q_UNUSED(reverse);
-        Q_UNUSED(currentSample);
-        Q_UNUSED(pTarget);
+        Q_UNUSED(currentPosition);
+        Q_UNUSED(pTargetPosition);
         RELEASE_ASSERT(!m_targetReturnValues.isEmpty());
-        *pTarget = m_targetReturnValues.takeFirst();
+        *pTargetPosition = m_targetReturnValues.takeFirst();
         RELEASE_ASSERT(!m_triggerReturnValues.isEmpty());
         return m_triggerReturnValues.takeFirst();
     }
 
-    // hintReader has no effect in this stubbed class
-    void hintReader(HintVector* pHintList) override {
-        Q_UNUSED(pHintList);
-    }
-
-    void notifySeek(double dNewPlaypos) override {
-        Q_UNUSED(dNewPlaypos);
-    }
-
-    void trackLoaded(TrackPointer pTrack) override {
-        Q_UNUSED(pTrack);
-    }
-
   protected:
-    QList<double> m_triggerReturnValues;
-    QList<double> m_targetReturnValues;
+    QList<mixxx::audio::FramePos> m_triggerReturnValues;
+    QList<mixxx::audio::FramePos> m_targetReturnValues;
 };
 
 class ReadAheadManagerTest : public MixxxTest {

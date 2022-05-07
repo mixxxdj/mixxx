@@ -1,5 +1,11 @@
 #include "library/basetracktablemodel.h"
 
+#include <QScreen>
+// for hack to get primary screen instead of view widget's screen
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+#include <QGuiApplication>
+#endif
+
 #include "library/bpmdelegate.h"
 #include "library/colordelegate.h"
 #include "library/coverartcache.h"
@@ -16,7 +22,6 @@
 #include "moc_basetracktablemodel.cpp"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/db/sqlite.h"
 #include "util/logger.h"
@@ -64,7 +69,7 @@ const QStringList kDefaultTableColumns = {
 inline QSqlDatabase cloneDatabase(
         const QSqlDatabase& prototype) {
     const auto connectionName =
-            uuidToStringWithoutBraces(QUuid::createUuid());
+            QUuid::createUuid().toString(QUuid::WithoutBraces);
     auto cloned = QSqlDatabase::cloneDatabase(
             prototype,
             connectionName);
@@ -109,9 +114,9 @@ BaseTrackTableModel::BaseTrackTableModel(
             this,
             &BaseTrackTableModel::slotRefreshAllRows);
     connect(&PlayerInfo::instance(),
-            &PlayerInfo::trackLoaded,
+            &PlayerInfo::trackChanged,
             this,
-            &BaseTrackTableModel::slotTrackLoaded);
+            &BaseTrackTableModel::slotTrackChanged);
 }
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
@@ -415,7 +420,7 @@ QVariant BaseTrackTableModel::data(
         DEBUG_ASSERT(bgColor.isValid());
         DEBUG_ASSERT(m_backgroundColorOpacity >= 0.0);
         DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
-        bgColor.setAlphaF(m_backgroundColorOpacity);
+        bgColor.setAlphaF(static_cast<float>(m_backgroundColorOpacity));
         return QBrush(bgColor);
     }
 
@@ -510,13 +515,24 @@ bool BaseTrackTableModel::setData(
 QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
         const QModelIndex& index) const {
     // Determine height of the cover art image depending on the screen size
-    const QScreen* primaryScreen = getPrimaryScreen();
-    if (!primaryScreen) {
-        DEBUG_ASSERT(!"Primary screen not found!");
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    auto* pTableView = qobject_cast<WTrackTableView*>(parent());
+    VERIFY_OR_DEBUG_ASSERT(pTableView) {
         return QVariant();
     }
+    QScreen* pViewScreen = pTableView->screen();
+#else
+    // Ugly hack assuming that the view is on whatever Qt considers the primary screen.
+    QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
+    VERIFY_OR_DEBUG_ASSERT(app) {
+        qWarning() << "Unable to get application's QGuiApplication instance, "
+                      "cannot determine primary screen";
+        return QVariant();
+    }
+    QScreen* pViewScreen = app->primaryScreen();
+#endif
     unsigned int absoluteHeightOfCoverartToolTip = static_cast<int>(
-            primaryScreen->availableGeometry().height() *
+            pViewScreen->availableGeometry().height() *
             kRelativeHeightOfCoverartToolTip);
     // Get image from cover art cache
     CoverArtCache* pCache = CoverArtCache::instance();
@@ -630,7 +646,11 @@ QVariant BaseTrackTableModel::roleValue(
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            if (rawValue.metaType().id() == QMetaType::QString) {
+#else
             if (rawValue.type() == QVariant::String) {
+#endif
                 // column value
                 lastPlayedAt = mixxx::sqlite::readGeneratedTimestamp(rawValue);
             } else {
@@ -664,11 +684,11 @@ QVariant BaseTrackTableModel::roleValue(
                     bpm = mixxx::Bpm(bpmValue);
                 }
             }
-            if (bpm.hasValue()) {
+            if (bpm.isValid()) {
                 if (role == Qt::ToolTipRole || role == kDataExportRole) {
-                    return QString::number(bpm.getValue(), 'f', 4);
+                    return QString::number(bpm.value(), 'f', 4);
                 } else {
-                    return QString::number(bpm.getValue(), 'f', 1);
+                    return QString::number(bpm.value(), 'f', 1);
                 }
             } else {
                 return QChar('-');
@@ -782,7 +802,10 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
-            return ok ? bpmValue : mixxx::Bpm().getValue();
+            if (!ok) {
+                return mixxx::Bpm::kValueUndefined;
+            }
+            return mixxx::Bpm{bpmValue}.valueOr(mixxx::Bpm::kValueUndefined);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return index.sibling(
@@ -921,7 +944,7 @@ QList<QUrl> BaseTrackTableModel::collectUrls(
             continue;
         }
         visitedRows.insert(index.row());
-        QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
+        QUrl url = getTrackUrl(index);
         if (url.isValid()) {
             urls.append(url);
         }
@@ -941,9 +964,11 @@ QMimeData* BaseTrackTableModel::mimeData(
     }
 }
 
-void BaseTrackTableModel::slotTrackLoaded(
+void BaseTrackTableModel::slotTrackChanged(
         const QString& group,
-        TrackPointer pTrack) {
+        TrackPointer pNewTrack,
+        TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
@@ -957,7 +982,7 @@ void BaseTrackTableModel::slotTrackLoaded(
                 emit dataChanged(topLeft, bottomRight);
             }
         }
-        m_previewDeckTrackId = doGetTrackId(pTrack);
+        m_previewDeckTrackId = doGetTrackId(pNewTrack);
     }
 }
 
@@ -1039,3 +1064,17 @@ TrackId BaseTrackTableModel::doGetTrackId(
         const TrackPointer& pTrack) const {
     return pTrack ? pTrack->getId() : TrackId();
 }
+
+bool BaseTrackTableModel::updateTrackGenre(
+        Track* pTrack,
+        const QString& genre) const {
+    return m_pTrackCollectionManager->updateTrackGenre(pTrack, genre);
+}
+
+#if defined(__EXTRA_METADATA__)
+bool BaseTrackTableModel::updateTrackMood(
+        Track* pTrack,
+        const QString& mood) const {
+    return m_pTrackCollectionManager->updateTrackMood(pTrack, mood);
+}
+#endif // __EXTRA_METADATA__

@@ -2202,9 +2202,9 @@ var NovationLaunchpad = (function () {
         name: 'sync_enabled',
         type: 'binary'
       },
-      sync_master: {
+      sync_leader: {
         group: "[".concat(type).concat(i, "]"),
-        name: 'sync_master',
+        name: 'sync_leader',
         type: 'binary'
       },
       sync_mode: {
@@ -6765,9 +6765,9 @@ var NovationLaunchpad = (function () {
                     }
                   }, function () {
                     if (bindings.syncMode.getValue() === 2) {
-                      deck.sync_master.setValue(0);
+                      deck.sync_leader.setValue(0);
                     } else {
-                      deck.sync_master.setValue(1);
+                      deck.sync_leader.setValue(1);
                     }
                   });
                 }

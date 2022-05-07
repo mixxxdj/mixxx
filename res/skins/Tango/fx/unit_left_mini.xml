@@ -224,6 +224,19 @@ Variables:
             </Connection>
           </WidgetGroup>
 
+          <WidgetGroup><!-- Effect chain selector -->
+            <ObjectName>AlignCenter</ObjectName>
+            <SizePolicy>max,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <EffectChainPresetButton>
+                <ObjectName>EffectChainPresetButtonLeft</ObjectName>
+                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+                <Size>18f,18f</Size>
+              </EffectChainPresetButton>
+            </Children>
+          </WidgetGroup>
+
           <Template src="skin:../Tango/controls/button_2state_persist.xml">
             <SetVariable name="ObjectName">MixModeButton</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>

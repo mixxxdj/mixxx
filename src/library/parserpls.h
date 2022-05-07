@@ -11,26 +11,16 @@
 //
 #pragma once
 
-#include "library/parser.h"
-
-#include <QTextStream>
 #include <QList>
 #include <QString>
+#include <QTextStream>
+
+#include "library/parser.h"
 
 class ParserPls : public Parser {
-    Q_OBJECT
   public:
-    ParserPls();
-    virtual ~ParserPls();
-    /**Can be called to parse a pls file**/
-    QList<QString> parse(const QString&);
-    //Playlist Export
+    static bool isPlaylistFilenameSupported(const QString& fileName);
+    static QList<QString> parseAllLocations(const QString& playlistFile);
+    /// Playlist Export
     static bool writePLSFile(const QString &file, const QList<QString> &items, bool useRelativePath);
-
-  private:
-    /**Returns the Number of entries in the pls file**/
-    long getNumEntries(QTextStream*);
-    /**Reads a line from the file and returns filepath**/
-    QString getFilePath(QTextStream*, const QString& basePath);
-
 };
