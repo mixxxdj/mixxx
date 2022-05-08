@@ -72,10 +72,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
 endif()
 
 # Version detection
-if(PC_hidapi_VERSION)
+if(DEFINED PC_hidapi_VERSION AND NOT PC_hidapi_VERSION STREQUAL "")
   set(hidapi_VERSION "${PC_hidapi_VERSION}")
 else()
-  if (EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
+  if (EXISTS "${hidapi_LIBRARY}" AND EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
       file(READ "${hidapi_INCLUDE_DIR}/hidapi.h" hidapi_H_CONTENTS)
       string(REGEX MATCH "#define HID_API_VERSION_MAJOR ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
       set(hidapi_VERSION_MAJOR "${CMAKE_MATCH_1}")
