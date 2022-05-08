@@ -177,12 +177,11 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
                     Qt::AlignCenter,
                     QSize(dialogWidth, dialogHeight),
                     pScreen->geometry()));
-            pMsgBox->setStyleSheet("QTextEdit { min-width: " +
-                    QString::number(dialogWidth -
-                            kEstimatedDialogBorders) +
-                    "px ; max-height: " +
-                    QString::number(dialogHeight) +
-                    "px; font-family: monospace;}");
+            pMsgBox->setStyleSheet(
+                    QString("QTextEdit { min-width: %1px ; max-height: %2px; "
+                            "font-family: monospace;}")
+                            .arg(dialogWidth - kEstimatedDialogBorders)
+                            .arg(dialogHeight));
         }
     }
 
