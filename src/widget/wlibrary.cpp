@@ -92,6 +92,42 @@ LibraryView* WLibrary::getActiveView() const {
     return dynamic_cast<LibraryView*>(currentWidget());
 }
 
+bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
+    //qDebug() << "WLibrary::isTrackInCurrentView" << trackId;
+    QWidget* current = currentWidget();
+    WTrackTableView* tracksView = qobject_cast<WTrackTableView*>(current);
+    if (!tracksView) {
+        // This view is no tracks view, but maybe a special tracks view with a
+        // controls row (AutoDJ, Recording)?
+        //qDebug() << "   view is no tracks view. look for tracks view child";
+        tracksView = current->findChild<WTrackTableView*>();
+    }
+    if (tracksView) {
+        //qDebug() << "   tracks view found";
+        return tracksView->isTrackInCurrentView(trackId);
+    } else {
+        // No tracks view, this is probably a root view WLibraryTextBrowser
+        //qDebug() << "   no tracks view found";
+        return false;
+    }
+}
+
+void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
+    //qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
+    QWidget* current = currentWidget();
+    WTrackTableView* tracksView = qobject_cast<WTrackTableView*>(current);
+    if (!tracksView) {
+        //qDebug() << "   view is no tracks view. look for tracks view child";
+        tracksView = current->findChild<WTrackTableView*>();
+    }
+    if (tracksView) {
+        //qDebug() << "   tracks view found";
+        tracksView->slotSelectTrack(trackId);
+    } else {
+        //qDebug() << "   no tracks view found";
+    }
+}
+
 bool WLibrary::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
