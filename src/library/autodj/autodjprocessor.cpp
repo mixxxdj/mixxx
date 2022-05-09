@@ -216,7 +216,6 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
 }
 
 void AutoDJProcessor::fadeNow() {
-    // Auto-DJ needs at least two decks
     if (m_eState != ADJ_IDLE) {
         // we cannot fade if AutoDj is disabled or already fading
         return;
