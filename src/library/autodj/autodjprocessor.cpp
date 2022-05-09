@@ -780,11 +780,11 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 m_transitionProgress = 0.0;
                 emitAutoDJStateChanged(m_eState);
 
-                const double toDeckFadeDisatance =
+                const double toDeckFadeDistance =
                         (thisDeck->fadeEndPos - thisDeck->fadeBeginPos) *
-                        getEndSecond(thisDeck) / getEndSecond(thisDeck);
+                        getEndSecond(thisDeck) / getEndSecond(otherDeck);
                 // Re-cue the track if the user has seeked forward and will miss the fadeBeginPos
-                if (otherDeck->playPosition() >= otherDeck->fadeBeginPos - toDeckFadeDisatance) {
+                if (otherDeck->playPosition() >= otherDeck->fadeBeginPos - toDeckFadeDistance) {
                     otherDeck->setPlayPosition(otherDeck->startPos);
                 }
 
