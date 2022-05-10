@@ -107,10 +107,12 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
     QString fileContents(QStringLiteral("#EXTM3U\n"));
     for (const QString& item : items) {
         fileContents += QStringLiteral("#EXTINF\n");
+        QUrl itemUrl = QUrl::fromLocalFile(item);
+        QString itemUrlEncoded = itemUrl.toEncoded();
         if (useRelativePath) {
             fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
         } else {
-            fileContents += item + QStringLiteral("\n");
+            fileContents += itemUrlEncoded + QStringLiteral("\n");
         }
     }
 
