@@ -1,16 +1,16 @@
 #pragma once
 
-#include <QApplication>
+#include <QGuiApplication>
 
 class ScopedOverrideCursor {
   public:
     inline explicit ScopedOverrideCursor(const QCursor& cursor) {
-        QApplication::setOverrideCursor(cursor);
-        QApplication::processEvents();
+        QGuiApplication::setOverrideCursor(cursor);
+        QCoreApplication::processEvents();
     }
 
     inline virtual ~ScopedOverrideCursor() {
-        QApplication::restoreOverrideCursor();
+        QGuiApplication::restoreOverrideCursor();
     }
 };
 
