@@ -31,7 +31,8 @@ QString userAgentRawHeaderValue() {
             QStringLiteral("/") +
             VersionStore::version() +
             QStringLiteral(" ( ") +
-            QStringLiteral(MIXXX_WEBSITE_URL) +
+            // QStringLiteral(MIXXX_WEBSITE_URL) fails to compile on Fedora 36 with GCC 12.0.x
+            MIXXX_WEBSITE_URL +
             QStringLiteral(" )");
 }
 
