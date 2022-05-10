@@ -1932,8 +1932,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
         if (file.open(QIODevice::ReadOnly)) {
             QByteArray fileBytes = file.readAll();
 
-            style = QString::fromLocal8Bit(fileBytes.constData(),
-                                           fileBytes.length());
+            style = QString::fromLocal8Bit(fileBytes);
         }
 
         QString platformSpecificAttribute;
@@ -1951,8 +1950,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
             if (platformSpecificFile.open(QIODevice::ReadOnly)) {
                 QByteArray fileBytes = platformSpecificFile.readAll();
 
-                style += QString::fromLocal8Bit(fileBytes.constData(),
-                                                fileBytes.length());
+                style += QString::fromLocal8Bit(fileBytes);
             }
         }
 
@@ -1975,8 +1973,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
             QFile file(strNewName);
             if (file.open(QIODevice::ReadOnly)) {
                 QByteArray fileBytes = file.readAll();
-                style.prepend(QString::fromLocal8Bit(fileBytes.constData(),
-                                               fileBytes.length()));
+                style.prepend(QString::fromLocal8Bit(fileBytes));
             }
         } else if (scaleFactor >= 2) {
             // Try to load with @2x suffix
@@ -1986,8 +1983,7 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
             QFile file(strNewName);
             if (file.open(QIODevice::ReadOnly)) {
                 QByteArray fileBytes = file.readAll();
-                style.prepend(QString::fromLocal8Bit(fileBytes.constData(),
-                                               fileBytes.length()));
+                style.prepend(QString::fromLocal8Bit(fileBytes));
             }
         }
 #endif
