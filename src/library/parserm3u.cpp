@@ -112,7 +112,11 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
         if (useRelativePath) {
             fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
         } else {
-            fileContents += itemUrlEncoded + QStringLiteral("\n");
+            if (!useUtf8) {
+                fileContents += itemUrlEncoded + QStringLiteral("\n");
+            } else {
+                fileContents += item + QStringLiteral("\n");
+            }
         }
     }
 
