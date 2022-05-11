@@ -256,7 +256,7 @@ Resampler::initialise(double snr, double bandwidth)
     // the centre of the filter.
 
     int h = int(m_filterLength / 2);
-    int n = ceil(double(m_filterLength - h) / outputSpacing);
+    int n = static_cast<int>(std::ceil(double(m_filterLength - h) / outputSpacing));
     
     m_phase = (h + n * outputSpacing) % inputSpacing;
 
