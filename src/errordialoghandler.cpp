@@ -18,6 +18,7 @@ namespace {
 constexpr int kEstimatedShowDetailedDialogWidth = 1000; // px
 constexpr int kEstimatedShowDetailedDialogHeight = 500; // px
 constexpr int kEstimatedDialogBorders = 50;             // px
+constexpr int kMinimumSpaceAroundDialog = 40;           // px
 } // namespace
 
 ErrorDialogProperties::ErrorDialogProperties()
@@ -165,18 +166,33 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
                     mixxx::widgethelper::getScreen(*pMsgBox);
             int dialogWidth = kEstimatedShowDetailedDialogWidth;
             int dialogHeight = kEstimatedShowDetailedDialogHeight;
-            // Limit dialog size to screen size, for the case of devices with very small display - like Raspberry Pi.
-            if (dialogWidth > pScreen->geometry().width()) {
-                dialogWidth = pScreen->geometry().width();
+            if (pScreen) {
+                // Limit dialog size to screen size, for the case of devices with very small display - like Raspberry Pi.
+                if (dialogWidth > pScreen->geometry().width() - 2 * kMinimumSpaceAroundDialog) {
+                    dialogWidth = pScreen->geometry().width() - 2 * kMinimumSpaceAroundDialog;
+                }
+                if (dialogHeight > pScreen->geometry().height() - 2 * kMinimumSpaceAroundDialog) {
+                    dialogHeight = pScreen->geometry().height() - 2 * kMinimumSpaceAroundDialog;
+                }
+                pMsgBox->setGeometry(QStyle::alignedRect(
+                        Qt::LeftToRight,
+                        Qt::AlignCenter,
+                        QSize(dialogWidth, dialogHeight),
+                        pScreen->geometry()));
+            } else {
+                pMsgBox->setStyleSheet("QTextEdit { font-family: monospace; }");
+                // some safe defaults for max pos, width and height
+                dialogWidth =
+                        mixxx::widgethelper::kWidthOfMinimumSupportedScreen -
+                        2 * kMinimumSpaceAroundDialog;
+                dialogHeight =
+                        mixxx::widgethelper::kHeightOfMinimumSupportedScreen -
+                        2 * kMinimumSpaceAroundDialog;
+                pMsgBox->setGeometry(kMinimumSpaceAroundDialog,
+                        kMinimumSpaceAroundDialog,
+                        dialogWidth,
+                        dialogHeight);
             }
-            if (dialogHeight > pScreen->geometry().height()) {
-                dialogHeight = pScreen->geometry().height();
-            }
-            pMsgBox->setGeometry(QStyle::alignedRect(
-                    Qt::LeftToRight,
-                    Qt::AlignCenter,
-                    QSize(dialogWidth, dialogHeight),
-                    pScreen->geometry()));
             pMsgBox->setStyleSheet(
                     QString("QTextEdit { min-width: %1px ; max-height: %2px; "
                             "font-family: monospace;}")

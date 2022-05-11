@@ -173,8 +173,11 @@ void DlgCoverArtFullSize::slotCoverFound(
     const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
     QRect screenGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
-        qWarning() << "Assuming screen size of 800x600px.";
-        screenGeometry = QRect(0, 0, 800, 600);
+        qWarning() << "Assuming minimum supported screen size";
+        screenGeometry = QRect(0,
+                0,
+                mixxx::widgethelper::kWidthOfMinimumSupportedScreen,
+                mixxx::widgethelper::kHeightOfMinimumSupportedScreen);
     }
     else {
         screenGeometry = pScreen->geometry();
