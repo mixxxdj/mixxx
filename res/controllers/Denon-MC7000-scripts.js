@@ -597,7 +597,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
 // Shift Button
 MC7000.shiftButton = function(channel, control, value, status, group) {
     var deckOffset = script.deckFromGroup(group) - 1;
-    MC7000.shift[deckOffset] = ! MC7000.shift[deckOffset];
+    MC7000.shift[deckOffset] = value > 0;
     midi.sendShortMsg(0x90 + deckOffset, 0x32,
         MC7000.shift[deckOffset] ? 0x7F : 0x01);
 };
