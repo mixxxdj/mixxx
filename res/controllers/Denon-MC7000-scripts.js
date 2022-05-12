@@ -887,6 +887,38 @@ MC7000.crossFaderCurve = function(control, value) {
     script.crossfaderCurve(value);
 };
 
+// Update state on deck changes
+MC7000.switchDeck = function(channel, control, value, status, group) {
+    // We need to 'transfer' the shift state when switching decks,
+    // otherwise it will get stuck and result in an 'inverted'
+    // shift after switching back to the deck.
+    // Since the controller switches immediately upon pressing down,
+    // we only do this when value is high.
+
+    if (value === 0x7F) {
+        var deckOffset = script.deckFromGroup(group) - 1;
+
+        var previousDeckOffset;
+        switch (deckOffset) {
+        case 0:
+            previousDeckOffset = 2;
+            break;
+        case 1:
+            previousDeckOffset = 3;
+            break;
+        case 2:
+            previousDeckOffset = 0;
+            break;
+        case 3:
+            previousDeckOffset = 1;
+            break;
+        }
+
+        MC7000.shift[deckOffset] = MC7000.shift[previousDeckOffset];
+        MC7000.shift[previousDeckOffset] = false;
+    }
+};
+
 // Set FX wet/dry value
 MC7000.fxWetDry = function(channel, control, value, status, group) {
     var numTicks = (value < 0x64) ? value : (value - 128);
