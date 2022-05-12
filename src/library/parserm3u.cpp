@@ -107,15 +107,23 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
     QString fileContents(QStringLiteral("#EXTM3U\n"));
     for (const QString& item : items) {
         fileContents += QStringLiteral("#EXTINF\n");
-        QUrl itemUrl = QUrl::fromLocalFile(item);
-        QString itemUrlEncoded = itemUrl.toEncoded();
-        if (useRelativePath) {
-            fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
-        } else {
-            if (!useUtf8) {
-                fileContents += itemUrlEncoded + QStringLiteral("\n");
+        QByteArray trackByteArray = QTextCodec::codecForName(kStandardM3uTextEncoding)
+                                            ->fromUnicode(item);
+        if ((trackByteArray == item) || useUtf8) {
+            if (useRelativePath) {
+                fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
             } else {
                 fileContents += item + QStringLiteral("\n");
+            }
+        } else {
+            if (useRelativePath) {
+                QUrl itemRelativeUrl = QUrl::fromLocalFile(baseDirectory.relativeFilePath(item));
+                QString itemRelativeUrlEncoded = itemRelativeUrl.toEncoded();
+                fileContents += itemRelativeUrlEncoded + QStringLiteral("\n");
+            } else {
+                QUrl itemUrl = QUrl::fromLocalFile(item);
+                QString itemUrlEncoded = itemUrl.toEncoded();
+                fileContents += itemUrlEncoded + QStringLiteral("\n");
             }
         }
     }
