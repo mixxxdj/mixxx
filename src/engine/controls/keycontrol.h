@@ -14,11 +14,11 @@ class KeyControl : public EngineControl {
   public:
 
     struct PitchTempoRatio {
-        // this is the calculated value used by engine buffer for pitch
-        // by default it is equal to the tempoRatio set by the speed slider
+        // This is the calculated value used by engine buffer for pitch.
+        // By default it is equal to the tempoRatio set by the speed slider
         double pitchRatio;
-        // this is the value of the speed slider and speed slider
-        // effecting controls at the moment of calculation
+        // This is the value of the speed slider and speed slider
+        // affecting controls at the moment of calculation
         double tempoRatio;
         // the offeset factor to the natural pitch set by the rate slider
         double pitchTweakRatio;
@@ -46,7 +46,7 @@ class KeyControl : public EngineControl {
   private:
     void setEngineKey(double key, double key_distance);
     bool syncKey(EngineBuffer* pOtherEngineBuffer);
-    void updateKeyCOs(double fileKeyNumeric, double pitch);
+    void updateKeyCOs(double fileKeyNumeric, double pitchOctaves);
     void updatePitch();
     void updatePitchAdjust();
     void updateRate();

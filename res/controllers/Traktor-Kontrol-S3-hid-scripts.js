@@ -146,6 +146,9 @@ TraktorS3.Controller = function() {
     // If true, channel 4 is in input mode
     this.channel4InputMode = false;
 
+    // Represents the first-pressed deck switch button, used for tracking deck clones.
+    this.deckSwitchPressed = "";
+
     // callbacks
     this.samplerCallbacks = [];
 };
@@ -186,6 +189,7 @@ TraktorS3.Deck = function(controller, deckNumber, group) {
     this.tickReceived = false;
     this.lastTickVal = 0;
     this.lastTickTime = 0;
+    this.lastTickWallClock = 0;
     this.wheelTouchInertiaTimer = 0;
 
     // Knob encoder states (hold values between 0x0 and 0xF)
@@ -711,25 +715,27 @@ TraktorS3.Deck.prototype.wheelDeltas = function(value) {
     // the number of ticks to elapse to get a velocity.
     var tickval = value & 0xFF;
     var timeval = value >>> 8;
-    var prevTick = 0;
-    var prevTime = 0;
 
-    prevTick = this.lastTickVal;
-    prevTime = this.lastTickTime;
+    var prevTick = this.lastTickVal;
+    var prevTime = this.lastTickTime;
+    var prevTickWallClock = this.lastTickWallClock;
     this.lastTickVal = tickval;
     this.lastTickTime = timeval;
+    this.lastTickWallClock = Date.now();
+
+    // The user hasn't touched the jog wheel for a long time, so the internal timer may have looped
+    // around more than once. We have nothing to go by so return 0, 1 (1 to prevent divide by zero).
+    if (this.lastTickWallClock - prevTickWallClock > 20000) {
+        return [0, 1];
+    }
 
     if (prevTime > timeval) {
         // We looped around.  Adjust current time so that subtraction works.
-        timeval += 0x100000;
+        timeval += 0x1000000;
     }
-    var timeDelta = timeval - prevTime;
-    if (timeDelta === 0) {
-        // Spinning too fast to detect speed!  By not dividing we are guessing it took 1ms.
-        // (This is almost certainly not going to happen on this controller.)
-        timeDelta = 1;
-    }
-
+    // Clamp Suspiciously low numbers.  Even flicking the wheel as fast as I can, I can't get it
+    // lower than this value.  Lower values (esp below zero) cause huge jumps / errors in playback.
+    var timeDelta = Math.max(timeval - prevTime, 500);
     var tickDelta = 0;
 
     // Very generous 8bit loop-around detection.
@@ -1764,7 +1770,7 @@ TraktorS3.Controller.prototype.parameterHandler = function(field) {
 };
 
 TraktorS3.Controller.prototype.anyShiftPressed = function() {
-    return this.Decks["deck1"].shiftPressed || this.Decks["deck2"].shiftPressed;
+    return this.Decks.deck1.shiftPressed || this.Decks.deck2.shiftPressed;
 };
 
 TraktorS3.Controller.prototype.masterGainHandler = function(field) {
@@ -1788,6 +1794,20 @@ TraktorS3.Controller.prototype.headphoneHandler = function(field) {
 
 TraktorS3.Controller.prototype.deckSwitchHandler = function(field) {
     if (field.value === 0) {
+        if (this.deckSwitchPressed === field.group) {
+            this.deckSwitchPressed = "";
+        }
+        return;
+    }
+
+    if (this.deckSwitchPressed === "") {
+        this.deckSwitchPressed = field.group;
+    } else {
+        // If a different deck switch is already pressed, do an instant double and do not select the
+        // deck.
+        var cloneFrom = this.Channels[this.deckSwitchPressed];
+        var cloneFromNum = cloneFrom.parentDeck.deckNumber;
+        engine.setValue(field.group, "CloneFromDeck", cloneFromNum);
         return;
     }
 
@@ -1877,8 +1897,8 @@ TraktorS3.Controller.prototype.registerOutputPackets = function() {
         "VuMeterR": 0x46
     };
     for (i = 0; i < 8; i++) {
-        outputB.addOutput("[Master]", "!" + "VuMeterL" + i, MasterVuOffsets["VuMeterL"] + i, "B");
-        outputB.addOutput("[Master]", "!" + "VuMeterR" + i, MasterVuOffsets["VuMeterR"] + i, "B");
+        outputB.addOutput("[Master]", "!" + "VuMeterL" + i, MasterVuOffsets.VuMeterL + i, "B");
+        outputB.addOutput("[Master]", "!" + "VuMeterR" + i, MasterVuOffsets.VuMeterR + i, "B");
     }
 
     outputB.addOutput("[Master]", "PeakIndicatorL", 0x45, "B");
@@ -1906,8 +1926,8 @@ TraktorS3.Controller.prototype.registerOutputPackets = function() {
     engine.connectControl("[Master]", "maximize_library", TraktorS3.bind(TraktorS3.Controller.prototype.maximizeLibraryOutput, this));
 
     // Master VuMeters
-    this.masterVuMeter["VuMeterL"].connection = engine.makeConnection("[Master]", "VuMeterL", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
-    this.masterVuMeter["VuMeterR"].connection = engine.makeConnection("[Master]", "VuMeterR", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
+    this.masterVuMeter.VuMeterL.connection = engine.makeConnection("[Master]", "VuMeterL", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
+    this.masterVuMeter.VuMeterR.connection = engine.makeConnection("[Master]", "VuMeterR", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
     this.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS3.bind(TraktorS3.Controller.prototype.peakOutput, this));
     this.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS3.bind(TraktorS3.Controller.prototype.peakOutput, this));
     this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", TraktorS3.bind(TraktorS3.Controller.prototype.guiTickHandler, this));
@@ -1939,8 +1959,8 @@ TraktorS3.Controller.prototype.pflOutput = function(value, group, key) {
 };
 
 TraktorS3.Controller.prototype.maximizeLibraryOutput = function(value, _group, _key) {
-    this.Decks["deck1"].colorOutput(value, "!MaximizeLibrary");
-    this.Decks["deck2"].colorOutput(value, "!MaximizeLibrary");
+    this.Decks.deck1.colorOutput(value, "!MaximizeLibrary");
+    this.Decks.deck2.colorOutput(value, "!MaximizeLibrary");
 };
 
 // Output drives lights that only have one color.
@@ -1991,7 +2011,7 @@ TraktorS3.Controller.prototype.vuMeterOutput = function(value, group, key, segme
         }
     }
     if (!this.batchingOutputs) {
-        this.hid.OutputPackets["outputB"].send();
+        this.hid.OutputPackets.outputB.send();
     }
 };
 
@@ -2014,12 +2034,12 @@ TraktorS3.Controller.prototype.samplesOutput = function(value, group, key) {
     // Sampler 1-8 -> Channel1
     // Samples 9-16 -> Channel2
     var sampler = this.resolveSampler(group);
-    var deck = this.Decks["deck1"];
+    var deck = this.Decks.deck1;
     var num = sampler;
     if (sampler === undefined) {
         return;
     } else if (sampler > 8 && sampler < 17) {
-        deck = this.Decks["deck2"];
+        deck = this.Decks.deck2;
         num = sampler - 8;
     }
 
@@ -2115,8 +2135,8 @@ TraktorS3.Controller.prototype.lightDeck = function(group, sendPackets) {
 TraktorS3.Controller.prototype.guiTickHandler = function() {
     this.batchingOutputs = true;
     var gotUpdate = false;
-    gotUpdate |= this.Channels[this.Decks["deck1"].activeChannel].lightWheelPosition();
-    gotUpdate |= this.Channels[this.Decks["deck2"].activeChannel].lightWheelPosition();
+    gotUpdate |= this.Channels[this.Decks.deck1.activeChannel].lightWheelPosition();
+    gotUpdate |= this.Channels[this.Decks.deck2.activeChannel].lightWheelPosition();
 
     for (var vu in this.masterVuMeter) {
         if (this.masterVuMeter[vu].updated) {
@@ -2246,10 +2266,10 @@ TraktorS3.init = function(_id) {
     };
 
     this.kontrol.Channels = {
-        "[Channel1]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks["deck1"], "[Channel1]"),
-        "[Channel3]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks["deck1"], "[Channel3]"),
-        "[Channel4]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks["deck2"], "[Channel4]"),
-        "[Channel2]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks["deck2"], "[Channel2]"),
+        "[Channel1]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks.deck1, "[Channel1]"),
+        "[Channel3]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks.deck1, "[Channel3]"),
+        "[Channel4]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks.deck2, "[Channel4]"),
+        "[Channel2]": new TraktorS3.Channel(this.kontrol, this.kontrol.Decks.deck2, "[Channel2]"),
     };
 
     this.kontrol.fxController = new TraktorS3.FXControl(this.kontrol);

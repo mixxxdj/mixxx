@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
 name: pre-commit
 
 on:
@@ -10,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: "Check out repository"
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 2
 
     - name: "Set up Python"
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
 
     - name: Install clang-format
       run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-format-10

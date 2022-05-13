@@ -10199,6 +10199,11 @@ Popolnoma na desni: konec periode efekta</translation>
 <context>
     <name>SamplerBank</name>
     <message>
+        <location filename="../../src/mixer/samplerbank.cpp" line="21"/>
+        <source>Mixxx Sampler Banks (*.xml)</source>
+        <translation>Mixxx banke vzorcev (*.xml)</translation>
+    </message>
+    <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="65"/>
         <source>Save Sampler Bank</source>
         <translation>Shrani banko vzorcev</translation>

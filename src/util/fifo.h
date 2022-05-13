@@ -16,8 +16,10 @@ class FIFO {
             return;
         }
         m_data = new DataType[size];
-        PaUtil_InitializeRingBuffer(
-                &m_ringBuffer, sizeof(DataType), size, m_data);
+        PaUtil_InitializeRingBuffer(&m_ringBuffer,
+                static_cast<ring_buffer_size_t>(sizeof(DataType)),
+                static_cast<ring_buffer_size_t>(size),
+                m_data);
     }
     virtual ~FIFO() {
         delete [] m_data;
