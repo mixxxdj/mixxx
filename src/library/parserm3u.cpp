@@ -103,23 +103,22 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
     // On Linux and OS X \n is <CR> (which remains \n)
 
     QDir baseDirectory(QFileInfo(file_str).canonicalPath());
-
+    QTextCodec* codec = QTextCodec::codecForName(kStandardM3uTextEncoding);
     QString fileContents(QStringLiteral("#EXTM3U\n"));
     for (const QString& item : items) {
         fileContents += QStringLiteral("#EXTINF\n");
-        QByteArray trackByteArray = QTextCodec::codecForName(kStandardM3uTextEncoding)
-                                            ->fromUnicode(item);
-        if ((trackByteArray == item) || useUtf8) {
+        if (useUtf8 ||
+                useRelativePath) { //Issue: URL Location is not working properly for Relative Paths
             if (useRelativePath) {
                 fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
             } else {
                 fileContents += item + QStringLiteral("\n");
             }
         } else {
-            if (useRelativePath) {
-                QUrl itemRelativeUrl = QUrl::fromLocalFile(baseDirectory.relativeFilePath(item));
-                QString itemRelativeUrlEncoded = itemRelativeUrl.toEncoded();
-                fileContents += itemRelativeUrlEncoded + QStringLiteral("\n");
+            QByteArray trackByteArray = codec->fromUnicode(item);
+            QString trackName = codec->toUnicode(trackByteArray);
+            if (trackName == item) {
+                fileContents += item + QStringLiteral("\n");
             } else {
                 QUrl itemUrl = QUrl::fromLocalFile(item);
                 QString itemUrlEncoded = itemUrl.toEncoded();
