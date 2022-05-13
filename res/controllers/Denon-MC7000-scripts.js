@@ -494,6 +494,15 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
     var deckOffset = deckNumber - 1;
     var i, j;
 
+    // The following modes are currently unhandled and could be
+    // added as if-branches in the future:
+
+    // - MC7000.PADModeCueLoop
+    // - MC7000.PADModeFlip
+    // - MC7000.PADModeSlicerLoop
+    // - MC7000.PADModeVelSamp
+    // - MC7000.PADModePitch
+
     // activate and clear Hot Cues
     if (MC7000.PADModeCue[deckNumber] && engine.getValue(group, "track_loaded") === 1) {
         for (i = 1; i <= 8; i++) {
@@ -512,10 +521,6 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 midi.sendShortMsg(0x94 + deckOffset, 0x1C + i - 1, MC7000.padColor.hotcueoff);
             }
         }
-    } else if (MC7000.PADModeCueLoop[deckNumber]) {
-        return;
-    } else if (MC7000.PADModeFlip[deckNumber]) {
-        return;
     } else if (MC7000.PADModeRoll[deckNumber]) {
         // TODO(all): check for actual beatloop_size and apply back after a PAD Roll
         i = control - 0x14;
@@ -560,8 +565,6 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
         } else {
             midi.sendShortMsg(0x94 + deckOffset, control, MC7000.padColor.sliceron);
         }
-    } else if (MC7000.PADModeSlicerLoop[deckNumber]) {
-        return;
     } else if (MC7000.PADModeSampler[deckNumber]) {
         for (i = 1; i <= 8; i++) {
             if (control === 0x14 + i - 1 && value >= 0x01) {
@@ -588,10 +591,6 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 }
             }
         }
-    } else if (MC7000.PADModeVelSamp[deckNumber]) {
-        return;
-    } else if (MC7000.PADModePitch[deckNumber]) {
-        return;
     }
 };
 
