@@ -28,6 +28,7 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
+class Stem;
 class ControlProxy;
 
 // For mocking PlayerManager
@@ -86,6 +87,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Add an auxiliary input to the PlayerManager
     void addAuxiliary();
 
+    // Add a stems output to the PlayerManager
+    void addStem();
+
     // Returns true if the group is a deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
     static bool isDeckGroup(const QString& group, int* number = nullptr);
@@ -126,6 +130,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     unsigned int numberOfSamplers() const override {
         return numSamplers();
     }
+
+    // Get the stem player by its number. Stem players are numbered starting with 1.
+    Stem* getStem(unsigned int stem) const;
 
     // Returns the track that was last ejected or unloaded. Can return nullptr or
     // invalid TrackId in case of error.
@@ -180,6 +187,12 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return QStringLiteral("[Auxiliary") + QString::number(i + 1) + ']';
     }
 
+    // Returns the group for the ith Stem player where i is zero indexed
+    static QString groupForStem(int i) {
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Stem") + QString::number(i + 1) + ']';
+    }
+
     static QAtomicPointer<ControlProxy> m_pCOPNumDecks;
     static QAtomicPointer<ControlProxy> m_pCOPNumSamplers;
     static QAtomicPointer<ControlProxy> m_pCOPNumPreviewDecks;
@@ -205,6 +218,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack);
     // Loads the location to the sampler. samplerNumber is 1-indexed
     void slotLoadToSampler(const QString& location, int samplerNumber);
+    // Loads the location to the stem player. stemNumber is 1-indexed
+    void slotLoadToStem(const QString& location, int stemNumber);
 
     void slotChangeNumDecks(double v);
     void slotChangeNumSamplers(double v);
@@ -264,6 +279,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Must hold m_mutex before calling this method. Internal method that
     // creates a new auxiliary.
     void addAuxiliaryInner();
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new stems player.
+    void addStemInner();
 
     // Used to protect access to PlayerManager state across threads.
     mutable QT_RECURSIVE_MUTEX m_mutex;
@@ -293,5 +311,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<PreviewDeck*> m_previewDecks;
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
+    QList<Stem*> m_stem;
     QMap<ChannelHandle, BaseTrackPlayer*> m_players;
 };

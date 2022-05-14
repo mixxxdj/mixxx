@@ -56,46 +56,47 @@ public:
     /// methods including getStringFromType, isIndexed, getTypeFromInt,
     /// channelsNeededForType (if necessary), the subclasses' getSupportedTypes
     /// (if necessary), etc.
-    enum AudioPathType {
-        MASTER,
-        HEADPHONES,
-        BOOTH,
-        BUS,
-        DECK,
-        VINYLCONTROL,
-        MICROPHONE,
-        AUXILIARY,
-        RECORD_BROADCAST,
-        INVALID, // if this isn't last bad things will happen -bkgood
-    };
-    AudioPath(unsigned char channelBase, unsigned char channels);
-    virtual ~AudioPath() = default;
-    AudioPathType getType() const;
-    ChannelGroup getChannelGroup() const;
-    unsigned char getIndex() const;
-    bool channelsClash(const AudioPath &other) const;
-    QString getString() const;
-    static QString getStringFromType(AudioPathType type);
-    static QString getTrStringFromType(AudioPathType type, unsigned char index);
-    static AudioPathType getTypeFromString(QString string);
-    static bool isIndexed(AudioPathType type);
-    static AudioPathType getTypeFromInt(int typeInt);
+  enum AudioPathType {
+      MASTER,
+      HEADPHONES,
+      BOOTH,
+      BUS,
+      DECK,
+      VINYLCONTROL,
+      MICROPHONE,
+      AUXILIARY,
+      RECORD_BROADCAST,
+      STEM,
+      INVALID, // if this isn't last bad things will happen -bkgood
+  };
+  AudioPath(unsigned char channelBase, unsigned char channels);
+  virtual ~AudioPath() = default;
+  AudioPathType getType() const;
+  ChannelGroup getChannelGroup() const;
+  unsigned char getIndex() const;
+  bool channelsClash(const AudioPath& other) const;
+  QString getString() const;
+  static QString getStringFromType(AudioPathType type);
+  static QString getTrStringFromType(AudioPathType type, unsigned char index);
+  static AudioPathType getTypeFromString(QString string);
+  static bool isIndexed(AudioPathType type);
+  static AudioPathType getTypeFromInt(int typeInt);
 
-    /// Returns the minimum number of channels needed on a sound device for an
-    /// AudioPathType.
-    static unsigned char minChannelsForType(AudioPathType type);
+  /// Returns the minimum number of channels needed on a sound device for an
+  /// AudioPathType.
+  static unsigned char minChannelsForType(AudioPathType type);
 
-    // Returns the maximum number of channels needed on a sound device for an
-    // AudioPathType.
-    static unsigned char maxChannelsForType(AudioPathType type);
+  // Returns the maximum number of channels needed on a sound device for an
+  // AudioPathType.
+  static unsigned char maxChannelsForType(AudioPathType type);
 
-    uint hashValue() const {
-        // Exclude m_channelGroup from hash value!
-        // See also: operator==()
-        // TODO: Why??
-        return (m_type << 8) |
-                m_index;
-    }
+  uint hashValue() const {
+      // Exclude m_channelGroup from hash value!
+      // See also: operator==()
+      // TODO: Why??
+      return (m_type << 8) |
+              m_index;
+  }
     friend qhash_seed_t qHash(
             const AudioPath& path,
             qhash_seed_t seed = 0) {

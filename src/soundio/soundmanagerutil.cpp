@@ -124,6 +124,8 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QStringLiteral("Microphone");
     case AUXILIARY:
         return QStringLiteral("Auxiliary");
+    case STEM:
+        return QStringLiteral("Stem");
     }
     return QStringLiteral("Unknown path type %1").arg(type);
 }
@@ -169,6 +171,9 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case AUXILIARY:
         return QString("%1 %2").arg(QObject::tr("Auxiliary"),
                                     QString::number(index + 1));
+    case STEM:
+        return QString("%1 %2").arg(QObject::tr("Stem"),
+                QString::number(index + 1));
     }
     return QObject::tr("Unknown path type %1").arg(type);
 }
@@ -197,6 +202,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
         return AudioPath::AUXILIARY;
     } else if (string == AudioPath::getStringFromType(AudioPath::RECORD_BROADCAST).toLower()) {
         return AudioPath::RECORD_BROADCAST;
+    } else if (string == AudioPath::getStringFromType(AudioPath::STEM).toLower()) {
+        return AudioPath::STEM;
     } else {
         return AudioPath::INVALID;
     }
@@ -213,6 +220,7 @@ bool AudioPath::isIndexed(AudioPathType type) {
     case VINYLCONTROL:
     case AUXILIARY:
     case MICROPHONE:
+    case STEM:
         return true;
     default:
         break;
@@ -309,6 +317,7 @@ QList<AudioPathType> AudioOutput::getSupportedTypes() {
     types.append(BUS);
     types.append(DECK);
     types.append(RECORD_BROADCAST);
+    types.append(STEM);
     return types;
 }
 

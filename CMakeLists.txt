@@ -765,6 +765,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/previewdeck.cpp
   src/mixer/sampler.cpp
   src/mixer/samplerbank.cpp
+  src/mixer/stem.cpp
   src/coreservices.cpp
   src/mixxxapplication.cpp
   src/musicbrainz/chromaprinter.cpp
@@ -1091,6 +1092,7 @@ else()
 endif()
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
+
 if(UNIX AND NOT APPLE)
   target_sources(mixxx-lib PRIVATE src/util/rlimit.cpp)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
@@ -2898,6 +2900,11 @@ if(WAVPACK)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PRIVATE WavPack::wavpack)
 endif()
+
+# Tensorflow for spleeter inference
+target_include_directories(mixxx-lib PUBLIC /usr/include/tensorflow)
+target_link_libraries(mixxx-lib PUBLIC tensorflow_cc)
+
 
 # Configure file with build options
 file(RELATIVE_PATH MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}" "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DOCDIR}")

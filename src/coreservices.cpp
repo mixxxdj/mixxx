@@ -21,10 +21,12 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "mixer/stem.h"
 #include "moc_coreservices.cpp"
 #include "preferences/settingsmanager.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/font.h"
 #include "util/logger.h"
@@ -305,8 +307,12 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
-    m_pPlayerManager->addPreviewDeck();
 
+    for (int i = 0; i < m_pPlayerManager->numDecks() * 5; i++) {
+        m_pPlayerManager->addStem();
+    }
+
+    m_pPlayerManager->addPreviewDeck();
     m_pEffectsManager->setup();
 
 #ifdef __VINYLCONTROL__
@@ -460,7 +466,6 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
         }
     }
-
     m_isInitialized = true;
 }
 
