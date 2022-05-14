@@ -367,13 +367,13 @@ void DlgPreferences::onShow() {
     int newHeight = m_geometry[3].toInt();
 
     const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
-    QSize screenSpace;
+    QRect screenAvailableGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
-        screenSpace = QSize(800, 600);
+        screenAvailableGeometry = QRect(0, 0, 800, 600);
     }
     else {
-        screenSpace = pScreen->availableSize();
+        screenAvailableGeometry = pScreen->availableGeometry();
     }
 
     // Make sure the entire window is visible on screen and is not occluded by taskbar
@@ -386,12 +386,16 @@ void DlgPreferences::onShow() {
     if (windowDecorationHeight <= 0) {
         windowDecorationHeight = 30;
     }
-    int availableWidth = screenSpace.width() - windowDecorationWidth;
-    int availableHeight = screenSpace.height() - windowDecorationHeight;
+    int availableWidth = screenAvailableGeometry.width() - windowDecorationWidth;
+    int availableHeight = screenAvailableGeometry.height() - windowDecorationHeight;
     newWidth = std::min(newWidth, availableWidth);
     newHeight = std::min(newHeight, availableHeight);
-    newX = std::max(0, std::min(newX, availableWidth - newWidth));
-    newY = std::max(0, std::min(newY, availableHeight - newHeight));
+    int minX = screenAvailableGeometry.x();
+    int minY = screenAvailableGeometry.y();
+    int maxX = screenAvailableGeometry.x() + availableWidth - newWidth;
+    int maxY = screenAvailableGeometry.y() + availableHeight - newHeight;
+    newX = std::clamp(newX, minX, maxX);
+    newY = std::clamp(newY, minY, maxY);
     m_geometry[0] = QString::number(newX);
     m_geometry[1] = QString::number(newY);
     m_geometry[2] = QString::number(newWidth);
