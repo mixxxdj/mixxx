@@ -107,8 +107,7 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
     QString fileContents(QStringLiteral("#EXTM3U\n"));
     for (const QString& item : items) {
         fileContents += QStringLiteral("#EXTINF\n");
-        if (useUtf8 ||
-                useRelativePath) { //Issue: URL Location is not working properly for Relative Paths
+        if (useUtf8) {
             if (useRelativePath) {
                 fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
             } else {
@@ -118,7 +117,11 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
             QByteArray trackByteArray = codec->fromUnicode(item);
             QString trackName = codec->toUnicode(trackByteArray);
             if (trackName == item) {
-                fileContents += item + QStringLiteral("\n");
+                if (useRelativePath) { //Issue: URL Location is not working properly for Relative Paths
+                    fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
+                } else {
+                    fileContents += item + QStringLiteral("\n");
+                }
             } else {
                 QUrl itemUrl = QUrl::fromLocalFile(item);
                 QString itemUrlEncoded = itemUrl.toEncoded();
