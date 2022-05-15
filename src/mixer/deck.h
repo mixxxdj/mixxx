@@ -17,7 +17,6 @@ class Deck : public BaseTrackPlayerImpl {
     ~Deck() override;
   private slots:
     void slotStemEnabled(double v);
-
   private:
     ControlObject* m_pStemControl;
     QString deckName;

@@ -91,7 +91,6 @@ Deck::~Deck() {
 }
 
 void Deck::Deallocator(void* data, size_t length, void* arg) {
-    // Is it safe to free the memory of the framesToSpleet pointer?
     //free(data);
     //data = nullptr;
 }
@@ -130,6 +129,12 @@ void Deck::slotStemEnabled(double v) {
                                 mixxx::SampleBuffer::WritableSlice(sampleBuffer)));
         const CSAMPLE* framesToSpleet = readableSampleFrames.readableData();
         float* framesToSpleetCast = const_cast<float*>(framesToSpleet);
+        float* framesToSpleetCastSoft =
+                (float*)malloc(pAudioSource->frameLength() * 2 * sizeof(float));
+
+        for (long int i = 0; i < pAudioSource->frameLength() * 2; i++) {
+            framesToSpleetCastSoft[i] = framesToSpleetCast[i] / 2;
+        }
 
         SNDFILE* out_file1;
         SNDFILE* out_file2;
@@ -156,22 +161,22 @@ void Deck::slotStemEnabled(double v) {
         input_values.push_back(TF_NewTensor(TF_FLOAT,
                 input_dims,
                 num_dims,
-                framesToSpleetCast,
+                framesToSpleetCastSoft,
                 num_bytes_in,
                 reinterpret_cast<void (*)(void*, size_t, void*)>(
                         &Deck::Deallocator),
                 0));
 
-        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_18"), 0});
+        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_50"), 0});
         output_values.push_back(nullptr);
 
-        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_28"), 0});
+        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_52"), 0});
         output_values.push_back(nullptr);
 
-        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_38"), 0});
+        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_54"), 0});
         output_values.push_back(nullptr);
 
-        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_48"), 0});
+        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_56"), 0});
         output_values.push_back(nullptr);
 
         output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_58"), 0});
@@ -243,5 +248,7 @@ void Deck::slotStemEnabled(double v) {
         m_pPlayerManager->slotLoadToStem(thirdScratchFile, firstStemNumber.toInt() + 2);
         m_pPlayerManager->slotLoadToStem(fourthScratchFile, firstStemNumber.toInt() + 3);
         m_pPlayerManager->slotLoadToStem(fifthScratchFile, firstStemNumber.toInt() + 4);
+
+        free(framesToSpleetCastSoft);
     }
 }

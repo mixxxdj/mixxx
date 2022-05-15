@@ -599,12 +599,12 @@ void PlayerManager::addStemInner() {
             this,
             &PlayerManager::slotSaveEjectedTrack);
 
-    /*if (m_pTrackAnalysisScheduler) {
+    if (m_pTrackAnalysisScheduler) {
         connect(pStem,
                 &BaseTrackPlayer::newTrackLoaded,
                 this,
                 &PlayerManager::slotAnalyzeTrack);
-    }*/
+    }
 
     // Connect the track loaded signal to the stem player so that loaded tracks are
     // played at once.

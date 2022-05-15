@@ -16,6 +16,10 @@ class Stem : public BaseTrackPlayerImpl {
     ~Stem() override = default;
   public slots:
     void slotStemPlay(TrackPointer pTrack);
+    void slotMuteDeck1();
+    void slotMuteDeck2();
+    void slotMuteDeck3();
+    void slotMuteDeck4();
 
   private:
     QString stemName;
