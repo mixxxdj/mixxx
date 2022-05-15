@@ -2065,4 +2065,4 @@ class TraktorZ2Class {
     }
 }
 
-var TraktorZ2 = new TraktorZ2Class;
+var TraktorZ2 = new TraktorZ2Class; // eslint-disable-line no-var, no-unused-vars
