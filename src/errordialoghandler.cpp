@@ -17,8 +17,9 @@ namespace {
 // with Show Details expanded.
 constexpr int kEstimatedShowDetailedDialogWidth = 1000; // px
 constexpr int kEstimatedShowDetailedDialogHeight = 500; // px
-constexpr int kEstimatedDialogBorders = 50;             // px
-constexpr int kMinimumSpaceAroundDialog = 40;           // px
+constexpr int kEstimatedDialogPadding = 50;             // px
+// used to push the dialog away from screen borders to not cover taskbars
+constexpr int kMinimumDialogMargin = 40; // px
 } // namespace
 
 ErrorDialogProperties::ErrorDialogProperties()
@@ -168,11 +169,11 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
             int dialogHeight = kEstimatedShowDetailedDialogHeight;
             if (pScreen) {
                 // Limit dialog size to screen size, for the case of devices with very small display - like Raspberry Pi.
-                if (dialogWidth > pScreen->geometry().width() - 2 * kMinimumSpaceAroundDialog) {
-                    dialogWidth = pScreen->geometry().width() - 2 * kMinimumSpaceAroundDialog;
+                if (dialogWidth > pScreen->geometry().width() - 2 * kMinimumDialogMargin) {
+                    dialogWidth = pScreen->geometry().width() - 2 * kMinimumDialogMargin;
                 }
-                if (dialogHeight > pScreen->geometry().height() - 2 * kMinimumSpaceAroundDialog) {
-                    dialogHeight = pScreen->geometry().height() - 2 * kMinimumSpaceAroundDialog;
+                if (dialogHeight > pScreen->geometry().height() - 2 * kMinimumDialogMargin) {
+                    dialogHeight = pScreen->geometry().height() - 2 * kMinimumDialogMargin;
                 }
                 pMsgBox->setGeometry(QStyle::alignedRect(
                         Qt::LeftToRight,
@@ -184,19 +185,19 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
                 // some safe defaults for max pos, width and height
                 dialogWidth =
                         mixxx::widgethelper::kWidthOfMinimumSupportedScreen -
-                        2 * kMinimumSpaceAroundDialog;
+                        2 * kMinimumDialogMargin;
                 dialogHeight =
                         mixxx::widgethelper::kHeightOfMinimumSupportedScreen -
-                        2 * kMinimumSpaceAroundDialog;
-                pMsgBox->setGeometry(kMinimumSpaceAroundDialog,
-                        kMinimumSpaceAroundDialog,
+                        2 * kMinimumDialogMargin;
+                pMsgBox->setGeometry(kMinimumDialogMargin,
+                        kMinimumDialogMargin,
                         dialogWidth,
                         dialogHeight);
             }
             pMsgBox->setStyleSheet(
                     QString("QTextEdit { min-width: %1px ; max-height: %2px; "
                             "font-family: monospace;}")
-                            .arg(dialogWidth - kEstimatedDialogBorders)
+                            .arg(dialogWidth - kEstimatedDialogPadding)
                             .arg(dialogHeight));
         }
     }
