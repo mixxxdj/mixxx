@@ -12,14 +12,6 @@ namespace mixxx {
 
 namespace widgethelper {
 
-/// Value to be used as fallback for screen width,
-/// when getScreen fails to determine the screen
-constexpr int kWidthOfMinimumSupportedScreen = 800; // px
-
-/// Value to be used as fallback for screen height,
-/// when getScreen fails to determine the screen
-constexpr int kHeightOfMinimumSupportedScreen = 600; // px
-
 /// Returns an adjusted upper left point for displaying the popup
 /// with the given size on the screen, shifting the popup if it would go off
 /// the right or bottom edges of the screen.
