@@ -263,6 +263,11 @@ void WTrackMenu::createActions() {
         connect(m_pFileBrowserAct, &QAction::triggered, this, &WTrackMenu::slotOpenInFileBrowser);
     }
 
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        m_pSelectInLibraryAct = new QAction(tr("Select in Library"), this);
+        connect(m_pSelectInLibraryAct, &QAction::triggered, this, &WTrackMenu::slotSelectInLibrary);
+    }
+
     if (featureIsEnabled(Feature::Metadata)) {
         m_pImportMetadataFromFileAct =
                 new QAction(tr("Import From File Tags"), m_pMetadataMenu);
@@ -415,6 +420,14 @@ void WTrackMenu::createActions() {
 void WTrackMenu::setupActions() {
     if (featureIsEnabled(Feature::SearchRelated)) {
         addMenu(m_pSearchRelatedMenu);
+    }
+
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        addAction(m_pSelectInLibraryAct);
+    }
+
+    if (featureIsEnabled(Feature::SearchRelated) ||
+            featureIsEnabled(Feature::SelectInLibrary)) {
         addSeparator();
     }
 
@@ -818,6 +831,14 @@ void WTrackMenu::updateMenus() {
         }
     }
 
+    if (featureIsEnabled(Feature::SelectInLibrary)) {
+        bool enabled = false;
+        if (m_pTrack) {
+            enabled = m_pLibrary->isTrackIdInCurrentLibraryView(m_pTrack->getId());
+        }
+        m_pSelectInLibraryAct->setEnabled(enabled);
+    }
+
     if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct->setEnabled(singleTrackSelected);
     }
@@ -968,6 +989,12 @@ void WTrackMenu::slotOpenInFileBrowser() {
         locations << trackRef.getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
+}
+
+void WTrackMenu::slotSelectInLibrary() {
+    if (m_pTrack) {
+        emit m_pLibrary->selectTrack(m_pTrack->getId());
+    }
 }
 
 namespace {
@@ -2134,6 +2161,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::SearchRelated:
         return m_pLibrary != nullptr;
+    case Feature::SelectInLibrary:
+        return m_pTrack != nullptr;
     default:
         DEBUG_ASSERT(!"unreachable");
         return false;
