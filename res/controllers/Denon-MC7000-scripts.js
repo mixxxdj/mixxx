@@ -895,26 +895,11 @@ MC7000.crossFaderCurve = function(control, value) {
 };
 
 // Update state on deck changes
-MC7000.switchDeck = function(channel, control, value, status, group) {
-    var deckOffset = script.deckFromGroup(group) - 1;
+MC7000.switchDeck = function(channel, control, value, status) {
+    var deckOffset = status - 0x90;
     var isTopDeck = deckOffset < 2;
     var side = deckOffset % 2;
-
-    var previousDeckOffset;
-    switch (deckOffset) {
-    case 0:
-        previousDeckOffset = 2;
-        break;
-    case 1:
-        previousDeckOffset = 3;
-        break;
-    case 2:
-        previousDeckOffset = 0;
-        break;
-    case 3:
-        previousDeckOffset = 1;
-        break;
-    }
+    var previousDeckOffset = (deckOffset + 2) % 4;
 
     // We need to 'transfer' the shift state when switching decks,
     // otherwise it will get stuck and result in an 'inverted'
