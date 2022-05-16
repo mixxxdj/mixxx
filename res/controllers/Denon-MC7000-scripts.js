@@ -112,6 +112,9 @@ MC7000.factor = [];
 //Set Shift button state to false as default
 MC7000.shift = [false, false, false, false];
 
+// For each side whether the top or bottom deck is active.
+MC7000.topDeckActive = [true, true];
+
 // initialize the PAD Mode to Hot Cue and all others off when starting
 MC7000.PADModeCue = [true, true, true, true];
 MC7000.PADModeCueLoop = [false, false, false, false];
@@ -180,6 +183,10 @@ MC7000.init = function() {
     engine.makeConnection("[Channel2]", "VuMeter", MC7000.VuMeter);
     engine.makeConnection("[Channel3]", "VuMeter", MC7000.VuMeter);
     engine.makeConnection("[Channel4]", "VuMeter", MC7000.VuMeter);
+
+    // Switch to active decks
+    midi.sendShortMsg(MC7000.topDeckActive[0] ? 0x90 : 0x92, 0x08, 0x7F);
+    midi.sendShortMsg(MC7000.topDeckActive[1] ? 0x91 : 0x93, 0x08, 0x7F);
 
     // Platter Ring LED mode
     midi.sendShortMsg(0x90, 0x64, MC7000.modeSingleLED);
@@ -597,7 +604,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
 // Shift Button
 MC7000.shiftButton = function(channel, control, value, status, group) {
     var deckOffset = script.deckFromGroup(group) - 1;
-    MC7000.shift[deckOffset] = ! MC7000.shift[deckOffset];
+    MC7000.shift[deckOffset] = value > 0;
     midi.sendShortMsg(0x90 + deckOffset, 0x32,
         MC7000.shift[deckOffset] ? 0x7F : 0x01);
 };
@@ -885,6 +892,26 @@ MC7000.censor = function(channel, control, value, status, group) {
 // Set Crossfader Curve
 MC7000.crossFaderCurve = function(control, value) {
     script.crossfaderCurve(value);
+};
+
+// Update state on deck changes
+MC7000.switchDeck = function(channel, control, value, status) {
+    var deckOffset = status - 0x90;
+    var isTopDeck = deckOffset < 2;
+    var side = deckOffset % 2;
+    var previousDeckOffset = (deckOffset + 2) % 4;
+
+    // We need to 'transfer' the shift state when switching decks,
+    // otherwise it will get stuck and result in an 'inverted'
+    // shift after switching back to the deck.
+    // Since the controller switches immediately upon pressing down,
+    // we only do this when value is high.
+
+    if (value === 0x7F && MC7000.topDeckActive[side] !== isTopDeck) {
+        MC7000.topDeckActive[side] = isTopDeck;
+        MC7000.shift[deckOffset] = MC7000.shift[previousDeckOffset];
+        MC7000.shift[previousDeckOffset] = false;
+    }
 };
 
 // Set FX wet/dry value
