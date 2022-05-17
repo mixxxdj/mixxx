@@ -86,6 +86,7 @@ Deck::Deck(PlayerManager* pParent,
 
 Deck::~Deck() {
     TF_DeleteSessionOptions(SessionOpts);
+    TF_DeleteSession(session, status);
     TF_DeleteStatus(status);
     delete m_pStemControl;
 }
@@ -99,156 +100,161 @@ void Deck::slotStemEnabled(double v) {
     bool enable = v > 0.0;
 
     if (enable) {
-        const int deckNumber = extractIntFromRegex(kDeckRegex, deckName);
-        QString firstStemNumber;
-
-        if (deckNumber == 1) {
-            firstStemNumber = "1";
-        }
-
-        else if (deckNumber == 2) {
-            firstStemNumber = "6";
-        }
-
-        else if (deckNumber == 3) {
-            firstStemNumber = "11";
-        }
-
-        else if (deckNumber == 4) {
-            firstStemNumber = "16";
-        }
-
-        TrackPointer pTrack = getLoadedTrack();
-        SoundSourceProxy proxy(pTrack);
-        mixxx::AudioSourcePointer pAudioSource = proxy.openAudioSource();
-        mixxx::SampleBuffer sampleBuffer(pAudioSource->frameLength() * 2);
-        mixxx::ReadableSampleFrames readableSampleFrames =
-                pAudioSource->readSampleFrames(
-                        mixxx::WritableSampleFrames(
-                                pAudioSource->frameIndexRange(),
-                                mixxx::SampleBuffer::WritableSlice(sampleBuffer)));
-        const CSAMPLE* framesToSpleet = readableSampleFrames.readableData();
-        float* framesToSpleetCast = const_cast<float*>(framesToSpleet);
-        float* framesToSpleetCastSoft =
-                (float*)malloc(pAudioSource->frameLength() * 2 * sizeof(float));
-
-        for (long int i = 0; i < pAudioSource->frameLength() * 2; i++) {
-            framesToSpleetCastSoft[i] = framesToSpleetCast[i] / 2;
-        }
-
-        SNDFILE* out_file1;
-        SNDFILE* out_file2;
-        SNDFILE* out_file3;
-        SNDFILE* out_file4;
-        SNDFILE* out_file5;
-        SF_INFO sfinfo;
-
-        sfinfo.samplerate = 44100;
-        sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-        sfinfo.frames = pAudioSource->frameLength();
-        sfinfo.channels = 2;
-        sfinfo.sections = 1;
-        sfinfo.seekable = 1;
-
-        std::vector<TF_Output> input_tensors, output_tensors;
-        std::vector<TF_Tensor*> input_values, output_values;
-
-        //input tensor shape.
-        std::int64_t input_dims[2] = {pAudioSource->frameLength(), 2};
-        int num_bytes_in = pAudioSource->frameLength() * 2 * sizeof(float);
-
-        input_tensors.push_back({TF_GraphOperationByName(graph, "Placeholder"), 0});
-        input_values.push_back(TF_NewTensor(TF_FLOAT,
-                input_dims,
-                num_dims,
-                framesToSpleetCastSoft,
-                num_bytes_in,
-                reinterpret_cast<void (*)(void*, size_t, void*)>(
-                        &Deck::Deallocator),
-                0));
-
-        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_50"), 0});
-        output_values.push_back(nullptr);
-
-        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_52"), 0});
-        output_values.push_back(nullptr);
-
-        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_54"), 0});
-        output_values.push_back(nullptr);
-
-        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_56"), 0});
-        output_values.push_back(nullptr);
-
-        output_tensors.push_back({TF_GraphOperationByName(graph, "strided_slice_58"), 0});
-        output_values.push_back(nullptr);
-
-        TF_SessionRun(session,
-                nullptr,
-                &input_tensors[0],
-                &input_values[0],
-                input_values.size(),
-                &output_tensors[0],
-                &output_values[0],
-                5,
-                nullptr,
-                0,
-                nullptr,
-                status);
-
-        if (TF_GetCode(status) != TF_OK) {
-            std::cout << "ERROR: SessionRun: " << TF_Message(status) << std::endl;
-        }
-
-        QString firstScratchFile = QDir::homePath() +
-                QString("/spleeterScratch_") +
-                QString::number(firstStemNumber.toInt()) + QString(".wav");
-        QString secondScratchFile = QDir::homePath() +
-                QString("/spleeterScratch_") +
-                QString::number(firstStemNumber.toInt() + 1) + QString(".wav");
-        QString thirdScratchFile = QDir::homePath() +
-                QString("/spleeterScratch_") +
-                QString::number(firstStemNumber.toInt() + 2) + QString(".wav");
-        QString fourthScratchFile = QDir::homePath() +
-                QString("/spleeterScratch_") +
-                QString::number(firstStemNumber.toInt() + 3) + QString(".wav");
-        QString fifthScratchFile = QDir::homePath() +
-                QString("/spleeterScratch_") +
-                QString::number(firstStemNumber.toInt() + 4) + QString(".wav");
-
-        out_file1 = sf_open(firstScratchFile.toStdString().c_str(), SFM_WRITE, &sfinfo);
-        out_file2 = sf_open(secondScratchFile.toStdString().c_str(), SFM_WRITE, &sfinfo);
-        out_file3 = sf_open(thirdScratchFile.toStdString().c_str(), SFM_WRITE, &sfinfo);
-        out_file4 = sf_open(fourthScratchFile.toStdString().c_str(), SFM_WRITE, &sfinfo);
-        out_file5 = sf_open(fifthScratchFile.toStdString().c_str(), SFM_WRITE, &sfinfo);
-
-        sf_write_float(out_file1,
-                (float*)TF_TensorData(output_values[0]),
-                pAudioSource->frameLength() * 2);
-        sf_write_float(out_file2,
-                (float*)TF_TensorData(output_values[1]),
-                pAudioSource->frameLength() * 2);
-        sf_write_float(out_file3,
-                (float*)TF_TensorData(output_values[2]),
-                pAudioSource->frameLength() * 2);
-        sf_write_float(out_file4,
-                (float*)TF_TensorData(output_values[3]),
-                pAudioSource->frameLength() * 2);
-        sf_write_float(out_file5,
-                (float*)TF_TensorData(output_values[4]),
-                pAudioSource->frameLength() * 2);
-
-        sf_close(out_file1);
-        sf_close(out_file2);
-        sf_close(out_file3);
-        sf_close(out_file4);
-        sf_close(out_file5);
-
-        m_pPlayerManager->slotLoadToStem(firstScratchFile, firstStemNumber.toInt());
-        m_pPlayerManager->slotLoadToStem(secondScratchFile, firstStemNumber.toInt() + 1);
-        m_pPlayerManager->slotLoadToStem(thirdScratchFile, firstStemNumber.toInt() + 2);
-        m_pPlayerManager->slotLoadToStem(fourthScratchFile, firstStemNumber.toInt() + 3);
-        m_pPlayerManager->slotLoadToStem(fifthScratchFile, firstStemNumber.toInt() + 4);
-
-        free(framesToSpleetCastSoft);
+        QThread* threadTF = QThread::create(threadedTensorflow, this);
+        connect(threadTF, &QThread::finished, threadTF, &QThread::deleteLater);
+        threadTF->start();
     }
+}
+
+void Deck::threadedTensorflow(Deck* deck) {
+    const int deckNumber = extractIntFromRegex(kDeckRegex, deck->deckName);
+    QString firstStemNumber;
+
+    if (deckNumber == 1) {
+        firstStemNumber = "1";
+    }
+
+    else if (deckNumber == 2) {
+        firstStemNumber = "6";
+    }
+
+    else if (deckNumber == 3) {
+        firstStemNumber = "11";
+    }
+
+    else if (deckNumber == 4) {
+        firstStemNumber = "16";
+    }
+
+    TrackPointer pTrack = deck->getLoadedTrack();
+    SoundSourceProxy proxy(pTrack);
+    mixxx::AudioSourcePointer pAudioSource = proxy.openAudioSource();
+    mixxx::SampleBuffer sampleBuffer(pAudioSource->frameLength() * 2);
+    mixxx::ReadableSampleFrames readableSampleFrames =
+            pAudioSource->readSampleFrames(
+                    mixxx::WritableSampleFrames(
+                            pAudioSource->frameIndexRange(),
+                            mixxx::SampleBuffer::WritableSlice(sampleBuffer)));
+    const CSAMPLE* framesToSpleet = readableSampleFrames.readableData();
+    float* framesToSpleetCast = const_cast<float*>(framesToSpleet);
+    float* framesToSpleetCastSoft = (float*)malloc(pAudioSource->frameLength() * 2 * sizeof(float));
+
+    for (long int i = 0; i < pAudioSource->frameLength() * 2; i++) {
+        framesToSpleetCastSoft[i] = framesToSpleetCast[i] / 2;
+    }
+
+    SNDFILE* out_file1;
+    SNDFILE* out_file2;
+    SNDFILE* out_file3;
+    SNDFILE* out_file4;
+    SNDFILE* out_file5;
+    SF_INFO sfinfo;
+
+    sfinfo.samplerate = 44100;
+    sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+    sfinfo.channels = 2;
+
+    std::vector<TF_Output> input_tensors, output_tensors;
+    std::vector<TF_Tensor*> input_values, output_values;
+
+    //input tensor shape.
+    std::int64_t input_dims[2] = {pAudioSource->frameLength(), 2};
+    int num_bytes_in = pAudioSource->frameLength() * 2 * sizeof(float);
+
+    input_tensors.push_back({TF_GraphOperationByName(deck->graph, "Placeholder"), 0});
+    input_values.push_back(TF_NewTensor(TF_FLOAT,
+            input_dims,
+            deck->num_dims,
+            framesToSpleetCastSoft,
+            num_bytes_in,
+            reinterpret_cast<void (*)(void*, size_t, void*)>(
+                    &Deck::Deallocator),
+            0));
+
+    output_tensors.push_back({TF_GraphOperationByName(deck->graph, "strided_slice_50"), 0});
+    output_values.push_back(nullptr);
+
+    output_tensors.push_back({TF_GraphOperationByName(deck->graph, "strided_slice_52"), 0});
+    output_values.push_back(nullptr);
+
+    output_tensors.push_back({TF_GraphOperationByName(deck->graph, "strided_slice_54"), 0});
+    output_values.push_back(nullptr);
+
+    output_tensors.push_back({TF_GraphOperationByName(deck->graph, "strided_slice_56"), 0});
+    output_values.push_back(nullptr);
+
+    output_tensors.push_back({TF_GraphOperationByName(deck->graph, "strided_slice_58"), 0});
+    output_values.push_back(nullptr);
+
+    TF_SessionRun(deck->session,
+            nullptr,
+            &input_tensors[0],
+            &input_values[0],
+            input_values.size(),
+            &output_tensors[0],
+            &output_values[0],
+            5,
+            nullptr,
+            0,
+            nullptr,
+            deck->status);
+
+    if (TF_GetCode(deck->status) != TF_OK) {
+        std::cout << "ERROR: SessionRun: " << TF_Message(deck->status) << std::endl;
+    }
+
+    QString firstScratchFile = QDir::homePath() + QString("/spleeterScratch_") +
+            QString::number(firstStemNumber.toInt()) + QString(".wav");
+    QString secondScratchFile = QDir::homePath() +
+            QString("/spleeterScratch_") +
+            QString::number(firstStemNumber.toInt() + 1) + QString(".wav");
+    QString thirdScratchFile = QDir::homePath() + QString("/spleeterScratch_") +
+            QString::number(firstStemNumber.toInt() + 2) + QString(".wav");
+    QString fourthScratchFile = QDir::homePath() +
+            QString("/spleeterScratch_") +
+            QString::number(firstStemNumber.toInt() + 3) + QString(".wav");
+    QString fifthScratchFile = QDir::homePath() + QString("/spleeterScratch_") +
+            QString::number(firstStemNumber.toInt() + 4) + QString(".wav");
+
+    out_file1 = sf_open(firstScratchFile.toStdString().c_str(), SFM_WRITE, &sfinfo);
+    out_file2 = sf_open(secondScratchFile.toStdString().c_str(), SFM_WRITE, &sfinfo);
+    out_file3 = sf_open(thirdScratchFile.toStdString().c_str(), SFM_WRITE, &sfinfo);
+    out_file4 = sf_open(fourthScratchFile.toStdString().c_str(), SFM_WRITE, &sfinfo);
+    out_file5 = sf_open(fifthScratchFile.toStdString().c_str(), SFM_WRITE, &sfinfo);
+
+    sf_write_float(out_file1,
+            (float*)TF_TensorData(output_values[0]),
+            pAudioSource->frameLength() * 2);
+    sf_write_float(out_file2,
+            (float*)TF_TensorData(output_values[1]),
+            pAudioSource->frameLength() * 2);
+    sf_write_float(out_file3,
+            (float*)TF_TensorData(output_values[2]),
+            pAudioSource->frameLength() * 2);
+    sf_write_float(out_file4,
+            (float*)TF_TensorData(output_values[3]),
+            pAudioSource->frameLength() * 2);
+    sf_write_float(out_file5,
+            (float*)TF_TensorData(output_values[4]),
+            pAudioSource->frameLength() * 2);
+
+    sf_close(out_file1);
+    sf_close(out_file2);
+    sf_close(out_file3);
+    sf_close(out_file4);
+    sf_close(out_file5);
+
+    deck->m_pPlayerManager->slotLoadToStem(firstScratchFile, firstStemNumber.toInt());
+    deck->m_pPlayerManager->slotLoadToStem(secondScratchFile, firstStemNumber.toInt() + 1);
+    deck->m_pPlayerManager->slotLoadToStem(thirdScratchFile, firstStemNumber.toInt() + 2);
+    deck->m_pPlayerManager->slotLoadToStem(fourthScratchFile, firstStemNumber.toInt() + 3);
+    deck->m_pPlayerManager->slotLoadToStem(fifthScratchFile, firstStemNumber.toInt() + 4);
+
+    free(framesToSpleetCastSoft);
+    TF_DeleteTensor(input_values[0]);
+    TF_DeleteTensor(output_values[0]);
+    TF_DeleteTensor(output_values[1]);
+    TF_DeleteTensor(output_values[2]);
+    TF_DeleteTensor(output_values[3]);
+    TF_DeleteTensor(output_values[4]);
 }

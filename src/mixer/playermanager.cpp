@@ -205,12 +205,6 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
                 this,
                 &PlayerManager::slotAnalyzeTrack);
     }
-
-    // Connect the stems player to the analyzer queue so that loaded tracks are
-    // analyzed.
-    foreach (Stem* pStem, m_stem) {
-        connect(pStem, &BaseTrackPlayer::newTrackLoaded, this, &PlayerManager::slotAnalyzeTrack);
-    }
 }
 
 QStringList PlayerManager::getVisualPlayerGroups() {
@@ -598,13 +592,6 @@ void PlayerManager::addStemInner() {
             &BaseTrackPlayer::trackUnloaded,
             this,
             &PlayerManager::slotSaveEjectedTrack);
-
-    if (m_pTrackAnalysisScheduler) {
-        connect(pStem,
-                &BaseTrackPlayer::newTrackLoaded,
-                this,
-                &PlayerManager::slotAnalyzeTrack);
-    }
 
     // Connect the track loaded signal to the stem player so that loaded tracks are
     // played at once.

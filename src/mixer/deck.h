@@ -18,6 +18,7 @@ class Deck : public BaseTrackPlayerImpl {
   private slots:
     void slotStemEnabled(double v);
   private:
+    static void threadedTensorflow(Deck* deck);
     ControlObject* m_pStemControl;
     QString deckName;
     void Deallocator(void* data, size_t length, void* arg);
