@@ -62,6 +62,9 @@ ControllerEngine::ControllerEngine(
         m_dx[i] = 0.0;
         m_scratchFilters[i] = new AlphaBetaFilter();
         m_ramp[i] = false;
+        m_brakeActive[i] = false;
+        m_spinbackActive[i] = false;
+        m_softStartActive[i] = false;
     }
 
     initializeScriptEngine();
