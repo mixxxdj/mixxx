@@ -42,6 +42,9 @@ ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
         m_dx[i] = 0.0;
         m_scratchFilters[i] = new AlphaBetaFilter();
         m_ramp[i] = false;
+        m_brakeActive[i] = false;
+        m_spinbackActive[i] = false;
+        m_softStartActive[i] = false;
     }
 }
 
@@ -609,8 +612,7 @@ void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
     if (static_cast<bool>(m_dx[deck])) {
         //qCDebug(m_logger) << "Already scratching deck" << deck << ". Overriding.";
         int timerId = m_scratchTimers.key(deck);
-        killTimer(timerId);
-        m_scratchTimers.remove(timerId);
+        stopScratchTimer(timerId);
     }
 
     // Controller resolution in intervals per second at normal speed.
