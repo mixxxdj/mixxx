@@ -553,6 +553,9 @@ QVariant BaseTrackTableModel::roleValue(
             return composeCoverArtToolTipHtml(index);
         case ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW:
             return QVariant();
+        case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
+            return std::move(rawValue);
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
