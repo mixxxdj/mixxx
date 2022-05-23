@@ -32,11 +32,6 @@
       <feBlend in="result6" in2="result10" mode="lighten" result="result12"/>
       <feComposite in2="SourceGraphic" operator="in" result="result2"/>
     </filter>
-    <linearGradient id="i" x1=".79064697" x2=".65562493" y1="-1.0761508" y2="-1.0761508" gradientTransform="matrix(-1.53e-5,255.97559,255.97559,1.53e-5,295.69482,210.05371)" gradientUnits="userSpaceOnUse" xlink:href="#s"/>
-    <linearGradient id="s" x2="1" gradientTransform="matrix(-1.53e-5,255.97559,255.97559,1.53e-5,295.69482,210.05371)" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#a3a5a7" offset="0"/>
-      <stop stop-color="#8f9193" offset="1"/>
-    </linearGradient>
     <filter id="q" x="-.035230909" y="-.034838148" width="1.0704618" height="1.0987081" color-interpolation-filters="sRGB">
       <feGaussianBlur result="result8" stdDeviation="0.5"/>
       <feOffset dx="0" dy="1" result="result11"/>
@@ -53,12 +48,6 @@
       <feBlend in="result6" in2="result10" mode="lighten" result="result12"/>
       <feComposite in2="SourceGraphic" operator="in" result="result2"/>
     </filter>
-    <linearGradient x2="1" gradientTransform="matrix(-1.53e-5,255.97559,255.97559,1.53e-5,295.69482,210.05371)" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#aaacae" offset="0"/>
-      <stop stop-color="#d2d4d5" offset=".926376"/>
-      <stop stop-color="#e7e8e9" offset=".957062"/>
-      <stop stop-color="#858789" offset="1"/>
-    </linearGradient>
     <filter id="b" x="-.012000189" y="-.011999811" width="1.0240004" height="1.0239996">
       <feGaussianBlur stdDeviation="0.1587275"/>
     </filter>
@@ -86,7 +75,7 @@
     <filter id="x" x="-.0078181064" y="-.01160638" width="1.0156362" height="1.0232128" color-interpolation-filters="sRGB">
       <feGaussianBlur stdDeviation="0.1587275"/>
     </filter>
-    <filter id="ag" x="-.010486859" y="-.01556828" width="1.0209737" height="1.0311366">
+    <filter id="s" x="-.010486859" y="-.01556828" width="1.0209737" height="1.0311366">
       <feGaussianBlur stdDeviation="0.21290998"/>
     </filter>
     <filter id="k" x="-.0078181064" y="-.01160638" width="1.0156362" height="1.0232128" color-interpolation-filters="sRGB">
@@ -122,7 +111,7 @@
     <filter id="f" x="-.0078181064" y="-.01160638" width="1.0156362" height="1.0232128" color-interpolation-filters="sRGB">
       <feGaussianBlur stdDeviation="0.1587275"/>
     </filter>
-    <filter id="ah" x="-.010486859" y="-.01556828" width="1.0209737" height="1.0311366">
+    <filter id="i" x="-.010486859" y="-.01556828" width="1.0209737" height="1.0311366">
       <feGaussianBlur stdDeviation="0.21290998"/>
     </filter>
     <filter id="af" x="-.0035224645" y="-.022235557" width="1.0070449" height="1.0444711">
@@ -149,7 +138,7 @@
     <g transform="matrix(.64387797 0 0 .64387797 268.97383 502.60318)">
       <g transform="translate(601.05478,-183.25433)">
         <g>
-          <g fill="url(#i)">
+          <g fill="url(#u)">
             <polygon points="91.126 412.503 67.51 378.058 57.065 378.058 80.68 412.503" color="#000000" filter="url(#q)"/>
             <polygon points="114.787 412.503 91.167 378.058 80.722 378.058 104.342 412.503" color="#000000" filter="url(#p)"/>
             <polygon points="138.443 412.503 114.823 378.058 104.378 378.058 127.999 412.503" color="#000000" filter="url(#p)"/>
@@ -158,7 +147,7 @@
           <polygon points="0 412.503 8.76 412.503 8.76 392.331 20.076 409.508 20.307 409.508 31.74 392.157 31.74 412.503 40.618 412.503 40.618 378.058 30.988 378.058 20.307 395.233 9.631 378.058 0 378.058" color="#000000" fill="url(#v)" filter="url(#z)"/>
         </g>
       </g>
-      <path d="m687.59179 220.76768 5.222 7.617 5.383-7.852-5.222-7.615zm-11.829-17.253 5.223 7.619 5.382-7.85-5.224-7.617zm53.291-8.711-5.976 8.714 5.221 7.614 11.195-16.328zm-70.937 34.445h10.448l5.973-8.712-5.224-7.619zm53.133-8.482 5.222 7.615 5.381-7.848-5.222-7.615zm-11.828-17.25 5.221 7.614 5.381-7.848-5.221-7.613z" color="#000000" fill="url(#i)" filter="url(#q)"/>
+      <path d="m687.59179 220.76768 5.222 7.617 5.383-7.852-5.222-7.615zm-11.829-17.253 5.223 7.619 5.382-7.85-5.224-7.617zm53.291-8.711-5.976 8.714 5.221 7.614 11.195-16.328zm-70.937 34.445h10.448l5.973-8.712-5.224-7.619zm53.133-8.482 5.222 7.615 5.381-7.848-5.222-7.615zm-11.828-17.25 5.221 7.614 5.381-7.848-5.221-7.613z" color="#000000" fill="url(#u)" filter="url(#q)"/>
     </g>
     <g>
       <g transform="matrix(.98440666 0 0 .98437637 535.90161 226.61748)">
@@ -400,7 +389,7 @@
             <rect x="16.6129" y="804.90277" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="#ffffff" stroke="#606163"/>
             <rect transform="matrix(.99013881 0 0 .95283435 376.50416 321.30359)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.767429" ry="1.8366257" color="#000000" fill="#606163" filter="url(#k)"/>
             <rect x="66.6129" y="804.90277" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="#ffffff" stroke="#606163"/>
-            <rect transform="matrix(1.165874 0 0 .94551226 381.89865 259.2564)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.3323696" ry="1.8366257" color="#000000" fill="#606163" filter="url(#ag)"/>
+            <rect transform="matrix(1.165874 0 0 .94551226 381.89865 259.2564)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.3323696" ry="1.8366257" color="#000000" fill="#606163" filter="url(#s)"/>
             <rect x="16.589603" y="739.18634" width="55.323078" height="29" rx="1.5094873" ry="1.6916667" color="#000000" fill="#ffffff" stroke="#606163" stroke-width=".94462"/>
           </g>
           <path transform="matrix(.98440666 0 0 .98437637 -9.97427 95.260186)" d="m27.899 586.346h27.959c1.041 0 1.893.852 1.893 1.893v27.959c0 1.042-.852 1.894-1.893 1.894h-27.959c-1.041 0-1.893-.852-1.893-1.894v-27.959c0-1.041.852-1.893 1.893-1.893z" fill="#606163" filter="url(#l)"/>
@@ -1032,113 +1021,113 @@
     </g>
     <text x="585.74695" y="604.13867" fill="#000000" font-family="sans-serif" font-weight="bold" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="585.74695" y="604.13867" font-family="sans-serif" font-size="12px" style="line-height:1"> * for en-us keyboard layout</tspan></text>
   </g>
-  <g>
-    <text x="16.637726" y="402.25839" fill="#005c94" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" onclick="http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names" xml:space="preserve"><desc>Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan x="16.637726" y="402.25839" fill="#005c94" font-family="sans-serif" font-size="10px" font-weight="bold" style="line-height:1.25"/></text>
-    <g transform="translate(-135.2406,-187.33114)">
-      <text x="152.7377" y="494.7558" fill="#000000" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="152.7377" y="494.7558" font-family="sans-serif" font-size="10px" font-weight="normal" style="line-height:1.25">You can make your own custom keyboard mapping:</tspan></text>
-      <a transform="translate(-66.700618,46.83607)" xlink:href="https://manual.mixxx.org/2.3/en/chapters/advanced_topics.html#making-a-custom-keyboard-mapping">
-        <text x="218.57895" y="458.6861" fill="#005c94" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" onclick="http://mixxx.org/manual/latest/chapters/advanced_topics.html#making-a-custom-keyboard-mapping" xml:space="preserve"><desc>Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan x="218.57895" y="458.6861" fill="#005c94" font-family="sans-serif" font-size="10px" font-weight="bold" style="line-height:1.25">https://manual.mixxx.org/2.3/en/chapters/advanced_topics.html#making-a-custom-keyboard-mapping</tspan></text>
-      </a>
-    </g>
-    <g transform="translate(-135.2406,-217.33114)">
-      <text x="152.7377" y="494.7558" fill="#000000" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="152.7377" y="494.7558" font-family="sans-serif" font-size="10px" font-weight="normal" style="line-height:1.25">Complete hotkey list:</tspan></text>
-      <a transform="translate(-66.700618,46.83607)" xlink:href="https://manual.mixxx.org/2.3/en/chapters/appendix/keyboard_mapping_table.html#appendix-keyboard">
-        <text x="218.57895" y="458.6861" fill="#005c94" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" onclick="http://mixxx.org/manual/latest/chapters/advanced_topics.html#making-a-custom-keyboard-mapping" xml:space="preserve"><desc>Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan x="218.57895" y="458.6861" fill="#005c94" font-family="sans-serif" font-size="10px" font-weight="bold" style="line-height:1.25">https://manual.mixxx.org/2.3/en/chapters/appendix/keyboard_mapping_table.html#appendix-keyboard</tspan></text>
-      </a>
-    </g>
-    <g transform="translate(-135.2406,-197.33114)">
-      <a transform="translate(-66.700618,46.83607)" xlink:href="https://manual.mixxx.org/2.3/en/chapters/advanced_topics.html#mixxx-controls">
-        <a xlink:href="https://manual.mixxx.org/2.3/en/chapters/appendix/mixxx_controls.html#appendix-mixxxcontrols">
-          <text x="218.57895" y="498.31989" fill="#005c94" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" onclick="http://www.mixxx.org/wiki/doku.php/mixxxcontrols" xml:space="preserve"><desc>Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan x="218.57895" y="498.31989" fill="#005c94" font-family="sans-serif" font-size="10px" font-weight="bold" style="line-height:1.25">https://manual.mixxx.org/2.3/en/chapters/appendix/mixxx_controls.html#appendix-mixxxcontrols</tspan></text>
+  <text x="16.637726" y="402.25839" fill="#005c94" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" onclick="http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names" xml:space="preserve"><desc>Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan x="16.637726" y="402.25839" fill="#005c94" font-family="sans-serif" font-size="10px" font-weight="bold" style="line-height:1.25"/></text>
+  <g transform="translate(-135.2406,-187.33114)">
+    <text x="152.7377" y="494.7558" fill="#000000" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="152.7377" y="494.7558" font-family="sans-serif" font-size="10px" font-weight="normal" style="line-height:1.25">You can make your own custom keyboard mapping:</tspan></text>
+    <a transform="translate(-66.700618,46.83607)" xlink:href="https://manual.mixxx.org/2.3/chapters/advanced_topics.html#making-a-custom-keyboard-mapping">
+      <text x="218.57895" y="458.6861" fill="#005c94" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" onclick="http://mixxx.org/manual/latest/chapters/advanced_topics.html#making-a-custom-keyboard-mapping" xml:space="preserve"><desc>Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan x="218.57895" y="458.6861" fill="#005c94" font-family="sans-serif" font-size="10px" font-weight="bold" style="line-height:1.25">https://manual.mixxx.org/2.3/chapters/advanced_topics.html#making-a-custom-keyboard-mapping</tspan></text>
+    </a>
+  </g>
+  <g transform="translate(-135.2406,-217.33114)">
+    <text x="152.7377" y="494.7558" fill="#000000" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="152.7377" y="494.7558" font-family="sans-serif" font-size="10px" font-weight="normal" style="line-height:1.25">Complete hotkey list:</tspan></text>
+    <a transform="translate(-66.700618,46.83607)" xlink:href="https://manual.mixxx.org/2.3/chapters/appendix/keyboard_mapping_table.html#appendix-keyboard">
+      <text x="218.57895" y="458.6861" fill="#005c94" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" onclick="http://mixxx.org/manual/latest/chapters/advanced_topics.html#making-a-custom-keyboard-mapping" xml:space="preserve"><desc>Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan x="218.57895" y="458.6861" fill="#005c94" font-family="sans-serif" font-size="10px" font-weight="bold" style="line-height:1.25">https://manual.mixxx.org/2.3/chapters/appendix/keyboard_mapping_table.html#appendix-keyboard</tspan></text>
+    </a>
+  </g>
+  <g transform="translate(-135.2406,-197.33114)">
+    <a transform="translate(-66.700618,46.83607)" xlink:href="https://manual.mixxx.org/2.3/chapters/advanced_topics.html#mixxx-controls">
+      <a xlink:href="https://manual.mixxx.org/2.3/en/chapters/appendix/mixxx_controls.html#appendix-mixxxcontrols">
+        <a xlink:href="https://manual.mixxx.org/2.3/chapters/appendix/mixxx_controls.html#appendix-mixxxcontrols">
+          <text x="218.57895" y="498.31989" fill="#005c94" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" onclick="http://www.mixxx.org/wiki/doku.php/mixxxcontrols" xml:space="preserve"><desc>Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan x="218.57895" y="498.31989" fill="#005c94" font-family="sans-serif" font-size="10px" font-weight="bold" style="line-height:1.25">https://manual.mixxx.org/2.3/chapters/appendix/mixxx_controls.html#appendix-mixxxcontrols</tspan></text>
         </a>
       </a>
-      <text x="151.73672" y="534.38959" fill="#000000" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="151.73672" y="534.38959" font-family="sans-serif" font-size="10px" font-weight="normal" style="line-height:1.25">List of controls that can be used in the keyboard mapping:</tspan></text>
+    </a>
+    <text x="151.73672" y="534.38959" fill="#000000" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="151.73672" y="534.38959" font-family="sans-serif" font-size="10px" font-weight="normal" style="line-height:1.25">List of controls that can be used in the keyboard mapping:</tspan></text>
+  </g>
+  <g transform="translate(-135.2406,-207.33114)">
+    <text x="152.05899" y="574.24573" fill="#000000" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="152.05899" y="574.24573" font-family="sans-serif" font-size="10px" font-weight="normal" style="line-height:1.25">Custom keyboard mappings can be shared with others in the Mixxx user customizations forum:</tspan></text>
+    <a transform="translate(-66.700618,46.83607)" xlink:href="https://mixxx.discourse.group/c/keyboard-mappings/12">
+      <text x="218.57895" y="538.31989" fill="#005c94" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" onclick="http://www.mixxx.org/wiki/doku.php/mixxxcontrols" xml:space="preserve"><desc>Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan x="218.57895" y="538.31989" fill="#005c94" font-family="sans-serif" font-size="10px" font-weight="bold" style="line-height:1.25">https://mixxx.discourse.group/c/keyboard-mappings/12</tspan></text>
+    </a>
+  </g>
+  <g transform="matrix(.98440666 0 0 .98437637 -403.55692 -445.70667)">
+    <g>
+      <path d="m27.899 586.346h27.959c1.041 0 1.893.852 1.893 1.893v27.959c0 1.042-.852 1.894-1.893 1.894h-27.959c-1.041 0-1.893-.852-1.893-1.894v-27.959c0-1.041.852-1.893 1.893-1.893z" fill="#606163" fill-rule="evenodd" filter="url(#r)"/>
+      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="#ffffff" fill-rule="evenodd" stroke="#606163" stroke-width="1.01586"/>
+      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.40003 1.773737.8888v13.12725c0 .48923-.798324.88926-1.773737.88926h-26.197528c-.975415 0-1.773737-.40003-1.773737-.88926v-13.12725c0-.48877.798322-.8888 1.773737-.8888z" color="#000000" fill="#9ade00" opacity=".7"/>
+      <path d="m28.779736 602.24629h26.197528c.975414 0 1.773737.40003 1.773737.8888v13.12725c0 .48923-.798324.88926-1.773737.88926h-26.197528c-.975415 0-1.773737-.40003-1.773737-.88926v-13.12725c0-.48877.798322-.8888 1.773737-.8888z" color="#000000" fill="#ffc022" opacity=".7"/>
     </g>
-    <g transform="translate(-135.2406,-207.33114)">
-      <text x="152.05899" y="574.24573" fill="#000000" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="152.05899" y="574.24573" font-family="sans-serif" font-size="10px" font-weight="normal" style="line-height:1.25">Custom keyboard mappings can be shared with others in the Mixxx user customizations forum:</tspan></text>
-      <a transform="translate(-66.700618,46.83607)" xlink:href="https://mixxx.discourse.group/c/keyboard-mappings/12">
-        <text x="218.57895" y="538.31989" fill="#005c94" font-family="Futura" font-weight="500" letter-spacing="0px" word-spacing="0px" style="line-height:0%" onclick="http://www.mixxx.org/wiki/doku.php/mixxxcontrols" xml:space="preserve"><desc>Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan x="218.57895" y="538.31989" fill="#005c94" font-family="sans-serif" font-size="10px" font-weight="bold" style="line-height:1.25">https://mixxx.discourse.group/c/keyboard-mappings/12</tspan></text>
-      </a>
-    </g>
-    <g transform="matrix(.98440666 0 0 .98437637 -403.55692 -445.70667)">
+    <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="none" stroke="#606163" stroke-width="1.01586"/>
+    <path d="m29.085313 602.20245h25.541373c.950989 0 1.729314 5e-4 1.729314.002v.0291c0 .00098-.778327.002-1.729314.002h-25.541373c-.95099 0-1.729314-.00099-1.729314-.002v-.0291c0-.00098.778324-.002 1.729314-.002z" color="#000000" fill="none" opacity=".7" stroke="#606163" stroke-width="1.01586"/>
+  </g>
+  <g transform="translate(-404.20995,-421.86157)">
+    <g>
+      <path d="m27.899 586.346h27.959c1.041 0 1.893.852 1.893 1.893v27.959c0 1.042-.852 1.894-1.893 1.894h-27.959c-1.041 0-1.893-.852-1.893-1.894v-27.959c0-1.041.852-1.893 1.893-1.893z" fill="#606163" fill-rule="evenodd" filter="url(#r)"/>
+      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="#ffffff" fill-rule="evenodd" stroke="#606163"/>
       <g>
-        <path d="m27.899 586.346h27.959c1.041 0 1.893.852 1.893 1.893v27.959c0 1.042-.852 1.894-1.893 1.894h-27.959c-1.041 0-1.893-.852-1.893-1.894v-27.959c0-1.041.852-1.893 1.893-1.893z" fill="#606163" fill-rule="evenodd" filter="url(#r)"/>
-        <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="#ffffff" fill-rule="evenodd" stroke="#606163" stroke-width="1.01586"/>
-        <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.40003 1.773737.8888v13.12725c0 .48923-.798324.88926-1.773737.88926h-26.197528c-.975415 0-1.773737-.40003-1.773737-.88926v-13.12725c0-.48877.798322-.8888 1.773737-.8888z" color="#000000" fill="#9ade00" opacity=".7"/>
-        <path d="m28.779736 602.24629h26.197528c.975414 0 1.773737.40003 1.773737.8888v13.12725c0 .48923-.798324.88926-1.773737.88926h-26.197528c-.975415 0-1.773737-.40003-1.773737-.88926v-13.12725c0-.48877.798322-.8888 1.773737-.8888z" color="#000000" fill="#ffc022" opacity=".7"/>
-      </g>
-      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="none" stroke="#606163" stroke-width="1.01586"/>
-      <path d="m29.085313 602.20245h25.541373c.950989 0 1.729314 5e-4 1.729314.002v.0291c0 .00098-.778327.002-1.729314.002h-25.541373c-.95099 0-1.729314-.00099-1.729314-.002v-.0291c0-.00098.778324-.002 1.729314-.002z" color="#000000" fill="none" opacity=".7" stroke="#606163" stroke-width="1.01586"/>
-    </g>
-    <g transform="translate(-404.20995,-421.86157)">
-      <g>
-        <path d="m27.899 586.346h27.959c1.041 0 1.893.852 1.893 1.893v27.959c0 1.042-.852 1.894-1.893 1.894h-27.959c-1.041 0-1.893-.852-1.893-1.894v-27.959c0-1.041.852-1.893 1.893-1.893z" fill="#606163" fill-rule="evenodd" filter="url(#r)"/>
-        <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="#ffffff" fill-rule="evenodd" stroke="#606163"/>
-        <g>
-          <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.40003 1.773737.8888v13.12725c0 .48923-.798324.88926-1.773737.88926h-26.197528c-.975415 0-1.773737-.40003-1.773737-.88926v-13.12725c0-.48877.798322-.8888 1.773737-.8888z" color="#000000" fill="#ffc022" opacity=".7"/>
-          <path d="m42.576809 602.24629h13.275366c.494283 0 .898826.40003.898826.8888v13.12725c0 .48923-.404544.88926-.898826.88926h-13.275366c-.494283 0-.898826-.40003-.898826-.88926v-13.12725c0-.48877.404543-.8888.898826-.8888z" color="#000000" fill="#ffc022" opacity=".7"/>
-          <path d="m27.670583 602.24629h13.187277c.491003 0 .892861.40003.892861.8888v13.12725c0 .48923-.401859.88926-.892861.88926h-13.187277c-.491003 0-.892862-.40003-.892862-.88926v-13.12725c0-.48877.401859-.8888.892862-.8888z" color="#000000" fill="#d76cff" opacity=".7"/>
-        </g>
-      </g>
-      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="none" stroke="#606163"/>
-      <path d="m29.10781 602.3086h25.541378c.950984 0 1.729312-.00098 1.729312-.002v-.0291c0-.00099-.778328-.002-1.729312-.002h-25.541378c-.950984 0-1.729311.00099-1.729311.002v.0291c0 .00099.778327.002 1.729311.002z" fill="none" opacity=".7" stroke="#606163"/>
-    </g>
-    <g transform="matrix(.98440666 0 0 .98437637 -403.55692 -511.70668)">
-      <g>
-        <path d="m27.899 586.346h27.959c1.041 0 1.893.852 1.893 1.893v27.959c0 1.042-.852 1.894-1.893 1.894h-27.959c-1.041 0-1.893-.852-1.893-1.894v-27.959c0-1.041.852-1.893 1.893-1.893z" fill="#606163" fill-rule="evenodd" filter="url(#o)"/>
-        <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="#ffffff" fill-rule="evenodd" stroke="#606163" stroke-width="1.01586"/>
-        <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" color="#000000" fill="#ffffff" opacity=".7"/>
-      </g>
-      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="none" stroke="#606163" stroke-width="1.01586"/>
-    </g>
-    <g transform="translate(-10.216867,-429.2666)">
-      <g>
-        <rect transform="matrix(.99013881 0 0 .95283435 -3.3498942 45.706003)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.767429" ry="1.8366257" color="#000000" fill="#606163" fill-rule="evenodd" filter="url(#f)"/>
-        <rect transform="matrix(.94972498 0 0 .8932822 -15.0541 76.847182)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.8426387" ry="1.9590673" color="#000000" fill="#ffffff" fill-rule="evenodd"/>
-        <rect x="-313.24115" y="529.30518" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="#d76cff" opacity=".7"/>
-      </g>
-      <rect x="-313.24115" y="529.30511" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="none" stroke="#606163"/>
-    </g>
-    <g transform="translate(-10.216867,-462.26661)" fill-rule="evenodd">
-      <rect transform="matrix(.99013881 0 0 .95283435 -3.3498942 45.706003)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.767429" ry="1.8366257" color="#000000" fill="#606163" filter="url(#f)"/>
-      <rect x="-313.24115" y="529.30518" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="#ffffff" stroke="#606163"/>
-    </g>
-    <g transform="translate(-10.216867,-396.2666)">
-      <g>
-        <rect transform="matrix(.99013881 0 0 .95283435 -3.3498942 45.706003)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.767429" ry="1.8366257" color="#000000" fill="#606163" fill-rule="evenodd" filter="url(#f)"/>
-        <rect transform="matrix(.94972498 0 0 .8932822 -15.0541 76.847182)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.8426387" ry="1.9590673" color="#000000" fill="#ffffff" fill-rule="evenodd"/>
-        <rect x="-313.24115" y="529.30518" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="#ffc022" opacity=".7"/>
-      </g>
-      <rect x="-313.24115" y="529.30511" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="none" stroke="#606163"/>
-    </g>
-    <g transform="translate(18.264624,-444.35862)" fill-rule="evenodd">
-      <rect transform="matrix(1.3065829 0 0 .94551226 137.81365 31.626916)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.3323696" ry="1.8366257" color="#000000" fill="#606163" filter="url(#ah)"/>
-      <rect x="-271.58441" y="511.55688" width="62" height="29" rx="1.6916667" ry="1.6916667" color="#000000" fill="#ffffff" stroke="#606163"/>
-    </g>
-    <g transform="translate(-345.4485,-421.98516)">
-      <g transform="matrix(1.0049505,0,0,1,534.51051,-88.000002)" fill-rule="evenodd">
-        <rect transform="matrix(.46470648 0 0 .95742238 -189.3358 15.919895)" x="-358.1882" y="585.36835" width="202" height="32" rx="3.7658179" ry="1.8278244" color="#000000" fill="#606163" filter="url(#af)"/>
-        <rect transform="matrix(.45492319 0 0 .89758349 -191.85195 51.90511)" x="-358.1882" y="585.36835" width="202" height="32" rx="3.7658179" ry="1.8278244" color="#000000" fill="#ffd364" stroke="#606163" stroke-width="1.56107"/>
+        <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.40003 1.773737.8888v13.12725c0 .48923-.798324.88926-1.773737.88926h-26.197528c-.975415 0-1.773737-.40003-1.773737-.88926v-13.12725c0-.48877.798322-.8888 1.773737-.8888z" color="#000000" fill="#ffc022" opacity=".7"/>
+        <path d="m42.576809 602.24629h13.275366c.494283 0 .898826.40003.898826.8888v13.12725c0 .48923-.404544.88926-.898826.88926h-13.275366c-.494283 0-.898826-.40003-.898826-.88926v-13.12725c0-.48877.404543-.8888.898826-.8888z" color="#000000" fill="#ffc022" opacity=".7"/>
+        <path d="m27.670583 602.24629h13.187277c.491003 0 .892861.40003.892861.8888v13.12725c0 .48923-.401859.88926-.892861.88926h-13.187277c-.491003 0-.892862-.40003-.892862-.88926v-13.12725c0-.48877.401859-.8888.892862-.8888z" color="#000000" fill="#d76cff" opacity=".7"/>
       </g>
     </g>
-    <text x="-378.58148" y="-51.315086" fill="#000000" font-family="sans-serif" font-size="12px" font-weight="bold" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="-378.58148" y="-51.315086" style="line-height:1.25">Clone Originals</tspan><tspan x="-378.58148" y="-36.315086" style="line-height:1.25"> </tspan><tspan x="-378.58148" y="-21.315086" style="line-height:1.25">Changes to this Originals will affect the clones.</tspan><tspan x="-378.58148" y="-6.3150864" style="line-height:1.25">If a clone is selected (see statusbar on the bottom)</tspan><tspan x="-378.58148" y="8.6849136" style="line-height:1.25">In Inkscape use SHIFT+D to find the Original.</tspan><tspan x="-378.58148" y="23.684914" style="line-height:1.25"> </tspan><tspan x="-378.58148" y="38.684914" style="line-height:1.25">If you need more clones, duplicate from the clones</tspan></text>
-    <flowRoot transform="translate(-7.6960948,-354.22767)" fill="#000000" font-family="sans-serif" letter-spacing="0px" word-spacing="0px" style="line-height:0.01%" xml:space="preserve"><flowRegion><rect x="-195.67343" y="266.86703" width="63.177071" height="89.500847"/></flowRegion><flowPara font-size="12px" style="line-height:1.25"> </flowPara></flowRoot>
-    <g transform="matrix(.98440666 0 0 .98437637 -403.55692 -478.70668)">
-      <g>
-        <path d="m27.899 586.346h27.959c1.041 0 1.893.852 1.893 1.893v27.959c0 1.042-.852 1.894-1.893 1.894h-27.959c-1.041 0-1.893-.852-1.893-1.894v-27.959c0-1.041.852-1.893 1.893-1.893z" fill="#606163" fill-rule="evenodd" filter="url(#o)"/>
-        <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="#ffffff" fill-rule="evenodd" stroke="#606163" stroke-width="1.01586"/>
-        <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" color="#000000" fill="#9ade00" opacity=".7"/>
-      </g>
-      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="none" stroke="#606163" stroke-width="1.01586"/>
+    <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="none" stroke="#606163"/>
+    <path d="m29.10781 602.3086h25.541378c.950984 0 1.729312-.00098 1.729312-.002v-.0291c0-.00099-.778328-.002-1.729312-.002h-25.541378c-.950984 0-1.729311.00099-1.729311.002v.0291c0 .00099.778327.002 1.729311.002z" fill="none" opacity=".7" stroke="#606163"/>
+  </g>
+  <g transform="matrix(.98440666 0 0 .98437637 -403.55692 -511.70668)">
+    <g>
+      <path d="m27.899 586.346h27.959c1.041 0 1.893.852 1.893 1.893v27.959c0 1.042-.852 1.894-1.893 1.894h-27.959c-1.041 0-1.893-.852-1.893-1.894v-27.959c0-1.041.852-1.893 1.893-1.893z" fill="#606163" fill-rule="evenodd" filter="url(#o)"/>
+      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="#ffffff" fill-rule="evenodd" stroke="#606163" stroke-width="1.01586"/>
+      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" color="#000000" fill="#ffffff" opacity=".7"/>
     </g>
-    <g letter-spacing="0px" word-spacing="0px">
-      <g>
-        <text x="-378.58148" y="268.68491" fill="#000000" font-family="sans-serif" font-weight="bold" style="line-height:0%" xml:space="preserve"><tspan x="-378.58148" y="268.68491" font-size="14.6667px" font-style="italic" font-weight="bold" style="line-height:1.25">mixxxdj/mixxx</tspan><tspan x="-378.58148" y="284.65887" font-size="12px" font-weight="normal" style="line-height:1.25">For the packaged doc file, export the entire page</tspan><tspan x="-378.58148" y="299.65887" font-size="12px" font-weight="normal" style="line-height:1.25">as Mixxx-Keyboard-Shortcuts.pdf (embed fonts).</tspan><tspan x="-378.58148" y="314.65887" font-size="12px" style="line-height:1.25"/><tspan x="-378.58148" y="332.01828" font-size="12px" font-weight="normal" style="line-height:1.25"><tspan font-size="14.6667px" font-style="italic" style="line-height:1.25"><tspan font-family="sans-serif" font-style="italic" font-weight="bold">mixxxdj/manual</tspan>   </tspan><tspan>(instructions for Inkscape)</tspan></tspan><tspan x="-378.58148" y="347.99225" font-size="12px" style="line-height:1.25">For the embedded SVG:</tspan><tspan x="-378.58148" y="362.99225" font-size="12px" font-weight="normal" style="line-height:1.25">- open a copy of this file</tspan><tspan x="-378.58148" y="377.99225" font-size="12px" style="line-height:1.25">- select the rectangle in layer '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">res</tspan>' &gt; '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">doc_file_boundary</tspan>'</tspan><tspan x="-378.58148" y="392.99225" font-size="12px" font-weight="normal" style="line-height:1.25">- open Document Properties &gt; Page tab</tspan><tspan x="-378.58148" y="407.99225" font-size="12px" font-weight="normal" style="line-height:1.25">- Custom size &gt; Resize page to content...</tspan><tspan x="-378.58148" y="422.99225" font-size="12px" style="line-height:1.25">- delete layers '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">res</tspan>', '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">links</tspan>' '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">setup_export</tspan>'</tspan><tspan x="-378.58148" y="437.99225" font-size="12px" font-weight="normal" style="line-height:1.25">  (everything outside the page)</tspan><tspan x="-378.58148" y="452.99225" font-size="12px" font-weight="normal" style="line-height:1.25">- save as Optimized SVG</tspan><tspan x="-378.58148" y="467.99225" font-size="12px" font-weight="normal" style="line-height:1.25"/><tspan x="-378.58148" y="482.99225" font-size="12px" font-weight="bold" style="line-height:1.25">For the downloadable PNG:</tspan><tspan x="-378.58148" y="497.99225" font-size="12px" font-weight="normal" style="line-height:1.25">Either open the cropped SVG copy and export the</tspan><tspan x="-378.58148" y="512.99225" font-size="12px" font-weight="normal" style="line-height:1.25">page, or use this document and export the custom range</tspan><tspan x="-378.58148" y="527.99225" font-size="12px" style="line-height:1.25">defined by the rectangle in layer '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">res</tspan>' &gt; '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">doc_file_boundary</tspan>',</tspan><tspan x="-378.58148" y="542.99225" font-size="12px" font-weight="normal" style="line-height:1.25">or set that range manually:</tspan><tspan x="-378.58148" y="557.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">    x0: 0 px    y0: 23 px</tspan><tspan x="-378.58148" y="572.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">    width: 782 px  height: 241 px</tspan><tspan x="-378.58148" y="587.99225" font-size="12px" font-weight="normal" style="line-height:1.25">as PNG</tspan><tspan x="-378.58148" y="602.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">    width: 1280 px</tspan><tspan x="-378.58148" y="617.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">    s(height: 394 px)</tspan><tspan x="-378.58148" y="632.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">default encoding settings should suffice but can</tspan><tspan x="-378.58148" y="647.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">certainly be tweaked.</tspan></text>
-        <text x="-408.13464" y="-74.522362" fill="#4c4c4c" font-family="Futura" font-weight="500" style="line-height:0%" xml:space="preserve"><tspan x="-408.13464" y="-74.522362" fill="#4c4c4c" font-family="sans-serif" font-size="20px" font-weight="bold" style="line-height:1.25">Setup</tspan></text>
-        <text x="-408.13464" y="245.47763" fill="#4c4c4c" font-family="Futura" font-weight="500" style="line-height:0%" xml:space="preserve"><tspan x="-408.13464" y="245.47763" fill="#4c4c4c" font-family="sans-serif" font-size="20px" font-weight="bold" style="line-height:1.25">Export</tspan></text>
-      </g>
-      <text x="-622.75098" y="64.253944" fill="#000000" font-family="sans-serif" font-size="40px" style="line-height:1.25" xml:space="preserve"><tspan x="-622.75098" y="64.253944"/></text>
+    <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="none" stroke="#606163" stroke-width="1.01586"/>
+  </g>
+  <g transform="translate(-10.216867,-429.2666)">
+    <g>
+      <rect transform="matrix(.99013881 0 0 .95283435 -3.3498942 45.706003)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.767429" ry="1.8366257" color="#000000" fill="#606163" fill-rule="evenodd" filter="url(#f)"/>
+      <rect transform="matrix(.94972498 0 0 .8932822 -15.0541 76.847182)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.8426387" ry="1.9590673" color="#000000" fill="#ffffff" fill-rule="evenodd"/>
+      <rect x="-313.24115" y="529.30518" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="#d76cff" opacity=".7"/>
     </g>
+    <rect x="-313.24115" y="529.30511" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="none" stroke="#606163"/>
+  </g>
+  <g transform="translate(-10.216867,-462.26661)" fill-rule="evenodd">
+    <rect transform="matrix(.99013881 0 0 .95283435 -3.3498942 45.706003)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.767429" ry="1.8366257" color="#000000" fill="#606163" filter="url(#f)"/>
+    <rect x="-313.24115" y="529.30518" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="#ffffff" stroke="#606163"/>
+  </g>
+  <g transform="translate(-10.216867,-396.2666)">
+    <g>
+      <rect transform="matrix(.99013881 0 0 .95283435 -3.3498942 45.706003)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.767429" ry="1.8366257" color="#000000" fill="#606163" fill-rule="evenodd" filter="url(#f)"/>
+      <rect transform="matrix(.94972498 0 0 .8932822 -15.0541 76.847182)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.8426387" ry="1.9590673" color="#000000" fill="#ffffff" fill-rule="evenodd"/>
+      <rect x="-313.24115" y="529.30518" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="#ffc022" opacity=".7"/>
+    </g>
+    <rect x="-313.24115" y="529.30511" width="46.276413" height="29.319416" rx="1.75" ry="1.75" color="#000000" fill="none" stroke="#606163"/>
+  </g>
+  <g transform="translate(18.264624,-444.35862)" fill-rule="evenodd">
+    <rect transform="matrix(1.3065829 0 0 .94551226 137.81365 31.626916)" x="-313.97198" y="506.51178" width="48.72612" height="32.822121" rx="1.3323696" ry="1.8366257" color="#000000" fill="#606163" filter="url(#i)"/>
+    <rect x="-271.58441" y="511.55688" width="62" height="29" rx="1.6916667" ry="1.6916667" color="#000000" fill="#ffffff" stroke="#606163"/>
+  </g>
+  <g transform="translate(-345.4485,-421.98516)">
+    <g transform="matrix(1.0049505,0,0,1,534.51051,-88.000002)" fill-rule="evenodd">
+      <rect transform="matrix(.46470648 0 0 .95742238 -189.3358 15.919895)" x="-358.1882" y="585.36835" width="202" height="32" rx="3.7658179" ry="1.8278244" color="#000000" fill="#606163" filter="url(#af)"/>
+      <rect transform="matrix(.45492319 0 0 .89758349 -191.85195 51.90511)" x="-358.1882" y="585.36835" width="202" height="32" rx="3.7658179" ry="1.8278244" color="#000000" fill="#ffd364" stroke="#606163" stroke-width="1.56107"/>
+    </g>
+  </g>
+  <text x="-378.58148" y="-51.315086" fill="#000000" font-family="sans-serif" font-size="12px" font-weight="bold" letter-spacing="0px" word-spacing="0px" style="line-height:0%" xml:space="preserve"><tspan x="-378.58148" y="-51.315086" style="line-height:1.25">Clone Originals</tspan><tspan x="-378.58148" y="-36.315086" style="line-height:1.25"> </tspan><tspan x="-378.58148" y="-21.315086" style="line-height:1.25">Changes to this Originals will affect the clones.</tspan><tspan x="-378.58148" y="-6.3150864" style="line-height:1.25">If a clone is selected (see statusbar on the bottom)</tspan><tspan x="-378.58148" y="8.6849136" style="line-height:1.25">In Inkscape use SHIFT+D to find the Original.</tspan><tspan x="-378.58148" y="23.684914" style="line-height:1.25"> </tspan><tspan x="-378.58148" y="38.684914" style="line-height:1.25">If you need more clones, duplicate from the clones</tspan></text>
+  <flowRoot transform="translate(-7.6960948,-354.22767)" fill="#000000" font-family="sans-serif" letter-spacing="0px" word-spacing="0px" style="line-height:0.01%" xml:space="preserve"><flowRegion><rect x="-195.67343" y="266.86703" width="63.177071" height="89.500847"/></flowRegion><flowPara font-size="12px" style="line-height:1.25"> </flowPara></flowRoot>
+  <g transform="matrix(.98440666 0 0 .98437637 -403.55692 -478.70668)">
+    <g>
+      <path d="m27.899 586.346h27.959c1.041 0 1.893.852 1.893 1.893v27.959c0 1.042-.852 1.894-1.893 1.894h-27.959c-1.041 0-1.893-.852-1.893-1.894v-27.959c0-1.041.852-1.893 1.893-1.893z" fill="#606163" fill-rule="evenodd" filter="url(#o)"/>
+      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="#ffffff" fill-rule="evenodd" stroke="#606163" stroke-width="1.01586"/>
+      <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" color="#000000" fill="#9ade00" opacity=".7"/>
+    </g>
+    <path d="m28.779736 587.34603h26.197528c.975414 0 1.773737.79832 1.773737 1.77374v26.19753c0 .97635-.798324 1.77467-1.773737 1.77467h-26.197528c-.975415 0-1.773737-.79832-1.773737-1.77467v-26.19753c0-.97542.798322-1.77374 1.773737-1.77374z" fill="none" stroke="#606163" stroke-width="1.01586"/>
+  </g>
+  <g letter-spacing="0px" word-spacing="0px">
+    <g>
+      <text x="-378.58148" y="268.68491" fill="#000000" font-family="sans-serif" font-weight="bold" style="line-height:0%" xml:space="preserve"><tspan x="-378.58148" y="268.68491" font-size="14.6667px" font-style="italic" font-weight="bold" style="line-height:1.25">mixxxdj/mixxx</tspan><tspan x="-378.58148" y="284.65887" font-size="12px" font-weight="normal" style="line-height:1.25">For the packaged doc file, export the entire page</tspan><tspan x="-378.58148" y="299.65887" font-size="12px" font-weight="normal" style="line-height:1.25">as Mixxx-Keyboard-Shortcuts.pdf (embed fonts).</tspan><tspan x="-378.58148" y="314.65887" font-size="12px" style="line-height:1.25"/><tspan x="-378.58148" y="332.01828" font-size="12px" font-weight="normal" style="line-height:1.25"><tspan font-size="14.6667px" font-style="italic" style="line-height:1.25"><tspan font-family="sans-serif" font-style="italic" font-weight="bold">mixxxdj/manual</tspan>   </tspan><tspan>(instructions for Inkscape)</tspan></tspan><tspan x="-378.58148" y="347.99225" font-size="12px" style="line-height:1.25">For the embedded SVG:</tspan><tspan x="-378.58148" y="362.99225" font-size="12px" font-weight="normal" style="line-height:1.25">- open a copy of this file</tspan><tspan x="-378.58148" y="377.99225" font-size="12px" style="line-height:1.25">- select the rectangle in layer '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">res</tspan>' &gt; '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">doc_file_boundary</tspan>'</tspan><tspan x="-378.58148" y="392.99225" font-size="12px" font-weight="normal" style="line-height:1.25">- open Document Properties &gt; Page tab</tspan><tspan x="-378.58148" y="407.99225" font-size="12px" font-weight="normal" style="line-height:1.25">- Custom size &gt; Resize page to content...</tspan><tspan x="-378.58148" y="422.99225" font-size="12px" style="line-height:1.25">- delete layers '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">res</tspan>', '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">links</tspan>' '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">setup_export</tspan>'</tspan><tspan x="-378.58148" y="437.99225" font-size="12px" font-weight="normal" style="line-height:1.25">  (everything outside the page)</tspan><tspan x="-378.58148" y="452.99225" font-size="12px" font-weight="normal" style="line-height:1.25">- save as Optimized SVG</tspan><tspan x="-378.58148" y="467.99225" font-size="12px" font-weight="normal" style="line-height:1.25"/><tspan x="-378.58148" y="482.99225" font-size="12px" font-weight="bold" style="line-height:1.25">For the downloadable PNG:</tspan><tspan x="-378.58148" y="497.99225" font-size="12px" font-weight="normal" style="line-height:1.25">Either open the cropped SVG copy and export the</tspan><tspan x="-378.58148" y="512.99225" font-size="12px" font-weight="normal" style="line-height:1.25">page, or use this document and export the custom range</tspan><tspan x="-378.58148" y="527.99225" font-size="12px" style="line-height:1.25">defined by the rectangle in layer '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">res</tspan>' &gt; '<tspan font-family="sans-serif" font-style="italic" font-weight="normal">doc_file_boundary</tspan>',</tspan><tspan x="-378.58148" y="542.99225" font-size="12px" font-weight="normal" style="line-height:1.25">or set that range manually:</tspan><tspan x="-378.58148" y="557.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">    x0: 0 px    y0: 23 px</tspan><tspan x="-378.58148" y="572.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">    width: 782 px  height: 241 px</tspan><tspan x="-378.58148" y="587.99225" font-size="12px" font-weight="normal" style="line-height:1.25">as PNG</tspan><tspan x="-378.58148" y="602.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">    width: 1280 px</tspan><tspan x="-378.58148" y="617.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">    s(height: 394 px)</tspan><tspan x="-378.58148" y="632.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">default encoding settings should suffice but can</tspan><tspan x="-378.58148" y="647.99225" font-size="12px" font-style="italic" font-weight="normal" style="line-height:1.25">certainly be tweaked.</tspan></text>
+      <text x="-408.13464" y="-74.522362" fill="#4c4c4c" font-family="Futura" font-weight="500" style="line-height:0%" xml:space="preserve"><tspan x="-408.13464" y="-74.522362" fill="#4c4c4c" font-family="sans-serif" font-size="20px" font-weight="bold" style="line-height:1.25">Setup</tspan></text>
+      <text x="-408.13464" y="245.47763" fill="#4c4c4c" font-family="Futura" font-weight="500" style="line-height:0%" xml:space="preserve"><tspan x="-408.13464" y="245.47763" fill="#4c4c4c" font-family="sans-serif" font-size="20px" font-weight="bold" style="line-height:1.25">Export</tspan></text>
+    </g>
+    <text x="-622.75098" y="64.253944" fill="#000000" font-family="sans-serif" font-size="40px" style="line-height:1.25" xml:space="preserve"><tspan x="-622.75098" y="64.253944"/></text>
   </g>
   <g display="none">
     <g transform="translate(0,-586.55123)" display="none">
