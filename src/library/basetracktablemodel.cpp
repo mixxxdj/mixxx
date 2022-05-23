@@ -649,20 +649,6 @@ QVariant BaseTrackTableModel::roleValue(
                 return QChar('-');
             }
         }
-        case ColumnCache::COLUMN_LIBRARYTABLE_YEAR: {
-            if (rawValue.isNull()) {
-                return QVariant();
-            }
-            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QString>()) {
-                return QVariant();
-            }
-            bool ok;
-            const auto year = mixxx::TrackMetadata::formatCalendarYear(rawValue.toString(), &ok);
-            if (!ok) {
-                return QVariant();
-            }
-            return year;
-        }
         case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
             if (rawValue.isNull()) {
                 return QVariant();
