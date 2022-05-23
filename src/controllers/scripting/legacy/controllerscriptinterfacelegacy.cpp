@@ -522,7 +522,7 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
         stopTimer(timerId);
     }
 
-    m_pScriptEngineLegacy->executeFunction(timerTarget.callback, QJSValueList());
+    m_pScriptEngineLegacy->executeFunction(timerTarget.callback);
 }
 
 void ControllerScriptInterfaceLegacy::softTakeover(
