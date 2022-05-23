@@ -1,8 +1,12 @@
 #include "controllers/scripting/legacy/scriptconnection.h"
 
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
+#include "util/trace.h"
 
 void ScriptConnection::executeCallback(double value) const {
+    std::unique_ptr<Trace> pCallCallbackTrace;
+    pCallCallbackTrace = std::make_unique<Trace>(
+            QString("JS " + key.item + " callback").toStdString().c_str());
     QJSValueList args;
     args << QJSValue(value);
     args << QJSValue(key.group);
