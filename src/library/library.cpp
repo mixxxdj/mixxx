@@ -74,6 +74,7 @@ Library::Library(
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_pSidebarModel(make_parented<SidebarModel>(this)),
           m_pLibraryControl(make_parented<LibraryControl>(this)),
+          m_pLibraryWidget(nullptr),
           m_pMixxxLibraryFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
@@ -103,6 +104,7 @@ Library::Library(
 #endif
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
+
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
 
@@ -138,6 +140,7 @@ Library::Library(
     addFeature(browseFeature);
 
     addFeature(new RecordingFeature(this, m_pConfig, pRecordingManager));
+
     addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
 
     m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig);
@@ -368,10 +371,11 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
 void Library::bindLibraryWidget(
         WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
-    WTrackTableView* pTrackTableView = new WTrackTableView(pLibraryWidget,
+    m_pLibraryWidget = pLibraryWidget;
+    WTrackTableView* pTrackTableView = new WTrackTableView(m_pLibraryWidget,
             m_pConfig,
             this,
-            pLibraryWidget->getTrackTableBackgroundColorOpacity(),
+            m_pLibraryWidget->getTrackTableBackgroundColorOpacity(),
             true);
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this,
@@ -386,11 +390,11 @@ void Library::bindLibraryWidget(
             &WTrackTableView::loadTrackToPlayer,
             this,
             &Library::slotLoadTrackToPlayer);
-    pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
+    m_pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this,
             &Library::switchToView,
-            pLibraryWidget,
+            m_pLibraryWidget,
             &WLibrary::switchToView);
     connect(this,
             &Library::saveModelState,
@@ -400,6 +404,10 @@ void Library::bindLibraryWidget(
             &Library::restoreModelState,
             pTrackTableView,
             &WTrackTableView::slotRestoreCurrentViewState);
+    connect(this,
+            &Library::selectTrack,
+            m_pLibraryWidget,
+            &WLibrary::slotSelectTrackInActiveTrackView);
     connect(pTrackTableView,
             &WTrackTableView::trackSelected,
             this,
@@ -418,7 +426,7 @@ void Library::bindLibraryWidget(
             pTrackTableView,
             &WTrackTableView::setSelectedClick);
 
-    m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
+    m_pLibraryControl->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
 
     connect(m_pLibraryControl,
             &LibraryControl::showHideTrackMenu,
@@ -430,7 +438,7 @@ void Library::bindLibraryWidget(
             &LibraryControl::slotUpdateTrackMenuControl);
 
     for (const auto& feature : qAsConst(m_features)) {
-        feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
+        feature->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
     }
 
     // Set the current font and row height on all the WTrackTableViews that were
@@ -667,6 +675,14 @@ std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
             parent, m_pConfig, m_pTrackCollectionManager);
 }
 #endif
+
+bool Library::isTrackIdInCurrentLibraryView(const TrackId& trackId) {
+    if (m_pLibraryWidget) {
+        return m_pLibraryWidget->isTrackInCurrentView(trackId);
+    } else {
+        return false;
+    }
+}
 
 LibraryTableModel* Library::trackTableModel() const {
     VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {

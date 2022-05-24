@@ -227,8 +227,7 @@ void MixxxMainWindow::initialize() {
     QFile file(":/skins/default.qss");
     if (file.open(QIODevice::ReadOnly)) {
         QByteArray fileBytes = file.readAll();
-        QString style = QString::fromLocal8Bit(fileBytes.constData(),
-                                               fileBytes.length());
+        QString style = QString::fromLocal8Bit(fileBytes);
         setStyleSheet(style);
     } else {
         qWarning() << "Failed to load default skin styles!";

@@ -16,6 +16,7 @@
 #include "engine/enginemaster.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -375,7 +376,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     // Scan the library for new files and directories
     bool rescan = pConfig->getValue<bool>(
-            ConfigKey("[Library]", "RescanOnStartup"));
+            library::prefs::kRescanOnStartupConfigKey);
     // rescan the library if we get a new plugin
     QList<QString> prev_plugins_list =
             pConfig->getValueString(

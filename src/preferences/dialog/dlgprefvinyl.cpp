@@ -95,7 +95,8 @@ DlgPrefVinyl::DlgPrefVinyl(
 
     TroubleshootingLink->setText(coloredLinkString(
             m_pLinkColor,
-            QStringLiteral("Troubleshooting"),
+            // QStringLiteral("Troubleshooting") fails to compile on Fedora 36 with GCC 12.0.x
+            "Troubleshooting",
             MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL));
 
     connect(VinylGain, &QSlider::sliderReleased, this, &DlgPrefVinyl::slotVinylGainApply);

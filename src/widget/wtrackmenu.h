@@ -50,10 +50,11 @@ class WTrackMenu : public QMenu {
         Properties = 1 << 12,
         SearchRelated = 1 << 13,
         UpdateReplayGainFromPregain = 1 << 14,
+        SelectInLibrary = 1 << 15,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
-                Properties | SearchRelated | UpdateReplayGainFromPregain
+                Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -88,6 +89,7 @@ class WTrackMenu : public QMenu {
   private slots:
     // File
     void slotOpenInFileBrowser();
+    void slotSelectInLibrary();
 
     // Row color
     void slotColorPicked(const mixxx::RgbColor::optional_t& color);
@@ -252,6 +254,9 @@ class WTrackMenu : public QMenu {
 
     // Open file in default file browser
     QAction* m_pFileBrowserAct{};
+
+    // Select track in library
+    QAction* m_pSelectInLibraryAct{};
 
     // BPM feature
     QAction* m_pBpmLockAction{};

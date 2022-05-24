@@ -148,6 +148,7 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlEncoder> m_pSortColumn;
     std::unique_ptr<ControlEncoder> m_pSortColumnToggle;
     std::unique_ptr<ControlPushButton> m_pSortOrder;
+    std::unique_ptr<ControlPushButton> m_pSortFocusedColumn;
 
     // Controls to change track color
     std::unique_ptr<ControlPushButton> m_pTrackColorPrev;

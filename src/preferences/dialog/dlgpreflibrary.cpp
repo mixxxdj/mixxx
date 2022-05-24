@@ -191,6 +191,9 @@ void DlgPrefLibrary::initializeDirList() {
 
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
+    spinbox_history_track_duplicate_distance->setValue(
+            kHistoryTrackDuplicateDistanceDefault);
+    spinbox_history_min_tracks_to_keep->setValue(1);
     checkBox_SyncTrackMetadata->setChecked(false);
     checkBox_SeratoMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
@@ -199,8 +202,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
-    radioButton_dbclick_bottom->setChecked(false);
     checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
+    radioButton_dbclick_bottom->setChecked(false);
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
     spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
@@ -212,13 +215,22 @@ void DlgPrefLibrary::slotResetToDefaults() {
 void DlgPrefLibrary::slotUpdate() {
     initializeDirList();
     checkBox_library_scan->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","RescanOnStartup"), false));
+            kRescanOnStartupConfigKey, false));
+
+    spinbox_history_track_duplicate_distance->setValue(m_pConfig->getValue(
+            kHistoryTrackDuplicateDistanceConfigKey,
+            kHistoryTrackDuplicateDistanceDefault));
+    spinbox_history_min_tracks_to_keep->setValue(m_pConfig->getValue(
+            kHistoryMinTracksToKeepConfigKey,
+            kHistoryMinTracksToKeepDefault));
+
     checkBox_SyncTrackMetadata->setChecked(
             m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
     checkBox_SeratoMetadataExport->setChecked(
             m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","UseRelativePathOnExport"), false));
+            kUseRelativePathOnExportConfigKey, false));
+
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowRhythmboxLibrary"), true));
     checkBox_show_banshee->setChecked(m_pConfig->getValue(
@@ -233,7 +245,7 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]", "ShowSeratoLibrary"), true));
 
     switch (m_pConfig->getValue<int>(
-            ConfigKey("[Library]", "TrackLoadAction"),
+            kTrackDoubleClickActionConfigKey,
             static_cast<int>(TrackDoubleClickAction::LoadToDeck))) {
     case static_cast<int>(TrackDoubleClickAction::AddToAutoDJBottom):
         radioButton_dbclick_bottom->setChecked(true);
@@ -245,8 +257,8 @@ void DlgPrefLibrary::slotUpdate() {
         radioButton_dbclick_ignore->setChecked(true);
         break;
     default:
-            radioButton_dbclick_deck->setChecked(true);
-            break;
+        radioButton_dbclick_deck->setChecked(true);
+        break;
     }
 
     bool editMetadataSelectedClick = m_pConfig->getValue(
@@ -383,16 +395,24 @@ void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
 }
 
 void DlgPrefLibrary::slotApply() {
-    m_pConfig->set(ConfigKey("[Library]","RescanOnStartup"),
-                ConfigValue((int)checkBox_library_scan->isChecked()));
+    m_pConfig->set(kRescanOnStartupConfigKey,
+            ConfigValue((int)checkBox_library_scan->isChecked()));
+
+    m_pConfig->set(kHistoryTrackDuplicateDistanceConfigKey,
+            ConfigValue(spinbox_history_track_duplicate_distance->value()));
+    m_pConfig->set(kHistoryMinTracksToKeepConfigKey,
+            ConfigValue(spinbox_history_min_tracks_to_keep->value()));
+
     m_pConfig->set(
             kSyncTrackMetadataConfigKey,
             ConfigValue{checkBox_SyncTrackMetadata->isChecked()});
     m_pConfig->set(
             kSyncSeratoMetadataConfigKey,
             ConfigValue{checkBox_SeratoMetadataExport->isChecked()});
-    m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
-                ConfigValue((int)checkBox_use_relative_path->isChecked()));
+
+    m_pConfig->set(kUseRelativePathOnExportConfigKey,
+            ConfigValue((int)checkBox_use_relative_path->isChecked()));
+
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowBansheeLibrary"),
@@ -405,6 +425,7 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
+
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
         dbclick_status = static_cast<int>(TrackDoubleClickAction::AddToAutoDJBottom);
@@ -415,8 +436,8 @@ void DlgPrefLibrary::slotApply() {
     } else { // radioButton_dbclick_ignore
         dbclick_status = static_cast<int>(TrackDoubleClickAction::Ignore);
     }
-    m_pConfig->set(ConfigKey("[Library]","TrackLoadAction"),
-                ConfigValue(dbclick_status));
+    m_pConfig->set(kTrackDoubleClickActionConfigKey,
+            ConfigValue(dbclick_status));
 
     m_pConfig->set(kEditMetadataSelectedClickConfigKey,
             ConfigValue(checkBoxEditMetadataSelectedClicked->checkState()));

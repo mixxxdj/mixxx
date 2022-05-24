@@ -38,7 +38,7 @@ class FakeMaster {
 
 class FakeDeck : public BaseTrackPlayer {
   public:
-    FakeDeck(const QString& group)
+    FakeDeck(const QString& group, EngineChannel::ChannelOrientation orient)
             : BaseTrackPlayer(NULL, group),
               trackSamples(ConfigKey(group, "track_samples")),
               samplerate(ConfigKey(group, "track_samplerate")),
@@ -49,11 +49,13 @@ class FakeDeck : public BaseTrackPlayer {
               introStartPos(ConfigKey(group, "intro_start_position")),
               introEndPos(ConfigKey(group, "intro_end_position")),
               outroStartPos(ConfigKey(group, "outro_start_position")),
-              outroEndPos(ConfigKey(group, "outro_end_position")) {
+              outroEndPos(ConfigKey(group, "outro_end_position")),
+              orientation(ConfigKey(group, "orientation")) {
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
         outroStartPos.set(Cue::kNoPosition);
         outroEndPos.set(Cue::kNoPosition);
+        orientation.set(orient);
     }
 
     void fakeTrackLoadedEvent(TrackPointer pTrack) {
@@ -112,6 +114,7 @@ class FakeDeck : public BaseTrackPlayer {
     ControlObject introEndPos;
     ControlObject outroStartPos;
     ControlObject outroEndPos;
+    ControlObject orientation;
 };
 
 class MockPlayerManager : public PlayerManagerInterface {
@@ -185,10 +188,10 @@ class AutoDJProcessorTest : public LibraryTest {
     }
 
     AutoDJProcessorTest()
-            :  deck1("[Channel1]"),
-               deck2("[Channel2]"),
-               deck3("[Channel3]"),
-               deck4("[Channel4]") {
+            : deck1("[Channel1]", EngineChannel::LEFT),
+              deck2("[Channel2]", EngineChannel::RIGHT),
+              deck3("[Channel3]", EngineChannel::LEFT),
+              deck4("[Channel4]", EngineChannel::RIGHT) {
         qRegisterMetaType<TrackPointer>("TrackPointer");
 
         PlaylistDAO& playlistDao = internalCollection()->getPlaylistDAO();
@@ -1597,6 +1600,60 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
 
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+}
+
+TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekBeforeTransition) {
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    // Crossfader starts on the left.
+    master.crossfader.set(-1.0);
+    // Pretend a track is playing on deck 1.
+    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    // Load track and mark it playing.
+    deck1.slotLoadTrack(pTrack, true);
+    // Indicate the track loaded successfully.
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    // Enable AutoDJ, we immediately transition into IDLE and request a track
+    // load on deck2.
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    // Pretend the track load succeeds.
+    deck2.slotLoadTrack(pTrack, false);
+    deck2.fakeTrackLoadedEvent(pTrack);
+
+    // No change to the mode, crossfader or play states.
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+
+    // Play "to deck" near end
+    deck2.play.set(1.0);
+    deck2.playposition.set(0.95);
+
+    // Expect that we will transition into LEFT_FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
+
+    // Seek track to 99.9 % it should fade
+    // not 100 % because the final step is done by deck2
+    deck1.playposition.set(0.999);
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
+
+    EXPECT_LT(-1.0, master.crossfader.get());
+
+    EXPECT_DOUBLE_EQ(0.999, deck1.playposition.get());
+    // We expect that the "to Deck" has been seeked to the beginning"
+    EXPECT_DOUBLE_EQ(0, deck2.playposition.get());
 }
 
 TEST_F(AutoDJProcessorTest, TrackZeroLength) {
