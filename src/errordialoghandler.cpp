@@ -1,6 +1,7 @@
 #include "errordialoghandler.h"
 
 #include <QCoreApplication>
+#include <QGuiApplication>
 #include <QScopedPointer>
 #include <QScreen>
 #include <QThread>
@@ -163,34 +164,34 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
         if (props->m_detailsUseMonospaceFont) {
             // There is no event to respond on the Show Details button of QMessagBox.
             // Therefore we must consider the expanded size for positioning the dialog initially.
-            const auto* const pScreen =
+            auto* pScreen =
                     mixxx::widgethelper::getScreen(*pMsgBox);
-            if (pScreen) {
-                int dialogWidth = kEstimatedShowDetailedDialogWidth;
-                int dialogHeight = kEstimatedShowDetailedDialogHeight;
-
-                // Limit dialog size to screen size, for the case of devices with very small display - like Raspberry Pi.
-                if (dialogWidth > pScreen->geometry().width() - 2 * kMinimumDialogMargin) {
-                    dialogWidth = pScreen->geometry().width() - 2 * kMinimumDialogMargin;
-                }
-                if (dialogHeight > pScreen->geometry().height() - 2 * kMinimumDialogMargin) {
-                    dialogHeight = pScreen->geometry().height() - 2 * kMinimumDialogMargin;
-                }
-                pMsgBox->setGeometry(QStyle::alignedRect(
-                        Qt::LeftToRight,
-                        Qt::AlignCenter,
-                        QSize(dialogWidth, dialogHeight),
-                        pScreen->geometry()));
-                pMsgBox->setStyleSheet(
-                        QString("QTextEdit { min-width: %1px ; max-height: %2px; "
-                                "font-family: monospace;}")
-                                .arg(dialogWidth - kEstimatedDialogPadding)
-                                .arg(dialogHeight));
-            } else {
-                // Fallback when mixxx::widgethelper::getScreen can't determine the screen
-                // This happens always with Qt5.12
-                pMsgBox->setStyleSheet("QTextEdit { font-family: monospace; }");
+            if (!pScreen) {
+                // Fallback to obtain the primary screen when mixxx::widgethelper::getScreen can't
+                // determine the screen This happens always with Qt5.12
+                pScreen = qGuiApp->primaryScreen();
             }
+            DEBUG_ASSERT(pScreen);
+            int dialogWidth = kEstimatedShowDetailedDialogWidth;
+            int dialogHeight = kEstimatedShowDetailedDialogHeight;
+
+            // Limit dialog size to screen size, for the case of devices with very small display - like Raspberry Pi.
+            if (dialogWidth > pScreen->geometry().width() - 2 * kMinimumDialogMargin) {
+                dialogWidth = pScreen->geometry().width() - 2 * kMinimumDialogMargin;
+            }
+            if (dialogHeight > pScreen->geometry().height() - 2 * kMinimumDialogMargin) {
+                dialogHeight = pScreen->geometry().height() - 2 * kMinimumDialogMargin;
+            }
+            pMsgBox->setGeometry(QStyle::alignedRect(
+                    Qt::LeftToRight,
+                    Qt::AlignCenter,
+                    QSize(dialogWidth, dialogHeight),
+                    pScreen->geometry()));
+            pMsgBox->setStyleSheet(
+                    QString("QTextEdit { min-width: %1px ; max-height: %2px; "
+                            "font-family: monospace;}")
+                            .arg(dialogWidth - kEstimatedDialogPadding)
+                            .arg(dialogHeight));
         }
     }
 
