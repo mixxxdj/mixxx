@@ -7,10 +7,11 @@ void ScriptConnection::executeCallback(double value) const {
     std::unique_ptr<Trace> pCallCallbackTrace;
     pCallCallbackTrace = std::make_unique<Trace>(
             QString("JS " + key.item + " callback").toStdString().c_str());
-    QJSValueList args;
-    args << QJSValue(value);
-    args << QJSValue(key.group);
-    args << QJSValue(key.item);
+    const auto args = QJSValueList{
+            value,
+            key.group,
+            key.item,
+    };
     QJSValue func = callback; // copy function because QJSValue::call is not const
     QJSValue result = func.call(args);
     if (result.isError()) {
