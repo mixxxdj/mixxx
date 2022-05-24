@@ -25,7 +25,7 @@ class ControllerScriptEngineBase : public QObject {
 
     virtual bool initialize();
 
-    bool executeFunction(QJSValue functionObject, const QJSValueList& arguments);
+    bool executeFunction(QJSValue functionObject, const QJSValueList& arguments = {});
 
     /// Shows a UI dialog notifying of a script evaluation error.
     /// Precondition: QJSValue.isError() == true
