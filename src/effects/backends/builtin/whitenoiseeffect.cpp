@@ -58,12 +58,12 @@ void WhiteNoiseEffect::processChannel(
 
     WhiteNoiseGroupState& gs = *pState;
 
-    CSAMPLE drywet = static_cast<CSAMPLE>(m_pDryWetParameter->value());
+    const CSAMPLE drywet = static_cast<CSAMPLE>(m_pDryWetParameter->value());
     RampingValue<CSAMPLE_GAIN> drywet_ramping_value(
             drywet, gs.previous_drywet, engineParameters.framesPerBuffer());
 
     for (unsigned int i = 0; i < engineParameters.samplesPerBuffer(); i++) {
-        CSAMPLE_GAIN drywet_ramped = drywet_ramping_value.getNext();
+        const CSAMPLE_GAIN drywet_ramped = drywet_ramping_value.getNext();
 
         constexpr float normalization_divisor =
                 static_cast<float>(std::numeric_limits<uint32_t>::max());
@@ -73,9 +73,5 @@ void WhiteNoiseEffect::processChannel(
         pOutput[i] = pInput[i] * (1 - drywet_ramped) + noise * drywet_ramped;
     }
 
-    if (enableState == EffectEnableState::Disabling) {
-        gs.previous_drywet = 0;
-    } else {
-        gs.previous_drywet = drywet;
-    }
+    gs.previous_drywet = (enableState == EffectEnableState::Disabling) ? 0 : drywet;
 }
