@@ -4,6 +4,14 @@
 
 namespace {
 const QString dryWetParameterId = QStringLiteral("dry_wet");
+std::uint32_t nextState(std::uint32_t previous_state) {
+    // taken from https://en.wikipedia.org/wiki/Xorshift#Example_implementation
+    // inspired by https://youtu.be/Tof5pRedskI?t=2735
+    previous_state ^= previous_state << 13;
+    previous_state ^= previous_state >> 17;
+    previous_state ^= previous_state << 5;
+    return previous_state;
+}
 } // anonymous namespace
 
 // static
@@ -54,13 +62,13 @@ void WhiteNoiseEffect::processChannel(
     RampingValue<CSAMPLE_GAIN> drywet_ramping_value(
             drywet, gs.previous_drywet, engineParameters.framesPerBuffer());
 
-    std::uniform_real_distribution<> r_distributor(0.0, 1.0);
-
     for (unsigned int i = 0; i < engineParameters.samplesPerBuffer(); i++) {
         CSAMPLE_GAIN drywet_ramped = drywet_ramping_value.getNext();
 
-        float noise = static_cast<float>(
-                r_distributor(gs.gen));
+        constexpr float normalization_divisor =
+                static_cast<float>(std::numeric_limits<uint32_t>::max());
+        gs.random_state = nextState(gs.random_state);
+        const float noise = static_cast<float>(gs.random_state) / normalization_divisor;
 
         pOutput[i] = pInput[i] * (1 - drywet_ramped) + noise * drywet_ramped;
     }
