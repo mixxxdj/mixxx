@@ -62,15 +62,30 @@ void WhiteNoiseEffect::processChannel(
     RampingValue<CSAMPLE_GAIN> drywet_ramping_value(
             drywet, gs.previous_drywet, engineParameters.framesPerBuffer());
 
-    for (unsigned int i = 0; i < engineParameters.samplesPerBuffer(); i++) {
+    // Is this relying on implementation details?
+    DEBUG_ASSERT(engineParameters.samplesPerBuffer() ==
+            engineParameters.framesPerBuffer() *
+                    engineParameters.channelCount());
+
+    for (unsigned int frameIndex = 0;
+            frameIndex < engineParameters.framesPerBuffer();
+            frameIndex++) {
         const CSAMPLE_GAIN drywet_ramped = drywet_ramping_value.getNext();
 
-        constexpr float normalization_divisor =
-                static_cast<float>(std::numeric_limits<uint32_t>::max());
-        gs.random_state = nextState(gs.random_state);
-        const float noise = static_cast<float>(gs.random_state) / normalization_divisor;
+        for (unsigned int sampleInFrameIndex = 0;
+                sampleInFrameIndex < engineParameters.channelCount();
+                sampleInFrameIndex++) {
+            constexpr float normalization_divisor =
+                    static_cast<float>(std::numeric_limits<uint32_t>::max());
+            gs.random_state = nextState(gs.random_state);
+            const float noise = static_cast<float>(gs.random_state) / normalization_divisor;
 
-        pOutput[i] = pInput[i] * (1 - drywet_ramped) + noise * drywet_ramped;
+            const int sampleIndex =
+                    frameIndex * engineParameters.channelCount() +
+                    sampleInFrameIndex;
+            pOutput[sampleIndex] = pInput[sampleIndex] * (1 - drywet_ramped) +
+                    noise * drywet_ramped;
+        }
     }
 
     gs.previous_drywet = (enableState == EffectEnableState::Disabling) ? 0 : drywet;
