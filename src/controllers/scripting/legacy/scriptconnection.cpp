@@ -4,9 +4,7 @@
 #include "util/trace.h"
 
 void ScriptConnection::executeCallback(double value) const {
-    std::unique_ptr<Trace> pCallCallbackTrace;
-    pCallCallbackTrace = std::make_unique<Trace>(
-            QString("JS " + key.item + " callback").toStdString().c_str());
+    Trace executeCallbackTrace(QString("JS " + key.item + " callback").toStdString().c_str());
     const auto args = QJSValueList{
             value,
             key.group,
