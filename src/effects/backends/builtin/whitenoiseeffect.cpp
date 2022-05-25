@@ -81,9 +81,10 @@ void WhiteNoiseEffect::processChannel(
                 sampleInFrameIndex < engineParameters.channelCount();
                 sampleInFrameIndex++) {
             constexpr float normalization_divisor =
-                    static_cast<float>(std::numeric_limits<uint32_t>::max());
+                    static_cast<float>(std::numeric_limits<int32_t>::max());
             gs.random_state = nextState(gs.random_state);
-            const float noise = static_cast<float>(gs.random_state) / normalization_divisor;
+            const auto bipolar_random = static_cast<int32_t>(gs.random_state);
+            const float noise = static_cast<float>(bipolar_random) / normalization_divisor;
 
             const int sampleIndex =
                     frameIndex * engineParameters.channelCount() +
