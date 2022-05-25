@@ -61,6 +61,10 @@ void WhiteNoiseEffect::processChannel(
     const CSAMPLE drywet = static_cast<CSAMPLE>(m_pDryWetParameter->value());
     RampingValue<CSAMPLE_GAIN> drywet_ramping_value(
             drywet, gs.previous_drywet, engineParameters.framesPerBuffer());
+    auto fade_in_out_ramping = RampingValue<CSAMPLE_GAIN>(
+            enableState == EffectEnableState::Enabling ? 0 : 1,
+            enableState == EffectEnableState::Disabling ? 0 : 1,
+            engineParameters.framesPerBuffer());
 
     // Is this relying on implementation details?
     DEBUG_ASSERT(engineParameters.samplesPerBuffer() ==
@@ -71,6 +75,7 @@ void WhiteNoiseEffect::processChannel(
             frameIndex < engineParameters.framesPerBuffer();
             frameIndex++) {
         const CSAMPLE_GAIN drywet_ramped = drywet_ramping_value.getNext();
+        const CSAMPLE_GAIN fade_in_out_gain = fade_in_out_ramping.getNext();
 
         for (unsigned int sampleInFrameIndex = 0;
                 sampleInFrameIndex < engineParameters.channelCount();
@@ -84,7 +89,7 @@ void WhiteNoiseEffect::processChannel(
                     frameIndex * engineParameters.channelCount() +
                     sampleInFrameIndex;
             pOutput[sampleIndex] = pInput[sampleIndex] * (1 - drywet_ramped) +
-                    noise * drywet_ramped;
+                    noise * drywet_ramped * fade_in_out_gain;
         }
     }
 
