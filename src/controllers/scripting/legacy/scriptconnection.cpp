@@ -4,7 +4,7 @@
 #include "util/trace.h"
 
 void ScriptConnection::executeCallback(double value) const {
-    Trace executeCallbackTrace(QString("JS " + key.item + " callback").toStdString().c_str());
+    Trace executeCallbackTrace("JS %1 callback", key.item);
     const auto args = QJSValueList{
             value,
             key.group,
