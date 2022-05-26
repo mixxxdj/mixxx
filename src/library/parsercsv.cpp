@@ -25,10 +25,6 @@ bool isColumnExported(BaseSqlTableModel* pPlaylistTableModel, int column) {
 
 } // namespace
 
-ParserCsv::ParserCsv()
-        : Parser() {
-}
-
 QList<QString> ParserCsv::parse(const QString& sFilename) {
     QFile file(sFilename);
     QString basepath = sFilename.section('/', 0, -2);

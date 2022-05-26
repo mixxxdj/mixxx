@@ -10,9 +10,9 @@
 class ParserCsv : public Parser {
     Q_OBJECT
   public:
-    ParserCsv();
+    ~ParserCsv() override = default;
 
-    QList<QString> parse(const QString&);
+    QList<QString> parse(const QString&) override;
     static bool writeCSVFile(
             const QString& file,
             BaseSqlTableModel* pPlaylistTableModel,
